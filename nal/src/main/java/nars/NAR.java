@@ -539,6 +539,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     @Nullable
     public Task input(float pri, Term term, byte punc, long start, long end, float freq, float conf) throws InvalidTaskException {
 
+        term = term.normalize();
 
         ObjectBooleanPair<Term> b = Task.tryContent(term, punc, false);
 
