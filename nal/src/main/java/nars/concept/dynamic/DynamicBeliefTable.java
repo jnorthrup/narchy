@@ -162,22 +162,23 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
         if (s == 0)
             return 0;
 
-        IntFloatHashMap dtConf = new IntFloatHashMap(s);
-        forEachTask(t->{
-           int tdt = t.dt();
-           if (tdt!=DTERNAL)
-               dtConf.addToValue(tdt, t.conf(start, end)); //maybe evi
+        int dur = nar.dur();
+
+        IntFloatHashMap dtEvi = new IntFloatHashMap(s);
+        forEachTask(t -> {
+            int tdt = t.dt();
+            if (tdt != DTERNAL)
+                dtEvi.addToValue(tdt, t.evi(start, end, dur)); //maybe evi
         });
-        int n = dtConf.size();
-        if (n == 0)
-             return 0;
-
-        MutableList<IntFloatPair> ll = dtConf.keyValuesView().toList();
-        if (n == 1)
-            return ll.get(0).getOne();
-
-        int lls = DecideRoulette.decideRoulette(ll.size(), (i)->ll.get(i).getTwo(), nar.random());
-        return ll.get(lls).getOne();
+        int n = dtEvi.size();
+        if (n == 0) {
+            return 0;
+        } else {
+            MutableList<IntFloatPair> ll = dtEvi.keyValuesView().toList();
+            int selected = n != 1 ?
+                    DecideRoulette.decideRoulette(ll.size(), (i) -> ll.get(i).getTwo(), nar.random()) : 0;
+            return ll.get(selected).getOne();
+        }
     }
 
     @Override

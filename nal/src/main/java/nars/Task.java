@@ -375,6 +375,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     /**
      * amount of evidence measured at a given time with a given duration window
      *
+     * WARNING check that you arent calling this with (start,end) values
      * @param when time
      * @param dur  duration period across which evidence can decay before and after its defined start/stop time
      * @return value >= 0 indicating the evidence
