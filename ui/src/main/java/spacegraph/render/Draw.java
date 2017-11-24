@@ -24,7 +24,6 @@
 package spacegraph.render;
 
 
-import com.google.common.io.Resources;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.util.ImmModeSink;

@@ -11,14 +11,11 @@ import nars.table.TemporalBeliefTable;
 import nars.task.util.PredictionFeedback;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.transform.Retemporalize;
 import nars.truth.Truth;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.tuple.primitive.IntFloatPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntFloatHashMap;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Consumer;
 
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;

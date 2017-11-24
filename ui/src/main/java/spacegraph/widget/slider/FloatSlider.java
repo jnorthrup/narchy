@@ -6,7 +6,6 @@ import jcog.Util;
 import jcog.math.FloatParam;
 import jcog.math.FloatSupplier;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.AspectAlign;
 import spacegraph.Surface;
 import spacegraph.widget.text.Label;
 

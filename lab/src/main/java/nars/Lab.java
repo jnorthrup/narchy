@@ -4,8 +4,6 @@ import nars.gui.Vis;
 import org.reflections.Reflections;
 import spacegraph.SpaceGraph;
 
-import java.lang.reflect.Constructor;
-
 import static java.util.stream.Collectors.toList;
 
 public class Lab {

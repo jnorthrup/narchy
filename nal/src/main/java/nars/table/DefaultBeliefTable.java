@@ -7,7 +7,6 @@ import nars.concept.BaseConcept;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.function.Consumer;

@@ -1,9 +1,6 @@
 package spacegraph.widget.button;
 
-import com.jogamp.opengl.GL2;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
-import spacegraph.AspectAlign;
-import spacegraph.render.Draw;
 import spacegraph.widget.text.Label;
 
 import java.util.concurrent.atomic.AtomicBoolean;

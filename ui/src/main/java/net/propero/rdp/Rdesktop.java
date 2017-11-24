@@ -40,7 +40,6 @@ import net.propero.rdp.rdp5.snd.SoundChannel;
 import net.propero.rdp.tools.SendEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.event.Level;
 
 import java.awt.*;
 import java.io.InputStream;

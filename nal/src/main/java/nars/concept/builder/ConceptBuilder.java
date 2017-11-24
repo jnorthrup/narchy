@@ -8,7 +8,6 @@ import nars.table.QuestionTable;
 import nars.table.TemporalBeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;
 

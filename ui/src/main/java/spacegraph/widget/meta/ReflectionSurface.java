@@ -4,7 +4,6 @@ import com.google.common.collect.Sets;
 import jcog.Services;
 import jcog.list.FasterList;
 import jcog.math.FloatParam;
-import org.jetbrains.annotations.NotNull;
 import spacegraph.Surface;
 import spacegraph.layout.Grid;
 import spacegraph.widget.button.CheckBox;

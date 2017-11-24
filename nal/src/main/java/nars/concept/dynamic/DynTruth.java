@@ -8,7 +8,6 @@ import nars.Task;
 import nars.control.Cause;
 import nars.task.NALTask;
 import nars.term.Term;
-import nars.term.transform.Retemporalize;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -17,7 +16,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
-import static nars.time.Tense.ETERNAL;
 
 /**
  * Created by me on 12/4/16.

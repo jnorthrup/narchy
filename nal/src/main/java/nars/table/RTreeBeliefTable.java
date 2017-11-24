@@ -1,7 +1,6 @@
 package nars.table;
 
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Streams;
 import jcog.Util;
 import jcog.math.CachedFloatFunction;
 import jcog.sort.Top;

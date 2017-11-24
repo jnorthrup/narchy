@@ -3,9 +3,7 @@ package nars.table;
 import nars.NAR;
 import nars.Task;
 import nars.concept.BaseConcept;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
