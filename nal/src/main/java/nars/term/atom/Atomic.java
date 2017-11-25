@@ -107,6 +107,7 @@ public interface Atomic extends Term {
     }
 
 
+
     /*@NotNull*/
     static Atomic the(String id) {
         int l = id.length();
@@ -271,14 +272,12 @@ public interface Atomic extends Term {
     static boolean isQuoteNecessary(CharSequence t) {
         int len = t.length();
 
-        if (len > 1 && (t.charAt(0) == '\"') &&
-                (t.charAt(len - 1) == '\"'))
+        if (len > 1 && (t.charAt(0) == '\"') && (t.charAt(len - 1) == '\"'))
             return false; //already quoted
 
 
         for (int i = 0; i < len; i++) {
-            char c = t.charAt(i);
-            if (!Narsese.isValidAtomChar(c))
+            if (!Narsese.isValidAtomChar(t.charAt(i)))
                 return true;
         }
 

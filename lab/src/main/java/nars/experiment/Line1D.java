@@ -31,7 +31,7 @@ public class Line1D {
     public static class Line1DVis {
 
 
-        public static void main(String[] args) throws Narsese.NarseseException {
+        public static void main(String[] args) {
 
 
 //                InstrumentedExecutor exe =

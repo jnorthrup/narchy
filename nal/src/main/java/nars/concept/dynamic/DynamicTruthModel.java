@@ -43,6 +43,18 @@ abstract public class DynamicTruthModel {
         for (int i = 0; i < inputs.length; i++) {
             Term it = inputs[i];
 
+            //TODO check these times
+            long subStart, subEnd;
+            if (start == ETERNAL || superterm.op() != CONJ) {
+                subStart = subEnd = ETERNAL;
+            } else {
+                int dt = superterm.subTimeSafe(it);
+                assert(dt!=DTERNAL);
+                subStart = start + dt;
+                subEnd = end + dt + it.dtRange();
+            }
+
+
             boolean negated = it.op() == Op.NEG;
             if (negated)
                 it = it.unneg();
@@ -50,33 +62,6 @@ abstract public class DynamicTruthModel {
             Concept subConcept = n.concept(it);
             if (subConcept == null)
                 return null; //ok just missing
-
-            int dt;
-            if (superterm.op() == CONJ) {
-                dt = superterm.subTimeSafe(it);
-//                if (dt == DTERNAL) {
-//                    if (sdt != DTERNAL && sdt != XTERNAL) {
-//                        return null; //dt = 0; //TODO maybe this should never happen, and if it does there is an error
-//                    }
-//                }
-            } else {
-                dt = DTERNAL; //
-            }
-
-
-            //TODO check these times
-            long subStart, subEnd;
-            if (start == ETERNAL) {
-                subStart = subEnd = ETERNAL;
-            } else {
-                if (dt == DTERNAL) {
-                    subStart = subEnd = start;
-                } else {
-                    subStart = start + dt;
-                    subEnd = end + dt + it.dtRange();
-                }
-            }
-
 
 
             Task bt;
@@ -122,15 +107,7 @@ abstract public class DynamicTruthModel {
 
         if (evi) {
             assert(!d.e.isEmpty());
-            if (outputs != null) {
-                d.concrete = superterm.op().the(DT, outputs);
-            } else {
-                d.concrete = superterm;
-            }
-//            if (d.concrete.hasXternal()) {
-//                //eval(superterm, beliefOrGoal, start, end, stamp, n); //HACK
-//                throw new RuntimeException("xternal");
-//            }
+            d.concrete = outputs != null ? superterm.op().the(DT, outputs) : superterm;
         }
 
 //        //if (template instanceof Compound) {

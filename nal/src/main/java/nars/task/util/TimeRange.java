@@ -36,8 +36,8 @@ public class TimeRange implements HyperRegion {
     @Override
     public boolean intersects(HyperRegion x) {
         var t = (TaskRegion)x;
-        if (t == null)
-            throw new NullPointerException(); //HACK this shouldnt happen
+//        if (t == null)
+//            throw new NullPointerException(); //HACK this shouldnt happen
         return start <= t.end() && end >= t.start();
     }
 

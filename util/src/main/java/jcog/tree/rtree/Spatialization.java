@@ -35,6 +35,7 @@ public class Spatialization<T> {
     public Branch<T> newBranch() {
         return new Branch<>(max);
     }
+
     public Branch<T> newBranch(Leaf<T> a, Leaf<T> b) {
         return new Branch<>(max, a, b);
     }
@@ -84,7 +85,7 @@ public class Spatialization<T> {
     /**
      * Different methods for splitting nodes in an RTree.
      */
-    public enum DefaultSplits {
+    @Deprecated public enum DefaultSplits {
         AXIAL {
             @Override
             public <T> Split<T> get() {

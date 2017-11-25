@@ -121,6 +121,13 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
 
     @Nullable
     protected DynTruth truth(long start, long end, Term template, boolean evidence, NAR nar) {
+        template = template(start, end, template, nar);
+        return template != null ? model.eval(template, beliefOrGoal, start, end, evidence, nar) : null;
+
+    }
+
+    @Nullable
+    private Term template(long start, long end, Term template, NAR nar) {
         boolean temporal = template.op().temporal;
         if (temporal) {
             int d = template.dt();
@@ -138,14 +145,13 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
                 }
 
                 if (next instanceof Bool || next.dt()==XTERNAL) {
-                    return null; //give up
+                    return null;
                 }
 
                 template = next;
             }
         }
-
-        return model.eval(template, beliefOrGoal, start, end, evidence, nar);
+        return template;
     }
 
     /**

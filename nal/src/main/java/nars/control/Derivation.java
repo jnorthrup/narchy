@@ -81,11 +81,6 @@ public class Derivation extends Unify {
     public float confMin;
 
 
-//    /**
-//     * the current premise being evaluated in this context TODO make private again
-//     */
-//    public Premise premise;
-
     /**
      * current MatchTerm to receive matches at the end of the Termute chain; set prior to a complete match by the matchee
      */

@@ -130,7 +130,6 @@ public class BaseConcept implements Concept {
         return taskLinks;
     }
 
-    @NotNull
     @Override
     public Bag<Term, PriReference<Term>> termlinks() {
         return termLinks;
@@ -218,11 +217,6 @@ public class BaseConcept implements Concept {
     public int varQuery() {
         return term.varQuery();
     }
-
-//    @Override
-//    public boolean isDynamic() {
-//        return false;
-//    }
 
     @Deprecated
     @Override

@@ -50,7 +50,7 @@ public final class Branch<T> implements Node<T, Node<T, ?>> {
         this.child = new Node[cap];
     }
 
-    public Branch(int cap, Leaf<T> a, Leaf<T> b) {
+    Branch(int cap, Leaf<T> a, Leaf<T> b) {
         this(cap);
         assert (cap >= 2);
         assert (a != b);
@@ -67,7 +67,7 @@ public final class Branch<T> implements Node<T, Node<T, ?>> {
             return false;
 
         int s = size;
-        Node<T, ?>[] c = this.child;
+        Node[] c = this.child;
         for (int i = 0; i < s; i++) {
             if (c[i].contains(t, b, model))
                 return true;
@@ -124,7 +124,7 @@ public final class Branch<T> implements Node<T, Node<T, ?>> {
 
         final HyperRegion tRect = model.bounds(t);
 
-        Node<T, ?>[] child = this.child;
+        Node[] child = this.child;
 
         if (bounds.contains(tRect)) {
             //MERGE STAGE:
@@ -135,7 +135,7 @@ public final class Branch<T> implements Node<T, Node<T, ?>> {
                     //                if (ci.contains(t, model))
                     //                    return this; // duplicate detected (subtree not changed)
 
-                    Node<T, ?> m = ci.add(t, null, model, null);
+                    Node m = ci.add(t, null, model, null);
                     if (m == null) {
                         return null; //merged
                     }
@@ -170,7 +170,7 @@ public final class Branch<T> implements Node<T, Node<T, ?>> {
 
             final int bestLeaf = chooseLeaf(t, tRect, parent, model);
 
-            Node<T, ?> nextBest = child[bestLeaf].add(t, this, model, added);
+            Node nextBest = child[bestLeaf].add(t, this, model, added);
             assert (added[0]);
 
             if (nextBest == null) {
@@ -185,7 +185,7 @@ public final class Branch<T> implements Node<T, Node<T, ?>> {
             // optimize on split to remove the extra created branch when there
             // is space for the children here
             if (size < child.length && nextBest.size() == 2 && !nextBest.isLeaf()) {
-                Node<T, ?>[] bc = ((Branch<T>) nextBest).child;
+                Node[] bc = ((Branch<T>) nextBest).child;
                 child[bestLeaf] = bc[0];
                 child[size++] = bc[1];
             }
@@ -243,7 +243,7 @@ public final class Branch<T> implements Node<T, Node<T, ?>> {
                             return child[0];
                         }
 
-                        Node<T, ?>[] cc = this.child;
+                        Node[] cc = this.child;
                         HyperRegion region = cc[0].bounds();
                         for (int j = 1; j < size; j++) {
                             region = grow(region, cc[j]);
@@ -266,9 +266,10 @@ public final class Branch<T> implements Node<T, Node<T, ?>> {
 
         //TODO may be able to avoid recomputing bounds if the old was not found
         boolean found = false;
-        Node<T, ?>[] cc = this.child;
+        Node[] cc = this.child;
         HyperRegion region = null;
-        for (int i = 0; i < size; i++) {
+        short s = this.size;
+        for (int i = 0; i < s; i++) {
             if (!found && tRect.intersects(cc[i].bounds())) {
                 cc[i] = cc[i].update(OLD, NEW, model);
                 found = true;

@@ -154,7 +154,7 @@ public class PremiseRule /*extends GenericCompound*/ {
                 new Solve.SolvePuncOverride(ii, puncOverride, belief, goal, beliefProjected);
 
         //PREFIX
-        Set<Term> precon = newHashSet(16); //for ensuring uniqueness / no duplicates
+        Set<Term> precon = newHashSet(4); //for ensuring uniqueness / no duplicates
 
         addAll(precon, PRE);
 

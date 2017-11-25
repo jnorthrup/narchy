@@ -51,6 +51,10 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
     //private final boolean rotate = !easy;
 
+    public Tetris(NAR nar) throws Narsese.NarseseException {
+        this(nar, Tetris.tetris_width, Tetris.tetris_height);
+    }
+
     public Tetris(NAR nar, int width, int height) throws Narsese.NarseseException {
         this(nar, width, height, 1);
     }

@@ -130,72 +130,66 @@ public interface Compound extends Term, IPair, TermContainer {
             return 0;
 
         Op op = op();
-        if (!op.temporal) {
+        if (!op.temporal || impossibleSubTerm(x))
             return DTERNAL;
-        }
 
-        if (!impossibleSubTerm(x)) {
-
-
-            //TODO do shuffled search to return different equivalent results wherever they may appear
+        //TODO do shuffled search to return different equivalent results wherever they may appear
 
 
-            int dt = dt();
-            if (dt == XTERNAL) //unknown
-                return DTERNAL;
+        int dt = dt();
+        if (dt == XTERNAL) //unknown
+            return DTERNAL;
 
-            /*@NotNull*/
-            TermContainer yy = subterms();
+        /*@NotNull*/
+        TermContainer yy = subterms();
 
-            if (op == IMPL) {
-                //only two options
-                Term s0 = yy.sub(0);
-                if (s0.equals(x)) {
-                    return 0;
-                }
-                int s1offset = s0.dtRange() + (dt == DTERNAL ? 0 : dt);
-                Term s1 = yy.sub(1);
-                if (s1.equals(x)) {
-                    return s1offset; //the subject's dtrange + the dt between points to the start of the predicate
-                }
-                if (s0.op() == CONJ) {
-                    int s0d = s0.subTimeSafe(x);
-                    if (s0d != DTERNAL)
-                        return s0d;
-                }
-                if (s1.op() == CONJ) {
-                    int s1d = s1.subTimeSafe(x);
-                    if (s1d != DTERNAL)
-                        return s1d + s1offset;
-                }
+        if (op == IMPL) {
+            //only two options
+            Term s0 = yy.sub(0);
+            if (s0.equals(x)) {
+                return 0;
+            }
+            int s1offset = s0.dtRange() + (dt == DTERNAL ? 0 : dt);
+            Term s1 = yy.sub(1);
+            if (s1.equals(x)) {
+                return s1offset; //the subject's dtrange + the dt between points to the start of the predicate
+            }
+            if (s0.op() == CONJ) {
+                int s0d = s0.subTimeSafe(x);
+                if (s0d != DTERNAL)
+                    return s0d;
+            }
+            if (s1.op() == CONJ) {
+                int s1d = s1.subTimeSafe(x);
+                if (s1d != DTERNAL)
+                    return s1d + s1offset;
+            }
 
-            } else if (op == CONJ) {
-                boolean reverse;
-                int idt;
-                if (dt == DTERNAL || dt == 0) {
-                    idt = 0; //parallel or eternal, no dt increment
-                    reverse = false;
+        } else if (op == CONJ) {
+            boolean reverse;
+            int idt;
+            if (dt == DTERNAL || dt == 0) {
+                idt = 0; //parallel or eternal, no dt increment
+                reverse = false;
+            } else {
+                idt = dt;
+                if (idt < 0) {
+                    idt = -idt;
+                    reverse = true;
                 } else {
-                    idt = dt;
-                    if (idt < 0) {
-                        idt = -idt;
-                        reverse = true;
-                    } else {
-                        reverse = false;
-                    }
-                }
-
-                int ys = yy.subs();
-                int offset = 0;
-                for (int yi = 0; yi < ys; yi++) {
-                    Term yyy = yy.sub(reverse ? ((ys - 1) - yi) : yi);
-                    int sdt = yyy.subTimeSafe(x);
-                    if (sdt != DTERNAL)
-                        return sdt + offset;
-                    offset += idt + yyy.dtRange();
+                    reverse = false;
                 }
             }
 
+            int ys = yy.subs();
+            int offset = 0;
+            for (int yi = 0; yi < ys; yi++) {
+                Term yyy = yy.sub(reverse ? ((ys - 1) - yi) : yi);
+                int sdt = yyy.subTimeSafe(x);
+                if (sdt != DTERNAL)
+                    return sdt + offset;
+                offset += idt + yyy.dtRange();
+            }
         }
 
         return DTERNAL;
@@ -227,9 +221,7 @@ public interface Compound extends Term, IPair, TermContainer {
     default ByteList structureKey(ByteArrayList appendTo) {
         appendTo.add(op().id);
         appendTo.add((byte) subs());
-        forEach(x -> {
-            x.structureKey(appendTo);
-        });
+        forEach(x -> x.structureKey(appendTo));
         return appendTo;
     }
 
@@ -250,15 +242,7 @@ public interface Compound extends Term, IPair, TermContainer {
      */
     @Override
     default boolean unify(/*@NotNull*/ Term ty, /*@NotNull*/ Unify u) {
-
-        if (Term.super.unify(ty, u))
-            return true;
-
-        Op op = op();
-        if (op != ty.op())
-            return false;
-
-        return unifySubterms(ty, u);
+        return Term.super.unify(ty, u) || (op() == ty.op() && unifySubterms(ty, u));
     }
 
     default boolean unifySubterms(Term ty, Unify u) {
@@ -282,9 +266,9 @@ public interface Compound extends Term, IPair, TermContainer {
 //        }
 
 
-        if (op() == CONJ) { //non-commutive, temporal CONJ
+        /*if (op() == CONJ) { //non-commutive, temporal CONJ
             return TermContainer.unifyConj(xsubs, dt(), ysubs, y.dt(), u);
-        } else if (isCommutative()) {
+        } else */if (isCommutative()) {
             return xsubs.unifyCommute(ysubs, u);
         } else {
             //do not do a fast termcontainer test unless it's linear; in commutive mode we want to allow permutations even if they are initially equal
