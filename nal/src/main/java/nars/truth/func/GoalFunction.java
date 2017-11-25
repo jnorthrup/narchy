@@ -16,7 +16,8 @@ import static nars.truth.TruthFunctions.*;
 
 public enum GoalFunction implements TruthOperator {
 
-    @AllowOverlap Strong() {
+    //@AllowOverlap
+    Strong() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return desireStrongOriginal(T, B, minConf);
@@ -24,7 +25,8 @@ public enum GoalFunction implements TruthOperator {
         }
     },
 
-    @AllowOverlap Weak() {
+    //@AllowOverlap
+    Weak() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return desireWeakOriginal(T, B, minConf);
@@ -33,7 +35,7 @@ public enum GoalFunction implements TruthOperator {
     },
 
 
-    @AllowOverlap
+    //@AllowOverlap
     DeciDeduction() {
         @Override
         public Truth apply(Truth T, Truth B, NAR m, float minConf) {
@@ -52,7 +54,7 @@ public enum GoalFunction implements TruthOperator {
 
     },
 
-    @AllowOverlap
+    //@AllowOverlap
     DeciInduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
@@ -93,7 +95,8 @@ public enum GoalFunction implements TruthOperator {
     },
 
 
-    @AllowOverlap @SinglePremise
+    @AllowOverlap
+    @SinglePremise
     StructuralReduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
@@ -101,8 +104,8 @@ public enum GoalFunction implements TruthOperator {
         }
     },
 
-    @SinglePremise
     @AllowOverlap
+    @SinglePremise
     StructuralDeduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
@@ -118,38 +121,25 @@ public enum GoalFunction implements TruthOperator {
         }
     },
 
-//    @SinglePremise
-//    Identity() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-//            return TruthOperator.identity(T, minConf);
-//        }
-//    },
 
-//    @AllowOverlap @SinglePremise
-//    StructuralStrongNeg() {
-//        
-//        @Override public Truth apply( final Truth T,  final Truth B, Memory m, float minConf) {
-//            return TruthFunctions.desireStrong(T, defaultTruth(m).negated(), minConf);
-//        }
-//    },
-
-
-    @AllowOverlap Union() {
+    //@AllowOverlap
+    Union() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return union(T, B, minConf);
         }
     },
 
-    @AllowOverlap Intersection() {
+    //@AllowOverlap
+    Intersection() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return intersection(T, B, minConf);
         }
     },
 
-    @AllowOverlap Difference() {
+    //@AllowOverlap
+    Difference() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return difference(T, B, minConf);

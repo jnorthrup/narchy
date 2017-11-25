@@ -68,9 +68,9 @@ public class DeriveTime extends TimeGraph {
             //Term beliefTerm = polarizedTaskTerm(belief);
             know(d, belief, beliefStart);
 
-        } else if (!task.term().equals(d.beliefTerm)) {
+        } /*else if (!task.term().equals(d.beliefTerm)) {
             know(d, d.beliefTerm, TIMELESS);
-        }
+        }*/
 
     }
 

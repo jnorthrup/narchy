@@ -1,5 +1,6 @@
 package nars.nal.nal7;
 
+import jcog.math.Interval;
 import nars.NAR;
 import nars.Narsese;
 import nars.Param;
@@ -16,7 +17,7 @@ abstract public class TemporalStabilityTest {
 
     //private final boolean stopOnFirstError = true;
 
-    public void test(int cycles, @NotNull NAR n) throws Narsese.NarseseException {
+    public void test(int cycles, @NotNull NAR n) {
 
         Param.DEBUG = true;
 
@@ -46,19 +47,32 @@ abstract public class TemporalStabilityTest {
         assert(!unstable);
     }
 
+    long minInput = ETERNAL, maxInput = ETERNAL;
+
     public void validate(Task t) {
+        long ts = t.start();
+        long te = t.end();
         if (t.isInput()) {
             System.out.println("in: " + t);
-            return;
-        }
+            if (!t.isEternal()) {
+                if (minInput == ETERNAL || minInput > ts)
+                    minInput = ts;
+                if (maxInput == ETERNAL || maxInput < te)
+                    maxInput = te;
+            }
+        } else {
 
-        if (!validOccurrence(t.start()) || !validOccurrence(t.end()) || refersToOOBEvents(t))  {
-            //if (irregular.add(t)) { //already detected?
+            if (ts < minInput || te > maxInput) {
+                System.err.println("  OOB: " + "\n" + t.proof() + "\n");
+                unstable = true;
+            } else if (!validOccurrence(ts) || !validOccurrence(te) || refersToOOBEvents(t)) {
+                //if (irregular.add(t)) { //already detected?
                 System.err.println("  instability: " + "\n" + t.proof() + "\n");
                 unstable = true;
-//                if (stopOnFirstError)
-//                    n.stop();
-            //}
+                //                if (stopOnFirstError)
+                //                    n.stop();
+                //}
+            }
         }
     }
 
