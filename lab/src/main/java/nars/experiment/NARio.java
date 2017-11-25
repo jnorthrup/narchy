@@ -270,7 +270,7 @@ public class NARio extends NAgentX {
                 x.trace = true;
 
                 n.onTask(t -> {
-                    if (t.isEternal() && !t.isInput()) {
+                    if (t.isEternal() && !t.isInput() && !t.isQuestOrQuestion()) {
                         System.err.println(t.proof());
                     }
 //                    if (t.isGoal() && !t.isInput()) {

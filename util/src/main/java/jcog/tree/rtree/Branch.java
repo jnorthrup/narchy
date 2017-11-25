@@ -382,7 +382,8 @@ public final class Branch<T> implements Node<T, Node<T, ?>> {
 
     @Override
     public boolean containing(final HyperRegion rect, final Predicate<T> t, Spatialization<T> model) {
-        if (rect.intersects(bounds)) {
+        HyperRegion b = this.bounds;
+        if (b!=null && rect.intersects(b)) {
             short s = this.size;
             Node[] data = this.child;
             for (int i = 0; i < s; i++) {
@@ -396,7 +397,8 @@ public final class Branch<T> implements Node<T, Node<T, ?>> {
 
     @Override
     public boolean intersecting(HyperRegion rect, Predicate<T> t, Spatialization<T> model) {
-        if (rect.intersects(bounds)) {
+        HyperRegion b = this.bounds;
+        if (b!=null && rect.intersects(b)) {
             short s = this.size;
             Node[] data = this.child;
             for (int i = 0; i < s; i++) {

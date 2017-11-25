@@ -316,6 +316,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
         }
 
+
         int subs = x.subs();
         if (subs == 2) {
             Term a = xx.sub(0);
@@ -323,61 +324,62 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             Term b = xx.sub(1);
             Collection<Event> bTerms = !b.equals(a) ? byTerm.get(b) : List.of();
             int ns = aTerms.size() + bTerms.size();
-            if (ns == 0)
-                return true; //cant do anything
-
-            //TODO sort to process smallest terms first
-            List<Event> sources = $.newArrayList(ns);
-            sources.addAll(aTerms);
-            sources.addAll(bTerms);
-            if (sources.size() > 1) {
-                sources.sort(Comparator.comparingInt(z -> z.id.volume()));
-            }
+            if (ns > 0) {
 
 
-//            boolean repeat = a.unneg().equals(b.unneg()); //if true, then we must be careful when trying this in a commutive-like result which would collapse the two terms
-
-            return dfs(sources, new CrossTimeSolver() {
-                @Override
-                protected boolean next(BooleanObjectPair<Edge<Event, TimeSpan>> move, Node<Event, TimeSpan> next) {
-
-                    //System.out.println(path);
-
-                    long[] startDT = pathDT(next, a, b, path);
-                    if (startDT == null)
-                        return true; //nothing at this step
-
-                    long ddt = startDT[1];
-                    assert (ddt < Integer.MAX_VALUE);
-                    int dt = (int) ddt;
-                    Term y = dt(x, dt);
-
-                    if (!(y instanceof Bool)) {
-
-                        long start = startDT[0];
-                        return start != TIMELESS ?
-                                each.test(
-                                        event(y, start,
-                                                start != ETERNAL ?
-                                                        start + dt : ETERNAL, false)
-                                )
-                                :
-                                solveOccurrence(event(y, TIMELESS), each);
-
-                    } else {
-                        return true;
-                    }
-
+                //TODO sort to process smallest terms first
+                List<Event> sources = $.newArrayList(ns);
+                sources.addAll(aTerms);
+                sources.addAll(bTerms);
+                if (sources.size() > 1) {
+                    sources.sort(Comparator.comparingInt(z -> z.id.volume()));
                 }
-            });
+
+
+                //            boolean repeat = a.unneg().equals(b.unneg()); //if true, then we must be careful when trying this in a commutive-like result which would collapse the two terms
+
+                return dfs(sources, new CrossTimeSolver() {
+                    @Override
+                    protected boolean next(BooleanObjectPair<Edge<Event, TimeSpan>> move, Node<Event, TimeSpan> next) {
+
+                        //System.out.println(path);
+
+                        long[] startDT = pathDT(next, a, b, path);
+                        if (startDT == null)
+                            return true; //nothing at this step
+
+                        long ddt = startDT[1];
+                        assert (ddt < Integer.MAX_VALUE);
+                        int dt = (int) ddt;
+                        Term y = dt(x, dt);
+
+                        if (!(y instanceof Bool)) {
+
+                            long start = startDT[0];
+                            return start != TIMELESS ?
+                                    each.test(
+                                            event(y, start,
+                                                    start != ETERNAL ?
+                                                            start + dt : ETERNAL, false)
+                                    )
+                                    :
+                                    solveOccurrence(event(y, TIMELESS), each);
+
+                        } else {
+                            return true;
+                        }
+
+                    }
+                });
+
+            }
 
         } else {
             assert(x.op()==CONJ);
             List<LongObjectPair<Term>> when = $.newArrayList();
             for (int ix = 0; ix < subs; ix++) {
-                Term z = xx.sub(ix);
-                assert(!z.hasXternal());
-                solveOccurrence(event(z, TIMELESS), (ze) -> {
+                //assert(!z.hasXternal());
+                solveOccurrence(event(xx.sub(ix), TIMELESS), (ze) -> {
                    if (ze.start()==TIMELESS)
                         return true; //keep trying
                    when.add(pair(ze.start(), ze.id));
@@ -389,7 +391,8 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 long base = when.get(0).getOne();
                 Term zz = when.get(0).getTwo();
                 for (int i = 1; i < subs; i++) {
-                    zz = Op.conjMerge(zz, 0, when.get(i).getTwo(), when.get(i).getOne()-base);
+                    LongObjectPair<Term> wgi = when.get(i);
+                    zz = Op.conjMerge(zz, 0, wgi.getTwo(), wgi.getOne()-base);
                     if (zz instanceof Bool)
                         return true; //failure
                 }
@@ -430,7 +433,8 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 //                }
 //            }
 //        }
-        return true; //continue
+
+        return each.test(event(x, TIMELESS)); //last resort
     }
 
     /**
@@ -442,8 +446,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         //CONSTRUCT NEW TERM
         Term y;
         if (x.op() != CONJ) {
-            int xdt = dt != DTERNAL ? dt - x.sub(0).dtRange() : dt;
-            y = x.dt(xdt);
+            y = x.dt(dt != DTERNAL ? dt - x.sub(0).dtRange() : dt);
         } else {
             y = Op.conjMerge(x.sub(0), 0, x.sub(1), dt);
         }
@@ -457,7 +460,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         return ThreadLocalRandom.current();
     }
 
-    final static LongSet EMPTY_LONG_SET = LongSets.immutable.empty();
+//    final static LongSet EMPTY_LONG_SET = LongSets.immutable.empty();
 
     public void solve(Term x, Predicate<Event> each) {
         solve(x, true, each);

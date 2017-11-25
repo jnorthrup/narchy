@@ -40,11 +40,11 @@ import static nars.time.Tense.*;
 public class DeriveTime extends TimeGraph {
 
 //    private final static Logger logger = LoggerFactory.getLogger(DeriveTime.class);
-    public static final int TEMPORAL_ITERATIONS = 8;
+    static final int TEMPORAL_ITERATIONS = 4;
 
     private final Task task, belief;
 
-    protected static final boolean knowTransformed = true;
+    private static final boolean knowTransformed = true;
     private final int dither;
     private final Derivation d;
 
@@ -115,21 +115,21 @@ public class DeriveTime extends TimeGraph {
         Term bb = d.beliefTerm;
 
 
-        if (d.single) {
-            //single
-
-            if (!tt.isTemporal()) {
-                //simple case: inherit task directly
-                occ[0] = task.start();
-                occ[1] = task.end();
-                return pattern;
-            }
-
-
-        } else {
-            //double
-
-        }
+//        if (d.single) {
+//            //single
+//
+////            if (!tt.isTemporal()) {
+////                //simple case: inherit task directly
+////                occ[0] = task.start();
+////                occ[1] = task.end();
+////                return pattern;
+////            }
+//
+//
+//        } else {
+//            //double
+//
+//        }
 
 
         Event[] best = new Event[1];
@@ -156,16 +156,41 @@ public class DeriveTime extends TimeGraph {
         if (es == TIMELESS) {
             return solveRaw(st);
         }
+
         occ[0] = es;
         occ[1] = event.end();
 
+        if (es == ETERNAL) {
+            if (task.isEternal() && (belief==null || belief.isEternal())) {
+                //its supposed to be eternal
+            } else {
 
-        Op eop = st.op();
-        if (!eop.conceptualizable) {
-            return null;
+                if (task.isEternal() && (belief != null && !belief.isEternal())) {
+                    es = belief.start();
+                } else if (!task.isEternal() && (belief != null && belief.isEternal())) {
+                    es = task.start();
+                } else {
+                    throw new RuntimeException("temporalization fault");
+                }
+                occ[0] = es;
+                occ[1] = es + st.dtRange();
+            }
         }
 
-        return st;
+        eternalCheck(occ[0]);
+
+        Op eop = st.op();
+        return !eop.conceptualizable ? null : st;
+
+    }
+
+    /** eternal check: eternals can only be derived from completely eternal premises */
+    private void eternalCheck(long l) {
+        if (l == ETERNAL) {
+            //if ((!d.task.isEternal()) && !(d.belief != null && !d.belief.isEternal()))
+            if (!d.task.isEternal() || (!d.single && !d.belief.isEternal()))
+                throw new RuntimeException("ETERNAL leak");
+        }
     }
 
     /**
@@ -200,13 +225,15 @@ public class DeriveTime extends TimeGraph {
                 }
 
 
-        } else if (d.single || !te || belief == null || belief.isEternal()) {
+        } else if (d.single || (!te && (belief == null || belief.isEternal()))) {
             s = task.start();
             e = task.end();
         } else {
             s = belief.start();
             e = belief.end();
         }
+
+        eternalCheck(s);
 
         occ[0] = s;
         occ[1] = e;

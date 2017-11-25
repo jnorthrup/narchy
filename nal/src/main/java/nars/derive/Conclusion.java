@@ -91,12 +91,7 @@ public final class Conclusion extends AbstractPred<Derivation> {
                 {
                     //final sanity tests hack
 
-                    //eternal check: eternals can only be derived from completely eternal premises
-//                    if (occ[0] == ETERNAL) {
-//                        //if ((!d.task.isEternal()) && !(d.belief != null && !d.belief.isEternal()))
-//                        if (!((d.task.isEternal()) || (d.belief != null && d.belief.isEternal())))
-//                            throw new RuntimeException("ETERNAL leak");
-//                    }
+
 
                     if (occ[0] > occ[1]) {
                         //HACK swap the reversed occ
