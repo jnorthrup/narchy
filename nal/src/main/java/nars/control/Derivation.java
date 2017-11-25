@@ -7,7 +7,7 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
-import nars.derive.DeriveTime;
+import nars.derive.time.DeriveTime;
 import nars.derive.PrediTerm;
 import nars.derive.rule.PremiseRule;
 import nars.op.Subst;

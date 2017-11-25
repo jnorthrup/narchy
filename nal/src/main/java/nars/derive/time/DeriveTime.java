@@ -1,11 +1,10 @@
-package nars.derive;
+package nars.derive.time;
 
 import jcog.math.Interval;
 import jcog.pri.Pri;
 import nars.Op;
 import nars.Task;
 import nars.control.Derivation;
-import nars.derive.time.TimeGraph;
 import nars.task.Revision;
 import nars.term.Term;
 import nars.term.Termed;
@@ -40,7 +39,7 @@ import static nars.time.Tense.*;
  */
 public class DeriveTime extends TimeGraph {
 
-    private final static Logger logger = LoggerFactory.getLogger(DeriveTime.class);
+//    private final static Logger logger = LoggerFactory.getLogger(DeriveTime.class);
     public static final int TEMPORAL_ITERATIONS = 8;
 
     private final Task task, belief;

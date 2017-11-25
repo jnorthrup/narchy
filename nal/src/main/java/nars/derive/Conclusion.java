@@ -4,6 +4,7 @@ import nars.NAR;
 import nars.Param;
 import nars.control.Derivation;
 import nars.derive.rule.PremiseRule;
+import nars.derive.time.DeriveTime;
 import nars.term.InvalidTermException;
 import nars.term.Term;
 import nars.term.transform.Retemporalize;

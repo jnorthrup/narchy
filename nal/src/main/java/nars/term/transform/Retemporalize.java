@@ -18,39 +18,13 @@ public interface Retemporalize extends CompoundTransform {
     @Override
     int dt(Compound x);
 
-    public static final Retemporalize retemporalizeAllToDTERNAL = new RetemporalizeAll(DTERNAL);
-    public static final Retemporalize retemporalizeAllToXTERNAL = new RetemporalizeAll(XTERNAL);
-    public static final Retemporalize retemporalizeXTERNALToDTERNAL = new RetemporalizeFromTo(XTERNAL, DTERNAL);
-    public static final Retemporalize retemporalizeXTERNALToZero = new RetemporalizeFromTo(XTERNAL, 0);
-    public static final Retemporalize retemporalizeDTERNALToZero = new RetemporalizeFromTo(DTERNAL, 0);
+    //Retemporalize retemporalizeAllToDTERNAL = new RetemporalizeAll(DTERNAL);
+    //Retemporalize retemporalizeDTERNALToZero = new RetemporalizeFromTo(DTERNAL, 0);
+    Retemporalize retemporalizeAllToXTERNAL = new RetemporalizeAll(XTERNAL);
+    Retemporalize retemporalizeXTERNALToDTERNAL = new RetemporalizeFromTo(XTERNAL, DTERNAL);
+    Retemporalize retemporalizeXTERNALToZero = new RetemporalizeFromTo(XTERNAL, 0);
 
-    //        @Nullable
-//        @Override
-//        public Term transform(Compound x, Op op, int dt) {
-//            switch (op) {
-//                case IMPL: {
-//                    if (x.dt() != DTERNAL || x.subterms().hasAny(Op.Temporal)) {
-//                        //special handling
-//                        Term subj = x.sub(0).root();
-//                        Term pred = x.sub(1).root();
-//                        return IMPL.the(subj.unneg().equals(pred) ? XTERNAL : DTERNAL, subj, pred);
-//                    } else {
-//                        return x; //unchanged
-//                    }
-//                }
-//                case CONJ: {
-//
-//                    else {
-//                        return DTERNAL;
-//                    }
-//                }
-//                break;
-//                default:
-//                    return Retemporalize.super.transform(x, op, dt);
-//            }
-//        }
-//
-    public static final Retemporalize retemporalizeRoot = x -> {
+    Retemporalize retemporalizeRoot = x -> {
                 TermContainer xs = x.subterms();
 
                 //any inside impl/conjunctions will disqualify the simple DTERNAL root form, but only in the next layer
@@ -76,17 +50,25 @@ public interface Retemporalize extends CompoundTransform {
 
     @Nullable
     @Override
-    default Term transform(Compound x, Op op, int dt) {
+    default Term transform(Compound x, Op op, int ignored) {
         if (!x.hasAny(Temporal)) {
             return x;
         } else {
-            return CompoundTransform.super.transform(x, op, op.temporal ? dt(x) : DTERNAL);
+            int dtCur = x.dt(), dtNext;
+            if (op.temporal) {
+                dtNext = dt(x);
+                if (dtCur == dtNext && !x.subterms().hasAny(Temporal))
+                    return x; //no change
+            } else {
+                dtNext = dtCur;
+            }
+            return CompoundTransform.super.transform(x, op, dtNext);
         }
     }
 
 
     @Deprecated
-    public static final class RetemporalizeAll implements Retemporalize {
+    final class RetemporalizeAll implements Retemporalize {
 
         final int targetDT;
 
@@ -100,7 +82,7 @@ public interface Retemporalize extends CompoundTransform {
         }
     }
 
-    public static final class RetemporalizeFromTo implements Retemporalize {
+    final class RetemporalizeFromTo implements Retemporalize {
 
         final int from, to;
 
@@ -116,7 +98,7 @@ public interface Retemporalize extends CompoundTransform {
         }
     }
 
-    public static final class RetemporalizeFromToFunc implements Retemporalize {
+    final class RetemporalizeFromToFunc implements Retemporalize {
 
         final int from;
         final IntSupplier to;

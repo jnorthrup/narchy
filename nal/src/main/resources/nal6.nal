@@ -248,19 +248,19 @@
     (B --> K), (($X --> L) ==> (&&,(#Y --> K),A..+)) |- substitute((($X --> L) ==>+- (&&,A..+)),#Y,B), (Belief:AnonymousAnalogy)
         (B --> K), (($X --> L) ==> (&&,--(#Y --> K),A..+)) |- substitute((($X --> L) ==>+- (&&,A..+)),#Y,B), (Belief:AnonymousAnalogyN)
 
-    (Y --> P), (&&,(X-->P),A..+) |- subIfUnifiesAny((&&,(X-->P),A..+), X,Y,strict), (Belief:Deduction)
-        (Y --> P), (&&,--(X-->P),A..+) |- subIfUnifiesAny((&&,--(X-->P),A..+), X,Y,strict), (Belief:DeductionN)
-    (Y --> P), ((&&,(X-->P),A..+) ==> Z) |- subIfUnifiesAny(((&&,(X-->P),A..+) ==>+- Z), X,Y,strict), (Belief:Deduction)
-        (Y --> P), ((&&,--(X-->P),A..+) ==> Z) |- subIfUnifiesAny(((&&,--(X-->P),A..+) ==>+- Z), X,Y,strict), (Belief:DeductionN)
-    (Y --> P), (Z ==> (&&,(X-->P),A..+)) |- subIfUnifiesAny((Z ==>+- (&&,(X-->P),A..+)), X,Y,strict), (Belief:Deduction)
-        (Y --> P), (Z ==> (&&,--(X-->P),A..+)) |- subIfUnifiesAny((Z ==>+- (&&,--(X-->P),A..+)), X,Y,strict), (Belief:DeductionN)
+    (Y --> P), (&&,(X-->P),A..+),neq(X,Y) |- subIfUnifiesAny((&&,(X-->P),A..+), X,Y,strict), (Belief:Deduction)
+        (Y --> P), (&&,--(X-->P),A..+),neq(X,Y) |- subIfUnifiesAny((&&,--(X-->P),A..+), X,Y,strict), (Belief:DeductionN)
+    (Y --> P), ((&&,(X-->P),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,(X-->P),A..+) ==>+- Z), X,Y,strict), (Belief:Deduction)
+        (Y --> P), ((&&,--(X-->P),A..+) ==> Z),neq(X,Y) |- subIfUnifiesAny(((&&,--(X-->P),A..+) ==>+- Z), X,Y,strict), (Belief:DeductionN)
+    (Y --> P), (Z ==> (&&,(X-->P),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,(X-->P),A..+)), X,Y,strict), (Belief:Deduction)
+        (Y --> P), (Z ==> (&&,--(X-->P),A..+)),neq(X,Y) |- subIfUnifiesAny((Z ==>+- (&&,--(X-->P),A..+)), X,Y,strict), (Belief:DeductionN)
 
 
     //temporary until ellipsis fix
-    (U --> L), ((&&,(#X --> L),(#X --> R),W) ==> Z), neq(U,R) |- substitute(((W &&+- (U --> R)) ==>+- Z),#X,U), (Belief:Deduction)
-        (U --> L), ((&&,--(#X --> L),(#X --> R),W) ==> Z), neq(U,R) |- substitute(((W &&+- (U --> R)) ==>+- Z),#X,U), (Belief:DeductionN)
-    (U --> L), ((&&,(#X --> L),(#X --> R)) ==> Z), neq(U,R) |- substitute(((U --> R) ==>+- Z),#X,U), (Belief:Deduction)
-        (U --> L), ((&&,--(#X --> L),(#X --> R)) ==> Z), neq(U,R) |- substitute(((U --> R) ==>+- Z),#X,U), (Belief:DeductionN)
+    //(U --> L), ((&&,(#X --> L),(#X --> R),W) ==> Z), neq(U,R) |- substitute(((W &&+- (U --> R)) ==>+- Z),#X,U), (Belief:Deduction)
+      //  (U --> L), ((&&,--(#X --> L),(#X --> R),W) ==> Z), neq(U,R) |- substitute(((W &&+- (U --> R)) ==>+- Z),#X,U), (Belief:DeductionN)
+    //(U --> L), ((&&,(#X --> L),(#X --> R)) ==> Z), neq(U,R) |- substitute(((U --> R) ==>+- Z),#X,U), (Belief:Deduction)
+      //  (U --> L), ((&&,--(#X --> L),(#X --> R)) ==> Z), neq(U,R) |- substitute(((U --> R) ==>+- Z),#X,U), (Belief:DeductionN)
 
 
 

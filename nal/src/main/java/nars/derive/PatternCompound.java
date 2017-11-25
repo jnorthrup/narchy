@@ -17,6 +17,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static nars.Op.CONJ;
+import static nars.time.Tense.XTERNAL;
+
 
 @Deprecated
 abstract public class PatternCompound extends GenericCompoundDT {
@@ -157,7 +160,10 @@ abstract public class PatternCompound extends GenericCompoundDT {
 //        final ImmutableSet<Term> fixed;
 
         public PatternCompoundWithEllipsisCommutive(Op op, int dt, Ellipsis ellipsis, TermContainer subterms) {
-            super(op, dt, ellipsis, subterms);
+            super(op,
+                  op==CONJ ? XTERNAL : dt,
+                  ellipsis, subterms);
+
 
 //            MutableSet<Term> f = new UnifiedSet();
 //            subterms.forEach(s -> {

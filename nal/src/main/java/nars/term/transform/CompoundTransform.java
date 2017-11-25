@@ -51,7 +51,7 @@ public interface CompoundTransform extends TermContext {
 
         boolean boolFilter = !op.allowsBool;
 
-        @NotNull TermContainer ss = x.subterms(); //for faster access, generally
+        TermContainer ss = x.subterms(); //for faster access, generally
 
         int s = ss.subs();
 
