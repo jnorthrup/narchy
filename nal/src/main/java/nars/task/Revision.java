@@ -34,6 +34,7 @@ import static nars.Op.CONJ;
 import static nars.Op.Null;
 import static nars.time.Tense.*;
 import static nars.truth.TruthFunctions.c2w;
+import static nars.truth.TruthFunctions.c2wSafe;
 
 /**
  * Revision / Projection / Revection Utilities
@@ -384,8 +385,10 @@ public class Revision {
 //        factor *= (1f / (1f + intermvalDistance));
 //        if (factor < Prioritized.EPSILON) return null;
 
-        float confMin = nar.confMin.floatValue();
-        Truth rawTruth = revise(a, b, factor, c2w(confMin));
+        float confMin =
+                0;
+                //nar.confMin.floatValue();
+        Truth rawTruth = revise(a, b, factor, c2wSafe(confMin));
         if (rawTruth == null)
             return null;
 

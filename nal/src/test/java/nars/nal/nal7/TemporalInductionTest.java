@@ -28,6 +28,10 @@ public class TemporalInductionTest {
     public void inductionDiffEventsCompound() {
         testInduction("x:before", "x:after", 10);
     }
+    @Test
+    public void inductionDiffEventsCompoundNear() {
+        testInduction("x:before", "x:after", 3);
+    }
 
     @Test
     public void inductionDiffEventsNegPos() {
@@ -56,7 +60,7 @@ public class TemporalInductionTest {
     }
 
     static void testInduction(String a, String b, int dt) {
-        int cycles = dt * 16;
+        int cycles = dt * 24;
         new TestNAR(NARS.tmp())
                 .log()
                 .input(a + ". :|:")

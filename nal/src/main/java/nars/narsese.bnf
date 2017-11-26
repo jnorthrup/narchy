@@ -2,6 +2,7 @@
 // https://github.com/JetBrains/Grammar-Kit
 
 {
+  parserUtilClass="nars.NarseseParserUtil"
   tokens = [
     space='regexp:\s+'
     string = "regexp:\"[^\"]*\"|'[^']*'"

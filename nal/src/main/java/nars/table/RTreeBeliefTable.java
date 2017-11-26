@@ -85,22 +85,22 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
         };
     }
 
-    private static final class TopDeleteVictims extends TopN<TaskRegion> {
-
-        private final float inputStrength;
-
-        public TopDeleteVictims(int count, FloatFunction<TaskRegion> weakestTask, float inputStrength) {
-            super(new TaskRegion[count], weakestTask);
-            this.inputStrength = inputStrength;
-        }
-
-        @Override
-        public int add(TaskRegion element, float elementRank, FloatFunction<TaskRegion> cmp) {
-            if (elementRank > inputStrength)
-                return -1;
-            return super.add(element, elementRank, cmp);
-        }
-    }
+//    private static final class TopDeleteVictims extends TopN<TaskRegion> {
+//
+//        private final float inputStrength;
+//
+//        public TopDeleteVictims(int count, FloatFunction<TaskRegion> weakestTask, float inputStrength) {
+//            super(new TaskRegion[count], weakestTask);
+//            this.inputStrength = inputStrength;
+//        }
+//
+//        @Override
+//        public int add(TaskRegion element, float elementRank, FloatFunction<TaskRegion> cmp) {
+//            if (elementRank > inputStrength)
+//                return -1;
+//            return super.add(element, elementRank, cmp);
+//        }
+//    }
 
 
     @Override

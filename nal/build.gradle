@@ -1,17 +1,40 @@
-//buildscript {
-//    repositories {
-//        mavenLocal()
-//        mavenCentral()
-//
-//    }
-//    dependencies {
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url 'http://jitpack.io'}
+    }
+    dependencies{
+//        classpath "com.github.hurricup:gradle-grammar-kit-plugin:2017.1"
 //        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.4'
-//    }
-//}
-//plugins {
-//    id "net.ltgt.errorprone" version "0.0.13"
-//}
+    }
+}
 
+//apply plugin: 'org.jetbrains.grammarkit'
+//grammarKit {
+////    jflexRelease = jflex_version
+////    grammarKitRelease = grammarkit_version
+//}
+//
+//import org.jetbrains.grammarkit.tasks.GenerateLexer
+//import org.jetbrains.grammarkit.tasks.GenerateParser
+//
+//task generateNarseseParser(type: GenerateParser) {
+//    // source bnf file
+//    source = "src/main/java/nars/narsese.bnf"
+//
+//    // optional, task-specific root for the generated files. Default: none
+//    targetRoot = 'src/main/java/nars/io/narsese'
+//
+//    // path to a parser file, relative to the targetRoot
+//    pathToParser = 'NarseseParser.java'
+//
+//    // path to a directory with generated psi files, relative to the targetRoot
+//    pathToPsiRoot = 'psi'
+//
+//    // if set, plugin will remove a parser output file and psi output directory before generating new ones. Default: false
+//    purgeOldFiles = true
+//}
 
 dependencies {
     compile project(':util')

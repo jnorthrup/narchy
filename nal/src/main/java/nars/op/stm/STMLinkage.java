@@ -21,7 +21,6 @@ import java.util.concurrent.BlockingQueue;
  */
 public final class STMLinkage extends TaskService {
 
-    @NotNull
     public final BlockingQueue<Task> stm;
 
     final FloatParam strength = new FloatParam(1f, 0f, 1f);
@@ -77,7 +76,7 @@ public final class STMLinkage extends TaskService {
     }
 
 
-    protected static void link(@NotNull Task ta, float pri, Task tb, NAR nar) {
+    protected static void link(Task ta, float pri, Task tb, NAR nar) {
 
 
         /** current task's... */

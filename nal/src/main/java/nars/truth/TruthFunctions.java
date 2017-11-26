@@ -532,6 +532,10 @@ public final class TruthFunctions {
     public static float c2w(float c) {
         return c2w(c, Param.HORIZON);
     }
+    public static float c2wSafe(float c) {
+        return c2wSafe(c, Param.HORIZON);
+    }
+
 
     /**
      * A function to convert confidence to weight

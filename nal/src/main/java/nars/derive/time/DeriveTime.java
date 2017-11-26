@@ -40,7 +40,7 @@ import static nars.time.Tense.*;
 public class DeriveTime extends TimeGraph {
 
 //    private final static Logger logger = LoggerFactory.getLogger(DeriveTime.class);
-    static final int TEMPORAL_ITERATIONS = 4;
+    static final int TEMPORAL_ITERATIONS = 8;
 
     private final Task task, belief;
 
@@ -244,7 +244,7 @@ public class DeriveTime extends TimeGraph {
     /**
      * heuristic for deciding a derivation result from among the calculated options
      */
-    protected static Event merge(Event a, Event b) {
+    protected Event merge(Event a, Event b) {
         Term at = a.id;
         Term bt = b.id;
         if (at.hasXternal() && !bt.hasXternal())
@@ -265,9 +265,17 @@ public class DeriveTime extends TimeGraph {
             }
         }
 
+        //prefer a term which is not a repeat of the task or belief term
+        boolean aMatch = a.id.equals(d.taskTerm) || a.id.equals(d.beliefTerm);
+        boolean bMatch = b.id.equals(d.taskTerm) || b.id.equals(d.beliefTerm);
+        if (aMatch && !bMatch)
+            return b;
+        if (!aMatch && bMatch)
+            return a;
+
         //heuristic: prefer more specific "dense" temporal events rather than sprawling sparse run-on-sentences
-        float aSpec = ((float) at.volume()) / at.dtRange();
-        float bSpec = ((float) bt.volume()) / bt.dtRange();
+        float aSpec = ((float) at.volume()) / (1+at.dtRange());
+        float bSpec = ((float) bt.volume()) / (1+bt.dtRange());
         if (bSpec > aSpec)
             return b;
         else //if (aSpec < bSpec)

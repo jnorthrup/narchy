@@ -1,5 +1,6 @@
 package nars.derive.time;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import jcog.Util;
@@ -320,21 +321,58 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         int subs = x.subs();
         if (subs == 2) {
             Term a = xx.sub(0);
-            Collection<Event> aTerms = byTerm.get(a);
             Term b = xx.sub(1);
-            Collection<Event> bTerms = !b.equals(a) ? byTerm.get(b) : List.of();
-            int ns = aTerms.size() + bTerms.size();
-            if (ns > 0) {
+            Set<Event>[] exact = new Set[2]; //exact occurrences of each subterm
 
+            boolean aEqB = b.equals(a);
+            com.google.common.base.Predicate<Event> filter = z -> {
+                if (z.absolute()) {
+                    if (z.id.equals(a)) {
+                        if (exact[0] == null) exact[0] = new HashSet();
+                        exact[0].add(z);
+                    }
+                    if (!aEqB && z.id.equals(b)) {
+                        if (exact[1] == null) exact[1] = new HashSet();
+                        exact[1].add(z);
+                    }
+                    return true;
+                }
+                //return false;
+                return true; //include non-absolutes
+            };
 
-                //TODO sort to process smallest terms first
-                List<Event> sources = $.newArrayList(ns);
-                sources.addAll(aTerms);
-                sources.addAll(bTerms);
-                if (sources.size() > 1) {
-                    sources.sort(Comparator.comparingInt(z -> z.id.volume()));
+            Iterable<Event> aTerms = Iterables.filter(byTerm.get(a), filter);
+
+            if (aEqB) exact[1] = exact[0];
+            else aTerms = Iterables.concat(aTerms, Iterables.filter(byTerm.get(b), filter));
+
+            if (exact[0]!=null && exact[1]!=null) {
+                //known exact occurrences for both subterms
+                //iterate all possibilities
+                //TODO order in some way
+                //simple case:
+                if (exact[0].size()==1 && exact[1].size()==1) {
+                    Event aa = exact[0].iterator().next();
+                    Event bb = exact[1].iterator().next();
+                    if (!solveDT(x, aa.start(), bb.start()-aa.end(), each ))
+                        return false;
+                } else {
+                    if (!exact[0].stream().allMatch(ae ->
+                            exact[1].stream().allMatch(be ->
+                                solveDT(x, ae.start(), be.start() - ae.end(), each))))
+                        return false;
                 }
 
+            }
+
+            List<Event> sources = new FasterList<>(aTerms);
+
+            int ns = sources.size();
+            if (ns > 0){
+                //TODO sort to process smallest terms first
+                if (ns  > 1) {
+                    sources.sort(Comparator.comparingInt(z -> z.id.volume()));
+                }
 
                 //            boolean repeat = a.unneg().equals(b.unneg()); //if true, then we must be careful when trying this in a commutive-like result which would collapse the two terms
 
@@ -348,27 +386,9 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                         if (startDT == null)
                             return true; //nothing at this step
 
+                        long start = startDT[0];
                         long ddt = startDT[1];
-                        assert (ddt < Integer.MAX_VALUE);
-                        int dt = (int) ddt;
-                        Term y = dt(x, dt);
-
-                        if (!(y instanceof Bool)) {
-
-                            long start = startDT[0];
-                            return start != TIMELESS ?
-                                    each.test(
-                                            event(y, start,
-                                                    start != ETERNAL ?
-                                                            start + dt : ETERNAL, false)
-                                    )
-                                    :
-                                    solveOccurrence(event(y, TIMELESS), each);
-
-                        } else {
-                            return true;
-                        }
-
+                        return TimeGraph.this.solveDT(x, start, ddt, each);
                     }
                 });
 
@@ -435,6 +455,27 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 //        }
 
         return each.test(event(x, TIMELESS)); //last resort
+    }
+
+    private boolean solveDT(Term x, long start, long ddt, Predicate<Event> each) {
+        assert (ddt < Integer.MAX_VALUE);
+        int dt = (int) ddt;
+        Term y = dt(x, dt);
+
+        if (!(y instanceof Bool)) {
+
+            return start != TIMELESS ?
+                    each.test(
+                            event(y, start,
+                                    (y.op()==CONJ && start != ETERNAL) ?
+                                            start + dt : start, false)
+                    )
+                    :
+                    solveOccurrence(event(y, TIMELESS), each);
+
+        } else {
+            return true;
+        }
     }
 
     /**
@@ -515,7 +556,11 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                         solveDT(u, v -> {
                             Term w = v.id;
                             if (w.equals(u))
-                                return true; //skip it
+                                return true; //skip it, no change
+
+                            if (v.start()!=TIMELESS && !w.hasXternal()) {
+                                return !each.test(v);
+                            }
 
                             //ignore the startTime component, although it might provide a clue here
                             Term y = x.replace(u, w);
