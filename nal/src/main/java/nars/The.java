@@ -132,16 +132,16 @@ public enum The {  ;
 
         };
 
-//        public static final Supplier<BiFunction<Op, Term[], Term>> SoftCompoundBuilder = ()->
-//                new BiFunction<>() {
-//
-//                    final SoftMemoize<NewCompound, Term> cache = new SoftMemoize<>((v) -> rawCompoundBuilder.apply(v.op, v.subs), 64 * 1024, true);
-//
-//                    @Override
-//                    public Term apply(Op op, Term[] terms) {
-//                        return cache.apply(new NewCompound(op, terms).commit());
-//                    }
-//                };
+        public static final Supplier<BiFunction<Op, List<Term>, Term>> SoftCompoundBuilder = ()->
+                new BiFunction<>() {
+
+                    final SoftMemoize<NewCompound, Term> cache = new SoftMemoize<>((v) -> rawCompoundBuilder.apply(v.op, new FasterList(v.subs) /* HACK */), 64 * 1024, true);
+
+                    @Override
+                    public Term apply(Op op, List<Term> terms) {
+                        return cache.apply(new NewCompound(op, terms).commit());
+                    }
+                };
 //
         public static final Supplier<BiFunction<Op, List<Term>, Term>> CaffeineCompoundBuilder = ()->new BiFunction<>() {
 

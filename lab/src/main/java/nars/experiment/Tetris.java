@@ -25,31 +25,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
     private TetrisState state;
 
-    //private final int visionSyncPeriod = 4; //16 * TIME_DILATION;
-
     private final CameraSensor<Bitmap2D> pixels;
-
-//        public MatrixView vis4 = new MatrixView(tetris_width, tetris_height, (x,y,gl)->{
-//            float r = concept[x][y].goalFreq(now, 0.5f);
-//            gl.glColor3f(0, r, 0);
-//            return 0f;
-//        });
-
-//        public Surface plot1;
-//        //public ConsoleSurface term = new ConsoleSurface(40, 8);
-//
-//        public Surface plot2;
-    //public Plot2D lstm;
-
-
-    //final View view = new View();
-
-
-    //private final ActionConcept motorRotate;
-    //private MotorConcept motorDown;
-    //private final ActionConcept motorLeftRight;
-
-    //private final boolean rotate = !easy;
 
     public Tetris(NAR nar) throws Narsese.NarseseException {
         this(nar, Tetris.tetris_width, Tetris.tetris_height);

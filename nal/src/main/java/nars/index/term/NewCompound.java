@@ -97,7 +97,7 @@ public class NewCompound extends /*HashCached*/DynBytes implements ProtoCompound
 
         Term[] tt;
         int s = this.size;
-        @NotNull Term[] ss = this.subs;
+        Term[] ss = this.subs;
         if (ss.length == s) {
             tt = ss;
             //return ss; //dont reallocate it's just fine to share

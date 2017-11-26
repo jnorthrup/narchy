@@ -271,9 +271,13 @@ public class DeriveTime extends TimeGraph {
         if (!aMatch && bMatch)
             return a;
 
-        //heuristic: prefer more specific "dense" temporal events rather than sprawling sparse run-on-sentences
-        float aSpec = ((float) at.volume()) / (1+at.dtRange());
-        float bSpec = ((float) bt.volume()) / (1+bt.dtRange());
+        //heuristic:
+        float aSpec =
+                //((float) at.volume()) / (1+at.dtRange()); //prefer more specific "dense" temporal events rather than sprawling sparse run-on-sentences
+                at.volume(); //prefer volume
+        float bSpec =
+                //((float) bt.volume()) / (1+bt.dtRange());
+                bt.volume();
         if (bSpec > aSpec)
             return b;
         else //if (aSpec < bSpec)

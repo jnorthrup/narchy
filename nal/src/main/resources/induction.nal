@@ -14,13 +14,13 @@
 //    B, A, time(raw), task("."), time(dtEvents)                       notImpl(A) |- (A ==>+- B), (Belief:Induction)
 //    B, A, time(raw), task("."), time(dtEventsOrEternals), neqAndCom(A,B),       notImpl(A) |- varIntro((A ==>+- B)), (Belief:Induction)
 
-    B, A, time(raw), belief(positive), task("."), notImpl(A),notImpl(B) |- (A ==>+- B), (Belief:Induction)
-    B, A, time(raw), belief(positive), task("."), neqAndCom(A,B), notImpl(A),notImpl(B) |- varIntro((A ==>+- B)), (Belief:Induction)
-        B, A, time(raw), belief(negative), task("."), notImpl(A),notImpl(B) |- (--A ==>+- B), (Belief:InductionN)
-        B, A, time(raw), belief(negative), task("."), neqAndCom(A,B),   notImpl(A),notImpl(B) |- varIntro((--A ==>+- B)), (Belief:InductionN)
+    B, A, time(raw), belief(positive), task("."), notImpl(A) |- (A ==>+- B), (Belief:Induction)
+    B, A, time(raw), belief(positive), task("."), neqAndCom(A,B), notImpl(A) |- varIntro((A ==>+- B)), (Belief:Induction)
+        B, A, time(raw), belief(negative), task("."), notImpl(A) |- (--A ==>+- B), (Belief:InductionN)
+        B, A, time(raw), belief(negative), task("."), neqAndCom(A,B),   notImpl(A) |- varIntro((--A ==>+- B)), (Belief:InductionN)
 
-    B, A, time(raw), task("."), notImpl(B),notImpl(A) |- (B ==>+- A), (Belief:AbductionPB)
-    B, A, time(raw), task("."), neqAndCom(A,B),         notImpl(B),notImpl(A) |- varIntro((B ==>+- A)), (Belief:AbductionPB)
+    B, A, time(raw), task("."), notImpl(B) |- (B ==>+- A), (Belief:AbductionPB)
+    B, A, time(raw), task("."), neqAndCom(A,B),         notImpl(B) |- varIntro((B ==>+- A)), (Belief:AbductionPB)
         //B, A, time(raw), task("."), time(dtAfter), notImpl(B) |- (--B ==>+- A), (Belief:AbductionPBN)
         //B, A, time(raw), task("."), time(dtAfterOrEternals), neqAndCom(A,B),     notImpl(B) |- varIntro((--B ==>+- A)), (Belief:AbductionPBN)
 
@@ -34,11 +34,11 @@
 //        B, A, time(raw), belief(negative), task("."), time(dtEventsOrEternals), neqAndCom(A,B),   notImpl(A) |- varIntro((--A ==>+- B)), (Belief:InductionPN)
 
 //&&
-    B, A, task("."), time(raw), notImpl(A),notImpl(B)                       |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized)
-        B, A, task("."), time(raw), notImpl(A),notImpl(B),neqRCom(A,B)      |- (--,((--,polarize(B,task)) &&+- (--,polarize(A,belief)))), (Belief:UnionDepolarized)
+    B, A, task("."), time(raw)                       |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized)
+        B, A, task("."), time(raw), neqRCom(A,B)     |- (--,((--,polarize(B,task)) &&+- (--,polarize(A,belief)))), (Belief:UnionDepolarized)
 
         //B, A, task("."), time(raw), time(dtEvents), notImpl(A),notImpl(B)                            |- (B &&+- A), (Belief:Intersection)
-    B, A, task("."), time(raw), neqAndCom(A,B), notImpl(A),notImpl(B)       |- varIntro((polarize(B,task) &&+- polarize(A,belief))), (Belief:IntersectionDepolarized)
+    B, A, task("."), time(raw), neqAndCom(A,B)       |- varIntro((polarize(B,task) &&+- polarize(A,belief))), (Belief:IntersectionDepolarized)
         //B, A, task("."), time(raw), neqAndCom(A,B),  notImpl(A),notImpl(B)  |- varIntro((--,((--,polarize(B,task)) &&+- (--,polarize(A,belief))))), (Belief:UnionDepolarized)
 
         //B, A, task("."), time(raw), time(dtEventsOrEternals), neqAndCom(A,B), notImpl(A),notImpl(B)  |- varIntro((B &&+- A)), (Belief:Intersection)
