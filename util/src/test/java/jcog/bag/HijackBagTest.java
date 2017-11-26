@@ -120,21 +120,17 @@ public class HijackBagTest {
         for (int cap : new int[] { 63, 37 }) {
             int rep = 3;
             int batch = 4;
-            float extraSpace = 5f;
+            int extraSpace = 5;
             final Random rng = new XorShift128PlusRandom(1);
-            DefaultHijackBag bag = new DefaultHijackBag(plus, (int) Math.ceil(cap * extraSpace), rep) {
-
-                {
-                    resize(capacity());
-                }
+            DefaultHijackBag bag = new DefaultHijackBag(plus, cap * extraSpace, rep) {
 
                 @Override
-                public void onRemove(@NotNull Object value) {
+                public void onRemove(Object value) {
                     fail("");
                 }
 
                 @Override
-                public void onReject(@NotNull Object value) {
+                public void onReject(Object value) {
                     fail("");
                 }
 
@@ -143,7 +139,10 @@ public class HijackBagTest {
                     return rng;
                 }
             };
-            testBagSamplingDistribution(bag, batch, cap);
+
+
+            fillLinear(bag, cap);
+            testBagSamplingDistribution(bag, batch);
             bag.print();
         }
 

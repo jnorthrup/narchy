@@ -179,7 +179,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
 
                     //Trie<ByteList, ByteSet> m = new Trie(Tries.TRIE_SEQUENCER_BYTE_LIST);
-                    List</* length, */ ByteList> statements = new FasterList<ByteList>();
+                    List</* length, */ ByteList> statements = new FasterList<>();
                     ByteObjectHashMap<List<ByteList>> indepVarPaths = new ByteObjectHashMap<>();
                     int visitVector = Op.VAR_INDEP.bit | Op.StatementBits;
                     t.pathsTo((x) -> x.op().in(visitVector) ? x : null, x -> x.hasAny(visitVector), (path, indepVarOrStatement) -> {

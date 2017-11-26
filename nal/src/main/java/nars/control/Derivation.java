@@ -3,10 +3,7 @@ package nars.control;
 import jcog.math.ByteShuffler;
 import jcog.pri.Pri;
 import jcog.version.Versioned;
-import nars.NAR;
-import nars.Op;
-import nars.Param;
-import nars.Task;
+import nars.*;
 import nars.derive.time.DeriveTime;
 import nars.derive.PrediTerm;
 import nars.derive.rule.PremiseRule;
@@ -187,10 +184,10 @@ public class Derivation extends Unify {
                 return compared.isNegative() ? subterm.neg() : subterm;
         });
 
-        Termed[] derivationFunctors = new Termed[]{
-                new uniSubAny(this),
-                polarizeFunc,
-                };
+        Termed[] derivationFunctors = new Termed[] {
+            new uniSubAny(this),
+            polarizeFunc
+        };
         Map<Term, Termed> m = new HashMap(derivationFunctors.length + 2);
         for (Termed x : derivationFunctors) {
             m.put(x.term(), x);
@@ -214,7 +211,8 @@ public class Derivation extends Unify {
                 nar.get(Atomic.the("ifConjCommNoDepVars")),
                 nar.get(Atomic.the("without")),
                 nar.get(Atomic.the("indicesOf")),
-                nar.get(Atomic.the("substDiff"))
+                nar.get(Atomic.the("substDiff")),
+                nar.get(Atomic.the("varIntro"))
                 /* varIntro(x) has special handling */
         };
     }

@@ -124,7 +124,7 @@ public interface TaskRegion extends HyperRegion, Tasked {
                     Task tr = (Task) this;
                     float tf = tr.freq();
                     float tc = tr.conf();
-                    float f0, f1, c0, c1;
+                    float f0, f1;
 
 
                     if (tf <= ef) {
@@ -134,6 +134,8 @@ public interface TaskRegion extends HyperRegion, Tasked {
                         f0 = ef;
                         f1 = tf;
                     }
+                    float c0;
+                    float c1;
                     if (tc <= ec) {
                         c0 = tc;
                         c1 = ec;
@@ -143,8 +145,7 @@ public interface TaskRegion extends HyperRegion, Tasked {
                     }
                     long ts = start();
                     long te = end();
-                    long ns, ne;
-//                    if (ts == es && te == ee) {
+                    //                    if (ts == es && te == ee) {
                         //may not be safe:
 //                        if (tf == ef && tc == ec)
 //                            return this; //identical taskregion, so use this
@@ -153,7 +154,8 @@ public interface TaskRegion extends HyperRegion, Tasked {
 //                            ne = te;
 //                        }
 //                    } else {
-                        ns = Math.min(ts, es); ne = Math.max(te, ee);
+                    long ns = Math.min(ts, es);
+                    long ne = Math.max(te, ee);
 //                    }
                     return new TasksRegion( ns, ne,
                             f0, f1, c0, c1

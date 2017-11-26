@@ -109,7 +109,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     private final AtomicReference<Term> self;
 
 
-
     /**
      * maximum NAL level currently supported by this memory, for restricting it to activity below NAL8
      */
@@ -229,13 +228,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
             //tasklinksCap.accept(c.tasklinks().capacity());
             tasklinkCount.recordValue(c.tasklinks().size());
 
-            if (c instanceof Concept) {
-                Concept tc = (Concept) c;
-                beliefs.accept(tc.beliefs().size());
-                goals.accept(tc.goals().size());
-                questions.accept(tc.questions().size());
-                quests.accept(tc.quests().size());
-            }
+            beliefs.accept(c.beliefs().size());
+            goals.accept(c.goals().size());
+            questions.accept(c.questions().size());
+            quests.accept(c.quests().size());
+
 
         });
 
@@ -1475,7 +1472,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     /**
      * strongest matching belief for the target time
      */
-    @Nullable public Task belief(Term c, long start, long end) {
+    @Nullable
+    public Task belief(Term c, long start, long end) {
         return answer(c, BELIEF, start, end);
     }
 
@@ -1490,7 +1488,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     /**
      * strongest matching goal for the target time
      */
-    @Nullable public final Task goal(Term c, long start, long end) {
+    @Nullable
+    public final Task goal(Term c, long start, long end) {
         return answer(c, GOAL, start, end);
     }
 
@@ -1498,11 +1497,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         return goal(c, when, when);
     }
 
-    @Nullable public Task answer(Term c, byte punc, long when) {
+    @Nullable
+    public Task answer(Term c, byte punc, long when) {
         return answer(c, punc, when, when);
     }
 
-    @Nullable public Task answer(Term c, byte punc, long start, long end) {
+    @Nullable
+    public Task answer(Term c, byte punc, long start, long end) {
         assert (punc == BELIEF || punc == GOAL);
         Concept concept = concept(c);
         if (!(concept instanceof BaseConcept))
@@ -1654,7 +1655,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
                 if (x instanceof NALTask) {
                     NALTask t = (NALTask) x;
                     int tcl = t.cause.length;
-                    if (tcl == 0 || (tcl == 1 && t.cause[0]==0)) {
+                    if (tcl == 0 || (tcl == 1 && t.cause[0] == 0)) {
                         assert (sharedOneElement[0] == ci);
                         t.cause = sharedOneElement;
                     } else {

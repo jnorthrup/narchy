@@ -75,7 +75,7 @@ public class UniExec extends Exec {
                 concurrent() ?
                         //new ConcurrentCurveBag<>(PriMerge.plus, new HashMap<>(), nar.random(), CAPACITY)
                         //new ConcurrentArrayBag<ITask,ITask>(this, new ConcurrentHashMap(), CAPACITY) {
-                        new PriorityHijackBag<Activate, Activate>(CAPACITY, 5) {
+                        new PriorityHijackBag<>(CAPACITY, 5) {
 
                             @Override
                             public Activate key(Activate value) {

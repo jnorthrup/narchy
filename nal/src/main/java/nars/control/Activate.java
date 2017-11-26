@@ -11,8 +11,8 @@ import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
+import nars.concept.Tasklinks;
 import nars.concept.TermLinks;
-import nars.table.TemporalBeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
 
@@ -65,17 +65,7 @@ public class Activate extends PLink<Concept> implements Termed {
         final Bag<Task, PriReference<Task>> tasklinks = id.tasklinks();
         long now = nar.time();
         int dur = nar.dur();
-        tasklinks.commit(PriForget.forget(tasklinks, linkForgetting, Pri.EPSILON, (r)-> new PriForget<PriReference<Task>>(r) {
-            @Override
-            public void accept(PriReference<Task> b) {
-                Task t = b.get();
-                float rate =
-                      t.isBeliefOrGoal() ?
-                            1f - TemporalBeliefTable.temporalTaskPriority(t, now, now, dur) :
-                            1f;
-                b.priSub(priRemoved * rate);
-            }
-        }));
+        tasklinks.commit(PriForget.forget(tasklinks, linkForgetting, Pri.EPSILON, (r)-> new Tasklinks.TaskLinkForget(r, now, dur)));
         int ntasklinks = tasklinks.size();
         if (ntasklinks == 0) return null;
 
@@ -200,4 +190,5 @@ public class Activate extends PLink<Concept> implements Termed {
     public Term term() {
         return id.term();
     }
+
 }

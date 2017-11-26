@@ -66,23 +66,24 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
     private int capacity;
 
     final Space<TaskRegion> tree;
-    final LongObjectProcedure<SignalTask> stretch;
+
+    /** TODO only needs to be stored in the SignalTask instance */
+    @Deprecated final LongObjectProcedure<SignalTask> stretch;
 
     public RTreeBeliefTable() {
 
-        tree = new ConcurrentRTree<>(new RTree<TaskRegion>(RTreeBeliefModel.the));
+        tree = new ConcurrentRTree<>(new RTree<>(RTreeBeliefModel.the));
 
-        stretch = (newEnd, task) -> {
-            ((ConcurrentRTree<TaskRegion>) (tree)).write((treeRW) -> {
+        stretch = (newEnd, task) ->
+                ((ConcurrentRTree<TaskRegion>)tree).write(treeRW -> {
 
-                boolean removed = treeRW.remove(task);
+                    boolean removed = treeRW.remove(task);
 
-                task.slidingEnd = newEnd;
+                    task.slidingEnd = newEnd;
 
-                boolean added = treeRW.add(task);
+                    boolean added = treeRW.add(task);
 
-            });
-        };
+                });
     }
 
 //    private static final class TopDeleteVictims extends TopN<TaskRegion> {
@@ -111,7 +112,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
         if (start == ETERNAL) {
             TaskRegion r = ((TaskRegion) tree.root().bounds());
             if (r == null)
-                return ete!=null ? ete.truth() : null;
+                return ete != null ? ete.truth() : null;
 
             start = r.start();
             end = r.end();
@@ -284,9 +285,9 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
             float maxTimeRange = boundsEnd - boundsStart;
             long expand = Math.max(1,
                     (
-                    //Math.min(
-                        //(end-start)/2,
-                        Math.round(maxTimeRange / (1 << (1 + SCAN_DIVISIONS)))));
+                            //Math.min(
+                            //(end-start)/2,
+                            Math.round(maxTimeRange / (1 << (1 + SCAN_DIVISIONS)))));
 
 
             //TODO use a polynomial or exponential scan expansion, to start narrow and grow wider faster
@@ -298,7 +299,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
             //TODO float complete and use this as the metric for limiting with scan quality parameter
             TimeRange r = //recycled
                     new TimeRange();
-                    //new TimeRangeUniqueNodes(); <- not safe yet because task's taskregion is re-used for branch/leaf bounds and this could cause a false positive in the bloom filter test
+            //new TimeRangeUniqueNodes(); <- not safe yet because task's taskregion is re-used for branch/leaf bounds and this could cause a false positive in the bloom filter test
             do {
 
 
@@ -363,7 +364,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
         float activation = x.priElseZero();
 
 
-        ObjectBooleanHashMap<Task> changes = new ObjectBooleanHashMap<>();
+        ObjectBooleanHashMap<Task> changes = new ObjectBooleanHashMap<>(1);
         ((ConcurrentRTree<TaskRegion>) tree).write(treeRW -> {
 
 //            ensureCapacity(treeRW, null, changes, n);
@@ -413,10 +414,12 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
                         taskStrengthWithFutureBoost(now, PRESENT_AND_FUTURE_BOOST, now, perceptDur)
                 );
 
-        for (int e = 0; treeRW.size() > cap /*&& e < excess*/; e++) {
+        int e = 0;
+        while (treeRW.size() > cap) {
             if (!compress(treeRW, e == 0 ? inputRegion : null /** only limit by inputRegion first */, taskStrength, changes, cap,
-                    now, (long)(1+tableDur()), perceptDur, nar))
+                    now, (long) (1 + tableDur()), perceptDur, nar))
                 return false;
+            e++;
         }
 
         assert (treeRW.size() <= cap);
@@ -519,7 +522,6 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
         changes.put(at, false);
 
 
-
         if (b != null) {
             Task bt = b.task();
 
@@ -585,14 +587,14 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
             for (Object _x : l.data) {
                 if (_x == null)
                     break;
-                TaskRegion x = (TaskRegion)_x;
-                if (((Task)x).isDeleted()) {
+                TaskRegion x = (TaskRegion) _x;
+                if (((Task) x).isDeleted()) {
                     //found a deleted task in the leaf, we need look no further
                     boolean removed = tree.remove(x);
                     if (!removed) {
                         tree.remove(x);
                     }
-                    assert(removed);
+                    assert (removed);
                     return false;
                 }
             }
@@ -625,20 +627,20 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
                     //r.furthestTimeTo(when);
                     r.nearestTimeTo(when);
 
-            float timeDist = (Math.abs(when - regionTime))/((float)perceptDur);
+            float timeDist = (Math.abs(when - regionTime)) / ((float) perceptDur);
 
-            if (r.start() >= when-perceptDur)
+            if (r.start() >= when - perceptDur)
                 timeDist /= PRESENT_AND_FUTURE_BOOST; //shrink the apparent time if it's present and future
 
             float conf =
-                    (float)r.coord(true, 2); //max
-                    //(float)r.coord(false, 2); //min
-                    //(float) (r.coord(true, 2) + r.coord(false, 2)) / 2f; //avg
+                    (float) r.coord(true, 2); //max
+            //(float)r.coord(false, 2); //min
+            //(float) (r.coord(true, 2) + r.coord(false, 2)) / 2f; //avg
 
             float antiConf = 1f - conf;
             //float span = (float)(1 + r.range(0)/dur); //span becomes less important the further away, more fair to short near-term tasks
 
-            return (float) ((antiConf) * (1+timeDist));
+            return (float) ((antiConf) * (1 + timeDist));
         };
     }
 
@@ -671,9 +673,8 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
             return taskStrength(start, end);
         } else {
             int tableDur = 1 + (int) (tableDur());
-            return (Task x) -> {
-                return temporalTaskPriority(x, start, end, tableDur) / (1f + Revision.dtDiff(template, x.term()));
-            };
+            return (Task x) ->
+                    temporalTaskPriority(x, start, end, tableDur) / (1f + Revision.dtDiff(template, x.term()));
         }
     }
 

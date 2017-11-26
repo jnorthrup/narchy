@@ -33,7 +33,6 @@ import static jcog.Util.lerp;
 import static nars.Op.CONJ;
 import static nars.Op.Null;
 import static nars.time.Tense.*;
-import static nars.truth.TruthFunctions.c2w;
 import static nars.truth.TruthFunctions.c2wSafe;
 
 /**

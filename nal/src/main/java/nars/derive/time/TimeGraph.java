@@ -16,13 +16,8 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.container.TermContainer;
 import org.apache.commons.math3.exception.MathArithmeticException;
-import org.eclipse.collections.api.list.MutableList;
-import org.eclipse.collections.api.set.primitive.LongSet;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
-import org.eclipse.collections.impl.factory.primitive.LongSets;
-import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
-import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -117,7 +112,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         return event(t, start, start, true);
     }
 
-    public TimeGraph.Event know(Task ta) {
+    public Event know(Task ta) {
         Term tt = ta.term();
 
         long start = ta.start();
@@ -130,11 +125,11 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
     }
 
-    public TimeGraph.Event event(Term t, long start) {
+    public Event event(Term t, long start) {
         return event(t, start, start, false);
     }
 
-    public TimeGraph.Event event(Term t, long start, long end, boolean add) {
+    public Event event(Term t, long start, long end, boolean add) {
         Event e = newEvent(t, start, end);
         return add ? add(e).id : event(e);
     }
@@ -144,7 +139,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         return existing != null ? existing.id : e;
     }
 
-    private static TimeGraph.Event newEvent(Term t, long start, long end) {
+    private static Event newEvent(Term t, long start, long end) {
         assert (!(t instanceof Bool));
 
         if (start == TIMELESS)
@@ -325,7 +320,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             Set<Event>[] exact = new Set[2]; //exact occurrences of each subterm
 
             boolean aEqB = b.equals(a);
-            com.google.common.base.Predicate<Event> filter = z -> {
+            Predicate<Event> filter = z -> {
                 if (z.absolute()) {
                     if (z.id.equals(a)) {
                         if (exact[0] == null) exact[0] = new HashSet();
@@ -341,10 +336,10 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 return true; //include non-absolutes
             };
 
-            Iterable<Event> aTerms = Iterables.filter(byTerm.get(a), filter);
+            Iterable<Event> aTerms = Iterables.filter(byTerm.get(a), filter::test);
 
             if (aEqB) exact[1] = exact[0];
-            else aTerms = Iterables.concat(aTerms, Iterables.filter(byTerm.get(b), filter));
+            else aTerms = Iterables.concat(aTerms, Iterables.filter(byTerm.get(b), filter::test));
 
             if (exact[0]!=null && exact[1]!=null) {
                 //known exact occurrences for both subterms

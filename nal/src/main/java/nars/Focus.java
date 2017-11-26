@@ -28,7 +28,7 @@ public class Focus {
     /**
      * temporal granularity unit, in seconds
      */
-    public static final float JIFFY = 0.002f;
+    public static final float JIFFY = 0.001f;
 
     private final Bag<Causable, ProcLink> can;
 
@@ -52,7 +52,7 @@ public class Focus {
 
     }
 
-    final static Atomic idleTerm = Atomic.the("idle");
+//    final static Atomic idleTerm = Atomic.the("idle");
 
     /**
      * uses an RBM as an adaptive associative memory to learn and reinforce the co-occurrences of the causes
@@ -189,7 +189,7 @@ public class Focus {
 
         this.revaluator =
                 new DefaultRevaluator();
-        //new RBMRevaluator(nar.random());
+                //new RBMRevaluator(nar.random());
 
         n.serviceAddOrRemove.on((xa) -> {
             Services.Service<NAR> x = xa.getOne();
@@ -237,11 +237,11 @@ public class Focus {
 //            }
     }
 
-    private final void add(Causable c) {
+    private void add(Causable c) {
         this.can.put(new ProcLink(c, 0));
     }
 
-    private final void remove(Causable c) {
+    private void remove(Causable c) {
         this.can.remove(c);
     }
 

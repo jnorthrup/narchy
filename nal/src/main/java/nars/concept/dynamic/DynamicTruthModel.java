@@ -29,7 +29,7 @@ abstract public class DynamicTruthModel {
         int DT = superterm.dt();
         assert(DT!=XTERNAL);
 
-        Term[] inputs = components(superterm), outputs = null;
+        Term[] inputs = components(superterm);
         assert (inputs.length > 0) : this + " yielded no dynamic components for superterm " + superterm;
 
         DynTruth d = new DynTruth(superterm, stamp ? new FasterList(inputs.length) : null);
@@ -40,6 +40,7 @@ abstract public class DynamicTruthModel {
         int dur = n.dur();
         boolean evi = d.e != null;
 
+        Term[] outputs = null;
         for (int i = 0; i < inputs.length; i++) {
             Term it = inputs[i];
 
@@ -158,7 +159,7 @@ abstract public class DynamicTruthModel {
         
         private final Term[] comp;
 
-        public Intersection( Term... comp) {
+        public Intersection( Term[] comp) {
             this.comp = comp;
         }
 

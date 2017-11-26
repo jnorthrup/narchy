@@ -23,12 +23,14 @@ package nars.term;
 import jcog.Util;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
+import jcog.tree.rtree.ConcurrentRTree;
 import nars.$;
 import nars.IO;
 import nars.Op;
 import nars.derive.AbstractPred;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.TermContext;
+import nars.task.util.TaskRegion;
 import nars.term.container.TermContainer;
 import nars.term.container.TermVector;
 import nars.term.subst.Unify;
@@ -730,7 +732,7 @@ public interface Compound extends Term, IPair, TermContainer {
                 recurseChange |= yi.hasAll(necessaryBits);
             }
             if (yi instanceof EllipsisMatch) {
-                ellipsisAdds += ((EllipsisMatch) yi).subs();
+                ellipsisAdds += yi.subs();
                 ellipsisRemoves++;
             }
         }
@@ -795,9 +797,8 @@ public interface Compound extends Term, IPair, TermContainer {
         int pVars = this.varPattern();
         int totalVars = vars + pVars;
 
-        Term y;
         assert (totalVars > 0);
-        y = transform(
+        Term y = transform(
                 ((vars == 1) && (pVars == 0) && varOffset == 0) ?
                         VariableNormalization.singleVariableNormalization //special case for efficiency
                         :
@@ -805,7 +806,7 @@ public interface Compound extends Term, IPair, TermContainer {
         );
 
         if (varOffset == 0 && y != null && y instanceof Compound) {
-            TermContainer st = ((Compound) y).subterms();
+            TermContainer st = y.subterms();
             if (st instanceof TermVector)
                 ((TermVector) st).setNormalized();
         }

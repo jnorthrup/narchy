@@ -42,14 +42,6 @@ public class Builtin {
             union.the,
             Subst.the,
 
-            Functor.f1("varIntro", (x) -> {
-                Term y = DepIndepVarIntroduction.varIntro(x, ThreadLocalRandom.current());
-                if (y == null)
-                    return x; //no variables introduced, fall-through
-                else
-                    return y;
-            }),
-
             /** applies the changes in structurally similar terms "from" and "to" to the target term */
             Functor.f3((Atom)$.the("substDiff"), (target, from, to) -> {
                 if (from.equals(to))
@@ -193,6 +185,15 @@ public class Builtin {
         for (Concept t : Builtin.statik) {
             nar.on(t);
         }
+
+
+        nar.on(Functor.f1("varIntro", (x) -> {
+            Term y = DepIndepVarIntroduction.varIntro(x, nar.random());
+            if (y == null)
+                return x; //no variables introduced, fall-through
+            else
+                return y;
+        }));
 
 //        nar.on(Functor.f("service", (TermContainer c) ->
 //                $.sete(

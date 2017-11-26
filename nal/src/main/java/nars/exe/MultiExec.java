@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 public class MultiExec extends UniExec {
 
 
-    public static final int WORK_BATCH_SIZE = 2;
+    public static final int WORK_BATCH_SIZE = 3;
 
 
     static final Logger logger = LoggerFactory.getLogger(MultiExec.class);
@@ -86,10 +86,10 @@ public class MultiExec extends UniExec {
             }
 
             NARLoop loop = nar.loop;
-            float throttle = loop.throttle.floatValue();
+            @Deprecated float throttle = loop.throttle.floatValue(); //HACK
 
             try {
-                focus.work((int) (WORK_BATCH_SIZE */*(1f-load)**/loop.throttle.floatValue()));
+                focus.work((int) (WORK_BATCH_SIZE */*(1f-load)**/throttle));
             } catch (Throwable e) {
                 if (Param.DEBUG) {
                     throw e;

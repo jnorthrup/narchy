@@ -4,8 +4,10 @@ import jcog.bag.Bag;
 import jcog.pri.PLinkUntilDeleted;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
+import jcog.pri.op.PriForget;
 import nars.NAR;
 import nars.Task;
+import nars.table.TemporalBeliefTable;
 import org.apache.commons.lang3.mutable.MutableFloat;
 
 import java.util.Collection;
@@ -63,6 +65,27 @@ public class Tasklinks {
 //                );
 
 
+        }
+    }
+
+    public static class TaskLinkForget extends PriForget<PriReference<Task>> {
+        private final long now;
+        private final int dur;
+
+        public TaskLinkForget(float r, long now, int dur) {
+            super(r);
+            this.now = now;
+            this.dur = dur;
+        }
+
+        @Override
+        public void accept(PriReference<Task> b) {
+            Task t = b.get();
+            float rate =
+                  t.isBeliefOrGoal() ?
+                        1f - TemporalBeliefTable.temporalTaskPriority(t, now, now, dur) :
+                        1f;
+            b.priSub(priRemoved * rate);
         }
     }
 }

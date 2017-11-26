@@ -241,12 +241,15 @@ public class Leaf<T> implements Node<T, T> {
     @Override
     public boolean intersecting(HyperRegion rect, Predicate<T> t, Spatialization<T> model) {
         short s = this.size;
-        if (s > 0 && rect.intersects(region)) {
-            T[] data = this.data;
-            for (int i = 0; i < s; i++) {
-                T d = data[i];
-                if (d!=null && rect.intersects(model.bounds(d)) && !t.test(d))
-                    return false;
+        if (s > 0) {
+            HyperRegion r = this.region;
+            if (r!=null && rect.intersects(r)) {
+                T[] data = this.data;
+                for (int i = 0; i < s; i++) {
+                    T d = data[i];
+                    if (d != null && rect.intersects(model.bounds(d)) && !t.test(d))
+                        return false;
+                }
             }
         }
         return true;
@@ -255,12 +258,15 @@ public class Leaf<T> implements Node<T, T> {
     @Override
     public boolean containing(HyperRegion rect, Predicate<T> t, Spatialization<T> model) {
         short s = this.size;
-        if (s > 0 && rect.intersects(region)) { //not sure why but it seems this has to be intersects and not contains
-            T[] data = this.data;
-            for (int i = 0; i < s; i++) {
-                T d = data[i];
-                if (d!=null && rect.contains(model.bounds(d)) && !t.test(d))
-                    return false;
+        if (s > 0) {
+            HyperRegion r = this.region;
+            if (r!=null && rect.intersects(r)) { //not sure why but it seems this has to be intersects and not contains
+                T[] data = this.data;
+                for (int i = 0; i < s; i++) {
+                    T d = data[i];
+                    if (d != null && rect.contains(model.bounds(d)) && !t.test(d))
+                        return false;
+                }
             }
         }
         return true;

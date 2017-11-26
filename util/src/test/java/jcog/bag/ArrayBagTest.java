@@ -3,6 +3,7 @@ package jcog.bag;
 import jcog.Util;
 import jcog.bag.impl.CurveBag;
 import jcog.bag.impl.PLinkArrayBag;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.math.random.XorShift128PlusRandom;
 import jcog.pri.PLink;
 import jcog.pri.Pri;
@@ -14,21 +15,20 @@ import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Random;
 import java.util.function.DoubleSupplier;
 
-import static jcog.bag.BagTest.testBagSamplingDistribution;
 import static jcog.bag.BagTest.testBasicInsertionRemoval;
 import static jcog.pri.op.PriMerge.plus;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ArrayBagTest {
 
-    @NotNull
+
     CurveBag<PLink<String>> curveBag(int n, PriMerge mergeFunction) {
-        return new CurveBag(mergeFunction, new HashMap<>(n),
+        return new CurveBag<>(mergeFunction, new HashMap<>(n),
+                new XoRoShiRo128PlusRandom(1),
                 //new XorShift128PlusRandom(1),
-                new Random(1),
+                //new Random(1),
                 n);
     }
 
@@ -162,7 +162,7 @@ public class ArrayBagTest {
     public void testCurveBagDistributionSmall() {
         for (int cap : new int[] { 2, 3, 4, 5, 6, 7, 8 }) {
             for (float batchSizeProp : new float[]{0.001f, 0.1f, 0.3f}) {
-                testBagSamplingDistribution(curveBag(cap, PriMerge.plus), batchSizeProp);
+                BagTest.testBagSamplingDistributionLinear(curveBag(cap, PriMerge.plus), batchSizeProp);
             }
         }
     }
@@ -170,28 +170,29 @@ public class ArrayBagTest {
     @Test
     public void testCurveBagDistribution8_BiggerBatch() {
         for (float batchSizeProp : new float[]{0.5f}) {
-            testBagSamplingDistribution(curveBag(8, PriMerge.plus), batchSizeProp);
+            BagTest.testBagSamplingDistributionLinear(curveBag(8, PriMerge.plus), batchSizeProp);
         }
     }
 
     @Test
     public void testCurveBagDistribution32() {
         for (float batchSizeProp : new float[]{ 0.05f, 0.1f, 0.2f}) {
-            testBagSamplingDistribution(curveBag(32, PriMerge.plus), batchSizeProp);
+            BagTest.testBagSamplingDistributionLinear(curveBag(32, PriMerge.plus), batchSizeProp);
         }
     }
 
     @Test
     public void testCurveBagDistribution64() {
         for (float batchSizeProp : new float[]{ 0.05f, 0.1f, 0.2f}) {
-            testBagSamplingDistribution(curveBag(64, PriMerge.plus), batchSizeProp);
+            BagTest.testBagSamplingDistributionLinear(curveBag(64, PriMerge.plus), batchSizeProp);
+            BagTest.testBagSamplingDistributionRandom(curveBag(64, PriMerge.plus), batchSizeProp);
         }
     }
 
     @Test public void testCurveBagDistribution32_64__small_batch() {
         for (int cap : new int[] { 32, 64 }) {
             for (float batchSizeProp : new float[]{ 0.001f }) {
-                testBagSamplingDistribution(curveBag(cap, PriMerge.plus), batchSizeProp);
+                BagTest.testBagSamplingDistributionLinear(curveBag(cap, PriMerge.plus), batchSizeProp);
             }
         }
     }

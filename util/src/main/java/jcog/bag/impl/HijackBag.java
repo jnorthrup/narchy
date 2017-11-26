@@ -93,7 +93,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         setCapacity(initialCapacity);
 
         int initialSpace = Math.min(reprobes, capacity);
-
         resize(initialSpace);
     }
 
@@ -553,7 +552,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     }
 
     @Override
-    @NotNull
     public HijackBag<K, V> sample(/*@NotNull*/ Bag.BagCursor<? super V> each) {
         final int s = size;
         if (s <= 0)
@@ -594,8 +592,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
                 }
 
                 if (v != null) {
-                    wVal[windowCap - 1] = v;
-                    wPri[windowCap - 1] = pri(v);
+                    wVal[windowCap - 1 - prefilled] = v;
+                    wPri[windowCap - 1 - prefilled] = pri(v);
                     if (++prefilled >= windowCap)
                         break;
                 } else {

@@ -2,6 +2,7 @@ package jcog.bag;
 
 import jcog.Util;
 import jcog.bag.impl.ArrayBag;
+import jcog.bag.impl.CurveBag;
 import jcog.bag.impl.HijackBag;
 import jcog.bag.impl.hijack.DefaultHijackBag;
 import jcog.list.FasterList;
@@ -158,22 +159,25 @@ public class BagTest {
     }
 
 
-    static void testBagSamplingDistribution(Bag<PLink<String>, PLink<String>> bag, float batchSizeProp) {
-        testBagSamplingDistribution(bag, batchSizeProp, bag.capacity());
+    static void testBagSamplingDistributionLinear(Bag<PLink<String>, PLink<String>> bag, float batchSizeProp) {
+        fillLinear(bag, bag.capacity());
+        testBagSamplingDistribution(bag, batchSizeProp);
+    }
+    static void testBagSamplingDistributionRandom(CurveBag<PLink<String>> bag, float batchSizeProp) {
+        fillRandom(bag);
+        testBagSamplingDistribution(bag, batchSizeProp);
     }
 
-    static void testBagSamplingDistribution(Bag<PLink<String>, PLink<String>> bag, float batchSizeProp, int cap) {
+    static void testBagSamplingDistribution(Bag<PLink<String>, PLink<String>> bag, float batchSizeProp) {
 
-        assert(cap > 0);
-
-        fillLinear(bag, cap);
 
         //bag.forEach(System.out::println);
 
+        int cap = bag.capacity();
         int batchSize = (int)Math.ceil(batchSizeProp * cap);
         int batches = cap * 1000 / batchSize;
 
-        Tensor f1 = samplingPriDist(bag, batches, batchSize, Math.max(2, cap/2));
+        Tensor f1 = samplingPriDist(bag, batches, batchSize, Math.min(10,Math.max(2, cap/2)));
 
         String h = "cap=" + cap + " total=" + (batches * batchSize);
         System.out.println(h + ":\n\t" + f1.tsv2());
@@ -194,10 +198,10 @@ public class BagTest {
             }
         }
 
+        final float MIN_RATIO = 1.5f; //should be higher
 
         for (int lows : ff.length > 4 ? new int[] { 0, 1} : new int[] { 0 }  ) {
             for (int highs : ff.length > 4 ? new int[] { ff.length-1, ff.length-2} : new int[] { ff.length-1 }  ) {
-                final float MIN_RATIO = 2f; //should be higher
                 float maxMinRatio = ff[highs] / ff[lows];
                 assertTrue(
                         maxMinRatio > MIN_RATIO,
@@ -310,11 +314,8 @@ public class BagTest {
 
         //insert biggest items first
         for (int i = c-1; i >= 0; i--) {
-            PLink p = new PLink(i + "x", (i + 0.5f) / c);
-            PLink inserted = bag.put(p); //midpoint
+            PLink inserted = bag.put(new PLink(i + "x", (i + 0.5f) / c)); //midpoint of (i,i+1)
             if (inserted==null) {
-                bag.print();
-                bag.put(p);
                 fail("");
             }
         }
@@ -322,6 +323,21 @@ public class BagTest {
         assertEquals(c, bag.size());
         assertEquals(0.5f / c, bag.priMin(), 0.03f);
         assertEquals(1 - 1f/(c*2f), bag.priMax(), 0.03f); //no pressure should have been applied because capacity was only reached after the last put
+    }
+    public static void fillRandom(CurveBag<PLink<String>> bag) {
+        assertTrue(bag.isEmpty());
+
+        int c = bag.capacity();
+
+        //insert biggest items first
+        for (int i = c-1; i >= 0; i--) {
+            PLink inserted = bag.put(new PLink(i + "x", bag.random().nextFloat()));
+            if (inserted==null) {
+                fail("");
+            }
+        }
+        bag.commit(null);
+        assertEquals(c, bag.size());
     }
 
 

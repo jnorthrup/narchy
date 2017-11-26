@@ -268,8 +268,7 @@ public enum Terms {
                 //TODO fast sorted array for arg.length == 3 ?
 
             default:
-                SortedList<Term> x = new SortedList<>(arg, new Term[arg.length]);
-                return x.toArrayRecycled(Term[]::new);
+                return new SortedList<>(arg, new Term[arg.length]).toArrayRecycled(Term[]::new);
 
             //return sortUniquely(arg); //<- may also work but seems slower
 

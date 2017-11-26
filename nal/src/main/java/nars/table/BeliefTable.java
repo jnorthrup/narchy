@@ -251,7 +251,7 @@ public interface BeliefTable extends TaskTable {
                 //            if (Param.DEBUG)
                 //                a.log("Answer Projected");
                 novel = true; //because it was projected
-                relevantTime = true;
+//                relevantTime = true;
                 answer = a;
             }
         }
