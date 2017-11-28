@@ -1,6 +1,5 @@
 package nars.derive.time;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import jcog.Util;
@@ -22,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -320,7 +320,10 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             Set<Event>[] exact = new Set[2]; //exact occurrences of each subterm
 
             boolean aEqB = b.equals(a);
-            Predicate<Event> filter = z -> {
+
+
+            List<Event> sources = new FasterList<>();
+            Consumer<Event> collect = z -> {
                 if (z.absolute()) {
                     if (z.id.equals(a)) {
                         if (exact[0] == null) exact[0] = new HashSet();
@@ -330,42 +333,46 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                         if (exact[1] == null) exact[1] = new HashSet();
                         exact[1].add(z);
                     }
-                    return true;
+//                    return true;
                 }
                 //return false;
-                return true; //include non-absolutes
+//                return true; //include non-absolutes
+
+                sources.add(z);
             };
 
-            Iterable<Event> aTerms = Iterables.filter(byTerm.get(a), filter::test);
+            byTerm.get(a).forEach(collect);
 
-            if (aEqB) exact[1] = exact[0];
-            else aTerms = Iterables.concat(aTerms, Iterables.filter(byTerm.get(b), filter::test));
+            if (aEqB) {
+                exact[1] = exact[0];
+            } else {
+                byTerm.get(b).forEach(collect);
+            }
 
-            if (exact[0]!=null && exact[1]!=null) {
+            if (exact[0] != null && exact[1] != null) {
                 //known exact occurrences for both subterms
                 //iterate all possibilities
                 //TODO order in some way
                 //simple case:
-                if (exact[0].size()==1 && exact[1].size()==1) {
+                if (exact[0].size() == 1 && exact[1].size() == 1) {
                     Event aa = exact[0].iterator().next();
                     Event bb = exact[1].iterator().next();
-                    if (!solveDT(x, aa.start(), bb.start()-aa.end(), each ))
+                    if (!solveDT(x, aa.start(), bb.start() - aa.end(), each))
                         return false;
                 } else {
                     if (!exact[0].stream().allMatch(ae ->
                             exact[1].stream().allMatch(be ->
-                                solveDT(x, ae.start(), be.start() - ae.end(), each))))
+                                    solveDT(x, ae.start(), be.start() - ae.end(), each))))
                         return false;
                 }
 
             }
 
-            List<Event> sources = new FasterList<>(aTerms);
 
             int ns = sources.size();
-            if (ns > 0){
+            if (ns > 0) {
                 //TODO sort to process smallest terms first
-                if (ns  > 1) {
+                if (ns > 1) {
                     sources.sort(Comparator.comparingInt(z -> z.id.volume()));
                 }
 
@@ -390,15 +397,15 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             }
 
         } else {
-            assert(x.op()==CONJ);
+            assert (x.op() == CONJ);
             List<LongObjectPair<Term>> when = $.newArrayList();
             for (int ix = 0; ix < subs; ix++) {
                 //assert(!z.hasXternal());
                 solveOccurrence(event(xx.sub(ix), TIMELESS), (ze) -> {
-                   if (ze.start()==TIMELESS)
+                    if (ze.start() == TIMELESS)
                         return true; //keep trying
-                   when.add(pair(ze.start(), ze.id));
-                   return false; //just one, for now //TODO see if there are any others
+                    when.add(pair(ze.start(), ze.id));
+                    return false; //just one, for now //TODO see if there are any others
                 });
             }
             if (when.size() == subs) {
@@ -407,7 +414,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 Term zz = when.get(0).getTwo();
                 for (int i = 1; i < subs; i++) {
                     LongObjectPair<Term> wgi = when.get(i);
-                    zz = Op.conjMerge(zz, 0, wgi.getTwo(), wgi.getOne()-base);
+                    zz = Op.conjMerge(zz, 0, wgi.getTwo(), wgi.getOne() - base);
                     if (zz instanceof Bool)
                         return true; //failure
                 }
@@ -457,20 +464,20 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         int dt = (int) ddt;
         Term y = dt(x, dt);
 
-        if (!(y instanceof Bool)) {
-
-            return start != TIMELESS ?
-                    each.test(
-                            event(y, start,
-                                    (y.op()==CONJ && start != ETERNAL) ?
-                                            start + dt : start, false)
-                    )
-                    :
-                    solveOccurrence(event(y, TIMELESS), each);
-
-        } else {
+        if (y instanceof Bool)
             return true;
-        }
+
+
+        return start != TIMELESS ?
+                each.test(
+                        event(y, start,
+                                (y.op() == CONJ && start != ETERNAL) ?
+                                        start + dt : start, false)
+                )
+                :
+                solveOccurrence(event(y, TIMELESS), each);
+
+
     }
 
     /**
@@ -553,7 +560,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                             if (w.equals(u))
                                 return true; //skip it, no change
 
-                            if (v.start()!=TIMELESS && !w.hasXternal()) {
+                            if (v.start() != TIMELESS && !w.hasXternal()) {
                                 return !each.test(v);
                             }
 

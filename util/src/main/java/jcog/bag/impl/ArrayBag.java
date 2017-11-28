@@ -403,12 +403,15 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                     Y y = (Y) x;
                     float yp = priUpdate(y);
                     if (yp!=yp) {
-                        remove(key(y));
+                        if (remove(key(y))==y)
+                            onRemove(y);
                     } else {
 
                         BagSample next = each.next(y);
-                        if (next.remove)
-                            remove(key(y));
+                        if (next.remove) {
+                            if (remove(key(y))==y)
+                                onRemove(y);
+                        }
 
                         if (next.stop)
                             return this;

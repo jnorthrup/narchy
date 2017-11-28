@@ -132,8 +132,8 @@ public class CurveBag<X extends Priority> extends PriArrayBag<X> {
 
                     BagSample next = each.next(v);
                     if (next.remove) {
-                        if (remove(v)!=null) {
-
+                        if (remove(key(v))==v) {
+                            onRemove(v);
                         }
                     }
 

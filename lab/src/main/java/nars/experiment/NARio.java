@@ -265,6 +265,9 @@ public class NARio extends NAgentX {
             NARio x;
             try {
                 x = new NARio(n);
+                n.freqResolution.set(0.05f);
+                n.confResolution.set(0.02f);
+
                 //new Implier(x, 1);
                 //x.durations.setValue(2f);
                 x.trace = true;

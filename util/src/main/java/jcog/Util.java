@@ -1333,10 +1333,10 @@ public enum Util {
         return x;
     }
 
-    public static float weightSum(int weightCount, IntToFloatFunction weight) {
+    public static float sum(int count, IntToFloatFunction values) {
         float weightSum = 0;
-        for (int i = 0; i < weightCount; i++) {
-            float w = weight.valueOf(i);
+        for (int i = 0; i < count; i++) {
+            float w = values.valueOf(i);
             assert (w == w && w >= 0);
             weightSum += w;
         }

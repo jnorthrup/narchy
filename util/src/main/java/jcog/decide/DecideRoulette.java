@@ -47,14 +47,14 @@ public class DecideRoulette<X> extends FasterList<X> {
     public static int decideRoulette(int weightCount, IntToFloatFunction weight, Random rng) {
         // calculate the total weight
         assert (weightCount > 0);
-        return decideRoulette(weightCount, weight, Util.weightSum(weightCount, weight), rng);
+        return decideRoulette(weightCount, weight, Util.sum(weightCount, weight), rng);
     }
 
     public static void decideRoulette(int choices, IntToFloatFunction choiceWeight, Random rng, IntFunction<RouletteControl> each) {
         float weightSum = NaN;
         while (true) {
             if (weightSum != weightSum) {
-                weightSum = Util.weightSum(choices, choiceWeight);
+                weightSum = Util.sum(choices, choiceWeight);
             }
             if (weightSum < Float.MIN_NORMAL * choices)
                 return; //no more choices

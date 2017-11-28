@@ -29,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -302,12 +303,18 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
             //new TimeRangeUniqueNodes(); <- not safe yet because task's taskregion is re-used for branch/leaf bounds and this could cause a false positive in the bloom filter test
             do {
 
-
-                if (!leftComplete)
-                    tree.whileEachIntersecting(r.set(leftStart, leftMid), update);
-
-                if (!rightComplete && !(leftStart == rightMid && leftMid == rightEnd))
-                    tree.whileEachIntersecting(r.set(rightMid, rightEnd), update);
+                //random scan order
+//                if (leftComplete || rightComplete || rng.nextBoolean()) {
+                    if (!leftComplete)
+                        tree.whileEachIntersecting(r.set(leftStart, leftMid), update);
+                    if (!rightComplete && !(leftStart == rightMid && leftMid == rightEnd))
+                        tree.whileEachIntersecting(r.set(rightMid, rightEnd), update);
+//                } else {
+//                    if (!rightComplete)
+//                        tree.whileEachIntersecting(r.set(rightMid, rightEnd), update);
+//                    if (!leftComplete && !(leftStart == rightMid && leftMid == rightEnd))
+//                        tree.whileEachIntersecting(r.set(leftStart, leftMid), update);
+//                }
 
                 if (attempts[0] >= maxTries || !continueScanning.test(u, r.set(leftStart, rightEnd)))
                     break;
