@@ -5,11 +5,10 @@ import jcog.Util;
 import jcog.math.FloatPolarNormalized;
 import jcog.math.FloatSupplier;
 import nars.*;
-import nars.concept.GoalActionAsyncConcept;
 import nars.concept.SensorConcept;
 import nars.control.DurService;
 import nars.gui.Vis;
-import nars.util.signal.LivePredictor;
+import jcog.learn.LivePredictor;
 import spacegraph.SpaceGraph;
 
 import javax.swing.*;
@@ -59,21 +58,21 @@ public class PoleCart extends NAgentX {
 
     float posMin = -2f, posMax = +2f;
     float velMax = 10;
-    public boolean manualOverride;
+    boolean manualOverride;
 
     // Constants used for physics
-    public static final double cartMass = 1.;
-    public static final double poleMass = 0.1;
-    public static final double poleLength = 1.;
-    public static final double forceMag = 20.;
-    public static final double tau = 0.02;
-    public static final double fricCart = 0.001;
-    public static final double fricPole =
+    static final double cartMass = 1.;
+    static final double poleMass = 0.1;
+    static final double poleLength = 1.;
+    static final double forceMag = 20.;
+    static final double tau = 0.02;
+    static final double fricCart = 0.001;
+    static final double fricPole =
             0.008;
-    public static final double totalMass = cartMass + poleMass;
-    public static final double halfPole = 0.5 * poleLength;
-    public static final double poleMassLength = halfPole * poleMass;
-    public static final double fourthirds = 4. / 3.;
+    static final double totalMass = cartMass + poleMass;
+    static final double halfPole = 0.5 * poleLength;
+    static final double poleMassLength = halfPole * poleMass;
+    static final double fourthirds = 4. / 3.;
 
 
     // Define the Engine
@@ -134,7 +133,7 @@ public class PoleCart extends NAgentX {
         ).resolution(0.1f);
 
         {
-            GoalActionAsyncConcept[] f = actionBipolar($.the("move"), (a) -> {
+            actionBipolar($.the("move"), (a) -> {
                 if (!manualOverride)
                     action = a;
                 return a;
@@ -156,26 +155,24 @@ public class PoleCart extends NAgentX {
 //        });
 
 
-        FloatSupplier[] ins = new FloatSupplier[]{
+        FloatSupplier[] ins = {
                 () -> (float) angleDot,
                 () -> (float) pos,
                 () -> (float) posDot,
         };
-        LivePredictor p = new LivePredictor(new LivePredictor.LSTMPredictor(),
-                ins, 16, new FloatSupplier[]{
+        LivePredictor p = new LivePredictor(new LivePredictor.LSTMPredictor(0.01f,2),
+                ins, 8, new FloatSupplier[]{
                     ()-> (float) (0.5f + 0.5f * Math.cos(angle)),
                     ()-> (float) (0.5f + 0.5f * Math.sin(angle))
-        }, 8);
+        });
         DurService d = DurService.on(nar, () -> {
             double[] trained = p.next();
 
             System.out.println(n4(trained));
 
-            float c = (float) trained[7];
-            nar.believe(angX.term, nar.time() + 8 * nar.time.dur(), c, 0.75f);
+            nar.believe(angX.term, nar.time() + 1 * nar.time.dur(), (float) trained[0], 0.75f);
 
-            float s = (float) trained[15];
-            nar.believe(angY.term, nar.time() + 8 * nar.time.dur(), s, 0.75f);
+            nar.believe(angY.term, nar.time() + 1 * nar.time.dur(), (float) trained[1], 0.75f);
         });
 //        d.durations.set(2);
 

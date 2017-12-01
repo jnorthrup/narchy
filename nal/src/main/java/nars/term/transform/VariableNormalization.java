@@ -62,7 +62,7 @@ public class VariableNormalization extends VariableTransform {
 
 
     /*@NotNull*/
-    protected Variable newVariableIncreasingCount(/*@NotNull*/ Variable x) {
+    private Variable newVariableIncreasingCount(/*@NotNull*/ Variable x) {
         ++count;
         return newVariable(x);
     }
@@ -97,7 +97,7 @@ public class VariableNormalization extends VariableTransform {
 
     public VariableNormalization(/*@NotNull*/ Map<Variable, Variable> r, int offset) {
         this.offset = offset;
-        map = r;
+        this.map = r;
 
         //NOTE:
         //rename = new ConcurrentHashMap(size); //doesnt work being called recursively

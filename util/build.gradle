@@ -10,7 +10,7 @@ dependencies {
 
     compile group: 'tec.uom', name: 'uom-se', version: '1.0.8'
     compile group: 'org.hdrhistogram', name: 'HdrHistogram', version: '2.1.10'
-    compile group: 'org.msgpack', name: 'jackson-dataformat-msgpack', version: '0.8.13'
+    compile group: 'org.msgpack', name: 'jackson-dataformat-msgpack', version: '0.8.14'
     compile group: 'org.roaringbitmap', name: 'RoaringBitmap', version: '0.6.51'
     compile group: 'com.google.guava', name: 'guava', version: '23.5-jre'
     compile group: 'org.ow2.asm', name: 'asm-debug-all', version: '6.0_BETA'

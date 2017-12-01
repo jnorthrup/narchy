@@ -109,7 +109,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
 
     public Event know(Term t, long start) {
-        return event(t, start, start, true);
+        return event(t, start, (start!=TIMELESS && start != ETERNAL) ?start+t.dtRange():start, true);
     }
 
     public Event know(Task ta) {
@@ -126,7 +126,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     }
 
     public Event event(Term t, long start) {
-        return event(t, start, start, false);
+        return event(t, start, (start!=TIMELESS && start != ETERNAL) ?start+t.dtRange():start, false);
     }
 
     public Event event(Term t, long start, long end, boolean add) {
@@ -471,8 +471,8 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         return start != TIMELESS ?
                 each.test(
                         event(y, start,
-                                (y.op() == CONJ && start != ETERNAL) ?
-                                        start + dt : start, false)
+                                (start != ETERNAL) ?
+                                        start + y.dtRange() : start, false)
                 )
                 :
                 solveOccurrence(event(y, TIMELESS), each);

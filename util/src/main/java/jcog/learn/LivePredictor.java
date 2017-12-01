@@ -1,11 +1,10 @@
-package nars.util.signal;
+package jcog.learn;
 
 import jcog.learn.lstm.Interaction;
 import jcog.learn.lstm.test.LiveSTM;
 import jcog.list.FasterList;
 import jcog.math.FloatDelay;
 import jcog.math.FloatSupplier;
-import org.apache.commons.lang3.mutable.MutableFloat;
 
 import java.util.Collection;
 
@@ -14,28 +13,41 @@ import static jcog.Texts.n4;
 /**
  * NOT TESTED YET
  * http://www.jakob-aungiers.com/articles/a/LSTM-Neural-Network-for-Time-Series-Prediction
+ * https://medium.com/making-sense-of-data/time-series-next-value-prediction-using-regression-over-a-rolling-window-228f0acae363
+ *
  */
 public class LivePredictor {
 
 
     public interface LivePredictorModel {
         /** may be called at any time to reinitialize the architecture */
-        public void init(int ins, int inHistory, int outs, int outHistory);
+        void init(int ins, int inHistory, int outs);
 
         void learn(double[] ins, double[] outs);
 
-        public double[] predict();
+        double[] predict();
     }
 
     public static class LSTMPredictor implements LivePredictorModel {
-        float learningRate = 0.01f;
+        private final int memoryScale;
+        float learningRate;
         private LiveSTM net;
         private double[] nextPredictions;
 
+        public LSTMPredictor() {
+            this(0.01f, 1);
+        }
+
+        public LSTMPredictor(float learningRate, int memoryScale) {
+             this.learningRate = learningRate;
+             this.memoryScale = memoryScale;
+        }
+
         @Override
-        public void init(int numInputs, int iHistory, int numOutputs, int oHistory) {
+        public void init(int numInputs, int iHistory, int numOutputs) {
             synchronized (this) {
-                net = new LiveSTM(numInputs * iHistory, numOutputs * oHistory, numInputs * numOutputs * Math.max(iHistory, oHistory)) {
+                net = new LiveSTM(numInputs * iHistory, numOutputs,
+                        numInputs * numOutputs * iHistory * memoryScale) {
                     @Deprecated
                     @Override
                     protected Interaction observe() {
@@ -63,31 +75,31 @@ public class LivePredictor {
 
     } */
 
-    private final DelayedFloats Ihistory;
-    private final DelayedFloats Ohistory;
+    public final FloatsDelay Ihistory;
 
     /** temporary buffers, re-used */
-    private double[] ti, to;
+    private double[] ii, oo;
 
     private final FloatSupplier[] INS;
     private final FloatSupplier[] OUTS;
     public final LivePredictorModel model;
 
 
-    public LivePredictor(LivePredictorModel model, FloatSupplier[] INS, int iHistory, FloatSupplier[] OUTS, int oHistory) {
+   public LivePredictor(LivePredictorModel model, FloatSupplier[] INS, int iHistory, FloatSupplier[] OUTS) {
 
         this.INS = INS;
         this.OUTS = OUTS;
-        this.Ihistory = DelayedFloats.delay(INS, iHistory);
-        this.Ohistory = DelayedFloats.delay(OUTS, oHistory);
+        this.Ihistory = FloatsDelay.delay(INS, iHistory);
+
 
         this.model = model;
-        model.init(INS.length, iHistory, OUTS.length, oHistory);
+        model.init(INS.length, iHistory, OUTS.length);
     }
 
-    public static class DelayedFloats extends FasterList<FloatDelay> {
+    /** delay line of floats (plural, vector) */
+    public static class FloatsDelay extends FasterList<FloatDelay> {
 
-        public DelayedFloats(int size) {
+        public FloatsDelay(int size) {
             super(size);
         }
 
@@ -95,12 +107,13 @@ public class LivePredictor {
             forEach(FloatDelay::next);
         }
 
-        static DelayedFloats delay(FloatSupplier[] vector, int history) {
-            DelayedFloats delayed = new DelayedFloats(vector.length);
+        static FloatsDelay delay(FloatSupplier[] vector, int history) {
+            FloatsDelay delayed = new FloatsDelay(vector.length);
             for (FloatSupplier f : vector)
                 delayed.add(new FloatDelay(f, history));
             return delayed;
         }
+
         public void print() {
             forEach(System.out::println);
         }
@@ -108,24 +121,26 @@ public class LivePredictor {
 
 
     public synchronized double[] next() {
-        Ohistory.next();
         Ihistory.next();
-        //Ihistory.print();
-        //Ohistory.print();
 
-        model.learn(ti = historyVector(Ihistory,Ihistory.get(0).data.length, ti), to = historyVector(Ohistory, Ohistory.get(0).data.length, to));
+        model.learn(
+            ii = historyVector(Ihistory, Ihistory.get(0).data.length, ii),
+            oo = vector(OUTS, oo)
+        );
 
         return model.predict();
     }
 
-    public static double[] d(FloatSupplier[] f) {
-        double[] d = new double[f.length];
-        int i = 0;
-        for (FloatSupplier g : f)
-            d[i++] = g.asFloat();
+
+    static double[] vector(FloatSupplier[] x, double[] d) {
+        if (d==null || d.length != x.length) {
+            d = new double[x.length];
+        }
+        for (int k = 0; k < d.length; k++) {
+            d[k] = x[k].asFloat();
+        }
         return d;
     }
-
 
     static double[] historyVector(Collection<? extends FloatDelay> f, int history, double[] d) {
         if (d==null || d.length != f.size() * history) {
@@ -140,30 +155,6 @@ public class LivePredictor {
         return d;
     }
 
-    public static void main(String[] args) {
-        MutableFloat m = new MutableFloat();
-
-        FloatSupplier[] in = {
-                () -> 1f * (m.floatValue() % 2) > 0 ? 1 : -1,
-                () -> 1f * ((m.floatValue() % 3) > 0 ? 1 : -1)
-        };
-        FloatSupplier[] out = {
-                () -> 1f * (((m.floatValue() % 2) + (m.floatValue() % 3)) > 2 ? 1 : -1)
-        };
-        LivePredictor l = new LivePredictor(new LSTMPredictor(),
-                in,
-                5, out, 1
-        );
-
-        for (int i = 0; i < 1500; i++) {
-            double[] prediction = l.next();
-
-            System.out.print( n4(prediction) + "\t=?=\t");
-            m.increment();
-            System.out.println(n4(d(in)) + "\t" + n4(d(out)) );
-        }
-
-    }
 
 }
 
