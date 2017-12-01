@@ -9,6 +9,8 @@ import nars.concept.SensorConcept;
 import nars.control.DurService;
 import nars.gui.Vis;
 import jcog.learn.LivePredictor;
+import nars.term.Termed;
+import nars.util.signal.BeliefPredict;
 import spacegraph.SpaceGraph;
 
 import javax.swing.*;
@@ -155,26 +157,13 @@ public class PoleCart extends NAgentX {
 //        });
 
 
-        FloatSupplier[] ins = {
-                () -> (float) angleDot,
-                () -> (float) pos,
-                () -> (float) posDot,
-        };
-        LivePredictor p = new LivePredictor(new LivePredictor.LSTMPredictor(0.01f,2),
-                ins, 8, new FloatSupplier[]{
-                    ()-> (float) (0.5f + 0.5f * Math.cos(angle)),
-                    ()-> (float) (0.5f + 0.5f * Math.sin(angle))
-        });
-        DurService d = DurService.on(nar, () -> {
-            double[] trained = p.next();
 
-            System.out.println(n4(trained));
-
-            nar.believe(angX.term, nar.time() + 1 * nar.time.dur(), (float) trained[0], 0.75f);
-
-            nar.believe(angY.term, nar.time() + 1 * nar.time.dur(), (float) trained[1], 0.75f);
-        });
-//        d.durations.set(2);
+        new BeliefPredict(
+                new Termed[]{ xVel, angVel, x},
+                8,
+                new Termed[] { angX, angY },
+                nar
+        );
 
         SpaceGraph.window(Vis.beliefCharts(100,
                 Lists.newArrayList(x, xVel,
