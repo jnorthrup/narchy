@@ -1,11 +1,15 @@
 package nars.experiment;
 
+import com.google.common.collect.Iterables;
 import jcog.Util;
+import jcog.learn.LivePredictor;
 import nars.*;
 import nars.concept.GoalActionAsyncConcept;
 import nars.concept.ScalarConcepts;
 import nars.gui.Vis;
 import nars.op.video.Scale;
+import nars.term.Termed;
+import nars.util.signal.BeliefPredict;
 import nars.util.signal.CameraSensor;
 import org.apache.commons.math3.util.MathUtils;
 import org.jetbrains.annotations.NotNull;
@@ -15,6 +19,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
+import static com.google.common.collect.Iterables.*;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -98,16 +103,28 @@ public class FZero extends NAgentX {
 //        });
 
 //        senseNumberDifference($.inh(the("joy"), id), happy).resolution.setValue(0.02f);
-        senseNumberDifference($.inh($.the("angVel"), id), () -> (float) fz.playerAngle).resolution(0.02f);
-        senseNumberDifference($.inh($.the("accel"), id), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.02f);
+        ScalarConcepts dAngVel = senseNumberDifference($.inh($.the("angVel"), id), () -> (float) fz.playerAngle).resolution(0.1f);
+        ScalarConcepts dAccel = senseNumberDifference($.inh($.the("accel"), id), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.1f);
         @NotNull ScalarConcepts ang = senseNumber($.the("ang"), () ->
                         (float) (0.5f + 0.5f * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
                 11,
                 ScalarConcepts.Needle
                 //ScalarConcepts.Fluid
-        ).resolution(1f);
-        window(
-                Vis.conceptBeliefPlots(this, ang, 16), 300, 300);
+        ).resolution(0.5f);
+        /*window(
+                Vis.conceptBeliefPlots(this, ang , 16), 300, 300);*/
+
+        window(Vis.beliefCharts(64, concat(dAngVel,dAccel), nar), 300, 300);
+
+        new BeliefPredict(
+                Iterables.concat(actions.keySet(),  Iterables.concat(dAngVel, dAccel)),
+                8,
+                12,
+                Iterables.concat(actions.keySet(),  Iterables.concat(dAngVel, dAccel)),
+                //new LivePredictor.LSTMPredictor(0.25f, 1),
+                new LivePredictor.MLPPredictor(),
+                nar
+        );
 
         //nar.mix.stream("Derive").setValue(1);
 

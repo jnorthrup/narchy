@@ -1,23 +1,30 @@
 package nars.experiment;
 
+import com.google.common.collect.Iterables;
 import jcog.Util;
+import jcog.learn.LivePredictor;
 import jcog.math.FloatParam;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.Narsese;
+import nars.concept.ScalarConcepts;
 import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
 import nars.experiment.mario.Scene;
 import nars.experiment.mario.sprites.Mario;
+import nars.gui.Vis;
 import nars.op.video.PixelBag;
+import nars.util.signal.BeliefPredict;
 import nars.util.signal.CameraSensor;
 
 import javax.swing.*;
 
+import static com.google.common.collect.Iterables.concat;
 import static jcog.Util.unitize;
 import static nars.$.$;
 import static nars.$.p;
+import static spacegraph.SpaceGraph.window;
 
 public class NARio extends NAgentX {
 
@@ -102,14 +109,39 @@ public class NARio extends NAgentX {
 //        nar.believe("nario:{narioLocal, narioGlobal}");
 
 
-        senseNumberDifference($.inh($("vx"), id), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
-                mario.x : 0).resolution(0.04f);
-        senseNumberDifference($("vy"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
-                mario.y : 0).resolution(0.04f);
-
         initBipolar();
         //initToggle();
 
+
+        ScalarConcepts dvx = senseNumberDifference($("vx"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
+                mario.x : 0).resolution(0.04f);
+        ScalarConcepts dvy = senseNumberDifference($("vy"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
+                mario.y : 0).resolution(0.04f);
+
+//        window(Vis.beliefCharts(64, concat(dvx,dvy), nar), 300, 300);
+//
+//        new BeliefPredict(
+//                Iterables.concat(actions.keySet(),  Iterables.concat(dvx, dvy)),
+//                8,
+//                12,
+//                Iterables.concat(actions.keySet(),  dvx, dvy),
+//                //new LivePredictor.LSTMPredictor(0.1f, 2),
+//                new LivePredictor.MLPPredictor(),
+//                nar
+//        );
+
+
+
+//        frame.addKeyListener(mario);
+//        frame.addFocusListener(mario);
+    }
+
+    private void initToggle() {
+        actionToggle(p("left"), (n) -> mario.scene.key(Mario.KEY_LEFT, n));
+        actionToggle(p("right"), (n) -> mario.scene.key(Mario.KEY_RIGHT, n));
+        actionToggle(p("jmp"), (n) -> mario.scene.key(Mario.KEY_JUMP, n));
+        actionToggle(p("down"), (n) -> mario.scene.key(Mario.KEY_DOWN, n));
+        actionToggle(p("speed"), (b) -> mario.scene.key(Mario.KEY_SPEED, b));
 //        actionTriState($("x"), i -> {
 //            boolean n, p;
 //            switch (i) {
@@ -156,18 +188,6 @@ public class NARio extends NAgentX {
 //            return true;
 //        });
 //
-
-
-//        frame.addKeyListener(mario);
-//        frame.addFocusListener(mario);
-    }
-
-    private void initToggle() {
-        actionToggle(p("left"), (n) -> mario.scene.key(Mario.KEY_LEFT, n));
-        actionToggle(p("right"), (n) -> mario.scene.key(Mario.KEY_RIGHT, n));
-        actionToggle(p("jmp"), (n) -> mario.scene.key(Mario.KEY_JUMP, n));
-        actionToggle(p("down"), (n) -> mario.scene.key(Mario.KEY_DOWN, n));
-        actionToggle(p("speed"), (b) -> mario.scene.key(Mario.KEY_SPEED, b));
 
     }
 

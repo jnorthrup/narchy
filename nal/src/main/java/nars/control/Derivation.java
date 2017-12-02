@@ -401,11 +401,11 @@ public class Derivation extends Unify {
                 //p.priElseZero(); //use the premise pri directly
                 belief == null ? task.priElseZero() : Param.TaskBeliefDerivation.apply(task.priElseZero(), belief.priElseZero());
 
-        float parentValue =
-                //nar.evaluate(parentCause); /* value of the parent cause as a multiplier above and below 1.0x */
-                0.5f * nar.evaluate(parentCause); /* can decrease only (0..1.0) */
-                //Pri.EPSILON + 0.5f * nar.evaluate(parentCause); //bounded 0..1.0
-        this.premisePri *= parentValue;
+//        float parentValue =
+//                //nar.evaluate(parentCause); /* value of the parent cause as a multiplier above and below 1.0x */
+//                0.5f * nar.evaluate(parentCause); /* can decrease only (0..1.0) */
+//                //Pri.EPSILON + 0.5f * nar.evaluate(parentCause); //bounded 0..1.0
+//        this.premisePri *= parentValue;
 
 
         this.premiseConfSingle = this.taskTruth != null ? taskTruth.conf() : 0;

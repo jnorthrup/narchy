@@ -1,12 +1,17 @@
 package nars.experiment;
 
 
+import com.google.common.collect.Iterables;
 import jcog.Util;
+import jcog.learn.LivePredictor;
 import jcog.math.FloatParam;
 import nars.*;
+import nars.concept.SensorConcept;
+import nars.gui.Vis;
 import nars.op.video.BufferedImageBitmap2D;
 import nars.op.video.Scale;
 import nars.op.video.SwingBitmap2D;
+import nars.util.signal.BeliefPredict;
 import nars.util.signal.CameraSensor;
 
 import javax.swing.*;
@@ -18,6 +23,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.google.common.collect.Iterables.concat;
+import static spacegraph.SpaceGraph.window;
 
 public class Arkancide extends NAgentX {
 
@@ -91,7 +99,7 @@ public class Arkancide extends NAgentX {
 
 
     public Arkancide(NAR nar) throws Narsese.NarseseException {
-        this(nar, true, false);
+        this(nar, true, true);
     }
 
     public Arkancide(NAR nar, boolean cam, boolean numeric) throws Narsese.NarseseException {
@@ -111,6 +119,9 @@ public class Arkancide extends NAgentX {
 
         paddleSpeed = 40 * noid.BALL_VELOCITY;
 
+        initBipolar();
+        //initToggle();
+
         float resX = 0.1f; //Math.max(0.01f, 0.5f / visW); //dont need more resolution than 1/pixel_width
         float resY = 0.1f; //Math.max(0.01f, 0.5f / visH); //dont need more resolution than 1/pixel_width
 
@@ -128,10 +139,10 @@ public class Arkancide extends NAgentX {
 
 
         if (numeric) {
-            senseNumber($.inh("px", id), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
-            senseNumber($.inh("dx",id), (() -> Math.abs(noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
-            senseNumber($.inh("bx", id), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
-            senseNumber($.inh("by", id), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
+            SensorConcept px = senseNumber($.inh("px", id), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
+            SensorConcept dx = senseNumber($.inh("dx", id), (() -> Math.abs(noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
+            SensorConcept bx = senseNumber($.inh("bx", id), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
+            SensorConcept by = senseNumber($.inh("by", id), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
             //SensorConcept d = senseNumber("noid:bvx", new FloatPolarNormalized(() -> noid.ball.velocityX)).resolution(0.25f);
             //SensorConcept e = senseNumber("noid:bvy", new FloatPolarNormalized(() -> noid.ball.velocityY)).resolution(0.25f);
 
@@ -150,6 +161,18 @@ public class Arkancide extends NAgentX {
 //                    System.err.println(t.proof());
 //                }
 //            });
+
+//            window(Vis.beliefCharts(64, java.util.List.of(px, dx, bx, by), nar), 300, 300);
+//
+//            new BeliefPredict(
+//                    Iterables.concat(actions.keySet(), java.util.List.of(px, dx, bx, by)),
+//                    8,
+//                    12,
+//                    Iterables.concat(actions.keySet(), java.util.List.of(px, dx, bx, by)),
+//                    //new LivePredictor.LSTMPredictor(0.1f, 2),
+//                    new LivePredictor.MLPPredictor(),
+//                    nar
+//            );
         }
 
         /*action(new ActionConcept( $.func("dx", "paddleNext", "noid"), nar, (b, d) -> {
@@ -188,10 +211,6 @@ public class Arkancide extends NAgentX {
 //                System.err.println(t.proof());
 //            }
 //        });
-
-        initBipolar();
-        //initToggle();
-
 
 
 //        Param.DEBUG = true;
@@ -256,7 +275,9 @@ public class Arkancide extends NAgentX {
     }
 
 
-    /** https://gist.github.com/Miretz/f10b18df01f9f9ebfad5 */
+    /**
+     * https://gist.github.com/Miretz/f10b18df01f9f9ebfad5
+     */
     public static class Arkanoid extends JFrame implements KeyListener {
 
         int score;
@@ -334,7 +355,6 @@ public class Arkancide extends NAgentX {
         }
 
 
-
         void increaseScore() {
             score++;
             if (score == (COUNT_BLOCKS_X * COUNT_BLOCKS_Y)) {
@@ -345,6 +365,7 @@ public class Arkancide extends NAgentX {
         protected void win() {
             reset();
         }
+
         protected void die() {
             reset();
         }
@@ -360,7 +381,9 @@ public class Arkancide extends NAgentX {
                 this.sizeY = PADDLE_HEIGHT;
             }
 
-            /** returns percent of movement accomplished */
+            /**
+             * returns percent of movement accomplished
+             */
             public boolean move(float dx) {
                 float px = x;
                 x += dx;
@@ -405,7 +428,7 @@ public class Arkancide extends NAgentX {
             public float moveTo(float target, float paddleSpeed) {
                 target *= SCREEN_WIDTH;
 
-                if (Math.abs(target-x) <= paddleSpeed) {
+                if (Math.abs(target - x) <= paddleSpeed) {
                     x = target;
                 } else if (target < x) {
                     x -= paddleSpeed;
@@ -413,10 +436,10 @@ public class Arkancide extends NAgentX {
                     x += paddleSpeed;
                 }
 
-                x = Math.min(x, SCREEN_WIDTH-1);
+                x = Math.min(x, SCREEN_WIDTH - 1);
                 x = Math.max(x, 0);
 
-                return x/SCREEN_WIDTH;
+                return x / SCREEN_WIDTH;
             }
         }
 
@@ -463,12 +486,12 @@ public class Arkancide extends NAgentX {
             }
 
             public void setVelocityRandom() {
-                this.setVelocity(BALL_VELOCITY, (float)(Math.random() * -Math.PI*(2/3f) + -Math.PI - Math.PI/6)); //angled downward
+                this.setVelocity(BALL_VELOCITY, (float) (Math.random() * -Math.PI * (2 / 3f) + -Math.PI - Math.PI / 6)); //angled downward
             }
 
             public void setVelocity(float speed, float angle) {
-                this.velocityX = (float)Math.cos(angle) * speed;
-                this.velocityY = (float)Math.sin(angle) * speed;
+                this.velocityX = (float) Math.cos(angle) * speed;
+                this.velocityY = (float) Math.sin(angle) * speed;
             }
 
             void draw(Graphics g) {
@@ -563,14 +586,14 @@ public class Arkancide extends NAgentX {
         void initializeBricks(Collection<Brick> bricks) {
             // deallocate old bricks
             //synchronized(bricks) {
-                bricks.clear();
+            bricks.clear();
 
-                for (int iX = 0; iX < COUNT_BLOCKS_X; ++iX) {
-                    for (int iY = 0; iY < COUNT_BLOCKS_Y; ++iY) {
-                        bricks.add(new Brick((iX + 1) * (BLOCK_WIDTH + 3) + BLOCK_LEFT_MARGIN,
-                                (iY + 2) * (BLOCK_HEIGHT + 3) + BLOCK_TOP_MARGIN));
-                    }
+            for (int iX = 0; iX < COUNT_BLOCKS_X; ++iX) {
+                for (int iY = 0; iY < COUNT_BLOCKS_Y; ++iY) {
+                    bricks.add(new Brick((iX + 1) * (BLOCK_WIDTH + 3) + BLOCK_LEFT_MARGIN,
+                            (iY + 2) * (BLOCK_HEIGHT + 3) + BLOCK_TOP_MARGIN));
                 }
+            }
             //}
         }
 
@@ -602,22 +625,22 @@ public class Arkancide extends NAgentX {
             ball.setVelocityRandom();
         }
 
-    //	void run() {
-    //
-    //
-    //		running = true;
-    //
-    //		reset();
-    //
-    //		while (running) {
-    //
-    //			next();
-    //
-    //		}
-    //
-    //		this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
-    //
-    //	}
+        //	void run() {
+        //
+        //
+        //		running = true;
+        //
+        //		reset();
+        //
+        //		while (running) {
+        //
+        //			next();
+        //
+        //		}
+        //
+        //		this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+        //
+        //	}
 
         public float next() {
 
@@ -630,14 +653,14 @@ public class Arkancide extends NAgentX {
             testCollision(paddle, ball);
 
             //synchronized (bricks) {
-                Iterator<Brick> it = bricks.iterator();
-                while (it.hasNext()) {
-                    Brick brick = it.next();
-                    testCollision(brick, ball);
-                    if (brick.destroyed) {
-                        it.remove();
-                    }
+            Iterator<Brick> it = bricks.iterator();
+            while (it.hasNext()) {
+                Brick brick = it.next();
+                testCollision(brick, ball);
+                if (brick.destroyed) {
+                    it.remove();
                 }
+            }
             //}
 
             //}
@@ -656,7 +679,6 @@ public class Arkancide extends NAgentX {
             //BufferStrategy bf = this.getBufferStrategy();
 
             try {
-
 
 
                 g.setColor(Color.black);
@@ -684,26 +706,26 @@ public class Arkancide extends NAgentX {
             }
 
             switch (event.getKeyCode()) {
-            case KeyEvent.VK_LEFT:
-                paddle.moveLeft();
-                break;
-            case KeyEvent.VK_RIGHT:
-                paddle.moveRight();
-                break;
-            default:
-                break;
+                case KeyEvent.VK_LEFT:
+                    paddle.moveLeft();
+                    break;
+                case KeyEvent.VK_RIGHT:
+                    paddle.moveRight();
+                    break;
+                default:
+                    break;
             }
         }
 
         @Override
         public void keyReleased(KeyEvent event) {
             switch (event.getKeyCode()) {
-            case KeyEvent.VK_LEFT:
-            case KeyEvent.VK_RIGHT:
-                paddle.stopMove();
-                break;
-            default:
-                break;
+                case KeyEvent.VK_LEFT:
+                case KeyEvent.VK_RIGHT:
+                    paddle.stopMove();
+                    break;
+                default:
+                    break;
             }
         }
 

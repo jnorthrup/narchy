@@ -1,5 +1,6 @@
 package nars.util.signal;
 
+import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.learn.LivePredictor;
 import jcog.math.FloatSupplier;
@@ -10,6 +11,8 @@ import nars.control.DurService;
 import nars.task.ITask;
 import nars.task.SignalTask;
 import nars.term.Termed;
+import nars.truth.Truth;
+import nars.truth.TruthFunctions;
 import org.apache.commons.lang3.mutable.MutableFloat;
 
 import static jcog.Util.map;
@@ -24,6 +27,12 @@ public class BeliefPredict {
 
     final DurService on;
     private final CauseChannel<ITask> predict;
+
+    public BeliefPredict(Iterable<Termed> inConcepts, int lookAhead, int history, Iterable<Termed> outConcepts, LivePredictor.Predictor m, NAR nar) {
+        this(Iterables.toArray(inConcepts, Termed.class),
+                lookAhead, history,
+                Iterables.toArray(outConcepts, Termed.class), m, nar);
+    }
 
     public BeliefPredict(Termed[] inConcepts, int lookAhead, int history, Termed[] outConcepts, LivePredictor.Predictor m, NAR nar) {
 
@@ -44,7 +53,7 @@ public class BeliefPredict {
                 var next = nar.time() + lookAhead * nar.time.dur();
                 predict.input(
                     new SignalTask(outConcepts[i].term(), BELIEF,
-                            $.t((float) predFreq[i], conf.floatValue()),
+                            $.t((float) predFreq[i], conf.floatValue()).dither(nar),
                             next, next, nar.time.nextStamp()
                     )
                 );

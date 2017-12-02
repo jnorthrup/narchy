@@ -35,7 +35,7 @@
 
 //&&
     B, A, task("."), time(raw)                       |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized)
-        B, A, task("."), time(raw), neqRCom(A,B)     |- (--,((--,polarize(B,task)) &&+- (--,polarize(A,belief)))), (Belief:UnionDepolarized)
+        //B, A, task("."), time(raw), neqRCom(A,B)     |- (--,((--,polarize(B,task)) &&+- (--,polarize(A,belief)))), (Belief:UnionDepolarized)
 
         //B, A, task("."), time(raw), time(dtEvents), notImpl(A),notImpl(B)                            |- (B &&+- A), (Belief:Intersection)
     B, A, task("."), time(raw), neqAndCom(A,B)       |- varIntro((polarize(B,task) &&+- polarize(A,belief))), (Belief:IntersectionDepolarized)

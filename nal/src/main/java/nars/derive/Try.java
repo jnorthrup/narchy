@@ -1,5 +1,6 @@
 package nars.derive;
 
+import jcog.Util;
 import jcog.decide.DecideRoulette;
 import nars.$;
 import nars.control.Cause;
@@ -36,17 +37,7 @@ public class Try extends AbstractPred<Derivation> {
         );
     }
 
-    static float value(PrediTerm<Derivation> branch) {
-//        if (branch instanceof ValueFork) {
-            ValueFork vf = (ValueFork) branch;
-            float sum = 0;
-            for (Cause c : vf.causes)
-                sum += 1 + (c.gain()); //softmax-like
-            return sum;
-//        } else {
-//            throw new UnsupportedOperationException();
-//        }
-    }
+
 
     @Override
     public boolean test(Derivation d) {
@@ -64,12 +55,13 @@ public class Try extends AbstractPred<Derivation> {
             default:
 
                 int[] c = choices.toArray();
-                float[] score = new float[N];
+                float[] val = new float[N];
+                float minVal = 1f/N;
                 for (int x = 0; x < N; x++)
-                    score[x] = value(branches[c[x]]);
+                    val[x] = minVal + Util.sum(Cause::value, ((ValueFork)(branches[c[x]])).causes);
 
                 int before = d.now();
-                DecideRoulette.selectRouletteUnique(d.random, N, i -> score[i], (i) -> {
+                DecideRoulette.selectRouletteUnique(d.random, N, i -> val[i], (i) -> {
                     branches[c[i]].test(d);
                     return d.revertLive(before);
                 });

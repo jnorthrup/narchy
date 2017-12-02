@@ -1344,6 +1344,16 @@ public enum Util {
         }
         return weightSum;
     }
+    public static float sumIfPositive(int count, IntToFloatFunction values) {
+        float weightSum = 0;
+        for (int i = 0; i < count; i++) {
+            float w = values.valueOf(i);
+            assert (w == w);
+            if (w > 0)
+                weightSum += w;
+        }
+        return weightSum;
+    }
 
     public static boolean equals(double[] a, double[] b, double epsilon) {
         if (a == b) return true;

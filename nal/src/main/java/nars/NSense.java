@@ -175,7 +175,8 @@ public interface NSense {
 
 
     default ScalarConcepts senseNumberDifference(Term id, FloatSupplier v) {
-        return senseNumberBi(id, new FloatPolarNormalized( new FloatFirstOrderDifference(()->nar().time(), v)) );
+        return senseNumberBi(id, new FloatPolarNormalized(
+                new FloatFirstOrderDifference(nar()::time, v)) );
     }
 
     default SensorConcept senseNumber(Term id, FloatSupplier v) {

@@ -122,7 +122,8 @@ public class ValueFork extends Fork {
         } else {
 
             final boolean[] continued = {true};
-            DecideRoulette.selectRouletteUnique(d.random, branches, (i) -> 1 + causes[i].gain(), (b) -> {
+            float minVal = 1f/branches;
+            DecideRoulette.selectRouletteUnique(d.random, branches, (i) -> minVal + causes[i].value(), (b) -> {
 
                 this.branches[b].test(d);
 

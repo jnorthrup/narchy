@@ -317,7 +317,7 @@ public abstract class Param extends Services<Term, NAR> {
      */
     public static final int STAMP_CAPACITY = 16;
 
-    public static final FloatParam causeCapacity = new FloatParam(16, 0, 128);
+    public static final FloatParam causeCapacity = new FloatParam(32, 0, 128);
 
     /** hard limit for cause capacity in case the runtime parameter otherwise disobeyed */
     public static final int CAUSE_LIMIT = (int) (causeCapacity.max*2);
