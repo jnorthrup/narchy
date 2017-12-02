@@ -1,12 +1,17 @@
 package jcog.learn;
 
+import jcog.Util;
+import jcog.learn.deep.MLP;
 import jcog.learn.lstm.Interaction;
 import jcog.learn.lstm.test.LiveSTM;
 import jcog.list.FasterList;
 import jcog.math.FloatDelay;
 import jcog.math.FloatSupplier;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 
 import java.util.Collection;
+
+import static jcog.Util.toDouble;
 
 /**
  * NOT TESTED YET
@@ -103,7 +108,32 @@ public class LivePredictor {
 
     }
 
-    /* TODO public static class NTMPredictor implements LivePredictorModel {
+    public static class MLPPredictor implements Predictor {
+
+        float learningRate = 0.1f;
+        float momentum = 0f;
+        MLPMap mlp;
+        private float[] next;
+
+        @Override
+        public void learn(double[] ins, double[] outs) {
+            if (mlp == null /*|| mlp.inputs()!=ins.length ...*/) {
+                 mlp = new MLPMap(ins.length, new int[] { ins.length + outs.length, outs.length},
+                         new XoRoShiRo128PlusRandom(1), true);
+                 Util.last(mlp.layers).setIsSigmoid(false);
+            }
+            float[] fIns = Util.toFloat(ins);
+            mlp.put(fIns, Util.toFloat(outs), learningRate, momentum);
+            next = mlp.get(fIns);
+        }
+
+        @Override
+        public double[] predict() {
+            return toDouble(next);
+        }
+    }
+
+    /* TODO public static class NTMPredictor implements Predictor {
 
     } */
 

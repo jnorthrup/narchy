@@ -56,8 +56,8 @@ public class Dimensionaleyez extends SimpleSpatial {
             public boolean next() {
                 double[] x;
                 while ((x = queue.poll()) != null) {
-                    float[] df = Util.doubleToFloatArray(x); //HACK
-                    x = Util.floatToDoubleArray(s.normalize(df, df)); //HACK
+                    float[] df = Util.toFloat(x); //HACK
+                    x = Util.toDouble(s.normalize(df, df)); //HACK
 
                     //history.addLast(da);
 

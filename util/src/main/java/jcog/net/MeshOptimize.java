@@ -30,6 +30,6 @@ public class MeshOptimize<X> extends Optimize<X> {
     @Override
     protected void onExperiment(double[] point, double score) {
         super.onExperiment(point, score);
-        m.put(serial.incrementAndGet(), Floats.asList(ArrayUtils.add(Util.doubleToFloatArray(point), (float)score)));
+        m.put(serial.incrementAndGet(), Floats.asList(ArrayUtils.add(Util.toFloat(point), (float)score)));
     }
 }

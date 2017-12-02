@@ -29,7 +29,7 @@ public class AutoTensor extends ArrayTensor {
         float[] ii = in.get();
         //System.out.println(n4(ii));
 
-        double[] dii = Util.floatToDoubleArray(ii);
+        double[] dii = Util.toDouble(ii);
 
         set(a.train(dii, learnRate, 0));
 

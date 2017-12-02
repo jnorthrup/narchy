@@ -26,7 +26,7 @@ public class NeuralGasMap extends NeuralGasNet<NeuralGasMap.AECentroid> {
             if (n.center==null)
                 n.center = new float[outs];
 
-            float[] x1 = Util.doubleToFloatArray(n.getDataRef());
+            float[] x1 = Util.toFloat(n.getDataRef());
             if (x1[0] == x1[0]) { //avoid NaN contaminating the matrices
                 enc.put(x1, 0.02f, 0.001f, 0.0f, false, true, false);
                 arraycopy(enc.output(), 0, n.center, 0, outs);

@@ -28,6 +28,7 @@ import com.google.common.io.Closeables;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Longs;
 import jcog.io.BinTxt;
+import jcog.learn.MLPMap;
 import jcog.math.NumberException;
 import jcog.math.OneDHaar;
 import jcog.pri.Prioritized;
@@ -1195,6 +1196,7 @@ public enum Util {
         return target;
     }
 
+
     /**
      * TODO make a version of this which can return the input array if no modifications occurr either by .equals() or identity
      */
@@ -1822,11 +1824,7 @@ public enum Util {
         return true;
     }
 
-    public static float[] doubleToFloatArray(double[] a) {
-        return doubleToFloatArray(a, 0, a.length);
-    }
-
-    public static float[] doubleToFloatArray(double[] a, int from, int to, DoubleToFloatFunction df) {
+    public static float[] toFloat(double[] a, int from, int to, DoubleToFloatFunction df) {
         float[] result = new float[to - from];
         for (int j = 0, i = from; i < to; i++, j++) {
             result[j] = df.valueOf(a[i]);
@@ -1834,18 +1832,10 @@ public enum Util {
         return result;
     }
 
-    public static float[] doubleToFloatArray(double[] a, int from, int to) {
+    public static float[] toFloat(double[] a, int from, int to) {
         float[] result = new float[to - from];
         for (int j = 0, i = from; i < to; i++, j++) {
             result[j] = (float) a[i];
-        }
-        return result;
-    }
-
-    public static double[] floatToDoubleArray(float[] a) {
-        double[] result = new double[a.length];
-        for (int i = 0; i < a.length; i++) {
-            result[i] = a[i];
         }
         return result;
     }
@@ -2003,6 +1993,11 @@ public enum Util {
         byte branchBit = (byte) (1 << branch);
         return count.updateValue(key, branchBit, (x) -> (byte) (x | branchBit));
     }
+
+    public static <X> X last(X[] x) {
+        return x[x.length-1];
+    }
+
 
 //    public static <T>  Collector<T, ?, List<T>> toListOrNullIfEmpty() {
 //        return new Collectors.CollectorImpl<>((Supplier<List<T>>) ArrayList::new, List::add,

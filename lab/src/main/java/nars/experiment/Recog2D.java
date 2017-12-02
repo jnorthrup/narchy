@@ -342,7 +342,7 @@ public class Recog2D extends NAgentX {
             this.outs = outs;
 
 
-            this.trainer = new MLPMap(ins.size(), new int[]{(ins.size() + outs.states) / 2, outs.states}, nar.random());
+            this.trainer = new MLPMap(ins.size(), new int[]{(ins.size() + outs.states) / 2, outs.states}, nar.random(), true);
             trainer.layers[1].setIsSigmoid(false);
 
         }

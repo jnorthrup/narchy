@@ -31,11 +31,12 @@ public class MLPMap {
         final float[] dweights;
         boolean isSigmoid = true;
 
-        public MLPLayer(int inputSize, int outputSize, Random r) {
+        public MLPLayer(int inputSize, int outputSize, Random r, boolean sigmoid) {
             output = new float[outputSize];
             input = new float[inputSize + 1];
             weights = new float[(1 + inputSize) * outputSize];
             dweights = new float[weights.length];
+            this.isSigmoid = sigmoid;
             initWeights(r);
         }
 
@@ -96,11 +97,11 @@ public class MLPMap {
 
     public final MLPLayer[] layers;
 
-    public MLPMap(int inputSize, int[] layersSize, Random r) {
+    public MLPMap(int inputSize, int[] layersSize, Random r, boolean sigmoid) {
         layers = new MLPLayer[layersSize.length];
         for (int i = 0; i < layersSize.length; i++) {
             int inSize = i == 0 ? inputSize : layersSize[i - 1];
-            layers[i] = new MLPLayer(inSize, layersSize[i], r);
+            layers[i] = new MLPLayer(inSize, layersSize[i], r, sigmoid);
         }
     }
 
@@ -112,6 +113,7 @@ public class MLPMap {
         return actIn;
     }
 
+    /** returns an error vector */
     public float[] put(float[] input, float[] targetOutput, float learningRate, float momentum) {
         float[] calcOut = get(input);
         float[] error = new float[calcOut.length];
@@ -130,7 +132,7 @@ public class MLPMap {
 
         float[][] res = {new float[]{0}, new float[]{1}, new float[]{1}, new float[]{0}};
 
-        MLPMap mlp = new MLPMap(2, new int[]{2, 1}, new Random());
+        MLPMap mlp = new MLPMap(2, new int[]{2, 1}, new Random(), true);
         mlp.layers[1].setIsSigmoid(false);
         Random r = new Random();
         int en = 500;

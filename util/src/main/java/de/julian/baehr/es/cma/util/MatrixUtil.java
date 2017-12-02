@@ -1,13 +1,12 @@
 package de.julian.baehr.es.cma.util;
 
+import jcog.Util;
 import jcog.math.tensor.Tensor;
 import org.apache.commons.math3.linear.Array2DRowRealMatrix;
 import org.apache.commons.math3.linear.MatrixUtils;
 import org.apache.commons.math3.linear.RealMatrix;
 
 import java.util.Arrays;
-
-import static jcog.Util.floatToDoubleArray;
 
 
 public class MatrixUtil {
@@ -18,11 +17,11 @@ public class MatrixUtil {
 	
 
 	public static RealMatrix  fromDiagonal(Tensor diagonal){
-		return MatrixUtils.createRealDiagonalMatrix(floatToDoubleArray(diagonal.get()));
+        return MatrixUtils.createRealDiagonalMatrix(Util.toDouble(diagonal.get()));
 	}
 	
 	public static RealMatrix  repeatVertically(Tensor vector, int times){
-		double[] row = floatToDoubleArray(vector.get());
+        double[] row = Util.toDouble(vector.get());
 		double[][] d = new double[times][];
 		Arrays.fill(d, row);
 		return MatrixUtils.createRealMatrix(d);

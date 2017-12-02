@@ -3,10 +3,8 @@ package nars.experiment;
 import com.google.common.collect.Lists;
 import jcog.Util;
 import jcog.math.FloatPolarNormalized;
-import jcog.math.FloatSupplier;
 import nars.*;
 import nars.concept.SensorConcept;
-import nars.control.DurService;
 import nars.gui.Vis;
 import jcog.learn.LivePredictor;
 import nars.term.Termed;
@@ -159,9 +157,12 @@ public class PoleCart extends NAgentX {
 
 
         new BeliefPredict(
-                new Termed[]{ xVel, angVel, x},
+                new Termed[] { xVel, angVel, x},
                 8,
-                new Termed[] { angX, angY },
+                12,
+                new Termed[] { angX, angY, angVel, xVel },
+                //new LivePredictor.LSTMPredictor(0.1f, 2),
+                new LivePredictor.MLPPredictor(),
                 nar
         );
 
