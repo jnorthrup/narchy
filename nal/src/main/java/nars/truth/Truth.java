@@ -31,6 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.*;
 import static nars.truth.TruthFunctions.w2c;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 
 /** scalar (1D) truth value "frequency", stored as a floating point value */
@@ -200,15 +201,14 @@ public interface Truth extends Truthed {
         return dither(nar, 1f);
     }
 
-    @Nullable default PreciseTruth dither(NAR nar, float confGain) {
-        return dither(nar.freqResolution.floatValue(), nar.confResolution.floatValue(), nar.confMin.floatValue(), confGain);
+    @Nullable default PreciseTruth dither(NAR nar, float eviGain) {
+        return dither(nar.freqResolution.floatValue(), nar.confResolution.floatValue(), nar.confMin.floatValue(), eviGain);
     }
 
-    @Nullable default PreciseTruth dither(float freqRes, float confRes, float confMin, float confGain) {
-        float c0 = conf() * confGain;
-        if (c0 < confMin)
-            return null;
-        float c = conf(c0, confRes); //dither confidence
+    @Nullable default PreciseTruth dither(float freqRes, float confRes, float confMin, float eviGain) {
+        float e = evi();
+        float ee = eviGain!=1 ? e * eviGain : e;
+        float c = conf(w2cSafe(ee), confRes); //dither confidence
         if (c < confMin)
             return null;
         return new PreciseTruth(freq(freq(), freqRes), c);

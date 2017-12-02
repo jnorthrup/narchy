@@ -23,7 +23,7 @@ public class PacComponent extends JComponent {
 		
 		this.game = g;
 
-		setIgnoreRepaint(true);
+		//setIgnoreRepaint(true);
 		
 		this.setPreferredSize(new Dimension(400, 400));
 		size = Math.min(Math.round((getWidth()) / (game.maze.width + 3)), Math.round((getHeight()) / (game.maze.height + 5)));
@@ -31,12 +31,12 @@ public class PacComponent extends JComponent {
 	}
 	
 	@Override
-	public void paintComponent(Graphics g) {
+	public synchronized void paintComponent(Graphics g) {
 		
 		int mWidth = game.maze.width;
 		int mHeight = game.maze.height;
-		size = Math.min(Math.round((getWidth()) / (mWidth + 0)),
-                Math.round((getHeight()) / (mHeight + 0)));
+		size = Math.min(Math.round((getWidth()) / (mWidth + 0f)),
+                Math.round((getHeight()) / (mHeight + 0f)));
 		Point offset =
 				new Point(0,0);
 				//new Point((int)Math.round(getWidth() - (size * mWidth)) / 2, (int)Math.round(getHeight() - (size * mHeight))/2);

@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import static nars.Op.Null;
+
 /**
  * Holds a vector or tuple of terms.
  * Useful for storing a fixed number of subterms

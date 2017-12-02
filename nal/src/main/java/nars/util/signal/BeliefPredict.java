@@ -55,7 +55,7 @@ public class BeliefPredict {
                     new SignalTask(outConcepts[i].term(), BELIEF,
                             $.t((float) predFreq[i], conf.floatValue()).dither(nar),
                             next, next, nar.time.nextStamp()
-                    )
+                    ).pri(nar.priDefault(BELIEF))
                 );
             }
         });

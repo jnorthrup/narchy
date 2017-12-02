@@ -19,13 +19,10 @@ dependencies {
             name: 'jogl-all-noawt-main',
             version: '2.3.2')
 
-//    compile group: 'org.boofcv', name: 'sfm', version: '0.26'
-//    compile group: 'org.boofcv', name: 'geo', version: '0.26'
     compile(group: 'org.boofcv', name: 'io', version: '0.26') {
         exclude(module: 'snakeyaml')
         exclude(module: 'xstream')
     }
-//    compile group: 'org.boofcv', name: 'ip', version: '0.26'
     compile(group: 'org.boofcv', name: 'WebcamCapture', version: '0.26') {
         exclude(module: 'visualize')
         exclude(module: 'ip')

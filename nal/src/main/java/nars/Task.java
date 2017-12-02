@@ -182,7 +182,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                     List</* length, */ ByteList> statements = new FasterList<>();
                     ByteObjectHashMap<List<ByteList>> indepVarPaths = new ByteObjectHashMap<>();
                     int visitVector = Op.VAR_INDEP.bit | Op.StatementBits;
-                    t.pathsTo((x) -> x.op().in(visitVector) ? x : null, x -> x.hasAny(visitVector), (path, indepVarOrStatement) -> {
+                    t.pathsTo((x) -> x.op().in(visitVector) ? x : null, x -> x.hasAny(visitVector), (ByteList path, Term indepVarOrStatement) -> {
                         if (path.isEmpty())
                             return true; //skip the input term
 
@@ -427,6 +427,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     default float eternalizable() {
 
         return 1f; //always
+        //return punc()==BELIEF ? 1f: 0f; //always if belief
         //return 0f; //never
 
 //        Term t = term();

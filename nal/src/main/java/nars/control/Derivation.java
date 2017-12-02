@@ -66,7 +66,7 @@ public class Derivation extends Unify {
     /** mutable state */
     public Truth concTruth;
     public byte concPunc;
-    public float concConfFactor;
+    public float concEviFactor;
     public final long[] concOcc = new long[2];
     public final Versioned<Term> derivedTerm;
 

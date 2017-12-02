@@ -441,7 +441,7 @@ public interface NAct {
                     x = Util.clamp((f[0]) - (f[1]), -1f, +1f);
                 }
 
-                float eviSum = e[0] + e[1];
+//                float eviSum = e[0] + e[1];
                 float y = update.valueOf(x); //-1..+1
 
 

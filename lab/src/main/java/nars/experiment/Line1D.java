@@ -11,6 +11,7 @@ import nars.gui.Vis;
 import nars.task.DerivedTask;
 import nars.test.agent.Line1DSimplest;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.impl.collector.Collectors2;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 import spacegraph.layout.Grid;
 import spacegraph.widget.meta.ReflectionSurface;
@@ -41,8 +42,9 @@ public class Line1D {
 //
             Param.DEBUG = true;
 
-            NARS nn = new NARS().threadable().nal(8);
-            nn.deriverAdd(1,8);
+            NAR n = NARS.tmp(); //new NARS().threadable().nal(8);
+            //nn.deriverAdd(1,8);
+            //nn.deriverAdd(6, 8);
 //            nn.deriver(
 //                    "B, (A ==> C), time(urgent),  notImpl(B) |- subIfUnifiesAny(C,A,B,\"$\"), (Belief:DeductionRecursivePB, Goal:DeciDeduction)",
 //                    "B, (--A ==> C), time(urgent),  notImpl(B) |- subIfUnifiesAny(C,A,B,\"$\"), (Belief:DeductionRecursivePBN, Goal:DeciDeductionN)",
@@ -50,7 +52,10 @@ public class Line1D {
 //                    "B, C, belief(\"&&|\"), belief(containsTask), task(\"!\"), time(urgent) |- without(C,B), (Goal:Strong)",
 //                    "B, C, belief(\"&&|\"), belief(containsTask), task(\"!\"), time(urgent) |- without(C,--B), (Goal:StrongN)"
 //            );
-            NAR n = nn.get();
+            //NAR n = nn.get();
+            n.freqResolution.set(0.5f);
+            n.confResolution.set(0.1f);
+            n.termVolumeMax.set(12);
 
 
 //            ConjClustering conjClusterB = new ConjClustering(n, 4, BELIEF, true, 16, 64);
@@ -60,11 +65,11 @@ public class Line1D {
 //                    System.err.println(x);
 //                }
 //            });
-            n.onCycle(()->{
-                System.out.println(n.time()+":");
-                n.exe.active().forEach(System.out::println);
-                System.out.println();
-            });
+//            n.onCycle(()->{
+//                System.out.println(n.time()+":");
+//                n.exe.active().forEach(System.out::println);
+//                System.out.println();
+//            });
 //            n.log();
 
             n.runLater(() -> {
@@ -129,15 +134,15 @@ public class Line1D {
                                 , 900, 900);
 
                     }).start();
-                    a.nar.onTask(t -> {
-                        if (!t.isInput() && t instanceof DerivedTask
-                                && t.isGoal()) {
-
-                            String s = t.term().toString();
-                            if (s.equals("(y,())") || s.equals("((),y)"))
-                                System.err.println(t.proof());
-                        }
-                    });
+//                    a.nar.onTask(t -> {
+//                        if (!t.isInput() && t instanceof DerivedTask
+//                                && t.isGoal()) {
+//
+//                            String s = t.term().toString();
+//                            if (s.equals("(y,())") || s.equals("((),y)"))
+//                                System.err.println(t.proof());
+//                        }
+//                    });
 
 //                  Term[] c = Util.map((String s) -> $.$safe(s), Term[]::new,
 ////                            "((i)==>happy)",
@@ -160,12 +165,12 @@ public class Line1D {
             exp.floatValueOf(n);
 
 
-            n.time.dur(10);
+            n.time.dur(3);
             exp.agent.curiosity.set(0.1f);
             exp.agent.runDur(1);
 
             //n.truthResolution.setValue(0.25f);
-            n.termVolumeMax.set(12);
+
 
 //            n.beliefConfidence(0.5f);
 //            n.goalConfidence(0.5f);
@@ -175,14 +180,14 @@ public class Line1D {
 
 
             //n.start();
-            //n.run(100000);
+            //n.run(10000);
             n.startFPS(32f);
 
-//            n.concepts().collect(Collectors2.toSortedSet()).forEach(x -> {
+            n.concepts().forEach(x -> {
 //                if (x.op() == IMPL) {
-//                    x.print();
+                    x.print();
 //                }
-//            });
+            });
 
 
         }

@@ -9,6 +9,7 @@ import nars.NAR;
 import nars.NAgentX;
 import nars.Narsese;
 import nars.concept.ScalarConcepts;
+import nars.concept.SensorConcept;
 import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
 import nars.experiment.mario.Scene;
@@ -113,9 +114,9 @@ public class NARio extends NAgentX {
         //initToggle();
 
 
-        ScalarConcepts dvx = senseNumberDifference($("vx"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
+        SensorConcept dvx = senseNumberDifference($("vx"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
                 mario.x : 0).resolution(0.04f);
-        ScalarConcepts dvy = senseNumberDifference($("vy"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
+        SensorConcept dvy = senseNumberDifference($("vy"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
                 mario.y : 0).resolution(0.04f);
 
 //        window(Vis.beliefCharts(64, concat(dvx,dvy), nar), 300, 300);

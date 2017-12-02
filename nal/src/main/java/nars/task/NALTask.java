@@ -266,10 +266,6 @@ public class NALTask extends Pri implements Task {
         return truth.evi();
     }
 
-    @Override
-    public final float eviEternalized() {
-        return truth.eviEternalized();
-    }
 
     @Override
     public double coord(boolean maxOrMin, int dimension) {

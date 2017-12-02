@@ -174,8 +174,8 @@ public interface NSense {
     }
 
 
-    default ScalarConcepts senseNumberDifference(Term id, FloatSupplier v) {
-        return senseNumberBi(id, new FloatPolarNormalized(
+    default SensorConcept senseNumberDifference(Term id, FloatSupplier v) {
+        return senseNumber(id, new FloatPolarNormalized(
                 new FloatFirstOrderDifference(nar()::time, v)) );
     }
 
@@ -217,11 +217,11 @@ public interface NSense {
 
     @NotNull
     default ScalarConcepts senseNumberBi(Term id, FloatSupplier v)  {
-        return senseNumber(v, ScalarConcepts.Fluid, inh(LOW, id), inh(HIH, id));
+        return senseNumber(v, ScalarConcepts.Needle, inh(LOW, id), inh(HIH, id));
     }
     @NotNull
     default ScalarConcepts senseNumberTri(Term id, FloatSupplier v)  {
-        return senseNumber(v, ScalarConcepts.Fluid,  inh(LOW, id), inh(MID, id), inh(HIH, id));
+        return senseNumber(v, ScalarConcepts.Needle,  inh(LOW, id), inh(MID, id), inh(HIH, id));
     }
 
     default SensorConcept senseNumber(String id, FloatSupplier v) throws Narsese.NarseseException {

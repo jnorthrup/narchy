@@ -667,7 +667,7 @@ public class Revision {
                     }
 
 
-                    //factor = 1f - (separation / ((float) u));
+//                    factor = 1f - (separation / (separation + (float) u));
 
                 }
             }

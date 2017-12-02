@@ -53,7 +53,7 @@ public class Taskify extends AbstractPred<Derivation> {
 
         Truth tru = d.concTruth;
         if (tru!=null) {
-            tru = d.concTruth.dither(d.freqRes, d.confRes, d.confMin, d.concConfFactor);
+            tru = d.concTruth.dither(d.freqRes, d.confRes, d.confMin, d.concEviFactor);
             if (tru == null)
                 return false;
         }

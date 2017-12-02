@@ -39,11 +39,10 @@ public class Tasklinks {
         }
 
         float conceptActivation = activationApplied * nar.evaluate(t.cause());
-
-        nar.activate(cc, conceptActivation);
-
-        if (conceptActivation > 0)
+        if (conceptActivation > 0) {
+            nar.activate(cc, conceptActivation);
             nar.emotion.onActivate(t, conceptActivation, cc, nar);
+        }
     }
 
     public static void linkTask(Task task, Collection<Concept> targets) {

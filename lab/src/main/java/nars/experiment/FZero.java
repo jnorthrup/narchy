@@ -3,12 +3,17 @@ package nars.experiment;
 import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.learn.LivePredictor;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.NAgentX;
+import nars.Task;
 import nars.concept.GoalActionAsyncConcept;
 import nars.concept.ScalarConcepts;
+import nars.concept.SensorConcept;
 import nars.gui.Vis;
+import nars.op.video.BufferedImageBitmap2D;
 import nars.op.video.Scale;
-import nars.term.Termed;
+import nars.op.video.ShapeSensor;
 import nars.util.signal.BeliefPredict;
 import nars.util.signal.CameraSensor;
 import org.apache.commons.math3.util.MathUtils;
@@ -19,7 +24,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
-import static com.google.common.collect.Iterables.*;
+import static com.google.common.collect.Iterables.concat;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -29,7 +34,7 @@ public class FZero extends NAgentX {
 
     private final FZeroGame fz;
 
-    float fwdSpeed = 9;
+    float fwdSpeed = 20;
     float rotSpeed = 0.1f;
 
     public static void main(String[] args) {
@@ -39,15 +44,12 @@ public class FZero extends NAgentX {
         NAgentX.runRT((n) -> {
 
             FZero a = null;
-            try {
-                n.freqResolution.set(0.05);
-                n.confResolution.set(0.01f);
-                a = new FZero(n);
-                a.happy.resolution(0.1f);
+            n.freqResolution.set(0.04);
+            n.confResolution.set(0.02f);
+            a = new FZero(n);
+            a.happy.resolution(0.1f);
 
-            } catch (Narsese.NarseseException e) {
-                e.printStackTrace();
-            }
+
             a.trace = true;
 
             return a;
@@ -57,13 +59,18 @@ public class FZero extends NAgentX {
 
     }
 
-    public FZero(NAR nar) throws Narsese.NarseseException {
+    public FZero(NAR nar) {
         super("fz", nar);
 
         this.fz = new FZeroGame();
 
         CameraSensor<Scale> c = senseCamera(id, new Scale(() -> fz.image,
-                32, 24)/*.blur()*/).resolution(0.05f);
+                //32, 24
+                12, 8
+        )/*.blur()*/).resolution(0.2f);
+
+        new ShapeSensor($.p(id, $.the("shape")), new BufferedImageBitmap2D(() -> fz.image), this);
+
 //        CameraSensor<Scale> c = senseCameraReduced(id, new Scale(() -> fz.image,
 //                128, 64), 8, 8, 2, 2).resolution(0.1f);
 
@@ -103,8 +110,8 @@ public class FZero extends NAgentX {
 //        });
 
 //        senseNumberDifference($.inh(the("joy"), id), happy).resolution.setValue(0.02f);
-        ScalarConcepts dAngVel = senseNumberDifference($.inh($.the("angVel"), id), () -> (float) fz.playerAngle).resolution(0.1f);
-        ScalarConcepts dAccel = senseNumberDifference($.inh($.the("accel"), id), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.1f);
+        SensorConcept dAngVel = senseNumberDifference($.inh($.the("angVel"), id), () -> (float) fz.playerAngle).resolution(0.1f);
+        SensorConcept dAccel = senseNumberDifference($.inh($.the("accel"), id), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.1f);
         @NotNull ScalarConcepts ang = senseNumber($.the("ang"), () ->
                         (float) (0.5f + 0.5f * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
                 11,
@@ -114,13 +121,13 @@ public class FZero extends NAgentX {
         /*window(
                 Vis.conceptBeliefPlots(this, ang , 16), 300, 300);*/
 
-        window(Vis.beliefCharts(64, concat(dAngVel,dAccel), nar), 300, 300);
+        window(Vis.beliefCharts(64, java.util.List.of(dAngVel, dAccel), nar), 300, 300);
 
         new BeliefPredict(
-                Iterables.concat(actions.keySet(),  Iterables.concat(dAngVel, dAccel)),
+                Iterables.concat(actions.keySet(), java.util.List.of(dAngVel, dAccel)),
                 8,
                 12,
-                Iterables.concat(actions.keySet(),  Iterables.concat(dAngVel, dAccel)),
+                Iterables.concat(actions.keySet(), java.util.List.of(dAngVel, dAccel)),
                 //new LivePredictor.LSTMPredictor(0.25f, 1),
                 new LivePredictor.MLPPredictor(),
                 nar
@@ -331,7 +338,7 @@ public class FZero extends NAgentX {
         fz.update();
 
         double distance = fz.vehicleMetrics[0][1];
-        double deltaDistance = (distance - lastDistance) / 170f;
+        double deltaDistance = (distance - lastDistance) / 250f;
         if (deltaDistance > 1f) deltaDistance = 1f;
         if (deltaDistance < -1f) deltaDistance = -1f;
 
@@ -343,7 +350,7 @@ public class FZero extends NAgentX {
         //System.out.println("head=" + fz.playerAngle%(2*3.14f) + " pow=" + fz.power + " vel=" + fz.vehicleMetrics[0][6] + " deltaDist=" + deltaDistance);
 
 
-        float ambientSadness = 0f;
+        float ambientSadness = 0.1f;
 
         return Util.clamp(
                 //-0.5f /* bias */ +
@@ -392,7 +399,7 @@ public class FZero extends NAgentX {
         // 6 = velocity magnitude
         // 7 = vx, 8 = vy
         final int[] powerOvalY = new int[2];
-        boolean onPowerBar = false;
+        boolean onPowerBar;
         final boolean playing = true;
 
         final BufferedImage[] vehicleSprites = new BufferedImage[10];
@@ -400,16 +407,16 @@ public class FZero extends NAgentX {
 
         final Color powerColor = new Color(0xFABEF1);
         final Color darkColor = new Color(0xA7000000, true);
-        int wiresBitmapIndex = 0;
-        double cos = 0;
-        double sin = 0;
-        int hitWallCount = 0;
+        int wiresBitmapIndex;
+        double cos;
+        double sin;
+        int hitWallCount;
         int paused = 1;
-        private Graphics imageGraphics;
-        private Font largeFont;
+        private final Graphics imageGraphics;
+        private final Font largeFont;
 
         public FZeroGame() {
-                        powerOvalY[0] = -96;
+            powerOvalY[0] = -96;
 
 
             // -- GENERATE WIRES BITMAP BEGIN ----------------------------------------------
@@ -584,7 +591,6 @@ public class FZero extends NAgentX {
             pack();
             setLocationRelativeTo(null);
             show();
-
 
 
             imageGraphics = image.getGraphics();
