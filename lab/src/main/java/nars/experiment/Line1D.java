@@ -43,6 +43,7 @@ public class Line1D {
             Param.DEBUG = true;
 
             NAR n = NARS.tmp(); //new NARS().threadable().nal(8);
+            //NAR n = NARS.shell();
             //nn.deriverAdd(1,8);
             //nn.deriverAdd(6, 8);
 //            nn.deriver(
@@ -53,18 +54,33 @@ public class Line1D {
 //                    "B, C, belief(\"&&|\"), belief(containsTask), task(\"!\"), time(urgent) |- without(C,--B), (Goal:StrongN)"
 //            );
             //NAR n = nn.get();
-            n.freqResolution.set(0.5f);
-            n.confResolution.set(0.1f);
+
+//            try {
+
+                //n.believe("(i ==> o)");
+//            n.goal("(i && (\"+\"-->y))");
+//            n.goal("(--i && (\"-\"-->y))");
+
+//                n.goal("(i|o)");
+//                n.goal("(--i|--o)");
+//                n.believe("(--(i|o) ==> happy)");
+//                n.believe("(--(i-o) ==> happy)");
+//                n.believe("(--(o-i) ==> happy)");
+//            } catch (Narsese.NarseseException e) {
+//                e.printStackTrace();
+//            }
+            //n.freqResolution.set(0.5f);
+            //n.confResolution.set(0.1f);
             n.termVolumeMax.set(12);
 
 
 //            ConjClustering conjClusterB = new ConjClustering(n, 4, BELIEF, true, 16, 64);
 
-//            n.onTask(x -> {
-//                if (x instanceof DerivedTask) {
-//                    System.err.println(x);
-//                }
-//            });
+            n.onTask(x -> {
+                if (x instanceof DerivedTask) {
+                    System.err.println(x.proof());
+                }
+            });
 //            n.onCycle(()->{
 //                System.out.println(n.time()+":");
 //                n.exe.active().forEach(System.out::println);
@@ -166,7 +182,7 @@ public class Line1D {
 
 
             n.time.dur(3);
-            exp.agent.curiosity.set(0.1f);
+            exp.agent.curiosity.set(0f);
             exp.agent.runDur(1);
 
             //n.truthResolution.setValue(0.25f);

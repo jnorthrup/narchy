@@ -70,8 +70,8 @@
 // original:	    ( --S ==> P),   P |- ( --P ==> S), (Truth:Contraposition, Derive:AllowBackward)
 // original:	    ( --S ==> P), --S |- ( --P ==> S), (Truth:Contraposition, Derive:AllowBackward)
 
-    ( --S ==> P), P, task(positive) |- ( --P ==>+- S), (Belief:Contraposition)
-    ( --S ==> P), P, task(negative) |- ( P ==>+- S), (Belief:ContrapositionN)
+    ( --S ==> P), P |- ( --P ==>+- S), (Belief:Contraposition)
+    ( --S ==> P), P |- ( P ==>+- S), (Belief:ContrapositionN)
 
 
 
@@ -288,7 +288,7 @@
     //for belief: any conj
     C, C, task("&&") |- dropAnyEvent(C), (Belief:StructuralDeduction)
     //for goal: eternal and paral (goal seq must be decomposed sequentially
-    C, C, task("&&|") |- dropAnyEvent(C), (Goal:StructuralDeduction)
+    //C, C, task("&&|") |- dropAnyEvent(C), (Goal:StructuralDeduction)
 
 
     //(&&,A_1..n), A_i |- A_i, (Truth:StructuralDeduction, Desire:Strong)
