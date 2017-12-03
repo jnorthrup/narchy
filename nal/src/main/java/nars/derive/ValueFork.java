@@ -2,6 +2,7 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.decide.DecideRoulette;
+import jcog.decide.DecideSoftmax;
 import nars.$;
 import nars.control.Cause;
 import nars.control.Derivation;
@@ -17,7 +18,6 @@ import java.util.function.Function;
 public class ValueFork extends Fork {
 
     final Taskify[] conc;
-//    final ValueCache values;
 
     /**
      * the term which a derivation will encounter signaling
@@ -47,16 +47,13 @@ public class ValueFork extends Fork {
         this.valueBranch = branch;
         this.downstream = downstream;
 
-        conc = new Taskify[branches.length];
-        int n = 0;
-        for (PrediTerm b : branches) {
-            PrediTerm fin = AndCondition.last(b);
-            UnifyTerm.UnifySubtermThenConclude u = (UnifyTerm.UnifySubtermThenConclude) fin;
-            conc[n++] = ((Taskify) (AndCondition.last(u.eachMatch)));
-        }
+        conc = Util.map(b->(Taskify) (AndCondition.last(((UnifyTerm.UnifySubtermThenConclude)
+                    AndCondition.last(b)
+            ).eachMatch)), Taskify[]::new, branches);
 
-        causes = Util.map(c -> c.channel, new Cause[n], conc);
-//        values = new ValueCache(c -> c::value, causes);
+
+        causes = Util.map(c -> c.channel, Cause[]::new, conc);
+
     }
 
     @Override
@@ -118,49 +115,21 @@ public class ValueFork extends Fork {
         int branches = this.branches.length;
         if (branches == 1) {
             this.branches[0].test(d);
-            return d.revertLive(before);
+            return d.revertLive(before) && d.use(1);
         } else {
 
-            final boolean[] continued = {true};
-            float minVal = 1f/branches;
-            DecideRoulette.selectRouletteUnique(d.random, branches, (i) -> minVal + causes[i].value(), (b) -> {
+            float[] w = Util.map(branches, i ->
+                    //causes[i].value() //<- not safe for direct roulette weights due to non-positive values
+                    (float) Math.exp(causes[i].value()) //softmax
+            );
+            DecideRoulette.selectRouletteUnique(branches, i->w[i], (b) -> {
 
                 this.branches[b].test(d);
 
-                if (!d.revertLive(before)) {
-                    continued[0] = false;
-                    return false;
-                }
-                return true;
-            });
-            return continued[0];
+                return d.revertLive(before) && d.use(1);
+            }, d.random);
 
-            //RANDOM
-            //ByteShuffler b = d.shuffler;
-            //byte[] order = b.shuffle(d.random, branches, true); //must get a copy because recursion will re-use the shuffler's internal array
-
-
-//            //BY VALUE
-//            byte[] order = new byte[branches];
-//            for (byte i = 0; i < branches; i++)
-//                order[i] = i;
-            //sort(order, 0, branches-1, a -> -causes[a].value());
-
-//            int ttl = d.ttl;
-
-//            for (int i = 0; i < branches; i++) {
-//
-////                int subTTL = Math.round(ttl * (value[i] / valueTotal));
-////                int reserve = d.getAndSetTTL(subTTL) - subTTL;
-//
-//                this.branches[order[i]].test(d);
-//
-////                d.addTTL(reserve);
-//
-//                if (!d.revertLive(before))
-//                    return false;
-//            }
-//            return true;
+            return d.live();
         }
     }
 

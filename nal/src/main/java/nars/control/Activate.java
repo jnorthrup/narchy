@@ -132,13 +132,13 @@ public class Activate extends PLink<Concept> implements Termed {
         } else {
 
             List<Concept> uu = $.newArrayList(count);
-            DecideRoulette.selectRouletteUnique(rng, tts, (w) -> {
+            DecideRoulette.selectRouletteUnique(tts, (w) -> {
                 //return tt.get(w).volume(); //biased toward larger template components so the activation trickles down to atoms with less probabilty
                 return 1f; //flat
             }, (z) -> {
                 uu.add(tt.get(z));
                 return (uu.size() < count);
-            });
+            }, rng);
             return uu;
         }
     }

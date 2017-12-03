@@ -70,10 +70,17 @@ public class DecideRoulette<X> extends FasterList<X> {
         }
     }
 
+    /** roulette selection on a softmax scale */
     public static int decideSoftmax(int count, IntToFloatFunction weight, float temperature, Random random) {
         return decideRoulette(count, (i) ->
                 (float) exp(weight.valueOf(i) / temperature), random);
     }
+
+//  /** roulette selection on a softmax scale */
+//    public static void decideSoftmax(int count, IntToFloatFunction weight, float temperature, Random random, IntFunction<RouletteControl> each) {
+//        decideRoulette(count, (i) ->
+//                (float) exp(weight.valueOf(i) / temperature), random, each);
+//    }
 
     /**
      * faster if the sum is already known
@@ -100,7 +107,7 @@ public class DecideRoulette<X> extends FasterList<X> {
         return i;
     }
 
-    public static <X> void selectRouletteUnique(Random random, int choices, IntToFloatFunction choiceWeight, IntPredicate tgt) {
+    public static <X> void selectRouletteUnique(int choices, IntToFloatFunction choiceWeight, IntPredicate tgt, Random random) {
         assert(choices > 0);
         if (choices == 1) {
             tgt.test(0);

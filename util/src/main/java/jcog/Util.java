@@ -1863,6 +1863,13 @@ public enum Util {
         }
         return x;
     }
+    public static float[] map(int num, IntToFloatFunction build) {
+        float[] f = new float[num];
+        for (int i = 0; i < num; i++) {
+            f[i] = build.valueOf(i);
+        }
+        return f;
+    }
 
     /**
      * returns amount of memory used as a value between 0 and 100% (1.0)
