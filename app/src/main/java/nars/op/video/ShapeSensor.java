@@ -221,14 +221,14 @@ public class ShapeSensor implements Runnable {
             int pk = k++;
             g.addPoly(pk, outer, true);
 
-            // handle internal contours
-            for (List<Point2D_I32> internal : c.internal) {
-                List<PointIndex_I32> inner = ShapeFittingOps.fitPolygon(internal, true, splitFraction, minimumSideFraction, 100);
-                g2.setColor(Color.getHSBColor(c.id / 10f, 0.8f, 0.4f));
-                g2.setStroke(new BasicStroke(2));
-                drawPolygon(inner, true, g2);
-                g.addPoly(pk, inner, false);
-            }
+//            // handle internal contours
+//            for (List<Point2D_I32> internal : c.internal) {
+//                List<PointIndex_I32> inner = ShapeFittingOps.fitPolygon(internal, true, splitFraction, minimumSideFraction, 100);
+//                g2.setColor(Color.getHSBColor(c.id / 10f, 0.8f, 0.4f));
+//                g2.setStroke(new BasicStroke(2));
+//                drawPolygon(inner, true, g2);
+//                g.addPoly(pk, inner, false);
+//            }
         }
 
         g.input(in, last, nar);

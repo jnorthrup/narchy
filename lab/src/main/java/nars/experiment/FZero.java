@@ -338,9 +338,8 @@ public class FZero extends NAgentX {
         fz.update();
 
         double distance = fz.vehicleMetrics[0][1];
-        double deltaDistance = (distance - lastDistance) / 250f;
-        if (deltaDistance > 1f) deltaDistance = 1f;
-        if (deltaDistance < -1f) deltaDistance = -1f;
+        double deltaDistance = (distance - lastDistance) / 20f;
+
 
         lastDistance = distance;
 
@@ -350,7 +349,7 @@ public class FZero extends NAgentX {
         //System.out.println("head=" + fz.playerAngle%(2*3.14f) + " pow=" + fz.power + " vel=" + fz.vehicleMetrics[0][6] + " deltaDist=" + deltaDistance);
 
 
-        float ambientSadness = 0.1f;
+        float ambientSadness = 0f;
 
         return Util.clamp(
                 //-0.5f /* bias */ +

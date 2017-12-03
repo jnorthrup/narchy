@@ -458,9 +458,11 @@ public interface NAct {
                     Pb = $.t(yp, feedbackConf);
                     Nb = $.t(yn, feedbackConf);
 
-                    float eviMax = max(eviMin, max(e[0], e[1]));
-                    Pg = curious || e[0] == 0 ? new PreciseTruth(yp, eviMax, false) : null;
-                    Ng = curious || e[1] == 0 ? new PreciseTruth(yn, eviMax, false) : null;
+                    float goalEvi =
+                            eviMin;
+                            //max(eviMin, max(e[0], e[1]));
+                    Pg = curious || e[0] == 0 ? new PreciseTruth(yp, goalEvi, false) : null;
+                    Ng = curious || e[1] == 0 ? new PreciseTruth(yn, goalEvi, false) : null;
 //
 //                    if (curious) {
 //                        e[0] = e[1] = 0; //reset to get full evidence override

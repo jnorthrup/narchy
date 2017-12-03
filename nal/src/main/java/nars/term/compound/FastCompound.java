@@ -465,9 +465,9 @@ abstract public class FastCompound implements Compound {
         public int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
             int o = offset;
             final int[] vv = {v};
-            c.subtermOffsets(offset, (subterm, at)->{
+            c.subtermOffsets(o, (subterm, at)->{
                 Term t = c.term(at);
-                System.out.println(subterm + " " + at + " " + t);
+                //System.out.println(subterm + " " + at + " " + t);
                 vv[0] = reduce.intValueOf(vv[0], t);
                 return true;
             });
