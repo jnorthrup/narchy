@@ -471,7 +471,20 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 //            aa = bb;
 //            bb = cc;
 //        }
-        return solveDT(x, aa.start(), dt(x, aa, bb), each);
+        long start;
+        if (x.op()==CONJ) {
+            //earliest first for CONJ, since it will be constructed with conjMerge
+            long astart = aa.start();
+            long bstart = bb.start();
+            if (astart!=TIMELESS && bstart!=TIMELESS) {
+                start = Math.min(astart, bstart);
+            } else {
+                start = astart;
+            }
+        } else {
+            start = aa.start();
+        }
+        return solveDT(x, start, dt(x, aa, bb), each);
     }
 
     /** since CONJ will be constructed with conjMerge, if x is conj the dt between events must be calculated from start-start. otherwise it is implication and this is measured internally */
