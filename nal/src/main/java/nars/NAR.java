@@ -54,6 +54,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.*;
 import java.util.stream.Stream;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import static nars.$.$;
 import static nars.Op.*;
@@ -1312,18 +1314,23 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         return time.now();
     }
 
+    static final int FILE_STREAM_BUFFER_SIZE = 16 * 1024;
+
     public @NotNull NAR inputBinary(@NotNull File input) throws IOException {
-        return inputBinary(new BufferedInputStream(new FileInputStream(input), 64 * 1024));
+        return inputBinary(new GZIPInputStream(new FileInputStream(input), FILE_STREAM_BUFFER_SIZE));
     }
 
-    @NotNull
+    public NAR outputBinary(@NotNull File f) throws IOException {
+        return outputBinary(f, false);
+    }
+
     public NAR outputBinary(@NotNull File f, boolean append) throws IOException {
         return outputBinary(f, append, t -> t);
     }
 
-    @NotNull
-    public NAR outputBinary(@NotNull File f, boolean append, @NotNull Function<Task, Task> each) throws IOException {
-        FileOutputStream ff = new FileOutputStream(f, append);
+    public NAR outputBinary(@NotNull File f, boolean append, Function<Task, Task> each) throws IOException {
+        FileOutputStream f1 = new FileOutputStream(f, append);
+        OutputStream ff = new GZIPOutputStream(f1, FILE_STREAM_BUFFER_SIZE);
         outputBinary(ff, each);
         ff.close();
         return this;
@@ -1335,53 +1342,35 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      * the each function allows transforming each task to an optional output form.
      * if this function returns null it will not output that task (use as a filter).
      */
-    @NotNull
-    public NAR outputBinary(@NotNull OutputStream o, @NotNull Function<Task, Task> each) {
-
-        //SnappyFramedOutputStream os = new SnappyFramedOutputStream(o);
+    public NAR outputBinary(OutputStream o, Function<Task, Task> each) {
 
         DataOutputStream oo = new DataOutputStream(o);
 
         MutableInteger total = new MutableInteger(0), wrote = new MutableInteger(0);
 
-        tasks().forEach(_x -> {
+        tasks().map(each).filter(Objects::nonNull).forEach(x -> {
 
             total.increment();
-            Task x = _x;
-            if (x.truth() != null && x.conf() < confMin.floatValue())
-                return; //ignore task if it is below confMin
 
-            x = each.apply(x);
-            if (x != null) {
-                byte[] b = IO.taskToBytes(x);
-                if (b != null) {
-                    try {
-
-                        //HACK temporary until this is debugged
-                        Task xx = IO.taskFromBytes(b);
-                        if (xx == null || !xx.equals(x)) {
-                            //this can happen if a subterm is decompressed only to discover that it contradicts another part of the compound it belongs within
-                            logger.error("task serialization problem: {} != {}", _x, xx);
-                        } else {
-
-                            oo.write(b);
-
-                            //IO.writeTask(oo, x);
-
-                            wrote.increment();
-                        }
-                    } catch (Exception e) {
-                        logger.error("{} can not output {}", x, e);
-                        //throw new RuntimeException(e);
-                        //e.printStackTrace();
-                    }
-                } else {
-                    //warn?
+            byte[] b = IO.taskToBytes(x);
+            if (Param.DEBUG) {
+                //HACK temporary until this is debugged
+                Task xx = IO.taskFromBytes(b);
+                if (xx == null || !xx.equals(x)) {
+                    throw new RuntimeException("task serialization problem: " + x + " != " + xx);
                 }
             }
+
+            try {
+                oo.write(b);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            wrote.increment();
         });
 
-        logger.info("output {}/{} tasks ({} bytes)", wrote, total, oo.size());
+        logger.debug("{} output {}/{} tasks ({} bytes)", o, wrote, total, oo.size());
 
         return this;
     }
@@ -1396,10 +1385,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         MutableInteger total = new MutableInteger(0), wrote = new MutableInteger(0);
 
         StringBuilder sb = new StringBuilder();
-        tasks().forEach(_x -> {
+        tasks().map(each).filter(Objects::nonNull).forEach(x -> {
 
             total.increment();
-            Task x = _x;
+
             if (x.truth() != null && x.conf() < confMin.floatValue())
                 return; //ignore task if it is below confMin
 

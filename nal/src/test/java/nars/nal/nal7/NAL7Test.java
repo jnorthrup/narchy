@@ -8,9 +8,12 @@ import nars.test.TestNAR;
 import nars.time.Tense;
 import nars.util.NALTest;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import static nars.$.$;
@@ -18,12 +21,41 @@ import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- * Created by me on 1/9/16.
- */
+
 public class NAL7Test extends NALTest {
 
     public int cycles = 250;
+
+    private static final Path tmpDir;
+
+
+    static {
+        try {
+            tmpDir
+                = new File("/tmp/" + NALTest.class.getSimpleName()).toPath();
+                // = Files.createTempDirectory(NALTest.class.getSimpleName());
+
+            if (!tmpDir.toFile().exists())
+                Files.createDirectory(tmpDir);
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    protected void afterTest(TestInfo testInfo) {
+        try {
+            File f = tmpDir.resolve(testInfo.getTestClass().get().getSimpleName() + "."
+                    + testInfo.getDisplayName().replace("()","") +
+                    ".nal").toFile();
+            nar.outputBinary(f, false);
+            logger.info("{} output {}", testInfo, f);
+        } catch (IOException e) {
+            logger.error("{} output error {}", test, e);
+        }
+
+    }
 
 
     @Test

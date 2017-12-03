@@ -17,7 +17,7 @@ public class MyNAL1MultistepTest implements FloatSupplier {
             System.out.println("TTL_MUTATE=" + n.nar.TTL_DERIVE_TASK_SUCCESS);
 
             ((NAL1MultistepTest) n).multistepSim4();
-            n.end(null);
+            n.end(null, null);
             return 1f / (1 + n.test.time());
 
         } catch (Exception e) {

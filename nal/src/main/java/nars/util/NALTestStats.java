@@ -13,8 +13,6 @@ public class NALTestStats implements AfterEachCallback, AfterAllCallback {
     final MetaGoal.Report metagoals = new MetaGoal.Report();
 
 
-
-
     @Override
     public void afterAll(ExtensionContext context) {
 
@@ -24,12 +22,12 @@ public class NALTestStats implements AfterEachCallback, AfterAllCallback {
 
     @Override
     public void afterEach(ExtensionContext context) {
-         NALTest n = ((NALTest)context.getTestInstance().get());
+        NALTest n = ((NALTest) context.getTestInstance().get());
 
         context.publishReportEntry(context.getUniqueId() + " NAR stats",
                 n.nar.stats().toString());
 
-        if (n.metagoals!=null)
+        if (n.metagoals != null)
             metagoals.add(n.metagoals);
     }
 }

@@ -9,6 +9,7 @@ import nars.test.condition.TaskCondition;
 import nars.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.junit.jupiter.api.TestInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +78,7 @@ public class TestNAR {
      * +1 = success in <= 1 cycles */
     public float score;
 
-    public TestNAR(@NotNull NAR nar) {
+    public TestNAR(NAR nar) {
         this.outputEvents = new Topic[]{
                 //nar.memory.eventDerived,
                 //nar.memory.eventInput,
@@ -213,9 +214,15 @@ public class TestNAR {
 
         }
 
-        assertTrue(success);
+        assertSuccess(success);
 
         return this;
+    }
+
+    protected void assertSuccess(boolean success) {
+
+        /** if success is false, the test will end here, throwing the appropriate JUnit exception */
+        assertTrue(success);
     }
 
     @NotNull
