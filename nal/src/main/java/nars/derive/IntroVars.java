@@ -18,20 +18,15 @@ public class IntroVars extends AbstractPred<Derivation> {
     public boolean test(Derivation p) {
         Term x = p.derivedTerm.get();
 
-        //var intro before temporalizing.  otherwise any calculated temporal data may not applied to the changed term (ex: occ shift)
-        @Nullable Pair<Term, Map<Term, Term>> vc = DepIndepVarIntroduction.varIntroX(x, p.random);
-        if (vc == null) return false;
+        @Nullable Pair<Term, Map<Term, Term>> xy = DepIndepVarIntroduction.varIntroX(x, p.random);
+        if (xy == null) return false;
 
-        Term v = vc.getOne();
-        if (!(v.op().conceptualizable) || (v.equals(x) /* keep only if it differs */))
+        Term y = xy.getOne();
+        if (!(y.op().conceptualizable) || (y.equals(x) /* keep only if it differs */)) {
             return false;
-
-//            if (d.temporal) {
-//                Map<Term, Term> m = vc.getTwo();
-//                m.forEach(d.xy::tryPut); //store the mapping so that temporalization can resolve with it
-//            }
-
-        p.derivedTerm.set(v);
-        return true;
+        } else {
+            p.derivedTerm.set(y);
+            return true;
+        }
     }
 }

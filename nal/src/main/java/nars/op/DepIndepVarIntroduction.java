@@ -32,7 +32,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
         if (result!=null) {
             return result.getOne();
         } else {
-            return null;
+            return Null;
         }
     }
 

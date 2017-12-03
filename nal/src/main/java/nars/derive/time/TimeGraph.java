@@ -26,6 +26,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.Op.CONJ;
+import static nars.Op.NEG;
 import static nars.derive.time.TimeGraph.Absolute.validate;
 import static nars.derive.time.TimeGraph.TimeSpan.TS_ZERO;
 import static nars.time.Tense.*;
@@ -342,11 +343,15 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             };
 
             byTerm.get(a).forEach(collect);
+//            if (exact[0]==null && a.op()==NEG)
+//                byTerm.get(a.unneg()).forEach(collect);
 
             if (aEqB) {
                 exact[1] = exact[0];
             } else {
                 byTerm.get(b).forEach(collect);
+//                if (exact[1] == null && b.op()==NEG)
+//                    byTerm.get(b.unneg()).forEach(collect);
             }
 
             if (exact[0] != null && exact[1] != null) {
@@ -357,12 +362,12 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 if (exact[0].size() == 1 && exact[1].size() == 1) {
                     Event aa = exact[0].iterator().next();
                     Event bb = exact[1].iterator().next();
-                    if (!solveDT(x, aa.start(), bb.start() - aa.end(), each))
+                    if (!solveDT(x, each, aa, bb))
                         return false;
                 } else {
                     if (!exact[0].stream().allMatch(ae ->
                             exact[1].stream().allMatch(be ->
-                                    solveDT(x, ae.start(), be.start() - ae.end(), each))))
+                                    solveDT(x, each, ae, be))))
                         return false;
                 }
 
@@ -459,6 +464,22 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         return each.test(event(x, TIMELESS)); //last resort
     }
 
+    private boolean solveDT(Term x, Predicate<Event> each, Event aa, Event bb) {
+//        if (x.op() == CONJ && bb.start() < aa.start()) {
+//            //earliest first for CONJ, since it will be constructed with conjMerge
+//            Event cc = aa;
+//            aa = bb;
+//            bb = cc;
+//        }
+        return solveDT(x, aa.start(), dt(x, aa, bb), each);
+    }
+
+    /** since CONJ will be constructed with conjMerge, if x is conj the dt between events must be calculated from start-start. otherwise it is implication and this is measured internally */
+    static long dt(Term x, Event aa, Event bb) {
+        return bb.start() - aa.start();
+        //return bb.start() - (x.op() == CONJ ? aa.start() : aa.end());
+    }
+
     private boolean solveDT(Term x, long start, long ddt, Predicate<Event> each) {
         assert (ddt < Integer.MAX_VALUE);
         int dt = (int) ddt;
@@ -489,9 +510,14 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         //CONSTRUCT NEW TERM
         Term y;
         if (x.op() != CONJ) {
-            y = x.dt(dt != DTERNAL ? dt - x.sub(0).dtRange() : dt);
+            y = x.dt(dt != DTERNAL ? dt - x.sub(0).dtRange() : dt); //IMPL
         } else {
-            y = Op.conjMerge(x.sub(0), 0, x.sub(1), dt);
+            int early = Op.conjEarlyLate(x, true);
+            if (early == 1)
+                dt = -dt;
+            y = Op.conjMerge(
+                    x.sub(early), 0,
+                    x.sub(1-early), dt);
         }
 
 
@@ -554,25 +580,25 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             if (!xternalsToSolve.isEmpty()) {
 
                 //solve the XTERNAL from simplest to most complex. the canonical sort order of compounds will naturally descend this way
-                if (!Util.andReverse(xternalsToSolve.toArray(new Term[xternalsToSolve.size()]), u ->
+                return (!Util.andReverse(xternalsToSolve.toArray(new Term[xternalsToSolve.size()]), u ->
                         solveDT(u, v -> {
                             Term w = v.id;
                             if (w.equals(u))
                                 return true; //skip it, no change
 
-                            if (v.start() != TIMELESS && !w.hasXternal()) {
-                                return !each.test(v);
-                            }
 
                             //ignore the startTime component, although it might provide a clue here
                             Term y = x.replace(u, w);
                             if (!(y instanceof Bool) && !x.equals(y)) {
+//                                if (v.start() != TIMELESS && !w.hasXternal()) {
+//                                    return !each.test(v);
+//                                }
+
                                 return solveAll(y, each); //recurse
                             }
                             return true; //continue
                         })
-                ))
-                    return false;
+                ));
             }
         }
 

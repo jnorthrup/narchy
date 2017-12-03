@@ -34,11 +34,11 @@
 //        B, A, time(raw), belief(negative), task("."), time(dtEventsOrEternals), neqAndCom(A,B),   notImpl(A) |- varIntro((--A ==>+- B)), (Belief:InductionPN)
 
 //&&
-    B, A, task("."), time(raw)                       |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized)
+    B, A, task("."), time(raw),notImpl(A)                       |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized)
         //B, A, task("."), time(raw), neqRCom(A,B)     |- (--,((--,polarize(B,task)) &&+- (--,polarize(A,belief)))), (Belief:UnionDepolarized)
 
         //B, A, task("."), time(raw), time(dtEvents), notImpl(A),notImpl(B)                            |- (B &&+- A), (Belief:Intersection)
-    B, A, task("."), time(raw), neqAndCom(A,B)       |- varIntro((polarize(B,task) &&+- polarize(A,belief))), (Belief:IntersectionDepolarized)
+    B, A, task("."), time(raw), neqAndCom(A,B),notImpl(A)       |- varIntro((polarize(B,task) &&+- polarize(A,belief))), (Belief:IntersectionDepolarized)
         //B, A, task("."), time(raw), neqAndCom(A,B),  notImpl(A),notImpl(B)  |- varIntro((--,((--,polarize(B,task)) &&+- (--,polarize(A,belief))))), (Belief:UnionDepolarized)
 
         //B, A, task("."), time(raw), time(dtEventsOrEternals), neqAndCom(A,B), notImpl(A),notImpl(B)  |- varIntro((B &&+- A)), (Belief:Intersection)

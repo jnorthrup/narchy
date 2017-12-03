@@ -237,9 +237,10 @@ public class Premise {
         }
 
         if (beliefTerm instanceof Bool) {
-            logger.warn("{} produced Bool beliefTerm", this);
-            return null; //WHY
+            //logger.warn("{} produced Bool beliefTerm", this);
+            return null;
         }
+
         //assert (!(beliefTerm instanceof Bool)): "beliefTerm boolean; termLink=" + termLink + ", belief=" + belief;
 
         d.set(this, belief, beliefTerm);

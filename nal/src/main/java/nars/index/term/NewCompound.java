@@ -141,9 +141,10 @@ public class NewCompound extends /*HashCached*/DynBytes implements ProtoCompound
         for (Term x : subs)
             volume += x.volume();
 
-        ArrayPool<byte[]> bytePool = ArrayPool.bytes();
-        byte[] bbTmp = bytePool.getMin(volume * 16 /* estimate */);
-        try {
+        //ArrayPool<byte[]> bytePool = ArrayPool.bytes();
+        byte[] bbTmp = //bytePool.getMin(volume * 16 /* estimate */);
+                        new byte[volume*8];
+//        try {
 
             this.bytes = bbTmp;
             //this.bytes = new byte[subs.length * 8 /* estimate */];
@@ -155,9 +156,9 @@ public class NewCompound extends /*HashCached*/DynBytes implements ProtoCompound
             compress();
             compact(bbTmp, false);
 
-        } finally {
-            bytePool.release(bbTmp);
-        }
+//        } finally {
+//            bytePool.release(bbTmp);
+//        }
 
         this.hash = hash(0, len);
         if (this.hash == 0) this.hash = 1;

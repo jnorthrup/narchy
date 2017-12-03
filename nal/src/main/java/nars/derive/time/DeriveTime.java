@@ -1,5 +1,6 @@
 package nars.derive.time;
 
+import jcog.math.Interval;
 import jcog.pri.Pri;
 import nars.Op;
 import nars.Task;
@@ -13,6 +14,7 @@ import nars.term.subst.Subst;
 import java.util.Random;
 
 import static nars.Op.CONJ;
+import static nars.Op.IMPL;
 import static nars.time.Tense.*;
 
 
@@ -201,16 +203,16 @@ public class DeriveTime extends TimeGraph {
 
                 //joint is a procedure for extending / blending non-temporal terms.
                 //since conj is temporal use strict
-//                boolean strict = x.op()!=CONJ;
-//
-//                if (strict) {
-//                    Interval ii = Interval.intersect(task.start(), task.end(), belief.start(), belief.end());
-//                    if (ii == null)
-//                        return null; //too distant, evidence lacks
-//
-//                    s = ii.a;
-//                    e = x.op()!=IMPL ? ii.b : ii.a;
-//                } else {
+                boolean strict = x.op()==CONJ;
+
+                if (strict) {
+                    Interval ii = Interval.intersect(task.start(), task.end(), belief.start(), belief.end());
+                    if (ii == null)
+                        return null; //too distant, evidence lacks
+
+                    s = ii.a;
+                    e = x.op()!=IMPL ? ii.b : ii.a;
+                } else {
                     Revision.TaskTimeJoint joint = new Revision.TaskTimeJoint(task.start(), task.end(), belief.start(), belief.end(), d.nar);
 //                    if (joint.factor <= Pri.EPSILON) //allow for questions/quests, if this ever happens
 //                        return null;
@@ -218,7 +220,7 @@ public class DeriveTime extends TimeGraph {
                     s = joint.unionStart;
                     e = joint.unionEnd;
                     d.concEviFactor *= joint.factor;
-//                }
+                }
 
 
         } else if (d.single || (!te && (belief == null || belief.isEternal()))) {

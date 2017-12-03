@@ -187,11 +187,7 @@ public class Builtin {
         }
 
         nar.on(Functor.f1("varIntro", (x) -> {
-            Term y = DepIndepVarIntroduction.varIntro(x, nar.random());
-            //no variables introduced
-            return y == null ?
-                    Null : //no variables introduced
-                    y;
+            return DepIndepVarIntroduction.varIntro(x, nar.random());
         }));
 
 //        nar.on(Functor.f("service", (TermContainer c) ->

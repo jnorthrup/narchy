@@ -855,8 +855,7 @@ public interface Compound extends Term, IPair, TermContainer {
 
 
                     for (int i = 0; i < l; i++) {
-                        Term x = tt.sub(i);
-                        s = Math.max(s, x.dtRange());
+                        s = Math.max(s, tt.sub(i).dtRange());
                     }
 
                     return s;

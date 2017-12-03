@@ -70,8 +70,8 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
 
         int bufferLen = from + Snappy.maxCompressedLength(len);
         //byte[] compressed = new byte[bufferLen];
-        ArrayPool<byte[]> bb = ArrayPool.bytes();
-        byte[] compressed = bb.getMin(bufferLen);
+//        ArrayPool<byte[]> bb = ArrayPool.bytes();
+        byte[] compressed = new byte[bufferLen]; //bb.getMin(bufferLen);
 
         int compressedLength = Snappy.compress(
                 this.bytes, from, len,
@@ -88,10 +88,11 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
             this.len = from + compressedLength;
             return compressedLength;
         } else {
-            bb.release(compressed);
+            return -1;
+            //bb.release(compressed);
         }
 
-        return -1;
+//        return -1;
     }
 
 

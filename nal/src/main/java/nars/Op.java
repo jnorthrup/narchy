@@ -1236,6 +1236,14 @@ public enum Op {
 
     }
 
+//    static private Term implInConjReduction(final Term conj /* possibly a conjunction */) {
+//        int cdt = conj.dt();
+//        if (concurrent(cdt) || cdt == XTERNAL)
+//            return implInConjReduction0(conj);
+//        else
+//            return conj;
+//    }
+
     /**
      * precondition combiner: a combination nconjunction/implication reduction
      */
@@ -2025,7 +2033,11 @@ public enum Op {
         return Null; //wasnt contained
     }
 
-
+    public static int conjEarlyLate(Term x, boolean earlyOrLate) {
+        assert(x.op()==CONJ);
+        int d = x.sub(0).compareTo(x.sub(1));
+        return (d >= 0 ? (earlyOrLate ? 0 : 1) : (earlyOrLate ? 1 : 0));
+    }
 
 
     /**
