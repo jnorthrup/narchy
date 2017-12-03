@@ -35,7 +35,7 @@ public class FZero extends NAgentX {
     private final FZeroGame fz;
 
     float fwdSpeed = 20;
-    float rotSpeed = 0.3f;
+    float rotSpeed = 0.1f;
 
     public static void main(String[] args) {
 

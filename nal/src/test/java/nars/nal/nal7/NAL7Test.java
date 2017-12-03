@@ -26,36 +26,34 @@ public class NAL7Test extends NALTest {
 
     public int cycles = 250;
 
-    private static final Path tmpDir;
-
-
-    static {
-        try {
-            tmpDir
-                = new File("/tmp/" + NALTest.class.getSimpleName()).toPath();
-                // = Files.createTempDirectory(NALTest.class.getSimpleName());
-
-            if (!tmpDir.toFile().exists())
-                Files.createDirectory(tmpDir);
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    protected void afterTest(TestInfo testInfo) {
-        try {
-            File f = tmpDir.resolve(testInfo.getTestClass().get().getSimpleName() + "."
-                    + testInfo.getDisplayName().replace("()","") +
-                    ".nal").toFile();
-            nar.outputBinary(f, false);
-            logger.info("{} output {}", testInfo, f);
-        } catch (IOException e) {
-            logger.error("{} output error {}", test, e);
-        }
-
-    }
+//    private static final Path tmpDir;
+//    static {
+//        try {
+//            tmpDir
+//                = new File("/tmp/" + NALTest.class.getSimpleName()).toPath();
+//                // = Files.createTempDirectory(NALTest.class.getSimpleName());
+//
+//            if (!tmpDir.toFile().exists())
+//                Files.createDirectory(tmpDir);
+//
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
+//
+//    @Override
+//    protected void afterTest(TestInfo testInfo) {
+//        try {
+//            File f = tmpDir.resolve(testInfo.getTestClass().get().getSimpleName() + "."
+//                    + testInfo.getDisplayName().replace("()","") +
+//                    ".nal").toFile();
+//            nar.outputBinary(f, false);
+//            logger.info("{} output {}", testInfo, f);
+//        } catch (IOException e) {
+//            logger.error("{} output error {}", test, e);
+//        }
+//
+//    }
 
 
     @Test

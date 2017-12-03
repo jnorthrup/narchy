@@ -1,5 +1,8 @@
 package nars.derive.time;
 
+import jcog.data.ArrayHashSet;
+import jcog.data.ArraySet;
+import jcog.list.FasterList;
 import jcog.math.Interval;
 import nars.Op;
 import nars.Task;
@@ -10,7 +13,9 @@ import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.term.subst.Subst;
 
+import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import static nars.Op.CONJ;
 import static nars.Op.IMPL;
@@ -129,7 +134,7 @@ public class DeriveTime extends TimeGraph {
 //        }
 
 
-        Event[] best = new Event[1];
+        ArraySet<Event> alternates = new ArrayHashSet(TEMPORAL_ITERATIONS);
 
         final int[] triesRemain = {TEMPORAL_ITERATIONS};
 
@@ -137,15 +142,30 @@ public class DeriveTime extends TimeGraph {
             assert (solution != null);
             //TODO test equivalence with task and belief terms and occurrences, and continue iterating up to a max # of tries if it produced a useless equivalent result
 
-            Event current = best[0];
-            best[0] = (current == null) ? solution : merge(current, solution);
+            Event current = alternates.first();
+            if (current == null)
+                alternates.add(solution);
+            else {
+                Event merged = merge(current, solution);
+                if (merged == null) {
+                    //add alternate
+                    alternates.add(solution);
+                } else if (merged == solution) {
+                    //replace all, this is the first fully valid one
+                    alternates.clear();
+                    alternates.add(solution);
+                }
+            }
 
             return triesRemain[0]-- > 0;
         });
 
-        Event event = best[0];
+
+        Event event = alternates.first();
         if (event == null) {
             return solveRaw(pattern);
+        } else if (alternates.size() > 1) {
+            event = alternates.get(d.random.nextInt(alternates.size()));
         }
 
         long es = event.when();
@@ -279,25 +299,27 @@ public class DeriveTime extends TimeGraph {
             }
         }
 
-        //prefer a term which is not a repeat of the task or belief term
-        boolean aMatch = a.id.equals(d.taskTerm) || a.id.equals(d.beliefTerm);
-        boolean bMatch = b.id.equals(d.taskTerm) || b.id.equals(d.beliefTerm);
-        if (aMatch && !bMatch)
-            return b;
-        if (!aMatch && bMatch)
-            return a;
+        return null; //save both as alternates
 
-        //heuristic:
-        float aSpec =
-                //((float) at.volume()) / (1+at.dtRange()); //prefer more specific "dense" temporal events rather than sprawling sparse run-on-sentences
-                at.volume(); //prefer volume
-        float bSpec =
-                //((float) bt.volume()) / (1+bt.dtRange());
-                bt.volume();
-        if (bSpec > aSpec)
-            return b;
-        else //if (aSpec < bSpec)
-            return a;
+//        //prefer a term which is not a repeat of the task or belief term
+//        boolean aMatch = a.id.equals(d.taskTerm) || a.id.equals(d.beliefTerm);
+//        boolean bMatch = b.id.equals(d.taskTerm) || b.id.equals(d.beliefTerm);
+//        if (aMatch && !bMatch)
+//            return b;
+//        if (!aMatch && bMatch)
+//            return a;
+
+//        //heuristic:
+//        float aSpec =
+//                //((float) at.volume()) / (1+at.dtRange()); //prefer more specific "dense" temporal events rather than sprawling sparse run-on-sentences
+//                at.volume(); //prefer volume
+//        float bSpec =
+//                //((float) bt.volume()) / (1+bt.dtRange());
+//                bt.volume();
+//        if (bSpec > aSpec)
+//            return b;
+//        else //if (aSpec < bSpec)
+//            return a;
 //        else {
 //            //long distToNow = ...
 //        }

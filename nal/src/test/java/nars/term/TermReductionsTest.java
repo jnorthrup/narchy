@@ -282,6 +282,18 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
+    public void testConjRepeatPosNeg() {
+        Term x = $.the("x");
+        assertEquals( +1, CONJ.the(-1, x, x).dt());
+        assertEquals( +1, CONJ.the(+1, x, x).dt());
+        assertArrayEquals(IO.termToBytes(CONJ.the(+32, x, x)), IO.termToBytes(CONJ.the(-32, x, x)));
+        assertEquals( +1, CONJ.the(XTERNAL, x, x).dt(-1).dt());
+        assertEquals( +1, CONJ.the(XTERNAL, x, x).dt(+1).dt());
+        assertEquals( CONJ.the(-1, x, x), CONJ.the(+1, x, x) );
+        assertEquals( CONJ.the(XTERNAL, x, x).dt(-1), CONJ.the( XTERNAL, x, x).dt(+1) );
+    }
+
+    @Test
     public void testConjEvents() throws Narsese.NarseseException {
         assertEquals(
                 "(a &&+16 ((--,a)&|b))",
@@ -966,7 +978,7 @@ public class TermReductionsTest extends NarseseTest {
         assertEquals("x", $.impl(Op.True, $.$("x")).toString());
     }
     @Test
-    public void testTrueUnneg() throws Narsese.NarseseException {
+    public void testTrueUnneg() {
         assertEquals(True, True.unneg());
         assertEquals(False, True.neg());
         assertEquals(True, False.unneg());
