@@ -1259,24 +1259,24 @@ public enum Op {
         //if there is only one implication subterm (first layer only), then fold into that.
         int whichImpl = -1;
         int conjSize = conj.subs();
-        Term implication = null;
-        int implDT = XTERNAL;
+
         for (int i = 0; i < conjSize; i++) {
             if (conj.subIs(i, Op.IMPL)) {
                 //only handle the first implication in this iteration
+//                if (implDT == XTERNAL) {
+//                    //dont proceed any further if XTERNAL
+//                    //return conj;
+//                }
                 whichImpl = i;
-                implication = conj.sub(whichImpl);
-                implDT = implication.dt();
-                if (implDT == XTERNAL) {
-                    //dont proceed any further if XTERNAL
-                    return conj;
-                }
                 break;
             }
         }
 
-        if (implication == null)
+        if (whichImpl == -1)
             return conj;
+
+        Term implication = conj.sub(whichImpl);
+
 
         Term other;
         if (conjSize == 2) {
@@ -1305,18 +1305,16 @@ public enum Op {
         if (conjInner instanceof Bool)
             return conjInner;
 
-        Term implPost = implication.sub(1); /* impl postcondition */
-
         int preInInner = conjInner.subTimeSafe(implication.sub(0));
-        if (preInInner == DTERNAL)
+        if (preInInner == DTERNAL || preInInner == XTERNAL)
             preInInner = 0; //HACK
-        int d =
+
+        int implDT = implication.dt();
+        return IMPL.the(
                 implDT != DTERNAL ?
                         implDT + preInInner - conjInner.dtRange() :
-                        DTERNAL;
-
-        return IMPL.the(d,
-                conjInner, implPost);
+                        DTERNAL,
+                conjInner, implication.sub(1));
 
     }
 

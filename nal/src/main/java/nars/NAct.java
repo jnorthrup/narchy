@@ -26,6 +26,8 @@ import static jcog.Util.unitize;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static nars.truth.TruthFunctions.c2w;
+import static nars.truth.TruthFunctions.w2c;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * Created by me on 9/30/16.
@@ -404,22 +406,22 @@ public interface NAct {
 
         @NotNull BiConsumer<GoalActionAsyncConcept, Truth> u = (action, g) -> {
 
-            boolean p = action.term().equals(pt);
             float f0, c0;
 
             NAR n = nar();
 
-            Random rng = n.random();
+
 
             float confMin = n.confMin.floatValue();
-            float eviMin = c2w(confMin*2);
+            float eviMin = c2w(confMin);
             float feedbackConf =
                     //confMin * 4;
-                    n.confDefault(GOAL);
+                    w2c(c2w(n.confDefault(GOAL))/2f);
             float curiEvi =
                     //c2w(confBase);
-                    eviMin * 2;
+                    eviMin;
 
+            boolean p = action.term().equals(pt);
             int ip = p ? 0 : 1;
             CC[ip] = action;
             f[ip] = g != null ? g.freq() : 0f;
@@ -431,6 +433,7 @@ public interface NAct {
             boolean curious;
             if (!p) {
 
+                Random rng = n.random();
                 float cur = curiosity().floatValue();
                 if (cur > 0 && rng.nextFloat() <= cur) {
                     x = (rng.nextFloat() - 0.5f) * 2f;
@@ -438,10 +441,21 @@ public interface NAct {
                     curious = true;
                 } else {
                     curious = false;
-                    x = Util.clamp((f[0]) - (f[1]), -1f, +1f);
+                    float df;
+
+                    float eMax = Math.max(e[0], e[1]);
+                    if (eMax < Float.MIN_NORMAL) {
+                        df = 0;
+                    } else {
+                        df = (f[0]) - (f[1]);
+                        //df *= 1f - Math.abs(e[0] - e[1]) / eMax; //experimental: lessen by a factor of how equally confident each goal is
+                        df *= 1f - Math.min(e[0], e[1]) / eMax; //experimental: lessen by a factor of how equally confident each goal is
+                        //df *= 1f - Math.min(w2cSafe(e[0]), w2cSafe(e[1])) / w2cSafe(eMax); //experimental: lessen by a factor of how equally confident each goal is
+                    }
+
+                    x = Util.clamp(df, -1f, +1f);
                 }
 
-//                float eviSum = e[0] + e[1];
                 float y = update.valueOf(x); //-1..+1
 
 

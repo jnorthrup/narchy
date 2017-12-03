@@ -108,7 +108,8 @@ public enum The {  ;
             boolean hasEllipsis = false;
             boolean prohibitBool = !o.allowsBool;
 
-            for (Term x : subterms) {
+            for (int i = 0, subtermsSize = subterms.size(); i < subtermsSize; i++) {
+                Term x = subterms.get(i);
                 if (prohibitBool && x instanceof Bool)
                     return Null;
                 if (!hasEllipsis && x instanceof Ellipsis)
