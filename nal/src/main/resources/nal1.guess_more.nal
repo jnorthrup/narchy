@@ -1,0 +1,2 @@
+    (X --> Y), X, task(".") |- (?1 --> Y),   (Punctuation:Question)
+    (Y --> X), X, task(".") |- (Y --> ?1),   (Punctuation:Question)

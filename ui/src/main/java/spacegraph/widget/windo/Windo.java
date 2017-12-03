@@ -3,6 +3,7 @@ package spacegraph.widget.windo;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.tree.rtree.rect.RectFloat2D;
+import spacegraph.Scale;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.input.Finger;
@@ -13,6 +14,7 @@ import spacegraph.math.v2;
 import spacegraph.render.Draw;
 import spacegraph.widget.button.PushButton;
 
+import javax.sound.sampled.Port;
 import java.util.Map;
 
 import static spacegraph.layout.Grid.grid;
@@ -215,6 +217,11 @@ public class Windo extends Widget {
 
     }
 
+    /** gets main content */
+    public Surface get() {
+        return ((Scale)children.get(0)).the;
+    }
+
     @Override
     protected void paintComponent(GL2 gl) {
         paintBack(gl);
@@ -234,7 +241,7 @@ public class Windo extends Widget {
 //        Draw.line(gl, W, 0, W, H);
 //        Draw.line(gl, 0, H, W, H);
 
-        float resizeBorder = Math.max(W, H) * this.resizeBorder;
+//        float resizeBorder = Math.max(W, H) * this.resizeBorder;
 
         DragEdit p;
         if ((p = potentialDragMode) != null) {

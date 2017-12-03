@@ -17,6 +17,7 @@ import nars.term.container.TermContainer;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
+import org.intelligentjava.machinelearning.decisiontree.feature.P;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -461,7 +462,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 //            }
 //        }
 
-        return each.test(event(x, TIMELESS)); //last resort
+        return true; //each.test(event(x, TIMELESS)); //last resort
     }
 
     private boolean solveDT(Term x, Predicate<Event> each, Event aa, Event bb) {
@@ -568,8 +569,11 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             if (e.absolute() && !each.test(e))
                 return;
         }
-//absolutes(x),
-        solveAll(x, each);
+
+        if (solveAll(x, each)) {
+            //as a last resort:
+            each.test(event(x, TIMELESS));
+        }
     }
 
 
@@ -593,25 +597,40 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             if (!xternalsToSolve.isEmpty()) {
 
                 //solve the XTERNAL from simplest to most complex. the canonical sort order of compounds will naturally descend this way
-                return (!Util.andReverse(xternalsToSolve.toArray(new Term[xternalsToSolve.size()]), u ->
+                if (!Util.andReverse(xternalsToSolve.toArray(new Term[xternalsToSolve.size()]), u ->
                         solveDT(u, v -> {
-                            Term w = v.id;
-                            if (w.equals(u))
-                                return true; //skip it, no change
 
+                            Term y = x.replace(u, v.id);
 
-                            //ignore the startTime component, although it might provide a clue here
-                            Term y = x.replace(u, w);
-                            if (!(y instanceof Bool) && !x.equals(y)) {
-                                if (v.start() != TIMELESS && !w.hasXternal()) {
-                                    return !each.test(v);
+                            boolean ye = y.equals(x);
+
+                            if (!(y instanceof Bool)) {
+                                if (!ye) {
+                                    boolean yx = y.hasXternal();
+                                    if (u.equals(x) && !yx) {
+                                        if (v.start() != TIMELESS) {
+                                            return each.test(v); //shortcut to finish
+                                        } else {
+                                            return solveOccurrence(v, each); //only need to solve occurrence
+                                        }
+                                    }
+
+                                    return yx ?
+                                            solveAll(y, each) : //recurse to solve remaning xternal's
+                                            solveOccurrence(event(y, TIMELESS), each); //just need to solve occurrence now
                                 } else {
-                                    return solveAll(y, each); //recurse
+                                    //term didnt change...
+                                    if (v.start()!=TIMELESS) {
+                                        if (!each.test(v)) //but atleast it somehow solved an occurrence time
+                                            return false;
+                                    }
                                 }
+
                             }
-                            return true; //continue
+                            return true; //keep trying
                         })
-                ));
+                ))
+                    return false;
             }
         }
 
@@ -667,18 +686,9 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
      */
     private boolean solveOccurrence(Event x, Predicate<Event> each) {
 
-        if (!each.test(x))
-            return false;
-
-        Term targetTerm = x.id;
-
         return dfs(x, new CrossTimeSolver() {
             @Override
             protected boolean next(BooleanObjectPair<Edge<Event, TimeSpan>> move, Node<Event, TimeSpan> n) {
-
-                //System.out.println(path);
-
-//                Term current = n.id.id;
 
                 if (n.id.absolute()) {
 
@@ -690,13 +700,13 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                             ETERNAL :
                             pathEndTime - pathTime(path, false);
 
-                    return each.test(event(targetTerm, startTime));
+                    return each.test(event(x.id, startTime));
                 }
 
                 return true;
 
             }
-        });
+        }) && each.test(x) /* last resort */;
 
     }
 

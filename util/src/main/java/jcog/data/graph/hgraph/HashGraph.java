@@ -44,6 +44,10 @@ public class HashGraph<N, E> {
         this.nodes = nodes;
     }
 
+    public void clear() {
+        nodes.clear();
+    }
+
     public void print() {
         print(System.out);
     }

@@ -37,7 +37,7 @@ public class Wall extends Stacking {
 //        }
 //    }
 
-    final Map<String, CRectFloat2D> rects = new ConcurrentHashMap();
+    protected final Map<String, CRectFloat2D> rects = new ConcurrentHashMap();
 
 
 

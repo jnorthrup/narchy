@@ -85,11 +85,11 @@ public class IRC extends ListenerAdapter {
         }
     }
 
-    public static void main(String[] args) {
-
-        IRC bot = new IRC("experiment1", "irc.freenode.net", "#123xyz");
-
-    }
+//    public static void main(String[] args) {
+//
+//        IRC bot = new IRC("experiment1", "irc.freenode.net", "#123xyz");
+//
+//    }
 
 
 }

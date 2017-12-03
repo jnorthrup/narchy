@@ -71,9 +71,6 @@
 
     (S --> P), (P --> S) |- (S <-> P), (Belief:Intersection, Goal:Strong)
 
-    (X --> Y), X, task(".") |- (?1 --> Y),   (Punctuation:Question)
-    (Y --> X), X, task(".") |- (Y --> ?1),   (Punctuation:Question)
-
     (X <-> Y), X, task("?") |- Y,   (Punctuation:Question)
     (X <-> Y), X, task("@") |- Y,   (Punctuation:Quest)
 

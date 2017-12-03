@@ -31,6 +31,8 @@
 
 package spacegraph.math;
 
+import spacegraph.phys.BulletGlobals;
+
 /**
  * A 2-element vector that is represented by single-precision floating
  * point x,y coordinates.
@@ -161,6 +163,18 @@ public class v2 extends Tuple2f {
 
     public boolean inUnit() {
         return x >= 0 && x <= 1f && y >= 0 && y <= 1f;
+    }
+
+
+    /**
+     * Normalizes this vector in place.
+     */
+    public final float normalize() {
+        float norm = (float) Math.sqrt(this.x * this.x + this.y * this.y);
+        if (norm >= BulletGlobals.FLT_EPSILON) {
+            set(this.x / norm, this.y / norm);
+        }
+        return norm;
     }
 
     /**

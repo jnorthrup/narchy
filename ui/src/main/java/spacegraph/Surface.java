@@ -184,4 +184,8 @@ abstract public class Surface {
     public Surface visible(boolean b) {
         return b ? show() : hide();
     }
+
+    public float radius() {
+        return Math.max(w(), h());
+    }
 }

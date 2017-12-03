@@ -42,10 +42,14 @@ public abstract class AbstractButton extends Widget {
     protected void paintContent(GL2 gl, float x, float y, float w, float h) {
     }
 
-    public void paintBack(GL2 gl, float x, float y, float w, float h) {
-        float p = pushed / 2f;
+    protected void paintBackColor(GL2 gl) {
         float dim = 1f - (pushed /* + if disabled, dim further */) * 3f;
         gl.glColor3f(0.25f * dim, 0.25f * dim, 0.25f * dim);
+    }
+
+    protected void paintBack(GL2 gl, float x, float y, float w, float h) {
+        paintBackColor(gl);
+        float p = pushed / 2f;
         Draw.rect(gl, x + p, y + p, w - 2 * p, h - 2 * p);
     }
 
