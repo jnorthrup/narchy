@@ -100,8 +100,9 @@ abstract public class NAgentX extends NAgent {
 
     public static NAR runRT(Function<NAR, NAgent> init, float narFPS, float agentFPS) {
 
-        The.Subterms.the =
-            The.Subterms.CaffeineSubtermBuilder.get();
+//        The.Subterms.the =
+//            The.Subterms.CaffeineSubtermBuilder.get();
+
 //        The.Compound.the =
 //            The.Compound.
 //                    SoftCompoundBuilder.get();

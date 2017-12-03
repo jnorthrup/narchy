@@ -415,8 +415,9 @@ public interface NAct {
             float confMin = n.confMin.floatValue();
             float eviMin = c2w(confMin);
             float feedbackConf =
+                    n.confDefault(GOAL);
                     //confMin * 4;
-                    w2c(c2w(n.confDefault(GOAL))/2f);
+                    //w2c(c2w(n.confDefault(GOAL))/2f);
             float curiEvi =
                     //c2w(confBase);
                     eviMin;
@@ -424,7 +425,9 @@ public interface NAct {
             boolean p = action.term().equals(pt);
             int ip = p ? 0 : 1;
             CC[ip] = action;
-            f[ip] = g != null ? g.freq() : 0f;
+            f[ip] = g != null ? g.freq() :
+                    0f;
+                    //0.5f;
             e[ip] = g != null ? g.evi() : 0f;
 
 
@@ -441,19 +444,29 @@ public interface NAct {
                     curious = true;
                 } else {
                     curious = false;
-                    float df;
+
 
                     float eMax = Math.max(e[0], e[1]);
+                    float eMin = Math.min(e[0], e[1]);
                     if (eMax < Float.MIN_NORMAL) {
-                        df = 0;
+                        x = 0;
                     } else {
+
+                        float df;
+
                         df = (f[0]) - (f[1]);
-                        //df *= 1f - Math.abs(e[0] - e[1]) / eMax; //experimental: lessen by a factor of how equally confident each goal is
-                        df *= 1f - Math.min(e[0], e[1]) / eMax; //experimental: lessen by a factor of how equally confident each goal is
-                        //df *= 1f - Math.min(w2cSafe(e[0]), w2cSafe(e[1])) / w2cSafe(eMax); //experimental: lessen by a factor of how equally confident each goal is
+                        //df = (f[0]-0.5f) - (f[1]-0.5f);
+
+                        //experimental: lessen by a factor of how equally confident each goal is
+                        //df *= 1f - Math.abs(e[0] - e[1]) / eMax;
+                        df *= eMin / eMax;
+                        //df *= Util.sqr(eMin / eMax); //more cautious
+                        //df *= Math.min(w2cSafe(e[0]), w2cSafe(e[1])) / w2cSafe(eMax);
+
+                        x = Util.clamp(df, -1f, +1f);
                     }
 
-                    x = Util.clamp(df, -1f, +1f);
+
                 }
 
                 float y = update.valueOf(x); //-1..+1

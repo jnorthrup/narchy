@@ -174,6 +174,23 @@ public class DeriveTime extends TimeGraph {
                 occ[1] = es + st.dtRange();
             }
         }
+//        if (occ[0] != ETERNAL) {
+//            if (st.op()!=CONJ && occ[1]==occ[0]) {
+//                //HACK lengthen non-conjunction to match the non-eternal timing of an eternal + temporal premise
+//                //TODO this should be handled by TimeGraph entirely
+//                Task matchRange = null;
+//                if (belief!=null && !belief.isEternal() && task.isEternal())
+//                    matchRange = belief;
+//                else if (!task.isEternal() && (belief==null || belief.isEternal()))
+//                    matchRange = task;
+//                //else: //TODO use intersection of task and belief
+//                if (matchRange!=null) {
+//                    long l = matchRange.range();
+//                    occ[1] = occ[0] + l;
+//                }
+//
+//            }
+//        }
 
         eternalCheck(occ[0]);
 
