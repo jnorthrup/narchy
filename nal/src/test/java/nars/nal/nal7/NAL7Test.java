@@ -487,6 +487,22 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
+    public void induction_on_events_conj_pos_neg() {
+        /*
+        WRONG ust be @ 1, not 6
+        $.21 ((a &&+5 ((--,a)&|b)) &&+5 (--,b)). 6⋈16 %1.0;.81% {9: 1;2} ((%1,%2,task("."),time(raw),notImpl(%2)),((polarize(%1,task) &&+- polarize(%2,belief)),((IntersectionDepolarized-->Belief))))
+            $.50 (a &&+5 (--,a)). 1⋈6 %1.0;.90% {1: 1} Narsese
+            $.50 (b &&+5 (--,b)). 6⋈11 %1.0;.90% {6: 2} Narsese
+         */
+        test
+                .log()
+                .inputAt(1, "(a &&+5 (--,a)). :|:")
+                .inputAt(6, "(b &&+5 (--,b)). :|:")
+                .mustBelieve(cycles, "((a &&+5 ((--,a)&|b)) &&+5 (--,b))", 1.00f, 0.81f, 1, 11)
+        ;
+    }
+
+    @Test
     public void induction_on_events_neg_pos() {
 
         test

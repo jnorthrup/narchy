@@ -590,11 +590,11 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                             //ignore the startTime component, although it might provide a clue here
                             Term y = x.replace(u, w);
                             if (!(y instanceof Bool) && !x.equals(y)) {
-//                                if (v.start() != TIMELESS && !w.hasXternal()) {
-//                                    return !each.test(v);
-//                                }
-
-                                return solveAll(y, each); //recurse
+                                if (v.start() != TIMELESS && !w.hasXternal()) {
+                                    return !each.test(v);
+                                } else {
+                                    return solveAll(y, each); //recurse
+                                }
                             }
                             return true; //continue
                         })
