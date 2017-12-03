@@ -131,7 +131,7 @@ public class ActivateTest {
     public void testTemplates4() throws Narsese.NarseseException {
         //dont descend past layer 3:
         testTemplates("(open(John,portal:interdimensional) ==> #x)",
-                "[(open(John,(interdimensional-->portal))==>#1), (John,(interdimensional-->portal)), open(John,(interdimensional-->portal)), open]");
+                "[open(John,(interdimensional-->portal)), (open(John,(interdimensional-->portal))==>#1), #1, open, John, (interdimensional-->portal), (John,(interdimensional-->portal))]");
     }
 
     @Test
@@ -206,7 +206,7 @@ public class ActivateTest {
     @Test
     public void testTemplateSimProd1() throws Narsese.NarseseException {
         testTemplates("((a,b)<->#1)",
-                "[(a,b), ((a,b)<->#1)]");
+                "[((a,b)<->#1), #1, (a,b)]");
         testTemplates("(c<->a)",
                 "[(a<->c), a, c]");
     }

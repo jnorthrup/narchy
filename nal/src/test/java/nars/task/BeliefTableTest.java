@@ -190,16 +190,13 @@ public class BeliefTableTest {
         NAR n = NARS.tmp();
 
         n.time.dur(15);
-        n.log();
         n.inputAt(2, "a:x. :|:");
         n.inputAt(10, "a:y. :|:");
         n.run(128);
 
-        assertDuration(n, "a:(x|y)", 6, 6);
-        assertDuration(n, "a:(x&y)", 6, 6);
-        assertDuration(n, "a:(y~x)", 6, 6);
-        assertDuration(n, "a:(x~y)", 6, 6);
-        //assertDuration(n, "(x<->y)", 5, 5);
+        for (String t : new String[]{"a:(x|y)", "a:(x&y)","a:(x~y)","a:(y~x)"} ) {
+            assertDuration(n, t, 2, 10);
+        }
 
         //n.concept("(x-->a)").print();
         //n.concept("(y-->a)").print();

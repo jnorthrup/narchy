@@ -639,7 +639,7 @@ public class Revision {
         public final long unionEnd;
 
         public TaskTimeJoint(long as, long ae, long bs, long be, NAR nar) {
-            int hd = nar.dur()/2;
+            int hd = nar.dur();
             Interval ai = new Interval(as, ae);
             Interval bi = new Interval(bs, be);
 

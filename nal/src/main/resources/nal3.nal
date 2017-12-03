@@ -5,9 +5,10 @@
 //  corresponds to extensional union, and extensional intersection corresponds
 //  to intensional union.
 
-    (P --> M), (S --> M), task("."), notSet(S), notSet(P), neq(S,P) |- ((S | P) --> M), (Belief:Intersection)
-    (P --> M), (S --> M), task("."), notSet(S), notSet(P), neq(S,P) |- ((S & P) --> M), (Belief:Union)
+    (P --> M), (S --> M), task("."), notSet(S), notSet(P), neq(S,P) |- ((P | S) --> M), (Belief:Intersection)
+    (P --> M), (S --> M), task("."), notSet(S), notSet(P), neq(S,P) |- ((P & S) --> M), (Belief:Union)
     (P --> M), (S --> M), task("."), notSet(S), notSet(P), neq(S,P) |- ((P ~ S) --> M), (Belief:Difference)
+    (P --> M), (S --> M), task("."), notSet(S), notSet(P), neq(S,P) |- ((S ~ P) --> M), (Belief:DifferenceReverse)
 
         (P --> M), (S --> M), is(P,"+"), is(S,"+") |- (differ(P,S) --> M), (Belief:Difference)
         ((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((intersect(A,X),intersect(B,Y)) --> M), (Belief:Intersection)
@@ -16,6 +17,7 @@
     (M --> P), (M --> S), task("."), notSet(S), notSet(P), neq(S,P) |- (M --> (P & S)), (Belief:Intersection)
     (M --> P), (M --> S), task("."), notSet(S), notSet(P), neq(S,P) |- (M --> (P | S)), (Belief:Union)
     (M --> P), (M --> S), task("."), notSet(S), notSet(P), neq(S,P) |- (M --> (P - S)), (Belief:Difference)
+    (M --> P), (M --> S), task("."), notSet(S), notSet(P), neq(S,P) |- (M --> (S - P)), (Belief:DifferenceReverse)
 
 
 //raw product composition, may be redundant because general induction via && does the equivalent

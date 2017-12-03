@@ -415,12 +415,12 @@ public interface NAct {
             float confMin = n.confMin.floatValue();
             float eviMin = c2w(confMin);
             float feedbackConf =
-                    n.confDefault(GOAL);
+                    //n.confDefault(GOAL);
                     //confMin * 4;
-                    //w2c(c2w(n.confDefault(GOAL))/2f);
+                    w2c(c2w(n.confDefault(GOAL))/2f);
             float curiEvi =
                     //c2w(confBase);
-                    eviMin;
+                    eviMin*2;
 
             boolean p = action.term().equals(pt);
             int ip = p ? 0 : 1;

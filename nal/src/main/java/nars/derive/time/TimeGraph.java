@@ -17,7 +17,6 @@ import nars.term.container.TermContainer;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
-import org.intelligentjava.machinelearning.decisiontree.feature.P;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -27,7 +26,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.Op.CONJ;
-import static nars.Op.NEG;
 import static nars.derive.time.TimeGraph.Absolute.validate;
 import static nars.derive.time.TimeGraph.TimeSpan.TS_ZERO;
 import static nars.time.Tense.*;
@@ -111,28 +109,31 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
 
     public Event know(Term t, long start) {
-        return event(t, start, (start!=TIMELESS && start != ETERNAL) ?start+t.dtRange():start, true);
+        return event(t, start, true);
     }
 
-    public Event know(Task ta) {
+    public void know(Task ta) {
         Term tt = ta.term();
 
         long start = ta.start();
         long end = ta.end();
         if (end != start && tt.op() != CONJ) {
-            return add(new AbsoluteRange(tt, start, end)).id;
+            //add each endpoint separately
+            event(tt, start, true);
+            event(tt, end, true);
         } else {
-            return event(tt, start, start, true);
+            event(tt, start, true);
         }
 
     }
 
     public Event event(Term t, long start) {
-        return event(t, start, (start!=TIMELESS && start != ETERNAL) ?start+t.dtRange():start, false);
+        return event(t, start, false);
     }
 
-    public Event event(Term t, long start, long end, boolean add) {
-        Event e = newEvent(t, start, end);
+    public Event event(Term t, long when, boolean add) {
+        Event e =
+                when == TIMELESS ? new Relative(t) : new Absolute(t, when);
         return add ? add(e).id : event(e);
     }
 
@@ -141,23 +142,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         return existing != null ? existing.id : e;
     }
 
-    private static Event newEvent(Term t, long start, long end) {
-        assert (!(t instanceof Bool));
 
-        if (start == TIMELESS)
-            return new Relative(t);
-
-        if (end != start && !(t.op() == CONJ && t.dtRange() == end - start)) {
-            //if it's equal to the dtRange encoded in the conj, use the AbsoluteConj instance checked next to avoid storing an additional 'end' field
-            assert (start != ETERNAL);
-            return new AbsoluteRange(t, start, end);
-        } else if (t.op() == CONJ && t.dtRange() != 0) {
-            return new AbsoluteConj(t, start);
-        } else {
-            return new Absolute(t, start);
-        }
-
-    }
 
     public boolean link(Event before, TimeSpan e, Event after) {
         return edgeAdd(add(before), e, add(after));
@@ -165,7 +150,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
     public void link(Event x, long dt, Event y) {
 
-        if (!allowSelfLoops && (x == y || ((x.id.equals(y.id)) && (x.start() == y.start() || x.end() == y.end()))))
+        if (!allowSelfLoops && (x == y || ((x.id.equals(y.id)) && (x.when() == y.when()))))
             return; //loop
 
         boolean swap = false;
@@ -240,7 +225,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 break;
             case CONJ:
                 TermContainer tt = eventTerm.subterms();
-                long et = event.start();
+                long et = event.when();
 
 
                 int s = tt.subs();
@@ -408,9 +393,9 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             for (int ix = 0; ix < subs; ix++) {
                 //assert(!z.hasXternal());
                 solveOccurrence(event(xx.sub(ix), TIMELESS), (ze) -> {
-                    if (ze.start() == TIMELESS)
+                    if (ze.when() == TIMELESS)
                         return true; //keep trying
-                    when.add(pair(ze.start(), ze.id));
+                    when.add(pair(ze.when(), ze.id));
                     return false; //just one, for now //TODO see if there are any others
                 });
             }
@@ -475,22 +460,22 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         long start;
         if (x.op()==CONJ) {
             //earliest first for CONJ, since it will be constructed with conjMerge
-            long astart = aa.start();
-            long bstart = bb.start();
+            long astart = aa.when();
+            long bstart = bb.when();
             if (astart!=TIMELESS && bstart!=TIMELESS) {
                 start = Math.min(astart, bstart);
             } else {
                 start = astart;
             }
         } else {
-            start = aa.start();
+            start = aa.when();
         }
         return solveDT(x, start, dt(x, aa, bb), each);
     }
 
     /** since CONJ will be constructed with conjMerge, if x is conj the dt between events must be calculated from start-start. otherwise it is implication and this is measured internally */
     static long dt(Term x, Event aa, Event bb) {
-        return bb.start() - aa.start();
+        return bb.when() - aa.when();
         //return bb.start() - (x.op() == CONJ ? aa.start() : aa.end());
     }
 
@@ -505,9 +490,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
         return start != TIMELESS ?
                 each.test(
-                        event(y, start,
-                                (start != ETERNAL) ?
-                                        start + y.dtRange() : start, false)
+                        event(y, start, false)
                 )
                 :
                 solveOccurrence(event(y, TIMELESS), each);
@@ -555,7 +538,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
         Predicate<Event> each = y -> {
             if (seen.add(y)) {
-                if (y.start() == TIMELESS && (filterTimeless || x.equals(y.id)))
+                if (y.when() == TIMELESS && (filterTimeless || x.equals(y.id)))
                     return true;
                 else
                     return target.test(y);
@@ -608,7 +591,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                                 if (!ye) {
                                     boolean yx = y.hasXternal();
                                     if (u.equals(x) && !yx) {
-                                        if (v.start() != TIMELESS) {
+                                        if (v.when() != TIMELESS) {
                                             return each.test(v); //shortcut to finish
                                         } else {
                                             return solveOccurrence(v, each); //only need to solve occurrence
@@ -620,7 +603,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                                             solveOccurrence(event(y, TIMELESS), each); //just need to solve occurrence now
                                 } else {
                                     //term didnt change...
-                                    if (v.start()!=TIMELESS) {
+                                    if (v.when()!=TIMELESS) {
                                         if (!each.test(v)) //but atleast it somehow solved an occurrence time
                                             return false;
                                     }
@@ -692,7 +675,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
                 if (n.id.absolute()) {
 
-                    long pathEndTime = n.id.start();
+                    long pathEndTime = n.id.when();
                     BooleanObjectPair<Edge<Event, TimeSpan>> pathStart = path.get(0);
                     Term pathStartTerm = pathStart.getTwo().from(pathStart.getOne()).id.id;
 
@@ -745,9 +728,6 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             for (int i = 0, pathSize = path.size(); i < pathSize; i++) {
                 BooleanObjectPair<Edge<Event, TimeSpan>> r = path.get(i);
                 Edge<Event, TimeSpan> event = r.getTwo();
-                long fromDT = event.from.id.dt();
-                if (fromDT == TIMELESS)
-                    return TIMELESS; //failed path
 
                 long spanDT = event.get().dt;
 
@@ -756,7 +736,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                     if (!eternalAsZero)
                         return ETERNAL;
                 } else if (spanDT != 0) {
-                    t += (spanDT + fromDT) * (r.getOne() ? +1 : -1);
+                    t += (spanDT) * (r.getOne() ? +1 : -1);
                 }
             }
 
@@ -789,8 +769,8 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 if ((endA && startTerm.equals(b)) || (endB && startTerm.equals(a))) {
 
 
-                    long startTime = startEvent.absolute() ? startEvent.start() : TIMELESS;
-                    long endTime = endEvent.absolute() ? endEvent.start() : TIMELESS;
+                    long startTime = startEvent.absolute() ? startEvent.when() : TIMELESS;
+                    long endTime = endEvent.absolute() ? endEvent.when() : TIMELESS;
 
                     long dt;
                     if (startTime != TIMELESS && startTime != ETERNAL && endTime != TIMELESS && endTime != ETERNAL) {
@@ -870,24 +850,17 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     /**
      * absolutely specified event
      */
-    public abstract static class Event /*extends Find<ObjectLongPair<T>>*/ {
+    public abstract static class Event {
 
         public final Term id;
         private final int hash;
 
-        protected Event(Term id, long start, long end) {
+        protected Event(Term id, long start) {
             this.id = id;
-            this.hash = Util.hashCombine(id.hashCode(), Long.hashCode(start), Long.hashCode(end));
+            this.hash = Util.hashCombine(id.hashCode(), Long.hashCode(start));
         }
 
-        abstract public long start();
-
-        abstract public long end();
-
-        public long dt() {
-            long s = start();
-            return ((s == ETERNAL) || (s == TIMELESS)) ? 0 : (end() - s);
-        }
+        abstract public long when();
 
         @Override
         public final int hashCode() {
@@ -898,7 +871,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         public final boolean equals(Object obj) {
             if (this == obj) return true;
             Event e = (Event) obj;
-            return start() == e.start() && id.equals(e.id) && end() == e.end();
+            return hash == e.hash && when() == e.when() && id.equals(e.id);
         }
 
         //        public float pri() {
@@ -908,25 +881,24 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
         @Override
         public final String toString() {
-            long s = start();
+            long s = when();
 
             if (s == TIMELESS) {
                 return id.toString();
             } else if (s == ETERNAL) {
                 return id + "@ETE";
             } else {
-                long e = end();
-                return id + "@" + (s == e ? s : "[" + s + ".." + e + ']');
+                return id + "@" + s;
             }
         }
 
         public final boolean absolute() {
-            return start() != TIMELESS;
+            return when() != TIMELESS;
         }
     }
 
     static class Absolute extends Event {
-        protected final long start;
+        protected final long when;
 
         static final long SAFETY_PAD = 32 * 1024;
 
@@ -937,73 +909,19 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 throw new MathArithmeticException();
         }
 
-        private Absolute(Term t, long startAndEnd) {
-            super(t, startAndEnd, startAndEnd);
-            validate(startAndEnd);
-            this.start = startAndEnd;
+        private Absolute(Term t, long when) {
+            super(t, when);
+            validate(when);
+            this.when = when;
         }
 
         @Override
-        public final long start() {
-            return start;
+        public final long when() {
+            return when;
         }
 
-        @Override
-        public long end() {
-            return start;
-        }
     }
 
-    static class AbsoluteConj extends Event {
-
-        private final long start;
-        private final int dt;
-
-        protected AbsoluteConj(Term t, long start) {
-            super(t, start, start + t.dtRange());
-            validate(start);
-            assert (t.op() == CONJ);
-            this.start = start;
-            this.dt = t.dtRange();
-        }
-
-        @Override
-        public long dt() {
-            return dt;
-        }
-
-        @Override
-        public long start() {
-            return start;
-        }
-
-        @Override
-        public long end() {
-            return (start != ETERNAL && start != TIMELESS) ? start + id.dtRange() : start;
-        }
-    }
-
-    public static class AbsoluteRange extends Event {
-        private final long start, end;
-
-        public AbsoluteRange(Term t, long start, long end) {
-            super(t, start, end);
-            assert (start != end);
-            //assert( t.op()!=CONJ ); //if there is a range and it's a CONJ it should have been created with AbsoluteConj
-            this.start = start;
-            this.end = end;
-        }
-
-        @Override
-        public final long start() {
-            return start;
-        }
-
-        @Override
-        public final long end() {
-            return end;
-        }
-    }
 
     /**
      * floating, but potentially related to one or more absolute event
@@ -1011,66 +929,15 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     public static class Relative extends Event {
 
         public Relative(Term id) {
-            super(id, TIMELESS, TIMELESS);
+            super(id, TIMELESS);
         }
 
         @Override
-        public final long start() {
+        public final long when() {
             return TIMELESS;
         }
 
-        @Override
-        public final long end() {
-            return TIMELESS;
-        }
     }
-
-//    /**
-//     * holds an attached solution-specific table of event times;
-//     * instances of Unsolved shouldnt be inserted
-//     */
-//    protected static class Unsolved extends Relative {
-//        public final Map<Term, LongSet> absolute;
-//
-//        public Unsolved(Term x, Map<Term, LongSet> absolute) {
-//            super(x);
-//            this.absolute = absolute;
-//        }
-//
-//        @Override
-//        public long dt() {
-//            return TIMELESS;
-//        }
-//
-//
-//        //        /* hack */
-////        static final String ETERNAL_STRING = Long.toString(ETERNAL);
-////
-////        @Override
-////        public String toString() {
-////            return id + "?" +
-////                    (absolute.toString().replace(ETERNAL_STRING, "ETE")); //HACK
-////        }
-//
-//    }
 
 
 }
-
-//        Stream<Event<Term>> src = a.entrySet().stream().flatMap(aa -> {
-//            Term aaa = aa.getKey();
-//            if (aa.getValue() == EMPTY_LONG_SET)
-//                return byTerm.get(aaa).stream();
-//            else
-//                return Stream.empty();
-//        });
-
-//Relative target = (Relative) know(targetTerm);  //add the target to the graph
-
-//find paths from the KNOWN to the UNKNOWN
-//        List<Event<Term>> as = a.keySet().stream().flatMap(x -> byTerm.get(x).stream()).collect(toList());
-
-//List<Event<Term>> as = Lists.newArrayList(
-//byTerm.get(aa)
-//Iterables.filter(byTerm.get(aa), Event::absolute));
-

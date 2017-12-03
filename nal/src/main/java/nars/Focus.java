@@ -28,7 +28,7 @@ public class Focus {
     /**
      * temporal granularity unit, in seconds
      */
-    public static final float JIFFY = 0.0005f;
+    public static final float JIFFY = 0.001f;
 
     private final Bag<Causable, ProcLink> can;
 

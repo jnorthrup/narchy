@@ -244,6 +244,13 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
+    DifferenceReverse() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return TruthFunctions.difference(B, T, minConf);
+        }
+    },
+
     Analogy() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {

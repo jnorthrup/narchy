@@ -1,7 +1,6 @@
 package nars.derive.time;
 
 import jcog.math.Interval;
-import jcog.pri.Pri;
 import nars.Op;
 import nars.Task;
 import nars.control.Derivation;
@@ -149,14 +148,14 @@ public class DeriveTime extends TimeGraph {
             return solveRaw(pattern);
         }
 
-        long es = event.start();
+        long es = event.when();
         Term st = event.id;
         if (es == TIMELESS) {
             return solveRaw(st);
         }
 
         occ[0] = es;
-        occ[1] = event.end();
+        occ[1] = es + (es!=ETERNAL ? st.dtRange() : 0);
 
         if (es == ETERNAL) {
             if (task.isEternal() && (belief==null || belief.isEternal())) {
@@ -267,9 +266,9 @@ public class DeriveTime extends TimeGraph {
         if (bt.hasXternal() && !at.hasXternal())
             return a;
 
-        long bstart = b.start();
+        long bstart = b.when();
         if (bstart != TIMELESS) {
-            long astart = a.start();
+            long astart = a.when();
             if (astart == TIMELESS)
                 return b;
 
