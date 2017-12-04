@@ -479,6 +479,8 @@ public interface NAct {
                     //y: (-1..+1)
                     float yp = y >= 0 ? y : 0;
                     float yn = y >= 0 ? 0 : -y;
+                    //float yp = y >= 0 ? 0.5f + y/2f : 0.5f - y/2f;
+                    //float yn = y >= 0 ? 0.5f - y/2f : 0.5f + y/2f;
 
                     //float yf = (y / 2f)+0.5f; //0..+1
 

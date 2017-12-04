@@ -58,8 +58,12 @@ public class Int implements Intlike {
     }
 
 
-    protected Int(int i) {
+    protected Int(int id, byte[] bytes) {
+        this.id = id;
+        this.bytesCached = bytes;
+    }
 
+    protected Int(int i) {
         this.id = i;
 
         byte[] b = new byte[6];
@@ -68,6 +72,7 @@ public class Int implements Intlike {
         Util.int2Bytes(id, b, 2);
         this.bytesCached = b;
     }
+
 
     @Override
     public byte[] bytes() {
@@ -262,12 +267,14 @@ public class Int implements Intlike {
             if (b instanceof IntRange) {
                 IntRange bb = (IntRange) b;
                 if (contains(bb)) {
-                    throw new TODO();
+                    if (Param.DEBUG)
+                        throw new TODO();
                 }
             } else if (b instanceof Int) {
                 Int bb = (Int) b;
                 if (contains(bb)) {
-                    throw new TODO();
+                    if (Param.DEBUG)
+                        throw new TODO();
                 }
             }
             return Null;

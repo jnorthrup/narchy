@@ -38,28 +38,33 @@
 package jcog.data;
 
 import java.util.ListIterator;
+import java.util.Random;
 import java.util.Set;
-
-import com.google.common.annotations.Beta;
 
 /**
  * A {@link Set} interface enriched with random access methods and a list iterator.
  * @author braz
  *
- * @param <E> the type of the elements.
+ * @param <X> the type of the elements.
  * from: https://github.com/aic-sri-international/aic-util/blob/master/src/main/java/com/sri/ai/util/collect/ArraySet.java
  */
-public interface ArraySet<E> extends Set<E> {
+public interface ArraySet<X> extends Set<X> {
 
-	ListIterator<E> listIterator();
+	ListIterator<X> listIterator();
 
-	ListIterator<E> listIterator(int index);
+	ListIterator<X> listIterator(int index);
 
-	E get(int index);
+	X get(int index);
 
 //	void set(int index, E element);
 
-	default E first() {
+	default X first() {
 		return isEmpty() ? null : get(0);
+	}
+
+	default X get(Random random) {
+		int s = size();
+		if (s == 0) return null;
+		return get(random.nextInt(s));
 	}
 }

@@ -209,13 +209,13 @@ public class Derivation extends Unify {
                 intersect.the,
                 nar.get(Atomic.the("dropAnyEvent")),
                 nar.get(Atomic.the("dropAnySet")),
-                nar.get(Atomic.the("conjEvent")),
-                nar.get(Atomic.the("conjDropIfEarliest")),
-                nar.get(Atomic.the("ifConjCommNoDepVars")),
                 nar.get(Atomic.the("without")),
+                nar.get(Atomic.the("conjWithout")),
+                nar.get(Atomic.the("conjDropIfEarliest")),
+                nar.get(Atomic.the("conjEvent")),
+                nar.get(Atomic.the("ifConjCommNoDepVars")),
                 nar.get(Atomic.the("indicesOf")),
                 nar.get(Atomic.the("substDiff")),
-
         };
     }
 

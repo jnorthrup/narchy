@@ -65,7 +65,7 @@ public class CurveBag<X extends Priority> extends PriArrayBag<X> {
         restart:
         while (true) {
             final Object[] map = this.items.list;
-            final int s = size();
+            final int s = Math.min(size(), map.length);
             if (s <= 0)
                 return this;
 

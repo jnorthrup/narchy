@@ -23,12 +23,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class Focus {
 
-    public static final int WORK_BATCH_SIZE = 4;
+    public static final int WORK_BATCH_SIZE = 2;
 
     /**
      * temporal granularity unit, in seconds
      */
-    public static final float JIFFY = 0.002f;
+    public static final float JIFFY = 0.001f;
 
     private final FastCoWList<Causable> can;
 
@@ -244,7 +244,7 @@ public class Focus {
     }
 
     private float weight(Causable c) {
-        final float TEMPERATURE = 0.5f;
+        final float TEMPERATURE = 1f;
         return (float) Math.exp(c.value() * TEMPERATURE);
     }
 

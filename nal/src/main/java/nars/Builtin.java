@@ -376,8 +376,31 @@ public class Builtin {
             return c.sub(target);
         }));
 
+        /** similar to without() but special handling for CONJ sub-events */
+        nar.on(Functor.f2((Atom) $.the("conjWithout"), (Term conj, Term event) -> {
+            if (conj.op() != CONJ || conj.impossibleSubTerm(event))
+                return Null;
+            if (conj.dt() != DTERNAL) {
+                FastList<LongObjectPair<Term>> events = conj.eventList();
+                int found = -1;
+                int es = events.size();
+                assert(es>1);
+                for (int i = 0; i < es; i++) {
+                    if (events.get(i).getTwo().equals(event)) {
+                        found = i;
+                        break;
+                    }
+                }
+                if (found == -1)
+                    return Null;
+                events.remove(found);
+                return Op.conj(events);
+            } else {
+                return Op.without(conj, event);
+            }
+        }));
         nar.on(Functor.f2((Atom) $.the("conjDropIfEarliest"), (Term conj, Term event) -> {
-            if (conj.op() != CONJ || conj.subTimeSafe(event) != 0)
+            if (conj.op() != CONJ || conj.impossibleSubTerm(event))
                 return Null;
             if (conj.dt() != DTERNAL) {
                 FastList<LongObjectPair<Term>> events = conj.eventList();

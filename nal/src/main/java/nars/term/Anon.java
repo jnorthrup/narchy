@@ -4,7 +4,9 @@ import jcog.Util;
 import jcog.list.FasterList;
 import nars.Op;
 import nars.Task;
+import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.atom.AtomicConst;
 import nars.term.atom.Int;
 import nars.term.container.TermVector;
 import nars.term.transform.CompoundTransform;
@@ -31,8 +33,8 @@ public class Anon {
         final static int MAX_ANOM = 127;
         final static int ANOM = Term.opX(ATOM, 0);
 
-        Anom(int i) {
-            super(i);
+        Anom(byte i) {
+            super(i, AtomicConst.bytes(ATOM, i));
         }
 
         @Override
@@ -73,7 +75,7 @@ public class Anon {
             //return super.compareTo(yy);
         }
 
-        static Anom[] cached = Util.map(0, MAX_ANOM, Anom::new, Anom[]::new);
+        static Anom[] cached = Util.map(0, MAX_ANOM, (i)->new Anom((byte)i), Anom[]::new);
 
         public static Anom the(int i) {
             return cached[i];

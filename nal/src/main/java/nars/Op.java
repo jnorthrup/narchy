@@ -1281,8 +1281,10 @@ public enum Op {
 
 
     private static Term differ(/*@NotNull*/ Op op, Term... t) {
-        if (op == DIFFe && t.length == 2 && t[0] instanceof Int.IntRange && t[1] instanceof Intlike) {
-            return ((Int.IntRange)t[0]).subtract(t[1]);
+        if (op == DIFFe && t.length == 2 && t[0] instanceof Int.IntRange && t[1].op()==INT) {
+            Term simplified = ((Int.IntRange)t[0]).subtract(t[1]);
+            if (simplified!=Null)
+                return simplified;
         }
 
         //TODO product 1D, 2D, etc unwrap
@@ -1339,8 +1341,11 @@ public enum Op {
                 return Null;
             else {
                 Term aMinB = ((Int.IntRange) a).subtract(b);
-                if (a.equals(aMinB))
-                    return Null; //
+                if (aMinB!=Null) {
+                    if (a.equals(aMinB))
+                        return Null; //
+                    return aMinB;
+                }
             }
         }
 
@@ -1965,7 +1970,9 @@ public enum Op {
 
     public static Term without(Term container, Term content) {
 
-        if (container.op().commutative) {
+        Op co = container.op();
+        if (co.commutative) {
+
             TermContainer cs = container.subterms();
 
             int z = cs.subs();
@@ -1979,7 +1986,7 @@ public enum Op {
                         case 1:
                             return s.first();
                         default:
-                            return container.op().the(container.dt(), s);
+                            return co.the(container.dt(), s);
                     }
                 }
             }

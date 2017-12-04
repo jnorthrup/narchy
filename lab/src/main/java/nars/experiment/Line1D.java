@@ -7,6 +7,7 @@ import jcog.math.FloatSupplier;
 import jcog.net.MeshOptimize;
 import jcog.optimize.Optimize;
 import nars.*;
+import nars.control.MetaGoal;
 import nars.gui.Vis;
 import nars.task.DerivedTask;
 import nars.test.agent.Line1DSimplest;
@@ -71,7 +72,9 @@ public class Line1D {
 //            }
             //n.freqResolution.set(0.5f);
             //n.confResolution.set(0.1f);
-            n.termVolumeMax.set(12);
+            n.termVolumeMax.set(16);
+            MetaGoal.Desire.want(n.want, 15f);
+            MetaGoal.Action.want(n.want, 15f);
 
 
 //            ConjClustering conjClusterB = new ConjClustering(n, 4, BELIEF, true, 16, 64);
@@ -181,8 +184,8 @@ public class Line1D {
             exp.floatValueOf(n);
 
 
-            n.time.dur(3);
-            exp.agent.curiosity.set(0f);
+            n.time.dur(10);
+            exp.agent.curiosity.set(0.1f);
             exp.agent.runDur(1);
 
             //n.truthResolution.setValue(0.25f);
@@ -197,7 +200,7 @@ public class Line1D {
 
             //n.start();
             //n.run(10000);
-            n.startFPS(32f);
+            n.startFPS(100f);
 
             n.concepts().forEach(x -> {
 //                if (x.op() == IMPL) {

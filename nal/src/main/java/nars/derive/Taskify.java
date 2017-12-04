@@ -46,7 +46,14 @@ public class Taskify extends AbstractPred<Derivation> {
     public boolean test(Derivation d) {
 
         Term x = d.derivedTerm.get();
-        x = d.anon.get(x).normalize();
+        Term xx = d.anon.get(x);
+        if (xx == null) {
+            d.anon.get(x); //HACK temporary for debug
+            throw new NullPointerException();
+        }
+        x = xx.normalize();
+        if (x == null) //HACK temporary for debug
+            throw new NullPointerException();
 
         long[] occ = d.concOcc;
         byte punc = d.concPunc;

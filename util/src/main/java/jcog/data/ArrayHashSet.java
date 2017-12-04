@@ -47,28 +47,28 @@ import jcog.list.FasterList;
  * but with the extra advantage of offering an iterator that is actually a {@link java.util.ListIterator}.
  * @author braz
  *
- * @param <E> the type of the elements
+ * @param <X> the type of the elements
  *
  * from: https://github.com/aic-sri-international/aic-util/blob/master/src/main/java/com/sri/ai/util/collect/ArrayHashSet.java
  */
-public class ArrayHashSet<E> extends AbstractSet<E> implements ArraySet<E> {
+public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
-	private HashSet<E>   set;
-	private List<E> list;
+	private HashSet<X>   set;
+	private List<X> list;
 
 	final static List EMPTY = List.of();
 	
 	public ArrayHashSet() {
-		this.set  = new HashSet<E>();
+		this.set  = new HashSet<X>();
 		this.list = EMPTY;//new ArrayList<E>();
 	}
 	
 	public ArrayHashSet(int capacity) {
-		this.set  = new HashSet<E>(capacity);
+		this.set  = new HashSet<X>(capacity);
 		this.list = EMPTY; //new ArrayList<E>(capacity);
 	}
 	
-	public ArrayHashSet(Collection<E> collection) {
+	public ArrayHashSet(Collection<X> collection) {
 		this();
 		addAll(collection);
 	}
@@ -76,17 +76,17 @@ public class ArrayHashSet<E> extends AbstractSet<E> implements ArraySet<E> {
 	// ArraySet methods
 	
 	@Override
-	public ListIterator<E> listIterator() {
+	public ListIterator<X> listIterator() {
 		return list.listIterator();
 	}
 
 	@Override
-	public ListIterator<E> listIterator(int index) {
+	public ListIterator<X> listIterator(int index) {
 		return list.listIterator(index);
 	}
 
 	@Override
-	public E get(int index) {
+	public X get(int index) {
 		return list.get(index);
 	}
 
@@ -102,7 +102,7 @@ public class ArrayHashSet<E> extends AbstractSet<E> implements ArraySet<E> {
 	// required implementations
 	
 	@Override
-	public boolean add(E element) {
+	public boolean add(X element) {
 		boolean modified = set.add(element);
 		if (modified) {
 			if (list ==EMPTY)
@@ -113,7 +113,7 @@ public class ArrayHashSet<E> extends AbstractSet<E> implements ArraySet<E> {
 	}
 
 	@Override
-	public Iterator<E> iterator() {
+	public Iterator<X> iterator() {
 		return list.listIterator();
 	}
 
@@ -164,6 +164,8 @@ public class ArrayHashSet<E> extends AbstractSet<E> implements ArraySet<E> {
 	public boolean isEmpty() {
 		return list==EMPTY;
 	}
+
+
 
 	// end of methods not required to be implemented, but more efficient
 

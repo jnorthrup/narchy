@@ -90,6 +90,7 @@ public class NAL8Test extends NALTest {
     public void subgoal_2() {
 
         test
+                .log()
                 .input("(hold(SELF,{t002}) &&+5 (at(SELF,{t001}) && open({t001})))! :|:")
                 .mustGoal(cycles, "hold(SELF,{t002})", 1.0f, 0.81f, 0)
                 .mustNotOutput(cycles, "hold(SELF,{t002})", GOAL, ETERNAL);

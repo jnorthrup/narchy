@@ -584,6 +584,8 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                         solveDT(u, v -> {
 
                             Term y = x.replace(u, v.id);
+                            if (y == null)
+                                return true; //continue
 
                             boolean ye = y.equals(x);
 

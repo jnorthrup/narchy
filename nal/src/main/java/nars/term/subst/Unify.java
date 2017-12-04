@@ -283,6 +283,9 @@ public abstract class Unify extends Versioning implements Subst {
     public final boolean putXY(final /*@NotNull*/ Term x, final /*@NotNull*/ Term y) {
 //        assert(!x0.equals(y)): "attempted to explicitly create a cycle";
 
+        if (y.containsRecursively(x))
+            return false; //cyclic
+
         Term y0 = xy(x);
 
         if (y0 != null) {
@@ -416,8 +419,7 @@ public abstract class Unify extends Versioning implements Subst {
                 for (int i = 0; i < s; i++) {
                     MatchConstraint cc = constraints.get(i);
                     if (cc==null)
-                        throw new RuntimeException("fix");
-                    assert(cc!=null);
+                        throw new RuntimeException("fix"); //???
                     if (cc.invalid(x, Unify.this))
                         return false;
                 }
