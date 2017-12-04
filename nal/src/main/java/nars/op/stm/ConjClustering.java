@@ -1,5 +1,7 @@
 package nars.op.stm;
 
+import com.google.common.collect.Iterators;
+import com.google.common.collect.PeekingIterator;
 import jcog.Util;
 import jcog.list.FasterList;
 import jcog.pri.VLink;
@@ -18,13 +20,14 @@ import nars.truth.Truth;
 import nars.util.BudgetFunctions;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
-import org.eclipse.collections.api.tuple.primitive.ObjectLongPair;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -62,6 +65,7 @@ public class ConjClustering extends Causable {
     private long now;
     private float freqRes, confRes, confMin;
     private int volMax;
+    private final static Logger logger = LoggerFactory.getLogger(ConjClustering.class);
 
     public ConjClustering(NAR nar, int maxConjSize, byte punc, boolean includeNeg, int centroids, int capacity) {
         super(nar);
@@ -74,7 +78,8 @@ public class ConjClustering extends Causable {
         nar.onTask(t -> {
             if (!t.isEternal() && t.punc() == punc && (includeNeg || t.isPositive())) {
                 bag.put(t,
-                        t.priElseZero()
+                        t.priElseZero() * (1f / t.volume()) //prefer smaller events
+                        //t.priElseZero()
                         //(1f + t.expolarity()) * (1f + t.conf())
                 );
                 //* (1f + t.priElseZero()));// / t.volume());
@@ -82,7 +87,8 @@ public class ConjClustering extends Causable {
         });
     }
 
-    private int tasksCreated, taskLimit;
+    private int tasksCreated, taskLimitPerCentroid;
+
 
     @Override
     protected int next(NAR nar, int work) {
@@ -94,162 +100,200 @@ public class ConjClustering extends Causable {
         confMin = nar.confMin.floatValue();
         this.volMax = nar.termVolumeMax.intValue();
 
-        taskLimit = work;
+        taskLimitPerCentroid = work;
         tasksCreated = 0;
 
-        bag.commitGroups(1, nar, this::conjoin);
+        bag.commitGroups(1, nar, this::conjoinCentroid);
+
+        /* decrease cluster bag vlink priority by at least as much as the priority lost by the task during conjing
+           helps ensures fair induction of new items and replacement of processed items (which can remain indefinitely)*/
+        bag.bag.commit(t -> {
+            float pp = t.id.pri();
+            if (pp == pp)
+                t.priMin(pp);
+            else
+                t.delete();
+        });
 
         return tasksCreated;
     }
 
-    /**
-     * produces a parallel conjunction term consisting of all the task's terms
-     */
-    public Stream<List<Task>> chunk(Stream<Task> input, int maxComponentsPerTerm, int maxVolume) {
-        final int[] group = {0};
-        final int[] subterms = {0};
-        final int[] currentVolume = {0};
-        final float[] currentConf = {1};
-        return input.filter(x -> !x.isDeleted())
-                .collect(Collectors.groupingBy(x -> {
+//    /**
+//     * produces a parallel conjunction term consisting of all the task's terms
+//     */
+//    public Stream<List<Task>> chunk(Stream<Task> input, int maxComponentsPerTerm, int maxVolume) {
+//        final int[] group = {0};
+//        final int[] subterms = {0};
+//        final int[] currentVolume = {0};
+//        final float[] currentConf = {1};
+//        return input.filter(x -> !x.isDeleted())
+//                .collect(Collectors.groupingBy(x -> {
+//
+//                    int v = x.volume();
+//                    float c = x.conf();
+//
+//                    if ((subterms[0] >= maxComponentsPerTerm) || (currentVolume[0] + v >= maxVolume) || (currentConf[0] * c < confMin)) {
+//                        //next group
+//                        group[0]++;
+//                        subterms[0] = 1;
+//                        currentVolume[0] = v;
+//                        currentConf[0] = c;
+//                    } else {
+//                        subterms[0]++;
+//                        currentVolume[0] += v;
+//                        currentConf[0] *= c;
+//                    }
+//
+//                    return group[0];
+//                }))
+//                .entrySet().stream()
+//                .map(c -> {
+//                    List<Task> v = c.getValue();
+//                    return c.getKey() >= 0 && //only batches of >1
+//                            v.size() > 1 ? v : null;  //ignore the -1 discard group
+//                })
+//                .filter(Objects::nonNull);
+//
+//    }
 
-                    int v = x.volume();
-                    float c = x.conf();
+//    static final BiFunction<Task, Task, Task> termPointMerger = (prevZ, newZ) -> ((prevZ == null) || (newZ.conf() >= prevZ.conf())) ?
+//            newZ : prevZ;
 
-                    if ((subterms[0] >= maxComponentsPerTerm) || (currentVolume[0] + v >= maxVolume) || (currentConf[0] * c < confMin)) {
-                        //next group
-                        group[0]++;
-                        subterms[0] = 1;
-                        currentVolume[0] = v;
-                        currentConf[0] = c;
-                    } else {
-                        subterms[0]++;
-                        currentVolume[0] += v;
-                        currentConf[0] *= c;
-                    }
-
-                    return group[0];
-                }))
-                .entrySet().stream()
-                .map(c -> {
-                    List<Task> v = c.getValue();
-                    return c.getKey() >= 0 && //only batches of >1
-                            v.size() > 1 ? v : null;  //ignore the -1 discard group
-                })
-                .filter(Objects::nonNull);
-
-    }
-
-    static final BiFunction<Task, Task, Task> termPointMerger = (prevZ, newZ) -> ((prevZ == null) || (newZ.conf() >= prevZ.conf())) ?
-            newZ : prevZ;
-
-    final Predicate<Object> kontinue = (l) -> tasksCreated < taskLimit;
-
-    private void conjoin(Stream<VLink<Task>> group, NAR nar) {
+    private void conjoinCentroid(Stream<VLink<Task>> group, NAR nar) {
 
         //get only the maximum confidence task for each term at its given starting time
 
-        in.input(chunk(group.filter(Objects::nonNull).takeWhile(kontinue)
-                        .map(x -> x.id), maxConjSize, volMax).takeWhile(kontinue).map(tasks -> {
+        //in.input(
+        //chunk(group.filter(Objects::nonNull).takeWhile(kontinue)
+        //.map(x -> x.id), maxConjSize, volMax).takeWhile(kontinue).map(tasks -> {
 
-                    Map<LongObjectPair<Term>, Task> vv = new HashMap<>(tasks.size());
+        List<ITask> gen = new FasterList();
 
-                    long end = Long.MIN_VALUE;
-                    long start = Long.MAX_VALUE;
+        Iterator<VLink<Task>> gg =
+                group.filter(x -> x != null && !x.isDeleted()).iterator();
+                //Iterators.peekingIterator();
 
 
-                    float freq = 1f;
-                    float conf = 1f;
-                    float priMax = Float.NEGATIVE_INFINITY, priMin = Float.POSITIVE_INFINITY;
-                    for (Task x : tasks) {
-                        Term xt = x.term();
+        Map<LongObjectPair<Term>, Task> vv = new HashMap<>();
+        FasterList<Task> actualTasks = new FasterList();
 
-                        long zs = x.start();
-                        long ze = x.end();
-                        if (start > zs) start = zs;
-                        if (end < ze) end = ze;
-                        assert (end >= start);
+        main: while (gen.size() < taskLimitPerCentroid) {
 
-                        Truth tx = x.truth();
-                        if (tx.isNegative()) {
-                            xt = xt.neg();
-                        }
+            vv.clear();
+            actualTasks.clear();
 
-                        vv.merge(pair(zs,xt), x, termPointMerger);
-                        if (ze != zs)
-                            vv.merge(pair(ze,xt), x, termPointMerger); //end point, if different from start
+
+            long end = Long.MIN_VALUE;
+            long start = Long.MAX_VALUE;
+
+
+            float freq = 1f;
+            float conf = 1f;
+            float priMax = Float.NEGATIVE_INFINITY, priMin = Float.POSITIVE_INFINITY;
+            int vol = 0;
+
+            do {
+                if (!gg.hasNext())
+                    break main;
+
+                Task t =
+                        gg.next().id;
+                        //gg.peek().id;
+                Term xt = t.term();
+
+                long zs = t.start();
+                long ze = t.end();
+                if (start > zs) start = zs;
+                if (end < ze) end = ze;
+                assert (end >= start);
+
+                Truth tx = t.truth();
+                Term xtn = xt.neg();
+                if (tx.isNegative()) {
+                    xt = xtn;
+                }
+
+                int xtv = xt.volume();
+                if (vol + xtv + 1 >= volMax || conf * tx.conf() < confMin) {
+                    continue; //cant go any further with this task
+                }
+
+                boolean involved = false;
+                LongObjectPair<Term> ps = pair(zs, xt);
+                if (!vv.containsKey(pair(zs, xt.neg())) && null == vv.putIfAbsent(ps, t)) {
+                    vol += xtv;
+                    involved = true;
+                }
+
+                if (ze != zs) {
+                    LongObjectPair<Term> pe = pair(ze, xt);
+                    if (!vv.containsKey(pair(ze, xt.neg())) && null == vv.putIfAbsent(pe, t)) { //end point, if different from start
+                        vol += xtv;
+                        involved = true;
                     }
+                }
 
-                    int vs = vv.size();
-                    if (vs < 2)
-                        return null;
+                if (involved) {
 
-                    //the tasks which are actually involved
-                    HashSet<Task> actualTasks = new HashSet<>(vv.values());
-                    for (Task x : actualTasks) {
-                        Truth tx = x.truth();
-                        conf *= tx.conf();
-                        if (conf < confMin)
-                            return null;
+                    actualTasks.add(t);
 
-                        float p = x.priElseZero();
-                        if (p < priMin) priMin = p;
-                        if (p > priMax) priMax = p;
+                    conf *= tx.conf();
 
+                    float tf = tx.freq();
+                    freq *= tx.isNegative() ? (1f - tf) : tf; //since it will appear as a negated subterm
 
-                        float tf = tx.freq();
-                        if (tx.isNegative()) {
-                            freq *= (1f - tf); //since it will appear as a negated subterm
-                        } else {
-                            freq *= tf;
-                        }
-                    }
+                    float p = t.priElseZero();
+                    if (p < priMin) priMin = p;
+                    if (p > priMax) priMax = p;
+
+                }
+            } while (vol < volMax - 1 && conf > confMin);
+
+            int vs = actualTasks.size();
+            if (vs < 2)
+                continue;
+
+            //the tasks which are actually involved
 
 
-                    Task[] uu = actualTasks.toArray(new Task[actualTasks.size()]);
+            Task[] uu = actualTasks.toArrayRecycled(Task[]::new);
 
-                    //List<LongObjectPair<Term>> pp = $.newArrayList(uu.length);
-//                    int vol = 0;
-//                    for (Task x : uu) {
-//
-//
-//                        vol += tt.volume();
-//                        if (vol > volMax)
-//                            return null;
-//
-//                    }
+            //TODO discount based on evidential overlap? needs N-way overlapFraction function
 
-                    //TODO discount based on evidential overlap? needs N-way overlapFraction function
+            PreciseTruth t = $.t(freq, conf).dither(freqRes, confRes, confMin, 1f);
+            if (t != null) {
 
-                    PreciseTruth t = $.t(freq, conf).dither(freqRes, confRes, confMin, 1f);
-                    if (t != null) {
+                Term cj = Op.conj(new FasterList(vv.keySet())).normalize();
+                ObjectBooleanPair<Term> cp = Task.tryContent(cj, punc, true);
+                if (cp != null) {
 
-                        @Nullable ObjectBooleanPair<Term> cp = Task.tryContent(Op.conj(new FasterList(vv.keySet())), punc, true);
-                        if (cp != null) {
+                    long[] evidence = Stamp.zip(uu, Param.STAMP_CAPACITY);
+                    NALTask m = new STMClusterTask(cp, t, start, end, evidence, punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
+
+                    m.cause = Cause.zip(nar.causeCapacity.intValue(), uu);
+
+                    float pri =
+                            //priMax;
+                            //priMin;
+                            (priMin + priMax) / 2f;
+
+                    m.priSet(BudgetFunctions.fund(pri, true, uu));
+                    tasksCreated++;
+                    gen.add(m);
+                } else {
+                    //Task.tryContent(cj, punc, true);
+                    //logger.warn("{} failed", this);
+                }
+
+            }
 
 
-                            int uuLen = uu.length;
-                            long[] evidence = Stamp.zip(uu, Param.STAMP_CAPACITY);
-                            NALTask m = new STMClusterTask(cp, t, start, end, evidence, punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
+        }
 
-                            m.cause = Cause.zip(nar.causeCapacity.intValue(), uu);
-
-                            float pri =
-                                    //priMax;
-                                    //priMin;
-                                    (priMin + priMax) / 2f;
-
-                            m.priSet(BudgetFunctions.fund(pri, true, uu));
-                            tasksCreated++;
-                            return m;
-                        }
-
-                    }
-
-                    return null;
-
-                }).filter(Objects::nonNull)
-        );
+        if (!gen.isEmpty()) {
+//            System.out.println(gen);
+            in.input(gen);
+        }
 
     }
 

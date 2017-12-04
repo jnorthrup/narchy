@@ -217,7 +217,8 @@ public class Focus {
 
         try {
 
-            can.commit(c -> c.priSet(c.get().value() * 0.5f));
+            float min = 1f/(1+can.size()); //HACK
+            can.commit(c -> c.priSet(min + c.get().value() * 0.5f));
 
 //            System.out.println(values);
 //            can.print();

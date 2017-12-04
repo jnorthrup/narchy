@@ -56,7 +56,7 @@ public class BagClustering<X> {
 
             @Nullable
             @Override
-            public X key(@NotNull VLink<X> x) {
+            public X key(VLink<X> x) {
                 return x.id;
             }
 
@@ -107,7 +107,6 @@ public class BagClustering<X> {
 
     public <Y> void commitGroups(int iter, Y y, BiConsumer<Stream<VLink<X>>,Y> each) {
         commit(iter, (sorted) -> {
-            List<Task> batch = $.newArrayList();
             int current = -1;
             int n = sorted.size();
             int bs = -1;
@@ -169,7 +168,7 @@ public class BagClustering<X> {
                     bag.commit(); //first, apply bag forgetting
 
                     //                net.compact();
-                    int cc = bag.capacity();
+                    //int cc = bag.capacity();
 
                     for (int i = 0; i < iterations; i++) {
                         bag.forEach(this::learn);
