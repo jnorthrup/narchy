@@ -10,6 +10,7 @@ import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
+import net.openhft.chronicle.core.util.FloatConsumer;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.jetbrains.annotations.NotNull;
@@ -388,6 +389,25 @@ public interface NAct {
         //actionBipolarGreedy(s, update);
         //actionBipolarMutex3(s, update);
     }
+
+    default void actionBipolarSteering(@NotNull Term s, FloatConsumer act) {
+        final float[] amp = new float[1];
+
+        actionUnipolar($.p($.the("\"*\""), s), (u)->{
+            amp[0] =
+                    u;
+                    //Math.max(u-0.5f, 0);
+            return u;
+        });
+        actionTriState($.p($.the("\"+-\""), s), (xy)->{
+            switch (xy) {
+                case 1: act.accept(amp[0]); break;
+                case 0: act.accept(0);  break;
+                case -1: act.accept(-amp[0]); break;
+            }
+        });
+    }
+
     default GoalActionAsyncConcept[] actionBipolarFrequencyDifferential(@NotNull Term s, @NotNull FloatToFloatFunction update) {
 
         Term pt =

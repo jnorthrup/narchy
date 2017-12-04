@@ -507,7 +507,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         //CONSTRUCT NEW TERM
         Term y;
         if (x.op() != CONJ) {
-            y = x.dt(dt != DTERNAL ? dt - x.sub(0).dtRange() : dt); //IMPL
+            y = x.dt((dt!=XTERNAL && dt != DTERNAL) ? dt - x.sub(0).dtRange() : dt); //IMPL
         } else {
             int early = Op.conjEarlyLate(x, true);
             if (early == 1)

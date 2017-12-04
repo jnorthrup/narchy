@@ -32,7 +32,7 @@ public class Arkancide extends NAgentX {
     static boolean numeric = true;
     static boolean cam = true;
 
-    public final FloatParam ballSpeed = new FloatParam(1.5f, 0.04f, 6f);
+    public final FloatParam ballSpeed = new FloatParam(0.75f, 0.04f, 6f);
     //public final FloatParam paddleSpeed = new FloatParam(2f, 0.1f, 3f);
 
 

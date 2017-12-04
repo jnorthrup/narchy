@@ -164,27 +164,26 @@ public class DeriveTime extends TimeGraph {
         if (event == null) {
             return solveRaw(pattern);
         } else if (alternates.size() > 1) {
-            Map<Term, LongHashSet> uniques = new HashMap();
-            alternates.forEach(x -> {
-                long w = x.when();
-                if (w!=TIMELESS && w!=ETERNAL)
-                    uniques.computeIfAbsent(x.id, xx -> new LongHashSet()).add(w);
-            });
-
-            if (!uniques.isEmpty()) {
-                //all alternates of the same term but at different points; so stretch a solution containing all of them
-
-                ArrayHashSet<Map.Entry<Term, LongHashSet>> uu = new ArrayHashSet<>(uniques.entrySet());
-                Map.Entry<Term, LongHashSet> h = uu.get(d.random);
-
-                Term st = h.getKey();
-                LongHashSet s = h.getValue();
-                occ[0] = s.min();
-                occ[1] = s.max() + st.dtRange();
-                return st;
-            } else {
+//            Map<Term, LongHashSet> uniques = new HashMap();
+//            alternates.forEach(x -> {
+//                long w = x.when();
+//                if (w!=TIMELESS && w!=ETERNAL)
+//                    uniques.computeIfAbsent(x.id, xx -> new LongHashSet()).add(w);
+//            });
+//            if (!uniques.isEmpty()) {
+//                //all alternates of the same term but at different points; so stretch a solution containing all of them
+//
+//                ArrayHashSet<Map.Entry<Term, LongHashSet>> uu = new ArrayHashSet<>(uniques.entrySet());
+//                Map.Entry<Term, LongHashSet> h = uu.get(d.random);
+//
+//                Term st = h.getKey();
+//                LongHashSet s = h.getValue();
+//                occ[0] = s.min();
+//                occ[1] = s.max() + st.dtRange();
+//                return st;
+//            } else {
                 event = alternates.get(d.random);
-            }
+//            }
         }
 
         long es = event.when();

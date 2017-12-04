@@ -109,7 +109,10 @@ abstract public class NAgentX extends NAgent {
 //                    CaffeineCompoundBuilder.get();
 
 
-        float durFPS = agentFPS;
+        float durFPS =
+                //agentFPS;
+                agentFPS * 2f; //nyquist
+                //agentFPS * 3f;
 
         RealTime clock =
                 durFPS >= 10 / 2f ? /* nyquist threshold between decisecond (0.1) and centisecond (0.01) clock resolution */

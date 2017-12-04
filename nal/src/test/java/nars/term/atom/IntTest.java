@@ -42,8 +42,10 @@ public class IntTest {
         n.run(10);
     }
 
-    @Test public void testDiffer() {
+    @Test public void testDifferRangeInt() {
         assertEquals(range(1,2), Op.difference(range(0,2), the(0)));
+        assertEquals(range(0,2), Op.difference(range(0,2), the(3))); //unchanged
+        assertEquals("(0&2)", Op.difference(range(0,2), the(1)).toString());
     }
 
     @Test

@@ -272,9 +272,13 @@ public class Int implements Intlike {
                 }
             } else if (b instanceof Int) {
                 Int bb = (Int) b;
-                if (contains(bb)) {
-                    if (Param.DEBUG)
-                        throw new TODO();
+                int bbi = bb.id;
+                if (min == bbi) {
+                    return Int.range(min+1, max);
+                } else if (max == bbi) {
+                    return Int.range(min, max-1);
+                } else if (min < bbi && bbi < max) {
+                    return Op.SECTe.the(Int.range(min, bbi-1), Int.range(bbi+1, max));
                 }
             }
             return Null;

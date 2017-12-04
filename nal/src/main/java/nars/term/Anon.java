@@ -4,10 +4,7 @@ import jcog.Util;
 import jcog.list.FasterList;
 import nars.Op;
 import nars.Task;
-import nars.term.atom.Atom;
-import nars.term.atom.Atomic;
-import nars.term.atom.AtomicConst;
-import nars.term.atom.Int;
+import nars.term.atom.*;
 import nars.term.container.TermVector;
 import nars.term.transform.CompoundTransform;
 import nars.term.var.UnnormalizedVariable;
@@ -88,6 +85,7 @@ public class Anon {
     final ByteFunction<Term> nextUniqueAtom = (Term next) -> {
         int s = rev.size();
         assert (s < MAX_ANOM);
+        assert( !(next instanceof Bool) );
         rev.add(next);
         return (byte) s;
     };

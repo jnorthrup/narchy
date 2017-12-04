@@ -123,15 +123,15 @@ public class FZero extends NAgentX {
 
         window(Vis.beliefCharts(64, java.util.List.of(dAngVel, dAccel), nar), 300, 300);
 
-        new BeliefPredict(
-                Iterables.concat(actions.keySet(), java.util.List.of(dAngVel, dAccel)),
-                8,
-                12,
-                Iterables.concat(actions.keySet(), java.util.List.of(dAngVel, dAccel)),
-                //new LivePredictor.LSTMPredictor(0.25f, 1),
-                new LivePredictor.MLPPredictor(),
-                nar
-        );
+//        new BeliefPredict(
+//                Iterables.concat(actions.keySet(), java.util.List.of(dAngVel, dAccel)),
+//                8,
+//                12,
+//                Iterables.concat(actions.keySet(), java.util.List.of(dAngVel, dAccel)),
+//                //new LivePredictor.LSTMPredictor(0.25f, 1),
+//                new LivePredictor.MLPPredictor(),
+//                nar
+//        );
 
         //nar.mix.stream("Derive").setValue(1);
 
@@ -296,7 +296,7 @@ public class FZero extends NAgentX {
     }
 
     public void initBipolar() {
-        GoalActionAsyncConcept[] f = actionBipolar($.the("fwd"), (a) -> {
+        actionBipolarSteering($.the("fwd"), (a) -> {
             //if (f > 0) {
             //accelerator
             //if (f > 0.5f)
@@ -308,15 +308,15 @@ public class FZero extends NAgentX {
 //                float brake = 0.5f - f;
 //                fz.vehicleMetrics[0][6] *= (1f - brake);
 //            }
-            return a;
+            //return a;
         });
 //        //eternal bias to stop
 //        nar.goal(f[0].term, Tense.Eternal, 0f, 0.01f);
 //        nar.goal(f[1].term, Tense.Eternal, 0f, 0.01f);
 
-        GoalActionAsyncConcept[] x = actionBipolar($.the("x"), (a) -> {
+        actionBipolarSteering($.the("x"), (a) -> {
             fz.playerAngle += (a) * rotSpeed;
-            return a;
+            //return a;
         });
 //        //eternal bias to stop
 //        nar.goal(x[0].term, Tense.Eternal, 0f, 0.01f);
