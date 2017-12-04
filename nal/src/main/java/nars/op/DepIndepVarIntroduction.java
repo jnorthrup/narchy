@@ -54,8 +54,8 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     //(t.op()==VAR_INDEP || t.op()==VAR_DEP) ? 0 : 1;
 
     @Override
-    protected List<Term> select(Term input, Random shuffle) {
-        return Terms.substAllRepeats(input, depIndepFilter, 2, shuffle);
+    protected Term next(Term input, Random shuffle) {
+        return Terms.nextRepeat(input, depIndepFilter, 2, shuffle);
     }
 
     @Nullable

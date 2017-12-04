@@ -2,25 +2,24 @@ package nars.term;
 
 import jcog.Texts;
 import jcog.Util;
-import jcog.decide.DecideRoulette;
 import jcog.list.FasterList;
 import jcog.sort.SortedList;
 import nars.Op;
 import nars.term.atom.Atom;
 import nars.term.atom.Bool;
 import nars.term.container.TermContainer;
+import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
 import org.eclipse.collections.impl.bag.mutable.HashBag;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
-import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
+import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
 import static nars.Op.*;
@@ -400,128 +399,145 @@ public enum Terms {
 //    }
 
 
+//    /**
+//     * returns the most optimal subterm that can be replaced with a variable, or null if one does not meet the criteria
+//     */
+//    @Nullable
+//    public static Term[] substMaximal(@NotNull Compound c, @NotNull Predicate<Term> include, int minCount, int minScore) {
+//        HashBag<Term> uniques = subtermScore(c,
+//                t -> include.test(t) ? t.volume() : 0 //sum by complexity if passes include filter
+//        );
+//
+//        int s = uniques.size();
+//        if (s > 0) {
+//            MutableList<ObjectIntPair<Term>> u = uniques.topOccurrences(s);
+//            for (ObjectIntPair<Term> p : u) {
+//                int score = p.getTwo();
+//                if (score >= minScore) {
+//                    Term subterm = p.getOne();
+//                    int count = score / subterm.complexity(); //should be a whole number according to the above scoring policy
+//                    if (count >= minCount) {
+//                        return new Term[]{subterm};
+//                    }
+//                }
+//            }
+//
+//        }
+//
+//        return null;
+//    }
+//
+//    /**
+//     * returns the most optimal subterm that can be replaced with a variable, or null if one does not meet the criteria
+//     */
+//    @Nullable
+//    public static Term[] substRoulette(@NotNull Compound c, @NotNull Predicate<Term> include, int minCount, Random rng) {
+//        HashBag<Term> uniques = subtermScore(c,
+//                t -> include.test(t) ? 1 : 0 //sum by complexity if passes include filter
+//        );
+//
+//        int s = uniques.size();
+//        if (s > 0) {
+//            ObjectIntPair<Term>[] oi = new ObjectIntPair[s];
+//            final int[] j = {0};
+//            final int[] sum = {0};
+//            uniques.forEachWithOccurrences((Term t, int count) -> {
+//                if (count >= minCount) {
+//                    int score = count * t.volume();
+//                    oi[j[0]++] = PrimitiveTuples.pair(t, score);
+//                    sum[0] += score;
+//                }
+//            });
+//
+//            int available = j[0];
+//            if (available == 1) {
+//                return new Term[]{oi[0].getOne()};
+//            } else if (available > 1) {
+//                int selected = DecideRoulette.decideRoulette(j[0], (i) -> oi[i].getTwo(), sum[0], rng);
+//                return new Term[]{oi[selected].getOne()};
+//            }
+//        }
+//
+//        return null;
+//    }
+
     /**
      * returns the most optimal subterm that can be replaced with a variable, or null if one does not meet the criteria
+     * when there is a chocie, it prefers least aggressive introduction. and then random choice if
+     * multiple equals are introducible
      */
-    @Nullable
-    public static Term[] substMaximal(@NotNull Compound c, @NotNull Predicate<Term> include, int minCount, int minScore) {
-        HashBag<Term> uniques = subtermScore(c,
-                t -> include.test(t) ? t.volume() : 0 //sum by complexity if passes include filter
-        );
+    public static Term nextRepeat(Term c, ToIntFunction<Term> countIf, int minCount, @Nullable Random rng) {
+        //FasterList<Term> oi = uniqueRepeats(c, countIf, minCount);
+        MutableList<ObjectIntPair<Term>> oi = Terms.subtermScore(c, countIf, minCount).toList();
+        switch (oi.size()) {
+            case 0: return null;
+            case 1: return oi.get(0).getOne();
+        }
 
-        int s = uniques.size();
-        if (s > 0) {
-            MutableList<ObjectIntPair<Term>> u = uniques.topOccurrences(s);
-            for (ObjectIntPair<Term> p : u) {
-                int score = p.getTwo();
-                if (score >= minScore) {
-                    Term subterm = p.getOne();
-                    int count = score / subterm.complexity(); //should be a whole number according to the above scoring policy
-                    if (count >= minCount) {
-                        return new Term[]{subterm};
-                    }
-                }
+        //keep only the unique subterms which are not contained by other terms in the list
+        //terms which are contained by other terms in the list
+        final int[] minScore = {Integer.MAX_VALUE};
+        oi.removeIf(bb -> {
+            if (oi.anySatisfyWith((a,b) -> (a != b) && a.getOne().containsRecursively(b.getOne()), bb)) {
+                return true;
+            } else {
+                if (bb.getTwo() < minScore[0])
+                    minScore[0] = bb.getTwo();
+                return false;
             }
-
-        }
-
-        return null;
-    }
-
-    /**
-     * returns the most optimal subterm that can be replaced with a variable, or null if one does not meet the criteria
-     */
-    @Nullable
-    public static Term[] substRoulette(@NotNull Compound c, @NotNull Predicate<Term> include, int minCount, Random rng) {
-        HashBag<Term> uniques = subtermScore(c,
-                t -> include.test(t) ? 1 : 0 //sum by complexity if passes include filter
-        );
-
-        int s = uniques.size();
-        if (s > 0) {
-            ObjectIntPair<Term>[] oi = new ObjectIntPair[s];
-            final int[] j = {0};
-            final int[] sum = {0};
-            uniques.forEachWithOccurrences((Term t, int count) -> {
-                if (count >= minCount) {
-                    int score = count * t.volume();
-                    oi[j[0]++] = PrimitiveTuples.pair(t, score);
-                    sum[0] += score;
-                }
-            });
-
-            int available = j[0];
-            if (available == 1) {
-                return new Term[]{oi[0].getOne()};
-            } else if (available > 1) {
-                int selected = DecideRoulette.decideRoulette(j[0], (i) -> oi[i].getTwo(), sum[0], rng);
-                return new Term[]{oi[selected].getOne()};
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * returns the most optimal subterm that can be replaced with a variable, or null if one does not meet the criteria
-     */
-    public static List<Term> substAllRepeats(Term c, ToIntFunction<Term> score, int minCount, @Nullable Random shuffle) {
-        FasterList<Term> oi = uniqueRepeats(c, score, minCount);
-        int s;
-        if (oi == null || (s = oi.size())==0)
-            return List.of();
-
-        if (s > 1) {
-            //keep only the unique subterms which are not contained by other terms in the list
-            //renive terms which are contained by other terms in the list
-
-            //oi.sort((a, b) -> Integer.compare(a.volume(), b.volume())); //sorted by volume
-
-            oi.removeIf(bb -> oi.anySatisfyWith((a,b) -> (a != b) && a.containsRecursively(b), bb));
-
-            if (shuffle!=null && oi.size() > 1)
-                Collections.shuffle(oi, shuffle);
-
-        }
-
-        return oi;
-    }
-
-    /**
-     * returns a list but its contents will be unique
-     */
-    @Nullable
-    static FasterList<Term> uniqueRepeats(Term c, ToIntFunction<Term> score, int minCount) {
-        HashBag<Term> uniques = Terms.subtermScore(c, score);
-        int us = uniques.size();
-        if (us == 0)
-            return null;
-
-        FasterList<Term> oi = new FasterList(0);
-
-        uniques.forEachWithOccurrences((Term t, int count) -> {
-            if (count >= minCount)
-                oi.add(t);
         });
 
-        return oi;
+        switch (oi.size()) {
+            case 0: throw new RuntimeException("shouldnt happen");
+            case 1:
+                return oi.get(0).getOne();
+        }
+
+        //prefer least aggressive options to gradually introduce variables rather than destroy the most information first, prefer to destroy small amounts first
+        oi.removeIf(bb -> bb.getTwo() > minScore[0]);
+        switch (oi.size()) {
+            case 0: throw new RuntimeException("shouldnt happen");
+            case 1:
+                return oi.get(0).getOne();
+            default:
+                return oi.get(rng.nextInt(oi.size())).getOne();
+        }
     }
+
+//    /**
+//     * returns a list but its contents will be unique
+//     */
+//    @Nullable
+//    static FasterList<Term> uniqueRepeats(Term c, ToIntFunction<Term> termScore, int minTotalScore) {
+//        RichIterable<ObjectIntPair<Term>> uniques = Terms.subtermScore(c, termScore, minTotalScore);
+//        int us = uniques.size();
+//        if (us == 0)
+//            return null;
+//
+//        FasterList<Term> oi = new FasterList(0);
+//
+//        uniques.forEachWithOccurrences((Term t, int count) -> {
+//            if (count >= minTotalScore)
+//                oi.add(t);
+//        });
+//
+//        return oi;
+//    }
 
 
     /**
      * counts the repetition occurrence count of each subterm within a compound
      */
-    @NotNull
-    public static HashBag<Term> subtermScore(Term c, ToIntFunction<Term> score) {
-        HashBag<Term> uniques = new HashBag<>(c.volume() / 2);
+    public static RichIterable<ObjectIntPair<Term>> subtermScore(Term c, ToIntFunction<Term> score, int minTotalScore) {
+        ObjectIntHashMap<Term> uniques = new ObjectIntHashMap(c.volume() / 2);
 
         c.recurseTerms((Term subterm) -> {
             int s = score.applyAsInt(subterm);
             if (s > 0)
-                uniques.addOccurrences(subterm, s);
+                uniques.addToValue(subterm, s);
         });
 
-        return uniques;
+        return uniques.keyValuesView().select((oi)->oi.getTwo()>=minTotalScore);
     }
 
     /**

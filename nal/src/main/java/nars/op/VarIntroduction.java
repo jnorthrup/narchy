@@ -25,17 +25,15 @@ public abstract class VarIntroduction {
 
         boolean inputWasNormalized = x.isNormalized();
 
-        List<Term> selections = select(x, r);
-        if (selections.isEmpty())
-            return null;
-
 
 //        Map<Term, Term> substs = new HashMap<>(1, 0.9f);
 //
         int varOffset = x.vars(); //ensure the variables dont collide with existing variables
 //        boolean found = false;
 //        for (int i = 0, selectionsSize = selections.size(); i < selectionsSize; i++) {
-            Term u = selections.get(0);
+            Term u = next(x, r);
+            if (u == null)
+                return null;
             Term v = next(x, u, ++varOffset);
 //            if (v != null) {
 //                substs.put(u, v);
@@ -80,7 +78,7 @@ public abstract class VarIntroduction {
     }
 
 
-    abstract protected List<Term> select(Term input, Random shuffle);
+    abstract protected Term next(Term input, Random shuffle);
 
 
     /**
