@@ -49,34 +49,34 @@ public class Fork extends AbstractPred<Derivation> {
     }
 
 
-    public static class ShuffledFork extends Fork {
-
-        protected ShuffledFork(@NotNull PrediTerm[] actions) {
-            super(actions);
-        }
-
-        @Override
-        public boolean test(Derivation m) {
-
-            int before = m.now();
-
-            int branches = this.branches.length;
-            if (branches == 1) {
-                this.branches[0].test(m);
-                return m.revertLive(before);
-            } else {
-                ByteShuffler b = m.shuffler;
-                byte[] order = b.shuffle(m.random, branches, true); //must get a copy because recursion will re-use the shuffler's internal array
-
-                for (int i = 0; i < branches; i++) {
-                    this.branches[order[i]].test(m);
-                    if (!m.revertLive(before))
-                        return false;
-                }
-            }
-            return true;
-        }
-    }
+//    public static class ShuffledFork extends Fork {
+//
+//        protected ShuffledFork(@NotNull PrediTerm[] actions) {
+//            super(actions);
+//        }
+//
+//        @Override
+//        public boolean test(Derivation m) {
+//
+//            int before = m.now();
+//
+//            int branches = this.branches.length;
+//            if (branches == 1) {
+//                this.branches[0].test(m);
+//                return m.revertLive(before);
+//            } else {
+//                ByteShuffler b = m.shuffler;
+//                byte[] order = b.shuffle(m.random, branches, true); //must get a copy because recursion will re-use the shuffler's internal array
+//
+//                for (int i = 0; i < branches; i++) {
+//                    this.branches[order[i]].test(m);
+//                    if (!m.revertLive(before))
+//                        return false;
+//                }
+//            }
+//            return true;
+//        }
+//    }
 
     @Nullable
     public static PrediTerm<Derivation> fork(PrediTerm<Derivation>[] n) {

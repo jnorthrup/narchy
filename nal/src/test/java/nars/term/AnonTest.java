@@ -25,6 +25,9 @@ public class AnonTest {
         assertAnon("(((0-->(1,2,#1))==>(3,4)),?2)",
                 "(((a-->(b,c,#2))==>(e,f)),?1)");
 
+        assertEquals("(4..6-->x)", $("((|,4,5,6)-->x)").toString());
+        assertAnon("(0-->1)", "((|,4,5,6)-->x)");
+
     }
 
     static Anon assertAnon(String expect, String test) throws Narsese.NarseseException {

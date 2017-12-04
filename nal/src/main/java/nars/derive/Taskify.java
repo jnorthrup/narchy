@@ -44,8 +44,9 @@ public class Taskify extends AbstractPred<Derivation> {
 
     @Override
     public boolean test(Derivation d) {
+
         Term x = d.derivedTerm.get();
-        assert(x!=null);
+        x = d.anon.get(x).normalize();
 
         long[] occ = d.concOcc;
         byte punc = d.concPunc;
@@ -83,10 +84,10 @@ public class Taskify extends AbstractPred<Derivation> {
             return spam(d, Param.TTL_DERIVE_TASK_FAIL);
         }
 
-        if (same(t, d.task, d.freqRes) || (d.belief != null && same(t, d.belief, d.freqRes))) {
-            //created a duplicate of the task
-            return spam(d, Param.TTL_DERIVE_TASK_SAME);
-        }
+//        if (same(t, d.task, d.freqRes) || (d.belief != null && same(t, d.belief, d.freqRes))) {
+//            //created a duplicate of the task
+//            return spam(d, Param.TTL_DERIVE_TASK_SAME);
+//        }
 
 
         float priority = Param.derivationPriority(t, d)

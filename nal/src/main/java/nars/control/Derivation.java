@@ -12,6 +12,7 @@ import nars.op.data.differ;
 import nars.op.data.intersect;
 import nars.op.data.union;
 import nars.task.DerivedTask;
+import nars.term.Anon;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
@@ -49,9 +50,11 @@ public class Derivation extends Unify {
     public NAR nar;
 
 
-    public final ByteShuffler shuffler = new ByteShuffler(64);
+//    public final ByteShuffler shuffler = new ByteShuffler(64);
 
     public final BatchActivation activator = new BatchActivation();
+
+    public final Anon anon = new Anon();
 
     /**
      * temporary buffer for derivations before input so they can be merged in case of duplicates
@@ -212,8 +215,7 @@ public class Derivation extends Unify {
                 nar.get(Atomic.the("without")),
                 nar.get(Atomic.the("indicesOf")),
                 nar.get(Atomic.the("substDiff")),
-                nar.get(Atomic.the("varIntro"))
-                /* varIntro(x) has special handling */
+
         };
     }
 
@@ -285,6 +287,16 @@ public class Derivation extends Unify {
      */
     public void set(Premise p, Task belief, Term beliefTerm) {
 
+        anon.clear();
+
+//        this.task = p.task;
+        final Task task = this.task = anon.put(p.task);
+        if (belief!=null)
+            belief = anon.put(belief);
+        beliefTerm = anon.put(beliefTerm);
+
+
+
 
         size = 0; //HACK instant revert to zero
         xy.map.clear(); //must also happen to be consistent
@@ -312,7 +324,6 @@ public class Derivation extends Unify {
         this.single = false;
         this.evidenceDouble = evidenceSingle = null;
 
-        final Task task = this.task = p.task;
 
 
         Term taskTerm = task.term();

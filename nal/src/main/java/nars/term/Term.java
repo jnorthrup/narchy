@@ -559,13 +559,13 @@ public interface Term extends Termed, Comparable<Termed> {
         //order first by volume. this is important for conjunctions which rely on volume-dependent ordering for balancing
         //left should be heavier
         //compareTo semantics state that a -1 value means left is less than right. we want the opposite
-        int diff2 = Integer.compare(y.volume(), volume());
-        if (diff2 != 0)
-            return diff2;
+        int vc = Integer.compare(y.volume(), this.volume());
+        if (vc != 0)
+            return vc;
 
-        int d = Integer.compare(this.opX(), y.opX());
-        if (d != 0)
-            return d;
+        int oc = Integer.compare(this.opX(), y.opX());
+        if (oc != 0)
+            return oc;
 
 
         if (this instanceof Atomic) {

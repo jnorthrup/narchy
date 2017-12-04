@@ -32,6 +32,10 @@ public class TermIOTest {
         assertEqualSerialize($.$(orig).term());
     }
 
+    void assertEqualTask(@NotNull String orig) throws Narsese.NarseseException {
+        assertEqualSerialize(nar.inputAndGet(orig));
+    }
+
     static void assertEqualSerialize(@NotNull Object orig) {
         //final IO.DefaultCodec codec = new IO.DefaultCodec(nar.index);
 
@@ -74,7 +78,10 @@ public class TermIOTest {
 
         //assertTrue(copy != orig);
         assertEquals(orig, copy);
+        assertEquals(copy, orig);
+        assertEquals(orig.toString(), copy.toString());
         assertEquals(orig.hashCode(), copy.hashCode());
+        //assertEquals(0, orig.compareTo(copy));
 
         //assertEquals(copy.getClass(), orig.getClass());
     }
@@ -99,6 +106,9 @@ public class TermIOTest {
         assertEqualSerialize("(a ==>+1 b)" /* term, not the concept */);
         assertEqualSerialize(("(b ==>+1 b)") /* term, not the concept */);
 
+        assertEqualSerialize(("(a ==>+- b)"));
+        assertEqualSerialize(("(a ==>+- a)"));
+        assertEqualSerialize(("(a ==> b)"));
 
     }
 
@@ -133,7 +143,7 @@ public class TermIOTest {
 
     }
 
-    static void assertTermEqualSerialize( String s) throws Narsese.NarseseException {
+    static void assertTermEqualSerialize(String s) throws Narsese.NarseseException {
         Termed t = $.$(s);
         assertTrue(t.isNormalized());
         assertTrue(t.term().isNormalized());
@@ -142,13 +152,22 @@ public class TermIOTest {
 
     @Test
     public void testTaskSerialization() throws Narsese.NarseseException {
-        assertEqualSerialize(nar.inputAndGet("<a-->b>."));
-        assertEqualSerialize(nar.inputAndGet("<a-->(b,c)>!"));
-        assertEqualSerialize(nar.inputAndGet("<a-->(b==>c)>?"));
-        assertEqualSerialize(nar.inputAndGet("$0.1 (b-->c)! %1.0;0.8%"));
-        assertEqualSerialize(nar.inputAndGet("$0.1 (b-->c)! :|: %1.0;0.8%"));
-        assertEqualSerialize(nar.inputAndGet("$0.1 (a ==>+4 (b-->c)). :|: %1.0;0.8%"));
-        assertEqualSerialize(nar.inputAndGet("$0.1 (1 ==>+4 (2-->3)). :|: %1.0;0.8%"));
+        assertEqualTask(("<a-->b>."));
+        assertEqualTask(("<a-->(b,c)>!"));
+        assertEqualTask(("<a-->(b==>c)>?"));
+        assertEqualTask(("$0.1 (b-->c)! %1.0;0.8%"));
+        assertEqualTask(("$0.1 (b-->c)! :|: %1.0;0.8%"));
+        assertEqualTask(("$0.1 (a ==>+4 (b-->c)). :|: %1.0;0.8%"));
+        assertEqualTask(("$0.1 (1 ==>+4 (2-->3)). :|: %1.0;0.8%"));
+
+        assertEqualTask(("(x ==>+- y)?"));
+        assertEqualTask(("(x ==>+- y)? :|:"));
+        assertEqualTask(("(x ==>+- x)?"));
+        assertEqualTask(("(x ==>+- x)? :|:"));
+        assertEqualTask(("(x &&+- y)?"));
+        assertEqualTask(("(x &&+- y)? :|:"));
+        assertEqualTask(("(x &&+- x)?"));
+        assertEqualTask(("(x &&+- x)? :|:"));
     }
 
     @Test

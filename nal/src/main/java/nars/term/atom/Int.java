@@ -58,12 +58,12 @@ public class Int implements Intlike {
     }
 
 
-    Int(int i) {
+    protected Int(int i) {
 
         this.id = i;
 
         byte[] b = new byte[6];
-        b[0] = INT.id;
+        b[0] = op().id;
         b[1] = 0; //subtype
         Util.int2Bytes(id, b, 2);
         this.bytesCached = b;
@@ -92,18 +92,22 @@ public class Int implements Intlike {
 
 
     @Override
-    public final int opX() {
+    public int opX() {
         return INT_ATOM;
     }
 
+    @Override
+    public /**/ Op op() {
+        return INT;
+    }
 
     @Override
-    public final int hashCode() {
+    public int hashCode() {
         return id * 31;
     }
 
     @Override
-    public final boolean equals(Object obj) {
+    public boolean equals(Object obj) {
         return this == obj || (obj instanceof Int && id == ((Int) obj).id);
     }
 
@@ -112,10 +116,6 @@ public class Int implements Intlike {
         return Integer.toString(id);
     }
 
-    @Override
-    public /**/ Op op() {
-        return INT;
-    }
 
     @Override
     public int complexity() {
