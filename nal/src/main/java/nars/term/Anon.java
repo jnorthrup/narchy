@@ -57,6 +57,8 @@ public class Anon {
         //optimized compareTo for frequent Anom->Anom cases
         @Override
         public int compareTo(Termed yy) {
+            if (this == yy) return 0;
+            
             Term y = yy.term();
             if (y instanceof Anom) {
                 return Integer.compare(id, ((Anom)y).id);

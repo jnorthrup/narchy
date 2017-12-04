@@ -128,16 +128,12 @@ abstract public class Widget extends Stacking {
     @Override
     protected boolean onTouching(Finger finger, v2 hitPoint, short[] buttons) {
         if (finger != null && finger.clickReleased(2)) { //released right button
-
-
-            new MetaFrame(this);
-
-
+            MetaFrame.toggle(this);
         }
         return super.onTouching(finger, hitPoint, buttons);
     }
 
-    public static void main(String[] args) throws IOException, JSchException {
+    public static void main(String[] args) throws Exception {
 
         SpaceGraph s = SpaceGraph.window(
 

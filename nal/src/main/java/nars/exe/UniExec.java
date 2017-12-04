@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 /**
  * single thread executor used for testing
- * TODO expand the focus abilities instead of being dummy
+ * TODO expand the focus abilities instead of naively executed all Can's a specific # of times per cycle
  */
 public class UniExec extends AbstractExec {
 

@@ -84,42 +84,52 @@ public class RTreeBeliefTableTest {
         r.setCapacity(4);
 
         add(r, x, 1f, 0.9f, 0, 1, n);
-        assertEquals(1f, r.truth(0,0, null, 1).freq());
+        assertEquals(1f, r.truth(0, 0, null, 1).freq());
 
         add(r, x, 0f, 0.9f, 2, 3, n);
-        assertEquals(0f, r.truth(3,3, null, 1).freq());
+        assertEquals(0f, r.truth(3, 3, null, 1).freq());
 
-        assertEquals("%.50;.95%", r.truth(1,2, null, 1).toString());
+        assertEquals("%.50;.95%", r.truth(1, 2, null, 1).toString());
 
-        assertEquals("%0.0;.83%", r.truth(4,4, null, 1).toString());
-        assertEquals("%0.0;.83%", r.truth(4,5, null, 1).toString());
-        assertEquals("%0.0;.72%", r.truth(5,5, null, 1).toString());
+        assertEquals("%0.0;.83%", r.truth(4, 4, null, 1).toString());
+        assertEquals("%0.0;.83%", r.truth(4, 5, null, 1).toString());
+        assertEquals("%0.0;.72%", r.truth(5, 5, null, 1).toString());
     }
 
 
-    @Test public void testAccuracyFlat() {
+    @Test
+    public void testAccuracyFlat() {
 
-        testAccuracy(1, 1,20, 8, (t) -> 0.5f); //flat
+        testAccuracy(1, 1, 20, 8, (t) -> 0.5f); //flat
     }
-    @Test public void testAccuracySineDur1() {
 
-        testAccuracy(1, 1,20, 8, (t) -> (float)(Math.sin(t/5f)/2f+0.5f));
+    @Test
+    public void testAccuracySineDur1() {
+
+        testAccuracy(1, 1, 20, 8, (t) -> (float) (Math.sin(t / 5f) / 2f + 0.5f));
     }
-    @Test public void testAccuracySineDur1Ext() {
-        testAccuracy(1, 1,50, 8, (t) -> (float)(Math.sin(t/1f)/2f+0.5f));
+
+    @Test
+    public void testAccuracySineDur1Ext() {
+        testAccuracy(1, 1, 50, 8, (t) -> (float) (Math.sin(t / 1f) / 2f + 0.5f));
     }
-    @Test public void testAccuracySineDur() {
-        testAccuracy(2, 2,50, 8, (t) -> (float)(Math.sin(t/5f)/2f+0.5f));
+
+    @Test
+    public void testAccuracySineDur() {
+        testAccuracy(2, 2, 50, 8, (t) -> (float) (Math.sin(t / 5f) / 2f + 0.5f));
     }
 
 
     static final LongToFloatFunction stepFunction = (t) -> (Math.sin(t) / 2f + 0.5f) >= 0.5 ? 1f : 0f;
 
-    @Test public void testAccuracySawtoothWave() {
+    @Test
+    public void testAccuracySawtoothWave() {
         //this step function when sampled poorly will appear as a triangle sawtooth
         testAccuracy(1, 3, 15, 5, stepFunction);
     }
-    @Test public void testAccuracySquareWave() {
+
+    @Test
+    public void testAccuracySquareWave() {
         testAccuracy(1, 1, 5, 5, stepFunction);
     }
 
@@ -143,6 +153,7 @@ public class RTreeBeliefTableTest {
         //int numTasks = 0;
         System.out.println("points:");
         long time;
+        long start = n.time();
         while ((time = n.time()) < end) {
             float f = func.valueOf(time);
             System.out.print(time + "=" + f + "\t");
@@ -153,16 +164,14 @@ public class RTreeBeliefTableTest {
         System.out.println();
 
 
-
-
         MultiStatistics<Task> m = new MultiStatistics<Task>()
-            .classify("input", (t) -> t.isInput())
-            .classify("derived", (t) -> t instanceof DerivedTask)
+                .classify("input", (t) -> t.isInput())
+                .classify("derived", (t) -> t instanceof DerivedTask)
 //            .classify("revised", (t) -> t instanceof AnswerTask)
-            .value("pri", (t) -> t.pri())
-            .value2D("truth", (t) -> new float[] { t.freq(), t.conf() })
-            .value("freqErr", (t) -> Math.abs( ((t.freq()-0.5f)*2f) - func.valueOf(t.mid())) )
-            .add(c.beliefs());
+                .value("pri", (t) -> t.pri())
+                .value2D("truth", (t) -> new float[]{t.freq(), t.conf()})
+                .value("freqErr", (t) -> Math.abs(((t.freq() - 0.5f) * 2f) - func.valueOf(t.mid())))
+                .add(c.beliefs());
 
         System.out.println();
         m.print();
@@ -174,13 +183,12 @@ public class RTreeBeliefTableTest {
         CSVOutput csv = new CSVOutput(System.out, "time", "actual", "approx");
 
         double errSum = 0;
-        int start = 0;
         for (long i = start; i < end; i++) {
             float actual = func.valueOf(i);
 
             Truth actualTruth = n.beliefTruth(term, i);
             float approx, err;
-            if (actualTruth!=null) {
+            if (actualTruth != null) {
                 approx = actualTruth.freq();
                 err = Math.abs(approx - actual);
             } else {
@@ -193,7 +201,7 @@ public class RTreeBeliefTableTest {
             csv.out(i, actual, approx);
             //System.out.println(n2(i) + "\t" + /*n2(err) + "\t" + */ n2(expected) + "\t" + n2(actual));
         }
-        double avgErr = errSum / (end-start+1);
+        double avgErr = errSum / (end - start + 1);
         System.out.println();
         System.out.println(n4(avgErr) + " avg freq err per point");
         assertTrue(avgErr < 0.1f);

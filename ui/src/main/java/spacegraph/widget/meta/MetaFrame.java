@@ -18,38 +18,43 @@ public class MetaFrame extends Widget {
     private final Widget base;
 
 
-    public MetaFrame(Widget base) {
+    MetaFrame(Widget base) {
         super();
         this.base = base;
 
-
         build();
-
-        attach(base);
-
-
     }
 
-    protected void attach(Widget base) {
+    public static void toggle(Widget base) {
         SurfaceRoot r = base.root();
-        r.the(MetaFrame.class, this, this::close);
 
-        base.children.add(this);
-        r.zoom(base.cx(), base.cy(), base.w(), base.h());
+        MetaFrame existing = (MetaFrame) r.the(MetaFrame.class);
+        if (existing != null && existing.base == base) {
+            //toggle off: detach
+            r.the(MetaFrame.class, null, null);
+
+        } else {
+            //toggle on: attach
+            MetaFrame mfer = new MetaFrame(base);
+            r.the(MetaFrame.class, mfer, mfer::close);
+
+            base.children.add(mfer);
+            r.zoom(base.cx(), base.cy(), base.w(), base.h());
+        }
     }
 
     protected void build() {
         Surface m = grid(
-            new PushButton("@"), //tag
-            new PushButton("?"), //inspect
-            new PushButton("X")  //hide
+                new PushButton("@"), //tag
+                new PushButton("?"), //inspect
+                new PushButton("X")  //hide
         );
-        children.add(new AspectAlign(m, 1f, AspectAlign.Align.RightTop, 0.5f ));
+        children.add(new AspectAlign(m, 1f, AspectAlign.Align.RightTop, 0.5f));
 
         Surface n = grid(
-            new Label(base.toString() )
+                new Label(base.toString())
         );
-        children.add(new AspectAlign(n, 1f, AspectAlign.Align.LeftTop, 0.25f ));
+        children.add(new AspectAlign(n, 1f, AspectAlign.Align.LeftTop, 0.25f));
 
     }
 

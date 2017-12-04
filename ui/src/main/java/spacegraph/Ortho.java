@@ -70,21 +70,30 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
     final Map<String,Pair<Object,Runnable>> singletons = new HashMap();
 
 
-    @Override public synchronized void the(String key, Object added, Runnable onRemove) {
-
-        Pair<Object,Runnable> removed = null;
-        if (added == null) {
-            assert(onRemove==null);
-            removed = singletons.remove(key);
-        } else {
-            removed = singletons.put(key, pair(added, onRemove));
+    @Override public synchronized Object the(String key) {
+        synchronized (singletons) {
+            Pair<Object, Runnable> x = singletons.get(key);
+            return x == null ? null : x.getOne();
         }
+    }
 
-        if (removed!=null) {
-            if (removed.getOne() == added) {
-                //same
+    @Override public void the(String key, Object added, Runnable onRemove) {
+        synchronized (singletons) {
+
+            Pair<Object, Runnable> removed = null;
+            if (added == null) {
+                assert (onRemove == null);
+                removed = singletons.remove(key);
             } else {
-                removed.getTwo().run();
+                removed = singletons.put(key, pair(added, onRemove));
+            }
+
+            if (removed != null) {
+                if (removed.getOne() == added) {
+                    //same
+                } else {
+                    removed.getTwo().run();
+                }
             }
         }
     }
