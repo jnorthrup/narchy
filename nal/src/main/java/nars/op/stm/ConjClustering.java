@@ -1,6 +1,7 @@
 package nars.op.stm;
 
 import jcog.Util;
+import jcog.list.FasterList;
 import jcog.pri.VLink;
 import nars.*;
 import nars.bag.BagClustering;
@@ -20,10 +21,8 @@ import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectLongPair;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -141,112 +140,115 @@ public class ConjClustering extends Causable {
 
     }
 
+    static final BiFunction<Task, Task, Task> termPointMerger = (prevZ, newZ) -> ((prevZ == null) || (newZ.conf() >= prevZ.conf())) ?
+            newZ : prevZ;
+
+    final Predicate<Object> kontinue = (l) -> tasksCreated < taskLimit;
+
     private void conjoin(Stream<VLink<Task>> group, NAR nar) {
 
         //get only the maximum confidence task for each term at its given starting time
 
+        in.input(chunk(group.filter(Objects::nonNull).takeWhile(kontinue)
+                        .map(x -> x.id), maxConjSize, volMax).takeWhile(kontinue).map(tasks -> {
 
-        Predicate<Object> kontinue = (l) -> tasksCreated < taskLimit;
+                    Map<LongObjectPair<Term>, Task> vv = new HashMap<>(tasks.size());
 
-        in.input( chunk(group.filter(Objects::nonNull).takeWhile(kontinue)
-            .map(x -> x.id), maxConjSize, volMax).takeWhile(kontinue).map(subs -> {
+                    long end = Long.MIN_VALUE;
+                    long start = Long.MAX_VALUE;
 
-                Map<ObjectLongPair<Term>, Task> vv = new HashMap<>(subs.size());
 
-                final long[] end = {Long.MIN_VALUE};
-                final long[] start = {Long.MAX_VALUE};
+                    float freq = 1f;
+                    float conf = 1f;
+                    float priMax = Float.NEGATIVE_INFINITY, priMin = Float.POSITIVE_INFINITY;
+                    for (Task x : tasks) {
+                        Term xt = x.term();
 
-                subs.forEach(z -> {
+                        long zs = x.start();
+                        long ze = x.end();
+                        if (start > zs) start = zs;
+                        if (end < ze) end = ze;
+                        assert (end >= start);
 
-                    long zs = z.start();
-                    long ze = z.end();
-                    if (start[0] > zs) start[0] = zs;
-                    if (end[0] < ze) end[0] = ze;
-                    assert (end[0] >= start[0]);
+                        Truth tx = x.truth();
+                        if (tx.isNegative()) {
+                            xt = xt.neg();
+                        }
 
-                    vv.merge(pair(z.term(), zs), z, (prevZ, newZ) -> {
-                        if (prevZ == null || newZ.conf() >= prevZ.conf())
-                            return newZ;
-                        else
-                            return prevZ;
-                    });
-                });
+                        vv.merge(pair(zs,xt), x, termPointMerger);
+                        if (ze != zs)
+                            vv.merge(pair(ze,xt), x, termPointMerger); //end point, if different from start
+                    }
 
-                int vs = vv.size();
-                if (vs < 2)
+                    int vs = vv.size();
+                    if (vs < 2)
+                        return null;
+
+                    //the tasks which are actually involved
+                    HashSet<Task> actualTasks = new HashSet<>(vv.values());
+                    for (Task x : actualTasks) {
+                        Truth tx = x.truth();
+                        conf *= tx.conf();
+                        if (conf < confMin)
+                            return null;
+
+                        float p = x.priElseZero();
+                        if (p < priMin) priMin = p;
+                        if (p > priMax) priMax = p;
+
+
+                        float tf = tx.freq();
+                        if (tx.isNegative()) {
+                            freq *= (1f - tf); //since it will appear as a negated subterm
+                        } else {
+                            freq *= tf;
+                        }
+                    }
+
+
+                    Task[] uu = actualTasks.toArray(new Task[actualTasks.size()]);
+
+                    //List<LongObjectPair<Term>> pp = $.newArrayList(uu.length);
+//                    int vol = 0;
+//                    for (Task x : uu) {
+//
+//
+//                        vol += tt.volume();
+//                        if (vol > volMax)
+//                            return null;
+//
+//                    }
+
+                    //TODO discount based on evidential overlap? needs N-way overlapFraction function
+
+                    PreciseTruth t = $.t(freq, conf).dither(freqRes, confRes, confMin, 1f);
+                    if (t != null) {
+
+                        @Nullable ObjectBooleanPair<Term> cp = Task.tryContent(Op.conj(new FasterList(vv.keySet())), punc, true);
+                        if (cp != null) {
+
+
+                            int uuLen = uu.length;
+                            long[] evidence = Stamp.zip(uu, Param.STAMP_CAPACITY);
+                            NALTask m = new STMClusterTask(cp, t, start, end, evidence, punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
+
+                            m.cause = Cause.zip(nar.causeCapacity.intValue(), uu);
+
+                            float pri =
+                                    //priMax;
+                                    //priMin;
+                                    (priMin + priMax) / 2f;
+
+                            m.priSet(BudgetFunctions.fund(pri, true, uu));
+                            tasksCreated++;
+                            return m;
+                        }
+
+                    }
+
                     return null;
 
-                Task[] uu = vv.values().toArray(new Task[vs]);
-                vv.clear();
-
-                List<LongObjectPair<Term>> pp = $.newArrayList(uu.length);
-                float freq = 1f;
-                float conf = 1f;
-                float priMax = Float.NEGATIVE_INFINITY, priMin = Float.POSITIVE_INFINITY;
-                int vol = 0;
-                for (Task x : uu) {
-
-                    Truth tx = x.truth();
-                    conf *= tx.conf();
-                    if (conf < confMin)
-                        return null;
-
-                    float p = x.priElseZero();
-                    if (p < priMin) priMin = p;
-                    if (p > priMax) priMax = p;
-
-                    Term tt = x.term();
-                    vol += tt.volume();
-                    if (vol > volMax)
-                        return null;
-
-                    float tf = tx.freq();
-                    if (tx.isNegative()) {
-                        tt = tt.neg();
-                        freq *= (1f - tf);
-                    } else {
-                        freq *= tf;
-                    }
-
-                    pp.add(pair(x.start(), tt));
-                }
-
-                //TODO discount based on evidential overlap? needs N-way overlapFraction function
-
-                PreciseTruth t = $.t(freq, conf).dither(freqRes, confRes, confMin, 1f);
-                if (t != null) {
-
-                    @Nullable Term conj = Op.conj(pp);
-                    if (!conj.op().conceptualizable) {
-                        return null;
-                    }
-
-
-                    @Nullable ObjectBooleanPair<Term> cp = Task.tryContent(conj, punc, true);
-                    if (cp != null) {
-
-
-                        int uuLen = uu.length;
-                        long[] evidence = Stamp.zip(uu, Param.STAMP_CAPACITY);
-                        NALTask m = new STMClusterTask(cp, t, start, end, evidence, punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
-
-                        m.cause = Cause.zip(nar.causeCapacity.intValue(), uu);
-
-                        float pri =
-                                //priMax;
-                                //priMin;
-                                (priMin + priMax)/2f;
-
-                        m.priSet(BudgetFunctions.fund(pri, true, uu));
-                        tasksCreated++;
-                        return m;
-                    }
-
-                }
-
-                return null;
-
-            }).filter(Objects::nonNull)
+                }).filter(Objects::nonNull)
         );
 
     }
@@ -288,8 +290,8 @@ public class ConjClustering extends Causable {
 
     public static class STMClusterTask extends NALTask {
 
-        public STMClusterTask(@Nullable ObjectBooleanPair<Term> cp, PreciseTruth t, long[] start, long[] end, long[] evidence, byte punc, long now) throws InvalidTaskException {
-            super(cp.getOne(), punc, t, now, start[0], end[0], evidence);
+        public STMClusterTask(@Nullable ObjectBooleanPair<Term> cp, PreciseTruth t, long start, long end, long[] evidence, byte punc, long now) throws InvalidTaskException {
+            super(cp.getOne(), punc, t, now, start, end, evidence);
         }
 
         @Override
