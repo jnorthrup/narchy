@@ -1,7 +1,7 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.decide.DecideRoulette;
+import jcog.decide.Roulette;
 import nars.$;
 import nars.control.Cause;
 import nars.control.Derivation;
@@ -60,7 +60,7 @@ public class Try extends AbstractPred<Derivation> {
                 ) );
 
                 int before = d.now();
-                DecideRoulette.selectRouletteUnique(N, i -> val[i], (i) -> {
+                Roulette.selectRouletteUnique(N, i -> val[i], (i) -> {
                     branches[c[i]].test(d);
                     return d.revertLive(before);
                 }, d.random);

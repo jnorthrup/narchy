@@ -1,6 +1,6 @@
 package nars.concept.dynamic;
 
-import jcog.decide.DecideRoulette;
+import jcog.decide.Roulette;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -179,7 +179,7 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
         } else {
             MutableList<IntFloatPair> ll = dtEvi.keyValuesView().toList();
             int selected = n != 1 ?
-                    DecideRoulette.decideRoulette(ll.size(), (i) -> ll.get(i).getTwo(), nar.random()) : 0;
+                    Roulette.decideRoulette(ll.size(), (i) -> ll.get(i).getTwo(), nar.random()) : 0;
             return ll.get(selected).getOne();
         }
     }

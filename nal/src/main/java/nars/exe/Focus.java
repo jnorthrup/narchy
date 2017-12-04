@@ -1,22 +1,20 @@
-package nars;
+package nars.exe;
 
 import jcog.Services;
 import jcog.Util;
-import jcog.bag.Bag;
-import jcog.bag.impl.CurveBag;
+import jcog.decide.Roulette;
 import jcog.learn.deep.RBM;
+import jcog.list.FastCoWList;
 import jcog.list.FasterList;
 import jcog.math.RecycledSummaryStatistics;
-import jcog.pri.PLink;
-import jcog.pri.op.PriMerge;
+import jcog.math.random.XoRoShiRo128PlusRandom;
+import nars.NAR;
 import nars.control.Causable;
 import nars.control.Cause;
 import nars.control.MetaGoal;
 import nars.control.Traffic;
-import nars.exe.Exec;
-import nars.term.atom.Atomic;
+import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.HashMap;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -25,34 +23,25 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class Focus {
 
+    public static final int WORK_BATCH_SIZE = 4;
+
     /**
      * temporal granularity unit, in seconds
      */
-    public static final float JIFFY = 0.001f;
+    public static final float JIFFY = 0.002f;
 
-    private final Bag<Causable, ProcLink> can;
+    private final FastCoWList<Causable> can;
+
+    /** probability of selecting each can (roulette weight), updated each cycle */
+    private float[] canWeights = ArrayUtils.EMPTY_FLOAT_ARRAY;
+    private Causable[] canActive;
 
     private final NAR nar;
 
     public final Exec.Revaluator revaluator;
 
+    final Random rng = new XoRoShiRo128PlusRandom(1); //separate from NAR but not necessarily
 
-    public class ProcLink extends PLink<Causable> implements Runnable {
-
-        public ProcLink(Causable can, float p) {
-            super(can, p);
-        }
-
-        @Override
-        public final void run() {
-            int iters = Math.max(1, Math.round(JIFFY / id.can.iterationTimeMean()));
-            //int iters = 1;
-            id.run(nar, iters);
-        }
-
-    }
-
-//    final static Atomic idleTerm = Atomic.the("idle");
 
     /**
      * uses an RBM as an adaptive associative memory to learn and reinforce the co-occurrences of the causes
@@ -183,7 +172,7 @@ public class Focus {
 
 
     public Focus(NAR n) {
-        this.can = new CurveBag(PriMerge.replace, new HashMap(), n.random, 32);
+        this.can = new FastCoWList<>(32, Causable[]::new);
         this.nar = n;
 
 
@@ -205,8 +194,22 @@ public class Focus {
         n.onCycle(this::update);
     }
 
-    public void work(int tasks) {
-        can.sample(tasks, ProcLink::run);
+    public void work(int work) {
+
+        float[] cw = canWeights;
+        int n = cw.length;
+        if (n == 0) return;
+
+        Causable[] ca = canActive;
+        if (ca.length!= n) return; //HACK in between updates, try again
+
+        for (int i = 0; i < work; i++) {
+            int x = Roulette.decideRoulette(cw, rng);
+            Causable y = ca[x];
+            int iters = Math.max(1, Math.round(JIFFY / y.can.iterationTimeMean()));
+            y.run(nar, iters);
+        }
+
     }
 
     final AtomicBoolean busy = new AtomicBoolean(false);
@@ -217,13 +220,15 @@ public class Focus {
 
         try {
 
-            float min = 1f/(1+can.size()); //HACK
-            can.commit(c -> c.priSet(min + c.get().value() * 0.5f));
+            //TODO these should be updated as atomic pair
+            canActive = can.copy;
+            canWeights = can.map(this::weight, canWeights);
 
 //            System.out.println(values);
 //            can.print();
 
             revaluator.update(nar.causes, nar.want);
+
         } finally {
             busy.set(false);
         }
@@ -238,8 +243,13 @@ public class Focus {
 //            }
     }
 
+    private float weight(Causable c) {
+        final float TEMPERATURE = 0.5f;
+        return (float) Math.exp(c.value() * TEMPERATURE);
+    }
+
     private void add(Causable c) {
-        this.can.put(new ProcLink(c, 0));
+        this.can.add(c);
     }
 
     private void remove(Causable c) {

@@ -1,8 +1,7 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.decide.DecideRoulette;
-import jcog.decide.DecideSoftmax;
+import jcog.decide.Roulette;
 import nars.$;
 import nars.control.Cause;
 import nars.control.Derivation;
@@ -122,7 +121,7 @@ public class ValueFork extends Fork {
                     //causes[i].value() //<- not safe for direct roulette weights due to non-positive values
                     (float) Math.exp(causes[i].value()) //softmax
             );
-            DecideRoulette.selectRouletteUnique(branches, i->w[i], (b) -> {
+            Roulette.selectRouletteUnique(branches, i->w[i], (b) -> {
 
                 this.branches[b].test(d);
 

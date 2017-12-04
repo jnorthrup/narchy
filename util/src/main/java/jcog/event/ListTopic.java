@@ -1,5 +1,6 @@
 package jcog.event;
 
+import jcog.list.FastCoWList;
 import jcog.list.FasterList;
 
 import java.util.concurrent.Executor;
@@ -7,12 +8,10 @@ import java.util.function.Consumer;
 
 /**  arraylist implementation, thread safe.  creates an array copy on each update
  *   for fastest possible iteration during emitted events. */
-public class ListTopic<V> extends FasterList<Consumer<V>> implements Topic<V> {
-
-    private Consumer[] copy = EMPTY;
+public class ListTopic<V> extends jcog.list.FastCoWList<Consumer<V>> implements Topic<V> {
 
     public ListTopic() {
-        super(8);
+        super(8, Consumer[]::new);
     }
 
     @Override
@@ -29,24 +28,13 @@ public class ListTopic<V> extends FasterList<Consumer<V>> implements Topic<V> {
             executorService.execute(()->c.accept(x));
     }
 
-    @Override public final synchronized void enable(Consumer<V> o) {
-        if(this.add(o)) {
-            commit();
-        }
+    @Override public final void enable(Consumer<V> o) {
+        add(o);
     }
 
-    @Override public final synchronized void disable(Consumer<V> o) {
-        if(this.remove(o)) {
-            commit();
-        }
+    @Override public final void disable(Consumer<V> o) {
+        remove(o);
     }
-
-    private final void commit() {
-        this.copy = (size == 0) ? EMPTY :
-                                  toArrayRecycled(Consumer[]::new);
-    }
-
-    private static final Consumer[] EMPTY = new Consumer[0];
 
 
 }

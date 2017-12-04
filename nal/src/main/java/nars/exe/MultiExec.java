@@ -18,10 +18,10 @@ import java.util.function.Consumer;
 import java.util.function.LongPredicate;
 import java.util.stream.Stream;
 
-public class MultiExec extends UniExec {
+public class MultiExec extends AbstractExec {
 
 
-    public static final int WORK_BATCH_SIZE = 3;
+
 
 
     static final Logger logger = LoggerFactory.getLogger(MultiExec.class);
@@ -89,7 +89,7 @@ public class MultiExec extends UniExec {
             @Deprecated float throttle = loop.throttle.floatValue(); //HACK
 
             try {
-                focus.work((int) (WORK_BATCH_SIZE */*(1f-load)**/throttle));
+                focus.work((int) (Focus.WORK_BATCH_SIZE */*(1f-load)**/throttle));
             } catch (Throwable e) {
                 if (Param.DEBUG) {
                     throw e;

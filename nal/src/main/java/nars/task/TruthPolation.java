@@ -1,7 +1,7 @@
 package nars.task;
 
 import jcog.Util;
-import jcog.decide.DecideRoulette;
+import jcog.decide.Roulette;
 import jcog.decide.DecideSoftmax;
 import nars.Param;
 import nars.Task;
@@ -207,7 +207,7 @@ public interface TruthPolation extends Consumer<Tasked> {
         @Override
         public PreciseTruth truth() {
             if (!evi.isEmpty()) {
-                int which = DecideRoulette.decideRoulette(freq.size(), evi::get, rng);
+                int which = Roulette.decideRoulette(freq.size(), evi::get, rng);
                 float f = freq.get(which);
                 float e = evi.get(which);
                 return new PreciseTruth(f, e, false);

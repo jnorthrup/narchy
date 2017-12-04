@@ -2,7 +2,7 @@ package jcog.bag.impl;
 
 import jcog.Util;
 import jcog.bag.Bag;
-import jcog.decide.DecideRoulette;
+import jcog.decide.Roulette;
 import jcog.pri.Pri;
 import jcog.pri.Prioritized;
 import jcog.pri.Priority;
@@ -125,7 +125,7 @@ public class CurveBag<X extends Priority> extends PriArrayBag<X> {
                     wVal[windowCap - 1] = v0;
                     wPri[windowCap - 1] = Util.max(p, Pri.EPSILON); //to differentiate from absolute zero
 
-                    int which = DecideRoulette.decideRoulette(windowCap, (r) -> wPri[r], random);
+                    int which = Roulette.decideRoulette(windowCap, (r) -> wPri[r], random);
                     X v = (X) wVal[which];
                     if (v == null)
                         continue; //shouldnt happen but just in case

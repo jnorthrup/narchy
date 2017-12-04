@@ -1,13 +1,13 @@
 package jcog;
 
-import jcog.decide.DecideRoulette;
+import jcog.decide.Roulette;
 import jcog.math.random.XorShift128PlusRandom;
 import org.apache.commons.math3.stat.Frequency;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class DecideRouletteTest {
+public class RouletteTest {
 
     @Test
     public void testDecideRouletteFlat() {
@@ -17,7 +17,7 @@ public class DecideRouletteTest {
 
         Frequency f = new Frequency();
         for (int i = 0; i < samples; i++)
-            f.addValue(DecideRoulette.decideRoulette(uniques, (k) -> 0.5f, rng));
+            f.addValue(Roulette.decideRoulette(uniques, (k) -> 0.5f, rng));
 
         //System.out.println(f);
         assertEquals(f.getUniqueCount(), uniques);
@@ -33,7 +33,7 @@ public class DecideRouletteTest {
 
         Frequency f = new Frequency();
         for (int i = 0; i < samples; i++)
-            f.addValue(DecideRoulette.decideRoulette(uniques, (k) -> (k+1f)/(uniques), rng));
+            f.addValue(Roulette.decideRoulette(uniques, (k) -> (k+1f)/(uniques), rng));
 
         System.out.println(f);
         assertEquals(f.getUniqueCount(), uniques);

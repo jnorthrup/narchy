@@ -17,7 +17,8 @@ import java.util.function.IntPredicate;
 import static java.lang.Float.NaN;
 import static java.lang.Math.exp;
 
-public class DecideRoulette<X> extends FasterList<X> {
+/** roulette decision making */
+public enum Roulette { ;
 
     public final static FloatFunction<? super PriReference> linearPri = (p) -> {
         return Math.max(p.priElseZero(), Prioritized.EPSILON);
@@ -27,14 +28,6 @@ public class DecideRoulette<X> extends FasterList<X> {
         return (float) exp(p.priElseZero() * 3 /* / temperature */);
     };
 
-    private final FloatFunction<X> eval;
-    private float[] values;
-    private float sum;
-
-    public DecideRoulette(FloatFunction<X> value) {
-        super();
-        this.eval = value;
-    }
 
     public static int decideRoulette(float[] x, Random rng) {
         return decideRoulette(x.length, (n) -> x[n], rng);
@@ -162,33 +155,33 @@ public class DecideRoulette<X> extends FasterList<X> {
 //        }
     }
 
-    @Nullable
-    public X decide(Random rng) {
-        int s = size();
-        if (s == 0)
-            return null;
-        return get(decideWhich(rng));
-    }
-
-    public int decideWhich(Random rng) {
-        int s = size();
-        if (s == 0)
-            return -1;
-        else if (s == 1)
-            return 0;
-
-        if (this.values == null || this.values.length!= s) {
-            this.values = new float[s];
-            float sum = 0;
-            for (int i = 0; i < s; i++) {
-                float f = eval.floatValueOf(get(i));
-                values[i] = f;
-                sum += f;
-            }
-            this.sum = sum;
-        }
-        return decideRoulette(s, (i)->values[i], sum, rng);
-    }
+//    @Nullable
+//    public X decide(Random rng) {
+//        int s = size();
+//        if (s == 0)
+//            return null;
+//        return get(decideWhich(rng));
+//    }
+//
+//    public int decideWhich(Random rng) {
+//        int s = size();
+//        if (s == 0)
+//            return -1;
+//        else if (s == 1)
+//            return 0;
+//
+//        if (this.values == null || this.values.length!= s) {
+//            this.values = new float[s];
+//            float sum = 0;
+//            for (int i = 0; i < s; i++) {
+//                float f = eval.floatValueOf(get(i));
+//                values[i] = f;
+//                sum += f;
+//            }
+//            this.sum = sum;
+//        }
+//        return decideRoulette(s, (i)->values[i], sum, rng);
+//    }
 
     public static enum RouletteControl {
         STOP, CONTINUE, WEIGHTS_CHANGED

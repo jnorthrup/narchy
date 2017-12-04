@@ -251,25 +251,6 @@ public class NARS {
             if (threadSafe)
                 index = () -> new CaffeineIndex(64 * 1024);
 
-            postInit.add((n) -> {
-                //HACK dummy Focus - useful only for single threaded testing.  to be moved to a special Testing executor
-                List<Causable> can = n.services().map(x -> x instanceof Causable ? ((Causable)x) : null).filter(Objects::nonNull).collect(Collectors.toList());
-                n.serviceAddOrRemove.on((xb)->{
-                    Services.Service<NAR> s = xb.getOne();
-                    if (s instanceof Causable) {
-                        if (xb.getTwo())
-                            can.add((Causable) s);
-                        else
-                            can.remove(s);
-                    }
-                });
-                n.onCycle(() -> {
-                    int WORK_PER_CYCLE = 2;
-                    for (int i = 0, canSize = can.size(); i < canSize; i++) {
-                        can.get(i).run(n, WORK_PER_CYCLE);
-                    }
-                });
-            });
         }
 
         @Override
