@@ -143,11 +143,8 @@ public enum Op {
 
                 case 1:
                     Term only = u[0];
-
                     if (only instanceof EllipsisMatch) {
-                        EllipsisMatch em = (EllipsisMatch) only;
-                        Term[] x = em.arrayShared();
-                        return _the(dt, x); //unwrap
+                        return _the(dt, ((EllipsisMatch) only).arrayShared()); //unwrap
                     }
 
                     //preserve unitary ellipsis for patterns etc
@@ -155,10 +152,6 @@ public enum Op {
                             new UnitCompound1(CONJ, only) //special; preserve the surrounding conjunction
                             :
                             only;
-
-                default:
-                    //continue below
-                    break;
 
             }
 
@@ -293,63 +286,32 @@ public enum Op {
 
 
                     if (dt == XTERNAL) {
-                        if (n == 2) {
+                        if (n == 2 && a.op() == CONJ && a.dt() == XTERNAL && a.subs() == 2) {
 
                             int va = a.volume();
                             int vb = b.volume();
 
-                            boolean heavyLeft, heavyRight;
-
-                            if (va > vb && a.op() == CONJ && a.dt() == XTERNAL && a.subs() == 2) {
-                                int va0 = a.sub(0).volume();
-                                int va1 = a.sub(1).volume();
-
+                            if (va > vb) {
+                                Term[] aa = a.subterms().arrayShared();
+                                int va0 = aa[0].volume();
+                                int va1 = aa[1].volume();
                                 int vamin = Math.min(va0, va1);
 
                                 //if left remains heavier by donating its smallest
                                 if ((va - vamin) > (vb + vamin)) {
                                     int min = va0 <= va1 ? 0 : 1;
-                                    Term aToB = a.sub(min);
                                     return CONJ.the(XTERNAL,
-                                            CONJ.the(XTERNAL, b, aToB), a.sub(1 - min));
+                                                CONJ.the(XTERNAL, b, aa[min] /* a to b */),
+                                                aa[1 - min]);
                                 }
                             }
-
-                            //b volume should not be larger than a, it is guaranteed by commutive ordinality convention
-
-                        /*else if (vb > va && b.op() == CONJ && b.dt() == XTERNAL && b.subs() == 2) {
-                            int vb0 = b.sub(0).volume();
-                            int vb1 = b.sub(1).volume();
-
-                            if (vb - va > Math.min(vb0, vb1)) {
-                                int min = vb0 <= vb1 ? 0 : 1;
-                                Term bToA = b.sub(min);
-                                return CONJ.the(XTERNAL,
-                                        CONJ.the(XTERNAL, a, bToA), b.sub(1 - min));
-                            }
-                        }*/
-
 
                         }
                         return compound(CONJ, XTERNAL, u);
                     } else {
-
-
-                        {
-
-                            if (dt < 0) { //&& (dt != XTERNAL)
-                                Term x = a;
-                                a = b;
-                                b = x;
-                                ci = conjMerge(a, 0, b, -dt + a.dtRange());
-                            } else {
-//                                if (heavyRight) {
-//                                    return conjMerge(b, 0, a, dt + a.dtRange());
-//                                } else {
-                                ci = conjMerge(a, 0, b, dt + a.dtRange());
-//                                }
-                            }
-                        }
+                        ci = dt >= 0 ?
+                                conjMerge(a, 0, b, +dt + a.dtRange()) :
+                                conjMerge(b, 0, a, -dt + b.dtRange());
                     }
 
                     break;
@@ -858,7 +820,6 @@ public enum Op {
     /**
      * string representation
      */
-    @NotNull
     public final String str;
     /**
      * character representation if symbol has length 1; else ch = 0
@@ -1114,7 +1075,7 @@ public enum Op {
     /**
      * constructs a correctly merged conjunction from a list of events
      */
-    @NotNull
+    /*@NotNull*/
     public static Term conj(List<LongObjectPair<Term>> events) {
 
         int ee = events.size();
@@ -1782,7 +1743,7 @@ public enum Op {
         return stringToOperator.get(s);
     }
 
-    @NotNull
+    /*@NotNull*/
     private static Term intersect(Term[] t, /*@NotNull*/ Op intersection, /*@NotNull*/ Op setUnion, /*@NotNull*/ Op setIntersection) {
 
         int trues = 0;
@@ -1842,7 +1803,7 @@ public enum Op {
 
     }
 
-    @NotNull
+    /*@NotNull*/
     @Deprecated
     private static Term intersect2(Term term1, Term term2, /*@NotNull*/ Op intersection, /*@NotNull*/ Op setUnion, /*@NotNull*/ Op setIntersection) {
 
@@ -1897,7 +1858,7 @@ public enum Op {
         return !c.hasAny(Op.NonGoalable);// && c.op().goalable;
     }
 
-    @NotNull
+
     @Override
     public String toString() {
         return str;
@@ -1906,7 +1867,7 @@ public enum Op {
     /**
      * writes this operator to a Writer in (human-readable) expanded UTF16 mode
      */
-    public final void append(@NotNull Compound c, @NotNull Appendable w) throws IOException {
+    public final void append(Compound c, Appendable w) throws IOException {
         append(c.dt(), w, false);
     }
 
@@ -1937,7 +1898,6 @@ public enum Op {
         }
 
         boolean hasTime = dt != Tense.DTERNAL;
-
         if (hasTime)
             w.append(' ');
 
@@ -1963,10 +1923,8 @@ public enum Op {
         }
     }
 
-    public boolean commute(int dt, int size) {
-        return size > 1 &&
-                (commutative && Op.concurrent(dt))
-                ;
+    public final boolean commute(int dt, int size) {
+        return size > 1 && commutative && Op.concurrent(dt);
     }
 
 

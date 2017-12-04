@@ -129,15 +129,19 @@ public class Revision {
 //                    aProp, curDepth, rng, mergeOrChoose).neg();
 //        }
 
+        assert(dt!=XTERNAL);
+
         int len = a.subs();
         if (len > 0) {
 
             if (ao.temporal) {
-                if (a.equals(b) && (dt == 0 || dt == DTERNAL)) {
+                boolean dtCommutes = dt == 0 || dt == DTERNAL;
+
+                if (a.equals(b) && dtCommutes) {
                     return a;
                 }
 
-                if (!mergeOrChoose && !a.subterms().hasAny(Op.CONJ) && !b.subterms().hasAny(Op.CONJ) && (dt == 0 || dt == DTERNAL)) {
+                if (!mergeOrChoose && dtCommutes && !a.subterms().hasAny(Op.CONJ) && !b.subterms().hasAny(Op.CONJ) ) {
                     return choose(a, b, aProp, rng);
                 } else {
                     switch (ao) {

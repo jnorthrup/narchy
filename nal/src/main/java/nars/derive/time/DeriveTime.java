@@ -142,11 +142,11 @@ public class DeriveTime extends TimeGraph {
             assert (solution != null);
             //TODO test equivalence with task and belief terms and occurrences, and continue iterating up to a max # of tries if it produced a useless equivalent result
 
-            Event current = alternates.first();
-            if (current == null)
+            Event first = alternates.first();
+            if (first == null) {
                 alternates.add(solution);
-            else {
-                Event merged = merge(current, solution);
+            } else {
+                Event merged = merge(first, solution);
                 if (merged == null) {
                     //add alternate
                     alternates.add(solution);
