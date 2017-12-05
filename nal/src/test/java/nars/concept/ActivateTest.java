@@ -173,13 +173,13 @@ public class ActivateTest {
     @Test
     public void testTemplateConj1() throws Narsese.NarseseException {
         testTemplates("(x && y)",
-                "[(x &&+- y), y, x]");
+                "[y, x, (x&&y)]");
     }
 
     @Test
     public void testTemplateConj2() throws Narsese.NarseseException {
         testTemplates("(&&,<#x --> lock>,(<$y --> key> ==> open($y,#x)))",
-                "[lock, ((($1-->key)&&(#2-->lock))==>open($1,#2)), ($1,#2), (#2-->lock), $1, open, open($1,#2), #2, (($1-->key)&&(#2-->lock)), key, ($1-->key)]");
+                "[lock, ((#1-->lock)&&($2-->key)), #1, ($2-->key), open, (((#1-->lock)&&($2-->key)) ==>+- open($2,#1)), (#1-->lock), $2, key, open($2,#1), ($2,#1)]");
 
     }
 

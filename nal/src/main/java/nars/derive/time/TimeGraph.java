@@ -26,7 +26,6 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.Op.CONJ;
-import static nars.derive.time.TimeGraph.Absolute.validate;
 import static nars.derive.time.TimeGraph.TimeSpan.TS_ZERO;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -141,7 +140,6 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         Node<Event, TimeSpan> existing = node(e);
         return existing != null ? existing.id : e;
     }
-
 
 
     public boolean link(Event before, TimeSpan e, Event after) {
@@ -458,11 +456,11 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 //            bb = cc;
 //        }
         long start;
-        if (x.op()==CONJ) {
+        if (x.op() == CONJ) {
             //earliest first for CONJ, since it will be constructed with conjMerge
             long astart = aa.when();
             long bstart = bb.when();
-            if (astart!=TIMELESS && bstart!=TIMELESS) {
+            if (astart != TIMELESS && bstart != TIMELESS) {
                 start = Math.min(astart, bstart);
             } else {
                 start = astart;
@@ -473,7 +471,9 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         return solveDT(x, start, dt(x, aa, bb), each);
     }
 
-    /** since CONJ will be constructed with conjMerge, if x is conj the dt between events must be calculated from start-start. otherwise it is implication and this is measured internally */
+    /**
+     * since CONJ will be constructed with conjMerge, if x is conj the dt between events must be calculated from start-start. otherwise it is implication and this is measured internally
+     */
     static long dt(Term x, Event aa, Event bb) {
         return bb.when() - aa.when();
         //return bb.start() - (x.op() == CONJ ? aa.start() : aa.end());
@@ -487,6 +487,9 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         if (y instanceof Bool)
             return true;
 
+        if (start != ETERNAL && start != TIMELESS && dt != DTERNAL && dt < 0 && y.op() == CONJ) {
+            start += dt; //shift to left align
+        }
 
         return start != TIMELESS ?
                 each.test(
@@ -507,14 +510,14 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         //CONSTRUCT NEW TERM
         Term y;
         if (x.op() != CONJ) {
-            y = x.dt((dt!=XTERNAL && dt != DTERNAL) ? dt - x.sub(0).dtRange() : dt); //IMPL
+            y = x.dt((dt != XTERNAL && dt != DTERNAL) ? dt - x.sub(0).dtRange() : dt); //IMPL
         } else {
             int early = Op.conjEarlyLate(x, true);
             if (early == 1)
                 dt = -dt;
             y = Op.conjMerge(
                     x.sub(early), 0,
-                    x.sub(1-early), dt);
+                    x.sub(1 - early), dt);
         }
 
 
@@ -548,15 +551,21 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         };
 
         //test for existing exact solutions to the exact term
-        for (Event e : byTerm.get(x)) {
-            if (e.absolute() && !each.test(e))
-                return;
-        }
+        if (!solveExact(x, each))
+            return;
 
         if (solveAll(x, each)) {
             //as a last resort:
             each.test(event(x, TIMELESS));
         }
+    }
+
+    private boolean solveExact(Term x, Predicate<Event> each) {
+        for (Event e : byTerm.get(x)) {
+            if (e.absolute() && !each.test(e))
+                return false;
+        }
+        return true;
     }
 
 
@@ -584,34 +593,36 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                         solveDT(u, v -> {
 
                             Term y = x.replace(u, v.id);
-                            if (y == null)
+                            if (y == null || y instanceof Bool)
                                 return true; //continue
 
                             boolean ye = y.equals(x);
+                            if (!ye) {
 
-                            if (!(y instanceof Bool)) {
-                                if (!ye) {
-                                    boolean yx = y.hasXternal();
-                                    if (u.equals(x) && !yx) {
-                                        if (v.when() != TIMELESS) {
-                                            return each.test(v); //shortcut to finish
-                                        } else {
-                                            return solveOccurrence(v, each); //only need to solve occurrence
-                                        }
-                                    }
+                                if (!solveExact(y, each))
+                                    return false;
 
-                                    return yx ?
-                                            solveAll(y, each) : //recurse to solve remaning xternal's
-                                            solveOccurrence(event(y, TIMELESS), each); //just need to solve occurrence now
-                                } else {
-                                    //term didnt change...
-                                    if (v.when()!=TIMELESS) {
-                                        if (!each.test(v)) //but atleast it somehow solved an occurrence time
-                                            return false;
+                                boolean yx = y.hasXternal();
+                                if (u.equals(x) && !yx) {
+                                    if (v.when() != TIMELESS) {
+                                        return each.test(v); //shortcut to finish
+                                    } else {
+                                        return solveOccurrence(v, each); //only need to solve occurrence
                                     }
                                 }
 
+                                return yx ?
+                                        solveAll(y, each) : //recurse to solve remaning xternal's
+                                        solveOccurrence(event(y, TIMELESS), each); //just need to solve occurrence now
+                            } else {
+                                //term didnt change...
+                                if (v.when() != TIMELESS) {
+                                    if (!each.test(v)) //but atleast it somehow solved an occurrence time
+                                        return false;
+                                }
                             }
+
+
                             return true; //keep trying
                         })
                 ))

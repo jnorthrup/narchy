@@ -189,7 +189,7 @@ public class BeliefTableTest {
         //this.activeTasks = activeTasks;
         NAR n = NARS.tmp();
 
-        n.time.dur(15);
+        //TODO extend these beliefs so they overlap (intersect), then it will derive the results
         n.inputAt(2, "a:x. :|:");
         n.inputAt(10, "a:y. :|:");
         n.run(128);

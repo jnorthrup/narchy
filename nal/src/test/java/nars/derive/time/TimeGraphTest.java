@@ -46,19 +46,19 @@ class TimeGraphTest {
 //    }
 
     @Test
-    public void testAtomEvent() throws Narsese.NarseseException {
+    public void testAtomEvent() {
         A.print();
         assertSolved("one", A, "one@1", "one@19");
     }
 
     @Test
-    public void testSimpleConjWithOneKnownAbsoluteSubEvent1() throws Narsese.NarseseException {
+    public void testSimpleConjWithOneKnownAbsoluteSubEvent1() {
 
         int nodesBefore = A.nodes().size();
         long edgesBefore = A.edges().count();
 
         assertSolved("(one &&+1 two)", A,
-                "(one &&+1 two)@[1..2]", "(one &&+1 two)@[19..20]");
+                "(one &&+1 two)@1", "(one &&+1 two)@19");
 
         int nodesAfter = A.nodes().size();
         long edgesAfter = A.edges().count();
@@ -67,42 +67,42 @@ class TimeGraphTest {
     }
 
     @Test
-    public void testSimpleConjWithOneKnownAbsoluteSubEvent2() throws Narsese.NarseseException {
+    public void testSimpleConjWithOneKnownAbsoluteSubEvent2() {
         assertSolved("(one &&+- two)", A,
-                "(one &&+1 two)@[1..2]", "(one &&+1 two)@[19..20]");
+                "(one &&+1 two)@1", "(one &&+19 two)@1", "(one &&+1 two)@19");
     }
 
     @Test
-    public void testSimpleConjOfTermsAcrossImpl1() throws Narsese.NarseseException {
+    public void testSimpleConjOfTermsAcrossImpl1() {
 
         assertSolved("(two &&+1 three)", A,
-                "(two &&+1 three)@[2..3]", "(two &&+1 three)@[20..21]");
+                "(two &&+1 three)@2", "(two &&+1 three)@20");
     }
     @Test
-    public void testSimpleConjOfTermsAcrossImpl2() throws Narsese.NarseseException {
+    public void testSimpleConjOfTermsAcrossImpl2() {
         int nodesBefore = A.nodes().size();
         long edgesBefore = A.edges().count();
 
         assertSolved("(two &&+- three)", A,
-                "(two &&+1 three)@[2..3]", "(two &&+1 three)@[20..21]");
+                "(two &&+1 three)@2", "(two &&+1 three)@20");
         int nodesAfter = A.nodes().size();
         long edgesAfter = A.edges().count();
 
     }
 
     @Test
-    public void testSimpleImplWithOneKnownAbsoluteSubEvent() throws Narsese.NarseseException {
+    public void testSimpleImplWithOneKnownAbsoluteSubEvent() {
         A.print();
         assertSolved("(one ==>+- three)", A,
                 "(one ==>+2 three)");
     }
 
-    @Test public void testImplChain1() throws Narsese.NarseseException {
+    @Test public void testImplChain1() {
         B.print();
         assertSolved("(z ==>+- x)", B, "(z ==>+1 x)");
     }
 
-    @Test public void testImplChain2() throws Narsese.NarseseException {
+    @Test public void testImplChain2() {
         assertSolved("(x ==>+- z)", B, "(x ==>-1 z)");
     }
 
@@ -115,7 +115,7 @@ class TimeGraphTest {
         cc1.know($.$("(b &&+5 c)"), 6);
         cc1.print();
         assertSolved("(a &&+- c)", cc1,
-                "(a &&+10 c)@[1..11]");
+                "(a &&+10 c)@1");
     }
 
     private static final String[] implWithConjPredicateSolutions = {
@@ -126,8 +126,9 @@ class TimeGraphTest {
     };
 
     @Test
-    public void testImplWithConjPredicate1() throws Narsese.NarseseException {
-        assertSolved("(one ==>+- (two &&+1 three))", A, implWithConjPredicateSolutions);
+    public void testImplWithConjPredicate1() {
+        assertSolved("(one ==>+- (two &&+1 three))", A,
+                "(one ==>+1 (two &&+1 three))");
     }
 
     @Test public void testDecomposeImplConj() throws Narsese.NarseseException {
@@ -141,7 +142,7 @@ class TimeGraphTest {
     }
 
     @Test
-    public void testImplWithConjPredicate2() throws Narsese.NarseseException {
+    public void testImplWithConjPredicate2() {
         assertSolved("(one ==>+- (two &&+- three))", A, implWithConjPredicateSolutions);
     }
 
