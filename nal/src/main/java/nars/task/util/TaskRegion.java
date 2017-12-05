@@ -20,10 +20,11 @@ public interface TaskRegion extends HyperRegion, Tasked {
     float CONF_SAMENESS_IMPORTANCE = 0.05f;
 
     static long nearestBetween(long s, long e, long when) {
-        assert (when != ETERNAL);
 
         if (s == ETERNAL) {
             return when;
+        } else if (when == ETERNAL) {
+            return (s + e)/2; //midpoint
         } else if (when < s || e == s) {
             return s; //point or at or beyond the start
         } else if (when > e) {

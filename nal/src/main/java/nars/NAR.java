@@ -1304,8 +1304,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
     /**
      * sets current maximum allowed NAL level (1..8)
+     * this doesnt affect the deriver. creating a NAL-limited deriver is the correct way to control NAL level usage
      */
-    public final NAR nal(int newLevel) {
+    @Deprecated public final NAR nal(int newLevel) {
         nal = newLevel;
         return this;
     }

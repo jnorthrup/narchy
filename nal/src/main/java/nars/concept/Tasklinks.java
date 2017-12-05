@@ -7,8 +7,10 @@ import jcog.pri.Prioritized;
 import jcog.pri.op.PriForget;
 import nars.NAR;
 import nars.Task;
+import nars.concept.builder.TaskLinkCurveBag;
 import nars.table.TemporalBeliefTable;
 import org.apache.commons.lang3.mutable.MutableFloat;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
@@ -20,28 +22,43 @@ public class Tasklinks {
             linkTask(t, p, cc, nar);
     }
 
-    public static void linkTask(Task t, float activationApplied, Concept cc, NAR nar) {
 
+    public static void linkTask(Task t, float pri, Concept cc) {
+        linkTask(t, pri, cc, null);
+    }
 
-        Bag<Task, PriReference<Task>> tl = cc.tasklinks();
+    public static void linkTask(Task x, float p, Bag b) {
+        linkTask(x, p, b, null);
+    }
 
+    public static void linkTask(Task x, float p, Bag<Task,PriReference<Task>> b, @Nullable MutableFloat overflow) {
+        PLinkUntilDeleted<Task> l = new PLinkUntilDeleted<>(x, p);
+        if (overflow!=null)
+            b.put(l, overflow);
+        else
+            b.putAsync(l);
+    }
 
-        MutableFloat overflow = new MutableFloat();
-        tl.put(
-                new PLinkUntilDeleted<>(t, activationApplied), overflow
-                //new PLink<>(t, activationApplied), overflow
-        );
+    /** if NAR is null, then only inserts tasklink.  otherwise it proceeds with activation */
+    public static void linkTask(Task t, float pri, Concept cc, @Nullable NAR nar) {
 
-        activationApplied -= overflow.floatValue();
+        boolean activate = nar!=null;
 
-        if (activationApplied >= Prioritized.EPSILON_VISIBLE) {
-            nar.eventTask.emit(t);
-        }
+        MutableFloat overflow = activate ? new MutableFloat() : null;
+        linkTask(t, pri, cc.tasklinks(), overflow);
 
-        float conceptActivation = activationApplied * nar.evaluate(t.cause());
-        if (conceptActivation > 0) {
-            nar.activate(cc, conceptActivation);
-            nar.emotion.onActivate(t, conceptActivation, cc, nar);
+        if (activate) {
+            pri -= overflow.floatValue();
+
+            if (pri >= Prioritized.EPSILON_VISIBLE) {
+                nar.eventTask.emit(t);
+            }
+
+            float conceptActivation = pri * nar.evaluate(t.cause());
+            if (conceptActivation > 0) {
+                nar.activate(cc, conceptActivation);
+                nar.emotion.onActivate(t, conceptActivation, cc, nar);
+            }
         }
     }
 
@@ -56,9 +73,7 @@ public class Tasklinks {
 
         for (Concept target : targets) {
 
-            target.tasklinks().putAsync(
-                    new PLinkUntilDeleted(task, tfaEach)
-            );
+            linkTask(task, tfaEach, target);
 //                target.termlinks().putAsync(
 //                        new PLink(task.term(), tfaEach)
 //                );

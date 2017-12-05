@@ -28,7 +28,7 @@ public class UnifySubst extends Unify {
 
     @Override
     public boolean unify(/*@NotNull*/ Term x, /*@NotNull*/ Term y, boolean finish) {
-        this.a = x;
+        this.a = y;
         return super.unify(x, y, finish);
     }
 
@@ -48,8 +48,11 @@ public class UnifySubst extends Unify {
 //            return null;
 //        }
             Term aa = a.transform(new MapSubst(xy));
-            if (aa!=null)
-                target.test(aa);
+            if (aa!=null) {
+                if (!target.test(aa)) {
+                    stop();
+                }
+            }
 
 
 //        }

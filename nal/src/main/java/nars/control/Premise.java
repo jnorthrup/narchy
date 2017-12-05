@@ -4,6 +4,7 @@
  */
 package nars.control;
 
+import jcog.Util;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import nars.NAR;
@@ -11,6 +12,7 @@ import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
+import nars.concept.Tasklinks;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -112,24 +114,39 @@ public class Premise {
 
         Term taskTerm = task.term();
 
-        boolean beliefConceptCanAnswerTaskConcept = false;
+        boolean beliefConceptCanAnswerTaskConcept = false, unifiedBelief = false;
 
-        if (!taskTerm.equals(beliefTerm)) {
-            int var = Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit;
-            boolean beliefHasVars = beliefTerm.hasAny(var);
-            if (taskTerm.hasAny(var) || beliefHasVars) {
-                Unify u = unify(taskTerm, beliefTerm, n, matchTTL);
-                if (u != null) {
-                    if (beliefHasVars) {
-                        beliefTerm = beliefTerm.transform(u);
-                        if (beliefTerm == null || beliefTerm instanceof Bool)
-                            return null;
+        Op to = taskTerm.op();
+        Op bo = beliefTerm.op();
+        if (to.var || bo.var || to == bo) {
+            if (taskTerm.equalsRoot(beliefTerm)) {
+                beliefConceptCanAnswerTaskConcept = true;
+            } else {
+                int var = Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit;
+                if (taskTerm.hasAny(var) || beliefTerm.hasAny(var)) {
+
+                    Term _beliefTerm = beliefTerm;
+                    final Term[] unifiedBeliefTerm = new Term[]{null};
+                    UnifySubst u = new UnifySubst(null, n, (y) -> {
+                        if (y.op().conceptualizable
+                                && !y.equals(_beliefTerm)
+                                && !y.hasAny(Op.BOOL)
+                                ) {
+                            unifiedBeliefTerm[0] = y;
+                            return false; //stop
+                        }
+                        return true; //keep going
+                    }, matchTTL);
+                    if (u.unify(taskTerm, beliefTerm, true)) {
+                        beliefConceptCanAnswerTaskConcept = true;
+                        if (unifiedBeliefTerm[0] != null) {
+                            beliefTerm = unifiedBeliefTerm[0];
+                            unifiedBelief = true;
+                        }
                     }
-                    beliefConceptCanAnswerTaskConcept = true;
                 }
             }
         }
-
         beliefTerm = beliefTerm.unneg(); //HACK ?? assert(beliefTerm.op()!=NEG);
 
         //QUESTION ANSWERING and TERMLINK -> TEMPORALIZED BELIEF TERM projection
@@ -137,16 +154,18 @@ public class Premise {
         Concept beliefConcept = n.conceptualize(beliefTerm);
 
 
-        if (beliefConcept != null && !beliefTerm.hasVarQuery()) { //doesnt make sense to look for a belief in a term with query var, it will have none
+        if (beliefConcept != null) {
 
-            Task match;
+            if (!beliefTerm.hasVarQuery()) { //doesnt make sense to look for a belief in a term with query var, it will have none
 
-            if (task.isQuestOrQuestion()) {
-                if ((beliefConceptCanAnswerTaskConcept || beliefConcept.equals(taskConcept))) {
-                    final BeliefTable answerTable =
-                            (task.isGoal() || task.isQuest()) ?
-                                    beliefConcept.goals() :
-                                    beliefConcept.beliefs();
+                Task match;
+
+                if (task.isQuestOrQuestion()) {
+                    if (beliefConceptCanAnswerTaskConcept) {
+                        final BeliefTable answerTable =
+                                (task.isGoal() || task.isQuest()) ?
+                                        beliefConcept.goals() :
+                                        beliefConcept.beliefs();
 
 //                            //see if belief unifies with task (in reverse of previous unify)
 //                            if (questionTerm.varQuery() == 0 || (unify((Compound)beliefConcept.term(), questionTerm, nar) == null)) {
@@ -155,77 +174,48 @@ public class Premise {
 //
 //                            }
 
-                    match = answerTable.answer(task.start(), task.end(), dur, task, beliefTerm, n);
-                    if (match != null) {
-                        assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
+                        match = answerTable.answer(task.start(), task.end(), dur, task, beliefTerm, n);
+                        if (match != null) {
+                            assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 
-                        @Nullable Task answered = task.onAnswered(match, n);
-                        if (answered != null) {
+                            @Nullable Task answered = task.onAnswered(match, n);
+                            if (answered != null) {
+                                n.emotion.onAnswer(this.task, answered);
+                            }
 
-                            n.emotion.onAnswer(this.task, answered);
+                            if (match.isBelief()) {
+                                belief = match;
+                            }
 
                         }
                     }
-                } else {
-                    long focus = matchTime(task, now, dur, n);
+                }
+
+                if (belief == null) {
+                    long focus = matchTime(task, now, n);
                     long focusStart, focusEnd;
                     if (focus == ETERNAL) {
                         focusStart = focusEnd = ETERNAL;
                     } else {
-                        focusStart = focus - dur;
-                        focusEnd = focus + dur;
+                        focusStart =
+                                //focus - dur;
+                                focus;
+                        focusEnd =
+                                //focus + dur;
+                                focus;
                     }
 
-//                boolean tryMatch = true;
-////                if (beliefIsTask && task.punc() == BELIEF && task.during(when)) {
-////                    if (Math.abs(when - now) > 0 /*= dur*/) {
-////                        //try projecting to now (maybe also a future time) because it will be a different time
-////                        when = now;
-////                    } else {
-////                        //leave belief blank. it already matches itself
-////                        tryMatch = false;
-////                    }
-////                }
-//                if (tryMatch) {
-                    match = beliefConcept.beliefs().match(focusStart, focusEnd, beliefTerm, n);
-//                } else {
-//                    match = null;
-//                }
+                    belief = beliefConcept.beliefs().match(focusStart, focusEnd, beliefTerm, n);
                 }
-            } else {
-                long focus = matchTime(task, now, dur, n);
-                long focusStart, focusEnd;
-                if (focus == ETERNAL) {
-                    focusStart = focusEnd = ETERNAL;
-                } else {
-                    focusStart =
-                            //focus - dur;
-                            focus;
-                    focusEnd =
-                            //focus + dur;
-                            focus;
-                }
-
-//                boolean tryMatch = true;
-////                if (beliefIsTask && task.punc() == BELIEF && task.during(when)) {
-////                    if (Math.abs(when - now) > 0 /*= dur*/) {
-////                        //try projecting to now (maybe also a future time) because it will be a different time
-////                        when = now;
-////                    } else {
-////                        //leave belief blank. it already matches itself
-////                        tryMatch = false;
-////                    }
-////                }
-//                if (tryMatch) {
-                match = beliefConcept.beliefs().match(focusStart, focusEnd, beliefTerm, n);
-//                } else {
-//                    match = null;
-//                }
             }
 
-            if (match != null && match.isBelief()) {
-                belief = match;
+
+            if (unifiedBelief) {
+                Concept originalBeliefConcept = n.concept(this.termLink);
+                if (originalBeliefConcept!=null)
+                    linkVariable(taskConcept, originalBeliefConcept, beliefConcept);
             }
+
         }
 
 
@@ -248,11 +238,36 @@ public class Premise {
         return d;
     }
 
+    /**
+     * x has variables, y unifies with x and has less or no variables
+     */
+    private void linkVariable(Concept taskConcept, Concept lessConstant, Concept moreConstant) {
+
+
+        /** creates a tasklink/termlink proportional to the tasklink's priority
+         *  and inversely proportional to the increase in term complexity of the
+         *  unified variable.  ie. $x -> (y)  would get a stronger link than  $x -> (y,z)
+         */
+        PriReference<Task> taskLink = this.task;
+        Term moreConstantTerm = moreConstant.term();
+        Term lessConstantTerm = lessConstant.term();
+        float pri = taskLink.priElseZero() * Util.unitize(lessConstantTerm.volume() / ((float) moreConstantTerm.volume()));
+
+        moreConstant.termlinks().putAsync(new PLink<>(lessConstantTerm, pri/2));
+        lessConstant.termlinks().putAsync(new PLink<>(moreConstantTerm, pri/2));
+        //moreConstant.termlinks().putAsync(new PLink<>(taskConcept.term(), pri));
+        //taskConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
+
+
+        //Tasklinks.linkTask(this.task.get(), pri, moreConstant);
+
+    }
+
 
     /**
      * temporal focus control: determines when a matching belief or answer should be projected to
      */
-    static long matchTime(Task task, long now, int dur, NAR nar) {
+    static long matchTime(Task task, long now, NAR nar) {
         assert (now != ETERNAL);
 
         if (task.isEternal()) {
@@ -293,49 +308,7 @@ public class Premise {
     }
 
 
-    /**
-     * unify any (and only) query variables which may be present in
-     * the 'a' term with any non-query terms in the 'q' term
-     * returns non-null if unification succeeded and resulted in a transformed 'a' term
-     * sets a negative number in the ttl array, which is to be added to the callee's
-     * ttl.  if zero, then no TTL was consumed
-     */
-    private static UnifySubst unify(Term q, Term a, NAR nar, int ttl) {
 
-
-        if (q.op() != a.op() /*|| q.size() != a.size()*/)
-            return null; //fast-fail: no chance
-
-        final boolean[] result = {false};
-        UnifySubst u = new UnifySubst(null, nar, (aa) -> {
-
-            result[0] = true;
-            return false;
-
-//            if (!aa.equals(a)) {
-//
-//                aa = aa.eval(nar.terms);
-//                if (aa!=null) {
-//                    result[0] = ((Compound) aa);
-//                    return false; //only this match
-//                }
-//            }
-//
-//
-//            return true; //keep trying
-
-        }, ttl);
-        u.unify(q, a, true);
-
-        //ttl[0] = -(startTTL - u.ttl); //how much consumed
-
-        return result[0] ? u : null;
-
-//        if (Terms.equal(q, a, false, true /* no need to unneg, task content is already non-negated */))
-//            return q;
-//        else
-//            return null;
-    }
 
 //    public void merge(Premise incoming) {
 //        //WARNING this isnt thread safe but collisions should be rare

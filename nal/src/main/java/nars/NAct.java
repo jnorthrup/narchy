@@ -46,8 +46,8 @@ public interface NAct {
 
     default void actionToggle(@NotNull Term t, @NotNull Runnable on, @NotNull Runnable off) {
 
-        float thresh = 0.5f + Param.TRUTH_EPSILON;
-        actionUnipolar(t, (f) -> {
+        float thresh = 0.5f;
+        actionUnipolar(t, 0f, (f) -> {
             if (f > thresh) {
                 on.run();
                 return 1f;
@@ -432,9 +432,9 @@ public interface NAct {
             float confMin = n.confMin.floatValue();
             float eviMin = c2w(confMin);
             float feedbackConf =
-                    //n.confDefault(GOAL);
+                    n.confDefault(GOAL);
                     //confMin * 4;
-                    w2c(c2w(n.confDefault(GOAL))/2f);
+                    //w2c(c2w(n.confDefault(GOAL))/2f);
             float curiEvi =
                     //c2w(confBase);
                     eviMin*2;
@@ -475,7 +475,7 @@ public interface NAct {
                         //df = (f[0]-0.5f) - (f[1]-0.5f);
 
                         //experimental: lessen by a factor of how equally confident each goal is
-                        //df *= eMin / eMax;
+                        df *= eMin / eMax;
                         //df *= 1f - Math.abs(e[0] - e[1]) / eMax;
                         //df *= Util.sqr(eMin / eMax); //more cautious
                         //df *= Math.min(w2cSafe(e[0]), w2cSafe(e[1])) / w2cSafe(eMax);
@@ -544,22 +544,22 @@ public interface NAct {
 
 
 
+    default GoalActionConcept actionUnipolar(@NotNull Term s, @NotNull FloatToFloatFunction update) {
+        return actionUnipolar(s, Float.NaN /* latch */, update);
+    }
 
     /**
      * update function receives a value in 0..1.0 corresponding directly to the present goal frequency
      */
-    @NotNull
-    default GoalActionConcept actionUnipolar(@NotNull Term s, @NotNull FloatToFloatFunction update) {
-        float confMin = nar().confMin.floatValue() * 2;
+    default GoalActionConcept actionUnipolar(@NotNull Term s, float valueIfUnknownGoal, @NotNull FloatToFloatFunction update) {
 
         final float[] lastValue = {0.5f};
 
-        boolean latch = false;
         return action(s, (b, d) -> {
             float o = (d != null) ?
                     //d.expectation()
                     d.freq()
-                    : (latch ? lastValue[0] : Float.NaN);
+                    : ((valueIfUnknownGoal==valueIfUnknownGoal) ? valueIfUnknownGoal : lastValue[0]);
 
             float f = update.valueOf(o == o ? o : 0);
             if (f != f)
@@ -570,10 +570,12 @@ public interface NAct {
             //return $.t(f, nar().confDefault(BELIEF));
 
             if (f == f) {
-                return $.t(f,
-                        d!=null ? d.conf() : confMin
-                        //nar().confDefault(BELIEF)
-                );
+                float confFeedback =
+                        nar().confDefault(BELIEF);
+                        //d!=null ? d.conf() : ..
+                        //nar().confMin.floatValue() * 2;
+
+                return $.t(f, confFeedback);
             }
             else
                 return null;

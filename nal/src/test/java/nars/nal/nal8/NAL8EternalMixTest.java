@@ -1,5 +1,7 @@
 package nars.nal.nal8;
 
+import nars.$;
+import nars.Narsese;
 import nars.test.TestNAR;
 import nars.time.Tense;
 import nars.util.NALTest;
@@ -128,7 +130,7 @@ public class NAL8EternalMixTest extends NALTest {
     public void condition_goal_deductionWithVariableEliminationOpposite() {
 
         test
-                //.log()
+                
                 .input("goto({t003}). :|:")
                 .input("(goto(#1) &&+5 at(SELF,#1))!")
                 .mustGoal(2 * cycles, "at(SELF,{t003})", 1.0f, 0.81f, 5)
@@ -138,8 +140,7 @@ public class NAL8EternalMixTest extends NALTest {
     @Test
     public void goal_deduction_impl() {
 
-        TestNAR tester = test;
-        tester.log();
+        TestNAR tester = test;;
         tester.input("x:y! :|:");
         tester.input("(goto(z) ==>+5 x:y).");
         tester.mustGoal(cycles, "goto(z)", 1.0f, 0.45f, (t)->t>=0);
@@ -252,8 +253,7 @@ public class NAL8EternalMixTest extends NALTest {
     public void goal_ded_2() {
 
         TestNAR tester = test;
-
-        tester.log();
+        
         tester.inputAt(0, "at(SELF,{t001}). :|:");
         tester.inputAt(0, "(at(SELF,{t001}) &&+5 open({t001}))!");
 
@@ -265,7 +265,7 @@ public class NAL8EternalMixTest extends NALTest {
     public void condition_goal_deduction_3simplerReverse() {
 
         test
-                //.log()
+                
                 .inputAt(1, "at:t003! :|:")
                 .input("(at:$1 ==>+5 goto:$1).")
 
@@ -385,7 +385,6 @@ public class NAL8EternalMixTest extends NALTest {
     public void temporal_goal_detachment_3_valid() {
 
         test
-                .log()
                 .input("(use)! :|:")
                 .inputAt(2, "( (hold) &&+5 (use) ).") //should be decomposed by the goal task
                 .mustGoal(cycles, "(hold)", 1f, 0.81f, 0)
@@ -411,7 +410,6 @@ public class NAL8EternalMixTest extends NALTest {
         TestNAR tester = test;
 
         int when = 4;
-        tester.log();
         tester.input("( ( hold:t2 &&+5 (att1 &&+5 open:t1)) ==>+5 opened:t1).");
         tester.inputAt(when, "hold:t2. :|:");
 
@@ -439,7 +437,7 @@ public class NAL8EternalMixTest extends NALTest {
         tester.input("((hold(SELF,{t002}) &&+5 ( at(SELF,{t001}) &&+5 open({t001}))) ==>+5 opened:{t001}).");
 
         tester.mustBelieve(cycles, "( hold(SELF,{t002}) &&+5 ( at(SELF,{t001}) &&+5 open({t001})))",
-                1.0f, 0.3f,
+                1.0f, 0.45f,
                 -15, -5);
 
     }
@@ -505,10 +503,9 @@ public class NAL8EternalMixTest extends NALTest {
     public void testBelievedImplOfDesireDelayed() {
 
         test
-                //t
                 .goal("(x)", Tense.Present, 1f, 0.9f)
                 .believe("((x)==>+3(y))")
-                .mustGoal(cycles, "(y)", 1f, 0.45f, 3)
+                .mustGoal(cycles, "(y)", 1f, 0.81f, 3)
         //.mustDesire(cycles, "(y)", 1f, 0.66f, ETERNAL)
         ;
     }
@@ -585,11 +582,19 @@ public class NAL8EternalMixTest extends NALTest {
     @Test
     public void testGoalImplComponentWithVar() {
 
+        test.nar.at(cycles*4, ()->{
+            try {
+                test.nar.concept($.$("c($1)")).print();
+            } catch (Narsese.NarseseException e) {
+                e.printStackTrace();
+            }
+        });
+
         test
-                .inputAt(0, "c(x)! :|:")
-                .inputAt(1, "a(x). :|:")
                 .input("((a($x) &&+4 b($x)) ==>-3 c($x)).")
-                .mustGoal(cycles * 2, "b(x)", 1f, 0.73f,
+                .inputAt(0, "c(x)! :|:")
+                //.inputAt(1, "a(x). :|:")
+                .mustGoal(cycles * 5, "b(x)", 1f, 0.73f,
                         (t)->t>=3 /* early since c(x) is alrady active when this gets derived */);
     }
     @Test

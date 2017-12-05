@@ -5,6 +5,7 @@ import jcog.pri.PLinkUntilDeleted;
 import jcog.pri.PriReference;
 import nars.Param;
 import nars.Task;
+import nars.concept.Tasklinks;
 
 import java.util.Map;
 import java.util.Random;
@@ -35,7 +36,7 @@ public class TaskLinkCurveBag extends CurveBag<PriReference<Task>> {
             } while (y != null && --hopsRemain > 0);
 
             if (x != px && !x.isDeleted()) {
-                putAsync(new PLinkUntilDeleted<>(x, p));
+                Tasklinks.linkTask(x, p, this);
             }
         }
 

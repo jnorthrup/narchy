@@ -110,7 +110,7 @@ public abstract class Unify extends Versioning implements Subst {
         if (++next < chain.length) {
             chain[next].mutate(this, chain, next);
         } else {
-            tryMatch(); //end of chain
+            matches++; tryMatch(); //end of chain
         }
     }
 
@@ -147,14 +147,19 @@ public abstract class Unify extends Versioning implements Subst {
 //        }
     }
 
+    private int matches;
 
     /**
      * unifies the next component, which can either be at the start (true, false), middle (false, false), or end (false, true)
      * of a matching context
      * <p>
      * setting finish=false allows matching in pieces before finishing
+     *
+     * NOT thread safe, use from single thread only at a time
      */
     public boolean unify(Term x, Term y, boolean finish) {
+
+        matches = 0;
 
         //accumulate any new free variables in this next matched term
 //        Set<Term> freeX = freeVariables(x);
@@ -173,7 +178,7 @@ public abstract class Unify extends Versioning implements Subst {
             return true;
         }
 
-        return false;
+        return matches > 0;
     }
 
 //    /**
@@ -203,7 +208,7 @@ public abstract class Unify extends Versioning implements Subst {
             tryMutate(t, -1); //start combinatorial recurse
 
         } else {
-            tryMatch(); //go directly to conclusion
+            matches++; tryMatch(); //go directly to conclusion
         }
 
 //        if (matched.size()>1)

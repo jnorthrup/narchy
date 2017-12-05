@@ -8,6 +8,7 @@ import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
+import nars.concept.Tasklinks;
 import nars.control.TaskService;
 import org.jetbrains.annotations.NotNull;
 
@@ -92,9 +93,8 @@ public final class STMLinkage extends TaskService {
                     ca.termlinks().putAsync(new PLink(cb.term(), interStrength));
 
                     //tasklinks, not sure:
-                    cb.tasklinks().putAsync(new PLinkUntilDeleted<>(ta, interStrength));
-                    ca.tasklinks().putAsync(new PLinkUntilDeleted<>(tb, interStrength));
-
+                    Tasklinks.linkTask(ta, interStrength, cb);
+                    Tasklinks.linkTask(tb, interStrength, ca);
                 }
             }
         }

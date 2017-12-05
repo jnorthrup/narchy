@@ -803,15 +803,17 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return conf(when, when, dur);
     }
 
-    @Nullable
-    default Truth truth(long targetStart, long targetEnd, long dur, float minConf) {
-        long t;
-        if (targetStart == targetEnd) {
-            t = targetStart;
-        } else {
-            t = distanceTo(targetStart) < distanceTo(targetEnd) ? targetStart : targetEnd;
-        }
-        return truth(t, dur, minConf);
+
+
+    @Nullable default Truth truth(long targetStart, long targetEnd, long dur, NAR nar) {
+        Truth t = truth(targetStart, targetEnd, dur, nar.confMin.floatValue());
+        if (t == null)
+            return t;
+        return t.dither(nar);
+    }
+
+    @Nullable default Truth truth(long targetStart, long targetEnd, long dur, float minConf) {
+        return truth(nearestTimeBetween(targetStart, targetEnd), dur, minConf);
     }
 
     default float evi(long targetStart, long targetEnd, final long dur) {
