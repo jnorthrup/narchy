@@ -455,19 +455,19 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 //            aa = bb;
 //            bb = cc;
 //        }
-        long start;
-        if (x.op() == CONJ) {
-            //earliest first for CONJ, since it will be constructed with conjMerge
-            long astart = aa.when();
-            long bstart = bb.when();
-            if (astart != TIMELESS && bstart != TIMELESS) {
-                start = Math.min(astart, bstart);
-            } else {
-                start = astart;
-            }
-        } else {
-            start = aa.when();
-        }
+//        long start;
+//        if (x.op() == CONJ) {
+//            //earliest first for CONJ, since it will be constructed with conjMerge
+//            long astart = aa.when();
+//            long bstart = bb.when();
+//            if (astart != TIMELESS && bstart != TIMELESS) {
+//                start = Math.min(astart, bstart);
+//            } else {
+//                start = astart;
+//            }
+//        } else {
+        long start = aa.when();
+//        }
         return solveDT(x, start, dt(x, aa, bb), each);
     }
 
@@ -756,6 +756,15 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             return t;
         }
 
+        protected Event pathStart(FasterList<BooleanObjectPair<Edge<Event, TimeSpan>>> path) {
+            BooleanObjectPair<Edge<Event, TimeSpan>> step = path.getFirst();
+            return step.getTwo().from(step.getOne()).id;
+        }
+        protected Event pathEnd(FasterList<BooleanObjectPair<Edge<Event, TimeSpan>>> path) {
+            BooleanObjectPair<Edge<Event, TimeSpan>> step = path.getLast();
+            return step.getTwo().to(step.getOne()).id;
+        }
+
         /**
          * assuming the path starts with one of the end-points (a and b),
          * if the path ends at either one of them
@@ -770,13 +779,9 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             boolean endB = b.equals(endTerm);
 
             if (endA || endB) {
-                BooleanObjectPair<Edge<Event, TimeSpan>> startStep = path.getFirst();
-                BooleanObjectPair<Edge<Event, TimeSpan>> endStep = path.getLast();
-                Edge<Event, TimeSpan> startEdge = startStep.getTwo();
-                Edge<Event, TimeSpan> endEdge = endStep.getTwo();
+                Event startEvent = pathStart(path);
+                Event endEvent = pathEnd(path);
 
-                Event startEvent = startEdge.from(startStep.getOne()).id;
-                Event endEvent = endEdge.to(endStep.getOne()).id;
                 Term startTerm = startEvent.id;
 
                 if ((endA && startTerm.equals(b)) || (endB && startTerm.equals(a))) {

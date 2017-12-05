@@ -51,7 +51,7 @@ abstract public class TemporalStabilityTest {
 
     public void validate(Task t) {
         long ts = t.start();
-        long te = t.end();
+        long te = Math.max(t.start()+t.term().dtRange(), t.end());
         if (t.isInput()) {
             System.out.println("in: " + t);
             if (!t.isEternal()) {
@@ -84,10 +84,6 @@ abstract public class TemporalStabilityTest {
 
             if (!validOccurrence(s + r))
                 return true;
-            if (xt.op() == CONJ) {
-               if (!validOccurrence(s + r + xt.dtRange()))
-                   return true;
-            }
 
             //cant be determined unless analyzing the relative time only
 //            if (xt.op()==IMPL && xt.dt()!=DTERNAL) {

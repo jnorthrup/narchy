@@ -44,9 +44,18 @@ public class Revision {
 
     @Nullable
     public static Truth revise(/*@NotNull*/ Truthed a, /*@NotNull*/ Truthed b, float factor, float minEvi) {
+
         float w1 = a.evi() * factor;
+//        if (w1 < Prioritized.EPSILON)
+//            return null;
+
         float w2 = b.evi() * factor;
+//        if (w2 < Prioritized.EPSILON)
+//            return null;
+
         float w = (w1 + w2);
+
+
         return w <= minEvi ?
                 null :
                 new PreciseTruth(
@@ -658,7 +667,7 @@ public class Revision {
                 this.factor = 0;
             } else {
                 //partial intersection, weaken the union
-                this.factor = ii.length() / ((float)u);
+                this.factor = (1+ii.length()) / (1+((float)u));
             }
 
 //            int separation = ai.
