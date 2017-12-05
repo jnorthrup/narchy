@@ -50,7 +50,7 @@ public class ActivateTest {
 
         BatchActivation ba = BatchActivation.get();
         for (int i = 0; i < 100; i++) {
-            cf.hypothesize(nar, ba, 9).forEach(p -> {
+            cf.premises(nar, ba, 9).forEach(p -> {
                 System.out.println("tasklink=" + p.task + " termlink=" + p.termLink);
                 if (p.termLink instanceof Atom || !A.equals(p.termLink.sub(0)))
                     return; //ignore

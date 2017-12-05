@@ -1026,13 +1026,13 @@ public enum Util {
 
 
     public static double normalize(double x, double min, double max) {
-        if (equals(min, max, Prioritized.EPSILON))
+        if (equals(min, max, Float.MIN_NORMAL))
             return min;
         return (x - min) / (max - min);
     }
 
     public static float normalize(float x, float min, float max) {
-        if (equals(min, max, Prioritized.EPSILON))
+        if (max-min <= Float.MIN_NORMAL)
             return min;
         return (x - min) / (max - min);
     }

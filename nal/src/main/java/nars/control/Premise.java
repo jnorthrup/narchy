@@ -4,6 +4,8 @@
  */
 package nars.control;
 
+import jcog.pri.PLink;
+import jcog.pri.PriReference;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -35,14 +37,13 @@ public class Premise {
 
     static final Logger logger = LoggerFactory.getLogger(Premise.class);
 
-    public final Task task;
+    public final PriReference<Task> task;
     public final Term termLink;
 
     @Nullable
     public final Collection<Concept> links;
 
-    public Premise(Task tasklink, Term termlink, Collection<Concept> links) {
-        //assert(!(termlink instanceof Bool));
+    public Premise(PriReference<Task> tasklink, Term termlink, Collection<Concept> links) {
         this.task = tasklink;
         this.termLink = termlink;
         this.links = links;
@@ -71,7 +72,7 @@ public class Premise {
 
         //nar.emotion.count("Premise_run");
 
-        final Task task = this.task;
+        final Task task = this.task.get();
         if (task == null || task.isDeleted()) {
 //            Task fwd = task.meta("@");
 //            if (fwd!=null)
@@ -161,7 +162,7 @@ public class Premise {
                         @Nullable Task answered = task.onAnswered(match, n);
                         if (answered != null) {
 
-                            n.emotion.onAnswer(task, answered);
+                            n.emotion.onAnswer(this.task, answered);
 
                         }
                     }
@@ -243,7 +244,7 @@ public class Premise {
 
         //assert (!(beliefTerm instanceof Bool)): "beliefTerm boolean; termLink=" + termLink + ", belief=" + belief;
 
-        d.set(this, belief, beliefTerm);
+        d.set(task, belief, beliefTerm);
         return d;
     }
 

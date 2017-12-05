@@ -23,7 +23,7 @@ public class AudioSource implements WaveSource {
     private byte[] audioBytes;
     private short[] samples;
     private final int bytesPerSample;
-    public final FloatParam gain = new FloatParam(1f, 0, 10f);
+    public final FloatParam gain = new FloatParam(1f, 0, 32f);
 
     private short sampleMin, sampleMax;
 

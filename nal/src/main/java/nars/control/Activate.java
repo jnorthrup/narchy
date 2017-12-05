@@ -1,5 +1,6 @@
 package nars.control;
 
+import jcog.Util;
 import jcog.bag.Bag;
 import jcog.decide.Roulette;
 import jcog.list.FasterList;
@@ -33,7 +34,8 @@ public class Activate extends PLink<Concept> implements Termed {
         super(c, pri);
     }
 
-    public Iterable<Premise> hypothesize(NAR nar, BatchActivation ba, int premisesMax) {
+    /** hypothesize premises, up to a max specified # */
+    /*@NotNull*/ public Iterable<Premise> premises(NAR nar, BatchActivation ba, int premisesMax) {
 
         assert (premisesMax > 0);
 
@@ -50,7 +52,7 @@ public class Activate extends PLink<Concept> implements Termed {
         termlinks.commit(termlinks.forget(linkForgetting));
         int ntermlinks = termlinks.size();
         if (ntermlinks == 0)
-            return null;
+            return List.of();
 
         //TODO add a termlink vs. tasklink balance parameter
         int TERMLINKS_SAMPLED = (int) Math.ceil((float) Math.sqrt(premisesMax));
@@ -67,7 +69,8 @@ public class Activate extends PLink<Concept> implements Termed {
         int dur = nar.dur();
         tasklinks.commit(PriForget.forget(tasklinks, linkForgetting, Pri.EPSILON, (r)-> new Tasklinks.TaskLinkForget(r, now, dur)));
         int ntasklinks = tasklinks.size();
-        if (ntasklinks == 0) return null;
+        if (ntasklinks == 0)
+            return List.of();
 
         Random rng = nar.random();
 
@@ -78,16 +81,17 @@ public class Activate extends PLink<Concept> implements Termed {
 
         tasklinks.sample((Predicate<PriReference<Task>>) tasklink -> {
 
-            final Task task = tasklink.get();
-            if (task == null || task.isDeleted())
-                return true;
+            int termlinksSampled = Math.min(Math.max(1,
+                    (int) Math.ceil(
+                        Util.normalize(tasklink.priElseZero(), tasklinks.priMin(), tasklinks.priMax())
+                            * termlinksPerTasklink)),
+                    remaining[0]);
 
-            int termlinksSampled = Math.min(Math.max(1, (int) Math.ceil(task.priElseZero() * termlinksPerTasklink)), remaining[0]);
             termlinks.sample(termlinksSampled, (termlink)->{
                 final Term term = termlink.get();
                 if (term != null) {
 
-                    Premise p = new Premise(task, term,
+                    Premise p = new Premise(tasklink, term,
 
                             //targets:
                             randomTemplateConcepts(conceptualizedTemplates, rng, TERMLINKS_SAMPLED /* heuristic */, nar)

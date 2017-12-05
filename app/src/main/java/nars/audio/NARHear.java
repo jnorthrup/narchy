@@ -5,6 +5,7 @@ import jcog.learn.Autoencoder;
 import jcog.math.random.XorShift128PlusRandom;
 import nars.*;
 import nars.concept.SensorConcept;
+import nars.control.DurService;
 import spacegraph.SpaceGraph;
 import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;
@@ -26,7 +27,13 @@ public class NARHear extends NAgent {
 
         //init();
 
-        NARLoop loop = new NARHear(null).nar.startFPS((float) 20);
+        NAR n = NARS.tmp();
+        n.log();
+        NARHear a = new NARHear(n);
+        a.runFPS(1f);
+        NARLoop loop = a.nar.startFPS(10);
+
+
 
 //        this.loop = nar.exe.loop(fps, () -> {
 //            if (enabled.get()) {
@@ -49,7 +56,7 @@ public class NARHear extends NAgent {
         List<SensorConcept> freqInputs = null; //absolute value unipolar
         try {
             freqInputs = senseNumber(0, au.freqSamplesPerFrame,
-                    i -> $.func("f", $.the(i)).toString(),
+                    i -> $.func("au", $.the(i)).toString(),
 
             //        i -> () -> (Util.clamp(au.history[i], -1f, 1f)+1f)/2f); //raw bipolar
                     i -> () -> (Util.sqr(Util.clamp(au.data[i], 0f, 1f))));
@@ -57,11 +64,10 @@ public class NARHear extends NAgent {
             e.printStackTrace();
         }
 
-        freqInputs.forEach(s -> {
-        });
 
-        Autoencoder ae = new Autoencoder(au.data.length, 16, new XorShift128PlusRandom(1));
-        nar.onCycle(f->{
+        Autoencoder ae = new Autoencoder(au.data.length, 8, new XorShift128PlusRandom(1));
+        //DurService.on(nar, ())
+        onFrame(()-> {
             ae.put(au.data, 0.15f, 0.01f, 0.1f, true, true, true);
         });
 
@@ -71,8 +77,9 @@ public class NARHear extends NAgent {
                             au.newMonitorPane(),
                             new FloatSlider(audio.gain)
                     ),
-                    new MatrixView(ae.W.length, ae.W[0].length, MatrixView.arrayRenderer(ae.W)),
-                    new MatrixView(ae.y, 4, (v, gl) -> { Draw.colorBipolar(gl, v); return 0; })
+                    //new MatrixView(ae.W.length, ae.W[0].length, MatrixView.arrayRenderer(ae.W)),
+                    new MatrixView(ae.xx, (v, gl) -> { Draw.colorBipolar(gl, v); return 0; }),
+                    new MatrixView(ae.y, (v, gl) -> { Draw.colorBipolar(gl, v); return 0; })
                     //Vis.conceptLinePlot(nar, freqInputs, 64)
                 ),
                 1200, 1200);

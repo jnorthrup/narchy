@@ -20,7 +20,7 @@ public class Autoencoder {
 
 
 	/** input vector after preprocessing (noise, corruption, etc..) */
-	protected final float[] xx;
+	public final float[] xx;
 
 	/** output vector */
 	final public float[] y;

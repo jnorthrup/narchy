@@ -14,7 +14,7 @@ public interface Priority extends Prioritized {
      * Change priority value
      *
      * @param p The new priority
-     * @return whether the operation had any effect
+     * @return value after set
      */
     float priSet(float p);
 
@@ -52,10 +52,10 @@ public interface Priority extends Prioritized {
         return priSet(toAdd);
     }
 
-    default float priAddAndGetDelta(float toAdd) {
-        float before = priElseZero();
-        return priSet(before + notNaN(toAdd)) - before;
-    }
+//    default float priAddAndGetDelta(float toAdd) {
+//        float before = priElseZero();
+//        return priSet(before + notNaN(toAdd)) - before;
+//    }
 
     default float priSub(float toSubtract) {
         //setPri(priElseZero() - toSubtract);
@@ -124,34 +124,33 @@ public interface Priority extends Prioritized {
         return toAdd - delta;
     }
 
-    default void take(Priority source, float p, boolean amountOrFraction, boolean copyOrMove) {
+    default float take(Priority source, float p, boolean amountOrFraction, boolean copyOrMove) {
         float amount;
         if (!amountOrFraction) {
-            if (p < Pri.EPSILON) return;
+            if (p < Pri.EPSILON) return 0;
             amount = source.priElseZero() * p;
-            if (amount < Pri.EPSILON) return;
+            if (amount < Pri.EPSILON) return 0;
         } else {
             amount = p;
         }
 
-        float toAdd;
-        if (copyOrMove) {
-            toAdd = (amount); //COPY
-        } else {
+        float before = priElseZero();
+
+        float after = priAdd(amount);
+
+        float taken = after - before;
+
+        if (!copyOrMove) {
             //TRANSFER
-            float afterReceived = priElseZero() + amount;
-            float overflow = afterReceived - 1f;
 
             //cap at 1, and only transfer what is necessary to reach it
-            if (overflow > 0) {
-                amount -= overflow;
+            if (taken > Pri.EPSILON) {
+                //subtract first to ensure the funds are available
+                source.priSub(taken);
             }
-
-            //subtract first to ensure the funds are available
-            source.priSub(amount);
-            toAdd = amount;
         }
-        priAdd(toAdd);
+
+        return taken;
     }
 
 //    /** returns the delta */

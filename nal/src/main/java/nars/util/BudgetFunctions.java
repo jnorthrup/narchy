@@ -197,9 +197,6 @@ public final class BudgetFunctions  {
 //    }
 
 
-
-
-    @NotNull
     public static Prioritized fund(float maxPri, boolean copyOrTransfer, Priority... src) {
         float priSum = Math.min(maxPri, Pri.sum(src));
         float perSrc = priSum / src.length;

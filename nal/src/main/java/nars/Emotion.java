@@ -4,6 +4,8 @@ import com.netflix.servo.monitor.BasicCounter;
 import com.netflix.servo.monitor.Counter;
 import com.netflix.servo.monitor.StepCounter;
 import jcog.meter.event.BufferedFloatGuage;
+import jcog.pri.Pri;
+import jcog.pri.PriReference;
 import nars.concept.Concept;
 import nars.control.MetaGoal;
 import nars.term.Compound;
@@ -329,19 +331,25 @@ public class Emotion extends ConcurrentMonitorRegistry {
         taskConcept.value(t, activation, n);
     }
 
-    public void onAnswer(Task question, @Nullable Task answer) {
+    public void onAnswer(PriReference<Task> questionLink, @Nullable Task answer) {
         //transfer budget from question to answer
         //transfer more of the budget from an unoriginal question to an answer than an original question
-        float qOrig = question.originality();
+        Task questionTask = questionLink.get();
+        if (questionTask == null)
+            return;
+
+        float qOrig = questionTask.originality();
         float ansConf = answer.conf();
 
-        answer.take(question,
-                ansConf * (1 - qOrig), false, false);
+        float qPriBefore = questionTask.priElseZero();
+        if (qPriBefore > Pri.EPSILON) {
+            float costFraction = ansConf * (1 - qOrig);
+            answer.take(questionTask, costFraction, false, false);
+            questionLink.priMult(1f - costFraction);
+        }
 
         //reward answer for answering the question
-        float str = ansConf *
-                qOrig *
-                question.priElseZero();
+        float str = ansConf * qOrig;
         MetaGoal.learn(MetaGoal.Answer, answer.cause(), str, nar);
     }
 

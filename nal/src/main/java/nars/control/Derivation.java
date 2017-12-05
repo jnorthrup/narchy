@@ -285,12 +285,12 @@ public class Derivation extends Unify {
     /**
      * tasklink/termlink scope
      */
-    public void set(Premise p, Task belief, Term beliefTerm) {
+    public void set(Task _task, Task belief, Term beliefTerm) {
 
         anon.clear();
 
 //        this.task = p.task;
-        final Task task = this.task = anon.put(p.task);
+        final Task task = this.task = anon.put(_task);
         if (belief!=null)
             belief = anon.put(belief);
         beliefTerm = anon.put(beliefTerm);
@@ -408,9 +408,10 @@ public class Derivation extends Unify {
                 Cause.zip(nar.causeCapacity.intValue(), task, belief) :
                 task.cause();
 
+        float taskPri = task.priElseZero();
         this.premisePri =
                 //p.priElseZero(); //use the premise pri directly
-                belief == null ? task.priElseZero() : Param.TaskBeliefDerivation.apply(task.priElseZero(), belief.priElseZero());
+                belief == null ? taskPri : Param.TaskBeliefDerivation.apply(taskPri, belief.priElseZero());
 
 //        float parentValue =
 //                //nar.evaluate(parentCause); /* value of the parent cause as a multiplier above and below 1.0x */

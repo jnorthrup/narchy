@@ -94,40 +94,35 @@ public class Deriver extends NARService {
         int ttlMax = nar.matchTTLmax.intValue();
 
 
-        int fireRemain[] = new int[]{work};
+        int premisesRemain[] = new int[]{work};
 
+        //hard limit on # of concepts processed. since usually there will be >1 premises per concept, this will normally not be exhausted
+        int conceptsRemain[] = new int[]{work};
 
         source.accept(a -> {
 
-            int hh = premises(a);
-            Iterable<Premise> h = a.hypothesize(nar, d.activator, hh);
+            for (Premise p : a.premises(nar, d.activator, premises(a))) {
 
-            if (h != null) {
+                if (p.match(d, matchTTL) != null) {
 
-                for (Premise p : h) {
+                    int deriveTTL = Util.lerp(
+                            //p.task.priElseZero() / nar.priDefault(p.task.punc()), //relative
+                            p.task.priElseZero(),                                   //absolute
+                            ttlMin, ttlMax);
 
-                    if (p.match(d, matchTTL) != null) {
+                    d.derive(deriveTTL);
 
-                        int deriveTTL = Util.lerp(
-                                //p.task.priElseZero() / nar.priDefault(p.task.punc()), //relative
-                                p.task.priElseZero(),                                   //absolute
-                                ttlMin, ttlMax);
-
-                        d.derive(deriveTTL);
-                        if (--fireRemain[0] <= 0) //premise completed
-                            break;
-                    }
+                    if (--premisesRemain[0] <= 0)
+                        return false; //done
                 }
             }
 
-            --fireRemain[0]; //premise miss for safety
-
-            return fireRemain[0] > 0;
+            return (--conceptsRemain[0] > 0);
         });
 
         int derived = d.commit(nar::input);
 
-        return work - fireRemain[0];
+        return work - premisesRemain[0];
     }
 
 

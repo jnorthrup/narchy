@@ -33,9 +33,9 @@ public class WaveCapture extends Loop {
     private float[] samples;
 
 
-    public final int freqSamplesPerFrame = 32;
+    public final int freqSamplesPerFrame = 8;
 
-    private final int historyFrames = 32;
+    private final int historyFrames = 16;
     public float[] data = new float[historyFrames * freqSamplesPerFrame];
 
 
