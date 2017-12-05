@@ -625,6 +625,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      * to the interval [x,y]
      */
     default long nearestTimeBetween(final long x, final long y) {
+        if (x == y)
+            return x;
+
         long a = this.start();
         if (a == ETERNAL)
             return (x + y) / 2; //use midpoint of the two if this task is eternal
@@ -817,12 +820,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     }
 
     default float evi(long targetStart, long targetEnd, final long dur) {
-        long t;
-        if (targetStart == targetEnd)
-            t = targetStart;
-        else
-            t = distanceTo(targetStart) <= distanceTo(targetEnd) ? targetStart : targetEnd;
-        return evi(t, dur);
+        return evi(nearestTimeBetween(targetStart, targetEnd), dur);
     }
 
     @Nullable

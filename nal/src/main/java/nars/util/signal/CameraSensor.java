@@ -211,9 +211,6 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
     @Override
     protected int next(NAR nar, int work) {
 
-        //hardcode the known supply (# pixels)
-        can.supply.clear();
-        can.supply.addValue(width*height);
 
 
         //stamp = nar.time.nextStamp();

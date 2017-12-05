@@ -193,7 +193,7 @@ public class DeriveTime extends TimeGraph {
         }
 
         occ[0] = es;
-        occ[1] = es + (es!=ETERNAL ? st.dtRange() : 0);
+        occ[1] = es;
 
         if (es == ETERNAL) {
             if (task.isEternal() && (belief==null || belief.isEternal())) {
@@ -208,7 +208,7 @@ public class DeriveTime extends TimeGraph {
                     throw new RuntimeException("temporalization fault");
                 }
                 occ[0] = es;
-                occ[1] = es + st.dtRange();
+                occ[1] = es;
             }
         }
 //        if (occ[0] != ETERNAL) {

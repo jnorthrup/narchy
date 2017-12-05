@@ -4,6 +4,7 @@ import jcog.Services;
 import jcog.Util;
 import jcog.math.FloatParam;
 import jcog.math.MutableInteger;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.pri.op.PriForget;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static jcog.Util.unitize;
@@ -426,7 +428,7 @@ public abstract class Param extends Services<Term, NAR> {
                 new TruthPolation.TruthPolationBasic(start, end, dur);
                 //new TruthPolation.TruthPolationConf(start, end, dur);
         //new TruthPolation.TruthPolationConf(start, end, dur);
-        //new TruthPolation.TruthPolationGreedy(start, end, dur);
+                //new TruthPolation.TruthPolationGreedy(start, end, dur, ThreadLocalRandom.current());
         //..SoftMax..
         //new TruthPolation.TruthPolationRoulette(start, end, dur, ThreadLocalRandom.current());
         //new TruthPolationWithVariance(when, dur);

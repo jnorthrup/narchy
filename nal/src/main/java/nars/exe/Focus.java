@@ -6,6 +6,7 @@ import jcog.decide.Roulette;
 import jcog.learn.deep.RBM;
 import jcog.list.FastCoWList;
 import jcog.list.FasterList;
+import jcog.math.NumberException;
 import jcog.math.RecycledSummaryStatistics;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.NAR;
@@ -28,7 +29,7 @@ public class Focus {
     /**
      * temporal granularity unit, in seconds
      */
-    public static final float JIFFY = 0.001f;
+    public static final float JIFFY = 0.0005f;
 
     private final FastCoWList<Causable> can;
 
@@ -244,8 +245,23 @@ public class Focus {
     }
 
     private float weight(Causable c) {
-        final float TEMPERATURE = 1f;
-        return (float) Math.exp(c.value() * TEMPERATURE);
+        final float TEMPERATURE = 0.05f;
+        final float MAX = canWeights.length * 2;
+        double supply = c.can.supply();
+        float iterationTimeMean = c.can.iterationTimeMean();
+        float den = (float) supply * iterationTimeMean;
+        if (den < Float.MIN_NORMAL)
+            return 1;
+        else {
+            float x = (float) Math.exp(c.value() / den * TEMPERATURE);
+            if (Float.isFinite(x)) {
+                return Math.min(x, MAX);
+            }
+            else {
+                return MAX;
+                //throw new NumberException("(value,cost) -> weight calculation");
+            }
+        }
     }
 
     private void add(Causable c) {

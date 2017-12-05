@@ -1251,12 +1251,12 @@ public class Narsese extends BaseParser<Object> {
                                 ));
 
         long st = ttt.start();
-        if (ttt.start() != ETERNAL && content.op() == CONJ) {
-            int dtRange = content.dtRange();
-            if (dtRange > 0) {
-                ttt.time(ttt.creation(), st, st + dtRange); //extend
-            }
-        }
+//        if (ttt.start() != ETERNAL && content.op() == CONJ) {
+//            int dtRange = content.dtRange();
+//            if (dtRange > 0) {
+//                ttt.time(ttt.creation(), st, st + dtRange); //extend
+//            }
+//        }
 
         if (x[0] == null)  /* do not set, Memory will apply defaults */
             ttt.priSet(m.priDefault(punct));

@@ -6,6 +6,7 @@ import jcog.decide.DecideSoftmax;
 import nars.Param;
 import nars.Task;
 import nars.truth.PreciseTruth;
+import nars.truth.Truth;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 
 import java.util.Random;
@@ -113,17 +114,19 @@ public interface TruthPolation extends Consumer<Tasked> {
     }
 
 
-    /** TODO this does not fairly handle equal values; the first will be chosen */
     class TruthPolationGreedy implements TruthPolation {
 
         final long start, end;
         final int dur;
-        float bestE = Float.NEGATIVE_INFINITY, bestF = Float.NaN;
+        private final Random rng;
+        float bestE = Float.NEGATIVE_INFINITY;
+        final FloatArrayList bestF = new FloatArrayList();
 
-        public TruthPolationGreedy(long start, long end, int dur) {
+        public TruthPolationGreedy(long start, long end, int dur, Random rng) {
             this.start = start;
             this.end = end;
             this.dur = dur;
+            this.rng = rng;
         }
 
         @Override
@@ -131,19 +134,28 @@ public interface TruthPolation extends Consumer<Tasked> {
             Task task = t.task();
             float e = task.evi(start, end, dur);
             if (e > bestE) {
-                bestE = e;
-                bestF = task.freq();
+                bestF.clear();
+            }
+            if (e >= bestE) {
+                bestF.add(task.freq());
             }
         }
 
 
         @Override
         public PreciseTruth truth() {
-            float f = this.bestF;
-            if (f != f)
-                return null;
+            FloatArrayList f = this.bestF;
+            int s = f.size();
 
-            return new PreciseTruth(f, bestE, false);
+            float g;
+            switch (s) {
+                case 0: return null;
+                case 1: g = f.get(0); break;
+                default:
+                    g = f.get(rng.nextInt(s)); break;
+            }
+
+            return new PreciseTruth(g, bestE, false);
         }
     }
 

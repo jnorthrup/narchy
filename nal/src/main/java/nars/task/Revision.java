@@ -643,7 +643,7 @@ public class Revision {
         public final long unionEnd;
 
         public TaskTimeJoint(long as, long ae, long bs, long be, NAR nar) {
-            int hd = nar.dur();
+
             Interval ai = new Interval(as, ae);
             Interval bi = new Interval(bs, be);
 
@@ -652,31 +652,42 @@ public class Revision {
             this.unionEnd = uu.b;
 
             long u = uu.length();
-            int al = (int) ai.length();
-            int bl = (int) bi.length();
-            int s = al + bl;
-
-
-            float factor = 1f;
-            if (u > s) {
-
-                /** account for how much the merge stretches the truth beyond the range of the inputs */
-                long separation = u - s;
-                if (separation > 0) {
-                    int minterval = Math.min(al, bl) + hd; //+hd to pad the attention surrounding point0like events
-                    if (separation < minterval) {
-                        factor = 1f - separation / ((float) minterval);
-                    } else {
-                        factor = 0; //too separate
-                    }
-
-
-//                    factor = 1f - (separation / (separation + (float) u));
-
-                }
+            Interval ii = ai.intersection(bi);
+            if (ii == null) {
+                //no intersection
+                this.factor = 0;
+            } else {
+                //partial intersection, weaken the union
+                this.factor = ii.length() / ((float)u);
             }
 
-            this.factor = factor;
+//            int separation = ai.
+//            int al = (int) ai.length();
+//            int bl = (int) bi.length();
+//            int s = al + bl;
+//
+//
+//            float factor = 1f;
+//            if (u > s) {
+//
+//                /** account for how much the merge stretches the truth beyond the range of the inputs */
+//                long separation = u - s;
+//                if (separation > 0) {
+//                    //int hd = nar.dur();
+//                    int minterval = Math.min(al, bl);// + hd; //+hd to pad the attention surrounding point0like events
+//                    if (separation < minterval) {
+//                        factor = 1f - separation / ((float) minterval);
+//                    } else {
+//                        factor = 0; //too separate
+//                    }
+//
+//
+////                    factor = 1f - (separation / (separation + (float) u));
+//
+//                }
+//            }
+//
+//            this.factor = factor;
 
         }
     }

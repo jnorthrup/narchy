@@ -500,19 +500,19 @@ import static nars.time.Tense.*;
 
         long endTime = occurrenceTime;
 
-        if (occurrenceTime!=ETERNAL && op()==CONJ) {
-             int dt = term().dtRange();
-             switch (dt) {
-                 case DTERNAL:
-                 case 0:
-                 case XTERNAL:
-                     break;
-
-                 default:
-                     endTime = occurrenceTime + Math.abs(dt);
-                     break;
-             }
-        }
+//        if (occurrenceTime!=ETERNAL && op()==CONJ) {
+//             int dt = term().dtRange();
+//             switch (dt) {
+//                 case DTERNAL:
+//                 case 0:
+//                 case XTERNAL:
+//                     break;
+//
+//                 default:
+//                     endTime = occurrenceTime + Math.abs(dt);
+//                     break;
+//             }
+//        }
         setEnd(endTime);
         return this;
     }
