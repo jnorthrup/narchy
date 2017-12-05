@@ -54,7 +54,7 @@ public class Derivation extends Unify {
 
     public final BatchActivation activator = new BatchActivation();
 
-    public final Anon anon = new Anon();
+    public final Anon anon = new Anon.CachingAnon(16);
 
     /**
      * temporary buffer for derivations before input so they can be merged in case of duplicates

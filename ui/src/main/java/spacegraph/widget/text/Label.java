@@ -28,19 +28,29 @@ public class Label extends Surface {
         set(s);
     }
 
+
+
     @Override
     public void paint(GL2 gl) {
         int len = value.length();
         if (len == 0) return;
 
         float charAspect = 1.4f;
-        if (charAspect / len <= h() / w()) {
-            //wider than tall
-            this.fontScaleX = 1f / len;
+        this.fontScaleX = 1f / len;
+        this.fontScaleY = 1 * charAspect;
+
+        float visAspect = h() / w();
+        if (fontScaleY / fontScaleX <= visAspect) {
+            this.fontScaleX = 1f / (charAspect * len);
             this.fontScaleY = fontScaleX * charAspect;
         } else {
-            this.fontScaleY = 1f;
-            this.fontScaleX = (fontScaleY/len) / charAspect;
+
+            this.fontScaleY = fontScaleX / visAspect;
+        }
+
+        if (fontScaleY > 1f) {
+            fontScaleY = 1f;
+            fontScaleX = 1f / (charAspect * len);
         }
 
         Draw.bounds(gl, this, this::paintUnit);

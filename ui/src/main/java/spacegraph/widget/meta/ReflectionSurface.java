@@ -6,6 +6,7 @@ import jcog.list.FasterList;
 import jcog.math.FloatParam;
 import spacegraph.Surface;
 import spacegraph.layout.Grid;
+import spacegraph.layout.VSplit;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.slider.FloatSlider;
@@ -79,31 +80,36 @@ public class ReflectionSurface<X> extends Grid {
 
 
         if (depth < MAX_DEPTH) {
-            collectFields(x, target, depth+1);
 
-            if (x instanceof Services) {
+            if (x instanceof Services) { //first
                 collectServices((Services) x, target);
             }
+
+            collectFields(x, target, depth+1);
+
             if (x instanceof Collection) {
-                collectElements((Collection) x, target, depth+1);
+                Surface cx = collectElements((Collection) x, depth+1);
+                if (cx != null) {
+                    target.add(new LabeledPane(yLabel, cx));
+                }
             }
         }
 
     }
 
-    private void collectElements(Collection<?> x, List<Surface> l, int depth) {
+    private Surface collectElements(Collection<?> x, int depth) {
         FasterList<Surface> m = new FasterList();
         for (Object o : x) {
             collect(o, m, depth);
         }
-        if (!m.isEmpty()) {
-            l.add(grid(m));
-        }
+        return !m.isEmpty() ? grid(m) : null;
     }
 
-    private static void collectServices(Services x, List<Surface> l) {
-        x.stream().forEach((s) ->
-                l.add(new WindowToggleButton(s.toString(), () -> new ReflectionSurface(s))));
+    private void collectServices(Services x, List<Surface> l) {
+        x.stream().forEach((s) -> {
+            seen.add(s);
+            l.add(new WindowToggleButton(s.toString(), () -> new ReflectionSurface(s)));
+        });
     }
 
     public void collectFields(Object x, List<Surface> l, int depth) {

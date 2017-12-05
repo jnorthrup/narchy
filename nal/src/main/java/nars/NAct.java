@@ -399,12 +399,9 @@ public interface NAct {
                     //Math.max(u-0.5f, 0);
             return u;
         });
-        actionTriState($.p($.the("\"+-\""), s), (xy)->{
-            switch (xy) {
-                case 1: act.accept(amp[0]); break;
-                case 0: act.accept(0);  break;
-                case -1: act.accept(-amp[0]); break;
-            }
+        actionBipolar($.p($.the("\"+-\""), s), (xy)->{
+            act.accept(xy * amp[0]);
+            return xy;
         });
     }
 

@@ -67,7 +67,7 @@ public class ConjClustering extends Causable {
     private int volMax;
     private final static Logger logger = LoggerFactory.getLogger(ConjClustering.class);
 
-    public ConjClustering(NAR nar, int maxConjSize, byte punc, boolean includeNeg, int centroids, int capacity) {
+    public ConjClustering(NAR nar, int maxConjSize, byte punc, boolean onlyInput, boolean onlyPos, int centroids, int capacity) {
         super(nar);
 
         this.punc = punc;
@@ -76,10 +76,10 @@ public class ConjClustering extends Causable {
         this.maxConjSize = maxConjSize;
 
         nar.onTask(t -> {
-            if (!t.isEternal() && t.punc() == punc && (includeNeg || t.isPositive())) {
+            if (!t.isEternal() && t.punc() == punc  && (!onlyInput || t.isInput()) && (!onlyPos || t.isPositive())) {
                 bag.put(t,
-                        t.priElseZero() * (1f / t.volume()) //prefer smaller events
-                        //t.priElseZero()
+                        //t.priElseZero() * (1f / t.volume()) //prefer smaller events
+                        t.priElseZero()
                         //(1f + t.expolarity()) * (1f + t.conf())
                 );
                 //* (1f + t.priElseZero()));// / t.volume());
@@ -263,26 +263,28 @@ public class ConjClustering extends Causable {
             PreciseTruth t = $.t(freq, conf).dither(freqRes, confRes, confMin, 1f);
             if (t != null) {
 
-                Term cj = Op.conj(new FasterList(vv.keySet())).normalize();
-                ObjectBooleanPair<Term> cp = Task.tryContent(cj, punc, true);
-                if (cp != null) {
+                Term cj = Op.conj(new FasterList(vv.keySet()));
+                if (cj!=null) {
+                    ObjectBooleanPair<Term> cp = Task.tryContent(cj.normalize(), punc, true);
+                    if (cp != null) {
 
-                    long[] evidence = Stamp.zip(uu, Param.STAMP_CAPACITY);
-                    NALTask m = new STMClusterTask(cp, t, start, end, evidence, punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
+                        long[] evidence = Stamp.zip(uu, Param.STAMP_CAPACITY);
+                        NALTask m = new STMClusterTask(cp, t, start, end, evidence, punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
 
-                    m.cause = Cause.zip(nar.causeCapacity.intValue(), uu);
+                        m.cause = Cause.zip(nar.causeCapacity.intValue(), uu);
 
-                    float pri =
-                            //priMax;
-                            //priMin;
-                            (priMin + priMax) / 2f;
+                        float pri =
+                                //priMax;
+                                //priMin;
+                                (priMin + priMax) / 2f;
 
-                    m.priSet(BudgetFunctions.fund(pri, true, uu));
-                    tasksCreated++;
-                    gen.add(m);
-                } else {
-                    //Task.tryContent(cj, punc, true);
-                    //logger.warn("{} failed", this);
+                        m.priSet(BudgetFunctions.fund(pri, true, uu));
+                        tasksCreated++;
+                        gen.add(m);
+                    } else {
+                        //Task.tryContent(cj, punc, true);
+                        //logger.warn("{} failed", this);
+                    }
                 }
 
             }

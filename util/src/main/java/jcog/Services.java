@@ -216,7 +216,7 @@ public class Services<X, C>  {
     }
 
 
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Services.class);
+//    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Services.class);
 
     protected final ConcurrentMap<X, Service<C>> services;
 

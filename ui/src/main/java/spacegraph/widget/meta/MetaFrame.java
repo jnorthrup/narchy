@@ -25,6 +25,11 @@ public class MetaFrame extends Widget {
         build();
     }
 
+    @Override
+    public boolean tangible() {
+        return false;
+    }
+
     public static void toggle(Widget base) {
         SurfaceRoot r = base.root();
 
@@ -49,12 +54,15 @@ public class MetaFrame extends Widget {
                 new PushButton("?"), //inspect
                 new PushButton("X")  //hide
         );
-        children.add(new AspectAlign(m, 1f, AspectAlign.Align.RightTop, 0.5f));
+        children.add(new AspectAlign(m, 1f,
+                AspectAlign.Align.RightTop, 0.1f, 0.1f));
 
         Surface n = grid(
                 new Label(base.toString())
         );
-        children.add(new AspectAlign(n, 1f, AspectAlign.Align.LeftTop, 0.25f));
+        children.add(new AspectAlign(n, 1f,
+                AspectAlign.Align.LeftTopOut,
+                1f, 0.1f));
 
     }
 

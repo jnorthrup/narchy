@@ -12,6 +12,7 @@ import nars.gui.Vis;
 import nars.gui.graph.EdgeDirected;
 import nars.gui.graph.run.SimpleConceptGraph1;
 import nars.index.term.map.CaffeineIndex;
+import nars.op.Implier;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.op.video.*;
@@ -94,7 +95,7 @@ abstract public class NAgentX extends NAgent {
     }
 
     public static NAR runRT(Function<NAR, NAgent> init, float fps) {
-        return runRT(init, 50f, fps);
+        return runRT(init, fps*2, fps);
     }
 
 
@@ -183,7 +184,7 @@ abstract public class NAgentX extends NAgent {
         n.goalConfidence(0.9f);
 
 
-        float priFactor = 0.5f;
+        float priFactor = 0.2f;
         n.DEFAULT_BELIEF_PRIORITY = 1f * priFactor;
         n.DEFAULT_GOAL_PRIORITY = 1f * priFactor;
         n.DEFAULT_QUESTION_PRIORITY = 1f * priFactor;
@@ -214,8 +215,8 @@ abstract public class NAgentX extends NAgent {
 //        ), 800, 600);
 
 
-        ConjClustering conjClusterB = new ConjClustering(n, 3, BELIEF, true, 32, 256);
-        ConjClustering conjClusterG = new ConjClustering(n, 3, GOAL, true, 16, 128);
+        ConjClustering conjClusterB = new ConjClustering(n, 3, BELIEF, true,false, 32, 128);
+        ConjClustering conjClusterG = new ConjClustering(n, 3, GOAL, true,false, 16, 64);
 
 //        n.runLater(() -> {
 ////            AudioContext ac = new AudioContext();
@@ -262,8 +263,8 @@ abstract public class NAgentX extends NAgent {
 //        });
 
 
-//        new Implier(a,
-//                2
+//        new Implier(2f, a,
+//                1
 //                //0,1,4
 //        );
 

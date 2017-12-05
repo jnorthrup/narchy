@@ -2,9 +2,13 @@ package nars.term;
 
 import jcog.Util;
 import jcog.list.FasterList;
+import jcog.memoize.LinkedMRUMemoize;
 import nars.Op;
 import nars.Task;
-import nars.term.atom.*;
+import nars.term.atom.Atomic;
+import nars.term.atom.AtomicConst;
+import nars.term.atom.Bool;
+import nars.term.atom.Int;
 import nars.term.container.TermVector;
 import nars.term.transform.CompoundTransform;
 import nars.term.var.UnnormalizedVariable;
@@ -15,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+import static jcog.Texts.n2;
 import static nars.Op.ATOM;
 import static nars.term.Anon.Anom.MAX_ANOM;
 
@@ -58,23 +63,23 @@ public class Anon {
         @Override
         public int compareTo(Termed yy) {
             if (this == yy) return 0;
-            
+
             Term y = yy.term();
             if (y instanceof Anom) {
-                return Integer.compare(id, ((Anom)y).id);
+                return Integer.compare(id, ((Anom) y).id);
             } else {
                 int vc = Integer.compare(y.volume(), this.volume());
                 if (vc != 0)
                     return vc;
 
                 int oc = Integer.compare(this.opX(), y.opX());
-                assert(oc!=0);
+                assert (oc != 0);
                 return oc;
             }
             //return super.compareTo(yy);
         }
 
-        static Anom[] cached = Util.map(0, MAX_ANOM, (i)->new Anom((byte)i), Anom[]::new);
+        static Anom[] cached = Util.map(0, MAX_ANOM, (i) -> new Anom((byte) i), Anom[]::new);
 
         public static Anom the(int i) {
             return cached[i];
@@ -87,7 +92,7 @@ public class Anon {
     final ByteFunction<Term> nextUniqueAtom = (Term next) -> {
         int s = rev.size();
         assert (s < MAX_ANOM);
-        assert( !(next instanceof Bool) );
+        assert (!(next instanceof Bool));
         rev.add(next);
         return (byte) s;
     };
@@ -107,12 +112,12 @@ public class Anon {
     final CompoundTransform GET = new CompoundTransform() {
         @Override
         public @Nullable Termed apply(Term t) {
-            return get(t);
+            return _get(t);
         }
 
         @Override
         public @Nullable Term applyTermOrNull(Term t) {
-            return get(t); //may be called more directly
+            return _get(t); //may be called more directly
         }
     };
 
@@ -133,6 +138,10 @@ public class Anon {
     }
 
     public Term get(Term x) {
+        return _get(x);
+    }
+
+    public Term _get(Term x) {
         if (x instanceof Anom) {
             return rev.get(((Anom) x).id); //assume it is an int
         } else if (x instanceof Atomic) {
@@ -151,4 +160,32 @@ public class Anon {
 
         return Task.clone(t, y);
     }
+
+    public static class CachingAnon extends Anon {
+
+        final LinkedMRUMemoize<Term, Term> cache;
+
+        public CachingAnon() {
+            this(16);
+        }
+
+        public CachingAnon(int capacity) {
+            cache = new LinkedMRUMemoize.LinkedMRUMemoizeRecurseable<>(super::_get, capacity);
+        }
+
+        @Override
+        public void clear() {
+            super.clear();
+            cache.clear();
+        }
+
+        @Override
+        public Term _get(Term x) {
+            if (x instanceof Anom)
+                return super._get(x);
+            else
+                return cache.apply(x);
+        }
+    }
+
 }

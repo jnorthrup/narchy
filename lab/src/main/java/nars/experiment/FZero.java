@@ -14,6 +14,7 @@ import nars.gui.Vis;
 import nars.op.video.BufferedImageBitmap2D;
 import nars.op.video.Scale;
 import nars.op.video.ShapeSensor;
+import nars.time.Tense;
 import nars.util.signal.BeliefPredict;
 import nars.util.signal.CameraSensor;
 import org.apache.commons.math3.util.MathUtils;
@@ -35,7 +36,7 @@ public class FZero extends NAgentX {
     private final FZeroGame fz;
 
     float fwdSpeed = 20;
-    float rotSpeed = 0.1f;
+    float rotSpeed = 0.3f;
 
     public static void main(String[] args) {
 
@@ -296,7 +297,7 @@ public class FZero extends NAgentX {
     }
 
     public void initBipolar() {
-        actionBipolarSteering($.the("fwd"), (a) -> {
+        actionBipolar($.the("fwd"), (a) -> {
             //if (f > 0) {
             //accelerator
             //if (f > 0.5f)
@@ -308,19 +309,33 @@ public class FZero extends NAgentX {
 //                float brake = 0.5f - f;
 //                fz.vehicleMetrics[0][6] *= (1f - brake);
 //            }
-            //return a;
+            return a;
         });
 //        //eternal bias to stop
 //        nar.goal(f[0].term, Tense.Eternal, 0f, 0.01f);
 //        nar.goal(f[1].term, Tense.Eternal, 0f, 0.01f);
 
-        actionBipolarSteering($.the("x"), (a) -> {
-            fz.playerAngle += (a) * rotSpeed;
-            //return a;
+        GoalActionAsyncConcept[] x = actionBipolar($.the("x"), (a) -> {
+            float deadZone =
+                    0;
+                    //1 / 6f;
+            if (Math.abs(a) > deadZone) {
+                if (a > 0) a -= deadZone;
+                else a += deadZone;
+                fz.playerAngle += (a) * rotSpeed;
+                return a;
+            } else
+                return 0;
         });
-//        //eternal bias to stop
-//        nar.goal(x[0].term, Tense.Eternal, 0f, 0.01f);
-//        nar.goal(x[1].term, Tense.Eternal, 0f, 0.01f);
+        //eternal bias to stop
+        nar.goal(x[0].term, Tense.Eternal, 0f, 0.5f);
+        nar.goal(x[1].term, Tense.Eternal, 0f, 0.5f);
+
+        //absolute control
+//        actionBipolar($.the("x"), (a) -> {
+//            fz.playerAngle = (a) * Math.PI*2;
+//            return a;
+//        });
     }
 
     protected boolean polarized(@NotNull Task task) {
@@ -338,8 +353,8 @@ public class FZero extends NAgentX {
         fz.update();
 
         double distance = fz.vehicleMetrics[0][1];
-        double deltaDistance = (distance - lastDistance) / 20f;
-
+        double deltaDistance = (distance - lastDistance) / 50f;
+        deltaDistance = Math.min(deltaDistance, 0.1f);
 
         lastDistance = distance;
 

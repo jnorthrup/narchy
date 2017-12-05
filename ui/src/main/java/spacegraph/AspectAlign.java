@@ -23,7 +23,7 @@ public class AspectAlign extends Layout {
      * relative size adjustment uniformly applied to x,y
      * after the 100% aspect size has been calculated
      */
-    protected float scale;
+    protected float scaleX, scaleY;
 
     public final Surface the;
 
@@ -37,10 +37,15 @@ public class AspectAlign extends Layout {
     }
 
     public AspectAlign(Surface the, float aspect, Align a, float scale) {
+        this(the, aspect, a, scale, scale);
+    }
+
+    public AspectAlign(Surface the, float aspect, Align a, float scaleX, float scaleY) {
         this.the = the;
         this.aspect = aspect;
         this.align = a;
-        this.scale = scale;
+        this.scaleX = scaleX;
+        this.scaleY = scaleY;
     }
 
     @Override
@@ -67,26 +72,26 @@ public class AspectAlign extends Layout {
         final float h = h();
 
         //target's relative size being computed
-        float tw = w;
-        float th = h;
+        float tw = w * scaleX;
+        float th = h * scaleY;
 
         float aspect = this.aspect;
         if (aspect == aspect /* not NaN */) {
 
-            if (h >= w) {
+            if (h > w/aspect) {
                 //if (aspect >= 1) {
                     //taller than wide
-                    tw = w;
-                    th = w / aspect;
+                    //tw = w;
+                    th = tw / aspect;
 //                } else {
 //                    //wider than tall
 //                    tw = vw;
 //                    th = vh*aspect;
 //                }
-            } else {
+            } else if (h * aspect > w) {
 //                if (aspect >= 1) {
-                    th = h;
-                    tw = h * aspect;
+                    //th = h;
+                    tw = th * aspect;
 //                } else {
 //                    tw = vw*aspect;
 //                    th = vh;
@@ -103,9 +108,6 @@ public class AspectAlign extends Layout {
 //            }
         }
 
-        tw *= scale;
-        th *= scale;
-
         float tx, ty;
         switch (align) {
 
@@ -121,6 +123,16 @@ public class AspectAlign extends Layout {
                 tx = bounds.max.x - tw;
                 ty = bounds.max.y - th;
                 break;
+
+            case RightTopOut:
+                tx = bounds.max.x;
+                ty = bounds.max.y;
+                break;
+            case LeftTopOut:
+                tx = bounds.min.x;
+                ty = bounds.max.y;
+                break;
+
             case LeftTop:
                 tx = bounds.min.x;
                 ty = bounds.max.y - th;
@@ -175,8 +187,10 @@ public class AspectAlign extends Layout {
         /**
          * 1:1, x=right, y=center
          */
-        RightTop, LeftTop
+        RightTop, LeftTop,
 
         //TODO etc...
+
+        RightTopOut, LeftTopOut
     }
 }

@@ -85,12 +85,13 @@ public class Can {
 
     @Override
     public String toString() {
-        return iterations.name + "{" +
-                "iterations=" + iterations() +
-                ", value=" + n4(value()) +
-                ", iterationTime=" + Texts.strNS(Math.round(iterationTime.getMean()*1.0E9)) +
-                ", supply=" + n2(supply.getMax()) +
-                '}';
+        return iterations.name;
+//        return iterations.name + "{" +
+//                "iterations=" + iterations() +
+//                ", value=" + n4(value()) +
+//                ", iterationTime=" + Texts.strNS(Math.round(iterationTime.getMean()*1.0E9)) +
+//                ", supply=" + n2(supply.getMax()) +
+//                '}';
     }
 
     /** estimated iterations this should be run next, given the value and historically estimated cost */

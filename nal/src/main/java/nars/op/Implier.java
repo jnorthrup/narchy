@@ -74,8 +74,8 @@ public class Implier extends DurService {
     }
 
 
-    public Implier(NAgent a, float... relativeTargetDurs) {
-        this(a.nar,
+    public Implier(float everyDurs, NAgent a, float... relativeTargetDurs) {
+        this(everyDurs, a.nar,
                 Iterables.concat(
                         Iterables.transform(a.actions.keySet(), ActionConcept::term),
                         Collections.singleton(a.happy.term)
@@ -85,7 +85,11 @@ public class Implier extends DurService {
     }
 
     public Implier(NAR n, Iterable<Term> seeds, float... relativeTargetDurs) {
-        super(n, 1f);
+        this(1, n, seeds, relativeTargetDurs);
+    }
+
+    public Implier(float everyDurs, NAR n, Iterable<Term> seeds, float... relativeTargetDurs) {
+        super(n, everyDurs);
 
         assert (relativeTargetDurs.length > 0);
 
@@ -214,9 +218,9 @@ public class Implier extends DurService {
             float strength = this.strength.floatValue();
 
             goalTruth.forEach((t, a) -> {
-                @Nullable Truth uu = a.commitSum().dither(freqRes, confRes, confMin, 1f);
+                @Nullable Truth uu = a.commitSum().dither(freqRes, confRes, confMin,  strength);
                 if (uu != null) {
-                    float c = uu.conf() * strength;
+                    float c = uu.conf();
                     NALTask y;
                     long[] stamp = nar.time.nextInputStamp();
                     if (c >= confMin) {
