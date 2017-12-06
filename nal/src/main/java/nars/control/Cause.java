@@ -206,7 +206,7 @@ public class Cause implements Comparable<Cause> {
     }
 
     /** learn the utility of this cause with regard to a goal. */
-    public void learn(MetaGoal p, float v) {
+    public final void learn(MetaGoal p, float v) {
         p.learn(goalValue, v);
     }
 

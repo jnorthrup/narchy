@@ -183,7 +183,7 @@ public enum $ {
 
     @NotNull
     public static Term p(@NotNull Term... t) {
-        return (t.length == 0) ? ZeroProduct : PROD.the(DTERNAL, t);
+        return PROD.the(t);
     }
 
     @NotNull

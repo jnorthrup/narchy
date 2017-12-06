@@ -233,8 +233,10 @@ public class RevisionTest {
     @Test public void testRevision2EternalImpl() throws Narsese.NarseseException {
         NAR n = newNAR(3)
             .input("(x ==> y). %1.0;0.9%",
-                   "(x ==> y). %0.0;0.9%" )
-                .run(1);
+                   "(x ==> y). %0.0;0.9%" );
+
+        n.run(1);
+
         BaseConcept c = (BaseConcept) n.conceptualize("(x ==> y)");
         c.print();
         Task t = n.answer(c.term(), BELIEF, ETERNAL);
@@ -246,7 +248,9 @@ public class RevisionTest {
     @Test public void testRevision2TemporalImpl() throws Narsese.NarseseException {
         NAR n = newNAR(3)
                 .input("(x ==> y). :|: %1.0;0.9%",
-                       "(x ==> y). :|: %0.0;0.9%" ).run(1);
+                       "(x ==> y). :|: %0.0;0.9%" );
+
+        n.run(1);
         Truth t = n.beliefTruth("(x ==> y)", 0);
         assertEquals(0.5f, t.freq(), 0.01f);
         assertEquals(0.947f, t.conf(), 0.01f);

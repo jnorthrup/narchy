@@ -1,35 +1,34 @@
 package jcog.list;
 
 import jcog.TODO;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.function.Consumer;
 import java.util.function.IntFunction;
 
 public class FastCoWList<X> extends FasterList<X> {
 
-    private static final Object[] EMPTY = new Consumer[0];
-
     private final IntFunction<X[]> arrayBuilder;
 
-    public X[] copy = (X[]) FastCoWList.EMPTY;
+    public X[] copy;
 
     public FastCoWList(int capacity, IntFunction<X[]> arrayBuilder) {
         super(capacity);
+        copy = arrayBuilder.apply(0);
         this.arrayBuilder = arrayBuilder;
     }
 
     protected final void commit() {
-        this.copy = (size == 0) ? (X[]) EMPTY :
+        this.copy = (size == 0) ? arrayBuilder.apply(0) :
                                   toArrayRecycled(arrayBuilder);
     }
 
     @Override
     public Iterator<X> iterator() {
-        return copy!=EMPTY ? new ArrayIterator<>(copy) : Collections.emptyIterator();
+        return copy.length> 0 ? new ArrayIterator<>(copy) : Collections.emptyIterator();
     }
 
     @Override
@@ -73,6 +72,9 @@ public class FastCoWList<X> extends FasterList<X> {
     public float[] map(FloatFunction<X> f, float[] target) {
         X[] c = this.copy;
         int n = c.length;
+        if (n == 0)
+            return ArrayUtils.EMPTY_FLOAT_ARRAY;
+
         if (n !=target.length) {
             target = new float[n];
         }

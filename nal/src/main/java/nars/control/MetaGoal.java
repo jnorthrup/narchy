@@ -81,6 +81,8 @@ public enum MetaGoal {
 
         if (Math.abs(strength) < Prioritized.EPSILON) return; //no change
 
+        float vPer = strength/numCauses;
+
         for (int i = 0; i < numCauses; i++) {
             short c = effects[i];
             Cause cc = causes.get(c);
@@ -94,7 +96,7 @@ public enum MetaGoal {
 
             //trace decay curve
             //linear triangle increasing to inc, warning this does not integrate to 100% here
-            float vPer = (strength * (i + 1)) / numCauses;
+            //float vPer = (strength * (i + 1)) / numCauses;
 
             cc.learn(p, vPer);
 

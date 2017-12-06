@@ -181,15 +181,18 @@ public class TermIOTest {
         ByteArrayOutputStream baos = new ByteArrayOutputStream(16384);
 
         NAR a = NARS.tmp()
-                .input("a:b.", "b:c.", "c:d!")
-                .run(16)
+                .input("a:b.", "b:c.", "c:d!");
+        a
+                .run(16);
+        a
                 .output(baos, true);
 
         byte[] x = baos.toByteArray();
         out.println("NAR tasks serialized: " + x.length + " bytes");
 
         NAR b = NARS.tmp()
-                .inputBinary(new ByteArrayInputStream(x)).run(1)
+                .inputBinary(new ByteArrayInputStream(x));
+        b.run(1)
                 //.next()
                 //.forEachConceptTask(true,true,true,true, out::println)
                 //.forEachConcept(System.out::println)

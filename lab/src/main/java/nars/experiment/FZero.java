@@ -35,7 +35,7 @@ public class FZero extends NAgentX {
 
     private final FZeroGame fz;
 
-    float fwdSpeed = 20;
+    float fwdSpeed = 5;
     float rotSpeed = 0.3f;
 
     public static void main(String[] args) {
@@ -45,8 +45,8 @@ public class FZero extends NAgentX {
         NAgentX.runRT((n) -> {
 
             FZero a = null;
-            n.freqResolution.set(0.04);
-            n.confResolution.set(0.02f);
+            n.freqResolution.set(0.25f);
+            n.confResolution.set(0.25f);
             a = new FZero(n);
             a.happy.resolution(0.1f);
 
@@ -297,25 +297,32 @@ public class FZero extends NAgentX {
     }
 
     public void initBipolar() {
-        actionBipolar($.the("fwd"), (a) -> {
-            //if (f > 0) {
-            //accelerator
-            //if (f > 0.5f)
-            if (a > 0)
-                fz.vehicleMetrics[0][6] = /*+=*/ (a) * (fwdSpeed);
+//        actionBipolar($.the("fwd"), (a) -> {
+//            //if (f > 0) {
+//            //accelerator
+//            //if (f > 0.5f)
+//            if (a > 0)
+//                fz.vehicleMetrics[0][6] = /*+=*/ (a) * (fwdSpeed);
+//            else
+//                fz.vehicleMetrics[0][6] *= 1 - (-a);
+////            else {
+////                float brake = 0.5f - f;
+////                fz.vehicleMetrics[0][6] *= (1f - brake);
+////            }
+//            return a;
+//        });
+        actionUnipolar($.the("fwd"), (a)->{
+            if (a > 0.5f)
+                fz.vehicleMetrics[0][6] = /*+=*/ (a-0.5f)*2f * (fwdSpeed);
             else
-                fz.vehicleMetrics[0][6] *= 1 - (-a);
-//            else {
-//                float brake = 0.5f - f;
-//                fz.vehicleMetrics[0][6] *= (1f - brake);
-//            }
+                fz.vehicleMetrics[0][6] = /*+=*/ (1f - (0.5f-a)*2f) * (fwdSpeed);
             return a;
         });
 //        //eternal bias to stop
 //        nar.goal(f[0].term, Tense.Eternal, 0f, 0.01f);
 //        nar.goal(f[1].term, Tense.Eternal, 0f, 0.01f);
 
-        GoalActionAsyncConcept[] x = actionBipolar($.the("x"), (a) -> {
+        actionBipolarSteering($.the("x"), (a) -> {
             float deadZone =
                     0;
                     //1 / 6f;
@@ -323,13 +330,13 @@ public class FZero extends NAgentX {
                 if (a > 0) a -= deadZone;
                 else a += deadZone;
                 fz.playerAngle += (a) * rotSpeed;
-                return a;
-            } else
-                return 0;
+                //return a;
+            }
+                //return 0;
         });
         //eternal bias to stop
-        nar.goal(x[0].term, Tense.Eternal, 0f, 0.5f);
-        nar.goal(x[1].term, Tense.Eternal, 0f, 0.5f);
+//        nar.goal(x[0].term, Tense.Eternal, 0f, 0.5f);
+//        nar.goal(x[1].term, Tense.Eternal, 0f, 0.5f);
 
         //absolute control
 //        actionBipolar($.the("x"), (a) -> {

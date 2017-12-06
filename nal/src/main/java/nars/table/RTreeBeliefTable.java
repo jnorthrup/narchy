@@ -43,14 +43,16 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
     /**
      * max fraction of the fully capacity table to compute in a single truthpolation
      */
-    static final float SCAN_QUALITY = 0.5f;
+    static final float SCAN_QUALITY =
+            1f;
+            //0.5f;
 
     /**
      * max allowed truths to be truthpolated in one test
      */
-    static final int TRUTHPOLATION_LIMIT = 8;
+    static final int TRUTHPOLATION_LIMIT = 4;
 
-    public static final float PRESENT_AND_FUTURE_BOOST = 2f;
+    public static final float PRESENT_AND_FUTURE_BOOST = 1.5f;
 
     static final int SCAN_DIVISIONS = 5;
 

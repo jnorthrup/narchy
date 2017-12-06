@@ -331,7 +331,7 @@ public abstract class Unify extends Versioning implements Subst {
 
     private class ConstrainedVersionMap extends VersionMap<Term, Term> {
         public ConstrainedVersionMap(Versioning versioning, int mapCap) {
-            super(versioning, mapCap, 1 /* maybe 2 is necessary for full 2nd-layer unification */);
+            super(versioning, mapCap, 1);
         }
 
 //        @Nullable
@@ -367,7 +367,7 @@ public abstract class Unify extends Versioning implements Subst {
         
         @Override
         protected Versioned newEntry(Term key) {
-            return new ConstrainedVersionedTerm(elementStackSizeDefault);
+            return new ConstrainedVersionedTerm();
         }
 
         public NewCompound snapshot() {
@@ -397,20 +397,30 @@ public abstract class Unify extends Versioning implements Subst {
 //         */
 //        Versioned<MatchConstraint> fastConstraints = null;
 
-        ConstrainedVersionedTerm(int stackSize) {
-            super(Unify.this, stackSize);
+        ConstrainedVersionedTerm() {
+            super(Unify.this, new Term[1]);
         }
 
-//        @Override
-//        public void pop() {
-//            if (forMatchedType) {
-//                if (get() != null) {
-//                    freeCount.add(freeCount.get()+1); //relase assigned variable
-//                }
-//            }
-//
-//            super.pop();
-//        }
+        @Override
+        public boolean add(Term newItem) {
+            if (this.size == 0) {
+                this.items[0] = newItem;
+                this.size = 1;
+                return true;
+            } else {
+                assert(this.size > 0);
+                return this.items[0].equals(newItem);  //coalesce
+            }
+        }
+
+        @Override
+        public void pop() {
+            if (this.size!=0) {
+                assert(this.size > 0);
+                this.size = 0;
+                this.items[0] = null;
+            }
+        }
 
         @Nullable
         @Override
@@ -434,10 +444,11 @@ public abstract class Unify extends Versioning implements Subst {
 
         public boolean constrain(MatchConstraint m) {
 
-            if (constraints == null)
-                constraints = new Versioned(Unify.this, 2);
+            Versioned<MatchConstraint> c = this.constraints;
+            if (c == null)
+                c = constraints = new Versioned(Unify.this, 4);
 
-            return constraints.set(m) != null;
+            return c.set(m) != null;
         }
 
 
@@ -454,9 +465,12 @@ public abstract class Unify extends Versioning implements Subst {
 
     public boolean constrain(MatchConstraint... cc) {
         for (MatchConstraint m : cc) {
+            assert(m!=null);
             Versioned<Term> v = xy.getOrCreateIfAbsent(m.target);
-            if (!((ConstrainedVersionedTerm) v).constrain(m))
+            if (!((ConstrainedVersionedTerm) v).constrain(m)) {
+                ((ConstrainedVersionedTerm) v).constrain(m);
                 return false;
+            }
         }
         return true;
     }

@@ -311,7 +311,7 @@ abstract public class NAgentX extends NAgent {
         //get ready
         System.gc();
 
-        NARLoop loop = a.nar.startFPS(narFPS);
+        Loop loop = a.nar.startFPS(narFPS);
 
 
         a.nar.runLater(() -> {

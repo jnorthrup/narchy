@@ -6,14 +6,25 @@ import nars.$;
 import nars.NAR;
 import nars.term.Term;
 import nars.term.Termed;
+import org.jetbrains.annotations.Nullable;
 
 public class NARService extends Services.AbstractService<NAR> implements Termed {
 
 
+    public final Term id;
     protected Ons ons;
 
-    protected NARService(NAR nar) {
-        nar.on(this);
+    @Deprecated protected NARService(NAR nar) {
+        this(nar, null);
+    }
+
+    protected NARService(@Nullable NAR nar, @Nullable Term id) {
+
+        this.id = id!=null ? id :
+            $.p($.quote(getClass().getName()), $.the(System.identityHashCode(this)) );
+
+        if (nar!=null)
+            nar.on(this);
     }
 
     @Override
@@ -40,8 +51,8 @@ public class NARService extends Services.AbstractService<NAR> implements Termed 
     }
 
     @Override
-    public  Term term() {
-        return $.p($.quote(getClass().getName()), $.the(System.identityHashCode(this)) );
+    public final Term term() {
+        return id;
     }
 
 }

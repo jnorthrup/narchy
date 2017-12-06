@@ -31,7 +31,6 @@ import static nars.Op.BELIEF;
  */
 public class ScalarConcepts extends NARService implements Iterable<SensorConcept>, Consumer<NAgent>, FloatSupplier {
 
-    private final Term id;
 
     final AtomicDouble value = new AtomicDouble();
     public final CauseChannel<ITask> in;
@@ -179,12 +178,10 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
     }
 
     public ScalarConcepts(FloatSupplier input, @NotNull NAR nar, ScalarEncoder truther, @NotNull Term... states) {
-        super(nar);
-
-        this.id = $.func(getClass().getSimpleName(),
+        super(null, $.func(ScalarConcepts.class.getSimpleName(),
                 $.sete(states),
                 $.quote(Util.toString(input)), $.the(truther.toString())
-        );
+        ));
 
         int numStates = states.length;
 
@@ -208,6 +205,7 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
             sensors.add(sc);
         }
 
+        nar.on(this);
 
     }
 
@@ -225,10 +223,6 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
     }
 
 
-    @Override
-    public @NotNull Term term() {
-        return id;
-    }
 
 
     //		private Truth biangular(float v) {

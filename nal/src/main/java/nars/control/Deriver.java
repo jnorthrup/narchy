@@ -1,6 +1,7 @@
 package nars.control;
 
 import jcog.Util;
+import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -54,8 +55,12 @@ public class Deriver extends NARService {
         this(nar.exe::fire, deriver, nar);
     }
 
+    static int serial = 0;
+
     public Deriver(Consumer<Predicate<Activate>> source, PrediTerm<Derivation> deriver, NAR nar) {
-        super(nar);
+        super(null,
+                $.func("deriver", $.the(serial++)) //HACK
+        );
         this.deriver = deriver;
         this.source = source;
         this.nar = nar;
@@ -80,6 +85,8 @@ public class Deriver extends NARService {
             }
         };
         //this.can.can.update(1,1,0.0);
+
+        nar.on(this);
     }
 
 

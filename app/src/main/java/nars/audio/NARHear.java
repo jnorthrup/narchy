@@ -1,6 +1,7 @@
 package nars.audio;
 
 import jcog.Util;
+import jcog.exe.Loop;
 import jcog.learn.Autoencoder;
 import jcog.math.random.XorShift128PlusRandom;
 import nars.*;
@@ -31,7 +32,7 @@ public class NARHear extends NAgent {
         n.log();
         NARHear a = new NARHear(n);
         a.runFPS(1f);
-        NARLoop loop = a.nar.startFPS(10);
+        Loop loop = a.nar.startFPS(10);
 
 
 

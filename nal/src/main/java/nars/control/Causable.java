@@ -2,6 +2,7 @@ package nars.control;
 
 import jcog.exe.Can;
 import nars.NAR;
+import nars.term.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,11 +26,15 @@ abstract public class Causable extends NARService {
 
     private final AtomicBoolean busy;
 
-    protected Causable(NAR nar) {
-        super(nar);
-        busy = singleton() ? new AtomicBoolean(false) : null;
+    @Deprecated protected Causable(NAR nar) {
+        this(nar, null);
+    }
 
+    protected Causable(NAR nar, Term id) {
+        super(null, id);
+        busy = new AtomicBoolean(false);
         can = new MyCan(nar, term().toString());
+        nar.on(this);
     }
 
     @Override

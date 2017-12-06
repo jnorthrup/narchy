@@ -22,8 +22,12 @@ public class Versioned<X> extends
 //        this.context = copy.context;
 //    }
 
-    public Versioned(Versioning sharedContext, int cap) {
-        super(cap);
+    public Versioned(Versioning sharedContext, int initialCap) {
+        super(initialCap);
+        this.context = sharedContext;
+    }
+    public Versioned(Versioning sharedContext, X[] emptyArray) {
+        super(0, emptyArray);
         this.context = sharedContext;
     }
 
@@ -73,7 +77,6 @@ public class Versioned<X> extends
 //            return null;
 //        }
     }
-
 
 
     @Override

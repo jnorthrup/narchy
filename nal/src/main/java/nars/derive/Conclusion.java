@@ -56,11 +56,6 @@ public final class Conclusion extends AbstractPred<Derivation> {
         if (c1 == null || !c1.op().conceptualizable || c1.volume() > volMax || c1.hasAny(BOOL,VAR_PATTERN) )
             return false;
 
-//        c1 = c1.eval(p);
-//        if (c1 == null || !c1.op().conceptualizable || c1.varPattern() > 0 || c1.volume() > volMax)
-//            return false;
-
-
         d.concEviFactor = 1f;
         final long[] occ = d.concOcc;
         occ[0] = occ[1] = ETERNAL;

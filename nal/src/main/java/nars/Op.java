@@ -125,7 +125,13 @@ public enum Op {
      * along with inheritance (INH), which comprise the functor,
      * can be used to compose the foundation of the system.
      */
-    PROD("*", 1, Args.GTEZero),
+    PROD("*", 1, Args.GTEZero) {
+        @Override
+        public Term the(int dt, Term... t) {
+            assert(dt == DTERNAL);
+            return (t.length == 0) ? ZeroProduct : compound(PROD, DTERNAL, t);
+        }
+    },
 
 
     /**
@@ -1939,7 +1945,7 @@ public enum Op {
     }
 
     /*@NotNull*/
-    public final Term the(int dt, Term... u) {
+    public Term the(int dt, Term... u) {
         return _the(dt, commute(dt, u.length) ? sorted(u) : u);
     }
 

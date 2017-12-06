@@ -82,7 +82,7 @@ import static org.fusesource.jansi.Ansi.ansi;
  * <p>
  * Memory is serializable so it can be persisted and transported.
  */
-public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles<NAR> {
+public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles<NAR>, Cycler {
 
     public static final Logger logger = LoggerFactory.getLogger(NAR.class);
     static final Set<String> logEvents = Sets.newHashSet("eventTask");
@@ -933,7 +933,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     /**
      * Exits an iteration loop if running
      */
-    @Override
     public NAR stop() {
 
         loop.stop();
@@ -948,6 +947,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     /**
      * steps 1 frame forward. cyclesPerFrame determines how many cycles this frame consists of
      */
+    @Override
     public final void cycle() {
 
         time.cycle(this);
@@ -963,19 +963,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         emotion.cycle();
     }
 
-    /**
-     * Runs multiple frames, unless already running (then it return -1).
-     *
-     * @return total time in seconds elapsed in realtime
-     */
-    public final NAR run(int frames) {
-
-        for (; frames > 0; frames--) {
-            cycle();
-        }
-
-        return this;
-    }
 
     public NAR trace(@NotNull Appendable out, Predicate<String> includeKey) {
         return trace(out, includeKey, null);
@@ -1008,50 +995,34 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         return this;
     }
 
-    @NotNull
-    public NAR trace(@NotNull Appendable out) {
+    public NAR trace(Appendable out) {
         return trace(out, k -> true);
     }
 
-    @NotNull
     public NAR log() {
         return log(System.out);
     }
 
-    @NotNull
     public NAR log(Appendable out) {
         return log(out, null);
     }
 
-    @NotNull
     public NAR log(Appendable out, Predicate includeValue) {
         return trace(out, NAR.logEvents::contains, includeValue);
     }
 
-    /**
-     * creates a new loop which runs at max speed
-     */
-    @NotNull
-    public NARLoop start() {
-        return startPeriodMS(0);
-    }
 
-    @NotNull
-    public final NARLoop startFPS(float initialFPS) {
-        assert (initialFPS >= 0);
 
-        float millisecPerFrame = initialFPS > 0 ? 1000.0f / initialFPS : 0 /* infinite speed */;
-        return startPeriodMS(Math.round(millisecPerFrame));
-    }
 
     /**
      * Runs until stopped, at a given delay period between frames (0= no delay). Main loop
      *
-     * @param ms in milliseconds
+     * @param initialDelayMS in milliseconds
      */
+    @Override
     @NotNull
-    public NARLoop startPeriodMS(int ms) {
-        loop.setPeriodMS(ms);
+    public NARLoop startPeriodMS(int initialDelayMS) {
+        loop.setPeriodMS(initialDelayMS);
         return loop;
     }
 

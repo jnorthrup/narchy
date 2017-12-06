@@ -2,6 +2,7 @@ package nars.exe;
 
 import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
+import com.google.common.util.concurrent.MoreExecutors;
 import jcog.exe.AffinityExecutor;
 import nars.*;
 import nars.task.ITask;
@@ -9,11 +10,16 @@ import nars.task.NativeTask;
 import org.eclipse.collections.api.set.primitive.LongSet;
 import org.eclipse.collections.impl.factory.primitive.LongSets;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
 import java.util.function.LongPredicate;
 import java.util.stream.Stream;
@@ -21,12 +27,9 @@ import java.util.stream.Stream;
 public class MultiExec extends AbstractExec {
 
 
-
-
-
     static final Logger logger = LoggerFactory.getLogger(MultiExec.class);
 
-    protected AffinityExecutor exe;
+    protected Executor exe;
 
     protected int threads;
     final MultithreadConcurrentQueue<ITask> q;
@@ -34,35 +37,30 @@ public class MultiExec extends AbstractExec {
     final List<Thread> activeThreads = $.newArrayList();
     LongSet activeThreadIds = new LongHashSet();
     LongPredicate isActiveThreadId = (x) -> false;
-    private Focus focus;
+    protected Focus focus;
 
     public MultiExec(int concepts, int threads, int qSize) {
         super(concepts);
+
+        assert(qSize > 0);
 
         this.q = new DisruptorBlockingQueue<>(qSize);
         this.threads = threads;
 
 
-        exe = new AffinityExecutor() {
-            @Override
-            protected void add(AffinityExecutor.AffinityThread at) {
-                super.add(at);
-                register(at);
-            }
-        };
+//        exe = new AffinityExecutor() {
+//            @Override
+//            protected void add(AffinityExecutor.AffinityThread at) {
+//                super.add(at);
+//                register(at);
+//            }
+//        };
+        exe = Executors.newFixedThreadPool(threads, runnable -> {
+           Thread t = new Thread(runnable);
+           register(t);
+           return t;
+        });
 
-//         return texe = new ThreadPoolExecutor(threads, threads,
-//                     60L, TimeUnit.SECONDS,
-//                     //new LinkedBlockingQueue<Runnable>(),
-//                     new ArrayBlockingQueue(8),
-//                     r -> {
-//                         Thread t = new Thread(r);
-//                         t.setDaemon(false);
-//                         t.setName("worker" + activeThreads.size());
-//                         register(t);
-//                         return t;
-//                     }, new ThreadPoolExecutor.AbortPolicy()
-//             );
         deferred = x -> {
             if (x instanceof Task)
                 execute(x);
@@ -100,18 +98,26 @@ public class MultiExec extends AbstractExec {
         }
     }
 
+    boolean running = false;
 
     @Override
     public synchronized void start(NAR nar) {
         this.focus = new Focus(nar);
         super.start(nar);
-        exe.execute(this::runner, threads);
+        for (int i = 0; i < threads; i++)
+            exe.execute(this::runner);
+        running = true;
     }
 
     @Override
     public synchronized void stop() {
-        exe.stop();
+        if (exe instanceof AffinityExecutor)
+            ((AffinityExecutor)exe).stop();
+        else
+            ((ExecutorService)exe).shutdownNow();
+
         super.stop();
+        running = false;
     }
 
     protected boolean isWorker(Thread t) {
@@ -219,7 +225,14 @@ public class MultiExec extends AbstractExec {
         if ((t instanceof Task) || (isWorker(Thread.currentThread()))) {
             execute(t);
         } else {
-            q.offer(t);
+            while (!q.offer(t)) {
+                if (!running) {
+                    throw new RuntimeException("work queue exceeded capacity while not running");
+                }
+                ITask next = q.poll();
+                if (next!=null)
+                    execute(next);
+            }
         }
     }
 

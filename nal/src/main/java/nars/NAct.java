@@ -392,17 +392,29 @@ public interface NAct {
 
     default void actionBipolarSteering(@NotNull Term s, FloatConsumer act) {
         final float[] amp = new float[1];
+        float dt = 0.1f;
+        float max = 1f;
+        float decay = 0.9f;
+        actionTriState(s, (i) -> {
+            float a = amp[0];
+            float b = Util.clamp( (a * decay) + dt * i, -max, max);
+            amp[0] = b;
 
-        actionUnipolar($.p($.the("\"*\""), s), (u)->{
-            amp[0] =
-                    u;
-                    //Math.max(u-0.5f, 0);
-            return u;
+            act.accept(b);
+
+            return !Util.equals(a, b, Float.MIN_NORMAL);
         });
-        actionBipolar($.p($.the("\"+-\""), s), (xy)->{
-            act.accept(xy * amp[0]);
-            return xy;
-        });
+
+//        actionUnipolar($.p($.the("\"*\""), s), (u)->{
+//            amp[0] =
+//                    u;
+//                    //Math.max(u-0.5f, 0);
+//            return u;
+//        });
+//        actionBipolar($.p($.the("\"+-\""), s), (xy)->{
+//            act.accept(xy * amp[0]);
+//            return xy;
+//        });
     }
 
     default GoalActionAsyncConcept[] actionBipolarFrequencyDifferential(@NotNull Term s, @NotNull FloatToFloatFunction update) {

@@ -228,10 +228,6 @@ public class NARS {
         return this;
     }
 
-    public @NotNull NARLoop startFPS(float framesPerSecond) {
-        return get().startFPS(framesPerSecond);
-    }
-
 
     /**
      * generic defaults

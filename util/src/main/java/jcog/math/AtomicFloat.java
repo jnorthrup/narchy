@@ -59,16 +59,12 @@ public class AtomicFloat extends AtomicInteger {
 
 
     @Override
-    public double doubleValue() { return (double) floatValue(); }
+    public double doubleValue() { return floatValue(); }
     @Override
     public int intValue()       { return Math.round(floatValue());  }
 
     public float addAndGet(float x) {
-        return updateAndGet((i)->{
-           float f = intBitsToFloat(i);
-           return floatToIntBits(f + x);
-        });
+        return updateAndGet((i)-> floatToIntBits(intBitsToFloat(i) + x ));
     }
-
 
 }

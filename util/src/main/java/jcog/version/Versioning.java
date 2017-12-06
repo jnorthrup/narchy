@@ -48,8 +48,11 @@ public class Versioning<X>
         final Versioned<X>[] i = this.items;
 
         while (c-- > 0) {
-            i[--s].pop();
-            i[s] = null;
+            Versioned<X> x = i[--s];
+            if (x!=null) {
+                x.pop();
+                i[s] = null;
+            }
         }
 
         this.size = s;

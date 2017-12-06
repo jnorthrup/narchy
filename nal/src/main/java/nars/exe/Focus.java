@@ -6,9 +6,9 @@ import jcog.decide.Roulette;
 import jcog.learn.deep.RBM;
 import jcog.list.FastCoWList;
 import jcog.list.FasterList;
-import jcog.math.NumberException;
 import jcog.math.RecycledSummaryStatistics;
 import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.util.Flip;
 import nars.NAR;
 import nars.control.Causable;
 import nars.control.Cause;
@@ -33,9 +33,42 @@ public class Focus {
 
     private final FastCoWList<Causable> can;
 
-    /** probability of selecting each can (roulette weight), updated each cycle */
-    private float[] canWeights = ArrayUtils.EMPTY_FLOAT_ARRAY;
-    private Causable[] canActive;
+    static class Schedule {
+        public float[] canWeights = ArrayUtils.EMPTY_FLOAT_ARRAY;
+
+        /**
+         * probability of selecting each can (roulette weight), updated each cycle
+         */
+
+        public Causable[] canActive;
+
+        private float weight(Causable c) {
+            final float TEMPERATURE = 0.05f;
+            final float MAX = canWeights.length * 2;
+            double supply = c.can.supply();
+            float iterationTimeMean = c.can.iterationTimeMean();
+            float den = (float) supply * iterationTimeMean;
+            if (den < Float.MIN_NORMAL)
+                return 1;
+            else {
+                float x = (float) Math.exp(c.value() / den * TEMPERATURE);
+                if (Float.isFinite(x)) {
+                    return Math.min(x, MAX);
+                } else {
+                    return MAX;
+                    //throw new NumberException("(value,cost) -> weight calculation");
+                }
+            }
+        }
+        
+        public void update(FastCoWList<Causable> can) {
+            canActive = can.copy;
+            canWeights = can.map(this::weight, canWeights);
+        }
+    }
+
+    final Flip<Schedule> schedule = new Flip<Schedule>(Schedule::new);
+
 
     private final NAR nar;
 
@@ -179,7 +212,7 @@ public class Focus {
 
         this.revaluator =
                 new DefaultRevaluator();
-                //new RBMRevaluator(nar.random());
+        //new RBMRevaluator(nar.random());
 
         n.serviceAddOrRemove.on((xa) -> {
             Services.Service<NAR> x = xa.getOne();
@@ -196,13 +229,15 @@ public class Focus {
     }
 
     public void work(int work) {
+        assert (work > 0);
 
-        float[] cw = canWeights;
+        Schedule s = schedule.read();
+
+        float[] cw = s.canWeights;
         int n = cw.length;
         if (n == 0) return;
 
-        Causable[] ca = canActive;
-        if (ca.length!= n) return; //HACK in between updates, try again
+        Causable[] ca = s.canActive;
 
         for (int i = 0; i < work; i++) {
             int x = Roulette.decideRoulette(cw, rng);
@@ -222,8 +257,9 @@ public class Focus {
         try {
 
             //TODO these should be updated as atomic pair
-            canActive = can.copy;
-            canWeights = can.map(this::weight, canWeights);
+            Schedule s = schedule.write();
+            s.update(can);
+            schedule.commit();
 
 //            System.out.println(values);
 //            can.print();
@@ -244,31 +280,12 @@ public class Focus {
 //            }
     }
 
-    private float weight(Causable c) {
-        final float TEMPERATURE = 0.05f;
-        final float MAX = canWeights.length * 2;
-        double supply = c.can.supply();
-        float iterationTimeMean = c.can.iterationTimeMean();
-        float den = (float) supply * iterationTimeMean;
-        if (den < Float.MIN_NORMAL)
-            return 1;
-        else {
-            float x = (float) Math.exp(c.value() / den * TEMPERATURE);
-            if (Float.isFinite(x)) {
-                return Math.min(x, MAX);
-            }
-            else {
-                return MAX;
-                //throw new NumberException("(value,cost) -> weight calculation");
-            }
-        }
-    }
 
-    private void add(Causable c) {
+    protected void add(Causable c) {
         this.can.add(c);
     }
 
-    private void remove(Causable c) {
+    protected void remove(Causable c) {
         this.can.remove(c);
     }
 
