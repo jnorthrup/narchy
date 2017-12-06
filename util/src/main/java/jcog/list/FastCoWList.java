@@ -3,6 +3,7 @@ package jcog.list;
 import jcog.TODO;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 
 import java.util.Collection;
 import java.util.Collections;

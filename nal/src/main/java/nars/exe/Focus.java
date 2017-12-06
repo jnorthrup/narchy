@@ -1,5 +1,6 @@
 package nars.exe;
 
+import com.google.common.base.Joiner;
 import jcog.Services;
 import jcog.Util;
 import jcog.decide.Roulette;
@@ -16,54 +17,121 @@ import nars.control.MetaGoal;
 import nars.control.Traffic;
 import org.apache.commons.lang3.ArrayUtils;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.IntStream;
+
+import static jcog.Texts.n2;
+import static jcog.Texts.n4;
+import static jcog.Util.normalize;
 
 /**
  * decides mental activity
  */
 public class Focus {
 
-    public static final int WORK_BATCH_SIZE = 2;
-
-    /**
-     * temporal granularity unit, in seconds
-     */
-    public static final float JIFFY = 0.0005f;
+//    /**
+//     * temporal granularity unit, in seconds
+//     */
+//    public static final float JIFFY = 0.005f;
 
     private final FastCoWList<Causable> can;
 
     static class Schedule {
-        public float[] canWeights = ArrayUtils.EMPTY_FLOAT_ARRAY;
+        public float[] time = ArrayUtils.EMPTY_FLOAT_ARRAY;
+        public float[] timeNormalized = ArrayUtils.EMPTY_FLOAT_ARRAY;
+        public float[] supply = ArrayUtils.EMPTY_FLOAT_ARRAY;
+        public float[] weight = ArrayUtils.EMPTY_FLOAT_ARRAY;
 
         /**
          * probability of selecting each can (roulette weight), updated each cycle
          */
 
-        public Causable[] canActive;
+        public Causable[] active = new Causable[0];
 
-        private float weight(Causable c) {
-            final float TEMPERATURE = 0.05f;
-            final float MAX = canWeights.length * 2;
-            double supply = c.can.supply();
-            float iterationTimeMean = c.can.iterationTimeMean();
-            float den = (float) supply * iterationTimeMean;
-            if (den < Float.MIN_NORMAL)
-                return 1;
-            else {
-                float x = (float) Math.exp(c.value() / den * TEMPERATURE);
-                if (Float.isFinite(x)) {
-                    return Math.min(x, MAX);
-                } else {
-                    return MAX;
-                    //throw new NumberException("(value,cost) -> weight calculation");
-                }
-            }
+        @Override
+        public String toString() {
+
+            return Joiner.on("\n").join(IntStream.range(0, active.length).mapToObj(
+                    x -> n4(weight[x]) + "=" + active[x] +
+                            "@" + n2(time[x]*1E3) + "uS x " + n2(supply[x])
+            ).iterator());
         }
-        
+
+//        private float weight(Causable c, float time) {
+//            //final float MAX = canWeights.length * 2;
+//            //double supply = c.can.supply();
+//            //float iterationTimeMean = c.can.iterationTimeMean();
+//            //float den = (float) supply * iterationTimeMean;
+//
+//
+//            float v = c.value() / time;
+//            return v;
+//
+////            final float TEMPERATURE = 1;
+////            float x = (float) Math.exp(v * TEMPERATURE);
+////            assert (Float.isFinite(x));
+////            return x;
+////            }
+//        }
+
         public void update(FastCoWList<Causable> can) {
-            canActive = can.copy;
-            canWeights = can.map(this::weight, canWeights);
+            active = can.copy;
+            int n = active.length;
+            if (n > 0) {
+                time = can.map(c -> c.can.iterationTimeSum(), time);
+                supply = can.map(c -> (float) c.can.supply(), supply);
+
+                float margin = 1f / n;
+
+                if (timeNormalized.length!=n)
+                    timeNormalized = new float[n];
+
+                float iterSum = 0;
+                float timeMax = 0;
+                int iters = 0;
+                for (float i : time) {
+                    if (i > Float.MIN_NORMAL) {
+                        iterSum += i;
+                        if (i > timeMax)
+                            timeMax = i;
+                        iters++;
+                    }
+                }
+
+                if (timeMax < Float.MIN_NORMAL)
+                    timeMax = 1f; //artificial
+
+                for (int i = 0; i < n; i++) {
+                    float ii = time[i];
+                    if (ii < Float.MIN_NORMAL) {
+                        time[i] = timeMax;
+                    }
+                }
+
+                if (iters < 2) {
+                    Arrays.fill(timeNormalized, 1f); //all the same
+                } else {
+                    float mean = iterSum/iters;
+                    for (int i = 0; i < n; i++) {
+                        timeNormalized[i] = normalize( normalize(time[i],
+                                0, timeMax), 0 - margin, +1f + margin);
+                    }
+                }
+            } else {
+                return;
+            }
+
+            weight = Util.map(n, (int i)->
+                active[i].value(), weight);
+
+            float[] minmax = Util.minmax(weight);
+            for (int i = 0; i < n; i++)
+                weight[i] = normalize(
+                                normalize(weight[i], minmax[0], minmax[1]),
+                        -1f/n, +1f) / time[i];
+                        //* (1f - timeNormalized[i]);
         }
     }
 
@@ -228,24 +296,53 @@ public class Focus {
         n.onCycle(this::update);
     }
 
-    public void work(int work) {
+    public void work(int work, float dt) {
         assert (work > 0);
 
         Schedule s = schedule.read();
 
-        float[] cw = s.canWeights;
+        float[] cw = s.weight;
         int n = cw.length;
         if (n == 0) return;
 
-        Causable[] ca = s.canActive;
+        Causable[] can = s.active;
+        float[] time = s.time;
+        float[] supply = s.supply;
 
+        float subDT = dt/work;
         for (int i = 0; i < work; i++) {
             int x = Roulette.decideRoulette(cw, rng);
-            Causable y = ca[x];
-            int iters = Math.max(1, Math.round(JIFFY / y.can.iterationTimeMean()));
-            y.run(nar, iters);
+            Causable cx = can[x];
+            AtomicBoolean cb = cx.busy;
+
+            int completed;
+            if (cb == null) {
+                completed = run(cx, subDT, supply[x], time[x]);
+            } else {
+                if (cb.compareAndSet(false, true)) {
+                    float weightSaved = cw[x];
+                    cw[x] = 0; //hide from being selected by other threads
+                    try {
+                        completed = run(cx, subDT, supply[x], time[x]);
+                    } finally {
+                        cb.set(false);
+                        cw[x] = weightSaved;
+                    }
+                } else {
+                    continue;
+                }
+            }
+
+            if (completed < 0) {
+                cw[x] = 0;
+            }
         }
 
+    }
+
+    private int run(Causable cx, float dt, float supply, float time) {
+        int iters = Math.max(1, Math.round(Math.max(1,supply) * (dt/time)));
+        return cx.run(nar, iters);
     }
 
     final AtomicBoolean busy = new AtomicBoolean(false);
@@ -256,13 +353,13 @@ public class Focus {
 
         try {
 
-            //TODO these should be updated as atomic pair
+
             Schedule s = schedule.write();
             s.update(can);
-            schedule.commit();
 
-//            System.out.println(values);
-//            can.print();
+            //System.out.println(schedule.read());
+
+            schedule.commit();
 
             revaluator.update(nar.causes, nar.want);
 

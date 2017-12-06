@@ -14,7 +14,7 @@ abstract public class Sensor2D<S> extends Causable {
     public final S src;
 
 
-    public Sensor2D(S src, int width, int height, NAR nar) {
+    protected Sensor2D(S src, int width, int height, NAR nar) {
         super(nar);
         this.src = src;
         this.width = width;

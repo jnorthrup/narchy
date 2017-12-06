@@ -4,6 +4,7 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.constraint.continuous.DoubleVar;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,8 +18,8 @@ public class Can {
 
     final static int WINDOW = 8;
 
-    final DescriptiveStatistics iterationTime = new DescriptiveStatistics(WINDOW);
-    public final DescriptiveStatistics supply = new DescriptiveStatistics(WINDOW);
+    final SummaryStatistics iterationTime = new SummaryStatistics();
+    public final SummaryStatistics supply = new SummaryStatistics();
     protected final DescriptiveStatistics value = new DescriptiveStatistics(WINDOW);
 
     /**
@@ -37,19 +38,21 @@ public class Can {
     /**
      * in seconds
      */
-    public float iterationTimeMean() {
-        double mean = iterationTime.getMean();
-        if (mean!=mean) return 1.0f;
-        return (float) mean;
+    public float iterationTimeSum() {
+        double s = iterationTime.getSum();
+        iterationTime.clear();
+        if (s!=s) return 0f;
+        return (float) s;
     }
 
     /**
      * max iterations that can/should be requested
      */
     public double supply() {
-        double mean = supply.getMax();
-        if (mean != mean) return 0;
-        return mean;
+        double s = supply.getSum();
+        supply.clear();
+        if (s != s) return 0;
+        return s;
     }
 
     /**

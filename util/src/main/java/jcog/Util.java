@@ -49,6 +49,7 @@ import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
 import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.msgpack.jackson.dataformat.MessagePackFactory;
 import org.slf4j.Logger;
 
@@ -1863,8 +1864,13 @@ public enum Util {
         }
         return x;
     }
+
     public static float[] map(int num, IntToFloatFunction build) {
-        float[] f = new float[num];
+        return map(num, build, null);
+    }
+
+    public static float[] map(int num, IntToFloatFunction build, @Nullable float[] reuse) {
+        float[] f = (reuse!=null && reuse.length==num) ? reuse : new float[num];
         for (int i = 0; i < num; i++) {
             f[i] = build.valueOf(i);
         }

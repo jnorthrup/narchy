@@ -3,6 +3,7 @@ package nars.exe;
 import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import com.google.common.util.concurrent.MoreExecutors;
+import jcog.Util;
 import jcog.exe.AffinityExecutor;
 import nars.*;
 import nars.task.ITask;
@@ -71,23 +72,39 @@ public class MultiExec extends AbstractExec {
 
 
     protected void runner() {
+
+
+        int BATCH_WORK = 2;
+        int BATCH_PLAY = 2;
+
+        long last = System.nanoTime();
         while (true) {
 
-            float load;
+            long now = System.nanoTime();
+            float dt =
+                    //(now - last)/1E9f;
+                    dt = 0.0001f; //fixed JIFFY
+            last = now;
 
-            ITask i = q.poll();
-            if (i != null) {
-                execute(i);
-                load = 0;
-            } else {
-                load = load();
-            }
+
+            int qq = BATCH_WORK;
+            do {
+
+                ITask i = q.poll();
+                if (i != null)
+                    execute(i);
+                else
+                    break;
+
+            } while (--qq > 0);
+
+            float load = load();
 
             NARLoop loop = nar.loop;
             @Deprecated float throttle = loop.throttle.floatValue(); //HACK
 
             try {
-                focus.work((int) (Focus.WORK_BATCH_SIZE */*(1f-load)**/throttle));
+                focus.work(BATCH_PLAY, dt * throttle /* * (1f- Util.sqr(load))*/ );
             } catch (Throwable e) {
                 if (Param.DEBUG) {
                     throw e;

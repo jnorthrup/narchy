@@ -44,6 +44,11 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
     transient int w, h;
     transient float conf;
     private int lastPixel;
+
+
+    private long lastUpdate;
+    int pixelsRemainPerUpdate = 0;
+
     //private long stamp;
 
 
@@ -66,6 +71,7 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
                 //InhRecurse(root, w, h, RADIX)
                 , n);
 
+        lastUpdate = n.time();
     }
 
     @NotNull
@@ -208,9 +214,22 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
         return in.value();
     }
 
+
     @Override
     protected int next(NAR nar, int work) {
 
+
+        int totalPixels = pixels.size();
+
+        long now = nar.time();
+        if (this.lastUpdate != now) {
+            src.update(1);
+            pixelsRemainPerUpdate = totalPixels;
+            this.lastUpdate = now;
+        } else {
+            if (pixelsRemainPerUpdate<=0)
+                return -1; //done for this cycle
+        }
 
 
         //stamp = nar.time.nextStamp();
@@ -221,10 +240,12 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
         //resolution(Util.round(Math.min(0.01f, 0.5f * (1f - this.in.amp())), 0.01f));
 
         //frame-rate timeslicing
-        int totalPixels = pixels.size();
-        int pixelsToProcess = Math.min(totalPixels, workToPixels(work));
+
+        int pixelsToProcess = Math.min(pixelsRemainPerUpdate, workToPixels(work));
         if (pixelsToProcess == 0)
             return 0;
+
+        pixelsRemainPerUpdate -= pixelsToProcess;
 
         int start, end;
 
@@ -241,7 +262,6 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
         end = (start + pixelsToProcess);
         Stream<Task> s;
 
-        src.update(1); //trigger camera at last possible moment
 
         if (end > totalPixels) {
             //wrap around

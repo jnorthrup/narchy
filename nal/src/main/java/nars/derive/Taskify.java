@@ -49,7 +49,8 @@ public class Taskify extends AbstractPred<Derivation> {
         Term x1 = d.anon.get(x0);
         if (x1 == null) {
             //d.anon.get(x0); //HACK temporary for debug
-            throw new NullPointerException();
+            //throw new NullPointerException();
+            return false; //when the values were finally dereferenced, the result produced an invalid compound
         }
         Term x = x1.normalize();
         if (x == null) //HACK temporary for debug

@@ -154,7 +154,7 @@ public class PremiseRuleTest {
 //        return rule(
 //                r
 //        );
-        Compound y = (Compound) parse("(S --> P), (--,%S) |- (P --> S), (Belief:Conversion)").id;
+        Compound y = (Compound) parse("(S --> P), (--,S) |- (P --> S), (Belief:Conversion)").id;
         assertTrue(y.hasAny(Op.NEG));
 
         assertNotNull(y);

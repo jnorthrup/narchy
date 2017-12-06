@@ -3,6 +3,7 @@ package nars.control;
 import jcog.exe.Can;
 import nars.NAR;
 import nars.term.Term;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +25,8 @@ abstract public class Causable extends NARService {
 
     public final Can can;
 
-    private final AtomicBoolean busy;
+    @Nullable
+    public final AtomicBoolean busy;
 
     @Deprecated protected Causable(NAR nar) {
         this(nar, null);
@@ -32,7 +34,7 @@ abstract public class Causable extends NARService {
 
     protected Causable(NAR nar, Term id) {
         super(null, id);
-        busy = new AtomicBoolean(false);
+        busy = singleton() ? new AtomicBoolean(false) : null;
         can = new MyCan(nar, term().toString());
         nar.on(this);
     }
@@ -51,10 +53,6 @@ abstract public class Causable extends NARService {
 
     public final int run(NAR n, int iterations) {
 
-        if (singleton() && !busy.compareAndSet(false, true)) {
-            return 0; //another thread running in here
-        }
-
         Throwable error = null;
         int completed = 0;
         try {
@@ -67,7 +65,8 @@ abstract public class Causable extends NARService {
             }
             long end = System.nanoTime();
 
-            can.update(completed, value(), (end - start) / 1.0E9);
+            if (completed >= 0)
+                can.update(completed, value(), (end - start) / 1.0E9);
         } catch (Exception e) {
             logger.error("{} {}", this, e);
         } finally {
@@ -92,6 +91,11 @@ abstract public class Causable extends NARService {
 
     /**
      * returns iterations actually completed
+     * returns 0 if no work was done, although the time taken will still be recorded
+     * if returns -1, then it signals there is no work availble
+     *    and time will not be recorded. further a scheduler can assume
+     *    this will remain true for the remainder of the cycle, so it can be
+     *    removed from the eligible execution list for the current cycle.
      */
     protected abstract int next(NAR n, int iterations);
 

@@ -1,21 +1,16 @@
 package nars.exe;
 
 import jcog.Util;
-import jcog.exe.Can;
 import jcog.exe.Loop;
 import nars.$;
 import nars.NAR;
-import nars.NARLoop;
 import nars.NARS;
 import nars.control.Causable;
-import nars.term.Term;
-import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
+import java.util.Arrays;
 
 import static jcog.Texts.n4;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class MultiExecTest {
 
@@ -26,10 +21,8 @@ public class MultiExecTest {
 
         int executed = 0;
 
-        static int serial = 0;
-
-        protected DummyCan(NAR nar) {
-            super(nar, $.func("dummy", $.the(serial++)));
+        protected DummyCan(NAR nar, String id) {
+            super(nar, $.the(id));
         }
 
         public DummyCan delay(int ms) {
@@ -40,6 +33,11 @@ public class MultiExecTest {
         public DummyCan value(float v) {
             this.value = v;
             return this;
+        }
+
+        @Override
+        public boolean singleton() {
+            return false;
         }
 
         @Override
@@ -63,15 +61,17 @@ public class MultiExecTest {
         NAR n = new NARS().exe(exe).get();
 
 
-        DummyCan a = new DummyCan(n).value(1f).delay(10);
-        DummyCan b = new DummyCan(n).value(2f).delay(10);
-        DummyCan c = new DummyCan(n).value(1f).delay(20);
+        DummyCan a = new DummyCan(n,"a").value(1f).delay(10);
+        DummyCan b = new DummyCan(n,"b").value(2f).delay(10);
+        DummyCan c = new DummyCan(n,"c").value(1f).delay(20);
 
         n.onCycle(nn -> {
-           System.out.println(nn.time() + " " + n4(exe.focus.schedule.read().canWeights));
+           System.out.println(nn.time() + " " +
+                   Arrays.toString(exe.focus.schedule.read().active) +
+                   "->" + n4(exe.focus.schedule.read().weight));
         });
 
-        @NotNull Loop l = n.startFPS(50f);
+        Loop l = n.startFPS(50f);
         Util.pause(1000);
         l.stop();
 
