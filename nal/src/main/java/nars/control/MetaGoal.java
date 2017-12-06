@@ -74,32 +74,11 @@ public enum MetaGoal {
      */
     public static void learn(MetaGoal p, short[] effects, float strength, FasterList<Cause> causes) {
 
-        //assert(strength >= 0);
+        int n = effects.length;
+        float s = strength/n;
 
-        int numCauses = effects.length;
-
-
-        if (Math.abs(strength) < Prioritized.EPSILON) return; //no change
-
-        float vPer = strength/numCauses;
-
-        for (int i = 0; i < numCauses; i++) {
-            short c = effects[i];
-            Cause cc = causes.get(c);
-//            if (cc == null)
-//                continue; //ignore, maybe some edge case where the cause hasnt been registered yet?
-
-            if (cc == null) {
-                logger.warn("cause {} missing", i);
-                continue;
-            }
-
-            //trace decay curve
-            //linear triangle increasing to inc, warning this does not integrate to 100% here
-            //float vPer = (strength * (i + 1)) / numCauses;
-
-            cc.learn(p, vPer);
-
+        for (int i = 0; i < n; i++) {
+            causes.get(effects[i]).learn(p, s);
         }
     }
 

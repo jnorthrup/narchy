@@ -117,15 +117,14 @@ public class ValueFork extends Fork {
             return d.revertLive(before) && d.use(1);
         } else {
 
-            float[] w = Util.map(branches, i ->
-                    //causes[i].value() //<- not safe for direct roulette weights due to non-positive values
-                    (float) Math.exp(causes[i].value()) //softmax
-            );
+            float[] w = Util.mapNormalizedWithMargin(branches, i -> causes[i].value());
+
             Roulette.selectRouletteUnique(branches, i->w[i], (b) -> {
 
                 this.branches[b].test(d);
 
                 return d.revertLive(before) && d.use(1);
+
             }, d.random);
 
             return d.live();

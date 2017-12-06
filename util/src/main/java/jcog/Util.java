@@ -28,10 +28,8 @@ import com.google.common.io.Closeables;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Longs;
 import jcog.io.BinTxt;
-import jcog.learn.MLPMap;
 import jcog.math.NumberException;
 import jcog.math.OneDHaar;
-import jcog.pri.Prioritized;
 import org.HdrHistogram.AbstractHistogram;
 import org.HdrHistogram.DoubleHistogram;
 import org.apache.commons.lang3.ArrayUtils;
@@ -1032,8 +1030,16 @@ public enum Util {
         return (x - min) / (max - min);
     }
 
+    public static float[] normalize(float[] x, float min, float max) {
+        int n = x.length;
+        for (int i = 0; i < n; i++) {
+            x[i] = normalize(x[i], min, max);
+        }
+        return x;
+    }
+
     public static float normalize(float x, float min, float max) {
-        if (max-min <= Float.MIN_NORMAL)
+        if (max - min <= Float.MIN_NORMAL)
             return min;
         return (x - min) / (max - min);
     }
@@ -1345,6 +1351,7 @@ public enum Util {
         }
         return weightSum;
     }
+
     public static float sumIfPositive(int count, IntToFloatFunction values) {
         float weightSum = 0;
         for (int i = 0; i < count; i++) {
@@ -1869,8 +1876,30 @@ public enum Util {
         return map(num, build, null);
     }
 
+    public static float[] mapNormalizedWithMargin(int num, IntToFloatFunction build) {
+        float[] minmax = new float[]{Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY};
+        float[] w = Util.map(num, i -> {
+            float v = build.valueOf(i);
+            if (v < minmax[0]) minmax[0] = v;
+            if (v > minmax[1]) minmax[1] = v;
+            return v;
+        });
+
+        if (Util.equals(minmax[0], minmax[1], Float.MIN_NORMAL*2)) {
+            Arrays.fill(w, 0.5f);
+            return w;
+        }
+
+
+        //TODO combine these into one normalize() by calculating an equivalent effective minmax range
+        Util.normalize(w, minmax[0], minmax[1]);
+        float margin = 1f / num;
+        Util.normalize(w, -margin, +1);
+        return w;
+    }
+
     public static float[] map(int num, IntToFloatFunction build, @Nullable float[] reuse) {
-        float[] f = (reuse!=null && reuse.length==num) ? reuse : new float[num];
+        float[] f = (reuse != null && reuse.length == num) ? reuse : new float[num];
         for (int i = 0; i < num; i++) {
             f[i] = build.valueOf(i);
         }
@@ -2018,7 +2047,7 @@ public enum Util {
     }
 
     public static <X> X last(X[] x) {
-        return x[x.length-1];
+        return x[x.length - 1];
     }
 
 

@@ -100,7 +100,7 @@ public class ConjClustering extends Causable {
         confMin = nar.confMin.floatValue();
         this.volMax = nar.termVolumeMax.intValue();
 
-        taskLimitPerCentroid = work;
+        taskLimitPerCentroid = Math.max(1, Math.round(((float)work)/bag.net.centroids.length));
         tasksCreated = 0;
 
         bag.commitGroups(1, nar, this::conjoinCentroid);

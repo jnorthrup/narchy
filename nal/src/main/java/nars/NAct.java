@@ -487,7 +487,7 @@ public interface NAct {
                         //df = (f[0]-0.5f) - (f[1]-0.5f);
 
                         //experimental: lessen by a factor of how equally confident each goal is
-                        df *= eMin / eMax;
+                        //df *= eMin / eMax;
                         //df *= 1f - Math.abs(e[0] - e[1]) / eMax;
                         //df *= Util.sqr(eMin / eMax); //more cautious
                         //df *= Math.min(w2cSafe(e[0]), w2cSafe(e[1])) / w2cSafe(eMax);

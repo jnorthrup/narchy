@@ -40,7 +40,7 @@ public class Focus {
 
     static class Schedule {
         public float[] time = ArrayUtils.EMPTY_FLOAT_ARRAY;
-        public float[] timeNormalized = ArrayUtils.EMPTY_FLOAT_ARRAY;
+//        public float[] timeNormalized = ArrayUtils.EMPTY_FLOAT_ARRAY;
         public float[] supply = ArrayUtils.EMPTY_FLOAT_ARRAY;
         public float[] weight = ArrayUtils.EMPTY_FLOAT_ARRAY;
 
@@ -85,8 +85,8 @@ public class Focus {
 
                 float margin = 1f / n;
 
-                if (timeNormalized.length!=n)
-                    timeNormalized = new float[n];
+//                if (timeNormalized.length!=n)
+//                    timeNormalized = new float[n];
 
                 float iterSum = 0;
                 float timeMax = 0;
@@ -110,15 +110,15 @@ public class Focus {
                     }
                 }
 
-                if (iters < 2) {
-                    Arrays.fill(timeNormalized, 1f); //all the same
-                } else {
-                    float mean = iterSum/iters;
-                    for (int i = 0; i < n; i++) {
-                        timeNormalized[i] = normalize( normalize(time[i],
-                                0, timeMax), 0 - margin, +1f + margin);
-                    }
-                }
+//                if (iters < 2) {
+//                    Arrays.fill(timeNormalized, 1f); //all the same
+//                } else {
+//                    float mean = iterSum/iters;
+//                    for (int i = 0; i < n; i++) {
+//                        timeNormalized[i] = normalize( normalize(time[i],
+//                                0, timeMax), 0 - margin, +1f + margin);
+//                    }
+//                }
             } else {
                 return;
             }
@@ -224,7 +224,7 @@ public class Focus {
 
         float momentum =
 //                    0f;
-                0.95f;
+                0.98f;
 
         @Override
         public void update(FasterList<Cause> causes, float[] goal) {

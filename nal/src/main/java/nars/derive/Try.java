@@ -54,13 +54,12 @@ public class Try extends AbstractPred<Derivation> {
             default:
 
                 int[] c = choices.toArray();
-                float[] val = Util.map(N, (x) ->
-                    (float)Math.exp(   //softmax
-                            Util.sum(Cause::value, ((ValueFork)(branches[c[x]])).causes) //sum of downstream cause values
-                ) );
+                float[] w = Util.mapNormalizedWithMargin(N, x ->
+                        Util.sum(Cause::value, ((ValueFork)(branches[c[x]])).causes) //sum of downstream cause values
+                    );
 
                 int before = d.now();
-                Roulette.selectRouletteUnique(N, i -> val[i], (i) -> {
+                Roulette.selectRouletteUnique(N, i -> w[i], (i) -> {
                     branches[c[i]].test(d);
                     return d.revertLive(before);
                 }, d.random);
