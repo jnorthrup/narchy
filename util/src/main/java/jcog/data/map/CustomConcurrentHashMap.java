@@ -10,12 +10,14 @@ import sun.misc.Unsafe;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -413,6 +415,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * of the table. This class contains only those methods for
      * directly assigning these fields, which must only be called
      * while holding locks.
+     *
+     * TODO use StampedLock
      */
     static final class Segment extends ReentrantLock {
         volatile Node[] table;
@@ -432,7 +436,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             ++count;
         }
 
-        final Node[] getTableForTraversal() {
+        final Node[] table() {
             return table;
         }
 
@@ -533,7 +537,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     /**
      * The segments, each of which acts as a hash table
      */
-    transient volatile Segment[] segments;
+    transient volatile AtomicReferenceArray<Segment> segments;
 
     /**
      * The factory for this map
@@ -573,7 +577,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         this.valueEquivalence = veq;
         // Reflectively assemble factory name
         String factoryName =
-                CustomConcurrentHashMap.class.getName() + "$" +
+                CustomConcurrentHashMap.class.getName() + '$' +
                         ks + "Key" +
                         vs + "ValueNodeFactory";
         try {
@@ -596,7 +600,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                 capacity = MAX_SEGMENT_CAPACITY;
             this.initialSegmentCapacity = capacity;
         }
-        this.segments = new Segment[NSEGMENTS];
+        this.segments = new AtomicReferenceArray<>(NSEGMENTS);
     }
 
     /**
@@ -689,7 +693,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * @return the segment, or null if not yet initialized
      */
     final Segment traversalSegment(int hash) {
-        return segments[(hash >>> SEGMENT_SHIFT) & SEGMENT_MASK];
+        return segments.get((hash >>> SEGMENT_SHIFT) & SEGMENT_MASK);
     }
 
     /**
@@ -700,18 +704,14 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * @return the segment
      */
     final Segment addSegment(int hash) {
-        Segment[] segs = segments;
+        AtomicReferenceArray<Segment> segs = segments;
         int index = (hash >>> SEGMENT_SHIFT) & SEGMENT_MASK;
-        Segment seg = segs[index];
-        if (seg == null) {
-            synchronized (segs) {
-                seg = segs[index];
-                if (seg == null) {
-                    seg = new Segment();
-                    // Fences.preStoreFence(seg);
-                    // segs[index] = seg;
-                    storeSegment(segs, index, seg);
-                }
+        Segment seg;
+        while ((seg = segs.get(index)) == null) {
+            Segment s2;
+            if (segs.compareAndSet(index,null, s2 = new Segment())) {
+                storeSegment(segs, index, s2);
+                return s2;
             }
         }
         return seg;
@@ -722,7 +722,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     final Node findNode(Object key, int hash, Segment seg) {
         if (seg != null) {
-            Node[] tab = seg.getTableForTraversal();
+            Node[] tab = seg.table();
             if (tab != null) {
                 Node p = tab[hash & (tab.length - 1)];
                 while (p != null) {
@@ -925,7 +925,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         if (seg != null) {
             seg.lock();
             try {
-                Node[] tab = seg.getTableForTraversal();
+                Node[] tab = seg.table();
                 if (tab != null) {
                     int i = hash & (tab.length - 1);
                     Node pred = null;
@@ -973,7 +973,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         if (seg != null) {
             seg.lock();
             try {
-                Node[] tab = seg.getTableForTraversal();
+                Node[] tab = seg.table();
                 if (tab != null) {
                     int i = hash & (tab.length - 1);
                     Node pred = null;
@@ -1018,7 +1018,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         if (seg != null) {
             seg.lock();
             try {
-                Node[] tab = seg.getTableForTraversal();
+                Node[] tab = seg.table();
                 if (tab != null) {
                     // remove all reclaimed in list
                     int i = hash & (tab.length - 1);
@@ -1052,11 +1052,12 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     @Override
     public final boolean isEmpty() {
-        final Segment[] segs = this.segments;
-        for (int i = 0; i < segs.length; ++i) {
-            Segment seg = segs[i];
+        AtomicReferenceArray<Segment> segs = this.segments;
+        int ss = segs.length();
+        for (int i = 0; i < ss; ++i) {
+            Segment seg = segs.get(i);
             if (seg != null &&
-                    seg.getTableForTraversal() != null &&
+                    seg.table() != null &&
                     seg.count != 0)
                 return false;
         }
@@ -1073,10 +1074,11 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     @Override
     public final int size() {
         long sum = 0;
-        final Segment[] segs = this.segments;
-        for (int i = 0; i < segs.length; ++i) {
-            Segment seg = segs[i];
-            if (seg != null && seg.getTableForTraversal() != null)
+        AtomicReferenceArray<Segment> segs = this.segments;
+        int ss = segs.length();
+        for (int i = 0; i < ss; ++i) {
+            Segment seg = segs.get(i);
+            if (seg != null && seg.table() != null)
                 sum += seg.count;
         }
         return (sum >= Integer.MAX_VALUE) ? Integer.MAX_VALUE : (int) sum;
@@ -1098,11 +1100,12 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     public final boolean containsValue(Object value) {
         if (value == null)
             throw new NullPointerException();
-        Segment[] segs = this.segments;
-        for (int i = 0; i < segs.length; ++i) {
-            Segment seg = segs[i];
+        AtomicReferenceArray<Segment> segs = this.segments;
+        int ss = segs.length();
+        for (int i = 0; i < ss; ++i) {
+            Segment seg = segs.get(i);
             Node[] tab;
-            if (seg != null && (tab = seg.getTableForTraversal()) != null) {
+            if (seg != null && (tab = seg.table()) != null) {
                 for (int j = 0; j < tab.length; ++j) {
                     for (Node p = tab[j];
                          p != null;
@@ -1123,9 +1126,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     @Override
     public final void clear() {
-        Segment[] segs = this.segments;
-        for (int i = 0; i < segs.length; ++i) {
-            Segment seg = segs[i];
+        AtomicReferenceArray<Segment> segs = this.segments;
+        int ss = segs.length();
+        for (int i = 0; i < ss; ++i) {
+            Segment seg = segs.get(i);
             if (seg != null) {
                 seg.lock();
                 try {
@@ -1302,7 +1306,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         Object lastKey;           // for remove()
 
         HashIterator() {
-            nextSegmentIndex = segments.length - 1;
+            nextSegmentIndex = segments.length() - 1;
             nextTableIndex = -1;
             advance();
         }
@@ -1326,10 +1330,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                 } else if (nextTableIndex >= 0) {
                     nextNode = currentTable[nextTableIndex--];
                 } else if (nextSegmentIndex >= 0) {
-                    Segment seg = segments[nextSegmentIndex--];
+                    Segment seg = segments.get(nextSegmentIndex--);
                     Node[] t;
                     if (seg != null &&
-                            (t = seg.getTableForTraversal()) != null) {
+                            (t = seg.table()) != null) {
                         currentTable = t;
                         nextTableIndex = t.length - 1;
                     }
@@ -1375,7 +1379,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     }
 
     final class WriteThroughEntry implements Map.Entry<K, V>, Serializable {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
         final K key;
         V value;
 
@@ -1689,15 +1693,16 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     private void readObject(java.io.ObjectInputStream s)
             throws IOException, ClassNotFoundException {
-        s.defaultReadObject();
-        this.segments = new Segment[NSEGMENTS];
-        for (; ; ) {
-            K key = (K) s.readObject();
-            V value = (V) s.readObject();
-            if (key == null)
-                break;
-            put(key, value);
-        }
+//        s.defaultReadObject();
+//        this.segments = new Segment[NSEGMENTS];
+//        for (; ; ) {
+//            K key = (K) s.readObject();
+//            V value = (V) s.readObject();
+//            if (key == null)
+//                break;
+//            put(key, value);
+//        }
+        throw new UnsupportedOperationException();
     }
 
     /**
@@ -1837,35 +1842,14 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     // Reference queue mechanics for reclaimable nodes
 
-    private static volatile ReferenceQueue<Object> refQueue;
-
-    /**
-     * Returns a queue that may be used as the ReferenceQueue argument
-     * to {@link java.lang.ref.Reference} constructors to arrange
-     * removal of reclaimed nodes from maps via a background thread.
-     *
-     * @return the reference queue associated with the background
-     * cleanup thread
-     */
-    static ReferenceQueue<Object> getReclamationQueue() {
-        ReferenceQueue<Object> q = refQueue;
-        return q != null ? q : startReclamation();
-    }
-
-    static synchronized ReferenceQueue<Object> startReclamation() {
-        ReferenceQueue<Object> q = refQueue;
-        if (q == null) {
-            refQueue = q = new ReferenceQueue<>();
-            new ReclamationThread(q).start();
-        }
-        return q;
-    }
+    private static final ReclamationThread reclaim = new ReclamationThread();
+    private static final ReferenceQueue<Object> refQueue = reclaim.queue;
 
     static final class ReclamationThread extends Thread {
         final ReferenceQueue<Object> queue;
 
-        ReclamationThread(ReferenceQueue<Object> q) {
-            this.queue = q;
+        ReclamationThread() {
+            this.queue = new ReferenceQueue<>();
             setDaemon(true);
         }
 
@@ -1891,13 +1875,13 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         final Reclaimable outer;
 
         EmbeddedWeakReference(Object x, Reclaimable outer) {
-            super(x, getReclamationQueue());
+            super(x, refQueue);
             this.outer = outer;
         }
 
         @Override
         public final void onReclamation() {
-            clear();
+            super.clear();
             outer.onReclamation();
         }
     }
@@ -1907,13 +1891,13 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         final Reclaimable outer;
 
         EmbeddedSoftReference(Object x, Reclaimable outer) {
-            super(x, getReclamationQueue());
+            super(x, refQueue);
             this.outer = outer;
         }
 
         @Override
         public final void onReclamation() {
-            clear();
+            super.clear();
             outer.onReclamation();
         }
     }
@@ -2356,7 +2340,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         final CustomConcurrentHashMap cchm;
 
         WeakKeyNode(int locator, Object key, CustomConcurrentHashMap cchm) {
-            super(key, getReclamationQueue());
+            super(key, refQueue);
             this.locator = locator;
             this.cchm = cchm;
         }
@@ -2368,7 +2352,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
         @Override
         public final void onReclamation() {
-            clear();
+            super.clear();
             cchm.removeIfReclaimed(this);
         }
     }
@@ -2382,7 +2366,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
         @Override
         public final Object getValue() {
-            return get();
+            return super.get();
         }
 
         @Override
@@ -2766,7 +2750,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         final CustomConcurrentHashMap cchm;
 
         SoftKeyNode(int locator, Object key, CustomConcurrentHashMap cchm) {
-            super(key, getReclamationQueue());
+            super(key, refQueue);
             this.locator = locator;
             this.cchm = cchm;
         }
@@ -2778,7 +2762,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
         @Override
         public final void onReclamation() {
-            clear();
+            super.clear();
             cchm.removeIfReclaimed(this);
         }
     }
@@ -2792,7 +2776,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
         @Override
         public final Object getValue() {
-            return get();
+            return super.get();
         }
 
         @Override
@@ -3622,10 +3606,11 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         UNSAFE.putOrderedObject(table, nodeOffset, r);
     }
 
-    static void storeSegment(Segment[] segs,
+    static void storeSegment(AtomicReferenceArray<Segment> segs,
                              int i, Segment s) {
-        long segmentOffset = ((long) i << segmentsShift) + segmentsBase;
-        UNSAFE.putOrderedObject(segs, segmentOffset, s);
+        segs.setRelease(i, s);
+//        long segmentOffset = ((long) i << segmentsShift) + segmentsBase;
+//        UNSAFE.putOrderedObject(segs, segmentOffset, s);
     }
 
     /**

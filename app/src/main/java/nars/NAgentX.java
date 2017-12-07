@@ -105,8 +105,8 @@ abstract public class NAgentX extends NAgent {
     public static NAR runRT(Function<NAR, NAgent> init, float narFPS, float agentFPS) {
 
         The.Subterms.the =
-                The.Subterms.CaffeineSubtermBuilder.get();
-
+                //The.Subterms.CaffeineSubtermBuilder.get();
+                The.Subterms.SoftSubtermBuilder.get();
 //        The.Compound.the =
 //            The.Compound.
 //                    //SoftCompoundBuilder.get();
@@ -114,8 +114,8 @@ abstract public class NAgentX extends NAgent {
 
 
         float durFPS =
-                //agentFPS;
-                agentFPS * 2f; //nyquist
+                agentFPS;
+                //agentFPS * 2f; //nyquist
         //agentFPS * 3f;
 
         RealTime clock =
@@ -177,17 +177,17 @@ abstract public class NAgentX extends NAgent {
         n.defaultWants();
 
         n.dtMergeOrChoose.set(true);
-        n.dtDither.set(1f);
+        n.dtDither.set(0.5f);
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(32);
+        n.termVolumeMax.set(24);
 
         n.beliefConfidence(0.9f);
         n.goalConfidence(0.9f);
 
 
-        float priFactor = 0.2f;
+        float priFactor = 0.3f;
         n.DEFAULT_BELIEF_PRIORITY = 1f * priFactor;
         n.DEFAULT_GOAL_PRIORITY = 1f * priFactor;
         n.DEFAULT_QUESTION_PRIORITY = 1f * priFactor;

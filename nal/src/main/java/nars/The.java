@@ -89,7 +89,7 @@ public enum The {  ;
             final Memoize<NewCompound, nars.term.container.Subterms> cache;
 
             /** TODO make adjustable */
-            int maxVol = 16;
+            int maxVol = 20;
 
             private MemoizeSubtermBuilder(Memoize<NewCompound, nars.term.container.Subterms> cache) {
                 this.cache = cache;
