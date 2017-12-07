@@ -150,7 +150,7 @@ public abstract class TermVector implements Subterms {
         return normalized;
     }
 
-    @NotNull
+
     public static Subterms the(Term... t) {
         for (Term x : t)
             if (x instanceof EllipsisMatch)
@@ -175,7 +175,6 @@ public abstract class TermVector implements Subterms {
     }
 
     @Override
-    @NotNull
     abstract public Term sub(int i);
 
     @Override
@@ -193,7 +192,6 @@ public abstract class TermVector implements Subterms {
         return complexity;
     }
 
-    @NotNull
     @Override
     public String toString() {
         return '(' + Joiner.on(',').join(arrayClone()) + ')';
@@ -204,8 +202,7 @@ public abstract class TermVector implements Subterms {
     public abstract Iterator<Term> iterator();
 
 
-    @Override
-    abstract public boolean equals(Object obj);
+    @Override abstract public boolean equals(Object obj);
 //        return
 //            (this == obj)
 //            ||

@@ -1742,7 +1742,7 @@ public enum Util {
         return and(xx, p);
     }
 
-    public static <X> boolean or(X[] xx, Predicate<X> p) {
+    public static <X> boolean or(Predicate<X> p, X... xx) {
         for (X x : xx) {
             if (p.test(x))
                 return true;
@@ -1750,9 +1750,9 @@ public enum Util {
         return false;
     }
 
-    public static <X> boolean or(Predicate<X> p, X... xx) {
-        return or(xx, p);
-    }
+//    public static <X> boolean or(Predicate<X> p, X... xx) {
+//        return or(p, xx);
+//    }
 
     /**
      * a and b should be in 0..1.0 unit domain; output will also

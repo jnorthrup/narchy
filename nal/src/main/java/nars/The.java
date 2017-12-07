@@ -36,7 +36,7 @@ public enum The {  ;
         return The.Subterms.the.apply(s.toArray(new Term[s.size()]));
     }
 
-    @Deprecated /* @NotNull */ protected static Term compound(Op o, Term... subterms) {
+    @Deprecated /* @NotNull */ public static Term compound(Op o, Term... subterms) {
 
         return Compound.the.apply(o, new FasterList<>(subterms));
     }
