@@ -23,15 +23,13 @@
  */
 package jcog.data.graph.hgraph;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import jcog.list.ArrayIterator;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.PrintStream;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
@@ -119,25 +117,25 @@ public class Node<N, E> {
 
     public final N id;
     public final int serial, hash;
-    private final Collection<Edge<N, E>> inEdges;
-    private final Collection<Edge<N, E>> outEdges;
+    public final Collection<Edge<N, E>> in;
+    public final Collection<Edge<N, E>> out;
 
     protected Node(N id) {
         this.serial = serials.getAndIncrement();
         this.id = id;
-        this.inEdges =
+        this.in =
                 new FastIteratingHashSet<>();
                 //new HashSet<>();
-        this.outEdges =
+        this.out =
                 //new HashSet<>();
                 new FastIteratingHashSet<>();
         this.hash = id.hashCode();
     }
 
-    public Stream<Edge<N, E>> edges(boolean in, boolean out) {
-        if (out && !in) return out();
-        else if (!out && in) return in();
-        else return Stream.concat(out(), in());
+    public Iterable<Edge<N, E>> edges(boolean in, boolean out) {
+        if (out && !in) return this.out;
+        else if (!out && in) return this.in;
+        else return Iterables.concat(this.out, this.in);
     }
 
     @Override
@@ -156,48 +154,48 @@ public class Node<N, E> {
 
     public int ins(boolean countSelfLoops) {
         if (countSelfLoops) {
-            return (int) in().count();
+            return (int) inStream().count();
         } else {
-            return (int) in().filter(e -> e.from!=this).count();
+            return (int) inStream().filter(e -> e.from!=this).count();
         }
     }
 
     public int outs() {
-        return (int) out().count();
+        return (int) outStream().count();
     }
 
 
     protected boolean inAdd(Edge<N, E> e) {
-        return inEdges.add(e);
+        return in.add(e);
     }
 
     protected boolean outAdd(Edge<N, E> e) {
-        return outEdges.add(e);
+        return out.add(e);
     }
 
     protected boolean inRemove(Edge<N, E> e) {
         //assert inEdges.contains(e);
-        return inEdges.remove(e);
+        return in.remove(e);
     }
 
     protected boolean outRemove(Edge<N, E> e) {
         //assert outEdges.contains(e);
-        return outEdges.remove(e);
+        return out.remove(e);
     }
 
-    public Stream<Edge<N, E>> in() {
-        return (inEdges.stream());
+    public Stream<Edge<N, E>> inStream() {
+        return (in.stream());
     }
 
-    public Stream<Edge<N, E>> out() {
-        return (outEdges.stream());
+    public Stream<Edge<N, E>> outStream() {
+        return (out.stream());
     }
 
     public Stream<N> successors() {
-        return out().map(e -> e.to.id);
+        return outStream().map(e -> e.to.id);
     }
     public Stream<N> predecessors() {
-        return in().map(e -> e.from.id);
+        return inStream().map(e -> e.from.id);
     }
 
     @Override
@@ -207,7 +205,7 @@ public class Node<N, E> {
 
     public void print(PrintStream out) {
         out.println(id);
-        out().forEach(e -> {
+        outStream().forEach(e -> {
            out.println("\t" + e);
         });
     }

@@ -352,11 +352,10 @@ public class Vis {
 
             //plot1.add("Conf", nar.emotion.confident::getSum);
             plot2.add("Busy", nar.emotion.busyVol::getSum);
-            plot3.add("Lern", nar.emotion::learningVol, 0f, 1f);
 
             plot1.add("Dex+0", () -> a.dexterity(a.now), 0f, 1f);
-            plot1.add("Dex+1", () -> a.dexterity(a.now + 1 * a.nar.dur()), 0f, 1f);
-            plot1.add("Dex+2", () -> a.dexterity(a.now + 2 * a.nar.dur()), 0f, 1f);
+//            plot1.add("Dex+1", () -> a.dexterity(a.now + 1 * a.nar.dur()), 0f, 1f);
+//            plot1.add("Dex+2", () -> a.dexterity(a.now + 2 * a.nar.dur()), 0f, 1f);
 
             plot4.add("Hpy", () -> {
                 return a.happy.beliefs().freq(a.now, a.nar);

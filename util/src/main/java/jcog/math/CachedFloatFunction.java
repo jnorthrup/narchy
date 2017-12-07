@@ -8,7 +8,7 @@ public class CachedFloatFunction<X> extends SaneObjectFloatHashMap<X> implements
     private final FloatFunction<X> f;
 
     public CachedFloatFunction(FloatFunction<X> f) {
-        super(2);
+        super(16);
         this.f = f;
     }
 

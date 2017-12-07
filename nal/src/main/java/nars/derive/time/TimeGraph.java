@@ -1,10 +1,11 @@
 package nars.derive.time;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import jcog.Util;
 import jcog.data.graph.hgraph.Edge;
-import jcog.data.graph.hgraph.HashGraph;
+import jcog.data.graph.hgraph.NodeGraph;
 import jcog.data.graph.hgraph.Node;
 import jcog.data.graph.hgraph.Search;
 import jcog.list.FasterList;
@@ -15,14 +16,17 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.container.TermContainer;
 import org.apache.commons.math3.exception.MathArithmeticException;
+import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static nars.Op.CONJ;
@@ -43,7 +47,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  * DTERNAL relationships can be maintained separate
  * from +0.
  */
-public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
+public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
     private static final boolean allowSelfLoops = true;
 
@@ -106,6 +110,9 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         return know(t, TIMELESS);
     }
 
+    public void know(Absolute a) {
+        know(a.id, a.when);
+    }
 
     public Event know(Term t, long start) {
         return event(t, start, true);
@@ -182,9 +189,9 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         Term eventTerm = event.id;
 
         byTerm.put(eventTerm, event);
-        Term tRoot = eventTerm.root();
-        if (!tRoot.equals(eventTerm))
-            byTerm.put(tRoot, event);
+//        Term tRoot = eventTerm.root();
+//        if (!tRoot.equals(eventTerm))
+//            byTerm.put(tRoot, event);
 
         int eventDT = eventTerm.dt();
 
@@ -288,7 +295,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         FasterList<Event> events = new FasterList<>(byTerm.get(x.root()));
         for (int i = 0, eventsSize = events.size(); i < eventsSize; i++) {
             Event r = events.get(i);
-            if (r.absolute()) {
+            if (r instanceof Absolute) {
                 if (r.id.subterms().equals(xx)) {
                     if (!each.test(r))
                         return false; //done
@@ -302,20 +309,20 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         if (subs == 2) {
             Term a = xx.sub(0);
             Term b = xx.sub(1);
-            Set<Event>[] exact = new Set[2]; //exact occurrences of each subterm
+            MutableSet<Event>[] exact = new MutableSet[2]; //exact occurrences of each subterm
 
             boolean aEqB = b.equals(a);
 
 
             List<Event> sources = new FasterList<>();
             Consumer<Event> collect = z -> {
-                if (z.absolute()) {
+                if (z instanceof Absolute) {
                     if (z.id.equals(a)) {
-                        if (exact[0] == null) exact[0] = new HashSet();
+                        if (exact[0] == null) exact[0] = new UnifiedSet(2);
                         exact[0].add(z);
                     }
                     if (!aEqB && z.id.equals(b)) {
-                        if (exact[1] == null) exact[1] = new HashSet();
+                        if (exact[1] == null) exact[1] = new UnifiedSet(2);
                         exact[1].add(z);
                     }
 //                    return true;
@@ -342,16 +349,17 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 //known exact occurrences for both subterms
                 //iterate all possibilities
                 //TODO order in some way
-                //simple case:
+                //TODO other simple cases: 1 -> N
                 if (exact[0].size() == 1 && exact[1].size() == 1) {
+                    //simple case:
                     Event aa = exact[0].iterator().next();
                     Event bb = exact[1].iterator().next();
                     if (!solveDT(x, each, aa, bb))
                         return false;
                 } else {
-                    if (!exact[0].stream().allMatch(ae ->
-                            exact[1].stream().allMatch(be ->
-                                    solveDT(x, each, ae, be))))
+                    if (!exact[0].allSatisfy(ae ->
+                            exact[1].allSatisfyWith((be, aaee) ->
+                                    solveDT(x, each, aaee, be), ae)))
                         return false;
                 }
 
@@ -551,18 +559,20 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         };
 
         //test for existing exact solutions to the exact term
-        if (!solveExact(x, each))
-            return;
+        boolean kontinue = solveExact(x, each) && solveAll(x, each) &&
+            each.test(event(x, TIMELESS)); //as a last resort: does this help?
 
-        if (solveAll(x, each)) {
-            //as a last resort:
-            each.test(event(x, TIMELESS));
-        }
+        //if (cache)
+//        seen.forEach(s -> {
+//            if (s instanceof Absolute)
+//                know((Absolute)s);
+//        });
+
     }
 
     private boolean solveExact(Term x, Predicate<Event> each) {
         for (Event e : byTerm.get(x)) {
-            if (e.absolute() && !each.test(e))
+            if (e instanceof Absolute && !each.test(e))
                 return false;
         }
         return true;
@@ -686,7 +696,7 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             @Override
             protected boolean next(BooleanObjectPair<Edge<Event, TimeSpan>> move, Node<Event, TimeSpan> n) {
 
-                if (n.id.absolute()) {
+                if (n.id instanceof Absolute) {
 
                     long pathEndTime = n.id.when();
                     BooleanObjectPair<Edge<Event, TimeSpan>> pathStart = path.get(0);
@@ -787,8 +797,8 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 if ((endA && startTerm.equals(b)) || (endB && startTerm.equals(a))) {
 
 
-                    long startTime = startEvent.absolute() ? startEvent.when() : TIMELESS;
-                    long endTime = endEvent.absolute() ? endEvent.when() : TIMELESS;
+                    long startTime = startEvent instanceof Absolute ? startEvent.when() : TIMELESS;
+                    long endTime = endEvent instanceof Absolute ? endEvent.when() : TIMELESS;
 
                     long dt;
                     if (startTime != TIMELESS && startTime != ETERNAL && endTime != TIMELESS && endTime != ETERNAL) {
@@ -829,8 +839,12 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     abstract protected class CrossTimeSolver extends TimeSolver {
 
         @Override
-        protected Stream<Edge<Event, TimeSpan>> next(Node<Event, TimeSpan> n) {
-            return Stream.concat(n.edges(true, true), dynamicLink(n));
+        protected Iterable<Edge<Event, TimeSpan>> next(Node<Event, TimeSpan> n) {
+            //must be cached to avoid concurrent modification exception
+            FasterList<Edge<Event, TimeSpan>> d = dynamicLink(n).collect(Collectors.toCollection(FasterList::new));
+
+            Iterable<Edge<Event, TimeSpan>> e = n.edges(true, true);
+            return !d.isEmpty() ? Iterables.concat(e, d) : e;
         }
 
     }
@@ -910,9 +924,6 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             }
         }
 
-        public final boolean absolute() {
-            return when() != TIMELESS;
-        }
     }
 
     static class Absolute extends Event {
@@ -920,16 +931,16 @@ public class TimeGraph extends HashGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
         static final long SAFETY_PAD = 32 * 1024;
 
-        public static void validate(long x) {
-            if (!((x == ETERNAL || x > 0 || x > ETERNAL + SAFETY_PAD))) //for catching time calculation bugs
-                throw new MathArithmeticException();
-            if (!((x < 0 || x < TIMELESS - SAFETY_PAD))) //for catching time calculation bugs
-                throw new MathArithmeticException();
-        }
-
         private Absolute(Term t, long when) {
             super(t, when);
-            validate(when);
+
+            //validation
+            assert(when !=TIMELESS);
+            if (!((when == ETERNAL || when > 0 || when > ETERNAL + SAFETY_PAD))) //for catching time calculation bugs
+                throw new MathArithmeticException();
+            if (!((when < 0 || when < TIMELESS - SAFETY_PAD))) //for catching time calculation bugs
+                throw new MathArithmeticException();
+
             this.when = when;
         }
 

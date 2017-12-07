@@ -1,26 +1,3 @@
-/*
- * Copyright (c) 2008, 2015, Oracle and/or its affiliates. All rights reserved.
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
- *
- * This code is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 only, as
- * published by the Free Software Foundation.
- *
- * This code is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- * version 2 for more details (a copy is included in the LICENSE file that
- * accompanied this code).
- *
- * You should have received a copy of the GNU General Public License version
- * 2 along with this work; if not, write to the Free Software Foundation,
- * Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * Please contact Oracle, 500 Oracle Parkway, Redwood Shores, CA 94065 USA
- * or visit www.oracle.com if you need additional information or have any
- * questions.
- *
- */
 package jcog.data.graph.hgraph;
 
 import com.google.common.collect.Iterables;
@@ -29,18 +6,21 @@ import java.io.PrintStream;
 import java.util.*;
 import java.util.stream.Stream;
 
+
 /**
- * @author Thomas Wuerthinger
+ * graph rooted in a set of vertices (nodes),
+ * providing access to edges only indirectly through them
+ * (ie. the edges are not stored in their own index but only secondarily as part of the vertices)
  */
-public class HashGraph<N, E> {
+public class NodeGraph<N, E> {
 
     protected Map<N, Node<N, E>> nodes;
 
-    public HashGraph() {
+    public NodeGraph() {
         this(new LinkedHashMap<>(), new LinkedHashMap());
     }
 
-    public HashGraph(Map<N, Node<N, E>> nodes, Map<E, Edge<N, E>> edges) {
+    public NodeGraph(Map<N, Node<N, E>> nodes, Map<E, Edge<N, E>> edges) {
         this.nodes = nodes;
     }
 
@@ -267,7 +247,7 @@ public class HashGraph<N, E> {
 //    }
 
     public Stream<Edge<N,E>> edges() {
-        return nodes().stream().flatMap(Node::out);
+        return nodes().stream().flatMap(Node::outStream);
     }
 
     @Override

@@ -60,11 +60,11 @@ public class Emotion extends ConcurrentMonitorRegistry {
     @NotNull
     public final BufferedFloatGuage busyVol;
 
-    /**
-     * priority rate of Task processing which affected concepts
-     */
-    @NotNull
-    public final BufferedFloatGuage learnPri, learnVol;
+//    /**
+//     * priority rate of Task processing which affected concepts
+//     */
+//    @NotNull
+//    public final BufferedFloatGuage learnPri, learnVol;
 
     /**
      * task priority overflow rate
@@ -113,8 +113,8 @@ public class Emotion extends ConcurrentMonitorRegistry {
 
         this.busyVol = new BufferedFloatGuage("busyV");
 
-        this.learnPri = new BufferedFloatGuage("learnP");
-        this.learnVol = new BufferedFloatGuage("learnV");
+//        this.learnPri = new BufferedFloatGuage("learnP");
+//        this.learnVol = new BufferedFloatGuage("learnV");
 
         this.confident = new BufferedFloatGuage("confidence");
 
@@ -141,8 +141,8 @@ public class Emotion extends ConcurrentMonitorRegistry {
 
         busyVol.clear();
 
-        learnPri.clear();
-        learnVol.clear();
+//        learnPri.clear();
+//        learnVol.clear();
 
         stress.clear();
 
@@ -156,15 +156,15 @@ public class Emotion extends ConcurrentMonitorRegistry {
 //        counts.values().forEach(x -> x.set(0));
 //    }
 
-    /**
-     * percentage of business which was not frustration, by aggregate volume
-     */
-    public float learningVol() {
-        double v = busyVol.getSum();
-        if (v > 0)
-            return (float) (learnVol.getSum() / v);
-        return 0;
-    }
+//    /**
+//     * percentage of business which was not frustration, by aggregate volume
+//     */
+//    public float learningVol() {
+//        double v = busyVol.getSum();
+//        if (v > 0)
+//            return (float) (learnVol.getSum() / v);
+//        return 0;
+//    }
 
 
     public float erring() {
@@ -243,13 +243,13 @@ public class Emotion extends ConcurrentMonitorRegistry {
             stress.accept(v);
     }
 
-    @Deprecated
-    public void learn(float pri, int vol) {
-
-        learnPri.accept(pri);
-        learnVol.accept(vol);
-
-    }
+//    @Deprecated
+//    public void learn(float pri, int vol) {
+//
+//        learnPri.accept(pri);
+//        learnVol.accept(vol);
+//
+//    }
 
     public void confident(float deltaConf, @NotNull Compound term) {
         confident.accept(deltaConf);
@@ -274,7 +274,7 @@ public class Emotion extends ConcurrentMonitorRegistry {
         StringBuilder sb = new StringBuilder()
                 .append(" hapy=").append(n4(happy()))
                 .append(" busy=").append(n4(busyVol.getSum()))
-                .append(" lern=").append(n4(learningVol()))
+//                .append(" lern=").append(n4(learningVol()))
                 .append(" errr=").append(n4(erring()))
                 .append(" strs=").append(n4(stress.getSum()))
                 //.append(" cpu=").append(resourceMeter.CYCLE_CPU_TIME)

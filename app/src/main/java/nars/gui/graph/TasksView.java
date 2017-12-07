@@ -2,7 +2,7 @@ package nars.gui.graph;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.data.graph.hgraph.HashGraph;
+import jcog.data.graph.hgraph.NodeGraph;
 import jcog.data.graph.hgraph.Node;
 import nars.NARS;
 import nars.Task;
@@ -40,7 +40,7 @@ public class TasksView extends MutableLayout {
 
     public void layoutTimeline() {
 
-        final HashGraph<Surface, String> graph = new HashGraph();
+        final NodeGraph<Surface, String> graph = new NodeGraph();
 
         float tScale = 100;
         float tMin = tScale;
@@ -116,7 +116,7 @@ public class TasksView extends MutableLayout {
 
     }
 
-    private void layoutForceDirect(HashGraph<Surface, String> graph) {
+    private void layoutForceDirect(NodeGraph<Surface, String> graph) {
 
 
         float maxRepelDist = 2000;

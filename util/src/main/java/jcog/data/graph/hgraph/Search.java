@@ -1,8 +1,10 @@
 package jcog.data.graph.hgraph;
 
+import com.google.common.collect.Iterables;
 import jcog.list.FasterList;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toCollection;
@@ -58,8 +60,7 @@ abstract public class Search<N, E> {
 
         this.at = current;
 
-        return next(current).collect(toCollection(FasterList::new)).allSatisfy(e -> {
-                //.allMatch(e -> {
+        return Iterables.all(next(current), e -> {
 
             Node<N, E> next = e.other(this.at);
 
@@ -88,7 +89,7 @@ abstract public class Search<N, E> {
 
     }
 
-    protected Stream<Edge<N, E>> next(Node<N, E> current) {
+    protected Iterable<Edge<N, E>> next(Node<N, E> current) {
         return current.edges(true, true);
     }
 
