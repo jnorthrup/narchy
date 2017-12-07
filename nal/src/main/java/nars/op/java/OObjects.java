@@ -37,7 +37,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.Op.*;
@@ -408,13 +407,11 @@ public class OObjects extends DefaultTermizer implements MethodHandler {
     }
 
     private Term[] terms(Object[] args) {
-        //TODO use direct array creation, not Stream
-        return Stream.of(args).map(this::term).toArray(Term[]::new);
+        return Util.map(this::term, Term[]::new, args);
     }
 
     private Term[] terms(TermContainer args) {
-        //TODO use direct array creation, not Stream
-        return Stream.of(args).map(this::term).toArray(Term[]::new);
+        return terms(args.arrayShared());
     }
 
 
@@ -634,7 +631,8 @@ public class OObjects extends DefaultTermizer implements MethodHandler {
 
     private static boolean isGeneric(Method method) {
         return isGeneric(method.getGenericReturnType())
-                || Arrays.stream(method.getGenericParameterTypes()).anyMatch(OObjects::isGeneric);
+                ||
+                Util.or((Predicate<Type>) OObjects::isGeneric, method.getGenericParameterTypes());
     }
 
     private static boolean isGeneric(Type type) {

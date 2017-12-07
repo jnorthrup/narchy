@@ -12,4 +12,11 @@ import java.lang.annotation.RetentionPolicy;
  */
 @Retention(RetentionPolicy.SOURCE)
 @Paper public @interface Paper {
+    String title() default "";
+
+    /** summary or abstract */
+    String summary() default "";
+
+    /** reference external URL or otherwise identifiable document (ex: DOI, ISBN etc) */
+    String url() default "";
 }

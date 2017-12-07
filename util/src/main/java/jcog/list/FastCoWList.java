@@ -29,7 +29,7 @@ public class FastCoWList<X> extends FasterList<X> {
 
     @Override
     public Iterator<X> iterator() {
-        return copy.length> 0 ? new ArrayIterator<>(copy) : Collections.emptyIterator();
+        return copy.length> 0 ? ArrayIterator.get(copy) : Collections.emptyIterator();
     }
 
     @Override

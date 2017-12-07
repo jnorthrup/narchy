@@ -2,7 +2,7 @@ description = ''
 dependencies {
     
     compile group: 'org.jetbrains', name: 'annotations', version: '15.0'
-    compile group: 'org.eclipse.collections', name: 'eclipse-collections', version: '9.0.0'
+    compile group: 'org.eclipse.collections', name: 'eclipse-collections', version: '9.1.0.M1'
     compile(group: 'com.conversantmedia', name: 'disruptor', version: '1.2.11') {
         exclude(module:'slf4j-api')
     }

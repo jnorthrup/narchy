@@ -29,7 +29,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.Random;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -45,7 +44,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
      */
     static final float SCAN_QUALITY =
             1f;
-            //0.5f;
+    //0.5f;
 
     /**
      * max allowed truths to be truthpolated in one test
@@ -70,15 +69,18 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
 
     final Space<TaskRegion> tree;
 
-    /** TODO only needs to be stored in the SignalTask instance */
-    @Deprecated final LongObjectProcedure<SignalTask> stretch;
+    /**
+     * TODO only needs to be stored in the SignalTask instance
+     */
+    @Deprecated
+    final LongObjectProcedure<SignalTask> stretch;
 
     public RTreeBeliefTable() {
 
         tree = new ConcurrentRTree<>(new RTree<>(RTreeBeliefModel.the));
 
         stretch = (newEnd, task) ->
-                ((ConcurrentRTree<TaskRegion>)tree).write(treeRW -> {
+                ((ConcurrentRTree<TaskRegion>) tree).write(treeRW -> {
 
                     boolean removed = treeRW.remove(task);
 
@@ -271,11 +273,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
             int maxTries = Math.min(s, maxAttempts);
 
             //scan
-            final int[] attempts = {0};
-            Predicate<TaskRegion> update = x -> {
-                u.add(x);
-                return attempts[0]++ < maxTries;
-            };
+            Predicate<TaskRegion> update = new ScanLimiter(u, maxTries);
 
             TaskRegion bounds = (TaskRegion) (tree.root().bounds());
 
@@ -307,10 +305,10 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
 
                 //random scan order
 //                if (leftComplete || rightComplete || rng.nextBoolean()) {
-                    if (!leftComplete)
-                        tree.whileEachIntersecting(r.set(leftStart, leftMid), update);
-                    if (!rightComplete && !(leftStart == rightMid && leftMid == rightEnd))
-                        tree.whileEachIntersecting(r.set(rightMid, rightEnd), update);
+                if (!leftComplete)
+                    tree.whileEachIntersecting(r.set(leftStart, leftMid), update);
+                if (!rightComplete && !(leftStart == rightMid && leftMid == rightEnd))
+                    tree.whileEachIntersecting(r.set(rightMid, rightEnd), update);
 //                } else {
 //                    if (!rightComplete)
 //                        tree.whileEachIntersecting(r.set(rightMid, rightEnd), update);
@@ -318,7 +316,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
 //                        tree.whileEachIntersecting(r.set(leftStart, leftMid), update);
 //                }
 
-                if (attempts[0] >= maxTries || !continueScanning.test(u, r.set(leftStart, rightEnd)))
+                if (/*attempts[0] >= maxTries || */!continueScanning.test(u, r.set(leftStart, rightEnd)))
                     break;
 
                 leftMid = leftStart - 1;
@@ -798,6 +796,22 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
             i.meta("merge", e);
         }
 
+    }
+
+    private final static class ScanLimiter implements Predicate<TaskRegion> {
+        private final Collection target;
+        int attemptsRemain;
+
+        public ScanLimiter(Collection u, int maxTries) {
+            this.attemptsRemain = maxTries;
+            this.target = u;
+        }
+
+        @Override
+        public boolean test(TaskRegion x) {
+            target.add(x);
+            return --attemptsRemain > 0;
+        }
     }
 
 //    private static class TimeRangeUniqueNodes extends TimeRange {

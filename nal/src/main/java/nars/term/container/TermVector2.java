@@ -1,5 +1,6 @@
 package nars.term.container;
 
+import com.google.common.collect.Iterators;
 import jcog.list.ArrayIterator;
 import nars.Op;
 import nars.term.Term;
@@ -70,7 +71,7 @@ public final class TermVector2 extends TermVector {
 
     @Override
     public Iterator<Term> iterator() {
-        return new ArrayIterator(arrayClone());
+        return ArrayIterator.get(x, y);
     }
 
     @Override

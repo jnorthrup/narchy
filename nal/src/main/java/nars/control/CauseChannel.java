@@ -1,12 +1,16 @@
 package nars.control;
 
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Streams;
+import jcog.list.ArrayIterator;
 import jcog.pri.Priority;
 import nars.NAR;
 import nars.task.ITask;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -48,10 +52,21 @@ public class CauseChannel<X extends Priority> extends Cause implements Consumer<
         x.forEach(this);
     }
 
-    public void input(X... x) {
+    public void input(List<? extends X> x) {
+        if (x.size()==1) {
+            input(x.get(0));
+        } else {
+            input(x.iterator());
+        }
+    }
 
-        for (X p : x)
-            input(p);
+    public void input(X... x) {
+        if (x.length == 1) {
+            input(x[0]);
+        } else {
+            for (X p : x)
+                input(p);
+        }
     }
 
     public void input(X x) {
@@ -110,17 +125,18 @@ public class CauseChannel<X extends Priority> extends Cause implements Consumer<
 
         @Override
         public void input(ITask x) {
-            input(Stream.of(x));
+            if (each.test(x))
+                nar.input(x);
         }
 
         @Override
         public void input(ITask... x) {
-            input(Stream.of(x));
+            nar.input(()->ArrayIterator.get(x));
         }
 
         @Override
         public void input(Iterator<? extends ITask> xx) {
-            input(Streams.stream(xx));
+            nar.input(Iterables.filter(()->xx, each::test));
         }
 
         @Override

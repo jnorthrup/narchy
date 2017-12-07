@@ -1,5 +1,6 @@
 package jcog.list;
 
+import com.google.common.collect.Iterators;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -37,24 +38,28 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
         return this;
     }
 
-    public static <E> Iterator<E> get(E[] e) {
+    public static <E> Iterator<E> get(E... e) {
         return ArrayIterator.get(e, e.length);
     }
 
     public static <E> Iterator<E> get(E[] e, int size) {
-        if (size == 0)
-            return Collections.emptyIterator();
-        else if (size == e.length)
-            return new ArrayIterator(e);
-        else
-            return new BoundedArrayIterator(e, size);
+        switch (size) {
+            case 0:
+                return Collections.emptyIterator();
+            case 1:
+                return Iterators.singletonIterator(e[0]);
+            default:
+                return size == e.length ?
+                        new ArrayIterator(e) :
+                        new PartialArrayIterator(e, size);
+        }
     }
 
-    static class BoundedArrayIterator<E> extends ArrayIterator<E> {
+    static final class PartialArrayIterator<E> extends ArrayIterator<E> {
 
         private final int size;
 
-        public BoundedArrayIterator(E[] array, int size) {
+        public PartialArrayIterator(E[] array, int size) {
             super(array);
             this.size = size;
         }
