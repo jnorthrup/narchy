@@ -54,9 +54,10 @@ public class Try extends AbstractPred<Derivation> {
             default:
 
                 int[] c = choices.toArray();
-                float[] w = Util.mapNormalizedWithMargin(N, x ->
-                        Util.sum(Cause::value, ((ValueFork)(branches[c[x]])).causes) //sum of downstream cause values
-                    );
+                float[] w = Util.marginMax(N, x ->
+                        Util.sum(Cause::value, ((ValueFork)(branches[c[x]])).causes), //sum of downstream cause values
+                        1f / N, 0
+                );
 
                 int before = d.now();
                 Roulette.selectRouletteUnique(N, i -> w[i], (i) -> {

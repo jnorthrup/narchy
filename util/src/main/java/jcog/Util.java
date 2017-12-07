@@ -1876,7 +1876,9 @@ public enum Util {
         return map(num, build, null);
     }
 
-    public static float[] mapNormalizedWithMargin(int num, IntToFloatFunction build) {
+    /** builds a MarginMax weight array, which can be applied in a Roulette decision */
+    @Paper
+    public static float[] marginMax(int num, IntToFloatFunction build, float lower, float upper) {
         float[] minmax = new float[]{Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY};
         float[] w = Util.map(num, i -> {
             float v = build.valueOf(i);
@@ -1893,8 +1895,7 @@ public enum Util {
 
         //TODO combine these into one normalize() by calculating an equivalent effective minmax range
         Util.normalize(w, minmax[0], minmax[1]);
-        float margin = 1f / num;
-        Util.normalize(w, -margin, +1);
+        Util.normalize(w, 0-lower, 1+upper);
         return w;
     }
 

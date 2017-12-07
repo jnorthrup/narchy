@@ -1,6 +1,7 @@
 package nars.control;
 
 import com.google.common.collect.TreeBasedTable;
+import jcog.Paper;
 import jcog.Util;
 import jcog.learn.ql.HaiQAgent;
 import jcog.list.FasterList;
@@ -22,19 +23,17 @@ import static jcog.Texts.n4;
 
 /**
  * high-level reasoner control parameters
+ * neg: perceived as input, can be measured for partial and complete tasks
+ * in their various stages of construction.
+ * <p>
+ * information is considered negative value by default (spam).
+ * see: http://mattmahoney.net/costofai.pdf
+ * <p>
+ * satisfying other goals is necessary to compensate for the
+ * perceptual cost.
  */
+@Paper
 public enum MetaGoal {
-
-    /**
-     * neg: perceived as input, can be measured for partial and complete tasks
-     * in their various stages of construction.
-     * <p>
-     * information is considered negative value by default (spam).
-     * see: http://mattmahoney.net/costofai.pdf
-     * <p>
-     * satisfying other goals is necessary to compensate for the
-     * perceptual cost.
-     */
     Perceive,
 
     /**

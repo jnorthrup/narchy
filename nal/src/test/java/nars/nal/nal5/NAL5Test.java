@@ -162,19 +162,18 @@ public class NAL5Test extends NALTest {
 
     @Test
     public void anonymous_analogy1_pos2() {
-        TestNAR tester = test;
-        tester.believe("(&&, x, y)");
-        tester.believe("x", 0.80f, 0.9f);
-        tester.mustBelieve(cycles, "y", 0.80f, 0.43f);
+        test
+        .believe("(x && y)")
+        .believe("x", 0.80f, 0.9f)
+        .mustBelieve(cycles, "y", 0.80f, 0.43f);
     }
 
     @Test
     public void anonymous_analogy1_pos3() {
-
         test
-                .believe("(&&, x, y, z)")
-                .believe("x", 0.80f, 0.9f)
-                .mustBelieve(cycles, "(&&,y,z)", 0.80f, 0.43f);
+        .believe("(&&, x, y, z)")
+        .believe("x", 0.80f, 0.9f)
+        .mustBelieve(cycles, "(y && z)", 0.80f, 0.43f);
     }
 
     @Test

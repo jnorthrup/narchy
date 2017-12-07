@@ -111,15 +111,15 @@ public class ValueFork extends Fork {
 
         int before = d.now();
 
-        int branches = this.branches.length;
-        if (branches == 1) {
+        int N = this.branches.length;
+        if (N == 1) {
             this.branches[0].test(d);
             return d.revertLive(before) && d.use(1);
         } else {
 
-            float[] w = Util.mapNormalizedWithMargin(branches, i -> causes[i].value());
+            float[] w = Util.marginMax(N, i -> causes[i].value(), 1f / N, 0);
 
-            Roulette.selectRouletteUnique(branches, i->w[i], (b) -> {
+            Roulette.selectRouletteUnique(N, i->w[i], (b) -> {
 
                 this.branches[b].test(d);
 
