@@ -63,6 +63,8 @@ public abstract class Unify extends Versioning implements Subst {
 
     /** whether the variable unification allows to happen in reverse (a variable in Y can unify a constant in X) */
     public boolean varSymmetric = true;
+    /** whether common variables are allowed to be substituted on variable match */
+    public boolean varCommonalize = true;
 
 //    /**
 //     * free variables remaining unassigned, for counting

@@ -11,11 +11,14 @@ import nars.table.TemporalBeliefTable;
 import nars.task.util.PredictionFeedback;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.tuple.primitive.IntFloatPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntFloatHashMap;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Arrays;
 
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -42,16 +45,19 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
 
             Task matched = match(input.start(), input.end(), input.term(), nar);
 
-            if (matched != null && matched.term().equals(input.term())) {
+            //must be _during_ the same time and same term, same stamp, then compare Truth
+            if (matched != null) {
 
-                if (!(input.isEternal() ^ matched.isEternal())) { //must be of the same temporality
+                if ((matched.start() <= input.start() && matched.end() >= input.end()) &&
+                     matched.term().equals(input.term()) &&
+                     Stamp.equalsIgnoreCyclic(matched.stamp(), input.stamp())) {
 
                     if (PredictionFeedback.absorb(matched, input, nar)) {
                         Tasklinks.linkTask(matched, matched.priElseZero(), concept, nar);
                         return;
                     }
-                }
 
+                }
             }
         }
 

@@ -137,6 +137,8 @@ public class Premise {
                         }
                         return true; //keep going
                     }, matchTTL);
+                    u.varSymmetric = false;
+                    u.varCommonalize = false;
                     if (u.unify(taskTerm, beliefTerm, true)) {
                         beliefConceptCanAnswerTaskConcept = true;
                         if (unifiedBeliefTerm[0] != null) {

@@ -47,7 +47,8 @@ public class AIMATests {
     @Test
     public void testWeaponsDomain() throws Narsese.NarseseException {
 
-        n.freqResolution.set(0.02f);
+        n.freqResolution.set(0.1f);
+        n.confResolution.set(0.02f);
         n.priDefault(QUESTION, 0.5f);
         n.priDefault(BELIEF, 0.3f);
 
@@ -95,10 +96,10 @@ public class AIMATests {
 
         n.run(2000);
 
-        if (!questions.isEmpty()) {
-            System.out.println("Questions Generated:");
-            questions.forEach(System.out::println);
-        }
+//        if (!questions.isEmpty()) {
+//            System.out.println("Questions Generated:");
+//            questions.forEach(System.out::println);
+//        }
 
         Task y = n.belief($.$("Criminal(West)"));
         assertNotNull(y);

@@ -109,7 +109,7 @@ public final class DynTruth implements Truthed {
 
         // then if the term is valid, see if it is valid for a task
         if (!Task.validTaskTerm(c,
-                beliefOrGoal ? BELIEF : GOAL, nar, true))
+                beliefOrGoal ? BELIEF : GOAL, true))
             return null;
 
         NALTask dyn = new NALTask(c, beliefOrGoal ? Op.BELIEF : Op.GOAL,

@@ -9,13 +9,14 @@ import org.jetbrains.annotations.Nullable;
 /**
  * similar to a plain atom, but applies altered operating semantics according to the specific
  * varible type, as well as serving as something like the "marker interfaces" of Atomic, Compound, ..
- *
+ * <p>
  * implemented by both raw variable terms and variable concepts
  **/
 public interface Variable extends Atomic {
 
 
-    /** an ID by which this variable can be uniquely identified,
+    /**
+     * an ID by which this variable can be uniquely identified,
      * among the other existing variables with the same ID but
      * from other variable op's #$?%
      */
@@ -48,7 +49,6 @@ public interface Variable extends Atomic {
     }
 
 
-
 //    @Override
 //    @Nullable
 //    default Set<Variable> varsUnique(@Nullable Op type) {
@@ -70,27 +70,30 @@ public interface Variable extends Atomic {
         //see: https://github.com/opennars/opennars/blob/4515f1d8e191a1f097859decc65153287d5979c5/nars_core/nars/language/Variables.java#L18
         Op xOp = op();
         Op yOp = y.op();
-        if (xOp==yOp && !this.equals(y) && commonalizableVariable(xOp) && commonalizableVariable(yOp)) {
+        if (xOp == yOp) {
 
-            //TODO check if this is already a common variable containing y
-            Term common = CommonVariable.common(this, (Variable) y);
+            if (u.varCommonalize && !this.equals(y) && commonalizableVariable(xOp) && commonalizableVariable(yOp)) {
+                //TODO check if this is already a common variable containing y
+                Term common = CommonVariable.common(this, (Variable) y);
 
-            if (common == this || common == y)
-                return true; //no change
+                if (common == this || common == y)
+                    return true; //no change
 
-            return u.putXY(this, common) && u.putXY(y, common);
-        } else {
-            if (y instanceof Variable) {
-                if (xOp.id < yOp.id) {  //only allows indep to subsume dep but not vice versa
-                    if (u.varSymmetric)
-                        return y.unify(this, u);
-                    else
-                        return false;
-                }
+                return u.putXY(this, common) && u.putXY(y, common);
             }
 
-            return u.matchType(xOp) && u.putXY(this, y);
         }
+
+        if (y instanceof Variable) {
+            if (xOp.id < yOp.id) {  //only allows indep to subsume dep but not vice versa
+                if (u.varSymmetric)
+                    return y.unify(this, u);
+                else
+                    return false;
+            }
+        }
+
+        return u.matchType(xOp) && u.putXY(this, y);
 
 
 //        if (y instanceof Variable) {

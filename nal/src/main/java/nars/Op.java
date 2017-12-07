@@ -10,7 +10,6 @@ import nars.term.*;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
-import nars.term.atom.Intlike;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.UnitCompound1;
 import nars.term.container.TermContainer;
@@ -128,7 +127,7 @@ public enum Op {
     PROD("*", 1, Args.GTEZero) {
         @Override
         public Term the(int dt, Term... t) {
-            assert(dt == DTERNAL);
+            assert (dt == DTERNAL);
             return (t.length == 0) ? ZeroProduct : compound(PROD, DTERNAL, t);
         }
     },
@@ -263,9 +262,8 @@ public enum Op {
                     break;
                 case DTERNAL:
 
-                    ci = junctionFlat(dt, u);
+                    return junctionFlat(dt, u);
 
-                    break;
                 default:
 
                     //sequence or xternal
@@ -307,8 +305,8 @@ public enum Op {
                                 if ((va - vamin) > (vb + vamin)) {
                                     int min = va0 <= va1 ? 0 : 1;
                                     return CONJ.the(XTERNAL,
-                                                CONJ.the(XTERNAL, b, aa[min] /* a to b */),
-                                                aa[1 - min]);
+                                            CONJ.the(XTERNAL, b, aa[min] /* a to b */),
+                                            aa[1 - min]);
                                 }
                             }
 
@@ -320,10 +318,9 @@ public enum Op {
                                 conjMerge(b, 0, a, -dt + b.dtRange());
                     }
 
-                    break;
             }
-
             return implInConjReduction(ci);
+
         }
 
 
@@ -855,7 +852,6 @@ public enum Op {
     public final byte id;
 
 
-
     Op(char c, int minLevel, OpType type) {
         this(c, minLevel, type, Args.None);
     }
@@ -921,7 +917,6 @@ public enum Op {
         this.atomic = var || ATOMICS.contains(str);
 
 
-
         switch (str) {
             case "==>":
             case "&&":
@@ -973,7 +968,7 @@ public enum Op {
         if (a.eventCount() == 1 && b.eventCount() == 1) {
             int dt = (int) (bStart - aStart);
 
-            return conjSeqFinal(dt, a, b);
+            return implInConjReduction(conjSeqFinal(dt, a, b));
         }
 
         LongObjectHashMap<Collection<Term>> eventSets = new LongObjectHashMap();
@@ -981,31 +976,32 @@ public enum Op {
         LongObjectPredicate<Term> insert = (long w, Term xb) -> {
             Collection<Term> ab = eventSets.updateValue(w,
                     () -> {
-                        TreeSet<Term> x = new TreeSet();
+                        Collection<Term> x =
+                                new UnifiedSet<>(1);
+                        //new TreeSet();
                         x.add(xb);
                         return x;
                     },
-                    (Collection<Term> xa) -> {
-                        if (xa.add(xb)) {
+                    (Collection<Term> xx) -> {
+                        if (xx.add(xb)) {
                             Op o = xb.op();
                             if (o == NEG) {
-                                if (xa.contains(xb.unneg())) return null;
+                                if (xx.contains(xb.unneg()))
+                                    return null;
                             } else {
                                 //if (xa.contains(xb.neg())) return null;
-                                for (Term z : xa) {
+                                for (Term z : xx) {
                                     if (z.op() == NEG && z.sub(0).equals(xb))
                                         return null;
                                 }
                             }
                         }
-                        return xa;
+                        return xx;
                     });
             return ab != null;
         };
 
-        if (!a.eventsWhile(insert, aStart))
-            return False;
-        if (!b.eventsWhile(insert, bStart))
+        if (!(a.eventsWhile(insert, aStart) && b.eventsWhile(insert, bStart)))
             return False;
 
         LongObjectHashMap<Term> eventSet = new LongObjectHashMap<>();
@@ -1017,7 +1013,7 @@ public enum Op {
             if (sps.length == 1)
                 pp = sps[0];
             else {
-                pp = implInConjReduction(compound(CONJ, 0, sps)); //direct
+                pp = /*implInConjReduction*/(compound(CONJ, 0, sps)); //direct
                 //pp = CONJ.the(0, sps);
             }
             if (pp instanceof Bool) {
@@ -1112,12 +1108,8 @@ public enum Op {
             case 1:
                 return events.get(0).getTwo();
             default:
-                return conjSeq(events);
+                return implInConjReduction(conjSeq(events, 0, events.size()));
         }
-    }
-
-    private static Term conjSeq(List<LongObjectPair<Term>> events) {
-        return conjSeq(events, 0, events.size());
     }
 
     /**
@@ -1134,22 +1126,20 @@ public enum Op {
             case 1:
                 return first.getTwo();
             case 2:
-                Term left = first.getTwo();
-                LongObjectPair<Term> second = events.get(end-1);
-                Term right = second.getTwo();
+                LongObjectPair<Term> second = events.get(end - 1);
                 return conjSeqFinal(
                         (int) (second.getOne() - first.getOne()),
-                        left, right);
+                        /* left */ first.getTwo(), /* right */ second.getTwo());
         }
 
         int center = start + (end - 1 - start) / 2;
 
 
-        Term left = conjSeq(events, start, center+1);
+        Term left = conjSeq(events, start, center + 1);
         if (left == Null) return Null;
         if (left == False) return False; //early fail shortcut
 
-        Term right = conjSeq(events, center+1, end);
+        Term right = conjSeq(events, center + 1, end);
         if (right == Null) return Null;
         if (right == False) return False; //early fail shortcut
 
@@ -1160,7 +1150,7 @@ public enum Op {
 
 
     private static Term conjSeqFinal(int dt, Term left, Term right) {
-        assert(dt!=XTERNAL);
+        assert (dt != XTERNAL);
         if (left == False) return False;
         if (left == Null) return Null;
 
@@ -1198,7 +1188,7 @@ public enum Op {
         }
 
 
-        return implInConjReduction(compound(CONJ, dt, left, right));
+        return compound(CONJ, dt, left, right);
         //return CONJ.the(dt, left, right);
 
     }
@@ -1221,7 +1211,7 @@ public enum Op {
             return conj; //fall-through
 
         int conjDT = conj.dt();
-        assert(conjDT!=XTERNAL);
+        assert (conjDT != XTERNAL);
 
         //if there is only one implication subterm (first layer only), then fold into that.
         int whichImpl = -1;
@@ -1287,15 +1277,15 @@ public enum Op {
 
 
     private static Term differ(/*@NotNull*/ Op op, Term... t) {
-        if (op == DIFFe && t.length == 2 && t[0] instanceof Int.IntRange && t[1].op()==INT) {
-            Term simplified = ((Int.IntRange)t[0]).subtract(t[1]);
-            if (simplified!=Null)
+        if (op == DIFFe && t.length == 2 && t[0] instanceof Int.IntRange && t[1].op() == INT) {
+            Term simplified = ((Int.IntRange) t[0]).subtract(t[1]);
+            if (simplified != Null)
                 return simplified;
         }
 
         //TODO product 1D, 2D, etc unwrap
         //if (t.length >= 2 && Util.and((Term tt) -> tt.op() == PROD && tt.subs()==1, t)) {
-            //return $.p(differ())
+        //return $.p(differ())
         //}
 
         //corresponding set type for reduction:
@@ -1331,7 +1321,7 @@ public enum Op {
 
     public static Term difference(/*@NotNull*/ Term a, Term b) {
         Op o = a.op();
-        assert(b.op()== o);
+        assert (b.op() == o);
         return difference(o, a, b);
     }
 
@@ -1347,7 +1337,7 @@ public enum Op {
                 return Null;
             else {
                 Term aMinB = ((Int.IntRange) a).subtract(b);
-                if (aMinB!=Null) {
+                if (aMinB != Null) {
                     if (a.equals(aMinB))
                         return Null; //
                     return aMinB;
@@ -1669,7 +1659,6 @@ public enum Op {
         }
 
 
-
         if ((dtConcurrent || op != IMPL) && (subject.varPattern() == 0 && predicate.varPattern() == 0)) {
             Predicate<Term> delim = (op == IMPL && dtConcurrent) ?
                     recursiveCommonalityDelimeterStrong : Op.recursiveCommonalityDelimeterWeak;
@@ -1885,7 +1874,7 @@ public enum Op {
     /**
      * writes this operator to a Writer in (human-readable) expanded UTF16 mode
      */
-    public final void append(int dt,  Appendable w, boolean invertDT) throws IOException {
+    public final void append(int dt, Appendable w, boolean invertDT) throws IOException {
 
 
         if (dt == 0) {
@@ -1949,7 +1938,8 @@ public enum Op {
         return _the(dt, commute(dt, u.length) ? sorted(u) : u);
     }
 
-    /*@NotNull*/ protected Term _the(int dt, Term[] u) {
+    /*@NotNull*/
+    protected Term _the(int dt, Term[] u) {
 
         if (statement) {
             if (u.length == 1) { //similarity has been reduced
@@ -2003,7 +1993,7 @@ public enum Op {
     }
 
     public static int conjEarlyLate(Term x, boolean earlyOrLate) {
-        assert(x.op()==CONJ);
+        assert (x.op() == CONJ);
         int d = x.sub(0).compareTo(x.sub(1));
         return (d >= 0 ? (earlyOrLate ? 0 : 1) : (earlyOrLate ? 1 : 0));
     }

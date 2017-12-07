@@ -128,7 +128,9 @@ public class Anon {
 
     public Term put(Term x) {
         if (x instanceof Variable) {
-            assert (!(x instanceof UnnormalizedVariable));
+            //assert (!(x instanceof UnnormalizedVariable));
+            if (x instanceof UnnormalizedVariable)
+                throw new RuntimeException("unnormalized variable in Anon");
             return x; //ignore normalized variables
         } else if (x instanceof Atomic) {
             return Anom.cached[fwd.getIfAbsentPutWithKey(x, nextUniqueAtom)];

@@ -257,6 +257,6 @@ public class TermIndexTest {
     @Test public void testConceptualizable() throws Narsese.NarseseException {
         Compound c = $.$("(((#1,#2,a02)-->#3)&&((#1,#2,a32)-->#3))");
         assertTrue(c.isNormalized());
-        assertTrue(Task.validTaskTerm(c, (byte) 0, null, true));
+        assertTrue(Task.validTaskTerm(c, (byte) 0, true));
     }
 }

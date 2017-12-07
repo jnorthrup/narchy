@@ -106,7 +106,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //        return validTaskTerm(t, (byte) 0, null, safe);
 //    }
 
-    static boolean validTaskTerm(@Nullable Term t, byte punc, @Nullable NAR nar, boolean safe) {
+    static boolean validTaskTerm(@Nullable Term t, byte punc, boolean safe) {
 
 //        if (t == null)
 //            return fail(t, "null content", safe);
@@ -139,15 +139,14 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                 return fail(t, "belief/goal content with dt=XTERNAL", safe);
         }
 
-        if (nar != null) {
-            int maxVol = nar.termVolumeMax.intValue();
-            if (t.volume() > maxVol)
-                return fail(t, "task term exceeds maximum volume", safe);
-
-            int nalLevel = nar.nal();
-            if (!t.levelValid(nalLevel))
-                return fail(t, "task term exceeds maximum NAL level", safe);
-        }
+//        if (nar != null) {
+//            int maxVol = nar.termVolumeMax.intValue();
+//            if (t.volume() > maxVol)
+//                return fail(t, "task term exceeds maximum volume", safe);
+//            int nalLevel = nar.nal();
+//            if (!t.levelValid(nalLevel))
+//                return fail(t, "task term exceeds maximum NAL level", safe);
+//        }
 
         if ((punc == Op.GOAL || punc == Op.QUEST) && !goalable(t))
             return fail(t, "Goal/Quest task term may not be Implication or Equivalence", safe);
@@ -316,7 +315,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             newContent = newContent.unneg();
         }
 
-        if (!Task.validTaskTerm(newContent, newPunc, null, true)) {
+        if (!Task.validTaskTerm(newContent, newPunc, true)) {
             return null;
         }
 
@@ -368,7 +367,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         }
 
 
-        if (Task.validTaskTerm(t, punc, null, safe)) {
+        if (Task.validTaskTerm(t, punc, safe)) {
             return pair(t, negated);
         } else {
             return null;
