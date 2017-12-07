@@ -21,7 +21,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.var.Variable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -90,7 +90,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
     private BaseConcept newTaskConcept(final Term t) {
         DynamicTruthModel dmt = null;
 
-        final TermContainer ts = t.subterms();
+        final Subterms ts = t.subterms();
         switch (t.op()) {
 
             case INH:
@@ -108,7 +108,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
                         //(P --> M), (S --> M), notSet(S), notSet(P), neqCom(S,P) |- ((P ~ S) --> M), (Belief:Difference)
 
 
-                        TermContainer subjsubs = subj.subterms();
+                        Subterms subjsubs = subj.subterms();
                         if (validUnwrappableSubterms(subjsubs)) {
                             int s = subjsubs.subs();
                             FasterList<Term> lx = new FasterList(0, new Term[s]);
@@ -304,7 +304,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
     final static Predicate<Term> validUnwrappableSubterm = x -> !(x instanceof Bool) && !(x.unneg() instanceof Variable);
 
-    private static boolean validUnwrappableSubterms(@NotNull TermContainer subterms) {
+    private static boolean validUnwrappableSubterms(@NotNull Subterms subterms) {
         return subterms.AND(validUnwrappableSubterm);
     }
 

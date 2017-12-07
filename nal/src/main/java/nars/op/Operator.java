@@ -11,7 +11,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -63,7 +63,7 @@ public class Operator extends BaseConcept implements PermanentConcept, Atomic {
     /**
      * returns the arguments of an operation (task or term)
      */
-    public static TermContainer args(Termed operation) {
+    public static Subterms args(Termed operation) {
         assert (operation.op() == INH && operation.subIs(1, ATOM));
         return operation.sub(0).subterms();
     }

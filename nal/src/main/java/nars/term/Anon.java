@@ -157,6 +157,10 @@ public class Anon {
         Term x = t.term();
         assert (x.isNormalized());
         Term y = put(x);
+        if (y == null || y instanceof Bool) {
+            put(x); //temporary
+            throw new RuntimeException("Anon fail for term: " + t);
+        }
         if (y instanceof Compound)
             ((TermVector) y.subterms()).setNormalized();
 

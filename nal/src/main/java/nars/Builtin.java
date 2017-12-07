@@ -10,7 +10,7 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Int;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.var.Variable;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.FastList;
@@ -18,7 +18,6 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiConsumer;
 
 import static nars.Op.*;
@@ -200,7 +199,7 @@ public class Builtin {
 //        ));
 
         /** subterm, but specifically inside an ellipsis. otherwise pass through */
-        nar.on(Functor.f("esubterm", (TermContainer c) -> {
+        nar.on(Functor.f("esubterm", (Subterms c) -> {
 
 
             Term x = c.sub(0, null);
@@ -422,7 +421,7 @@ public class Builtin {
 
         nar.onOp("assertEquals", (task, nn) -> {
             //String msg = op + "(" + Joiner.on(',').join(args) + ')';
-            @Nullable TermContainer args = Operator.args(task);
+            @Nullable Subterms args = Operator.args(task);
             if (args.subs()==2) {
                 //assertEquals(/*msg,*/ 2, args.subs());
                 assertEquals(/*msg,*/ args.sub(0), args.sub(1));
@@ -620,7 +619,7 @@ public class Builtin {
 
     }
 
-    static Term[] dropRandom(Random random, TermContainer t) {
+    static Term[] dropRandom(Random random, Subterms t) {
         int size = t.subs();
         assert (size > 1);
         Term[] y = new Term[size - 1];

@@ -5,7 +5,7 @@ import nars.Param;
 import nars.The;
 import nars.term.Term;
 import nars.term.container.ShuffledSubterms;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.subst.Unify;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,8 +17,8 @@ import java.util.SortedSet;
 public final class CommutivePermutations extends Termutator.AbstractTermutator {
 
     @NotNull
-    private final TermContainer y;
-    private final TermContainer x;
+    private final Subterms y;
+    private final Subterms x;
 
     public CommutivePermutations(SortedSet<Term> x, SortedSet<Term> y) {
         this(
@@ -27,7 +27,7 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
         );
 
     }
-    public CommutivePermutations(TermContainer x, TermContainer y) {
+    public CommutivePermutations(Subterms x, Subterms y) {
         this(
             $.pFast(x), $.pFast(y)
         );

@@ -14,7 +14,7 @@ import nars.Op;
 import nars.Task;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
@@ -229,7 +229,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
                 break;
             case CONJ:
-                TermContainer tt = eventTerm.subterms();
+                Subterms tt = eventTerm.subterms();
                 long et = event.when();
 
 
@@ -291,7 +291,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     boolean solveDT(Term x, Predicate<Event> each) {
         assert (x.dt() == XTERNAL);
 
-        TermContainer xx = x.subterms();
+        Subterms xx = x.subterms();
         FasterList<Event> events = new FasterList<>(byTerm.get(x.root()));
         for (int i = 0, eventsSize = events.size(); i < eventsSize; i++) {
             Event r = events.get(i);

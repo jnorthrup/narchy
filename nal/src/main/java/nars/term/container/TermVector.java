@@ -15,7 +15,7 @@ import java.util.Iterator;
  * a TermVector specifically for subterms.  while both
  * can be
  */
-public abstract class TermVector implements TermContainer {
+public abstract class TermVector implements Subterms {
 
     /**
      * normal high-entropy "content" hash
@@ -151,14 +151,14 @@ public abstract class TermVector implements TermContainer {
     }
 
     @NotNull
-    public static TermContainer the(Term... t) {
+    public static Subterms the(Term... t) {
         for (Term x : t)
             if (x instanceof EllipsisMatch)
                 throw new RuntimeException("ellipsis match should not be a subterm of ANYTHING");
 
         switch (t.length) {
             case 0:
-                return TermContainer.NoSubterms;
+                return Subterms.Empty;
             case 1:
                 return new TermVector1(t[0]);
             //case 2:

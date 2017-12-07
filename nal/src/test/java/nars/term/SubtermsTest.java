@@ -4,7 +4,7 @@ import nars.Narsese;
 import nars.Op;
 import nars.term.atom.Atomic;
 import nars.term.container.ArrayTermVector;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.container.TermVector1;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 3/1/16.
  */
-public class TermContainerTest {
+public class SubtermsTest {
 
     /**
      * recursively
@@ -27,7 +27,7 @@ public class TermContainerTest {
         boolean aCompound = a instanceof Compound;
         boolean bCompound = b instanceof Compound;
         if (aCompound && bCompound) {
-            return TermContainer.commonSubterms((Compound) a, ((Compound) b), false);
+            return Subterms.commonSubterms((Compound) a, ((Compound) b), false);
         } else {
             if (aCompound && !bCompound) {
                 return a.contains(b);
@@ -48,17 +48,17 @@ public class TermContainerTest {
         assertFalse(commonSubtermOrContainment($("x"), $("y")));
         assertTrue(commonSubtermOrContainment($("(x,y,z)"), $("y")));
         assertFalse(commonSubtermOrContainment($("(x,y,z)"), $("w")));
-        assertFalse(TermContainer.commonSubterms($("(a,b,c)"), $("(x,y,z)"), false));
-        assertTrue(TermContainer.commonSubterms($("(x,y)"), $("(x,y,z)"), false));
+        assertFalse(Subterms.commonSubterms($("(a,b,c)"), $("(x,y,z)"), false));
+        assertTrue(Subterms.commonSubterms($("(x,y)"), $("(x,y,z)"), false));
     }
 
     @Disabled @Test
     public void testCommonSubtermsRecursion() throws Narsese.NarseseException {
-        assertTrue(TermContainer.commonSubterms($("(x,y)"), $("{a,x}"), false));
-        assertFalse(TermContainer.commonSubterms($("(x,y)"), $("{a,b}"), false));
+        assertTrue(Subterms.commonSubterms($("(x,y)"), $("{a,x}"), false));
+        assertFalse(Subterms.commonSubterms($("(x,y)"), $("{a,b}"), false));
 
-        assertFalse(TermContainer.commonSubterms($("(#x,y)"), $("{a,#x}"), true));
-        assertTrue(TermContainer.commonSubterms($("(#x,a)"), $("{a,$y}"), true));
+        assertFalse(Subterms.commonSubterms($("(#x,y)"), $("{a,#x}"), true));
+        assertTrue(Subterms.commonSubterms($("(#x,a)"), $("{a,$y}"), true));
     }
 
     @Test
@@ -97,11 +97,11 @@ public class TermContainerTest {
     @Test
     public void testEqualityOfVector1() {
         Term a = Atomic.the("a");
-        TermContainer x = new TermVector1(a);
-        TermContainer y = new TermVector1(a);
+        Subterms x = new TermVector1(a);
+        Subterms y = new TermVector1(a);
         assertEquals(x, y);
 
-        TermContainer z = new ArrayTermVector(a);
+        Subterms z = new ArrayTermVector(a);
         assertEquals(z.hashCode(), x.hashCode());
         assertEquals(x, z);
         assertEquals(z, x);

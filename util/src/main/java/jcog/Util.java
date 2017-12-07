@@ -1231,6 +1231,15 @@ public enum Util {
         return y;
     }
 
+    public static <X> boolean sumExceeds(ToIntFunction<X> value, int max, X... xx) {
+        int y = 0;
+        for (X x : xx) {
+            if ((y += value.applyAsInt(x)) > max)
+                return true;
+        }
+        return false;
+    }
+
     public static <X> int or(ToIntFunction<X> value, X... xx) {
         int y = 0;
         for (X x : xx)
@@ -2050,6 +2059,8 @@ public enum Util {
     public static <X> X last(X[] x) {
         return x[x.length - 1];
     }
+
+
 
 
 //    public static <T>  Collector<T, ?, List<T>> toListOrNullIfEmpty() {

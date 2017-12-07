@@ -5,7 +5,7 @@ import nars.IO;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.container.TermVector1;
 import org.jetbrains.annotations.Nullable;
 
@@ -108,7 +108,7 @@ public class UnitCompound1 extends TermVector1 implements Compound {
 
     @Deprecated /* HACK */
     @Override
-    public /*@NotNull*/ TermContainer subterms() {
+    public /*@NotNull*/ Subterms subterms() {
 
         //return new TermVector1(sub);
         return new TermVector1(sub, this);

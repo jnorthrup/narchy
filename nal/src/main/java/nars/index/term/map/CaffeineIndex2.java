@@ -8,7 +8,7 @@ import nars.The;
 import nars.index.util.TermContainerToOpMap;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.var.Variable;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,7 +26,7 @@ import static nars.Op.True;
  *          so that the lower subset starting at 0 are the kinds of operators being stored. this will
  *          slightly reduce the size that TermContainerToOpMap's need to be.
  */
-public class CaffeineIndex2 extends MaplikeTermIndex implements RemovalListener<TermContainer, TermContainerToOpMap<Termed>> {
+public class CaffeineIndex2 extends MaplikeTermIndex implements RemovalListener<Subterms, TermContainerToOpMap<Termed>> {
     private final long capacity;
 
 
@@ -40,7 +40,7 @@ public class CaffeineIndex2 extends MaplikeTermIndex implements RemovalListener<
      * holds compounds and subterm vectors
      */
     @NotNull
-    public Cache<TermContainer, TermContainerToOpMap<Termed>> vectors;
+    public Cache<Subterms, TermContainerToOpMap<Termed>> vectors;
 
 
 //    private static final Weigher<Term, Termed> weigher = (k, v) -> {
@@ -62,7 +62,7 @@ public class CaffeineIndex2 extends MaplikeTermIndex implements RemovalListener<
 
 
 
-    final static Weigher<TermContainer, TermContainerToOpMap> w = (k, v) -> {
+    final static Weigher<Subterms, TermContainerToOpMap> w = (k, v) -> {
         //return k.volume();
         return (k.complexity() + k.volume())/2;
     };
@@ -168,8 +168,8 @@ public class CaffeineIndex2 extends MaplikeTermIndex implements RemovalListener<
 
     }
 
-    static TermContainer vector(Term x) {
-        TermContainer xs = x.subterms();
+    static Subterms vector(Term x) {
+        Subterms xs = x.subterms();
         if (xs.subs() == 0) {
             //atomic
             return The.subterms(x, True); //to distinguish from: (x)
@@ -264,7 +264,7 @@ public class CaffeineIndex2 extends MaplikeTermIndex implements RemovalListener<
 
 
     @Override
-    public void onRemoval(TermContainer key, TermContainerToOpMap<Termed> value, RemovalCause cause) {
+    public void onRemoval(Subterms key, TermContainerToOpMap<Termed> value, RemovalCause cause) {
         if (value!=null)
             value.forEach(this::onRemove);
     }

@@ -1,7 +1,7 @@
 package nars.derive.constraint;
 
 import nars.term.Term;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -24,7 +24,7 @@ public final class CommonSubtermConstraint extends CommonalityConstraint {
     @Override
     protected boolean invalid(Term x, Term y) {
 
-        return x.equals(y) || x.containsRecursively(y) || y.containsRecursively(x) || !TermContainer.hasCommonSubtermsRecursive(x, y, true);
+        return x.equals(y) || x.containsRecursively(y) || y.containsRecursively(x) || !Subterms.hasCommonSubtermsRecursive(x, y, true);
     }
 
 }

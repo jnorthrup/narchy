@@ -4,7 +4,7 @@ import nars.$;
 import nars.Op;
 import nars.term.Functor;
 import nars.term.Term;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,9 +27,9 @@ public abstract class flat extends Functor.UnaryFunctor {
 
     @Override
     public @Nullable Term apply(Term x) {
-        if (x instanceof TermContainer) {
+        if (x instanceof Subterms) {
             List<Term> l = $.newArrayList(x.volume());
-            collect(((TermContainer)x).arrayClone(), l);
+            collect(((Subterms)x).arrayClone(), l);
             return result(l);
         } else {
             return null;
@@ -40,7 +40,7 @@ public abstract class flat extends Functor.UnaryFunctor {
     public static List<Term> collect(@NotNull Term[] x, @NotNull List<Term> l) {
         for (Term a : x) {
             if (a.op() == Op.PROD || a.op().isSet() || a.op() == Op.CONJ) {
-                ((TermContainer) a).copyInto(l);
+                ((Subterms) a).copyInto(l);
             }
             else
                 l.add(a);

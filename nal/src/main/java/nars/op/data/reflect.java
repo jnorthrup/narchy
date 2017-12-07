@@ -16,7 +16,7 @@ import nars.task.NALTask;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -68,12 +68,12 @@ public class reflect {
     }
 
     @Nullable
-    public static Term sop(@NotNull TermContainer s, Term predicate) {
+    public static Term sop(@NotNull Subterms s, Term predicate) {
         return $.inh($.p(reflect(s.sub(0)), reflect(s.sub(1))), predicate);
     }
 
     @Nullable
-    public static Term sop(String operatorName, @NotNull TermContainer c) {
+    public static Term sop(String operatorName, @NotNull Subterms c) {
         Term[] m = new Term[c.subs()];
         for (int i = 0; i < c.subs(); i++) {
             if ((m[i] = reflect(c.sub(i))) == null)

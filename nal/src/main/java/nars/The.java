@@ -1,5 +1,6 @@
 package nars;
 
+import jcog.Util;
 import jcog.list.FasterList;
 import jcog.memoize.CaffeineMemoize;
 import jcog.memoize.HijackMemoize;
@@ -11,7 +12,6 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.UnitCompound1;
-import nars.term.container.TermContainer;
 import nars.term.container.TermVector;
 
 import java.util.Collection;
@@ -28,12 +28,12 @@ import static nars.Op.*;
  */
 public enum The {  ;
 
-    @Deprecated /* @NotNull */ public static final TermContainer subterms(Term... s) {
-        return Subterms.the.apply(s);
+    @Deprecated /* @NotNull */ public static final nars.term.container.Subterms subterms(Term... s) {
+        return The.Subterms.the.apply(s);
     }
 
-    /* @NotNull */ public static final TermContainer subterms(Collection<? extends Term> s) {
-        return Subterms.the.apply(s.toArray(new Term[s.size()]));
+    /* @NotNull */ public static final nars.term.container.Subterms subterms(Collection<? extends Term> s) {
+        return The.Subterms.the.apply(s.toArray(new Term[s.size()]));
     }
 
     @Deprecated /* @NotNull */ protected static Term compound(Op o, Term... subterms) {
@@ -51,50 +51,56 @@ public enum The {  ;
 
     public static final class Subterms {
 
-        public static final Function<Term[], TermContainer> RawSubtermBuilder =
+        public static final Function<Term[], nars.term.container.Subterms> RawSubtermBuilder =
                 TermVector::the;
 
-        static final Function<NewCompound, TermContainer> rawSubtermBuilderBuilder = (n) -> RawSubtermBuilder.apply(n.subs);
+        static final Function<NewCompound, nars.term.container.Subterms> rawSubtermBuilderBuilder = (n) -> RawSubtermBuilder.apply(n.subs);
 
-        public static final Supplier<Function<Term[], TermContainer>> SoftSubtermBuilder = () ->
+        public static final Supplier<Function<Term[], nars.term.container.Subterms>> SoftSubtermBuilder = () ->
                 new MemoizeSubtermBuilder(new SoftMemoize<>(rawSubtermBuilderBuilder, 512 * 1024, true));
 
-        public static final Supplier<Function<Term[], TermContainer>> WeakSubtermBuilder = () ->
+        public static final Supplier<Function<Term[], nars.term.container.Subterms>> WeakSubtermBuilder = () ->
                 new MemoizeSubtermBuilder(new SoftMemoize<>(rawSubtermBuilderBuilder, 512 * 1024, false));
 
-        public static final Supplier<Function<Term[], TermContainer>> CaffeineSubtermBuilder = () ->
+        public static final Supplier<Function<Term[], nars.term.container.Subterms>> CaffeineSubtermBuilder = () ->
                 new MemoizeSubtermBuilder(CaffeineMemoize.build(rawSubtermBuilderBuilder, 512 * 1024, false));
 
 
-        public static final Supplier<Function<Term[], TermContainer>> HijackSubtermBuilder = () ->
+        public static final Supplier<Function<Term[], nars.term.container.Subterms>> HijackSubtermBuilder = () ->
                 new Function<>() {
 
-                    final HijackMemoize<NewCompound, TermContainer> cache
+                    final HijackMemoize<NewCompound, nars.term.container.Subterms> cache
                             = new HijackMemoize<>((x) -> RawSubtermBuilder.apply(x.subs),
                             128 * 1024 + 7 /* ~prime */, 4);
 
                     @Override
-                    public TermContainer apply(Term[] o) {
+                    public nars.term.container.Subterms apply(Term[] o) {
                         return cache.apply(
                                 new NewCompound(PROD, o).commit()
                         );
                     }
                 };
 
-        public static Function<Term[], TermContainer> the =
+        public static Function<Term[], nars.term.container.Subterms> the =
                 //CaffeineSubtermBuilder.get();
                 RawSubtermBuilder;
 
-        private static class MemoizeSubtermBuilder implements Function<Term[], TermContainer> {
-            final Memoize<NewCompound, TermContainer> cache;
+        private static class MemoizeSubtermBuilder implements Function<Term[], nars.term.container.Subterms> {
+            final Memoize<NewCompound, nars.term.container.Subterms> cache;
 
-            private MemoizeSubtermBuilder(Memoize<NewCompound, TermContainer> cache) {
+            /** TODO make adjustable */
+            int maxVol = 16;
+
+            private MemoizeSubtermBuilder(Memoize<NewCompound, nars.term.container.Subterms> cache) {
                 this.cache = cache;
             }
 
             @Override
-            public TermContainer apply(Term[] terms) {
-                return cache.apply(new NewCompound(PROD, terms).commit());
+            public nars.term.container.Subterms apply(Term[] terms) {
+                if (Util.sumExceeds(Term::volume, maxVol, terms))
+                    return RawSubtermBuilder.apply(terms);
+                else
+                    return cache.apply(new NewCompound(PROD, terms).commit());
             }
         }
 

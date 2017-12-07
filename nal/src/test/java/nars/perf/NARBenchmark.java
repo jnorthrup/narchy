@@ -5,7 +5,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.The;
 import nars.term.Term;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.test.DeductiveMeshTest;
 import org.junit.jupiter.api.Disabled;
 import org.openjdk.jmh.annotations.*;
@@ -37,7 +37,7 @@ public class NARBenchmark {
 
     @Setup
     public void start() {
-        Function<Term[], TermContainer> h = null;
+        Function<Term[], Subterms> h = null;
         switch (subtermBuilder) {
             case "heap": h = The.Subterms.RawSubtermBuilder; break;
             case "hijack": h = The.Subterms.HijackSubtermBuilder.get(); break;

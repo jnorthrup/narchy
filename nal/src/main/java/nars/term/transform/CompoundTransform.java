@@ -8,10 +8,11 @@ import nars.index.term.TermContext;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.var.Variable;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.Op.PROD;
 import static nars.Op.VAR_QUERY;
 
 /**
@@ -19,6 +20,94 @@ import static nars.Op.VAR_QUERY;
  */
 public interface CompoundTransform extends TermContext {
 
+    default int dt(Compound c) {
+        return c.dt();
+    }
+
+    @Nullable
+    default Term transform(Compound x, Op op, int dt) {
+
+        Subterms xx = x.subterms();
+
+        Subterms yy = transform(xx, !op.allowsBool);
+
+        if (yy == null) {
+            return null;
+        } else if (yy != xx || op != x.op()) {
+            return the(op, dt, yy);
+        } else {
+            return x.dt(dt);
+        }
+    }
+
+    /**
+     * returns 'x' unchanged if no changes were applied,
+     * returns 'y' if changes
+     * returns null if untransformable
+     */
+    default Subterms transform(Subterms x, boolean boolFilter) {
+
+        int s = x.subs();
+
+        NewCompound y = null;
+
+        for (int i = 0; i < s; i++) {
+
+            Term xi = x.sub(i);
+
+            Term yi = xi.transform(this);
+
+            if (yi == null)
+                return null;
+
+            if (yi instanceof EllipsisMatch) {
+                EllipsisMatch xe = (EllipsisMatch) yi;
+                int xes = xe.subs();
+
+                if (y == null) {
+                    y = new NewCompound(PROD, s - 1 + xes /*estimate */); //create anyway because this will signal if it was just empty
+                    if (i > 0) x.forEach(y::add, 0, i); //add previously skipped subterms
+                }
+
+                if (xes > 0) {
+                    for (int j = 0; j < xes; j++) {
+                        @Nullable Term k = xe.sub(j).transform(this);
+                        if (Term.invalidBoolSubterm(k, boolFilter)) {
+                            return null;
+                        } else {
+                            y.add(k);
+                        }
+                    }
+                }
+
+            } else {
+
+                if (xi != yi && (yi.getClass() != xi.getClass() || !xi.equals(yi))) {
+
+                    if (Term.invalidBoolSubterm(yi, boolFilter)) {
+                        return null;
+                    }
+
+                    if (y == null) {
+                        y = new NewCompound(PROD, s);
+                        if (i > 0) x.forEach(y::add, 0, i); //add previously skipped subterms
+                    }
+                }
+
+                if (y != null)
+                    y.add(yi);
+
+            }
+
+        }
+
+        return y != null ? y : x;
+    }
+
+
+    default Term the(Op op, int dt, Subterms t) {
+        return op.the(dt, t.arrayShared());
+    }
 
     /**
      * transforms non-compound subterms
@@ -28,6 +117,10 @@ public interface CompoundTransform extends TermContext {
         return t;
     }
 
+
+    /**
+     * change all query variables to dep vars
+     */
     /**
      * change all query variables to dep vars
      */
@@ -40,81 +133,6 @@ public interface CompoundTransform extends TermContext {
             return subterm;
         }
     };
-
-    default int dt(Compound c) {
-        return c.dt();
-    }
-
-    @Nullable
-    default Term transform(Compound x, Op op, int dt) {
-
-        boolean boolFilter = !op.allowsBool;
-
-        TermContainer ss = x.subterms(); //for faster access, generally
-
-        int s = ss.subs();
-
-        NewCompound target = null;
-
-        for (int i = 0; i < s; i++) {
-
-            Term xi = ss.sub(i);
-
-            Term yi = xi.transform(this);
-
-            if (yi == null)
-                return null;
-
-            if (yi instanceof EllipsisMatch) {
-                EllipsisMatch xx = (EllipsisMatch) yi;
-                int xxs = xx.subs();
-
-                if (target == null) {
-                    target = new NewCompound(op, s - 1 + xxs /*estimate */); //create anyway because this will signal if it was just empty
-                    for (int j = 0; j < i; j++)
-                        target.add(ss.sub(j)); //add the pre-existing ones
-                }
-
-                if (xxs > 0) {
-                    for (int j = 0; j < xxs; j++) {
-                        @Nullable Term k = xx.sub(j).transform(this);
-                        if (Term.invalidBoolSubterm(k, boolFilter)) {
-                            return null;
-                        } else {
-                            target.add(k);
-                        }
-                    }
-                }
-
-            } else {
-
-                if (xi != yi && (yi.getClass() != xi.getClass() || !x.equals(yi))) {
-
-                    if (Term.invalidBoolSubterm(yi, boolFilter)) {
-                        return null;
-                    }
-
-                    if (target == null) {
-                        target = new NewCompound(op, s);
-                        for (int j = 0; j < i; j++)
-                            target.add(ss.sub(j)); //add the pre-existing ones
-                    }
-                }
-
-                if (target!=null)
-                    target.add(yi);
-
-            }
-
-        }
-
-
-        if (target!=null || op != x.op()) {
-            return op.the(dt, ((target!=null) ? target : ss).arrayShared());
-        }
-
-        return x.dt(dt);
-    }
 
 //    CompoundTransform Identity = (parent, subterm) -> subterm;
 

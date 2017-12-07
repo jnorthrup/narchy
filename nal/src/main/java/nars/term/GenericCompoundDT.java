@@ -5,7 +5,7 @@ import nars.IO;
 import nars.Op;
 import nars.Param;
 import nars.derive.PatternCompound;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.transform.CompoundTransform;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +35,7 @@ public class GenericCompoundDT /*extends ProxyTerm<Compound>*/ implements Compou
 
             Op op = base.op();
 
-            @NotNull TermContainer subterms = base.subterms();
+            @NotNull Subterms subterms = base.subterms();
             int size = subterms.subs();
 
             if (op.temporal && (op != CONJ && size != 2))
@@ -229,7 +229,7 @@ public class GenericCompoundDT /*extends ProxyTerm<Compound>*/ implements Compou
 //    }
 
     @Override
-    public TermContainer subterms() {
+    public Subterms subterms() {
         return ref.subterms();
     }
 

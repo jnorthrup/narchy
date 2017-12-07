@@ -11,7 +11,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Terms;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.transform.VariableNormalization;
 import nars.term.var.Variable;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -61,7 +61,7 @@ public class PatternIndex extends MapTermIndex {
     protected Term patternify(/*@NotNull*/ Compound x) {
 
 
-        TermContainer s = x.subterms();
+        Subterms s = x.subterms();
         int ss = s.subs();
         Term[] bb = new Term[ss];
         boolean changed = false;//, temporal = false;
@@ -77,7 +77,7 @@ public class PatternIndex extends MapTermIndex {
         if (!changed && Ellipsis.firstEllipsis(s) == null)
             return x;
 
-        TermContainer v = (changed ? The.subterms(bb.length > 1 && x.op().commutative && (concurrent(x.dt())) ?
+        Subterms v = (changed ? The.subterms(bb.length > 1 && x.op().commutative && (concurrent(x.dt())) ?
                 Terms.sorted(bb) :
                 bb) : s);
 
@@ -98,7 +98,7 @@ public class PatternIndex extends MapTermIndex {
 
 
     /*@NotNull*/
-    private static PatternCompound ellipsis(/*@NotNull*/ Compound seed, /*@NotNull*/ TermContainer v, /*@NotNull*/ Ellipsis e) {
+    private static PatternCompound ellipsis(/*@NotNull*/ Compound seed, /*@NotNull*/ Subterms v, /*@NotNull*/ Ellipsis e) {
 
 
         //this.ellipsisTransform = hasEllipsisTransform(this);

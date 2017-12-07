@@ -1,7 +1,7 @@
 package nars.term;
 
 import nars.Op;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.util.SoftException;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +28,7 @@ public final class InvalidTermException extends SoftException {
         this(op, dt, reason, args);
     }
 
-    public InvalidTermException(/*@NotNull*/ Op op, int dt, @NotNull TermContainer args, @NotNull String reason) {
+    public InvalidTermException(/*@NotNull*/ Op op, int dt, @NotNull Subterms args, @NotNull String reason) {
         this(op, dt, reason, args.arrayClone());
     }
 

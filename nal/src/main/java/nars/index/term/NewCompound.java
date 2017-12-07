@@ -2,6 +2,7 @@ package nars.index.term;
 
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.TODO;
+import jcog.Util;
 import jcog.data.byt.DynBytes;
 import jcog.list.FasterList;
 import jcog.util.ArrayPool;
@@ -95,18 +96,10 @@ public class NewCompound extends /*HashCached*/DynBytes implements ProtoCompound
     public Term[] arrayShared() {
         compact(); //compact the key
 
-        Term[] tt;
         int s = this.size;
         Term[] ss = this.subs;
-        if (ss.length == s) {
-            tt = ss;
-            //return ss; //dont reallocate it's just fine to share
-        } else {
-            tt = Arrays.copyOfRange(ss, 0, s); //trim
-        }
-        this.subs = null; //clear refernce to the array from this point
-
-        return tt;
+        this.subs = null; //clear reference to the array from this point
+        return ss.length == s ? ss : Arrays.copyOfRange(ss, 0, s);
     }
 
 
@@ -137,9 +130,7 @@ public class NewCompound extends /*HashCached*/DynBytes implements ProtoCompound
 //            size = subs.length;
 //        }
 
-        int volume = 0;
-        for (Term x : subs)
-            volume += x.volume();
+        int volume = Util.sum(Term::volume, subs);
 
         //ArrayPool<byte[]> bytePool = ArrayPool.bytes();
         int bv = volume * 8;

@@ -3,7 +3,7 @@ package nars.index.term;
 import nars.Op;
 import nars.term.Term;
 import nars.term.Termlike;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
  * derivation and other purposes.
  *
  */
-public interface ProtoCompound extends TermContainer {
+public interface ProtoCompound extends Subterms {
 
     @Nullable
     Op op();

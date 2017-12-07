@@ -1,7 +1,7 @@
 package nars.term;
 
 import nars.Op;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -18,7 +18,7 @@ public interface Termed extends Termlike {
         return subterms().sub(i);
     }
 
-    default TermContainer subterms() {
+    default Subterms subterms() {
         return term().subterms();
     }
 

@@ -12,7 +12,7 @@ import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.UnitCompound1;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -593,7 +593,7 @@ public enum Op {
         return false;
     }
 
-    public static final Compound ZeroProduct = new CachedCompound(Op.PROD, TermContainer.NoSubterms);
+    public static final Compound ZeroProduct = new CachedCompound(Op.PROD, Subterms.Empty);
 
     public static final int StatementBits = Op.or(Op.INH, Op.SIM, Op.IMPL);
 
@@ -1240,7 +1240,7 @@ public enum Op {
             other = conj.sub(1 - whichImpl);
         } else {
             //more than 2; group them as one term
-            TermContainer cs = conj.subterms();
+            Subterms cs = conj.subterms();
             TreeSet<Term> ss = cs.toSortedSet();
             assert (ss.remove(implication)) : "must have removed something";
 
@@ -1295,7 +1295,7 @@ public enum Op {
             case 1:
                 Term single = t[0];
                 if (single instanceof EllipsisMatch) {
-                    return differ(op, ((TermContainer) single).arrayShared());
+                    return differ(op, ((Subterms) single).arrayShared());
                 }
                 return single instanceof Ellipsislike ?
                         new UnitCompound1(op, single) :
@@ -1782,7 +1782,7 @@ public enum Op {
 
                 Term single = t[0];
                 if (single instanceof EllipsisMatch) {
-                    return intersect(((TermContainer) single).arrayShared(), intersection, setUnion, setIntersection);
+                    return intersect(((Subterms) single).arrayShared(), intersection, setUnion, setIntersection);
                 }
                 return single instanceof Ellipsislike ?
                         new UnitCompound1(intersection, single) :
@@ -1969,7 +1969,7 @@ public enum Op {
         Op co = container.op();
         if (co.commutative) {
 
-            TermContainer cs = container.subterms();
+            Subterms cs = container.subterms();
 
             int z = cs.subs();
             if (z > 1 && cs.contains(content)) {

@@ -7,7 +7,7 @@ import nars.control.Derivation;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.subst.SubUnify;
 import org.jetbrains.annotations.Nullable;
 
@@ -80,7 +80,7 @@ abstract public class SubstUnified extends Functor {
 
     /*@NotNull*/
     @Override
-    public Term apply(/*@NotNull*/ TermContainer a) {
+    public Term apply(/*@NotNull*/ Subterms a) {
 
         Term input = a.sub(0);
         if (input == Null) return Null;

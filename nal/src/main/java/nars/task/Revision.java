@@ -12,7 +12,7 @@ import nars.Task;
 import nars.control.Cause;
 import nars.control.Derivation;
 import nars.term.Term;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -169,8 +169,8 @@ public class Revision {
 
                 Term[] ab = new Term[len];
                 boolean change = false;
-                TermContainer aa = a.subterms();
-                TermContainer bb = b.subterms();
+                Subterms aa = a.subterms();
+                Subterms bb = b.subterms();
                 for (int i = 0; i < len; i++) {
                     Term ai = aa.sub(i);
                     Term bi = bb.sub(i);
@@ -563,9 +563,9 @@ public class Revision {
             return Float.POSITIVE_INFINITY; //why?
 
 
-        TermContainer aa = a.subterms();
+        Subterms aa = a.subterms();
         int len = aa.subs();
-        TermContainer bb = b.subterms();
+        Subterms bb = b.subterms();
 
         float d = 0;
 

@@ -46,8 +46,8 @@ public class TermVector1 extends TermVector /*implements Set<Term>*/ {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (obj instanceof TermContainer) {
-            TermContainer t = (TermContainer) obj;
+        if (obj instanceof Subterms) {
+            Subterms t = (Subterms) obj;
             if (hash == t.hashCodeSubTerms() && t.subs() == 1 && sub.equals(t.sub(0))) {
                 if (t instanceof TermVector)
                     equivalentTo((TermVector) t);
@@ -139,9 +139,9 @@ public class TermVector1 extends TermVector /*implements Set<Term>*/ {
 
     @Override
     public void forEach(Consumer<? super Term> action, int start, int stop) {
-        if (start != 0 || stop != 0)
+        if (start!=0 || stop != 1)
             throw new ArrayIndexOutOfBoundsException();
-        forEach(action);
+        action.accept(sub);
     }
 
     @Override

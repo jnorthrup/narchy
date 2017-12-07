@@ -10,7 +10,7 @@ import nars.derive.mutate.CommutivePermutations;
 import nars.term.Compound;
 import nars.term.GenericCompoundDT;
 import nars.term.Term;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.subst.Unify;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +33,7 @@ abstract public class PatternCompound extends GenericCompoundDT {
 
 //    @Nullable public final Set<Variable> uniqueVars;
 
-    PatternCompound(/*@NotNull*/ Op op, int dt, TermContainer subterms) {
+    PatternCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
         super((Compound) op.the(subterms.arrayShared()), dt);
     }
 
@@ -42,14 +42,14 @@ abstract public class PatternCompound extends GenericCompoundDT {
         final Ellipsis ellipsis;
         final int structureRequired;
 
-        PatternCompoundWithEllipsis(/*@NotNull*/ Op seed, int dt, Ellipsis ellipsis, TermContainer subterms) {
+        PatternCompoundWithEllipsis(/*@NotNull*/ Op seed, int dt, Ellipsis ellipsis, Subterms subterms) {
             super(seed, dt, subterms);
 
             this.ellipsis = ellipsis;
             this.structureRequired = subterms.structure() & ~(Op.VariableBits);
         }
 
-        abstract protected boolean matchEllipsis(TermContainer y, Unify subst);
+        abstract protected boolean matchEllipsis(Subterms y, Unify subst);
 
         @Override
         public final boolean unifySubterms(Term y, Unify u) {
@@ -60,12 +60,12 @@ abstract public class PatternCompound extends GenericCompoundDT {
 
     public static class PatternCompoundWithEllipsisLinear extends PatternCompoundWithEllipsis {
 
-        public PatternCompoundWithEllipsisLinear(/*@NotNull*/ Op op, int dt, Ellipsis ellipsis, TermContainer subterms) {
+        public PatternCompoundWithEllipsisLinear(/*@NotNull*/ Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
             super(op, dt, ellipsis, subterms);
         }
 
         @Override
-        protected boolean matchEllipsis(TermContainer y, Unify subst) {
+        protected boolean matchEllipsis(Subterms y, Unify subst) {
             return matchEllipsedLinear(y, subst);
         }
 
@@ -78,7 +78,7 @@ abstract public class PatternCompound extends GenericCompoundDT {
          * WARNING this implementation only works if there is one ellipse in the subterms
          * this is not tested for either
          */
-        final boolean matchEllipsedLinear(TermContainer Y, Unify u) {
+        final boolean matchEllipsedLinear(Subterms Y, Unify u) {
 
             int i = 0, j = 0;
             int xsize = subs();
@@ -159,7 +159,7 @@ abstract public class PatternCompound extends GenericCompoundDT {
 //        /** the components of this pattern compound other than the ellipsis "*/
 //        final ImmutableSet<Term> fixed;
 
-        public PatternCompoundWithEllipsisCommutive(Op op, int dt, Ellipsis ellipsis, TermContainer subterms) {
+        public PatternCompoundWithEllipsisCommutive(Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
             super(op,
                   op==CONJ ? XTERNAL : dt,
                   ellipsis, subterms);
@@ -200,7 +200,7 @@ abstract public class PatternCompound extends GenericCompoundDT {
          * @param y the compound being matched to this
          */
         @Override
-        protected boolean matchEllipsis(TermContainer y, Unify u) {
+        protected boolean matchEllipsis(Subterms y, Unify u) {
             //return subst.matchEllipsedCommutative(
             //        this, ellipsis, y
             //);

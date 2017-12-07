@@ -3,7 +3,7 @@ package nars.term;
 import nars.$;
 import nars.Narsese;
 import nars.term.atom.Atomic;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.container.TermVector;
 import org.junit.jupiter.api.Test;
 
@@ -60,8 +60,8 @@ public class TermVectorTest {
         assertNotEquals(a, b);
         assertNotEquals(a.hashCode(), b.hashCode());
 
-        assertEquals(0, TermContainer.compare(a.subterms(), b.subterms()));
-        assertEquals(0, TermContainer.compare(b.subterms(), a.subterms()));
+        assertEquals(0, Subterms.compare(a.subterms(), b.subterms()));
+        assertEquals(0, Subterms.compare(b.subterms(), a.subterms()));
 
         assertNotEquals(0, a.compareTo(b));
         assertNotEquals(0, b.compareTo(a));
@@ -73,11 +73,11 @@ public class TermVectorTest {
     }
 
     @Test public void testSortedTermContainer() throws Narsese.NarseseException {
-        TermContainer a = TermVector.the($.$("a"), $.$("b"));
+        Subterms a = TermVector.the($.$("a"), $.$("b"));
         assertTrue(a.isSorted());
-        TermContainer b = TermVector.the($.$("b"), $.$("a"));
+        Subterms b = TermVector.the($.$("b"), $.$("a"));
         assertFalse(b.isSorted());
-        TermContainer s = TermVector.the(Terms.sorted(b.arrayClone()));
+        Subterms s = TermVector.the(Terms.sorted(b.arrayClone()));
         assertTrue(s.isSorted());
         assertEquals(a, s);
         assertNotEquals(b, s);

@@ -2,16 +2,14 @@ package nars.term;
 
 import jcog.Texts;
 import jcog.Util;
-import jcog.list.FasterList;
 import jcog.sort.SortedList;
 import nars.Op;
 import nars.term.atom.Atom;
 import nars.term.atom.Bool;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
-import org.eclipse.collections.impl.bag.mutable.HashBag;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.jetbrains.annotations.NotNull;
@@ -59,7 +57,7 @@ public enum Terms {
     }
 
 
-    public static int hashSubterms(TermContainer container) {
+    public static int hashSubterms(Subterms container) {
         int h = 1;
         int s = container.subs();
         for (int i = 0; i < s; i++) {
@@ -386,7 +384,7 @@ public enum Terms {
     }
 
 
-    public static boolean allNegated(@NotNull TermContainer subterms) {
+    public static boolean allNegated(@NotNull Subterms subterms) {
         return subterms.hasAny(Op.NEG) && subterms.AND((Term t) -> t.op() == NEG);
     }
 
@@ -588,7 +586,7 @@ public enum Terms {
         return true;
     }
 
-    public static boolean flatten(/*@NotNull*/ Op op, @NotNull TermContainer u, int dt, ObjectByteHashMap<Term> s) {
+    public static boolean flatten(/*@NotNull*/ Op op, @NotNull Subterms u, int dt, ObjectByteHashMap<Term> s) {
         int l = u.subs();
         for (int i = 0; i < l; i++) {
             if (!flatten(op, dt, u.sub(i), s))
@@ -667,17 +665,17 @@ public enum Terms {
     }
 
     @NotNull
-    public static Term intersect(/*@NotNull*/ Op o, TermContainer a, TermContainer b) {
+    public static Term intersect(/*@NotNull*/ Op o, Subterms a, Subterms b) {
         if (a instanceof Term && a.equals(b))
             return (Term) a;
 
 
-        Term[] c = TermContainer.intersect(a, b);
+        Term[] c = Subterms.intersect(a, b);
         return (c == null || c.length == 0) ? Null : (Compound) (o.the(c));
     }
 
     @NotNull
-    public static Term union(/*@NotNull*/ Op o, TermContainer a, TermContainer b) {
+    public static Term union(/*@NotNull*/ Op o, Subterms a, Subterms b) {
         boolean bothTerms = a instanceof Term && b instanceof Term;
         if (bothTerms && a.equals(b))
             return (Term) a;

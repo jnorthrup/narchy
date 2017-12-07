@@ -28,9 +28,9 @@ import static nars.time.Tense.XTERNAL;
  * Methods common to both Term and Subterms
  * T = subterm type
  */
-public interface TermContainer extends Termlike, Iterable<Term> {
+public interface Subterms extends Termlike, Iterable<Term> {
 
-    /*@NotNull*/ TermVector NoSubterms = new ArrayTermVector(Term.EmptyArray);
+    /*@NotNull*/ TermVector Empty = new ArrayTermVector(Term.EmptyArray);
 
 
     //TODO optionally allow atomic structure positions to differ
@@ -53,6 +53,7 @@ public interface TermContainer extends Termlike, Iterable<Term> {
         }
         return true;
     }
+
 
 
 
@@ -152,7 +153,7 @@ public interface TermContainer extends Termlike, Iterable<Term> {
     /**
      * returns sorted ready for commutive
      */
-    static @Nullable Term[] intersect(/*@NotNull*/ TermContainer a, /*@NotNull*/ TermContainer b) {
+    static @Nullable Term[] intersect(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
         if ((a.structure() & b.structure()) == 0)
             return null; //nothing in common
         else {
@@ -430,7 +431,7 @@ public interface TermContainer extends Termlike, Iterable<Term> {
 //    }
 
 
-    static String toString(/*@NotNull*/ TermContainer t) {
+    static String toString(/*@NotNull*/ Subterms t) {
         StringBuilder sb = new StringBuilder("{[(");
         int s = t.subs();
         for (int i = 0; i < s; i++) {
@@ -595,7 +596,7 @@ public interface TermContainer extends Termlike, Iterable<Term> {
 //        return compareTo(this, o);
 //    }
 
-    static int compare(/*@NotNull*/ TermContainer a, /*@NotNull*/ TermContainer b) {
+    static int compare(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
 
         if (a == b) return 0;
 
@@ -641,7 +642,7 @@ public interface TermContainer extends Termlike, Iterable<Term> {
      * a and b must be instances of input, and output must be of size input.length-2
      */
     /*@NotNull*/
-    static Term[] except(/*@NotNull*/ TermContainer input, Term a, Term b, /*@NotNull*/ Term[] output) {
+    static Term[] except(/*@NotNull*/ Subterms input, Term a, Term b, /*@NotNull*/ Term[] output) {
 //        int targetLen = input.size() - 2;
 //        if (output.length!= targetLen) {
 //            throw new RuntimeException("wrong size");
@@ -684,7 +685,7 @@ public interface TermContainer extends Termlike, Iterable<Term> {
 
 
     /*@NotNull*/
-    static Set<Term> toSetExcept(/*@NotNull*/ TermContainer c, /*@NotNull*/ MutableSet<Term> except) {
+    static Set<Term> toSetExcept(/*@NotNull*/ Subterms c, /*@NotNull*/ MutableSet<Term> except) {
 
 //        return c.value(null, (x, s) -> {
 //
@@ -734,7 +735,7 @@ public interface TermContainer extends Termlike, Iterable<Term> {
     /**
      * matches in the correct ordering conditions for CONJ
      */
-    static boolean unifyConj(TermContainer X, int Xdt, TermContainer Y, int Ydt, /*@NotNull*/ Unify u) {
+    static boolean unifyConj(Subterms X, int Xdt, Subterms Y, int Ydt, /*@NotNull*/ Unify u) {
         boolean xCommutes = communify(Xdt);
         boolean yCommutes = communify(Ydt);
 
@@ -758,7 +759,7 @@ public interface TermContainer extends Termlike, Iterable<Term> {
         return Xdt == XTERNAL || Xdt == DTERNAL || Xdt == 0;
     }
 
-    default boolean unifyLinear(TermContainer Y, /*@NotNull*/ Unify u) {
+    default boolean unifyLinear(Subterms Y, /*@NotNull*/ Unify u) {
         int s = subs();
         for (int i = 0; i < s; i++) {
             if (!sub(i).unify(Y.sub(i), u))
@@ -812,7 +813,7 @@ public interface TermContainer extends Termlike, Iterable<Term> {
 
     }
 
-    default boolean unifyCommute(TermContainer y, /*@NotNull*/ Unify u) {
+    default boolean unifyCommute(Subterms y, /*@NotNull*/ Unify u) {
 
         if (y.equals(this))
             return true;
@@ -908,8 +909,8 @@ public interface TermContainer extends Termlike, Iterable<Term> {
         return AND(s -> whileTrue.test(s) && s.recurseTerms(parentsMust, whileTrue, parent));
     }
 
-    default TermContainer reverse() {
-        return subs() > 1 ? new ReverseTermContainer(this) : this;
+    default Subterms reverse() {
+        return subs() > 1 ? new ReverseSubterms(this) : this;
     }
 
     //    /**

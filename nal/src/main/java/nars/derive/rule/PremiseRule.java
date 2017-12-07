@@ -17,7 +17,7 @@ import nars.term.Termed;
 import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.container.TermVector;
 import nars.term.transform.CompoundTransform;
 import nars.truth.func.BeliefFunction;
@@ -84,7 +84,7 @@ public class PremiseRule /*extends GenericCompound*/ {
     final List<PrediTerm<Derivation>> post = $.newArrayList();
 
     PremiseRule(Pair<PremiseRule, String> x) {
-        this((TermContainer)(x.getOne().id));
+        this((Subterms)(x.getOne().id));
         withSource(x.getTwo());
     }
 
@@ -111,7 +111,7 @@ public class PremiseRule /*extends GenericCompound*/ {
         return (Compound) id.sub(1);
     }
 
-    public PremiseRule(TermContainer premiseAndResult) {
+    public PremiseRule(Subterms premiseAndResult) {
         this.id = $.p(premiseAndResult);
     }
 
@@ -218,7 +218,7 @@ public class PremiseRule /*extends GenericCompound*/ {
      * deduplicate and generate match-optimized compounds for rules
      */
     private void compile(TermIndex index) {
-        Term[] premisePattern = ((TermContainer) id.sub(0)).arrayClone();
+        Term[] premisePattern = ((Subterms) id.sub(0)).arrayClone();
         premisePattern[0] = index.get(premisePattern[0], true).term(); //task pattern
         premisePattern[1] = index.get(premisePattern[1], true).term(); //belief pattern
     }
@@ -257,8 +257,8 @@ public class PremiseRule /*extends GenericCompound*/ {
         //1. construct precondition term array
         //Term[] terms = terms();
 
-        Term[] precon = ((TermContainer) id.sub(0)).arrayClone();
-        Term[] postcons = ((TermContainer) id.sub(1)).arrayClone();
+        Term[] precon = ((Subterms) id.sub(0)).arrayClone();
+        Term[] postcons = ((Subterms) id.sub(1)).arrayClone();
 
 
         Set<PrediTerm> pres =
@@ -295,7 +295,7 @@ public class PremiseRule /*extends GenericCompound*/ {
 
             //if (predicate.getSubject() instanceof SetExt) {
             //decode precondition predicate arguments
-            args = ((TermContainer) (predicate.sub(0))).arrayClone();
+            args = ((Subterms) (predicate.sub(0))).arrayClone();
             X = (args.length > 0) ? args[0] : null;
             Y = (args.length > 1) ? args[1] : null;
 //            Z = (args.length > 2) ? args[2] : null;
@@ -576,7 +576,7 @@ public class PremiseRule /*extends GenericCompound*/ {
             if (i >= postcons.length)
                 throw new RuntimeException("invalid rule: missing meta term for postcondition involving " + t);
 
-            postConditions.add(PostCondition.make(this, t, Terms.sorted(((TermContainer) postcons[i++]).arrayShared())));
+            postConditions.add(PostCondition.make(this, t, Terms.sorted(((Subterms) postcons[i++]).arrayShared())));
         }
 
 

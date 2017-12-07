@@ -7,7 +7,7 @@ import nars.derive.match.Ellipsis;
 import nars.derive.match.EllipsisMatch;
 import nars.term.Term;
 import nars.term.container.ShuffledSubterms;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.subst.Unify;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -82,7 +82,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
                 Term y2 = yy.sub(c1);
 
                 if (x[1].unify(y2, f) &&
-                        xEllipsis.unify(EllipsisMatch.match(TermContainer.except(yy, y1, y2, m)), f)) {
+                        xEllipsis.unify(EllipsisMatch.match(Subterms.except(yy, y1, y2, m)), f)) {
 
                     f.tryMutate(chain, current);
                 }

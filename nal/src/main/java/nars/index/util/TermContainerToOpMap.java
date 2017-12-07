@@ -1,7 +1,7 @@
 package nars.index.util;
 
 import nars.Op;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;
@@ -13,11 +13,11 @@ public class TermContainerToOpMap<X>
         extends AtomicReferenceArray<X>
         implements Comparable<TermContainerToOpMap> {
 
-    public final TermContainer id;
+    public final Subterms id;
 
     public final static int CAPACITY = Op.VAR_DEP.id; //everything below VAR_DEP
 
-    public TermContainerToOpMap(TermContainer id) {
+    public TermContainerToOpMap(Subterms id) {
         super(CAPACITY);
         this.id = id;
     }

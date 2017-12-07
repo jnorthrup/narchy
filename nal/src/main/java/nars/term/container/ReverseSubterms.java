@@ -4,12 +4,12 @@ import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 
 /** reversed view of a TermContainer */
-public class ReverseTermContainer implements TermContainer {
+public class ReverseSubterms implements Subterms {
 
-    private final TermContainer ref;
+    private final Subterms ref;
     private final int size;
 
-    public ReverseTermContainer(TermContainer ref) {
+    public ReverseSubterms(Subterms ref) {
         this.ref = ref;
         this.size = ref.subs();
     }

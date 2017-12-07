@@ -5,7 +5,7 @@ import nars.IO;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +18,7 @@ public class CachedCompound implements Compound {
     /**
      * subterm vector
      */
-    private final TermContainer subterms;
+    private final Subterms subterms;
 
 
     /**
@@ -34,7 +34,7 @@ public class CachedCompound implements Compound {
     private transient Term concepted = null;
 
 
-    public CachedCompound(/*@NotNull*/ Op op, TermContainer subterms) {
+    public CachedCompound(/*@NotNull*/ Op op, Subterms subterms) {
 
         this.op = op;
 
@@ -70,7 +70,7 @@ public class CachedCompound implements Compound {
 
     @NotNull
     @Override
-    public final TermContainer subterms() {
+    public final Subterms subterms() {
         return subterms;
     }
 

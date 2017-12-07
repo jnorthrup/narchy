@@ -29,7 +29,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.time.Tense;
 import nars.time.Time;
 import nars.truth.DiscreteTruth;
@@ -788,7 +788,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     /**
      * simplified wrapper for use cases where only the arguments of an operation task, and not the task itself matter
      */
-    public final void onOpArgs(@NotNull String atom, @NotNull BiConsumer<TermContainer, NAR> exe) {
+    public final void onOpArgs(@NotNull String atom, @NotNull BiConsumer<Subterms, NAR> exe) {
         onOp(atom, (task, nar) -> {
             exe.accept(task.term().sub(0).subterms(), nar);
             return null;
@@ -1264,7 +1264,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      * registers a term rewrite functor
      */
     @NotNull
-    public final Concept on(@NotNull String termAtom, @NotNull Function<TermContainer, Term> f) {
+    public final Concept on(@NotNull String termAtom, @NotNull Function<Subterms, Term> f) {
         return on(f(termAtom, f));
     }
 

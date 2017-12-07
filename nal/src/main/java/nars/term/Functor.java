@@ -12,7 +12,7 @@ import nars.concept.builder.ConceptBuilder;
 import nars.derive.AbstractPred;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.var.Variable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,7 +30,7 @@ import static nars.term.atom.Atomic.the;
  * a result Term from the TermContainer arguments of
  * a function term, for example: f(x) or f(x, y).
  */
-abstract public class Functor extends BaseConcept implements PermanentConcept, Function<TermContainer, Term>, Atomic {
+abstract public class Functor extends BaseConcept implements PermanentConcept, Function<Subterms, Term>, Atomic {
 
     protected Functor(@NotNull String atom) {
         this(fName(atom));
@@ -69,22 +69,22 @@ abstract public class Functor extends BaseConcept implements PermanentConcept, F
     /**
      * creates a new functor from a term name and a lambda
      */
-    public static LambdaFunctor f(@NotNull String termAtom, @NotNull Function<TermContainer, Term> f) {
+    public static LambdaFunctor f(@NotNull String termAtom, @NotNull Function<Subterms, Term> f) {
         return f(fName(termAtom), f);
     }
 
     /**
      * creates a new functor from a term name and a lambda
      */
-    public static LambdaFunctor f(@NotNull Atom termAtom, @NotNull Function<TermContainer, Term> f) {
+    public static LambdaFunctor f(@NotNull Atom termAtom, @NotNull Function<Subterms, Term> f) {
         return new LambdaFunctor(termAtom, f);
     }
 
-    public static LambdaFunctor f(@NotNull String termAtom, int arityRequired, @NotNull Function<TermContainer, Term> ff) {
+    public static LambdaFunctor f(@NotNull String termAtom, int arityRequired, @NotNull Function<Subterms, Term> ff) {
         return f(fName(termAtom), arityRequired, ff);
     }
 
-    public static LambdaFunctor f(@NotNull Atom termAtom, int arityRequired, @NotNull Function<TermContainer, Term> ff) {
+    public static LambdaFunctor f(@NotNull Atom termAtom, int arityRequired, @NotNull Function<Subterms, Term> ff) {
         return f(termAtom, (tt) -> {
             if (tt.subs() != arityRequired)
                 return null;
@@ -204,16 +204,16 @@ abstract public class Functor extends BaseConcept implements PermanentConcept, F
     public static final class LambdaFunctor extends Functor {
 
         @NotNull
-        private final Function<TermContainer, Term> f;
+        private final Function<Subterms, Term> f;
 
-        public LambdaFunctor(@NotNull Atom termAtom, @NotNull Function<TermContainer, Term> f) {
+        public LambdaFunctor(@NotNull Atom termAtom, @NotNull Function<Subterms, Term> f) {
             super(termAtom);
             this.f = f;
         }
 
         @Nullable
         @Override
-        public final Term apply(TermContainer terms) {
+        public final Term apply(Subterms terms) {
             return f.apply(terms);
         }
     }
@@ -229,7 +229,7 @@ abstract public class Functor extends BaseConcept implements PermanentConcept, F
 
         @Nullable
         @Override
-        public final Term apply(TermContainer x) {
+        public final Term apply(Subterms x) {
             if (x.subs() != 1)
                 return null;
             //throw new UnsupportedOperationException("# args must equal 1");
@@ -256,7 +256,7 @@ abstract public class Functor extends BaseConcept implements PermanentConcept, F
 
         @Nullable
         @Override
-        public final Term apply(TermContainer x) {
+        public final Term apply(Subterms x) {
             if (x.subs() != 2)
                 throw new UnsupportedOperationException("# args must equal 2");
 

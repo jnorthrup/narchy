@@ -8,7 +8,7 @@ import nars.Narsese;
 import nars.index.term.PatternIndex;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.container.TermVector;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.Pair;
@@ -236,7 +236,7 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
     }
 
     @NotNull
-    public static TermContainer parseRuleComponents(@NotNull String src) throws Narsese.NarseseException {
+    public static Subterms parseRuleComponents(@NotNull String src) throws Narsese.NarseseException {
 
         //(Compound) index.parseRaw(src)
         String[] ab = ruleImpl.split(src);

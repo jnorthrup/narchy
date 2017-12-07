@@ -74,29 +74,34 @@ public class MultiExec extends AbstractExec {
     protected void runner() {
 
 
-        int BATCH_WORK = 2;
-        int BATCH_PLAY = 2;
+
+
 
         long last = System.nanoTime();
         while (true) {
 
+            int BATCH_PLAY = 4;
+
             long now = System.nanoTime();
             float dt =
                     //(now - last)/1E9f;
-                    dt = 0.0001f; //fixed JIFFY
+                    dt = 0.00005f * BATCH_PLAY; //fixed JIFFY
             last = now;
 
 
-            int qq = BATCH_WORK;
-            do {
+            int qq = q.size();
+            if (qq > 0) {
+                int BATCH_WORK = (int) Math.ceil(((float) qq) / threads);
+                do {
 
-                ITask i = q.poll();
-                if (i != null)
-                    execute(i);
-                else
-                    break;
+                    ITask i = q.poll();
+                    if (i != null)
+                        execute(i);
+                    else
+                        break;
 
-            } while (--qq > 0);
+                } while (--BATCH_WORK > 0);
+            }
 
             float load = load();
 

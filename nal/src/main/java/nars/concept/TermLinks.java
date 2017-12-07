@@ -13,7 +13,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 
@@ -77,7 +77,7 @@ public enum TermLinks {
         if ((layersRemain <= 1) || !o.conceptualizable)
             return;
 
-        TermContainer bb = b.subterms();
+        Subterms bb = b.subterms();
         int bs = bb.subs();
         if (bs > 0) {
             int r = layersRemain - 1;
@@ -217,7 +217,7 @@ public enum TermLinks {
 
         if (Param.MUTATE_INT_CONTAINING_TERMS_RATE > 0) {
             if (t.hasAny(INT)) {
-                TermContainer ts = t.subterms();
+                Subterms ts = t.subterms();
                 if (ts.OR(Int.class::isInstance) && rng.nextFloat() <= Param.MUTATE_INT_CONTAINING_TERMS_RATE) {
 
                     Term[] xx = ts.arrayClone();

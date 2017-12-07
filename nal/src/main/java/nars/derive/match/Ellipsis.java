@@ -3,7 +3,7 @@ package nars.derive.match;
 import nars.$;
 import nars.Op;
 import nars.term.Term;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.var.AbstractVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.Variable;
@@ -124,7 +124,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
 
 
     /** this needs to use .term(x) instead of Term[] because of shuffle terms */
-    @Nullable public static Ellipsis firstEllipsis(TermContainer x) {
+    @Nullable public static Ellipsis firstEllipsis(Subterms x) {
         if (x.varPattern()==0)
             return null;
 
@@ -146,7 +146,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
     }
 
     /** this needs to use .term(x) instead of Term[] because of shuffle terms */
-    @Nullable public static Ellipsis firstEllipsisRecursive(TermContainer x) {
+    @Nullable public static Ellipsis firstEllipsisRecursive(Subterms x) {
         int xsize = x.subs();
         for (int i = 0; i < xsize; i++) {
             Term xi = x.sub(i);

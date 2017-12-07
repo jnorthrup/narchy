@@ -8,7 +8,7 @@ import nars.The;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.UncheckedBytes;
 import org.eclipse.collections.api.block.function.primitive.ByteFunction0;
@@ -229,7 +229,7 @@ abstract public class FastCompound implements Compound {
     }
 
     @Override
-    public TermContainer subterms() {
+    public Subterms subterms() {
         return new SubtermView(this, 0);
     }
 
@@ -433,7 +433,7 @@ abstract public class FastCompound implements Compound {
 
     protected abstract int atomCount();
 
-    private static class SubtermView extends AbstractList<Term> implements TermContainer {
+    private static class SubtermView extends AbstractList<Term> implements Subterms {
         private final FastCompound c;
 
         private int offset = 0;
@@ -456,9 +456,9 @@ abstract public class FastCompound implements Compound {
             return
                     (this == obj)
                             ||
-                            (obj instanceof TermContainer)
-                                    && hashCodeSubTerms() == ((TermContainer) obj).hashCodeSubTerms()
-                                    && equalTerms(((TermContainer) obj).arrayShared());
+                            (obj instanceof Subterms)
+                                    && hashCodeSubTerms() == ((Subterms) obj).hashCodeSubTerms()
+                                    && equalTerms(((Subterms) obj).arrayShared());
         }
 
         @Override

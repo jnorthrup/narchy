@@ -18,7 +18,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.var.UnnormalizedVariable;
 import nars.truth.DiscreteTruth;
 import nars.truth.Truth;
@@ -315,7 +315,7 @@ public class IO {
 //        d.appendTo(out);
 //    }
 
-    public static void writeTermContainer(ByteArrayDataOutput out, TermContainer c) {
+    public static void writeTermContainer(ByteArrayDataOutput out, Subterms c) {
         int siz = c.subs();
 
         out.writeByte(siz);
@@ -515,7 +515,7 @@ public class IO {
 
             c.op().append(c, p);
 
-            TermContainer cs = c.subterms();
+            Subterms cs = c.subterms();
             if (cs.subs() == 1)
                 p.append(Op.ARGUMENT_SEPARATOR);
 
@@ -525,7 +525,7 @@ public class IO {
 
         }
 
-        static void compoundAppend(String o, TermContainer c, Function<Term, Term> filter, Appendable p) throws IOException {
+        static void compoundAppend(String o, Subterms c, Function<Term, Term> filter, Appendable p) throws IOException {
 
             p.append(Op.COMPOUND_TERM_OPENER);
 
@@ -541,7 +541,7 @@ public class IO {
         }
 
 
-        static void appendArgs(TermContainer c, Appendable p) throws IOException {
+        static void appendArgs(Subterms c, Appendable p) throws IOException {
             int nterms = c.subs();
 
             boolean bb = nterms > 1;
@@ -553,7 +553,7 @@ public class IO {
             }
         }
 
-        static void appendArgs(TermContainer c, Function<Term, Term> filter, Appendable p) throws IOException {
+        static void appendArgs(Subterms c, Function<Term, Term> filter, Appendable p) throws IOException {
             int nterms = c.subs();
 
             boolean bb = nterms > 1;
@@ -647,7 +647,7 @@ public class IO {
 
         static void statementAppend(Compound c, Appendable p, /*@NotNull*/ Op op) throws IOException {
 
-            TermContainer cs = c.subterms();
+            Subterms cs = c.subterms();
             Term a = cs.sub(0);
             Term b = cs.sub(1);
 
@@ -675,7 +675,7 @@ public class IO {
         }
 
 
-        static void productAppend(TermContainer product, Appendable p) throws IOException {
+        static void productAppend(Subterms product, Appendable p) throws IOException {
 
             int s = product.subs();
             p.append(Op.COMPOUND_TERM_OPENER);

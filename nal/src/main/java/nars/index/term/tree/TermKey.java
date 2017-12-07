@@ -9,7 +9,7 @@ import nars.Task;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.DataOutput;
@@ -148,7 +148,7 @@ public class TermKey extends HashCachedBytes {
     }
 
 
-    static void writeTermContainerSeq(@NotNull DataOutput out, @NotNull TermContainer c, boolean includeTemporal) throws IOException {
+    static void writeTermContainerSeq(@NotNull DataOutput out, @NotNull Subterms c, boolean includeTemporal) throws IOException {
 
         int siz = c.subs();
         for (int i = 0; i < siz; i++) {

@@ -2,13 +2,10 @@ package nars.term.container;
 
 import jcog.list.ArrayIterator;
 import nars.term.Term;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-
-import static nars.Op.Null;
 
 /**
  * Holds a vector or tuple of terms.
@@ -71,9 +68,9 @@ public class ArrayTermVector extends TermVector {
 
             return true;
 
-        } else if (obj instanceof TermContainer) {
+        } else if (obj instanceof Subterms) {
 
-            TermContainer that = (TermContainer) obj;
+            Subterms that = (Subterms) obj;
             if (hash != that.hashCodeSubTerms())
                 return false;
 
@@ -120,7 +117,8 @@ public class ArrayTermVector extends TermVector {
     }
 
     @Override
-    public final void forEach(@NotNull Consumer<? super Term> action, int start, int stop) {
+    public final void forEach(Consumer<? super Term> action, int start, int stop) {
+        assert(stop-start > 0);
         Term[] t = this.terms;
         for (int i = start; i < stop; i++) {
             action.accept(t[i]);

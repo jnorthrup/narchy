@@ -5,7 +5,7 @@ import nars.exe.AbstractExec;
 import nars.op.AtomicExec;
 import nars.op.Operator;
 import nars.op.stm.ConjClustering;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.time.RealTime;
 import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +42,7 @@ public class NARchy extends NARS {
         nar.runLater(()-> {
             MaryTTSpeech.speak(""); //forces load of TTS so it will be ready ASAP and not load on the first use
             nar.onOp("speak", new AtomicExec((t, n) -> {
-                @Nullable TermContainer args = Operator.args(t);
+                @Nullable Subterms args = Operator.args(t);
                 if (args.AND(x -> !x.op().var)) {
                     String text = Joiner.on(", ").join(args);
                     if (text.isEmpty())

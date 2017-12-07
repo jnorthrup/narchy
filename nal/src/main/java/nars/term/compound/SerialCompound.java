@@ -8,7 +8,7 @@ import nars.Op;
 import nars.Param;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -96,7 +96,7 @@ public class SerialCompound extends DynBytes implements Compound {
     }
 
     @Override
-    public @NotNull TermContainer subterms() {
+    public @NotNull Subterms subterms() {
         return build().subterms(); //HACK just a temporary way of accessing them
     }
 

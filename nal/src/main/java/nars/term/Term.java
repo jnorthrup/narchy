@@ -32,7 +32,7 @@ import nars.op.mental.AliasConcept;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.container.TermVector;
 import nars.term.subst.MapSubst;
 import nars.term.subst.MapSubst1;
@@ -161,7 +161,7 @@ public interface Term extends Termed, Comparable<Termed> {
     default boolean hasXternal() {
         if (dt()==XTERNAL) return true;
 
-        TermContainer xs = subterms();
+        Subterms xs = subterms();
         return xs.isTemporal() && xs.OR(Term::hasXternal);
     }
 
@@ -204,7 +204,7 @@ public interface Term extends Termed, Comparable<Termed> {
             return src; //path wont continue inside an atom
 
         Compound csrc = (Compound) src;
-        TermContainer css = csrc.subterms();
+        Subterms css = csrc.subterms();
 
         int n = css.subs();
         if (n == 0) return src;
@@ -240,7 +240,7 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     @Nullable
-    static byte[] pathTo(/*@NotNull*/ ByteArrayList p, TermContainer superTerm, /*@NotNull*/ Term target) {
+    static byte[] pathTo(/*@NotNull*/ ByteArrayList p, Subterms superTerm, /*@NotNull*/ Term target) {
 
         int n = superTerm.subs();
         for (int i = 0; i < n; i++) {
@@ -262,7 +262,7 @@ public interface Term extends Termed, Comparable<Termed> {
         return null;
     }
 
-    static <X> boolean pathsTo(/*@NotNull*/ ByteArrayList p, TermContainer superTerm, Predicate<Term> descendIf,/*@NotNull*/ Function<Term, X> subterm, BiPredicate<ByteList, X> receiver) {
+    static <X> boolean pathsTo(/*@NotNull*/ ByteArrayList p, Subterms superTerm, Predicate<Term> descendIf,/*@NotNull*/ Function<Term, X> subterm, BiPredicate<ByteList, X> receiver) {
 
 
         int ppp = p.size();
@@ -591,14 +591,14 @@ public interface Term extends Termed, Comparable<Termed> {
 
         } else {
 
-            int c = TermContainer.compare(subterms(), y.subterms());
+            int c = Subterms.compare(subterms(), y.subterms());
             return c != 0 ? c : Integer.compare(dt(), y.dt());
         }
     }
 
     @Override
-    default TermContainer subterms() {
-        return TermVector.NoSubterms;
+    default Subterms subterms() {
+        return TermVector.Empty;
     }
 
 

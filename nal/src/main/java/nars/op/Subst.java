@@ -6,7 +6,7 @@ import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.subst.MapSubst1;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +28,7 @@ public class Subst extends Functor {
         super((Atom) $.the("substitute"));
     }
 
-    @Nullable @Override public Term apply( TermContainer xx) {
+    @Nullable @Override public Term apply( Subterms xx) {
 
         final Term input = xx.sub(0); //term to possibly transform
 

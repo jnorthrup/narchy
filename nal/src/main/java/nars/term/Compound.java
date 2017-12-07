@@ -23,15 +23,13 @@ package nars.term;
 import jcog.Util;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
-import jcog.tree.rtree.ConcurrentRTree;
 import nars.$;
 import nars.IO;
 import nars.Op;
 import nars.derive.AbstractPred;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.TermContext;
-import nars.task.util.TaskRegion;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.container.TermVector;
 import nars.term.subst.Unify;
 import nars.term.transform.CompoundTransform;
@@ -57,7 +55,7 @@ import static nars.time.Tense.XTERNAL;
  * a compound term
  * TODO make this an interface extending Subterms
  */
-public interface Compound extends Term, IPair, TermContainer {
+public interface Compound extends Term, IPair, Subterms {
 
 
     static boolean equals(/*@NotNull*/ Term a, @Nullable Term bb) {
@@ -91,7 +89,7 @@ public interface Compound extends Term, IPair, TermContainer {
 
     @Override
         /*@NotNull*/
-    TermContainer subterms();
+    Subterms subterms();
 
     @Override
     default int hashCodeSubTerms() {
@@ -143,7 +141,7 @@ public interface Compound extends Term, IPair, TermContainer {
             return DTERNAL;
 
         /*@NotNull*/
-        TermContainer yy = subterms();
+        Subterms yy = subterms();
 
         if (op == IMPL) {
             //only two options
@@ -248,7 +246,7 @@ public interface Compound extends Term, IPair, TermContainer {
     }
 
     default boolean unifySubterms(Term ty, Unify u) {
-        TermContainer xsubs = subterms();
+        Subterms xsubs = subterms();
         if ((/*xs = */xsubs.subs()) != ty.subs())
             return false;
 
@@ -258,7 +256,7 @@ public interface Compound extends Term, IPair, TermContainer {
             return false; //no free vars, the only way unification can proceed is if equal
 
         Compound y = (Compound) ty;
-        TermContainer ysubs = y.subterms();
+        Subterms ysubs = y.subterms();
 //        if (op.temporal) {
 //            int sdur = subst.dur;
 //            if (sdur >= 0) {
@@ -539,7 +537,7 @@ public interface Compound extends Term, IPair, TermContainer {
             if (nextDT == XTERNAL) {
                 return new GenericCompoundDT(base, XTERNAL);
             } else {
-                TermContainer subs = subterms();
+                Subterms subs = subterms();
                 int ns = subs.subs();
 //                if (nextDT == DTERNAL && ns == 2 && !subs.sub(0).unneg().equals(subs.sub(1).unneg()))
 //                    return base; //re-use base only if the terms are inequal
@@ -655,7 +653,7 @@ public interface Compound extends Term, IPair, TermContainer {
                 if (dt == DTERNAL || dt == XTERNAL)
                     dt = 0;
 
-                TermContainer tt = subterms();
+                Subterms tt = subterms();
                 int s = tt.subs();
                 long t = offset;
 
@@ -806,7 +804,7 @@ public interface Compound extends Term, IPair, TermContainer {
         );
 
         if (varOffset == 0 && y != null && y instanceof Compound) {
-            TermContainer st = y.subterms();
+            Subterms st = y.subterms();
             if (st instanceof TermVector)
                 ((TermVector) st).setNormalized();
         }
@@ -832,7 +830,7 @@ public interface Compound extends Term, IPair, TermContainer {
 //
             case CONJ:
 
-                TermContainer tt = subterms();
+                Subterms tt = subterms();
                 int l = tt.subs();
                 if (l == 2) {
                     int dt = dt();

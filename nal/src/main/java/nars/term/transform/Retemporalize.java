@@ -3,7 +3,7 @@ package nars.term.transform;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.IntSupplier;
@@ -25,7 +25,7 @@ public interface Retemporalize extends CompoundTransform {
     Retemporalize retemporalizeXTERNALToZero = new RetemporalizeFromTo(XTERNAL, 0);
 
     Retemporalize retemporalizeRoot = x -> {
-                TermContainer xs = x.subterms();
+                Subterms xs = x.subterms();
 
                 //any inside impl/conjunctions will disqualify the simple DTERNAL root form, but only in the next layer
 

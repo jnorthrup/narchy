@@ -4,7 +4,7 @@ import nars.Op;
 import nars.index.term.TermContext;
 import nars.term.Term;
 import nars.term.compound.CachedCompound;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.container.TermVector;
 import nars.term.subst.Unify;
 import nars.term.transform.CompoundTransform;
@@ -81,7 +81,7 @@ public class EllipsisMatch extends CachedCompound {
 
 
 
-    public static Term match(/*@NotNull*/ TermContainer y, int from, int to) {
+    public static Term match(/*@NotNull*/ Subterms y, int from, int to) {
 
 
         if (from == to) {
@@ -124,7 +124,7 @@ public class EllipsisMatch extends CachedCompound {
         return true;
     }
 
-    public boolean linearMatch(TermContainer y, int from, /*@NotNull*/ Unify subst) {
+    public boolean linearMatch(Subterms y, int from, /*@NotNull*/ Unify subst) {
         int s = subs();
 
         if (s + from > y.subs())
@@ -164,8 +164,8 @@ public class EllipsisMatch extends CachedCompound {
     }
 
 
-    public boolean rematch(/*@NotNull*/ TermContainer y, /*@NotNull*/ Collection<Term> yFree) {
-        /*@NotNull*/ TermContainer x = subterms();
+    public boolean rematch(/*@NotNull*/ Subterms y, /*@NotNull*/ Collection<Term> yFree) {
+        /*@NotNull*/ Subterms x = subterms();
         int xs = x.subs();
         for (int i = 0; i < xs; i++) {
             Term e = x.sub(i);

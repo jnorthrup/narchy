@@ -19,7 +19,7 @@ import nars.task.LatchingSignalTask;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.atom.Atom;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.truth.Truth;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.Pair;
@@ -396,7 +396,7 @@ public class OObjects extends DefaultTermizer implements MethodHandler {
 
         @Override
         protected boolean exePrefilter(Task x) {
-            TermContainer args = validArgs(Operator.args(x));
+            Subterms args = validArgs(Operator.args(x));
             if (args == null)
                 return false;
             if (null == validMethod(args.sub(0)))
@@ -410,7 +410,7 @@ public class OObjects extends DefaultTermizer implements MethodHandler {
         return Util.map(this::term, Term[]::new, args);
     }
 
-    private Term[] terms(TermContainer args) {
+    private Term[] terms(Subterms args) {
         return terms(args.arrayShared());
     }
 
@@ -482,7 +482,7 @@ public class OObjects extends DefaultTermizer implements MethodHandler {
         return (task, n) -> {
 
             Term taskTerm = task.term();
-            TermContainer args = validArgs(Operator.args(taskTerm));
+            Subterms args = validArgs(Operator.args(taskTerm));
             if (args == null)
                 return;
 
@@ -534,7 +534,7 @@ public class OObjects extends DefaultTermizer implements MethodHandler {
         };
     }
 
-    private TermContainer validArgs(TermContainer args) {
+    private Subterms validArgs(Subterms args) {
         int a = args.subs();
         if (!(a == 2 || (a == 3 && args.sub(2).op() == VAR_DEP))) {
             //this is likely a goal from the NAR to itself about a desired result state

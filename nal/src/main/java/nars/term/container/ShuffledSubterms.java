@@ -12,15 +12,15 @@ import java.util.Random;
  * proxy to a TermContainer providing access to its subterms via a shuffling order
  * warning: don't use as subterms of a Compound
  */
-public final class ShuffledSubterms extends ShuffledPermutations implements TermContainer {
+public final class ShuffledSubterms extends ShuffledPermutations implements Subterms {
 
-    public final TermContainer srcsubs;
+    public final Subterms srcsubs;
 
-    public ShuffledSubterms(Random rng, Term[] subterms) {
-        this(TermVector.the(subterms), rng  /* must be unique, private instance */);
-    }
+//    public ShuffledSubterms(Random rng, Term[] subterms) {
+//        this(TermVector.the(subterms), rng  /* must be unique, private instance */);
+//    }
 
-    public ShuffledSubterms(TermContainer subterms, Random rng) {
+    public ShuffledSubterms(Subterms subterms, Random rng) {
         this.srcsubs = subterms;
         reset(rng);
     }
@@ -60,7 +60,7 @@ public final class ShuffledSubterms extends ShuffledPermutations implements Term
 
     @Override
     public String toString() {
-        return TermContainer.toString(this);
+        return Subterms.toString(this);
     }
 
     @Override
@@ -103,9 +103,9 @@ public final class ShuffledSubterms extends ShuffledPermutations implements Term
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof TermContainer)) return false;
+        if (!(obj instanceof Subterms)) return false;
 
-        TermContainer c = (TermContainer) obj;
+        Subterms c = (Subterms) obj;
 
         int s = subs();
         if (s != c.subs())

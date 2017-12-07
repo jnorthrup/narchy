@@ -1,6 +1,5 @@
 package nars.term.container;
 
-import com.google.common.collect.Iterators;
 import jcog.list.ArrayIterator;
 import nars.Op;
 import nars.term.Term;
@@ -55,9 +54,9 @@ public final class TermVector2 extends TermVector {
     @Override
     public boolean equals(@NotNull Object obj) {
         if (this == obj) return true;
-        if (obj instanceof TermContainer) {
+        if (obj instanceof Subterms) {
             if (hash == obj.hashCode()) {
-                TermContainer t = (TermContainer) obj;
+                Subterms t = (Subterms) obj;
                 return (t.subs() == 2 && t.sub(0).equals(x) && t.sub(1).equals(y));
             }
         }
@@ -76,9 +75,14 @@ public final class TermVector2 extends TermVector {
 
     @Override
     public void forEach(Consumer<? super Term> action, int start, int stop) {
-        if (start == stop) {
+        int howMany = stop - start;
+
+        if (!(howMany <= 2 && howMany >= 1 && start >= 0 && start < 2))
+            throw new ArrayIndexOutOfBoundsException();
+
+        if (howMany ==1) {
             action.accept( start == 0 ? x : y );
-        } else if (start == 0 && stop == 1) {
+        } else {
             action.accept(x);
             action.accept(y);
         }

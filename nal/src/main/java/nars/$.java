@@ -21,7 +21,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import nars.term.compound.CachedCompound;
-import nars.term.container.TermContainer;
+import nars.term.container.Subterms;
 import nars.term.obj.JsonTerm;
 import nars.term.var.AbstractVariable;
 import nars.term.var.UnnormalizedVariable;
@@ -187,7 +187,7 @@ public enum $ {
     }
 
     @NotNull
-    public static Term p(@NotNull TermContainer t) {
+    public static Term p(@NotNull Subterms t) {
         return p((Term[]) t.arrayClone());
     }
 
@@ -870,7 +870,7 @@ public enum $ {
         return JsonTerm.the(j);
     }
 
-    public static Term pFast(TermContainer x) {
+    public static Term pFast(Subterms x) {
         return new CachedCompound(Op.PROD,x);
     }
 
