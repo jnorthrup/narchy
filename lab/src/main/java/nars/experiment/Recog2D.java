@@ -151,7 +151,7 @@ public class Recog2D extends NAgentX {
                 row(beliefTableCharts(nar, out.keySet(), 256)),
 
                 row(p = new Plot2D(history, Plot2D.Line).add("Reward", () ->
-                                rewardCurrent
+                                reward
                         //tv.errorSum()
                 )),
                 //row(s = new Plot2D(history, Plot2D.BarWave).add("Rward", () -> rewardValue)),

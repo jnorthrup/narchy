@@ -1,21 +1,16 @@
 package nars.experiment;
 
-import com.google.common.collect.Iterables;
 import jcog.Util;
-import jcog.learn.LivePredictor;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.Task;
-import nars.concept.GoalActionAsyncConcept;
 import nars.concept.ScalarConcepts;
 import nars.concept.SensorConcept;
 import nars.gui.Vis;
 import nars.op.video.BufferedImageBitmap2D;
 import nars.op.video.Scale;
 import nars.op.video.ShapeSensor;
-import nars.time.Tense;
-import nars.util.signal.BeliefPredict;
 import nars.util.signal.CameraSensor;
 import org.apache.commons.math3.util.MathUtils;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +20,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
-import static com.google.common.collect.Iterables.concat;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -35,8 +29,8 @@ public class FZero extends NAgentX {
 
     private final FZeroGame fz;
 
-    float fwdSpeed = 5;
-    float rotSpeed = 0.3f;
+    float fwdSpeed = 8;
+    float rotSpeed = 0.12f;
 
     public static void main(String[] args) {
 
@@ -45,10 +39,10 @@ public class FZero extends NAgentX {
         NAgentX.runRT((n) -> {
 
             FZero a = null;
-            n.freqResolution.set(0.25f);
-            n.confResolution.set(0.25f);
+            n.freqResolution.set(0.05f);
+            n.confResolution.set(0.02f);
             a = new FZero(n);
-            a.happy.resolution(0.1f);
+            a.happy.resolution(0.05f);
 
 
             a.trace = true;
@@ -311,29 +305,42 @@ public class FZero extends NAgentX {
 ////            }
 //            return a;
 //        });
-        actionUnipolar($.the("fwd"), (a)->{
+        actionUnipolar($.the("fwd"), (a) -> {
             if (a > 0.5f)
-                fz.vehicleMetrics[0][6] = /*+=*/ (a-0.5f)*2f * (fwdSpeed);
+                fz.vehicleMetrics[0][6] = /*+=*/ (a - 0.5f) * 2f * (fwdSpeed);
             else
-                fz.vehicleMetrics[0][6] = /*+=*/ (1f - (0.5f-a)*2f) * (fwdSpeed);
+                fz.vehicleMetrics[0][6] = /*+=*/ (1f - (0.5f - a) * 2f) * (fwdSpeed);
             return a;
         });
 //        //eternal bias to stop
 //        nar.goal(f[0].term, Tense.Eternal, 0f, 0.01f);
 //        nar.goal(f[1].term, Tense.Eternal, 0f, 0.01f);
-
-        actionBipolarSteering($.the("x"), (a) -> {
+        actionBipolar($.the("x"), (a) -> {
             float deadZone =
                     0;
-                    //1 / 6f;
+            //1 / 6f;
+            float aa = a;
             if (Math.abs(a) > deadZone) {
                 if (a > 0) a -= deadZone;
                 else a += deadZone;
                 fz.playerAngle += (a) * rotSpeed;
-                //return a;
+                return aa;
             }
-                //return 0;
+
+            return 0;
         });
+//        actionBipolarSteering($.the("x"), (a) -> {
+//            float deadZone =
+//                    0;
+//                    //1 / 6f;
+//            if (Math.abs(a) > deadZone) {
+//                if (a > 0) a -= deadZone;
+//                else a += deadZone;
+//                fz.playerAngle += (a) * rotSpeed;
+//                //return a;
+//            }
+//                //return 0;
+//        });
         //eternal bias to stop
 //        nar.goal(x[0].term, Tense.Eternal, 0f, 0.5f);
 //        nar.goal(x[1].term, Tense.Eternal, 0f, 0.5f);

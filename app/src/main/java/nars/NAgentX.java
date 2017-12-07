@@ -4,7 +4,9 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.exe.Loop;
 import jcog.list.FasterList;
+import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatParam;
+import jcog.math.FloatPolarNormalized;
 import jcog.pri.mix.control.MixContRL;
 import nars.control.*;
 import nars.exe.MultiExec;
@@ -12,7 +14,6 @@ import nars.gui.Vis;
 import nars.gui.graph.EdgeDirected;
 import nars.gui.graph.run.SimpleConceptGraph1;
 import nars.index.term.map.CaffeineIndex;
-import nars.op.Implier;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.op.video.*;
@@ -88,21 +89,23 @@ abstract public class NAgentX extends NAgent {
 
     public NAgentX(String id, NAR nar) {
         super(id, nar);
-    }
 
-    public NAgentX(Term id, NAR nar) {
-        super(id, nar);
+        new ActionInfluencingSensorConcept(
+                id != null ? $.inh($.the("joy"), id) : $.the("joy"),
+                new FloatPolarNormalized(new FloatFirstOrderDifference(nar::time,
+                        () -> reward)));
+
     }
 
     public static NAR runRT(Function<NAR, NAgent> init, float fps) {
-        return runRT(init, fps*2, fps);
+        return runRT(init, fps * 2, fps);
     }
 
 
     public static NAR runRT(Function<NAR, NAgent> init, float narFPS, float agentFPS) {
 
         The.Subterms.the =
-            The.Subterms.CaffeineSubtermBuilder.get();
+                The.Subterms.CaffeineSubtermBuilder.get();
 
 //        The.Compound.the =
 //            The.Compound.
@@ -113,7 +116,7 @@ abstract public class NAgentX extends NAgent {
         float durFPS =
                 //agentFPS;
                 agentFPS * 2f; //nyquist
-                //agentFPS * 3f;
+        //agentFPS * 3f;
 
         RealTime clock =
                 durFPS >= 10 / 2f ? /* nyquist threshold between decisecond (0.1) and centisecond (0.01) clock resolution */
@@ -128,7 +131,7 @@ abstract public class NAgentX extends NAgent {
 //        );
 
 
-        int THREADS = Math.max(1,Runtime.getRuntime().availableProcessors()-1);
+        int THREADS = Math.max(1, Runtime.getRuntime().availableProcessors() - 1);
 
         //Predicate<Activate> randomBool = (a) -> ThreadLocalRandom.current().nextBoolean();
 
@@ -148,22 +151,22 @@ abstract public class NAgentX extends NAgent {
 //                    }
 //                })
                 .exe(new MultiExec
-                            //Intense
-                            //CoolNQuiet
+                        //Intense
+                        //CoolNQuiet
                         (192, THREADS, 128))
 
                 .time(clock)
-                .deriverAdd(1,1)
-                .deriverAdd(2,5)
-                .deriverAdd(6,6)
+                .deriverAdd(1, 1)
+                .deriverAdd(2, 5)
+                .deriverAdd(6, 6)
                 //.deriverAdd(6,6) //extra NAL6
-                .deriverAdd(7,8)
+                .deriverAdd(7, 8)
                 //.deriverAdd("goal_analogy.nal")
                 //.deriverAdd("motivation.nal")
                 .deriverAdd("list.nal")
                 .index(
                         new CaffeineIndex(256 * 1024)
-                       // new PriMapTermIndex()
+                        // new PriMapTermIndex()
                         //new CaffeineIndex2(64 * 1024)
                         //new CaffeineIndex2(-1)
                         //new HijackTermIndex(Primes.nextPrime( 64 * 1024 + 1),  3)
@@ -192,7 +195,7 @@ abstract public class NAgentX extends NAgent {
 
         NAgent a = init.apply(n);
 
-        new Deriver(a.fire(), Deriver.deriver(6,7,
+        new Deriver(a.fire(), Deriver.deriver(6, 7,
                 "motivation.nal", "goal_analogy.nal").apply(n).deriver, n);
 
         Loop aLoop = a.runFPS(agentFPS);
@@ -215,8 +218,8 @@ abstract public class NAgentX extends NAgent {
 //        ), 800, 600);
 
 
-        ConjClustering conjClusterB = new ConjClustering(n, 3, BELIEF, true,false, 32, 128);
-        ConjClustering conjClusterG = new ConjClustering(n, 3, GOAL, true,false, 16, 64);
+        ConjClustering conjClusterB = new ConjClustering(n, 3, BELIEF, true, false, 32, 128);
+        ConjClustering conjClusterG = new ConjClustering(n, 3, GOAL, true, false, 16, 64);
 
 //        n.runLater(() -> {
 ////            AudioContext ac = new AudioContext();
@@ -226,7 +229,6 @@ abstract public class NAgentX extends NAgent {
 //            new VocalCommentary(null, a);
 //            //ac.out.dependsOn(aclock);
 //        });
-
 
 
         Inperience inp = new Inperience(n, 32);
@@ -325,19 +327,19 @@ abstract public class NAgentX extends NAgent {
             window(grid(Vis.reflect(n)), 700, 600);
 
             Surface exePanel = row(
-                Vis.reflect(n.loop)
+                    Vis.reflect(n.loop)
             );
 
 
             window(
-                new VSplit(exePanel,
-                    col(
-                        metaGoalChart(a),
-                        row(
-                                metaGoalPlot(a),
-                                metaGoalControls(n)
-                        )),
-            0.9f), 800, 800);
+                    new VSplit(exePanel,
+                            col(
+                                    metaGoalChart(a),
+                                    row(
+                                            metaGoalPlot(a),
+                                            metaGoalControls(n)
+                                    )),
+                            0.9f), 800, 800);
 
         });
 
@@ -528,8 +530,8 @@ abstract public class NAgentX extends NAgent {
 
         BitmapMatrixView bmp = new BitmapMatrixView((i) ->
                 gain.floatValue() * nar.causes.get(i).value(),
-                        //Util.tanhFast(nar.causes.get(i).value()),
-                s, Math.max(1, (int)Math.ceil(Math.sqrt(s))),
+                //Util.tanhFast(nar.causes.get(i).value()),
+                s, Math.max(1, (int) Math.ceil(Math.sqrt(s))),
                 Draw::colorBipolar) {
 
             final DurService on;
@@ -657,7 +659,7 @@ abstract public class NAgentX extends NAgent {
                         );
                         EdgeDirected fd = new EdgeDirected();
                         s.dyn.addBroadConstraint(fd);
-                        fd.attraction.set(fd.attraction.get()*4);
+                        fd.attraction.set(fd.attraction.get() * 4);
                         s.camPos(0, 0, 90);
                         return s;
                     }),
@@ -679,7 +681,7 @@ abstract public class NAgentX extends NAgent {
                     a instanceof NAgentX ?
                             new WindowToggleButton("vision", () -> grid(((NAgentX) a).cam.stream().map(cs ->
                                     new AspectAlign(new CameraSensorView(cs, a), AspectAlign.Align.Center, cs.height, cs.width))
-                                .toArray(Surface[]::new))
+                                    .toArray(Surface[]::new))
                             ) : grid()
 
 //                    grid(

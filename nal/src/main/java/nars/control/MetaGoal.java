@@ -7,7 +7,6 @@ import jcog.learn.ql.HaiQAgent;
 import jcog.list.FasterList;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
-import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.NAgent;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
@@ -140,7 +139,7 @@ public enum MetaGoal {
                 //DQN::new,
                 HaiQAgent::new,
                 //() -> Util.tanhFast(a.dexterity())) //reward function
-                () -> a.dexterity() * Util.tanhFast(a.rewardCurrent) /* - lag */) //reward function
+                () -> a.dexterity() * Util.tanhFast(a.reward) /* - lag */) //reward function
 
                 .in(a::dexterity)
                 .in(a.happy)

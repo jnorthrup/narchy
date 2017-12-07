@@ -37,7 +37,6 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static jcog.Texts.n2;
-import static nars.$.t;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
@@ -90,8 +89,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     /**
      * range: -1..+1
      */
-    public float rewardCurrent;
-    private Loop loop;
+    public float reward;
     public final NAR nar;
     private int dur;
     private final NALTask happyGoal;
@@ -119,29 +117,11 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
                 $.inh($.the("happy"), id);
         FloatNormalized happyValue = new FloatPolarNormalized(
                 //new FloatHighPass(
-                () -> rewardCurrent
+                () -> reward
                 //)
         ).relax(0.01f);
 
-        SensorConcept h = new SensorConcept(happyTerm, nar(), happyValue,
-                (x) -> t(Util.unitize(x), nar().confDefault(Op.BELIEF))
-        ) {
-
-            List<Termed> extTemplates = null;
-
-            @Override
-            public List<Termed> templates() {
-                List<Termed> superTemplates = super.templates();
-                if (extTemplates == null || extTemplates.size() != (superTemplates.size() + actions.size())) {
-                    List<Termed> l = $.newArrayList(superTemplates.size() + actions.size());
-                    l.addAll(superTemplates);
-                    l.addAll(actions.keySet());
-                    this.extTemplates = l;
-                }
-                return extTemplates;
-            }
-        };
-        addSensor(this.happy = h);
+        this.happy = new ActionInfluencingSensorConcept(happyTerm, happyValue);
 
 
         //this.happy = senseNumber(happyTerm, happyValue);
@@ -216,7 +196,6 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     @Override
     public void stop(NAR nar) {
         nar.stop();
-        loop = null;
     }
 
 
@@ -231,7 +210,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
         //sendInfluxDB("localhost", 8089);
 
-        return id + " rwrd=" + n2(rewardCurrent) +
+        return id + " rwrd=" + n2(reward) +
                 " dex=" + /*n4*/(dexterity(now, now)) +
                 //"\t" + Op.cache.summary() +
                 /*" var=" + n4(varPct(nar)) + */ "\t" + nar.terms.summary() + " " +
@@ -273,7 +252,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
         happy(motivation.floatValue());
 
-        float r = rewardCurrent = act();
+        float r = reward = act();
 
         this.now = nar.time();
 
@@ -691,4 +670,29 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     }
 
 
+    /** adds the actions to its set of termlink templates */
+    protected class ActionInfluencingSensorConcept extends SensorConcept {
+
+        List<Termed> templatesPlusActions;
+
+        public ActionInfluencingSensorConcept(Term id, FloatNormalized value) {
+            super(id, NAgent.this.nar(), value,
+                    (x) -> $.t(Util.unitize(x),
+                    NAgent.this.nar().confDefault(Op.BELIEF)));
+            templatesPlusActions = null;
+            addSensor(this);
+        }
+
+        @Override
+        public List<Termed> templates() {
+            List<Termed> superTemplates = super.templates();
+            if (templatesPlusActions == null || templatesPlusActions.size() != (superTemplates.size() + actions.size())) {
+                List<Termed> l = $.newArrayList(superTemplates.size() + actions.size());
+                l.addAll(superTemplates);
+                l.addAll(actions.keySet());
+                this.templatesPlusActions = l;
+            }
+            return templatesPlusActions;
+        }
+    }
 }

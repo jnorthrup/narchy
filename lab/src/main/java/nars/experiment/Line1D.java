@@ -12,7 +12,6 @@ import nars.gui.Vis;
 import nars.task.DerivedTask;
 import nars.test.agent.Line1DSimplest;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.eclipse.collections.impl.collector.Collectors2;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 import spacegraph.layout.Grid;
 import spacegraph.widget.meta.ReflectionSurface;
@@ -138,7 +137,7 @@ public class Line1D {
                                                 () -> (float) a.i.floatValue(),
                                                 a.o,
                                                 //a.out.feedback.current!=null ? a.out.feedback.current.freq() : 0f,
-                                                () -> a.rewardCurrent
+                                                () -> a.reward
                                                 //() -> a.rewardSum
                                                 )
                                                 ,
@@ -399,7 +398,7 @@ public class Line1D {
 
         public Line1DTrainer(Line1DSimplest a) {
             this.a = a;
-            this.lastReward = a.rewardCurrent;
+            this.lastReward = a.reward;
 
             NAR n = a.nar;
 
@@ -422,7 +421,7 @@ public class Line1D {
 
 
                 //System.out.println(a.reward);
-                if (a.rewardCurrent > rewardThresh)
+                if (a.reward > rewardThresh)
                     consecutiveCorrect++;
                 else
                     consecutiveCorrect = 0; //start over
@@ -450,7 +449,7 @@ public class Line1D {
 
                     if (lag > 1) { //skip the step after a new target has been selected which can make it seem worse
 
-                        float worsening = lastReward - a.rewardCurrent;
+                        float worsening = lastReward - a.reward;
                         if (step > trainingRounds && worsening > worsenThreshold) {
                             //print tasks suspected of faulty logic
                             current.forEach(x -> {
@@ -463,7 +462,7 @@ public class Line1D {
 
                 }
 
-                lastReward = a.rewardCurrent;
+                lastReward = a.reward;
 
                 current.clear();
             });
