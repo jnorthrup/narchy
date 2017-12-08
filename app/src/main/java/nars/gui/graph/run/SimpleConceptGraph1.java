@@ -9,6 +9,7 @@ import nars.control.Activate;
 import nars.gui.graph.DynamicConceptSpace;
 import nars.task.ITask;
 import nars.task.NALTask;
+import nars.test.DeductiveMeshTest;
 
 public class SimpleConceptGraph1 extends DynamicConceptSpace {
 
@@ -105,7 +106,7 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
 //        for (int i = 1; i < 24; i++)
 //            n.inputAt(i*2,"(" + ((char)('a' + i)) + "). :|:");
 
-        //new DeductiveMeshTest(n, new int[]{3, 2}, 16384);
+        new DeductiveMeshTest(n, new int[]{3, 2}, 16384);
 
 
         //n.onCycle(nn->{System.out.println(nn.time() + "\n" + n.exe.stats() + "\n\n");});

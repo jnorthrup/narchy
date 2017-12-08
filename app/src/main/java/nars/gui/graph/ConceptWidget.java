@@ -25,7 +25,7 @@ public class ConceptWidget extends TermWidget<Concept> {
 
     public float pri;
 
-    public final Flip<Map<Concept, ConceptEdge>> currentEdges = new Flip(LinkedHashMap::new);
+    public final Flip<Map<Concept, ConceptEdge>> edges = new Flip(LinkedHashMap::new);
 
     public ConceptWidget(Concept x) {
         super(x);
@@ -48,9 +48,8 @@ public class ConceptWidget extends TermWidget<Concept> {
 
     @Override
     public Iterable<ConceptEdge> edges() {
-        return currentEdges.read().values();
+        return edges.read().values();
     }
-
 
     @Override
     public Dynamic newBody(boolean collidesWithOthersLikeThis) {

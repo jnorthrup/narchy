@@ -39,6 +39,7 @@ import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.AspectAlign;
+import spacegraph.Ortho;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.layout.Grid;
@@ -69,6 +70,7 @@ import java.util.stream.Stream;
 import static nars.$.$;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
+import static nars.gui.Vis.reflect;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.layout.Grid.*;
 
@@ -105,8 +107,8 @@ abstract public class NAgentX extends NAgent {
     public static NAR runRT(Function<NAR, NAgent> init, float narFPS, float agentFPS) {
 
         The.Subterms.the =
-                //The.Subterms.CaffeineSubtermBuilder.get();
-                The.Subterms.SoftSubtermBuilder.get();
+                The.Subterms.CaffeineSubtermBuilder.get();
+        //The.Subterms.SoftSubtermBuilder.get();
 //        The.Compound.the =
 //            The.Compound.
 //                    //SoftCompoundBuilder.get();
@@ -115,7 +117,7 @@ abstract public class NAgentX extends NAgent {
 
         float durFPS =
                 agentFPS;
-                //agentFPS * 2f; //nyquist
+        //agentFPS * 2f; //nyquist
         //agentFPS * 3f;
 
         RealTime clock =
@@ -153,7 +155,7 @@ abstract public class NAgentX extends NAgent {
                 .exe(new MultiExec
                         //Intense
                         //CoolNQuiet
-                        (192, THREADS, 128))
+                        (512, THREADS, 128))
 
                 .time(clock)
                 .deriverAdd(1, 1)
@@ -165,7 +167,7 @@ abstract public class NAgentX extends NAgent {
                 //.deriverAdd("motivation.nal")
                 .deriverAdd("list.nal")
                 .index(
-                        new CaffeineIndex(256 * 1024)
+                        new CaffeineIndex(200 * 1024)
                         // new PriMapTermIndex()
                         //new CaffeineIndex2(64 * 1024)
                         //new CaffeineIndex2(-1)
@@ -175,6 +177,8 @@ abstract public class NAgentX extends NAgent {
                 .get();
 
         n.defaultWants();
+
+        n.conceptActivation.set(0.1f);
 
         n.dtMergeOrChoose.set(true);
         n.dtDither.set(0.5f);
@@ -653,13 +657,33 @@ abstract public class NAgentX extends NAgent {
                     }),
                     new WindowToggleButton("top", () -> (new ConsoleTerminal(new nars.TextUI(nar).session(20f)))),
                     new WindowToggleButton("concept graph", () -> {
+                        SimpleConceptGraph1 sg;
                         SpaceGraph s = new SpaceGraph<>(
-                                new SimpleConceptGraph1(nar,
-                                        64, 12)
+                                sg = new SimpleConceptGraph1(nar,
+                                        128, 6)
                         );
                         EdgeDirected fd = new EdgeDirected();
                         s.dyn.addBroadConstraint(fd);
                         fd.attraction.set(fd.attraction.get() * 4);
+
+                        s.add(new Ortho(
+                                //window(
+                                grid(reflect(fd), reflect(sg.vis))) {
+                            @Override
+                            protected void resized() {
+
+                                surface.pos(0, 0, W/2, H/2);
+
+                                scale.set(1, 1);
+                                cam.set(W / 2, H / 2);
+
+                                layout();
+                            }
+                        });
+
+                        //,  400, 400);
+                        //.pos(0, 0, 0.5f, 0.5f)
+
                         s.camPos(0, 0, 90);
                         return s;
                     }),

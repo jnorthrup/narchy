@@ -1,6 +1,8 @@
 package nars.experiment;
 
+import com.google.common.collect.Iterables;
 import jcog.Util;
+import jcog.learn.LivePredictor;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -11,6 +13,7 @@ import nars.gui.Vis;
 import nars.op.video.BufferedImageBitmap2D;
 import nars.op.video.Scale;
 import nars.op.video.ShapeSensor;
+import nars.util.signal.BeliefPredict;
 import nars.util.signal.CameraSensor;
 import org.apache.commons.math3.util.MathUtils;
 import org.jetbrains.annotations.NotNull;
@@ -39,8 +42,8 @@ public class FZero extends NAgentX {
         NAgentX.runRT((n) -> {
 
             FZero a = null;
-            n.freqResolution.set(0.05f);
-            n.confResolution.set(0.02f);
+            n.freqResolution.set(0.03f);
+            n.confResolution.set(0.01f);
             a = new FZero(n);
             a.happy.resolution(0.05f);
 
@@ -61,8 +64,8 @@ public class FZero extends NAgentX {
 
         CameraSensor<Scale> c = senseCamera(id, new Scale(() -> fz.image,
                 //32, 24
-                12, 8
-        )/*.blur()*/).resolution(0.2f);
+                16, 10
+        )/*.blur()*/).resolution(0.1f);
 
         new ShapeSensor($.p(id, $.the("shape")), new BufferedImageBitmap2D(() -> fz.image), this);
 
@@ -118,15 +121,15 @@ public class FZero extends NAgentX {
 
         window(Vis.beliefCharts(64, java.util.List.of(dAngVel, dAccel), nar), 300, 300);
 
-//        new BeliefPredict(
-//                Iterables.concat(actions.keySet(), java.util.List.of(dAngVel, dAccel)),
-//                8,
-//                12,
-//                Iterables.concat(actions.keySet(), java.util.List.of(dAngVel, dAccel)),
-//                //new LivePredictor.LSTMPredictor(0.25f, 1),
-//                new LivePredictor.MLPPredictor(),
-//                nar
-//        );
+        new BeliefPredict(
+                Iterables.concat(actions.keySet(), java.util.List.of(dAngVel, dAccel)),
+                8,
+                12,
+                Iterables.concat(actions.keySet(), java.util.List.of(dAngVel, dAccel)),
+                //new LivePredictor.LSTMPredictor(0.25f, 1),
+                new LivePredictor.MLPPredictor(),
+                nar
+        );
 
         //nar.mix.stream("Derive").setValue(1);
 

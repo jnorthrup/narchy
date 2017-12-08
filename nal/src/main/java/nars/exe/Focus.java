@@ -224,7 +224,7 @@ public class Focus {
 
         float momentum =
 //                    0f;
-                0.98f;
+                0.5f;
 
         @Override
         public void update(FasterList<Cause> causes, float[] goal) {
@@ -280,7 +280,7 @@ public class Focus {
 
         this.revaluator =
                 new DefaultRevaluator();
-        //new RBMRevaluator(nar.random());
+                //new RBMRevaluator(nar.random());
 
         n.serviceAddOrRemove.on((xa) -> {
             Services.Service<NAR> x = xa.getOne();

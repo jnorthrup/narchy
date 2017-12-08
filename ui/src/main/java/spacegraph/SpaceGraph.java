@@ -108,8 +108,10 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
     }
 
 
-    public SpaceGraph ortho(Surface ortho) {
-        return add(new Ortho(ortho));
+    public Ortho ortho(Surface ortho) {
+        Ortho o = new Ortho(ortho);
+        add(o);
+        return o;
     }
 
     public SpaceGraph add(Ortho c) {
@@ -146,7 +148,7 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
         return (Y) y;
     }
 
-    public <Y extends Spatial<X>> Y get(X x) {
+    public <Y extends Spatial<X>> Y get(Object x) {
         //Spatial y = atoms.getIfPresent(x);
         Spatial y = atoms.get(x);
         if (y != null)

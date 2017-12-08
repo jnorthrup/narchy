@@ -40,6 +40,9 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
     private final int maxNodes;
     private DurService on;
 
+    volatile static int serial = 0;
+    final String spaceID;
+
     final StampedLock rw = new StampedLock();
 
 
@@ -47,6 +50,9 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
 
     public DynamicConceptSpace(NAR nar, @Nullable Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super();
+
+        this.spaceID = DynamicConceptSpace.class + "." + (serial++);
+
         vis = new ConceptVis2(maxNodes * maxEdgesPerNodeMax);
         this.nar = nar;
         this.maxNodes = maxNodes;
@@ -58,28 +64,16 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
 
             @Override
             public void onRemove(PriReference<Activate> value) {
-                removeNode(value.get());
+                //ConceptWidget cw = (ConceptWidget) space.get(value.get().id.term().);
+                ConceptWidget cw = value.get().id.meta(spaceID);
+                if (cw!=null) {
+                    cw.deactivate();
+                }
             }
         };
     }
 
-    void removeNode(Activate concept) {
-        if (space != null)
-            space.remove(concept.id);
 
-//        @Nullable ConceptWidget cw = widgets.getIfPresent(concept.get());
-//        if (cw != null) {
-//            cw.hide();
-//        }
-    }
-////        cw.delete();
-////
-////        ConceptWidget cw = concept.remove(this);
-////        if (cw!=null) {
-////            cw.delete(space.dyn);
-////        }
-////        return cw;
-//    }
 
 
     final AtomicBoolean updates = new AtomicBoolean(false);
@@ -125,8 +119,12 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
             if (s > 0) {
                 try {
                     concepts.forEach((clink) -> {
-                        ConceptWidget cw = space.getOrAdd(clink.get().id, ConceptWidget::new);
+                        //ConceptWidget cw = space.getOrAdd(clink.get().id, ConceptWidget::new);
+                        Concept cc = clink.get().id;
+                        ConceptWidget cw = cc.meta(spaceID, (sid)->new ConceptWidget(cc));
                         if (cw != null) {
+
+                            cw.activate();
 
                             cw.pri = clink.priElseZero();
                             l.add(cw);
@@ -171,6 +169,9 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
         public final FloatParam lineAlphaMin = new FloatParam(0.1f, 0f, 1f);
         public final FloatParam lineAlphaMax = new FloatParam(0.8f, 0f, 1f);
 
+
+        public final FloatParam edgeBrightness = new FloatParam(1/16f, 0f, 2f);
+
         public ConceptVis2(int maxEdges) {
             super();
             this.maxEdges = maxEdges;
@@ -181,7 +182,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
                             //new PLinkArrayBag<>(maxEdges,
                             //PriMerge.max,
                             //PriMerge.replace,
-                            PriMerge.max,
+                            PriMerge.plus,
                             //new UnifiedMap()
                             //new LinkedHashMap()
                             //new LinkedHashMap() //maybe: edgeBagSharedMap
@@ -195,6 +196,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
                     };
         }
 
+
         @Override
         public void accept(List<ConceptWidget> pending) {
 
@@ -203,12 +205,12 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
             //float priSum = edges.priSum();
 
             pending.forEach(c -> {
-                c.currentEdges.write().values().forEach(x -> x.inactive = true);
+                c.edges.write().values().forEach(x -> x.inactive = true);
             });
 
             edges.commit(ee -> {
                 ConceptWidget src = ee.src;
-                Map<Concept, ConceptWidget.ConceptEdge> eee = src.currentEdges.write();
+                Map<Concept, ConceptWidget.ConceptEdge> eee = src.edges.write();
                 if (ee.tgt.active()) {
                     eee.computeIfAbsent(ee.tgt.id, (t) ->
                             new ConceptWidget.ConceptEdge(src, ee.tgt, 0)
@@ -229,7 +231,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
             float lineAlphaMax = Math.max(lineAlphaMin, _lineAlphaMax);
             pending.forEach(c -> {
                 float srcRad = c.radius();
-                c.currentEdges.write().values().removeIf(e -> {
+                c.edges.write().values().removeIf(e -> {
                     if (e.inactive)
                         return true;
 
@@ -256,7 +258,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
                         e.b = 0.05f + 0.65f * (termish);
                         e.g = 0.1f * (1f - (e.r + e.g) / 1.5f);
 
-                        e.a = Util.lerp(p * Math.max(taskish, termish), lineAlphaMin, lineAlphaMax);
+                        e.a = Util.lerp(p /* * Math.max(taskish, termish) */, lineAlphaMin, lineAlphaMax);
 
                         //0.05f + 0.9f * Util.and(this.r * tasklinkBoost, this.g * termlinkBoost);
 
@@ -272,7 +274,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
 
                     return false;
                 });
-                c.currentEdges.commit();
+                c.edges.commit();
             });
 
 
@@ -288,11 +290,11 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
             if (ttt == null)
                 return;
 
-            Term tt = ttt.term();
+            Term tt = ttt.term().conceptual();
             if (!tt.equals(src.id.term())) {
-                Concept cc = nar.concept(tt);
+                @Deprecated Concept cc = nar.concept(tt); //TODO generic key should be Term not Concept this would avoid a lookup in the main index
                 if (cc != null) {
-                    ConceptWidget tgt = space.get(cc);
+                    ConceptWidget tgt = cc.meta(spaceID);
                     if (tgt != null && tgt.active()) {
                         //                Concept c = space.nar.concept(tt);
                         //                if (c != null) {
@@ -304,7 +306,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
                             type = TERMLINK;
                         }
 
-                        edges.putAsync(new ConceptWidget.EdgeComponent(link, src, tgt, type, pri));
+                        edges.putAsync(new ConceptWidget.EdgeComponent(link, src, tgt, type, pri * edgeBrightness.floatValue()));
                         //new PLinkUntilDeleted(ate, pri)
                         //new PLink(ate, pri)
 
@@ -373,7 +375,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
 //                //angle / 360f
             Draw.colorHash(cw.id, cw.shapeColor);// * or(belief.conf(), goal.conf()), 0.9f, cw.shapeColor);
 
-            cw.currentEdges.write().clear();
+            cw.edges.write().clear();
             cw.id.tasklinks().forEach(x -> this.accept(cw, x));
             cw.id.termlinks().forEach(x -> this.accept(cw, x));
 

@@ -29,7 +29,7 @@ public class ForceDirected implements spacegraph.phys.constraint.BroadConstraint
 
 
     /** speed at which center correction is applied */
-    float centerSpeed = 0.1f;
+    float centerSpeed = 0.02f;
 
     final v3 boundsMin, boundsMax;
     final float maxRepelDist;
@@ -55,7 +55,7 @@ public class ForceDirected implements spacegraph.phys.constraint.BroadConstraint
 //        }
 
     public ForceDirected() {
-        float r = 400;
+        float r = 800;
         boundsMin = v(-r, -r, -r);
         boundsMax = v(+r, +r, +r);
         maxRepelDist = r*2;

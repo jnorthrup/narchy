@@ -698,6 +698,39 @@ public enum Op {
 
     public final boolean beliefable, goalable;
 
+    public static Term dt(Compound base, int nextDT) {
+
+        if (nextDT == XTERNAL) {
+            return new GenericCompoundDT(base, XTERNAL);
+        } else {
+            Subterms subs = base.subterms();
+            int ns = subs.subs();
+//                if (nextDT == DTERNAL && ns == 2 && !subs.sub(0).unneg().equals(subs.sub(1).unneg()))
+//                    return base; //re-use base only if the terms are inequal
+
+            /*@NotNull*/
+            if (!concurrent(nextDT) && ns > 2)
+                return Null; //tried to temporalize what can only be commutive
+
+
+            Term[] ss = subs.arrayShared();
+
+            Op o = base.op();
+            assert (o.temporal);
+            if (o.commutative) {
+
+                if (ss.length == 2) {
+                    //must re-arrange the order to lexicographic, and invert dt
+                    return o.the(nextDT != DTERNAL ? -nextDT : DTERNAL, ss[1], ss[0]);
+                } else {
+                    return o.the(nextDT, ss);
+                }
+            } else {
+                return o.the(nextDT, ss);
+            }
+        }
+    }
+
 //    public interface TermInstancer {
 //
 //
@@ -1268,9 +1301,9 @@ public enum Op {
 
         int implDT = implication.dt();
         return IMPL.the(
-                implDT != DTERNAL ?
+                (implDT != DTERNAL && implDT != XTERNAL) ?
                         implDT + preInInner - conjInner.dtRange() :
-                        DTERNAL,
+                        implDT,
                 conjInner, implication.sub(1));
 
     }

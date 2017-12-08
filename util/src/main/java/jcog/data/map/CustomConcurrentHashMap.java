@@ -10,7 +10,6 @@ import sun.misc.Unsafe;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
@@ -221,7 +220,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class EquivalenceUsingIdentity
             implements Equivalence<Object>, Serializable {
-        private static final long serialVersionUID = 7259069246764182397L;
+        //private static final long serialVersionUID = 7259069246764182397L;
 
         @Override
         public final boolean equal(Object a, Object b) {
@@ -236,7 +235,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class EquivalenceUsingEquals
             implements Equivalence<Object>, Serializable {
-        private static final long serialVersionUID = 7259069247764182397L;
+        //private static final long serialVersionUID = 7259069247764182397L;
 
         @Override
         public final boolean equal(Object a, Object b) {
@@ -251,7 +250,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class EquivalenceUsingHashAndIdentity
             implements Equivalence<Object>, Serializable {
-        private static final long serialVersionUID = 7259069247764182397L;
+        //private static final long serialVersionUID = 7259069247764182397L;
 
         @Override
         public final boolean equal(Object a, Object b) {
@@ -1379,7 +1378,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     }
 
     final class WriteThroughEntry implements Map.Entry<K, V>, Serializable {
-        //private static final long serialVersionUID = 7249069346764182397L;
+        ////private static final long serialVersionUID = 7249069346764182397L;
         final K key;
         V value;
 
@@ -1668,42 +1667,42 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
         return h;
     }
 
-    /**
-     * Saves the state of the instance to a stream (i.e., serializes it).
-     *
-     * @param s the stream
-     * @serialData the key (Object) and value (Object)
-     * for each key-value mapping, followed by a null pair.
-     * The key-value mappings are emitted in no particular order.
-     */
-    private void writeObject(java.io.ObjectOutputStream s) throws IOException {
-        s.defaultWriteObject();
-        for (Map.Entry<K, V> e : entrySet()) {
-            s.writeObject(e.getKey());
-            s.writeObject(e.getValue());
-        }
-        s.writeObject(null);
-        s.writeObject(null);
-    }
-
-    /**
-     * Reconstitutes the instance from a stream (that is, deserializes it).
-     *
-     * @param s the stream
-     */
-    private void readObject(java.io.ObjectInputStream s)
-            throws IOException, ClassNotFoundException {
-//        s.defaultReadObject();
-//        this.segments = new Segment[NSEGMENTS];
-//        for (; ; ) {
-//            K key = (K) s.readObject();
-//            V value = (V) s.readObject();
-//            if (key == null)
-//                break;
-//            put(key, value);
+//    /**
+//     * Saves the state of the instance to a stream (i.e., serializes it).
+//     *
+//     * @param s the stream
+//     * @serialData the key (Object) and value (Object)
+//     * for each key-value mapping, followed by a null pair.
+//     * The key-value mappings are emitted in no particular order.
+//     */
+//    private void writeObject(java.io.ObjectOutputStream s) throws IOException {
+//        s.defaultWriteObject();
+//        for (Map.Entry<K, V> e : entrySet()) {
+//            s.writeObject(e.getKey());
+//            s.writeObject(e.getValue());
 //        }
-        throw new UnsupportedOperationException();
-    }
+//        s.writeObject(null);
+//        s.writeObject(null);
+//    }
+//
+//    /**
+//     * Reconstitutes the instance from a stream (that is, deserializes it).
+//     *
+//     * @param s the stream
+//     */
+//    private void readObject(java.io.ObjectInputStream s)
+//            throws IOException, ClassNotFoundException {
+////        s.defaultReadObject();
+////        this.segments = new Segment[NSEGMENTS];
+////        for (; ; ) {
+////            K key = (K) s.readObject();
+////            V value = (V) s.readObject();
+////            if (key == null)
+////                break;
+////            put(key, value);
+////        }
+//        throw new UnsupportedOperationException();
+//    }
 
     /**
      * A hash-based set with properties identical to those of
@@ -1986,7 +1985,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class StrongKeySelfValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -2064,7 +2063,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class StrongKeyStrongValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -2144,7 +2143,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class StrongKeyIntValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -2232,7 +2231,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class StrongKeyWeakValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -2319,7 +2318,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class StrongKeySoftValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -2415,7 +2414,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class WeakKeySelfValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -2493,7 +2492,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class WeakKeyStrongValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -2570,7 +2569,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class WeakKeyIntValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -2649,7 +2648,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class WeakKeyWeakValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -2729,7 +2728,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class WeakKeySoftValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -2825,7 +2824,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class SoftKeySelfValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -2903,7 +2902,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class SoftKeyStrongValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -2980,7 +2979,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class SoftKeyIntValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -3059,7 +3058,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class SoftKeyWeakValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -3139,7 +3138,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class SoftKeySoftValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -3230,7 +3229,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class IntKeySelfValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -3308,7 +3307,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class IntKeyStrongValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -3386,7 +3385,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class IntKeyIntValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -3472,7 +3471,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class IntKeyWeakValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -3559,7 +3558,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
 
     static final class IntKeySoftValueNodeFactory
             implements NodeFactory {
-        private static final long serialVersionUID = 7249069346764182397L;
+        //private static final long serialVersionUID = 7249069346764182397L;
 
         @Override
         public final Node newNode(int locator,
@@ -3578,8 +3577,8 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     static final Unsafe UNSAFE;
     static final long tableBase;
     static final int tableShift;
-    static final long segmentsBase;
-    static final int segmentsShift;
+//    static final long segmentsBase;
+//    static final int segmentsShift;
 
     static {
         try {
@@ -3589,11 +3588,11 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             if ((scale & (scale - 1)) != 0)
                 throw new Error("data type scale not a power of two");
             tableShift = 31 - Integer.numberOfLeadingZeros(scale);
-            segmentsBase = UNSAFE.arrayBaseOffset(Segment[].class);
-            scale = UNSAFE.arrayIndexScale(Segment[].class);
-            if ((scale & (scale - 1)) != 0)
-                throw new Error("data type scale not a power of two");
-            segmentsShift = 31 - Integer.numberOfLeadingZeros(scale);
+//            segmentsBase = UNSAFE.arrayBaseOffset(Segment[].class);
+//            scale = UNSAFE.arrayIndexScale(Segment[].class);
+//            if ((scale & (scale - 1)) != 0)
+//                throw new Error("data type scale not a power of two");
+//            segmentsShift = 31 - Integer.numberOfLeadingZeros(scale);
         } catch (Throwable e) {
             throw new RuntimeException("Could not initialize intrinsics", e);
         }

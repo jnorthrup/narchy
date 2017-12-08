@@ -73,12 +73,12 @@ public class AIMATests {
 
 
 
-        Set<Task> questions = new LinkedHashSet();
-        n.onTask(x -> {
-           if (x.isQuestion() && !x.isInput()) {
-               questions.add(x);
-           }
-        });
+//        Set<Task> questions = new LinkedHashSet();
+//        n.onTask(x -> {
+//           if (x.isQuestion() && !x.isInput()) {
+//               questions.add(x);
+//           }
+//        });
 
 
 //        n.input("Criminal(?x)?");
@@ -94,7 +94,7 @@ public class AIMATests {
 //        n.concept($.$("Criminal")).print();
 
 
-        n.run(2000);
+        n.run(3000);
 
 //        if (!questions.isEmpty()) {
 //            System.out.println("Questions Generated:");

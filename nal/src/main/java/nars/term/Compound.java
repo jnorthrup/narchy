@@ -518,53 +518,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default Term dt(int nextDT) {
-
-
-        if (nextDT != this.dt()) {
-
-
-            Op o = op();
-            assert (o.temporal);
-//            if (!o.temporal) {
-//                return this;
-//                //assert (o.temporal);
-//            }
-
-            Compound base = this instanceof GenericCompoundDT ?
-                    ((GenericCompoundDT) this).ref : this;
-
-
-            if (nextDT == XTERNAL) {
-                return new GenericCompoundDT(base, XTERNAL);
-            } else {
-                Subterms subs = subterms();
-                int ns = subs.subs();
-//                if (nextDT == DTERNAL && ns == 2 && !subs.sub(0).unneg().equals(subs.sub(1).unneg()))
-//                    return base; //re-use base only if the terms are inequal
-
-                /*@NotNull*/
-                if (!concurrent(nextDT) && ns > 2)
-                    return Null; //tried to temporalize what can only be commutive
-
-
-                Term[] ss = subs.arrayShared();
-                if (o.commutative) {
-
-                    if (ss.length == 2) {
-                        //must re-arrange the order to lexicographic, and invert dt
-                        return o.the(nextDT != DTERNAL ? -nextDT : DTERNAL, ss[1], ss[0]);
-                    } else {
-                        return o.the(nextDT, ss);
-                    }
-                } else {
-                    return o.the(nextDT, ss);
-                }
-            }
-
-
-        }
-
-        return this;
+        return nextDT != DTERNAL ? Op.dt(this, nextDT) : this;
     }
 
     /**
@@ -590,7 +544,6 @@ public interface Compound extends Term, IPair, Subterms {
      * finds the first occurring index path to a recursive subterm equal
      * to 't'
      */
-
     static boolean pathFirst(/*@NotNull*/ Compound container, /*@NotNull*/ Term t, /*@NotNull*/ ByteArrayList l) {
         int s = container.subs();
         for (int i = 0; i < s; i++) {

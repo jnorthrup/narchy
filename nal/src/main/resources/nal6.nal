@@ -115,18 +115,20 @@
 
 // Conditional syllogism && Independent Variable Elimination
 //      If after M, P usually happens, and M happens, it means P is expected to happen
+// original:
+//    M, (M ==> P), shift_occurrence_forward(M,"==>")  |- P, (Truth:Deduction, Desire:Induction, Order:ForAllSame)
+//    M, (P ==> M), shift_occurrence_backward(P,"==>") |- P, (Truth:Abduction, Desire:Deduction, Order:ForAllSame)
 
-    B, (A ==> C),  notImpl(B), task(".") |- subIfUnifiesAny(C,A,B,"$"), (Belief:DeductionRecursivePB)
+    B, (A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B,"$"), (Belief:DeductionRecursivePB, Goal:DeciInduction)
         //B, (A ==> C),  notImpl(B), task(".") |- subIfUnifiesAny(C,A,B,"$",strict), (Belief:DeductionRecursivePB)
-        B, (B ==> C),  notImpl(B), task("!") |- C, (Goal:DeciDeduction)
+        //B, (B ==> C),  notImpl(B), task("!") |- C, (Goal:DeciInduction)
 
-    B, (--A ==> C),  notImpl(B), task(".") |- subIfUnifiesAny(C,A,B,"$"), (Belief:DeductionRecursivePBN)
+    B, (--A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B,"$"), (Belief:DeductionRecursivePBN, Goal:DeciInductionN)
         //B, (--A ==> C),  notImpl(B), task(".") |- subIfUnifiesAny(C,A,B,"$",strict), (Belief:DeductionRecursivePBN)
-        B, (--B ==> C),  notImpl(B), task("!") |- C, (Goal:DeciDeductionN)
+        //B, (--B ==> C),  notImpl(B), task("!") |- C, (Goal:DeciInductionN)
 
-    //neq(B,C) on this one but not the others since C is at the 'start' time of the impl
-    B, (C ==> A), notImpl(B), neq(B,C), task(".") |- subIfUnifiesAny(C,A,B,"$"), (Belief:AbductionPB)
-        B, (C ==> B), notImpl(B), neq(B,C), task("!") |- B (Goal:DeciInduction)
+    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B,"$"), (Belief:AbductionPB, Goal:DeciDeduction)
+        //B, (C ==> B), notImpl(B), task("!") |- C (Goal:DeciDeduction)
 
 
 

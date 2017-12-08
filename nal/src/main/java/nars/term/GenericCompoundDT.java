@@ -105,8 +105,8 @@ public class GenericCompoundDT /*extends ProxyTerm<Compound>*/ implements Compou
 
 
     @Override
-    public final Term dt(int dt) {
-        return dt == this.dt ? this : Compound.super.dt(dt);
+    public final Term dt(int nextDT) {
+        return nextDT != dt ? Op.dt(ref, nextDT) : this;
     }
 
     @Override

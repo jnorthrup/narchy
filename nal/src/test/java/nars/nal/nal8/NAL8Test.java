@@ -114,7 +114,7 @@ public class NAL8Test extends NALTest {
         test
                 .input("(hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001}))). :|:")
                 .mustBelieve(cycles, "hold(SELF,{t002})", 1.0f, 0.73f, 0)
-                .mustBelieve(cycles, "(at(SELF,{t001}) &&+5 open({t001}))", 1.0f, 0.81f, 5, 10)
+                .mustBelieve(cycles, "(at(SELF,{t001}) &&+5 open({t001}))", 1.0f, 0.81f, 5)
         ;
     }
 
@@ -425,12 +425,16 @@ public class NAL8Test extends NALTest {
     public void testInhibitionInverse() {
 
         test
-                //.log()
+                .log()
                 .goal("--reward")
                 .believe("(good ==> reward)", 1, 0.9f)
                 .believe("(bad ==> reward)", 0, 0.9f)
-                .mustGoal(cycles, "good", 0.0f, 0.45f)
-                .mustGoal(cycles, "bad", 1.0f, 0.45f)
+                .mustGoal(cycles, "bad", 1.0f,
+                        0.81f)
+                        //0.45f)
+                //nothing strong about 'good' should be concluded
+                .mustNotOutput(cycles, "good", GOAL, 0f, 1f, 0.8f, 1f, ETERNAL)
+                //.mustNotGoal(cycles, "good", 0.0f, 0.45f)
         ;
     }
 

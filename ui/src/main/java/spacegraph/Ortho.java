@@ -37,7 +37,8 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
     /**
      * window width/height in pixels
      */
-    int W, H;
+    protected int W;
+    protected int H;
 
     public Surface surface;
     public SpaceGraph window;
@@ -118,7 +119,7 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
 
     public void start(SpaceGraph s) {
         this.window = s;
-        resized();
+        windowResized(null);
         s.addWindowListener(this);
         s.addMouseListener(this);
         s.addKeyListener(this);
@@ -137,10 +138,6 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Ortho scale(float s) {
-        throw new UnsupportedOperationException();
-    }
 
     float zoomMargin = 0.25f;
 
@@ -155,7 +152,8 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
 
     @Override
     public Ortho scale(float sx, float sy) {
-        throw new UnsupportedOperationException();
+        scale.set(sx, sy);
+        return this;
     }
 
 
@@ -171,6 +169,8 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
 
     @Override
     public void windowResized(WindowEvent e) {
+        W = window.getWidth();
+        H = window.getHeight();
         resized();
     }
 
@@ -296,7 +296,7 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
                     Finger.pointer.set(window.windowX + e.getX(), window.windowY + e.getY());
                 }
             }
-            e.setConsumed(true);
+
         }
 
         /*if (e == null) {
@@ -308,6 +308,8 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
         //if (lx >= 0 && ly >= 0 && lx <= 1f && ly <= 1f) {
         if ((s = finger.on(sx, sy, wmx, wmy, buttonsDown)) != null) {
             log("on", s);
+            if (e!=null)
+                e.setConsumed(true);
             return s;
         } else {
             return null;
@@ -328,20 +330,15 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
         surface.render(gl);
     }
 
-    private void resized() {
-        if (window != null) {
-            W = window.getWidth();
-            H = window.getHeight();
-            //pos(0, 0, );
-            surface.pos(0, 0, W, H);
+    protected void resized() {
 
-            scale.set(1, 1);
-            cam.set(W/2, H/2);
+        surface.pos(0, 0, W, H);
 
-            layout();
-        } else {
-            W = H = 1;
-        }
+        scale.set(1, 1);
+        cam.set(W / 2f, H / 2f);
+
+        layout();
+
     }
 
     @Override

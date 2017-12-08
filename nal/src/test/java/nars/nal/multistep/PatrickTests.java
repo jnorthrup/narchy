@@ -120,8 +120,8 @@ public class PatrickTests extends NALTest {
 
         tt.truthTolerance(0.1f);
 //        MetaGoal.Desire.want(nar.want, 0.5f);
-        tt.nar.freqResolution.set(0.25f);
-        tt.nar.confResolution.set(0.1f);
+        tt.nar.freqResolution.set(0.05f);
+        tt.nar.confResolution.set(0.02f);
         //tt.nar.DEFAULT_BELIEF_PRIORITY = 0.1f;
         tt.nar.time.dur(10);
         tt.nar.termVolumeMax.set(40);

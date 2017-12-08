@@ -37,6 +37,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
 
     public final float[] shapeColor;
     public final Transform transform = new Transform();
+    public boolean active;
 
     public SimpleSpatial(X x) {
         super(x);
@@ -72,12 +73,19 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
     }
 
     @Override
-    public boolean active() {
-        return body!=null && super.active();
+    public void preActivate(boolean b) {
+        active = b;
+        super.preActivate(b);
     }
 
+    @Override
+    public boolean active() {
+        return active && body!=null && super.active();
+    }
+
+
     protected String label(X x) {
-        return x!=null ? x.toString() : super.toString();
+        return x!=null ? x.toString() : toString();
     }
 
 
@@ -266,6 +274,10 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
         return body.mass();
     }
 
+    @Override
+    public void renderAbsolute(GL2 gl, long timeMS) {
+        super.renderAbsolute(gl, timeMS);
+    }
 
     @Override protected void colorshape(GL2 gl) {
         gl.glColor4fv(shapeColor, 0);

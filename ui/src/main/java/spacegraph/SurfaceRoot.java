@@ -15,7 +15,9 @@ public interface SurfaceRoot {
 
     Ortho move(float x, float y);
 
-    Ortho scale(float s);
+    default Ortho scale(float s) {
+        return scale(s, s);
+    }
 
     Ortho scale(float sx, float sy);
 

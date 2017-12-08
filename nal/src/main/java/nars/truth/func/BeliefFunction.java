@@ -80,8 +80,8 @@ public enum BeliefFunction implements TruthOperator {
         @Override
         public Truth apply(Truth T, Truth B, NAR m, float minConf) {
             if (B.isNegative()) {
-                Truth x = TruthFunctions.deduction(T, B.neg(), minConf);
-                return x != null ? x.neg() : null;
+                Truth x = TruthFunctions.deduction(T.neg(), B.neg(), minConf);
+                return x != null ? x : null;
             } else {
                 return TruthFunctions.deduction(T, B, minConf);
             }

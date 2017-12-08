@@ -126,12 +126,21 @@ public class Anon {
 
         protected Term transformDirect(Op o, Compound x) {
 
-            Term[] yy = Util.map(this::applyTermOrNull, Term[]::new, x.subterms().arrayShared());
+            Subterms xx = x.subterms();
+            Term[] yy = Util.map(this::applyTermOrNull, Term[]::new, xx.arrayShared());
 
             if (Util.or((Term y) -> y instanceof Bool, yy))
                 return null;
 
-            return transformDirect(o, yy);
+            Term z = transformDirect(o, yy);
+
+
+            Subterms zz = z.subterms();
+            if (!zz.isNormalized() && xx.isNormalized()) //propagate normalization, it should still hold
+                ((TermVector) zz).setNormalized();
+
+
+            return z;
         }
 
         @Nullable
