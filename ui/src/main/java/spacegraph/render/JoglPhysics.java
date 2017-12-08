@@ -789,7 +789,7 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
 
             gl.glPushMatrix();
 
-            Draw.transform(gl, body.transform());
+            Draw.transform(gl, body.transform);
 
             s.renderRelative(gl, body);
 

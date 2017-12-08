@@ -69,7 +69,7 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
 
                     //TODO compute new azi and ele that match the current viewing angle values by backcomputing the vector delta
 
-                    space.camera(co.getWorldOrigin(), co.shape().getBoundingRadius()*2.5f);
+                    space.camera(co.transform, co.shape().getBoundingRadius()*2.5f);
 
                 }
                 return true;
@@ -158,7 +158,7 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
             Dynamic body = pickedBody;
             v3 pickPos = new v3(rayCallback.hitPointWorld);
 
-            Transform tmpTrans = body.worldTransform;
+            Transform tmpTrans = body.transform;
             tmpTrans.inverse();
             v3 localPivot = new v3(pickPos);
             tmpTrans.transform(localPivot);

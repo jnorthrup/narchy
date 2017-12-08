@@ -588,7 +588,7 @@ public class Dynamics<X> extends Collisions<X> {
                 if (body.isActive() && (!body.isStaticOrKinematicObject())) {
                     body.predictIntegratedTransform(timeStep, predictedTrans);
 
-                    Transform BW = body.worldTransform;
+                    Transform BW = body.transform;
 
                     tmp.sub(predictedTrans, BW);
                     float squareMotion = tmp.lengthSquared();

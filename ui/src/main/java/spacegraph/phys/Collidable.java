@@ -48,7 +48,7 @@ public class Collidable<X> {
 	public static final int WANTS_DEACTIVATION = 3;
 	public static final int DISABLE_DEACTIVATION = 4;
 	public static final int DISABLE_SIMULATION = 5;
-	public final Transform worldTransform;
+	public final Transform transform;
 
 	///m_interpolationWorldTransform is used for CCD and interpolation
 	///it can be either previous or future (predicted) transform
@@ -105,11 +105,7 @@ public class Collidable<X> {
 		this.state = 1;
 		this.friction = 0.5f;
 		this.hitFraction = 1f;
-		this.worldTransform = t;
-	}
-
-	public final Transform transform() {
-		return worldTransform;
+		this.transform = t;
 	}
 
 	public boolean checkCollideWithOverride(Collidable co) {
@@ -218,12 +214,12 @@ public class Collidable<X> {
 	}
 
 	public Transform getWorldTransform(Transform out) {
-		out.set(worldTransform);
+		out.set(transform);
 		return out;
 	}
 
-	public void setWorldTransform(Transform worldTransform) {
-		this.worldTransform.set(worldTransform);
+	public void transform(Transform transform) {
+		this.transform.set(transform);
 	}
 
 	public void broadphase(@Nullable Broadphasing broadphaseHandle) {
@@ -324,14 +320,14 @@ public class Collidable<X> {
 	}
 
 	public v3 getWorldOrigin() {
-		return worldTransform;
+		return transform;
 	}
 
 	@Override
 	public String toString() {
 		return "CollisionObject{" +
 				collisionShape +
-				" @ " + worldTransform +
+				" @ " + transform +
 				'}';
 	}
 

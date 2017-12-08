@@ -44,15 +44,15 @@ public class Flatten<X> implements SpaceTransform<X>, Consumer<Spatial<X>> {
             if (b == null)
                 return;
 
-            float tz = b.worldTransform.z;
+            float tz = b.transform.z;
             if (Math.abs(tz) > zTolerance) {
 //                b.velAdd(v( 0, 0,
 //                        -(tz > 0 ? (tz - zTolerance) : (tz + zTolerance)) * zSpeed));
                 b.linearVelocity.z *= zSpeed;
-                b.worldTransform.z *= zSpeed;
+                b.transform.z *= zSpeed;
             } else {
                 b.linearVelocity.z = 0;
-                b.worldTransform.z = 0;
+                b.transform.z = 0;
             }
             s.rotate(up, rotateRate, new Quaternion());
 

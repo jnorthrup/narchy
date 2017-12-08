@@ -187,23 +187,23 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 
 			if (child_has_transform0) {
 				tmpTrans.mul(orgtrans0, shape0.getChildTransform(triface0));
-				body0.setWorldTransform(tmpTrans);
+				body0.transform(tmpTrans);
 			}
 
 			if (child_has_transform1) {
 				tmpTrans.mul(orgtrans1, shape1.getChildTransform(triface1));
-				body1.setWorldTransform(tmpTrans);
+				body1.transform(tmpTrans);
 			}
 
 			// collide two convex shapes
 			convex_vs_convex_collision(body0, body1, colshape0, colshape1);
 
 			if (child_has_transform0) {
-				body0.setWorldTransform(orgtrans0);
+				body0.transform(orgtrans0);
 			}
 
 			if (child_has_transform1) {
-				body1.setWorldTransform(orgtrans1);
+				body1.transform(orgtrans1);
 			}
 
 		}
@@ -283,7 +283,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 
 			if (child_has_transform0) {
 				tmpTrans.mul(orgtrans0, shape0.getChildTransform(child_index));
-				body0.setWorldTransform(tmpTrans);
+				body0.transform(tmpTrans);
 			}
 
 			// collide two shapes
@@ -296,7 +296,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 
 			// restore transforms
 			if (child_has_transform0) {
-				body0.setWorldTransform(orgtrans0);
+				body0.transform(orgtrans0);
 			}
 
 		}
@@ -314,14 +314,14 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 			CollisionShape colshape1 = shape1.getChildShape(i);
 			childtrans1.mul(orgtrans1, shape1.getChildTransform(i, tmpTrans));
 
-			body1.setWorldTransform(childtrans1);
+			body1.transform(childtrans1);
 
 			// collide child shape
 			gimpact_vs_shape(body0, body1,
 					shape0, colshape1, swapped);
 
 			// restore transforms
-			body1.setWorldTransform(orgtrans1);
+			body1.transform(orgtrans1);
 		}
 	}
 	
@@ -336,11 +336,11 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		tricallback.margin = shape1.getMargin();
 
 		// getting the trimesh AABB
-		Transform gimpactInConcaveSpace = body1.worldTransform; /*new Transform();
+		Transform gimpactInConcaveSpace = body1.transform; /*new Transform();
 
 		body1.getWorldTransform(gimpactInConcaveSpace);*/
 		gimpactInConcaveSpace.inverse();
-		gimpactInConcaveSpace.mul(body0.worldTransform);
+		gimpactInConcaveSpace.mul(body0.transform);
 
 		v3 minAABB = new v3(), maxAABB = new v3();
 		shape0.getAabb(gimpactInConcaveSpace, minAABB, maxAABB);
@@ -427,8 +427,8 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 	void collide_sat_triangles(Collidable body0, Collidable body1, GImpactMeshShape.GImpactMeshShapePart shape0, GImpactMeshShape.GImpactMeshShapePart shape1, PairSet pairs, int pair_count) {
 		v3 tmp = new v3();
 
-		Transform orgtrans0 = body0.worldTransform;
-		Transform orgtrans1 = body1.worldTransform;
+		Transform orgtrans0 = body0.transform;
+		Transform orgtrans1 = body1.transform;
 
 		PrimitiveTriangle ptri0 = new PrimitiveTriangle();
 		PrimitiveTriangle ptri1 = new PrimitiveTriangle();
@@ -579,8 +579,8 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 	}
 	
 	protected void gimpacttrimeshpart_vs_plane_collision(Collidable body0, Collidable body1, GImpactMeshShape.GImpactMeshShapePart shape0, StaticPlaneShape shape1, boolean swapped) {
-		Transform orgtrans0 = body0.worldTransform;
-		Transform orgtrans1 = body1.worldTransform;
+		Transform orgtrans0 = body0.transform;
+		Transform orgtrans1 = body1.transform;
 
 		StaticPlaneShape planeshape = shape1;
 		Vector4f plane = new Vector4f();

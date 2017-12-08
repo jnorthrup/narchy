@@ -88,9 +88,9 @@ public class SolverBody {
 
 			// correct the position/orientation based on push/turn recovery
 			newTransform.setIdentity();
-			Transform curTrans = body.transform(); //getWorldTransform(new Transform());
+			Transform curTrans = body.transform; //getWorldTransform(new Transform());
 			TransformUtil.integrateTransform(curTrans, pushVelocity, turnVelocity, timeStep, newTransform);
-			body.setWorldTransform(newTransform);
+			body.transform(newTransform);
 
 			//m_originalBody->setCompanionId(-1);
 		}

@@ -58,7 +58,7 @@ public class ConceptWidget extends TermWidget<Concept> {
         final float initDistanceEpsilon = 50f;
 
         //place in a random direction
-        x.transform().set(
+        x.transform.set(
                 SpaceGraph.r(initDistanceEpsilon),
                 SpaceGraph.r(initDistanceEpsilon),
                 SpaceGraph.r(initDistanceEpsilon));

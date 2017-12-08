@@ -106,7 +106,7 @@ public abstract class Collisions<X> extends BulletGlobals {
             v3 maxAabb = new v3();
 
             CollisionShape shape = c.shape();
-            shape.getAabb(c.worldTransform, minAabb, maxAabb);
+            shape.getAabb(c.transform, minAabb, maxAabb);
 
             c.broadphase(broadphase.createProxy(
                     minAabb,
@@ -512,7 +512,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                     //RigidcollisionObject* collisionObject = ctrl->GetRigidcollisionObject();
                     CollisionShape shape = collidable.shape();
 
-                    Transform worldTransform = collidable.worldTransform;
+                    Transform worldTransform = collidable.transform;
 
                     shape.getAabb(worldTransform, collisionObjectAabbMin, collisionObjectAabbMax);
 
@@ -583,7 +583,7 @@ public abstract class Collisions<X> extends BulletGlobals {
             // only perform raycast if filterMask matches
             if (resultCallback.needsCollision(collidable.broadphase)) {
                 //RigidcollisionObject* collisionObject = ctrl->GetRigidcollisionObject();
-                Transform S = collidable.worldTransform;
+                Transform S = collidable.transform;
                 CollisionShape shape = collidable.shape();
 
                 shape.getAabb(S, collisionObjectAabbMin, collisionObjectAabbMax);

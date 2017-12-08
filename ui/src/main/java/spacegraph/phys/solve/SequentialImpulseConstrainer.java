@@ -1037,8 +1037,8 @@ public class SequentialImpulseConstrainer extends Constrainer {
                 cp.getPositionWorldOnA(pos1);
                 cp.getPositionWorldOnB(pos2);
 
-                rel_pos1.sub(pos1, body0.worldTransform);
-                rel_pos2.sub(pos2, body1.worldTransform);
+                rel_pos1.sub(pos1, body0.transform);
+                rel_pos2.sub(pos2, body1.transform);
 
                 // this jacobian entry is re-used for all iterations
                 Matrix3f mat1 = body0.getCenterOfMassTransform(tt1).basis;

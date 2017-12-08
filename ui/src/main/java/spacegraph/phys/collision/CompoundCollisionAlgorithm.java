@@ -113,7 +113,7 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 
 			compoundShape.getChildTransform(i, childTrans);
 			newChildWorldTrans.mul(orgTrans, childTrans);
-			colObj.setWorldTransform(newChildWorldTrans);
+			colObj.transform(newChildWorldTrans);
 			colObj.setInterpolationWorldTransform(newChildWorldTrans);
 
 			// the contactpoint is still projected back using the original inverted worldtrans
@@ -123,7 +123,7 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
             childCollisionAlgorithms.get(i).processCollision(colObj, otherObj, dispatchInfo, resultOut);
 			// revert back
 			colObj.internalSetTemporaryCollisionShape(tmpShape);
-			colObj.setWorldTransform(orgTrans);
+			colObj.transform(orgTrans);
 			colObj.setInterpolationWorldTransform(orgInterpolationTrans);
 		}
 	}
@@ -162,7 +162,7 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 			//btTransform	newChildWorldTrans = orgTrans*childTrans ;
 			tmpTrans.set(orgTrans);
 			tmpTrans.mul(childTrans);
-			colObj.setWorldTransform(tmpTrans);
+			colObj.transform(tmpTrans);
 
 			CollisionShape tmpShape = colObj.shape();
 			colObj.internalSetTemporaryCollisionShape(childShape);
@@ -173,7 +173,7 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 			}
 			// revert back
 			colObj.internalSetTemporaryCollisionShape(tmpShape);
-			colObj.setWorldTransform(orgTrans);
+			colObj.transform(orgTrans);
 		}
 		return hitFraction;
 	}

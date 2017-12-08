@@ -86,7 +86,7 @@ public class ForceDirected implements spacegraph.phys.constraint.BroadConstraint
         if (center) {
             float cx = 0, cy = 0, cz = 0;
             for (int i = 0, objectsSize = n; i < objectsSize; i++) {
-                v3 c = objects.get(i).worldTransform;
+                v3 c = objects.get(i).transform;
                 cx += c.x;
                 cy += c.y;
                 cz += c.z;
@@ -100,7 +100,7 @@ public class ForceDirected implements spacegraph.phys.constraint.BroadConstraint
                 correction.normalize(centerSpeed);
 
             for (int i = 0, objectsSize = n; i < objectsSize; i++) {
-                objects.get(i).worldTransform.add(correction);
+                objects.get(i).transform.add(correction);
             }
 
         }

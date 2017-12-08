@@ -153,10 +153,10 @@ public class Dynamic<X> extends Collidable<X> {
 //			optionalMotionState.getWorldTransform(worldTransform);
 //		} else
 //		{
-			this.worldTransform.setIdentity();
+			this.transform.setIdentity();
 //		}
 
-		interpolationWorldTransform.set(worldTransform);
+		interpolationWorldTransform.set(transform);
 //		interpolationLinearVelocity.set(0f, 0f, 0f);
 //		interpolationAngularVelocity.set(0f, 0f, 0f);
 
@@ -229,7 +229,7 @@ public class Dynamic<X> extends Collidable<X> {
 	 * Continuous collision detection needs prediction.
 	 */
 	public void predictIntegratedTransform(float timeStep, Transform predictedTransform) {
-		TransformUtil.integrateTransform(worldTransform, linearVelocity, angularVelocity, timeStep, predictedTransform);
+		TransformUtil.integrateTransform(transform, linearVelocity, angularVelocity, timeStep, predictedTransform);
 	}
 
 
@@ -245,10 +245,10 @@ public class Dynamic<X> extends Collidable<X> {
 //			}
 			//Vector3f linVel = new Vector3f(), angVel = new Vector3f();
 
-			TransformUtil.calculateVelocity(interpolationWorldTransform, worldTransform, timeStep, linearVelocity, angularVelocity);
+			TransformUtil.calculateVelocity(interpolationWorldTransform, transform, timeStep, linearVelocity, angularVelocity);
 //			interpolationLinearVelocity.set(linearVelocity);
 //			interpolationAngularVelocity.set(angularVelocity);
-			interpolationWorldTransform.set(worldTransform);
+			interpolationWorldTransform.set(transform);
 		//printf("angular = %f %f %f\n",m_angularVelocity.getX(),m_angularVelocity.getY(),m_angularVelocity.getZ());
 		}
 	}
@@ -400,10 +400,10 @@ public class Dynamic<X> extends Collidable<X> {
 	}
 
 	public void setCenterOfMassTransform(Transform xform) {
-		interpolationWorldTransform.set(isStaticOrKinematicObject() ? worldTransform : xform);
+		interpolationWorldTransform.set(isStaticOrKinematicObject() ? transform : xform);
 //		getLinearVelocity(interpolationLinearVelocity);
 //		getAngularVelocity(interpolationAngularVelocity);
-		worldTransform.set(xform);
+		transform.set(xform);
 		updateInertiaTensor();
 	}
 
@@ -485,26 +485,26 @@ public class Dynamic<X> extends Collidable<X> {
 	
 	public void updateInertiaTensor() {
 		Matrix3f mat1 = new Matrix3f();
-		MatrixUtil.scale(mat1, worldTransform.basis, invInertiaLocal);
+		MatrixUtil.scale(mat1, transform.basis, invInertiaLocal);
 
-		Matrix3f mat2 = new Matrix3f(worldTransform.basis);
+		Matrix3f mat2 = new Matrix3f(transform.basis);
 		mat2.transpose();
 
 		invInertiaTensorWorld.mul(mat1, mat2);
 	}
 
 	@Deprecated public v3 getCenterOfMassPosition(v3 out) {
-		out.set(worldTransform);
+		out.set(transform);
 		return out;
 	}
 
 	@Deprecated public Quat4f getOrientation(Quat4f out) {
-		MatrixUtil.getRotation(worldTransform.basis, out);
+		MatrixUtil.getRotation(transform.basis, out);
 		return out;
 	}
 	
 	@Deprecated public Transform getCenterOfMassTransform(Transform out) {
-		out.set(worldTransform);
+		out.set(transform);
 		return out;
 	}
 
@@ -546,17 +546,17 @@ public class Dynamic<X> extends Collidable<X> {
 	}
 
 	public void translate(v3 v) {
-		worldTransform.add(v);
+		transform.add(v);
 	}
 
 
 	public void getAabb(v3 aabbMin, v3 aabbMax) {
-		shape().getAabb(worldTransform, aabbMin, aabbMax);
+		shape().getAabb(transform, aabbMin, aabbMax);
 	}
 
 	public float computeImpulseDenominator(v3 pos, v3 normal) {
 		v3 r0 = new v3();
-		r0.sub(pos, worldTransform);
+		r0.sub(pos, transform);
 
 		v3 c0 = new v3();
 		c0.cross(r0, normal);

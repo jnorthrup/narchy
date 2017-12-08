@@ -127,7 +127,7 @@ public abstract class Spatial<X> implements Active {
         //v3 zero = v(0,0,0);
 
         forEachBody(b -> {
-            v3 t = b.worldTransform;
+            v3 t = b.transform;
             //((Dynamic)b).clearForces();
             //((Dynamic)b).setLinearVelocity(zero);
             t.clamp(boundsMin, boundsMax);
