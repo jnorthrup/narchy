@@ -1,6 +1,7 @@
 package jcog.data.graph.hgraph;
 
 import com.google.common.collect.Iterables;
+import jcog.TODO;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -17,10 +18,10 @@ public class NodeGraph<N, E> {
     protected Map<N, Node<N, E>> nodes;
 
     public NodeGraph() {
-        this(new LinkedHashMap<>(), new LinkedHashMap());
+        this(new LinkedHashMap<>());
     }
 
-    public NodeGraph(Map<N, Node<N, E>> nodes, Map<E, Edge<N, E>> edges) {
+    public NodeGraph(Map<N, Node<N, E>> nodes) {
         this.nodes = nodes;
     }
 
@@ -116,7 +117,9 @@ public class NodeGraph<N, E> {
 //        });
 //    }
 
+    
     public void traverseBFS(Node<N, E> startingNode, Search tv, boolean longestPath) {
+        throw new TODO();
 
 //        if (longestPath) {
 //            markReachable(startingNode);

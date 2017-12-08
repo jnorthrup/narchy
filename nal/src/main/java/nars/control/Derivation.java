@@ -14,10 +14,10 @@ import nars.op.data.differ;
 import nars.op.data.intersect;
 import nars.op.data.union;
 import nars.task.DerivedTask;
-import nars.term.anon.Anon;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.anon.Anon;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
@@ -56,7 +56,7 @@ public class Derivation extends Unify {
 
     public final BatchActivation activator = new BatchActivation();
 
-    public final Anon anon = new Anon.CachingAnon(16);
+    public final Anon anon;
 
     /**
      * temporary buffer for derivations before input so they can be merged in case of duplicates
@@ -65,10 +65,12 @@ public class Derivation extends Unify {
 
     private ImmutableMap<Term, Termed> derivationFunctors;
 
-    public float freqRes,confRes;
+    public float freqRes, confRes;
 
 
-    /** mutable state */
+    /**
+     * mutable state
+     */
     public Truth concTruth;
     public byte concPunc;
     public float concEviFactor;
@@ -141,7 +143,6 @@ public class Derivation extends Unify {
     public DeriveTime dtSingle = null, dtDouble = null;
 
 
-
 //    private transient Term[][] currentMatch;
 
 //    public /*static*/ final Cache<Transformation, Term> transformsCache; //works in static mode too
@@ -160,7 +161,15 @@ public class Derivation extends Unify {
                 , null, Param.UnificationStackMax, 0);
 
 
-         derivedTerm = new Versioned(this, 3);
+        derivedTerm = new Versioned(this, 3);
+
+        anon = new Anon.CachingAnon(16) {
+            @Override
+            public Term _get(Term x) {
+                Term y = super._get(x);
+                return y!=null ? y.eval(nar.terms) : null;
+            }
+        };
 
 //        Caffeine cb = Caffeine.newBuilder().executor(nar.exe);
 //            //.executor(MoreExecutors.directExecutor());
@@ -189,9 +198,9 @@ public class Derivation extends Unify {
                 return compared.isNegative() ? subterm.neg() : subterm;
         });
 
-        Termed[] derivationFunctors = new Termed[] {
-            new uniSubAny(this),
-            polarizeFunc
+        Termed[] derivationFunctors = new Termed[]{
+                new uniSubAny(this),
+                polarizeFunc
         };
         Map<Term, Termed> m = new HashMap(derivationFunctors.length + 2);
         for (Termed x : derivationFunctors) {
@@ -202,7 +211,9 @@ public class Derivation extends Unify {
         this.derivationFunctors = Maps.immutable.ofMap(m);
     }
 
-    /** functors to be inserted in PatternIndex's for direct usage */
+    /**
+     * functors to be inserted in PatternIndex's for direct usage
+     */
     public static Termed[] ruleFunctors(NAR nar) {
         return new Termed[]{
                 Subst.the,
@@ -293,11 +304,9 @@ public class Derivation extends Unify {
 
 //        this.task = p.task;
         final Task task = this.task = anon.put(_task);
-        if (belief!=null)
+        if (belief != null)
             belief = anon.put(belief);
         beliefTerm = anon.put(beliefTerm);
-
-
 
 
         size = 0; //HACK instant revert to zero
@@ -308,7 +317,7 @@ public class Derivation extends Unify {
         dtSingle = dtDouble = null;
 
 //        if (revert(0)) {
-            //remove common variable entries because they will just consume memory if retained as empty
+        //remove common variable entries because they will just consume memory if retained as empty
 //            xy.map.keySet().removeIf(k -> {
 //                return !(k instanceof AbstractVariable) || k instanceof CommonVariable;
 //            });
@@ -327,7 +336,6 @@ public class Derivation extends Unify {
         this.evidenceDouble = evidenceSingle = null;
 
 
-
         Term taskTerm = task.term();
         this.taskTerm = taskTerm;
 
@@ -337,7 +345,6 @@ public class Derivation extends Unify {
 
 
         this.belief = belief;
-
 
 
         this.concOcc[0] = this.concOcc[1] = ETERNAL;
@@ -377,7 +384,7 @@ public class Derivation extends Unify {
                 this.beliefTruth = !task.isEternal() ?
                         belief.truth(belief.nearestTimeBetween(task.start(), task.end()), dur, confMin) :
                         belief.truth();
-                            //belief.truth(ETERNAL, ETERNAL...)
+                //belief.truth(ETERNAL, ETERNAL...)
             } else {
                 this.beliefTruth = beliefTruthRaw;
             }
@@ -391,7 +398,7 @@ public class Derivation extends Unify {
 //                            Stamp.overlapFraction(taskStamp, beliefStamp),
 //                            Stamp.cyclicity(beliefStamp)
 //                    );
-                      Stamp.overlapFraction(taskStamp, beliefStamp);
+                    Stamp.overlapFraction(taskStamp, beliefStamp);
         } else {
             this.beliefTruth = this.beliefTruthRaw = null;
             this.overlapDouble = 0;

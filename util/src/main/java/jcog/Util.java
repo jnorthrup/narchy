@@ -484,6 +484,14 @@ public enum Util {
         }
         return offset + 4;
     }
+    /**
+     * returns the next index
+     */
+    public static int short2Bytes(int l, byte[] target, int offset) {
+        target[offset++] = (byte)((l >> 8) & 0xff);
+        target[offset++] = (byte)((l) & 0xff);
+        return offset;
+    }
 
     /**
      * http://www.java-gaming.org/index.php?topic=24194.0

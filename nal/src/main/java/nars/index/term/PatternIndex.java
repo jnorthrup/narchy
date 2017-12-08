@@ -180,11 +180,9 @@ public class PatternIndex extends MapTermIndex {
 //
 //            } else
             if (x instanceof Ellipsis.EllipsisPrototype) {
-                Ellipsis.EllipsisPrototype ep = (Ellipsis.EllipsisPrototype) x;
-                int serial = count;
-                return Ellipsis.EllipsisPrototype.make(serial, ep.minArity);
+                return Ellipsis.EllipsisPrototype.make((byte) count,
+                        ((Ellipsis.EllipsisPrototype) x).minArity);
             } else if (x instanceof Ellipsis) {
-
                 return x;
 
                 //throw new UnsupportedOperationException("?");

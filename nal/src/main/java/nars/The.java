@@ -11,7 +11,8 @@ import nars.derive.match.EllipsisMatch;
 import nars.index.term.NewCompound;
 import nars.term.Term;
 import nars.term.anon.Anom;
-import nars.term.anon.AnomVector;
+import nars.term.anon.AnonID;
+import nars.term.anon.AnonVector;
 import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.UnitCompound1;
@@ -64,7 +65,7 @@ public enum The {
             for (Term x : t) {
                 if (x instanceof EllipsisMatch)
                     throw new RuntimeException("ellipsis match should not be a subterm of ANYTHING");
-                if (!(x instanceof Anom))
+                if (purelyAnon && !(x instanceof AnonID))
                     purelyAnon = false;
             }
 
@@ -80,7 +81,7 @@ public enum The {
                         return new ArrayTermVector(t);
                 }
             } else {
-                return new AnomVector(t);
+                return new AnonVector(t);
             }
 
         };

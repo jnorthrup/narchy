@@ -9,10 +9,7 @@ import org.eclipse.collections.impl.utility.ArrayIterate;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
@@ -41,6 +38,13 @@ public class FasterList<X> extends FastList<X> {
 
     public FasterList(Iterable<X> copy) {
         copy.forEach(this::add);
+    }
+
+    public FasterList(Iterator<X> copy) {
+        super();
+        while (copy.hasNext()) {
+            add(copy.next());
+        }
     }
 
     public FasterList(Iterable<X> copy, int sizeEstimate) {

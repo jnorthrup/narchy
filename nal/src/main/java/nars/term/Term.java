@@ -383,7 +383,7 @@ public interface Term extends Termed, Comparable<Termed> {
      */
     default boolean unify(Term y, Unify u) {
         if (this.equals(y)) {
-            return true;
+            return true; //only assume unification via equality if not a compound, since
         } else if (y instanceof Variable && !(this instanceof Variable) && u.varSymmetric && u.matchType(y.op())) {
             return y.unify(this, u); //reverse
         } else if (y instanceof AliasConcept.AliasAtom) {
@@ -790,13 +790,13 @@ public interface Term extends Termed, Comparable<Termed> {
         return DTERNAL;
     }
 
-    default Term normalize(int offset) {
+    default Term normalize(byte offset) {
         return this; //no change
     }
 
     @Nullable
     default Term normalize() {
-        return normalize(0);
+        return normalize((byte)0);
     }
 
 

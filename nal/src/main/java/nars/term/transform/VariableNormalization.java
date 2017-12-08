@@ -41,7 +41,7 @@ public class VariableNormalization extends VariableTransform {
     public static final VariableTransform singleVariableNormalization = new VariableTransform() {
 
         @Override public Term apply(Term t) {
-            return t instanceof Variable ? t.normalize(1) : t;
+            return t instanceof Variable ? t.normalize((byte)1) : t;
         }
     };
 
@@ -73,7 +73,7 @@ public class VariableNormalization extends VariableTransform {
 
         int vid = this.count + offset;
 
-        return x.normalize(vid);
+        return x.normalize((byte)vid);
 
 //        if (x instanceof UnnormalizedVariable) {
 //            y = ((UnnormalizedVariable) x).normalize(vid); //HACK

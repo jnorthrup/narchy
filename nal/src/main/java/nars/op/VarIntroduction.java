@@ -27,7 +27,9 @@ public abstract class VarIntroduction {
 
 //        Map<Term, Term> substs = new HashMap<>(1, 0.9f);
 //
-        int varOffset = x.vars(); //ensure the variables dont collide with existing variables
+        int vars = x.vars();
+        assert(vars < 127-1);
+        byte varOffset = (byte) vars; //ensure the variables dont collide with existing variables
 //        boolean found = false;
 //        for (int i = 0, selectionsSize = selections.size(); i < selectionsSize; i++) {
             Term u = next(x, r);
@@ -83,7 +85,7 @@ public abstract class VarIntroduction {
     /**
      * provides the next terms that will be substituted in separate permutations; return null to prevent introduction
      */
-    abstract protected Term next(Term input, Term selection, int order);
+    abstract protected Term next(Term input, Term selection, byte order);
     /*{
         return $.varQuery("c" + iteration);
     }*/

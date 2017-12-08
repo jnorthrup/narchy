@@ -9,7 +9,7 @@ public interface TraveLog {
     /** returns false if it was already added */
     boolean visit(Node n);
 
-    boolean isVisited(Node n);
+    boolean hasVisited(Node n);
 
 
     //TODO: reachable, etc
@@ -29,7 +29,7 @@ public interface TraveLog {
         }
 
         @Override
-        public boolean isVisited(Node n) {
+        public boolean hasVisited(Node n) {
             return visit.contains(n.serial);
         }
 

@@ -108,8 +108,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
     static boolean validTaskTerm(@Nullable Term t, byte punc, boolean safe) {
 
-//        if (t == null)
-//            return fail(t, "null content", safe);
+        if (t == null)
+            return fail(t, "null content", safe);
 
         if (punc != COMMAND) {
 
@@ -186,7 +186,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                             return true; //skip the input term
 
                         if (indepVarOrStatement.op() == VAR_INDEP) {
-                            indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).id(), FasterList::new).add(
+                            indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).anonNum(), FasterList::new).add(
                                 path.toImmutable()
                             );
                         } else {
@@ -366,6 +366,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             negated = false;
         }
 
+        t = t.normalize();
 
         if (Task.validTaskTerm(t, punc, safe)) {
             return pair(t, negated);

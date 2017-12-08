@@ -12,7 +12,7 @@ import static nars.Op.VAR_INDEP;
  */
 public final class VarIndep extends AbstractVariable {
 
-    public VarIndep(int id) {
+    public VarIndep(byte id) {
         super(VAR_INDEP, id);
     }
 

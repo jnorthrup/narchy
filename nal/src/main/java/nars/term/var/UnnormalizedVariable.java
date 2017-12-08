@@ -20,11 +20,6 @@ public class UnnormalizedVariable extends AtomicConst implements Variable {
         this.type = type;
     }
 
-    @Override
-    public final byte id() {
-        throw new UnsupportedOperationException();
-    }
-
 
     @Override
     public final int complexity() {
@@ -74,8 +69,9 @@ public class UnnormalizedVariable extends AtomicConst implements Variable {
         return type == Op.VAR_PATTERN ? 0 : 1;
     }
 
-    /** produce a normalized version of this identified by the serial integer */
-    @Override public Variable normalize(int serial) {
+    /** produce a normalized version of this identified by the serial integer
+     * @param serial*/
+    @Override public Variable normalize(byte serial) {
         return $.v(type, serial);
     }
 

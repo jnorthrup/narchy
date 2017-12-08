@@ -10,6 +10,7 @@ import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
 import nars.task.NALTask;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import nars.truth.Truth;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
@@ -47,13 +48,13 @@ public class Taskify extends AbstractPred<Derivation> {
 
         Term x0 = d.derivedTerm.get();
         Term x1 = d.anon.get(x0);
-        if (x1 == null) {
+        if (x1 == null || x1 instanceof Bool) {
             //d.anon.get(x0); //HACK temporary for debug
             //throw new NullPointerException();
             return false; //when the values were finally dereferenced, the result produced an invalid compound
         }
         Term x = x1.normalize();
-        if (x == null) //HACK temporary for debug
+        if (x == null || x instanceof Bool) //HACK temporary for debug
             throw new NullPointerException();
 
         long[] occ = d.concOcc;

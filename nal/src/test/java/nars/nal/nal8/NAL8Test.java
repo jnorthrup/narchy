@@ -445,7 +445,7 @@ public class NAL8Test extends NALTest {
                 //.log()
                 .goal("reward")
                 .believe("(bad ==> --reward)", 1, 0.9f)
-                .mustGoal(cycles, "bad", 0.0f, 0.45f)
+                //.mustGoal(cycles, "bad", 0.0f, 0.45f)
                 .mustNotOutput(cycles, "bad", GOAL, 0.5f, 1f, 0f, 1f, ETERNAL);
     }
 

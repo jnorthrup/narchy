@@ -1,16 +1,21 @@
 package nars.term;
 
+import jcog.data.array.Arrays;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import nars.Narsese;
 import nars.term.anon.Anom;
-import nars.term.anon.AnomVector;
+import nars.term.anon.AnonVector;
 import nars.term.anon.Anon;
 import nars.term.compound.CachedCompound;
 import nars.term.container.ArrayTermVector;
 import nars.term.container.TermVector;
 import nars.term.container.TermVector1;
 import nars.term.container.TermVector2;
+import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Test;
+
+import java.util.Random;
 
 import static nars.$.$;
 import static nars.Op.PROD;
@@ -56,12 +61,26 @@ public class AnonTest {
 
         Term[] x = {Anom.the(2), Anom.the(0), Anom.the(1)};
 
-        assertEqual(new TermVector1(x[0]), new AnomVector(x[0]));
-        assertEqual(new TermVector2(x[0], x[1]), new AnomVector(x[0], x[1]));
-        assertEqual(new ArrayTermVector(x), new AnomVector(x));
+        assertEqual(new TermVector1(x[0]), new AnonVector(x[0]));
+        assertEqual(new TermVector2(x[0], x[1]), new AnonVector(x[0], x[1]));
+        assertEqual(new ArrayTermVector(x), new AnonVector(x));
     }
 
-    static void assertEqual(TermVector v, AnomVector a) {
+    @Test public void testMixedAnonVector() {
+
+        Term[] x = {$.varDep(1), $.varIndep(2), $.varQuery(3), Anom.the(4)};
+        Random rng = new XoRoShiRo128PlusRandom(1);
+        for (int i = 0; i < 4; i++) {
+
+            ArrayUtils.shuffle(x, rng);
+
+            assertEqual(new TermVector1(x[0]), new AnonVector(x[0]));
+            assertEqual(new TermVector2(x[0], x[1]), new AnonVector(x[0], x[1]));
+            assertEqual(new ArrayTermVector(x), new AnonVector(x));
+        }
+    }
+
+    static void assertEqual(TermVector v, AnonVector a) {
         assertEquals(v,a);
         assertEquals(v.toString(),a.toString());
         assertEquals(v.hashCode(), a.hashCode());

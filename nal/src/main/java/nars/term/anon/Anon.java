@@ -112,7 +112,7 @@ public class Anon {
         return _get(x);
     }
 
-    public Term _get(Term x) {
+    protected Term _get(Term x) {
         if (x instanceof Anom) {
             return rev.get(((Anom) x).id); //assume it is an int
         } else if (x instanceof Atomic) {

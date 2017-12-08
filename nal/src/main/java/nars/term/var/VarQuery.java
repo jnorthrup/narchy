@@ -11,7 +11,7 @@ import static nars.Op.VAR_QUERY;
  */
 public final class VarQuery extends AbstractVariable {
 
-    public VarQuery(int id) {
+    public VarQuery(byte id) {
         super(VAR_QUERY, id);
     }
 

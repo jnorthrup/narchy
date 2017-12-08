@@ -60,7 +60,7 @@ abstract public class Search<N, E> {
 
             Node<N, E> next = e.other(this.at);
 
-            if (log.isVisited(next))
+            if (log.hasVisited(next))
                 return true; //pre-skip, avoiding some work
 
             BooleanObjectPair<Edge<N, E>> move = pair(next == e.to, e);

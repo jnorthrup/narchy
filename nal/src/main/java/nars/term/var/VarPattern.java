@@ -11,7 +11,7 @@ import static nars.Op.VAR_PATTERN;
  */
 public class VarPattern extends AbstractVariable {
 
-    public VarPattern(int id) {
+    public VarPattern(byte id) {
         super(VAR_PATTERN, id);
     }
 

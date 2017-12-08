@@ -307,7 +307,7 @@ public class EllipsisTest {
         assertNotNull(t);
         //assertEquals(s, t.toString());
         //assertEquals("%prefix", t.target.toString());
-        assertEquals(EllipsisOneOrMore.class, t.normalize(1).getClass());
+        assertEquals(EllipsisOneOrMore.class, t.normalize((byte) 1).getClass());
 
         //assertEquals(t.target, $("%prefix")); //equality between target and itself
     }
@@ -319,7 +319,7 @@ public class EllipsisTest {
         assertNotNull(t);
         assertEquals(s, t.toString());
         //assertEquals("%prefix", t.target.toString());
-        Term tn = t.normalize(1);
+        Term tn = t.normalize((byte) 1);
         assertEquals(EllipsisZeroOrMore.class, tn.getClass());
         assertEquals("%1..*", tn.toString());
         assertNotEquals($.varPattern(1), tn);

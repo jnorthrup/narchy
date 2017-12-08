@@ -15,14 +15,6 @@ import org.jetbrains.annotations.Nullable;
 public interface Variable extends Atomic {
 
 
-    /**
-     * an ID by which this variable can be uniquely identified,
-     * among the other existing variables with the same ID but
-     * from other variable op's #$?%
-     */
-    byte id();
-
-
     @Override
     @Nullable
     default Term normalize() {
@@ -30,7 +22,7 @@ public interface Variable extends Atomic {
     }
 
     @Override
-    Variable normalize(int offset);
+    Variable normalize(byte offset);
 
     /**
      * The syntactic complexity of a variable is 0, because it does not refer to
@@ -65,26 +57,29 @@ public interface Variable extends Atomic {
     @Override
     default boolean unify(Term y, Unify u) {
 
-        //do not test for equality
+        if (this.equals(y))
+            return true;
+
         //var pattern will unify anything (below)
         //see: https://github.com/opennars/opennars/blob/4515f1d8e191a1f097859decc65153287d5979c5/nars_core/nars/language/Variables.java#L18
         Op xOp = op();
-        Op yOp = y.op();
-        if (xOp == yOp) {
-
-            if (u.varCommonalize && !this.equals(y) && commonalizableVariable(xOp) && commonalizableVariable(yOp)) {
-                //TODO check if this is already a common variable containing y
-                Term common = CommonVariable.common(this, (Variable) y);
-
-                if (common == this || common == y)
-                    return true; //no change
-
-                return u.putXY(this, common) && u.putXY(y, common);
-            }
-
-        }
 
         if (y instanceof Variable) {
+            Op yOp = y.op();
+            if (xOp == yOp) {
+
+                if (u.varCommonalize && commonalizableVariable(xOp) && commonalizableVariable(yOp)) {
+                    //TODO check if this is already a common variable containing y
+                    Term common = CommonVariable.common(this, (Variable) y);
+
+                    if (common == this || common == y)
+                        return true; //no change
+
+                    return u.putXY(this, common) && u.putXY(y, common);
+                }
+
+            }
+
             if (xOp.id < yOp.id) {  //only allows indep to subsume dep but not vice versa
                 if (u.varSymmetric)
                     return y.unify(this, u);

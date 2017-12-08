@@ -203,7 +203,7 @@ public class IO {
 
     @NotNull
     public static Atomic readVariable(DataInput in, /*@NotNull*/ Op o) throws IOException {
-        return $.v(o, in.readInt());
+        return $.v(o, in.readByte());
     }
 
 
@@ -223,7 +223,7 @@ public class IO {
             case VAR_DEP:
             case VAR_QUERY:
             case VAR_INDEP:
-                return $.v(o, Ints.fromBytes(b[1], b[2], b[3], b[4]));
+                return $.v(o, b[1]);
 
             case INT:
 //                byte subType = in.readByte();

@@ -160,7 +160,7 @@ public class PremiseRuleTest {
         assertNotNull(y);
 
         PatternIndex i = new PatternIndex();
-        y = (Compound) (y.normalize(0));
+        y = (Compound) (y.normalize((byte) 0));
         assertNotNull(y);
         PremiseRule.printRecursive(y);
 

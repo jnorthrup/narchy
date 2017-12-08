@@ -143,7 +143,7 @@ public class ActivateTest {
     @Test
     public void testFunction() throws Narsese.NarseseException {
         testTemplates("f(x)",
-                "[(x), x, f(x), f]");
+                "[x, f(x), (x), f]");
     }
 
     @Test
@@ -227,7 +227,7 @@ public class ActivateTest {
     }
 
     @Test public void testConceptualizeNonTaskable_IndepVarUnbalanced() throws Narsese.NarseseException {
-        assertNull(NARS.tmp(1).conceptualize($("(x --> $1)")));
+        assertNotNull(NARS.tmp(1).conceptualize($("(x --> $1)")));
     }
 
 

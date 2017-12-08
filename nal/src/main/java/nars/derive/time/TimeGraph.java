@@ -1,6 +1,7 @@
 package nars.derive.time;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import jcog.Util;
@@ -720,18 +721,19 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     abstract protected class TimeSolver extends Search<Event, TimeSpan> {
 
 
-        Stream<Edge<Event, TimeSpan>> dynamicLink(Node<Event, TimeSpan> n) {
+        @Nullable Iterator<Edge<Event, TimeSpan>> dynamicLink(Node<Event, TimeSpan> n) {
             return dynamicLink(n, x -> true);
         }
 
-        Stream<Edge<Event, TimeSpan>> dynamicLink(Node<Event, TimeSpan> n, Predicate<Event> preFilter) {
-            return byTerm.get(n.id.id).stream()
-                    .filter(preFilter)
-                    .map(TimeGraph.this::node)
-                    .filter(e -> e != n)
-                    .map(that ->
+        @Nullable Iterator<Edge<Event, TimeSpan>> dynamicLink(Node<Event, TimeSpan> n, Predicate<Event> preFilter) {
+            Iterator<Event> x = byTerm.get(n.id.id).iterator();
+            return x.hasNext() ? Iterators.transform(Iterators.filter(Iterators.transform(
+                        Iterators.filter(x, preFilter::test),
+                        TimeGraph.this::node),
+                    e -> e != n && !log.hasVisited(e)),
+                    that ->
                             new Edge<>(n, that, TS_ZERO) //co-occurring
-                    );
+                    ) : null;
         }
 
 
@@ -840,11 +842,12 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
         @Override
         protected Iterable<Edge<Event, TimeSpan>> next(Node<Event, TimeSpan> n) {
-            //must be cached to avoid concurrent modification exception
-            FasterList<Edge<Event, TimeSpan>> d = dynamicLink(n).collect(Collectors.toCollection(FasterList::new));
-
             Iterable<Edge<Event, TimeSpan>> e = n.edges(true, true);
-            return !d.isEmpty() ? Iterables.concat(e, d) : e;
+
+            //must be cached to avoid concurrent modification exception
+            Iterator<Edge<Event, TimeSpan>> d = dynamicLink(n);
+
+            return (d!=null && d.hasNext()) ? Iterables.concat(e, new FasterList<>(d)) : e;
         }
 
     }

@@ -14,8 +14,11 @@
     //X, X, task("!") |- (--,(#1 && (--,X))), (Goal:StructuralDeduction)
 
     X, (Y==>X), task("!")  |-          Y, (Punctuation:Quest)
-    X, (X==>Y), task("!")  |-          Y, (Punctuation:Quest)
+    X, (--X==>Y), task("!")  |-          Y, (Punctuation:Quest)
     X, (X && Y), task("!") |-          Y, (Punctuation:Quest)
+    X, (--X && Y), task("!") |-          Y, (Punctuation:Quest)
+    X, (X && --Y), task("!") |-          Y, (Punctuation:Quest)
+    X, (--X && --Y), task("!") |-          Y, (Punctuation:Quest)
 
     //question the precondition state
     X, (Y==>X), task("!") |-          Y, (Punctuation:Question)

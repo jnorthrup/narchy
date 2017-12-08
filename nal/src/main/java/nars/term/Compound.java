@@ -29,12 +29,14 @@ import nars.Op;
 import nars.derive.AbstractPred;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.TermContext;
+import nars.op.mental.AliasConcept;
 import nars.term.container.Subterms;
 import nars.term.container.TermVector;
 import nars.term.subst.Unify;
 import nars.term.transform.CompoundTransform;
 import nars.term.transform.Retemporalize;
 import nars.term.transform.VariableNormalization;
+import nars.term.var.Variable;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
@@ -217,7 +219,7 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     @Override
-            /*@NotNull*/
+    /*@NotNull*/
     default ByteList structureKey(ByteArrayList appendTo) {
         appendTo.add(op().id);
         appendTo.add((byte) subs());
@@ -251,7 +253,6 @@ public interface Compound extends Term, IPair, Subterms {
             return false;
 
 
-
         if (!u.relevantVariables(xsubs, ty))
             return false; //no free vars, the only way unification can proceed is if equal
 
@@ -268,7 +269,8 @@ public interface Compound extends Term, IPair, Subterms {
 
         /*if (op() == CONJ) { //non-commutive, temporal CONJ
             return TermContainer.unifyConj(xsubs, dt(), ysubs, y.dt(), u);
-        } else */if (isCommutative()) {
+        } else */
+        if (isCommutative()) {
             return xsubs.unifyCommute(ysubs, u);
         } else {
             //do not do a fast termcontainer test unless it's linear; in commutive mode we want to allow permutations even if they are initially equal
@@ -643,7 +645,16 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default Term unneg() {
-        return op() == NEG ? sub(0) : this;
+        if (op() == NEG) {
+
+            Term u = sub(0);
+            if (!u.isNormalized() && isNormalized())
+                ((TermVector) u.subterms()).setNormalized();
+            return u;
+
+        } else {
+            return this;
+        }
     }
 
     /*@NotNull*/
@@ -739,7 +750,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     @Nullable
-    default Term normalize(int varOffset) {
+    default Term normalize(byte varOffset) {
         if (varOffset == 0 && this.isNormalized())
             return this;
 
@@ -870,9 +881,9 @@ public interface Compound extends Term, IPair, Subterms {
             return true;
 
         return
-            (opX() == x.opX() && structure() == x.structure() && volume() == x.volume()) //pre-test
-                &&
-            root().equals(x.root());
+                (opX() == x.opX() && structure() == x.structure() && volume() == x.volume()) //pre-test
+                        &&
+                        root().equals(x.root());
     }
 
 

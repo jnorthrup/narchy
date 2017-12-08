@@ -204,12 +204,10 @@ public enum $ {
         return $.p(x);
     }
 
-    @NotNull
     public static Term p(String... t) {
         return $.p((Term[]) $.the(t));
     }
 
-    @NotNull
     public static Term p(int... t) {
         return $.p((Term[]) $.the(t));
     }
@@ -217,7 +215,7 @@ public enum $ {
     /**
      * warning: generic variable
      */
-    public static @NotNull Variable v(/*@NotNull*/ Op type, @NotNull String name) {
+    public static Variable v(/*@NotNull*/ Op type, String name) {
 
 //        if (name.length()==1) {
 //            char c = name.charAt(0);
@@ -229,38 +227,34 @@ public enum $ {
     }
 
 
-    @NotNull
-    @Deprecated
     public static Variable varDep(int i) {
-        return v(VAR_DEP, i);
+        return v(VAR_DEP, (byte) i);
     }
 
-    public static @NotNull Variable varDep(@NotNull String s) {
+    public static Variable varDep(String s) {
         return v(VAR_DEP, s);
     }
 
-    @NotNull
-    @Deprecated
     public static Variable varIndep(int i) {
-        return v(VAR_INDEP, i);
+        return v(VAR_INDEP, (byte) i);
     }
 
-    public static @NotNull Variable varIndep(@NotNull String s) {
+    public static Variable varIndep(String s) {
         return v(VAR_INDEP, s);
     }
 
-    @NotNull
+    
     public static Variable varQuery(int i) {
-        return v(VAR_QUERY, i);
+        return v(VAR_QUERY, (byte) i);
     }
 
-    public static @NotNull Variable varQuery(@NotNull String s) {
+    public static Variable varQuery(String s) {
         return v(VAR_QUERY, s);
     }
 
     @NotNull
     public static VarPattern varPattern(int i) {
-        return (VarPattern) v(VAR_PATTERN, i);
+        return (VarPattern) v(VAR_PATTERN, (byte) i);
     }
 
 
@@ -409,7 +403,7 @@ public enum $ {
     /**
      * normalized variable
      */
-    public static AbstractVariable v(/*@NotNull*/ Op type, int id) {
+    public static AbstractVariable v(/*@NotNull*/ Op type, byte id) {
         return AbstractVariable.the(type, id);
     }
 

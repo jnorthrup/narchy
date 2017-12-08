@@ -76,11 +76,11 @@ public class TermutatorTest {
         }
         e0 = ee0;
     }
-    static final @NotNull Ellipsis e1 = Ellipsis.EllipsisPrototype.make(1,1);
+    static final @NotNull Ellipsis e1 = Ellipsis.EllipsisPrototype.make((byte) 1,1);
 
 
-    static final Variable p2= v(Op.VAR_PATTERN, 2);
-    static final SortedSet<Term> p2p3 = ((Compound)$.p( p2, v(Op.VAR_PATTERN, 3) )).toSortedSet();
+    static final Variable p2= v(Op.VAR_PATTERN, (byte) 2);
+    static final SortedSet<Term> p2p3 = ((Compound)$.p( p2, v(Op.VAR_PATTERN, (byte) 3) )).toSortedSet();
 
     @Test public void testChoose2_2() {
 

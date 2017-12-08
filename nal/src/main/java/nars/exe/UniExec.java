@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  */
 public class UniExec extends AbstractExec {
 
-    int WORK_PER_CYCLE = 2;
+    int WORK_PER_CYCLE = 1;
 
     public UniExec(int capacity) {
         super(capacity);

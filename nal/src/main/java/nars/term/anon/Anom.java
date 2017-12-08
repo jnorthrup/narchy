@@ -10,7 +10,7 @@ import nars.term.atom.Int;
 import static nars.Op.ATOM;
 
 /* indexed anonymous term */
-public final class Anom extends Int {
+public final class Anom extends Int implements AnonID {
 
     final static int MAX_ANOM = 127;
     final static int ANOM = Term.opX(ATOM, 0);
@@ -27,6 +27,11 @@ public final class Anom extends Int {
     @Override
     public /**/ Op op() {
         return ATOM;
+    }
+
+    @Override
+    public short anonID() {
+        return (short) id; //since ATOM_MASK is zero, it is just the lowest 8 bits of the 'id' int
     }
 
     @Override
@@ -64,4 +69,6 @@ public final class Anom extends Int {
     public static Anom the(int i) {
         return the[i];
     }
+
+
 }

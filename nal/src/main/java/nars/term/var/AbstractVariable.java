@@ -21,10 +21,10 @@
 package nars.term.var;
 
 
-import jcog.Util;
 import nars.$;
 import nars.Op;
 import nars.Param;
+import nars.term.anon.AnonID;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -32,42 +32,46 @@ import org.jetbrains.annotations.Nullable;
  * Normalized variable
  * "highly immutable" and re-used
  */
-public abstract class AbstractVariable implements Variable {
+public abstract class AbstractVariable implements Variable, AnonID {
 
-    /** lowest 4 bits specify the type of variable */
-    public final int id;
 
-    static final byte DEP_ORD = Op.VAR_DEP.id;
-    static {
+    public final short id;
 
-        //test for the expected ordering of the variable op ordinals
-        assert(Op.VAR_PATTERN.id - DEP_ORD == 3);
-    }
+//    static final byte DEP_ORD = Op.VAR_DEP.id;
+//    static {
+//
+//        //test for the expected ordering of the variable op ordinals
+//        assert(Op.VAR_PATTERN.id - DEP_ORD == 3);
+//    }
 
-    private final byte[] bytesCached;
+    private final byte[] bytes;
 
-    protected AbstractVariable(/*@NotNull*/ Op type, int num) {
+    protected AbstractVariable(/*@NotNull*/ Op type, byte num) {
         assert(num > 0);
         assert(num < Byte.MAX_VALUE);
 
-        int id = num << 2 | (type.id-DEP_ORD);
-        this.id = id;
+        id = AnonID.termToId(type, num );
 
-        byte[] b = new byte[5];
+        byte[] b = new byte[2];
         b[0] = type.id;
-        Util.int2Bytes(num, b, 1);
-        this.bytesCached = b;
+        b[1] = num;
+        this.bytes = b;
     }
 
 
     @Override
     public final byte[] bytes() {
-        return bytesCached;
+        return bytes;
     }
 
     @Override
-    public final byte id() {
-        return (byte) (id >> 2);
+    public final short anonID() {
+        return id;
+    }
+
+    @Override
+    public byte anonNum() {
+        return bytes[1];
     }
 
     //@Override abstract public boolean equals(Object other);
@@ -98,8 +102,8 @@ public abstract class AbstractVariable implements Variable {
 
 
     @Override
-    public @Nullable Variable normalize(int vid) {
-        if (id() == vid)
+    public @Nullable Variable normalize(byte vid) {
+        if (anonNum() == vid)
             return this;
         else
             return $.v(op(), vid);
@@ -115,7 +119,7 @@ public abstract class AbstractVariable implements Variable {
     @NotNull
     @Override
     public String toString() {
-        return op().ch + Byte.toString(id()); //Integer.toString(id);;
+        return op().ch + Integer.toString(anonNum());
     }
 
     /**
@@ -175,7 +179,7 @@ public abstract class AbstractVariable implements Variable {
         //precompute cached variable instances
         for (Op o : new Op[]{Op.VAR_PATTERN, Op.VAR_QUERY, Op.VAR_DEP, Op.VAR_INDEP}) {
             int t = opToVarIndex(o);
-            for (int i = 1; i < Param.MAX_VARIABLE_CACHED_PER_TYPE; i++) {
+            for (byte i = 1; i < Param.MAX_VARIABLE_CACHED_PER_TYPE; i++) {
                 varCache[t][i] = vNew(o, i);
             }
         }
@@ -185,7 +189,7 @@ public abstract class AbstractVariable implements Variable {
      * TODO move this to TermBuilder
      */
     @NotNull
-    static AbstractVariable vNew(/*@NotNull*/ Op type, int id) {
+    static AbstractVariable vNew(/*@NotNull*/ Op type, byte id) {
         switch (type) {
             case VAR_PATTERN:
                 return new VarPattern(id);
@@ -200,12 +204,12 @@ public abstract class AbstractVariable implements Variable {
         }
     }
 
-    public static AbstractVariable the(/*@NotNull*/ Op type, int id) {
+    public static AbstractVariable the(/*@NotNull*/ Op type, byte id) {
         assert(id > 0);
-        if (id >= Param.MAX_VARIABLE_CACHED_PER_TYPE) {
-            return AbstractVariable.vNew(type, id); //for special variables like ellipsis
+        if (id < Param.MAX_VARIABLE_CACHED_PER_TYPE) {
+            return varCache[AbstractVariable.opToVarIndex(type)][id];
         } else {
-            return AbstractVariable.varCache[AbstractVariable.opToVarIndex(type)][id];
+            return vNew(type, id);
         }
     }
 

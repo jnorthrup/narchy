@@ -1,6 +1,8 @@
 //NAL6---------------
 
-    Z, (C==>Y), task("?") |- subIfUnifiesAny(C,Y,Z), (Punctuation:Question)
+    Z, (X==>Y), task("?") |- subIfUnifiesAny(X,Y,Z), (Punctuation:Question)
+    Z, (Y==>X), task("?") |- subIfUnifiesAny(X,Y,Z), (Punctuation:Question)
+    Z, (--Y==>X), task("?") |- subIfUnifiesAny(X,Y,Z), (Punctuation:Question)
 
 
 //If S can stand for P, P can to a certain low degree also represent the class S

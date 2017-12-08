@@ -12,7 +12,7 @@ import static nars.time.Tense.ETERNAL;
 public class NAL6Test extends NALTest {
 
 
-    final int cycles = 500;
+    final int cycles = 2500;
 
     @BeforeEach
     public void nal() {
@@ -22,14 +22,11 @@ public class NAL6Test extends NALTest {
 
     @Test
     public void variable_unification1() {
-
-        TestNAR tester = test;
-        tester.mustBelieve(cycles, "<<$1 --> bird> ==> <$1 --> flyer>>", 0.79f, 0.92f); //en("If something is a bird, then usually, it is a flyer.");
-        tester.believe("<<$x --> bird> ==> <$x --> flyer>>"); //en("If something is a bird, then it is a flyer.");
-        tester.believe("<<$y --> bird> ==> <$y --> flyer>>", 0.00f, 0.70f); //en("If something is a bird, then it is not a flyer.");
-
+        test
+            .believe("(($x --> bird) ==> ($x --> flyer))") //en("If something is a bird, then it is a flyer.")
+            .believe("(($y --> bird) ==> ($y --> flyer))", 0.00f, 0.70f) //en("If something is a bird, then it is not a flyer.")
+            .mustBelieve(cycles, "(($1 --> bird) ==> ($1 --> flyer))", 0.79f, 0.92f); //en("If something is a bird, then usually, it is a flyer.");
     }
-
 
     @Test
     public void variable_unification2() {
@@ -144,15 +141,33 @@ public class NAL6Test extends NALTest {
 
 
     @Test
-    public void variable_elimination_impl_fwd() {
+    public void variable_elimination_impl_fwd_pos_pos() {
 
-        TestNAR tester = test;
-        tester.believe("<<$x --> bird> ==> <$x --> animal>>"); //en("If something is a bird, then it is an animal.");
-        tester.believe("<robin --> bird>"); //en("A robin is a bird.");
-        tester.mustBelieve(cycles, "<robin --> animal>", 1.00f, 0.81f); //en("A robin is an animal.");
+        test
+        .believe("<<$x --> bird> ==> <$x --> animal>>") //en("If something is a bird, then it is an animal.");
+        .believe("<robin --> bird>") //en("A robin is a bird.");
+        .mustBelieve(cycles, "<robin --> animal>", 1.00f, 0.81f); //en("A robin is an animal.");
+
+    }
+    @Test
+    public void variable_elimination_impl_fwd_pos_neg() {
+
+        test
+        .believe("(($x --> bird) ==> --($x --> --animal))") //en("If something is a bird, then it is an animal.");
+        .believe("(robin --> bird)") //en("A robin is a bird.");
+        .mustBelieve(cycles, "(robin --> --animal)", 0.00f, 0.81f); //en("A robin is an animal.");
 
     }
 
+    @Test
+    public void variable_elimination_impl_fwd_neg_pos() {
+
+        test
+        .believe("(--($x --> --bird) ==> ($x --> animal))") //en("If something is a bird, then it is an animal.");
+        .believe("--(robin --> --bird)") //en("A robin is a bird.");
+        .mustBelieve(cycles, "(robin --> animal)", 1.00f, 0.81f); //en("A robin is an animal.");
+
+    }
 
     @Test
     public void variable_elimination_impl_rev() {
@@ -230,14 +245,13 @@ public class NAL6Test extends NALTest {
 
         ////  ((%1,((%3&&%1073742338..+)==>%4),task(".")),(subIfUnifiesAny(((&&,%1073742338..+) ==>+- %4),%3,%1,"$"),((DeductionPB-->Belief))))
 
-        TestNAR tester = test;
-        tester.believe("((&&, flyer:$x, [chirping]:$x, food($x, worms)) ==> bird:$x)"); //en("If something can fly, chirp, and eats worms, then it is a bird.");
-        tester.believe("flyer:Tweety"); //en("Tweety can fly.");
-        tester.mustBelieve(cycles*2,
-                "(([chirping]:Tweety && food(Tweety,worms)) ==> bird:Tweety)",
+        test
+        .believe("((&&, flyer:$x, [chirping]:$x, food($x, worms)) ==> bird:$x)")
+        .believe("flyer:Tweety")
+        .mustBelieve(cycles * 2, "(([chirping]:Tweety && food(Tweety,worms)) ==> bird:Tweety)",
                 1.0f,
-                0.73f);
-                //0.81f); //en("If Tweety can chirp and eats worms, then it is a bird.");
+                0.73f); //en("If something can fly, chirp, and eats worms, then it is a bird.");
+        //0.81f); //en("If Tweety can chirp and eats worms, then it is a bird.");
 
     }
 

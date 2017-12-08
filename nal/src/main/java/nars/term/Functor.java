@@ -135,13 +135,17 @@ abstract public class Functor extends BaseConcept implements PermanentConcept, F
     }
 
     public static <X extends Term> LambdaFunctor f1Const(@NotNull String termAtom, @NotNull Function<X, Term> ff) {
-        return f1(fName(termAtom), safeFunctor(ff));
+        return f1(fName(termAtom), (Term x) -> {
+            if (x == null || x.vars() > 0)
+                return null;
+            return ff.apply((X) x);
+        });
     }
 
     @NotNull
     static <X extends Term> Function<Term, Term> safeFunctor(@NotNull Function<X, Term> ff) {
         return x ->
-                (x == null || x instanceof Variable) ? null
+                (x == null) ? null
                         :
                         ff.apply((X) x);
     }

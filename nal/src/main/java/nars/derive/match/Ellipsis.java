@@ -15,6 +15,7 @@ import static nars.Op.VAR_PATTERN;
 public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsislike {
 
     private final int minArity;
+    protected final byte num;
 
 
 //    /** a placeholder that indicates an expansion of one or more terms that will be provided by an Ellipsis match.
@@ -57,12 +58,12 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
         @Override
         public
         @Deprecated
-        @NotNull Variable normalize(int serial) {
+        @NotNull Variable normalize(byte serial) {
             return make(serial, minArity);
         }
 
 
-        public static Ellipsis make(int serial, int minArity) {
+        public static Ellipsis make(byte serial, int minArity) {
             AbstractVariable v = $.v(VAR_PATTERN, serial);
             switch (minArity) {
                 case 0:
@@ -102,6 +103,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
             // + (minArity == 0 ? "..*" : "..+")
         assert(target.op()==VAR_PATTERN); //only VAR_PATTERN for now
         this.minArity = minArity;
+        this.num = target.anonNum();
     }
 
 

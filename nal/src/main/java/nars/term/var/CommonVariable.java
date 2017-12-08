@@ -1,9 +1,13 @@
 package nars.term.var;
 
+import com.google.common.base.Joiner;
 import nars.Op;
 import nars.term.Term;
+import org.eclipse.collections.api.iterator.ByteIterator;
 import org.eclipse.collections.api.set.primitive.ImmutableByteSet;
 import org.eclipse.collections.impl.factory.primitive.ByteSets;
+
+import java.util.PrimitiveIterator;
 
 public final class CommonVariable extends UnnormalizedVariable {
 
@@ -11,9 +15,9 @@ public final class CommonVariable extends UnnormalizedVariable {
 
     CommonVariable(/*@NotNull*/ Op type, byte x, byte y) {
         super(type, type.ch + name(x, y));
-        assert(x!=y);
+        if (x == y)
+            throw new RuntimeException();
         assert(x!=0 && y!=0);
-        assert(y < 0);
         this.vars = ByteSets.immutable.of(x, y);
     }
 
@@ -24,16 +28,21 @@ public final class CommonVariable extends UnnormalizedVariable {
 
     /** simple name generator */
     private static String name(byte x, byte y) {
-        return "x" + name(x) + "y" + name(-y);
-    }
-    private static String name(ImmutableByteSet vars) {
-        return String.join("",
-                vars.collect(b -> (b > 0 ? "x" : "y") + name(b)));
+        return x < y ? x + "_" + y : y + "_" + x;
     }
 
-    private static String name(int component) {
-        return Integer.toString(Math.abs(component), 36);
+    private static String name(ImmutableByteSet vars) {
+        StringBuilder s = new StringBuilder(vars.size() * 2);
+        byte[] bb = vars.toSortedArray();
+        for (int i = 0, bbLength = bb.length; i < bbLength; i++) {
+            byte b = bb[i];
+            s.append(b);
+            if (i!=bbLength-1)
+                s.append('_');
+        }
+        return s.toString();
     }
+
 
     @Override
     public int opX() {
@@ -42,27 +51,34 @@ public final class CommonVariable extends UnnormalizedVariable {
 
     public static Variable common(Variable A, Variable B) {
 
+        //1. sort
+        if (A.compareTo(B) < 0) {
+            Variable c = B;
+            B = A;
+            A = c;
+        }
+
         Op Aop = A.op();
         assert(B.op()==Aop);
 
         boolean aa = A instanceof AbstractVariable;
         boolean bb = B instanceof AbstractVariable;
         if (aa && bb) {
-            byte ai = A.id();
-            byte bi = B.id();
-            return new CommonVariable(Aop, ai, (byte) -bi);
+            byte ai = ((AbstractVariable)A).anonNum();
+            byte bi = ((AbstractVariable)B).anonNum();
+            return new CommonVariable(Aop, ai, bi);
         }
 
         if (!aa && bb) {
             ImmutableByteSet ai = ((CommonVariable)A).vars;
-            byte bi = B.id();
-            if (ai.contains((byte) -bi))
+            byte bi = ((AbstractVariable)B).anonNum();
+            if (ai.contains(bi))
                 return A;
-            return new CommonVariable(Aop, ai.newWith((byte) -bi));
+            return new CommonVariable(Aop, ai.newWith(bi));
         }
 
         if (aa && !bb) {
-            byte ai = A.id();
+            byte ai = ((AbstractVariable)A).anonNum();
             ImmutableByteSet bi = ((CommonVariable)B).vars;
             if (bi.contains(ai))
                 return B;

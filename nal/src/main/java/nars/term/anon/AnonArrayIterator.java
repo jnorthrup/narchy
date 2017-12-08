@@ -4,12 +4,12 @@ import nars.term.Term;
 
 import java.util.Iterator;
 
-public class AnomArrayIterator implements Iterator<Term> {
+public class AnonArrayIterator implements Iterator<Term> {
 
     private int current;
-    private final byte[] values;
+    private final short[] values;
 
-    public AnomArrayIterator(byte[] subterms) {
+    public AnonArrayIterator(short[] subterms) {
         this.values = subterms;
     }
 
@@ -20,7 +20,7 @@ public class AnomArrayIterator implements Iterator<Term> {
 
     @Override
     public Term next() {
-        return Anom.the[values[this.current++]];
+        return AnonID.idToTerm(values[this.current++]);
     }
 
 }

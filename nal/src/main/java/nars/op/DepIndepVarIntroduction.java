@@ -60,7 +60,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
     @Nullable
     @Override
-    protected Term next(Term input, Term selected, int order) {
+    protected Term next(Term input, Term selected, byte order) {
 
         if (selected.equals(Imdex))
             return null;
