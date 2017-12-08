@@ -21,7 +21,7 @@ import java.util.function.Function;
 import static nars.$.$;
 import static nars.$.t;
 import static nars.Op.*;
-import static nars.time.Tense.*;
+import static nars.time.Tense.ETERNAL;
 
 /**
  * Default Task implementation

@@ -1,8 +1,5 @@
 package jcog.event;
 
-import jcog.list.FastCoWList;
-import jcog.list.FasterList;
-
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 

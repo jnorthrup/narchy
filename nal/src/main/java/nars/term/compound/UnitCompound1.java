@@ -31,7 +31,7 @@ public class UnitCompound1 extends TermVector1 implements Compound {
         super(arg);
 
         this.op = op;
-        this.chash = Util.hashCombine(hashCodeSubTerms(), op.id);
+        this.chash = Util.hashCombine(hashCodeSubterms(), op.id);
         this.cstruct = op.bit | arg.structure();
 
         if (!normalized && arg.isNormalized())

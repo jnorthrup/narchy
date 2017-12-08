@@ -17,7 +17,6 @@ import nars.control.MetaGoal;
 import nars.control.Traffic;
 import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
@@ -224,7 +223,7 @@ public class Focus {
 
         float momentum =
 //                    0f;
-                0.5f;
+                0.75f;
 
         @Override
         public void update(FasterList<Cause> causes, float[] goal) {

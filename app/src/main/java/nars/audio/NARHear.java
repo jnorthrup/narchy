@@ -6,7 +6,6 @@ import jcog.learn.Autoencoder;
 import jcog.math.random.XorShift128PlusRandom;
 import nars.*;
 import nars.concept.SensorConcept;
-import nars.control.DurService;
 import spacegraph.SpaceGraph;
 import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;

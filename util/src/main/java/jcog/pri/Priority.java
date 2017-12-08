@@ -4,7 +4,6 @@ import jcog.Texts;
 import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.lerp;
-import static jcog.Util.notNaN;
 
 /**
  * Mutable Prioritized

@@ -4,7 +4,6 @@ import jcog.Services;
 import jcog.Util;
 import jcog.math.FloatParam;
 import jcog.math.MutableInteger;
-import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.pri.op.PriForget;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
@@ -20,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static jcog.Util.unitize;

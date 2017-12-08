@@ -8,12 +8,9 @@ import nars.test.TestNAR;
 import nars.time.Tense;
 import nars.util.NALTest;
 import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
 
 import static nars.$.$;

@@ -6,7 +6,6 @@ import jcog.list.FasterList;
 import jcog.math.FloatParam;
 import spacegraph.Surface;
 import spacegraph.layout.Grid;
-import spacegraph.layout.VSplit;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.slider.FloatSlider;

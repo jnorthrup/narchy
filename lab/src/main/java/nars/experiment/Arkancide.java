@@ -1,17 +1,13 @@
 package nars.experiment;
 
 
-import com.google.common.collect.Iterables;
 import jcog.Util;
-import jcog.learn.LivePredictor;
 import jcog.math.FloatParam;
 import nars.*;
 import nars.concept.SensorConcept;
-import nars.gui.Vis;
 import nars.op.video.BufferedImageBitmap2D;
 import nars.op.video.Scale;
 import nars.op.video.SwingBitmap2D;
-import nars.util.signal.BeliefPredict;
 import nars.util.signal.CameraSensor;
 
 import javax.swing.*;
@@ -23,9 +19,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static com.google.common.collect.Iterables.concat;
-import static spacegraph.SpaceGraph.window;
 
 public class Arkancide extends NAgentX {
 

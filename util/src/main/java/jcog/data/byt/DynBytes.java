@@ -1,7 +1,6 @@
 package jcog.data.byt;
 
 import com.google.common.io.ByteArrayDataOutput;
-import jcog.util.ArrayPool;
 import org.apache.commons.lang3.ArrayUtils;
 import org.iq80.snappy.Snappy;
 import org.jetbrains.annotations.NotNull;

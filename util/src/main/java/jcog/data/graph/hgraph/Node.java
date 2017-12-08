@@ -29,7 +29,10 @@ import jcog.list.ArrayIterator;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 

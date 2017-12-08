@@ -2,11 +2,11 @@ package nars.experiment;
 
 import com.google.common.collect.Lists;
 import jcog.Util;
+import jcog.learn.LivePredictor;
 import jcog.math.FloatPolarNormalized;
 import nars.*;
 import nars.concept.SensorConcept;
 import nars.gui.Vis;
-import jcog.learn.LivePredictor;
 import nars.term.Termed;
 import nars.util.signal.BeliefPredict;
 import spacegraph.SpaceGraph;
@@ -18,7 +18,6 @@ import java.awt.event.KeyEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static jcog.Texts.n2;
-import static jcog.Texts.n4;
 
 /**
  * adapted from: https://github.com/B00075594/CI_Lab2_CartAndPole/blob/master/src/pole.java

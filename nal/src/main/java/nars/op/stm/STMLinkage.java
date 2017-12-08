@@ -3,7 +3,6 @@ package nars.op.stm;
 import jcog.Util;
 import jcog.math.FloatParam;
 import jcog.pri.PLink;
-import jcog.pri.PLinkUntilDeleted;
 import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.Task;

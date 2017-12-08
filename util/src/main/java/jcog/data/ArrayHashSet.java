@@ -37,9 +37,9 @@
  */
 package jcog.data;
 
-import java.util.*;
-
 import jcog.list.FasterList;
+
+import java.util.*;
 
 /**
  * Analogous to {@link java.util.LinkedHashSet}, but with an {@link java.util.ArrayList} instead of a {@link java.util.LinkedList},

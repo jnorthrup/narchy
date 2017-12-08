@@ -1,6 +1,5 @@
 package nars.derive;
 
-import jcog.math.ByteShuffler;
 import nars.$;
 import nars.control.Derivation;
 import nars.term.Term;

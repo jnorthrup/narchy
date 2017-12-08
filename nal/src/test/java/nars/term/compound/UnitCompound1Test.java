@@ -75,7 +75,7 @@ public class UnitCompound1Test {
         assertEquals(u.subterms(), g.subterms());
         assertEquals(g.subterms(), u.subterms()); //reverse
         assertEquals(u.hashCode(), g.hashCode());
-        assertEquals(((Compound)u).hashCodeSubTerms(), g.hashCodeSubTerms());
+        assertEquals(((Compound)u).hashCodeSubterms(), g.hashCodeSubterms());
         assertEquals(u.toString(), g.toString());
         assertEquals(0, u.compareTo(g));
         assertEquals(0, g.compareTo(u));

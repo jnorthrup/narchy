@@ -1,7 +1,6 @@
 package nars.derive;
 
 import nars.NAR;
-import nars.Param;
 import nars.control.Derivation;
 import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
@@ -12,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 /**

@@ -2,9 +2,18 @@ package nars.term;
 
 import nars.$;
 import nars.Narsese;
+import nars.term.anon.Anom;
+import nars.term.anon.AnomVector;
+import nars.term.anon.Anon;
+import nars.term.compound.CachedCompound;
+import nars.term.container.ArrayTermVector;
+import nars.term.container.TermVector;
+import nars.term.container.TermVector1;
+import nars.term.container.TermVector2;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
+import static nars.Op.PROD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class AnonTest {
@@ -42,4 +51,22 @@ public class AnonTest {
         assertEquals(x, z);
         return a;
     }
+
+    @Test public void testAnomVector() {
+
+        Term[] x = {Anom.the(2), Anom.the(0), Anom.the(1)};
+
+        assertEqual(new TermVector1(x[0]), new AnomVector(x[0]));
+        assertEqual(new TermVector2(x[0], x[1]), new AnomVector(x[0], x[1]));
+        assertEqual(new ArrayTermVector(x), new AnomVector(x));
+    }
+
+    static void assertEqual(TermVector v, AnomVector a) {
+        assertEquals(v,a);
+        assertEquals(v.toString(),a.toString());
+        assertEquals(v.hashCode(), a.hashCode());
+        assertEquals(v.hashCodeSubterms(), a.hashCodeSubterms());
+        assertEquals(new CachedCompound(PROD, v), new CachedCompound(PROD, a));
+    }
+
 }

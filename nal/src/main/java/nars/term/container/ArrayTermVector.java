@@ -71,7 +71,7 @@ public class ArrayTermVector extends TermVector {
         } else if (obj instanceof Subterms) {
 
             Subterms that = (Subterms) obj;
-            if (hash != that.hashCodeSubTerms())
+            if (hash != that.hashCodeSubterms())
                 return false;
 
             final Term[] x = this.terms;

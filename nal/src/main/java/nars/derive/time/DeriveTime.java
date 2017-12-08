@@ -1,8 +1,6 @@
 package nars.derive.time;
 
 import jcog.data.ArrayHashSet;
-import jcog.data.ArraySet;
-import jcog.list.FasterList;
 import jcog.math.Interval;
 import nars.Op;
 import nars.Task;
@@ -12,9 +10,8 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.term.subst.Subst;
-import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 
-import java.util.*;
+import java.util.Random;
 
 import static nars.Op.CONJ;
 import static nars.Op.IMPL;

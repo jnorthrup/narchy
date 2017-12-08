@@ -124,10 +124,10 @@ public class FZero extends NAgentX {
         new BeliefPredict(
                 Iterables.concat(actions.keySet(), java.util.List.of(dAngVel, dAccel)),
                 8,
-                12,
-                Iterables.concat(actions.keySet(), java.util.List.of(dAngVel, dAccel)),
-                //new LivePredictor.LSTMPredictor(0.25f, 1),
-                new LivePredictor.MLPPredictor(0.1f),
+                8,
+                /*Iterables.concat(actions.keySet(), */java.util.List.of(dAngVel, dAccel),
+                new LivePredictor.LSTMPredictor(0.01f, 1),
+                //new LivePredictor.MLPPredictor(0.1f),
                 nar
         );
 

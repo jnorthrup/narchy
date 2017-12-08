@@ -6,7 +6,6 @@ import nars.Op;
 import nars.Param;
 import nars.derive.match.EllipsisMatch;
 import nars.term.Term;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 
@@ -151,22 +150,6 @@ public abstract class TermVector implements Subterms {
     }
 
 
-    public static Subterms the(Term... t) {
-        for (Term x : t)
-            if (x instanceof EllipsisMatch)
-                throw new RuntimeException("ellipsis match should not be a subterm of ANYTHING");
-
-        switch (t.length) {
-            case 0:
-                return Subterms.Empty;
-            case 1:
-                return new TermVector1(t[0]);
-            //case 2:
-            //return new TermVector2(t);
-            default:
-                return new ArrayTermVector(t);
-        }
-    }
 
 
     @Override
@@ -211,7 +194,7 @@ public abstract class TermVector implements Subterms {
 
 
     @Override
-    public final int hashCodeSubTerms() {
+    public final int hashCodeSubterms() {
         return hash;
     }
 

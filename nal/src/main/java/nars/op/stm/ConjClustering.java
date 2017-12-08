@@ -1,7 +1,5 @@
 package nars.op.stm;
 
-import com.google.common.collect.Iterators;
-import com.google.common.collect.PeekingIterator;
 import jcog.Util;
 import jcog.list.FasterList;
 import jcog.pri.VLink;

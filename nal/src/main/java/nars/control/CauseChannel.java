@@ -1,8 +1,6 @@
 package nars.control;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Streams;
 import jcog.list.ArrayIterator;
 import jcog.pri.Priority;
 import nars.NAR;

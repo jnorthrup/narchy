@@ -13,7 +13,7 @@ import java.util.List;
  * Uses the A* Algorithm to find the shortest path from
  * an initial to a goal node.
  */
-public class AStarGoalFind<F extends Solution> implements GoalFind {
+public class AStarGoalFind<F extends Solution> {
 
 
 

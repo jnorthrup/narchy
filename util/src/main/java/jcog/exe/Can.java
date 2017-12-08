@@ -1,15 +1,11 @@
 package jcog.exe;
 
-import jcog.Texts;
 import jcog.Util;
 import jcog.constraint.continuous.DoubleVar;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import java.util.concurrent.atomic.AtomicInteger;
-
-import static jcog.Texts.n2;
-import static jcog.Texts.n4;
 
 /** potentially executable procedure of some value N >=1 iterations per invocation */
 public class Can {

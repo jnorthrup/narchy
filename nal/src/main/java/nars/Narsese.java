@@ -35,7 +35,6 @@ import static nars.$.neg;
 import static nars.Op.*;
 import static nars.term.Term.nullIfNull;
 import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.ETERNAL;
 
 /**
  * NARese, syntax and language for interacting with a NAR in NARS.

@@ -22,13 +22,10 @@ import java.util.function.BiConsumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntPredicate;
 
-import static jcog.Util.max;
 import static jcog.Util.unitize;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static nars.truth.TruthFunctions.c2w;
-import static nars.truth.TruthFunctions.w2c;
-import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * Created by me on 9/30/16.

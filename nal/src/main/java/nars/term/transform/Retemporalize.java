@@ -3,6 +3,7 @@ package nars.term.transform;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.anon.DirectCompoundTransform;
 import nars.term.container.Subterms;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,7 +14,7 @@ import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
 @FunctionalInterface
-public interface Retemporalize extends CompoundTransform {
+public interface Retemporalize extends DirectCompoundTransform {
 
     @Override
     int dt(Compound x);
@@ -62,7 +63,7 @@ public interface Retemporalize extends CompoundTransform {
             } else {
                 dtNext = dtCur;
             }
-            return CompoundTransform.super.transform(x, op, dtNext);
+            return DirectCompoundTransform.super.transform(x, op, dtNext);
         }
     }
 

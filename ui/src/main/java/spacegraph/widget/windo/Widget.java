@@ -1,6 +1,5 @@
 package spacegraph.widget.windo;
 
-import com.jcraft.jsch.JSchException;
 import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.Util;
@@ -23,8 +22,6 @@ import spacegraph.widget.slider.BaseSlider;
 import spacegraph.widget.slider.FloatSlider;
 import spacegraph.widget.slider.XYSlider;
 import spacegraph.widget.text.Label;
-
-import java.io.IOException;
 
 import static spacegraph.layout.Grid.*;
 

@@ -1,12 +1,11 @@
 package nars.task;
 
 import jcog.Util;
-import jcog.decide.Roulette;
 import jcog.decide.DecideSoftmax;
+import jcog.decide.Roulette;
 import nars.Param;
 import nars.Task;
 import nars.truth.PreciseTruth;
-import nars.truth.Truth;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 
 import java.util.Random;

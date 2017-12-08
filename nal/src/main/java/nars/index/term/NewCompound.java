@@ -5,7 +5,6 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.data.byt.DynBytes;
 import jcog.list.FasterList;
-import jcog.util.ArrayPool;
 import nars.Op;
 import nars.term.Term;
 import org.jetbrains.annotations.NotNull;

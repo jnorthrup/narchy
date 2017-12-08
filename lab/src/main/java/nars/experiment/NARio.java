@@ -1,31 +1,24 @@
 package nars.experiment;
 
-import com.google.common.collect.Iterables;
 import jcog.Util;
-import jcog.learn.LivePredictor;
 import jcog.math.FloatParam;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.Narsese;
-import nars.concept.ScalarConcepts;
 import nars.concept.SensorConcept;
 import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
 import nars.experiment.mario.Scene;
 import nars.experiment.mario.sprites.Mario;
-import nars.gui.Vis;
 import nars.op.video.PixelBag;
-import nars.util.signal.BeliefPredict;
 import nars.util.signal.CameraSensor;
 
 import javax.swing.*;
 
-import static com.google.common.collect.Iterables.concat;
 import static jcog.Util.unitize;
 import static nars.$.$;
 import static nars.$.p;
-import static spacegraph.SpaceGraph.window;
 
 public class NARio extends NAgentX {
 

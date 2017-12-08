@@ -6,7 +6,7 @@ import jcog.pri.Priority;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PriMergeTest {
     final static float tol = 0.01f;

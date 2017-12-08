@@ -2,13 +2,11 @@ package jcog.decide;
 
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
-import jcog.list.FasterList;
 import jcog.pri.Pri;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 import java.util.function.IntFunction;

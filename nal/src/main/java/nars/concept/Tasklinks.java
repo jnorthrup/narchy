@@ -7,7 +7,6 @@ import jcog.pri.Prioritized;
 import jcog.pri.op.PriForget;
 import nars.NAR;
 import nars.Task;
-import nars.concept.builder.TaskLinkCurveBag;
 import nars.table.TemporalBeliefTable;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;

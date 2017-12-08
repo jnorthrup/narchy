@@ -4,7 +4,6 @@ import nars.term.Term;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.tuple.Tuples;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 

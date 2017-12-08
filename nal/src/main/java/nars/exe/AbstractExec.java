@@ -3,14 +3,11 @@ package nars.exe;
 import jcog.bag.Bag;
 import jcog.bag.impl.ConcurrentCurveBag;
 import jcog.bag.impl.CurveBag;
-import jcog.bag.impl.hijack.PriorityHijackBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.control.Activate;
 import nars.task.ITask;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.function.Predicate;

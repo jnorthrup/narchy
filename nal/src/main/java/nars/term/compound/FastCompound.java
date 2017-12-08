@@ -457,7 +457,7 @@ abstract public class FastCompound implements Compound {
                     (this == obj)
                             ||
                             (obj instanceof Subterms)
-                                    && hashCodeSubTerms() == ((Subterms) obj).hashCodeSubTerms()
+                                    && hashCodeSubterms() == ((Subterms) obj).hashCodeSubterms()
                                     && equalTerms(((Subterms) obj).arrayShared());
         }
 
@@ -486,7 +486,7 @@ abstract public class FastCompound implements Compound {
         }
 
         @Override
-        public int hashCodeSubTerms() {
+        public int hashCodeSubterms() {
             return this.hashCode();
         }
 

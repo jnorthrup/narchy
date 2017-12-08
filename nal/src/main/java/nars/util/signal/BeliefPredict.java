@@ -1,7 +1,6 @@
 package nars.util.signal;
 
 import com.google.common.collect.Iterables;
-import jcog.Util;
 import jcog.learn.LivePredictor;
 import jcog.math.FloatSupplier;
 import nars.$;
@@ -11,8 +10,6 @@ import nars.control.DurService;
 import nars.task.ITask;
 import nars.task.SignalTask;
 import nars.term.Termed;
-import nars.truth.Truth;
-import nars.truth.TruthFunctions;
 import org.apache.commons.lang3.mutable.MutableFloat;
 
 import static jcog.Util.map;

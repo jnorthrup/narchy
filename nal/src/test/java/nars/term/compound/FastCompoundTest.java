@@ -83,7 +83,7 @@ public class FastCompoundTest {
         }
 
         assertArrayEquals(c.subterms().arrayShared(), f.subterms().arrayShared());
-        assertEquals(c.subterms().hashCodeSubTerms(), f.subterms().hashCodeSubTerms());
+        assertEquals(c.subterms().hashCodeSubterms(), f.subterms().hashCodeSubterms());
         assertEquals(c.subterms().hashCode(), f.subterms().hashCode());
 
         assertEquals(c.structure(), f.structure());

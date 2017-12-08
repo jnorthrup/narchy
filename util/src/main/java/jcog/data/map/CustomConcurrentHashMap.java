@@ -8,7 +8,6 @@ package jcog.data.map;
 
 import sun.misc.Unsafe;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;

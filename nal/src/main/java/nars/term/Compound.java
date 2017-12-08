@@ -92,7 +92,7 @@ public interface Compound extends Term, IPair, Subterms {
     Subterms subterms();
 
     @Override
-    default int hashCodeSubTerms() {
+    default int hashCodeSubterms() {
         return subterms().hashCode();
     }
 

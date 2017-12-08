@@ -1,18 +1,20 @@
 package nars.control;
 
-import jcog.math.ByteShuffler;
 import jcog.pri.Pri;
 import jcog.version.Versioned;
-import nars.*;
-import nars.derive.time.DeriveTime;
+import nars.NAR;
+import nars.Op;
+import nars.Param;
+import nars.Task;
 import nars.derive.PrediTerm;
 import nars.derive.rule.PremiseRule;
+import nars.derive.time.DeriveTime;
 import nars.op.Subst;
 import nars.op.data.differ;
 import nars.op.data.intersect;
 import nars.op.data.union;
 import nars.task.DerivedTask;
-import nars.term.Anon;
+import nars.term.anon.Anon;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;

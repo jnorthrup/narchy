@@ -1,7 +1,6 @@
 package jcog.learn;
 
 import jcog.Util;
-import jcog.learn.deep.MLP;
 import jcog.learn.lstm.Interaction;
 import jcog.learn.lstm.test.LiveSTM;
 import jcog.list.FasterList;
@@ -9,7 +8,6 @@ import jcog.math.FloatDelay;
 import jcog.math.FloatSupplier;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 

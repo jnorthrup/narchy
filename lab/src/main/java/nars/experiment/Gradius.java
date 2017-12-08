@@ -6,9 +6,7 @@ import nars.NAR;
 import nars.NAgentX;
 import nars.concept.ScalarConcepts;
 import nars.gui.Vis;
-import nars.op.video.BufferedImageBitmap2D;
 import nars.op.video.Scale;
-import nars.op.video.ShapeSensor;
 
 import static java4k.gradius4k.Gradius4K.*;
 import static spacegraph.SpaceGraph.window;

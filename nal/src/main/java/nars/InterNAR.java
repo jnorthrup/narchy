@@ -1,8 +1,8 @@
 package nars;
 
-import jcog.util.TriConsumer;
 import jcog.Util;
 import jcog.net.UDPeer;
+import jcog.util.TriConsumer;
 import nars.bag.leak.TaskLeak;
 import nars.control.CauseChannel;
 import nars.control.TaskService;

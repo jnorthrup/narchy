@@ -22,7 +22,7 @@ public class TermVector1 extends TermVector /*implements Set<Term>*/ {
 
 
     public TermVector1(Term sub, TermVector of) {
-        super(of.hashCodeSubTerms(), of.structure,
+        super(of.hashCodeSubterms(), of.structure,
              of.varPattern, of.varDep, of.varQuery, of.varIndep,
              of.complexity, of.volume, of.normalized
         );
@@ -48,7 +48,7 @@ public class TermVector1 extends TermVector /*implements Set<Term>*/ {
         if (this == obj) return true;
         if (obj instanceof Subterms) {
             Subterms t = (Subterms) obj;
-            if (hash == t.hashCodeSubTerms() && t.subs() == 1 && sub.equals(t.sub(0))) {
+            if (hash == t.hashCodeSubterms() && t.subs() == 1 && sub.equals(t.sub(0))) {
                 if (t instanceof TermVector)
                     equivalentTo((TermVector) t);
                 return true;

@@ -6,8 +6,8 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.junit.jupiter.api.Test;
 
-import static jcog.Texts.n4;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LivePredictorTest {
 

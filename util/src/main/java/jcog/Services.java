@@ -19,7 +19,6 @@ import jcog.event.ListTopic;
 import jcog.event.Topic;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
 import java.util.concurrent.ConcurrentHashMap;

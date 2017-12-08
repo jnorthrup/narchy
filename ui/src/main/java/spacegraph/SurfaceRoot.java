@@ -2,7 +2,6 @@ package spacegraph;
 
 import com.jogamp.opengl.GL2;
 import jcog.event.On;
-import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;

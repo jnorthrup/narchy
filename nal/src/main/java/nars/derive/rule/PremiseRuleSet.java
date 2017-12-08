@@ -5,6 +5,7 @@ import com.google.common.collect.Streams;
 import jcog.memoize.CaffeineMemoize;
 import nars.NAR;
 import nars.Narsese;
+import nars.The;
 import nars.index.term.PatternIndex;
 import nars.term.Compound;
 import nars.term.Term;
@@ -256,7 +257,7 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
             throw new Narsese.NarseseException("Right rule component must be compound: " + src);
         }
 
-        return TermVector.the(a, b);
+        return The.subterms(a, b);
     }
 
 //    public void permute(@NotNull PremiseRule preNormRule, String src, @NotNull PatternIndex index, @NotNull Collection<PremiseRule> ur) {

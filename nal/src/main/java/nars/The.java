@@ -7,12 +7,16 @@ import jcog.memoize.HijackMemoize;
 import jcog.memoize.Memoize;
 import jcog.memoize.SoftMemoize;
 import nars.derive.match.Ellipsis;
+import nars.derive.match.EllipsisMatch;
 import nars.index.term.NewCompound;
 import nars.term.Term;
+import nars.term.anon.Anom;
+import nars.term.anon.AnomVector;
 import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.UnitCompound1;
-import nars.term.container.TermVector;
+import nars.term.container.ArrayTermVector;
+import nars.term.container.TermVector1;
 
 import java.util.Collection;
 import java.util.List;
@@ -26,13 +30,16 @@ import static nars.Op.*;
  * The the
  * immutable singleton instantiator/interner/etc
  */
-public enum The {  ;
+public enum The {
+    ;
 
-    @Deprecated /* @NotNull */ public static final nars.term.container.Subterms subterms(Term... s) {
+    /* @NotNull */
+    public static final nars.term.container.Subterms subterms(Term... s) {
         return The.Subterms.the.apply(s);
     }
 
-    /* @NotNull */ public static final nars.term.container.Subterms subterms(Collection<? extends Term> s) {
+    /* @NotNull */
+    public static final nars.term.container.Subterms subterms(Collection<? extends Term> s) {
         return The.Subterms.the.apply(s.toArray(new Term[s.size()]));
     }
 
@@ -41,18 +48,43 @@ public enum The {  ;
         return Compound.the.apply(o, new FasterList<>(subterms));
     }
 
-    /* @NotNull */ protected static Term compound(Op o, List<Term> subterms) {
+    /* @NotNull */
+    protected static Term compound(Op o, List<Term> subterms) {
         if (o == NEG)
-            return Compound.rawCompoundBuilder.apply(o,subterms); //dont intern neg's
+            return Compound.rawCompoundBuilder.apply(o, subterms); //dont intern neg's
         return Compound.the.apply(o, subterms);
     }
 
 
-
     public static final class Subterms {
 
-        public static final Function<Term[], nars.term.container.Subterms> RawSubtermBuilder =
-                TermVector::the;
+        public static final Function<Term[], nars.term.container.Subterms> RawSubtermBuilder = (t) -> {
+
+            boolean purelyAnon = true;
+            for (Term x : t) {
+                if (x instanceof EllipsisMatch)
+                    throw new RuntimeException("ellipsis match should not be a subterm of ANYTHING");
+                if (!(x instanceof Anom))
+                    purelyAnon = false;
+            }
+
+            if (!purelyAnon) {
+                switch (t.length) {
+                    case 0:
+                        return nars.term.container.Subterms.Empty;
+                    case 1:
+                        return new TermVector1(t[0]);
+                    //case 2:
+                    //return new TermVector2(t);
+                    default:
+                        return new ArrayTermVector(t);
+                }
+            } else {
+                return new AnomVector(t);
+            }
+
+        };
+
 
         static final Function<NewCompound, nars.term.container.Subterms> rawSubtermBuilderBuilder = (n) -> RawSubtermBuilder.apply(n.subs);
 
@@ -88,7 +120,9 @@ public enum The {  ;
         private static class MemoizeSubtermBuilder implements Function<Term[], nars.term.container.Subterms> {
             final Memoize<NewCompound, nars.term.container.Subterms> cache;
 
-            /** TODO make adjustable */
+            /**
+             * TODO make adjustable
+             */
             int maxVol = 20;
 
             private MemoizeSubtermBuilder(Memoize<NewCompound, nars.term.container.Subterms> cache) {
@@ -139,7 +173,7 @@ public enum The {  ;
 
         };
 
-        public static final Supplier<BiFunction<Op, List<Term>, Term>> SoftCompoundBuilder = ()->
+        public static final Supplier<BiFunction<Op, List<Term>, Term>> SoftCompoundBuilder = () ->
                 new BiFunction<>() {
 
                     final SoftMemoize<NewCompound, Term> cache = new SoftMemoize<>((v) -> rawCompoundBuilder.apply(v.op, new FasterList(v.subs) /* HACK */), 64 * 1024, true);
@@ -149,8 +183,8 @@ public enum The {  ;
                         return cache.apply(new NewCompound(op, terms).commit());
                     }
                 };
-//
-        public static final Supplier<BiFunction<Op, List<Term>, Term>> CaffeineCompoundBuilder = ()->new BiFunction<>() {
+        //
+        public static final Supplier<BiFunction<Op, List<Term>, Term>> CaffeineCompoundBuilder = () -> new BiFunction<>() {
 
             final CaffeineMemoize<NewCompound, Term> cache = CaffeineMemoize.build((v) -> rawCompoundBuilder.apply(v.op, new FasterList(v.subs) /* HACK */),
                     256 * 1024, false);
@@ -160,7 +194,7 @@ public enum The {  ;
                 return cache.apply(new NewCompound(op, terms).commit());
             }
         };
-//
+        //
 //        public static final Supplier<BiFunction<Op, Term[], Term>> HijackCompoundBuilder = ()->new BiFunction<>() {
 //
 //            final HijackMemoize<NewCompound, Term> cache
@@ -177,8 +211,8 @@ public enum The {  ;
 //
         public static BiFunction<Op, List<Term>, Term> the =
                 rawCompoundBuilder;
-                //CaffeineCompoundBuilder.get();
-                //HijackCompoundBuilder;
+        //CaffeineCompoundBuilder.get();
+        //HijackCompoundBuilder;
 
     }
 }

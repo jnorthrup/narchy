@@ -1,13 +1,10 @@
 package nars.nal.nal7;
 
-import jcog.math.Interval;
 import nars.NAR;
-import nars.Narsese;
 import nars.Param;
 import nars.Task;
 import org.jetbrains.annotations.NotNull;
 
-import static nars.Op.CONJ;
 import static nars.time.Tense.ETERNAL;
 
 

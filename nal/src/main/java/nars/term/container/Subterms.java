@@ -556,7 +556,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     /**
      * allows the subterms to hold a different hashcode than hashCode when comparing subterms
      */
-    default int hashCodeSubTerms() {
+    default int hashCodeSubterms() {
         return hashCode();
     }
 

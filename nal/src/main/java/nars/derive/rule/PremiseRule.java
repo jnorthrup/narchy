@@ -5,6 +5,7 @@ import jcog.list.FasterList;
 import nars.$;
 import nars.NAR;
 import nars.Op;
+import nars.The;
 import nars.control.Derivation;
 import nars.derive.*;
 import nars.derive.constraint.*;
@@ -812,7 +813,7 @@ public class PremiseRule /*extends GenericCompound*/ {
         }
 
         return PremiseRuleSet.normalize(
-                new PremiseRule(TermVector.the(newPremise, newConclusion)), index, nar);
+                new PremiseRule(The.subterms(newPremise, newConclusion)), index, nar);
 
     }
 

@@ -559,7 +559,7 @@ public class TermTest {
         TermVector b = new ArrayTermVector(x);
         assertEquals(a, b);
         assertEquals(a.hashCode(), b.hashCode());
-        assertEquals(a.hashCodeSubTerms(), b.hashCodeSubTerms());
+        assertEquals(a.hashCodeSubterms(), b.hashCodeSubterms());
         assertEquals(a.toString(), b.toString());
     }
 
