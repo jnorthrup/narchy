@@ -1,21 +1,14 @@
-package nars.budget;
+package jcog.pri.op;
 
 import jcog.pri.Pri;
 import jcog.pri.Prioritized;
 import jcog.pri.Priority;
-import jcog.pri.op.PriMerge;
-import nars.$;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-
-/**
- * Created by me on 2/2/16.
- */
 public class PriMergeTest {
-
     final static float tol = 0.01f;
 
     static final Pri a = new Pri(1);
@@ -91,7 +84,7 @@ public class PriMergeTest {
 
         float overflow = m.merge(x, y);
 
-        System.out.println(x0 + " <-merge<- " + y + " x "  + "\t\texpect:" + $.b(ouPri) + " ?? actual:" + x);
+        System.out.println(x0 + " <-merge<- " + y + " x "  + "\t\texpect:" + new Pri(ouPri) + " ?? actual:" + x);
         assertEquals(ouPri, x.pri(), tol);
 
         if (expectedOverflow > 0)
@@ -99,6 +92,5 @@ public class PriMergeTest {
 
         return x;
     }
-
 
 }

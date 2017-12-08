@@ -127,7 +127,7 @@ public class FZero extends NAgentX {
                 12,
                 Iterables.concat(actions.keySet(), java.util.List.of(dAngVel, dAccel)),
                 //new LivePredictor.LSTMPredictor(0.25f, 1),
-                new LivePredictor.MLPPredictor(),
+                new LivePredictor.MLPPredictor(0.1f),
                 nar
         );
 

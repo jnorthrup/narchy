@@ -2,7 +2,7 @@ package nars.term.compound;
 
 import nars.$;
 import nars.Narsese;
-import nars.index.term.tree.TermKey;
+import nars.index.term.TermKey;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;

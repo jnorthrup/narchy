@@ -162,7 +162,7 @@ public class PoleCart extends NAgentX {
                 12,
                 new Termed[] { angX, angY, angVel, xVel },
                 //new LivePredictor.LSTMPredictor(0.1f, 2),
-                new LivePredictor.MLPPredictor(),
+                new LivePredictor.MLPPredictor(0.1f),
                 nar
         );
 

@@ -1,11 +1,10 @@
-package nars.index.term.tree;
+package nars.index.term;
 
 import com.google.common.collect.Streams;
 import jcog.tree.radix.MyConcurrentRadixTree;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
-import nars.index.term.TermIndex;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.NotNull;

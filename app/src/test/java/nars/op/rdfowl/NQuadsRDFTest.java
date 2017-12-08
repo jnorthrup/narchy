@@ -103,17 +103,17 @@ public class NQuadsRDFTest {
 
         n.clear();
         n.log();
-        n.run(1).input("({I}-->PhysicalPerson).");
-        n.run(1).input("({I}-->Seller).");
-        n.run(1).input("({I}-->ExternalRisk).");
-        n.run(1).input("({I}-->Service).");
-        n.run(1).input("({I}-->FinancialInstrument).");
-        n.run(1).input("({I}-->NonResidentCapitalOwner)!");
-        n.run(1).input("isReceiverOfPhysicalValue(I,#1)!");
-        n.run(1).input("--isReceiverOfPhysicalValue(#1,I)!");
-        n.run(1).input("isReceiverOfObligationValue(I,#1)!");
-        n.run(1).input("--isReceiverOfObligationValue(#1,I)!");
-        n.run(1).input("$0.99 (I<->?x)?");
+        n.run(1); n.input("({I}-->PhysicalPerson).");
+        n.run(1); n.input("({I}-->Seller).");
+        n.run(1); n.input("({I}-->ExternalRisk).");
+        n.run(1); n.input("({I}-->Service).");
+        n.run(1); n.input("({I}-->FinancialInstrument).");
+        n.run(1); n.input("({I}-->NonResidentCapitalOwner)!");
+        n.run(1); n.input("isReceiverOfPhysicalValue(I,#1)!");
+        n.run(1); n.input("--isReceiverOfPhysicalValue(#1,I)!");
+        n.run(1); n.input("isReceiverOfObligationValue(I,#1)!");
+        n.run(1); n.input("--isReceiverOfObligationValue(#1,I)!");
+        n.run(1); n.input("$0.99 (I<->?x)?");
         n.run(2512);
 
     }

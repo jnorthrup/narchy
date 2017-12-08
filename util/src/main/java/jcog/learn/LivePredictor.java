@@ -10,6 +10,8 @@ import jcog.math.FloatSupplier;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Random;
 
 import static jcog.Util.toDouble;
 
@@ -52,6 +54,7 @@ public class LivePredictor {
 
         @Override
         public double[] inputs() {
+            data.next();
             return ii = historyVector(data, history, ii);
         }
 
@@ -110,16 +113,27 @@ public class LivePredictor {
 
     public static class MLPPredictor implements Predictor {
 
-        float learningRate = 0.1f;
+        private final Random rng;
+        float learningRate;
         float momentum = 0f;
         MLPMap mlp;
         private float[] next;
+
+
+        public MLPPredictor(float learningRate) {
+            this(learningRate, new XoRoShiRo128PlusRandom(1));
+        }
+
+        public MLPPredictor(float learningRate, Random rng) {
+            this.learningRate = learningRate;
+            this.rng = rng;
+        }
 
         @Override
         public void learn(double[] ins, double[] outs) {
             if (mlp == null /*|| mlp.inputs()!=ins.length ...*/) {
                  mlp = new MLPMap(ins.length, new int[] { ins.length + outs.length, outs.length},
-                         new XoRoShiRo128PlusRandom(1), true);
+                         rng, true);
                  Util.last(mlp.layers).setIsSigmoid(false);
             }
             float[] fIns = Util.toFloat(ins);
@@ -191,13 +205,13 @@ public class LivePredictor {
         return d;
     }
 
-    static double[] historyVector(Collection<? extends FloatDelay> f, int history, double[] d) {
+    static double[] historyVector(List<? extends FloatDelay> f, int history, double[] d) {
         if (d == null || d.length != f.size() * history) {
             d = new double[f.size() * history];
         }
         int i = 0;
-        for (FloatDelay g : f) {
-            float[] gd = g.data;
+        for (int i1 = 0, fSize = f.size(); i1 < fSize; i1++) {
+            float[] gd = f.get(i1).data;
             for (int k = 0; k < gd.length; k++)
                 d[i++] = gd[k];
         }

@@ -1,4 +1,4 @@
-package nars.index.term.tree;
+package nars.index.term;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteArrayDataOutput;

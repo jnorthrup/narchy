@@ -2,7 +2,6 @@ package nars.budget;
 
 import jcog.Util;
 import jcog.io.SparkLine;
-import nars.util.UtilityFunctions;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  *
  * @author me
  */
-public class BudgetTest {
+public class UtilMiscTest {
 
     @Test
     public void test() {
@@ -33,7 +32,7 @@ public class BudgetTest {
         int N = 32;
         Integer[] x = new Integer[N];
         for (int i = 0; i < N; i++) {
-            x[i] = Math.round(UtilityFunctions.sawtoothCurved((float)i/(N-1)) * N);
+            x[i] = Math.round(Util.sawtoothCurved((float)i/(N-1)) * N);
         }
         System.out.println(SparkLine.render(x));
     }

@@ -2,13 +2,9 @@ package jcog.learn;
 
 import jcog.math.FloatSupplier;
 import jcog.math.MutableInteger;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.junit.jupiter.api.Test;
-
-import java.util.DoubleSummaryStatistics;
 
 import static jcog.Texts.n4;
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,8 +14,8 @@ public class LivePredictorTest {
     @Test public void test1() {
         IntToFloatFunction ii = x -> (float)Math.sin(x/4f);
         IntToFloatFunction oo = x -> (float)Math.cos(x/4f);
-        LivePredictor.LSTMPredictor model = new LivePredictor.LSTMPredictor(0.01f, 1);
-        int iHistory = 8;
+        LivePredictor.LSTMPredictor model = new LivePredictor.LSTMPredictor(0.1f, 1);
+        int iHistory = 4;
         int errorWindow = 16;
         int totalTime = 8192;
         float maxMeanError = 0.2f;
@@ -27,24 +23,38 @@ public class LivePredictorTest {
 
         assertCorrect(ii, oo, model, iHistory, errorWindow, totalTime, maxMeanError);
     }
-    @Test public void test21() {
+    @Test public void test21_LSTM() {
         IntToFloatFunction ii = x -> (float)Math.sin(x/4f);
         IntToFloatFunction oo = x -> (float)Math.cos(x/8f);
         LivePredictor.LSTMPredictor model = new LivePredictor.LSTMPredictor(0.5f, 1);
         int iHistory = 6;
         int errorWindow = 16;
         int totalTime = 8192*8;
-        float maxMeanError = 0.2f;
+        float maxMeanError = 0.1f;
 
 
         assertCorrect(ii, oo, model, iHistory, errorWindow, totalTime, maxMeanError);
     }
 
-    static void assertCorrect(IntToFloatFunction ii, IntToFloatFunction oo, LivePredictor.LSTMPredictor model, int iHistory, int errorWindow, int totalTime, float maxMeanError) {
+    @Test public void test12_MLP() {
+
+        IntToFloatFunction ii = x -> (float)Math.sin(x/8f);
+        IntToFloatFunction oo = x -> (float)Math.cos(x/8f);
+        LivePredictor.MLPPredictor model =
+                new LivePredictor.MLPPredictor(0.03f);
+        int iHistory = 4;
+        int errorWindow = 16;
+        int totalTime = 1024;
+        float maxMeanError = 0.15f;
+
+        assertCorrect(ii, oo, model, iHistory, errorWindow, totalTime, maxMeanError);
+    }
+
+    static void assertCorrect(IntToFloatFunction ii, IntToFloatFunction oo, LivePredictor.Predictor model, int iHistory, int errorWindow, int totalTime, float maxMeanError) {
         MutableInteger m = new MutableInteger();
 
 
-        FloatSupplier[] in =  { () -> ii.valueOf(m.intValue()) };
+        FloatSupplier[] in =  { () -> ii.valueOf(m.intValue()),  () -> oo.valueOf(m.intValue()-1) };
         FloatSupplier[] out = { () -> oo.valueOf(m.intValue()) };
 
         LivePredictor.HistoryFramer ih = new LivePredictor.HistoryFramer(in, iHistory, out);
@@ -52,28 +62,25 @@ public class LivePredictorTest {
 
         DescriptiveStatistics error = new DescriptiveStatistics(errorWindow);
 
-        for (int i = 0; i < totalTime; i++) {
+        for (int i = 0; i < totalTime; i++, m.increment()) {
 
             double[] prediction = l.next();
 
-            float[] i0 = ih.data.get(0).data;
-            assertEquals(i0[0], in[0].asFloat(), 0.001f);
-            if (i > 1) {
-                assertEquals(i0[1], ii.valueOf(m.intValue()-1), 0.001f);
+            //test time shift preseves previous value;
+            {
+                float[] i0 = ih.data.get(0).data;
+                assertEquals(i0[0], in[0].asFloat(), 0.001f);
+                if (i > 1)
+                    assertEquals(i0[1], ii.valueOf(m.intValue() - 1), 0.001f);
             }
 
-            double p0 = prediction[0];
-            double a = oo.valueOf(m.intValue()+1);
-            //System.out.println(n4(p0) + " , " + n4(a));
+            double predicted = prediction[0];
+            double actual = oo.valueOf(m.intValue()+1);
 
-            double e = Math.abs(a - p0); //absolute error
+            double e = Math.abs(actual - predicted); //absolute error
             error.addValue(e);
-            double eMean = error.getMean();
-            //System.out.println(eMean);
 
-            //System.out.print( n4(prediction) + "\t=?=\t");
-            m.increment();
-            //System.out.println(n4(d(in)) + "\t" + n4(d(out)) );
+           //System.out.println( n4(predicted) + "\t" + n4(actual));
         }
 
         double eMean = error.getMean();

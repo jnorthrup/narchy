@@ -1,4 +1,4 @@
-package nars.index.term.tree;
+package nars.index.term;
 
 import nars.NAR;
 import nars.NARS;

@@ -2060,7 +2060,40 @@ public enum Util {
         return x[x.length - 1];
     }
 
+    /*
+    curved-sawtooth function:
+        the left-half of this wave is convex, like capacitor charging.
+        the right-half of the wave is concave, like capacitor discharging
 
+        for efficiency, dont use the exponential function which circuit models
+        use but instead use the circle which can be computed with polynomial
+
+            left    0<=x<=0.5:     0.5 * (1-(x-0.5)*(x-0.5)*4)^0.5
+            right:  0.5<x<=1.0:   -0.5 * (1-(x-1.0)*(x-1.0)*4)^0.5+0.5
+                                     a * sqrt(1-(x+tx)*(x+tx)*4) + b
+
+        hypothesis: the discontinuity at the midpoint represents the threshold point
+        where metastable behavior can be attracted
+
+        this value is then used to LERP between the min and max priority limits, mapping
+        that range to the 0..1.0 unit range of this sawtooth.
+
+        see doc/CurvedSawtooth_Function.svg
+     */
+    public static float sawtoothCurved(float x) {
+        float tx, a, b;
+        if (x < 0.5f) {
+            a = +0.5f;
+            b = 0f;
+            tx = -0.5f;
+        } else {
+            a = -0.5f;
+            b = +0.5f;
+            tx = -1f;
+        }
+        float x0 = (x+tx);
+        return (float) (a * Math.sqrt(1f - x0 * x0 * 4) + b);
+    }
 
 
 //    public static <T>  Collector<T, ?, List<T>> toListOrNullIfEmpty() {

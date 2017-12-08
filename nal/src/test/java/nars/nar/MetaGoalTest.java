@@ -1,4 +1,4 @@
-package nars.control;
+package nars.nar;
 
 import nars.NAR;
 import nars.NARS;
