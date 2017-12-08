@@ -533,15 +533,16 @@ abstract public class NAgentX extends NAgent {
         FloatParam gain = new FloatParam(1f, 0f, 10f);
 
         BitmapMatrixView bmp = new BitmapMatrixView((i) ->
-                gain.floatValue() * nar.causes.get(i).value(),
+                Util.tanhFast(
+                    gain.floatValue() * nar.causes.get(i).value()
+                ),
                 //Util.tanhFast(nar.causes.get(i).value()),
                 s, Math.max(1, (int) Math.ceil(Math.sqrt(s))),
                 Draw::colorBipolar) {
 
             final DurService on;
-
             {
-                on = a.onFrame((Runnable) this::update);
+                on = a.onFrame(this::update);
             }
 
             @Override
@@ -551,7 +552,7 @@ abstract public class NAgentX extends NAgent {
             }
         };
 
-        return bmp;
+        return new VSplit(bmp, Vis.reflect(gain), 0.1f);
     }
 
 //    public static class NARSView extends Grid {

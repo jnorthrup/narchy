@@ -26,6 +26,7 @@ abstract public class Loop {
 
     /** in seconds */
     public final DescriptiveStatistics dutyTime = new DescriptiveStatistics(windowLength); //in millisecond
+    public final DescriptiveStatistics cycleTime = new DescriptiveStatistics(windowLength); //in millisecond
 
 
 
@@ -138,7 +139,7 @@ abstract public class Loop {
         logger.info("start {} @ {}ms period", this, nextPeriodMS());
 
         int periodMS;
-        long beforeTime = System.currentTimeMillis();
+        long beforeTime = System.nanoTime();
         while ((periodMS = nextPeriodMS()) >= 0) {
 
 
@@ -158,20 +159,24 @@ abstract public class Loop {
 
 
             if (periodMS > 0) {
-                long afterTime = System.currentTimeMillis();
+                long afterTime = System.nanoTime();
 
 
                 long frameTime = afterTime - beforeTime;
 
-                lagSum += (this.lag = Math.max(0, (frameTime - periodMS) / ((float) periodMS)));
+                long frameTimeMS = frameTime/1000000;
+                lagSum += (this.lag = Math.max(0, (frameTimeMS /*nano to ms */  - periodMS) / ((float) periodMS)));
 
                 //System.out.println(getClass() + " " + frameTime + " " + periodMS + " " + lag);
 
-                this.dutyTime.addValue((frameTime)/1000.0);
+                double frameTimeS = (frameTime) / 1.0E9;
+                this.dutyTime.addValue(frameTimeS);
 
-                Util.sleep((int)( periodMS - frameTime) ); //((long) this.dutyTime.getMean()) ));
+                Util.sleep((int)( periodMS - frameTimeMS) ); //((long) this.dutyTime.getMean()) ));
 
-                beforeTime = System.currentTimeMillis();
+                long prevBeforeTime = beforeTime;
+                beforeTime = System.nanoTime();
+                this.cycleTime.addValue( (beforeTime - prevBeforeTime)/1.0E9 );
 
             } else {
                 //Thread.yield();

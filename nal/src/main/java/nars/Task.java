@@ -327,7 +327,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
         float xp = x.pri();
         if (xp == xp)
-            y.priSet(x); //otherwise leave deleted
+            y.priSet(xp); //otherwise leave deleted
 
         //y.meta.putAll(x.meta());
         return y;

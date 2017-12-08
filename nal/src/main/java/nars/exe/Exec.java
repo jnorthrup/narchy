@@ -142,7 +142,7 @@ abstract public class Exec implements Executor {
         /**
          * goal and goalSummary instances correspond to the possible MetaGoal's enum
          */
-        void update(FasterList<Cause> causes, float[] goal);
+        void update(long time, int dur, FasterList<Cause> causes, float[] goal);
     }
 
 }

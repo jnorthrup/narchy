@@ -24,6 +24,7 @@ import java.util.stream.IntStream;
 import static jcog.Texts.n2;
 import static jcog.Texts.n4;
 import static jcog.Util.normalize;
+import static nars.time.Tense.ETERNAL;
 
 /**
  * decides mental activity
@@ -166,18 +167,18 @@ public class Focus {
         /**
          * hidden to visible neuron ratio
          */
-        private float hiddenMultipler = 0.5f;
+        private float hiddenMultipler = 1f;
 
-        float rbmStrength = 0.1f;
+        float rbmStrength = 0.25f;
 
         public RBMRevaluator(Random rng) {
+            super();
             this.rng = rng;
-            momentum = 1f - rbmStrength;
         }
 
         @Override
-        public void update(FasterList<Cause> causes, float[] goal) {
-            super.update(causes, goal);
+        public void update(long time, int dur, FasterList<Cause> causes, float[] goal) {
+            super.update(time, dur, causes, goal);
 
             int numCauses = causes.size();
             if (numCauses < 2)
@@ -206,7 +207,7 @@ public class Focus {
                 float j = /*((rng.nextFloat()-0.5f)*2*noise)*/ +
                         //((float) (next[i]));
                         //(float)( Math.abs(next[i]) > Math.abs(cur[i]) ? next[i] : cur[i]);
-                        (float) (cur[i] + rbmStrength * next[i]);
+                        (float) ((1f - rbmStrength) * cur[i] + rbmStrength * next[i]);
                 causes.get(i).setValue(j);
             }
         }
@@ -223,10 +224,23 @@ public class Focus {
 
         float momentum =
 //                    0f;
-                0.75f;
+                //0.5f;
+                //0.75f;
+                0.95f;
+
+        final static double minUpdateDurs = 1f;
+
+        long lastUpdate = ETERNAL;
 
         @Override
-        public void update(FasterList<Cause> causes, float[] goal) {
+        public void update(long time, int dur, FasterList<Cause> causes, float[] goal) {
+
+            if (lastUpdate == ETERNAL)
+                lastUpdate = time;
+            double dt = (time - lastUpdate)/dur;
+            if (dt < minUpdateDurs)
+                return;
+            lastUpdate = time;
 
             for (RecycledSummaryStatistics r : causeSummary) {
                 r.clear();
@@ -247,7 +261,7 @@ public class Focus {
 //            goalFactor[j] = goal[j] / ( Util.equals(m, 0, epsilon) ? 1 : m );
 //        }
 
-            final float momentum = this.momentum;
+            final float momentum = (float) Math.pow(this.momentum, dt);
             for (int i = 0, causesSize = cc; i < causesSize; i++) {
                 Cause c = causes.get(i);
 
@@ -265,7 +279,15 @@ public class Focus {
 //                            Math.abs(next) / (1 + Math.max(Math.abs(next), Math.abs(prev)))));
 
                 //c.setValue(Util.lerp(momentum, next, prev));
-                c.setValue(momentum * prev + (1f - momentum) * next);
+
+//                //memory update factor: increase momentum in proportion to their relative strength
+//                float ap = Math.abs(prev);
+//                float an = Math.abs(next);
+//                float den = an + ap;
+//                float m = den > Float.MIN_NORMAL ? (ap / den) : 0f;
+//                m = Util.lerp(m, momentum, 0.99f);
+                float m = momentum;
+                c.setValue(m * prev + (1f - m) * next);
             }
         }
 
@@ -295,7 +317,7 @@ public class Focus {
         n.onCycle(this::update);
     }
 
-    public void work(int work, float dt) {
+    public void run(int work, float dt) {
         assert (work > 0);
 
         Schedule s = schedule.read();
@@ -360,7 +382,7 @@ public class Focus {
 
             schedule.commit();
 
-            revaluator.update(nar.causes, nar.want);
+            revaluator.update(nar.time(), nar.dur(), nar.causes, nar.want);
 
         } finally {
             busy.set(false);

@@ -62,12 +62,12 @@ public class FZero extends NAgentX {
 
         this.fz = new FZeroGame();
 
-        CameraSensor<Scale> c = senseCamera(id, new Scale(() -> fz.image,
+        CameraSensor<Scale> c = senseCamera($.the("cam"), new Scale(() -> fz.image,
                 //32, 24
                 16, 10
         )/*.blur()*/).resolution(0.1f);
 
-        new ShapeSensor($.p(id, $.the("shape")), new BufferedImageBitmap2D(() -> fz.image), this);
+        new ShapeSensor($.the("shape"), new BufferedImageBitmap2D(() -> fz.image), this);
 
 //        CameraSensor<Scale> c = senseCameraReduced(id, new Scale(() -> fz.image,
 //                128, 64), 8, 8, 2, 2).resolution(0.1f);
