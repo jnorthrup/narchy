@@ -187,7 +187,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
                         if (indepVarOrStatement.op() == VAR_INDEP) {
                             indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).anonNum(), FasterList::new).add(
-                                path.toImmutable()
+                                    path.toImmutable()
                             );
                         } else {
                             statements.add(path.toImmutable());
@@ -219,7 +219,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                         ByteByteHashMap count = new ByteByteHashMap();
 
 
-
                         //byte 1 = which statement path, byte 2 = length down it
                         int numVarPaths = varPaths.size();
                         for (byte varPath = 0; varPath < numVarPaths; varPath++) {
@@ -228,7 +227,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                             ByteList p = varPaths.get(varPath);
                             if (rootIsStatement) {
                                 byte branch = p.get(0);
-                                if (Util.branchOr((byte)-1, count, branch)==3)
+                                if (Util.branchOr((byte) -1, count, branch) == 3)
                                     return true; //valid
                             }
 
@@ -249,7 +248,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                                 }
 
                                 byte lastBranch = p.get(statementPathLength);
-                                assert (lastBranch == 0 || lastBranch == 1): lastBranch + " for path " + p + " while validating term: " + t;
+                                assert (lastBranch == 0 || lastBranch == 1) : lastBranch + " for path " + p + " while validating term: " + t;
 
                                 //match
                                 if (Util.branchOr(statementNum, count, lastBranch) == 3) {
@@ -375,8 +374,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
     /**
      * amount of evidence measured at a given time with a given duration window
-     *
+     * <p>
      * WARNING check that you arent calling this with (start,end) values
+     *
      * @param when time
      * @param dur  duration period across which evidence can decay before and after its defined start/stop time
      * @return value >= 0 indicating the evidence
@@ -622,7 +622,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      */
     default long nearestTimeOf(final long x, final long y) {
 
-        assert(y >= x && (x!=ETERNAL || x==y));
+        assert (y >= x && (x != ETERNAL || x == y));
 
         if (x == y)
             return x;
@@ -792,15 +792,16 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     }
 
 
-
-    @Nullable default Truth truth(long targetStart, long targetEnd, long dur, NAR nar) {
+    @Nullable
+    default Truth truth(long targetStart, long targetEnd, long dur, NAR nar) {
         Truth t = truth(targetStart, targetEnd, dur, nar.confMin.floatValue());
         if (t == null)
             return t;
         return t.dither(nar);
     }
 
-    @Nullable default Truth truth(long targetStart, long targetEnd, long dur, float minConf) {
+    @Nullable
+    default Truth truth(long targetStart, long targetEnd, long dur, float minConf) {
         return truth(nearestTimeOf(targetStart, targetEnd), dur, minConf);
     }
 
@@ -1101,15 +1102,17 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //        }
 //    }
 
-    static long[] range(Iterable<Task> ie) {
+    static long[] range(List<Task> ie) {
         long start = Long.MAX_VALUE, end = Long.MIN_VALUE;
-        for (Task x : ie) {
+        int n = ie.size();
+        for (int i = 0; i < n; i++) {
+            Task x = ie.get(i);
             long s = x.start();
-            if (s == ETERNAL)
-                continue; //return Task.ETERNAL_ETERNAL;
-            if (s < start) start = s;
-            long e = x.end();
-            if (e > end) end = e;
+            if (s != ETERNAL) {
+                if (s < start) start = s;
+                long e = x.end();
+                if (e > end) end = e;
+            }
         }
         if (start == Long.MAX_VALUE) //nothing or all eternal
             return Task.ETERNAL_ETERNAL;

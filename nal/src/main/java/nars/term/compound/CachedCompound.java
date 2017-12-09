@@ -6,6 +6,7 @@ import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.container.Subterms;
+import nars.term.container.TermVector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +19,7 @@ public class CachedCompound implements Compound {
     /**
      * subterm vector
      */
-    private final Subterms subterms;
+    private Subterms subterms;
 
 
     /**
@@ -30,6 +31,9 @@ public class CachedCompound implements Compound {
 
     final int _volume;
     final int _structure;
+
+    private static volatile int SERIAL = 0;
+    public final int serial = SERIAL++;
 
     private transient Term rooted = null;
     private transient Term concepted = null;
@@ -87,7 +91,7 @@ public class CachedCompound implements Compound {
 
 
     @Override
-    public int dt() {
+    public final int dt() {
         return DTERNAL;
     }
 
@@ -113,36 +117,51 @@ public class CachedCompound implements Compound {
     public final boolean equals(@Nullable Object that) {
         if (this == that) return true;
 
-        if (!(that instanceof Term) || hash != that.hashCode())
-            return false;
+        if (that instanceof CachedCompound) {
+            CachedCompound them = (CachedCompound) that;
+            Subterms mySubs = subterms;
+            Subterms theirSubs = them.subterms;
+            if (mySubs != theirSubs) {
+                if (!mySubs.equals(theirSubs))
+                    return false;
 
-        if (Compound.equals(this, (Term) that)) {
-            if (that instanceof CachedCompound) {
-                equivalent((CachedCompound) that);
+                if (mySubs instanceof TermVector && theirSubs instanceof TermVector) {
+                    //prefer the earlier instance for sharing
+                    if ((((TermVector) mySubs).serial) < (((TermVector) theirSubs).serial)) {
+                        them.subterms = mySubs;
+                    } else {
+                        this.subterms = theirSubs;
+                    }
+                }
+
             }
+
+            //assert(dt()==DTERNAL && them.dt()==DTERNAL);
+            if (op != them.op)
+                return false;
+
+            equivalent((CachedCompound) that);
             return true;
+
+        } else {
+            if (!(that instanceof Term) || hash != that.hashCode())
+                return false;
+
+            return Compound.equals(this, (Term) that);
         }
-        return false;
     }
 
     /**
-     * data sharing
+     * data sharing: call if another instance is known to be equivalent to share some clues
      */
-    private void equivalent(CachedCompound that) {
-//        TermContainer otherSubterms = that.subterms;
-//        TermContainer mySubterms = this.subterms;
-//        if (mySubterms!=otherSubterms) {
-//            if (System.identityHashCode(mySubterms) < System.identityHashCode(otherSubterms))
-//                that.subterms = mySubterms;
-//            else
-//                this.subterms = otherSubterms;
-//        }
+    protected void equivalent(CachedCompound them) {
 
-        if (that.rooted != null && this.rooted!=this) this.rooted = that.rooted;
-        if (this.rooted != null && that.rooted!=that) that.rooted = this.rooted;
 
-        if (that.concepted != null && this.concepted!=this) this.concepted = that.concepted;
-        if (this.concepted != null && that.concepted!=that) that.concepted = this.concepted;
+        if (them.rooted != null && this.rooted!=this) this.rooted = them.rooted;
+        if (this.rooted != null && them.rooted!=them) them.rooted = this.rooted;
+
+        if (them.concepted != null && this.concepted!=this) this.concepted = them.concepted;
+        if (this.concepted != null && them.concepted!=them) them.concepted = this.concepted;
 
     }
 

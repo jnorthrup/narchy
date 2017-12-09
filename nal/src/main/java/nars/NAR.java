@@ -1314,33 +1314,35 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      */
     public NAR outputBinary(OutputStream o, Function<Task, Task> each) {
 
-        DataOutputStream oo = new DataOutputStream(o);
+        runLater(()-> {
+            DataOutputStream oo = new DataOutputStream(o);
 
-        MutableInteger total = new MutableInteger(0), wrote = new MutableInteger(0);
+            MutableInteger total = new MutableInteger(0), wrote = new MutableInteger(0);
 
-        tasks().map(each).filter(Objects::nonNull).forEach(x -> {
+            tasks().map(each).filter(Objects::nonNull).forEach(x -> {
 
-            total.increment();
+                total.increment();
 
-            byte[] b = IO.taskToBytes(x);
-            if (Param.DEBUG) {
-                //HACK temporary until this is debugged
-                Task xx = IO.taskFromBytes(b);
-                if (xx == null || !xx.equals(x)) {
-                    throw new RuntimeException("task serialization problem: " + x + " != " + xx);
+                byte[] b = IO.taskToBytes(x);
+                if (Param.DEBUG) {
+                    //HACK temporary until this is debugged
+                    Task xx = IO.taskFromBytes(b);
+                    if (xx == null || !xx.equals(x)) {
+                        throw new RuntimeException("task serialization problem: " + x + " != " + xx);
+                    }
                 }
-            }
 
-            try {
-                oo.write(b);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+                try {
+                    oo.write(b);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
 
-            wrote.increment();
+                wrote.increment();
+            });
+
+            logger.debug("{} output {}/{} tasks ({} bytes)", o, wrote, total, oo.size());
         });
-
-        logger.debug("{} output {}/{} tasks ({} bytes)", o, wrote, total, oo.size());
 
         return this;
     }
@@ -1348,22 +1350,24 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     @NotNull
     public NAR outputText(@NotNull OutputStream o, @NotNull Function<Task, Task> each) {
 
-        //SnappyFramedOutputStream os = new SnappyFramedOutputStream(o);
+        runLater(()-> {
+            //SnappyFramedOutputStream os = new SnappyFramedOutputStream(o);
 
-        PrintStream ps = new PrintStream(o);
+            PrintStream ps = new PrintStream(o);
 
-        MutableInteger total = new MutableInteger(0), wrote = new MutableInteger(0);
+            MutableInteger total = new MutableInteger(0), wrote = new MutableInteger(0);
 
-        StringBuilder sb = new StringBuilder();
-        tasks().map(each).filter(Objects::nonNull).forEach(x -> {
+            StringBuilder sb = new StringBuilder();
+            tasks().map(each).filter(Objects::nonNull).forEach(x -> {
 
-            total.increment();
+                total.increment();
 
-            if (x.truth() != null && x.conf() < confMin.floatValue())
-                return; //ignore task if it is below confMin
+                if (x.truth() != null && x.conf() < confMin.floatValue())
+                    return; //ignore task if it is below confMin
 
-            sb.setLength(0);
-            ps.println(x.appendTo(sb, true));
+                sb.setLength(0);
+                ps.println(x.appendTo(sb, true));
+            });
         });
 
         return this;

@@ -1,5 +1,6 @@
 package org.intelligentjava.machinelearning.decisiontree;
 
+import jcog.learn.gng.Gasolinear;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.intelligentjava.machinelearning.decisiontree.feature.DiscretizedScalarFeature;
 import org.jetbrains.annotations.Nullable;
@@ -64,7 +65,7 @@ public class RealDecisionTree extends DecisionTree<Integer, Float> {
             return p;
         };
 
-        this.cols = IntStream.range(0, table.cols.length).mapToObj(x -> new DiscretizedScalarFeature(x, table.cols[x], discretization))
+        this.cols = IntStream.range(0, table.cols.length).mapToObj(x -> new DiscretizedScalarFeature(x, table.cols[x], discretization, new Gasolinear()))
                 .toArray(DiscretizedScalarFeature[]::new);
 
         switch (discretization) {
@@ -96,7 +97,7 @@ public class RealDecisionTree extends DecisionTree<Integer, Float> {
 
         //System.out.println(classifiers);
 
-        put(column, rows.map((r) -> (Function<Integer, Float>) i -> r[i]).collect(toList()),
+        put(column, rows.map((r) -> (Function<Integer,Float>) i -> r[i]).collect(toList()),
 
                 //the classifiers from every non-target column
                 Stream.of(cols).

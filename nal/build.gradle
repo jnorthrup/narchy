@@ -2,7 +2,8 @@ buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
-        maven { url 'http://jitpack.io'}
+        maven { url 'http://jitpack.io' }
+        //maven { url 'https://stamp-project.github.io/stamp-maven-repository' }
     }
     dependencies{
 //        classpath "com.github.hurricup:gradle-grammar-kit-plugin:2017.1"
@@ -56,6 +57,8 @@ dependencies {
     }
     testCompile group: 'org.openjdk.jmh', name: 'jmh-generator-annprocess', version: '1.19'
 
+
+//    testCompile(group: 'fr.inria.stamp', name:'dspot', version:'1.0.2-SNAPSHOT')
 }
 
 //apply plugin: 'com.uber.infer.java'

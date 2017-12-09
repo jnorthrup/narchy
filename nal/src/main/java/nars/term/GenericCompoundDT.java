@@ -5,6 +5,7 @@ import nars.IO;
 import nars.Op;
 import nars.Param;
 import nars.derive.PatternCompound;
+import nars.term.compound.CachedCompound;
 import nars.term.container.Subterms;
 import nars.term.transform.CompoundTransform;
 import org.jetbrains.annotations.NotNull;
@@ -21,7 +22,8 @@ public class GenericCompoundDT /*extends ProxyTerm<Compound>*/ implements Compou
      */
     public final int dt;
     private final int hashDT;
-    protected final Compound ref;
+
+    private Compound ref;
 
     public GenericCompoundDT(Compound base, int dt) {
         this.ref = base;
@@ -158,23 +160,31 @@ public class GenericCompoundDT /*extends ProxyTerm<Compound>*/ implements Compou
     public boolean equals(Object that) {
         if (this == that) return true;
 
-        if (!(that instanceof Term) || hashDT != that.hashCode())
-            return false;
 
         if (that instanceof GenericCompoundDT) {
             GenericCompoundDT cthat = (GenericCompoundDT) that;
-            if (dt != cthat.dt) return false;
             Compound thatRef = cthat.ref;
             Compound myRef = this.ref;
-            if (myRef == thatRef) {
-                return true;
-            } else if (myRef.equals(thatRef)) {
-//                this.ref = thatRef; //share
-                return true;
-            } else {
-                return false;
+
+            //try sharing ref, even if the equality is false
+            if (myRef != thatRef) {
+                if (!myRef.equals(thatRef))
+                    return false;
+
+                //prefer the earlier instance for sharing
+                if ((((CachedCompound)myRef).serial) < (((CachedCompound)thatRef).serial)) {
+                    cthat.ref = myRef;
+                } else {
+                    this.ref = thatRef;
+                }
             }
+
+            return (dt == cthat.dt);
+
         } else {
+
+            if (!(that instanceof Term) || hashDT != that.hashCode())
+                return false;
 
             return Compound.equals(this, (Term)that);
         }

@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static nars.truth.TruthFunctions.c2wSafe;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 public class ConjClustering extends Causable {
@@ -259,7 +260,7 @@ public class ConjClustering extends Causable {
 
             //TODO discount based on evidential overlap? needs N-way overlapFraction function
 
-            PreciseTruth t = $.t(freq, conf).dither(freqRes, confRes, confMin, 1f);
+            PreciseTruth t = Truth.the(freq, c2wSafe(conf), nar);
             if (t != null) {
 
                 Term cj = Op.conj(new FasterList(vv.keySet()));

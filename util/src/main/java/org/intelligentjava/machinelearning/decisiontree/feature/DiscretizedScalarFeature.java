@@ -1,7 +1,7 @@
 package org.intelligentjava.machinelearning.decisiontree.feature;
 
 import jcog.Texts;
-import jcog.learn.gng.Gasolinear;
+import jcog.learn.Discretize1D;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
@@ -12,20 +12,23 @@ import java.util.stream.Stream;
 public class DiscretizedScalarFeature {
 
     final String name;
-    final Gasolinear discretizer;
+    final Discretize1D discretizer;
     public final int num;
+    private final int arity;
 
-    public DiscretizedScalarFeature(int x, String name, int discretization) {
+    public DiscretizedScalarFeature(int x, String name, int arity, Discretize1D d) {
+        this.arity = arity;
         this.num = x;
         this.name = name;
-        this.discretizer = new Gasolinear(discretization);
+        this.discretizer = d;
+        d.reset(arity);
     }
 
     public void learn(float x) {
         discretizer.put(x);
     }
 
-    public Stream<Predicate<Function<Integer, Float>>> classifiers(@Nullable String... labels) {
+    public Stream<Predicate<Function<Integer,Float>>> classifiers(@Nullable String... labels) {
         assert (labels == null || labels.length == 0 || labels.length == levels());
         return IntStream.range(0, levels()).mapToObj(
                 labels != null && labels.length == levels() ?
@@ -34,15 +37,15 @@ public class DiscretizedScalarFeature {
         );
     }
 
-    public float value() {
-        return (float) discretizer.centroids[num].getEntry(0);
-    }
+//    public float value() {
+//        return (float) discretizer.centroids[num].getEntry(0);
+//    }
 
     protected int levels() {
-        return discretizer.centroids.length;
+        return arity;
     }
 
-    class CentroidMatch implements Predicate<Function<Integer, Float>> {
+    class CentroidMatch implements Predicate<Function<Integer,Float>> {
 
         private final int v;
         private final String label;
@@ -59,12 +62,12 @@ public class DiscretizedScalarFeature {
         }
 
         public double value() {
-            return discretizer.centroids[v].getEntry(0);
+            return discretizer.value(v);
         }
 
         @Override
         public boolean test(Function<Integer, Float> rr) {
-            return discretizer.which(rr.apply(num)) == v;
+            return discretizer.index(rr.apply(num)) == v;
         }
     }
 

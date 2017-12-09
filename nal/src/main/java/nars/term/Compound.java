@@ -63,11 +63,11 @@ public interface Compound extends Term, IPair, Subterms {
 
 
         return
+                (a.opX() == bb.opX())
+                &&
                 (a.subterms().equals(bb.subterms()))
-                        &&
-                        (a.opX() == bb.opX())
-                        &&
-                        (a.dt() == bb.dt())
+                &&
+                (a.dt() == bb.dt())
                 ;
     }
 

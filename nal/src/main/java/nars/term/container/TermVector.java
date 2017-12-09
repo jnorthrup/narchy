@@ -40,6 +40,9 @@ public abstract class TermVector implements Subterms {
 
     protected transient boolean normalized;
 
+    private static volatile int SERIAL = 0;
+    public final int serial = SERIAL++;
+
     /** copy constructor for fast instantiation */
     protected TermVector(int hash, int structure,
                          byte varPattern, byte varDep, byte varQuery, byte varIndep,

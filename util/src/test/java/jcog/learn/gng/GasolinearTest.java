@@ -27,22 +27,22 @@ public class GasolinearTest {
             out.println(g);
             System.out.println();
 
-            g.which(Math.random());
+            g.index(Math.random());
         }
 
 
 
 
-        assertEquals(0, g.which(-0.1));
-        assertEquals(0, g.which(0.1));
+        assertEquals(0, g.index(-0.1));
+        assertEquals(0, g.index(0.1));
 
         out.println(g);
-        assertEquals(1, g.which(0.4));
-        assertEquals(1, g.which(0.5));
+        assertEquals(1, g.index(0.4));
+        assertEquals(1, g.index(0.5));
 
         out.println(g);
-        assertEquals(2, g.which(0.9));
-        assertEquals(2, g.which(1.1));
+        assertEquals(2, g.index(0.9));
+        assertEquals(2, g.index(1.1));
     }
 
        @Test
@@ -59,7 +59,6 @@ public class GasolinearTest {
 //
 //            1f, 0.8f, 0.95f, 0.83f
         );
-        g.sort();
         out.println(g);
 
 //        assertEquals(0, g.which(-0.1));

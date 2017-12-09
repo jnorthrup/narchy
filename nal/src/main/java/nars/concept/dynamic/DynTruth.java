@@ -74,32 +74,33 @@ public final class DynTruth {
 
     @Nullable Truth truth(@Nullable Consumer<NALTask> builtTask, boolean beliefOrGoal, NAR nar) {
 
+
+
         float evi = c2wSafe(conf);
         float eviMin = c2wSafe(nar.confMin.floatValue());
         if (evi < eviMin)
             return null;
 
         Term c = this.term;
-
         long[] se = Task.range(e);
         long start = se[0];
         long end = se[1];
         long eviRange = end - start;
         int termRange = c.dtRange();
 
-        float rangeCoherence = eviRange==termRange ? 1f :
-                1f - ((float)Math.abs(eviRange - termRange))/Math.max(eviRange, termRange)/nar.dur();
-        evi *= rangeCoherence;
-        if (evi < eviMin)
-            return null;
+//        float rangeCoherence = eviRange==termRange ? 1f :
+//                1f - ((float)Math.abs(eviRange - termRange))/Math.max(eviRange, termRange)/nar.dur();
+//        evi *= rangeCoherence;
+//        if (evi < eviMin)
+//            return null;
 
         //TODO compute max valid overlap to terminate the zip early
-        ObjectFloatPair<long[]> ee = Stamp.zip(e, Param.STAMP_CAPACITY);
-        float overlap = ee.getTwo();
+        ObjectFloatPair<long[]> ss = Stamp.zip(e, Param.STAMP_CAPACITY);
+        float overlap = ss.getTwo();
         evi *= (1f-overlap);
         if (evi < eviMin)
             return null;
-        long[] stamp = ee.getOne();
+        long[] stamp = ss.getOne();
 
         float f;
         if (c.op() == NEG) {

@@ -585,12 +585,8 @@ public enum Op {
     public final boolean depVarParent;
 
     private static boolean conegated(Term a, Term b) {
-        Term ua = a.unneg();
-        if (ua != a && ua.equals(b)) return true; //co-negation
-        Term ub = b.unneg();
-        if (ub != b && ub.equals(a)) return true; //co-negation
-
-        return false;
+        return (a.op()==NEG && a.unneg().equals(b)) ||
+                (b.op()==NEG && b.unneg().equals(a));
     }
 
     public static final Compound ZeroProduct = new CachedCompound(Op.PROD, Subterms.Empty);
@@ -1184,13 +1180,13 @@ public enum Op {
 
     private static Term conjSeqFinal(int dt, Term left, Term right) {
         assert (dt != XTERNAL);
+
         if (left == False) return False;
         if (left == Null) return Null;
+        if (left == True) return right;
 
         if (right == False) return False;
         if (right == Null) return Null;
-
-        if (left == True) return right;
         if (right == True) return left;
 
         if (dt == 0 || dt == DTERNAL) {
@@ -1211,13 +1207,15 @@ public enum Op {
             left = t;
         }
 
-        int ldt = left.dt();
-        int rdt = right.dt();
-        if (left.op() == CONJ && !concurrent(ldt) && ldt != XTERNAL &&
-                right.op() == CONJ && !concurrent(rdt) && rdt != XTERNAL &&
-                ((left.subs() > 1 + right.subs()) || (right.subs() > left.subs()))) {
-            //seq imbalance
-            return CONJ.the(dt, left, right); //send through again
+        if (left.op() == CONJ && right.op() == CONJ) {
+            int ldt = left.dt(), rdt = right.dt();
+            if (ldt != XTERNAL && !concurrent(ldt) && rdt != XTERNAL && !concurrent(rdt)) {
+                int ls = left.subs(), rs = right.subs();
+                if ((ls > 1 + rs) || (rs > ls)) {
+                    //seq imbalance; send through again
+                    return CONJ.the(dt, left, right);
+                }
+            }
         }
 
 

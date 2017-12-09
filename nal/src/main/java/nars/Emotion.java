@@ -311,15 +311,14 @@ public class Emotion extends ConcurrentMonitorRegistry {
      * sensory prefilter
      * @param x is a non-command task
      */
-    public void onInput(Task x, NAR nar) {
+    public void onInput(Task t, NAR nar) {
 
-        Task t = x;
         float pri = t.priElseZero();
         float vol = t.voluplexity();
 
-        float cost = unitize(vol / nar.termVolumeMax.floatValue())
-                * pri;
-                //;
+        float cost = (vol / nar.termVolumeMax.floatValue())
+                //* pri;
+                ;
 
         MetaGoal.learn(MetaGoal.Perceive, t.cause(), cost, nar);
 
