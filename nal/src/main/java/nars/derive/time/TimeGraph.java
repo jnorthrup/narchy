@@ -27,8 +27,6 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static nars.Op.CONJ;
 import static nars.derive.time.TimeGraph.TimeSpan.TS_ZERO;

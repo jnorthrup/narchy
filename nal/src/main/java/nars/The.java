@@ -10,7 +10,6 @@ import nars.derive.match.Ellipsis;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.NewCompound;
 import nars.term.Term;
-import nars.term.anon.Anom;
 import nars.term.anon.AnonID;
 import nars.term.anon.AnonVector;
 import nars.term.atom.Bool;

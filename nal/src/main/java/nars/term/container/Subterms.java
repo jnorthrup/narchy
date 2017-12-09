@@ -818,13 +818,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     default boolean unifyCommute(Subterms y, /*@NotNull*/ Unify u) {
 
-        int s = subs();
-        if (s != y.subs())
-            return false;
 
-        boolean v = u.relevantVariables(this, y);
-        if (!v && !y.equals(this))
-            return false;
+        boolean v = Unify.relevantVariables(this) || u.relevantVariables(y);
+        if (!v)
+            return y.equals(this);
 
         //if there are no variables of the matching type, then it seems CommutivePermutations wouldnt match anyway
 //        if (!unifyPossible(subst.type)) {
@@ -836,12 +833,19 @@ public interface Subterms extends Termlike, Iterable<Term> {
         Collection<Term> yys = y.toSet();
         ////xs.removeIf(s -> !subst.matchType(s) && ys.remove(s));
 
-        UnifiedSet<Term> constCommon = new UnifiedSet(0);
+        Map<Term,byte[]> constCommon = new LinkedHashMap<>(0);
 
         forEach(x -> {
             if (!u.relevantVariables(x)) {
                 if (yys.contains(x)) //attempt to eliminate a common constant term
-                    constCommon.add(x);
+                    constCommon.compute(x, (k, vv)-> {
+                        if (vv == null) {
+                            vv = new byte[]{1, 0};
+                        } else {
+                            vv[0]++;
+                        }
+                        return vv;
+                    });
             }
         });
 
@@ -849,11 +853,22 @@ public interface Subterms extends Termlike, Iterable<Term> {
         Term[] xs, ys;
         if (cc > 0) {
 
-            //filter out the common terms
-            assert (cc != s); //otherwise equality test would have passed earlier
+            y.forEach(yy -> {
+                byte[] vv = constCommon.get(yy);
+                if (vv!=null)
+                    vv[1]++;
+            });
+            constCommon.values().forEach(vv -> {
+               byte min = (byte) Math.min(vv[0], vv[1]);
+               vv[0] = vv[1] = min;
+            });
 
-            xs = termsExcept(constCommon);
-            ys = y.termsExcept(constCommon);
+
+            //filter out the common terms
+            assert (cc != subs()); //otherwise equality test would have passed earlier
+
+            xs = termsExcept(constCommon, true);
+            ys = y.termsExcept(constCommon, false);
 
         } else {
             xs = arrayShared(); //already sorted
@@ -862,8 +877,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         //what remains are all variably-permutable terms and there must be an equal # of each
         int xss = xs.length;
-        assert (ys.length == xss);
-        assert (xss > 0);
+        //assert (ys.length == xss);
+        if (xss == 0 || xs.length!=ys.length) {
+            throw new RuntimeException("commutive unification mismatch");
+        }
+
 
 
         //subst.termutes.add(new CommutivePermutations(TermVector.the(xs), TermVector.the(ys)));
@@ -901,6 +919,45 @@ public interface Subterms extends Termlike, Iterable<Term> {
         });
         return fxs.toArrayRecycled(Term[]::new);
     }
+    /** extracts a certain subset of the terms according to a paired count map */
+    default Term[] termsExcept(Map<Term,byte[]> except, boolean loOrHi) {
+        FasterList<Term> fxs = new FasterList<>(subs());
+        forEach(t -> {
+            byte[] u = except.get(t);
+            if (u != null) {
+                byte remain = u[loOrHi ? 0 : 1];
+                if (remain > 0) {
+                    //decrement count and skip this one
+                    u[loOrHi ? 0 : 1]--;
+                    return;
+                }
+            }
+
+            fxs.add(t);
+        });
+        return fxs.toArrayRecycled(Term[]::new);
+    }
+//    /** extracts a certain subset of the terms according to a paired count map */
+//    default Term[] termsExcept(ObjectShortHashMap<Term> except, boolean loOrHi) {
+//        FasterList<Term> fxs = new FasterList<>(subs());
+//        forEach(t -> {
+//            short u = except.getIfAbsent(t, Short.MAX_VALUE);
+//            if (u != Short.MAX_VALUE) {
+//                int b = (loOrHi ? u : (u >> 8)) & 0xff;
+//                if (b > 0) {
+//                    b--;
+//                    //decrement count and skip this one
+//                    //clear the active byte and update, dont erase the other byte
+//                    except.put(t, (short) ((!loOrHi) ?
+//                            ((u & 0x00ff) | (b << 8)) : ((u & 0xff00) | b)));
+//                    return;
+//                }
+//            }
+//
+//            fxs.add(t);
+//        });
+//        return fxs.toArrayRecycled(Term[]::new);
+//    }
 
 
     /**

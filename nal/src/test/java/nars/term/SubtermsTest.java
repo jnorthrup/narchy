@@ -106,7 +106,10 @@ public class SubtermsTest {
         assertEquals(x, z);
         assertEquals(z, x);
 
-
     }
+    
+//    @Test public void testSubtermsExcept() {
+//        //TODO
+//    }
 
 }

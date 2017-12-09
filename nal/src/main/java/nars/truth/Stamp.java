@@ -30,7 +30,6 @@ import org.eclipse.collections.api.set.primitive.LongSet;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.factory.primitive.LongSets;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
-import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 
 import java.util.Arrays;
 import java.util.List;

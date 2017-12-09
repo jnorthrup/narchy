@@ -249,10 +249,18 @@ public interface Compound extends Term, IPair, Subterms {
         Subterms xsubs = subterms();
         Subterms ysubs = ty.subterms();
 
-        if (((/*xs = */xsubs.subs()) != ysubs.subs())
-                ||
-           !u.relevantVariables(xsubs, ty)) //if no free vars, the only way unification can proceed is if equal
+        if (xsubs.subs() != ysubs.subs())
             return false;
+
+        if (isCommutative()) {
+            return xsubs.unifyCommute(ysubs, u);
+        } else {
+            //do not do a fast termcontainer test unless it's linear; in commutive mode we want to allow permutations even if they are initially equal
+            return xsubs.unifyLinear(ysubs, u);
+        }
+
+
+
 
 //        if (op.temporal) {
 //            int sdur = subst.dur;
@@ -266,12 +274,6 @@ public interface Compound extends Term, IPair, Subterms {
         /*if (op() == CONJ) { //non-commutive, temporal CONJ
             return TermContainer.unifyConj(xsubs, dt(), ysubs, y.dt(), u);
         } else */
-        if (isCommutative()) {
-            return xsubs.unifyCommute(ysubs, u);
-        } else {
-            //do not do a fast termcontainer test unless it's linear; in commutive mode we want to allow permutations even if they are initially equal
-            return xsubs.unifyLinear(ysubs, u);
-        }
     }
 
 

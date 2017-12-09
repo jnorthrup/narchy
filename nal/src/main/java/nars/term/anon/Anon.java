@@ -1,28 +1,21 @@
 package nars.term.anon;
 
-import jcog.Util;
 import jcog.list.FasterList;
 import jcog.memoize.LinkedMRUMemoize;
-import nars.Op;
 import nars.Task;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.compound.CachedCompound;
-import nars.term.container.Subterms;
 import nars.term.container.TermVector;
 import nars.term.transform.CompoundTransform;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.Variable;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.ByteFunction;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import static nars.term.anon.Anom.MAX_ANOM;

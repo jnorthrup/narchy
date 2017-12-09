@@ -4,7 +4,6 @@ package nars;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.google.common.primitives.Ints;
 import jcog.TODO;
 import jcog.data.byt.DynBytes;
 import jcog.data.string.Utf8Writer;

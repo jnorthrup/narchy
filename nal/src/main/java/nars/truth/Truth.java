@@ -209,6 +209,10 @@ public interface Truth extends Truthed {
         float c = w2cDithered(evi() * eviGain, confRes);
         return c < confMin ? null : new PreciseTruth(freq(freq(), freqRes), c);
     }
+    @Nullable default DiscreteTruth ditherDiscrete(float freqRes, float confRes, float confMin, float eviGain) {
+        float c = w2cDithered(evi() * eviGain, confRes);
+        return c < confMin ? null : new DiscreteTruth(freq(freq(), freqRes), c);
+    }
 
 
     @Nullable static PreciseTruth the(float freq, float evi, NAR nar) {

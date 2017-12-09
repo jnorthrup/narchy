@@ -6,11 +6,9 @@ import nars.index.term.TermContext;
 import nars.term.Term;
 import nars.term.compound.CachedCompound;
 import nars.term.container.Subterms;
-import nars.term.container.TermVector;
 import nars.term.subst.Unify;
 import nars.term.transform.CompoundTransform;
 import nars.term.transform.Retemporalize;
-import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -80,6 +78,37 @@ public class EllipsisMatch extends CachedCompound {
         }
     }
 
+    public static Term matchExcept(Subterms matched, byte... except) {
+        int ll = matched.subs();
+        int ee = except.length;
+        Term[] t = new Term[ll - ee];
+        int j = 0;
+        main: for (int i = 0; i < ll; i++) {
+            for (int k = 0; k < ee; k++)
+                if (i == except[k])
+                    continue main;
+
+
+            t[j++] = matched.sub(i);
+        }
+        return new EllipsisMatch(t);
+    }
+
+    public static Term matchExcept(Term[] matched, byte... except) {
+        int ll = matched.length;
+        int ee = except.length;
+        Term[] t = new Term[ll - ee];
+        int j = 0;
+        main: for (int i = 0; i < ll; i++) {
+            for (int k = 0; k < ee; k++)
+                if (i == except[k])
+                    continue main;
+
+            t[j++] = matched[i];
+        }
+        return new EllipsisMatch(t);
+    }
+
 
 
     public static Term match(/*@NotNull*/ Subterms y, int from, int to) {
@@ -107,14 +136,14 @@ public class EllipsisMatch extends CachedCompound {
         }
     }
 
-    public static Term matchExcept(Term[] x, Term without) {
-        int num = x.length - 1;
-        switch (num) {
-            case 0: return empty;
-            case 1: return x[0].equals(without) ? x[1] : x[0];
-            default: return new EllipsisMatch(ArrayUtils.removeElement(x, without));
-        }
-    }
+//    public static Term matchExcept(Term[] x, int index) {
+//        int num = x.length - 1;
+//        switch (num) {
+//            case 0: return empty;
+//            case 1: return x[0].equals(without) ? x[1] : x[0];
+//            default: return new EllipsisMatch(ArrayUtils.removeElement(x, without));
+//        }
+//    }
 
     public final boolean forEachWhile(Predicate<? super Term> c) {
         int s = subs();

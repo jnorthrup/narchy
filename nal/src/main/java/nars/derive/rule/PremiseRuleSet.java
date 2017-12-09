@@ -2,7 +2,6 @@ package nars.derive.rule;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.Streams;
-import jcog.memoize.CaffeineMemoize;
 import jcog.memoize.LinkedMRUMemoize;
 import jcog.memoize.Memoize;
 import nars.NAR;
@@ -12,7 +11,6 @@ import nars.index.term.PatternIndex;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.container.Subterms;
-import nars.term.container.TermVector;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.tuple.Tuples;

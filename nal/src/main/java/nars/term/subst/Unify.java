@@ -23,8 +23,6 @@ import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.Set;
 
-import static nars.Op.Null;
-
 
 /* recurses a pair of compound term tree's subterms
 across a hierarchy of sequential and permutative fanouts
@@ -115,12 +113,7 @@ public abstract class Unify extends Versioning implements Subst {
                 matches = new UnifiedSet(1);
 
             if (matches.add(((ConstrainedVersionMap) xy).snapshot())) {
-                tryMatch();
-                if (matches.size() > 3)
-                    return; //for debugg
-            } else {
-                //repeated
-                System.out.println("ok");
+                tryMatch(); //new unique match
             }
         } else {
             tryMatch();

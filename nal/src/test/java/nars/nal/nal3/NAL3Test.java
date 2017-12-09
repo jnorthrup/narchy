@@ -248,8 +248,8 @@ public class NAL3Test extends NALTest {
 
         TestNAR tester = test;
         tester.believe("<swan --> bird>", 0.9f, 0.9f); //.en("Swan is a type of bird.");
-        tester.askAt(cycles / 2, "<(~,swimmer, swan) --> bird>"); //.en("Is being bird what differ swimmer from swan?");
-        tester.mustBelieve(cycles, "<(~,swimmer, swan) --> bird>", 0.10f, 0.73f); //.en("What differs swimmer from swan is not being bird.");
+        tester.askAt(cycles / 2, "<(swimmer ~ swan) --> bird>"); //.en("Is being bird what differ swimmer from swan?");
+        tester.mustBelieve(cycles, "<(swimmer ~ swan) --> bird>", 0.10f, 0.73f); //.en("What differs swimmer from swan is not being bird.");
 
     }
 
@@ -258,17 +258,8 @@ public class NAL3Test extends NALTest {
 
         TestNAR tester = test;
 
-        tester.believe("<robin --> (-,bird,swimmer)>", 0.9f, 0.9f); //.en("Robin is a type of nonswimming bird.");
+        tester.believe("(robin --> (bird - swimmer))", 0.9f, 0.9f); //.en("Robin is a type of nonswimming bird.");
         tester.mustBelieve(cycles, "<robin --> bird>", 0.90f, 0.73f); //.en("Robin is a type of bird.");
-
-    }
-
-    @Test
-    public void compound_decomposition_one_premise2() {
-
-        TestNAR tester = test;
-        tester.believe("<(|, boy, girl) --> youth>", 0.9f, 0.9f); //.en("Boys and gials are youth.");
-        tester.mustBelieve(cycles, "<boy --> youth>", 0.90f, 0.73f); //.en("Boys are youth.");
 
     }
 
@@ -276,9 +267,19 @@ public class NAL3Test extends NALTest {
     public void compound_decomposition_one_premise3() {
 
         TestNAR tester = test;
-        tester.believe("<(~, boy, girl) --> [strong]>", 0.9f, 0.9f); //.en("What differs boys from girls are being strong.");
+        tester.believe("<(boy ~ girl) --> [strong]>", 0.9f, 0.9f); //.en("What differs boys from girls are being strong.");
         tester.mustBelieve(cycles, "<boy --> [strong]>", 0.90f, 0.73f); //.en("Boys are strong.");
     }
+
+    @Test
+    public void compound_decomposition_one_premise2() {
+
+        TestNAR tester = test;
+        tester.believe("<(boy | girl) --> youth>", 0.9f, 0.9f); //.en("Boys and gials are youth.");
+        tester.mustBelieve(cycles, "<boy --> youth>", 0.90f, 0.73f); //.en("Boys are youth.");
+
+    }
+
 
     @Test
     public void testDifference() {

@@ -10,7 +10,6 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.container.Subterms;
 import nars.term.var.AbstractVariable;
-import nars.term.var.Variable;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.PROD;

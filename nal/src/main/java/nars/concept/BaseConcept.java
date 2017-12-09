@@ -45,6 +45,8 @@ public class BaseConcept implements Concept {
     public transient ConceptState state = Deleted;
     private final List<Termed> templates;
 
+    private final int hash;
+
     protected final CompactArrayMap<String, Object> meta = new CompactArrayMap<>();
 
 
@@ -75,6 +77,7 @@ public class BaseConcept implements Concept {
         this.questions = questions;
         this.quests = quests;
         this.state = New;
+        this.hash = term.hashCode();
 
         templates = TermLinks.templates(term);
         if (Param.DEBUG_EXTRA) {
@@ -182,14 +185,15 @@ public class BaseConcept implements Concept {
 
 
     @Override
-    public boolean equals(Object obj) {
-        return this == obj || term.equals(obj);
+    public final boolean equals(Object obj) {
+        //return this == obj || term.equals(obj);
         //return this == obj || (obj instanceof Termed && term.equals(((Termed) obj).term()));
+        return this == obj || (term.equals(((Termed) obj).term()));
     }
 
     @Override
     public final int hashCode() {
-        return term.hashCode();
+        return hash;
     }
 
     @Override

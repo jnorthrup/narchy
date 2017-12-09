@@ -1,12 +1,11 @@
 package nars.term;
 
-import jcog.data.array.Arrays;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import nars.Narsese;
 import nars.term.anon.Anom;
-import nars.term.anon.AnonVector;
 import nars.term.anon.Anon;
+import nars.term.anon.AnonVector;
 import nars.term.compound.CachedCompound;
 import nars.term.container.ArrayTermVector;
 import nars.term.container.TermVector;

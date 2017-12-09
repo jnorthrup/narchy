@@ -2,7 +2,6 @@ package nars.derive;
 
 import jcog.Util;
 import nars.$;
-import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.control.Derivation;
@@ -10,7 +9,6 @@ import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
 import nars.task.NALTask;
 import nars.term.Term;
-import nars.term.atom.Bool;
 import nars.truth.Truth;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
@@ -47,15 +45,12 @@ public class Taskify extends AbstractPred<Derivation> {
     public boolean test(Derivation d) {
 
         Term x0 = d.derivedTerm.get();
-        Term x1 = d.anon.get(x0);
-        if (x1 == null || x1 instanceof Bool) {
+        Term x = d.anon.get(x0);
+        if (x == null || !x.op().conceptualizable) {
             //d.anon.get(x0); //HACK temporary for debug
             //throw new NullPointerException();
             return false; //when the values were finally dereferenced, the result produced an invalid compound
         }
-        Term x = x1.normalize();
-        if (x == null || x instanceof Bool) //HACK temporary for debug
-            throw new NullPointerException();
 
         long[] occ = d.concOcc;
         byte punc = d.concPunc;
@@ -63,30 +58,22 @@ public class Taskify extends AbstractPred<Derivation> {
 
         Truth tru = d.concTruth;
         if (tru!=null) {
-            tru = d.concTruth.dither(d.freqRes, d.confRes, d.confMin, d.concEviFactor);
+            tru = tru.ditherDiscrete(d.freqRes, d.confRes, d.confMin, d.concEviFactor);
             if (tru == null)
                 return false;
         }
 
-        final NAR nar = d.nar;
         DerivedTask t = (DerivedTask) Task.tryTask(x, punc, tru, (C, tr) -> {
 
             long start = occ[0];
             long end = occ[1];
             assert (end >= start): "task has reversedoccurrence: " + start + ".." + end;
 
-
             long[] evi = d.single ? d.evidenceSingle() : d.evidenceDouble();
-
             long now = d.time;
-
-            DerivedTask derived =
-                    Param.DEBUG ?
+            return Param.DEBUG ?
                             new DebugDerivedTask(C, punc, tr, now, start, end, evi, d.task, !d.single ? d.belief : null) :
                             new DerivedTask(C, punc, tr, now, start, end, evi);
-
-
-            return derived;
         });
 
         if (t == null) {
@@ -110,8 +97,7 @@ public class Taskify extends AbstractPred<Derivation> {
         if (Param.DEBUG)
             t.log(channel.ruleString);
 
-        short[] cause = ArrayUtils.addAll(d.parentCause, channel.id);
-        t.cause = cause;
+        t.cause = ArrayUtils.addAll(d.parentCause, channel.id);
 
         if (d.derivations.merge(t, t, DUPLICATE_DERIVATION_MERGE) != t) {
             spam(d, Param.TTL_DERIVE_TASK_REPEAT);

@@ -3,7 +3,6 @@ package nars.term.anon;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.transform.CompoundTransform;
 import org.jetbrains.annotations.Nullable;
 

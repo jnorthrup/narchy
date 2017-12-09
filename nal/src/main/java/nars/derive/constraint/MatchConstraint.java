@@ -7,21 +7,16 @@ import nars.$;
 import nars.control.Derivation;
 import nars.derive.AbstractPred;
 import nars.derive.AndCondition;
-import nars.derive.Fork;
 import nars.derive.PrediTerm;
 import nars.term.Term;
 import nars.term.subst.Unify;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.IntIntPair;
-import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.NotNull;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 

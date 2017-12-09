@@ -3,7 +3,6 @@ package nars.term.anon;
 import nars.term.Term;
 import nars.term.container.Subterms;
 import nars.term.container.TermVector;
-import nars.term.subst.Unify;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;

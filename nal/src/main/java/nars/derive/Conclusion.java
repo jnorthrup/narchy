@@ -5,7 +5,6 @@ import nars.control.Derivation;
 import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
 import nars.term.Term;
-import nars.term.atom.Bool;
 import nars.term.transform.Retemporalize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

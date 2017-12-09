@@ -10,10 +10,8 @@ import nars.derive.mutate.CommutivePermutations;
 import nars.term.Compound;
 import nars.term.GenericCompoundDT;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.container.Subterms;
 import nars.term.subst.Unify;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -41,20 +39,22 @@ abstract public class PatternCompound extends GenericCompoundDT {
     abstract protected static class PatternCompoundWithEllipsis extends PatternCompound {
 
         final Ellipsis ellipsis;
-        final int structureRequired;
+        //final int structureRequired;
 
         PatternCompoundWithEllipsis(/*@NotNull*/ Op seed, int dt, Ellipsis ellipsis, Subterms subterms) {
             super(seed, dt, subterms);
 
             this.ellipsis = ellipsis;
-            this.structureRequired = subterms.structure() & ~(Op.VariableBits);
+            //this.structureRequired = subterms.structure() & ~(Op.VariableBits);
         }
 
         abstract protected boolean matchEllipsis(Subterms y, Unify subst);
 
         @Override
         public final boolean unifySubterms(Term y, Unify u) {
-            return y.hasAll(structureRequired) && matchEllipsis(y.subterms(), u);
+//            if (y.volume() < volume())
+//                return false;
+            return /*y.hasAll(structureRequired) && */matchEllipsis(y.subterms(), u);
         }
     }
 

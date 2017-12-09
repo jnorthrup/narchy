@@ -40,10 +40,10 @@
      (S --> M), ((P ~ S) --> M) |- (P --> M), (Belief:DecomposeNegativeNegativeNegative, Goal:DecomposeNegativeNegativeNegative)
 
      (M --> S), (M --> (S - P)) |- (M --> P), (Belief:DecomposePositiveNegativePositive, Goal:DecomposePositiveNegativePositive)
-         S, (S - P) |- P, (Belief:DecomposePositiveNegativePositive, Goal:DecomposePositiveNegativePositive)
+         //S, (S - P) |- P, (Belief:DecomposePositiveNegativePositive, Goal:DecomposePositiveNegativePositive)
 
      (M --> S), (M --> (P - S)) |- (M --> P), (Belief:DecomposeNegativeNegativeNegative, Goal:DecomposeNegativeNegativeNegative)
-         S, (P - S) |- P, (Belief:DecomposeNegativeNegativeNegative, Goal:DecomposeNegativeNegativeNegative)
+         //S, (P - S) |- P, (Belief:DecomposeNegativeNegativeNegative, Goal:DecomposeNegativeNegativeNegative)
 
 
 //NAL3 single premise decompose
@@ -59,8 +59,8 @@
         ((X,Y) --> C), ((X,Y) --> C), is(X,"+"),isAny(Y,"+") |- ((dropAnySet(X),Y) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
         ((X,Y) --> C), ((X,Y) --> C), is(X,"+"),isAny(Y,"+") |- ((X,dropAnySet(Y)) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
-    ((B ~ G) --> S), G |- (B --> S), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    (S --> (B - G)), G |- (S --> B), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    ((B ~ G) --> S), (B ~ G) |- (B --> S), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (S --> (B - G)), (B - G) |- (S --> B), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 
 //experiment

@@ -20,10 +20,6 @@ public abstract class TaskLeak extends Causable {
 
     protected final DtLeak<Task, PLink<Task>> in;
 
-    protected TaskLeak(@NotNull Bag<Task, PLink<Task>> bag, float ratePerDuration, @NotNull NAR n) {
-        this(bag, new FloatParam(ratePerDuration), n);
-    }
-
     protected TaskLeak(int capacity, float ratePerDuration, @NotNull NAR n) {
         this(
                 new ConcurrentArrayBag<Task,PLink<Task>>(PriMerge.max, capacity) {
@@ -36,11 +32,16 @@ public abstract class TaskLeak extends Causable {
         );
     }
 
+    protected TaskLeak(@NotNull Bag<Task, PLink<Task>> bag, float ratePerDuration, @NotNull NAR n) {
+        this(bag, new FloatParam(ratePerDuration), n);
+    }
+
+
     TaskLeak(@NotNull Bag<Task, PLink<Task>> bag, @NotNull FloatParam rate, @NotNull NAR n) {
         super(n);
         this.in = new DtLeak<>(bag, rate) {
             @Override
-            protected float receive(@NotNull PLink<Task> b) {
+            protected float receive(PLink<Task> b) {
                 Task t = b.get();
                 if (t.isDeleted())
                     return 0f;

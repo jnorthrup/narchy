@@ -1,17 +1,13 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.list.FasterList;
 import nars.$;
-import nars.control.Derivation;
-import nars.derive.constraint.MatchConstraint;
 import nars.term.Term;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.roaringbitmap.RoaringBitmap;
 
-import java.util.*;
+import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 

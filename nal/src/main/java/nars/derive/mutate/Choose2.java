@@ -7,7 +7,6 @@ import nars.derive.match.Ellipsis;
 import nars.derive.match.EllipsisMatch;
 import nars.term.Term;
 import nars.term.container.ShuffledSubterms;
-import nars.term.container.Subterms;
 import nars.term.subst.Unify;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -59,7 +58,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
         int start = f.now();
         /*@NotNull*/ ShuffledSubterms yy = this.yy;
 
-        Term[] m = new Term[this.yy.subs()-2];
+
 
         Ellipsis xEllipsis = this.xEllipsis;
         Unify f = this.f;
@@ -71,8 +70,8 @@ public class Choose2 extends Termutator.AbstractTermutator {
             c = phase ? ccc.next() : c;
             phase = !phase;
 
-            int c0 = c[0];
-            int c1 = c[1];
+            byte c0 = (byte) c[0];
+            byte c1 = (byte) c[1];
             ArrayUtils.reverse(c); //swap to try the reverse next iteration
 
             Term y1 = yy.sub(c0);
@@ -82,7 +81,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
                 Term y2 = yy.sub(c1);
 
                 if (x[1].unify(y2, f) &&
-                        xEllipsis.unify(EllipsisMatch.match(Subterms.except(yy, y1, y2, m)), f)) {
+                        xEllipsis.unify(EllipsisMatch.matchExcept(yy, c0, c1), f)) {
 
                     if (!f.tryMutate(chain, current))
                         break;

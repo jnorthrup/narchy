@@ -24,7 +24,7 @@ public interface TaskRegion extends HyperRegion, Tasked {
         if (s == ETERNAL) {
             return when;
         } else if (when == ETERNAL) {
-            return (s + e)/2; //midpoint
+            return (s + e) / 2; //midpoint
         } else if (when < s || e == s) {
             return s; //point or at or beyond the start
         } else if (when > e) {
@@ -147,7 +147,7 @@ public interface TaskRegion extends HyperRegion, Tasked {
                     long ts = start();
                     long te = end();
                     //                    if (ts == es && te == ee) {
-                        //may not be safe:
+                    //may not be safe:
 //                        if (tf == ef && tc == ec)
 //                            return this; //identical taskregion, so use this
 //                        else {
@@ -158,7 +158,7 @@ public interface TaskRegion extends HyperRegion, Tasked {
                     long ns = Math.min(ts, es);
                     long ne = Math.max(te, ee);
 //                    }
-                    return new TasksRegion( ns, ne,
+                    return new TasksRegion(ns, ne,
                             f0, f1, c0, c1
                     );
                 } else {
@@ -169,7 +169,7 @@ public interface TaskRegion extends HyperRegion, Tasked {
                             Util.min(coordF(false, 2), ec),
                             Util.max(coordF(true, 2), ec)
                     );
-               }
+                }
             } else {
                 TaskRegion er = (TaskRegion) r;
                 return new TasksRegion(
@@ -186,21 +186,18 @@ public interface TaskRegion extends HyperRegion, Tasked {
     @Override
     default boolean intersects(HyperRegion x) {
         if (x == this) return true;
-        //        for (int i = 0; i < d; i++)
-        //            if (coordF(false, i) > x.coordF(true, i) ||
-        //                    coordF(true, i) < x.coordF(false, i))
-        //                return false;
-        //        return true;
+        long start = start();
         if (x instanceof TimeRange) {
             TimeRange t = (TimeRange) x;
-            return !((start() > t.end) || (end() < t.start));
+            return start <= t.end && end() >= t.start;
         } else {
             TaskRegion t = (TaskRegion) x;
-            if ((start() > t.end()) || (end() < t.start()))
-                return false;
-            if ((coordF(false, 1) > t.coordF(true, 1)) || (coordF(true, 1) < t.coordF(false, 1)))
-                return false;
-            return (!(coordF(false, 2) > t.coordF(true, 2))) && (!(coordF(true, 2) < t.coordF(false, 2)));
+            return                      start <= t.end() &&
+                                        end() >= t.start() &&
+                   coordF(false, 1) <= t.coordF(true, 1) &&
+                   coordF(true, 1) >= t.coordF(false, 1) &&
+                   coordF(false, 2) <= t.coordF(true, 2) &&
+                   coordF(true, 2) >= t.coordF(false, 2);
         }
     }
 
@@ -216,16 +213,18 @@ public interface TaskRegion extends HyperRegion, Tasked {
         //                return false;
         //        return true;
         //    }
+        long start = start();
         if (x instanceof TimeRange) {
             TimeRange t = (TimeRange) x;
-            return !((start() > t.start) || (end() < t.end));
+            return start <= t.start && end() >= t.end;
         } else {
             TaskRegion t = (TaskRegion) x;
-            if ((start() > t.start()) || (end() < t.end()))
-                return false;
-            if ((coordF(false, 1) > t.coordF(false, 1)) || (coordF(true, 1) < t.coordF(true, 1)))
-                return false;
-            return (!(coordF(false, 2) > t.coordF(false, 2))) && (!(coordF(true, 2) < t.coordF(true, 2)));
+            return
+                    start <= t.start() && end() >= t.end() &&
+                    coordF(false, 1) <= t.coordF(false, 1) &&
+                    coordF(true, 1) >= t.coordF(true, 1) &&
+                    coordF(false, 2) <= t.coordF(false, 2) &&
+                    coordF(true, 2) >= t.coordF(true, 2);
         }
     }
 

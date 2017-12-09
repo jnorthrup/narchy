@@ -51,9 +51,10 @@ public class Choose1 extends Termutator.AbstractTermutator {
         Term xEllipsis = this.xEllipsis;
         for (Term x = this.x; l >=0; l--) {
 
-            Term y = this.yy[(shuffle + l) % this.yy.length];
+            int iy = (shuffle + l) % this.yy.length;
+            Term y = this.yy[iy];
             if (x.unify(y, u)) {
-                if (xEllipsis.unify(EllipsisMatch.matchExcept(yy, y), u)) {
+                if (xEllipsis.unify(EllipsisMatch.matchExcept(yy, (byte) iy), u)) {
                     if (!u.tryMutate(chain, current))
                         break;
                 }

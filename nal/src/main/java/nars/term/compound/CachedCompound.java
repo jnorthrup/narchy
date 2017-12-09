@@ -28,7 +28,8 @@ public class CachedCompound implements Compound {
 
     public final Op op;
 
-    final int structureCached;
+    final int _volume;
+    final int _structure;
 
     private transient Term rooted = null;
     private transient Term concepted = null;
@@ -40,7 +41,8 @@ public class CachedCompound implements Compound {
 
         this.hash = Util.hashCombine((this.subterms = subterms).hashCode(), op.id);
 
-        this.structureCached = Compound.super.structure();
+        this._structure = Compound.super.structure();
+        this._volume = Compound.super.volume();
     }
 
     @Override public Term root() {
@@ -59,8 +61,11 @@ public class CachedCompound implements Compound {
     }
 
     @Override
+    public final int volume() { return _volume;     }
+
+    @Override
     public final int structure() {
-        return structureCached;
+        return _structure;
     }
 
     //    @Override

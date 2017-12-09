@@ -1,17 +1,11 @@
 package nars.derive.mutate;
 
 import nars.$;
-import nars.Param;
-import nars.The;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.container.ShuffledSubterms;
 import nars.term.container.Subterms;
 import nars.term.subst.Unify;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Set;
-import java.util.SortedSet;
 
 /**
  * Created by me on 12/22/15.

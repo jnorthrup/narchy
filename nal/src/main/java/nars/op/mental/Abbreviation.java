@@ -68,13 +68,13 @@ public class Abbreviation/*<S extends Term>*/ extends TaskService {
         bag = new DtLeak<>(new ConcurrentArrayBag<Compound, PLink<Compound>>(PriMerge.plus, capacity) {
             @Nullable
             @Override
-            public Compound key(@NotNull PLink<Compound> l) {
+            public Compound key(PLink<Compound> l) {
                 return l.get();
             }
         }, new FloatParam(selectionRate)) {
 
             @Override
-            protected float receive(@NotNull PLink<Compound> b) {
+            protected float receive(PLink<Compound> b) {
                 return abbreviate(b.get(), b, nar) ? 1f : 0f;
             }
         };
