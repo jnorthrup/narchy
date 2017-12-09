@@ -43,7 +43,7 @@ public class NewCompound extends /*HashCached*/DynBytes implements ProtoCompound
         super();
         this.op = op;
         this.size = prepopulated.size();
-        this.subs = prepopulated instanceof FasterList ? ((FasterList<Term>)prepopulated).toArrayRecycled(Term[]::new) : prepopulated.toArray(new Term[size]);
+        this.subs = prepopulated instanceof FasterList ? ((FasterList<Term>) prepopulated).toArrayRecycled(Term[]::new) : prepopulated.toArray(new Term[size]);
     }
 
     public NewCompound(@Nullable Op op, Term[] prepopulated) {
@@ -129,24 +129,25 @@ public class NewCompound extends /*HashCached*/DynBytes implements ProtoCompound
 //            size = subs.length;
 //        }
 
+
         int volume = Util.sum(Term::volume, subs);
 
         //ArrayPool<byte[]> bytePool = ArrayPool.bytes();
         int bv = volume * 8;
 
         byte[] bbTmp = //bytePool.getMin(volume * 16 /* estimate */);
-                        new byte[bv];
+                new byte[bv];
 //        try {
 
-            this.bytes = bbTmp;
-            //this.bytes = new byte[subs.length * 8 /* estimate */];
+        this.bytes = bbTmp;
+        //this.bytes = new byte[subs.length * 8 /* estimate */];
 
-            writeByte(op != null ? op.id : Byte.MAX_VALUE);
-            for (Term x : subs)
-                appendKey(x);
+        writeByte(op != null ? op.id : Byte.MAX_VALUE);
+        for (Term x : subs)
+            appendKey(x);
 
-            compress();
-            compact(bbTmp, false);
+        compress();
+        compact(bbTmp, false);
 
 //        } finally {
 //            bytePool.release(bbTmp);
@@ -155,6 +156,15 @@ public class NewCompound extends /*HashCached*/DynBytes implements ProtoCompound
         this.hash = hash(0, len);
         if (this.hash == 0) this.hash = 1;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+
+
+        return hash == obj.hashCode() && equivalent((DynBytes) obj);
     }
 
     @Override
@@ -193,6 +203,20 @@ public class NewCompound extends /*HashCached*/DynBytes implements ProtoCompound
         }
 
         _add(x);
+
+        return true;
+    }
+
+    public boolean add(Term... x) {
+        int c = subs.length;
+        int len = this.size;
+        int xx = x.length;
+        if (c < len + xx) {
+            ensureCapacity(len, len + Math.max(xx, (len / 2)));
+        }
+
+        for (Term y : x)
+            _add(y);
 
         return true;
     }

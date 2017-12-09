@@ -10,6 +10,7 @@ import nars.derive.mutate.CommutivePermutations;
 import nars.term.Compound;
 import nars.term.GenericCompoundDT;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.container.Subterms;
 import nars.term.subst.Unify;
 import org.jetbrains.annotations.Nullable;
@@ -226,8 +227,8 @@ abstract public class PatternCompound extends GenericCompoundDT {
                         if (v instanceof EllipsisMatch) {
                             return ((EllipsisMatch) v).rematch(y, yFree);
                         } else {
-                            Term vv = v; //single-term matched for the ellipsis, so wont be EllipsisMatch instance
-                            if (!yFree.remove(vv))
+                            //single-term matched for the ellipsis, so wont be EllipsisMatch instance
+                            if (!u.relevantVariables(v) && !yFree.remove(v))
                                 return false;
                         }
                     }
@@ -278,28 +279,30 @@ abstract public class PatternCompound extends GenericCompoundDT {
 //
 //                } else {
 
-                Op xo = x.op();
-                boolean xConst = !u.matchType(xo);
+
+                boolean xConst = !u.relevantVariables(x);
                 if (!xConst) {
-                    //try to resolve an already assigned and thus resolvable to constant
-                    @Nullable Term previouslyMatched = u.xy(x);
-                    if (previouslyMatched != null) {
-                        x = previouslyMatched;
-                    }
+//                    //try to resolve an already assigned and thus resolvable to constant
+//                    @Nullable Term previouslyMatched = u.xy(x);
+//                    if (previouslyMatched != null) {
+//                        x = previouslyMatched;
+//                    }
 
                     xFixed.add(x); //x is a variable which must be termuted when everything non-X is assigned
 
                 } else {
 
-                    if (yFree.remove(x)) {
-                        //matched constant
-                        //xFixed.remove(x); //<- probably not necessary
-                    } else {
-                        if ((u.type == null && (x.vars()+x.varPattern()==0)) || (u.type!=null && !x.hasAny(u.type)))
-                            return false; //unmatched constant offers no possibility of eventual unification
-
-                        xFixed.add(x);
+                    if (!yFree.remove(x)) {
+                        return false;
                     }
+//                        //matched constant
+//                        //xFixed.remove(x); //<- probably not necessary
+//                    } else {
+//                        if ((u.type == null && (x.vars()+x.varPattern()==0)) || (u.type!=null && !x.hasAny(u.type)))
+//                            return false; //unmatched constant offers no possibility of eventual unification
+//
+//                        xFixed.add(x);
+//                    }
 
 //                    if (!yFree.remove(x))
 //                        xFixed.add(x);
@@ -331,7 +334,7 @@ abstract public class PatternCompound extends GenericCompoundDT {
                         if (xFixed.size()==match.subs())
                             return u.termutes.add(new CommutivePermutations(
                                     The.subterms(xFixed),
-                                    match.subterms()));
+                                    match.subterms().sorted()));
                         else
                             return false; //?
                     }

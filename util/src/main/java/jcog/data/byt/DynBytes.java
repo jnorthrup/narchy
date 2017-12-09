@@ -113,7 +113,10 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
         if (this == obj)
             return true;
 
-        DynBytes d = (DynBytes) obj;
+        return equivalent((DynBytes) obj);
+    }
+
+    public boolean equivalent(DynBytes d) {
         int len = this.len;
         return d.len == len && Arrays.equals(bytes, 0, len, d.bytes, 0, len);
     }

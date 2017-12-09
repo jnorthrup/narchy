@@ -29,14 +29,12 @@ import nars.Op;
 import nars.derive.AbstractPred;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.TermContext;
-import nars.op.mental.AliasConcept;
 import nars.term.container.Subterms;
 import nars.term.container.TermVector;
 import nars.term.subst.Unify;
 import nars.term.transform.CompoundTransform;
 import nars.term.transform.Retemporalize;
 import nars.term.transform.VariableNormalization;
-import nars.term.var.Variable;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
@@ -249,15 +247,13 @@ public interface Compound extends Term, IPair, Subterms {
 
     default boolean unifySubterms(Term ty, Unify u) {
         Subterms xsubs = subterms();
-        if ((/*xs = */xsubs.subs()) != ty.subs())
+        Subterms ysubs = ty.subterms();
+
+        if (((/*xs = */xsubs.subs()) != ysubs.subs())
+                ||
+           !u.relevantVariables(xsubs, ty)) //if no free vars, the only way unification can proceed is if equal
             return false;
 
-
-        if (!u.relevantVariables(xsubs, ty))
-            return false; //no free vars, the only way unification can proceed is if equal
-
-        Compound y = (Compound) ty;
-        Subterms ysubs = y.subterms();
 //        if (op.temporal) {
 //            int sdur = subst.dur;
 //            if (sdur >= 0) {

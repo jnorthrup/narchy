@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractSet;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -77,7 +78,7 @@ public class UnenforcedConcatSet<X> extends AbstractSet<X> {
         boolean aEmpty = a == null || a.isEmpty();
         boolean bEmpty = b == null || b.isEmpty();
         if (bEmpty && aEmpty) {
-            nextFree = Set.of();
+            nextFree = Collections.EMPTY_SET;
         } else if (bEmpty) {
             nextFree = a;
         } else if (aEmpty) {

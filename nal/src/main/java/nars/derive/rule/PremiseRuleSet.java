@@ -3,6 +3,8 @@ package nars.derive.rule;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Streams;
 import jcog.memoize.CaffeineMemoize;
+import jcog.memoize.LinkedMRUMemoize;
+import jcog.memoize.Memoize;
 import nars.NAR;
 import nars.Narsese;
 import nars.The;
@@ -58,7 +60,8 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
         return rs;
     }
 
-    final static CaffeineMemoize<String, List<Pair<PremiseRule, String>>> ruleCache = CaffeineMemoize.build((String n) -> {
+    final static Memoize<String, List<Pair<PremiseRule, String>>> ruleCache =
+            new LinkedMRUMemoize<>((String n) -> {
         InputStream nn = null;
         try {
             nn = ClassLoader.getSystemResource(n).openStream();
@@ -79,7 +82,7 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
         return parse(load(bb)).collect(toList());
 
 
-    }, 32, false);
+    }, 32);
 
     public static Stream<Pair<PremiseRule, String>> parsedRules(Collection<String> name) {
         return name.stream().flatMap(n -> ruleCache.apply(n).stream());

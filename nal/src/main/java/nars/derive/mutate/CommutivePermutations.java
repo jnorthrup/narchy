@@ -4,11 +4,13 @@ import nars.$;
 import nars.Param;
 import nars.The;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.container.ShuffledSubterms;
 import nars.term.container.Subterms;
 import nars.term.subst.Unify;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Set;
 import java.util.SortedSet;
 
 /**
@@ -20,13 +22,21 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
     private final Subterms y;
     private final Subterms x;
 
-    public CommutivePermutations(SortedSet<Term> x, SortedSet<Term> y) {
-        this(
-            The.Subterms.RawSubtermBuilder.apply(x.toArray(new Term[x.size()])),
-            The.Subterms.RawSubtermBuilder.apply(y.toArray(new Term[y.size()]))
-        );
-
-    }
+//    public CommutivePermutations(Set<Term> x, Set<Term> y) {
+//        this(
+//            The.Subterms.RawSubtermBuilder.apply(Terms.sorted(x)),
+//            The.Subterms.RawSubtermBuilder.apply(Terms.sorted(y))
+//        );
+//
+//    }
+//
+//    public CommutivePermutations(SortedSet<Term> x, SortedSet<Term> y) {
+//        this(
+//            The.Subterms.RawSubtermBuilder.apply(x.toArray(new Term[x.size()])),
+//            The.Subterms.RawSubtermBuilder.apply(y.toArray(new Term[y.size()]))
+//        );
+//
+//    }
     public CommutivePermutations(Subterms x, Subterms y) {
         this(
             $.pFast(x), $.pFast(y)
@@ -39,8 +49,9 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
     public CommutivePermutations(Term x, Term y) {
         super(x, y);
 
-        assert(x.subs()==y.subs());
-        if (Param.DEBUG) assert(!x.equals(y));
+        int xs = x.subs();
+        assert(xs > 1);
+        assert(xs == y.subs());
 
         this.y = y.subterms();
         this.x = x.subterms();
@@ -62,7 +73,8 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
         while (p.hasNextThenNext()) {
 
             if (p.unifyLinear(y, f)) {
-                f.tryMutate(chain, current);
+                if (!f.tryMutate(chain, current))
+                    break;
             }
 
             if (!f.revertLive(start))

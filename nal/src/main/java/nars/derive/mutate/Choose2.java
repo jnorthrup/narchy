@@ -84,7 +84,8 @@ public class Choose2 extends Termutator.AbstractTermutator {
                 if (x[1].unify(y2, f) &&
                         xEllipsis.unify(EllipsisMatch.match(Subterms.except(yy, y1, y2, m)), f)) {
 
-                    f.tryMutate(chain, current);
+                    if (!f.tryMutate(chain, current))
+                        break;
                 }
 
             }

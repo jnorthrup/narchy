@@ -1,14 +1,16 @@
 package jcog.version;
 
 import jcog.list.ArrayUnenforcedSet;
+import jcog.list.FasterList;
+import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
+
+import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 
 public class VersionMap<X, Y> extends AbstractMap<X, Y> {
@@ -141,6 +143,29 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
         return new Versioned<>(context, elementStackSizeDefault);
         //return cache(k) ? new Versioned(context) :
         //return new RemovingVersionedEntry(k);
+    }
+
+    public void forEach(BiConsumer<? super X, ? super Y> each) {
+        map.forEach((x,yy)->{
+            Y y = yy.get();
+            if (y!=null)
+                each.accept(x, y);
+        });
+    }
+    public void forEachSorted(BiConsumer<? super X, ? super Y> each) {
+        List<Pair<X,Y>> all = new FasterList<>();
+        map.forEach((x,yy)->{
+            Y y = yy.get();
+            if (y!=null)
+                all.add(pair(x,y));
+        });
+        int s = all.size();
+        if (s > 0) {
+            for (int i = 0; i < s; i++) {
+                Pair<X, Y> a = all.get(i);
+                each.accept(a.getOne(), a.getTwo());
+            }
+        }
     }
 
     public boolean forEachVersioned(BiPredicate<? super X, ? super Y> each) {

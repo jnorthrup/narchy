@@ -1,6 +1,7 @@
 package nars.term.subst;
 
 import jcog.Util;
+import jcog.data.byt.AbstractBytes;
 import jcog.version.VersionMap;
 import jcog.version.Versioned;
 import jcog.version.Versioning;
@@ -11,11 +12,13 @@ import nars.derive.mutate.Termutator;
 import nars.index.term.NewCompound;
 import nars.term.Term;
 import nars.term.Termlike;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Random;
 import java.util.Set;
@@ -105,15 +108,37 @@ public abstract class Unify extends Versioning implements Subst {
      */
     public abstract void tryMatch();
 
-    public final void tryMutate(Termutator[] chain, int next) {
+
+    protected void nextMatch(boolean termuting) {
+        if (termuting) {
+            if (matches == null)
+                matches = new UnifiedSet(1);
+
+            if (matches.add(((ConstrainedVersionMap) xy).snapshot())) {
+                tryMatch();
+                if (matches.size() > 3)
+                    return; //for debugg
+            } else {
+                //repeated
+                System.out.println("ok");
+            }
+        } else {
+            tryMatch();
+            assert(matches == null);
+            matches = Collections.EMPTY_SET;; //indicates that there was a match, by being non-null
+        }
+    }
+
+    public final boolean tryMutate(Termutator[] chain, int next) {
         if (!use(Param.TTL_MUTATE))
-            return;
+            return false;
 
         if (++next < chain.length) {
             chain[next].mutate(this, chain, next);
         } else {
-            matches++; tryMatch(); //end of chain
+            nextMatch(true); //end of chain
         }
+        return true;
     }
 
     @Nullable
@@ -149,7 +174,7 @@ public abstract class Unify extends Versioning implements Subst {
 //        }
     }
 
-    private int matches;
+    private Set<AbstractBytes> matches = null;
 
     /**
      * unifies the next component, which can either be at the start (true, false), middle (false, false), or end (false, true)
@@ -161,7 +186,8 @@ public abstract class Unify extends Versioning implements Subst {
      */
     public boolean unify(Term x, Term y, boolean finish) {
 
-        matches = 0;
+        assert(matches == null);
+        //matches = null;
 
         //accumulate any new free variables in this next matched term
 //        Set<Term> freeX = freeVariables(x);
@@ -176,11 +202,17 @@ public abstract class Unify extends Versioning implements Subst {
         if (x.unify(y, this)) {
             if (finish) {
                 tryMatches();
+
+                boolean matched = matches!=null;
+                matches = null;
+                return matched;
+
             }
             return true;
         }
 
-        return matches > 0;
+        assert(matches == null);
+        return false;
     }
 
 //    /**
@@ -210,7 +242,7 @@ public abstract class Unify extends Versioning implements Subst {
             tryMutate(t, -1); //start combinatorial recurse
 
         } else {
-            matches++; tryMatch(); //go directly to conclusion
+            nextMatch(false); //go directly to conclusion
         }
 
 //        if (matched.size()>1)
@@ -327,7 +359,7 @@ public abstract class Unify extends Versioning implements Subst {
 
     public static boolean relevantVariables(Termlike x) {
         return //type == null ?
-                x.varPattern() > 0 || x.hasAny(Op.VAR_DEP.bit | Op.VAR_INDEP.bit | Op.VAR_QUERY.bit);
+                x.hasAny(Op.VAR_DEP.bit | Op.VAR_INDEP.bit | Op.VAR_QUERY.bit) || x.varPattern() > 0;
                 //x.hasAny(type);
     }
 
@@ -372,14 +404,13 @@ public abstract class Unify extends Versioning implements Subst {
             return new ConstrainedVersionedTerm();
         }
 
-        public NewCompound snapshot() {
-            NewCompound s = new NewCompound(null, xy.map.size() * 2);
-            xy.forEach((x, y) -> {
-                s.add(x);
-                if (y == null)
-                    y = Null; //HACK this should have been handled by the variable count
-                s.add(y);
-            });
+        public AbstractBytes snapshot() {
+            int ss = xy.size();
+            if (ss == 0)
+                return AbstractBytes.EMPTY;
+
+            NewCompound s = new NewCompound(null, ss * 2);
+            xy.forEachSorted(s::add);
             return s.commit();
         }
     }

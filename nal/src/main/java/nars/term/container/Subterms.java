@@ -1,11 +1,14 @@
 package nars.term.container;
 
+import jcog.list.FasterList;
 import nars.$;
 import nars.Op;
+import nars.The;
 import nars.derive.mutate.CommutivePermutations;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
+import nars.term.Terms;
 import nars.term.subst.Unify;
 import nars.term.var.Variable;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
@@ -53,8 +56,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
         return true;
     }
-
-
 
 
     /*@NotNull*/
@@ -105,7 +106,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     /**
      * @return a Mutable Set, unless empty
      */
-    default /*@NotNull*/ Set<Term> toSet() {
+    default /*@NotNull*/ MutableSet<Term> toSet() {
         int s = subs();
         if (s > 0) {
             UnifiedSet u = new UnifiedSet(s);
@@ -147,7 +148,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default boolean isNormalized() {
-        return (vars()==0 && varPattern()==0); //assume un-normalized if any variable appears
+        return (vars() == 0 && varPattern() == 0); //assume un-normalized if any variable appears
     }
 
     /**
@@ -265,7 +266,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         return r[0];
     }
-
 
 
     @Override
@@ -560,7 +560,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return hashCode();
     }
 
-  @Override
+    @Override
     default boolean hasVarQuery() {
         return hasAny(Op.VAR_QUERY);
     }
@@ -760,6 +760,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default boolean unifyLinear(Subterms Y, /*@NotNull*/ Unify u) {
+        if (equals(Y))
+            return true;
+
         int s = subs();
         for (int i = 0; i < s; i++) {
             if (!sub(i).unify(Y.sub(i), u))
@@ -815,8 +818,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     default boolean unifyCommute(Subterms y, /*@NotNull*/ Unify u) {
 
-        if (y.equals(this))
-            return true;
+        int s = subs();
+        if (s != y.subs())
+            return false;
+
+        boolean v = u.relevantVariables(this, y);
+        if (!v && !y.equals(this))
+            return false;
 
         //if there are no variables of the matching type, then it seems CommutivePermutations wouldnt match anyway
 //        if (!unifyPossible(subst.type)) {
@@ -824,43 +832,74 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        }
 
         //lexic sorted so that the formed termutator has a canonical representation, preventing permuted duplicates in the termute chain
-        SortedSet<Term> xs = toSortedSet();
-        SortedSet<Term> ys = y.toSortedSet();
+
+        Collection<Term> yys = y.toSet();
         ////xs.removeIf(s -> !subst.matchType(s) && ys.remove(s));
 
-        xs.removeIf(x -> {
-            if (x.vars() == 0) {
-                return ys.remove(x);
+        UnifiedSet<Term> constCommon = new UnifiedSet(0);
+
+        forEach(x -> {
+            if (!u.relevantVariables(x)) {
+                if (yys.contains(x)) //attempt to eliminate a common constant term
+                    constCommon.add(x);
             }
-            return false;
         });
-        //TODO it may be safe to remove from both if a term contains no variables being matched
+
+        int cc = constCommon.size();
+        Term[] xs, ys;
+        if (cc > 0) {
+
+            //filter out the common terms
+            assert (cc != s); //otherwise equality test would have passed earlier
+
+            xs = termsExcept(constCommon);
+            ys = y.termsExcept(constCommon);
+
+        } else {
+            xs = arrayShared(); //already sorted
+            ys = y.arrayShared();
+        }
+
+        //what remains are all variably-permutable terms and there must be an equal # of each
+        int xss = xs.length;
+        assert (ys.length == xss);
+        assert (xss > 0);
+
 
         //subst.termutes.add(new CommutivePermutations(TermVector.the(xs), TermVector.the(ys)));
-        int xss = xs.size();
-        int yss = ys.size();
 
 
-        if (yss == 1) {
+        if (xss == 1) {
             //special case
             //  ex: {x,%1} vs. {x,z} --- there is actually no combination here
             //  Predicate<Term> notType = (x) -> !subst.matchType(x);
             //another case:
             //  xss > 1, yss=1: because of duplicates in ys that were removed; instead apply ys.first() to each of xs
             //  note for validation: the reverse will not work (trying to assign multiple different terms to the same variable in x)
-            Term yy = ys.first();
-            for (Term x : xs) {
-                if (!x.unify(yy, u))
-                    return false;
-            }
-            return true; //they all unified
-        } else if (yss == xss) {
 
-            u.termutes.add(new CommutivePermutations( xs, ys ));
+
+            //return xs.allSatisfyWith((x,yy) -> x.unify(yy, u), ys.getOnly());
+            return xs[0].unify(ys[0], u);
+
+        } else /*if (xss == xss)*/ {
+
+            u.termutes.add(new CommutivePermutations(
+                    $.pFast(The.subterms(xs)),
+                    $.pFast(The.subterms(ys))));
             return true;
-        } else /* yss!=xss */ {
-            return false; //TODO this may possibly be handled
         }
+//        } else /* yss!=xss */ {
+//            return false; //TODO this may possibly be handled
+//        }
+    }
+
+    default Term[] termsExcept(Collection<Term> except) {
+        FasterList<Term> fxs = new FasterList<>(subs());
+        forEach(t -> {
+            if (!except.contains(t))
+                fxs.add(t);
+        });
+        return fxs.toArrayRecycled(Term[]::new);
     }
 
 
@@ -872,7 +911,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default Term[] toArraySubRange(int from, int to) {
         if (from == 0 && to == subs()) {
             return arrayShared();
-                    //arrayClone();
+            //arrayClone();
         } else {
 
             int s = to - from;
@@ -899,7 +938,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //    }
 
 
-
     @Override
     default void recurseTerms(/*@NotNull*/ Consumer<Term> v) {
         forEach(s -> s.recurseTerms(v));
@@ -912,6 +950,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default Subterms reverse() {
         return subs() > 1 ? new ReverseSubterms(this) : this;
     }
+
+    default Subterms sorted() {
+        return isSorted() ? this : The.subterms(Terms.sorted(arrayClone()));
+    }
+
 
     //    /**
 //     * returns a sorted and de-duplicated version of this container

@@ -113,7 +113,7 @@ public interface Termlike {
             else
                 checkStruct |= o.bit;
         }
-        return (checkStruct != 0 && hasAny(checkStruct)) || (checkVarPattern && hasAny(VAR_PATTERN));
+        return (checkStruct != 0 && hasAny(checkStruct)) || (checkVarPattern && varPattern() > 0);
     }
 
     /**

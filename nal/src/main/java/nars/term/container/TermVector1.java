@@ -4,6 +4,7 @@ import com.google.common.collect.Iterators;
 import nars.Op;
 import nars.derive.match.EllipsisMatch;
 import nars.term.Term;
+import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.factory.Sets;
 import org.jetbrains.annotations.NotNull;
 
@@ -92,7 +93,7 @@ public class TermVector1 extends TermVector /*implements Set<Term>*/ {
 
     @Override
     @NotNull
-    public Set<Term> toSet() {
+    public MutableSet<Term> toSet() {
         return Sets.mutable.of(sub);
     }
 

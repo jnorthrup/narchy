@@ -59,13 +59,13 @@ public class SubUnify extends Unify {
             Term result = transformed.transform(this);//transform(transformed);
             if (result != null && !result.equals(transformed)) {
 
-                int before = parent.now();
-                if (xy.forEachVersioned(parent::putXY)) {
+//                int before = parent.now();
+//                if (xy.forEachVersioned(parent::putXY)) {
                     this.result = result;
                     parent.addTTL(stop()); //stop and refund parent
-                } else {
-                    parent.revert(before); //continue trying
-                }
+//                } else {
+//                    parent.revert(before); //continue trying
+//                }
 
             }
         }

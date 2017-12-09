@@ -8,6 +8,16 @@ public interface AbstractBytes {
     AbstractBytes EMPTY = new AbstractBytes() {
 
         @Override
+        public boolean equals(Object obj) {
+            return this == obj || ((AbstractBytes)obj).length() == 0;
+        }
+
+        @Override
+        public int hashCode() {
+            return 0;
+        }
+
+        @Override
         public int length() {
             return 0;
         }
