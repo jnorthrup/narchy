@@ -382,7 +382,7 @@ public class Derivation extends Unify {
             if (!belief.isEternal()) {
                 //project belief truth to task's time
                 this.beliefTruth = !task.isEternal() ?
-                        belief.truth(belief.nearestTimeBetween(task.start(), task.end()), dur, confMin) :
+                        belief.truth(belief.nearestTimeOf(task.start(), task.end()), dur, confMin) :
                         belief.truth();
                 //belief.truth(ETERNAL, ETERNAL...)
             } else {

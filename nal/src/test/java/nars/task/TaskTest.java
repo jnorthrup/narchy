@@ -2,7 +2,6 @@ package nars.task;
 
 import nars.*;
 import nars.concept.Concept;
-import nars.time.Tense;
 import nars.truth.DiscreteTruth;
 import nars.truth.Stamp;
 import org.jetbrains.annotations.NotNull;
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Arrays;
 
 import static nars.Op.BELIEF;
+import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -23,11 +23,11 @@ public class TaskTest {
 
         String s = "<a --> b>.";
 
-        assertEquals(Narsese.parse().task(s, n).start(), Tense.ETERNAL);
+        assertEquals(Narsese.parse().task(s, n).start(), ETERNAL);
 
         assertTrue(Narsese.parse().task(s, n).isEternal(), "default is eternal");
 
-        assertEquals(Narsese.parse().task(s, n).start(), Tense.ETERNAL, "tense=eternal is eternal");
+        assertEquals(Narsese.parse().task(s, n).start(), ETERNAL, "tense=eternal is eternal");
 
         //assertTrue("present is non-eternal", !Tense.isEternal(((Task)n.task(s)).present(n).start()));
 
@@ -184,24 +184,49 @@ public class TaskTest {
         assertNotNull(c);
     }
 
-    @Test public void testTaskNearestTimePoint() throws Narsese.NarseseException {
-        NAR tt = NARS.shell();
-        Task t = $.task("x", BELIEF, 1f, 0.9f).time(0, 10, 20).apply(tt);
+    final private NAR tt = NARS.shell();
 
-        assertEquals(10, t.start());
-        assertEquals(20, t.end());
-
-        assertEquals(20, t.nearestTimeTo(30));
-        assertEquals(18, t.nearestTimeTo(18)); //mid
-        assertEquals(15, t.nearestTimeTo(15)); //mid
-        assertEquals(12, t.nearestTimeTo(12)); //mid
-        assertEquals(10, t.nearestTimeTo(0));
-
-        assertEquals(15, t.nearestTimeBetween(9, 21)); //midpoint
-        assertEquals(10, t.nearestTimeBetween(0, 1));
-        assertEquals(10, t.nearestTimeBetween(0, 15));
-        assertEquals(15, t.nearestTimeBetween(15, 15));
-        assertEquals(20, t.nearestTimeBetween(30, 40));
+    @Test public void testTaskNearestTimePoint_point() throws Narsese.NarseseException {
+        assertNearTests(15, 15);
     }
-    
+    @Test public void testTaskNearestTimePoint_range() throws Narsese.NarseseException {
+        Task t = assertNearTests(10, 20);
+        assertEquals(18, t.nearestTimeTo(18)); //mid
+        assertEquals(12, t.nearestTimeTo(12)); //mid
+    }
+    @Test public void testTaskNearestTimePoint_eternal() throws Narsese.NarseseException {
+        Task t = assertNearTests(ETERNAL, ETERNAL);
+    }
+
+    private Task assertNearTests(long sta, long end) throws Narsese.NarseseException {
+
+        Task t = $.task("x", BELIEF, 1f, 0.9f).time(0, sta, end).apply(tt);
+        long mid = t.mid();
+
+        assertEquals(sta, t.start());
+        assertEquals(end, t.end());
+
+        assertEquals(end, t.nearestTimeTo(30));
+        assertEquals(mid, t.nearestTimeTo(mid)); //mid
+        assertEquals(sta, t.nearestTimeTo(0));
+        assertEquals(mid, t.nearestTimeTo(ETERNAL));
+        assertEquals(ETERNAL, t.nearestTimeOf(ETERNAL, ETERNAL));
+
+        assertEquals(9, t.nearestTimeOf(9, 9));
+        assertEquals(-1, t.nearestTimeOf(-1, -1)); //before
+        assertEquals(100, t.nearestTimeOf(100, 100)); //after
+
+        if (sta!=ETERNAL) {
+            assertEquals(mid, t.nearestTimeOf(mid - 1, mid + 1)); //midpoint
+            assertEquals(mid, t.nearestTimeOf(mid, mid));
+            assertEquals(sta, t.nearestTimeOf(0, 1));
+            assertEquals(sta, t.nearestTimeOf(0, mid));
+            assertEquals(end, t.nearestTimeOf(30, 40));
+        }
+        assertEquals((9+21)/2, t.nearestTimeOf(9, 21)); //midpoint
+
+
+        return t;
+    }
+
 }

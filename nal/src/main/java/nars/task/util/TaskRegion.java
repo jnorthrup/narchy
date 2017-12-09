@@ -5,7 +5,6 @@ import jcog.tree.rtree.HyperRegion;
 import nars.Task;
 import nars.task.Tasked;
 
-import static nars.task.util.TaskRegion.nearestBetween;
 import static nars.time.Tense.ETERNAL;
 
 public interface TaskRegion extends HyperRegion, Tasked {
@@ -19,38 +18,41 @@ public interface TaskRegion extends HyperRegion, Tasked {
      */
     float CONF_SAMENESS_IMPORTANCE = 0.05f;
 
-    static long nearestBetween(long s, long e, long when) {
+    /** nearest point between starts and ends (inclusive) to the point 'x' */
+    static long nearestTimeTo(long x, long starts, long ends) {
+        assert(ends >= starts);
 
-        if (s == ETERNAL) {
-            return when;
-        } else if (when == ETERNAL) {
-            return (s + e) / 2; //midpoint
-        } else if (when < s || e == s) {
-            return s; //point or at or beyond the start
-        } else if (when > e) {
-            return e; //at or beyond the end
-        } else {
-            return when; //internal
-        }
-    }
-
-    static long furthestBetween(long s, long e, long when) {
-        assert (when != ETERNAL);
-
-        if (s == ETERNAL) {
-            return when;
-        } else if (when < s || e == s) {
-            return e; //point or at or beyond the start
-        } else if (when > e) {
-            return s; //at or beyond the end
-        } else {
-            //internal, choose most distant endpoint
-            if (Math.abs(when - s) > Math.abs(when - e))
-                return s;
+        if (x == ETERNAL) {
+             if (starts == ETERNAL)
+                return ETERNAL; //the avg of eternal with eternal produces 0 which is not right
             else
-                return e;
+                return (starts + ends) / 2; //midpoint
+        } else if (x <= starts) {
+            return starts; //point or at or beyond the start
+        } else if (x >= ends) {
+            return ends; //at or beyond the end
+        } else {
+            return x; //internal: x is between starts,ends
         }
     }
+
+//    static long furthestBetween(long s, long e, long when) {
+//        assert (when != ETERNAL);
+//
+//        if (s == ETERNAL) {
+//            return when;
+//        } else if (when < s || e == s) {
+//            return e; //point or at or beyond the start
+//        } else if (when > e) {
+//            return s; //at or beyond the end
+//        } else {
+//            //internal, choose most distant endpoint
+//            if (Math.abs(when - s) > Math.abs(when - e))
+//                return s;
+//            else
+//                return e;
+//        }
+//    }
 
     @Override
     boolean equals(Object obj);
@@ -67,12 +69,12 @@ public interface TaskRegion extends HyperRegion, Tasked {
     }
 
     default long nearestTimeTo(long when) {
-        return nearestBetween(start(), end(), when);
+        return TaskRegion.nearestTimeTo(when, start(), end());
     }
 
-    default long furthestTimeTo(long when) {
-        return furthestBetween(start(), end(), when);
-    }
+//    default long furthestTimeTo(long when) {
+//        return furthestBetween(start(), end(), when);
+//    }
 
     @Override
     default double cost() {
@@ -86,17 +88,19 @@ public interface TaskRegion extends HyperRegion, Tasked {
 
 
     default float timeCost() {
-        return (float) (1 + range(0));
+
+        //return 1 + (float) range(0) /* * 1 */;
+
+        double dt = range(0);
+        return 1 + (float) Math.log(dt+1) /* * 1 */;
     }
 
     default float freqCost() {
-        float d = (float) range(1);
-        return 1 + d /* * timeCost()*/ * FREQ_SAMENESS_IMPORTANCE;
+        return 1 + (float) range(1) * FREQ_SAMENESS_IMPORTANCE;
     }
 
     default float confCost() {
-        float d = (float) range(2);
-        return 1 + d /* * timeCost()*/ * CONF_SAMENESS_IMPORTANCE;
+        return 1 + (float) range(2) * CONF_SAMENESS_IMPORTANCE;
     }
 
     @Override
@@ -124,7 +128,6 @@ public interface TaskRegion extends HyperRegion, Tasked {
                 if (this instanceof Task) {
                     Task tr = (Task) this;
                     float tf = tr.freq();
-                    float tc = tr.conf();
                     float f0, f1;
 
 
@@ -137,6 +140,7 @@ public interface TaskRegion extends HyperRegion, Tasked {
                     }
                     float c0;
                     float c1;
+                    float tc = tr.conf();
                     if (tc <= ec) {
                         c0 = tc;
                         c1 = ec;
@@ -155,10 +159,8 @@ public interface TaskRegion extends HyperRegion, Tasked {
 //                            ne = te;
 //                        }
 //                    } else {
-                    long ns = Math.min(ts, es);
-                    long ne = Math.max(te, ee);
-//                    }
-                    return new TasksRegion(ns, ne,
+                    //                    }
+                    return new TasksRegion(Math.min(ts, es), Math.max(te, ee),
                             f0, f1, c0, c1
                     );
                 } else {
@@ -192,12 +194,12 @@ public interface TaskRegion extends HyperRegion, Tasked {
             return start <= t.end && end() >= t.start;
         } else {
             TaskRegion t = (TaskRegion) x;
-            return                      start <= t.end() &&
-                                        end() >= t.start() &&
-                   coordF(false, 1) <= t.coordF(true, 1) &&
-                   coordF(true, 1) >= t.coordF(false, 1) &&
-                   coordF(false, 2) <= t.coordF(true, 2) &&
-                   coordF(true, 2) >= t.coordF(false, 2);
+            return start <= t.end() &&
+                    end() >= t.start() &&
+                    coordF(false, 1) <= t.coordF(true, 1) &&
+                    coordF(true, 1) >= t.coordF(false, 1) &&
+                    coordF(false, 2) <= t.coordF(true, 2) &&
+                    coordF(true, 2) >= t.coordF(false, 2);
         }
     }
 
@@ -205,14 +207,6 @@ public interface TaskRegion extends HyperRegion, Tasked {
     default boolean contains(HyperRegion x) {
         if (x == this) return true;
 
-        //    default boolean contains(HyperRegion<X> x) {
-        //        int d = dim();
-        //        for (int i = 0; i < d; i++)
-        //            if (coordF(false, i) > x.coordF(false, i) ||
-        //                    coordF(true, i) < x.coordF(true, i))
-        //                return false;
-        //        return true;
-        //    }
         long start = start();
         if (x instanceof TimeRange) {
             TimeRange t = (TimeRange) x;
@@ -221,10 +215,10 @@ public interface TaskRegion extends HyperRegion, Tasked {
             TaskRegion t = (TaskRegion) x;
             return
                     start <= t.start() && end() >= t.end() &&
-                    coordF(false, 1) <= t.coordF(false, 1) &&
-                    coordF(true, 1) >= t.coordF(true, 1) &&
-                    coordF(false, 2) <= t.coordF(false, 2) &&
-                    coordF(true, 2) >= t.coordF(true, 2);
+                            coordF(false, 1) <= t.coordF(false, 1) &&
+                            coordF(true, 1) >= t.coordF(true, 1) &&
+                            coordF(false, 2) <= t.coordF(false, 2) &&
+                            coordF(true, 2) >= t.coordF(true, 2);
         }
     }
 

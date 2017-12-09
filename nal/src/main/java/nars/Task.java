@@ -270,20 +270,20 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return true;
     }
 
-    static boolean fail(@Nullable Term t, String reason, boolean safe) {
+    private static boolean fail(@Nullable Term t, String reason, boolean safe) {
         if (safe)
             return false;
         else
             throw new InvalidTaskException(t, reason);
     }
 
-    static long nearestStartOrEnd(long a, long b, long x, long y) {
-        if (a == x && b == y) {
-            return (a + b) / 2; //midpoint
-        }
+    private static long nearestStartOrEnd(long a, long b, long x, long y) {
+//        if (a == x && b == y) {
+//            return (a + b) / 2; //midpoint
+//        }
 
-        long u = TaskRegion.nearestBetween(a, b, x);
-        long v = TaskRegion.nearestBetween(a, b, y);
+        long u = TaskRegion.nearestTimeTo(x, a, b);
+        long v = TaskRegion.nearestTimeTo(y, a, b);
         if (Math.min(Math.abs(u - a), Math.abs(u - b)) <
                 Math.min(Math.abs(v - a), Math.abs(v - b))) {
             return u;
@@ -624,7 +624,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     /**
      * to the interval [x,y]
      */
-    default long nearestTimeBetween(final long x, final long y) {
+    default long nearestTimeOf(final long x, final long y) {
+
+        assert(y >= x);
+
         if (x == y)
             return x;
 
@@ -633,11 +636,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             return (x + y) / 2; //use midpoint of the two if this task is eternal
 
         long b = this.end();
-        if (a == b) {
-            return TaskRegion.nearestBetween(x, y, a);
-        } else if ((x > a) && (y < b)) {
+        if ((x >= a) && (y <= b)) {
             return (x + y) / 2; //midpoint of the contained range
-        } else if (x <= a && y >= b) {
+        } else if (x < a && y > b) {
             return (a + b) / 2; //midpoint of this within the range
         } else {
             return nearestStartOrEnd(a, b, x, y); //overlap or no overlap
@@ -816,11 +817,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     }
 
     @Nullable default Truth truth(long targetStart, long targetEnd, long dur, float minConf) {
-        return truth(nearestTimeBetween(targetStart, targetEnd), dur, minConf);
+        return truth(nearestTimeOf(targetStart, targetEnd), dur, minConf);
     }
 
     default float evi(long targetStart, long targetEnd, final long dur) {
-        return evi(nearestTimeBetween(targetStart, targetEnd), dur);
+        return evi(nearestTimeOf(targetStart, targetEnd), dur);
     }
 
     @Nullable

@@ -288,7 +288,7 @@ public class NALTask extends Pri implements Task {
     }
 
     @Override
-    public double range(int dim) {
+    public final double range(int dim) {
         switch (dim) {
             case 0:
                 return end - start;
