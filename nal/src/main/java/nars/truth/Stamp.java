@@ -27,12 +27,16 @@ import nars.Param;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.iterator.MutableLongIterator;
 import org.eclipse.collections.api.set.primitive.LongSet;
+import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.factory.primitive.LongSets;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
+import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static nars.time.Tense.ETERNAL;
+import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 public interface Stamp {
 
@@ -420,35 +424,82 @@ public interface Stamp {
 
 
 
-    static long[] zip(Stamp[] s, int maxLen) {
-//        final int extra = 1;
-//        int maxPer = Math.max(1, Math.round((float)maxLen / num)) + extra;
+    /** returns pair: (stamp, % overlapping) */
+    static ObjectFloatPair<long[]> zip(List<? extends Stamp> s, int maxLen) {
+        int S = s.size();
+        assert(S > 0);
+        if (S == 1) {
+            return pair(s.get(0).stamp(), 0f);
+        }
+
         LongHashSet l = new LongHashSet(maxLen);
-        boolean cyclic = false;
+        boolean preCyclic = false;
         int done = 0;
-        int S = s.length;
-        int p = 0;
-        while (done<S && l.size() < (maxLen - (cyclic ? 1 : 0))) {
+
+        int repeats = 0;
+
+        int totalEvidence = 0;
+        byte[] ptr = new byte[S]; //assumes stamps are < 127 in length
+        for (int i = 0, sSize = s.size(); i < sSize; i++) {
+            Stamp si = s.get(i);
+            long[] x = si.stamp();
+            int xl = x.length;
+            boolean c = (x[xl - 1] == Long.MAX_VALUE);
+            int r;
+            if (c) {
+                preCyclic = true;
+                r = xl-1;
+            } else {
+                r = xl;
+            }
+            totalEvidence += r;
+            ptr[i] = (byte)r;
+        }
+
+        int limit = (maxLen - (preCyclic ? 1 : 0));
+        boolean halted = false;
+        main: while (done<S && l.size() < limit) {
             done = 0;
             for (int i = 0; i < S; i++) {
-                long[] x = s[i].stamp();
-                int xl = x.length;
-                boolean c = (xl > 1 && x[xl-1]==Long.MAX_VALUE);
+                long[] x = s.get(i).stamp();
 
-                int xi = xl - 1 - p - (c ? 1 : 0);
+                int xi = --ptr[i];
                 if (xi < 0) {
                     done++;
                     continue;
                 }
-
-                long v = x[xi]; //skip cyclic
-                cyclic |= (!l.add(v)) || c;
+                if (!l.add(x[xi])) {
+                    if (repeats == 0)
+                        limit--; //subtract one from the limit for the eventual cyclic that needs to be at the end
+                    repeats++;
+                } else {
+                    if (l.size() >= limit) {
+                        halted = true;
+                        break main;
+                    }
+                }
             }
-            p++;
+        }
+
+        if (halted) {
+            //count remaining overlap
+            for (int i = 0, ptrLength = ptr.length; i < ptrLength; i++) {
+                int rr = ptr[i];
+                if (rr >= 0) {
+                    long[] ss = s.get(i).stamp();
+                    for (int j = 0; j <= rr; j++) {
+                        if (l.contains(ss[j]))
+                            repeats++;
+                    }
+                }
+            }
         }
 
 
         int ls = l.size();
+        assert(ls <= limit);
+
+        boolean cyclic = preCyclic | (repeats > 0);
 
         long[] e = new long[ls + (cyclic ? 1 : 0)];
         MutableLongIterator ll = l.longIterator();
@@ -460,9 +511,10 @@ public interface Stamp {
         if (cyclic)
             e[k] = Long.MAX_VALUE;
 
-        Arrays.sort(e);
+        if (ls > 1)
+            Arrays.sort(e);
 
-        return e;
+        return pair(e, (((float)repeats)/totalEvidence));
     }
 
 

@@ -5,6 +5,7 @@ import nars.control.Derivation;
 import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import nars.term.transform.Retemporalize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +81,8 @@ public final class Conclusion extends AbstractPred<Derivation> {
                     else
                         d.dtDouble = dt;
                 }
-                c2 = dt.solve(c1);
+
+                c2 = dt.get().solve(c1);
 
                 {
                     //final sanity tests hack

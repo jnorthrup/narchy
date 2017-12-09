@@ -51,8 +51,9 @@ public final class Conclude {
         Taskify taskify = new Taskify( nar.newCause((s)->new RuleCause(rule, s)));
 
         Term concID = $.func("derive", /*$.the(cid), */pattern/* prod args */);
+        Conclusion conc = new Conclusion(concID, pattern, rule);
         return AndCondition.the(
-                new Conclusion(concID,pattern, rule),
+                conc,
                 introVars ? //Fork.fork(
                         AndCondition.the(new IntroVars(), taskify)
                         //makeTask)

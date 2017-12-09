@@ -87,7 +87,7 @@ public class PoleCart extends NAgentX {
 
     public PoleCart(NAR nar) throws Narsese.NarseseException {
         //super(nar, HaiQAgent::new);
-        super(nar);
+        super("cart", nar);
 
 //        this.inputVariable1 = senseNumber("(ang)",
 //                () -> MathUtils.normalizeAngle(angle, 0)).resolution(0.1f);

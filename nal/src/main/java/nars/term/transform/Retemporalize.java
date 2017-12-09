@@ -7,8 +7,11 @@ import nars.term.anon.DirectCompoundTransform;
 import nars.term.container.Subterms;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.IntSupplier;
 
+import static nars.Op.CONJ;
 import static nars.Op.Temporal;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -26,42 +29,56 @@ public interface Retemporalize extends DirectCompoundTransform {
     Retemporalize retemporalizeXTERNALToZero = new RetemporalizeFromTo(XTERNAL, 0);
 
     Retemporalize retemporalizeRoot = x -> {
-                Subterms xs = x.subterms();
+        Subterms xs = x.subterms();
 
-                //any inside impl/conjunctions will disqualify the simple DTERNAL root form, but only in the next layer
+        //any inside impl/conjunctions will disqualify the simple DTERNAL root form, but only in the next layer
 
-                switch (x.op()) {
-                    case CONJ:
-                        if ((xs.subs()==2) &&
-                                xs.hasAny(Temporal) && xs.OR(y->y.isAny(Temporal)) ||
-                                xs.sub(0).unneg().equals(xs.sub(1).unneg())) {
-                            return XTERNAL;
-                        } else {
-                            return DTERNAL; //simple
-                        }
-                    case IMPL:
-                        //impl pred is always non-neg
-                        return xs.hasAny(Temporal) && xs.OR(y->y.isAny(Temporal)) ||
-                               xs.sub(0).unneg().equals(xs.sub(1)) ? XTERNAL : DTERNAL;
-                    default:
-                        throw new UnsupportedOperationException();
+        switch (x.op()) {
+            case CONJ:
+                if ((xs.subs() == 2) &&
+                        xs.hasAny(Temporal) && xs.OR(y -> y.isAny(Temporal)) ||
+                        xs.sub(0).unneg().equals(xs.sub(1).unneg())) {
+                    return XTERNAL;
+                } else {
+                    return DTERNAL; //simple
                 }
-            };
+            case IMPL:
+                //impl pred is always non-neg
+                return xs.hasAny(Temporal) && xs.OR(y -> y.isAny(Temporal)) ||
+                        xs.sub(0).unneg().equals(xs.sub(1)) ? XTERNAL : DTERNAL;
+            default:
+                throw new UnsupportedOperationException();
+        }
+    };
 
 
     @Nullable
     @Override
-    default Term transform(Compound x, Op op, int ignored) {
+    default Term transform(Compound x, Op op, int dt) {
         if (!x.hasAny(Temporal)) {
             return x;
         } else {
-            int dtCur = x.dt(), dtNext;
+            int dtNext;
             if (op.temporal) {
                 dtNext = dt(x);
-                if (dtCur == dtNext && !x.subterms().hasAny(Temporal))
+                if (dtNext == XTERNAL && op == CONJ && x.subterms().hasAny(CONJ)) {
+                    //recursive conj, decompose to events
+                    SortedSet<Term> s = new TreeSet();
+                    x.events(a -> {
+                        Term zz = a.getTwo();
+                        if (!zz.equals(x)) {
+                            Term yy = zz.transform(this);
+                            assert (yy != null);
+                            s.add(yy);
+                        }
+                    });
+                    if (s.size() > 2)
+                        return CONJ.the(XTERNAL, s);
+                }
+                if (dt == dtNext && !x.subterms().hasAny(Temporal))
                     return x; //no change
             } else {
-                dtNext = dtCur;
+                dtNext = dt;
             }
             return DirectCompoundTransform.super.transform(x, op, dtNext);
         }

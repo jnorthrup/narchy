@@ -9,8 +9,10 @@ import nars.task.Revision;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
-import nars.term.subst.Subst;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 import static nars.Op.CONJ;
@@ -38,37 +40,78 @@ import static nars.time.Tense.*;
 public class DeriveTime extends TimeGraph {
 
 //    private final static Logger logger = LoggerFactory.getLogger(DeriveTime.class);
-    static final int TEMPORAL_ITERATIONS = 8;
+    static final int TEMPORAL_ITERATIONS = 16;
 
     private final Task task, belief;
 
-    private static final boolean knowTransformed = true;
     private final int dither;
     private final Derivation d;
+
+    final Map<Term,ArrayHashSet<Event>> cache;
+
+    @Override
+    public void clear() {
+        cache.clear();
+    }
+
+    DeriveTime(DeriveTime copy, Term transformedTask, Term transformedBelief) {
+        this.d = copy.d;
+        this.task = copy.task;
+        this.belief = copy.belief;
+        this.dither = copy.dither;
+        this.byTerm.putAll(copy.byTerm);
+        if (transformedTask!=null)
+            know(transformedTask, task.start());
+        if (transformedBelief!=null)
+            know(transformedBelief, belief.start());
+        cache = null;
+    }
 
     public DeriveTime(Derivation d, boolean single) {
         this.d = d;
         this.task = d.task;
         this.belief = d.belief; //!d.single ? d.belief : null;
         this.dither = Math.max(1, Math.round(d.nar.dtDither.floatValue() * d.dur));
+        this.cache = new HashMap();
 
-        long taskStart = task.start();
-
-        //Term taskTerm = polarizedTaskTerm(task);
-        know(d, task, taskStart);
-
+        know(task);
 
         if (!single && belief != null && !belief.equals(task)) {
 
-            long beliefStart = belief.start();
-
-            //Term beliefTerm = polarizedTaskTerm(belief);
-            know(d, belief, beliefStart);
+            know(belief);
 
         } /*else if (!task.term().equals(d.beliefTerm)) {
             know(d, d.beliefTerm, TIMELESS);
         }*/
 
+    }
+
+    /** if current state of the derivation produced novel terms */
+    public DeriveTime get() {
+        Term td = ifDynamic(d.task);
+        Term bd = d.belief!=null ? ifDynamic(d.belief) : null;
+        boolean tChange = td != null;
+        boolean bChange = bd != null;
+        if (tChange || bChange) {
+            return new DeriveTime(this, tChange ? td : null, bChange? bd : null);
+        } else {
+            return this;
+        }
+    }
+
+    Term ifDynamic(Termed x) {
+        Term xterm = x.term();
+        Term y = xterm.eval(d);
+        if (y != null && !(y instanceof Bool) && !y.equals(xterm)) {
+            Collection<Event> existing = byTerm.get(y);
+            for (Event ee : existing)
+                if (ee instanceof Absolute)
+                    return null; //transformed but already known (maybe only return 'x' if absolute times are known here)
+
+            return y;
+        } else {
+            return null;
+        }
     }
 
     int dtDither(int dt) {
@@ -130,37 +173,12 @@ public class DeriveTime extends TimeGraph {
 //        }
 
 
-        ArrayHashSet<Event> alternates = new ArrayHashSet(TEMPORAL_ITERATIONS);
+        ArrayHashSet<Event> solutions = cache!=null ? solveCached(pattern) : solveAll(pattern);
 
-        final int[] triesRemain = {TEMPORAL_ITERATIONS};
-
-        solve(pattern, false /* take everything */, (solution) -> {
-            assert (solution != null);
-            //TODO test equivalence with task and belief terms and occurrences, and continue iterating up to a max # of tries if it produced a useless equivalent result
-
-            Event first = alternates.first();
-            if (first == null) {
-                alternates.add(solution);
-            } else {
-                Event merged = merge(first, solution);
-                if (merged == null) {
-                    //add alternate
-                    alternates.add(solution);
-                } else if (merged == solution) {
-                    //replace all, this is the first fully valid one
-                    alternates.clear();
-                    alternates.add(solution);
-                }
-            }
-
-            return triesRemain[0]-- > 0;
-        });
-
-
-        Event event = alternates.first();
+        Event event = solutions.first();
         if (event == null) {
             return solveRaw(pattern);
-        } else if (alternates.size() > 1) {
+        } else if (solutions.size() > 1) {
 //            Map<Term, LongHashSet> uniques = new HashMap();
 //            alternates.forEach(x -> {
 //                long w = x.when();
@@ -179,7 +197,7 @@ public class DeriveTime extends TimeGraph {
 //                occ[1] = s.max() + st.dtRange();
 //                return st;
 //            } else {
-                event = alternates.get(d.random);
+                event = solutions.get(d.random);
 //            }
         }
 
@@ -231,6 +249,43 @@ public class DeriveTime extends TimeGraph {
         Op eop = st.op();
         return !eop.conceptualizable ? null : st;
 
+    }
+
+
+    protected ArrayHashSet<Event> solveCached(Term pattern) {
+        return cache.computeIfAbsent(pattern, this::solveAll);
+    }
+
+
+
+    protected ArrayHashSet<Event> solveAll(Term pattern) {
+        ArrayHashSet<Event> solutions = new ArrayHashSet(TEMPORAL_ITERATIONS);
+
+        final int[] triesRemain = {TEMPORAL_ITERATIONS};
+
+        solve(pattern, false /* take everything */, (solution) -> {
+            assert (solution != null);
+            //TODO test equivalence with task and belief terms and occurrences, and continue iterating up to a max # of tries if it produced a useless equivalent result
+
+            Event first = solutions.first();
+            if (first == null) {
+                solutions.add(solution);
+            } else {
+                Event merged = merge(first, solution);
+                if (merged == null) {
+                    //add alternate
+                    solutions.add(solution);
+                } else if (merged == solution) {
+                    //replace all, this is the first fully valid one
+                    solutions.clear();
+                    solutions.add(solution);
+                }
+            }
+
+            return triesRemain[0]-- > 0;
+        });
+
+        return !solutions.isEmpty() ? solutions : ArrayHashSet.EMPTY;
     }
 
     /** eternal check: eternals can only be derived from completely eternal premises */
@@ -367,21 +422,15 @@ public class DeriveTime extends TimeGraph {
         return d.random;
     }
 
-    void know(Subst d, Termed x, long start) {
-
-        if (x instanceof Task)
-            know((Task) x);
-        else
-            know(x.term());
-
-        if (knowTransformed) {
-            Term y = //x.transform(d);
-                    x.term().eval(d);
-            if (y != null && !y.equals(x) && !(y instanceof Bool)) {
-                know(y, start);
-            }
-        }
-    }
+//    void know(Termed x) {
+//
+//        Term xterm = x.term();
+//        if (x instanceof Task)
+//            know((Task) x);
+//        else
+//            know(xterm);
+//
+//    }
 
 
 }

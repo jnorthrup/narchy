@@ -53,19 +53,57 @@ import java.util.*;
  */
 public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
-	private HashSet<X>   set;
+	public static ArrayHashSet EMPTY= new ArrayHashSet(0) {
+		@Override
+		public boolean add(Object element) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public Object first() {
+			return null;
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return true;
+		}
+
+		@Override
+		public int size() {
+			return 0;
+		}
+
+		@Override
+		public ListIterator listIterator() {
+			return Collections.emptyListIterator();
+		}
+
+		@Override
+		public ListIterator listIterator(int index) {
+			assert(index==0);
+			return Collections.emptyListIterator();
+		}
+
+		@Override
+		public Iterator iterator() {
+			return Collections.emptyIterator();
+		}
+	};
+
+    private HashSet<X> set;
 	private List<X> list;
 
-	final static List EMPTY = List.of();
+	final static List EMPTY_LIST = List.of();
 	
 	public ArrayHashSet() {
 		this.set  = new HashSet<X>();
-		this.list = EMPTY;//new ArrayList<E>();
+		this.list = EMPTY_LIST;//new ArrayList<E>();
 	}
 	
 	public ArrayHashSet(int capacity) {
 		this.set  = new HashSet<X>(capacity);
-		this.list = EMPTY; //new ArrayList<E>(capacity);
+		this.list = EMPTY_LIST; //new ArrayList<E>(capacity);
 	}
 	
 	public ArrayHashSet(Collection<X> collection) {
@@ -105,7 +143,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 	public boolean add(X element) {
 		boolean modified = set.add(element);
 		if (modified) {
-			if (list ==EMPTY)
+			if (list == EMPTY_LIST)
 				list = new FasterList<>(1);
 			list.add(element);
 		}
@@ -147,22 +185,22 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 		if (removed) {
 			list.remove(o);
 			if (list.isEmpty())
-				list = EMPTY;
+				list = EMPTY_LIST;
 		}
 		return removed;
 	}
 	
 	@Override
 	public void clear() {
-		if (list!=EMPTY) {
+		if (list!= EMPTY_LIST) {
 			set.clear();
-			list = EMPTY;
+			list = EMPTY_LIST;
 		}
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return list==EMPTY;
+		return list== EMPTY_LIST;
 	}
 
 

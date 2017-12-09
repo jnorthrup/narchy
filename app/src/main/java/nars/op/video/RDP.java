@@ -30,7 +30,7 @@ public class RDP extends NAgentX {
     private final static org.slf4j.Logger logger = LoggerFactory.getLogger(RDP.class);
 
     public RDP(NAR n, String host, int port) throws RdesktopException, Narsese.NarseseException {
-        super(n);
+        super("rdp(\"" + host + "\", " + port + ")", n);
         RdesktopFrame w = Rdesktop.RDPwindow(host + ":" + port);
 
         senseCameraRetina(("video"), ()->w.canvas.backstore.getBufferedImage(), 64, 64);

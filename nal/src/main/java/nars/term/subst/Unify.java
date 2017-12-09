@@ -453,24 +453,13 @@ public abstract class Unify extends Versioning implements Subst {
             return c.set(m) != null;
         }
 
-
-//
-//        boolean isFast(MatchConstraint m) {
-//            return !(m instanceof CommonalityConstraint);
-//        }
-
-//        Versioned newConstraints() {
-//            return new Versioned(versioning, MaxMatchConstraintsPerVariable);
-//        }
     }
 
 
     public boolean constrain(MatchConstraint... cc) {
         for (MatchConstraint m : cc) {
-            assert(m!=null);
             Versioned<Term> v = xy.getOrCreateIfAbsent(m.target);
             if (!((ConstrainedVersionedTerm) v).constrain(m)) {
-                ((ConstrainedVersionedTerm) v).constrain(m);
                 return false;
             }
         }

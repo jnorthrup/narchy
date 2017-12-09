@@ -11,6 +11,7 @@ import nars.concept.Concept;
 import nars.table.BeliefTable;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,13 +27,13 @@ abstract public class DynamicTruthModel {
     @Nullable
     public DynTruth eval(Term superterm, boolean beliefOrGoal, long start, long end, boolean stamp, NAR n) {
 
-        int DT = superterm.dt();
+        final int DT = superterm.dt();
         assert(DT!=XTERNAL);
 
         Term[] inputs = components(superterm);
         assert (inputs.length > 0) : this + " yielded no dynamic components for superterm " + superterm;
 
-        DynTruth d = new DynTruth(superterm, stamp ? new FasterList(inputs.length) : null);
+        DynTruth d = new DynTruth(stamp ? new FasterList(inputs.length) : null);
         d.freq = d.conf = 1f;
 
         final float confMin = 0; //n.confMin.floatValue();
@@ -44,16 +45,19 @@ abstract public class DynamicTruthModel {
         for (int i = 0; i < inputs.length; i++) {
             Term it = inputs[i];
 
-            //TODO check these times
+
             long subStart, subEnd;
-            if (start == ETERNAL || superterm.op() != CONJ) {
-                subStart = subEnd = ETERNAL;
-            } else {
-                int dt = superterm.subTimeSafe(it);
-                assert(dt!=DTERNAL);
-                subStart = start + dt;
-                subEnd = end + dt + it.dtRange();
-            }
+
+
+                if (start == ETERNAL || superterm.op() != CONJ) {
+                    subStart = subEnd = ETERNAL;
+                } else {
+                    int dt = superterm.subTimeSafe(it);
+                    assert (dt != DTERNAL);
+                    subStart = start + dt;
+                    subEnd = end + dt + it.dtRange();
+                }
+
 
 
             boolean negated = it.op() == Op.NEG;
@@ -108,7 +112,13 @@ abstract public class DynamicTruthModel {
 
         if (evi) {
             assert(!d.e.isEmpty());
-            d.concrete = outputs != null ? superterm.op().the(DT, outputs) : superterm;
+            if (outputs != null) {
+                Term reconstructed = superterm.op().the(DT, outputs);
+                if (reconstructed instanceof Bool)
+                    return null;
+                d.term = reconstructed;
+            } else
+                d.term = superterm;
         }
 
 //        //if (template instanceof Compound) {

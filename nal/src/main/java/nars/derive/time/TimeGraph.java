@@ -139,6 +139,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     }
 
     public Event event(Term t, long when, boolean add) {
+        assert(!(t instanceof Bool));
         Event e =
                 when == TIMELESS ? new Relative(t) : new Absolute(t, when);
         return add ? add(e).id : event(e);
@@ -730,7 +731,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             return x.hasNext() ? Iterators.transform(Iterators.filter(Iterators.transform(
                         Iterators.filter(x, preFilter::test),
                         TimeGraph.this::node),
-                    e -> e != n && !log.hasVisited(e)),
+                    e -> e != n && e!=null && !log.hasVisited(e)),
                     that ->
                             new Edge<>(n, that, TS_ZERO) //co-occurring
                     ) : null;

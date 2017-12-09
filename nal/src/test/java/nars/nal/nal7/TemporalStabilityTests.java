@@ -122,6 +122,11 @@ public class TemporalStabilityTests {
     @Test public void testTemporalStabilityBiProd() {
         new T1(biproductor, 1, 2, 5).test(CYCLES, NARS.tmp());
     }
+
+    @Test public void testTemporalStabilityLinkedProd_easy() {
+        new T1(linkedproductor, 1, 2).test(500, NARS.tmp().log());
+    }
+
     @Test public void testTemporalStabilityLinkedProd() {
         new T1(linkedproductor, 1, 2, 5).test(CYCLES, NARS.tmp());
     }

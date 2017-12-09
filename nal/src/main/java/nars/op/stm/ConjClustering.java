@@ -18,6 +18,7 @@ import nars.truth.Truth;
 import nars.util.BudgetFunctions;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
+import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -266,8 +267,9 @@ public class ConjClustering extends Causable {
                     ObjectBooleanPair<Term> cp = Task.tryContent(cj.normalize(), punc, true);
                     if (cp != null) {
 
-                        long[] evidence = Stamp.zip(uu, Param.STAMP_CAPACITY);
-                        NALTask m = new STMClusterTask(cp, t, start, end, evidence, punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
+                        ObjectFloatPair<long[]> evidence = Stamp.zip(actualTasks, Param.STAMP_CAPACITY);
+
+                        NALTask m = new STMClusterTask(cp, t, start, end, evidence.getOne(), punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
 
                         m.cause = Cause.zip(nar.causeCapacity.intValue(), uu);
 

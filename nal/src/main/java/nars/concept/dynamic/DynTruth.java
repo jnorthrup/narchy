@@ -8,19 +8,22 @@ import nars.Task;
 import nars.control.Cause;
 import nars.task.NALTask;
 import nars.term.Term;
-import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Consumer;
+
 import static nars.Op.*;
+import static nars.truth.TruthFunctions.c2wSafe;
 
 /**
  * Created by me on 12/4/16.
  */
-public final class DynTruth implements Truthed {
+public final class DynTruth {
 
     @Nullable
     public final FasterList<Task> e;
@@ -29,14 +32,12 @@ public final class DynTruth implements Truthed {
     public float freq;
     public float conf; //running product
 
-    final Term template;
-    Term concrete = null;
+    Term term = null;
 
-    public DynTruth(Term template, FasterList<Task> e) {
+    public DynTruth(FasterList<Task> e) {
         //this.t = t;
         this.e = e;
         this.truth = null;
-        this.template = template;
     }
 
     public void setTruth(Truthed truth) {
@@ -62,34 +63,23 @@ public final class DynTruth implements Truthed {
     }
 
     @Nullable
-    public long[] evidence() {
-        return Stamp.zip(e.array(Stamp[]::new), Param.STAMP_CAPACITY);
-    }
-
-    @Nullable
     public short[] cause(NAR nar) {
         return e != null ? Cause.zip(nar.causeCapacity.intValue(), e.array(Task[]::new) /* HACK */) : ArrayUtils.EMPTY_SHORT_ARRAY;
     }
 
-    @Override
-    @Nullable
-    public PreciseTruth truth() {
-        return conf == conf && conf <= 0 ? null : new PreciseTruth(freq, conf);
+
+    @Nullable Truth truth(NAR nar) {
+        return truth(null, false, nar);
     }
 
+    @Nullable Truth truth(@Nullable Consumer<NALTask> builtTask, boolean beliefOrGoal, NAR nar) {
 
-    NALTask task(boolean beliefOrGoal, NAR nar) {
-
-        Term c = this.concrete;
-
-        Truth tr0 = truth();
-        if (tr0 == null)
+        float evi = c2wSafe(conf);
+        float eviMin = c2wSafe(nar.confMin.floatValue());
+        if (evi < eviMin)
             return null;
 
-        if (c.op() == NEG) {
-            c = c.unneg();
-            tr0 = tr0.neg();
-        }
+        Term c = this.term;
 
         long[] se = Task.range(e);
         long start = se[0];
@@ -99,13 +89,34 @@ public final class DynTruth implements Truthed {
 
         float rangeCoherence = eviRange==termRange ? 1f :
                 1f - ((float)Math.abs(eviRange - termRange))/Math.max(eviRange, termRange)/nar.dur();
-
-        Truth tr = tr0.dither(nar, rangeCoherence);
-        if (tr == null)
+        evi *= rangeCoherence;
+        if (evi < eviMin)
             return null;
 
-        float priority = budget();
+        //TODO compute max valid overlap to terminate the zip early
+        ObjectFloatPair<long[]> ee = Stamp.zip(e, Param.STAMP_CAPACITY);
+        float overlap = ee.getTwo();
+        evi *= (1f-overlap);
+        if (evi < eviMin)
+            return null;
+        long[] stamp = ee.getOne();
 
+        float f;
+        if (c.op() == NEG) {
+            c = c.unneg();
+            f = 1f - freq;
+        } else {
+            f = freq;
+        }
+
+
+        Truth tr = Truth.the(f, evi, nar);
+        if (tr == null)
+            return null;
+        if (builtTask==null)
+            return tr;
+
+        float priority = budget();
 
         // then if the term is valid, see if it is valid for a task
         if (!Task.validTaskTerm(c,
@@ -113,13 +124,17 @@ public final class DynTruth implements Truthed {
             return null;
 
         NALTask dyn = new NALTask(c, beliefOrGoal ? Op.BELIEF : Op.GOAL,
-                tr, nar.time(), start, end /*+ dur*/, evidence());
+                tr, nar.time(), start, end /*+ dur*/, stamp);
         dyn.cause = cause(nar);
         dyn.priSet(priority);
 
         if (Param.DEBUG)
             dyn.log("Dynamic");
 
-        return dyn;
+        builtTask.accept(dyn);
+
+        return tr;
     }
+
+
 }

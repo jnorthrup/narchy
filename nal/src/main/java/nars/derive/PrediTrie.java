@@ -5,6 +5,7 @@ import jcog.tree.perfect.TrieNode;
 import nars.$;
 import nars.Op;
 import nars.control.Derivation;
+import nars.derive.constraint.MatchConstraint;
 import nars.derive.op.AbstractPatternOp;
 import nars.derive.rule.PremiseRuleSet;
 import nars.term.Term;
@@ -78,9 +79,27 @@ public final class PrediTrie {
     }
 
 
-
     public static PrediTerm<Derivation> the(PremiseRuleSet r, Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
         PrediTrie t = new PrediTrie(r);
+
+        FasterList<ValueFork> pc = t.postChoices;
+        for (int i = 0, postChoices1Size = pc.size(); i < postChoices1Size; i++) {
+            ValueFork x = pc.get(i);
+            PrediTerm<Derivation>[] branches = x.branches;
+            for (int j = 0, branchesLength = branches.length; j < branchesLength; j++) {
+                PrediTerm xx = branches[j];
+                if (xx instanceof AndCondition) {
+                    PrediTerm yy = ((AndCondition) xx).transform((y) -> {
+                        if (y instanceof AndCondition) {
+                            return MatchConstraint.combineConstraints((AndCondition)y);
+                        }
+                        return y;
+                    }, (sub) -> sub);
+                    branches[j] = yy;
+                }
+            }
+
+        }
         return AndCondition.the(
                 PrediTrie.compile(t.pre, each),
                 new Try(t.postChoices.toArrayRecycled(ValueFork[]::new)));
@@ -104,7 +123,6 @@ public final class PrediTrie {
     }
 
 
-    @NotNull
     static List<PrediTerm<Derivation>> compile(@NotNull TrieNode<List<PrediTerm<Derivation>>, PrediTerm<Derivation>> node) {
 
 

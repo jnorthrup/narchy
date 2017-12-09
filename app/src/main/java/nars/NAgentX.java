@@ -85,9 +85,7 @@ abstract public class NAgentX extends NAgent {
 
     public final Set<CameraSensor> cam = new LinkedHashSet<>();
 
-    public NAgentX(NAR nar) {
-        this("", nar);
-    }
+
 
     public NAgentX(String id, NAR nar) {
         super(id, nar);
@@ -164,8 +162,8 @@ abstract public class NAgentX extends NAgent {
                 //.deriverAdd(6,6) //extra NAL6
                 .deriverAdd(7, 8)
                 //.deriverAdd("goal_analogy.nal")
-                //.deriverAdd("motivation.nal")
-                .deriverAdd("list.nal")
+                .deriverAdd("motivation.nal")
+                //.deriverAdd("list.nal")
                 .index(
                         new CaffeineIndex(200 * 1024)
                         // new PriMapTermIndex()

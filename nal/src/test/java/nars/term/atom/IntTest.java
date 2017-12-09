@@ -112,7 +112,8 @@ public class IntTest {
                                     $.p(Int.range(0,1), $.the("a"), Int.the(0))))
         ));
     }
-    @Test
+
+    @Disabled @Test
     public void testRangeUnification() {
         TestNAR n = new TestNAR(NARS.tmp());
         n.log();

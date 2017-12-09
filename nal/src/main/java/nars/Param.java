@@ -42,15 +42,10 @@ public abstract class Param extends Services<Term, NAR> {
     public static final float MUTATE_INT_CONTAINING_TERMS_RATE = 0.25f;
 
 
-    public static final FloatParam forgetRate = new FloatParam(PriForget.FORGET_TEMPERATURE_DEFAULT, 0f, 1f);
+    public final FloatParam forgetRate = new FloatParam(PriForget.FORGET_TEMPERATURE_DEFAULT, 0f, 1f);
 
     /** hard limit to prevent infinite looping */
     public static final int MAX_TASK_FORWARD_HOPS = 8;
-
-    /** default max time for a cycle when executing in synchronous (step) mode */
-    public static double SynchronousExecution_Max_CycleTime = 0.00001; //sec;
-
-
 
     /**
      * controls interpolation policy:

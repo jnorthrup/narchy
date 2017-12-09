@@ -833,14 +833,14 @@ public interface Compound extends Term, IPair, Subterms {
     @Nullable
     default Term temporalize(Retemporalize r) {
 //        return r.transform(this, op(), DTERNAL);
-        if (!hasAny(Op.Temporal))
-            return this;
+//        if (!hasAny(Op.Temporal))
+//            return this;
 //        else {
 //            Op o = op();
 //            boolean ot = o.temporal;
 //            int dt = ot ? r.dt(this) : DTERNAL;
 //
-        Term t = r.transform(this, op(), DTERNAL);
+        Term t = r.transform(this, op(), dt());
         return t == null ? Null : t; //why happens Null?
 //        }
     }

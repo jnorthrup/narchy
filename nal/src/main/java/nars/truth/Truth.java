@@ -205,16 +205,23 @@ public interface Truth extends Truthed {
         return dither(nar.freqResolution.floatValue(), nar.confResolution.floatValue(), nar.confMin.floatValue(), eviGain);
     }
 
-    @Nullable default PreciseTruth dither(float freqRes, float confRes, float confMin, float eviGain) {
-        float e = evi();
-        float ee = eviGain!=1 ? e * eviGain : e;
-        float c = conf(w2cSafe(ee), confRes); //dither confidence
-        if (c < confMin)
-            return null;
-        return new PreciseTruth(freq(freq(), freqRes), c);
+    @Deprecated @Nullable default PreciseTruth dither(float freqRes, float confRes, float confMin, float eviGain) {
+        float c = w2cDithered(evi() * eviGain, confRes);
+        return c < confMin ? null : new PreciseTruth(freq(freq(), freqRes), c);
     }
 
 
+    @Nullable static PreciseTruth the(float freq, float evi, NAR nar) {
+        float confMin = nar.confMin.floatValue();
+        float c = w2cDithered(evi, nar.confResolution.floatValue());
+        if (c < confMin)
+            return null;
+        return new PreciseTruth(freq(freq, nar.freqResolution.floatValue()), c);
+    }
+
+    static float w2cDithered(float evi, float confRes) {
+        return conf(w2cSafe(evi), confRes);
+    }
 
     @Override
     default float eviEternalized() {

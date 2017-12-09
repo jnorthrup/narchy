@@ -37,7 +37,7 @@ public enum TrieDeriver {
         } else if (p instanceof AndCondition) {
             out.println("and {");
             AndCondition ac = (AndCondition) p;
-            for (PrediTerm b : ac.cache) {
+            for (PrediTerm b : ac.cond) {
                 print(b, out, indent + 2);
             }
             TermTrie.indent(indent); out.println("}");
@@ -114,7 +114,7 @@ public enum TrieDeriver {
             //TermTrie.indent(indent);
             //out.println("and {");
             AndCondition ac = (AndCondition) p;
-            for (PrediTerm b : ac.cache) {
+            for (PrediTerm b : ac.cond) {
                 forEach(b, out);
             }
         } else if (p instanceof Fork) {
@@ -182,7 +182,7 @@ public enum TrieDeriver {
             //TermTrie.indent(indent);
             //out.println("and {");
             AndCondition ac = (AndCondition) x;
-            for (PrediTerm y : ac.cache) {
+            for (PrediTerm y : ac.cond) {
                 forEach(x, y, out);
             }
         } else if (x instanceof Fork) {
@@ -282,17 +282,17 @@ public enum TrieDeriver {
 
 
     @Nullable
-    public static PrediTerm<Derivation> ifThen(@NotNull Stream<PrediTerm<Derivation>> cond, @Nullable PrediTerm<Derivation> conseq) {
-        return AndCondition.the(AndCondition.compile(
-                (conseq != null ? Stream.concat(cond, Stream.of(conseq)) : cond)
-        ).toArray(PrediTerm[]::new));
+    public static PrediTerm<Derivation> ifThen(Stream<PrediTerm<Derivation>> cond, @Nullable PrediTerm<Derivation> conseq) {
+        return AndCondition.the(
+                (conseq != null ? Stream.concat(cond, Stream.of(conseq)) : cond).toArray(PrediTerm[]::new)
+        );
     }
 
     public static void print(PrediTerm<Derivation> d) {
         print(d, System.out);
     }
 
-    public static void print(PrediTerm<Derivation> d, @NotNull PrintStream out) {
+    public static void print(PrediTerm<Derivation> d, PrintStream out) {
         print(d, out, 0);
 
 //        out.println("Fork {");

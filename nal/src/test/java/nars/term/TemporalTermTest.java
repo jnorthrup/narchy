@@ -893,6 +893,10 @@ public class TemporalTermTest {
 
     }
 
+    @Test void testXternalConjCommutiveAllowsPosNeg() {
+        assertEquals("( &&+- ,(--,x),x,y)", Op.CONJ.the(XTERNAL, $.the("x"), $.the("x").neg(), $.the("y")).toString());
+    }
+
     @Test
     public void testConceptual2() throws Narsese.NarseseException {
 

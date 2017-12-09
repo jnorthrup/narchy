@@ -1,14 +1,17 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.list.FasterList;
 import nars.$;
 import nars.control.Derivation;
+import nars.derive.constraint.MatchConstraint;
 import nars.term.Term;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.roaringbitmap.RoaringBitmap;
 
-import java.util.Collection;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -19,7 +22,7 @@ public final class AndCondition<D> extends AbstractPred<D> {
 
     @Override
     public final boolean test(Object m) {
-        for (PrediTerm x : cache) {
+        for (PrediTerm x : cond) {
             boolean b = x.test(m);
             if (!b)
                 return false;
@@ -29,17 +32,26 @@ public final class AndCondition<D> extends AbstractPred<D> {
     AndCondition(PrediTerm<D>[] p) {
         super($.p((Term[]) p));
         assert (p.length >= 2) : "unnecessary use of AndCondition";
-        this.cache = p;
+        this.cond = p;
     }
 
-    AndCondition(@NotNull Collection<PrediTerm<D>> p) {
-        this(p.toArray(new PrediTerm[p.size()]));
-    }
+//    AndCondition(Collection<PrediTerm<D>> p) {
+//        this(p.toArray(new PrediTerm[p.size()]));
+//    }
 
     @NotNull
-    public final PrediTerm<D>[] cache;
+    public final PrediTerm<D>[] cond;
 
-    public static @Nullable <D> PrediTerm<D> the(@NotNull PrediTerm<D>... cond) {
+    public static @Nullable <D> PrediTerm<D> the(List<PrediTerm<D>> cond) {
+        int s = cond.size();
+        switch (s) {
+            case 0: return null;
+            case 1: return cond.get(0);
+            default: return the(cond.toArray(new PrediTerm[s]));
+        }
+    }
+
+    public static @Nullable <D> PrediTerm<D> the(PrediTerm<D>... cond) {
         int s = cond.length;
         switch (s) {
             case 0: return null;
@@ -56,7 +68,7 @@ public final class AndCondition<D> extends AbstractPred<D> {
                         needsFlat[0] = false;
                         cond = Stream.of(cond).flatMap(x -> {
                             if (x instanceof AndCondition)
-                                return Stream.of(((AndCondition) x).cache);
+                                return Stream.of(((AndCondition) x).cond);
                             else
                                 return Stream.of(x);
                         }).peek(x -> {
@@ -71,10 +83,10 @@ public final class AndCondition<D> extends AbstractPred<D> {
     }
 
     public PrediTerm<D> first() {
-        return cache[0];
+        return cond[0];
     }
     public PrediTerm<D> last() {
-        return cache[cache.length-1];
+        return cond[cond.length-1];
     }
 
     /** chase the last of the last of the last(...etc.) condition in any number of recursive AND's */
@@ -94,11 +106,16 @@ public final class AndCondition<D> extends AbstractPred<D> {
 
     @Override
     public PrediTerm<D> transform(Function<PrediTerm<D>, PrediTerm<D>> f) {
+        return transform(o -> o, f);
+    }
+
+    public PrediTerm<D> transform(Function<AndCondition,PrediTerm<D>> outer, Function<PrediTerm<D>, PrediTerm<D>> f) {
         PrediTerm[] yy = transformedConditions(f);
-        if (yy!=cache)
-            return new AndCondition(yy);
+        PrediTerm<D> z = yy != cond ? AndCondition.the(yy) : this;
+        if (z instanceof AndCondition)
+            return outer.apply((AndCondition)z);
         else
-            return this;
+            return z;
     }
 
     public PrediTerm[] transformedConditions(Function<PrediTerm<D>, PrediTerm<D>> f) {
@@ -108,9 +125,9 @@ public final class AndCondition<D> extends AbstractPred<D> {
             if (y != x)
                 changed[0] = true;
             return y;
-        }, new PrediTerm[cache.length], cache);
+        }, new PrediTerm[cond.length], cond);
         if (!changed[0])
-            return cache;
+            return cond;
         else
             return yy;
     }
@@ -124,51 +141,7 @@ public final class AndCondition<D> extends AbstractPred<D> {
     }*/
 
 
-
-    /**
-     * combine certain types of items in an AND expression
-     */
-    public static Stream<PrediTerm<Derivation>> compile(Stream<PrediTerm<Derivation>> p) {
-//        if (p.size() == 1)
-//            return p;
-
-//        SortedSet<MatchConstraint> constraints = new TreeSet<>(MatchConstraint.costComparator);
-//        Iterator<PrediTerm<Derivation>> il = p.iterator();
-//        while (il.hasNext()) {
-//            PrediTerm c = il.next();
-//            if (c instanceof MatchConstraint) {
-//                constraints.add((MatchConstraint) c);
-//                il.remove();
-//            }
-//        }
-
-
-//        if (!constraints.isEmpty()) {
-//
-//
-//            int iMatchTerm = -1; //first index of a MatchTerm op, if any
-//            for (int j = 0, cccSize = p.size(); j < cccSize; j++) {
-//                PrediTerm c = p.get(j);
-//                if ((c instanceof Fork) && iMatchTerm == -1) {
-//                    iMatchTerm = j;
-//                }
-//            }
-//            if (iMatchTerm == -1)
-//                iMatchTerm = p.size();
-//
-//            //1. sort the constraints and add them at the end
-//            int c = constraints.size();
-//            if (c > 1) {
-//                p.add(iMatchTerm, new MatchConstraint.CompoundConstraint(constraints.toArray(new MatchConstraint[c])));
-//            } else
-//                p.add(iMatchTerm, constraints.iterator().next()); //just add the singleton at the end
-//        }
-
-        return p;
-    }
-
-
-//    /** just attempts to evaluate the condition, causing any desired side effects as a result */
+    //    /** just attempts to evaluate the condition, causing any desired side effects as a result */
 //    @Override public final void accept(@NotNull PremiseEval m, int now) {
 //        booleanValueOf(m, now);
 ////        m.revert(now);
@@ -176,7 +149,7 @@ public final class AndCondition<D> extends AbstractPred<D> {
 
 
     public @Nullable PrediTerm<D> without(PrediTerm<D> condition) {
-        PrediTerm[] x = ArrayUtils.remove(cache, ArrayUtils.indexOf(cache, condition)); assert(x.length != cache.length);
+        PrediTerm[] x = ArrayUtils.remove(cond, ArrayUtils.indexOf(cond, condition)); assert(x.length != cond.length);
         return AndCondition.the(x);
     }
 

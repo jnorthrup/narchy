@@ -10,6 +10,8 @@ import nars.util.NALTest;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.List;
 
@@ -1149,22 +1151,29 @@ public class NAL7Test extends NALTest {
 
         test
                 .input("hold(key). :|:")
-                .input("((hold(#x) && open(door)) =|> enter(room)). :|:")
+                .input("((hold(#x) &| open(door)) =|> enter(room)). :|:")
                 .mustBelieve(cycles, "(open(door) =|> enter(room))",
                         1.00f, 0.81f,
+                        0)
+                .mustBelieve(cycles, "(hold(key) =|> enter(room))",
+                        1.00f, 0.73f,
                         0)
         ;
     }
 
-    @Test
-    public void multiConditionSyllogismPost() {
+    @ParameterizedTest
+    @ValueSource(strings = {"",":|:"}) //both: ETERNAL and NOW
+    public void multiConditionSyllogismPost(String implSuffix) {
         //    Y, ((&&,X,A..+) ==> B), time(dtBeliefExact), notImpl(A..+) |- subIfUnifiesAny(((&&,A..+) ==>+- B),X,Y), (Belief:Deduction)
 
         test
                 .input("hold(key). :|:")
-                .input("(goto(door) =|> (hold(#x) && open(door))). :|:")
-                .mustBelieve(cycles, "(goto(door) =|> open(door))",
-                        1.00f, 0.81f,
+                .input("(goto(door) =|> (hold(#x) &| open(door))). " + implSuffix)
+                .mustBelieve(cycles*2, "(goto(door) =|> open(door))",
+                        1f, 1.00f, 0.73f, 0.81f,
+                        0)
+                .mustBelieve(cycles*2, "(goto(door) =|> hold(key))",
+                        1f, 1.00f, 0.73f, 0.81f,
                         0);
     }
 

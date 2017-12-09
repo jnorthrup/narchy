@@ -326,7 +326,9 @@ public class RevectionTest {
 
         Term a = $.$("(((--,(dx-->noid)) &&+4 ((--,(by-->noid))&|(happy-->noid))) &&+11 (bx-->noid))");
         Term b = $.$("(((bx-->noid) &&+7 (--,(dx-->noid))) &&+4 ((--,(by-->noid))&|(happy-->noid)))");
-        assertEquals(a.root(), b.root());
+        Term ar = a.root();
+        Term br = b.root();
+        assertEquals(ar, br);
         assertEquals(a.conceptual(), b.conceptual());
 
         TreeSet<Term> outcomes = new TreeSet();

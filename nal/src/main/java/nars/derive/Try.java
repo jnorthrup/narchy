@@ -26,7 +26,8 @@ public class Try extends AbstractPred<Derivation> {
     }
 
     public Try(ValueFork[] branches) {
-        this(branches, Stream.of(branches).flatMap(b -> Stream.of(b.causes)).toArray(Cause[]::new));
+        this(branches,
+             Stream.of(branches).flatMap(b -> Stream.of(b.causes)).toArray(Cause[]::new));
     }
 
     @Override
