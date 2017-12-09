@@ -9,14 +9,13 @@ import static nars.time.Tense.ETERNAL;
 
 public interface TaskRegion extends HyperRegion, Tasked {
 
-    /**
-     * relative to time sameness (1)
-     */
-    float FREQ_SAMENESS_IMPORTANCE = 0.25f;
-    /**
-     * relative to time sameness (1)
-     */
-    float CONF_SAMENESS_IMPORTANCE = 0.05f;
+
+    /** cost of stretching a node by time */
+    float TIME_COST = 1f;
+    /** cost of stretching a node by freq */
+    float FREQ_COST = 4f;
+    /** cost of stretching a node by conf */
+    float CONF_COST = 0.1f;
 
     /** nearest point between starts and ends (inclusive) to the point 'x' */
     static long nearestTimeTo(long x, long starts, long ends) {
@@ -65,7 +64,8 @@ public interface TaskRegion extends HyperRegion, Tasked {
     long end();
 
     default long mid() {
-        return (start() + end()) / 2;
+        long s = start();
+        return s==ETERNAL ? ETERNAL : (s + end()) / 2L;
     }
 
     default long nearestTimeTo(long when) {
@@ -89,18 +89,17 @@ public interface TaskRegion extends HyperRegion, Tasked {
 
     default float timeCost() {
 
-        //return 1 + (float) range(0) /* * 1 */;
+        return 1 + (float) range(0) * TIME_COST;
 
-        double dt = range(0);
-        return 1 + (float) Math.log(dt+1) /* * 1 */;
+        //return 1 + (float) Math.log(range(0)+1) /* * 1 */;
     }
 
     default float freqCost() {
-        return 1 + (float) range(1) * FREQ_SAMENESS_IMPORTANCE;
+        return 1 + (float) range(1) * FREQ_COST;
     }
 
     default float confCost() {
-        return 1 + (float) range(2) * CONF_SAMENESS_IMPORTANCE;
+        return 1 + (float) range(2) * CONF_COST;
     }
 
     @Override

@@ -278,9 +278,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     }
 
     private static long nearestStartOrEnd(long a, long b, long x, long y) {
-//        if (a == x && b == y) {
-//            return (a + b) / 2; //midpoint
-//        }
 
         long u = TaskRegion.nearestTimeTo(x, a, b);
         long v = TaskRegion.nearestTimeTo(y, a, b);
@@ -409,7 +406,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
                 long touched =
                         nearestTimeTo(when);
-                //(a + z) / 2; //midpoint: to be fair to other more precisely endured tasks
 
                 long dist = Math.abs(when - touched);
                 if (dist > 0) {
@@ -626,7 +622,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      */
     default long nearestTimeOf(final long x, final long y) {
 
-        assert(y >= x);
+        assert(y >= x && (x!=ETERNAL || x==y));
 
         if (x == y)
             return x;
@@ -653,12 +649,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     @NotNull
     @Deprecated
     default String toStringWithoutBudget() {
-        StringBuilder b = new StringBuilder();
-        appendTo(b, true, false,
+        return appendTo(new StringBuilder(64), true, false,
                 false, //budget
                 false//log
-        );
-        return b.toString();
+        ).toString();
 
     }
 
@@ -675,17 +669,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     @NotNull
     default StringBuilder appendTo(@Nullable StringBuilder buffer, /**@Nullable*/boolean term, boolean showStamp, boolean showBudget, boolean showLog) {
 
-        String contentName;
-        if (term) {
-            try {
-                contentName = term().toString();
-            } catch (Throwable t) {
-                contentName = t.toString();
-            }
-
-        } else {
-            contentName = "";
-        }
+        String contentName = term ? term().toString() : "";
 
         CharSequence tenseString;
 //        if (memory != null) {
@@ -841,11 +825,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return null;
     }
 
-    @Override
-    default long mid() {
-        long s = start();
-        return (s != ETERNAL) ? ((s + end()) / 2L) : ETERNAL;
-    }
 
 //    /**
 //     * prints this task as a TSV/CSV line.  fields:

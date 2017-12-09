@@ -329,11 +329,12 @@ public class Revision {
 
     @Nullable
     public static Task merge(/*@NotNull*/ Task a, /*@NotNull*/ Task b, long now, NAR nar) {
-        if (a.op() == CONJ) {
-            //avoid intermpolation of 2 conjunctions with opposite polarities
-            if (!a.term().equals(b.term()) && (a.isPositive() ^ b.isPositive()) && (a.term().dtRange() != 0 || b.term().dtRange() != 0))
-                return null;
-        }
+//        if (a.op() == CONJ) {
+//            //avoid intermpolation of 2 conjunctions with opposite polarities
+//            if (!a.term().equals(b.term())
+//                    && (a.isPositive() ^ b.isPositive()) && (a.term().dtRange() != 0 || b.term().dtRange() != 0))
+//                return null;
+//        }
 
         long as, bs;
         if ((as = a.start()) > (bs = b.start())) {
@@ -406,7 +407,7 @@ public class Revision {
 
         float maxEviAB = Math.max(a.evi(), b.evi());
         float evi = rawTruth.evi();
-        if (maxEviAB < evi + Pri.EPSILON) {
+        if (maxEviAB < evi) {
             //more evidence overlap indicates redundant information, so reduce the confWeight (measure of evidence) by this amount
             //TODO weight the contributed overlap amount by the relative confidence provided by each task
             float overlapDiscount = Stamp.overlapFraction(a.stamp(), b.stamp());
@@ -652,6 +653,26 @@ public class Revision {
         public final long unionEnd;
 
         public TaskTimeJoint(long as, long ae, long bs, long be, NAR nar) {
+            this(as, ae, bs, be, 0.1f, nar);
+        }
+
+        /**
+         * strict is a threshold value in 0..1.0 of evidence discount between
+         * the cases of full or partial overlap, or
+         * if there is no overlap then the discount applies in
+         * proportion to how much separation exists.
+         *
+         * if strict==0, then cases where no overlap occurs are not tolerated
+         * and the resulting factor is zero.
+         *
+         * otherwise, for values greater than 0, some separation is tolerated
+         * in proportion to the length of the involved tasks
+         *
+         *                                                   strict
+         *                                                      x
+         * 0 <-- no overlap (to increasing separation distance) | partial overlap | full overlap > +1.0
+         */
+        public TaskTimeJoint(long as, long ae, long bs, long be, float strict, NAR nar) {
 
             Interval ai = new Interval(as, ae);
             Interval bi = new Interval(bs, be);
@@ -662,41 +683,46 @@ public class Revision {
 
             long u = uu.length();
             Interval ii = ai.intersection(bi);
-            if (ii == null) {
-                //no intersection
-                this.factor = 0;
-            } else {
+            if (ii != null) {
                 //partial intersection, weaken the union
-                this.factor = (1+ii.length()) / (1+((float)u));
+                this.factor = Util.lerp( (1f+ii.length()) / (1f+ u), strict, 1f);
+            } else {
+                //no intersection
+                if (strict==0) {
+                    this.factor = 0;
+                } else {
+                    long al = ai.length();
+                    long bl = bi.length();
+                    long separation = u - al - bl; assert(separation > 0);
+                    float separationRatio = ((float)separation) / (1+Math.min(al, bl));
+                    this.factor = Util.lerp(1f / (1f + separationRatio), 0, strict);
+        //
+        //
+        //            float factor = 1f;
+        //            if (u > s) {
+        //
+        //                /** account for how much the merge stretches the truth beyond the range of the inputs */
+        //                long separation = u - s;
+        //                if (separation > 0) {
+        //                    //int hd = nar.dur();
+        //                    int minterval = Math.min(al, bl);// + hd; //+hd to pad the attention surrounding point0like events
+        //                    if (separation < minterval) {
+        //                        factor = 1f - separation / ((float) minterval);
+        //                    } else {
+        //                        factor = 0; //too separate
+        //                    }
+        //
+        //
+        ////                    factor = 1f - (separation / (separation + (float) u));
+        //
+        //                }
+        //            }
+        //
+        //            this.factor = factor;
+
+                }
             }
 
-//            int separation = ai.
-//            int al = (int) ai.length();
-//            int bl = (int) bi.length();
-//            int s = al + bl;
-//
-//
-//            float factor = 1f;
-//            if (u > s) {
-//
-//                /** account for how much the merge stretches the truth beyond the range of the inputs */
-//                long separation = u - s;
-//                if (separation > 0) {
-//                    //int hd = nar.dur();
-//                    int minterval = Math.min(al, bl);// + hd; //+hd to pad the attention surrounding point0like events
-//                    if (separation < minterval) {
-//                        factor = 1f - separation / ((float) minterval);
-//                    } else {
-//                        factor = 0; //too separate
-//                    }
-//
-//
-////                    factor = 1f - (separation / (separation + (float) u));
-//
-//                }
-//            }
-//
-//            this.factor = factor;
 
         }
     }

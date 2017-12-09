@@ -379,15 +379,15 @@ public class Derivation extends Unify {
             /** to compute the time-discounted truth, find the minimum distance
              *  of the tasks considering their dtRange
              */
-            if (!belief.isEternal()) {
-                //project belief truth to task's time
-                this.beliefTruth = !task.isEternal() ?
-                        belief.truth(belief.nearestTimeOf(task.start(), task.end()), dur, confMin) :
-                        belief.truth();
-                //belief.truth(ETERNAL, ETERNAL...)
-            } else {
+//            if (!belief.isEternal()) {
+//                //project belief truth to task's time
+//                this.beliefTruth = !task.isEternal() ?
+//                        belief.truth(belief.nearestTimeOf(task.start(), task.end()), dur, confMin) :
+//                        belief.truth();
+//                //belief.truth(ETERNAL, ETERNAL...)
+//            } else {
                 this.beliefTruth = beliefTruthRaw;
-            }
+//            }
 
             long[] beliefStamp = belief.stamp();
             this.overlapDouble =

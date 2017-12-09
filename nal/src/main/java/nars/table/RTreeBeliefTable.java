@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 
 import static nars.table.TemporalBeliefTable.temporalTaskPriority;
 import static nars.time.Tense.ETERNAL;
+import static nars.truth.TruthFunctions.c2w;
 
 public class RTreeBeliefTable implements TemporalBeliefTable {
 
@@ -639,15 +640,18 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
             if (r.start() >= when - perceptDur)
                 timeDist /= PRESENT_AND_FUTURE_BOOST; //shrink the apparent time if it's present and future
 
-            float conf =
-                    (float) r.coord(true, 2); //max
+            float evi =
+                    c2w((float) r.coord(true, 2)); //max
+//            float dt =
+//                    (float) r.range(1);
             //(float)r.coord(false, 2); //min
             //(float) (r.coord(true, 2) + r.coord(false, 2)) / 2f; //avg
 
-            float antiConf = 1f - conf;
+            //float antiConf = 1f - conf;
+            float antivalue = 1f / (1f + evi);
             //float span = (float)(1 + r.range(0)/dur); //span becomes less important the further away, more fair to short near-term tasks
 
-            return (float) ((antiConf) * (1 + timeDist));
+            return (float) ((antivalue) * (1 + timeDist));
         };
     }
 

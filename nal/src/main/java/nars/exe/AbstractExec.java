@@ -43,7 +43,8 @@ abstract public class AbstractExec extends Exec {
 
     @Override
     public void add(ITask t) {
-        execute(t);
+        if (t!=null)
+            execute(t);
     }
 
     @Override

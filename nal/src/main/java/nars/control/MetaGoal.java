@@ -72,6 +72,9 @@ public enum MetaGoal {
      */
     public static void learn(MetaGoal p, short[] effects, float strength, FasterList<Cause> causes) {
 
+        if (Math.abs(strength) < Float.MIN_NORMAL)
+            return; //would have no effect
+
         int n = effects.length;
         float s = strength/n;
 

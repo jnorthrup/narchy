@@ -389,9 +389,9 @@ public class BeliefTableChart extends Widget implements Consumer<NAR> {
             float W = Util.max((end - start), baseTaskSize/4);
 
             if (beliefOrGoal) {
-                gl.glColor4f(0f, 0.5f * (1f-conf), 1f * conf, 0.5f);
+                gl.glColor4f( 1f, 0, 0.25f, 0.1f + 0.5f * conf);
             } else {
-                gl.glColor4f(0.5f * (1f-conf),  1f * conf, 0, 0.5f);
+                gl.glColor4f( 0f, 1, 0.25f, 0.1f + 0.5f * conf);
             }
             float y = freq - ph / 2;
             float x = mid - W / 2;
@@ -426,9 +426,9 @@ public class BeliefTableChart extends Widget implements Consumer<NAR> {
                 return;
             }
 
-            float a = 0.25f + 0.5f * conf;
+            float a = 0.25f + 0.7f * conf;
             if (beliefOrGoal) {
-                gl.glColor4f(0f, 0.1f * (1f-conf), 0.25f + 0.75f * conf, a);
+                gl.glColor4f(0.25f + 0.75f * conf, 0.1f * (1f-conf), 0f, a);
             } else {
                 gl.glColor4f(0.1f * (1f-conf),  0.25f + 0.75f * conf, 0f, a);
             }

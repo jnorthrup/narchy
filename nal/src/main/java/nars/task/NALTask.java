@@ -20,9 +20,7 @@ import java.util.function.Function;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
-/**
- * Created by me on 2/24/17.
- */
+
 public class NALTask extends Pri implements Task {
 
     public final Term term;

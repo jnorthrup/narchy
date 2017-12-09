@@ -182,7 +182,7 @@ public class ConjClustering extends Causable {
             actualTasks.clear();
 
 
-            long end = Long.MIN_VALUE;
+//            long end = Long.MIN_VALUE;
             long start = Long.MAX_VALUE;
 
 
@@ -203,8 +203,8 @@ public class ConjClustering extends Causable {
                 long zs = t.start();
                 long ze = t.end();
                 if (start > zs) start = zs;
-                if (end < ze) end = ze;
-                assert (end >= start);
+//                if (end < ze) end = ze;
+//                assert (end >= start);
 
                 Truth tx = t.truth();
                 Term xtn = xt.neg();
@@ -269,7 +269,7 @@ public class ConjClustering extends Causable {
 
                         ObjectFloatPair<long[]> evidence = Stamp.zip(actualTasks, Param.STAMP_CAPACITY);
 
-                        NALTask m = new STMClusterTask(cp, t, start, end, evidence.getOne(), punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
+                        NALTask m = new STMClusterTask(cp, t, start, start, evidence.getOne(), punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
 
                         m.cause = Cause.zip(nar.causeCapacity.intValue(), uu);
 

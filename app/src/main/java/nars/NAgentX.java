@@ -71,6 +71,7 @@ import static nars.$.$;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static nars.gui.Vis.reflect;
+import static nars.time.Tense.ETERNAL;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.layout.Grid.*;
 
@@ -84,7 +85,6 @@ abstract public class NAgentX extends NAgent {
 
 
     public final Set<CameraSensor> cam = new LinkedHashSet<>();
-
 
 
     public NAgentX(String id, NAR nar) {
@@ -198,7 +198,18 @@ abstract public class NAgentX extends NAgent {
         NAgent a = init.apply(n);
 
         new Deriver(a.fire(), Deriver.deriver(6, 7,
-                "motivation.nal", "goal_analogy.nal").apply(n).deriver, n);
+                "motivation.nal", "goal_analogy.nal").apply(n).deriver, n) {
+            @Override
+            protected long matchTime(Task task) {
+
+                if (task.isEternal()) {
+                    return ETERNAL;
+                } else {
+                    return this.now + n.random().nextInt(4) * n.dur(); //forward
+                }
+
+            }
+        };
 
         Loop aLoop = a.runFPS(agentFPS);
 
@@ -318,7 +329,9 @@ abstract public class NAgentX extends NAgent {
         Loop loop = a.nar.startFPS(narFPS);
 
 
-        a.nar.runLater(() -> {
+        a.nar.runLater(() ->
+
+        {
 
             chart(a);
 
@@ -532,13 +545,14 @@ abstract public class NAgentX extends NAgent {
 
         BitmapMatrixView bmp = new BitmapMatrixView((i) ->
                 Util.tanhFast(
-                    gain.floatValue() * nar.causes.get(i).value()
+                        gain.floatValue() * nar.causes.get(i).value()
                 ),
                 //Util.tanhFast(nar.causes.get(i).value()),
                 s, Math.max(1, (int) Math.ceil(Math.sqrt(s))),
                 Draw::colorBipolar) {
 
             final DurService on;
+
             {
                 on = a.onFrame(this::update);
             }
@@ -671,7 +685,7 @@ abstract public class NAgentX extends NAgent {
                             @Override
                             protected void resized() {
 
-                                surface.pos(0, 0, W/2, H/2);
+                                surface.pos(0, 0, W / 2, H / 2);
 
                                 scale.set(1, 1);
                                 cam.set(W / 2, H / 2);
@@ -792,7 +806,8 @@ abstract public class NAgentX extends NAgent {
         return senseCamera(id, new SwingBitmap2D(w), pw, ph);
     }
 
-    protected CameraSensor<Scale> senseCamera(String id, Supplier<BufferedImage> w, int pw, int ph) throws Narsese.NarseseException {
+    protected CameraSensor<Scale> senseCamera(String id, Supplier<BufferedImage> w, int pw, int ph) throws
+            Narsese.NarseseException {
         return senseCamera(id, new Scale(w, pw, ph));
     }
 
@@ -800,15 +815,18 @@ abstract public class NAgentX extends NAgent {
 //        return senseCamera(id, new Scale(new SwingBitmap2D(w), pw, ph));
 //    }
 
-    protected Sensor2D<PixelBag> senseCameraRetina(String id, Container w, int pw, int ph) throws Narsese.NarseseException {
+    protected Sensor2D<PixelBag> senseCameraRetina(String id, Container w, int pw, int ph) throws
+            Narsese.NarseseException {
         return senseCameraRetina(id, new SwingBitmap2D(w), pw, ph);
     }
 
-    protected Sensor2D<PixelBag> senseCameraRetina(String id, Container w, int pw, int ph, FloatToObjectFunction<Truth> pixelTruth) throws Narsese.NarseseException {
+    protected Sensor2D<PixelBag> senseCameraRetina(String id, Container w, int pw, int ph, FloatToObjectFunction<
+            Truth> pixelTruth) throws Narsese.NarseseException {
         return senseCameraRetina(id, new SwingBitmap2D(w), pw, ph);
     }
 
-    protected CameraSensor<PixelBag> senseCameraRetina(String id, Supplier<BufferedImage> w, int pw, int ph) throws Narsese.NarseseException {
+    protected CameraSensor<PixelBag> senseCameraRetina(String id, Supplier<BufferedImage> w, int pw, int ph) throws
+            Narsese.NarseseException {
         return senseCameraRetina($(id), w, pw, ph);
     }
 
@@ -818,12 +836,14 @@ abstract public class NAgentX extends NAgent {
         return senseCamera(id, pb);
     }
 
-    protected Sensor2D<WaveletBag> senseCameraFreq(String id, Supplier<BufferedImage> w, int pw, int ph) throws Narsese.NarseseException {
+    protected Sensor2D<WaveletBag> senseCameraFreq(String id, Supplier<BufferedImage> w, int pw, int ph) throws
+            Narsese.NarseseException {
         WaveletBag pb = new WaveletBag(w, pw, ph);
         return senseCamera(id, pb);
     }
 
-    protected <C extends Bitmap2D> CameraSensor<C> senseCamera(@Nullable String id, C bc) throws Narsese.NarseseException {
+    protected <C extends Bitmap2D> CameraSensor<C> senseCamera(@Nullable String id, C bc) throws
+            Narsese.NarseseException {
         return senseCamera(id != null ? $(id) : null, bc);
     }
 
@@ -831,11 +851,13 @@ abstract public class NAgentX extends NAgent {
         return addCamera(new CameraSensor(id, bc, this));
     }
 
-    protected <C extends Bitmap2D> CameraSensor<C> senseCameraReduced(@Nullable Term id, Supplier<BufferedImage> bc, int sx, int sy, int ox, int oy) {
+    protected <C extends Bitmap2D> CameraSensor<C> senseCameraReduced(@Nullable Term
+                                                                              id, Supplier<BufferedImage> bc, int sx, int sy, int ox, int oy) {
         return addCamera(new CameraSensor(id, new AutoencodedBitmap(new BufferedImageBitmap2D(bc), sx, sy, ox, oy), this));
     }
 
-    protected <C extends Bitmap2D> CameraSensor<C> senseCameraReduced(@Nullable Term id, C bc, int sx, int sy, int ox, int oy) {
+    protected <C extends Bitmap2D> CameraSensor<C> senseCameraReduced(@Nullable Term id, C bc, int sx, int sy,
+                                                                      int ox, int oy) {
         return addCamera(new CameraSensor(id, new AutoencodedBitmap(bc, sx, sy, ox, oy), this));
     }
 

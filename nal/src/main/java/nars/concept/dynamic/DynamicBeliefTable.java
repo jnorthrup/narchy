@@ -44,7 +44,8 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
 
         if (!input.isInput()) {
 
-            Task matched = match(input.start(), input.end(), input.term(), nar);
+            long start, end;
+            Task matched = match(start = input.start(), end = input.end(), input.term(), nar);
 
             //must be _during_ the same time and same term, same stamp, then compare Truth
             if (matched != null) {
@@ -53,7 +54,7 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
                         matched.term().equals(input.term()) &&
                         Stamp.equalsIgnoreCyclic(matched.stamp(), input.stamp())) {
 
-                    if (PredictionFeedback.absorb(matched, input, nar)) {
+                    if (PredictionFeedback.absorb(matched, input, start, end, nar)) {
                         Tasklinks.linkTask(matched, matched.priElseZero(), concept, nar);
                         return;
                     }

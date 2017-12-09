@@ -44,28 +44,21 @@ abstract public class Solve extends AbstractPred<Derivation> {
 
                 single = f.single();
 
-                if (!single) {
-                    if ((beliefProjected ? d.beliefTruth : d.beliefTruthRaw) == null)
-                        return false; //double premise requiring a belief, but belief is null
-                }
+                Truth beliefTruth = beliefProjected ? d.beliefTruth : d.beliefTruthRaw;
 
+                if (!single && beliefTruth == null)
+                    return false; //double premise requiring a belief, but belief is null
 
-
-                float confMin = d.confMin;
                 if ((t = f.apply(
                         d.taskTruth, //task truth is not involved in the outcome of this; set task truth to be null to prevent any negations below:
-                        single ? null : beliefProjected ? d.beliefTruth : d.beliefTruthRaw,
-                        d.nar, confMin
+                        single ? null : beliefTruth,
+                        d.nar, d.confMin
                 )) == null)
                     return false;
 
 
-                float overlap;
-                if (f.allowOverlap()) {
-                    overlap = 0;
-                } else {
-                    overlap = (single ? d.overlapSingle : d.overlapDouble);
-                }
+                float overlap = f.allowOverlap() ?
+                        0 : single ? d.overlapSingle : d.overlapDouble;
 
                 if (overlap > 0) {
                     return false;

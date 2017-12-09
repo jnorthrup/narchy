@@ -21,6 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.function.LongFunction;
+import java.util.function.ToLongFunction;
 
 import static nars.Op.BELIEF;
 import static nars.concept.Tasklinks.linkTask;
@@ -63,9 +65,11 @@ public class Premise {
      * patham9 its using the result of higher confidence
      * <p>
      * returns ttl used, -1 if failed before starting
+     *
+     * @param matchTime - temporal focus control: determines when a matching belief or answer should be projected to
      */
     @Nullable
-    public Derivation match(Derivation d, int matchTTL) {
+    public Derivation match(Derivation d, ToLongFunction<Task> matchTime, int matchTTL) {
 
         NAR n = d.nar;
         n.emotion.conceptFirePremises.increment();
@@ -151,6 +155,7 @@ public class Premise {
 
         //QUESTION ANSWERING and TERMLINK -> TEMPORALIZED BELIEF TERM projection
         Task belief = null;
+
         Concept beliefConcept = n.conceptualize(beliefTerm);
 
 
@@ -192,7 +197,7 @@ public class Premise {
                 }
 
                 if (belief == null) {
-                    long focus = matchTime(task, now, n);
+                    long focus = matchTime.applyAsLong(task);
                     long focusStart, focusEnd;
                     if (focus == ETERNAL) {
                         focusStart = focusEnd = ETERNAL;
@@ -263,49 +268,6 @@ public class Premise {
 
     }
 
-
-    /**
-     * temporal focus control: determines when a matching belief or answer should be projected to
-     */
-    static long matchTime(Task task, long now, NAR nar) {
-        assert (now != ETERNAL);
-
-        if (task.isEternal()) {
-            return ETERNAL;
-        } else {
-
-            //return now;
-
-            //return task.nearestTimeTo(now);
-
-            return nar.random().nextBoolean() ?
-                    now : task.nearestTimeTo(now);
-
-            //        return nar.random().nextBoolean() ?
-            //                task.nearestTimeTo(now) :
-            //                now + Math.round((-0.5f + nar.random().nextFloat()) * 2f * (Math.abs(now - task.mid())));
-        }
-
-        //return now + dur;
-
-//        if (task.isEternal()) {
-//            return ETERNAL;
-//        } else //if (task.isInput()) {
-//            return task.nearestTimeTo(now);
-
-//        } else {
-//            if (task.isBelief()) {
-//                return now +
-//                        nar.dur() *
-//                            nar.random().nextInt(2*Param.PREDICTION_HORIZON)-Param.PREDICTION_HORIZON; //predictive belief
-//            } else {
-//                return Math.max(now, task.start()); //the corresponding belief for a goal or question task
-//            }
-//        }
-
-        //now;
-        //now + dur;
-    }
 
 
 

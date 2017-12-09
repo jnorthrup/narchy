@@ -1,10 +1,7 @@
 package nars.control;
 
 import jcog.Util;
-import nars.$;
-import nars.NAR;
-import nars.Op;
-import nars.Param;
+import nars.*;
 import nars.derive.*;
 import nars.derive.instrument.DebugDerivationPredicate;
 import nars.derive.rule.PremiseRuleSet;
@@ -15,6 +12,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import static nars.time.Tense.ETERNAL;
 
 /**
  * an individual deriver process: executes a particular Deriver model
@@ -27,6 +26,7 @@ public class Deriver extends NARService {
     private final Consumer<Predicate<Activate>> source;
     private float minPremisesPerConcept = 1;
     private float maxPremisesPerConcept = 3;
+    protected long now;
 
     public static Function<NAR, Deriver> deriver(Function<NAR, PremiseRuleSet> rules) {
         return (nar) ->
@@ -90,10 +90,51 @@ public class Deriver extends NARService {
     }
 
 
+    protected long matchTime(Task task) {
+        assert (now != ETERNAL);
+
+        if (task.isEternal()) {
+            return ETERNAL;
+        } else {
+
+            //return now;
+
+            //return task.nearestTimeTo(now);
+
+            return nar.random().nextBoolean() ?
+                    now : task.nearestTimeTo(now);
+
+            //        return nar.random().nextBoolean() ?
+            //                task.nearestTimeTo(now) :
+            //                now + Math.round((-0.5f + nar.random().nextFloat()) * 2f * (Math.abs(now - task.mid())));
+        }
+
+        //return now + dur;
+
+//        if (task.isEternal()) {
+//            return ETERNAL;
+//        } else //if (task.isInput()) {
+//            return task.nearestTimeTo(now);
+
+//        } else {
+//            if (task.isBelief()) {
+//                return now +
+//                        nar.dur() *
+//                            nar.random().nextInt(2*Param.PREDICTION_HORIZON)-Param.PREDICTION_HORIZON; //predictive belief
+//            } else {
+//                return Math.max(now, task.start()); //the corresponding belief for a goal or question task
+//            }
+//        }
+
+        //now;
+        //now + dur;
+
+    }
     protected int run(int work) {
 
 
         NAR nar = this.nar;
+
         Derivation d = derivation.get().cycle(nar, deriver);
 
         int matchTTL = Param.TTL_PREMISE_MIN * 4;
@@ -108,9 +149,11 @@ public class Deriver extends NARService {
 
         source.accept(a -> {
 
+            now = nar.time();
+
             for (Premise p : a.premises(nar, d.activator, premises(a))) {
 
-                if (p.match(d, matchTTL) != null) {
+                if (p.match(d, this::matchTime, matchTTL) != null) {
 
                     int deriveTTL = Util.lerp(
                             //p.task.priElseZero() / nar.priDefault(p.task.punc()), //relative
