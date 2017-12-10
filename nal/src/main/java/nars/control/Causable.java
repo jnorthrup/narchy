@@ -2,6 +2,7 @@ package nars.control;
 
 import jcog.exe.Can;
 import nars.NAR;
+import nars.Param;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -67,7 +68,10 @@ abstract public class Causable extends NARService {
             if (completed >= 0)
                 can.update(completed, value(), (end - start) / 1.0E9);
         } catch (Exception e) {
-            logger.error("{} {}", this, e);
+            if (Param.DEBUG)
+                throw new RuntimeException(e);
+            else
+                logger.error("{} {}", this, e);
         } finally {
             if (busy != null)
                 busy.set(false);

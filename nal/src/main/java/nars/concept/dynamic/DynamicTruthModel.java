@@ -53,7 +53,7 @@ abstract public class DynamicTruthModel {
                     subStart = subEnd = ETERNAL;
                 } else {
                     int dt = superterm.subTimeSafe(it);
-                    assert (dt != DTERNAL);
+                    assert (dt != DTERNAL): it + " not found in superterm: " + superterm;
                     subStart = start + dt;
                     subEnd = end + dt + it.dtRange();
                 }

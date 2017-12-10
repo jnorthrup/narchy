@@ -209,9 +209,9 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         int eventDT = eventTerm.dt();
 
         switch (eventTerm.op()) {
-            case NEG:
-                link(know(eventTerm.unneg()), 0, event); //lower priority?
-                break;
+//            case NEG:
+//                link(know(eventTerm.unneg()), 0, event); //lower priority?
+//                break;
             case IMPL:
 
                 Term subj = eventTerm.sub(0);
@@ -615,9 +615,14 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 if (!Util.andReverse(xternalsToSolve.toArray(new Term[xternalsToSolve.size()]), u ->
                         solveDT(u, v -> {
 
-                            Term y = x.replace(u, v.id);
-                            if (y == null || y instanceof Bool)
-                                return true; //continue
+                            Term y;
+                            if (!u.equals(v.id)) {
+                                y = x.replace(u, v.id);
+                                if (y == null || y instanceof Bool)
+                                    return true; //continue
+                            } else {
+                                y = x;
+                            }
 
                             boolean ye = y.equals(x);
                             if (!ye) {

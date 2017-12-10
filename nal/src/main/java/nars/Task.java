@@ -1078,6 +1078,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     short[] cause();
 
     default long distanceTo(long when) {
+        if (isEternal())
+            return 0;
         return Math.abs(when - nearestTimeTo(when));
     }
 

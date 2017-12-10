@@ -208,6 +208,8 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 		Collections.shuffle(list, random);
 	}
 
+
+
 	// end of methods not required to be implemented, but more efficient
 
 //	private class ArrayHashSetIterator implements ListIterator<E> {

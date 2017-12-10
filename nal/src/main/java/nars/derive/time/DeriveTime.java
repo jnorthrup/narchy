@@ -57,16 +57,24 @@ public class DeriveTime extends TimeGraph {
     }
 
     DeriveTime(DeriveTime copy, Term transformedTask, Term transformedBelief) {
+        this.cache = null;
         this.d = copy.d;
         this.task = copy.task;
         this.belief = copy.belief;
         this.dither = copy.dither;
         this.byTerm.putAll(copy.byTerm);
-        if (transformedTask!=null)
-            know(transformedTask, task.start());
-        if (transformedBelief!=null)
-            know(transformedBelief, belief.start());
-        cache = null;
+        if (transformedTask!=null) {
+            Event y = know(transformedTask, task.start());
+            link(know(task.term(), task.start()), 0, y);
+            Event yNeg = know(transformedTask.neg(), task.start());
+            link(know(task.term().neg(), task.start()), 0, yNeg);
+        }
+        if (transformedBelief!=null) {
+            Event y = know(transformedBelief, belief.start());
+            link(know(belief.term(), belief.start()), 0, y);
+            Event yNeg = know(transformedBelief.neg(), belief.start());
+            link(know(belief.term().neg(), belief.start()), 0, yNeg);
+        }
     }
 
     public DeriveTime(Derivation d, boolean single) {
@@ -147,7 +155,12 @@ public class DeriveTime extends TimeGraph {
 
     public Term solveAndProject(Term pattern) {
         Term c = solve(pattern);
+
         if (c!=null && (d.taskPunct==BELIEF || d.taskPunct==GOAL)) {
+            TruthOperator f = d.truthFunction;
+            if (f == null)
+                return c; //not sure why this happens
+
             long[] occ = d.concOcc;
 
             boolean project = false;
@@ -180,8 +193,6 @@ public class DeriveTime extends TimeGraph {
 
             if (project) {
                 //recalculate truth
-                TruthOperator f = d.truthFunction;
-                assert(f!=null);
                 Truth projected = f.apply(taskTruth, beliefTruth, d.nar);
                 if (projected == null)
                     return null; //fail
@@ -246,31 +257,35 @@ public class DeriveTime extends TimeGraph {
 //                return st;
 //            } else {
 
-            if (d.eternal) {
+            if ((!d.single && d.eternal) || (d.single && d.task.isEternal())) {
                 event = solutions.get(d.random); //doesnt really matter which solution is chosen, in terms of probability of projection success
             } else {
 
                 //choose event with least distance to task and belief occurrence so that projection has best propensity for non-failure
 
-                solutions.shuffle(d.random); //shuffle so that equal items are selected fairly
+                //solutions.shuffle(d.random); //shuffle so that equal items are selected fairly
 
-                event = solutions.max((e) -> {
+                /* weight the influence of the distance to each
+                   according to its weakness (how likely it is to null during projection). */
+                float taskWeight = task.isBeliefOrGoal() ? (0.5f + 0.5f * (1f - task.conf())) : 0f;
+                float beliefWeight = belief!=null ? (0.5f + 0.5f * (1f - belief.conf())) : 0;
+
+                final float base = 1f/solutions.size();
+                event = solutions.roulette((e) -> {
                     long when = e.when();
-                    if (when ==ETERNAL || when ==TIMELESS)
-                        return Float.NEGATIVE_INFINITY;
+                    if (when == TIMELESS)
+                        return base/2f;
+                    if (when == ETERNAL)
+                        return base; //prefer eternal only if a temporal solution does not exist
 
-                    long distance = 0;
-                    /* TODO if both task and belief are involved,
-                       weight the influence of the distance to each
-                       according to its weakness (how likely it is to null during projection).
-                     */
-                    if (!task.isEternal())
-                        distance += task.distanceTo(when);
-                    if (belief!=null && !belief.isEternal())
-                        distance += belief.distanceTo(when);
+                    long distance = 1;
+                    distance += task.distanceTo(when) * taskWeight;
 
-                    return -distance;
-                });
+                    if (!d.single && belief!=null)
+                        distance += belief.distanceTo(when) * beliefWeight;
+
+                    return 1f/distance;
+                }, d.nar.random());
             }
 //            }
         }

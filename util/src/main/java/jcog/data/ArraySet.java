@@ -37,6 +37,7 @@
  */
 package jcog.data;
 
+import jcog.decide.Roulette;
 import jcog.math.CachedFloatFunction;
 import jcog.sort.Top;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -73,9 +74,22 @@ public interface ArraySet<X> extends Set<X> {
 	}
 
 	default X max(FloatFunction<X> rank) {
+		assert(!isEmpty());
 		return new Top<>(new CachedFloatFunction<>(rank)).of(listIterator()).the;
+	}
+
+	default X roulette(FloatFunction<X> rank, Random rng) {
+		int s = size();
+		assert(s > 0);
+		float[] weights = new float[s];
+		for (int i = 0; i < s; i++) {
+			weights[i] = rank.floatValueOf(get(i));
+		}
+		return get(Roulette.decideRoulette(weights, rng));
 	}
 
 	/** shuffles the list */
 	void shuffle(Random random);
+
+
 }
