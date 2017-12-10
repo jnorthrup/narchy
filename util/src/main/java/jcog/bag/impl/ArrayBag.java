@@ -163,7 +163,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             }
         }
 
-        boolean trashEmpty = trash.isEmpty();
+        boolean trashEmpty = trash==null || trash.isEmpty();
         return trashEmpty ? null : trash;
     }
 

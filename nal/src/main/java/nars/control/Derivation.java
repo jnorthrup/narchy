@@ -314,8 +314,13 @@ public class Derivation extends Unify {
 
 //        this.task = p.task;
         final Task task = this.task = anon.put(_task);
-        if (belief != null)
+        if (task == null)
+            throw new NullPointerException();
+        if (belief != null) {
             belief = anon.put(belief);
+            if (belief == null)
+                throw new NullPointerException();
+        }
         beliefTerm = anon.put(beliefTerm);
 
 

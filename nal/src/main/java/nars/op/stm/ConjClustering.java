@@ -183,7 +183,7 @@ public class ConjClustering extends Causable {
             actualTasks.clear();
 
 
-//            long end = Long.MIN_VALUE;
+            long end = Long.MIN_VALUE;
             long start = Long.MAX_VALUE;
 
 
@@ -204,7 +204,7 @@ public class ConjClustering extends Causable {
                 long zs = t.start();
                 long ze = t.end();
                 if (start > zs) start = zs;
-//                if (end < ze) end = ze;
+                if (end < ze) end = ze;
 //                assert (end >= start);
 
                 Truth tx = t.truth();
@@ -220,14 +220,15 @@ public class ConjClustering extends Causable {
 
                 boolean involved = false;
                 LongObjectPair<Term> ps = pair(zs, xt);
-                if (!vv.containsKey(pair(zs, xt.neg())) && null == vv.putIfAbsent(ps, t)) {
+                Term xtNeg = xt.neg();
+                if (!vv.containsKey(pair(zs, xtNeg)) && null == vv.putIfAbsent(ps, t)) {
                     vol += xtv;
                     involved = true;
                 }
 
                 if (ze != zs) {
                     LongObjectPair<Term> pe = pair(ze, xt);
-                    if (!vv.containsKey(pair(ze, xt.neg())) && null == vv.putIfAbsent(pe, t)) { //end point, if different from start
+                    if (!vv.containsKey(pair(ze, xtNeg)) && null == vv.putIfAbsent(pe, t)) { //end point, if different from start
                         vol += xtv;
                         involved = true;
                     }
@@ -270,7 +271,7 @@ public class ConjClustering extends Causable {
 
                         ObjectFloatPair<long[]> evidence = Stamp.zip(actualTasks, Param.STAMP_CAPACITY);
 
-                        NALTask m = new STMClusterTask(cp, t, start, start, evidence.getOne(), punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
+                        NALTask m = new STMClusterTask(cp, t, start, end, evidence.getOne(), punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
 
                         m.cause = Cause.zip(nar.causeCapacity.intValue(), uu);
 

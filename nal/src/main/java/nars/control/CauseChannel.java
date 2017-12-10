@@ -1,9 +1,11 @@
 package nars.control;
 
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Iterators;
 import jcog.list.ArrayIterator;
 import jcog.pri.Priority;
 import nars.NAR;
+import nars.Task;
 import nars.task.ITask;
 import org.jetbrains.annotations.Nullable;
 
@@ -128,8 +130,8 @@ public class CauseChannel<X extends Priority> extends Cause implements Consumer<
         }
 
         @Override
-        public void input(ITask... x) {
-            nar.input(()->ArrayIterator.get(x));
+        public void input(ITask[] x) {
+            nar.input(()->Iterators.filter(ArrayIterator.get(x), each::test));
         }
 
         @Override

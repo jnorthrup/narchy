@@ -1623,15 +1623,15 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
         synchronized (causes) {
 
+//            final short[] sharedOneElement = {ci};
             final short ci = (short) (causes.size());
-            final short[] sharedOneElement = {ci};
             CauseChannel c = new CauseChannel.TaskChannel(this, ci, id, (x) -> {
-                if (x instanceof NALTask) {
+                if (x instanceof Task) {
                     NALTask t = (NALTask) x;
                     int tcl = t.cause.length;
                     if (tcl == 0 || (tcl == 1 && t.cause[0] == 0)) {
-                        assert (sharedOneElement[0] == ci);
-                        t.cause = sharedOneElement;
+//                        assert (sharedOneElement[0] == ci);
+                        t.cause = new short[]{ci}; //sharedOneElement;
                     } else {
                         //concat
                         t.cause = Arrays.copyOf(t.cause, tcl + 1);

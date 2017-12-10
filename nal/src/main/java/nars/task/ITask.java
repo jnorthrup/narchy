@@ -31,10 +31,6 @@ public interface ITask extends Priority {
      */
     @Nullable Iterable<? extends ITask> run(NAR n);
 
-    /**
-     * special signal a task can return to signal it should be deleted after execution
-     */
-    ITask[] DeleteMe = new ITask[0];
 
 
     default byte punc() {

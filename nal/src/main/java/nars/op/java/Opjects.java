@@ -389,8 +389,10 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
             //TODO handle static methods
 
-            boolean isVoid = result == null && method.getReturnType() == void.class;
-            Term[] x = new Term[isVoid ? 2 : 3];
+            Class<?> returnType = method.getReturnType();
+            boolean isVoid = result == null && returnType == void.class;
+            boolean isBoolean = (returnType == boolean.class) || (returnType == Boolean.class);
+            Term[] x = new Term[(isVoid || isBoolean) ? 2 : 3];
             x[0] = $.the(method.getName());
             switch (args.length) {
                 case 0:
@@ -415,17 +417,9 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                 }
                 x[2] = tr;
             } else {
-                boolean isBoolean = method.getReturnType() == boolean.class;
                 if (isBoolean) {
-
-                    boolean b = (Boolean) result;
-                    if (!b) {
-                        result = true;
-                        negate = true;
-                    }
-                }
-
-                if (!isVoid) {
+                    negate = !( (Boolean) result );
+                } else if (!isVoid) {
                     x[2] = Opjects.this.term(result);
                     assert (x[2] != null) : "could not termize: " + result;
                 }
