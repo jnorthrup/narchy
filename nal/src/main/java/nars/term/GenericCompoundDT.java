@@ -52,10 +52,11 @@ public class GenericCompoundDT /*extends ProxyTerm<Compound>*/ implements Compou
 
         }
 
-        if (op == CONJ && s.subs()==2) {
+
+        if (dt!=DTERNAL && dt < 0 && op == CONJ && s.subs()==2) {
             //make sure it's always positive so there is only one form of the commutive equivalent
             if (s.sub(0).equals(s.sub(1)))
-                dt = Math.abs(dt);
+                dt = -dt; //Math.abs(dt);
         }
 
 
