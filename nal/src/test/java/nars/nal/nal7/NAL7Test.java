@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL7Test extends NALTest {
 
+    private static final float TRUTH_TOLERANCE_FOR_PROJECTIONS = 0.15f;
     public int cycles = 100;
 
 //    private static final Path tmpDir;
@@ -413,27 +414,23 @@ public class NAL7Test extends NALTest {
     @Test
     public void inference_on_tense_3() {
 
-        TestNAR tester = test;
-
-        tester.mustBelieve(cycles, "<(John,room) --> enter>",
-                1.00f, 0.81f, 3);
-
-        tester.believe("(((John,key) --> hold) ==>+3 ((John,room) --> enter))", 1.0f, 0.9f);
-        tester.input("<(John,key) --> hold>. :|:");
-
-
+        test
+                .truthTolerance(TRUTH_TOLERANCE_FOR_PROJECTIONS)
+                .inputAt(0, "hold(John,key). :|:")
+                .believe("(hold(John,key) ==>+1 enter(John,room))", 1.0f, 0.9f)
+                .mustBelieve(cycles, "enter(John,room)",
+                        1.00f, 0.81f, 1)
+        ;
     }
 
     @Test
     public void inference_on_tense_4() {
 
-        TestNAR tester = test;
-        //tester;
-
-        tester.believe("(((John,key) --> hold) ==>+3 ((John,room) --> enter))");
-        tester.input("<(John,room) --> enter>. :|:");
-        tester.mustBelieve(cycles, "<(John,key) --> hold>",
-                1.00f, 0.45f, -3);
+        test
+                .truthTolerance(TRUTH_TOLERANCE_FOR_PROJECTIONS)
+                .believe("(hold(John,key) ==>+3 enter(John,room))")
+                .inputAt(0, "enter(John,room). :|:")
+                .mustBelieve(cycles, "hold(John,key)", 1.00f, 0.45f, -3);
     }
 
     @Test
@@ -441,8 +438,8 @@ public class NAL7Test extends NALTest {
 
         test
 
-                .input("open(John,door). :|:")
                 .inputAt(4, "enter(John,room). :|:")
+                .input("open(John,door). :|:")
                 .mustBelieve(cycles, "( enter(John, room) ==>-4 open(John, door) )",
                         1.00f, 0.45f, 4);
     }
@@ -463,13 +460,11 @@ public class NAL7Test extends NALTest {
     @Test
     public void induction_on_events2() {
 
-        TestNAR tester = test;
-
-
-        tester.input("<(John,door) --> open>. :|:");
-        tester.inputAt(4, "<(John,room) --> enter>. :|:");
-
-        tester.mustBelieve(cycles, "(((John, door) --> open) ==>+4 ((John, room) --> enter))",
+        test
+        .truthTolerance(TRUTH_TOLERANCE_FOR_PROJECTIONS)
+        .input("<(John,door) --> open>. :|:")
+        .inputAt(4, "<(John,room) --> enter>. :|:")
+        .mustBelieve(cycles, "(((John, door) --> open) ==>+4 ((John, room) --> enter))",
                 1.00f, 0.45f, 0);
 
     }
@@ -478,15 +473,15 @@ public class NAL7Test extends NALTest {
     public void induction_on_events3() {
 
         test
-
-                .input("open(John,door). :|:")
-                .inputAt(4, "enter(John,room). :|:")
-                .mustBelieve(cycles, "(open(John, door) ==>+4 enter(John, room))",
-                        1.00f, 0.45f,
-                        0)
-                .mustBelieve(cycles, "(enter(John, room) ==>-4 open(John, door))",
-                        1.00f, 0.45f,
-                        4);
+            .truthTolerance(TRUTH_TOLERANCE_FOR_PROJECTIONS)
+            .input("open(John,door). :|:")
+            .inputAt(4, "enter(John,room). :|:")
+            .mustBelieve(cycles, "(open(John, door) ==>+4 enter(John, room))",
+                    1.00f, 0.45f,
+                    0)
+            .mustBelieve(cycles, "(enter(John, room) ==>-4 open(John, door))",
+                    1.00f, 0.45f,
+                    4);
 
     }
 
@@ -854,18 +849,19 @@ public class NAL7Test extends NALTest {
                 .input("a:x.")
                 .input("a:y. :|:")
                 .mustBelieve(cycles, "(a:x && a:y)", 1f, 0.81f, 0)
-                .mustNotOutput(cycles, "(a:x &| a:y)", BELIEF, 0f, 1, 0f, 1, (t)->true);
+                .mustNotOutput(cycles, "(a:x &| a:y)", BELIEF, 0f, 1, 0f, 1, (t) -> true);
 
     }
 
-    @Disabled @Test
+    @Disabled
+    @Test
     public void testImplInductionEternalTemporal() {
         test
                 .log()
                 .input("a:x.")
                 .input("a:y. :|:")
                 .mustBelieve(cycles, "(a:x ==> a:y)", 1f, 0.45f, 0)
-                .mustNotOutput(cycles, "(a:x =|> a:y)", BELIEF, 0f, 1, 0f, 1, (t)->true);
+                .mustNotOutput(cycles, "(a:x =|> a:y)", BELIEF, 0f, 1, 0f, 1, (t) -> true);
     }
 
     @Test
@@ -1157,17 +1153,17 @@ public class NAL7Test extends NALTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"",":|:"}) //both: ETERNAL and NOW
+    @ValueSource(strings = {"", ":|:"}) //both: ETERNAL and NOW
     public void multiConditionSyllogismPost(String implSuffix) {
         //    Y, ((&&,X,A..+) ==> B), time(dtBeliefExact), notImpl(A..+) |- subIfUnifiesAny(((&&,A..+) ==>+- B),X,Y), (Belief:Deduction)
 
         test
                 .input("hold(key). :|:")
                 .input("(goto(door) =|> (hold(#x) &| open(door))). " + implSuffix)
-                .mustBelieve(cycles*2, "(goto(door) =|> open(door))",
+                .mustBelieve(cycles * 2, "(goto(door) =|> open(door))",
                         1f, 1.00f, 0.73f, 0.81f,
                         0)
-                .mustBelieve(cycles*2, "(goto(door) =|> hold(key))",
+                .mustBelieve(cycles * 2, "(goto(door) =|> hold(key))",
                         1f, 1.00f, 0.73f, 0.81f,
                         0);
     }

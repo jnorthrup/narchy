@@ -6,19 +6,19 @@ import org.slf4j.LoggerFactory;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class Driver<X> {
+public class Teacher<X> {
 
-    final static org.slf4j.Logger logger = LoggerFactory.getLogger(Driver.class);
+    final static org.slf4j.Logger logger = LoggerFactory.getLogger(Teacher.class);
     protected final X x;
     protected final NAR n;
 
-    public Driver(NAR n, Class<? extends X> c, Object... args) {
+    public Teacher(NAR n, Class<? extends X> c, Object... args) {
         this(new Opjects(n), c, args);
     }
 
-    public Driver(Opjects objs, Class<? extends X> c, Object... args) {
+    public Teacher(Opjects objs, Class<? extends X> c, Object... args) {
         this.n = objs.nar;
-        this.x = objs.a("a_" + c.getClass().getSimpleName(), c, args);
+        this.x = objs.a("a_" + c.getSimpleName(), c, args);
     }
 
     public Trick<X> teach(String taskName,

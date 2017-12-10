@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class ThermostatTest {
 
@@ -40,7 +41,7 @@ public class ThermostatTest {
             add(-1);
         }
 
-        public String say() {
+        public String report() {
             String msg;
             if (is() < should())
                 msg = "too cold";
@@ -70,17 +71,22 @@ public class ThermostatTest {
         NAR n = NARS.tmp();
         n.time.dur(DUR);
         n.termVolumeMax.set(20);
-        n.freqResolution.set(0.25f);
-        n.confResolution.set(0.25f);
+        n.freqResolution.set(0.1f);
+        n.confResolution.set(0.1f);
         //n.logPriMin(System.out, 0.5f);
         n.logPresent(System.out);
 
-        Driver<Thermostat> env = new Driver<>(new Opjects(n) {
+        Teacher<Thermostat> env = new Teacher<>(new Opjects(n) {
             @Override
             protected Object invoked(Instance in, Object obj, Method wrapped, Object[] args, Object result) {
+
+                n.time.synch(n);
+
                 Object r = super.invoked(in, obj, wrapped, args, result);
 
-                n.runLater(()->n.run(DUR*2));
+                n.runLater(()->{
+                    n.run(DUR*2);
+                });
 
                 return r;
             }
@@ -96,23 +102,25 @@ public class ThermostatTest {
         Consumer<Thermostat>
             hotToCold =  x -> { x.is(x.hot);  x.should(x.cold); },
             coldToCold = x -> { x.is(x.cold); x.should(x.cold); };
-
         for (Consumer<Thermostat> condition : new Consumer[] { hotToCold, coldToCold })
             env.teach("cold", condition, x -> {
-                x.say();
+                x.report();
                 while (x.is() > x.cold) x.down();
-                x.say();
+                x.report();
             }, x -> x.is() == x.cold);
 
+
         Consumer<Thermostat>
-            coldToHot =  x -> { x.is(x.cold); x.should(x.hot); },
-            hotToHot = x ->   { x.is(x.hot);  x.should(x.hot); };
-        for (Consumer<Thermostat> condition : new Consumer[] { coldToHot, hotToHot })
+            coldToHot = x -> { x.is(x.cold); x.should(x.hot); },
+            hotToHot =  x -> { x.is(x.hot);  x.should(x.hot); };
+        Predicate<Thermostat> isHot = x -> x.is() == x.hot;
+        for (Consumer<Thermostat> condition : new Consumer[] { coldToHot, hotToHot }) {
             env.teach("hot", condition, x -> {
-                x.say();
-                while (x.is() < x.hot) x.up();
-                x.say();
-            }, x -> x.is() == x.hot);
+                x.report();
+                while (!isHot.test(x)) x.up();
+                x.report();
+            }, isHot);
+        }
 
     }
 
