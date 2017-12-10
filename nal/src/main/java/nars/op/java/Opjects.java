@@ -391,8 +391,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
             Class<?> returnType = method.getReturnType();
             boolean isVoid = result == null && returnType == void.class;
-            boolean isBoolean = (returnType == boolean.class) || (returnType == Boolean.class);
-            Term[] x = new Term[(isVoid || isBoolean) ? 2 : 3];
+            Term[] x = new Term[isVoid ? 2 : 3];
             x[0] = $.the(method.getName());
             switch (args.length) {
                 case 0:
@@ -417,9 +416,17 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                 }
                 x[2] = tr;
             } else {
+                boolean isBoolean = returnType == boolean.class || returnType == Boolean.class;
                 if (isBoolean) {
-                    negate = !( (Boolean) result );
-                } else if (!isVoid) {
+
+                    boolean b = (Boolean) result;
+                    if (!b) {
+                        result = true;
+                        negate = true;
+                    }
+                }
+
+                if (!isVoid) {
                     x[2] = Opjects.this.term(result);
                     assert (x[2] != null) : "could not termize: " + result;
                 }
@@ -429,7 +436,6 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         }
 
     }
-
     private class MethodExec extends AtomicExec {
         public MethodExec(Object object) {
             super(operator(object.getClass()), executionThreshold);

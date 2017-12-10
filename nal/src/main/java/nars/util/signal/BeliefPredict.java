@@ -1,6 +1,7 @@
 package nars.util.signal;
 
 import com.google.common.collect.Iterables;
+import jcog.Util;
 import jcog.learn.LivePredictor;
 import jcog.math.FloatSupplier;
 import nars.$;
@@ -10,6 +11,8 @@ import nars.control.DurService;
 import nars.task.ITask;
 import nars.task.SignalTask;
 import nars.term.Termed;
+import nars.truth.PreciseTruth;
+import nars.truth.Truth;
 import org.apache.commons.lang3.mutable.MutableFloat;
 
 import static jcog.Util.map;
@@ -45,12 +48,16 @@ public class BeliefPredict {
         this.predict = nar.newCauseChannel(this);
 
         this.on = DurService.on(nar, () -> {
-            var predFreq = p.next();
-            for (var i = 0; i < predFreq.length; i++) {
-                var next = nar.time() + lookAhead * nar.time.dur();
+            double[] predFreq = p.next();
+            long next = nar.time() + lookAhead * nar.time.dur();
+            for (int i = 0; i < predFreq.length; i++) {
+
+                float f = (float)Util.unitize(predFreq[i]);
+                PreciseTruth t = Truth.the(f, conf.floatValue(), nar);
+
                 predict.input(
                     new SignalTask(outConcepts[i].term(), BELIEF,
-                            $.t((float) predFreq[i], conf.floatValue()).dither(nar),
+                            t,
                             next, next, nar.time.nextStamp()
                     ).pri(nar.priDefault(BELIEF))
                 );

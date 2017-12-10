@@ -43,7 +43,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  */
 public class PremiseRule /*extends GenericCompound*/ {
 
-    static final Atomic UNPROJ = Atomic.the("unproj");
+
     public static final Atomic Task = Atomic.the("task");
     public static final Atomic Belief = Atomic.the("belief");
     private static final Term TaskAny = $.func("task", Atomic.the("any"));
@@ -73,11 +73,6 @@ public class PremiseRule /*extends GenericCompound*/ {
 
     public String source;
 
-
-    /**
-     * unless time(raw), projected belief truth will be used by default
-     */
-    private boolean beliefProjected = true;
 
     final SortedSet<MatchConstraint> constraints = new TreeSet(PrediTerm.sortByCost);
     final List<PrediTerm<Derivation>> pre = $.newArrayList();
@@ -142,16 +137,12 @@ public class PremiseRule /*extends GenericCompound*/ {
         if (puncOverride != 0)
             args.add($.quote(((char) puncOverride)));
 
-        if (!beliefProjected) {
-            args.add(UNPROJ);
-        }
-
         Compound ii = (Compound) $.func("truth", args.toArrayRecycled(Term[]::new));
 
 
         Solve truth = (puncOverride == 0) ?
-                new Solve.SolvePuncFromTask(ii, belief, goal, beliefProjected) :
-                new Solve.SolvePuncOverride(ii, puncOverride, belief, goal, beliefProjected);
+                new Solve.SolvePuncFromTask(ii, belief, goal) :
+                new Solve.SolvePuncOverride(ii, puncOverride, belief, goal);
 
         //PREFIX
         Set<Term> precon = newHashSet(4); //for ensuring uniqueness / no duplicates
@@ -394,10 +385,6 @@ public class PremiseRule /*extends GenericCompound*/ {
 
                 case "time":
                     switch (XString) {
-                        case "raw":
-                            beliefProjected = false;
-                            break;
-
                         case "dtEvents":
                             pres.add(TaskBeliefOccurrence.bothEvents);
                             minNAL = 7;

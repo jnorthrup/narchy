@@ -239,7 +239,7 @@ public class Premise {
 
         //assert (!(beliefTerm instanceof Bool)): "beliefTerm boolean; termLink=" + termLink + ", belief=" + belief;
 
-        d.set(task, belief, beliefTerm);
+        d.reset().set(task, belief, beliefTerm);
         return d;
     }
 

@@ -298,7 +298,8 @@ public class ShapeSensor implements Runnable {
                 ts.add(ll.sub(1)); //HACK
             }
 
-            image.add($.sete(ts));
+            if(!ts.isEmpty())
+                image.add($.sete(ts));
         }
     }
 

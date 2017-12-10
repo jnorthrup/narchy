@@ -85,8 +85,8 @@ public final class DynTruth {
         long[] se = Task.range(e);
         long start = se[0];
         long end = se[1];
-        long eviRange = end - start;
-        int termRange = c.dtRange();
+//        long eviRange = end - start;
+//        int termRange = c.dtRange();
 
 //        float rangeCoherence = eviRange==termRange ? 1f :
 //                1f - ((float)Math.abs(eviRange - termRange))/Math.max(eviRange, termRange)/nar.dur();
@@ -125,7 +125,7 @@ public final class DynTruth {
             return null;
 
         NALTask dyn = new NALTask(c, beliefOrGoal ? Op.BELIEF : Op.GOAL,
-                tr, nar.time(), start, end /*+ dur*/, stamp);
+                tr, nar.time(), start, c.op().temporal ? start : end, stamp);
         dyn.cause = cause(nar);
         dyn.priSet(priority);
 

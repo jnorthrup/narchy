@@ -62,6 +62,7 @@ public class TemporalInductionTest {
     static void testInduction(String a, String b, int dt) {
         int cycles = dt * 24;
         new TestNAR(NARS.tmp())
+                .truthTolerance(0.25f)
                 .log()
                 .input(a + ". :|:")
                 .inputAt(dt, b + ". :|:")

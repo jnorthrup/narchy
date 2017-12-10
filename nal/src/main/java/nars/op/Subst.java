@@ -28,6 +28,10 @@ public class Subst extends Functor {
         super((Atom) $.the("substitute"));
     }
 
+    protected Subst(Atom id) {
+        super(id);
+    }
+
     @Nullable @Override public Term apply( Subterms xx) {
 
         final Term input = xx.sub(0); //term to possibly transform

@@ -7,6 +7,7 @@ import nars.control.Derivation;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
+import nars.term.atom.Bool;
 import nars.term.container.Subterms;
 import nars.term.subst.SubUnify;
 import org.jetbrains.annotations.Nullable;
@@ -122,26 +123,16 @@ abstract public class SubstUnified extends Functor {
 
         int subTTL = Math.round(Param.BELIEF_MATCH_TTL_FRACTION * parent.ttl);
         SubUnify su = new SubUnify(parent, op, subTTL);
-        Term z = su.tryMatch(input, x, y);
+        Term output = su.tryMatch(input, x, y);
         parent.use(subTTL - su.ttl);
 
-        if (z != null)
-            return z;
-
-        return Null;
+        if (output != null)
+            return output;
+        else
+            return Null;
     }
 
-    public static class uniSubAny extends SubstUnified {
-
-        final static Atom func = (Atom) $.the("subIfUnifiesAny");
-
-        public uniSubAny(Derivation parent) {
-            super(func, parent);
-        }
-
-    }
-
-//    public static class substituteIfUnifiesDep extends substituteIfUnifies {
+    //    public static class substituteIfUnifiesDep extends substituteIfUnifies {
 //
 //        final static Atom func = (Atom) $.the("subIfUnifiesDep");
 //

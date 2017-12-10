@@ -179,8 +179,8 @@ public abstract class Unify extends Versioning implements Subst {
      */
     public boolean unify(Term x, Term y, boolean finish) {
 
-        assert(matches == null);
-        //matches = null;
+        //assert(matches == null);
+        matches = null;
 
         //accumulate any new free variables in this next matched term
 //        Set<Term> freeX = freeVariables(x);

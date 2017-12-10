@@ -1,13 +1,15 @@
 package nars.op.java;
 
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
-import nars.Param;
+import com.google.common.base.Strings;
+import nars.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static nars.Op.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class OpjectsTest {
@@ -30,7 +32,14 @@ public class OpjectsTest {
     public void testSelfInvocation() throws Narsese.NarseseException {
         final NAR n = NARS.tmp();
 
-        final Opjects objs = new Opjects(n);
+        Set<Task> evokes = new HashSet();
+        final Opjects objs = new Opjects(n) {
+            @Override
+            protected boolean evoked(Task task, Object[] args, Object inst) {
+                evokes.add(task);
+                return super.evoked(task, args, inst);
+            }
+        };
 
         final SimpleClass x = objs.a("x", SimpleClass.class);
         StringBuilder sb = new StringBuilder();
@@ -45,9 +54,7 @@ public class OpjectsTest {
         n.run(1);
         n.run(1);
 
-        String s = sb.toString();
-        assertTrue(s.contains("x(set,(1)). 3 %1.0;.90%"), ()->"result: " + s);
-        assertTrue(s.contains("x(get,(),1). 4 %1.0;.90%"), ()->"result: " + s);
+        assertEquals(2, evokes.size());
     }
 
    @Test
@@ -68,7 +75,7 @@ public class OpjectsTest {
     }
 
     @Test
-    public void testExternalInvocation() {
+    public void testInvocationExternal() {
         final NAR n = NARS.tmp();
 
         final Opjects objs = new Opjects(n);
@@ -86,8 +93,8 @@ public class OpjectsTest {
         }
         n.run(1);
         String s = sb.toString();
-        assertTrue(s.contains("$.50 x(get,(),0). 1 %1.0;.90%"));
-        assertTrue(s.contains("$.50 x(set,1). 2 %1.0;.90%"));
+        assertTrue(s.contains("$.50 x(get,(),0)."));
+        assertTrue(s.contains("$.50 x(set,1)."));
     }
 
     @Disabled

@@ -37,6 +37,10 @@ public interface TruthOperator {
      */
     @Nullable Truth apply(@Nullable Truth task, @Nullable Truth belief, NAR m, float minConf);
 
+    default Truth apply(@Nullable Truth task, @Nullable Truth belief, NAR m) {
+        return apply(task, belief, m, m.confMin.floatValue());
+    }
+
 
     boolean allowOverlap();
     boolean single();

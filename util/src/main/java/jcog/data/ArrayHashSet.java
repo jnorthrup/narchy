@@ -203,7 +203,10 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 		return list== EMPTY_LIST;
 	}
 
-
+	@Override
+	public void shuffle(Random random) {
+		Collections.shuffle(list, random);
+	}
 
 	// end of methods not required to be implemented, but more efficient
 

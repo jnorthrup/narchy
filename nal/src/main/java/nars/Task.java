@@ -930,21 +930,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //    default boolean during(long a, long b) {
 //        return distanceTo(a, b) == 0;
 //    }
-//
-//    default boolean during(long when) {
-//        long start = start();
-//        if (start != ETERNAL) {
-//            if (start == when)
-//                return true;
-//            if (when >= start) {
-//                if (when <= end())
-//                    return true;
-//            }
-//            return false;
-//        } else {
-//            return true;
-//        }
-//    }
+
 
     @Override
     default @Nullable Iterable<? extends ITask> run(NAR n) {
@@ -1059,16 +1045,32 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         long x = nearestTimeTo(when);
         return x == ETERNAL || x < when;
     }
-//
-//    default boolean isPresentOf(long when) {
-//        long x = nearestTimeTo(when);
-//        return x == ETERNAL || x == when;
-//    }
-//
-//    default boolean isPresentOf(long when, int dur) {
-//        long x = nearestTimeTo(when);
-//        return x == ETERNAL || Math.abs(x - when) <= dur;
-//    }
+
+    default boolean isDuringAny(long... when) {
+        if (when.length == 2 && when[0] == when[1]) return isDuring(when[0]); //quick
+        for (long x : when) {
+            if (isDuring(x)) return true;
+        }
+        return false;
+    }
+
+    default boolean isDuring(long when) {
+        if (when == ETERNAL)
+            return true;
+        long start = start();
+        if (start != ETERNAL) {
+            if (start == when)
+                return true;
+            if (when >= start) {
+                if (when <= end())
+                    return true;
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
 
     /**
      * TODO cause should be merged if possible when merging tasks in belief table or otherwise
@@ -1119,5 +1121,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         else
             return new long[]{start, end};
     }
+
 
 }

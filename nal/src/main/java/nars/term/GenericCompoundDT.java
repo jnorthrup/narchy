@@ -28,16 +28,18 @@ public class GenericCompoundDT /*extends ProxyTerm<Compound>*/ implements Compou
     public GenericCompoundDT(Compound base, int dt) {
         this.ref = base;
 
+        Subterms s = base.subterms();
+        Op op = base.op();
+
         if (!(dt == XTERNAL || Math.abs(dt) < Param.DT_ABS_LIMIT))
-            throw new InvalidTermException(base.op(), dt, base.subterms(), "exceeded DT limit");
+            throw new InvalidTermException(base.op(), dt, s, "exceeded DT limit");
 
         if (Param.DEBUG_EXTRA) {
 
             assert (getClass() != GenericCompoundDT.class /* a subclass */ || dt != DTERNAL);
 
-            Op op = base.op();
 
-            @NotNull Subterms subterms = base.subterms();
+            @NotNull Subterms subterms = s;
             int size = subterms.subs();
 
             if (op.temporal && (op != CONJ && size != 2))
@@ -48,6 +50,12 @@ public class GenericCompoundDT /*extends ProxyTerm<Compound>*/ implements Compou
                     throw new RuntimeException("invalid ordering");
             }
 
+        }
+
+        if (op == CONJ && s.subs()==2) {
+            //make sure it's always positive so there is only one form of the commutive equivalent
+            if (s.sub(0).equals(s.sub(1)))
+                dt = Math.abs(dt);
         }
 
 

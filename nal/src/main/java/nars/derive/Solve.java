@@ -8,19 +8,19 @@ import nars.truth.func.TruthOperator;
 import static nars.Op.*;
 
 /**
- * Evaluates the truth of a premise
+ * Evaluates the (maximum possible) truth of a premise
+ * After temporalization, truth may be recalculated.  the confidence
+ * will not exceed the prior value calculated here.
  */
 abstract public class Solve extends AbstractPred<Derivation> {
 
     private final TruthOperator belief;
     private final TruthOperator goal;
-    private final boolean beliefProjected;
 
-    Solve(Term id, TruthOperator belief, TruthOperator goal, boolean beliefProjected) {
+    Solve(Term id, TruthOperator belief, TruthOperator goal) {
         super(id);
         this.belief = belief;
         this.goal = goal;
-        this.beliefProjected = beliefProjected;
     }
 
     @Override
@@ -34,17 +34,21 @@ abstract public class Solve extends AbstractPred<Derivation> {
         boolean single;
         Truth t;
 
+        d.truthFunction = null;
+
         byte punc = punc(d);
         switch (punc) {
             case BELIEF:
             case GOAL:
                 TruthOperator f = (punc == BELIEF) ? belief : goal;
+                d.truthFunction = f;
+
                 if (f == null)
                     return false; //there isnt a truth function for this punctuation
 
                 single = f.single();
 
-                Truth beliefTruth = beliefProjected ? d.beliefTruth : d.beliefTruthRaw;
+                Truth beliefTruth = d.beliefTruth;
 
                 if (!single && beliefTruth == null)
                     return false; //double premise requiring a belief, but belief is null
@@ -74,6 +78,7 @@ abstract public class Solve extends AbstractPred<Derivation> {
 //                    if (d.random.nextFloat() <= overlap)
 //                        return false;
                 }
+
 
                 break;
 
@@ -111,8 +116,8 @@ abstract public class Solve extends AbstractPred<Derivation> {
         private final byte puncOverride;
 
 
-        public SolvePuncOverride(Term i, byte puncOverride, TruthOperator belief, TruthOperator desire, boolean beliefProjected) {
-            super(i, belief, desire, beliefProjected);
+        public SolvePuncOverride(Term i, byte puncOverride, TruthOperator belief, TruthOperator desire) {
+            super(i, belief, desire);
             this.puncOverride = puncOverride;
         }
 
@@ -129,8 +134,8 @@ abstract public class Solve extends AbstractPred<Derivation> {
      */
     public static final class SolvePuncFromTask extends Solve {
 
-        public SolvePuncFromTask(Term i, TruthOperator belief, TruthOperator desire, boolean beliefProjected) {
-            super(i, belief, desire, beliefProjected);
+        public SolvePuncFromTask(Term i, TruthOperator belief, TruthOperator desire) {
+            super(i, belief, desire);
         }
 
         @Override

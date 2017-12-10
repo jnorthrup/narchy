@@ -9,14 +9,16 @@ import nars.task.Revision;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
+import nars.truth.Truth;
+import nars.truth.func.BeliefFunction;
+import nars.truth.func.TruthOperator;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import static nars.Op.CONJ;
-import static nars.Op.IMPL;
+import static nars.Op.*;
 import static nars.time.Tense.*;
 
 
@@ -143,6 +145,52 @@ public class DeriveTime extends TimeGraph {
         return y;
     }
 
+    public Term solveAndProject(Term pattern) {
+        Term c = solve(pattern);
+        if (c!=null && (d.taskPunct==BELIEF || d.taskPunct==GOAL)) {
+            long[] occ = d.concOcc;
+
+            boolean project = false;
+            Truth taskTruth = d.taskTruth;
+            int dur = d.dur;
+            if (!d.task.isDuringAny(occ)) {
+                Truth tt = d.task.truth(d.task.nearestTimeOf(occ[0], occ[1]), dur);
+                if (tt == null) {
+                    return null; //fail
+                } else if (!tt.equals(taskTruth)) {
+                    project = true;
+                    taskTruth = tt;
+                }
+            }
+            Truth beliefTruth;
+            if (!d.single && d.belief!=null) {
+                beliefTruth = d.beliefTruth;
+                if (!d.belief.isDuringAny(occ)) {
+                    Truth bb = d.belief.truth(d.belief.nearestTimeOf(occ[0], occ[1]), dur);
+                    if (bb == null) {
+                        return null; //fail
+                    } else if (!bb.equals(beliefTruth)) {
+                        project = true;
+                        beliefTruth = bb;
+                    }
+                }
+            } else {
+                beliefTruth = null;
+            }
+
+            if (project) {
+                //recalculate truth
+                TruthOperator f = d.truthFunction;
+                assert(f!=null);
+                Truth projected = f.apply(taskTruth, beliefTruth, d.nar);
+                if (projected == null)
+                    return null; //fail
+                d.concTruth = projected;
+            }
+        }
+        return c;
+    }
+
     public Term solve(Term pattern) {
 
 //        if (taskStart == ETERNAL && task.isGoal() && belief!=null && !belief.isEternal()) {
@@ -152,8 +200,8 @@ public class DeriveTime extends TimeGraph {
 
         long[] occ = d.concOcc;
 
-        Term tt = task.term();
-        Term bb = d.beliefTerm;
+//        Term tt = polarizedTaskTerm(task);
+//        Term bb = d.beliefTerm;
 
 
 //        if (d.single) {
@@ -197,7 +245,33 @@ public class DeriveTime extends TimeGraph {
 //                occ[1] = s.max() + st.dtRange();
 //                return st;
 //            } else {
-                event = solutions.get(d.random);
+
+            if (d.eternal) {
+                event = solutions.get(d.random); //doesnt really matter which solution is chosen, in terms of probability of projection success
+            } else {
+
+                //choose event with least distance to task and belief occurrence so that projection has best propensity for non-failure
+
+                solutions.shuffle(d.random); //shuffle so that equal items are selected fairly
+
+                event = solutions.max((e) -> {
+                    long when = e.when();
+                    if (when ==ETERNAL || when ==TIMELESS)
+                        return Float.NEGATIVE_INFINITY;
+
+                    long distance = 0;
+                    /* TODO if both task and belief are involved,
+                       weight the influence of the distance to each
+                       according to its weakness (how likely it is to null during projection).
+                     */
+                    if (!task.isEternal())
+                        distance += task.distanceTo(when);
+                    if (belief!=null && !belief.isEternal())
+                        distance += belief.distanceTo(when);
+
+                    return -distance;
+                });
+            }
 //            }
         }
 
@@ -409,13 +483,7 @@ public class DeriveTime extends TimeGraph {
 
     }
 
-//    /**
-//     * negate if negated, for precision in discriminating positive/negative
-//     */
-//    static Term polarizedTaskTerm(Task t) {
-//        Truth tt = t.truth();
-//        return t.term().negIf(tt != null && tt.isNegative());
-//    }
+
 
     @Override
     protected Random random() {

@@ -2,14 +2,12 @@ package nars.control;
 
 import jcog.pri.Pri;
 import jcog.version.Versioned;
-import nars.NAR;
-import nars.Op;
-import nars.Param;
-import nars.Task;
+import nars.*;
 import nars.derive.PrediTerm;
 import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
 import nars.op.Subst;
+import nars.op.SubstUnified;
 import nars.op.data.differ;
 import nars.op.data.intersect;
 import nars.op.data.union;
@@ -21,9 +19,11 @@ import nars.term.anon.Anon;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.container.Subterms;
 import nars.term.subst.Unify;
 import nars.truth.Stamp;
 import nars.truth.Truth;
+import nars.truth.func.TruthOperator;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.impl.factory.Maps;
 import org.jetbrains.annotations.Nullable;
@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import static nars.Op.*;
-import static nars.op.SubstUnified.uniSubAny;
 import static nars.time.Tense.ETERNAL;
 
 
@@ -107,7 +106,7 @@ public class Derivation extends Unify {
      */
     public long time = ETERNAL;
 
-    public Truth taskTruth, beliefTruth, beliefTruthRaw;
+    public Truth taskTruth, beliefTruth;
     public Term taskTerm;
     public Term beliefTerm;
     public Task task;
@@ -117,7 +116,7 @@ public class Derivation extends Unify {
     /**
      * whether either the task or belief are events and thus need to be considered with respect to time
      */
-    public boolean temporal;
+    public boolean temporal, eternal;
 
 
     /**
@@ -141,6 +140,11 @@ public class Derivation extends Unify {
     public float premiseConfDouble;
     private long[] evidenceDouble, evidenceSingle;
     public DeriveTime dtSingle = null, dtDouble = null;
+
+    /** original non-anonymized tasks */
+    public Task _task;
+    public Task _belief;
+    public TruthOperator truthFunction;
 
 
 //    private transient Term[][] currentMatch;
@@ -210,6 +214,7 @@ public class Derivation extends Unify {
 
         Termed[] derivationFunctors = new Termed[]{
                 new uniSubAny(this),
+                new uniSub(this),
                 polarizeFunc
         };
         Map<Term, Termed> m = new HashMap(derivationFunctors.length + 2);
@@ -226,7 +231,6 @@ public class Derivation extends Unify {
      */
     public static Termed[] ruleFunctors(NAR nar) {
         return new Termed[]{
-                Subst.the,
                 union.the,
                 differ.the,
                 intersect.the,
@@ -305,33 +309,22 @@ public class Derivation extends Unify {
 
     }
 
-    /**
-     * tasklink/termlink scope
-     */
-    public void set(Task _task, Task belief, Term beliefTerm) {
-
+    public Derivation reset() {
         anon.clear();
+        termutes.clear();
+        preToPost.clear();
+        this.forEachMatch = null;
+        this.concTruth = null;
+        this.concPunc = 0;
+        this.truthFunction = null;
+        this.single = false;
+        this.evidenceDouble = evidenceSingle = null;
+        this.dtSingle = this.dtDouble = null;
 
-//        this.task = p.task;
-        final Task task = this.task = anon.put(_task);
-        if (task == null)
-            throw new NullPointerException();
-        if (belief != null) {
-            belief = anon.put(belief);
-            if (belief == null)
-                throw new NullPointerException();
-        }
-        beliefTerm = anon.put(beliefTerm);
-
-
-        size = 0; //HACK instant revert to zero
-        xy.map.clear(); //must also happen to be consistent
-        derivedTerm.clear();
-        //and any other Versioned or Versioned-containing instances referenced
-
-        dtSingle = dtDouble = null;
-
-//        if (revert(0)) {
+        this.size = 0; //HACK instant revert to zero
+        this.xy.map.clear(); //must also happen to be consistent
+        this.derivedTerm.clear();
+        //        if (revert(0)) {
         //remove common variable entries because they will just consume memory if retained as empty
 //            xy.map.keySet().removeIf(k -> {
 //                return !(k instanceof AbstractVariable) || k instanceof CommonVariable;
@@ -339,27 +332,36 @@ public class Derivation extends Unify {
 //            xy.map.clear();
 //        }
 
+        return this;
+    }
 
-        termutes.clear();
-        preToPost.clear();
-        //assert(termutes.isEmpty() && preToPost.isEmpty());
-        this.forEachMatch = null;
-//        this.temporalize = null;
-        this.concTruth = null;
-        this.concPunc = 0;
-        this.single = false;
-        this.evidenceDouble = evidenceSingle = null;
+    /**
+     * must call reset() immediately before or after calling this.
+     */
+    public void set(Task _task, Task belief, Term beliefTerm) {
 
 
-        Term taskTerm = task.term();
-        this.taskTerm = taskTerm;
 
 
+        final Task task = this.task = anon.put(this._task = _task);
+        if (task == null)
+            throw new NullPointerException();
+
+        if (belief != null) {
+            belief = anon.put(this._belief = belief);
+            if (belief == null)
+                throw new NullPointerException();
+        }
+        this.belief = belief;
+        beliefTerm = anon.put(beliefTerm);
+
+
+
+        final Term taskTerm = this.taskTerm = task.term();
         this.termSub0Struct = taskTerm.structure();
         this.termSub0op = taskTerm.op().id;
 
 
-        this.belief = belief;
 
 
         this.concOcc[0] = this.concOcc[1] = ETERNAL;
@@ -389,7 +391,7 @@ public class Derivation extends Unify {
         this.overlapSingle = Stamp.cyclicity(taskStamp);
 
         if (belief != null) {
-            this.beliefTruthRaw = belief.truth();
+            this.beliefTruth = belief.truth();
 
             /** to compute the time-discounted truth, find the minimum distance
              *  of the tasks considering their dtRange
@@ -401,7 +403,7 @@ public class Derivation extends Unify {
 //                        belief.truth();
 //                //belief.truth(ETERNAL, ETERNAL...)
 //            } else {
-            this.beliefTruth = beliefTruthRaw;
+//            this.beliefTruth = beliefTruth;
 //            }
 
             long[] beliefStamp = belief.stamp();
@@ -415,7 +417,7 @@ public class Derivation extends Unify {
 //                    );
                     Stamp.overlapFraction(taskStamp, beliefStamp);
         } else {
-            this.beliefTruth = this.beliefTruthRaw = null;
+            this.beliefTruth = null;
             this.overlapDouble = 0;
         }
 
@@ -425,8 +427,8 @@ public class Derivation extends Unify {
         Op bOp = beliefTerm.op();
         this.termSub1op = bOp.id;
 
-        this.temporal = (!task.isEternal() || taskTerm.isTemporal()) ||
-                (belief != null && (!belief.isEternal() || beliefTerm.isTemporal()));
+        this.eternal = task.isEternal() && (belief == null || belief.isEternal());
+        this.temporal = !eternal || (taskTerm.isTemporal() || (belief != null && beliefTerm.isTemporal()));
 
         this.parentCause = belief != null ?
                 Cause.zip(nar.causeCapacity.intValue(), task, belief) :
@@ -541,6 +543,44 @@ public class Derivation extends Unify {
             derivations.clear();
         }
         return s;
+    }
+
+    public static class uniSubAny extends SubstUnified {
+
+        final static Atom func = (Atom) $.the("subIfUnifiesAny");
+
+        public uniSubAny(Derivation parent) {
+            super(func, parent);
+        }
+
+        @Override
+        public Term apply(Subterms xx) {
+            Term y = super.apply(xx);
+            if (y!=null && y!=Null) {
+                parent.putXY(xx.sub(1), xx.sub(2)); //store the transformation
+            }
+            return y;
+        }
+    }
+
+    public static class uniSub extends Subst {
+
+        final static Atom func = (Atom) $.the("substitute");
+        private final Derivation parent;
+
+        public uniSub(Derivation parent) {
+            super(func);
+            this.parent = parent;
+        }
+
+        @Override
+        public @Nullable Term apply(Subterms xx) {
+            Term y = super.apply(xx);
+//            if (y!=null && y!=Null) {
+//                parent.putXY(xx.sub(0), y); //store the outer transformation
+//            }
+            return y;
+        }
     }
 
     //    /**

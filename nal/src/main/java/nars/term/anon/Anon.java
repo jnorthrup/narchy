@@ -32,7 +32,7 @@ public class Anon {
     final ByteFunction<Term> nextUniqueAtom = (Term next) -> {
         int s = rev.size();
         assert (s < MAX_ANOM);
-        assert (!(next instanceof Bool));
+        //assert (!(next instanceof Bool));
         rev.add(next);
         return (byte) s;
     };

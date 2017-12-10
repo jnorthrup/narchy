@@ -37,6 +37,10 @@
  */
 package jcog.data;
 
+import jcog.math.CachedFloatFunction;
+import jcog.sort.Top;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+
 import java.util.ListIterator;
 import java.util.Random;
 import java.util.Set;
@@ -67,4 +71,11 @@ public interface ArraySet<X> extends Set<X> {
 		if (s == 0) return null;
 		return get(random.nextInt(s));
 	}
+
+	default X max(FloatFunction<X> rank) {
+		return new Top<>(new CachedFloatFunction<>(rank)).of(listIterator()).the;
+	}
+
+	/** shuffles the list */
+	void shuffle(Random random);
 }

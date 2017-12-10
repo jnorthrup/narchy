@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL7Test extends NALTest {
 
-    public int cycles = 250;
+    public int cycles = 100;
 
 //    private static final Path tmpDir;
 //    static {
@@ -105,7 +105,7 @@ public class NAL7Test extends NALTest {
         test
                 .inputAt(1, "(a &&+5 b). :|:")
                 .inputAt(6, "(b &&+5 #1). :|:") //should not unify in the same direction
-                .mustBelieve(cycles, "(a &&+10 #1)", 1.00f, 0.73f, 1, 11)
+                .mustBelieve(cycles, "(a &&+10 #1)", 1.00f, 0.73f, 1)
                 .mustBelieve(cycles, "a", 1.00f, 0.81f, 1)
                 .mustBelieve(cycles, "b", 1.00f, 0.81f, 6)
                 .mustNotOutput(cycles, "b", BELIEF, -4)
@@ -135,7 +135,7 @@ public class NAL7Test extends NALTest {
 
         test
                 .inputAt(1, "((a &&+5 b) &&+5 c). :|:")
-                .mustBelieve(cycles, "(b &&+5 c)", 1.00f, 0.81f, 6, 11)
+                .mustBelieve(cycles, "(b &&+5 c)", 1.00f, 0.81f, 6)
                 .mustNotOutput(cycles, "(b &&+5 c)", BELIEF, ETERNAL)
                 .mustNotOutput(cycles, "(b &&+5 c)", BELIEF, 16) //<- not caught here TODO fix this mustNotEmit stuff
         ;
@@ -342,7 +342,7 @@ public class NAL7Test extends NALTest {
                 //.input("X:x.") //shouldnt be necessary
                 .inputAt(1, "(X:x &&+1 (Y:y &&+2 Z:z)). :|:")
                 .mustBelieve(cycles, "X:x.", 1.00f, 0.73f, 1)
-                .mustBelieve(cycles, "(Y:y &&+2 Z:z).", 1.00f, 0.81f, 2, 4)
+                .mustBelieve(cycles, "(Y:y &&+2 Z:z).", 1.00f, 0.81f, 2)
                 .mustNotOutput(cycles, "(Y:y &&+2 Z:z)", BELIEF, 1.00f, 1f, 0.43f, 0.43f, 2) //avoid the substitutionIfUnifies result
                 .mustBelieve(cycles, "Y:y.", 1.00f, 0.73f, 2)
                 .mustBelieve(cycles, "Z:z.", 1.00f, 0.73f, 4)
@@ -456,7 +456,7 @@ public class NAL7Test extends NALTest {
                 .mustBelieve(cycles, "( (--,open(John, door)) ==>+4 enter(John, room) )",
                         1.00f, 0.45f, 0)
                 .mustBelieve(cycles, "( (--,open(John, door)) &&+4 enter(John, room) )",
-                        1f, 0.81f, 0, 4)
+                        1f, 0.81f, 0)
         ;
     }
 
@@ -517,17 +517,11 @@ public class NAL7Test extends NALTest {
 
     @Test
     public void induction_on_events_conj_pos_neg() {
-        /*
-        WRONG ust be @ 1, not 6
-        $.21 ((a &&+5 ((--,a)&|b)) &&+5 (--,b)). 6⋈16 %1.0;.81% {9: 1;2} ((%1,%2,task("."),time(raw),notImpl(%2)),((polarize(%1,task) &&+- polarize(%2,belief)),((IntersectionDepolarized-->Belief))))
-            $.50 (a &&+5 (--,a)). 1⋈6 %1.0;.90% {1: 1} Narsese
-            $.50 (b &&+5 (--,b)). 6⋈11 %1.0;.90% {6: 2} Narsese
-         */
         test
                 .log()
                 .inputAt(1, "(a &&+5 (--,a)). :|:")
                 .inputAt(6, "(b &&+5 (--,b)). :|:")
-                .mustBelieve(cycles, "((a &&+5 ((--,a)&|b)) &&+5 (--,b))", 1.00f, 0.81f, 1, 11)
+                .mustBelieve(cycles, "((a &&+5 ((--,a)&|b)) &&+5 (--,b))", 1.00f, 0.81f, 1)
         ;
     }
 
@@ -547,10 +541,11 @@ public class NAL7Test extends NALTest {
     public void induction_on_events_neg_neg() {
 
         test
+                .log()
                 .inputAt(1, "--a. :|:")
                 .inputAt(2, "--b. :|:")
-                .mustBelieve(cycles, "(--a &&+1 --b)", 1.00f, 0.81f, 1, 2)
-        ;
+                .mustBelieve(cycles, "(--a &&+1 --b)", 1.00f, 0.81f, 1)
+                .mustBelieve(cycles, "(--a ==>+1 b)", 0.00f, 0.45f, 1);
     }
 
     @Test
@@ -630,7 +625,7 @@ public class NAL7Test extends NALTest {
 
         int t = 1;
         int dt = 7;
-        String component = "(open(John,door) &&+0 hold(John,key))";
+        String component = "(open(John,door) &| hold(John,key))";
         tester.inputAt(t, component + ". :|:");
         tester.inputAt(t + dt, "enter(John,room). :|:");
 
@@ -863,7 +858,7 @@ public class NAL7Test extends NALTest {
 
     }
 
-    @Test
+    @Disabled @Test
     public void testImplInductionEternalTemporal() {
         test
                 .log()
@@ -1367,7 +1362,7 @@ public class NAL7Test extends NALTest {
                 .inputAt(3, "(b). :|:")
                 .mustBelieve(cycles * 2,
                         "(((a) &&+2 (b)) &&+3 (c))",
-                        1f, 0.81f, 1, 6)
+                        1f, 0.81f, 1)
                 .mustNotOutput(cycles * 2,
                         "((b) &&+3 ((a) &&+5 (c)))", BELIEF, (t) -> t == 1 || t == ETERNAL);
     }

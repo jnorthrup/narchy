@@ -484,12 +484,13 @@ public enum Util {
         }
         return offset + 4;
     }
+
     /**
      * returns the next index
      */
     public static int short2Bytes(int l, byte[] target, int offset) {
-        target[offset++] = (byte)((l >> 8) & 0xff);
-        target[offset++] = (byte)((l) & 0xff);
+        target[offset++] = (byte) ((l >> 8) & 0xff);
+        target[offset++] = (byte) ((l) & 0xff);
         return offset;
     }
 
@@ -634,6 +635,25 @@ public enum Util {
 //
 //    }
 
+
+    /**
+     * clamps a value to 0..1 range
+     */
+    public static double unitize(double x) {
+        if (x <= 1.0) {
+            if (x >= 0.0) {
+                return x;
+            } else {
+                notNaN(x);
+                return 0.0;
+            }
+        } else {
+            notNaN(x);
+            return 1.0;
+        }
+
+    }
+
     /**
      * clamps a value to 0..1 range
      */
@@ -657,22 +677,18 @@ public enum Util {
         return x;
     }
 
+    public static double notNaN(double x) throws NumberException {
+        if (x != x)
+            throw new NumberException("NaN");
+        return x;
+    }
+
 //    public static float notNaNOrNeg(float x) throws NumberException {
 //        if (notNaN(x) < 0)
 //            throw new NumberException("Negative");
 //        return x;
 //    }
 
-    /**
-     * clamps a value to 0..1 range
-     */
-    public static double unitize(double p) {
-        if (p > 1.0)
-            p = 1.0;
-        else if (p < 0.0)
-            p = 0.0;
-        return p;
-    }
 
     /**
      * clamps a value to -1..1 range
@@ -1465,6 +1481,7 @@ public enum Util {
     public static double sqr(long l) {
         return l * l;
     }
+
     public static int sqr(int l) {
         return l * l;
     }
@@ -1896,7 +1913,9 @@ public enum Util {
         return map(num, build, null);
     }
 
-    /** builds a MarginMax weight array, which can be applied in a Roulette decision */
+    /**
+     * builds a MarginMax weight array, which can be applied in a Roulette decision
+     */
     @Paper
     public static float[] marginMax(int num, IntToFloatFunction build, float lower, float upper) {
         float[] minmax = new float[]{Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY};
@@ -1907,7 +1926,7 @@ public enum Util {
             return v;
         });
 
-        if (Util.equals(minmax[0], minmax[1], Float.MIN_NORMAL*2)) {
+        if (Util.equals(minmax[0], minmax[1], Float.MIN_NORMAL * 2)) {
             Arrays.fill(w, 0.5f);
             return w;
         }
@@ -1915,7 +1934,7 @@ public enum Util {
 
         //TODO combine these into one normalize() by calculating an equivalent effective minmax range
         Util.normalize(w, minmax[0], minmax[1]);
-        Util.normalize(w, 0-lower, 1+upper);
+        Util.normalize(w, 0 - lower, 1 + upper);
         return w;
     }
 
@@ -2102,7 +2121,7 @@ public enum Util {
             b = +0.5f;
             tx = -1f;
         }
-        float x0 = (x+tx);
+        float x0 = (x + tx);
         return (float) (a * Math.sqrt(1f - x0 * x0 * 4) + b);
     }
 

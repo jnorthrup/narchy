@@ -16,6 +16,7 @@ import nars.Task;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.container.Subterms;
+import nars.truth.Truth;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
@@ -117,19 +118,31 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         return event(t, start, true);
     }
 
-    public void know(Task ta) {
-        Term tt = ta.term();
+    /**
+     * negate if negated, for precision in discriminating positive/negative
+     */
+    static Term polarizedTaskTerm(Task t) {
+        Truth tt = t.truth();
+        return t.term().negIf(tt != null && tt.isNegative());
+    }
 
-        long start = ta.start();
-        long end = ta.end();
-        if (end != start && tt.op() != CONJ) {
+    public void know(Task t) {
+        Term tt = t.term();
+        //both positive and negative possibilities
+        know(t, tt);
+        know(t, tt.neg());
+    }
+
+    private void know(Task task, Term term) {
+        long start = task.start();
+        long end = task.end();
+        if (end != start && term.op() != CONJ) {
             //add each endpoint separately
-            event(tt, start, true);
-            event(tt, end, true);
+            event(term, start, true);
+            event(term, end, true);
         } else {
-            event(tt, start, true);
+            event(term, start, true);
         }
-
     }
 
     public Event event(Term t, long start) {
@@ -137,7 +150,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     }
 
     public Event event(Term t, long when, boolean add) {
-        assert(!(t instanceof Bool));
+        assert (!(t instanceof Bool));
         Event e =
                 when == TIMELESS ? new Relative(t) : new Absolute(t, when);
         return add ? add(e).id : event(e);
@@ -560,7 +573,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
         //test for existing exact solutions to the exact term
         boolean kontinue = solveExact(x, each) && solveAll(x, each) &&
-            each.test(event(x, TIMELESS)); //as a last resort: does this help?
+                each.test(event(x, TIMELESS)); //as a last resort: does this help?
 
         //if (cache)
 //        seen.forEach(s -> {
@@ -727,12 +740,12 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         @Nullable Iterator<Edge<Event, TimeSpan>> dynamicLink(Node<Event, TimeSpan> n, Predicate<Event> preFilter) {
             Iterator<Event> x = byTerm.get(n.id.id).iterator();
             return x.hasNext() ? Iterators.transform(Iterators.filter(Iterators.transform(
-                        Iterators.filter(x, preFilter::test),
-                        TimeGraph.this::node),
-                    e -> e != n && e!=null && !log.hasVisited(e)),
+                    Iterators.filter(x, preFilter::test),
+                    TimeGraph.this::node),
+                    e -> e != n && e != null && !log.hasVisited(e)),
                     that ->
                             new Edge<>(n, that, TS_ZERO) //co-occurring
-                    ) : null;
+            ) : null;
         }
 
 
@@ -771,6 +784,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             BooleanObjectPair<Edge<Event, TimeSpan>> step = path.getFirst();
             return step.getTwo().from(step.getOne()).id;
         }
+
         protected Event pathEnd(FasterList<BooleanObjectPair<Edge<Event, TimeSpan>>> path) {
             BooleanObjectPair<Edge<Event, TimeSpan>> step = path.getLast();
             return step.getTwo().to(step.getOne()).id;
@@ -846,7 +860,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             //must be cached to avoid concurrent modification exception
             Iterator<Edge<Event, TimeSpan>> d = dynamicLink(n);
 
-            return (d!=null && d.hasNext()) ? Iterables.concat(e, new FasterList<>(d)) : e;
+            return (d != null && d.hasNext()) ? Iterables.concat(e, new FasterList<>(d)) : e;
         }
 
     }
@@ -937,7 +951,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             super(t, when);
 
             //validation
-            assert(when !=TIMELESS);
+            assert (when != TIMELESS);
             if (!((when == ETERNAL || when > 0 || when > ETERNAL + SAFETY_PAD))) //for catching time calculation bugs
                 throw new MathArithmeticException();
             if (!((when < 0 || when < TIMELESS - SAFETY_PAD))) //for catching time calculation bugs

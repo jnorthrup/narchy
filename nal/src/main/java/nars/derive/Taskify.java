@@ -64,12 +64,12 @@ public class Taskify extends AbstractPred<Derivation> {
 
             long start = occ[0];
             long end = occ[1];
-            assert (end >= start): "task has reversedoccurrence: " + start + ".." + end;
+            assert (end >= start): "task has reversed occurrence: " + start + ".." + end;
 
             long[] evi = d.single ? d.evidenceSingle() : d.evidenceDouble();
             long now = d.time;
             return Param.DEBUG ?
-                            new DebugDerivedTask(C, punc, tr, now, start, end, evi, d.task, !d.single ? d.belief : null) :
+                            new DebugDerivedTask(C, punc, tr, now, start, end, evi, d._task, !d.single ? d._belief : null) :
                             new DerivedTask(C, punc, tr, now, start, end, evi);
         });
 

@@ -59,7 +59,6 @@ abstract public class Causable extends NARService {
             long start = System.nanoTime();
             try {
                 completed = next(n, iterations);
-                assert (completed >= 0);
             } catch (Throwable t) {
                 error = t;
             }
