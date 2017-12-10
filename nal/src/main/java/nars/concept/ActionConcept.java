@@ -24,20 +24,23 @@ public abstract class ActionConcept extends WiredConcept {
         super(term, null, null, n);
     }
 
-    @Nullable abstract public Stream<ITask> update(long now, int dur, NAR nar);
+    @Nullable
+    abstract public Stream<ITask> update(long now, int dur, NAR nar);
 
-   @Override
+    @Override
     public void value(Task t, float activation, NAR n) {
 
         super.value(t, activation, n);
 
-       long now = n.time();
-       if (t.isGoal() && !t.isBefore(now) && t.creation() <= now) {
+        long now = n.time();
+        if (t.isGoal() && !t.isBefore(now) && t.creation() <= now) {
             MetaGoal.learn(MetaGoal.Action, t.cause(),
-                    activation * t.conf(),
+                    t.conf(),
+                    //activation * t.conf(),
                     n);
         }
     }
+
 
 //    @Deprecated public static class CuriosityTask extends GeneratedTask {
 //
@@ -65,25 +68,31 @@ public abstract class ActionConcept extends WiredConcept {
 //    @Nullable public abstract Task curiosity(float conf, long next, NAR nar);
 
 
-    /** determines the feedback belief when desire or belief has changed in a MotorConcept
-     *  implementations may be used to trigger procedures based on these changes.
-     *  normally the result of the feedback will be equal to the input desired value
-     *  although this may be reduced to indicate that the motion has hit a limit or
-     *  experienced resistence
-     * */
-    @FunctionalInterface  public interface MotorFunction  {
+    /**
+     * determines the feedback belief when desire or belief has changed in a MotorConcept
+     * implementations may be used to trigger procedures based on these changes.
+     * normally the result of the feedback will be equal to the input desired value
+     * although this may be reduced to indicate that the motion has hit a limit or
+     * experienced resistence
+     */
+    @FunctionalInterface
+    public interface MotorFunction {
 
         /**
-         * @param desired current desire - null if no desire Truth can be determined
+         * @param desired  current desire - null if no desire Truth can be determined
          * @param believed current belief - null if no belief Truth can be determined
          * @return truth of a new feedback belief, or null to disable the creation of any feedback this iteration
          */
         @Nullable Truth motor(@Nullable Truth believed, @Nullable Truth desired);
 
-        /** all desire passes through to affect belief */
+        /**
+         * all desire passes through to affect belief
+         */
         MotorFunction Direct = (believed, desired) -> desired;
 
-        /** absorbs all desire and doesnt affect belief */
+        /**
+         * absorbs all desire and doesnt affect belief
+         */
         @Nullable MotorFunction Null = (believed, desired) -> null;
     }
 

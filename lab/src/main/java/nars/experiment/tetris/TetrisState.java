@@ -95,12 +95,12 @@ public class TetrisState {
         currentRotation = 0;
         is_game_over = false;
 
-        spawn_block();
+        spawnBlock();
         running = true;
 
     }
 
-    public void toVector(boolean monochrome, float[] target) {
+    private void toVector(boolean monochrome, float[] target) {
         //eget observation with only the state space
 
         Arrays.fill(target, -1);
@@ -151,7 +151,7 @@ public class TetrisState {
     }
 
     /* This code applies the action, but doesn't do the default fall of 1 square */
-    public boolean take_action(int theAction) {
+    public boolean act(int theAction) {
 
 
         int nextRotation = currentRotation;
@@ -190,11 +190,20 @@ public class TetrisState {
                 }
                 nextY--;
                 break;
-            case NONE:
-                break;
-            //default:
-            //throw new RuntimeException("unknown action");
+            default:
+                throw new RuntimeException("unknown action");
         }
+
+
+        return act(nextRotation, nextX, nextY);
+    }
+
+    public boolean act() {
+        return act(currentRotation, currentX, currentY);
+    }
+
+    public boolean act(int nextRotation, int nextX, int nextY) {
+
         //Check if the resulting position is legal. If so, accept it.
         //Otherwise, don't change anything
         if (inBounds(nextX, nextY, nextRotation)) {
@@ -217,17 +226,17 @@ public class TetrisState {
      * @param y
      * @return
      */
-    public final int i(int x, int y) {
+    private final int i(int x, int y) {
         return y * width + x;
         //assert returnValue >= 0 : " "+y+" * "+worldWidth+" + "+x+" was less than 0.";
         //return returnValue;
     }
-    final int x(int i) {
-        return i % width;
-    }
-    final int y(int i) {
-        return i / width;
-    }
+//    final int x(int i) {
+//        return i % width;
+//    }
+//    final int y(int i) {
+//        return i / width;
+//    }
 
     /**
      * Check if any filled part of the 5x5 block array is either out of bounds
@@ -363,7 +372,8 @@ public class TetrisState {
     }
 
     /*Ok, at this point, they've just taken their action.  We now need to make them fall 1 spot, and check if the game is over, etc */
-    public void update() {
+    void update() {
+        act();
         time++;
 
         // Sanity check.  The game piece should always be in bounds.
@@ -395,7 +405,7 @@ public class TetrisState {
 
     }
 
-    public int spawn_block() {
+    public int spawnBlock() {
         running = true;
 
         currentBlockId = nextBlock();
@@ -426,19 +436,19 @@ public class TetrisState {
         return randomGenerator.nextInt(possibleBlocks.size());
     }
 
-    public void checkIfRowAndScore() {
+    public void checkScore() {
         int numRowsCleared = 0;
         int rowsFilled = 0;
 
 
         //Start at the bottom, work way up
         for (int y = height - 1; y >= 0; --y) {
-            if (isRow(y)) {
+            if (isRow(y, true)) {
                 removeRow(y);
                 numRowsCleared += 1;
                 y += 1;
             } else {
-                if (!isRowClear(y))
+                if (!isRow(y,false))
                     rowsFilled++;
             }
         }
@@ -476,33 +486,17 @@ public class TetrisState {
      * @param y
      * @return
      */
-    boolean isRow(int y) {
+    public boolean isRow(int y, boolean filledOrClear) {
         for (int x = 0; x < width; ++x) {
-            int linearIndex = i(x, y);
-            if (worldState[linearIndex] == 0) {
+            float s = worldState[i(x, y)];
+            if (filledOrClear ? (s==0) : (s != 0)) {
                 return false;
             }
         }
         return true;
     }
-    boolean isRowClear(int y) {
-        for (int x = 0; x < width; ++x) {
-            int linearIndex = i(x, y);
-            if (worldState[linearIndex] != 0) {
-                return false;
-            }
-        }
-        return true;
-    }
-    boolean isEmpty(int y) {
-        for (int x = 0; x < width; ++x) {
-            int linearIndex = i(x, y);
-            if (worldState[linearIndex] != 0) {
-                return false;
-            }
-        }
-        return true;
-    }
+
+
 
     /**
      * Dec 13/07.  Radkie + Tanner found 2 bugs here.
@@ -511,7 +505,7 @@ public class TetrisState {
      * @param y
      */
     void removeRow(int y) {
-        if (!isRow(y)) {
+        if (!isRow(y, true)) {
             System.err.println("In GameState.java remove_row you have tried to remove a row which is not complete. Failed to remove row");
             return;
         }
@@ -538,13 +532,13 @@ public class TetrisState {
 
     }
 
-    public int numEmptyRows() {
-        int t = 0;
-        for (int y = 0; y < getHeight(); y++)
-            if (isEmpty(y))
-                t++;
-        return t;
-    }
+//    public int numEmptyRows() {
+//        int t = 0;
+//        for (int y = 0; y < getHeight(); y++)
+//            if (isRow(y,false))
+//                t++;
+//        return t;
+//    }
 
 
     public int getWidth() {
@@ -592,13 +586,12 @@ public class TetrisState {
 
     public void next() {
         if (running) {
-            take_action(-1); //actions already taken above
             update();
         } else {
-            spawn_block();
+            spawnBlock();
         }
 
-        checkIfRowAndScore();
+        checkScore();
 
         toVector(false, seen);
 

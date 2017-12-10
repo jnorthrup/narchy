@@ -471,11 +471,11 @@ public interface Stamp {
                     if (repeats == 0)
                         limit--; //subtract one from the limit for the eventual cyclic that needs to be at the end
                     repeats++;
-                } else {
-                    if (l.size() >= limit) {
-                        halted = true;
-                        break main;
-                    }
+                }
+
+                if (l.size() >= limit) {
+                    halted = true;
+                    break main;
                 }
             }
         }

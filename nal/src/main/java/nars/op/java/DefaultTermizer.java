@@ -27,12 +27,12 @@ import static jcog.data.map.CustomConcurrentHashMap.*;
 public class DefaultTermizer implements Termizer {
 
 
-    public static final Atomic PACKAGE = Atomic.the("package");
-    public static final Atomic PRIMITIVE = Atomic.the("primitive");
+//    public static final Atomic PACKAGE = Atomic.the("package");
+//    public static final Atomic PRIMITIVE = Atomic.the("primitive");
     public static final Variable INSTANCE_VAR = $.varDep("instance");
 
-    final Map<Package, Term> packages = new HashMap();
-    final Map<Class, Term> classes = new HashMap();
+//    final Map<Package, Term> packages = new HashMap();
+//    final Map<Class, Term> classes = new HashMap();
 
 
     final Map<Term, Object> termToObj = new CustomConcurrentHashMap(STRONG, EQUALS, SOFT, IDENTITY, 64); //cache: (class,method) -> Method
@@ -58,13 +58,13 @@ public class DefaultTermizer implements Termizer {
     );
 
     public DefaultTermizer() {
-        termToObj.put(Op.True, true);
-        termToObj.put(Op.False, false);
+        termToObj.put($.the("true") /* Op.True */, true);
+        termToObj.put($.the("false") /* Op.False */, false);
         objToTerm.put(true, TRUE);
         objToTerm.put(false, FALSE);
     }
 
-    public void put(@NotNull Term x, @NotNull Object y) {
+    public void put(Term x, Object y) {
         assert(x!=y);
         synchronized (termToObj) {
             termToObj.put(x, y);
@@ -358,6 +358,8 @@ public class DefaultTermizer implements Termizer {
         if (o instanceof Boolean) {
             if (((Boolean) o)) return TRUE;
             else return FALSE;
+        } else if (o instanceof String) {
+            return $.the((String)o);
         }
 
         //        String cname = o.getClass().toString().substring(6) /* "class " */;

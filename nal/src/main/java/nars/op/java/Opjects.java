@@ -5,6 +5,8 @@ import com.google.common.primitives.Primitives;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
+import jcog.Paper;
+import jcog.Skill;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.map.CustomConcurrentHashMap;
@@ -22,8 +24,8 @@ import nars.term.atom.Atom;
 import nars.term.container.Subterms;
 import nars.truth.Truth;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.platform.commons.util.Preconditions;
@@ -40,21 +42,42 @@ import java.util.function.Predicate;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.Op.*;
+import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 
 /**
- * Operated Objects - Dynamic proxy classes for any POJO that intercepts specific
+ * Opjects - Operable Objects
+ * Transparent JVM Metaprogramming Interface for Non-Axiomatic Logic Reasoners
+ * <p>
+ * Generates dynamic proxy classes for any POJO that intercepts specific
  * methods and generates reasoner events which can be
  * stored, input to one or more reasoners, etc..
  * <p>
+ * An Opjects instance manages a set of ("opject") proxy instances and their activity,
+ * whether either by a user (ex: while training) or the NAR itself (ex: after trained).
  * <p>
- * TODO option to include stack traces in conjunction with invocation
+ * Invoke -  invoked internally, deliberately as a result of NAR activity.
+ * <p>
+ * Evoke -  externally caused execution (by user or other computer process).
+ * in a sense the NAR is puppeted by these actions, because it perceives them,
+ * to some degree, as causing them itself.  however, from a user's perspective,
+ * we clearly distinguish between Evoked and Invoked procedures.
+ * <p>
+ * Evocation trains the NAR how to invoke.  During on-line use, it provides
+ * asynchronously triggered feedback which can inform and trigger the NAR
+ * for what it has learned, or any other task.
+ * <p>
+ * TODO option to record stack traces
  */
-public class OObjects extends DefaultTermizer implements MethodHandler {
+@Paper
+@Skill({"Metaprogramming", "Reinforcement_learning"})
+public class Opjects extends DefaultTermizer implements MethodHandler {
 
-    final static org.slf4j.Logger logger = LoggerFactory.getLogger(OObjects.class);
+    final static org.slf4j.Logger logger = LoggerFactory.getLogger(Opjects.class);
 
-    public static final float DESIRE_THRESH = 0.6f;
+    public final MutableFloat executionThreshold = new MutableFloat(0.51f);
+
+    boolean goalMimic = false;
 
     @NotNull
     public final Set<String> methodExclusions = Sets.newConcurrentHashSet(Set.of(
@@ -64,6 +87,7 @@ public class OObjects extends DefaultTermizer implements MethodHandler {
             "wait",
             "finalize",
             "stream",
+            "iterator",
             "getHandler",
             "setHandler",
             "toString",
@@ -71,10 +95,10 @@ public class OObjects extends DefaultTermizer implements MethodHandler {
     ));
 
     static final Map<Class, Class> proxyCache = new CustomConcurrentHashMap(STRONG, EQUALS, SOFT, IDENTITY, 64);
-    static final Map<Term, Method> methodCache = new CustomConcurrentHashMap(STRONG, EQUALS, SOFT, IDENTITY, 64); //cache: (class,method) -> Method
+    //static final Map<Term, Method> methodCache = new CustomConcurrentHashMap(STRONG, EQUALS, SOFT, IDENTITY, 64); //cache: (class,method) -> Method
 
 
-    public static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
+    //public static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
 
     //final Map<Class, ClassOperator> classOps = Global.newHashMap();
     //final Map<Method, MethodOperator> methodOps = Global.newHashMap();
@@ -95,31 +119,50 @@ public class OObjects extends DefaultTermizer implements MethodHandler {
 
     final static ThreadLocal<Task> invokingGoal = new ThreadLocal<>();
     private final CauseChannel<ITask> in;
-    private final static SoftMemoize<Pair<Pair<Class, String>, List<Class>>, MethodHandle> methodArgCache = new SoftMemoize<>((xx) -> {
+
+    //TODO use Triple<> not Pair<Pair<>>
+    private final static SoftMemoize<Pair<Pair<Class, Term>, List<Class>>, Method> methodArgCache = new SoftMemoize<>((xx) -> {
 
         Class c = xx.getOne().getOne();
-        String m = xx.getOne().getTwo();
+        String mName = xx.getOne().getTwo().toString();
         List<Class> types = xx.getTwo();
-        Method x = findMethod(c, m, types.isEmpty() ? ArrayUtils.EMPTY_CLASS_ARRAY : ((FasterList<Class>) types).array());
-        if (x == null)
+        Class<?>[] cc = types.isEmpty() ? ArrayUtils.EMPTY_CLASS_ARRAY : ((FasterList<Class>) types).array();
+        Method m = findMethod(c, mName, cc);
+        if (m == null)
             return null;
 
-        x.trySetAccessible();
-
-        try {
-            return MethodHandles.lookup().unreflect(x);
-        } catch (IllegalAccessException e) {
-            logger.warn("{} {} {} {}", c, m, types, e);
-            return null;
-        }
+        m.trySetAccessible();
+        return m;
+//
+//        try {
+//            MethodHandle y = MethodHandles.lookup().unreflect(m);
+//            return y;
+//            //return y.asSpreader(Object[].class, types.size());
+//
+////            Class<?>[] arguments = m.getParameterTypes();
+////            MethodType invocationType = MethodType.genericMethodType(arguments == null ? 0 : arguments.length);
+////
+////            return y.asSpreader(invocationType.returnType(), invocationType.parameterCount());
+//            //return y;
+//            //return invocationType.invokers().spreadInvoker(0).invokeExact(this.asType(invocationType), arguments);
+//
+//
+//        } catch (IllegalAccessException e) {
+//            logger.warn("{} {} {} {}", m, e);
+//            return null;
+//        }
 
     }, 512, true /* soft */);
+//    private final static SoftMemoize<Pair<MethodHandle, Object>, MethodHandle> instMethodCache = new SoftMemoize<>((xx) -> {
+//        MethodHandle mh = xx.getOne();
+//        Object obj = xx.getTwo();
+//        return mh.bindTo(obj);
+//    }, 512, true /* soft */);
 
-    public OObjects(NAR n) {
+    public Opjects(NAR n) {
         nar = n;
         in = n.newCauseChannel(this);
     }
-
 
     @Override
     protected Term classInPackage(Term classs, Term packagge) {
@@ -251,10 +294,13 @@ public class OObjects extends DefaultTermizer implements MethodHandler {
                 nt = nt.unneg();
                 f = 1 - f;
             }
-            long now = nar.time();
+            int dur = nar.dur();
+            long start = nar.time();
+            long end = nar.time() + dur;
+
             NALTask next = new NALTask(nt,
                     BELIEF, $.t(f, nar.confDefault(BELIEF)),
-                    now, now, now, nar.time.nextInputStamp());
+                    start, start, end, nar.time.nextInputStamp());
 
             if (Param.DEBUG)
                 next.log("Invoked");
@@ -272,19 +318,21 @@ public class OObjects extends DefaultTermizer implements MethodHandler {
             }
 
 
+
+
             if (cause != null && !next.term().equals(cause.term())) {
                 //input quenching invocation belief term corresponding to the goal
                 NALTask quench = new NALTask(cause.term(), BELIEF, $.t(f, nar.confDefault(BELIEF)),
-                        now, now, now, nar.time.nextInputStamp());
+                        start, start, end, nar.time.nextInputStamp());
                 quench.priMax(next.priElseZero());
                 quench.causeMerge(next);
                 quench.meta("@", next);
                 if (Param.DEBUG)
                     quench.log("InvoQuench");
-                in.input(quench);
+                in.input(List.of(quench, next)); //batch
+            } else {
+                in.input(next);
             }
-
-            in.input(next);
 
             return nextValue;
         }
@@ -303,7 +351,6 @@ public class OObjects extends DefaultTermizer implements MethodHandler {
         /**
          * for VM-caused invocations: if true, inputs a goal task since none was involved. assists learning the interface
          */
-        static private final boolean goalMimic = true;
 
         public Instance(String id, Object object) {
             super(id);
@@ -350,7 +397,7 @@ public class OObjects extends DefaultTermizer implements MethodHandler {
                     x[1] = Op.ZeroProduct;
                     break;
                 case 1:
-                    x[1] = OObjects.this.term(args[0]);
+                    x[1] = Opjects.this.term(args[0]);
                     break; /* unwrapped singleton */
                 default:
                     x[1] = $.p(terms(args));
@@ -379,7 +426,7 @@ public class OObjects extends DefaultTermizer implements MethodHandler {
                 }
 
                 if (!isVoid) {
-                    x[2] = OObjects.this.term(result);
+                    x[2] = Opjects.this.term(result);
                     assert (x[2] != null) : "could not termize: " + result;
                 }
             }
@@ -391,11 +438,16 @@ public class OObjects extends DefaultTermizer implements MethodHandler {
 
     private class MethodExec extends AtomicExec {
         public MethodExec(Object object) {
-            super(operator(object.getClass()), DESIRE_THRESH);
+            super(operator(object.getClass()), executionThreshold);
         }
 
         @Override
         protected boolean exePrefilter(Task x) {
+
+
+            if (x.meta("mimic")!=null)
+                return false; //filter instructive tasks (would cause feedback loop)
+
             Subterms args = validArgs(Operator.args(x));
             if (args == null)
                 return false;
@@ -496,42 +548,58 @@ public class OObjects extends DefaultTermizer implements MethodHandler {
 
             int aa = maWrapped ? methodArgs.subs() : 1;
 
-            Object[] orgs;
+            Object[] objArgs;
             List<Class> types;
             if (aa == 0) {
-                orgs = ArrayUtils.EMPTY_OBJECT_ARRAY;
+                objArgs = ArrayUtils.EMPTY_OBJECT_ARRAY;
                 types = List.of();
             } else {
-                orgs = object(maWrapped ? methodArgs.subterms().arrayShared() : new Term[]{methodArgs});
-                types = typesOf(orgs);
+                objArgs = object(maWrapped ? methodArgs.subterms().arrayShared() : new Term[]{methodArgs});
+                types = typesOf(objArgs);
             }
 
-            MethodHandle mm;
 
-            mm = methodArgCache.apply(Tuples.pair(Tuples.pair(c, method.toString()), types));
-            if (mm == null)
-                return;
-
-
-            Atom ins = Operator.func(taskTerm);
-            Object inst = termToObj.get(ins);
+            Object inst = termToObj.get(Operator.func(taskTerm));
             assert (inst != null);
 
-            if (invokingGoal.get() != null) {
-                throw new TODO("we need a stack: " + invokingGoal.get() + " -> " + task);
-            }
-            invokingGoal.set(task);
+            if (evoked(task, objArgs, inst)) {
 
-            try {
-                mm.bindTo(inst).invokeWithArguments(orgs);
-            } catch (Throwable throwable) {
-                logger.error("{} {} {} {}", task, inst, mm, args);
-                throwable.printStackTrace();
-            } finally {
-                invokingGoal.set(null);
+//                MethodHandle mm = methodArgCache.apply(pair(pair(c, method.toString()), types));
+//                if (mm == null)
+//                    return;
+//                MethodHandle mh = instMethodCache.apply(pair(mm, inst));
+                Method mm = methodArgCache.apply(pair(pair(c, method), types));
+                if (mm == null)
+                    return;
+
+                if (invokingGoal.get() != null)
+                    throw new TODO("we need a stack: " + invokingGoal.get() + " -> " + task);
+
+                invokingGoal.set(task);
+                try {
+
+                    mm.invoke(inst, objArgs);
+
+                    //mh.invokeWithArguments(objArgs);
+                    //mh.invoke(objArgs);
+                    //mh.invokeExact(objArgs);
+
+                } catch (Throwable throwable) {
+                    logger.error("{} {} {}", task, inst, args);
+                    throwable.printStackTrace();
+                } finally {
+                    invokingGoal.set(null);
+                }
             }
 
         };
+    }
+
+    protected boolean evoked(Task task, Object[] args, Object inst) {
+        if (task.meta("mimic")==null)
+            logger.info("evoke: {}", task);
+
+        return true;
     }
 
     private Subterms validArgs(Subterms args) {
@@ -632,7 +700,7 @@ public class OObjects extends DefaultTermizer implements MethodHandler {
     private static boolean isGeneric(Method method) {
         return isGeneric(method.getGenericReturnType())
                 ||
-                Util.or((Predicate<Type>) OObjects::isGeneric, method.getGenericParameterTypes());
+                Util.or((Predicate<Type>) Opjects::isGeneric, method.getGenericParameterTypes());
     }
 
     private static boolean isGeneric(Type type) {
@@ -654,7 +722,8 @@ public class OObjects extends DefaultTermizer implements MethodHandler {
         return invoked(obj, wrapper, args, result);
     }
 
-    @Nullable Object invoked(Object obj, Method wrapped, Object[] args, Object result) {
+    @Nullable
+    private Object invoked(Object obj, Method wrapped, Object[] args, Object result) {
         if (methodExclusions.contains(wrapped.getName()))
             return result;
 
@@ -662,6 +731,10 @@ public class OObjects extends DefaultTermizer implements MethodHandler {
         if (in == null)
             return result;
 
+        return invoked(in, obj, wrapped, args, result);
+    }
+
+    protected Object invoked(Instance in, Object obj, Method wrapped, Object[] args, Object result) {
         return in.update(obj, wrapped, args, result);
     }
 

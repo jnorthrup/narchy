@@ -742,7 +742,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     /**
      * logs tasks and other budgeted items with a summary exceeding a threshold
      */
-    @NotNull
     public NAR logPriMin(Appendable out, float priThresh) {
         return log(out, v -> {
             Prioritized b = null;
@@ -754,6 +753,19 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
                 }
             }
             return b != null && b.pri() > priThresh;
+        });
+    }
+
+    public NAR logPresent(Appendable out) {
+        return log(out, v -> {
+            if (v instanceof Task) {
+                Task t = (Task) v;
+                long now = time();
+                int dur = dur();
+                return !((t.isBefore(now - dur) || t.isAfter(now + dur)));
+            } else {
+                return false;
+            }
         });
     }
 
@@ -1008,8 +1020,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     public NAR log(Appendable out, Predicate includeValue) {
         return trace(out, NAR.logEvents::contains, includeValue);
     }
-
-
 
 
     /**
@@ -1275,7 +1285,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      * sets current maximum allowed NAL level (1..8)
      * this doesnt affect the deriver. creating a NAL-limited deriver is the correct way to control NAL level usage
      */
-    @Deprecated public final NAR nal(int newLevel) {
+    @Deprecated
+    public final NAR nal(int newLevel) {
         nal = newLevel;
         return this;
     }
@@ -1314,7 +1325,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      */
     public NAR outputBinary(OutputStream o, Function<Task, Task> each) {
 
-        runLater(()-> {
+        runLater(() -> {
             DataOutputStream oo = new DataOutputStream(o);
 
             MutableInteger total = new MutableInteger(0), wrote = new MutableInteger(0);
@@ -1350,7 +1361,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     @NotNull
     public NAR outputText(@NotNull OutputStream o, @NotNull Function<Task, Task> each) {
 
-        runLater(()-> {
+        runLater(() -> {
             //SnappyFramedOutputStream os = new SnappyFramedOutputStream(o);
 
             PrintStream ps = new PrintStream(o);

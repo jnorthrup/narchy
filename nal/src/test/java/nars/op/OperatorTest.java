@@ -83,7 +83,7 @@ public class OperatorTest {
 
                 n.believe($.impl(x.term(), r), Tense.Present);
             }
-        }, 0.51f, 1));
+        }, 0.51f));
         n.log();
         n.input("x(1)! :|:");
         n.run(4);

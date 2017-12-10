@@ -1,26 +1,25 @@
 package nars.op.java;
 
 import jcog.Util;
-import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Param;
-import nars.term.Term;
-import nars.time.Tense;
+import nars.Task;
 import org.junit.jupiter.api.Test;
-import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Method;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public class ThermostatTest {
 
     public static class Thermostat {
-        private int now, target;
-        private final static int cold = 0, hot = 1;
+        private int current, target;
+
+        /** limits */
+        private final static int cold = 0, hot = 3;
 
         public int is() {
-            return now;
+            return current;
         }
 
         public int should() {
@@ -28,15 +27,29 @@ public class ThermostatTest {
         }
 
         private void add(int delta) {
-            now = Util.clamp(now + delta, cold, hot);
+            current = Util.clamp(current + delta, cold, hot);
         }
 
         public void up() {
+            System.err.println("t++");
             add(+1);
         }
 
         public void down() {
+            System.err.println("t--");
             add(-1);
+        }
+
+        public String say() {
+            String msg;
+            if (is() < should())
+                msg = "too cold";
+            else if (is() > should())
+                msg = "too hot";
+            else
+                msg = "temperature ok";
+            System.err.println(msg);
+            return msg;
         }
 
         public void should(int x) {
@@ -44,102 +57,41 @@ public class ThermostatTest {
         }
 
         public void is(int x) {
-            this.now = x;
+            this.current = x;
         }
     }
 
-    /** labelled training episode */
-    public static class Trick<X> {
-
-        final static org.slf4j.Logger logger = LoggerFactory.getLogger(Trick.class);
-
-        final String id;
-
-        /** setup preconditions */
-        final Consumer<X> pre;
-
-        /** activity */
-        final Consumer<X> action;
-
-        /** validation */
-        final Predicate<X> post;
-
-        public Trick(String name, Consumer<X> pre, Consumer<X> action, Predicate<X> post) {
-            this.id = name;
-            this.pre = pre;
-            this.action = action;
-            this.post = post;
-        }
-
-        public boolean valid(X x) {
-             return post.test(x);
-        }
-
-        public void train(X x, NAR n) {
-
-            logger.info("training: {}", id);
-
-            n.clear();
-            Term LEARN = $.func("learn", $.the(id));
-            n.believe(LEARN, Tense.Present); //label the learning episode which begins now
-            pre.accept(x);
-
-            n.run(1000); //perceive the preconditions
-
-            Term DO = $.func("do", $.the(id));
-            n.believe(DO, Tense.Present); //label the activity that will happen next
-
-            action.accept(x); //execute the task
-
-            n.run(1000); //consider the execution
-
-            n.believe(DO.neg(), Tense.Present); //done doing
-            n.believe(LEARN.neg(), Tense.Present); //done learning
-
-        }
-    }
-
-    public static class ThermostatTester {
-
-        final static org.slf4j.Logger logger = LoggerFactory.getLogger(ThermostatTester.class);
-        protected final Thermostat x;
-        protected final NAR n;
-
-        public ThermostatTester() {
-
-            Param.DEBUG = true;
-
-            n = NARS.tmp();
-
-            OObjects objs = new OObjects(n);
-
-            this.x =
-                    objs.a("x", Thermostat.class);
-            //objs.the("x", new MyMutableInteger());
-        }
-
-        public Trick teach(String taskName,
-                          Consumer<Thermostat> pre,
-                          Consumer<Thermostat> task,
-                          Predicate<Thermostat> post /* validation*/) {
-
-            Trick<Thermostat> t = new Trick<>(taskName, pre, task, post);
-            t.train(x, n);
-
-            boolean valid = t.valid(x);
-            if (!valid)
-                throw new RuntimeException("invalid after training. please dont confuse NARS");
-
-            n.run(1000); //debriefing
-
-            return t;
-        }
-    }
 
     @Test
     public void test1() {
-        ThermostatTester env = new ThermostatTester();
-        env.n.log();
+        Param.DEBUG = true;
+        final int DUR = 10;
+
+        NAR n = NARS.tmp();
+        n.time.dur(DUR);
+        n.termVolumeMax.set(20);
+        n.freqResolution.set(0.25f);
+        n.confResolution.set(0.25f);
+        //n.logPriMin(System.out, 0.5f);
+        n.logPresent(System.out);
+
+        Driver<Thermostat> env = new Driver<>(new Opjects(n) {
+            @Override
+            protected Object invoked(Instance in, Object obj, Method wrapped, Object[] args, Object result) {
+                Object r = super.invoked(in, obj, wrapped, args, result);
+
+                n.runLater(()->n.run(DUR*2));
+
+                return r;
+            }
+
+            @Override
+            protected boolean evoked(Task task, Object[] args, Object inst) {
+                return super.evoked(task, args, inst);
+            }
+        }, Thermostat.class);
+
+
 
         Consumer<Thermostat>
             hotToCold =  x -> { x.is(x.hot);  x.should(x.cold); },
@@ -147,16 +99,19 @@ public class ThermostatTest {
 
         for (Consumer<Thermostat> condition : new Consumer[] { hotToCold, coldToCold })
             env.teach("cold", condition, x -> {
+                x.say();
                 while (x.is() > x.cold) x.down();
+                x.say();
             }, x -> x.is() == x.cold);
 
-
         Consumer<Thermostat>
-            coldToHot =  x -> { x.is(x.cold);  x.should(x.hot); },
-            hotToHot = x -> { x.is(x.hot); x.should(x.hot); };
+            coldToHot =  x -> { x.is(x.cold); x.should(x.hot); },
+            hotToHot = x ->   { x.is(x.hot);  x.should(x.hot); };
         for (Consumer<Thermostat> condition : new Consumer[] { coldToHot, hotToHot })
             env.teach("hot", condition, x -> {
+                x.say();
                 while (x.is() < x.hot) x.up();
+                x.say();
             }, x -> x.is() == x.hot);
 
     }

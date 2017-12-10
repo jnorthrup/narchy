@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static nars.Op.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class OObjectsTest {
+public class OpjectsTest {
 
     static class SimpleClass {
         private int v;
@@ -30,7 +30,7 @@ public class OObjectsTest {
     public void testSelfInvocation() throws Narsese.NarseseException {
         final NAR n = NARS.tmp();
 
-        final OObjects objs = new OObjects(n);
+        final Opjects objs = new Opjects(n);
 
         final SimpleClass x = objs.a("x", SimpleClass.class);
         StringBuilder sb = new StringBuilder();
@@ -55,7 +55,7 @@ public class OObjectsTest {
         final NAR n = NARS.tmp();
 
         n.log();
-        final OObjects objs = new OObjects(n);
+        final Opjects objs = new Opjects(n);
 
         final SimpleClass x = objs.a("x", SimpleClass.class);
         StringBuilder sb = new StringBuilder();
@@ -71,7 +71,7 @@ public class OObjectsTest {
     public void testExternalInvocation() {
         final NAR n = NARS.tmp();
 
-        final OObjects objs = new OObjects(n);
+        final Opjects objs = new Opjects(n);
 
         final SimpleClass x = objs.a("x", SimpleClass.class);
         StringBuilder sb = new StringBuilder();
@@ -99,7 +99,7 @@ public class OObjectsTest {
         final NAR n = NARS.tmp();
 
 
-        final OObjects objs = new OObjects(n);
+        final Opjects objs = new Opjects(n);
 
         final SimpleClass x = objs.a("x", SimpleClass.class);
 

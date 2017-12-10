@@ -3,7 +3,7 @@ package nars.experiment;
 import jcog.math.FloatParam;
 import nars.*;
 import nars.experiment.tetris.TetrisState;
-import nars.op.java.OObjects;
+import nars.op.java.Opjects;
 import nars.util.signal.Bitmap2D;
 import nars.util.signal.CameraSensor;
 
@@ -159,7 +159,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
     private void actionsReflect() {
 
-        OObjects oo = new OObjects(nar);
+        Opjects oo = new Opjects(nar);
         oo.methodExclusions.add("toVector");
         state =
                 //oo.the("tetris", this.state);
@@ -169,9 +169,9 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
 
     void actionsToggle() throws Narsese.NarseseException {
-        actionToggle($.p("left"), ()-> state.take_action(LEFT));
-        actionToggle($.p("right"), ()-> state.take_action(RIGHT));
-        actionToggle($.p("rotCW"), ()-> state.take_action(CW));
+        actionToggle($.p("left"), ()-> state.act(LEFT));
+        actionToggle($.p("right"), ()-> state.act(RIGHT));
+        actionToggle($.p("rotCW"), ()-> state.act(CW));
         //actionToggle($.p("rotCCW"), ()-> state.take_action(CCW));
     }
 
@@ -181,17 +181,17 @@ public class Tetris extends NAgentX implements Bitmap2D {
         actionTriState($.the("X"), (i) -> {
             switch (i) {
                 case -1:
-                    state.take_action(LEFT);
+                    state.act(LEFT);
                     break;
                 case 0:
                     break;
                 case +1:
-                    state.take_action(RIGHT);
+                    state.act(RIGHT);
                     break;
             }
         });
 
-        actionToggle($.the("R"), ()-> state.take_action(CW));
+        actionToggle($.the("R"), ()-> state.act(CW));
 
 //        actionTriState($("R"), (i) -> {
 //            switch (i) {

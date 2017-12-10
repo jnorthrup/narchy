@@ -2,7 +2,7 @@ package nars.experiment.connect4;
 
 import nars.NAR;
 import nars.NARS;
-import nars.op.java.OObjects;
+import nars.op.java.Opjects;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,7 +35,7 @@ public class ConnectFour {
     public static void main(String[] args) {
         NAR n = NARS.tmp();
         n.log();
-        OObjects o = new OObjects(n);
+        Opjects o = new Opjects(n);
         ConnectFourState c = o.a("c", ConnectFourState.class);
         while (true) {
             switch (c.moving()) {

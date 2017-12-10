@@ -5,17 +5,21 @@ import jcog.pri.PLink;
 import jcog.pri.op.PriMerge;
 import nars.$;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.control.DurService;
+import nars.control.MetaGoal;
 import nars.term.Term;
 import nars.truth.Truth;
+import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
@@ -25,7 +29,7 @@ import java.util.function.BiFunction;
 public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
     //    private final float minPeriod;
-    private final float desireThresh;
+    private final MutableFloat desireThresh;
 
 //    /**
 //     * time of the current rising edge, or ETERNAL if not activated
@@ -37,8 +41,6 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 //     */
 //    final static float presentDurs = 0.5f;
 
-//
-//    long lastActivity = ETERNAL;
 
     static final Logger logger = LoggerFactory.getLogger(AtomicExec.class);
 
@@ -55,11 +57,12 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
     private DurService onCycle;
 
+
     public AtomicExec(BiConsumer<Task, NAR> exe, float dThresh) {
-        this(exe, dThresh, 0);
+        this(exe, new MutableFloat(dThresh));
     }
 
-    public AtomicExec(BiConsumer<Task, NAR> exe, float dThresh, @Deprecated float minRecoveryPeriod /* dur's */) {
+    public AtomicExec(BiConsumer<Task, NAR> exe, MutableFloat dThresh) {
         this.exe = exe;
         active.setCapacity(ACTIVE_CAPACITY);
         this.desireThresh = dThresh;
@@ -72,61 +75,72 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
         return true;
     }
 
-    protected synchronized void update(NAR n) {
-        //probe all active concepts.
-        //  remove any below desire threshold
-        //  execute any above desire-belief threshold
-        //  if no active remain, disable update service
+    final AtomicBoolean busy = new AtomicBoolean(false);
 
-        assert(!active.isEmpty());
+    protected void update(NAR n) {
+        if (!busy.compareAndSet(false, true))
+            return; //in-progress
+        try {
+            //probe all active concepts.
+            //  remove any below desire threshold
+            //  execute any above desire-belief threshold
+            //  if no active remain, disable update service
 
-        long now = n.time();
-        int dur = n.dur();
-        long start = now - dur /2;
-        long end = now + dur /2;
-        List<Task> toInvoke = $.newArrayList(0);
-        active.forEach(x -> {
-            Term term = x.get();
-            Concept c = n.concept(term);
-            Task desire = c.goals().match(start, end, null, n);
-            Truth desireTruth;
-            float d;
-            if (desire == null
-                    || (desireTruth = desire.truth(now,  now)) == null
-                    || (d = desireTruth.expectation()) < desireThresh) {
-                x.delete();
-                return;
-            }
-            Truth belief = c.beliefs().truth(start, end, n);
-            float b = belief == null ? 0 /* assume false with no evidence */ :
-                    belief.expectation();
+            assert (!active.isEmpty());
 
-            float delta = d - b;
-            if (delta >= desireThresh) {
-                toInvoke.add(desire);
-            }
-        });
-        active.commit();
-        if (active.isEmpty()) {
-            onCycle.stop();
-            onCycle = null;
-        }
-        if (!toInvoke.isEmpty()) {
-            n.runLater(()->{
-                for (int i = 0, toInvokeSize = toInvoke.size(); i < toInvokeSize; i++)
-                    exe.accept(toInvoke.get(i), n);
+            long now = n.time();
+            int dur = n.dur();
+            long start = now - dur / 2;
+            long end = now + dur / 2;
+            List<Task> toInvoke = $.newArrayList(0);
+            float desireThresh = this.desireThresh.floatValue();
+            active.forEach(x -> {
+                Term xx = x.get();
+                Concept c = n.concept(xx);
+                Task desire = c.goals().match(start, end, xx, n);
+                Truth desireTruth;
+                float d;
+                if (desire == null
+                        || (desireTruth = desire.truth(start, end)) == null
+                        || (d = desireTruth.expectation()) < desireThresh) {
+                    x.delete();
+                    return;
+                }
+                Truth belief = c.beliefs().truth(start, end, n);
+                float b = belief == null ? 0 /* assume false with no evidence */ :
+                        belief.expectation();
+
+                float delta = d - b;
+                if (delta >= desireThresh) {
+                    toInvoke.add(desire);
+                    MetaGoal.learn(MetaGoal.Action, desire.cause(), d, n);
+                }
             });
+            active.commit();
+            if (active.isEmpty()) {
+                onCycle.stop();
+                onCycle = null;
+            }
+            if (!toInvoke.isEmpty()) {
+                n.runLater(() -> {
+                    for (int i = 0, toInvokeSize = toInvoke.size(); i < toInvokeSize; i++) {
+                        Task tt = toInvoke.get(i);
+                        if (!tt.isDeleted()) {
+                            exe.accept(tt, n);
+                        }
+                    }
+                });
+            }
+        } finally {
+            busy.set(false);
         }
     }
 
     @Override
     public @Nullable Task apply(Task x, NAR n) {
 
-        if (x.freq() < 0.5f)
+        if (x.freq() <= 0.5f + Param.TRUTH_EPSILON)
             return x; //dont even think about executing it, but pass thru to reasoner
-
-        if (x.meta("mimic")!=null)
-            return x; //filter instructive tasks (would cause feedback loop)
 
         if (!exePrefilter(x))
             return x; //pass thru to reasoner
@@ -136,7 +150,11 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
         ));
 
         if (onCycle == null) {
-            onCycle = DurService.on(n, this::update);
+            synchronized (active) {
+                if (onCycle==null) {
+                    onCycle = DurService.on(n, this::update);
+                }
+            }
         }
 
         return x;
