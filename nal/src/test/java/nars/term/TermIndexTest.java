@@ -33,7 +33,7 @@ public class TermIndexTest {
 
         Task t1 = t.inputAndGet(term);
         Task t2 = t.inputAndGet(term);
-        t.cycle();
+        t.run();
 
         testShared(t.concept(t1), t.concept(t2));
 

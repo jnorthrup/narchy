@@ -47,13 +47,13 @@ public class BeliefTableTest {
         assertEquals(1, beliefs.size());
 
         b.believe(1.0f, 0.5f);
-        n.cycle();
+        n.run();
         b.print();
         assertEquals(3 /* revision */, beliefs.size());
         assertEquals(0.669, beliefs.match(ETERNAL, null, n).conf(), 0.01);
 
         b.believe(1.0f, 0.5f);
-        n.cycle();
+        n.run();
         b.print();
         assertEquals(5, beliefs.size());
         @NotNull BeliefTable bb = beliefs;
@@ -61,7 +61,7 @@ public class BeliefTableTest {
         assertEquals(0.75, n.beliefTruth(b, n.time()).conf(), 0.01);
 
         b.believe(1.0f, 0.5f);
-        n.cycle();
+        n.run();
         b.print();
         assertEquals(0.79, beliefs.match(ETERNAL, null, n).conf(), 0.02);
         assertEquals(6, beliefs.size());

@@ -7,6 +7,7 @@ import jcog.Util;
 import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Topic;
+import jcog.exe.Cycler;
 import jcog.list.FasterList;
 import jcog.math.MutableInteger;
 import jcog.pri.Pri;
@@ -958,7 +959,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      * steps 1 frame forward. cyclesPerFrame determines how many cycles this frame consists of
      */
     @Override
-    public final void cycle() {
+    public final void run() {
 
         time.cycle(this);
 

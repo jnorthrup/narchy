@@ -55,20 +55,21 @@ public class Anoncepts extends LeakBack {
     }
 
     @Override
-    protected float leak(Task next) {
-        Term a = next.term().root().anonymous();
+    protected float leak(Task task) {
+        Term taskTerm = task.term().root();
+        Term a = taskTerm.anonymous();
         if (a == null)  //?<- why would this, if it does
             return 0;
 
-        float pri = next.priElseZero();
+        float pri = task.priElseZero();
 
         float cr = conceptActivationRate.floatValue();
         Concept c = nar.activate(a, pri * cr);
         if (c == null)
             return 0;  //???
 
-        c.tasklinks().putAsync(new PLinkUntilDeleted<>(next, pri * taskLinkActivationRate.floatValue()));
-        c.termlinks().putAsync(new PLink<>(next.term(), pri * cr));
+        c.tasklinks().putAsync(new PLinkUntilDeleted<>(task, pri * taskLinkActivationRate.floatValue()));
+        c.termlinks().putAsync(new PLink<>(taskTerm, pri * cr));
 
         return 1;
     }

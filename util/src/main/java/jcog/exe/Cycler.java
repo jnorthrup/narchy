@@ -1,22 +1,28 @@
-package nars;
-
-import jcog.exe.Loop;
+package jcog.exe;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
 
-/** like an Iterator, but for unbounded iterations,
-  * with both synchronous and asynchronous execution methods */
-public interface Cycler {
+/**
+ * like an Iterator, but for unbounded iterations,
+ * with both synchronous and asynchronous execution methods
+ *
+ * calls the Runnable.run() method each cycle/iteration.
+ */
+public interface Cycler extends Runnable {
 
-    void cycle();
+    /**
+     * run asynchronously with specified delay (milliseconds)
+     */
+    Loop startPeriodMS(int initialDelayMS);
 
-
-    /** runs until the returned AtomicBoolean is false */
-    default AtomicBoolean run() {
+    /**
+     * runs until the returned AtomicBoolean is false
+     */
+    default AtomicBoolean runUntil() {
         AtomicBoolean kontinue = new AtomicBoolean(true);
         while (kontinue.get())
-            cycle();
+            run();
         return kontinue;
     }
 
@@ -25,22 +31,28 @@ public interface Cycler {
      */
     default void run(int cycles) {
         for (; cycles > 0; cycles--)
-            cycle();
+            run();
     }
 
-    /** run while the supplied predicate returns true */
+    /**
+     * run while the supplied predicate returns true
+     */
     default void runWhile(BooleanSupplier test) {
         while (test.getAsBoolean()) {
-            cycle();
+            run();
         }
     }
 
-    /** run asynchronously with no delay */
+    /**
+     * run asynchronously with no delay
+     */
     default Loop start() {
         return startPeriodMS(0);
     }
 
-    /** run asynchronously at specified FPS */
+    /**
+     * run asynchronously at specified FPS
+     */
     default Loop startFPS(float initialFPS) {
         assert (initialFPS >= 0);
 
@@ -48,7 +60,5 @@ public interface Cycler {
         return startPeriodMS(Math.round(millisecPerFrame));
     }
 
-    /** run asynchronously with specified delay (milliseconds) */
-    Loop startPeriodMS(int initialDelayMS);
 
 }

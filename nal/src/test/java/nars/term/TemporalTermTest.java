@@ -189,7 +189,7 @@ public class TemporalTermTest {
         Task a = n.inputAndGet("((x) ==>+10 (y)).");
         Task c = n.inputAndGet("((x) ==>+9 (y)).");
         Task b = n.inputAndGet("((x) <-> (y)).");
-        n.cycle();
+        n.run();
 
         @NotNull Term aa = a.term();
         assertNotNull(aa);
@@ -535,7 +535,7 @@ public class TemporalTermTest {
         n.terms.print(System.out);
 
         n.input("(x ==>+1 y). :|:"); //present
-        n.cycle();
+        n.run();
 
         //d.concept("(x==>y)").print();
 

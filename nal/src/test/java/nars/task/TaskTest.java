@@ -132,11 +132,11 @@ public class TaskTest {
 
         Task x = n.inputAndGet("<a --> b>.");
         assertArrayEquals(new long[]{1}, x.stamp());
-        n.cycle();
+        n.run();
 
         Task y = n.inputAndGet("<b --> c>.");
         assertArrayEquals(new long[]{2}, y.stamp());
-        n.cycle();
+        n.run();
 
         n.reset();
 

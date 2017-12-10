@@ -33,7 +33,7 @@ public class NARLoop extends Loop {
 
     @Override
     public final boolean next() {
-        nar.cycle();
+        nar.run();
         return true;
     }
 

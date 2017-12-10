@@ -85,7 +85,7 @@ public class ScalarConceptsTest {
         //run a few oscillations
         for (int i = 0; i < 5; i++) {
             m.set(Math.sin(i / 2f));
-            n.cycle();
+            n.run();
 
 
             double freqSum = f.sensors.stream()

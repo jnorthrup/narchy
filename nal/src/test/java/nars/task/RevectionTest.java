@@ -278,11 +278,11 @@ public class RevectionTest {
 
 
         b.believe(0.5f, 0.0f, 0.85f, 5);
-        n.cycle();
+        n.run();
         b.believe(0.5f, 0.95f, 0.85f, 10);
-        n.cycle();
+        n.run();
         b.believe(0.5f, 1.0f, 0.85f, 11); //this and the previous one should get combined when inserting the 4th
-        n.cycle();
+        n.run();
 
         b.print();
         assertEquals(3, b.size(true));

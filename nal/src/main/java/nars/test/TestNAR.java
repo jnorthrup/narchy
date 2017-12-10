@@ -239,7 +239,7 @@ public class TestNAR {
         //try {
         int frames = Math.max(0,(int) (finalCycle - time()));
         while (frames-- > 0 && !finished)
-            nar.cycle();
+            nar.run();
 
         //finish anything pending
         nar.time.synch(nar);
