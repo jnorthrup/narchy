@@ -33,7 +33,7 @@ public class FZero extends NAgentX {
     private final FZeroGame fz;
 
     float fwdSpeed = 8;
-    float rotSpeed = 0.12f;
+    float rotSpeed = 0.2f;
 
     public static void main(String[] args) {
 
@@ -43,7 +43,8 @@ public class FZero extends NAgentX {
 
             FZero a = null;
             n.freqResolution.set(0.03f);
-            n.confResolution.set(0.01f);
+            n.confResolution.set(0.02f);
+            n.confMin.set(0.04f);
             a = new FZero(n);
             a.happy.resolution(0.05f);
 

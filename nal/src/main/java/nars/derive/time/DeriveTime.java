@@ -62,7 +62,7 @@ public class DeriveTime extends TimeGraph {
         this.task = copy.task;
         this.belief = copy.belief;
         this.dither = copy.dither;
-        this.byTerm.putAll(copy.byTerm);
+        this.byTerm.putAll(copy.byTerm); //TODO wrap rather than copy
         if (transformedTask!=null) {
             Event y = know(transformedTask, task.start());
             link(know(task.term(), task.start()), 0, y);

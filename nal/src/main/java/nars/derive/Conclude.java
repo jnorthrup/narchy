@@ -32,9 +32,24 @@ public final class Conclude {
 
         Term pattern = rule.conclusion().sub(0);
 
-        //substitute occurrences of the exact task and belief terms with the short-cut
-        pattern = index.get(
-                pattern.replace(rule.getTask(), Derivation._taskTerm).replace(rule.getBelief(), Derivation._beliefTerm), true).term();
+        //TODO may interfere with constraints, functors, etc or other features, ie.
+        // if the pattern is a product for example?
+        //            pattern = pattern.replace(ta, Derivation._taskTerm);
+        // determine if any cases where a shortcut like this can work (ie. no constraints, not a product etc)
+
+        //        //substitute compound occurrences of the exact task and belief terms with the short-cut
+//        Term ta = rule.getTask();
+//        if (!ta.op().var) {
+//            if (pattern.equals(ta))
+//                pattern = Derivation.TaskTerm;
+//        }
+//        Term tb = rule.getBelief();
+//        if (!tb.op().var) {
+//            //pattern = pattern.replace(tb, Derivation._beliefTerm);
+//            if (pattern.equals(tb))
+//                pattern = Derivation.BeliefTerm;
+//        }
+        pattern = index.get(pattern, true).term();
 
         //HACK unwrap varIntro so we can apply it at the end of the derivation process, not before like other functors
         boolean introVars;

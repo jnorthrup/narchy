@@ -110,21 +110,21 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         return know(t, TIMELESS);
     }
 
-    public void know(Absolute a) {
-        know(a.id, a.when);
-    }
+//    public void know(Absolute a) {
+//        know(a.id, a.when);
+//    }
 
     public Event know(Term t, long start) {
         return event(t, start, true);
     }
 
-    /**
-     * negate if negated, for precision in discriminating positive/negative
-     */
-    static Term polarizedTaskTerm(Task t) {
-        Truth tt = t.truth();
-        return t.term().negIf(tt != null && tt.isNegative());
-    }
+//    /**
+//     * negate if negated, for precision in discriminating positive/negative
+//     */
+//    static Term polarizedTaskTerm(Task t) {
+//        Truth tt = t.truth();
+//        return t.term().negIf(tt != null && tt.isNegative());
+//    }
 
     public void know(Task t) {
         Term tt = t.term();
@@ -136,7 +136,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     private void know(Task task, Term term) {
         long start = task.start();
         long end = task.end();
-        if (end != start && term.op() != CONJ) {
+        if (end != start) {
             //add each endpoint separately
             event(term, start, true);
             event(term, end, true);

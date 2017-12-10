@@ -44,8 +44,8 @@ import static nars.time.Tense.ETERNAL;
  */
 public class Derivation extends Unify {
 
-    public static final Atomic _taskTerm = Atomic.the("_taskTerm");
-    public static final Atomic _beliefTerm = Atomic.the("_beliefTerm");
+    public static final Atomic TaskTerm = Atomic.the("_taskTerm");
+    public static final Atomic BeliefTerm = Atomic.the("_beliefTerm");
 
 
     public NAR nar;
@@ -221,8 +221,8 @@ public class Derivation extends Unify {
         for (Termed x : derivationFunctors) {
             m.put(x.term(), x);
         }
-        m.put(_taskTerm, () -> taskTerm);
-        m.put(_beliefTerm, () -> beliefTerm);
+        m.put(TaskTerm, () -> taskTerm);
+        m.put(BeliefTerm, () -> beliefTerm);
         this.derivationFunctors = Maps.immutable.ofMap(m);
     }
 
