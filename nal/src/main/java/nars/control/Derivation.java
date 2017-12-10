@@ -16,6 +16,7 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.anon.Anon;
+import nars.term.anon.CachedAnon;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
@@ -167,7 +168,7 @@ public class Derivation extends Unify {
 
         derivedTerm = new Versioned(this, 3);
 
-        anon = new Anon.CachingAnon(16) {
+        anon = new CachedAnon(16) {
 //            @Override
 //            public Term get(Term x) {
 //                Term y = super.get(x);

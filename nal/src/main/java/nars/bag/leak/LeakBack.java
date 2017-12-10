@@ -1,18 +1,20 @@
 package nars.bag.leak;
 
+import jcog.Paper;
+import jcog.Skill;
 import jcog.math.FloatParam;
 import nars.NAR;
 import nars.control.CauseChannel;
 import nars.task.ITask;
 
-/** LeakOut subclass which has support for a return input channel
- * whose value adjusts the throttle rate of the Leak. */
+/** LeakBack generates new tasks through its CauseChannel -
+ *  and its value directly adjusts the throttle rate of the
+ *  Leak it will receive. */
+@Paper
+@Skill({"Queing_theory","Feedback"})
 abstract public class LeakBack extends TaskLeak {
 
     final static float INITIAL_RATE = 1f;
-
-    //HACK
-    public final FloatParam boost = new FloatParam(1f, 0, 2f);
 
     private final CauseChannel<ITask> out;
 

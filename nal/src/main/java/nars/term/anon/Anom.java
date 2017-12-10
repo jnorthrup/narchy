@@ -30,6 +30,11 @@ public final class Anom extends Int implements AnonID {
     }
 
     @Override
+    public String toString() {
+        return "_" + Integer.toString(anonNum());
+    }
+
+    @Override
     public short anonID() {
         return (short) id; //since ATOM_MASK is zero, it is just the lowest 8 bits of the 'id' int
     }

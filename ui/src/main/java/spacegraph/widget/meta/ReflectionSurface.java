@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import jcog.Services;
 import jcog.list.FasterList;
 import jcog.math.FloatParam;
+import org.apache.commons.lang.StringUtils;
 import spacegraph.Surface;
 import spacegraph.layout.Grid;
 import spacegraph.widget.button.CheckBox;
@@ -107,7 +108,8 @@ public class ReflectionSurface<X> extends Grid {
     private void collectServices(Services x, List<Surface> l) {
         x.stream().forEach((s) -> {
             seen.add(s);
-            l.add(new WindowToggleButton(s.toString(), () -> new ReflectionSurface(s)));
+            String label = StringUtils.abbreviate(s.toString(), 16);
+            l.add(new WindowToggleButton(label, () -> new ReflectionSurface(s)));
         });
     }
 

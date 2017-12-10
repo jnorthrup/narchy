@@ -1,0 +1,41 @@
+package nars.term.anon;
+
+import jcog.memoize.LinkedMRUMemoize;
+import nars.term.Compound;
+import nars.term.Term;
+
+public class CachedAnon extends Anon {
+
+    protected final LinkedMRUMemoize.LinkedMRUMemoizeRecurseable<Term, Term> cache;
+
+    public CachedAnon() {
+        this(16);
+    }
+
+    public CachedAnon(int capacity) {
+        cache = new LinkedMRUMemoize.LinkedMRUMemoizeRecurseable<>(super::_get, capacity);
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        cache.clear();
+    }
+
+    @Override
+    public Term _get(Term x) {
+        if ((x instanceof Compound)) {
+            return cache.apply(x);
+        } else {
+            return super._get(x);
+        }
+    }
+
+    @Override
+    protected Term putTransformed(Term x) {
+        Term y = super.putTransformed(x);
+        if (y instanceof Compound)
+            cache.putIfAbsent(y, x);
+        return y;
+    }
+}

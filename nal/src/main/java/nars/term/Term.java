@@ -29,6 +29,7 @@ import nars.Op;
 import nars.Param;
 import nars.index.term.TermContext;
 import nars.op.mental.AliasConcept;
+import nars.term.anon.Anom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
@@ -824,6 +825,10 @@ public interface Term extends Termed, Comparable<Termed> {
     @Nullable
     Term temporalize(Retemporalize r);
 
+
+    default Term anonymous() {
+        return Anom.the(0);
+    }
 
 }
 

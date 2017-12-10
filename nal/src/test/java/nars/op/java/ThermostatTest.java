@@ -76,7 +76,7 @@ public class ThermostatTest {
         //n.logPriMin(System.out, 0.5f);
         n.logPresent(System.out);
 
-        Teacher<Thermostat> env = new Teacher<>(new Opjects(n) {
+        Teacher<Thermostat> env = new Teacher<Thermostat>(new Opjects(n) {
             @Override
             protected Object invoked(Instance in, Object obj, Method wrapped, Object[] args, Object result) {
 

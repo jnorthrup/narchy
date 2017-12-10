@@ -14,6 +14,7 @@ import nars.gui.Vis;
 import nars.gui.graph.EdgeDirected;
 import nars.gui.graph.run.SimpleConceptGraph1;
 import nars.index.term.map.CaffeineIndex;
+import nars.op.Anoncepts;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.op.video.*;
@@ -279,6 +280,8 @@ abstract public class NAgentX extends NAgent {
 //            //n.emotion.happy(n.emotion.busyPri.getSum()/50000f);
 //        });
 
+
+        new Anoncepts(8, n);
 
 //        new Implier(2f, a,
 //                1

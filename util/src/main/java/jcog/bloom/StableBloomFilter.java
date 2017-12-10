@@ -36,18 +36,22 @@ public class StableBloomFilter<E> implements CountingLeakySet<E> {
         this.numberOfHashes = numberOfHashes;
         this.cells = new byte[numberOfCells];
         this.hashProvider = hashProvider;
-        this.forget = (int) Math.ceil(numberOfCells * forget);
+        this.forget = forget(forget);
         this.rng = rng;
+    }
+
+    public int forget(float forget) {
+        return (int) Math.ceil(numberOfCells * forget);
     }
 
     /**
      * if the element isnt contained, add it. return true if added, false if already present.
      */
     public boolean addIfMissing(E element) {
-        return addIfMissing(element, 0, null);
+        return addIfMissing(element, 1);
     }
 
-    public boolean addIfMissing(E element, float unlearnIfNew, Random rng) {
+    public boolean addIfMissing(E element, float unlearnIfNew) {
         int[] hash = hash(element);
         boolean c = contains(hash);
         if (!c) {
@@ -100,8 +104,8 @@ public class StableBloomFilter<E> implements CountingLeakySet<E> {
     }
 
 
-    public void unlearn(float rate, Random rng) {
-        for (int i = 0; i < forget; i++) {
+    public void unlearn(float forgetFactor, Random rng) {
+        for (int i = 0; i < Math.round(forget*forgetFactor); i++) {
             int index = rng.nextInt(numberOfCells);
             decrement(index);
         }

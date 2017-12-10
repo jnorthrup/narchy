@@ -24,22 +24,22 @@ public class AnonTest {
 
     @Test
     public void testAtoms() throws Narsese.NarseseException {
-        assertAnon("0", "a");
+        assertAnon("_0", "a");
         assertAnon("#1", $.varDep(1)); //unchanged
-        assertAnon("0", $.the(2)); //int remaps to internal int
+        assertAnon("_0", $.the(2)); //int remaps to internal int
     }
 
     @Test
     public void testCompounds() throws Narsese.NarseseException {
-        assertAnon("(0-->1)", "(a-->b)");
+        assertAnon("(_0-->_1)", "(a-->b)");
 
-        assertAnon("(0-->#1)", "(a-->#1)");
+        assertAnon("(_0-->#1)", "(a-->#1)");
 
-        assertAnon("(((0-->(1,2,#1))==>(3,4)),?2)",
+        assertAnon("(((_0-->(_1,_2,#1))==>(_3,_4)),?2)",
                 "(((a-->(b,c,#2))==>(e,f)),?1)");
 
         assertEquals("(4..6-->x)", $("((|,4,5,6)-->x)").toString());
-        assertAnon("(0-->1)", "((|,4,5,6)-->x)");
+        assertAnon("(_0-->_1)", "((|,4,5,6)-->x)");
 
     }
 

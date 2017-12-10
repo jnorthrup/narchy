@@ -76,8 +76,6 @@ public abstract class TaskLeak extends Causable {
             in.put(new PLink<>(t, t.priElseZero()));
     }
 
-
-
     protected boolean preFilter(Task next) {
         return true;
     }

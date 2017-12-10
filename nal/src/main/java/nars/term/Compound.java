@@ -29,6 +29,7 @@ import nars.Op;
 import nars.derive.AbstractPred;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.TermContext;
+import nars.term.anon.Anon;
 import nars.term.container.Subterms;
 import nars.term.container.TermVector;
 import nars.term.subst.Unify;
@@ -195,6 +196,11 @@ public interface Compound extends Term, IPair, Subterms {
         return DTERNAL;
     }
 
+
+    @Override
+    default Term anonymous() {
+        return new Anon().put(this);
+    }
 
     @Override
     default boolean recurseTerms(Predicate<Term> descendFilter, Predicate<Term> whileTrue, @Nullable Term parent) {
