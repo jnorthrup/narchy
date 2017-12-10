@@ -97,8 +97,12 @@ public class Anon {
         } else if (x instanceof Atomic) {
             return Anom.the[fwd.getIfAbsentPutWithKey(x, nextUniqueAtom)];
         } else {
-            return x.transform(PUT);
+            return putTransformed(x);
         }
+    }
+
+    protected Term putTransformed(Term x) {
+        return x.transform(PUT);
     }
 
     public Term get(Term x) {
@@ -132,7 +136,7 @@ public class Anon {
 
     public static class CachingAnon extends Anon {
 
-        final LinkedMRUMemoize<Term, Term> cache;
+        protected final LinkedMRUMemoize.LinkedMRUMemoizeRecurseable<Term, Term> cache;
 
         public CachingAnon() {
             this(16);
@@ -150,10 +154,19 @@ public class Anon {
 
         @Override
         public Term _get(Term x) {
-            if (x instanceof Anom)
-                return super._get(x);
-            else
+            if ((x instanceof Compound)) {
                 return cache.apply(x);
+            } else {
+                return super._get(x);
+            }
+        }
+
+        @Override
+        protected Term putTransformed(Term x) {
+            Term y = super.putTransformed(x);
+            if (y instanceof Compound)
+                cache.putIfAbsent(y, x);
+            return y;
         }
     }
 

@@ -51,7 +51,7 @@ public final class Conclusion extends AbstractPred<Derivation> {
         Term c1 = pattern.eval(d);
 
         int volMax = d.termVolMax;
-        if (c1 == null || !c1.op().conceptualizable || c1.volume() > volMax || c1.hasAny(BOOL,VAR_PATTERN) )
+        if (c1 == null || !c1.op().conceptualizable || c1.volume() > volMax || c1.hasAny(/*BOOL,*/VAR_PATTERN) )
             return false;
 
         d.concEviFactor = 1f;

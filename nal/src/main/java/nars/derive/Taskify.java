@@ -46,11 +46,8 @@ public class Taskify extends AbstractPred<Derivation> {
 
         Term x0 = d.derivedTerm.get();
         Term x = d.anon.get(x0);
-        if (x == null || !x.op().conceptualizable) {
-            //d.anon.get(x0); //HACK temporary for debug
-            //throw new NullPointerException();
+        if (x == null || !x.op().conceptualizable)
             return false; //when the values were finally dereferenced, the result produced an invalid compound
-        }
 
         long[] occ = d.concOcc;
         byte punc = d.concPunc;

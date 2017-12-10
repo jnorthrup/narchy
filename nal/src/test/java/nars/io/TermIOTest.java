@@ -185,7 +185,9 @@ public class TermIOTest {
         a
                 .run(16);
         a
-                .output(baos, true);
+                .output(baos, true)
+                .run(1);
+        ;
 
         byte[] x = baos.toByteArray();
         out.println("NAR tasks serialized: " + x.length + " bytes");

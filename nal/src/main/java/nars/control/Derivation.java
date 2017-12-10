@@ -164,11 +164,21 @@ public class Derivation extends Unify {
         derivedTerm = new Versioned(this, 3);
 
         anon = new Anon.CachingAnon(16) {
-            @Override
-            public Term _get(Term x) {
-                Term y = super._get(x);
-                return y!=null ? y.eval(nar.terms) : null;
-            }
+//            @Override
+//            public Term get(Term x) {
+//                Term y = super.get(x);
+//                boolean possiblyEvaluable = false; //quick test
+//                Term z = (y != null) ?
+//                        ((possiblyEvaluable = y.hasAll(Op.funcBits)) ? y.eval(nar.terms) : y) : Null;
+//
+//                return z;
+//            }
+
+//            @Override
+//            public Term _get(Term x) {
+//                Term y = super._get(x);
+//                return y != null ? y.eval(nar.terms) : null;
+//            }
         };
 
 //        Caffeine cb = Caffeine.newBuilder().executor(nar.exe);
@@ -386,7 +396,7 @@ public class Derivation extends Unify {
 //                        belief.truth();
 //                //belief.truth(ETERNAL, ETERNAL...)
 //            } else {
-                this.beliefTruth = beliefTruthRaw;
+            this.beliefTruth = beliefTruthRaw;
 //            }
 
             long[] beliefStamp = belief.stamp();

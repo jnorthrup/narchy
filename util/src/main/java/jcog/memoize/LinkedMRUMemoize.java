@@ -33,7 +33,8 @@ public class LinkedMRUMemoize<X, Y> extends MRUCache<X, Y> implements Memoize<X,
      *      rather using Map.computeIfAbsent which would cause ConcurrentModificationException
      */
     public static class LinkedMRUMemoizeRecurseable<X, Y> extends LinkedMRUMemoize<X, Y> {
-        long hit = 0, miss = 0;
+        public long hit = 0;
+        long miss = 0;
 
         public LinkedMRUMemoizeRecurseable(Function<X, Y> f, int capacity) {
             super(f, capacity);

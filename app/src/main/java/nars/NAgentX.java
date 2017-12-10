@@ -166,7 +166,7 @@ abstract public class NAgentX extends NAgent {
                 .deriverAdd("motivation.nal")
                 //.deriverAdd("list.nal")
                 .index(
-                        new CaffeineIndex(200 * 1024)
+                        new CaffeineIndex(50 * 1024)
                         // new PriMapTermIndex()
                         //new CaffeineIndex2(64 * 1024)
                         //new CaffeineIndex2(-1)
