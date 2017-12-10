@@ -123,7 +123,7 @@ public enum The {
             /**
              * TODO make adjustable
              */
-            int maxVol = 20;
+            int maxVol = 10;
 
             private MemoizeSubtermBuilder(Memoize<NewCompound, nars.term.container.Subterms> cache) {
                 this.cache = cache;

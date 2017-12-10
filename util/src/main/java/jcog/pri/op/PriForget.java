@@ -13,7 +13,7 @@ import java.util.function.Consumer;
  */
 public class PriForget<P extends Priority> implements Consumer<P> {
 
-    public static final float FORGET_TEMPERATURE_DEFAULT = 0.5f;
+    public static final float FORGET_TEMPERATURE_DEFAULT = 1f;
 
     public final float priRemoved;
 

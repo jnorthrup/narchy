@@ -43,6 +43,7 @@ public class IRC extends ListenerAdapter {
                 .setAutoReconnect(true)
                 .setAutoNickChange(true)
         );
+
     }
 
     public IRC(Configuration.Builder cb)  {

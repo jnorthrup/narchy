@@ -995,8 +995,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             //resolve possible functor in goal or command (TODO question functors)
             //the eval step producing 'y' above will have a reference to any resolved functor concept
             Pair<Operator, Term> o = Op.functor(y, (i) -> {
-                //Concept operation = n.concept(i);
-                return i instanceof Operator ? (Operator) i : null;
+                Concept operation = n.concept(i);
+                return operation instanceof Operator ? (Operator) operation : null;
             });
             if (o != null) {
                 try {

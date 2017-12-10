@@ -269,12 +269,16 @@ public class IRCNLP extends IRC {
 
         //Param.DEBUG = true;
 
-        float durFPS = 25f;
+        float durFPS = 20f;
         NAR n = NARS.realtime(durFPS).get();
 
-        n.freqResolution.set(0.2f);
+        n.conceptActivation.set(0.2f);
+        n.forgetRate.set(1f);
 
-        n.termVolumeMax.set(24);
+        n.freqResolution.set(0.2f);
+        n.confResolution.set(0.05f);
+
+        n.termVolumeMax.set(48);
 
         /*@NotNull Default n = new Default(new Default.DefaultTermIndex(4096),
             new RealTime.DS(true),
@@ -298,12 +302,10 @@ public class IRCNLP extends IRC {
 
         IRCNLP bot = new IRCNLP(n,
                 //"exp" + Math.round(10000 * Math.random()),
-                "patham10",
-
+                "nar" + Math.round(64 * 1024 * Math.random()),
                 "irc.freenode.net",
                 "#123xyz"
                 //"#netention"
-                //"#x"
         );
 
 
@@ -367,7 +369,7 @@ public class IRCNLP extends IRC {
 //        };
 
         Hear.wiki(n);
-        //n.log();
+        n.logPriMin(System.out, 0.9f);
 
         n.start();
 

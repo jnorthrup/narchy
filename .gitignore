@@ -44,3 +44,6 @@ jmh-result*
 narchy.ipr
 narchy.iws
 log/
+gradle.properties
+gradlew
+gradlew.bat
