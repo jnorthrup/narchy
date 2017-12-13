@@ -90,7 +90,7 @@ public abstract class ConcreteCursor implements Cursor {
 	}
 
 	@Override
-	public int numObjects() {
+	public int size() {
 	    return numberOfObjects;
 	}
 

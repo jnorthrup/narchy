@@ -37,6 +37,6 @@ public interface Cursor extends Closeable {
 	@Override
 	void close();
 
-	int numObjects();
+	int size();
 
 }

@@ -346,7 +346,7 @@ public class Derivation extends Unify {
 
         final Task task = this.task = anon.put(this._task = _task);
         if (task == null)
-            throw new NullPointerException();
+            throw new NullPointerException(_task + " could not be anonymized");
 
         if (belief != null) {
             belief = anon.put(this._belief = belief);

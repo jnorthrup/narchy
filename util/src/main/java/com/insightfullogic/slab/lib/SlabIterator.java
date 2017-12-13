@@ -21,7 +21,7 @@ public class SlabIterator<T extends Cursor> implements Iterator<T> {
 
     @Override
     public boolean hasNext() {
-        return index < cursor.numObjects();
+        return index < cursor.size();
     }
 
     @Override

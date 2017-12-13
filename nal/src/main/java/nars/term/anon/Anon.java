@@ -1,7 +1,6 @@
 package nars.term.anon;
 
 import jcog.list.FasterList;
-import jcog.memoize.LinkedMRUMemoize;
 import nars.Task;
 import nars.term.Compound;
 import nars.term.Term;
@@ -26,8 +25,16 @@ import static nars.term.anon.Anom.MAX_ANOM;
 public class Anon {
 
 
-    final ObjectByteHashMap<Term> fwd = new ObjectByteHashMap();
-    final List<Term> rev = new FasterList<>();
+    final ObjectByteHashMap<Term> fwd;
+    final List<Term> rev = new FasterList<>(0);
+
+    public Anon() {
+        fwd = new ObjectByteHashMap();
+    }
+
+    public Anon(int estSize) {
+        fwd = new ObjectByteHashMap(estSize);
+    }
 
     final ByteFunction<Term> nextUniqueAtom = (Term next) -> {
         int s = rev.size();
@@ -77,6 +84,7 @@ public class Anon {
         public @Nullable Term applyTermOrNull(Term t) {
             return _get(t); //may be called more directly
         }
+
         @Override
         public final @Nullable Termed apply(Term t) {
             return applyTermOrNull(t);

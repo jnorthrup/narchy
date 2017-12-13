@@ -199,7 +199,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default Term anonymous() {
-        return new Anon().put(this);
+        return new Anon(volume()).put(this);
     }
 
     @Override
