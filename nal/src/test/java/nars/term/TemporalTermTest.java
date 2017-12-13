@@ -879,19 +879,18 @@ public class TemporalTermTest {
         assertConceptual("((--,(nario,zoom))&&happy)", "((--,(nario,zoom)) &&+- happy)");
         assertConceptual("(((--,(nario,zoom))&&happy) &&+- (--,(x,(--,x))))", "(((--,(nario,zoom)) &&+- happy) &&+- (--,(x,(--,x))))");
 
-        String c = "((--,(nario,zoom)) &&+- (vx&&vy))";
+        String c =
+                //"((--,(nario,zoom)) &&+- (vx&&vy))";
+                "( &&+- ,(--,(nario,zoom)),vx,vy)";
         assertConceptual(
                 c, "((vx &&+97 vy) &&+156 (--,(nario,zoom)))");
         assertConceptual(
                 c, "((vx &&+97 vy) &&+100 (--,(nario,zoom)))");
-    }
-    @Test
-    public void testConjSeqConceptual2() throws Narsese.NarseseException {
         assertConceptual(
-                "(((--,(nario,zoom))&&vx) &&+- vy)",
+                c,
                 "((vx &&+97 vy) &&-100 (--,(nario,zoom)))");
-
     }
+
 
     @Test void testXternalConjCommutiveAllowsPosNeg() {
         assertEquals("( &&+- ,(--,x),x,y)", Op.CONJ.the(XTERNAL, $.the("x"), $.the("x").neg(), $.the("y")).toString());

@@ -48,11 +48,12 @@ public class Activate extends PLink<Concept> implements Termed {
 
         final Bag<Term, PriReference<Term>> termlinks = id.termlinks();
 
-        float linkForgetting = nar.forgetRate.floatValue();
-        termlinks.commit(termlinks.forget(linkForgetting));
         int ntermlinks = termlinks.size();
         if (ntermlinks == 0)
             return List.of();
+        float linkForgetting = nar.forgetRate.floatValue();
+        termlinks.commit(termlinks.forget(linkForgetting));
+
 
         //TODO add a termlink vs. tasklink balance parameter
         int TERMLINKS_SAMPLED = (int) Math.ceil((float) Math.sqrt(premisesMax));

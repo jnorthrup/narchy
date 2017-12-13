@@ -57,7 +57,7 @@ public class Anoncepts extends LeakBack {
     @Override
     protected float leak(Task task) {
         Term taskTerm = task.term().root();
-        Term a = taskTerm.anonymous();
+        Term a = taskTerm.anon();
         if (a == null)  //?<- why would this, if it does
             return 0;
 

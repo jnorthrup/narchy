@@ -35,7 +35,7 @@ public class MultiExec extends AbstractExec {
     final List<Thread> activeThreads = $.newArrayList();
     LongSet activeThreadIds = new LongHashSet();
     LongPredicate isActiveThreadId = (x) -> false;
-    protected Focus focus;
+    public Focus focus;
 
     public MultiExec(int concepts, int threads, int qSize) {
         super(concepts);

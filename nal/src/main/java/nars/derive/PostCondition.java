@@ -175,7 +175,7 @@ public class PostCondition implements Serializable //since there can be multiple
             assert !rule.getTask().equals(pattern) :
                     "punctuation not modified yet rule task equals pattern: " + rule;
             assert !rule.getBelief().equals(pattern) :
-                    "punctuation not modified yet rule belief equals pattern: " + rule;
+                    "punctuation not modified yet rule belief equals pattern: " + rule + "\n\t" + rule.getBelief() + "\n\t" + pattern;
         }
 
         if (pc.minNAL != 0)

@@ -119,7 +119,7 @@ public abstract class Param extends Services<Term, NAR> {
             //0;
             //Integer.MAX_VALUE;
             //8;
-            32;
+            64;
 
 
     /**

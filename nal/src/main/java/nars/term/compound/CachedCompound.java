@@ -13,7 +13,9 @@ import org.jetbrains.annotations.Nullable;
 import static nars.time.Tense.DTERNAL;
 
 
-/** on-heap, caches many commonly used methods for fast repeat access while it survives */
+/**
+ * on-heap, caches many commonly used methods for fast repeat access while it survives
+ */
 public class CachedCompound implements Compound {
 
     /**
@@ -49,23 +51,25 @@ public class CachedCompound implements Compound {
         this._volume = Compound.super.volume();
     }
 
-    @Override public Term root() {
+    @Override
+    public Term root() {
         return (rooted != null) ? rooted
                 :
-            (this.rooted = Compound.super.root());
+                (this.rooted = Compound.super.root());
     }
-
 
 
     @Override
     public Term conceptual() {
         return (concepted != null) ? concepted
                 :
-            (this.concepted = Compound.super.conceptual());
+                (this.concepted = Compound.super.conceptual());
     }
 
     @Override
-    public final int volume() { return _volume;     }
+    public final int volume() {
+        return _volume;
+    }
 
     @Override
     public final int structure() {
@@ -105,7 +109,6 @@ public class CachedCompound implements Compound {
     public final Op op() {
         return op;
     }
-
 
 
     @Override
@@ -157,11 +160,11 @@ public class CachedCompound implements Compound {
     protected void equivalent(CachedCompound them) {
 
 
-        if (them.rooted != null && this.rooted!=this) this.rooted = them.rooted;
-        if (this.rooted != null && them.rooted!=them) them.rooted = this.rooted;
+        if (them.rooted != null && this.rooted != this) this.rooted = them.rooted;
+        if (this.rooted != null && them.rooted != them) them.rooted = this.rooted;
 
-        if (them.concepted != null && this.concepted!=this) this.concepted = them.concepted;
-        if (this.concepted != null && them.concepted!=them) them.concepted = this.concepted;
+        if (them.concepted != null && this.concepted != this) this.concepted = them.concepted;
+        if (this.concepted != null && them.concepted != them) them.concepted = this.concepted;
 
     }
 

@@ -49,6 +49,7 @@ public class AIMATests {
         n.confResolution.set(0.02f);
         n.priDefault(QUESTION, 0.5f);
         n.priDefault(BELIEF, 0.2f);
+        n.termVolumeMax.set(24);
 
         //new QuerySpider(n);
         //new PrologCore(n);
@@ -92,7 +93,7 @@ public class AIMATests {
 //        n.concept($.$("Criminal")).print();
 
 
-        n.run(3000);
+        n.run(4000);
 
 //        if (!questions.isEmpty()) {
 //            System.out.println("Questions Generated:");

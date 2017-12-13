@@ -319,7 +319,7 @@ public enum Op {
                     }
 
             }
-            return implInConjReduction(ci);
+            return implInConjReduce(ci);
 
         }
 
@@ -355,7 +355,7 @@ public enum Op {
             if (s.isEmpty())
                 return True; //? does this happen
 
-            SortedSet<Term> cs = junctionGroupNonDTSubterms(s);
+            final SortedSet<Term> cs = junctionGroupNonDTSubterms(s);
             if (!cs.isEmpty()) {
 
 
@@ -381,7 +381,9 @@ public enum Op {
                                 if (!disjSubs.isEmpty()) {
                                     if (csa == null)
                                         csa = $.newArrayList(1);
-                                    csa.add(CONJ.the(disj.dt(), sorted(disjSubs)).neg());
+                                    csa.add(
+                                        CONJ.the(disj.dt(), sorted(disjSubs)).neg()
+                                    );
                                 }
                             }
                         }
@@ -395,7 +397,7 @@ public enum Op {
 
                 Term[] scs = sorted(cs);
 
-                boolean dtChange = false;
+//                boolean dtChange = false;
 
                 //promote DTERNAL to ZERO if any components are ZERO
 //                if (dt == DTERNAL) {
@@ -409,9 +411,9 @@ public enum Op {
 //                }
 
 
-                return (dtChange || !Arrays.equals(scs, u)) ?
+                return (/*dtChange || */!Arrays.equals(scs, u)) ?
                         CONJ.the(dt, scs) : //changed, recurse
-                        Op.implInConjReduction(compound(CONJ, dt, scs));
+                        Op.implInConjReduce(compound(CONJ, dt, scs));
             }
 
             return Null;
@@ -467,8 +469,7 @@ public enum Op {
             TreeSet<Term> outer = new TreeSet<>();
 
             for (ObjectBytePair<Term> xn : s.keyValuesView()) {
-                Term x = xn.getOne();
-                outer.add(x.negIf(xn.getTwo() < 0));
+                outer.add(xn.getOne().negIf(xn.getTwo() < 0));
             }
             return outer;
 
@@ -995,9 +996,7 @@ public enum Op {
     static public Term conjMerge(Term a, long aStart, Term b, long bStart) {
 
         if (a.eventCount() == 1 && b.eventCount() == 1) {
-            int dt = (int) (bStart - aStart);
-
-            return implInConjReduction(conjSeqFinal(dt, a, b));
+            return conjSeqFinal((int) (bStart - aStart), a, b);
         }
 
         LongObjectHashMap<Collection<Term>> eventSets = new LongObjectHashMap();
@@ -1042,7 +1041,7 @@ public enum Op {
             if (sps.length == 1)
                 pp = sps[0];
             else {
-                pp = /*implInConjReduction*/(compound(CONJ, 0, sps)); //direct
+                pp = implInConjReduce(compound(CONJ, 0, sps)); //direct
                 //pp = CONJ.the(0, sps);
             }
             if (pp instanceof Bool) {
@@ -1055,11 +1054,6 @@ public enum Op {
             return cut[0];
         }
 
-//        int ee = eventSet.size();
-//        assert (ee > 0);
-//        if (ee == 1) {
-//            return eventSet.values().iterator().next().get;
-//        }
 
         List<LongObjectPair<Term>> events = new FasterList<>(eventSet.size());
         eventSet.forEachKeyValue((w, t) -> events.add(PrimitiveTuples.pair(w, t)));
@@ -1137,7 +1131,7 @@ public enum Op {
             case 1:
                 return events.get(0).getTwo();
             default:
-                return implInConjReduction(conjSeq(events, 0, events.size()));
+                return conjSeq(events, 0, events.size());
         }
     }
 
@@ -1219,7 +1213,7 @@ public enum Op {
         }
 
 
-        return compound(CONJ, dt, left, right);
+        return implInConjReduce( compound(CONJ, dt, left, right) );
         //return CONJ.the(dt, left, right);
 
     }
@@ -1235,7 +1229,7 @@ public enum Op {
     /**
      * precondition combiner: a combination nconjunction/implication reduction
      */
-    static private Term implInConjReduction(final Term conj /* possibly a conjunction */) {
+    static private Term implInConjReduce(final Term conj /* possibly a conjunction */) {
 
 
         if (!conj.hasAny(IMPL) || conj.op() != CONJ)

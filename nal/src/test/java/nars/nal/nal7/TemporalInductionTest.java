@@ -35,13 +35,12 @@ public class TemporalInductionTest {
 
     @Test
     public void inductionDiffEventsNegPos() {
-        Param.DEBUG = true;
         testInduction("--x:before", "x:after", 4);
     }
 
     @Test
     public void inductionSameEvents() {
-        testInduction("x", "x", 10);
+        testInduction("x", "x", 3);
     }
 
     @Test
@@ -60,15 +59,15 @@ public class TemporalInductionTest {
     }
 
     static void testInduction(String a, String b, int dt) {
-        int cycles = dt * 24;
+        int cycles = dt * 16;
         new TestNAR(NARS.tmp())
-                .truthTolerance(0.25f)
                 .log()
+                .truthTolerance(0.25f)
                 .input(a + ". :|:")
                 .inputAt(dt, b + ". :|:")
                 .mustBelieve(cycles, "(" + a + " ==>+" + dt + " " + b + ")", 1.00f, 0.45f /*abductionConf*/, 0)
                 .mustBelieve(cycles, "(" + b + " ==>-" + dt + " " + a + ")", 1.00f, 0.45f /*inductionConf*/, dt)
-                .mustBelieve(cycles, "(" + a + " &&+" + dt + " " + b + ")", 1.00f, 0.81f /*intersectionConf*/, 0, dt)
+                .mustBelieve(cycles, "(" + a + " &&+" + dt + " " + b + ")", 1.00f, 0.81f /*intersectionConf*/, 0)
                 .run(cycles, true)
         ;
     }

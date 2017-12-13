@@ -243,7 +243,6 @@ public class BeliefTableTest {
 
             String abpill = "((a==>b)-->[pill])";
             BaseConcept cc = (BaseConcept) n.conceptualize(abpill); //iterator().next().get();//((ArrayBag<Concept>) cb).get(0).get();
-
             assertNotNull(cc);
 
             String correctMerge = "((a ==>+4 b)-->[pill])";

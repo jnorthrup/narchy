@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.truth.TruthFunctions.c2wSafe;
@@ -61,22 +62,20 @@ public class ConjClustering extends Causable {
     };
     private final BagClustering<Task> bag;
     private final byte punc;
-    private final int maxConjSize;
     private long now;
-    private float freqRes, confRes, confMin;
+    private float confMin;
     private int volMax;
     private final static Logger logger = LoggerFactory.getLogger(ConjClustering.class);
 
-    public ConjClustering(NAR nar, int maxConjSize, byte punc, boolean onlyInput, boolean onlyPos, int centroids, int capacity) {
+    public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {
         super(nar);
 
         this.punc = punc;
         this.in = nar.newCauseChannel(this);
         this.bag = new BagClustering<>(ConjClusterModel, centroids, capacity);
-        this.maxConjSize = maxConjSize;
 
         nar.onTask(t -> {
-            if (!t.isEternal() && t.punc() == punc  && (!onlyInput || t.isInput()) && (!onlyPos || t.isPositive())) {
+            if (!t.isEternal() && t.punc() == punc  && filter.test(t)) {
                 bag.put(t,
                         //t.priElseZero() * (1f / t.volume()) //prefer smaller events
                         t.priElseZero()
@@ -95,8 +94,6 @@ public class ConjClustering extends Causable {
 
 
         now = nar.time();
-        freqRes = nar.freqResolution.floatValue();
-        confRes = nar.confResolution.floatValue();
         confMin = nar.confMin.floatValue();
         this.volMax = nar.termVolumeMax.intValue();
 

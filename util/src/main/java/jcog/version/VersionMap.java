@@ -3,6 +3,7 @@ package jcog.version;
 import jcog.list.ArrayUnenforcedSet;
 import jcog.list.FasterList;
 import org.eclipse.collections.api.tuple.Pair;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,9 +36,9 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
      */
     public VersionMap(Versioning context, int mapCap, int eleCap) {
         this(context,
-                new HashMap(mapCap)
+                //new HashMap(mapCap)
                 //new LinkedHashMap<>(mapCap)
-                //new UnifiedMap(mapCap)
+                new UnifiedMap(mapCap)
                 , eleCap
         );
     }

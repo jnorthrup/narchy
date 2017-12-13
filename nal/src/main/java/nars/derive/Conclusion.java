@@ -25,7 +25,7 @@ import static nars.truth.TruthFunctions.w2cSafe;
 public final class Conclusion extends AbstractPred<Derivation> {
 
 
-    private final static Logger logger = LoggerFactory.getLogger(Conclusion.class);
+    //private final static Logger logger = LoggerFactory.getLogger(Conclusion.class);
     public final Term pattern;
 
 

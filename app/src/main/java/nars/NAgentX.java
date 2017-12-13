@@ -70,7 +70,6 @@ import java.util.stream.Stream;
 
 import static nars.$.$;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static nars.gui.Vis.reflect;
 import static nars.time.Tense.ETERNAL;
 import static spacegraph.SpaceGraph.window;
@@ -234,8 +233,10 @@ abstract public class NAgentX extends NAgent {
 //        ), 800, 600);
 
 
-        ConjClustering conjClusterB = new ConjClustering(n, 3, BELIEF, true, false, 32, 128);
-        ConjClustering conjClusterG = new ConjClustering(n, 3, GOAL, true, false, 16, 64);
+        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (t->t.isInput()), 32, 128);
+        ConjClustering conjClusterBnonInput = new ConjClustering(n, BELIEF, (t->!t.isInput()), 4, 8);
+
+        //ConjClustering conjClusterG = new ConjClustering(n, 3, GOAL, true, false, 16, 64);
 
 //        n.runLater(() -> {
 ////            AudioContext ac = new AudioContext();

@@ -71,15 +71,8 @@ abstract public class SubstUnified extends Functor {
     protected SubstUnified(Atom id, Derivation parent) {
         super(id);
         this.parent = parent;
-        //this.subMatcher = sub;
     }
 
-//    public substituteIfUnifies(PremiseEval parent, OneMatchFindSubst sub) {
-//        this("subIfUnifies", parent, sub);
-//    }
-
-
-    /*@NotNull*/
     @Override
     public Term apply(/*@NotNull*/ Subterms a) {
 

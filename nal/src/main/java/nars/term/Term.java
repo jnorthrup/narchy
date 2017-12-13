@@ -826,7 +826,7 @@ public interface Term extends Termed, Comparable<Termed> {
     Term temporalize(Retemporalize r);
 
 
-    default Term anonymous() {
+    default Term anon() {
         return Anom.the(0);
     }
 

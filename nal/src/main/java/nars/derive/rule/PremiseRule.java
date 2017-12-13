@@ -232,9 +232,9 @@ public class PremiseRule /*extends GenericCompound*/ {
 
 
     public final PremiseRule normalize(PatternIndex index) {
-        Compound t = index.pattern((Compound) id.transform(UppercaseAtomsToPatternVariables));
+        Term t = index.pattern(id.transform(UppercaseAtomsToPatternVariables));
         if (t != this)
-            return new PremiseRule(t);
+            return new PremiseRule((Compound)t);
         else
             return this;
     }

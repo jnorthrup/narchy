@@ -49,7 +49,6 @@ public final class Conclude {
 //            if (pattern.equals(tb))
 //                pattern = Derivation.BeliefTerm;
 //        }
-        pattern = index.get(pattern, true).term();
 
         //HACK unwrap varIntro so we can apply it at the end of the derivation process, not before like other functors
         boolean introVars;
@@ -61,7 +60,7 @@ public final class Conclude {
             introVars = false;
         }
 
-        Term id = $.func("derive", pattern);
+        pattern = index.get(pattern, true).term(); //get(pattern, true).term();
 
         Taskify taskify = new Taskify( nar.newCause((s)->new RuleCause(rule, s)));
 

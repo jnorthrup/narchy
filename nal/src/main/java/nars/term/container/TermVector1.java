@@ -2,7 +2,9 @@ package nars.term.container;
 
 import com.google.common.collect.Iterators;
 import nars.Op;
+import nars.concept.PermanentConcept;
 import nars.derive.match.EllipsisMatch;
+import nars.term.Functor;
 import nars.term.Term;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.factory.Sets;

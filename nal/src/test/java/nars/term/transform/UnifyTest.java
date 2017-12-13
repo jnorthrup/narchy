@@ -45,7 +45,7 @@ public class UnifyTest {
 //    }
 
     static /**/ Compound pattern(/**/ String s) throws Narsese.NarseseException {
-        return new PatternIndex().pattern((Compound) Narsese.parse().term(s, false));
+        return (Compound) new PatternIndex().pattern(Narsese.parse().term(s, false));
     }
 
     

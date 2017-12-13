@@ -8,6 +8,7 @@ import nars.test.TestNAR;
 import nars.time.Tense;
 import nars.util.NALTest;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -23,8 +24,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL7Test extends NALTest {
 
-    private static final float TRUTH_TOLERANCE_FOR_PROJECTIONS = 0.15f;
+    public static final float TRUTH_TOLERANCE_FOR_PROJECTIONS = 0.25f;
     public int cycles = 100;
+
+    @BeforeEach
+    public void setTolerance() {
+        test.truthTolerance(TRUTH_TOLERANCE_FOR_PROJECTIONS);
+    }
 
 //    private static final Path tmpDir;
 //    static {
@@ -54,7 +60,6 @@ public class NAL7Test extends NALTest {
 //        }
 //
 //    }
-
 
     @Test
     public void induction_on_events_neg2() {
@@ -415,7 +420,6 @@ public class NAL7Test extends NALTest {
     public void inference_on_tense_3() {
 
         test
-                .truthTolerance(TRUTH_TOLERANCE_FOR_PROJECTIONS)
                 .inputAt(0, "hold(John,key). :|:")
                 .believe("(hold(John,key) ==>+1 enter(John,room))", 1.0f, 0.9f)
                 .mustBelieve(cycles, "enter(John,room)",
@@ -427,7 +431,6 @@ public class NAL7Test extends NALTest {
     public void inference_on_tense_4() {
 
         test
-                .truthTolerance(TRUTH_TOLERANCE_FOR_PROJECTIONS)
                 .believe("(hold(John,key) ==>+3 enter(John,room))")
                 .inputAt(0, "enter(John,room). :|:")
                 .mustBelieve(cycles, "hold(John,key)", 1.00f, 0.45f, -3);
@@ -461,7 +464,6 @@ public class NAL7Test extends NALTest {
     public void induction_on_events2() {
 
         test
-        .truthTolerance(TRUTH_TOLERANCE_FOR_PROJECTIONS)
         .input("<(John,door) --> open>. :|:")
         .inputAt(4, "<(John,room) --> enter>. :|:")
         .mustBelieve(cycles, "(((John, door) --> open) ==>+4 ((John, room) --> enter))",
@@ -473,7 +475,6 @@ public class NAL7Test extends NALTest {
     public void induction_on_events3() {
 
         test
-            .truthTolerance(TRUTH_TOLERANCE_FOR_PROJECTIONS)
             .input("open(John,door). :|:")
             .inputAt(4, "enter(John,room). :|:")
             .mustBelieve(cycles, "(open(John, door) ==>+4 enter(John, room))",

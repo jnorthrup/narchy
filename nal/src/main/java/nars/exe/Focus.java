@@ -38,7 +38,7 @@ public class Focus {
 
     private final FastCoWList<Causable> can;
 
-    static class Schedule {
+    public static class Schedule {
         public float[] time = ArrayUtils.EMPTY_FLOAT_ARRAY;
 //        public float[] timeNormalized = ArrayUtils.EMPTY_FLOAT_ARRAY;
         public float[] supply = ArrayUtils.EMPTY_FLOAT_ARRAY;
@@ -135,7 +135,7 @@ public class Focus {
         }
     }
 
-    final Flip<Schedule> schedule = new Flip<Schedule>(Schedule::new);
+    public final Flip<Schedule> schedule = new Flip<Schedule>(Schedule::new);
 
 
     private final NAR nar;

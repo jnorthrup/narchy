@@ -1,4 +1,4 @@
-package nars.exe;
+package nars.nar;
 
 import jcog.Util;
 import jcog.exe.Loop;
@@ -6,6 +6,8 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.control.Causable;
+import nars.exe.Focus;
+import nars.exe.MultiExec;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -66,9 +68,9 @@ public class MultiExecTest {
         DummyCan c = new DummyCan(n,"c").value(1f).delay(20);
 
         n.onCycle(nn -> {
-           System.out.println(nn.time() + " " +
-                   Arrays.toString(exe.focus.schedule.read().active) +
-                   "->" + n4(exe.focus.schedule.read().weight));
+            Focus.Schedule s = exe.focus.schedule.read();
+            System.out.println(nn.time() + " " +
+                   Arrays.toString(s.active) + "->" + n4(s.weight));
         });
 
         Loop l = n.startFPS(50f);

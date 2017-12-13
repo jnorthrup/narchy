@@ -142,7 +142,9 @@ public class Derivation extends Unify {
     private long[] evidenceDouble, evidenceSingle;
     public DeriveTime dtSingle = null, dtDouble = null;
 
-    /** original non-anonymized tasks */
+    /**
+     * original non-anonymized tasks
+     */
     public Task _task;
     public Task _belief;
     public TruthOperator truthFunction;
@@ -198,33 +200,6 @@ public class Derivation extends Unify {
 //
 //        transformsCache = cb.builder();
 
-        //final Functor substituteIfUnifiesDep = new substituteIfUnifiesDep(this);
-
-        Functor.LambdaFunctor polarizeFunc = Functor.f2("polarize", (subterm, whichTask) -> {
-            Truth compared;
-            if (whichTask.equals(PremiseRule.Task)) {
-                compared = taskTruth;
-            } else {
-                compared = beliefTruth;
-            }
-            if (compared == null)
-                return Null;
-            else
-                return compared.isNegative() ? subterm.neg() : subterm;
-        });
-
-        Termed[] derivationFunctors = new Termed[]{
-                new uniSubAny(this),
-                new uniSub(this),
-                polarizeFunc
-        };
-        Map<Term, Termed> m = new HashMap(derivationFunctors.length + 2);
-        for (Termed x : derivationFunctors) {
-            m.put(x.term(), x);
-        }
-        m.put(TaskTerm, () -> taskTerm);
-        m.put(BeliefTerm, () -> beliefTerm);
-        this.derivationFunctors = Maps.immutable.ofMap(m);
     }
 
     /**
@@ -258,14 +233,15 @@ public class Derivation extends Unify {
     @Override
     public final Term applyTermIfPossible(Term x) {
 
+        if (x instanceof Bool)//assert (!(x instanceof Bool));
+            return x;
+
         if (x instanceof Atom) {
             Termed f = derivationFunctors.get(x);
             if (f != null)
                 return f.term();
         }
 
-        if (x instanceof Bool)//assert (!(x instanceof Bool));
-            return x;
 
         Term y = xy(x);
         if (y != null) {
@@ -308,6 +284,35 @@ public class Derivation extends Unify {
         this.nar = nar;
         this.random = nar.random();
 
+        Functor.LambdaFunctor polarizeFunc = Functor.f2("polarize", (subterm, whichTask) -> {
+            Truth compared;
+            if (whichTask.equals(PremiseRule.Task)) {
+                compared = taskTruth;
+            } else {
+                compared = beliefTruth;
+            }
+            if (compared == null)
+                return Null;
+            else
+                return compared.isNegative() ? subterm.neg() : subterm;
+        });
+
+        Termed[] derivationFunctors = new Termed[]{
+                new uniSubAny(this),
+                new uniSub(this),
+                polarizeFunc
+        };
+        Map<Term, Termed> m = new HashMap<>(derivationFunctors.length + 2);
+
+        for (Termed x : ruleFunctors(nar))
+            m.put(x.term(), x);
+
+        for (Termed x : derivationFunctors)
+            m.put(x.term(), x);
+
+        m.put(TaskTerm, () -> taskTerm);
+        m.put(BeliefTerm, () -> beliefTerm);
+        this.derivationFunctors = Maps.immutable.ofMap(m);
     }
 
     public Derivation reset() {
@@ -342,8 +347,6 @@ public class Derivation extends Unify {
     public void set(Task _task, Task belief, Term beliefTerm) {
 
 
-
-
         final Task task = this.task = anon.put(this._task = _task);
         if (task == null)
             throw new NullPointerException(_task + " could not be anonymized");
@@ -357,12 +360,9 @@ public class Derivation extends Unify {
         beliefTerm = anon.put(beliefTerm);
 
 
-
         final Term taskTerm = this.taskTerm = task.term();
         this.termSub0Struct = taskTerm.structure();
         this.termSub0op = taskTerm.op().id;
-
-
 
 
         this.concOcc[0] = this.concOcc[1] = ETERNAL;
@@ -557,8 +557,10 @@ public class Derivation extends Unify {
         @Override
         public Term apply(Subterms xx) {
             Term y = super.apply(xx);
-            if (y!=null && y!=Null) {
-                parent.putXY(xx.sub(1), xx.sub(2)); //store the transformation
+            if (y != null && y != Null) {
+                Term x = xx.sub(0);
+                if (!x.equals(y))
+                    parent.putXY(x, y); //store the transformation
             }
             return y;
         }
@@ -577,9 +579,11 @@ public class Derivation extends Unify {
         @Override
         public @Nullable Term apply(Subterms xx) {
             Term y = super.apply(xx);
-//            if (y!=null && y!=Null) {
-//                parent.putXY(xx.sub(0), y); //store the outer transformation
-//            }
+            if (y != null && y != Null) {
+                Term x = xx.sub(0);
+                if (!x.equals(y))
+                    parent.putXY(x, y); //store the outer transformation
+            }
             return y;
         }
     }

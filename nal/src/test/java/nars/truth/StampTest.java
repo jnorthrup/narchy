@@ -1,4 +1,4 @@
-package nars.task;
+package nars.truth;
 
 import nars.truth.Stamp;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;

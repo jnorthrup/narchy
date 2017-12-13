@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import jcog.Util;
 import nars.Op;
 import nars.Param;
+import nars.concept.PermanentConcept;
 import nars.term.Term;
 
 import java.util.Iterator;
@@ -82,6 +83,7 @@ public abstract class TermVector implements Subterms {
             varPattern += x.varPattern();
             vol += x.volume();
             hash = Util.hashCombine(hash, x.hashCode());
+
         }
         this.hash = hash;
         this.structure = structure;

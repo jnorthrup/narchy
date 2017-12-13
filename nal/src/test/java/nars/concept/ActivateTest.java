@@ -15,6 +15,7 @@ import org.eclipse.collections.impl.bag.mutable.HashBag;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collection;
+import java.util.TreeSet;
 
 import static nars.$.$;
 import static org.junit.jupiter.api.Assertions.*;
@@ -110,105 +111,113 @@ public class ActivateTest {
 
         //layer 1:
         testTemplates("open:door",
-                "[door, open, (door-->open)]");
+                "[(door-->open), door, open]");
     }
 
     @Test
     public void testTemplates2() throws Narsese.NarseseException {
         //layer 2:
         testTemplates("open(John,door)",
-                "[door, open, open(John,door), (John,door), John]");
+                "[open(John,door), (John,door), John, door, open]");
     }
 
     @Test
     public void testTemplates3() throws Narsese.NarseseException {
         //layer 3:
         testTemplates("(open(John,door) ==> #x)",
-                "[#1, open, John, door, (open(John,door)==>#1), (John,door), open(John,door)]");
+                "[(open(John,door)==>#1), open(John,door), (John,door), John, door, open, #1]");
     }
 
     @Test
     public void testTemplates4() throws Narsese.NarseseException {
         //dont descend past layer 3:
         testTemplates("(open(John,portal:interdimensional) ==> #x)",
-                "[open(John,(interdimensional-->portal)), (open(John,(interdimensional-->portal))==>#1), #1, open, John, (interdimensional-->portal), (John,(interdimensional-->portal))]");
+                "[(open(John,(interdimensional-->portal))==>#1), open(John,(interdimensional-->portal)), (John,(interdimensional-->portal)), (interdimensional-->portal), John, open, #1]");
     }
 
     @Test
     public void testTemplates4b() throws Narsese.NarseseException {
         testTemplates("(open(John,portal(a(d),b,c)) ==> #x)",
-                "[open(John,portal(a(d),b,c)), (John,portal(a(d),b,c)), open, (open(John,portal(a(d),b,c))==>#1)]");
+                "[(open(John,portal(a(d),b,c))==>#1), open(John,portal(a(d),b,c)), (John,portal(a(d),b,c)), portal(a(d),b,c), John, open, #1]");
     }
 
     @Test
     public void testFunction() throws Narsese.NarseseException {
         testTemplates("f(x)",
-                "[x, f(x), (x), f]");
+                "[f(x), (x), f, x]");
     }
 
     @Test
     public void testTemplatesWithInt2() throws Narsese.NarseseException {
         testTemplates("num((0))",
-                "[((0)), 0, num((0)), (0), num]");
+                "[num((0)), ((0)), (0), num, 0]");
     }
 
     @Test
     public void testTemplatesWithInt1() throws Narsese.NarseseException {
         testTemplates("(0)",
-                "[0, (0)]");
+                "[(0), 0]");
     }
 
     @Test
     public void testTemplatesWithQueryVar() throws Narsese.NarseseException {
         testTemplates("(x --> ?1)",
-                "[x, ?1, (x-->?1)]");
+                "[(x-->?1), x, ?1]");
     }
 
     @Test
     public void testTemplatesWithDepVar() throws Narsese.NarseseException {
         testTemplates("(x --> #1)",
-                "[x, (x-->#1)]");
+                "[(x-->#1), x, #1]");
     }
 
     @Test
     public void testTemplateConj1() throws Narsese.NarseseException {
         testTemplates("(x && y)",
-                "[y, x, (x&&y)]");
+                "[(x&&y), x, y]");
     }
 
     @Test
     public void testTemplateConj2() throws Narsese.NarseseException {
         testTemplates("(&&,<#x --> lock>,(<$y --> key> ==> open($y,#x)))",
-                "[lock, ((#1-->lock)&&($2-->key)), #1, ($2-->key), open, (((#1-->lock)&&($2-->key)) ==>+- open($2,#1)), (#1-->lock), $2, key, open($2,#1), ($2,#1)]");
+                "[(((#1-->lock)&&($2-->key)) ==>+- open($2,#1)), ((#1-->lock)&&($2-->key)), open($2,#1), (#1-->lock), ($2-->key), ($2,#1), lock, open, key, #1, $2]");
 
     }
 
     @Test
     public void testTemplateDiffRaw() throws Narsese.NarseseException {
         testTemplates("(x-y)",
-                "[(x-y), y, x]");
+                "[(x-y), x, y]");
     }
 
     @Test
     public void testTemplateDiffRaw2() throws Narsese.NarseseException {
         testTemplates("((a,b)-y)",
-                "[((a,b)-y), y, (a,b)]");
+                "[((a,b)-y), (a,b), y]");
     }
 
     @Test
     public void testTemplateProd() throws Narsese.NarseseException {
         testTemplates("(a,b)",
-                "[a, (a,b), b]");
-        testTemplates("(a,(b,c))",
-                "[a, (b,c), (a,(b,c))]");
+                "[(a,b), a, b]");
     }
 
     @Test
-    public void testTemplateSimProd1() throws Narsese.NarseseException {
-        testTemplates("((a,b)<->#1)",
-                "[#1, ((a,b)<->#1), (a,b)]");
+    public void testTemplateProdWithCompound() throws Narsese.NarseseException {
+        testTemplates("(a,(b,c))",
+                "[(a,(b,c)), (b,c), a]");
+    }
+
+    @Test
+    public void testTemplateSimProd() throws Narsese.NarseseException {
         testTemplates("(c<->a)",
                 "[(a<->c), a, c]");
+    }
+
+    @Test
+    public void testTemplateSimProdCompound() throws Narsese.NarseseException {
+        testTemplates("((a,b)<->#1)",
+                "[((a,b)<->#1), (a,b), #1]");
     }
 
     @Test
@@ -222,7 +231,7 @@ public class ActivateTest {
         //n.believe(term + ".");
         Concept c = n.conceptualize($(term));
         Activate a = new Activate(c, 0.5f);
-        Collection<Termed> t = c.templates();
+        Collection<Termed> t = new TreeSet(c.templates());
         assertEquals(expect, t.toString());
     }
 

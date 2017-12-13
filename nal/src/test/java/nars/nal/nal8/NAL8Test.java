@@ -3,11 +3,13 @@ package nars.nal.nal8;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
+import nars.nal.nal7.NAL7Test;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.test.TestNAR;
 import nars.time.Tense;
 import nars.util.NALTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -19,6 +21,13 @@ public class NAL8Test extends NALTest {
 
     public static final int cycles = 230;
 
+
+
+    @BeforeEach
+    public void setTolerance() {
+        test.truthTolerance(NAL7Test.TRUTH_TOLERANCE_FOR_PROJECTIONS);
+        test.nar.time.dur(3);
+    }
 
     @Test
     public void subsent_1_even_simpler_simplerBeliefTemporal() {
@@ -107,14 +116,17 @@ public class NAL8Test extends NALTest {
 
     @Test
     public void subbelief_2() throws Narsese.NarseseException {
-        Term t = $.$("(hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001})))");
-        assertEquals(2, t.subs());
-        assertEquals(10, t.dtRange());
+        //pre-test
+        {
+            Term t = $.$("(hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001})))");
+            assertEquals(2, t.subs());
+            assertEquals(10, t.dtRange());
+        }
 
         test
-                .input("(hold(SELF,{t002}) &&+5 (at(SELF,{t001}) &&+5 open({t001}))). :|:")
+                .input("(hold(SELF,{t002}) &&+2 (at(SELF,{t001}) &&+2 open({t001}))). :|:")
                 .mustBelieve(cycles, "hold(SELF,{t002})", 1.0f, 0.73f, 0)
-                .mustBelieve(cycles, "(at(SELF,{t001}) &&+5 open({t001}))", 1.0f, 0.81f, 5)
+                .mustBelieve(cycles, "(at(SELF,{t001}) &&+2 open({t001}))", 1.0f, 0.81f, 2)
         ;
     }
 

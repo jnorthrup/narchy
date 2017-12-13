@@ -43,7 +43,7 @@ public final class STMLinkage extends TaskService {
 
     }
 
-    static boolean stmLinkable(@NotNull Task newEvent, boolean allowNonInput) {
+    static boolean stmLinkable(Task newEvent, boolean allowNonInput) {
         return (!newEvent.isEternal() && (allowNonInput || newEvent.isInput()));
     }
 

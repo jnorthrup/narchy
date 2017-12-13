@@ -40,21 +40,20 @@ public class AnonTest {
 
         assertEquals("(4..6-->x)", $("((|,4,5,6)-->x)").toString());
         assertAnon("(_0-->_1)", "((|,4,5,6)-->x)");
-
     }
 
-    static Anon assertAnon(String expect, String test) throws Narsese.NarseseException {
-        return assertAnon(expect, $(test));
+
+    @Test public void testCompounds2() throws Narsese.NarseseException {
+        //TODO check that this is correct (includes a impl in conj reduction):
+        String xs = "(((($1-->tetris) ==>-1422 (happy-->$1)) &&+105 (--,(((isRow,(8,true),true)~(checkScore,()))-->tetris))) &&+7 ((--,(((isRow,(8,true),true)~(checkScore,()))-->tetris)) &&+74 ((act,0,true)-->#2)))";
+        String ys = "(((($2-->_4) &&+105 (--,(((_0,(_1,_2),_2)~(_3,()))-->_4))) &&+7 ((--,(((_0,(_1,_2),_2)~(_3,()))-->_4)) &&+81 ((_5,_6,_2)-->#1))) ==>-1832 (_7-->$2))";
+        Term x = $(xs);
+        //System.out.println(x);
+        //assertEquals(xs, x);
+        Term y = x.anon();
+        assertEquals(ys, y.toString());
     }
 
-    static Anon assertAnon(String expect, Term x) {
-        Anon a = new Anon();
-        Term y = a.put(x);
-        Term z = a.get(y);
-        assertEquals(expect, y.toString());
-        assertEquals(x, z);
-        return a;
-    }
 
     @Test public void testAnomVector() {
 
@@ -77,6 +76,19 @@ public class AnonTest {
             assertEqual(new TermVector2(x[0], x[1]), new AnonVector(x[0], x[1]));
             assertEqual(new ArrayTermVector(x), new AnonVector(x));
         }
+    }
+
+    static Anon assertAnon(String expect, String test) throws Narsese.NarseseException {
+        return assertAnon(expect, $(test));
+    }
+
+    static Anon assertAnon(String expect, Term x) {
+        Anon a = new Anon();
+        Term y = a.put(x);
+        Term z = a.get(y);
+        assertEquals(expect, y.toString());
+        assertEquals(x, z);
+        return a;
     }
 
     static void assertEqual(TermVector v, AnonVector a) {

@@ -82,10 +82,12 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
 
     }, 32);
 
+//    public static Stream<Pair<PremiseRule, String>> parsedRules(Collection<String> name) {
+//        return name.stream().flatMap(n -> ruleCache.apply(n).stream());
+//    }
     public static Stream<Pair<PremiseRule, String>> parsedRules(Collection<String> name) {
         return name.stream().flatMap(n -> ruleCache.apply(n).stream());
     }
-
 
     public PremiseRuleSet(PatternIndex index, NAR nar, String... rules) {
         this(parse(Stream.of(rules)), index, nar);

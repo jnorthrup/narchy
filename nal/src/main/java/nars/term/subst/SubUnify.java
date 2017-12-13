@@ -24,31 +24,6 @@ public class SubUnify extends Unify {
         this.parent = parent;
     }
 
-    //    @Override
-//    public @Nullable Term resolve(@NotNull Term x) {
-//
-//        assert(target!=null);
-//
-//        Term thisResolved = super.resolve(x);
-//        if (thisResolved == null)
-//            return target.resolve(x);
-//        else
-//            return thisResolved;
-//    }
-//
-//    @Override
-//    public @Nullable Term xy(@NotNull Term x) {
-//
-//        return resolve(x);//new MapSubst(xy).transform(x, index);
-////        assert(target!=null);
-////
-////        Term thisResolved = super.xy(x);
-////        if (thisResolved == null)
-////            return target.xy(x);
-////        else
-////            return thisResolved;
-//    }
-
     /**
      * terminate after the first match
      */

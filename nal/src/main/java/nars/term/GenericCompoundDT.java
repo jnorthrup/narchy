@@ -180,11 +180,13 @@ public class GenericCompoundDT /*extends ProxyTerm<Compound>*/ implements Compou
                 if (!myRef.equals(thatRef))
                     return false;
 
-                //prefer the earlier instance for sharing
-                if ((((CachedCompound)myRef).serial) < (((CachedCompound)thatRef).serial)) {
-                    cthat.ref = myRef;
-                } else {
-                    this.ref = thatRef;
+                if (myRef instanceof CachedCompound && thatRef instanceof CachedCompound) {
+                    //prefer the earlier instance for sharing
+                    if ((((CachedCompound) myRef).serial) < (((CachedCompound) thatRef).serial)) {
+                        cthat.ref = myRef;
+                    } else {
+                        this.ref = thatRef;
+                    }
                 }
             }
 

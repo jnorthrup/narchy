@@ -15,6 +15,7 @@ import nars.term.container.Subterms;
 import nars.term.transform.VariableNormalization;
 import nars.term.var.Variable;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 
@@ -35,9 +36,9 @@ public class PatternIndex extends MapTermIndex {
      */
     public PatternIndex(NAR nar) {
         this();
-        for (Termed t : Derivation.ruleFunctors(nar)) {
-            set(t);
-        }
+//        for (Termed t : Derivation.ruleFunctors(nar)) {
+//            set(t);
+//        }
     }
 
     @SuppressWarnings("Java8MapApi")
@@ -49,16 +50,16 @@ public class PatternIndex extends MapTermIndex {
         //avoid recursion-caused concurrent modifiation exception
         Termed y = concepts.get(x);
         if (y == null) {
-            concepts.put(x,
-                    y = x instanceof Compound ? patternify((Compound) x) : x
-            );
+            Term yy = x instanceof Compound ? patternify((Compound) x) : x;
+            concepts.put(yy, yy);
+            return yy;
+        } else {
+            return y;
         }
-        return y;
     }
 
     /*@NotNull*/
-    @Deprecated
-    protected Term patternify(/*@NotNull*/ Compound x) {
+    public Term patternify(/*@NotNull*/ Compound x) {
 
 
         Subterms s = x.subterms();
@@ -77,9 +78,9 @@ public class PatternIndex extends MapTermIndex {
         if (!changed && Ellipsis.firstEllipsis(s) == null)
             return x;
 
-        Subterms v = (changed ? The.subterms(bb.length > 1 && x.op().commutative && (concurrent(x.dt())) ?
+        Subterms v = changed ? The.subterms(bb.length > 1 && x.op().commutative && (concurrent(x.dt())) ?
                 Terms.sorted(bb) :
-                bb) : s);
+                bb) : s;
 
         Ellipsis e = Ellipsis.firstEllipsis(v);
         return e != null ?
@@ -87,7 +88,12 @@ public class PatternIndex extends MapTermIndex {
                 x.op().the(x.dt(), v.arrayShared()); //new PatternCompound.PatternCompoundSimple(x.op(), x.dt(), v);
     }
 
-//    static boolean canBuildConcept(/*@NotNull*/ Term y) {
+    @Override
+    public void set(@NotNull Term src, @NotNull Termed target) {
+        super.set(src, target);
+    }
+
+    //    static boolean canBuildConcept(/*@NotNull*/ Term y) {
 //        if (y instanceof Compound) {
 //            return y.op() != NEG;
 //        } else {
@@ -142,16 +148,20 @@ public class PatternIndex extends MapTermIndex {
     /**
      * returns an normalized, optimized pattern term for the given compound
      */
-    public /*@NotNull*/ Compound pattern(Compound x) {
+    public /*@NotNull*/ Term pattern(Term x) {
 
         Term y = x.transform(new PremiseRuleVariableNormalization());
 
         assert (y != null);
 
-        return (Compound) get(y, true).term();
+        return get(y, true).term();
 
     }
 
+    @Override
+    public Term intern(Term x) {
+        return x;
+    }
 
     public static final class PremiseRuleVariableNormalization extends VariableNormalization {
 
