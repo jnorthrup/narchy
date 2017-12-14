@@ -5,7 +5,6 @@ import jcog.TODO;
 import jcog.list.FasterList;
 import nars.derive.match.EllipsisMatch;
 import nars.derive.match.Ellipsislike;
-import nars.op.data.flat;
 import nars.op.mental.AliasConcept;
 import nars.term.*;
 import nars.term.atom.Atomic;
@@ -265,16 +264,15 @@ public enum Op {
 
                     return junctionFlat(dt, u);
 
-                default:
 
-                    //sequence or xternal
-                    //assert (n == 2) : "invalid non-commutive conjunction arity!=2, arity=" + n;
+                //sequence or xternal
+                //assert (n == 2) : "invalid non-commutive conjunction arity!=2, arity=" + n;
 
-                    //rebalance and align
-                    //convention: left align all sequences
-                    //ex: (x &&+ (y &&+ z))
-                    //      becomes
-                    //    ((x &&+ y) &&+ z)
+                //rebalance and align
+                //convention: left align all sequences
+                //ex: (x &&+ (y &&+ z))
+                //      becomes
+                //    ((x &&+ y) &&+ z)
 
 
 //                int eventsLeft = a.eventCount();
@@ -285,18 +283,22 @@ public enum Op {
 //                boolean heavyRight = (eventsRight - eventsLeft) > 0; // notice the difference in 0, 1. if the # of events is odd, left gets it
 
 
-                    if (dt == XTERNAL) {
+                case XTERNAL:
 
-                        if (n > 2) {
+                    //TODO junctionFlat any embedded XTERNAL CONJ subterms?
 
-                            //allow co-negations, etc.
 
-//                            Term x = junctionFlat(DTERNAL, u);
-//                            if (x instanceof Bool) return x;
-//                            return x.dt(XTERNAL);
-                        } else if (n == 2) {
+                    switch (u.length) {
+                        case 0:
+                            return True;
 
-                            Arrays.sort(u); //pre-sort but should have been sorted already
+                        case 1:
+                            return u[0];
+
+                        case 2: {
+
+                            u = u.clone();
+                            Arrays.sort(u); //dont use Terms.sorted which will de-duplicate and remove (x &&+1 x) cases.
 
                             Term a = u[0];
                             Term b = u[1];
@@ -321,20 +323,33 @@ public enum Op {
                                 }
 
                             }
+                            break;
                         }
 
-                        return compound(CONJ, XTERNAL, u);
-                    } else {
-                        assert(n==2);
+                        default:
+                            u = Terms.sorted(u);
 
-                        Term a = u[0];
-                        Term b = u[1];
-                        ci = (dt >= 0) ?
-                                conjMerge(a, 0, b, +dt + a.dtRange()) :
-                                conjMerge(b, 0, a, -dt + b.dtRange());
+                            //allow co-negations, etc.
+
+//                            Term x = junctionFlat(DTERNAL, u);
+//                            if (x instanceof Bool) return x;
+//                            return x.dt(XTERNAL);
+                            break;
                     }
 
+                    return compound(CONJ, XTERNAL, u);
+
+                default: {
+                    assert (n == 2);
+
+                    Term a = u[0];
+                    Term b = u[1];
+                    ci = (dt >= 0) ?
+                            conjMerge(a, 0, b, +dt + a.dtRange()) :
+                            conjMerge(b, 0, a, -dt + b.dtRange());
+                }
             }
+
 
             return implInConjReduce(ci);
 
@@ -367,8 +382,8 @@ public enum Op {
             ObjectByteHashMap<Term> s = new ObjectByteHashMap<>(u.length);
 
             Term uu = flatten(CONJ, u, dt, s);
-            if (uu!=null) {
-                assert(uu instanceof Bool);
+            if (uu != null) {
+                assert (uu instanceof Bool);
                 return uu;
             }
 

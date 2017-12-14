@@ -906,7 +906,11 @@ public class TemporalTermTest {
 
 
     @Test void testXternalConjCommutiveAllowsPosNeg() {
-        assertEquals("( &&+- ,(--,x),x,y)", Op.CONJ.the(XTERNAL, $.the("x"), $.the("x").neg(), $.the("y")).toString());
+        String s = "( &&+- ,(--,x),x,y)";
+        assertEquals(s,
+                Op.CONJ.the(XTERNAL, $.the("x"), $.the("x").neg(), $.the("y")).toString());
+        assertEquals(s,
+                Op.CONJ.the(XTERNAL, $.the("y"), $.the("x"), $.the("x").neg()).toString()); //changed order to test sorting
     }
 
     @Test
