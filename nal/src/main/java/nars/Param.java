@@ -225,9 +225,9 @@ public abstract class Param extends Services<Term, NAR> {
         if (/* belief or goal */ tr != null) {
 
             //prefer confidence, relative to the premise which formed it
-            float parentConf = d.single ? d.premiseConfSingle : d.premiseConfDouble;
+            float parentConf = d.single ? d.premiseEviSingle : d.premiseEviDouble;
             if (parentConf > 0) {
-                float relConf = unitize(tr.conf() / parentConf);
+                float relConf = unitize(tr.evi() / parentConf);
 
                 discount *= relConf;
             }

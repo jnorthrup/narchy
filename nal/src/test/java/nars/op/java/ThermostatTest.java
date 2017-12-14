@@ -16,7 +16,9 @@ public class ThermostatTest {
     public static class Thermostat {
         private int current, target;
 
-        /** limits */
+        /**
+         * limits
+         */
         private final static int cold = 0, hot = 3;
 
         public int is() {
@@ -66,27 +68,28 @@ public class ThermostatTest {
     @Test
     public void test1() {
         Param.DEBUG = true;
-        final int DUR = 10;
+        final int DUR = 5;
 
         NAR n = NARS.tmp();
         n.time.dur(DUR);
-        n.termVolumeMax.set(20);
+        n.termVolumeMax.set(24);
         n.freqResolution.set(0.1f);
         n.confResolution.set(0.1f);
         //n.logPriMin(System.out, 0.5f);
-        n.logPresent(System.out);
+        //n.logWhen(System.out, false, true, true);
 
         Teacher<Thermostat> env = new Teacher<Thermostat>(new Opjects(n) {
             @Override
-            protected Object invoked(Instance in, Object obj, Method wrapped, Object[] args, Object result) {
+            protected synchronized Object invoked(Instance in, Object obj, Method wrapped, Object[] args, Object result) {
 
+                //long now = System.nanoTime();
                 n.time.synch(n);
 
                 Object r = super.invoked(in, obj, wrapped, args, result);
 
-                n.runLater(()->{
-                    n.run(DUR*2);
-                });
+                //n.runLater(() -> {
+                    n.run(DUR * 2);
+                //});
 
                 return r;
             }
@@ -98,11 +101,16 @@ public class ThermostatTest {
         }, Thermostat.class);
 
 
-
         Consumer<Thermostat>
-            hotToCold =  x -> { x.is(x.hot);  x.should(x.cold); },
-            coldToCold = x -> { x.is(x.cold); x.should(x.cold); };
-        for (Consumer<Thermostat> condition : new Consumer[] { hotToCold, coldToCold })
+                hotToCold = x -> {
+            x.is(x.hot);
+            x.should(x.cold);
+        },
+                coldToCold = x -> {
+                    x.is(x.cold);
+                    x.should(x.cold);
+                };
+        for (Consumer<Thermostat> condition : new Consumer[]{hotToCold, coldToCold})
             env.teach("cold", condition, x -> {
                 x.report();
                 while (x.is() > x.cold) x.down();
@@ -110,17 +118,23 @@ public class ThermostatTest {
             }, x -> x.is() == x.cold);
 
 
-        Consumer<Thermostat>
-            coldToHot = x -> { x.is(x.cold); x.should(x.hot); },
-            hotToHot =  x -> { x.is(x.hot);  x.should(x.hot); };
+        Consumer<Thermostat> coldToHot = x -> {
+            x.is(x.cold);
+            x.should(x.hot);
+        }, hotToHot = x -> {
+            x.is(x.hot);
+            x.should(x.hot);
+        };
         Predicate<Thermostat> isHot = x -> x.is() == x.hot;
-        for (Consumer<Thermostat> condition : new Consumer[] { coldToHot, hotToHot }) {
+        for (Consumer<Thermostat> condition : new Consumer[]{coldToHot, hotToHot}) {
             env.teach("hot", condition, x -> {
                 x.report();
                 while (!isHot.test(x)) x.up();
                 x.report();
             }, isHot);
         }
+
+        System.out.println(n.time());
 
     }
 

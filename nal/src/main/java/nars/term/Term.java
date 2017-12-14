@@ -113,6 +113,8 @@ public interface Term extends Termed, Comparable<Termed> {
     @Override
     boolean contains(Term t);
 
+    boolean containsRoot(Term t);
+
     default void append(ByteArrayDataOutput out) {
         Term.append(this, out);
     }
@@ -830,6 +832,7 @@ public interface Term extends Termed, Comparable<Termed> {
     default Term anon() {
         return Anom.the(0);
     }
+
 
 }
 

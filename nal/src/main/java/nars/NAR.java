@@ -757,16 +757,18 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         });
     }
 
-    public NAR logPresent(Appendable out) {
+    public NAR logWhen(Appendable out, boolean past, boolean present, boolean future) {
         return log(out, v -> {
             if (v instanceof Task) {
                 Task t = (Task) v;
                 long now = time();
                 int dur = dur();
-                return !((t.isBefore(now - dur) || t.isAfter(now + dur)));
-            } else {
-                return false;
+                if (past && t.isBefore(now-dur) || (future && t.isAfter(now+dur)) ||
+                        (present && !t.isBefore(now - dur) && !t.isAfter(now + dur))) {
+                    return true;
+                }
             }
+            return false;
         });
     }
 
@@ -1039,11 +1041,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      * adds a task to the queue of task which will be executed in batch
      * after the end of the current frame before the next frame.
      */
-    public final void runLater(@NotNull Runnable t) {
+    public final void runLater(Runnable t) {
         time.at(time(), t);
     }
 
-    public final void runLater(@NotNull Consumer<NAR> t) {
+    public final void runLater(Consumer<NAR> t) {
         time.at(time(), t);
     }
 
@@ -1227,7 +1229,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     }
 
     public void input(Iterable<? extends ITask> tasks) {
-        //if (tasks == null) return;
+        if (tasks == null) return;
         exe.add(tasks);
     }
 

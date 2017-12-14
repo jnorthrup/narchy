@@ -30,7 +30,7 @@ public final class NoCommonSubtermConstraint extends CommonalityConstraint {
     }
 
     @NotNull
-    @Override protected boolean invalid(Term x, Term y) {
+    @Override protected boolean invalidCommonality(Term x, Term y) {
         return isSubtermOfTheOther(x, y, recurse, true);
     }
 
@@ -44,13 +44,28 @@ public final class NoCommonSubtermConstraint extends CommonalityConstraint {
         if ((excludeVariables) && (a instanceof Variable || b instanceof Variable))
             return false;
 
-        return recurse ?
+        int av = a.volume();
+        int bv = b.volume();
+        if (av == bv) {
+            return recurse ?
+                    a.containsRecursively(b, true, limit) ||
+                            b.containsRecursively(a, true, limit) :
 
-                //a.containsRecursively(b) || b.containsRecursively(a) :
-                a.containsRecursively(b,  limit) ||
-                        b.containsRecursively(a,  limit) :
+                    a.containsRoot(b) || b.containsRoot(a);
+        } else {
+            //if one volume is smaller than the other we only need to test containment unidirectionally
 
-                a.contains(b) || b.contains(a);
+            if (av < bv) {
+                //swap
+                Term c = a;
+                a = b;
+                b = c;
+            }
+
+            return recurse ?
+                    a.containsRecursively(b, true, limit) :
+                    a.containsRoot(b);
+        }
     }
     //commonSubtermsRecurse((Compound) B, C, true, new HashSet())
                     //commonSubterms((Compound) B, C, true, scratch.get())

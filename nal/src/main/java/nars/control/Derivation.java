@@ -137,8 +137,8 @@ public class Derivation extends Unify {
      */
     public final RoaringBitmap preToPost = new RoaringBitmap();
 
-    public float premiseConfSingle;
-    public float premiseConfDouble;
+    public float premiseEviSingle;
+    public float premiseEviDouble;
     private long[] evidenceDouble, evidenceSingle;
     public DeriveTime dtSingle = null, dtDouble = null;
 
@@ -447,10 +447,10 @@ public class Derivation extends Unify {
 //        this.premisePri *= parentValue;
 
 
-        this.premiseConfSingle = this.taskTruth != null ? taskTruth.conf() : 0;
-        this.premiseConfDouble = beliefTruth != null ?
-                Math.min(premiseConfSingle, beliefTruth.conf()) : //to be fair to the lesser confidence
-                premiseConfSingle;
+        this.premiseEviSingle = this.taskTruth != null ? taskTruth.evi() : 0;
+        this.premiseEviDouble = beliefTruth != null ?
+                Math.min(premiseEviSingle, beliefTruth.evi()) : //to be fair to the lesser confidence
+                premiseEviSingle;
 
     }
 

@@ -12,7 +12,7 @@ import static nars.time.Tense.ETERNAL;
 //@RunWith(Parameterized.class)
 public class NAL5Test extends NALTest {
 
-    final int cycles = 3750;
+    final int cycles = 1775;
 
     @BeforeEach
     public void nal() {
@@ -457,8 +457,8 @@ public class NAL5Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<(&&,<R --> [f]>,<R --> [w]>) ==> <R --> [l]>>", 0.9f, 0.9f);
         tester.believe("<(&&,<R --> [f]>,<R --> b>) ==> <R --> [l]>>");
-        tester.mustBelieve(cycles * 2, "<<R --> b> ==> <R --> [w]>>", 1f, 0.42f /*0.36f*/);
-        tester.mustBelieve(cycles * 2, "<<R --> [w]> ==> <R --> b>>", 0.90f, 0.37f /*0.45f*/);
+        tester.mustBelieve(cycles * 4, "<<R --> b> ==> <R --> [w]>>", 1f, 0.42f /*0.36f*/);
+        tester.mustBelieve(cycles * 4, "<<R --> [w]> ==> <R --> b>>", 0.90f, 0.37f /*0.45f*/);
     }
 
     @Test
@@ -482,8 +482,8 @@ public class NAL5Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<(&&,<r --> [f]>,<r --> [w]>) ==> <r --> [l]>>", 0.9f, 0.9f);
         tester.believe("<(&&,<r --> [f]>,<r --> b>) ==> <r --> [l]>>");
-        tester.mustBelieve(cycles, "<<r --> b> ==> <r --> [w]>>", 1f, 0.42f);
-        tester.mustBelieve(cycles, "<<r --> [w]> ==> <r --> b>>", 0.90f, 0.45f);
+        tester.mustBelieve(cycles*4, "<<r --> b> ==> <r --> [w]>>", 1f, 0.42f);
+        tester.mustBelieve(cycles*4, "<<r --> [w]> ==> <r --> b>>", 0.90f, 0.45f);
     }
 
     @Test
@@ -503,7 +503,7 @@ public class NAL5Test extends NALTest {
         TestNAR tester = test;
         tester.believe("((&&,x1,x2,a) ==> c)");
         tester.believe("((&&,y1,y2,a) ==> c)");
-        tester.mustBelieve(cycles, "((x1&&x2) ==> (y1&&y2))", 1.00f, 0.45f);
+        tester.mustBelieve(cycles*2, "((x1&&x2) ==> (y1&&y2))", 1.00f, 0.45f);
     }
 
 

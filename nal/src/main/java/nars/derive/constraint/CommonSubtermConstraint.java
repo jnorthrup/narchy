@@ -22,7 +22,7 @@ public final class CommonSubtermConstraint extends CommonalityConstraint {
     }
 
     @Override
-    protected boolean invalid(Term x, Term y) {
+    protected boolean invalidCommonality(Term x, Term y) {
 
         return x.equals(y) || x.containsRecursively(y) || y.containsRecursively(x) || !Subterms.hasCommonSubtermsRecursive(x, y, true);
     }

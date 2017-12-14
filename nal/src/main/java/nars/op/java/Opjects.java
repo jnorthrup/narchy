@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -121,18 +122,29 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     private final CauseChannel<ITask> in;
 
     //TODO use Triple<> not Pair<Pair<>>
-    private final static SoftMemoize<Pair<Pair<Class, Term>, List<Class>>, Method> methodArgCache = new SoftMemoize<>((xx) -> {
+    private final static SoftMemoize<Pair<Pair<Class, Term>, List<Class<?>>>, MethodHandle> methodArgCache = new SoftMemoize<>((xx) -> {
 
         Class c = xx.getOne().getOne();
         String mName = xx.getOne().getTwo().toString();
-        List<Class> types = xx.getTwo();
-        Class<?>[] cc = types.isEmpty() ? ArrayUtils.EMPTY_CLASS_ARRAY : ((FasterList<Class>) types).array();
+        List<Class<?>> types = xx.getTwo();
+        Class<?>[] cc = types.isEmpty() ? ArrayUtils.EMPTY_CLASS_ARRAY : ((FasterList<Class<?>>) types).array();
         Method m = findMethod(c, mName, cc);
-        if (m == null)
-            return null;
-
+//        if (m == null)
+//            return null;
+//
         m.trySetAccessible();
-        return m;
+//        return m;
+
+        MethodHandles.Lookup lookup = MethodHandles.lookup();
+//        MethodType methodType = MethodType.methodType(m.getReturnType(), types);
+
+        try {
+            return lookup.unreflect(m);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
 //
 //        try {
 //            MethodHandle y = MethodHandles.lookup().unreflect(m);
@@ -153,11 +165,12 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 //        }
 
     }, 512, true /* soft */);
-//    private final static SoftMemoize<Pair<MethodHandle, Object>, MethodHandle> instMethodCache = new SoftMemoize<>((xx) -> {
-//        MethodHandle mh = xx.getOne();
-//        Object obj = xx.getTwo();
-//        return mh.bindTo(obj);
-//    }, 512, true /* soft */);
+    private final static SoftMemoize<Pair<MethodHandle, Object>, MethodHandle> instMethodCache = new SoftMemoize<>((xx) -> {
+        MethodHandle mh = xx.getOne();
+        Object obj = xx.getTwo();
+        mh = mh.bindTo(obj);
+        return mh;
+    }, 512, true /* soft */);
 
     public Opjects(NAR n) {
         nar = n;
@@ -318,8 +331,6 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
             }
 
 
-
-
             if (cause != null && !next.term().equals(cause.term())) {
                 //input quenching invocation belief term corresponding to the goal
                 NALTask quench = new NALTask(cause.term(), BELIEF, $.t(f, nar.confDefault(BELIEF)),
@@ -436,6 +447,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         }
 
     }
+
     private class MethodExec extends AtomicExec {
         public MethodExec(Object object) {
             super(operator(object.getClass()), executionThreshold);
@@ -445,7 +457,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         protected boolean exePrefilter(Task x) {
 
 
-            if (x.meta("mimic")!=null)
+            if (x.meta("mimic") != null)
                 return false; //filter instructive tasks (would cause feedback loop)
 
             Subterms args = validArgs(Operator.args(x));
@@ -549,7 +561,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
             int aa = maWrapped ? methodArgs.subs() : 1;
 
             Object[] objArgs;
-            List<Class> types;
+            List<Class<?>> types;
             if (aa == 0) {
                 objArgs = ArrayUtils.EMPTY_OBJECT_ARRAY;
                 types = List.of();
@@ -567,10 +579,10 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 //                MethodHandle mm = methodArgCache.apply(pair(pair(c, method.toString()), types));
 //                if (mm == null)
 //                    return;
-//                MethodHandle mh = instMethodCache.apply(pair(mm, inst));
-                Method mm = methodArgCache.apply(pair(pair(c, method), types));
-                if (mm == null)
-                    return;
+                MethodHandle mm = methodArgCache.apply(pair(pair(c, method), types));
+                if (mm == null) return;
+                MethodHandle mh = instMethodCache.apply(pair(mm, inst));
+                if (mh == null) return;
 
                 if (invokingGoal.get() != null)
                     throw new TODO("we need a stack: " + invokingGoal.get() + " -> " + task);
@@ -578,11 +590,12 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                 invokingGoal.set(task);
                 try {
 
-                    mm.invoke(inst, objArgs);
 
-                    //mh.invokeWithArguments(objArgs);
-                    //mh.invoke(objArgs);
-                    //mh.invokeExact(objArgs);
+                    //mm.invoke(inst, objArgs);
+                    //mm.invokeExact(inst, objArgs);
+
+                    //mm.bindTo(inst).invokeWithArguments(objArgs);
+                    mh.invokeWithArguments(objArgs);
 
                 } catch (Throwable throwable) {
                     logger.error("{} {} {}", task, inst, args);
@@ -596,7 +609,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     }
 
     protected boolean evoked(Task task, Object[] args, Object inst) {
-        if (task.meta("mimic")==null)
+        if (task.meta("mimic") == null)
             logger.info("evoke: {}", task);
 
         return true;
@@ -632,7 +645,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         return types;
     }
 
-    private FasterList<Class> typesOf(Object[] orgs) {
+    private FasterList<Class<?>> typesOf(Object[] orgs) {
         return new FasterList<>(typesOfArray(orgs));
     }
 
@@ -728,10 +741,9 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
             return result;
 
         Instance in = (Instance) objToTerm.get(obj);
-        if (in == null)
-            return result;
-
-        return invoked(in, obj, wrapped, args, result);
+        return (in == null) ?
+                result :
+                invoked(in, obj, wrapped, args, result);
     }
 
     protected Object invoked(Instance in, Object obj, Method wrapped, Object[] args, Object result) {

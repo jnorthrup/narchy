@@ -24,15 +24,7 @@ public abstract class CommonalityConstraint extends MatchConstraint {
         } else if (x.equals(y)) {
             return true;
         } else {
-//            if (!invalid(x,y)) {
-//                if (x.containsRecursively(y) || y.containsRecursively(x)) {
-//                    invalid(x,y);
-//                    System.err.println("wtf");
-//                }
-//                return false;
-//            }
-//            return true;
-            return invalid(x, y);
+            return invalidCommonality(x, y);
         }
     }
 
@@ -40,7 +32,7 @@ public abstract class CommonalityConstraint extends MatchConstraint {
     /**
      * equality will have already been tested prior to calling this
      */
-    protected abstract boolean invalid(Term x, Term y);
+    protected abstract boolean invalidCommonality(Term x, Term y);
 
 
 }

@@ -9,6 +9,9 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.function.Consumer;
 
 /**
@@ -34,8 +37,10 @@ public abstract class Time implements Clock, Serializable {
 //    }
 
 
+    final static int MAX_QUEUED = 4 * 1024;
+    final BlockingQueue<SchedTask> pendingSched = new ArrayBlockingQueue<>(MAX_QUEUED);
     final PriorityQueue<SchedTask> scheduled =
-    //final MinMaxPriorityQueue<SchedTask> scheduled =
+            //final MinMaxPriorityQueue<SchedTask> scheduled =
             //MinMaxPriorityQueue.orderedBy((SchedTask a, SchedTask b) -> {
             new PriorityQueue<>();
 
@@ -45,7 +50,9 @@ public abstract class Time implements Clock, Serializable {
     public abstract void clear();
 
 
-    /** time elapsed since last cycle */
+    /**
+     * time elapsed since last cycle
+     */
     public abstract long sinceLast();
 
     /**
@@ -71,14 +78,16 @@ public abstract class Time implements Clock, Serializable {
     public void at(long whenOrAfter, Runnable then) {
         at(new SchedTask(whenOrAfter, then));
     }
+
     public void at(long whenOrAfter, Consumer<NAR> then) {
         at(new SchedTask(whenOrAfter, then));
     }
 
     public void at(SchedTask event) {
-        synchronized (scheduled) {
-            scheduled.offer(event);
-        }
+        pendingSched.add(event);
+//        synchronized(scheduled) {
+//            scheduled.add(event);
+//        }
     }
 
 
@@ -90,21 +99,26 @@ public abstract class Time implements Clock, Serializable {
 //        if (firstQuick == null || firstQuick.when > now)
 //            return null; //too soon for the next one
 
-        List<SchedTask> pending = new LinkedList();
+
+        if (scheduled.isEmpty() && pendingSched.isEmpty())
+            return null;
 
         synchronized (scheduled) {
 
-            long now = now(); //get time now inside the synch in case it had to wait to enter
+            pendingSched.drainTo(scheduled);
+
+            List<SchedTask> pending = new LinkedList();
 
             SchedTask next;
-            while (((next = scheduled.peek()) != null) && (next.when <= now)) {
-                SchedTask next2 = scheduled.poll(); assert(next==next2);
+            while (((next = scheduled.peek()) != null) && (next.when <= now())) {
+                SchedTask next2 = scheduled.poll();
+                assert (next == next2);
                 pending.add(next);
             }
+            return pending;
         }
 
 
-        return pending;
     }
 
     public void cycle(NAR n) {
@@ -112,7 +126,9 @@ public abstract class Time implements Clock, Serializable {
     }
 
 
-    /** flushes the pending work queued for the current time */
+    /**
+     * flushes the pending work queued for the current time
+     */
     public void synch(NAR n) {
         n.input(exeScheduled());
     }

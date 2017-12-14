@@ -21,16 +21,16 @@ public class MatchConstraintTest {
     public void testNeqComRecursiveConstraint() throws Narsese.NarseseException {
         NoCommonSubtermConstraint c = new NoCommonSubtermConstraint($.varQuery(1), $.varQuery(2), true);
         assertFalse(
-                c.invalid($.$("X"), (Term)$.$("Y"))
+                c.invalidCommonality($.$("X"), (Term)$.$("Y"))
         );
         assertFalse(
-                c.invalid($.$("X"), (Term)$.$("f(X,Y)")) //allow since a product separates
+                c.invalidCommonality($.$("X"), (Term)$.$("f(X,Y)")) //allow since a product separates
         );
         assertFalse(
-                c.invalid($.$("X"), (Term)$.$("(X && Y)")) //allow since a product separates
+                c.invalidCommonality($.$("X"), (Term)$.$("(X && Y)")) //allow since a product separates
         );
         assertTrue(
-                c.invalid($.$("X"), (Term)$.$("(X|Y)"))
+                c.invalidCommonality($.$("X"), (Term)$.$("(X|Y)"))
         );
     }
 

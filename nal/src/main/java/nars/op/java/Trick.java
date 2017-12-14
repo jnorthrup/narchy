@@ -45,14 +45,15 @@ public class Trick<X> {
         n.believe(LEARN, Tense.Present); //label the learning episode which begins now
         pre.accept(x);
 
-        n.run(1000); //perceive the preconditions
+        int considerTime = n.dur() * 2;
+        n.run(considerTime); //perceive the preconditions
 
         Term DO = $.func("do", $.the(id));
         n.believe(DO, Tense.Present); //label the activity that will happen next
 
         action.accept(x); //execute the task
 
-        n.run(1000); //consider the execution
+        n.run(considerTime); //consider the execution
 
         n.believe(DO.neg(), Tense.Present); //done doing
         n.believe(LEARN.neg(), Tense.Present); //done learning
