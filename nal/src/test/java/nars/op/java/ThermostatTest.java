@@ -1,15 +1,18 @@
 package nars.op.java;
 
 import jcog.Util;
-import nars.NAR;
-import nars.NARS;
-import nars.Param;
-import nars.Task;
+import nars.*;
+import nars.op.Implier;
+import nars.task.NALTask;
+import nars.task.NativeTask;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 
 public class ThermostatTest {
 
@@ -62,70 +65,78 @@ public class ThermostatTest {
         public void is(int x) {
             this.current = x;
         }
+
+        static Consumer<Thermostat> change(boolean isHot, boolean shouldHot) {
+            return x -> {
+                x.is(isHot ? x.hot : x.cold);
+                x.should(shouldHot? x.hot : x.cold);
+            };
+        }
     }
 
 
     @Test
-    public void test1() {
+    public void test1() throws Narsese.NarseseException {
         Param.DEBUG = true;
-        final int DUR = 5;
+        final int DUR = 15;
 
         NAR n = NARS.tmp();
         n.time.dur(DUR);
-        n.termVolumeMax.set(24);
-        n.freqResolution.set(0.1f);
-        n.confResolution.set(0.1f);
+        n.termVolumeMax.set(20);
+        n.freqResolution.set(0.25f);
+        n.confResolution.set(0.01f);
+
+        n.priDefault(BELIEF, 0.1f);
+
         //n.logPriMin(System.out, 0.5f);
-        //n.logWhen(System.out, false, true, true);
+//        n.logWhen(System.out, false, true, true);
 
         Teacher<Thermostat> env = new Teacher<Thermostat>(new Opjects(n) {
+
+
             @Override
             protected synchronized Object invoked(Instance in, Object obj, Method wrapped, Object[] args, Object result) {
 
-                //long now = System.nanoTime();
                 n.time.synch(n);
+
+
+                //long now = System.nanoTime();
 
                 Object r = super.invoked(in, obj, wrapped, args, result);
 
                 //n.runLater(() -> {
-                    n.run(DUR * 2);
+                n.run(DUR * 2);
                 //});
 
                 return r;
+
             }
 
             @Override
             protected boolean evoked(Task task, Object[] args, Object inst) {
+                System.err.println("evoke: " + task);
                 return super.evoked(task, args, inst);
             }
+
         }, Thermostat.class);
 
 
         Consumer<Thermostat>
-                hotToCold = x -> {
-            x.is(x.hot);
-            x.should(x.cold);
-        },
-                coldToCold = x -> {
-                    x.is(x.cold);
-                    x.should(x.cold);
-                };
-        for (Consumer<Thermostat> condition : new Consumer[]{hotToCold, coldToCold})
+                hotToCold = Thermostat.change(true, false),
+                coldToCold = Thermostat.change(false, false),
+                coldToHot = Thermostat.change(false, true),
+                hotToHot = Thermostat.change(true, true);
+        Predicate<Thermostat> isCold = x -> x.is() == x.cold;
+        Predicate<Thermostat> isHot = x -> x.is() == x.hot;
+
+        for (Consumer<Thermostat> condition : new Consumer[]{hotToCold, coldToCold}) {
             env.teach("cold", condition, x -> {
                 x.report();
                 while (x.is() > x.cold) x.down();
                 x.report();
-            }, x -> x.is() == x.cold);
+            }, isCold);
+        }
 
-
-        Consumer<Thermostat> coldToHot = x -> {
-            x.is(x.cold);
-            x.should(x.hot);
-        }, hotToHot = x -> {
-            x.is(x.hot);
-            x.should(x.hot);
-        };
-        Predicate<Thermostat> isHot = x -> x.is() == x.hot;
         for (Consumer<Thermostat> condition : new Consumer[]{coldToHot, hotToHot}) {
             env.teach("hot", condition, x -> {
                 x.report();
@@ -134,7 +145,32 @@ public class ThermostatTest {
             }, isHot);
         }
 
-        System.out.println(n.time());
+
+        //n.clear();
+
+
+//        n.log();
+        n.logWhen(System.out, false, true, true);
+
+        new Implier(n, 1f,
+                $.$("a_Thermostat(down,())"), $.the("a_Thermostat(up,())") );
+
+        try {
+
+             //make cold
+//            n.input(new NALTask($.$("a_Thermostat(should,(),0)"),
+//                    BELIEF, $.t(1f, 0.99f),
+//                    n.time(), n.time(), n.time()+1000,
+//                    n.time.nextInputStamp()).pri(1f));
+            n.input(new NALTask($.$("a_Thermostat(is,(),0)"),
+                    GOAL, $.t(1f, 0.99f),
+                    n.time(), n.time(), n.time()+1000,
+                    n.time.nextInputStamp()).pri(1f));
+
+        } catch (Narsese.NarseseException e) {
+            e.printStackTrace();
+        }
+        n.run(1000);
 
     }
 

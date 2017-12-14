@@ -5,6 +5,7 @@ import nars.*;
 import nars.io.NarseseTest;
 import nars.task.util.InvalidTaskException;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
@@ -253,6 +254,8 @@ public class TermReductionsTest extends NarseseTest {
         assertEquals("((R &&+2 P) ==>+1 Q)", $("(R ==>+2 (P ==>+1 Q))").toString());
         assertEquals("(((S &&+1 R) &&+2 P) ==>+1 Q)", $("((S &&+1 R) ==>+2 (P ==>+1 Q))").toString());
     }
+
+
 
     @Test
     public void testConjParallelConceptualShouldntBeXTERNAL() throws Narsese.NarseseException {
@@ -759,12 +762,12 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     public void testConegatedConjunctionTerms0() throws Narsese.NarseseException {
-        assertEquals(False, $("(#1 && (--,#1))"));
-        assertEquals(False, $("(#1 &| (--,#1))"));
-        assertEquals(False, parallel(varDep(1), varDep(1).neg()));
+        assertEquals(Null, $("(#1 && (--,#1))"));
+        assertEquals(Null, $("(#1 &| (--,#1))"));
+        assertEquals(Null, parallel(varDep(1), varDep(1).neg()));
 
-        assertEquals(False, $("(&&, #1, (--,#1), (x))"));
-        assertEquals("(x)", $("(&&, --(#1 && (--,#1)), (x))").toString());
+        assertEquals(Null, $("(&&, #1, (--,#1), (x))"));
+        assertEquals(Null, $("(&&, --(#1 && (--,#1)), (x))"));
 
         assertSame($("((x) &&+1 --(x))").op(), CONJ);
         assertSame($("(#1 &&+1 (--,#1))").op(), CONJ);
@@ -837,23 +840,23 @@ public class TermReductionsTest extends NarseseTest {
     public void testCoNegatedJunction() throws Narsese.NarseseException {
         //the conegation cancels out conflicting terms
 
-        assertEquals(False, $("(&&,x,a:b,(--,a:b))"));
+        assertEquals(Null, $("(&&,x,a:b,(--,a:b))"));
 
-        assertEquals(False, $("(&&, (a), (--,(a)), (b))")); //a cancels, reduce to 'b'
-        assertEquals(False, $("(&&, (a), (--,(a)), (b), (c))"));
+        assertEquals(Null, $("(&&, (a), (--,(a)), (b))")); //a cancels, reduce to 'b'
+        assertEquals(Null, $("(&&, (a), (--,(a)), (b), (c))"));
 
 
-        assertEquals(False, $("(&&,x,y,a:b,(--,a:b))"));
+        assertEquals(Null, $("(&&,x,y,a:b,(--,a:b))"));
     }
 
 
     @Test
     public void testCoNegatedDisjunction() throws Narsese.NarseseException {
 
-        assertEquals(True,
+        assertEquals(Null,
                 $("(||,x,a:b,(--,a:b))"));
 
-        assertEquals(True,
+        assertEquals(Null,
                 $("(||,x,y,a:b,(--,a:b))"));
 
     }
@@ -986,15 +989,15 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testDternalizeRepeatConjImpl() throws Narsese.NarseseException {
+    public void testCommutizeRepeatingConjunctions() throws Narsese.NarseseException {
         assertEquals("a",
                 $("(a &&+1 a)").dt(DTERNAL).toString());
-        assertEquals(False,
+        assertEquals(Null,
                 $("(a &&+1 --a)").dt(DTERNAL));
 
         assertEquals("a",
                 $("(a &&+1 a)").dt(0).toString());
-        assertEquals(False,
+        assertEquals(Null,
                 $("(a &&+1 --a)").dt(0));
 
         assertEquals("(a &&+- a)",

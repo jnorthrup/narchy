@@ -568,8 +568,13 @@ public enum Terms {
      * for commutive conjunction
      *
      * @param dt will be either 0 or DTERNAL (commutive relation)
+     * @return
+     *      True   -- short-circuit to True
+     *      False  -- short-circuit to False
+     *      Null   -- short-circuit to Null (failure)
+     *      null   -- ok
      */
-    public static boolean flatten(/*@NotNull*/ Op op, Term[] u, int dt, ObjectByteHashMap<Term> s) {
+    public static Term flatten(/*@NotNull*/ Op op, Term[] u, int dt, ObjectByteHashMap<Term> s) {
 
         assert (u.length > 1);
 
@@ -579,47 +584,53 @@ public enum Terms {
         //u = u.clone(); //dont modify input, it will confuse callee's
         //Arrays.sort(u, volumeComparator);
 
+        byte trues = 0, falses = 0;
         for (Term x : u) {
-            if (!flatten(op, dt, x, s))
-                return false;
+            Term xx = flatten(op, dt, x, s);
+            if (xx != null) {
+                if (xx == True) {
+                    if (falses > 0)
+                        return Null;
+                    trues++;
+                }
+                else if (xx == False) {
+                    if (trues > 0)
+                        return Null;
+                    falses++;
+                }
+                else if (xx == Null)
+                    return Null;
+            }
         }
-        return true;
+        /*if (trues > 0 && falses > 0)
+            return Null;
+        else */if (trues > 0)
+            return True;
+        else if (falses > 0)
+            return False;
+        else
+            return null;
     }
 
-    public static boolean flatten(/*@NotNull*/ Op op, @NotNull Subterms u, int dt, ObjectByteHashMap<Term> s) {
-        int l = u.subs();
-        for (int i = 0; i < l; i++) {
-            if (!flatten(op, dt, u.sub(i), s))
-                return false;
-        }
-        return true;
-    }
+
 
     public static boolean flattenMatchDT(int candidate, int target) {
         return (candidate == target) || ((target == 0) && (candidate == DTERNAL));
     }
 
-    public static boolean flatten(/*@NotNull*/ Op op, int dt, Term x, ObjectByteHashMap<Term> s) {
+    public static Term flatten(/*@NotNull*/ Op op, int dt, Term x, ObjectByteHashMap<Term> s) {
         if (x instanceof Bool) {
-
-            if (x == True)
-                return true;
-
-            if (x == False)
-                return false;
-            //return s.getIfAbsentPut(True, (byte) -1) == (byte) +1; //attempt to mark a False, for the chance it may become inverted and disappear rather than aborting any further construction here
-
-            return false; //x must be Null
+            return x;
         }
 
         Op xo = x.op();
 
         if ((xo == op) && (flattenMatchDT(x.dt(), dt))) {
-            return flatten(op, x.subterms(), dt, s);
+            return flatten(op, x.subterms().arrayShared(), dt, s);
 
         } else {
             if (!testCoNegate(x, s))
-                return false;
+                return Null;
 
             if (x.op() == CONJ) {
                 int xdt = x.dt();
@@ -632,7 +643,7 @@ public enum Terms {
                     byte earlyExisting = s.getIfAbsent(earlyUnneg, (byte) 0);
                     if (earlyExisting != 0) {
                         if (early.op() == NEG ^ (earlyExisting == -1))
-                            return false; //wrong polarity
+                            return Null; //wrong polarity
                         else {
                             //subsume the existing term by removing it from the list, since it is part of 'x' which has been added in entirity already
                             s.remove(earlyUnneg);
@@ -643,7 +654,7 @@ public enum Terms {
                 }
             }
 
-            return true;
+            return null; //ok
         }
 
     }

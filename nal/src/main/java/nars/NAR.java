@@ -125,7 +125,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         this.terms = terms;
 
         this.time = time;
-        time.clear();
+        time.reset();
 
         this.exe = exe;
 
@@ -305,7 +305,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
             stop();
 
-            restart();
+            time.reset();
+
+            exe.start(this);
 
         }
 
@@ -317,21 +319,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      * <p>
      * this does not indicate the NAR has stopped or reset itself.
      */
-    public void clear() {
+    public synchronized void clear() {
+        time.clear(this);
         eventClear.emit(this);
     }
 
-    /**
-     * initialization and post-reset procedure
-     */
-    protected void restart() {
-
-
-        time.clear();
-
-        exe.start(this);
-
-    }
 
     public final void setSelf(String self) {
         setSelf(Atomic.the(self));

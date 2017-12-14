@@ -633,7 +633,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
 
             long regionTime =
                     //r.furthestTimeTo(when);
-                    r.nearestTimeTo(when);
+                    r.myNearestTimeTo(when);
 
             float timeDist = (Math.abs(when - regionTime)) / ((float) perceptDur);
 

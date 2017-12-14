@@ -40,7 +40,7 @@ public abstract class RealTime extends Time {
     }
 
     @Override
-    public void clear() {
+    public void reset() {
         long rt = realtime();
 
         if (start!=0)

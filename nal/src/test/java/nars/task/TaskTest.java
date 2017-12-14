@@ -191,8 +191,8 @@ public class TaskTest {
     }
     @Test public void testTaskNearestTimePoint_range() throws Narsese.NarseseException {
         Task t = assertNearTests(10, 20);
-        assertEquals(18, t.nearestTimeTo(18)); //mid
-        assertEquals(12, t.nearestTimeTo(12)); //mid
+        assertEquals(18, t.theNearestTimeWithin(18,18)); //mid
+        assertEquals(12, t.theNearestTimeWithin(12,12)); //mid
     }
     @Test public void testTaskNearestTimePoint_eternal() throws Narsese.NarseseException {
         Task t = assertNearTests(ETERNAL, ETERNAL);
@@ -206,27 +206,41 @@ public class TaskTest {
         assertEquals(sta, t.start());
         assertEquals(end, t.end());
 
-        assertEquals(end, t.nearestTimeTo(30));
-        assertEquals(mid, t.nearestTimeTo(mid)); //mid
-        assertEquals(sta, t.nearestTimeTo(0));
-        assertEquals(mid, t.nearestTimeTo(ETERNAL));
-        assertEquals(ETERNAL, t.nearestTimeOf(ETERNAL, ETERNAL));
+        assertEquals(end, t.theNearestTimeWithin(end, end));
 
-        assertEquals(9, t.nearestTimeOf(9, 9));
-        assertEquals(-1, t.nearestTimeOf(-1, -1)); //before
-        assertEquals(100, t.nearestTimeOf(100, 100)); //after
+        if (end!=ETERNAL) {
+            assertEquals(end, t.theNearestTimeWithin(end, end + 5));
+            assertEquals(end + 5, t.theNearestTimeWithin(end + 5, end + 5));
+        }
+        assertEquals(mid, t.theNearestTimeWithin(mid,mid)); //mid
+        assertEquals(0, t.theNearestTimeWithin(0,0));
+        assertEquals(ETERNAL, t.theNearestTimeWithin(ETERNAL,ETERNAL));
+        assertEquals(t.mid(), t.myNearestTimeTo(ETERNAL, ETERNAL));
+
+        assertEquals(t.start(), t.myNearestTimeTo(-1, -1)); //before
+        assertEquals(t.end(), t.myNearestTimeTo(100, 100)); //after
 
         if (sta!=ETERNAL) {
-            assertEquals(mid, t.nearestTimeOf(mid - 1, mid + 1)); //midpoint
-            assertEquals(mid, t.nearestTimeOf(mid, mid));
-            assertEquals(sta, t.nearestTimeOf(0, 1));
-            assertEquals(sta, t.nearestTimeOf(0, mid));
-            assertEquals(end, t.nearestTimeOf(30, 40));
+            assertEquals(mid, t.myNearestTimeTo(mid - 1, mid + 1)); //midpoint
+            assertEquals(mid, t.myNearestTimeTo(mid, mid));
+            assertEquals(sta, t.myNearestTimeTo(0, 1));
+            assertEquals(sta, t.myNearestTimeTo(0, mid));
+            assertEquals(end, t.myNearestTimeTo(30, 40));
         }
-        assertEquals((9+21)/2, t.nearestTimeOf(9, 21)); //midpoint
+        assertEquals((9+21)/2, t.myNearestTimeTo(9, 21)); //midpoint
 
 
         return t;
     }
 
+    @Test public void testTaskTimeSanity() throws Narsese.NarseseException {
+        Task t = $.task("x", BELIEF, 1f, 0.9f)
+                .time(0, 1530, 1545).apply(tt);
+        assertEquals(2966, t.theNearestTimeWithin(2966, 2980));
+        assertEquals(0, t.theNearestTimeWithin(0, 0));
+        assertEquals(1530, t.theNearestTimeWithin(1530, 1545));
+        assertEquals(1545, t.theNearestTimeWithin(1545, 1545));
+        assertEquals(1545, t.theNearestTimeWithin(1545, 1546));
+        assertEquals(1546, t.theNearestTimeWithin(1546, 1546));
+    }
 }

@@ -42,8 +42,6 @@ public class Teacher<X> {
         if (!valid)
             throw new RuntimeException("invalid after training. please dont confuse NARS");
 
-        n.run(1000); //debriefing
-
         return t;
     }
 }

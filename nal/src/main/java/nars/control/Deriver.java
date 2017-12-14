@@ -21,9 +21,10 @@ import static nars.time.Tense.ETERNAL;
  * <p>
  * runtime intensity is metered and throttled by causal feedback
  */
-public class Deriver extends NARService {
+public class Deriver extends Causable {
 
     private final Consumer<Predicate<Activate>> source;
+    private final Cause[] subCauses;
     private float minPremisesPerConcept = 1;
     private float maxPremisesPerConcept = 3;
     protected long now;
@@ -35,7 +36,8 @@ public class Deriver extends NARService {
                 ), nar);
     }
 
-    /** loads default deriver rules, specified by a range (inclusive) of levels. this allows creation
+    /**
+     * loads default deriver rules, specified by a range (inclusive) of levels. this allows creation
      * of multiple deriver layers each targetting a specific range of the NAL spectrum
      */
     public static Function<NAR, Deriver> deriver(int minLevel, int maxLevel, String... additional) {
@@ -49,13 +51,12 @@ public class Deriver extends NARService {
 
     public final PrediTerm<Derivation> deriver;
     private final NAR nar;
-    private final Causable can;
 
     public Deriver(PrediTerm<Derivation> deriver, NAR nar) {
         this(nar.exe::fire, deriver, nar);
     }
 
-    static int serial = 0;
+    static volatile int serial = 0;
 
     public Deriver(Consumer<Predicate<Activate>> source, PrediTerm<Derivation> deriver, NAR nar) {
         super(null,
@@ -66,29 +67,25 @@ public class Deriver extends NARService {
         this.nar = nar;
 
         Try t = (Try) ((AndCondition) (deriver)).cond[((AndCondition) (deriver)).cond.length - 1]; //HACK
-
-        //this.cause = nar.newCauseChannel(this);
-        this.can = new Causable(nar) {
-            @Override
-            protected int next(NAR n, int iterations) {
-                return Deriver.this.run(iterations);
-            }
-
-            @Override
-            public boolean singleton() {
-                return false;
-            }
-
-            @Override
-            public float value() {
-                return Util.sum(Cause::value, t.causes);
-            }
-        };
-        //this.can.can.update(1,1,0.0);
+        subCauses = t.causes;
 
         nar.on(this);
     }
 
+    @Override
+    protected int next(NAR n, int iterations) {
+        return Deriver.this.run(iterations);
+    }
+
+    @Override
+    public boolean singleton() {
+        return false;
+    }
+
+    @Override
+    public float value() {
+        return Util.sum(Cause::value, subCauses);
+    }
 
     protected long matchTime(Task task) {
         assert (now != ETERNAL);
@@ -102,7 +99,7 @@ public class Deriver extends NARService {
             //return task.nearestTimeTo(now);
 
             return nar.random().nextBoolean() ?
-                    now : task.nearestTimeTo(now);
+                    now : task.myNearestTimeTo(now);
 
             //        return nar.random().nextBoolean() ?
             //                task.nearestTimeTo(now) :
@@ -130,6 +127,7 @@ public class Deriver extends NARService {
         //now + dur;
 
     }
+
     protected int run(int work) {
 
 

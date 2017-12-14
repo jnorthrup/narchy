@@ -276,17 +276,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             throw new InvalidTaskException(t, reason);
     }
 
-    private static long nearestStartOrEnd(long a, long b, long x, long y) {
-
-        long u = TaskRegion.nearestTimeTo(x, a, b);
-        long v = TaskRegion.nearestTimeTo(y, a, b);
-        if (Math.min(Math.abs(u - a), Math.abs(u - b)) <
-                Math.min(Math.abs(v - a), Math.abs(v - b))) {
-            return u;
-        } else {
-            return v;
-        }
-    }
 
 
     @Nullable
@@ -393,29 +382,19 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             return this.eviEternalized();
         else {
 
-            float cw = this.evi();
-            long z = end();
+            float cw = t.evi();
+//            long z = end();
             //assert (z >= a) : this + " has mismatched start/end times";
 
-            if ((when >= a) && (when <= z)) {
 
-                //full confidence
+            long dist = minDistanceTo(when);
+            if (dist > 0) {
+                assert (dur > 0) : "dur<=0 is invalid here";
 
-            } else {
-                //nearest endpoint of the interval
-
-                long touched =
-                        nearestTimeTo(when);
-
-                long dist = Math.abs(when - touched);
-                if (dist > 0) {
-                    assert (dur > 0) : "dur<=0 is invalid here";
-
-                    float ete = eternalizable();
-                    float ecw = ete > 0 ? this.eviEternalized() * ete : 0;
-                    float dcw = cw - ecw; //delta to eternalization
-                    cw = (float) (ecw + Param.evi(dcw, dist, dur)); //decay
-                }
+                float ete = eternalizable();
+                float ecw = ete > 0 ? this.eviEternalized() * ete : 0;
+                float dcw = cw - ecw; //delta to eternalization
+                cw = (float) (ecw + Param.evi(dcw, dist, dur)); //decay
             }
 
             return cw;
@@ -512,20 +491,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //        }
     }
 
-// TODO
-//    default long nearestTimeTo(Task otherTask) {
-//        long s = start();
-//        if (s == ETERNAL)
-//            return ETERNAL;
-//        long os = otherTask.start();
-//        if (os == ETERNAL)
-//            return s;
-//
-//
-//        if (s == ETERNAL)
-//            return ETERNAL;
-//        return nearestStartOrEnd(s, end(), when);
-//    }
 
     default boolean isQuestOrQuestion() {
         byte c = punc();
@@ -615,30 +580,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         }
 
         return answer;
-    }
-
-    /**
-     * to the interval [x,y]
-     */
-    default long nearestTimeOf(final long x, final long y) {
-
-        assert (y >= x && (x != ETERNAL || x == y));
-
-        if (x == y)
-            return x;
-
-        long a = this.start();
-        if (a == ETERNAL)
-            return (x + y) / 2; //use midpoint of the two if this task is eternal
-
-        long b = this.end();
-        if ((x >= a) && (y <= b)) {
-            return (x + y) / 2; //midpoint of the contained range
-        } else if (x < a && y > b) {
-            return (a + b) / 2; //midpoint of this within the range
-        } else {
-            return nearestStartOrEnd(a, b, x, y); //overlap or no overlap
-        }
     }
 
 
@@ -802,11 +743,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
     @Nullable
     default Truth truth(long targetStart, long targetEnd, long dur, float minConf) {
-        return truth(nearestTimeOf(targetStart, targetEnd), dur, minConf);
+        return truth(theNearestTimeWithin(targetStart, targetEnd), dur, minConf);
     }
 
     default float evi(long targetStart, long targetEnd, final long dur) {
-        return evi(nearestTimeOf(targetStart, targetEnd), dur);
+        return evi(theNearestTimeWithin(targetStart, targetEnd), dur);
     }
 
     @Nullable
@@ -1028,101 +969,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return new PreciseTruth(freq(), e, false);
     }
 
-    /**
-     * amount of time this spans for
-     */
-    default long range() {
-        long s = start();
-        return s != ETERNAL ? end() - s : 0;
-    }
-
-    default boolean isAfter(long when) {
-        long x = nearestTimeTo(when);
-        return x == ETERNAL || x > when;
-    }
-
-    default boolean isBefore(long when) {
-        long x = nearestTimeTo(when);
-        return x == ETERNAL || x < when;
-    }
-
-    default boolean isDuringAny(long... when) {
-        if (when.length == 2 && when[0] == when[1]) return isDuring(when[0]); //quick
-        for (long x : when) {
-            if (isDuring(x)) return true;
-        }
-        return false;
-    }
-
-    default boolean isDuring(long when) {
-        if (when == ETERNAL)
-            return true;
-        long start = start();
-        if (start != ETERNAL) {
-            if (start == when)
-                return true;
-            if (when >= start) {
-                if (when <= end())
-                    return true;
-            }
-            return false;
-        } else {
-            return true;
-        }
-    }
-
 
     /**
      * TODO cause should be merged if possible when merging tasks in belief table or otherwise
      */
     short[] cause();
-
-    default long distanceTo(long when) {
-        if (isEternal())
-            return 0;
-        return Math.abs(when - nearestTimeTo(when));
-    }
-
-//    /**
-//     * TODO see if this can be made faster
-//     */
-//    default long distanceTo(long start, long end) {
-//        assert (start != ETERNAL);
-//
-//        if (start == end) {
-//            return distanceTo(start);
-//        } else {
-//            long s = this.start();
-//            if (s == ETERNAL) return 0;
-//
-//
-//            long e = this.end();
-//
-//            if (Interval.intersectLength(s, e, start, end) >= 0)
-//                return 0; //intersects
-//            else {
-//                return Interval.unionLength(s, e, start, end) - (end - start) - (e - s);
-//            }
-//        }
-//    }
-
-    static long[] range(List<Task> ie) {
-        long start = Long.MAX_VALUE, end = Long.MIN_VALUE;
-        int n = ie.size();
-        for (int i = 0; i < n; i++) {
-            Task x = ie.get(i);
-            long s = x.start();
-            if (s != ETERNAL) {
-                if (s < start) start = s;
-                long e = x.end();
-                if (e > end) end = e;
-            }
-        }
-        if (start == Long.MAX_VALUE) //nothing or all eternal
-            return Task.ETERNAL_ETERNAL;
-        else
-            return new long[]{start, end};
-    }
-
 
 }

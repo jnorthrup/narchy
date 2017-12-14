@@ -101,7 +101,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
                 Truth desireTruth;
                 float d;
                 if (desire == null
-                        || (desireTruth = desire.truth(start, end)) == null
+                        || (desireTruth = desire.truth(start, end, dur, Param.TRUTH_EPSILON)) == null
                         || (d = desireTruth.expectation()) < desireThresh) {
                     x.delete();
                     return;

@@ -19,7 +19,7 @@ public class CycleTime extends Time {
     CycleTime(int dt, int dur) {
         this.dt = dt;
         this.dur = dur;
-        clear();
+        reset();
     }
 
     public CycleTime() {
@@ -38,7 +38,7 @@ public class CycleTime extends Time {
     }
 
     @Override
-    public void clear() {
+    public void reset() {
         t = 0;
     }
 

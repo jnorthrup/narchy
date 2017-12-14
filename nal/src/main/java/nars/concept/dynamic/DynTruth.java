@@ -7,6 +7,7 @@ import nars.Param;
 import nars.Task;
 import nars.control.Cause;
 import nars.task.NALTask;
+import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -82,7 +83,7 @@ public final class DynTruth {
             return null;
 
         Term c = this.term;
-        long[] se = Task.range(e);
+        long[] se = TaskRegion.range(e);
         long start = se[0];
         long end = se[1];
 //        long eviRange = end - start;

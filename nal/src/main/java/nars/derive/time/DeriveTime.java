@@ -10,7 +10,6 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.truth.Truth;
-import nars.truth.func.BeliefFunction;
 import nars.truth.func.TruthOperator;
 
 import java.util.Collection;
@@ -163,11 +162,14 @@ public class DeriveTime extends TimeGraph {
 
             long[] occ = d.concOcc;
 
+            float minConf = d.confMin;
             boolean project = false;
             Truth taskTruth = d.taskTruth;
             int dur = d.dur;
+            ///if (!d.task.isDuringAll(occ)) {
+               // Truth tt = d.task.truth( d.task.furthestTimeOf( occ[0], occ[1]), dur, minConf);
             if (!d.task.isDuringAny(occ)) {
-                Truth tt = d.task.truth(d.task.nearestTimeOf(occ[0], occ[1]), dur);
+                Truth tt = d.task.truth( occ[0], occ[1], dur, minConf);
                 if (tt == null) {
                     return null; //fail
                 } else if (!tt.equals(taskTruth)) {
@@ -178,8 +180,10 @@ public class DeriveTime extends TimeGraph {
             Truth beliefTruth;
             if (!d.single && d.belief!=null) {
                 beliefTruth = d.beliefTruth;
+//                if (!d.belief.isDuringAll(occ)) {
+//                    Truth bb = d.belief.truth(d.belief.furthestTimeOf(occ[0], occ[1]), dur, minConf);
                 if (!d.belief.isDuringAny(occ)) {
-                    Truth bb = d.belief.truth(d.belief.nearestTimeOf(occ[0], occ[1]), dur);
+                    Truth bb = d.belief.truth(occ[0], occ[1], dur, minConf);
                     if (bb == null) {
                         return null; //fail
                     } else if (!bb.equals(beliefTruth)) {
@@ -267,8 +271,12 @@ public class DeriveTime extends TimeGraph {
 
                 /* weight the influence of the distance to each
                    according to its weakness (how likely it is to null during projection). */
-                float taskWeight = task.isBeliefOrGoal() ? (0.5f + 0.5f * (1f - task.conf())) : 0f;
-                float beliefWeight = belief!=null ? (0.5f + 0.5f * (1f - belief.conf())) : 0;
+                float taskWeight =
+                        //task.isBeliefOrGoal() ? (0.5f + 0.5f * (1f - task.conf())) : 0f;
+                        0.5f;
+                float beliefWeight =
+                        //belief!=null ? (0.5f + 0.5f * (1f - belief.conf())) : 0;
+                        0.5f;
 
                 final float base = 1f/solutions.size();
                 event = solutions.roulette((e) -> {
@@ -279,10 +287,10 @@ public class DeriveTime extends TimeGraph {
                         return base; //prefer eternal only if a temporal solution does not exist
 
                     long distance = 1;
-                    distance += task.distanceTo(when) * taskWeight;
+                    distance += task.minDistanceTo(when) * taskWeight;
 
                     if (!d.single && belief!=null)
-                        distance += belief.distanceTo(when) * beliefWeight;
+                        distance += belief.minDistanceTo(when) * beliefWeight;
 
                     return 1f/distance;
                 }, d.nar.random());

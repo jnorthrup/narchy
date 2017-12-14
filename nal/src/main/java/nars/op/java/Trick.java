@@ -36,11 +36,12 @@ public class Trick<X> {
          return post.test(x);
     }
 
-    public void train(X x, NAR n) {
+    public synchronized void train(X x, NAR n) {
 
         logger.info("training: {}", id);
 
         n.clear();
+
         Term LEARN = $.func("learn", $.the(id));
         n.believe(LEARN, Tense.Present); //label the learning episode which begins now
         pre.accept(x);
@@ -57,6 +58,8 @@ public class Trick<X> {
 
         n.believe(DO.neg(), Tense.Present); //done doing
         n.believe(LEARN.neg(), Tense.Present); //done learning
+
+        n.run(considerTime); //consider the execution
 
     }
 }

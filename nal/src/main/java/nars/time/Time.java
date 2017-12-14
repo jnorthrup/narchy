@@ -1,5 +1,6 @@
 package nars.time;
 
+import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import com.netflix.servo.util.Clock;
 import nars.NAR;
 import nars.task.NativeTask.SchedTask;
@@ -9,9 +10,8 @@ import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 /**
@@ -37,17 +37,32 @@ public abstract class Time implements Clock, Serializable {
 //    }
 
 
+    final AtomicLong scheduledNext = new AtomicLong(Long.MIN_VALUE);
     final static int MAX_QUEUED = 4 * 1024;
-    final BlockingQueue<SchedTask> pendingSched = new ArrayBlockingQueue<>(MAX_QUEUED);
+    final BlockingQueue<SchedTask> pendingSched =
+            new DisruptorBlockingQueue<>(MAX_QUEUED);
+    //new ArrayBlockingQueue<>(MAX_QUEUED);
+    //final ConcurrentQueue<SchedTask> pendingSched =
+    //new MultithreadConcurrentQueue(MAX_QUEUED);
+
     final PriorityQueue<SchedTask> scheduled =
             //final MinMaxPriorityQueue<SchedTask> scheduled =
             //MinMaxPriorityQueue.orderedBy((SchedTask a, SchedTask b) -> {
             new PriorityQueue<>();
 
+
+    public void clear(NAR n) {
+        synchronized(scheduled) {
+            synch(n);
+            pendingSched.clear();
+            scheduled.clear();
+        }
+    }
+
     /**
      * called when memory reset
      */
-    public abstract void clear();
+    public abstract void reset();
 
 
     /**
@@ -83,11 +98,10 @@ public abstract class Time implements Clock, Serializable {
         at(new SchedTask(whenOrAfter, then));
     }
 
-    public void at(SchedTask event) {
+    private final void at(SchedTask event) {
         pendingSched.add(event);
-//        synchronized(scheduled) {
-//            scheduled.add(event);
-//        }
+        long w = event.when;
+        scheduledNext.updateAndGet((z) -> Math.min(z, w));
     }
 
 
@@ -100,22 +114,33 @@ public abstract class Time implements Clock, Serializable {
 //            return null; //too soon for the next one
 
 
-        if (scheduled.isEmpty() && pendingSched.isEmpty())
+        long nextScheduled = scheduledNext.get();
+        if ((now() < nextScheduled) || !(scheduledNext.compareAndSet(nextScheduled, Long.MAX_VALUE)))
             return null;
 
-        synchronized (scheduled) {
+
+        try  {
 
             pendingSched.drainTo(scheduled);
+
 
             List<SchedTask> pending = new LinkedList();
 
             SchedTask next;
             while (((next = scheduled.peek()) != null) && (next.when <= now())) {
-                SchedTask next2 = scheduled.poll();
-                assert (next == next2);
+                SchedTask actualNext = scheduled.poll();
+                assert (next == actualNext);
                 pending.add(next);
             }
+
+            long nextNextWhen = next!=null ? next.when : Long.MAX_VALUE;
+            scheduledNext.updateAndGet(z -> Math.min(z, nextNextWhen ));
             return pending;
+
+        } catch (Throwable t) {
+            t.printStackTrace();
+            scheduledNext.set(now()); //try again immediately
+            return null;
         }
 
 

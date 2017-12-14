@@ -5,6 +5,7 @@ import jcog.TODO;
 import jcog.list.FasterList;
 import nars.derive.match.EllipsisMatch;
 import nars.derive.match.Ellipsislike;
+import nars.op.data.flat;
 import nars.op.mental.AliasConcept;
 import nars.term.*;
 import nars.term.atom.Atomic;
@@ -205,7 +206,7 @@ public enum Op {
 
             if (u.length == 2 && (dt == 0 || dt == DTERNAL)) {
                 if (conegated(u[0], u[1]))
-                    return False;
+                    return Null;
             }
 
 
@@ -275,12 +276,7 @@ public enum Op {
                     //      becomes
                     //    ((x &&+ y) &&+ z)
 
-                    if (dt == XTERNAL) {
-                        Arrays.sort(u); //pre-sort but should have been sorted already
-                    }
 
-                    Term a = u[0];
-                    Term b = u[1];
 //                int eventsLeft = a.eventCount();
 //                int eventsRight = b.eventCount();
 //                assert(eventsLeft > 0);
@@ -290,35 +286,56 @@ public enum Op {
 
 
                     if (dt == XTERNAL) {
-                        if (n == 2 && a.op() == CONJ && a.dt() == XTERNAL && a.subs() == 2) {
 
-                            int va = a.volume();
-                            int vb = b.volume();
+                        if (n > 2) {
 
-                            if (va > vb) {
-                                Term[] aa = a.subterms().arrayShared();
-                                int va0 = aa[0].volume();
-                                int va1 = aa[1].volume();
-                                int vamin = Math.min(va0, va1);
+                            //allow co-negations, etc.
 
-                                //if left remains heavier by donating its smallest
-                                if ((va - vamin) > (vb + vamin)) {
-                                    int min = va0 <= va1 ? 0 : 1;
-                                    return CONJ.the(XTERNAL,
-                                            CONJ.the(XTERNAL, b, aa[min] /* a to b */),
-                                            aa[1 - min]);
+//                            Term x = junctionFlat(DTERNAL, u);
+//                            if (x instanceof Bool) return x;
+//                            return x.dt(XTERNAL);
+                        } else if (n == 2) {
+
+                            Arrays.sort(u); //pre-sort but should have been sorted already
+
+                            Term a = u[0];
+                            Term b = u[1];
+                            if (a.op() == CONJ && a.dt() == XTERNAL && a.subs() == 2) {
+
+                                int va = a.volume();
+                                int vb = b.volume();
+
+                                if (va > vb) {
+                                    Term[] aa = a.subterms().arrayShared();
+                                    int va0 = aa[0].volume();
+                                    int va1 = aa[1].volume();
+                                    int vamin = Math.min(va0, va1);
+
+                                    //if left remains heavier by donating its smallest
+                                    if ((va - vamin) > (vb + vamin)) {
+                                        int min = va0 <= va1 ? 0 : 1;
+                                        return CONJ.the(XTERNAL,
+                                                CONJ.the(XTERNAL, b, aa[min] /* a to b */),
+                                                aa[1 - min]);
+                                    }
                                 }
-                            }
 
+                            }
                         }
+
                         return compound(CONJ, XTERNAL, u);
                     } else {
-                        ci = dt >= 0 ?
+                        assert(n==2);
+
+                        Term a = u[0];
+                        Term b = u[1];
+                        ci = (dt >= 0) ?
                                 conjMerge(a, 0, b, +dt + a.dtRange()) :
                                 conjMerge(b, 0, a, -dt + b.dtRange());
                     }
 
             }
+
             return implInConjReduce(ci);
 
         }
@@ -349,8 +366,11 @@ public enum Op {
 
             ObjectByteHashMap<Term> s = new ObjectByteHashMap<>(u.length);
 
-            if (!flatten(CONJ, u, dt, s))
-                return False;
+            Term uu = flatten(CONJ, u, dt, s);
+            if (uu!=null) {
+                assert(uu instanceof Bool);
+                return uu;
+            }
 
             if (s.isEmpty())
                 return True; //? does this happen
@@ -382,7 +402,7 @@ public enum Op {
                                     if (csa == null)
                                         csa = $.newArrayList(1);
                                     csa.add(
-                                        CONJ.the(disj.dt(), sorted(disjSubs)).neg()
+                                            CONJ.the(disj.dt(), sorted(disjSubs)).neg()
                                     );
                                 }
                             }
@@ -586,8 +606,8 @@ public enum Op {
     public final boolean depVarParent;
 
     private static boolean conegated(Term a, Term b) {
-        return (a.op()==NEG && a.unneg().equals(b)) ||
-                (b.op()==NEG && b.unneg().equals(a));
+        return (a.op() == NEG && a.unneg().equals(b)) ||
+                (b.op() == NEG && b.unneg().equals(a));
     }
 
     public static final Compound ZeroProduct = new CachedCompound(Op.PROD, Subterms.Empty);
@@ -1213,7 +1233,7 @@ public enum Op {
         }
 
 
-        return implInConjReduce( compound(CONJ, dt, left, right) );
+        return implInConjReduce(compound(CONJ, dt, left, right));
         //return CONJ.the(dt, left, right);
 
     }

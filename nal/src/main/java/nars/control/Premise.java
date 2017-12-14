@@ -156,7 +156,7 @@ public class Premise {
         //QUESTION ANSWERING and TERMLINK -> TEMPORALIZED BELIEF TERM projection
         Task belief = null;
 
-        Concept beliefConcept = n.conceptualize(beliefTerm);
+        final Concept beliefConcept = n.conceptualize(beliefTerm);
 
 
         if (beliefConcept != null) {

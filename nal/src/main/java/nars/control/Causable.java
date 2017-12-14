@@ -36,8 +36,9 @@ abstract public class Causable extends NARService {
     protected Causable(NAR nar, Term id) {
         super(null, id);
         busy = singleton() ? new AtomicBoolean(false) : null;
-        can = new MyCan(nar, term().toString());
-        nar.on(this);
+        can = new MyCan(term().toString());
+        if (nar!=null)
+            nar.on(this);
     }
 
     @Override
@@ -132,11 +133,9 @@ abstract public class Causable extends NARService {
 //    }
 
     private static final class MyCan extends Can {
-        private final NAR nar;
 
-        public MyCan(NAR nar, String id) {
+        public MyCan(String id) {
             super(id);
-            this.nar = nar;
         }
 
 //        @Override
