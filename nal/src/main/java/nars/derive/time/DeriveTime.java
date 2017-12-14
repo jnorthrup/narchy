@@ -152,59 +152,59 @@ public class DeriveTime extends TimeGraph {
         return y;
     }
 
-    public Term solveAndProject(Term pattern) {
-        Term c = solve(pattern);
-
-        if (c!=null && (d.taskPunct==BELIEF || d.taskPunct==GOAL)) {
-            TruthOperator f = d.truthFunction;
-            if (f == null)
-                return c; //not sure why this happens
-
-            long[] occ = d.concOcc;
-
-            float minConf = d.confMin;
-            boolean project = false;
-            Truth taskTruth = d.taskTruth;
-            int dur = d.dur;
-            ///if (!d.task.isDuringAll(occ)) {
-               // Truth tt = d.task.truth( d.task.furthestTimeOf( occ[0], occ[1]), dur, minConf);
-            if (!d.task.isDuringAny(occ)) {
-                Truth tt = d.task.truth( occ[0], occ[1], dur, minConf);
-                if (tt == null) {
-                    return null; //fail
-                } else if (!tt.equals(taskTruth)) {
-                    project = true;
-                    taskTruth = tt;
-                }
-            }
-            Truth beliefTruth;
-            if (!d.single && d.belief!=null) {
-                beliefTruth = d.beliefTruth;
-//                if (!d.belief.isDuringAll(occ)) {
-//                    Truth bb = d.belief.truth(d.belief.furthestTimeOf(occ[0], occ[1]), dur, minConf);
-                if (!d.belief.isDuringAny(occ)) {
-                    Truth bb = d.belief.truth(occ[0], occ[1], dur, minConf);
-                    if (bb == null) {
-                        return null; //fail
-                    } else if (!bb.equals(beliefTruth)) {
-                        project = true;
-                        beliefTruth = bb;
-                    }
-                }
-            } else {
-                beliefTruth = null;
-            }
-
-            if (project) {
-                //recalculate truth
-                Truth projected = f.apply(taskTruth, beliefTruth, d.nar);
-                if (projected == null)
-                    return null; //fail
-                d.concTruth = projected;
-            }
-        }
-        return c;
-    }
+//    public Term solveAndProject(Term pattern) {
+//        Term c = solve(pattern);
+//
+//        if (c!=null && (d.taskPunct==BELIEF || d.taskPunct==GOAL)) {
+//            TruthOperator f = d.truthFunction;
+//            if (f == null)
+//                return c; //not sure why this happens
+//
+//            long[] occ = d.concOcc;
+//
+//            float minConf = d.confMin;
+//            boolean project = false;
+//            Truth taskTruth = d.taskTruth;
+//            int dur = d.dur;
+//            ///if (!d.task.isDuringAll(occ)) {
+//               // Truth tt = d.task.truth( d.task.furthestTimeOf( occ[0], occ[1]), dur, minConf);
+//            if (!d.task.isDuringAny(occ)) {
+//                Truth tt = d.task.truth( occ[0], occ[1], dur, minConf);
+//                if (tt == null) {
+//                    return null; //fail
+//                } else if (!tt.equals(taskTruth)) {
+//                    project = true;
+//                    taskTruth = tt;
+//                }
+//            }
+//            Truth beliefTruth;
+//            if (!d.single && d.belief!=null) {
+//                beliefTruth = d.beliefTruth;
+////                if (!d.belief.isDuringAll(occ)) {
+////                    Truth bb = d.belief.truth(d.belief.furthestTimeOf(occ[0], occ[1]), dur, minConf);
+//                if (!d.belief.isDuringAny(occ)) {
+//                    Truth bb = d.belief.truth(occ[0], occ[1], dur, minConf);
+//                    if (bb == null) {
+//                        return null; //fail
+//                    } else if (!bb.equals(beliefTruth)) {
+//                        project = true;
+//                        beliefTruth = bb;
+//                    }
+//                }
+//            } else {
+//                beliefTruth = null;
+//            }
+//
+//            if (project) {
+//                //recalculate truth
+//                Truth projected = f.apply(taskTruth, beliefTruth, d.nar);
+//                if (projected == null)
+//                    return null; //fail
+//                d.concTruth = projected;
+//            }
+//        }
+//        return c;
+//    }
 
     public Term solve(Term pattern) {
 
@@ -265,35 +265,39 @@ public class DeriveTime extends TimeGraph {
                 event = solutions.get(d.random); //doesnt really matter which solution is chosen, in terms of probability of projection success
             } else {
 
+                event = solutions.get(d.random);
+
+
+
                 //choose event with least distance to task and belief occurrence so that projection has best propensity for non-failure
 
                 //solutions.shuffle(d.random); //shuffle so that equal items are selected fairly
 
-                /* weight the influence of the distance to each
-                   according to its weakness (how likely it is to null during projection). */
-                float taskWeight =
-                        //task.isBeliefOrGoal() ? (0.5f + 0.5f * (1f - task.conf())) : 0f;
-                        0.5f;
-                float beliefWeight =
-                        //belief!=null ? (0.5f + 0.5f * (1f - belief.conf())) : 0;
-                        0.5f;
-
-                final float base = 1f/solutions.size();
-                event = solutions.roulette((e) -> {
-                    long when = e.when();
-                    if (when == TIMELESS)
-                        return base/2f;
-                    if (when == ETERNAL)
-                        return base; //prefer eternal only if a temporal solution does not exist
-
-                    long distance = 1;
-                    distance += task.minDistanceTo(when) * taskWeight;
-
-                    if (!d.single && belief!=null)
-                        distance += belief.minDistanceTo(when) * beliefWeight;
-
-                    return 1f/distance;
-                }, d.nar.random());
+//                /* weight the influence of the distance to each
+//                   according to its weakness (how likely it is to null during projection). */
+//                float taskWeight =
+//                        //task.isBeliefOrGoal() ? (0.5f + 0.5f * (1f - task.conf())) : 0f;
+//                        0.5f;
+//                float beliefWeight =
+//                        //belief!=null ? (0.5f + 0.5f * (1f - belief.conf())) : 0;
+//                        0.5f;
+//
+//                final float base = 1f/solutions.size();
+//                event = solutions.roulette((e) -> {
+//                    long when = e.when();
+//                    if (when == TIMELESS)
+//                        return base/2f;
+//                    if (when == ETERNAL)
+//                        return base; //prefer eternal only if a temporal solution does not exist
+//
+//                    long distance = 1;
+//                    distance += task.minDistanceTo(when) * taskWeight;
+//
+//                    if (!d.single && belief!=null)
+//                        distance += belief.minDistanceTo(when) * beliefWeight;
+//
+//                    return 1f/distance;
+//                }, d.nar.random());
             }
 //            }
         }

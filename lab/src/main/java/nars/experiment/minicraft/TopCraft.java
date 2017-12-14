@@ -41,7 +41,7 @@ public class TopCraft extends NAgentX {
                 e.printStackTrace();
                 return null;
             }
-        }, 25);
+        }, 40);
     }
 
     public TopCraft(NAR nar) throws Narsese.NarseseException {
@@ -101,15 +101,15 @@ public class TopCraft extends NAgentX {
         senseSwitch("tile(cra,left)", ()->craft.player.tile(-1,0).id, 0, tileMax);
 
         InputHandler input = craft.input;
-        actionToggle($.func("fire", "cra"), input.attack::toggle/*, 16*/ );
+        actionToggle($.func("fire", "cra"), input.attack::pressed/*, 16*/ );
         actionTriState($.func("move","cra", "X"), (i)->{
            boolean l = false, r = false;
            switch (i) {
                case -1: l = true;  break;
                case +1: r = true;  break;
            }
-           input.left.toggle(l);
-           input.right.toggle(r);
+           input.left.pressed(l);
+           input.right.pressed(r);
         });
         actionTriState($.func("move","cra", "Y"), (i)->{
             boolean u = false, d = false;
@@ -117,10 +117,10 @@ public class TopCraft extends NAgentX {
                 case -1:  u = true;  break;
                 case +1:  d = true;  break;
             }
-            input.up.toggle(u);
-            input.down.toggle(d);
+            input.up.pressed(u);
+            input.down.pressed(d);
         });
-        actionToggle($.func("menu", "cra"), input.menu::toggle);
+        actionToggle($.func("menu", "cra"), input.menu::pressed);
 
 //        Param.DEBUG = true;
 //        nar.onTask(t ->{

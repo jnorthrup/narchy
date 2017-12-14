@@ -90,10 +90,11 @@ public class Player extends Mob {
 
 		int xa = 0;
 		int ya = 0;
-		if (input.up.down) ya--;
-		if (input.down.down) ya++;
-		if (input.left.down) xa--;
-		if (input.right.down) xa++;
+		int speed = 8;
+		if (input.up.down) ya-=speed;
+		if (input.down.down) ya+=speed;
+		if (input.left.down) xa-=speed;
+		if (input.right.down) xa+=speed;
 		if (isSwimming() && tickTime % 60 == 0) {
 			if (stamina > 0) {
 				stamina--;

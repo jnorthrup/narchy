@@ -7,6 +7,7 @@ import nars.op.stm.ConjClustering;
 import nars.task.NALTask;
 import nars.task.NativeTask;
 import nars.time.Tense;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
@@ -77,16 +78,16 @@ public class ThermostatTest {
     }
 
 
-    @Test
+    @Test @Disabled
     public void test1() throws Narsese.NarseseException {
         Param.DEBUG = true;
         final int DUR = 2;
 
         NAR n = NARS.tmp();
         n.time.dur(DUR);
-        n.termVolumeMax.set(22);
-        n.freqResolution.set(0.1f);
-        n.confResolution.set(0.01f);
+        n.termVolumeMax.set(18);
+        n.freqResolution.set(0.15f);
+        n.confResolution.set(0.02f);
 
         new ConjClustering(n, BELIEF, (t)->true, 8, 64);
 
@@ -96,11 +97,6 @@ public class ThermostatTest {
         n.logWhen(System.out, false, true, true);
 
         Teacher<Thermostat> env = new Teacher<Thermostat>(new Opjects(n) {
-
-
-            {
-                //goalMimic = true;
-            }
 
             @Override
             protected synchronized Object invoked(Instance in, Object obj, Method wrapped, Object[] args, Object result) {
@@ -118,12 +114,6 @@ public class ThermostatTest {
 
                 return r;
 
-            }
-
-            @Override
-            protected boolean evoked(Task task, Object[] args, Object inst) {
-                System.err.println("evoke: " + task.proof());
-                return super.evoked(task, args, inst);
             }
 
         }, Thermostat.class);

@@ -35,9 +35,9 @@ public class OpjectsTest {
         Set<Task> evokes = new HashSet();
         final Opjects objs = new Opjects(n) {
             @Override
-            protected boolean evoked(Task task, Object[] args, Object inst) {
+            protected boolean evoked(Task task, Object[] args) {
                 evokes.add(task);
-                return super.evoked(task, args, inst);
+                return super.evoked(task, args);
             }
         };
 

@@ -43,7 +43,7 @@ public interface NAct {
 
     default void actionToggle(@NotNull Term t, @NotNull Runnable on, @NotNull Runnable off) {
 
-        float thresh = 0.5f;
+        float thresh = 0.75f;
         actionUnipolar(t, 0f, (f) -> {
             if (f > thresh) {
                 on.run();
@@ -380,14 +380,18 @@ public interface NAct {
     }
 
     default GoalActionAsyncConcept[] actionBipolar(@NotNull Term s, @NotNull FloatToFloatFunction update) {
-        return actionBipolarFrequencyDifferential(s, update);
+        return actionBipolar(s, false, update);
+    }
+
+    default GoalActionAsyncConcept[] actionBipolar(@NotNull Term s, boolean fair, @NotNull FloatToFloatFunction update) {
+        return actionBipolarFrequencyDifferential(s, fair, update);
         //actionBipolarExpectation(s, update);
         //actionBipolarExpectationNormalized(s, update);
         //actionBipolarGreedy(s, update);
         //actionBipolarMutex3(s, update);
     }
 
-    default void actionBipolarSteering(@NotNull Term s, FloatConsumer act) {
+    default void actionBipolarSteering(@NotNull Term s, boolean fair, FloatConsumer act) {
         final float[] amp = new float[1];
         float dt = 0.1f;
         float max = 1f;
@@ -414,7 +418,7 @@ public interface NAct {
 //        });
     }
 
-    default GoalActionAsyncConcept[] actionBipolarFrequencyDifferential(@NotNull Term s, @NotNull FloatToFloatFunction update) {
+    default GoalActionAsyncConcept[] actionBipolarFrequencyDifferential(@NotNull Term s, boolean fair, @NotNull FloatToFloatFunction update) {
 
         Term pt =
                 $.inh( $.the("\"+\""), s);
@@ -484,7 +488,8 @@ public interface NAct {
                         //df = (f[0]-0.5f) - (f[1]-0.5f);
 
                         //experimental: lessen by a factor of how equally confident each goal is
-                        df *= eMin / eMax;
+                        if (fair)
+                            df *= eMin / eMax;
                         //df *= 1f - Math.abs(e[0] - e[1]) / eMax;
                         //df *= Util.sqr(eMin / eMax); //more cautious
                         //df *= Math.min(w2cSafe(e[0]), w2cSafe(e[1])) / w2cSafe(eMax);

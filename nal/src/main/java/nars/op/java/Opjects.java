@@ -122,24 +122,25 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     private final CauseChannel<ITask> in;
 
     //TODO use Triple<> not Pair<Pair<>>
-    private final static SoftMemoize<Pair<Pair<Class, Term>, List<Class<?>>>, MethodHandle> methodArgCache = new SoftMemoize<>((xx) -> {
+    private final SoftMemoize<Pair<Pair<Class, Term>, Pair<List<Class<?>>, Term /* func */>>, MethodHandle> methodArgCache = new SoftMemoize<>((xx) -> {
 
         Class c = xx.getOne().getOne();
         String mName = xx.getOne().getTwo().toString();
-        List<Class<?>> types = xx.getTwo();
+        List<Class<?>> types = xx.getTwo().getOne();
         Class<?>[] cc = types.isEmpty() ? ArrayUtils.EMPTY_CLASS_ARRAY : ((FasterList<Class<?>>) types).array();
         Method m = findMethod(c, mName, cc);
-//        if (m == null)
-//            return null;
+        if (m == null)
+            return null;
 //
         m.trySetAccessible();
 //        return m;
 
-        MethodHandles.Lookup lookup = MethodHandles.lookup();
 //        MethodType methodType = MethodType.methodType(m.getReturnType(), types);
 
+        Object inst = termToObj.get(xx.getTwo().getTwo());
+
         try {
-            return lookup.unreflect(m);
+            return MethodHandles.lookup().unreflect(m).bindTo(inst);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -165,12 +166,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 //        }
 
     }, 512, true /* soft */);
-    private final static SoftMemoize<Pair<MethodHandle, Object>, MethodHandle> instMethodCache = new SoftMemoize<>((xx) -> {
-        MethodHandle mh = xx.getOne();
-        Object obj = xx.getTwo();
-        mh = mh.bindTo(obj);
-        return mh;
-    }, 512, true /* soft */);
+
 
     public Opjects(NAR n) {
         nar = n;
@@ -298,8 +294,6 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     public class PointMethodValueModel implements InstanceMethodValueModel {
 
 
-        private float quenchFactor = 0.5f;
-
         @Override
         public Object update(Instance instance, Task cause, Object obj, Method method, Object[] args, Object nextValue) {
             float f = invocationBeliefFreq;
@@ -310,8 +304,9 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                 f = 1 - f;
             }
             int dur = nar.dur();
-            long start = nar.time();
-            long end = nar.time() + dur;
+            long now = nar.time();
+            long start = now;
+            long end = now + dur;
 
             SignalTask next = new SignalTask(nt,
                     BELIEF, $.t(f, nar.confDefault(BELIEF)),
@@ -336,7 +331,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
             if (cause != null && !next.term().equals(cause.term())) {
                 //input quenching invocation belief term corresponding to the goal
                 SignalTask quench = new SignalTask(cause.term(), BELIEF,
-                        $.t(f, nar.confDefault(BELIEF) * quenchFactor),
+                        $.t(1f-next.freq(), next.conf() ), //equal and opposite
                         start, end, next.stamp[0]);
                 quench.priMax(next.priElseZero());
                 quench.causeMerge(next);
@@ -567,43 +562,30 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
             List<Class<?>> types;
             if (aa == 0) {
                 objArgs = ArrayUtils.EMPTY_OBJECT_ARRAY;
-                types = List.of();
+                types = Collections.emptyList();
             } else {
                 objArgs = object(maWrapped ? methodArgs.subterms().arrayShared() : new Term[]{methodArgs});
                 types = typesOf(objArgs);
             }
 
 
-            Object inst = termToObj.get(Operator.func(taskTerm));
-            assert (inst != null);
-
-            if (evoked(task, objArgs, inst)) {
-
-//                MethodHandle mm = methodArgCache.apply(pair(pair(c, method.toString()), types));
-//                if (mm == null)
-//                    return;
-                MethodHandle mm = methodArgCache.apply(pair(pair(c, method), types));
-                if (mm == null) return;
-                MethodHandle mh = instMethodCache.apply(pair(mm, inst));
-                if (mh == null) return;
-
-                if (invokingGoal.get() != null)
-                    throw new TODO("we need a stack: " + invokingGoal.get() + " -> " + task);
+            if (evoked(task, objArgs)) {
 
                 nar.runLater(() -> {
+
+                    final MethodHandle mm = methodArgCache.apply(pair(pair(c, method), pair(types, Operator.func(taskTerm))));
+                    if (mm == null) return;
+
+                    if (invokingGoal.get() != null)
+                        throw new TODO("we need a stack: " + invokingGoal.get() + " -> " + task);
 
                     invokingGoal.set(task);
                     try {
 
-
-                        //mm.invoke(inst, objArgs);
-                        //mm.invokeExact(inst, objArgs);
-
-                        //mm.bindTo(inst).invokeWithArguments(objArgs);
-                        mh.invokeWithArguments(objArgs);
+                        mm.invokeWithArguments(objArgs);
 
                     } catch (Throwable throwable) {
-                        logger.error("{} {} {}", task, inst, args);
+                        logger.error("{} {} {}", task, args);
                         throwable.printStackTrace();
                     } finally {
                         invokingGoal.set(null);
@@ -615,25 +597,26 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         };
     }
 
-    protected boolean evoked(Task task, Object[] args, Object inst) {
+    protected boolean evoked(Task task, Object[] args) {
         if (task.meta("mimic") == null)
-            logger.info("evoke: {}", task);
+            logger.info("evoke: {}", Param.DEBUG ? task.proof() : task);
 
         return true;
     }
 
-    private Subterms validArgs(Subterms args) {
+    protected Subterms validArgs(Subterms args) {
         int a = args.subs();
-        if (!(a == 2 || (a == 3 && args.sub(2).op() == VAR_DEP))) {
+        if (a == 2 || (a == 3 && args.sub(2).op() == VAR_DEP)) {
+            return args;
+        } else {
             //this is likely a goal from the NAR to itself about a desired result state
             //used during reasoning
             //anyway it is invalid for invocation (u
             return null;
         }
-        return args;
     }
 
-    private Term validMethod(Term method) {
+    protected Term validMethod(Term method) {
         if (method.op() != ATOM)
             return null;
         if (methodExclusions.contains(method.toString()))
@@ -645,14 +628,16 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     }
 
 
-    private Class[] typesOfArray(Object[] orgs) {
-        Class[] types;
-        types = Util.map(x -> Primitives.unwrap(x.getClass()),
-                new Class[orgs.length], orgs);
-        return types;
+    protected Class[] typesOfArray(Object[] orgs) {
+        if (orgs.length == 0)
+            return ArrayUtils.EMPTY_CLASS_ARRAY;
+        else {
+            return Util.map(x -> Primitives.unwrap(x.getClass()),
+                    new Class[orgs.length], orgs);
+        }
     }
 
-    private FasterList<Class<?>> typesOf(Object[] orgs) {
+    protected FasterList<Class<?>> typesOf(Object[] orgs) {
         return new FasterList<>(typesOfArray(orgs));
     }
 
@@ -761,7 +746,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     /**
      * @see org.junit.platform.commons.support.ReflectionSupport#findMethod(Class, String, Class...)
      */
-    public static Method findMethod(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
+    static Method findMethod(Class<?> clazz, String methodName, Class<?>... parameterTypes) {
         Preconditions.notNull(clazz, "Class must not be null");
         Preconditions.notNull(parameterTypes, "Parameter types array must not be null");
         Preconditions.containsNoNullElements(parameterTypes, "Individual parameter types must not be null");

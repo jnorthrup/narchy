@@ -81,7 +81,7 @@ public final class Conclusion extends AbstractPred<Derivation> {
                         d.dtDouble = dt;
                 }
 
-                c2 = dt.get().solveAndProject(c1);
+                c2 = dt.get().solve(c1);
 
                 {
                     //final sanity tests hack

@@ -1,5 +1,6 @@
 package nars.term.var;
 
+import nars.$;
 import nars.Op;
 import nars.term.Term;
 import org.eclipse.collections.api.set.primitive.ImmutableByteSet;
@@ -92,7 +93,8 @@ public final class CommonVariable extends UnnormalizedVariable {
 
     }
 
-//    public boolean common(@NotNull AbstractVariable y) {
+
+    //    public boolean common(@NotNull AbstractVariable y) {
 //        int yid = y.id;
 //
 //        int v1 = (hash & 0xff) - 1; //unhash
