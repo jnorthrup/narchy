@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import static nars.$.$;
+import static nars.Op.Null;
 import static nars.term.atom.Int.range;
 import static nars.term.atom.Int.the;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -133,7 +134,13 @@ public class IntTest {
         n.test();
     }
 
+    @Test public void testInvalidDifference() throws Narsese.NarseseException {
+        assertEquals(Null, $("(((happy~(0,0))~(0,0))-->tetris)"));
+        assertEquals(Null, $("(((happy-(0,0))-(0,0))-->tetris)"));
+    }
+
 }
+
 ///**
 // * Created by me on 8/5/16.
 // */

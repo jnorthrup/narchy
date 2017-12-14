@@ -341,5 +341,7 @@ public class NAL3Test extends NALTest {
                 .mustBelieve(cycles, "((x,1)-(x,0))", 0.0f, 0.81f, ETERNAL)
                 .mustBelieve(cycles, "((x,0)-(x,1))", 0.5f, 0.81f, ETERNAL);
     }
+
+
 }
 

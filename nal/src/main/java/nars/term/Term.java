@@ -467,14 +467,15 @@ public interface Term extends Termed, Comparable<Termed> {
     /**
      * computes the first occuring event's time relative to the start of the
      * temporal term
-     * <p>
-     * TODO make a 'subtermTimes' which returns all matching sub-event times
      *
      * @param dt the current offset in the search
      * @return DTERNAL if the subterm was not found
      */
-    default int subTimeSafe(/*@NotNull*/ Term x) {
+    default int subTimeSafe(/*@NotNull*/ Term x, int after) {
         return equals(x) ? 0 : DTERNAL;
+    }
+    default int subTimeSafe(/*@NotNull*/ Term x) {
+        return subTimeSafe(x, 0);
     }
 
 

@@ -565,6 +565,19 @@ public class TemporalTermTest {
         assertEquals(9, c.dtRange());
     }
 
+    @Test public void testSubtermTimeNegAnon() throws Narsese.NarseseException {
+        //"(--,noid(_0,#1)) not found in superterm: (&|,(--,noid(_0,#1)),(\"+\"-->(X-->noid)),noid(#1,#1))"
+        String needle = "(--,noid(_0,#1))";
+        String haystack = "(&|,(--,noid(_0,#1)),(\"+\"-->(X-->noid)),noid(#1,#1))";
+        assertEquals(0, $.$(haystack).subTimeSafe($.$(needle)));
+        assertEquals(0, $.$(haystack).anon().subTimeSafe($.$(needle).anon()));
+    }
+
+    @Test public void testSubtermRepeat() throws Narsese.NarseseException {
+        assertEquals(0, $.$("(x &&+1 x)").subTimeSafe($.$("x")));
+        assertEquals(1, $.$("(x &&+1 x)").subTimeSafe($.$("x"), 1));
+    }
+
     @Test
     public void testSubtermNonCommutivePosNeg() throws Narsese.NarseseException {
         Term x = $("((d-->c) ==>-3 (a-->b))");

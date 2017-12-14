@@ -39,7 +39,7 @@ public class TransformUtil {
 	public static final float ANGULAR_MOTION_THRESHOLD = 0.5f* BulletGlobals.SIMD_HALF_PI;
 	
 	public static float recipSqrt(float x) {
-		return 1f / (float) Math.sqrt(x);  /* reciprocal square root */
+		return (float)(1.0 / Math.sqrt(x));  /* reciprocal square root */
 	}
 
 	public static void planeSpace1(v3 n, v3 p, v3 q) {
@@ -90,9 +90,9 @@ public class TransformUtil {
 		}
 		else {
 			// sync(fAngle) = sin(c*fAngle)/t
-			axis.scale((float) Math.sin(0.5f * fAngle * timeStep) / fAngle, angvel);
+			axis.scale((float) Math.sin(0.5 * fAngle * timeStep) / fAngle, angvel);
 		}
-		Quat4f dorn = new Quat4f(axis.x, axis.y, axis.z, (float) Math.cos(fAngle * timeStep * 0.5f));
+		Quat4f dorn = new Quat4f(axis.x, axis.y, axis.z, (float) Math.cos(0.5 * fAngle * timeStep));
 		Quat4f orn0 = curTrans.getRotation(new Quat4f());
 
 		Quat4f predictedOrn = new Quat4f();

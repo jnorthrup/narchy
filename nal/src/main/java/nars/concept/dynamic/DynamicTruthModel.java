@@ -25,7 +25,7 @@ abstract public class DynamicTruthModel {
 
 
     @Nullable
-    public DynTruth eval(Term superterm, boolean beliefOrGoal, long start, long end, boolean stamp, NAR n) {
+    public DynTruth eval(final Term superterm, boolean beliefOrGoal, long start, long end, boolean stamp, NAR n) {
 
         final int DT = superterm.dt();
         assert(DT!=XTERNAL);
@@ -42,6 +42,7 @@ abstract public class DynamicTruthModel {
         boolean evi = d.e != null;
 
         Term[] outputs = null;
+        int odt = 0;
         for (int i = 0; i < inputs.length; i++) {
             Term it = inputs[i];
 
@@ -49,13 +50,17 @@ abstract public class DynamicTruthModel {
             long subStart, subEnd;
 
 
-                if (start == ETERNAL || superterm.op() != CONJ) {
-                    subStart = subEnd = ETERNAL;
+                if (start == ETERNAL || superterm.op() != CONJ || DT==DTERNAL) {
+                    subStart = start;
+                    subEnd = end;
                 } else {
-                    int dt = superterm.subTimeSafe(it);
-                    assert (dt != DTERNAL): it + " not found in superterm: " + superterm;
+                    int dt = superterm.subTimeSafe(it, odt);
+                    if (dt==DTERNAL)
+                        throw new RuntimeException(it + " not found in superterm: " + superterm);
+                    //assert (dt != DTERNAL): it + " not found in superterm: " + superterm;
                     subStart = start + dt;
-                    subEnd = end + dt + it.dtRange();
+                    subEnd = end + dt;
+                    odt += dt;
                 }
 
 

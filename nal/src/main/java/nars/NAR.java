@@ -372,9 +372,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     /**
      * ask question
      */
-    public void question(@NotNull String termString) throws NarseseException {
+    public Task question(@NotNull String termString) throws NarseseException {
         //TODO remove '?' if it is attached at end
-        question($.$(termString));
+        return question($.$(termString));
     }
 
     /**

@@ -46,7 +46,9 @@ public class BulletGlobals {
 	public static final float SIMD_HALF_PI = SIMD_2_PI * 0.25f;
 	public static final float SIMD_RADS_PER_DEG = SIMD_2_PI / 360f;
 	public static final float SIMD_DEGS_PER_RAD = 360f / SIMD_2_PI;
-	public static final float SIMD_INFINITY = Float.MAX_VALUE;
+	public static final float SIMD_INFINITY =
+			Float.POSITIVE_INFINITY;
+			//Float.MAX_VALUE;
 
 	////////////////////////////////////////////////////////////////////////////
 

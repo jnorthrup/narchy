@@ -16,7 +16,6 @@ import nars.Task;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.container.Subterms;
-import nars.truth.Truth;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;

@@ -1302,11 +1302,6 @@ public enum Op {
 
 
     private static Term differ(/*@NotNull*/ Op op, Term... t) {
-        if (op == DIFFe && t.length == 2 && t[0] instanceof Int.IntRange && t[1].op() == INT) {
-            Term simplified = ((Int.IntRange) t[0]).subtract(t[1]);
-            if (simplified != Null)
-                return simplified;
-        }
 
         //TODO product 1D, 2D, etc unwrap
         //if (t.length >= 2 && Util.and((Term tt) -> tt.op() == PROD && tt.subs()==1, t)) {
@@ -1327,12 +1322,20 @@ public enum Op {
                         Null;
             case 2:
                 Term et0 = t[0], et1 = t[1];
+
                 if (et0.equals(et1)
                         || et0.containsRecursively(et1, true, recursiveCommonalityDelimeterWeak)
                         || et1.containsRecursively(et0, true, recursiveCommonalityDelimeterWeak))
 
                     return Null;
-                else if ((et0.op() == set && et1.op() == set))
+
+                if (op == DIFFe && et0 instanceof Int.IntRange && et1.op() == INT) {
+                    Term simplified = ((Int.IntRange) et0).subtract(et1);
+                    if (simplified != Null)
+                        return simplified;
+                }
+
+                if ((et0.op() == set && et1.op() == set))
                     return difference(set, et0, et1);
                 else
                     return The.compound(op, t);

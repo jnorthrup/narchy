@@ -85,16 +85,20 @@ public final class STMLinkage extends TaskService {
             Concept ca = ta.concept(nar, true);
             if (ca != null) {
                 Concept cb = tb.concept(nar, true);
-                if (cb != null && !cb.equals(ca)) { //null or same concept?
+                if (cb != null)
+                    if (!cb.equals(ca)) { //null or same concept?
 
-                    //TODO handle overflow?
-                    cb.termlinks().putAsync(new PLink(ca.term(), interStrength));
-                    ca.termlinks().putAsync(new PLink(cb.term(), interStrength));
+                        //TODO handle overflow?
+                        cb.termlinks().putAsync(new PLink(ca.term(), interStrength));
+                        ca.termlinks().putAsync(new PLink(cb.term(), interStrength));
 
-                    //tasklinks, not sure:
-                    Tasklinks.linkTask(ta, interStrength, cb);
-                    Tasklinks.linkTask(tb, interStrength, ca);
-                }
+                        //tasklinks, not sure:
+                        Tasklinks.linkTask(ta, interStrength, cb);
+                        Tasklinks.linkTask(tb, interStrength, ca);
+                    } else {
+                        //create a self-termlink
+                        ca.termlinks().putAsync(new PLink(ca.term(), interStrength));
+                    }
             }
         }
     }

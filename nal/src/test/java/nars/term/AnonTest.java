@@ -48,11 +48,10 @@ public class AnonTest {
         String xs = "(((($1-->tetris) ==>-1422 (happy-->$1)) &&+105 (--,(((isRow,(8,true),true)~(checkScore,()))-->tetris))) &&+7 ((--,(((isRow,(8,true),true)~(checkScore,()))-->tetris)) &&+74 ((act,0,true)-->#2)))";
         String ys = "(((($2-->_4) &&+105 (--,(((_0,(_1,_2),_2)~(_3,()))-->_4))) &&+7 ((--,(((_0,(_1,_2),_2)~(_3,()))-->_4)) &&+81 ((_5,_6,_2)-->#1))) ==>-1832 (_7-->$2))";
         Term x = $(xs);
-        //System.out.println(x);
-        //assertEquals(xs, x);
         Term y = x.anon();
         assertEquals(ys, y.toString());
     }
+
 
 
     @Test public void testAnomVector() {
