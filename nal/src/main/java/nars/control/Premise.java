@@ -21,11 +21,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
-import java.util.function.LongFunction;
 import java.util.function.ToLongFunction;
 
 import static nars.Op.BELIEF;
-import static nars.concept.Tasklinks.linkTask;
+import static nars.link.Tasklinks.linkTask;
 import static nars.time.Tense.ETERNAL;
 
 /**

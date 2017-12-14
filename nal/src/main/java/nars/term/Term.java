@@ -385,7 +385,7 @@ public interface Term extends Termed, Comparable<Termed> {
      * @return whether unification succeeded
      */
     default boolean unify(Term y, Unify u) {
-        if (((this instanceof Atomic) || (!isCommutative()) || (!u.relevantVariables(this, y))) && this.equals(y)) {
+        if (((this instanceof Atomic) || !isCommutative() || !u.relevantVariables(this, y)) && this.equals(y)) {
             return true; //only assume unification via equality if not a compound, since
         } else if (y instanceof Variable && !(this instanceof Variable) && u.varSymmetric && u.matchType(y.op())) {
             return y.unify(this, u); //reverse

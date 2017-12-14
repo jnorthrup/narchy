@@ -7,19 +7,20 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Predicate;
 
-/** containment test of x to y's subterms and y to x's subterms */
+/**
+ * containment test of x to y's subterms and y to x's subterms
+ */
 public final class NoCommonSubtermConstraint extends CommonalityConstraint {
 
     public final boolean recurse;
 
     /**
-     * @param recurse
-     *   true: recursive
-     *   false: only cross-compares the first layer of subterms.
+     * @param recurse true: recursive
+     *                false: only cross-compares the first layer of subterms.
      */
     public NoCommonSubtermConstraint(@NotNull Term target, @NotNull Term x, boolean recurse) {
         super(recurse ? "neqRCom" : "neqCom",
-                target, x );
+                target, x);
         this.recurse = recurse;
     }
 
@@ -29,14 +30,14 @@ public final class NoCommonSubtermConstraint extends CommonalityConstraint {
         return recurse ? 1.5f : 1f;
     }
 
-    @NotNull
-    @Override protected boolean invalidCommonality(Term x, Term y) {
+    @Override
+    protected boolean invalidCommonality(Term x, Term y) {
         return isSubtermOfTheOther(x, y, recurse, true);
     }
 
 
-        final static Predicate<Term> limit =
-                Op.recursiveCommonalityDelimeterWeak;
+    final static Predicate<Term> limit =
+            Op.recursiveCommonalityDelimeterWeak;
 
 
     static boolean isSubtermOfTheOther(Term a, Term b, boolean recurse, boolean excludeVariables) {
@@ -68,8 +69,7 @@ public final class NoCommonSubtermConstraint extends CommonalityConstraint {
         }
     }
     //commonSubtermsRecurse((Compound) B, C, true, new HashSet())
-                    //commonSubterms((Compound) B, C, true, scratch.get())
-
+    //commonSubterms((Compound) B, C, true, scratch.get())
 
 
 }

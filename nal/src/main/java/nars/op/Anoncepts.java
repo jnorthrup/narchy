@@ -3,12 +3,11 @@ package nars.op;
 import jcog.Paper;
 import jcog.Skill;
 import jcog.bloom.StableBloomFilter;
-import jcog.pri.PLink;
-import jcog.pri.PLinkUntilDeleted;
 import nars.NAR;
 import nars.Task;
 import nars.bag.leak.LeakBack;
 import nars.concept.Concept;
+import nars.link.CauseLink;
 import nars.term.Term;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.NotNull;
@@ -68,8 +67,9 @@ public class Anoncepts extends LeakBack {
         if (c == null)
             return 0;  //???
 
-        c.tasklinks().putAsync(new PLinkUntilDeleted<>(task, pri * taskLinkActivationRate.floatValue()));
-        c.termlinks().putAsync(new PLink<>(taskTerm, pri * cr));
+        short cid = out.id;
+        c.tasklinks().putAsync(new CauseLink.CauseLinkUntilDeleted<>(task, pri * taskLinkActivationRate.floatValue(), cid));
+        c.termlinks().putAsync(new CauseLink.PriCauseLink<>(taskTerm, pri * cr, cid));
 
         return 1;
     }

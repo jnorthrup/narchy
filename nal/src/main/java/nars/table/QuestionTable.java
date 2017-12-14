@@ -5,7 +5,7 @@ import jcog.list.ArrayIterator;
 import nars.NAR;
 import nars.Task;
 import nars.concept.BaseConcept;
-import nars.concept.Tasklinks;
+import nars.link.Tasklinks;
 import nars.task.NALTask;
 
 import java.util.Collections;

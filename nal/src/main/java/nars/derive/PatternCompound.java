@@ -214,12 +214,13 @@ abstract public class PatternCompound extends GenericCompoundDT {
 
             SortedSet<Term> yFree = y.toSortedSet();
 
-            int s = subs();
+            Subterms ss = subterms();
+            int s = ss.subs();
 
             for (int k = 0; k < s; k++) {
 
 
-                Term x = sub(k);
+                Term x = ss.sub(k);
 
                 if (x.equals(ellipsis)) {
                     Term v = u.xy(x);

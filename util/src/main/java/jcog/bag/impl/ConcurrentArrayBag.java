@@ -24,7 +24,7 @@ abstract public class ConcurrentArrayBag<K,X extends Priority> extends ArrayBag<
         super(mergeFunction, map);
         setCapacity(cap);
 
-        this.toPut = new QueueLock<X>(Util.blockingQueue(cap), super::putAsync, (batchSize) -> {
+        this.toPut = new QueueLock<X>(Util.blockingQueue(cap*2), super::putAsync, (batchSize) -> {
             if (mustSort) {
                 synchronized (items) {
                     super.ensureSorted();

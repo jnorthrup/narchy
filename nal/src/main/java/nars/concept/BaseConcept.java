@@ -11,6 +11,7 @@ import nars.Task;
 import nars.concept.builder.ConceptBuilder;
 import nars.concept.state.ConceptState;
 import nars.control.MetaGoal;
+import nars.link.TermLinks;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
 import nars.table.TaskTable;

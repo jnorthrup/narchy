@@ -84,9 +84,9 @@ abstract public class DurService extends NARService implements Runnable {
         if (enabled && busy.compareAndSet(false, true)) {
 
             long last = this.now;
-            long now = nar.time();
             int dur = nar.dur();
             long durCycles = Math.round(durations.floatValue() * nar.dur());
+            long now = nar.time();
 
             try {
 
@@ -97,7 +97,6 @@ abstract public class DurService extends NARService implements Runnable {
                     } catch (Throwable t) {
                         logger.error("{} {}", this, t);
                     }
-                    this.now = nar.time();
                 } else {
                     //too soon, reschedule
                 }
@@ -105,8 +104,8 @@ abstract public class DurService extends NARService implements Runnable {
             } catch (Exception e) {
                 logger.error("{} {}", this, e);
             } finally {
+                nar.at((this.now = nar.time()) + durCycles, this);
                 busy.set(false);
-                nar.at(this.now + durCycles, this);
             }
         }
     }

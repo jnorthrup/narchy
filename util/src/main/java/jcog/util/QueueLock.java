@@ -47,32 +47,35 @@ public class QueueLock<X> implements Consumer<X> {
     }
 
     @Override
-    public void accept(@NotNull X x) {
-        if (!queue.offer(x)) {
-            proc.accept(x);
-            return;
-        }
-//        try {
-//
-//        } catch (InterruptedException e) {
-//            throw new RuntimeException(e);
-//        }
-
-        boolean responsible = busy.compareAndSet(0, 1);
-        if (!responsible)
-            return; //to be processed by another thread
-
+    public void accept(X x) {
         int count = 0;
-        final X[] next = (X[]) new Object[1];
-        while (busy.updateAndGet((y) -> (next[0] = queue.poll()) != null ? 1 : 0) == 1) {
-            X n = next[0];
-            try {
-                proc.accept(n);
-            } catch (Throwable t) {
-                onException(n, t);
+
+        if (!queue.offer(x)) {
+            proc.accept(x); //bypass queue, requires that the procedure be thread-safe otherwise it must block here
+            count = 1;
+        } else {
+            //        try {
+            //
+            //        } catch (InterruptedException e) {
+            //            throw new RuntimeException(e);
+            //        }
+
+            boolean responsible = busy.compareAndSet(0, 1);
+            if (!responsible)
+                return; //to be processed by another thread
+
+            final X[] next = (X[]) new Object[1];
+            while (busy.updateAndGet((y) -> (next[0] = queue.poll()) != null ? 1 : 0) == 1) {
+                X n = next[0];
+                try {
+                    proc.accept(n);
+                } catch (Throwable t) {
+                    onException(n, t);
+                }
+                count++;
             }
-            count++;
         }
+
         if (afterBatch != null) {
             try {
                 afterBatch.accept(count);

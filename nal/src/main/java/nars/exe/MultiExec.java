@@ -82,14 +82,14 @@ public class MultiExec extends AbstractExec {
 //            long now = System.nanoTime();
             float dt =
 //                    cycleTimeNanos/1E9f;
-                    dt = 0.00005f * BATCH_PLAY; //fixed JIFFY
+                    0.0002f * BATCH_PLAY; //fixed JIFFY
 //            last = now;
 
 
 
             int qq = q.size();
             if (qq > 0) {
-                int BATCH_WORK = (int) Math.ceil(((float) qq) / threads);
+                int BATCH_WORK = (int) Math.ceil(((float) qq) / Math.max(1,(threads-1)));
                 do {
 
                     ITask i = q.poll();

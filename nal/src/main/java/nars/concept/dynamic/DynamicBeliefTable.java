@@ -6,7 +6,7 @@ import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.concept.BaseConcept;
-import nars.concept.Tasklinks;
+import nars.link.Tasklinks;
 import nars.table.DefaultBeliefTable;
 import nars.table.TemporalBeliefTable;
 import nars.task.util.PredictionFeedback;

@@ -1,22 +1,29 @@
 package jcog.exe;
 
+import com.google.common.math.Stats;
+import com.google.common.math.StatsAccumulator;
 import jcog.Util;
 import jcog.constraint.continuous.DoubleVar;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.DoubleAccumulator;
+import java.util.concurrent.atomic.DoubleAdder;
 
 /** potentially executable procedure of some value N >=1 iterations per invocation */
 public class Can {
 
     final static AtomicInteger ids = new AtomicInteger();
 
-    final static int WINDOW = 8;
 
-    final SummaryStatistics iterationTime = new SummaryStatistics();
-    public final SummaryStatistics supply = new SummaryStatistics();
-    protected final DescriptiveStatistics value = new DescriptiveStatistics(WINDOW);
+
+
+    final DoubleAdder iterationTime = new DoubleAdder();
+    public final DoubleAdder supply = new DoubleAdder();
+//    final static int WINDOW = 8;
+//    protected final DescriptiveStatistics value = new DescriptiveStatistics(WINDOW);
 
     /**
      * next iterations, to be solved
@@ -35,8 +42,7 @@ public class Can {
      * in seconds
      */
     public float iterationTimeSum() {
-        double s = iterationTime.getSum();
-        iterationTime.clear();
+        double s = iterationTime.sumThenReset();
         if (s!=s) return 0f;
         return (float) s;
     }
@@ -45,30 +51,29 @@ public class Can {
      * max iterations that can/should be requested
      */
     public double supply() {
-        double s = supply.getSum();
-        supply.clear();
+        double s = supply.sumThenReset();
         if (s != s) return 0;
         return s;
     }
 
-    /**
-     * relative value of an iteration; ie. past value estimate divided by the actual supplied unit count
-     * >=0
-     */
-    public float value() {
-        double mean = value.getMean();
-
-        return mean != mean ? 0f : Math.max(0,Util.tanhFast((float) mean)+1);
-    }
+//    /**
+//     * relative value of an iteration; ie. past value estimate divided by the actual supplied unit count
+//     * >=0
+//     */
+//    public float value() {
+//        double mean = value.getMean();
+//
+//        return mean != mean ? 0f : Math.max(0,Util.tanhFast((float) mean)+1);
+//    }
 
     /**
      * totalTime in sec
      */
-    public void update(int supplied, double totalValue, double totalTimeSec) {
-        supply.addValue(supplied);
+    public void update(int supplied, double totalTimeSec) {
+        supply.add(supplied);
         if (supplied > 0) {
-            value.addValue(totalValue / supplied);
-            iterationTime.addValue(totalTimeSec / supplied);
+//            value.addValue(totalValue / supplied);
+            iterationTime.add(totalTimeSec);
         }
     }
 

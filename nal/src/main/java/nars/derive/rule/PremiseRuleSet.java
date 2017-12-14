@@ -244,21 +244,18 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
 
         //(Compound) index.parseRaw(src)
         String[] ab = ruleImpl.split(src);
-        if (ab.length != 2) {
+        if (ab.length != 2)
             throw new Narsese.NarseseException("Rule component must have arity=2, separated by \"|-\": " + src);
-        }
 
         String A = '(' + ab[0].trim() + ')';
         Term a = Narsese.term(A, false);
-        if (!(a instanceof Compound)) {
+        if (!(a instanceof Compound))
             throw new Narsese.NarseseException("Left rule component must be compound: " + src);
-        }
 
         String B = '(' + ab[1].trim() + ')';
         Term b = Narsese.term(B, false);
-        if (!(b instanceof Compound)) {
+        if (!(b instanceof Compound))
             throw new Narsese.NarseseException("Right rule component must be compound: " + src);
-        }
 
         return The.subterms(a, b);
     }

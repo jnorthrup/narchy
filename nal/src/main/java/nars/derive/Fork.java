@@ -18,7 +18,7 @@ public class Fork extends AbstractPred<Derivation> {
 
     public final PrediTerm<Derivation>[] branches;
 
-    protected Fork(@NotNull PrediTerm[] actions) {
+    protected Fork(PrediTerm[] actions) {
         super($.s((Term[]) actions));
         this.branches = actions;
     }

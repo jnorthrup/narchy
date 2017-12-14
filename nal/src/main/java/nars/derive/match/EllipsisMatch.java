@@ -78,6 +78,15 @@ public class EllipsisMatch extends CachedCompound {
         }
     }
 
+    public static Term match(SortedSet<Term> term) {
+        int num = term.size();
+        switch (num) {
+            case 0: return empty;
+            case 1: return term.first();
+            default: return new EllipsisMatch(term.toArray(new Term[num]));
+        }
+    }
+
     public static Term matchExcept(Subterms matched, byte... except) {
         int ll = matched.subs();
         int ee = except.length;
@@ -127,14 +136,6 @@ public class EllipsisMatch extends CachedCompound {
 
     }
 
-    public static Term match(SortedSet<Term> term) {
-        int num = term.size();
-        switch (num) {
-            case 0: return empty;
-            case 1: return term.first();
-            default: return new EllipsisMatch(term.toArray(new Term[num]));
-        }
-    }
 
 //    public static Term matchExcept(Term[] x, int index) {
 //        int num = x.length - 1;
@@ -145,14 +146,14 @@ public class EllipsisMatch extends CachedCompound {
 //        }
 //    }
 
-    public final boolean forEachWhile(Predicate<? super Term> c) {
-        int s = subs();
-        for (int i = 0; i < s; i++) {
-            if (!c.test(sub(i)))
-                return false;
-        }
-        return true;
-    }
+//    public final boolean forEachWhile(Predicate<? super Term> c) {
+//        int s = subs();
+//        for (int i = 0; i < s; i++) {
+//            if (!c.test(sub(i)))
+//                return false;
+//        }
+//        return true;
+//    }
 
     public boolean linearMatch(Subterms y, int from, /*@NotNull*/ Unify subst) {
         int s = subs();
@@ -161,7 +162,7 @@ public class EllipsisMatch extends CachedCompound {
             return false; //size mismatch: would extend beyond y's size
 
         for (int i = 0; i < s; i++) {
-            if (!y.sub(from+i).unify(sub(i), subst)) //term mismatch
+            if (!y.sub(i + from).unify(sub(i), subst)) //term mismatch
                 return false;
         }
         return true;

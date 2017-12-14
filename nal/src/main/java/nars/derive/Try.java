@@ -96,30 +96,30 @@ public class Try extends AbstractPred<Derivation> {
 //        return ttlSaved;
 //    }
 
-
-    /**
-     * get
-     */
-    private static short g2(short[] s, int i, boolean firstOrSecond) {
-        return s[i * 2 + (firstOrSecond ? 0 : 1)];
-    }
-
-    private static void a2(short[] s, int i, boolean firstOrSecond, short amt) {
-        s[i * 2 + (firstOrSecond ? 0 : 1)] += amt;
-    }
-
-    /**
-     * put
-     */
-    private static short p2(short[] s, int i, boolean firstOrSecond, short newValue) {
-        int ii = i * 2 + (firstOrSecond ? 0 : 1);
-        short prev = s[ii];
-        s[ii] = newValue;
-        return prev;
-    }
-
-    private static final boolean KEY = true;
-    private static final boolean VAL = false;
+//
+//    /**
+//     * get
+//     */
+//    private static short g2(short[] s, int i, boolean firstOrSecond) {
+//        return s[i * 2 + (firstOrSecond ? 0 : 1)];
+//    }
+//
+//    private static void a2(short[] s, int i, boolean firstOrSecond, short amt) {
+//        s[i * 2 + (firstOrSecond ? 0 : 1)] += amt;
+//    }
+//
+//    /**
+//     * put
+//     */
+//    private static short p2(short[] s, int i, boolean firstOrSecond, short newValue) {
+//        int ii = i * 2 + (firstOrSecond ? 0 : 1);
+//        short prev = s[ii];
+//        s[ii] = newValue;
+//        return prev;
+//    }
+//
+//    private static final boolean KEY = true;
+//    private static final boolean VAL = false;
 //
 //    /**
 //     * set

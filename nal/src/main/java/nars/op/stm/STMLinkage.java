@@ -2,12 +2,13 @@ package nars.op.stm;
 
 import jcog.Util;
 import jcog.math.FloatParam;
-import jcog.pri.PLink;
 import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
-import nars.concept.Tasklinks;
+import nars.control.Cause;
+import nars.link.CauseLink;
+import nars.link.Tasklinks;
 import nars.control.TaskService;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,6 +26,7 @@ public final class STMLinkage extends TaskService {
 
     final FloatParam strength = new FloatParam(1f, 0f, 1f);
     private final boolean allowNonInput;
+    private final Cause cause;
 
     public STMLinkage(@NotNull NAR nar, int capacity) {
         this(nar, capacity, false);
@@ -40,7 +42,7 @@ public final class STMLinkage extends TaskService {
 //        for (int i = 0; i < capacity+1; i++)
 //            stm.add(null); //fill with nulls initially
 
-
+        cause = nar.newCause(Cause::new);
     }
 
     static boolean stmLinkable(Task newEvent, boolean allowNonInput) {
@@ -65,10 +67,11 @@ public final class STMLinkage extends TaskService {
         if (tPri == 0)
             return;
 
+        short cid = cause.id;
         float p = strength * tPri;
         for (Task u : stm) {
             if (u == null) continue; //skip null's and dummy's
-            link(t, p * u.priElseZero(), u, nar);
+            link(t, p * u.priElseZero(), u, cause.id, nar);
         }
 
         stm.poll();
@@ -76,7 +79,7 @@ public final class STMLinkage extends TaskService {
     }
 
 
-    protected static void link(Task ta, float pri, Task tb, NAR nar) {
+    protected static void link(Task ta, float pri, Task tb, short cid, NAR nar) {
 
 
         /** current task's... */
@@ -89,15 +92,15 @@ public final class STMLinkage extends TaskService {
                     if (!cb.equals(ca)) { //null or same concept?
 
                         //TODO handle overflow?
-                        cb.termlinks().putAsync(new PLink(ca.term(), interStrength));
-                        ca.termlinks().putAsync(new PLink(cb.term(), interStrength));
+                        cb.termlinks().putAsync(new CauseLink.PriCauseLink(ca.term(), interStrength, cid));
+                        ca.termlinks().putAsync(new CauseLink.PriCauseLink(cb.term(), interStrength, cid));
 
                         //tasklinks, not sure:
                         Tasklinks.linkTask(ta, interStrength, cb);
                         Tasklinks.linkTask(tb, interStrength, ca);
                     } else {
                         //create a self-termlink
-                        ca.termlinks().putAsync(new PLink(ca.term(), interStrength));
+                        ca.termlinks().putAsync(new CauseLink.PriCauseLink(ca.term(), interStrength, cid));
                     }
             }
         }

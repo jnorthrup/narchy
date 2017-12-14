@@ -5,7 +5,7 @@ import jcog.pri.PLinkUntilDeleted;
 import jcog.pri.PriReference;
 import nars.Param;
 import nars.Task;
-import nars.concept.Tasklinks;
+import nars.link.Tasklinks;
 
 import java.util.Map;
 import java.util.Random;

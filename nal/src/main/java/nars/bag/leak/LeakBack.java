@@ -16,7 +16,7 @@ abstract public class LeakBack extends TaskLeak {
 
     final static float INITIAL_RATE = 1f;
 
-    private final CauseChannel<ITask> out;
+    protected final CauseChannel<ITask> out;
 
     protected LeakBack(int capacity, NAR nar) {
         super(capacity, INITIAL_RATE, nar);

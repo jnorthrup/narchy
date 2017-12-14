@@ -20,7 +20,7 @@ public class ConcurrentCurveBag<X extends Priority> extends CurveBag<X> {
     public ConcurrentCurveBag(@NotNull PriMerge mergeFunction, @NotNull Map<X, X> map, Random rng, int cap) {
         super(mergeFunction, map, rng, cap);
 
-        IntConsumer afterBatch = null; //assumes the bag will be manually commit()'d
+        IntConsumer afterBatch = null; //assumes the bag will be periodically / manually commit()'d
 //                (batchSize) -> {
 //            commit();
 ////            if (mustSort) {
@@ -29,7 +29,7 @@ public class ConcurrentCurveBag<X extends Priority> extends CurveBag<X> {
 ////                }
 ////            }
 //        };
-        this.toPut = new QueueLock<X>(Util.blockingQueue(cap/2), super::putAsync, afterBatch);
+        this.toPut = new QueueLock<X>(Util.blockingQueue(cap*2), super::putAsync, afterBatch);
     }
 
     @Override
@@ -38,7 +38,7 @@ public class ConcurrentCurveBag<X extends Priority> extends CurveBag<X> {
     }
 
     @Override
-    public void putAsync(@NotNull X b) {
+    public void putAsync(X b) {
         toPut.accept(b);
     }
 

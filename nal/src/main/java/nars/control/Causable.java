@@ -67,7 +67,7 @@ abstract public class Causable extends NARService {
             long end = System.nanoTime();
 
             if (completed >= 0)
-                can.update(completed, value(), (end - start) / 1.0E9);
+                can.update(completed, (end - start) / 1.0E9);
         } catch (Exception e) {
             if (Param.DEBUG)
                 throw new RuntimeException(e);
@@ -75,7 +75,7 @@ abstract public class Causable extends NARService {
                 logger.error("{} {}", this, e);
         } finally {
             if (busy != null)
-                busy.set(false);
+                busy.set(false); //busy is set True in Focus.java
         }
 
         if (error != null) {

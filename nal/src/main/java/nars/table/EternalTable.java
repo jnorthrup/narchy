@@ -6,7 +6,7 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.BaseConcept;
-import nars.concept.Tasklinks;
+import nars.link.Tasklinks;
 import nars.control.Cause;
 import nars.task.NALTask;
 import nars.task.Revision;

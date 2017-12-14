@@ -21,15 +21,15 @@ abstract public class TaskBeliefOccurrence extends AbstractPred<Derivation> {
         return 0.1f;
     }
 
-    @Nullable
-    public static final PrediTerm bothEvents = new TaskBeliefOccurrence("bothEvents") {
-
-        @Override
-        public boolean test(@NotNull Derivation m) {
-            Task b = m.belief;
-            return b != null && !b.isEternal() && !m.task.isEternal();
-        }
-    };
+//    @Nullable
+//    public static final PrediTerm bothEvents = new TaskBeliefOccurrence("bothEvents") {
+//
+//        @Override
+//        public boolean test(@NotNull Derivation m) {
+//            Task b = m.belief;
+//            return b != null && !b.isEternal() && !m.task.isEternal();
+//        }
+//    };
 
     /**
      * same eternality

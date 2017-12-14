@@ -50,53 +50,11 @@ final public class TaskPunctuation extends AbstractPred<Derivation> {
         }
     };
 
-    public static final PrediTerm<Derivation> QuestionOrQuest = new AbstractPred<Derivation>("task:\"?@\"") {
-        @Override
-        public boolean test( Derivation o) {
-            byte c = o.taskPunct;
-            return c == Op.QUESTION || c == QUEST;
-        }
 
-        @Override
-        public float cost() {
-            return 0.1f;
-        }
-    };
 
     public static final PrediTerm<Derivation> Question = new TaskPunctuation(QUESTION);
 
     public static final PrediTerm<Derivation> Quest = new TaskPunctuation(QUEST);
 
-    //    /** only belief, not goal or question */
-//    public static final AtomicBoolCondition NotGoal = new AtomicBoolCondition()  {
-//        @Override public boolean booleanValueOf( PremiseEval o) {
-//            return (o.premise.task().punc() != Symbols.GOAL);
-//        }
-//        @Override public String toString() { return "task:\".\""; }
-//    };
-//    public static final AtomicPred<Derivation> NotQuestion = new AtomicPred<>() {
-//        @Override
-//        public boolean test( Derivation o) {
-//            byte p = o.taskPunct;
-//            return (p != Op.QUESTION && p != Op.QUEST);
-//        }
-//
-//        @Override
-//        public String toString() {
-//            return "task:\".!\"";
-//        }
-//    };
-//    public static final AtomicBoolCondition NotBelief = new AtomicBoolCondition()  {
-//        @Override public boolean booleanValueOf( PremiseEval o) {
-//            return (o.premise.task().punc() != Symbols.BELIEF);
-//        }
-//        @Override public String toString() { return "task:\"!?@\""; }
-//    };
 
-
-    //    
-//    @Override
-//    public String toJavaConditionString() {
-//        return "'" + punc + "' == p.getTask().getPunctuation()";
-//    }
 }

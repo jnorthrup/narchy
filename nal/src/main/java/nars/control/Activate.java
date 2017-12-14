@@ -12,8 +12,8 @@ import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
-import nars.concept.Tasklinks;
-import nars.concept.TermLinks;
+import nars.link.Tasklinks;
+import nars.link.TermLinks;
 import nars.term.Term;
 import nars.term.Termed;
 

@@ -30,17 +30,12 @@ public class PostCondition implements Serializable //since there can be multiple
     @Nullable
     public final Term goalTruth;
 
-    /**
-     * minimum NAL level necessary to involve this postcondition
-     */
-    public final int minNAL;
 
     private PostCondition(@NotNull Term pattern, @Nullable Term beliefTruth, @Nullable Term goalTruth, byte puncOverride) {
         this.pattern = pattern;
         this.beliefTruth = beliefTruth;
         this.goalTruth = goalTruth;
         this.puncOverride = puncOverride;
-        this.minNAL = Terms.maxLevel(pattern);// term.op().minLevel;
     }
 
 
@@ -85,15 +80,11 @@ public class PostCondition implements Serializable //since there can be multiple
         byte puncOverride = 0;
 
         for (Term m : modifiers) {
-            if (m.op() != Op.INH) {
+            if (m.op() != Op.INH)
                 throw new RuntimeException("Unknown postcondition format: " + m);
-            }
 
-            Compound i = (Compound) m;
-
-            Term type = i.sub(1);
-            Term which = i.sub(0);
-
+            Term type = m.sub(1);
+            Term which = m.sub(0);
 
             switch (type.toString()) {
 
@@ -128,14 +119,14 @@ public class PostCondition implements Serializable //since there can be multiple
                     goalTruth = which;
                     break;
 
-                case "Permute":
-                    if (which.equals(PostCondition.backward)) {
-                        rule.permuteBackward = true;
-                    } else if (which.equals(PostCondition.swap)) {
-                        rule.permuteForward = true;
-                    } else
-                        throw new RuntimeException("illegal Permute opcode: " + which);
-                    break;
+//                case "Permute":
+//                    if (which.equals(PostCondition.backward)) {
+//                        rule.permuteBackward = true;
+//                    } else if (which.equals(PostCondition.swap)) {
+//                        rule.permuteForward = true;
+//                    } else
+//                        throw new RuntimeException("illegal Permute opcode: " + which);
+//                    break;
 
 //                case "Order":
 //                    //ignore, because this only affects at TaskRule construction
@@ -177,9 +168,6 @@ public class PostCondition implements Serializable //since there can be multiple
             assert !rule.getBelief().equals(pattern) :
                     "punctuation not modified yet rule belief equals pattern: " + rule + "\n\t" + rule.getBelief() + "\n\t" + pattern;
         }
-
-        if (pc.minNAL != 0)
-            rule.minNAL = Math.min(rule.minNAL, pc.minNAL);
 
         return pc;
     }

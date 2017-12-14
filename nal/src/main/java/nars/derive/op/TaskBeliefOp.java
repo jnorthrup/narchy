@@ -37,60 +37,60 @@ public final class TaskBeliefOp extends AbstractPred<Derivation> {
                 (!belief || derivation.termSub1op == op);
     }
 
-    static boolean isSequence(int dt) {
-            return dt!=0 && dt!=DTERNAL && dt!=XTERNAL;
-        }
+//    static boolean isSequence(int dt) {
+//            return dt!=0 && dt!=DTERNAL && dt!=XTERNAL;
+//        }
 
-    public static class TaskBeliefConjSeq extends AbstractPred<Derivation> {
+//    public static class TaskBeliefConjSeq extends AbstractPred<Derivation> {
+//
+//        private final boolean task;
+//        private final boolean belief;
+//
+//        public TaskBeliefConjSeq(boolean testTask, boolean testBelief) {
+//            super($.func("conjSeq", $.the(testTask ? 1 : 0), $.the(testBelief ? 1 : 0)));
+//            this.task = testTask;
+//            this.belief = testBelief;
+//        }
+//
+//        @Override
+//        public boolean test(Derivation derivation) {
+//            if (task) {
+//                if (!(derivation.termSub0op == CONJ.id && isSequence(derivation.taskTerm.dt())))
+//                    return false;
+//            }
+//            if (belief) {
+//                return derivation.belief != null && derivation.termSub1op == CONJ.id && isSequence(derivation.belief.term().dt());
+//            }
+//            return true;
+//        }
+//
+//
+//
+//    }
 
-        private final boolean task;
-        private final boolean belief;
-
-        public TaskBeliefConjSeq(boolean testTask, boolean testBelief) {
-            super($.func("conjSeq", $.the(testTask ? 1 : 0), $.the(testBelief ? 1 : 0)));
-            this.task = testTask;
-            this.belief = testBelief;
-        }
-
-        @Override
-        public boolean test(Derivation derivation) {
-            if (task) {
-                if (!(derivation.termSub0op == CONJ.id && isSequence(derivation.taskTerm.dt())))
-                    return false;
-            }
-            if (belief) {
-                return derivation.belief != null && derivation.termSub1op == CONJ.id && isSequence(derivation.belief.term().dt());
-            }
-            return true;
-        }
-
-
-
-    }
-
-    public static class TaskBeliefConjComm extends AbstractPred<Derivation> {
-
-        private final boolean task;
-        private final boolean belief;
-
-        public TaskBeliefConjComm(boolean testTask, boolean testBelief) {
-            super($.func("conjComm", $.the(testTask ? 1 : 0), $.the(testBelief ? 1 : 0)));
-            this.task = testTask;
-            this.belief = testBelief;
-        }
-
-        @Override
-        public boolean test(Derivation derivation) {
-            if (task) {
-                if (!(derivation.termSub0op == CONJ.id && !isSequence(derivation.taskTerm.dt())))
-                    return false;
-            }
-            if (belief) {
-                return derivation.belief != null && derivation.termSub1op == CONJ.id && !isSequence(derivation.belief.term().dt());
-            }
-            return true;
-        }
-
-    }
+//    public static class TaskBeliefConjComm extends AbstractPred<Derivation> {
+//
+//        private final boolean task;
+//        private final boolean belief;
+//
+//        public TaskBeliefConjComm(boolean testTask, boolean testBelief) {
+//            super($.func("conjComm", $.the(testTask ? 1 : 0), $.the(testBelief ? 1 : 0)));
+//            this.task = testTask;
+//            this.belief = testBelief;
+//        }
+//
+//        @Override
+//        public boolean test(Derivation derivation) {
+//            if (task) {
+//                if (!(derivation.termSub0op == CONJ.id && !isSequence(derivation.taskTerm.dt())))
+//                    return false;
+//            }
+//            if (belief) {
+//                return derivation.belief != null && derivation.termSub1op == CONJ.id && !isSequence(derivation.belief.term().dt());
+//            }
+//            return true;
+//        }
+//
+//    }
 
 }

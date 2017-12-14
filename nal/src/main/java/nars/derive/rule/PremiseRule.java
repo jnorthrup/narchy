@@ -66,11 +66,6 @@ public class PremiseRule /*extends GenericCompound*/ {
     public PostCondition[] POST;
 
 
-    /**
-     * maximum of the minimum NAL levels involved in the postconditions of this rule
-     */
-    public int minNAL;
-
     public String source;
 
 
@@ -315,11 +310,11 @@ public class PremiseRule /*extends GenericCompound*/ {
                     constraints.add(new CommonSubtermConstraint(Y, X));
                     break;
 
-                case "neqCom":
-                    //neqPrefilter(pres, taskTermPattern, beliefTermPattern, X, Y, neqCom);
-                    constraints.add(new NoCommonSubtermConstraint(X, Y, false));
-                    constraints.add(new NoCommonSubtermConstraint(Y, X, false));
-                    break;
+//                case "neqCom":
+//                    //neqPrefilter(pres, taskTermPattern, beliefTermPattern, X, Y, neqCom);
+//                    constraints.add(new NoCommonSubtermConstraint(X, Y, false));
+//                    constraints.add(new NoCommonSubtermConstraint(Y, X, false));
+//                    break;
                 case "neqRCom":
                     //neqPrefilter(pres, taskTermPattern, beliefTermPattern, X, Y, neqRCom);
                     constraints.add(new NoCommonSubtermConstraint(X, Y, true));
@@ -376,19 +371,19 @@ public class PremiseRule /*extends GenericCompound*/ {
                      termIs(pres, taskPattern, beliefPattern, constraints, X, o);
                     break;
 
-                case "has":
-                    //TODO make var arg version of this
-                    Op oh = Op.the($.unquote(Y));
-                    assert (oh != null);
-                    termHasAny(taskPattern, beliefPattern, pres, constraints, X, oh);
-                    break;
+//                case "has":
+//                    //TODO make var arg version of this
+//                    Op oh = Op.the($.unquote(Y));
+//                    assert (oh != null);
+//                    termHasAny(taskPattern, beliefPattern, pres, constraints, X, oh);
+//                    break;
 
                 case "time":
                     switch (XString) {
-                        case "dtEvents":
-                            pres.add(TaskBeliefOccurrence.bothEvents);
-                            minNAL = 7;
-                            break;
+//                        case "dtEvents":
+//                            pres.add(TaskBeliefOccurrence.bothEvents);
+//                            minNAL = 7;
+//                            break;
 
                         //NOTE THIS SHOULD ACTUALLY BE CALLED dtBeforeAfterOrEternal or something
                         case "dtEventsOrEternals":
@@ -461,9 +456,9 @@ public class PremiseRule /*extends GenericCompound*/ {
 
                 case "belief":
                     switch (XString) {
-                          case "containsTask":
-                            pres.add(TaskPolarity.beliefContainsTask);
-                            break;
+//                          case "containsTask":
+//                            pres.add(TaskPolarity.beliefContainsTask);
+//                            break;
                         case "negative":
                             pres.add(TaskPolarity.beliefNeg);
                             break;
@@ -478,12 +473,12 @@ public class PremiseRule /*extends GenericCompound*/ {
                         case "\"&&\"":
                             pres.add(new TaskBeliefOp(CONJ, false, true));
                             break;
-                        case "\"&&+\"": //sequence
-                            pres.add(new TaskBeliefOp.TaskBeliefConjSeq(false, true));
-                            break;
-                        case "\"&&|\"": //parallel or eternal
-                            pres.add(new TaskBeliefOp.TaskBeliefConjComm(false, true));
-                            break;
+//                        case "\"&&+\"": //sequence
+//                            pres.add(new TaskBeliefOp.TaskBeliefConjSeq(false, true));
+//                            break;
+//                        case "\"&&|\"": //parallel or eternal
+//                            pres.add(new TaskBeliefOp.TaskBeliefConjComm(false, true));
+//                            break;
                         default:
                             throw new UnsupportedOperationException();
                     }
@@ -491,10 +486,10 @@ public class PremiseRule /*extends GenericCompound*/ {
 
                 case "task":
                     switch (XString) {
-                        case "containsBelief":
-                            pres.add(TaskPolarity.taskContainsBelief);
-                            break;
-
+//                        case "containsBelief":
+//                            pres.add(TaskPolarity.taskContainsBelief);
+//                            break;
+//
                         case "containsBeliefRecursively":
                             pres.add(TaskPolarity.taskContainsBeliefRecursively);
                             break;
@@ -509,10 +504,10 @@ public class PremiseRule /*extends GenericCompound*/ {
                             pres.add(TaskPunctuation.Question);
                             taskPunc = '?';
                             break;
-                        case "\"?@\"":
-                            pres.add(TaskPunctuation.QuestionOrQuest);
-                            taskPunc = '?'; //this will choose quest as punctuation type when necessary, according to the task
-                            break;
+//                        case "\"?@\"":
+//                            pres.add(TaskPunctuation.QuestionOrQuest);
+//                            taskPunc = '?'; //this will choose quest as punctuation type when necessary, according to the task
+//                            break;
                         case "\"@\"":
                             pres.add(TaskPunctuation.Quest);
                             taskPunc = '@';
@@ -532,12 +527,12 @@ public class PremiseRule /*extends GenericCompound*/ {
                         case "\"&&\"":
                             pres.add(new TaskBeliefOp(CONJ, true, false));
                             break;
-                        case "\"&&|\"": //parallel or eternal
-                            pres.add(new TaskBeliefOp.TaskBeliefConjComm(true, false));
-                            break;
-                        case "any":
-                            taskPunc = ' ';
-                            break;
+//                        case "\"&&|\"": //parallel or eternal
+//                            pres.add(new TaskBeliefOp.TaskBeliefConjComm(true, false));
+//                            break;
+//                        case "any":
+//                            taskPunc = ' ';
+//                            break;
 
                         default:
                             throw new RuntimeException("Unknown task punctuation type: " + XString);
@@ -607,13 +602,6 @@ public class PremiseRule /*extends GenericCompound*/ {
         //store to arrays
         this.PRE = pres.toArray(new PrediTerm[pres.size()]);
 
-        //TODO add modifiers to affect minNAL (ex: anything temporal set to 7)
-        //this will be raised by conclusion postconditions of higher NAL level
-        minNAL = max(minNAL,
-                max(maxLevel(getConclusionTermPattern()),
-                        max(maxLevel(getTask()),
-                                maxLevel(getBelief())
-                        )));
 
 
         //        if (getConclusionTermPattern().containsTemporal()) {
@@ -668,15 +656,15 @@ public class PremiseRule /*extends GenericCompound*/ {
         includesOp(pres, taskPattern, beliefPattern, x, struct, false);
     }
 
-    private static void termHasAny(Term task, Term belief, @NotNull Set<PrediTerm> pres, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term x, Op o) {
-        constraints.add(new StructureHasAny(x, o.bit));
-
-        includesOp(pres, task, belief, x, o);
-    }
-
-    private static void termHasNot(Term task, Term belief, @NotNull Set<PrediTerm> pres, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term t, int structure) {
-        constraints.add(new StructureHasNone(t, structure));
-    }
+//    private static void termHasAny(Term task, Term belief, @NotNull Set<PrediTerm> pres, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term x, Op o) {
+//        constraints.add(new StructureHasAny(x, o.bit));
+//
+//        includesOp(pres, task, belief, x, o);
+//    }
+//
+//    private static void termHasNot(Term task, Term belief, @NotNull Set<PrediTerm> pres, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term t, int structure) {
+//        constraints.add(new StructureHasNone(t, structure));
+//    }
 
     private static void neq(@NotNull SortedSet<MatchConstraint> constraints, @NotNull Term x, @NotNull Term y) {
         constraints.add(new NotEqualConstraint(x, y));

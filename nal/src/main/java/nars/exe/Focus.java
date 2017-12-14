@@ -31,10 +31,6 @@ import static nars.time.Tense.ETERNAL;
  */
 public class Focus {
 
-//    /**
-//     * temporal granularity unit, in seconds
-//     */
-//    public static final float JIFFY = 0.005f;
 
     private final FastCoWList<Causable> can;
 
@@ -362,7 +358,7 @@ public class Focus {
     }
 
     private int run(Causable cx, float dt, float supply, float time) {
-        int iters = Math.max(1, Math.round(Math.max(1,supply) * (dt/time)));
+        int iters = (int) Math.ceil(Math.max(1,supply) * (dt/time));
         return cx.run(nar, iters);
     }
 
