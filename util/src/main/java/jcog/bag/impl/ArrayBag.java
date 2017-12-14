@@ -758,18 +758,22 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     @Override
     public void forEach(Consumer<? super Y> action) {
 
-        int s = size();
-        Object[] x = items.array();
-        for (Object a : (x)) {
-            if (a != null) {
-                Y b = (Y) a;
-                float p = pri(b);
-                if (p == p) {
-                    action.accept(b);
+        synchronized (items) {
+            int s = size();
+            if (s == 0)
+                return;
+
+            Object[] x = items.array();
+            for (int i = 0; i < s; i++) {
+                Object a = x[i];
+                if (a != null) {
+                    Y b = (Y) a;
+                    float p = pri(b);
+                    if (p == p) {
+                        action.accept(b);
+                    }
                 }
             }
-            if (s-- <= 0)
-                break;
         }
 
     }

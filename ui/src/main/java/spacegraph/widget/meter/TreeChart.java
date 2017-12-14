@@ -156,7 +156,7 @@ public class TreeChart<X> extends Surface {
         }
     }
 
-    private static FasterList<ItemVis> concat(@NotNull Collection<ItemVis> row, @NotNull ItemVis c) {
+    private static FasterList<ItemVis> concat(Collection<ItemVis> row,  ItemVis c) {
         FasterList<ItemVis> concatRow = new FasterList<>(row.size() + 1);
         concatRow.addAll(row);
         concatRow.add(c);

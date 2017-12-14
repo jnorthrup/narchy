@@ -74,7 +74,7 @@ abstract public class AbstractExec extends Exec {
 //                                PriMerge.plus, new HashMap<>(CAPACITY),
 //                                nar.random(), CAPACITY)
 
-                        new PriorityHijackBag<Activate,Activate>(CAPACITY, 5) {
+                        new PriorityHijackBag<Activate,Activate>(CAPACITY, 4) {
 
                             @Override
                             public Activate key(Activate value) {

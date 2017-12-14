@@ -154,7 +154,7 @@ abstract public class NAgentX extends NAgent {
                 .exe(new MultiExec
                         //Intense
                         //CoolNQuiet
-                        (1024, THREADS, 32))
+                        (512, THREADS, 128))
 
                 .time(clock)
                 .deriverAdd(1, 1)
@@ -355,7 +355,7 @@ abstract public class NAgentX extends NAgent {
             window(
                     new VSplit(exePanel,
                             col(
-                                    metaGoalChart(a),
+                                    //metaGoalChart(a),
                                     row(
                                             metaGoalPlot(a),
                                             metaGoalControls(n)
@@ -679,7 +679,7 @@ abstract public class NAgentX extends NAgent {
                         SimpleConceptGraph1 sg;
                         SpaceGraph s = new SpaceGraph<>(
                                 sg = new SimpleConceptGraph1(nar,
-                                        128, 6)
+                                        64, 7)
                         );
                         EdgeDirected fd = new EdgeDirected();
                         s.dyn.addBroadConstraint(fd);
@@ -691,7 +691,7 @@ abstract public class NAgentX extends NAgent {
                             @Override
                             protected void resized() {
 
-                                surface.pos(0, 0, W / 2, H / 2);
+                                surface.pos(0, 0, W / 3, H / 4);
 
                                 scale.set(1, 1);
                                 cam.set(W / 2, H / 2);

@@ -1,5 +1,6 @@
 package nars.op.stm;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.pri.MultiLink;
 import jcog.pri.PLink;
@@ -107,7 +108,8 @@ public class LinkClustering extends DurService {
                 float linkPri =
                         //tx.pri() * ty.pri();
                         Util.or(tx.priElseZero(), ty.priElseZero());
-                STMLinkage.link(tx, linkPri, ty, nar);
+                throw new TODO();
+//                STMLinkage.link(tx, linkPri, ty, nar);
             }
             x = y;
         }

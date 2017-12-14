@@ -63,6 +63,11 @@ abstract public class DurService extends NARService implements Runnable {
         this(nar, new MutableFloat(1f));
     }
 
+    public DurService durs(int durations) {
+        this.durations.set(durations);
+        return this;
+    }
+
     @Override
     protected synchronized void start(NAR nar) {
         super.start(nar);

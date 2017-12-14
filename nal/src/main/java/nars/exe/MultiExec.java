@@ -4,7 +4,10 @@ import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import jcog.Util;
 import jcog.exe.AffinityExecutor;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.NARLoop;
+import nars.Task;
 import nars.task.ITask;
 import nars.task.NativeTask;
 import org.eclipse.collections.api.set.primitive.LongSet;
@@ -38,26 +41,33 @@ public class MultiExec extends AbstractExec {
     public Focus focus;
 
     public MultiExec(int concepts, int threads, int qSize) {
+        this(concepts, threads, qSize, true);
+    }
+
+    public MultiExec(int concepts, int threads, int qSize, boolean affinity) {
         super(concepts);
 
-        assert(qSize > 0);
+        assert (qSize > 0);
 
         this.q = new DisruptorBlockingQueue<>(qSize);
         this.threads = threads;
 
 
-//        exe = new AffinityExecutor() {
-//            @Override
-//            protected void add(AffinityExecutor.AffinityThread at) {
-//                super.add(at);
-//                register(at);
-//            }
-//        };
-        exe = Executors.newFixedThreadPool(threads, runnable -> {
-           Thread t = new Thread(runnable);
-           register(t);
-           return t;
-        });
+        if (affinity) {
+            exe = new AffinityExecutor() {
+                @Override
+                protected void add(AffinityExecutor.AffinityThread at) {
+                    super.add(at);
+                    register(at);
+                }
+            };
+        } else {
+            exe = Executors.newFixedThreadPool(threads, runnable -> {
+                Thread t = new Thread(runnable);
+                register(t);
+                return t;
+            });
+        }
 
         deferred = x -> {
             if (x instanceof Task)
@@ -71,57 +81,52 @@ public class MultiExec extends AbstractExec {
     protected void runner() {
 
 
-        long last = System.nanoTime();
-        while (true) {
+//        long last = System.nanoTime();
+//        while (true) {
 
-            int BATCH_PLAY = 4;
 
-            double cycleTime = nar.loop.cycleTime.getMean();
-            double cycleTimeNanos = cycleTime *1E9;
+
 
 //            long now = System.nanoTime();
             float dt =
 //                    cycleTimeNanos/1E9f;
-                    0.0002f * BATCH_PLAY; //fixed JIFFY
+                    0.005f; //fixed JIFFY
 //            last = now;
 
 
 
-            int qq = q.size();
-            if (qq > 0) {
-                int BATCH_WORK = (int) Math.ceil(((float) qq) / Math.max(1,(threads-1)));
-                do {
 
-                    ITask i = q.poll();
-                    if (i != null)
-                        execute(i);
-                    else
-                        break;
+            focus.run(() -> {
 
-                } while (--BATCH_WORK > 0);
-            }
+                int qq = q.size();
+                if (qq > 0) {
+                    int WORK_SHARE =
+                            (int) Math.ceil(((float) qq) / Math.max(1, (threads - 1)));
+                    do {
 
-            float load = load();
+                        ITask i = q.poll();
+                        if (i != null)
+                            execute(i);
+                        else
+                            break;
 
-            NARLoop loop = nar.loop;
-            @Deprecated float throttle = loop.throttle.floatValue(); //HACK
-
-            if (throttle < 1f) {
-                long sleepTime = Math.round(((1.0 - throttle) * (cycleTimeNanos))/1.0E6f);
-                if (sleepTime > 0)
-                    Util.sleep(sleepTime);
-            }
-
-            try {
-                focus.run(BATCH_PLAY, dt * throttle /* * (1f- Util.sqr(load))*/ );
-            } catch (Throwable e) {
-                if (Param.DEBUG) {
-                    throw e;
-                } else {
-                    logger.error("{} {}", this, e);
+                    } while (--WORK_SHARE > 0);
                 }
-            }
-        }
+
+                @Deprecated float throttle = nar.loop.throttle.floatValue(); //HACK
+
+                if (throttle < 1f) {
+                    double cycleTime = nar.loop.cycleTime.getMean();
+                    double cycleTimeNanos = cycleTime * 1E9;
+                    long sleepTime = Math.round(((1.0 - throttle) * (cycleTimeNanos)) / 1.0E6f);
+                    if (sleepTime > 0)
+                        Util.sleep(sleepTime);
+                }
+
+                return dt * throttle;
+            });
+
+//        }
     }
 
     boolean running = false;
@@ -138,9 +143,9 @@ public class MultiExec extends AbstractExec {
     @Override
     public synchronized void stop() {
         if (exe instanceof AffinityExecutor)
-            ((AffinityExecutor)exe).stop();
+            ((AffinityExecutor) exe).stop();
         else
-            ((ExecutorService)exe).shutdownNow();
+            ((ExecutorService) exe).shutdownNow();
 
         super.stop();
         running = false;
@@ -256,7 +261,7 @@ public class MultiExec extends AbstractExec {
                     throw new RuntimeException("work queue exceeded capacity while not running");
                 }
                 ITask next = q.poll();
-                if (next!=null)
+                if (next != null)
                     execute(next);
             }
         }

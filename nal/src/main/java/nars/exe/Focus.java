@@ -7,6 +7,7 @@ import jcog.decide.Roulette;
 import jcog.learn.deep.RBM;
 import jcog.list.FastCoWList;
 import jcog.list.FasterList;
+import jcog.math.FloatSupplier;
 import jcog.math.RecycledSummaryStatistics;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.util.Flip;
@@ -36,7 +37,7 @@ public class Focus {
 
     public static class Schedule {
         public float[] time = ArrayUtils.EMPTY_FLOAT_ARRAY;
-//        public float[] timeNormalized = ArrayUtils.EMPTY_FLOAT_ARRAY;
+        //        public float[] timeNormalized = ArrayUtils.EMPTY_FLOAT_ARRAY;
         public float[] supply = ArrayUtils.EMPTY_FLOAT_ARRAY;
         public float[] weight = ArrayUtils.EMPTY_FLOAT_ARRAY;
 
@@ -51,7 +52,7 @@ public class Focus {
 
             return Joiner.on("\n").join(IntStream.range(0, active.length).mapToObj(
                     x -> n4(weight[x]) + "=" + active[x] +
-                            "@" + n2(time[x]*1E3) + "uS x " + n2(supply[x])
+                            "@" + n2(time[x] * 1E3) + "uS x " + n2(supply[x])
             ).iterator());
         }
 
@@ -119,15 +120,15 @@ public class Focus {
                 return;
             }
 
-            weight = Util.map(n, (int i)->
-                active[i].value(), weight);
+            weight = Util.map(n, (int i) ->
+                    active[i].value(), weight);
 
             float[] minmax = Util.minmax(weight);
             for (int i = 0; i < n; i++)
                 weight[i] = normalize(
-                                normalize(weight[i], minmax[0], minmax[1]),
-                        -1f/n, +1f) / time[i];
-                        //* (1f - timeNormalized[i]);
+                        normalize(weight[i], minmax[0], minmax[1]),
+                        -1f / n, +1f) / time[i];
+            //* (1f - timeNormalized[i]);
         }
     }
 
@@ -233,7 +234,7 @@ public class Focus {
 
             if (lastUpdate == ETERNAL)
                 lastUpdate = time;
-            double dt = (time - lastUpdate)/dur;
+            double dt = (time - lastUpdate) / dur;
             if (dt < minUpdateDurs)
                 return;
             lastUpdate = time;
@@ -297,7 +298,7 @@ public class Focus {
 
         this.revaluator =
                 new DefaultRevaluator();
-                //new RBMRevaluator(nar.random());
+        //new RBMRevaluator(nar.random());
 
         n.serviceAddOrRemove.on((xa) -> {
             Services.Service<NAR> x = xa.getOne();
@@ -313,52 +314,62 @@ public class Focus {
         n.onCycle(this::update);
     }
 
-    public void run(int work, float dt) {
-        assert (work > 0);
+    public void run(FloatSupplier kontinueDT) {
 
-        Schedule s = schedule.read();
 
-        float[] cw = s.weight;
-        int n = cw.length;
-        if (n == 0) return;
+        float dt;
+        while ((dt = kontinueDT.asFloat()) == dt) {
 
-        Causable[] can = s.active;
-        float[] time = s.time;
-        float[] supply = s.supply;
+            try {
+                Schedule s = schedule.read();
 
-        float subDT = dt/work;
-        for (int i = 0; i < work; i++) {
-            int x = Roulette.decideRoulette(cw, rng);
-            Causable cx = can[x];
-            AtomicBoolean cb = cx.busy;
+                float[] cw = s.weight;
 
-            int completed;
-            if (cb == null) {
-                completed = run(cx, subDT, supply[x], time[x]);
-            } else {
-                if (cb.compareAndSet(false, true)) {
-                    float weightSaved = cw[x];
-                    cw[x] = 0; //hide from being selected by other threads
-                    try {
-                        completed = run(cx, subDT, supply[x], time[x]);
-                    } finally {
-                        cb.set(false);
-                        cw[x] = weightSaved;
-                    }
-                } else {
+                Causable[] can = s.active;
+                float[] time = s.time;
+                float[] supply = s.supply;
+                if (cw.length == 0)
                     continue;
+
+                final int PLAY_BATCH = 8;
+                float subDT = dt/PLAY_BATCH;
+                for (int i = 0; i < PLAY_BATCH; i++) {
+                    int x = Roulette.decideRoulette(cw, rng);
+                    Causable cx = can[x];
+                    AtomicBoolean cb = cx.busy;
+
+                    int completed;
+                    if (cb == null) {
+                        completed = run(cx, subDT, supply[x], time[x]);
+                    } else {
+                        if (cb.compareAndSet(false, true)) {
+                            float weightSaved = cw[x];
+                            cw[x] = 0; //hide from being selected by other threads
+                            try {
+                                completed = run(cx, subDT, supply[x], time[x]);
+                            } finally {
+                                cb.set(false);
+                                cw[x] = weightSaved;
+                            }
+                        } else {
+                            continue;
+                        }
+                    }
+
+                    if (completed < 0) {
+                        cw[x] = 0;
+                    }
                 }
+            } catch (Throwable t) {
+                t.printStackTrace();
             }
 
-            if (completed < 0) {
-                cw[x] = 0;
-            }
         }
 
     }
 
     private int run(Causable cx, float dt, float supply, float time) {
-        int iters = (int) Math.ceil(Math.max(1,supply) * (dt/time));
+        int iters = (int) Math.ceil(Math.max(1, supply) * (dt / time));
         return cx.run(nar, iters);
     }
 

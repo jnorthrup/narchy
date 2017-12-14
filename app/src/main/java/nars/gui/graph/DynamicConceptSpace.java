@@ -25,7 +25,6 @@ import spacegraph.render.Draw;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiConsumer;
 
 import static jcog.Util.sqr;
@@ -43,7 +42,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
     volatile static int serial = 0;
     final String spaceID;
 
-    final StampedLock rw = new StampedLock();
+    //final StampedLock rw = new StampedLock();
 
 
     public TermWidget.TermVis vis;
@@ -66,7 +65,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
             public void onRemove(PriReference<Activate> value) {
                 //ConceptWidget cw = (ConceptWidget) space.get(value.get().id.term().);
                 ConceptWidget cw = value.get().id.meta(spaceID);
-                if (cw!=null) {
+                if (cw != null) {
                     cw.deactivate();
                 }
             }
@@ -74,26 +73,20 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
     }
 
 
-
-
-    final AtomicBoolean updates = new AtomicBoolean(false);
+    final AtomicBoolean updated = new AtomicBoolean(false);
 
     @Override
     public void start(SpaceGraph<Concept> space) {
         super.start(space);
         on = DurService.on(nar, () -> {
-            long s = rw.tryWriteLock();
-            if (s == 0) return;
-            try {
-                if (concepts.update()) {
-                    updates.set(true);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                rw.unlockWrite(s);
+            if (!updated.get() && concepts.update()) {
+
+
+
+                updated.set(true);
             }
-        });
+
+        }).durs(1);
     }
 
     @Override
@@ -107,45 +100,36 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
     @Override
     protected List<ConceptWidget> get() {
 
+        if (updated.get()) {
 
-        if (updates.compareAndSet(true, false)) {
+                    List<ConceptWidget> w;
+                w = next.write();
+                w.clear();
 
-            List<ConceptWidget> l;
-            l = next.write();
-            l.clear();
-            updates.set(false); //acquired this set
+                concepts.forEach((clink) -> {
+                    //ConceptWidget cw = space.getOrAdd(clink.get().id, ConceptWidget::new);
+                    Concept cc = clink.get().id;
+                    ConceptWidget cw = cc.meta(spaceID, (sid) -> new ConceptWidget(cc));
+                    if (cw != null) {
 
-            long s = rw.tryReadLock();
-            if (s > 0) {
-                try {
-                    concepts.forEach((clink) -> {
-                        //ConceptWidget cw = space.getOrAdd(clink.get().id, ConceptWidget::new);
-                        Concept cc = clink.get().id;
-                        ConceptWidget cw = cc.meta(spaceID, (sid)->new ConceptWidget(cc));
-                        if (cw != null) {
+                        cw.activate();
 
-                            cw.activate();
+                        cw.pri = clink.priElseZero();
+                        w.add(cw);
 
-                            cw.pri = clink.priElseZero();
-                            l.add(cw);
-
-                        }
-                        //space.getOrAdd(concept.term(), materializer).setConcept(concept, now)
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    rw.unlockRead(s);
-                }
-
-                vis.accept(l);
-                next.commit();
-            }
+                    }
+                    //space.getOrAdd(concept.term(), materializer).setConcept(concept, now)
+                });
 
 
+            vis.accept(next.write());
+
+            next.commit();
+
+            updated.set(false);
         }
-
         List<ConceptWidget> r = next.read();
+
         return r;
     }
 
@@ -170,7 +154,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
         public final FloatParam lineAlphaMax = new FloatParam(0.8f, 0f, 1f);
 
 
-        public final FloatParam edgeBrightness = new FloatParam(1/16f, 0f, 2f);
+        public final FloatParam edgeBrightness = new FloatParam(1 / 16f, 0f, 2f);
 
         public ConceptVis2(int maxEdges) {
             super();
