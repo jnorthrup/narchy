@@ -1,7 +1,6 @@
 package nars.exe;
 
 import jcog.bag.Bag;
-import jcog.bag.impl.ConcurrentCurveBag;
 import jcog.bag.impl.CurveBag;
 import jcog.bag.impl.hijack.PriorityHijackBag;
 import jcog.pri.op.PriMerge;
@@ -25,7 +24,7 @@ abstract public class AbstractExec extends Exec {
     protected Bag<Activate, Activate> active;
     //protected Baggie<Concept> active;
 
-    public AbstractExec(int capacity) {
+    protected AbstractExec(int capacity) {
 
         CAPACITY = capacity;
     }

@@ -25,7 +25,7 @@ public class TaskLinkCurveBag extends CurveBag<PriReference<Task>> {
 
             Task x = value.get();
             Task px = x;
-            Task y = null;
+            Task y;
 
             //TODO maybe a hard limit should be here for safety in case anyone wants to create loops of forwarding tasks
             int hopsRemain = Param.MAX_TASK_FORWARD_HOPS;

@@ -162,8 +162,6 @@ public class Premise {
 
             if (!beliefTerm.hasVarQuery()) { //doesnt make sense to look for a belief in a term with query var, it will have none
 
-                Task match;
-
                 if (task.isQuestOrQuestion()) {
                     if (beliefConceptCanAnswerTaskConcept) {
                         final BeliefTable answerTable =
@@ -178,7 +176,7 @@ public class Premise {
 //
 //                            }
 
-                        match = answerTable.answer(task.start(), task.end(), dur, task, beliefTerm, n);
+                        Task match = answerTable.answer(task.start(), task.end(), dur, task, beliefTerm, n);
                         if (match != null) {
                             assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 

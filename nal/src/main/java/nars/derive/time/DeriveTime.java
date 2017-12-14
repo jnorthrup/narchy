@@ -9,8 +9,6 @@ import nars.task.Revision;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
-import nars.truth.Truth;
-import nars.truth.func.TruthOperator;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -261,7 +259,7 @@ public class DeriveTime extends TimeGraph {
 //                return st;
 //            } else {
 
-            if ((!d.single && d.eternal) || (d.single && d.task.isEternal())) {
+            if (d.single ? d.task.isEternal() : d.eternal) {
                 event = solutions.get(d.random); //doesnt really matter which solution is chosen, in terms of probability of projection success
             } else {
 
@@ -449,7 +447,7 @@ public class DeriveTime extends TimeGraph {
     /**
      * heuristic for deciding a derivation result from among the calculated options
      */
-    protected Event merge(Event a, Event b) {
+    static protected Event merge(Event a, Event b) {
         Term at = a.id;
         Term bt = b.id;
         if (at.hasXternal() && !bt.hasXternal())

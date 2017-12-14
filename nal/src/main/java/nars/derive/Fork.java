@@ -3,7 +3,6 @@ package nars.derive;
 import nars.$;
 import nars.control.Derivation;
 import nars.term.Term;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;

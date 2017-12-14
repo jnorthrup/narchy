@@ -4,7 +4,6 @@ import nars.Op;
 import nars.derive.rule.PremiseRule;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.atom.Atomic;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.impl.factory.Sets;

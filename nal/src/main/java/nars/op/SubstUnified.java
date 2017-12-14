@@ -1,13 +1,11 @@
 package nars.op;
 
-import nars.$;
 import nars.Op;
 import nars.Param;
 import nars.control.Derivation;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
-import nars.term.atom.Bool;
 import nars.term.container.Subterms;
 import nars.term.subst.SubUnify;
 import org.jetbrains.annotations.Nullable;

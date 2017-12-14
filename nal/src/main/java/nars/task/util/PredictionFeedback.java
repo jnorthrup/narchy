@@ -10,7 +10,6 @@ import nars.table.DefaultBeliefTable;
 import nars.task.NALTask;
 import nars.task.SignalTask;
 import nars.truth.Stamp;
-import nars.truth.Truth;
 
 import java.util.List;
 

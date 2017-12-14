@@ -3,7 +3,6 @@ package nars.op.java;
 import com.google.common.collect.ImmutableSet;
 import jcog.data.map.CustomConcurrentHashMap;
 import nars.$;
-import nars.Op;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
@@ -359,7 +358,7 @@ public class DefaultTermizer implements Termizer {
             if (((Boolean) o)) return TRUE;
             else return FALSE;
         } else if (o instanceof String) {
-            return $.the((String)o);
+            return Atomic.the((String)o);
         }
 
         //        String cname = o.getClass().toString().substring(6) /* "class " */;

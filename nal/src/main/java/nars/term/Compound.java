@@ -553,7 +553,7 @@ public interface Compound extends Term, IPair, Subterms {
 
                 boolean reverse = dt < 0;
 
-                for (int i = !reverse ? 0 : s - 1; (!reverse && i < s) || (reverse && i >= 0); i += (!reverse ? +1 : -1)) {
+                for (int i = !reverse ? 0 : s - 1; reverse ? i >= 0 : i < s; i += (!reverse ? +1 : -1)) {
                     Term st = tt.sub(i);
                     if (!st.eventsWhile(events, t,
                             decomposeConjParallel, decomposeConjDTernal, decomposeXternal,
@@ -815,6 +815,7 @@ public interface Compound extends Term, IPair, Subterms {
         return term;
     }
 
+    @Override
     default boolean equalsRoot(Term x) {
         if (this.equals(x))
             return true;

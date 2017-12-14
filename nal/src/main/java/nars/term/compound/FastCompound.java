@@ -42,7 +42,7 @@ abstract public class FastCompound implements Compound {
         @NotNull
         private final byte[][] atoms;
 
-        public FastCompoundSerializedAtoms(byte[][] atoms, byte[] shadow, int structure, int hash, byte volume, boolean normalized) {
+        protected FastCompoundSerializedAtoms(byte[][] atoms, byte[] shadow, int structure, int hash, byte volume, boolean normalized) {
             super(shadow, structure, hash, volume, normalized);
             this.atoms = atoms;
         }
@@ -96,7 +96,7 @@ abstract public class FastCompound implements Compound {
     final byte volume;
     protected final int structure;
 
-    public FastCompound(byte[] shadow, int structure, int hash, byte volume, boolean normalized) {
+    protected FastCompound(byte[] shadow, int structure, int hash, byte volume, boolean normalized) {
         this.shadow = shadow;
         this.hash = hash;
         this.volume = volume;

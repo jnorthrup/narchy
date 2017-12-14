@@ -191,7 +191,7 @@ public class NodeGraph<N, E> {
         search.start();
         try {
 
-            boolean result = false;
+
 
             for (Node n : startingNodes) {
                 if (!search.visit(n))

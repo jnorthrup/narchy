@@ -47,11 +47,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
 
     public static final Logger logger = LoggerFactory.getLogger(NAgent.class);
-
-    /**
-     * identifies this environment instance
-     **/
-    public final Term id;
+    
 
     public final Map<SensorConcept, CauseChannel<ITask>> sensors = new LinkedHashMap();
 
@@ -104,11 +100,10 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     }
 
     protected NAgent(@Nullable Term id, @NotNull NAR nar) {
-        super(nar);
+        super(null, id);
 
         this.nar = nar;
 
-        this.id = id;
         this.now = ETERNAL; //not started
 
         Term happyTerm = id == null ?
@@ -149,6 +144,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
 //        if (id == null) id = $.quote(getClass().toString());
 
+        nar.on(this);
     }
 
     @Deprecated

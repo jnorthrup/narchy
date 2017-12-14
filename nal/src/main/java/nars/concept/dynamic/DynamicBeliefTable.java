@@ -71,9 +71,7 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
         DynTruth yy = truth(start, end, template, nar);
         if (yy != null) {
             Task[] tt = new Task[1];
-            yy.truth((bg) -> {
-                tt[0] = bg;
-            }, beliefOrGoal, nar);
+            yy.truth((bg) -> tt[0] = bg, beliefOrGoal, nar);
             return tt[0];
         } else {
             return null;

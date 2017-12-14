@@ -49,7 +49,7 @@ public abstract class Unify extends Versioning implements Subst {
     public final Op type;
 
     @NotNull
-    public final Set<Termutator> termutes = new LinkedHashSet();
+    public final Set<Termutator> termutes = new LinkedHashSet(8);
 
 //    @NotNull
 //    public final TermIndex terms;
@@ -118,7 +118,7 @@ public abstract class Unify extends Versioning implements Subst {
         } else {
             tryMatch();
             assert(matches == null);
-            matches = Collections.EMPTY_SET;; //indicates that there was a match, by being non-null
+            matches = Collections.emptySet();//indicates that there was a match, by being non-null
         }
     }
 

@@ -38,24 +38,22 @@ public class Subst extends Functor {
 
         final Term x = xx.sub(1); //original term (x)
 
-        boolean strict = xx.subEquals(3, STRICT);
-
-        Term y = xx.sub(2); //replacement term (y)
+        final Term y = xx.sub(2); //replacement term (y)
 
         Term result;
         if (x.equals(y) || !input.containsRecursively(x)) {
-            result = strict ? Null : input; //no change would be applied
+            result = xx.subEquals(3, STRICT) ? Null : input; //no change would be applied
         }else if (input.equals(x)) { //direct replacement
-            result = y;
+            result = y; //TODO add STRICT condition here?
         } else {
-            result = input.transform(new MapSubst1(x, y));
+            result = input.replace(x, y);
         }
 
-        if (!(result instanceof Bool && !result.equals(input))) {
-//            //add mapping in parent
-//            if (!onChange(input, x, y, result))
-//                return Null;
-        }
+//        if (!(result instanceof Bool && !result.equals(input))) {
+////            //add mapping in parent
+////            if (!onChange(input, x, y, result))
+////                return Null;
+//        }
 
         return result;
     }

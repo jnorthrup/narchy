@@ -3,7 +3,6 @@ package nars.index.term;
 import nars.NAR;
 import nars.Op;
 import nars.The;
-import nars.control.Derivation;
 import nars.derive.PatternCompound;
 import nars.derive.match.Ellipsis;
 import nars.index.term.map.MapTermIndex;
@@ -31,15 +30,15 @@ public class PatternIndex extends MapTermIndex {
         super(new HashMap<>());
     }
 
-    /**
-     * installs static and NAR-specific functors
-     */
-    public PatternIndex(NAR nar) {
-        this();
-//        for (Termed t : Derivation.ruleFunctors(nar)) {
-//            set(t);
-//        }
-    }
+//    /**
+//     * installs static and NAR-specific functors
+//     */
+//    public PatternIndex(NAR nar) {
+//        this();
+////        for (Termed t : Derivation.ruleFunctors(nar)) {
+////            set(t);
+////        }
+//    }
 
     @SuppressWarnings("Java8MapApi")
     @Override
@@ -88,10 +87,6 @@ public class PatternIndex extends MapTermIndex {
                 x.op().the(x.dt(), v.arrayShared()); //new PatternCompound.PatternCompoundSimple(x.op(), x.dt(), v);
     }
 
-    @Override
-    public void set(@NotNull Term src, @NotNull Termed target) {
-        super.set(src, target);
-    }
 
     //    static boolean canBuildConcept(/*@NotNull*/ Term y) {
 //        if (y instanceof Compound) {
@@ -156,11 +151,6 @@ public class PatternIndex extends MapTermIndex {
 
         return get(y, true).term();
 
-    }
-
-    @Override
-    public Term intern(Term x) {
-        return x;
     }
 
     public static final class PremiseRuleVariableNormalization extends VariableNormalization {

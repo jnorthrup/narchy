@@ -170,7 +170,7 @@ public class Derivation extends Unify {
 
         derivedTerm = new Versioned(this, 3);
 
-        anon = new CachedAnon(16) {
+        anon = new CachedAnon(16);
 //            @Override
 //            public Term get(Term x) {
 //                Term y = super.get(x);
@@ -186,7 +186,7 @@ public class Derivation extends Unify {
 //                Term y = super._get(x);
 //                return y != null ? y.eval(nar.terms) : null;
 //            }
-        };
+
 
 //        Caffeine cb = Caffeine.newBuilder().executor(nar.exe);
 //            //.executor(MoreExecutors.directExecutor());

@@ -34,12 +34,12 @@ public enum The {
     ;
 
     /* @NotNull */
-    public static final nars.term.container.Subterms subterms(Term... s) {
+    public static nars.term.container.Subterms subterms(Term... s) {
         return The.Subterms.the.apply(s);
     }
 
     /* @NotNull */
-    public static final nars.term.container.Subterms subterms(Collection<? extends Term> s) {
+    public static nars.term.container.Subterms subterms(Collection<? extends Term> s) {
         return The.Subterms.the.apply(s.toArray(new Term[s.size()]));
     }
 

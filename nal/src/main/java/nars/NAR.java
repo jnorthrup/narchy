@@ -938,6 +938,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     /**
      * Exits an iteration loop if running
      */
+    @Override
     public NAR stop() {
 
         loop.stop();
@@ -1621,7 +1622,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 //            final short[] sharedOneElement = {ci};
             final short ci = (short) (causes.size());
             CauseChannel c = new CauseChannel.TaskChannel(this, ci, id, (x) -> {
-                if (x instanceof Task) {
+                if (x instanceof NALTask) {
                     NALTask t = (NALTask) x;
                     int tcl = t.cause.length;
                     if (tcl == 0 || (tcl == 1 && t.cause[0] == 0)) {

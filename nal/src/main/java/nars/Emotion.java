@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.SortedMap;
 
 import static jcog.Texts.n4;
-import static jcog.Util.unitize;
 import static nars.NInner.id;
 
 /**

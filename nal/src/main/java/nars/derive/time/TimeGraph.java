@@ -551,9 +551,9 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
 //    final static LongSet EMPTY_LONG_SET = LongSets.immutable.empty();
 
-    public void solve(Term x, Predicate<Event> each) {
-        solve(x, true, each);
-    }
+//    public void solve(Term x, Predicate<Event> each) {
+//        solve(x, true, each);
+//    }
 
     public void solve(Term x, boolean filterTimeless, Predicate<Event> target) {
 
@@ -813,11 +813,13 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
                 Term startTerm = startEvent.id;
 
-                if ((endA && startTerm.equals(b)) || (endB && startTerm.equals(a))) {
+                boolean fwd = startTerm.equals(a) && endB;
+                boolean rev = startTerm.equals(b) && endA;
+                if (fwd || rev) {
 
+                    long startTime = startEvent.when();
+                    long endTime = endEvent.when();
 
-                    long startTime = startEvent instanceof Absolute ? startEvent.when() : TIMELESS;
-                    long endTime = endEvent instanceof Absolute ? endEvent.when() : TIMELESS;
 
                     long dt;
                     if (startTime != TIMELESS && startTime != ETERNAL && endTime != TIMELESS && endTime != ETERNAL) {
@@ -835,8 +837,10 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                     if (dt == TIMELESS)
                         return null;
 
-                    if (endA && dt != ETERNAL)
+                    if (rev && dt != ETERNAL) {
                         dt = -dt; //reverse
+                        startTime = endTime;
+                    }
 
 
                     return new long[]{

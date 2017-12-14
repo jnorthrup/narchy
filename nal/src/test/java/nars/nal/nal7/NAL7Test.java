@@ -69,7 +69,7 @@ public class NAL7Test extends NALTest {
                 .inputAt(10, "(--,x:after). :|:")
                 .mustBelieve(cycles, "(x:before ==>+10 x:after)", 0.00f, 0.45f /*abductionConf*/, 0)
                 .mustBelieve(cycles, "((--,x:after) ==>-10 x:before)", 1.00f, 0.45f /*inductionConf*/, 10)
-                .mustBelieve(cycles, "(x:before &&+10 (--,x:after))", 1.00f, 0.81f /*intersectionConf*/, 0, 10)
+                .mustBelieve(cycles, "(x:before &&+10 (--,x:after))", 1.00f, 0.81f /*intersectionConf*/, 0)
                 .mustNotOutput(cycles, "(x:before &&-10 (--,x:after))", BELIEF,
                         (t -> t == 0 || t == 10));
 //                .mustBelieve(cycles, "(x:after <=>-10 x:before)", 0.00f, 0.45f /*comparisonConf*/, 0, 10)
@@ -101,6 +101,19 @@ public class NAL7Test extends NALTest {
 
     }
 
+    @Test public void testConjDecomposeAGAIN() {
+        /*
+          WRONG TIME
+          $.20 (b &&+5 c). 11 %1.0;.73% {105: 2;3} ((%1,%2,task("."),notImpl(%2)),((polarize(%1,task) &&+- polarize(%2,belief)),((IntersectionDepolarized-->Belief))))
+            $.27 c. 11 %1.0;.81% {13: 3;;} ((%1,%1,task("&&")),(dropAnyEvent(%1),((StructuralDeduction-->Belief))))
+              $.50 (c &&+5 d). 11 %1.0;.90% {11: 3} Narsese
+            $.50 (b &&+5 c). 6 %1.0;.90% {6: 2} Narsese
+         */
+          test
+            .inputAt(11, "c. :|:")
+            .inputAt(6, "(b &&+5 c). :|:") //should not unify in the same direction
+            .mustNotOutput(cycles, "(b &&+5 c)", BELIEF, 11);
+    }
 
     @Test
     public void testConjDecomposeWrongDirection() {
@@ -160,7 +173,7 @@ public class NAL7Test extends NALTest {
                 .inputAt(1, "(a). :|:") //try to ignore this
                 .inputAt(2, "(b). :|:")
                 .inputAt(5, "(c). :|:")
-                .mustBelieve(cycles, "((b) &&+3 (c))", 1.00f, 0.81f, 2, 5)
+                .mustBelieve(cycles, "((b) &&+3 (c))", 1.00f, 0.81f, 2)
                 .mustNotOutput(cycles, "(c)", BELIEF, (t) -> t != 5)
         ;
     }
@@ -169,7 +182,7 @@ public class NAL7Test extends NALTest {
     public void testDropAnyEventSimple2() {
         test
                 .inputAt(1, "((happy &&+4120 (i)) &&+1232 (--,(i)))! :|:")
-                .mustGoal(cycles, "(happy &&+4120 (i))", 1f, 0.81f, 1, 4121)
+                .mustGoal(cycles, "(happy &&+4120 (i))", 1f, 0.81f, 1)
                 .mustNotOutput(cycles, "((i)&&happy)", GOAL, 1)
         ;
     }
@@ -258,7 +271,7 @@ public class NAL7Test extends NALTest {
         test
                 .inputAt(11, "(c &&+5 d). :|:")
                 .inputAt(6, "(((a&|b) &&+5 (b&|c)) ==>+5 (c &&+5 d)). :|:")
-                .mustBelieve(cycles, "((a&|b) &&+5 (b&|c))", 1, 0.45f, 1, 6)
+                .mustBelieve(cycles, "((a&|b) &&+5 (b&|c))", 1, 0.45f, 1)
                 //.mustNotOutput(cycles, "((a&|b) &&+5 (b&|c))", BELIEF, (t) -> t!=1)
                 .mustNotOutput(cycles, "(c &&+5 d)", BELIEF, (t) -> t != 11)
         ;
@@ -505,7 +518,7 @@ public class NAL7Test extends NALTest {
         test
                 .inputAt(1, "a. :|:")
                 .inputAt(2, "--b. :|:")
-                .mustBelieve(cycles, "(a &&+1 --b)", 1.00f, 0.81f, 1, 2)
+                .mustBelieve(cycles, "(a &&+1 --b)", 1.00f, 0.81f, 1)
                 .mustBelieve(cycles, "(--b ==>-1 a)", 1.00f, 0.45f, 2)
                 .mustBelieve(cycles, "(a ==>+1 b)", 0.00f, 0.45f, 1)
         ;
@@ -527,7 +540,7 @@ public class NAL7Test extends NALTest {
         test
                 .inputAt(1, "--b. :|:")
                 .inputAt(2, "a. :|:")
-                .mustBelieve(cycles, "(--b &&+1 a)", 1.00f, 0.81f, 1, 2) //i
+                .mustBelieve(cycles, "(--b &&+1 a)", 1.00f, 0.81f, 1) //i
                 .mustBelieve(cycles, "(--b ==>+1 a)", 1.00f, 0.45f, 1) //in
         //.mustBelieve(cycles, "(a ==>-1 b)", 0.00f, 0.45f, 2) //ab
         ;
@@ -677,11 +690,11 @@ public class NAL7Test extends NALTest {
         tester.mustBelieve(cycles,
                 "(at(SELF,{t003}) &&+4 on({t002},{t003}))",
                 1.0f, 0.81f,
-                0, 4);
+                0);
         tester.mustBelieve(cycles,
                 "(at(SELF,#1) &&+4 on({t002},#1))",
                 1.0f, 0.81f,
-                0, 4);
+                0);
         tester.mustNotOutput(cycles, "(at(SELF,#1) &&-4 on({t002},#1))", BELIEF, ETERNAL);
 
     }
@@ -821,7 +834,7 @@ public class NAL7Test extends NALTest {
 
                 .inputAt(2, "a:x. :|: %1.0;0.45%")
                 .inputAt(5, "b:x. :|: %1.0;0.90%")
-                .mustBelieve(cycles, "(a:#1 &&+3 b:#1)", 1f, 0.40f, 2, 5)
+                .mustBelieve(cycles, "(a:#1 &&+3 b:#1)", 1f, 0.40f, 2)
                 .mustNotOutput(cycles, "(a:#1 &&-3 b:#1)", BELIEF, 0f, 1, 0f, 1, 2);
 
     }
@@ -933,9 +946,9 @@ public class NAL7Test extends NALTest {
 
         test
                 .input("(((x) &&+1 (y)) &&+1 (z)). :|:")
-                .mustBelieve(cycles * 2, "((x) &&+1 (y))", 1f, 0.81f, 0, 1)
-                .mustBelieve(cycles * 2, "((y) &&+1 (z))", 1f, 0.81f, 1, 2)
-                .mustBelieve(cycles * 2, "((x) &&+2 (z))", 1f, 0.81f, 0, 2);
+                .mustBelieve(cycles * 2, "((x) &&+1 (y))", 1f, 0.81f, 0)
+                .mustBelieve(cycles * 2, "((y) &&+1 (z))", 1f, 0.81f, 1)
+                .mustBelieve(cycles * 2, "((x) &&+2 (z))", 1f, 0.81f, 0);
     }
 
     @Test
@@ -943,9 +956,9 @@ public class NAL7Test extends NALTest {
 
         test
                 .input("((z) &&+1 ((x) &&+1 (y))). :|:")
-                .mustBelieve(cycles, "((x) &&+1 (y))", 1f, 0.81f, 1, 2)
-                .mustBelieve(cycles, "((z) &&+2 (y))", 1f, 0.81f, 0, 2)
-                .mustBelieve(cycles, "((z) &&+1 (x))", 1f, 0.81f, 0, 1);
+                .mustBelieve(cycles, "((x) &&+1 (y))", 1f, 0.81f, 1)
+                .mustBelieve(cycles, "((z) &&+2 (y))", 1f, 0.81f, 0)
+                .mustBelieve(cycles, "((z) &&+1 (x))", 1f, 0.81f, 0);
     }
 
     @Test
@@ -953,9 +966,9 @@ public class NAL7Test extends NALTest {
 
         test
                 .input("((&|,a,b,c) &&+1 z). :|:")
-                .mustBelieve(cycles, "(a &&+1 z)", 1f, 0.73f, 0, 1)
-                .mustBelieve(cycles, "(b &&+1 z)", 1f, 0.73f, 0, 1)
-                .mustBelieve(cycles, "(c &&+1 z)", 1f, 0.73f, 0, 1);
+                .mustBelieve(cycles, "(a &&+1 z)", 1f, 0.73f, 0)
+                .mustBelieve(cycles, "(b &&+1 z)", 1f, 0.73f, 0)
+                .mustBelieve(cycles, "(c &&+1 z)", 1f, 0.73f, 0);
     }
 
 
@@ -1324,7 +1337,7 @@ public class NAL7Test extends NALTest {
         test
                 .inputAt(1, "((a-->b) &&+4 (c-->d)). :|:")
                 .inputAt(10, "(d-->e). :|:")
-                .mustBelieve(cycles, "(((a-->b) &&+4 (c-->#1)) &&+5 (#1-->e))", 1f, 0.81f, 1, 10)
+                .mustBelieve(cycles, "(((a-->b) &&+4 (c-->#1)) &&+5 (#1-->e))", 1f, 0.81f, 1)
                 .mustNotOutput(cycles, "(((a-->b) &&+4 (c-->#1)) &&+9 (#1-->e))", BELIEF, t -> t == ETERNAL || t == 1);
 
     }
@@ -1341,7 +1354,7 @@ public class NAL7Test extends NALTest {
 
                 .inputAt(1, "(a). :|:")
                 .inputAt(2, "((b) &&+3 (d)). :|:")
-                .mustBelieve(cycles, "(((a) &&+1 (b)) &&+3 (d))", 1f, 0.81f, 1, 5)
+                .mustBelieve(cycles, "(((a) &&+1 (b)) &&+3 (d))", 1f, 0.81f, 1)
         ;
 
     }
@@ -1378,7 +1391,7 @@ public class NAL7Test extends NALTest {
                 .mustBelieve(cycles,
                         //"((a) &&+2 (&|, (b), (c), (d)))", //HACK <- this should work
                         "((a) &&+2 (((b) &| (c)) &| (d)) )",
-                        1f, 0.81f, 1, 3);
+                        1f, 0.81f, 1);
     }
 
     @Test
@@ -1393,7 +1406,7 @@ public class NAL7Test extends NALTest {
                 .inputAt(4, "(b). :|:")
                 .mustBelieve(cycles,
                         "(((a) &&+3 ((b) &| (c))) &&+4 (e))",
-                        1f, 0.81f, 1, 8);
+                        1f, 0.81f, 1);
     }
 
     @Test
@@ -1415,7 +1428,7 @@ public class NAL7Test extends NALTest {
                 .inputAt(4, "(b). :|:")
                 .mustBelieve(cycles,
                         "(((--,((a) &&+3 (--,(c)))) &&+3 (b)) &&+1 (e))",
-                        1f, 0.81f, 1, 5)
+                        1f, 0.81f, 1)
                 .mustNotOutput(cycles, "(((--,((a) &&+3 (--,(c)))) &&+3 (b)) &&+4 (e))", BELIEF, t -> t == ETERNAL || t == 1);
 
     }

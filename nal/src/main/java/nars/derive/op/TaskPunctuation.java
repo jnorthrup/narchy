@@ -1,6 +1,5 @@
 package nars.derive.op;
 
-import nars.Op;
 import nars.control.Derivation;
 import nars.derive.AbstractPred;
 import nars.derive.PrediTerm;

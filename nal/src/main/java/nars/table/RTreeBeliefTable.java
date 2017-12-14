@@ -575,8 +575,8 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
             }
         }
 
-        if (aAlreadyDeleted)
-            return true;
+//        if (aAlreadyDeleted)
+//            return true;
 
 //        //merge impossible, delete a
 //        if (b != null)
@@ -729,7 +729,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
     static Predicate<TaskRegion> scanWhile(Predicate<? super Task> each) {
         return (t) -> {
             Task tt = t.task();
-            return tt != null ? each.test(tt) : true;
+            return tt == null || each.test(tt);
         };
     }
 

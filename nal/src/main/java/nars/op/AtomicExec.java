@@ -23,6 +23,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
+import static nars.time.Tense.ETERNAL;
+
 /**
  * debounced and atomically/asynchronously executable operation
  */
@@ -56,6 +58,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
     };
 
     private DurService onCycle;
+    private long lastUpdated = ETERNAL;
 
 
     public AtomicExec(BiConsumer<Task, NAR> exe, float dThresh) {
@@ -78,8 +81,17 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
     final AtomicBoolean busy = new AtomicBoolean(false);
 
     protected void update(NAR n) {
+
+        long now = n.time();
+        if (now!=lastUpdated) {
+            busy.set(false); //force reset if new clock time occurrs.  the runLater may have been lost
+        }
+
         if (!busy.compareAndSet(false, true))
             return; //in-progress
+
+        lastUpdated = now;
+
         try {
             //probe all active concepts.
             //  remove any below desire threshold
@@ -88,7 +100,6 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
             assert (!active.isEmpty());
 
-            long now = n.time();
             int dur = n.dur();
             long start = now - dur / 2;
             long end = now + dur / 2;
@@ -129,10 +140,13 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
                             exe.accept(tt, n);
                         }
                     }
+                    busy.set(false);
                 });
+            } else {
+                busy.set(false);
             }
         } finally {
-            busy.set(false);
+
         }
     }
 

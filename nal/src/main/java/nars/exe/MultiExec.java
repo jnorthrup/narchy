@@ -6,7 +6,6 @@ import jcog.Util;
 import jcog.exe.AffinityExecutor;
 import nars.$;
 import nars.NAR;
-import nars.NARLoop;
 import nars.Task;
 import nars.task.ITask;
 import nars.task.NativeTask;
@@ -100,8 +99,8 @@ public class MultiExec extends AbstractExec {
 
                 int qq = q.size();
                 if (qq > 0) {
-                    int WORK_SHARE =
-                            (int) Math.ceil(((float) qq) / Math.max(1, (threads - 1)));
+//                    int WORK_SHARE =
+//                            (int) Math.ceil(((float) qq) / Math.max(1, (threads - 1)));
                     do {
 
                         ITask i = q.poll();
@@ -110,7 +109,7 @@ public class MultiExec extends AbstractExec {
                         else
                             break;
 
-                    } while (--WORK_SHARE > 0);
+                    } while (true);//--WORK_SHARE > 0);
                 }
 
                 @Deprecated float throttle = nar.loop.throttle.floatValue(); //HACK

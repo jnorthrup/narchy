@@ -337,7 +337,7 @@ public enum Op {
                             break;
                     }
 
-                    return compound(CONJ, XTERNAL, u);
+                    return u.length > 1 ? compound(CONJ, XTERNAL, u) : u[0];
 
                 default: {
                     assert (n == 2);

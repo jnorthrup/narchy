@@ -5,10 +5,6 @@ import nars.Op;
 import nars.control.Derivation;
 import nars.derive.AbstractPred;
 
-import static nars.Op.CONJ;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
-
 
 /**
  * Created by me on 5/19/17.

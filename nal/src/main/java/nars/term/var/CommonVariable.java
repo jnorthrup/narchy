@@ -1,6 +1,5 @@
 package nars.term.var;
 
-import nars.$;
 import nars.Op;
 import nars.term.Term;
 import org.eclipse.collections.api.set.primitive.ImmutableByteSet;

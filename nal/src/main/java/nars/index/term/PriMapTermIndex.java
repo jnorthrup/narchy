@@ -91,7 +91,7 @@ public class PriMapTermIndex extends MaplikeTermIndex {
 
             @Override
             protected float updateMemory(float used) {
-                System.err.println("memory: " + used + ", concepts=" + size());
+                System.err.println("memory: " + used + ", concepts=" + super.size());
                 return super.updateMemory(used);
             }
 
@@ -116,7 +116,7 @@ public class PriMapTermIndex extends MaplikeTermIndex {
                                 int kill = Math.round(strength * nv);
                                 if (kill > 0) {
 
-                                    System.err.println("evicting " + kill + " victims (" + bad.size() + " remain;\ttotal concepts=" + size());
+                                    System.err.println("evicting " + kill + " victims (" + bad.size() + " remain;\ttotal concepts=" + super.size());
                                     bad.pop(kill, (t) -> {
                                         Concept x = t.get();
                                         if (x != null)
@@ -198,10 +198,10 @@ public class PriMapTermIndex extends MaplikeTermIndex {
                 concept.tasklinks().forEach(victimCollector);
                 concept.termlinks().forEach(victimCollector);
 
-                remove(concept.term());
+                super.remove(concept.term());
 
                 neighbors.forEach(t -> {
-                    Concept c = get(t.term());
+                    Concept c = super.get(t.term());
                     if (c != null) {
                         update(c);
                     }

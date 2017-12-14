@@ -28,13 +28,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-import static java.lang.Math.max;
 import static java.util.Collections.addAll;
 import static nars.$.*;
 import static nars.Op.CONJ;
 import static nars.Op.PROD;
 import static nars.term.Terms.concat;
-import static nars.term.Terms.maxLevel;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**

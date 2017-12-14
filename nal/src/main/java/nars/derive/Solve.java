@@ -31,12 +31,11 @@ abstract public class Solve extends AbstractPred<Derivation> {
     @Override
     public final boolean test(Derivation d) {
 
-        boolean single;
-        Truth t;
-
         d.truthFunction = null;
 
         byte punc = punc(d);
+        boolean single;
+        Truth t;
         switch (punc) {
             case BELIEF:
             case GOAL:

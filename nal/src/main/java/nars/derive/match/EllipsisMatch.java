@@ -13,7 +13,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.SortedSet;
-import java.util.function.Predicate;
 
 /**
  * Holds results of an ellipsis match and

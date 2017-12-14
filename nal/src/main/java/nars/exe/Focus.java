@@ -234,7 +234,7 @@ public class Focus {
 
             if (lastUpdate == ETERNAL)
                 lastUpdate = time;
-            double dt = (time - lastUpdate) / dur;
+            double dt = (time - lastUpdate) / ((double)dur);
             if (dt < minUpdateDurs)
                 return;
             lastUpdate = time;

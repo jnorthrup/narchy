@@ -124,9 +124,3 @@ task printClasspath4DSpot {
         configurations.testRuntime.each { println it }
     }
 }
-
-task printClasspath4DSpot {
-    doLast {
-        configurations.testRuntime.each { println it }
-    }
-}

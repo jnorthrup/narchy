@@ -4,7 +4,6 @@ import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.learn.LivePredictor;
 import jcog.math.FloatSupplier;
-import nars.$;
 import nars.NAR;
 import nars.control.CauseChannel;
 import nars.control.DurService;

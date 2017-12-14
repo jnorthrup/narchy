@@ -6,8 +6,6 @@ import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
 import nars.term.Term;
 import nars.term.transform.Retemporalize;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;

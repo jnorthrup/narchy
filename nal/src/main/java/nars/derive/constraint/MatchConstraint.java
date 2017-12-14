@@ -70,13 +70,13 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
 
 
             List<PrediTerm<?>> l = new FasterList();
-            int i = 0;
+            int i;
             for (i = 0; i < start; i++) {
                 l.add(a.cond[i]);
             }
             l.add(
                 new MatchConstraint.CompoundConstraint(
-                        Util.map(x -> (MatchConstraint)x, MatchConstraint[]::new, ArrayUtils.subarray(a.cond, rr.getOne(), rr.getTwo()+1))
+                        Util.map(MatchConstraint.class::cast, MatchConstraint[]::new, ArrayUtils.subarray(a.cond, rr.getOne(), rr.getTwo()+1))
                 )
             );
             i = end+1;

@@ -5,7 +5,6 @@ import com.google.common.collect.Iterators;
 import jcog.list.ArrayIterator;
 import jcog.pri.Priority;
 import nars.NAR;
-import nars.Task;
 import nars.task.ITask;
 import org.jetbrains.annotations.Nullable;
 

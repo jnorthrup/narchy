@@ -3,7 +3,6 @@ package nars.task;
 import nars.Task;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class DebugDerivedTask extends DerivedTask {

@@ -4,8 +4,6 @@ import nars.Task;
 import nars.control.Derivation;
 import nars.derive.AbstractPred;
 import nars.derive.PrediTerm;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * fast task/belief occurrence tests

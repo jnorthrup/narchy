@@ -38,6 +38,7 @@ import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -78,7 +79,8 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
     public final MutableFloat executionThreshold = new MutableFloat(0.51f);
 
-    boolean goalMimic = false;
+    /** when true, forms its own puppet goals when invoked externally, as a learning method */
+    boolean pretend = false;
 
     @NotNull
     public final Set<String> methodExclusions = Sets.newConcurrentHashSet(Set.of(
@@ -109,14 +111,14 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     /**
      * for externally-puppeted method invocation goals
      */
-    private final float invocationBeliefFreq = 1.0f;
-    private final float invocationBeliefConfFactor = 1f;
-    /**
-     * for meta-data beliefs about (classes, objects, packages, etc..)
-     */
-    private final float metadataBeliefFreq = 1.0f;
-    private final float metadataBeliefConf = 0.99f;
-    private final float metadataPriority = 0.1f;
+
+//    private final float invocationBeliefConfFactor = 1f;
+//    /**
+//     * for meta-data beliefs about (classes, objects, packages, etc..)
+//     */
+//    private final float metadataBeliefFreq = 1.0f;
+//    private final float metadataBeliefConf = 0.99f;
+//    private final float metadataPriority = 0.1f;
 
     final static ThreadLocal<Task> invokingGoal = new ThreadLocal<>();
     private final CauseChannel<ITask> in;
@@ -206,144 +208,154 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
     interface InstanceMethodValueModel {
 
-        Object update(Instance instance, Task cause, Object obj, Method method, Object[] args, Object nextValue);
+        @Nullable Consumer<NAR> update(Instance instance, Task cause, Object obj, Method method, Object[] args, Object nextValue);
     }
+//
+//    /**
+//     * TODO not fully tested, and missing Quench support
+//     */
+//    public class ExtendedMethodValueModel implements InstanceMethodValueModel {
+//        /**
+//         * current (previous) value
+//         */
+//        public final ConcurrentHashMap<Method, ValueSignalTask> value = new ConcurrentHashMap();
+//
+//        @Override
+//        public Object update(Instance instance, Task cause, Object obj, Method method, Object[] args, Object nextValue) {
+//
+//            float pri = nar.priDefault(BELIEF);
+//
+//            // this essentially synchronizes on each (method,resultValue) tuple
+//            // so it can form a coherent, synchronzed sequence of value change events
+//
+//
+//            List<Task> pending = $.newArrayList(2); //max 2
+//            Term nextTerm = instance.opTerm(method, args, nextValue);
+//
+//            value.compute(method, (m, p1) -> {
+//
+//                long now = nar.time();
+//                if (p1 != null && Objects.equals(p1.value, nextValue)) {
+//                    //just continue the existing task
+//
+//                    p1.priMax(pri); //rebudget
+//                    p1.grow(now);
+//                    return p1; //keep
+//                }
+//
+//
+//                float f = invocationBeliefFreq;
+//                Term nt = nextTerm;
+//                if (nt.op() == NEG) {
+//                    nt = nt.unneg();
+//                    f = 1 - f;
+//                }
+//                ValueSignalTask next = new ValueSignalTask(nt,
+//                        BELIEF, $.t(f, nar.confDefault(BELIEF)),
+//                        now, now, nar.time.nextStamp(), nextValue);
+//
+//                if (Param.DEBUG)
+//                    next.log("Invocation" /* via VM */);
+//
+////                if (explicit) {
+//                next.causeMerge(cause);
+//                next.priMax(cause.priElseZero());
+//                //cause.pri(0); //drain
+//                cause.meta("@", next);
+////                } else {
+////                    next.priMax(pri);
+////                }
+//
+//
+//                if (p1 != null && !p1.equals(nt)) {
+//                    p1.end(Math.max(p1.start(), now - 1)); //dont need to re-input prev, this takes care of it. ends in the cycle previous to now
+//                    next.priMax(pri);
+//
+//                    NALTask prevEnd = new NALTask(p1.term(),
+//                            BELIEF, $.t(1f - invocationBeliefFreq, nar.confDefault(BELIEF)),
+//                            now, now, now, nar.time.nextInputStamp());
+//                    prevEnd.priMax(pri);
+//                    if (Param.DEBUG)
+//                        prevEnd.log("Invoked");
+//
+//                    pending.add(prevEnd);
+//                }
+//
+//                pending.add(next);
+//                return next;
+//            });
+//
+//            in.input(pending);
+//            return nextValue;
+//        }
+//    }
 
-    /**
-     * TODO not fully tested, and missing Quench support
-     */
-    public class ExtendedMethodValueModel implements InstanceMethodValueModel {
-        /**
-         * current (previous) value
-         */
-        public final ConcurrentHashMap<Method, ValueSignalTask> value = new ConcurrentHashMap();
+    final InstanceMethodValueModel pointTasks = new PointMethodValueModel();
+    final Function<String, InstanceMethodValueModel> valueModel = (x) -> pointTasks /* memoryless */;
+
+    public static class PointMethodValueModel implements InstanceMethodValueModel {
+
+        private final float invocationBeliefFreq = 1.0f;
 
         @Override
-        public Object update(Instance instance, Task cause, Object obj, Method method, Object[] args, Object nextValue) {
-
-            float pri = nar.priDefault(BELIEF);
-
-            // this essentially synchronizes on each (method,resultValue) tuple
-            // so it can form a coherent, synchronzed sequence of value change events
-
-
-            List<Task> pending = $.newArrayList(2); //max 2
-            Term nextTerm = instance.opTerm(method, args, nextValue);
-
-            value.compute(method, (m, p1) -> {
-
+        public Consumer<NAR> update(Instance instance, Task cause, Object obj, Method method, Object[] args, Object nextValue) {
+            return (nar) -> {
                 long now = nar.time();
-                if (p1 != null && Objects.equals(p1.value, nextValue)) {
-                    //just continue the existing task
-
-                    p1.priMax(pri); //rebudget
-                    p1.grow(now);
-                    return p1; //keep
-                }
-
+                int dur = nar.dur();
 
                 float f = invocationBeliefFreq;
+                Term nextTerm = instance.opTerm(method, args, nextValue);
                 Term nt = nextTerm;
                 if (nt.op() == NEG) {
                     nt = nt.unneg();
                     f = 1 - f;
                 }
-                ValueSignalTask next = new ValueSignalTask(nt,
+                long start = now;
+                long end = now + dur;
+
+                SignalTask next = new SignalTask(nt,
                         BELIEF, $.t(f, nar.confDefault(BELIEF)),
-                        now, now, nar.time.nextStamp(), nextValue);
+                        start, end, nar.time.nextStamp());
 
                 if (Param.DEBUG)
-                    next.log("Invocation" /* via VM */);
+                    next.log("Invoked");
 
-//                if (explicit) {
-                next.causeMerge(cause);
-                next.priMax(cause.priElseZero());
-                //cause.pri(0); //drain
-                cause.meta("@", next);
-//                } else {
-//                    next.priMax(pri);
-//                }
+                float pri = nar.priDefault(BELIEF);
 
 
-                if (p1 != null && !p1.equals(nt)) {
-                    p1.end(Math.max(p1.start(), now - 1)); //dont need to re-input prev, this takes care of it. ends in the cycle previous to now
+                if (cause != null) {
+                    next.causeMerge(cause);
+                    next.priMax(cause.priElseZero());
+                    //cause.pri(0); //drain
+                    cause.meta("@", next);
+                } else {
                     next.priMax(pri);
-
-                    NALTask prevEnd = new NALTask(p1.term(),
-                            BELIEF, $.t(1f - invocationBeliefFreq, nar.confDefault(BELIEF)),
-                            now, now, now, nar.time.nextInputStamp());
-                    prevEnd.priMax(pri);
-                    if (Param.DEBUG)
-                        prevEnd.log("Invoked");
-
-                    pending.add(prevEnd);
                 }
 
-                pending.add(next);
-                return next;
-            });
+                List<Task> i = new FasterList(3);
 
-            in.input(pending);
-            return nextValue;
-        }
-    }
+                if (cause!=null && cause.meta("pretend")!=null)
+                    i.add(cause);
 
-    final InstanceMethodValueModel pointTasks = new PointMethodValueModel();
-    final Function<String, InstanceMethodValueModel> valueModel = (x) -> pointTasks /* memoryless */;
+                i.add(next);
 
-    public class PointMethodValueModel implements InstanceMethodValueModel {
+                if (cause != null && !next.term().equals(cause.term())) {
+                    //input quenching invocation belief term corresponding to the goal
+                    SignalTask quench = new SignalTask(cause.term(), BELIEF,
+                            $.t(1f - next.freq(), next.conf()), //equal and opposite
+                            start, end,
+                            nar.time.nextStamp() //next.stamp[0]
+                    );
+                    quench.priMax(next.priElseZero());
+                    quench.causeMerge(next);
+                    quench.meta("@", next);
+                    if (Param.DEBUG)
+                        quench.log("InvoQuench");
+                    i.add(quench);
+                }
 
-
-        @Override
-        public Object update(Instance instance, Task cause, Object obj, Method method, Object[] args, Object nextValue) {
-            float f = invocationBeliefFreq;
-            Term nextTerm = instance.opTerm(method, args, nextValue);
-            Term nt = nextTerm;
-            if (nt.op() == NEG) {
-                nt = nt.unneg();
-                f = 1 - f;
-            }
-            int dur = nar.dur();
-            long now = nar.time();
-            long start = now;
-            long end = now + dur;
-
-            SignalTask next = new SignalTask(nt,
-                    BELIEF, $.t(f, nar.confDefault(BELIEF)),
-                    start, end, nar.time.nextStamp());
-
-            if (Param.DEBUG)
-                next.log("Invoked");
-
-            float pri = nar.priDefault(BELIEF);
-
-
-            if (cause != null) {
-                next.causeMerge(cause);
-                next.priMax(cause.priElseZero());
-                //cause.pri(0); //drain
-                cause.meta("@", next);
-            } else {
-                next.priMax(pri);
-            }
-
-
-            if (cause != null && !next.term().equals(cause.term())) {
-                //input quenching invocation belief term corresponding to the goal
-                SignalTask quench = new SignalTask(cause.term(), BELIEF,
-                        $.t(1f-next.freq(), next.conf() ), //equal and opposite
-                        start, end, next.stamp[0]);
-                quench.priMax(next.priElseZero());
-                quench.causeMerge(next);
-                quench.meta("@", next);
-                if (Param.DEBUG)
-                    quench.log("InvoQuench");
-                in.input(List.of(quench, next)); //batch
-            } else {
-                in.input(next);
-            }
-
-            return nextValue;
+                nar.input(i);
+            };
         }
     }
 
@@ -372,25 +384,28 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         public Object update(Object obj, Method method, Object[] args, Object nextValue) {
             Task cause = invokingGoal.get();
 
-            if (cause == null && goalMimic) {
-                cause = goalMimic(obj, method, args);
+            if (cause == null && pretend) {
+                Task pretend = pretend(obj, method, args);
+                cause = pretend;
             }
 
-            Object o = belief.update(this, cause, obj, method, args, nextValue);
+            Consumer<NAR> update = belief.update(this, cause, obj, method, args, nextValue);
+            if (update!=null) {
+                nar.runLater(update);
+            }
 
-            return o;
+            return nextValue;
         }
 
-        private Task goalMimic(Object obj, Method method, Object[] args) {
+        private Task pretend(Object obj, Method method, Object[] args) {
             long now = nar.time();
             NALTask g = new NALTask(opTerm(method, args,
                     method.getReturnType() == void.class ? null : $.varDep(1)), GOAL,
                     $.t(1f, nar.confDefault(GOAL)), now, now, now, nar.time.nextInputStamp());
             g.priMax(nar.priDefault(GOAL));
-            g.meta("mimic", "");
+            g.meta("pretend", "");
             if (Param.DEBUG)
-                g.log("Mimic");
-            in.input(g);
+                g.log("Pretend");
             return g;
         }
 
@@ -455,7 +470,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         protected boolean exePrefilter(Task x) {
 
 
-            if (x.meta("mimic") != null)
+            if (x.meta("pretend") != null)
                 return false; //filter instructive tasks (would cause feedback loop)
 
             Subterms args = validArgs(Operator.args(x));
@@ -585,7 +600,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                         mm.invokeWithArguments(objArgs);
 
                     } catch (Throwable throwable) {
-                        logger.error("{} {} {}", task, args);
+                        logger.error("{} {}", task, args);
                         throwable.printStackTrace();
                     } finally {
                         invokingGoal.set(null);
@@ -598,7 +613,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     }
 
     protected boolean evoked(Task task, Object[] args) {
-        if (task.meta("mimic") == null)
+        if (task.meta("pretend") == null)
             logger.info("evoke: {}", Param.DEBUG ? task.proof() : task);
 
         return true;
@@ -728,18 +743,14 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     }
 
     @Nullable
-    private Object invoked(Object obj, Method wrapped, Object[] args, Object result) {
+    protected Object invoked(Object obj, Method wrapped, Object[] args, Object result) {
         if (methodExclusions.contains(wrapped.getName()))
             return result;
 
         Instance in = (Instance) objToTerm.get(obj);
         return (in == null) ?
                 result :
-                invoked(in, obj, wrapped, args, result);
-    }
-
-    protected Object invoked(Instance in, Object obj, Method wrapped, Object[] args, Object result) {
-        return in.update(obj, wrapped, args, result);
+                in.update(obj, wrapped, args, result);
     }
 
 

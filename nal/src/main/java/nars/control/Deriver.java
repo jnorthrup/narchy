@@ -44,7 +44,7 @@ public class Deriver extends Causable {
         assert ((minLevel <= maxLevel && maxLevel > 0) || additional.length > 0);
 
         return deriver(nar ->
-                PremiseRuleSet.rules(nar, new PatternIndex(nar),
+                PremiseRuleSet.rules(nar, new PatternIndex(),
                         Derivers.standard(minLevel, maxLevel, additional)
                 ));
     }
@@ -179,12 +179,12 @@ public class Deriver extends Causable {
     }
 
 
-    public static final Function<NAR, PrediTerm<Derivation>> NullDeriver = (n) -> new AbstractPred<Derivation>(Op.Null) {
-        @Override
-        public boolean test(Derivation derivation) {
-            return true;
-        }
-    };
+//    public static final Function<NAR, PrediTerm<Derivation>> NullDeriver = (n) -> new AbstractPred<Derivation>(Op.Null) {
+//        @Override
+//        public boolean test(Derivation derivation) {
+//            return true;
+//        }
+//    };
 
 
     public static Stream<Deriver> derivers(NAR n) {
@@ -193,7 +193,7 @@ public class Deriver extends Causable {
 
     public static void print(NAR n, PrintStream p) {
         derivers(n).forEach(d -> {
-            p.println(d.toString());
+            p.println(d);
             TrieDeriver.print(d.deriver, p);
             p.println();
         });

@@ -44,8 +44,6 @@ public class Anon {
         return (byte) s;
     };
 
-    ;
-
     final CompoundTransform PUT = new DirectCompoundTransform() {
 
 //        @Override
