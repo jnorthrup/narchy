@@ -3,8 +3,10 @@ package nars.op.java;
 import jcog.Util;
 import nars.*;
 import nars.op.Implier;
+import nars.op.stm.ConjClustering;
 import nars.task.NALTask;
 import nars.task.NativeTask;
+import nars.time.Tense;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
@@ -58,11 +60,11 @@ public class ThermostatTest {
             return msg;
         }
 
-        public void should(int x) {
+        private void should(int x) {
             this.target = x;
         }
 
-        public void is(int x) {
+        private void is(int x) {
             this.current = x;
         }
 
@@ -78,26 +80,32 @@ public class ThermostatTest {
     @Test
     public void test1() throws Narsese.NarseseException {
         Param.DEBUG = true;
-        final int DUR = 15;
+        final int DUR = 2;
 
         NAR n = NARS.tmp();
         n.time.dur(DUR);
-        n.termVolumeMax.set(20);
-        n.freqResolution.set(0.25f);
+        n.termVolumeMax.set(22);
+        n.freqResolution.set(0.1f);
         n.confResolution.set(0.01f);
 
-        n.priDefault(BELIEF, 0.1f);
+        new ConjClustering(n, BELIEF, (t)->true, 8, 64);
+
+        n.priDefault(BELIEF, 0.2f);
 
         //n.logPriMin(System.out, 0.5f);
-//        n.logWhen(System.out, false, true, true);
+        n.logWhen(System.out, false, true, true);
 
         Teacher<Thermostat> env = new Teacher<Thermostat>(new Opjects(n) {
 
 
+            {
+                //goalMimic = true;
+            }
+
             @Override
             protected synchronized Object invoked(Instance in, Object obj, Method wrapped, Object[] args, Object result) {
 
-                n.time.synch(n);
+                //n.time.synch(n);
 
 
                 //long now = System.nanoTime();
@@ -105,7 +113,7 @@ public class ThermostatTest {
                 Object r = super.invoked(in, obj, wrapped, args, result);
 
                 //n.runLater(() -> {
-                n.run(DUR * 2);
+                    n.run(DUR * 2);
                 //});
 
                 return r;
@@ -114,7 +122,7 @@ public class ThermostatTest {
 
             @Override
             protected boolean evoked(Task task, Object[] args, Object inst) {
-                System.err.println("evoke: " + task);
+                System.err.println("evoke: " + task.proof());
                 return super.evoked(task, args, inst);
             }
 
@@ -131,29 +139,43 @@ public class ThermostatTest {
 
         for (Consumer<Thermostat> condition : new Consumer[]{hotToCold, coldToCold}) {
             env.teach("cold", condition, x -> {
+                x.up(); //demonstrate no change
                 x.report();
                 while (x.is() > x.cold) x.down();
+                x.report();
+                x.down(); //demonstrate no change
                 x.report();
             }, isCold);
         }
 
         for (Consumer<Thermostat> condition : new Consumer[]{coldToHot, hotToHot}) {
             env.teach("hot", condition, x -> {
+                x.down(); //demonstrate no change
                 x.report();
                 while (!isHot.test(x)) x.up();
+                x.report();
+                x.up(); //demonstrate no change
                 x.report();
             }, isHot);
         }
 
 
-        //n.clear();
+
+        n.clear();
+
+        System.out.println("VALIDATING");
+        System.out.println();
 
 
 //        n.log();
-        n.logWhen(System.out, false, true, true);
+        //n.run(100);
+//        n.logWhen(System.out, false, true, true);
 
-        new Implier(n, 1f,
-                $.$("a_Thermostat(down,())"), $.the("a_Thermostat(up,())") );
+//        new Implier(n, new float[] { 1f },
+//                $.$("a_Thermostat(down,())"),
+//                $.$("a_Thermostat(up,())")
+//                //$.$("a_Thermostat(is,(),#x)")
+//        );
 
         try {
 
@@ -162,15 +184,29 @@ public class ThermostatTest {
 //                    BELIEF, $.t(1f, 0.99f),
 //                    n.time(), n.time(), n.time()+1000,
 //                    n.time.nextInputStamp()).pri(1f));
+
+            env.x.should(0);
+            env.x.is();
+
             n.input(new NALTask($.$("a_Thermostat(is,(),0)"),
                     GOAL, $.t(1f, 0.99f),
+                    n.time(), n.time(), n.time()+1000,
+                    n.time.nextInputStamp()).pri(1f));
+            n.input(new NALTask($.$("a_Thermostat(is,(),3)"),
+                    GOAL, $.t(0f, 0.99f),
                     n.time(), n.time(), n.time()+1000,
                     n.time.nextInputStamp()).pri(1f));
 
         } catch (Narsese.NarseseException e) {
             e.printStackTrace();
         }
-        n.run(1000);
+
+        while (env.x.is()!=0)
+            n.run(100);
+
+        env.x.report();
+        System.out.println("good job nars!");
+        n.believe($.the("good"), Tense.Present);
 
     }
 

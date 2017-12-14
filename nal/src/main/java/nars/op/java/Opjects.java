@@ -19,6 +19,7 @@ import nars.op.Operator;
 import nars.task.ITask;
 import nars.task.LatchingSignalTask;
 import nars.task.NALTask;
+import nars.task.SignalTask;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.container.Subterms;
@@ -33,7 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -298,6 +298,8 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     public class PointMethodValueModel implements InstanceMethodValueModel {
 
 
+        private float quenchFactor = 0.5f;
+
         @Override
         public Object update(Instance instance, Task cause, Object obj, Method method, Object[] args, Object nextValue) {
             float f = invocationBeliefFreq;
@@ -311,9 +313,9 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
             long start = nar.time();
             long end = nar.time() + dur;
 
-            NALTask next = new NALTask(nt,
+            SignalTask next = new SignalTask(nt,
                     BELIEF, $.t(f, nar.confDefault(BELIEF)),
-                    start, start, end, nar.time.nextInputStamp());
+                    start, end, nar.time.nextStamp());
 
             if (Param.DEBUG)
                 next.log("Invoked");
@@ -333,8 +335,9 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
             if (cause != null && !next.term().equals(cause.term())) {
                 //input quenching invocation belief term corresponding to the goal
-                NALTask quench = new NALTask(cause.term(), BELIEF, $.t(f, nar.confDefault(BELIEF)),
-                        start, start, end, nar.time.nextInputStamp());
+                SignalTask quench = new SignalTask(cause.term(), BELIEF,
+                        $.t(f, nar.confDefault(BELIEF) * quenchFactor),
+                        start, end, next.stamp[0]);
                 quench.priMax(next.priElseZero());
                 quench.causeMerge(next);
                 quench.meta("@", next);
@@ -587,22 +590,26 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                 if (invokingGoal.get() != null)
                     throw new TODO("we need a stack: " + invokingGoal.get() + " -> " + task);
 
-                invokingGoal.set(task);
-                try {
+                nar.runLater(() -> {
+
+                    invokingGoal.set(task);
+                    try {
 
 
-                    //mm.invoke(inst, objArgs);
-                    //mm.invokeExact(inst, objArgs);
+                        //mm.invoke(inst, objArgs);
+                        //mm.invokeExact(inst, objArgs);
 
-                    //mm.bindTo(inst).invokeWithArguments(objArgs);
-                    mh.invokeWithArguments(objArgs);
+                        //mm.bindTo(inst).invokeWithArguments(objArgs);
+                        mh.invokeWithArguments(objArgs);
 
-                } catch (Throwable throwable) {
-                    logger.error("{} {} {}", task, inst, args);
-                    throwable.printStackTrace();
-                } finally {
-                    invokingGoal.set(null);
-                }
+                    } catch (Throwable throwable) {
+                        logger.error("{} {} {}", task, inst, args);
+                        throwable.printStackTrace();
+                    } finally {
+                        invokingGoal.set(null);
+                    }
+
+                });
             }
 
         };

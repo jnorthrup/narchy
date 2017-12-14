@@ -16,7 +16,7 @@ public class ImplierTest {
         NAR n = NARS.tmp();
         Term x = $("x");
         Term y = $("y");
-        Implier imp = new Implier(n, 0f, y);
+        Implier imp = new Implier(n, new float[] { 0f }, y);
 
         n.log();
         n.input("(x ==> y). :|:");

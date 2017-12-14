@@ -106,10 +106,10 @@ public enum TermGraph {
                                 return;
                             }
 
-                            s = s.temporalize(Retemporalize.retemporalizeXTERNALToZero);
+                            s = s.temporalize(Retemporalize.retemporalizeAllToZero);
                             if (s == null)
                                 return;
-                            p = p.temporalize(Retemporalize.retemporalizeXTERNALToZero);
+                            p = p.temporalize(Retemporalize.retemporalizeAllToZero);
                             if (p == null)
                                 return;
 
@@ -121,7 +121,7 @@ public enum TermGraph {
                 }
             } while (!next.isEmpty() && g.nodeCount() < maxSize);
 
-            System.out.println(g.nodeCount() + " " + g.edgeCount());
+            //System.out.println(g.nodeCount() + " " + g.edgeCount());
             return g;
         }
 

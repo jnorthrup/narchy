@@ -25,6 +25,7 @@ public interface Retemporalize extends DirectCompoundTransform {
     //Retemporalize retemporalizeAllToDTERNAL = new RetemporalizeAll(DTERNAL);
     //Retemporalize retemporalizeDTERNALToZero = new RetemporalizeFromTo(DTERNAL, 0);
     Retemporalize retemporalizeAllToXTERNAL = new RetemporalizeAll(XTERNAL);
+    Retemporalize retemporalizeAllToZero = new RetemporalizeAll(0);
     Retemporalize retemporalizeXTERNALToDTERNAL = new RetemporalizeFromTo(XTERNAL, DTERNAL);
     Retemporalize retemporalizeXTERNALToZero = new RetemporalizeFromTo(XTERNAL, 0);
 

@@ -13,11 +13,13 @@ import nars.control.CauseChannel;
 import nars.control.DurService;
 import nars.task.ITask;
 import nars.task.NALTask;
+import nars.task.Revision;
 import nars.term.Term;
 import nars.term.var.Variable;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import nars.truth.TruthAccumulator;
+import nars.truth.TruthFunctions;
 import nars.truth.func.GoalFunction;
 import nars.truth.func.TruthOperator;
 import nars.util.graph.TermGraph;
@@ -67,8 +69,9 @@ public class Implier extends DurService {
     final static TruthOperator ind = GoalFunction.get($.the("DeciInduction"));
     private long then;
     private final FloatParam strength = new FloatParam(0.5f, 0f, 1f);
+    private long now;
 
-    public Implier(NAR n, float relativeTargetDur, Term... seeds) {
+    public Implier(NAR n, float[] relativeTargetDur, Term... seeds) {
         this(n, List.of(seeds), relativeTargetDur);
         assert(seeds.length > 0);
     }
@@ -128,7 +131,7 @@ public class Implier extends DurService {
         float confSubMin = confMin / implCount;
 
         int dur = nar.dur();
-        long now = nar.time();
+        now = nar.time();
 
         for (float relativeTargetDur : relativeTargetDurs) {
 
@@ -148,7 +151,7 @@ public class Implier extends DurService {
                 if (SGimpl == null)
                     return;
 
-                float implConf = w2cSafe(SGimpl.evi(this.then, dur));
+                float implConf = w2cSafe(SGimpl.evi());
                 if (implConf < confSubMin)
                     return;
 
@@ -157,16 +160,16 @@ public class Implier extends DurService {
                     implDT = 0;
 
 
-                float f = SGimpl.freq();
+                //compute desire(S) @ then:
+                //      desireDed( G @ then+implDT, belief(S ==>+- G) @ then )
+                //G, (S ==>+- G) |- S  (Goal:DeductionRecursivePB)
 
-
-                //G, (S ==> G) |- S  (Goal:DeductionRecursivePB)
-                Truth Pg = desire(pred, this.then + implDT); //the desire at the predicate time
-                if (Pg == null)
+                Truth Gdesire = desire(pred, this.then + implDT); //the desire at the predicate time
+                if (Gdesire == null)
                     return;
 
-                PreciseTruth t = $.t(f, implConf);
-                Truth Sg = ded.apply(Pg, t, nar, confSubMin);
+
+                Truth Sg = ded.apply(Gdesire, $.t(SGimpl.freq(), implConf), nar, confSubMin);
 
                 if (Sg != null) {
                     goal(goalTruth, subj, Sg);
@@ -233,7 +236,7 @@ public class Implier extends DurService {
                         //                        if (Param.DEBUG)
                         //                            y.log("")
                         in.input(y);
-                        System.out.println("\t" + y);
+                        //System.out.println("\t" + y);
 
                 }
             });

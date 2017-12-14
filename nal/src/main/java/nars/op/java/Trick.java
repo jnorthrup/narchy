@@ -40,7 +40,7 @@ public class Trick<X> {
 
         logger.info("training: {}", id);
 
-        n.clear();
+        //n.clear();
 
         Term LEARN = $.func("learn", $.the(id));
         n.believe(LEARN, Tense.Present); //label the learning episode which begins now

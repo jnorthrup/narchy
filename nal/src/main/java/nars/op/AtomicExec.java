@@ -111,7 +111,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
                         belief.expectation();
 
                 float delta = d - b;
-                if (delta >= desireThresh) {
+                if (delta >= 0) {
                     toInvoke.add(desire);
                     MetaGoal.learn(MetaGoal.Action, desire.cause(), d, n);
                 }
