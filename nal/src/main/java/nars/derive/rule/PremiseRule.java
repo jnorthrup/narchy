@@ -346,10 +346,21 @@ public class PremiseRule /*extends GenericCompound*/ {
                     termIsNot(pres, taskPattern, beliefPattern, constraints, X, Op.IMPL.bit);
                     break;
 
-                 case "subOf":
+                 case "subOf": //non-recursive
                     //X subOf Y : X is subterm of Y
-                    constraints.add(new SubOfConstraint(X, Y, false));
-                    constraints.add(new SubOfConstraint(Y, X, true));
+                    constraints.add(new SubOfConstraint(X, Y, false, false, false));
+                    constraints.add(new SubOfConstraint(Y, X, true, false, false));
+                    break;
+
+                 case "in": //recursive
+                    //X in Y : X is recursive subterm of Y
+                    constraints.add(new SubOfConstraint(X, Y, false, false, true));
+                    constraints.add(new SubOfConstraint(Y, X, true, false, true));
+                    break;
+
+                 case "eqOrIn": //recursive
+                    constraints.add(new SubOfConstraint(X, Y, false, true, true));
+                    constraints.add(new SubOfConstraint(Y, X, true, true, true));
                     break;
 
                  case "isAny":

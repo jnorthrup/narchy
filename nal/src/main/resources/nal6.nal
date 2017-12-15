@@ -159,17 +159,17 @@
 //   original:   ((&&,A_1..n) =\> C), M, not_implication_or_equivalence(M) |- ((&&,M,A_1..n) =\> C), (Truth:Induction)
 //   original:   ((&&,M,A_1..n) ==> C), ((&&,A,A_1..n) ==> C) |- (A ==> M), (Truth:Induction, Order:ForAllSame)
 
-    (X ==> C), M,  is(X,"&&"), subOf(M,X) |- (conjWithout(X,M) ==>+- C), (Belief:Deduction)
+    (X ==> C), M,  is(X,"&&"), in(M,X) |- (conjWithout(X,M) ==>+- C), (Belief:Deduction)
         //((&&,M,A..+) ==> C), M,                  |- ((&&,A..+) ==>+- C), (Belief:Deduction)
-    (X ==> C), (B==>M), is(X,"&&"), subOf(M,X), neq(B,M) |- ((conjWithout(X,M) &&+- B) ==>+- C), (Belief:Deduction)
+    (X ==> C), (B==>M), is(X,"&&"), in(M,X), neq(B,M) |- ((conjWithout(X,M) &&+- B) ==>+- C), (Belief:Deduction)
         //((&&,M,A..+) ==> C), (B ==> M), neq(B,M) |- ((&&,B,A..+) ==>+- C), (Belief:Deduction)
 
     (X ==> C), (Y==>C), is(X,"&&"), is(Y,"&&"), neq(X,Y)   |- differ(Y,X), (Belief:AbductionPB)
-        (X ==> C), (Y==>C), is(X,"&&"), subOf(Y,X), neq(X,Y)   |- conjWithout(X,Y), (Belief:AbductionPB)
-        (X ==> C), (Y==>C), is(Y,"&&"), subOf(X,Y), neq(X,Y)   |- conjWithout(Y,X), (Belief:AbductionPB)
+        (X ==> C), (Y==>C), is(X,"&&"), in(Y,X), neq(X,Y)   |- conjWithout(X,Y), (Belief:AbductionPB)
+        (X ==> C), (Y==>C), is(Y,"&&"), in(X,Y), neq(X,Y)   |- conjWithout(Y,X), (Belief:AbductionPB)
         //((&&,M,A..+) ==> C), ((&&,A..+) ==> C)   |- M, (Belief:AbductionPB)
 
-    (X ==> C), (B==>M), is(X,"&&"), subOf(B,X), neq(B,M) |- ((conjWithout(X,B) &&+- M) ==>+- C), (Belief:AbductionPB)
+    (X ==> C), (B==>M), is(X,"&&"), in(B,X), neq(B,M) |- ((conjWithout(X,B) &&+- M) ==>+- C), (Belief:AbductionPB)
         //((&&,B,A..+) ==> C), (B ==> M), neq(B,M) |- ((&&,M,A..+) ==>+- C), (Belief:AbductionPB)
 
     (X ==> C), M, is(X,"&&") |- ((X &&+- M) ==>+- C), (Belief:Induction)

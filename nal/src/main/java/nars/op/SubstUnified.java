@@ -74,53 +74,73 @@ abstract public class SubstUnified extends Functor {
     @Override
     public Term apply(/*@NotNull*/ Subterms a) {
 
-        Term input = a.sub(0);
-        if (input == Null) return Null;
 
-        Term x = a.sub(1);
-        if (x == Null) return Null;
-        if (x.equals(Subst.SAME))
-            x = input;
-
-        Term y = a.sub(2);
-        if (y == Null) return Null;
+        Term[] aa = a.arrayShared();
 
         //parse parameters
-        int aa = a.subs();
         boolean strict = false;
-        @Nullable Op op = null; // unifying();
-        for (int i = 3; i < aa; i++) {
-            if (a.subEquals(i, Subst.STRICT))
+        @Nullable Op op = null;
+
+        //TODO compile at function construction time
+
+        boolean force = false;
+        for (int i = 3; i < aa.length; i++) {
+            Term ai = aa[i];
+            if (ai.equals(Subst.STRICT))
                 strict = true;
-            else if (a.subEquals(i, Subst.INDEP_VAR))
+            else if (ai.equals(Subst.INDEP_VAR))
                 op = VAR_INDEP;
-            else if (a.subEquals(i, Subst.DEP_VAR))
+            else if (ai.equals(Subst.DEP_VAR))
                 op = VAR_DEP;
+            else if (ai.equals(Subst.FORCE))
+                force = true;
+            else
+                throw new UnsupportedOperationException("unrecognized parameter: " + ai);
         }
+
+        Term input = aa[0];
+        //if (input == Null) return Null;
+
+        Term x = aa[1];
+        //if (x == Null) return Null;
+
+        Term y = aa[2];
+        //if (y == Null) return Null;
 
         if (x.equals(y)) {
             return strict ? Null : input; //unification would occurr but no changes would result
         }
 
-        boolean hasAnyOp =
-                (op==null && (x.vars() + x.varPattern()  > 0))
-                ||
-                (op!=null && x.hasAny(op));
+        Term output;
+        if (input.equals(x)) {
+            //input equals X so it effectiely replaces input with 'y'
+            output = y;
+        } else {
 
-        if (!hasAnyOp/* && mustSubstitute()*/) {
-            return Null; //no change
+            boolean hasAnyOp =
+                    (op == null && x.hasAny(Op.VariableBits))
+                            ||
+                            (op != null && x.hasAny(op));
+
+            if (!hasAnyOp/* && mustSubstitute()*/) {
+                output = null; //no change
+            } else {
+                int subTTL = Math.round(Param.BELIEF_MATCH_TTL_FRACTION * parent.ttl);
+                SubUnify su = new SubUnify(parent, op, subTTL);
+                output = su.tryMatch(input, x, y);
+                parent.use(subTTL - su.ttl);
+            }
+
+            if (output == null) {
+                if (force)
+                    return input.replace(x, y); //force: apply substitution even if un-unifiable
+                else
+                    return Null;
+            }
+
         }
 
-
-        int subTTL = Math.round(Param.BELIEF_MATCH_TTL_FRACTION * parent.ttl);
-        SubUnify su = new SubUnify(parent, op, subTTL);
-        Term output = su.tryMatch(input, x, y);
-        parent.use(subTTL - su.ttl);
-
-        if (output != null)
-            return output;
-        else
-            return Null;
+        return (strict && input.equals(output)) ? Null : output;
     }
 
     //    public static class substituteIfUnifiesDep extends substituteIfUnifies {

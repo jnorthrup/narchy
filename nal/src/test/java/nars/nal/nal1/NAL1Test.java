@@ -141,16 +141,7 @@ public class NAL1Test extends NALTest {
                 .mustOutput(CYCLES, "<bird --> ?1>?") //.en("What is the type of bird?");
         ;
     }
-//   @Test
-//    public void analogyNeg() throws nars.Narsese.NarseseException {
-//
-//       TestNAR t = test();
-//       t.nar.nal(8); //necessary why
-//            .believe("(bird --> swimmer)")
-//            .believe("--(rock <-> swimmer)")
-//            .mustBelieve(CYCLES, "<bird --> rock>", 0, 0.81f)
-//       ;
-//    }
+
 
 
 }

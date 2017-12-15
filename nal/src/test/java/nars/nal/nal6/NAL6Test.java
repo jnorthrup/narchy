@@ -296,10 +296,11 @@ public class NAL6Test extends NALTest {
 
         TestNAR tester = test;
         tester.believe("(&&,open(#y,#x),<#x --> lock>,<#y --> key>)"); //en("There is a key that can open some lock.");
-        tester.believe("<{lock1} --> lock>"); //en("Lock-1 is a lock.");
-        tester.mustBelieve(cycles, "(&&,<#1 --> key>,open(#1,{lock1}))",
+        tester.believe("({lock1} --> lock)"); //en("Lock-1 is a lock.");
+        tester.mustBelieve(cycles, "(<#1 --> key> && open(#1,{lock1}))",
                 1.00f,
-                0.73f
+                0.43f
+                //0.73f
         ); //en("I guess there is a key that can open Lock-1.");
 
     }
@@ -601,6 +602,7 @@ public class NAL6Test extends NALTest {
     public void strong_elimination() {
 
         TestNAR tester = test;
+        tester.log();
         tester.believe("((test($a,is,cat) && sentence($a,is,$b)) ==> ($a --> $b))");
         tester.believe("test(tim,is,cat)");
         tester.mustBelieve(cycles, "(sentence(tim,is,$1) ==> (tim --> $1))",

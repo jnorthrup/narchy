@@ -15,7 +15,7 @@ public final class NotEqualConstraint extends MatchConstraint {
 
     @Override
     public float cost() {
-        return 0.25f;
+        return 0.2f;
     }
 
     @Override

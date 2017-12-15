@@ -59,6 +59,7 @@ public class NAL2Test extends NALTest {
     public void analogy() {
 
         TestNAR tester = test;
+        tester.log();
         tester.believe("<swan --> swimmer>");//Swan is a type of swimmer.");
         tester.believe("<gull <-> swan>");//Gull is similar to swan.");
         tester.mustBelieve(cycles, "<gull --> swimmer>", 1.0f, 0.81f);//I think gull is a type of swimmer.");
@@ -73,6 +74,15 @@ public class NAL2Test extends NALTest {
         tester.believe("<gull <-> swan>");//Gull is similar to swan.");
         tester.mustBelieve(cycles, "<swan --> swimmer>", 1.0f, 0.81f);//I believe a swan is a type of swimmer.");
 
+    }
+   @Test
+    public void analogyNeg() {
+
+       test
+            .believe("(bird --> swimmer)")
+            .believe("--(rock <-> swimmer)")
+            .mustBelieve(cycles, "<bird --> rock>", 0, 0.81f)
+       ;
     }
 
     @Test

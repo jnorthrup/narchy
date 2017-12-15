@@ -469,36 +469,58 @@ public class NAL8Test extends NALTest {
                 //.log()
                 .goal("(reward)")
                 .believe("((good) ==> (reward))", 1, 0.9f)
-                .believe("((bad) ==> --(reward))", 1, 0.9f)
-                .mustGoal(cycles, "(good)", 1.0f, 0.45f)
+//                .believe("((bad) ==> --(reward))", 1, 0.9f)
+                .mustGoal(cycles, "(good)", 1.0f, 0.81f)
                 .mustNotOutput(cycles, "(good)", GOAL, 0.0f, 0.7f, 0.5f, 1f, ETERNAL)
-                .mustGoal(cycles, "(bad)", 0.0f, 0.45f)
-                .mustNotOutput(cycles, "(bad)", GOAL, 0.3f, 1f, 0f, 1f, ETERNAL);
+                //.mustGoal(cycles, "(bad)", 0.0f, 0.81f)
+                //.mustNotOutput(cycles, "(bad)", GOAL, 0.3f, 1f, 0f, 1f, ETERNAL)
+        ;
     }
 
     @Test
     public void testInhibitionReverse() {
-        //deisreDed, and its negative counterpart for the negated belief
 
         test
                 //.log()
                 .goal("(reward)")
                 .believe("((reward) ==> (good))", 1, 0.9f)
-                .believe("((--,(reward)) ==> (bad))", 1, 0.9f)
-                .mustGoal(cycles, "(good)", 1.0f, 0.81f)
+//                .believe("((--,(reward)) ==> (bad))", 1, 0.9f)
+                .mustGoal(cycles, "(good)", 1.0f, 0.45f)
                 .mustNotOutput(cycles, "(good)", GOAL, 0.0f, 0.5f, 0.0f, 1f, ETERNAL);
         //.mustNotOutput(cycles, "(bad)", GOAL, ETERNAL);
     }
 
 
-    @Test
-    public void testGoalSimilaritySpreading() {
-
+    @Test public void testGoalSimilaritySpreading() {
         test
-                .input("(R)!")
-                .input("((G) <-> (R)).")
-                .mustGoal(cycles, "(G)", 1.0f, 0.4f);
-        //.mustNotOutput(cycles, "(G)", GOAL, ETERNAL); // because <-> isnt symmetric
+            .input("R!")
+            .input("(G <-> R).")
+            .mustGoal(cycles, "G", 1.0f, 0.4f);
+    }
+    @Test public void testGoalSimilaritySpreadingNeg() {
+        test
+            .input("R!")
+            .input("--(G <-> R).")
+            .mustGoal(cycles, "G", 0.0f, 0.4f);
+    }
+    @Test public void testGoalSimilaritySpreadingNegInside() {
+        test
+            .input("--R!")
+            .input("(G <-> --R).")
+            .mustGoal(cycles, "G", 1.0f, 0.4f);
+    }
+    @Test public void testGoalSimilaritySpreadingNegInsideNeg() {
+        test
+            .input("--R!")
+            .input("--(G <-> --R).")
+            .mustGoal(cycles, "G", 0.0f, 0.4f);
+    }
+
+  @Test public void testGoalSimilaritySpreadingParameter() {
+        test
+            .input("R(x)!")
+            .input("(x <-> y).")
+            .mustGoal(cycles, "R(y)", 1.0f, 0.4f);
     }
 
     //    @Test
@@ -509,15 +531,7 @@ public class NAL8Test extends NALTest {
 //                .input("((G) <-> (R)).")
 //                .mustNotOutput(cycles, "(G)", GOAL, ETERNAL); // because <-> isnt symmetric
 //    }
-    @Test
-    public void testGoalPosNegSimilaritySpreading() {
 
-        test
-                //.log()
-                .input("--(R)!")
-                .input("((G) <-> --(R)).")
-                .mustGoal(cycles, "(G)", 1f, 0.4f, (x) -> x == ETERNAL);
-    }
 
 //    @Test public void testInheritanceCompositionTemporal() {
 //        /*

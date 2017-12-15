@@ -1,0 +1,19 @@
+//general analogy
+ Z, (X<->Y), eqOrIn(X,Z), belief(positive)   |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:Analogy, Goal:Weak)
+ Z, (X<->Y), eqOrIn(X,Z), belief(negative)   |- (--, subIfUnifiesAny(Z, X, Y, strict, force)), (Belief:AnalogyPN, Goal:WeakPN)
+ Z, (--X<->Y), eqOrIn(X,Z), belief(positive) |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:AnalogyN, Goal:WeakN)
+ Z, (--X<->Y), eqOrIn(X,Z), belief(negative) |- (--, subIfUnifiesAny(Z, X, Y, strict, force)), (Belief:AnalogyNN, Goal:WeakNN)
+
+
+//these old rules are replaced by the above rules:
+        //If M is a special case of P and S and M are similar, then S is also a special case of P (strong)
+
+            //(M --> P), (S <-> M), neqRCom(S,P) |- (S --> P), (Belief:Analogy, Goal:Strong)
+                    //TODO write test case for this
+            //(P --> M), (S <-> M), neqRCom(S,P) |- (P --> S), (Belief:Analogy, Goal:Strong)
+                    //TODO write test case for this
+            //variable elimination 4b:
+        //    (X --> A),        ((Y --> A)<->(Y --> C)),  neqRCom(X,C), neq(X,Y)      |- (X-->C), (Belief:Analogy, Goal:Strong)
+         //       (X --> A),  (--(Y --> A)<->(Y --> C)),  neqRCom(X,C), neq(X,Y)      |- (X-->C), (Belief:AnalogyN, Goal:StrongN)
+          //  (A --> X),        ((A --> Y)<->(C --> Y)),  neqRCom(X,C), neq(X,Y)      |- (C-->X), (Belief:Analogy, Goal:Strong)
+          //      (A --> X),  (--(A --> Y)<->(C --> Y)),  neqRCom(X,C), neq(X,Y)      |- (C-->X), (Belief:AnalogyN, Goal:StrongN)

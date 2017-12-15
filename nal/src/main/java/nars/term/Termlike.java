@@ -96,11 +96,15 @@ public interface Termlike {
 
 
     default boolean hasAll(int structuralVector) {
-        return Op.hasAll(structure(), structuralVector);
+        return Op.hasAll(structure(), structuralVector)
+                &&
+               (((structuralVector & VAR_PATTERN.bit) == 0) || varPattern() > 0); //HACK since VAR_PATTERN will not appear structure vectors
     }
 
     default boolean hasAny(int structuralVector) {
-        return Op.hasAny(structure(), structuralVector);
+        return Op.hasAny(structure(), structuralVector)
+                ||
+               (((structuralVector & VAR_PATTERN.bit) == 1) && varPattern() > 0); //HACK since VAR_PATTERN will not appear structure vectors
     }
 
     /** has special handling for VAR_PATTERN */
@@ -125,15 +129,15 @@ public interface Termlike {
     }
 
     default boolean hasVarIndep() {
-        return varIndep() != 0;
+        return varIndep() > 0;
     }
 
     default boolean hasVarDep() {
-        return varDep() != 0;
+        return varDep() > 0;
     }
 
     default boolean hasVarQuery() {
-        return varQuery() != 0;
+        return varQuery() > 0;
     }
 
     default boolean impossibleSubTerm(/*@NotNull*/Termlike target) {
@@ -152,13 +156,13 @@ public interface Termlike {
         return otherTermsVolume > volume();
     }
 
-    default boolean levelValid(int nal) {
-
-        if (nal >= 8) return true;
-
-        int mask = Op.NALLevelEqualAndAbove[nal];
-        return (structure() | mask) == mask;
-    }
+//    default boolean levelValid(int nal) {
+//
+//        if (nal >= 8) return true;
+//
+//        int mask = Op.NALLevelEqualAndAbove[nal];
+//        return (structure() | mask) == mask;
+//    }
 
 
     /**

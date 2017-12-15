@@ -163,8 +163,8 @@ public class Derivation extends Unify {
      */
     public Derivation() {
         super(
-                null /* any var type */
-                //VAR_PATTERN
+                //null /* any var type */
+                VAR_PATTERN
                 , null, Param.UnificationStackMax, 0);
 
 
@@ -557,11 +557,11 @@ public class Derivation extends Unify {
         @Override
         public Term apply(Subterms xx) {
             Term y = super.apply(xx);
-            if (y != null && y != Null) {
-                Term x = xx.sub(0);
-                if (!x.equals(y))
-                    parent.putXY(x, y); //store the transformation
-            }
+//            if (y != null && y != Null) {
+//                Term x = xx.sub(0);
+//                if (!x.equals(y))
+//                    parent.putXY(x, y); //store the transformation
+//            }
             return y;
         }
     }
@@ -579,11 +579,11 @@ public class Derivation extends Unify {
         @Override
         public @Nullable Term apply(Subterms xx) {
             Term y = super.apply(xx);
-            if (y != null && y != Null) {
-                Term x = xx.sub(0);
-                if (!x.equals(y))
-                    parent.putXY(x, y); //store the outer transformation
-            }
+//            if (y != null && y != Null) {
+//                Term x = xx.sub(0);
+//                if (!x.equals(y))
+//                    parent.putXY(x, y); //store the outer transformation
+//            }
             return y;
         }
     }

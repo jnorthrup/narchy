@@ -1,10 +1,5 @@
 
-//substitutionViaSimilarity
-     Z, (X<->Y), subOf(X,Z), belief(positive)  |- substitute(Z,X,Y,"strict"), (Belief:Analogy, Goal:Weak)
-     Z, (X<->Y), subOf(X,Z), belief(negative)  |- (--,substitute(Z,X,Y,"strict")), (Belief:AnalogyPN, Goal:WeakPN)
 
-     //R, (S<->P)  |- subIfUnifiesAny(P, S, R), (Belief:Analogy, Goal:Weak)
-     //R, (--S<->P)  |- subIfUnifiesAny(P, S, R), (Belief:AnalogyN, Goal:WeakN)
 
 
 

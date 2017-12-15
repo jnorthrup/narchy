@@ -434,7 +434,7 @@ public abstract class Unify extends Versioning implements Subst {
                 this.size = 1;
                 return true;
             } else {
-                assert(this.size > 0);
+                //assert(this.size > 0);
                 return this.items[0].equals(newItem);  //coalesce
             }
         }
@@ -442,7 +442,7 @@ public abstract class Unify extends Versioning implements Subst {
         @Override
         public void pop() {
             if (this.size!=0) {
-                assert(this.size > 0);
+                //assert(this.size > 0);
                 this.size = 0;
                 this.items[0] = null;
             }
@@ -454,16 +454,12 @@ public abstract class Unify extends Versioning implements Subst {
             return valid(next) ? super.set(next) : null;
         }
 
-        private boolean valid(/*@NotNull*/ Term x) {
+        private boolean valid(Term x) {
             if (constraints != null) {
                 int s = constraints.size();
-                for (int i = 0; i < s; i++) {
-                    MatchConstraint cc = constraints.get(i);
-                    if (cc==null)
-                        throw new RuntimeException("fix"); //???
-                    if (cc.invalid(x, Unify.this))
+                for (int i = 0; i < s; i++)
+                    if (constraints.get(i).invalid(x, Unify.this))
                         return false;
-                }
             }
             return true;
         }
