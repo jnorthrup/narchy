@@ -29,8 +29,8 @@ public class NARTestBenchmark {
 
     static final Class[] tests = {
             NAL1Test.class,
-            NAL6Test.class,
-            NAL7Test.class
+//            NAL6Test.class,
+//            NAL7Test.class
     };
 
     /**
@@ -81,7 +81,7 @@ public class NARTestBenchmark {
 
     public static void main(String[] args) throws RunnerException {
         perf(NARTestBenchmark.class, (x) -> {
-            x.measurementIterations(2);
+            x.measurementIterations(1);
             x.warmupIterations(1);
             //x.jvmArgs("-Xint");
             x.forks(1);

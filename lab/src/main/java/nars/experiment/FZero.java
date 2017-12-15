@@ -65,7 +65,7 @@ public class FZero extends NAgentX {
 
         CameraSensor<Scale> c = senseCamera($.the("cam"), new Scale(() -> fz.image,
                 //32, 24
-                16, 10
+                24, 16
         )/*.blur()*/).resolution(0.1f);
 
         new ShapeSensor($.the("shape"), new BufferedImageBitmap2D(() -> fz.image), this);

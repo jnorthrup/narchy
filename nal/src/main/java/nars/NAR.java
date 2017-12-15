@@ -43,6 +43,7 @@ import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunctio
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.Twin;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
+import org.eclipse.collections.impl.bag.mutable.HashBag;
 import org.fusesource.jansi.Ansi;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -195,9 +196,9 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     public synchronized SortedMap<String, Object> stats() {
 
         //Frequency complexity = new Frequency();
-        Frequency clazz = new Frequency();
-        Frequency policy = new Frequency();
-        Frequency rootOp = new Frequency();
+        HashBag clazz = new HashBag();
+        HashBag policy = new HashBag();
+        HashBag rootOp = new HashBag();
 
         ShortCountsHistogram volume = new ShortCountsHistogram(2);
 
@@ -219,11 +220,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
             //complexity.addValue(c.complexity());
             volume.recordValue(c.volume());
-            rootOp.addValue(c.op());
-            clazz.addValue(c.getClass().toString());
+            rootOp.add(c.op());
+            clazz.add(c.getClass().toString());
 
             ConceptState p = c.state();
-            policy.addValue(p != null ? p.toString() : "null");
+            policy.add(p != null ? p.toString() : "null");
 
             //termlinksCap.accept(c.termlinks().capacity());
             termlinkCount.recordValue(c.termlinks().size());

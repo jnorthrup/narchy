@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /*
@@ -173,7 +174,6 @@ public class StackProfiler2 implements InternalProfiler {
 
         public void measure(ThreadInfo[] infos) {
 
-            StackRecord lines = new StackRecord();
 
             info:
             for (ThreadInfo info : infos) {
@@ -195,11 +195,20 @@ public class StackProfiler2 implements InternalProfiler {
                 //   - Get the remaining number of stack lines and builder the stack record
 
 
+                StackRecord lines = new StackRecord();
                 Stream.of(info.getStackTrace())
                         .filter(f -> !exclude(f.getClassName()))
                         .limit(stackLines)
                         .forEach(lines::add)
                 ;
+
+//                StackRecord lines = StackWalker.getInstance().walk(s->{
+//                    StackRecord ll = new StackRecord();
+//                    s.dropWhile(x->ll.size()<stackLines)
+//                        .filter(f -> !exclude(f.getClassName())).
+//                        forEach(ll::add);
+//                    return ll;
+//                });
 
 //                    for (StackTraceElement l : stack) {
 //                        String className = l.getClassName();
@@ -217,7 +226,6 @@ public class StackProfiler2 implements InternalProfiler {
                 if (!lines.isEmpty()) {
                     lines.commit();
                     stacks.get(info.getThreadState()).add(lines);
-                    lines = new StackRecord();
                 }
             }
         }
@@ -257,7 +265,7 @@ public class StackProfiler2 implements InternalProfiler {
         private int hash;
 
         public StackRecord() {
-            super(0);
+            super(16);
         }
 
         public void commit() {
@@ -277,6 +285,15 @@ public class StackProfiler2 implements InternalProfiler {
         }
 
         public void add(StackTraceElement l) {
+            add(
+                    Tuples.pair(
+                            l.getClassName(),
+                            PrimitiveTuples.pair(l.getLineNumber(), l.getMethodName())
+                    )
+            );
+        }
+
+        public void add(StackWalker.StackFrame l) {
             add(
                     Tuples.pair(
                             l.getClassName(),
@@ -322,7 +339,7 @@ public class StackProfiler2 implements InternalProfiler {
 
             int top = 32;
 //
-            StringBuilder sb = new StringBuilder(128*1024);
+            StringBuilder sb = new StringBuilder(16*1024);
 
             stacks.entrySet().forEach(e -> {
                 HashBag<StackRecord> cc = e.getValue();
