@@ -1,11 +1,14 @@
 package nars.term.compound;
 
 import nars.$;
+import nars.IO;
 import nars.Narsese;
+import nars.Op;
 import nars.index.term.TermKey;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.sub.Neg;
 import nars.term.sub.TermVector1;
 import org.junit.jupiter.api.Test;
 
@@ -18,20 +21,31 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 11/16/16.
  */
-public class UnitCompound1Test {
+public class UnitCompoundTest {
 
     @Test
-    public void testUnitCompound1() {
+    public void testUnitCompound_viaNeg() {
         Atomic x = Atomic.the("x");
-        UnitCompound1 u = new UnitCompound1(PROD, x);
-        Compound g = new CachedCompound(PROD, new TermVector1(x));
+        assertEqual(NEG, x, (Compound) Neg.the(x));
+    }
+
+    @Test
+    public void testCachedUnitCompound1() {
+        Atomic x = Atomic.the("x");
+        assertEqual(PROD, x, new CachedUnitCompound(PROD, x));
+    }
+
+    static void assertEqual(Op o, Atomic x, Compound u) {
+        Compound g = new CachedCompound(o, new TermVector1(x));
         assertEquals(g.hashCode(), u.hashCode());
+        assertEquals(g.hashCodeSubterms(), u.hashCodeSubterms());
         assertEquals(u, g);
         assertEquals(g, u);
         assertEquals(0, u.compareTo(g));
         assertEquals(0, g.compareTo(u));
         assertEquals(g.toString(), u.toString());
         assertTrue(Arrays.equals(TermKey.term(g).array(), TermKey.term(u).array()));
+        assertTrue(Arrays.equals(IO.termToBytes(g), IO.termToBytes(u)));
     }
 
     @Test
@@ -60,9 +74,6 @@ public class UnitCompound1Test {
         Atomic x = Atomic.the("x");
 
         Term u = x.neg();
-//        System.out.println(u);
-//        System.out.println(u.sub(0));
-        assertEquals(UnitCompound1.class, u.getClass());
 
         CachedCompound g = new CachedCompound(NEG, new TermVector1(x));
         assertNotSame(u, g);

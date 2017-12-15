@@ -29,7 +29,7 @@ import static nars.Op.BELIEF;
  * <p>
  * expects values which have been normalized to 0..1.0 range (ex: use NormalizedFloat)
  */
-public class ScalarConcepts extends NARService implements Iterable<SensorConcept>, Consumer<NAgent>, FloatSupplier {
+public class ScalarConcepts extends NARService implements Iterable<SensorConcept>, Consumer<NAR>, FloatSupplier {
 
 
     final AtomicDouble value = new AtomicDouble();
@@ -210,9 +210,8 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
     }
 
     @Override
-    public void accept(NAgent a) {
-        NAR n = a.nar;
-        update(a.now, n.dur(), n);
+    public void accept(NAR n) {
+        update(n.time(), n.dur(), n);
     }
 
     public void update(long now, int dur, NAR n) {

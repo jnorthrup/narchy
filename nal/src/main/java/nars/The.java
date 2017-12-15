@@ -14,9 +14,8 @@ import nars.term.anon.AnonID;
 import nars.term.anon.AnonVector;
 import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
-import nars.term.compound.UnitCompound1;
+import nars.term.compound.CachedUnitCompound;
 import nars.term.sub.ArrayTermVector;
-import nars.term.sub.TermVector1;
 import nars.term.sub.UnitSubterm;
 
 import java.util.Collection;
@@ -126,6 +125,7 @@ public enum The {
              * TODO make adjustable
              */
             int maxVol = 10;
+            final int minSubterms = 2;
 
             private MemoizeSubtermBuilder(Memoize<NewCompound, nars.term.sub.Subterms> cache) {
                 this.cache = cache;
@@ -133,7 +133,7 @@ public enum The {
 
             @Override
             public nars.term.sub.Subterms apply(Term[] terms) {
-                if (Util.sumExceeds(Term::volume, maxVol, terms))
+                if (terms.length < minSubterms || Util.sumExceeds(Term::volume, maxVol, terms))
                     return RawSubtermBuilder.apply(terms);
                 else
                     return cache.apply(new NewCompound(PROD, terms).commit());
@@ -167,7 +167,7 @@ public enum The {
 
             switch (s) {
                 case 1:
-                    return new UnitCompound1(o, subterms.get(0));
+                    return new CachedUnitCompound(o, subterms.get(0));
 
                 default:
                     return new CachedCompound(o, subterms(subterms));

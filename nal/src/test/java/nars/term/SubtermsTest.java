@@ -6,6 +6,7 @@ import nars.term.atom.Atomic;
 import nars.term.sub.ArrayTermVector;
 import nars.term.sub.Subterms;
 import nars.term.sub.TermVector1;
+import nars.term.sub.UnitSubterm;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -95,15 +96,24 @@ public class SubtermsTest {
     }
 
     @Test
-    public void testEqualityOfVector1() {
+    public void testEqualityOfUnitSubtermsImpls() {
         Term a = Atomic.the("a");
         Subterms x = new TermVector1(a);
-        Subterms y = new TermVector1(a);
-        assertEquals(x, y);
+        Subterms x0 = new TermVector1(a);
+        assertEquals(x, x0);
 
-        Subterms z = new ArrayTermVector(a);
-        assertEquals(z.hashCode(), x.hashCode());
+        Subterms y = new ArrayTermVector(a);
+        assertEquals(y.hashCode(), x.hashCode());
+        assertEquals(y.hashCodeSubterms(), x.hashCodeSubterms());
+        assertEquals(x, y);
+        assertEquals(y, x);
+
+        Subterms z = new UnitSubterm(a);
+        assertEquals(y.hashCode(), z.hashCode());
+        assertEquals(y.hashCodeSubterms(), z.hashCodeSubterms());
+        assertEquals(y, z);
         assertEquals(x, z);
+        assertEquals(z, y);
         assertEquals(z, x);
 
     }

@@ -11,7 +11,8 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.compound.CachedCompound;
-import nars.term.compound.UnitCompound1;
+import nars.term.compound.CachedUnitCompound;
+import nars.term.sub.Neg;
 import nars.term.sub.Subterms;
 import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
@@ -55,16 +56,7 @@ public enum Op {
         @Override
         public Term _the(int dt, Term[] u) {
             assert (u.length == 1); //assert (dt == DTERNAL || dt == XTERNAL);
-
-            Term x = u[0];
-            switch (x.op()) {
-                case BOOL:
-                    return x.neg();
-                case NEG:
-                    return x.unneg();
-                default:
-                    return The.compound(NEG, x);
-            }
+            return Neg.the(u[0]);
         }
     },
 
@@ -154,7 +146,7 @@ public enum Op {
 
                     //preserve unitary ellipsis for patterns etc
                     return only instanceof Ellipsislike ?
-                            new UnitCompound1(CONJ, only) //special; preserve the surrounding conjunction
+                            new CachedUnitCompound(CONJ, only) //special; preserve the surrounding conjunction
                             :
                             only;
 
@@ -1353,7 +1345,7 @@ public enum Op {
                     return differ(op, ((Subterms) single).arrayShared());
                 }
                 return single instanceof Ellipsislike ?
-                        new UnitCompound1(op, single) :
+                        new CachedUnitCompound(op, single) :
                         Null;
             case 2:
                 Term et0 = t[0], et1 = t[1];
@@ -1848,7 +1840,7 @@ public enum Op {
                     return intersect(((Subterms) single).arrayShared(), intersection, setUnion, setIntersection);
                 }
                 return single instanceof Ellipsislike ?
-                        new UnitCompound1(intersection, single) :
+                        new CachedUnitCompound(intersection, single) :
                         single;
 
             case 2:

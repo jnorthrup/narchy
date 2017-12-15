@@ -40,7 +40,7 @@ abstract public class AbstractUnitSubterm implements Subterms {
 
     @Override
     public int hashCode() {
-        return Util.hashCombine(1, sub().hashCode());
+        return Util.hashCombine1(sub().hashCode());
     }
 
     @Override

@@ -393,6 +393,13 @@ public enum Util {
         return a ^ (b + 0x9e3779b9 + (a << 6) + (a >> 2));
     }
 
+    /**
+     * == hashCombine(1, b)
+     */
+    public static int hashCombine1(int b) {
+        return 1 ^ (b + 0x9e3779b9 + (1 << 6) + (1 >> 2));
+    }
+
     public static int hashCombine(int a, int b, int c) {
 
         return hashCombine(hashCombine(a, b), c); //TODO decide if this is efficient and hashes well
@@ -1253,6 +1260,15 @@ public enum Util {
         for (X x : xx)
             y += value.applyAsInt(x);
         return y;
+    }
+
+    public static <X> boolean sumBetween(ToIntFunction<X> value, int min, int max, X... xx) {
+        int y = 0;
+        for (X x : xx) {
+            if ((y += value.applyAsInt(x)) > max)
+                return false;
+        }
+        return (y >= min);
     }
 
     public static <X> boolean sumExceeds(ToIntFunction<X> value, int max, X... xx) {
