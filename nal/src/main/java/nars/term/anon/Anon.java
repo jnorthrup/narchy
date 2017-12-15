@@ -7,7 +7,8 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.container.TermVector;
+import nars.term.sub.Subterms;
+import nars.term.sub.TermVector;
 import nars.term.transform.CompoundTransform;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.Variable;
@@ -133,8 +134,11 @@ public class Anon {
             put(x); //temporary
             throw new RuntimeException("Anon fail for term: " + t);
         }
-        if (y instanceof Compound)
-            ((TermVector) y.subterms()).setNormalized();
+        if (y instanceof Compound) {
+            Subterms yy = y.subterms();
+            if (yy instanceof TermVector)
+                ((TermVector) yy).setNormalized();
+        }
 
         return Task.clone(t, y);
     }

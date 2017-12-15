@@ -8,7 +8,7 @@ import nars.The;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import net.openhft.chronicle.bytes.Bytes;
 import net.openhft.chronicle.bytes.UncheckedBytes;
 import org.eclipse.collections.api.block.function.primitive.ByteFunction0;

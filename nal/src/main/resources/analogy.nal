@@ -1,4 +1,8 @@
-//general analogy
+// General Analogy
+//   see:
+//      https://en.wikipedia.org/wiki/Fluid_Concepts_and_Creative_Analogies
+//      https://cogsci.indiana.edu/
+
  Z, (X<->Y), eqOrIn(X,Z), belief(positive)   |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:Analogy, Goal:Weak)
  Z, (X<->Y), eqOrIn(X,Z), belief(negative)   |- (--, subIfUnifiesAny(Z, X, Y, strict, force)), (Belief:AnalogyPN, Goal:WeakPN)
  Z, (--X<->Y), eqOrIn(X,Z), belief(positive) |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:AnalogyN, Goal:WeakN)

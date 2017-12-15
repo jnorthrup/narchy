@@ -6,7 +6,7 @@ import nars.control.Derivation;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import nars.term.subst.SubUnify;
 import org.jetbrains.annotations.Nullable;
 
@@ -126,14 +126,18 @@ abstract public class SubstUnified extends Functor {
                 output = null; //no change
             } else {
                 int subTTL = Math.round(Param.BELIEF_MATCH_TTL_FRACTION * parent.ttl);
-                SubUnify su = new SubUnify(parent, op, subTTL);
-                output = su.tryMatch(input, x, y);
-                parent.use(subTTL - su.ttl);
+                if (subTTL > 0) {
+                    SubUnify su = new SubUnify(parent, op, subTTL);
+                    output = su.tryMatch(input, x, y);
+                    parent.use(subTTL - su.ttl);
+                } else {
+                    output = null;
+                }
             }
 
             if (output == null) {
                 if (force)
-                    return input.replace(x, y); //force: apply substitution even if un-unifiable
+                    output = input.replace(x, y); //force: apply substitution even if un-unifiable
                 else
                     return Null;
             }

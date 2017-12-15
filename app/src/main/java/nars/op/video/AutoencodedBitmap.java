@@ -1,6 +1,7 @@
 package nars.op.video;
 
 import jcog.learn.Autoencoder;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.math.random.XorShift128PlusRandom;
 import nars.util.signal.Bitmap2D;
 
@@ -9,6 +10,8 @@ import nars.util.signal.Bitmap2D;
  */
 public class AutoencodedBitmap implements Bitmap2D {
 
+    public static final float LEARNING_RATE = 0.05f;
+    public static final float NOISE_LEVEL = 0.005f;
     final Bitmap2D source;
     private final float[] output;
 
@@ -32,7 +35,7 @@ public class AutoencodedBitmap implements Bitmap2D {
 
         int i = sx * sy;
         this.input = new float[i];
-        this.ae = new Autoencoder(i, ox * oy, new XorShift128PlusRandom(1));
+        this.ae = new Autoencoder(i, ox * oy, new XoRoShiRo128PlusRandom(1));
 
         this.w = w / sx * ox;
         this.h = h / sy * oy;
@@ -62,7 +65,7 @@ public class AutoencodedBitmap implements Bitmap2D {
                 }
                 assert(j==input.length);
 
-                ae.put(input, 0.05f, 0.002f, 0, true);
+                ae.put(input, LEARNING_RATE, NOISE_LEVEL, 0, true);
 
                 float[] o = ae.output();
                 for (float anO : o) {

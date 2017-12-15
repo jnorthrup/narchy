@@ -5,7 +5,7 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.Null;

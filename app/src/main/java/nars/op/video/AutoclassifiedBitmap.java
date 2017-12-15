@@ -2,10 +2,7 @@ package nars.op.video;
 
 import jcog.Util;
 import jcog.learn.Autoencoder;
-import nars.$;
-import nars.NAR;
-import nars.NAgent;
-import nars.Op;
+import nars.*;
 import nars.concept.SensorConcept;
 import nars.term.Term;
 import spacegraph.Surface;
@@ -21,7 +18,10 @@ import static spacegraph.layout.Grid.col;
 /**
  * Created by me on 9/22/16.
  */
-public class PixelAutoClassifier extends Autoencoder implements Consumer<NAR> {
+public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
+
+    float alpha = 0.075f; //this represents the overall rate; the sub-block rate will be a fraction of this
+    float noise = (float) Math.sqrt(alpha);
 
     public static final MetaBits NoMetaBits = (x, y) -> Util.EmptyFloatArray;
     private final NAR nar;
@@ -63,14 +63,14 @@ public class PixelAutoClassifier extends Autoencoder implements Consumer<NAR> {
         }
      */
 
-    public PixelAutoClassifier(String root, float[][] pixIn, int sw, int sh, int states, NAgent agent) {
+    public AutoclassifiedBitmap(String root, float[][] pixIn, int sw, int sh, int states, NAgent agent) {
         this(root, pixIn, sw, sh, NoMetaBits, states, agent);
     }
 
     /**
      * metabits must consistently return an array of the same size, since now the size of this autoencoder is locked to its dimension
      */
-    public PixelAutoClassifier(String root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, NAgent agent) {
+    public AutoclassifiedBitmap(String root, float[][] pixIn, int sw, int sh, MetaBits metabits, int states, NAgent agent) {
         super(sw * sh + metabits.get(0, 0).length, states, agent.nar.random());
         this.metabits = metabits;
         this.agent = agent;
@@ -96,12 +96,13 @@ public class PixelAutoClassifier extends Autoencoder implements Consumer<NAR> {
                 for (int k = 0; k < states; k++) {
                     Term term = $.func(root, coord, $.the(k));
                     int ii = i;  int jj = j; int kk = k;
-                    agent.sense(term, () -> pixEnable[ii][jj][kk] ? 1f : Float.NaN, (v) -> $.t(v, pixConf[ii][jj]));
+                    agent.sense(term, () -> pixEnable[ii][jj][kk] ? 1f : Float.NaN, (v) ->
+                            pixConf[ii][jj] > Param.TRUTH_EPSILON  ? $.t(v, pixConf[ii][jj]) : null);
                 }
             }
         }
 
-        agent.nar.onCycle(this);
+        agent.onFrame(this);
 
     }
 
@@ -113,8 +114,6 @@ public class PixelAutoClassifier extends Autoencoder implements Consumer<NAR> {
         //float basePri = nar.priorityDefault(Symbols.BELIEF);
         //float baseDur = nar.durabilityDefault(Symbols.BELIEF);
 
-        float alpha = 0.075f; //this represents the overall rate; the sub-block rate will be a fraction of this
-        float corruption = 0.05f;
         int regionPixels = sw * sh;
         float sumErr = 0;
 
@@ -156,7 +155,7 @@ public class PixelAutoClassifier extends Autoencoder implements Consumer<NAR> {
 
                 short[] po = null;
                 if (learn) {
-                    float regionError = put(in, alpha, 0f, corruption, true, false, true);
+                    float regionError = put(in, alpha, noise, 0, true, false, true);
                     sumErr += regionError;
 
                     // must have sufficient error, and

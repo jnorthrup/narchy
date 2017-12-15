@@ -18,7 +18,7 @@ import nars.term.Termed;
 import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import nars.term.transform.CompoundTransform;
 import nars.truth.func.BeliefFunction;
 import nars.truth.func.GoalFunction;

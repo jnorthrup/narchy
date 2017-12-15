@@ -3,7 +3,7 @@ package nars.term;
 import com.google.common.io.ByteArrayDataOutput;
 import nars.Op;
 import nars.index.term.TermContext;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import nars.term.subst.Unify;
 import nars.term.transform.Retemporalize;
 import org.eclipse.collections.api.list.primitive.ByteList;

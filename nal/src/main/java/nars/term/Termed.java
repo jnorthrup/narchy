@@ -1,7 +1,7 @@
 package nars.term;
 
 import nars.Op;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;

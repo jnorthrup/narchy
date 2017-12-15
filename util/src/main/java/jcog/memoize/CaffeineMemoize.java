@@ -3,6 +3,7 @@ package jcog.memoize;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.stats.CacheStats;
+import com.google.common.util.concurrent.MoreExecutors;
 
 import java.util.function.Function;
 
@@ -25,6 +26,8 @@ public class CaffeineMemoize<K, V> implements Memoize<K, V> {
             b.softValues();
         else
             b.maximumSize(capacity);
+
+        b.executor(MoreExecutors.directExecutor());
 
         if (stats)
             b.recordStats();

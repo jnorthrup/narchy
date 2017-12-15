@@ -8,7 +8,7 @@ import nars.index.term.TermContext;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import nars.term.var.AbstractVariable;
 import org.jetbrains.annotations.Nullable;
 

@@ -21,9 +21,9 @@ import nars.concept.Concept;
 import nars.derive.match.EllipsisMatch;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.container.ArrayTermVector;
-import nars.term.container.TermVector;
-import nars.term.container.TermVector1;
+import nars.term.sub.ArrayTermVector;
+import nars.term.sub.TermVector;
+import nars.term.sub.TermVector1;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 

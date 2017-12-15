@@ -5,14 +5,13 @@ import nars.exe.AbstractExec;
 import nars.op.AtomicExec;
 import nars.op.Operator;
 import nars.op.stm.ConjClustering;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import nars.time.RealTime;
 import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.audio.MaryTTSpeech;
 
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 
 public class NARchy extends NARS {
 

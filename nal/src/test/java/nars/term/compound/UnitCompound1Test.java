@@ -6,7 +6,7 @@ import nars.index.term.TermKey;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.container.TermVector1;
+import nars.term.sub.TermVector1;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

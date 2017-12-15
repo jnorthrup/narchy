@@ -6,7 +6,7 @@ import nars.Op;
 import nars.Param;
 import nars.derive.PatternCompound;
 import nars.term.compound.CachedCompound;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import nars.term.transform.CompoundTransform;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

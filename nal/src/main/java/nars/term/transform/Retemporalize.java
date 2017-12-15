@@ -4,7 +4,7 @@ import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.anon.DirectCompoundTransform;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.SortedSet;

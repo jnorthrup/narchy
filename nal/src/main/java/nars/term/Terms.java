@@ -6,7 +6,7 @@ import jcog.sort.SortedList;
 import nars.Op;
 import nars.term.atom.Atom;
 import nars.term.atom.Bool;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;

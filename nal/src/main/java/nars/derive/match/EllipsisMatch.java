@@ -5,7 +5,7 @@ import nars.The;
 import nars.index.term.TermContext;
 import nars.term.Term;
 import nars.term.compound.CachedCompound;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import nars.term.subst.Unify;
 import nars.term.transform.CompoundTransform;
 import nars.term.transform.Retemporalize;

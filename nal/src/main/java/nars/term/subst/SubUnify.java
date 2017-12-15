@@ -37,7 +37,7 @@ public class SubUnify extends Unify {
                 int before = parent.now();
                 if (xy.forEachVersioned(parent::putXY)) {
                     this.result = result;
-                    parent.addTTL(stop()); //stop and refund parent
+                    stop();
                 } else {
                     parent.revert(before); //continue trying
                 }

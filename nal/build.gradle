@@ -5,10 +5,10 @@ buildscript {
         maven { url 'http://jitpack.io' }
         //maven { url 'https://stamp-project.github.io/stamp-maven-repository' }
     }
-    dependencies{
+//    dependencies{
 //        classpath "com.github.hurricup:gradle-grammar-kit-plugin:2017.1"
 //        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.4'
-    }
+//    }
 }
 
 //apply plugin: 'org.jetbrains.grammarkit'
@@ -49,8 +49,6 @@ dependencies {
     compile group: 'net.byteseek', name: 'byteseek', version: '2.0.3'
 
     compile group: 'net.openhft', name: 'chronicle-bytes', version: '1.10.2'
-
-    //compile group: 'com.lmax', name: 'disruptor', version: '3.3.7'
 
     testCompile(group: 'org.openjdk.jmh', name: 'jmh-core', version: '1.19') {
         exclude(module: 'commons-math3')
@@ -119,14 +117,14 @@ dependencies {
 
 
 
-task printClasspath4DSpot {
-    doLast {
-        configurations.testRuntime.each { println it }
-    }
-}
+//task printClasspath4DSpot {
+//    doLast {
+//        configurations.testRuntime.each { println it }
+//    }
+//}
 
-task printClasspath4DSpot {
-    doLast {
-        configurations.testRuntime.each { println it }
-    }
-}
+//task printClasspath4DSpot {
+//    doLast {
+//        configurations.testRuntime.each { println it }
+//    }
+//}

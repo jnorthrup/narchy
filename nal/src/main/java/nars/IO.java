@@ -17,7 +17,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import nars.term.var.UnnormalizedVariable;
 import nars.truth.DiscreteTruth;
 import nars.truth.Truth;
@@ -316,11 +316,8 @@ public class IO {
 
     public static void writeTermContainer(ByteArrayDataOutput out, Subterms c) {
         int siz = c.subs();
-
         out.writeByte(siz);
-
-        for (int i = 0; i < siz; i++)
-            c.sub(i).append(out);
+        c.forEach(t -> t.append(out));
     }
 
 //    public static void writeTermContainer(DataOutput out, Term... subterms) throws IOException {

@@ -10,7 +10,7 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Int;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import nars.term.var.Variable;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.FastList;

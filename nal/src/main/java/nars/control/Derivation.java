@@ -20,7 +20,7 @@ import nars.term.anon.CachedAnon;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import nars.term.subst.Unify;
 import nars.truth.Stamp;
 import nars.truth.Truth;

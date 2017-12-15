@@ -1,6 +1,5 @@
 package nars.index.term;
 
-import nars.NAR;
 import nars.Op;
 import nars.The;
 import nars.derive.PatternCompound;
@@ -10,11 +9,10 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Terms;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import nars.term.transform.VariableNormalization;
 import nars.term.var.Variable;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 

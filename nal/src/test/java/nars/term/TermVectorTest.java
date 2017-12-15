@@ -4,7 +4,7 @@ import nars.$;
 import nars.Narsese;
 import nars.The;
 import nars.term.atom.Atomic;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

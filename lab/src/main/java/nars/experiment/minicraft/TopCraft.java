@@ -6,8 +6,13 @@ import nars.NAgentX;
 import nars.Narsese;
 import nars.experiment.minicraft.top.InputHandler;
 import nars.experiment.minicraft.top.TopDownMinicraft;
-import nars.op.video.PixelAutoClassifier;
+import nars.op.video.AutoclassifiedBitmap;
+import nars.op.video.PixelBag;
 import nars.util.signal.Sensor2D;
+
+import java.util.function.Supplier;
+
+import static spacegraph.SpaceGraph.window;
 
 //import org.jcodec.codecs.h264.H264Encoder;
 //import org.jcodec.codecs.h264.H264Utils;
@@ -30,8 +35,8 @@ import nars.util.signal.Sensor2D;
 public class TopCraft extends NAgentX {
 
     private final TopDownMinicraft craft;
-    private Sensor2D pixels;
-    private PixelAutoClassifier camAE;
+    private Sensor2D<PixelBag> pixels;
+    private AutoclassifiedBitmap camAE;
 
     public static void main(String[] args) {
         runRT(nar1 -> {
@@ -77,32 +82,35 @@ public class TopCraft extends NAgentX {
 //                e.printStackTrace();
 //            }
 //        }
-        pixels = senseCameraRetina("cra", ()->craft.image, 32,32);
+        pixels = senseCameraRetina("cam", ()->craft.image, 32,32);
         //pixels = addFreqCamera("see", ()->craft.image, 64,64, (v) -> $.t( v, alpha));
 
-//        int nx = 8;
-//        camAE = new PixelAutoClassifier("cra", pixels.src.pixels, nx, nx,   (subX, subY) -> {
-//            //context metadata: camera zoom, to give a sense of scale
-//            //return new float[]{subX / ((float) (nx - 1)), subY / ((float) (nx - 1)), pixels.src.Z};
-//            return new float[]{ pixels.src.Z};
-//        }, 24, this);
-//        window(camAE.newChart(), 500, 500);
+        senseCameraReduced($.the("camr"), (Supplier)()->craft.image, 10,15,2,3);
+                //.resolution(0.5f);
+
+        int nx = 8;
+        camAE = new AutoclassifiedBitmap("cae", pixels.src.pixels, nx, nx,   (subX, subY) -> {
+            //context metadata: camera zoom, to give a sense of scale
+            //return new float[]{subX / ((float) (nx - 1)), subY / ((float) (nx - 1)), pixels.src.Z};
+            return new float[]{ pixels.src.Z};
+        }, 24, this);
+        window(camAE.newChart(), 500, 500);
 
 
-        senseSwitch("dir(cra)", ()->craft.player.dir, 0, 4);
-        sense($.func("stamina", "cra"), ()->(craft.player.stamina)/((float)craft.player.maxStamina));
-        sense($.func("health", "cra"), ()->(craft.player.health)/((float)craft.player.maxHealth));
+        senseSwitch("dir", ()->craft.player.dir, 0, 4);
+        sense($.the("stamina"), ()->(craft.player.stamina)/((float)craft.player.maxStamina));
+        sense($.the("health"), ()->(craft.player.health)/((float)craft.player.maxHealth));
 
         int tileMax = 13;
-        senseSwitch("tile(cra,here)", ()->craft.player.tile().id, 0, tileMax);
-        senseSwitch("tile(cra,up)", ()->craft.player.tile(0,1).id, 0, tileMax);
-        senseSwitch("tile(cra,down)", ()->craft.player.tile(0,-1).id, 0, tileMax);
-        senseSwitch("tile(cra,right)", ()->craft.player.tile(1,0).id, 0, tileMax);
-        senseSwitch("tile(cra,left)", ()->craft.player.tile(-1,0).id, 0, tileMax);
+        senseSwitch("tile:here", ()->craft.player.tile().id, 0, tileMax);
+        senseSwitch("tile:up", ()->craft.player.tile(0,1).id, 0, tileMax);
+        senseSwitch("tile:down", ()->craft.player.tile(0,-1).id, 0, tileMax);
+        senseSwitch("tile:right", ()->craft.player.tile(1,0).id, 0, tileMax);
+        senseSwitch("tile:left", ()->craft.player.tile(-1,0).id, 0, tileMax);
 
         InputHandler input = craft.input;
-        actionToggle($.func("fire", "cra"), input.attack::pressed/*, 16*/ );
-        actionTriState($.func("move","cra", "X"), (i)->{
+        actionToggle($.the("fire" ), input.attack::pressed/*, 16*/ );
+        actionTriState($.p("move", "X"), (i)->{
            boolean l = false, r = false;
            switch (i) {
                case -1: l = true;  break;
@@ -111,7 +119,7 @@ public class TopCraft extends NAgentX {
            input.left.pressed(l);
            input.right.pressed(r);
         });
-        actionTriState($.func("move","cra", "Y"), (i)->{
+        actionTriState($.p("move","y"), (i)->{
             boolean u = false, d = false;
             switch (i) {
                 case -1:  u = true;  break;
@@ -120,7 +128,7 @@ public class TopCraft extends NAgentX {
             input.up.pressed(u);
             input.down.pressed(d);
         });
-        actionToggle($.func("menu", "cra"), input.menu::pressed);
+        actionToggle($.the("menu"), input.menu::pressed);
 
 //        Param.DEBUG = true;
 //        nar.onTask(t ->{

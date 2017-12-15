@@ -166,7 +166,7 @@ public class PoleCart extends NAgentX {
 //        );
 
         SpaceGraph.window(Vis.beliefCharts(100,
-                Lists.newArrayList(x, xVel,
+                java.util.List.of(x, xVel,
                         angX,
                         angY,
                         angVel),

@@ -12,7 +12,7 @@ import nars.Task;
 import nars.control.Cause;
 import nars.control.Derivation;
 import nars.term.Term;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;

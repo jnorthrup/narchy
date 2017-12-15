@@ -657,8 +657,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     }
 
     @Override
-    public DurService onFrame(Consumer each) {
-        return DurService.on(nar, () -> each.accept(this));
+    public DurService onFrame(Consumer/*<NAR>*/ each) {
+        return DurService.on(nar, each::accept);
     }
 
     public DurService onFrame(Runnable each) {

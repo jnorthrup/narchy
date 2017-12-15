@@ -12,7 +12,7 @@ import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.UnitCompound1;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;

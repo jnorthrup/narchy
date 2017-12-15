@@ -243,7 +243,7 @@ public class Focus {
 
         public AERevaluator(Random rng) {
             super();
-            this.momentum = 0f;
+            this.momentum = 0.5f;
             this.rng = rng;
         }
 

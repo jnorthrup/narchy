@@ -3,7 +3,7 @@ package nars.index.term;
 import nars.Op;
 import nars.term.Term;
 import nars.term.Termlike;
-import nars.term.container.Subterms;
+import nars.term.sub.Subterms;
 import org.jetbrains.annotations.Nullable;
 
 /**
