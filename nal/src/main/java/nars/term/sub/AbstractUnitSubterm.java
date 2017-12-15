@@ -3,12 +3,21 @@ package nars.term.sub;
 import jcog.Util;
 import nars.term.Term;
 
+
+import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 abstract public class AbstractUnitSubterm implements Subterms {
 
     abstract public Term sub();
+
+
+    @Override
+    public Term[] arrayClone() {
+        return new Term[] { sub() };
+    }
 
     @Override
     public boolean OR(Predicate<Term> p) {
@@ -73,5 +82,14 @@ abstract public class AbstractUnitSubterm implements Subterms {
         c.accept(sub());
     }
 
+    @Override
+    public Stream<Term> subStream() {
+        return Stream.of(sub());
+    }
+
+    @Override
+    public Iterator<Term> iterator() {
+        return com.google.common.collect.Iterators.singletonIterator(sub());
+    }
 
 }

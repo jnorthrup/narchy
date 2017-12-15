@@ -17,6 +17,7 @@ import nars.term.compound.CachedCompound;
 import nars.term.compound.UnitCompound1;
 import nars.term.sub.ArrayTermVector;
 import nars.term.sub.TermVector1;
+import nars.term.sub.UnitSubterm;
 
 import java.util.Collection;
 import java.util.List;
@@ -73,7 +74,8 @@ public enum The {
                     case 0:
                         return nars.term.sub.Subterms.Empty;
                     case 1:
-                        return new TermVector1(t[0]);
+                        //return new TermVector1(t[0]);
+                        return new UnitSubterm(t[0]);
                     //case 2:
                     //return new TermVector2(t);
                     default:
