@@ -566,7 +566,10 @@ public class Int implements Intlike {
 
             default:
                 //either there is none, or too many -- just use the term directly
-                throw new UnsupportedOperationException("too many embedded dimensions: " + dim);
+                if (Param.DEBUG)
+                    throw new UnsupportedOperationException("too many embedded dimensions: " + dim);
+                else
+                    return null;
 
         }
 

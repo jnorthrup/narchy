@@ -26,10 +26,7 @@ import nars.term.var.Variable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
@@ -113,7 +110,12 @@ public class DefaultConceptBuilder implements ConceptBuilder {
                             int s = subjsubs.subs();
                             FasterList<Term> lx = new FasterList(0, new Term[s]);
                             if (subj instanceof Int.IntRange || so == PROD && subj.hasAny(INT)) {
-                                Int.unroll(subj).forEachRemaining(dsi -> lx.add(INH.the(dsi, pred)));
+                                Iterator<Term> iu = Int.unroll(subj);
+                                if (iu!=null)
+                                    iu.forEachRemaining(dsi -> lx.add(INH.the(dsi, pred)));
+                                else {
+                                    //??
+                                }
                             }
                             if (so != PROD) {
                                 for (int i = 0; i < s; i++) {
