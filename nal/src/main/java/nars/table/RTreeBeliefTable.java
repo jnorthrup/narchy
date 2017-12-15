@@ -599,9 +599,9 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
                 if (((Task) x).isDeleted()) {
                     //found a deleted task in the leaf, we need look no further
                     boolean removed = tree.remove(x);
-                    if (!removed) {
-                        tree.remove(x);
-                    }
+//                    if (!removed) {
+//                        tree.remove(x);
+//                    }
                     assert (removed);
                     return false;
                 }
@@ -746,9 +746,9 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
     @Override
     public void forEachTask(Consumer<? super Task> each) {
         tree.forEach(t -> {
-            Task tt = t.task();
-            if (tt != null)
-                each.accept(tt);
+//            Task tt = t.task();
+//            if (tt != null)
+            each.accept((Task)t);
         });
     }
 
@@ -803,10 +803,10 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
     }
 
     private final static class ScanLimiter implements Predicate<TaskRegion> {
-        private final Collection target;
+        private final Collection<TaskRegion> target;
         int attemptsRemain;
 
-        public ScanLimiter(Collection u, int maxTries) {
+        public ScanLimiter(Collection<TaskRegion> u, int maxTries) {
             this.attemptsRemain = maxTries;
             this.target = u;
         }

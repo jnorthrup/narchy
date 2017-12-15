@@ -39,7 +39,7 @@ public class AutoencoderTest {
             da.encode(test_X[i], encoded_X, false, false);
             System.out.println(Arrays.toString(test_X[i]));
             System.out.println(Arrays.toString(encoded_X));
-            da.reconstruct(test_X[i], reconstructed_X[i]);
+            da.reconstruct(test_X[i]);
             for (int j = 0; j < n_visible; j++) {
                 System.out.printf("%.5f ", reconstructed_X[i][j]);
             }

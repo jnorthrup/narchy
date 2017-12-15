@@ -58,27 +58,7 @@ public final class TruthFunctions {
 
     /* ----- Single argument functions, called in StructuralRules ----- */
 
-    /**
-     * {A} |- (--A)
-     *
-     * @return Truth value of the conclusion
-     */
-    @Nullable
-    public static Truth negation(@Nullable Truth v1, float minConf) {
-        return ((v1 == null) || (v1.conf() < minConf)) ? null : v1.neg();
 
-        /*
-
-        if (t == null) return null;
-        final float f = 1 - t.freq();
-        final float c = t.conf();
-
-        if (t.isAnalytic())
-            return AnalyticTruth.get(f, c, t); //experimental: for cases where analytic is inverted, to preserve analytic state
-        else
-            return t(f, c, t);
-            */
-    }
 
 
     /**
@@ -266,37 +246,37 @@ public final class TruthFunctions {
 //        //return Math.max((aFreq * bFreq), (1f - aFreq) * (1f - bFreq));
 //    }
 
-    /**
-     * if unipolar (ex: NAL 1), the condition frequency acts as a gate
-     * if bipolar, the condition frequency does not affect confidence
-     * but the polarity of the derivation only
-     */
-    @Nullable
-    public static Truth desire(Truth goal, Truth cond, float minConf, boolean weak) {
-
-        float c = and(cond.conf(), goal.conf());
-
-        c *= cond.freq();
-
-        if (weak)
-            c *= w2c(1.0f);
-
-        if (c < minConf) {
-            return null;
-        } else {
-            float gf = goal.freq();
-            float f;
-            if (gf >= 0.5f) {
-                f = 0.5f + ((gf - 0.5f) * cond.freq());
-            } else {
-                f = 0.5f - ((0.5f - gf) * cond.freq());
-            }
-            return t(f, c);
-        }
-
-//        float c = and(a.conf(), b.conf(), freqSimilarity(aFreq, bFreq));
-//        return c < minConf ? null : desire(aFreq, bFreq, c);
-    }
+//    /**
+//     * if unipolar (ex: NAL 1), the condition frequency acts as a gate
+//     * if bipolar, the condition frequency does not affect confidence
+//     * but the polarity of the derivation only
+//     */
+//    @Nullable
+//    public static Truth desire(Truth goal, Truth cond, float minConf, boolean weak) {
+//
+//        float c = and(cond.conf(), goal.conf());
+//
+//        c *= cond.freq();
+//
+//        if (weak)
+//            c *= w2c(1.0f);
+//
+//        if (c < minConf) {
+//            return null;
+//        } else {
+//            float gf = goal.freq();
+//            float f;
+//            if (gf >= 0.5f) {
+//                f = 0.5f + ((gf - 0.5f) * cond.freq());
+//            } else {
+//                f = 0.5f - ((0.5f - gf) * cond.freq());
+//            }
+//            return t(f, c);
+//        }
+//
+////        float c = and(a.conf(), b.conf(), freqSimilarity(aFreq, bFreq));
+////        return c < minConf ? null : desire(aFreq, bFreq, c);
+//    }
 
     /**
      * A function specially designed for desire value [To be refined]
@@ -324,45 +304,45 @@ public final class TruthFunctions {
         return t(and(f1, f2), c);
     }
 
-    /**
-     * A function specially designed for desire value [To be refined]
-     *
-     * @param v1 Truth value of the first premise
-     * @param v2 Truth value of the second premise
-     * @return Truth value of the conclusion
-     */
-    public static Truth desireDed(final Truth v1, final Truth v2, float confMin) {
-        final float f1 = v1.freq();
-        final float f2 = v2.freq();
-        final float c1 = v1.conf();
-        final float c2 = v2.conf();
-        final float f = and(f1, f2);
-        final float c = and(c1, c2);
-        if (c > confMin)
-            return new PreciseTruth(f, c);
-        else
-            return null;
-    }
+//    /**
+//     * A function specially designed for desire value [To be refined]
+//     *
+//     * @param v1 Truth value of the first premise
+//     * @param v2 Truth value of the second premise
+//     * @return Truth value of the conclusion
+//     */
+//    public static Truth desireDed(final Truth v1, final Truth v2, float confMin) {
+//        final float f1 = v1.freq();
+//        final float f2 = v2.freq();
+//        final float c1 = v1.conf();
+//        final float c2 = v2.conf();
+//        final float f = and(f1, f2);
+//        final float c = and(c1, c2);
+//        if (c > confMin)
+//            return new PreciseTruth(f, c);
+//        else
+//            return null;
+//    }
 
-    /**
-     * A function specially designed for desire value [To be refined]
-     *
-     * @param v1 Truth value of the first premise
-     * @param v2 Truth value of the second premise
-     * @return Truth value of the conclusion
-     */
-    public static Truth desireInd(final Truth v1, final Truth v2, float confMin) {
-        final float f1 = v1.freq();
-        final float f2 = v2.freq();
-        final float c1 = v1.conf();
-        final float c2 = v2.conf();
-        final float w = and(f2, c1, c2);
-        final float c = w2c(w);
-        if (c > confMin)
-            return new PreciseTruth(f1, c);
-        else
-            return null;
-    }
+//    /**
+//     * A function specially designed for desire value [To be refined]
+//     *
+//     * @param v1 Truth value of the first premise
+//     * @param v2 Truth value of the second premise
+//     * @return Truth value of the conclusion
+//     */
+//    public static Truth desireInd(final Truth v1, final Truth v2, float confMin) {
+//        final float f1 = v1.freq();
+//        final float f2 = v2.freq();
+//        final float c1 = v1.conf();
+//        final float c2 = v2.conf();
+//        final float w = and(f2, c1, c2);
+//        final float c = w2c(w);
+//        if (c > confMin)
+//            return new PreciseTruth(f1, c);
+//        else
+//            return null;
+//    }
 
 
     /* ----- double argument functions, called in CompositionalRules ----- */
@@ -399,17 +379,17 @@ public final class TruthFunctions {
                 t(and(v1.freq(), v2.freq()), c);
     }
 
-    public static Truth intersection(@Nullable List<Truth> truths, float minConf) {
-        float f = 1f;
-        float c = 1f;
-        for (Truth t : truths) {
-            f *= t.freq();
-            c *= t.conf();
-            if (c < minConf)
-                return null;
-        }
-        return $.t(f, c);
-    }
+//    public static Truth intersection(@Nullable List<Truth> truths, float minConf) {
+//        float f = 1f;
+//        float c = 1f;
+//        for (Truth t : truths) {
+//            f *= t.freq();
+//            c *= t.conf();
+//            if (c < minConf)
+//                return null;
+//        }
+//        return $.t(f, c);
+//    }
 
 //    private static float freqInterp(float f1, float f2, float c1, float c2) {
 //        float w1 = c2w(c1);
@@ -441,10 +421,7 @@ public final class TruthFunctions {
     @Nullable
     public static Truth reduceConjunction(/*@NotNull*/ Truth v1, /*@NotNull*/ Truth v2, float minConf) {
 
-        Truth n1 = negation(v1, minConf);
-        if (n1 == null) return null;
-
-        Truth i12 = intersection(n1, v2, minConf);
+        Truth i12 = intersection(v1.neg(), v2, minConf);
         if (i12 == null) return null;
 
         Truth v11 = deductionR(i12, 1.0f, minConf);

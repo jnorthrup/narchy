@@ -1,6 +1,7 @@
 package nars.task.util;
 
 import jcog.Util;
+import jcog.math.Interval;
 import jcog.tree.rtree.HyperRegion;
 import nars.Task;
 import nars.task.Tasked;
@@ -468,4 +469,7 @@ public interface TaskRegion extends HyperRegion, Tasked {
     @Override
     float coordF(boolean maxOrMin, int dimension);
 
+    default boolean isDuring(long start, long end) {
+        return Interval.intersect(start, end, start(), end())!=null;
+    }
 }

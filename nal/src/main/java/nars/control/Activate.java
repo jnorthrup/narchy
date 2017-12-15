@@ -71,7 +71,7 @@ public class Activate extends PLink<Concept> implements Termed {
         tasklinks.commit(PriForget.forget(tasklinks, linkForgetting, Pri.EPSILON, (r)-> new Tasklinks.TaskLinkForget(r, now, dur)));
         int ntasklinks = tasklinks.size();
         if (ntasklinks == 0)
-            return List.of();
+            return Collections.emptyList();
 
         Random rng = nar.random();
 

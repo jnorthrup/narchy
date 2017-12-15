@@ -4,10 +4,10 @@ import com.google.common.base.Joiner;
 import jcog.Services;
 import jcog.Util;
 import jcog.decide.Roulette;
+import jcog.learn.Autoencoder;
 import jcog.learn.deep.RBM;
 import jcog.list.FastCoWList;
 import jcog.list.FasterList;
-import jcog.math.FloatSupplier;
 import jcog.math.RecycledSummaryStatistics;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.util.Flip;
@@ -20,6 +20,7 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.LongSupplier;
 import java.util.stream.IntStream;
 
 import static jcog.Texts.n2;
@@ -38,8 +39,9 @@ public class Focus {
     public static class Schedule {
         public float[] time = ArrayUtils.EMPTY_FLOAT_ARRAY;
         //        public float[] timeNormalized = ArrayUtils.EMPTY_FLOAT_ARRAY;
-        public float[] supply = ArrayUtils.EMPTY_FLOAT_ARRAY;
+        public float[] supplied = ArrayUtils.EMPTY_FLOAT_ARRAY;
         public float[] weight = ArrayUtils.EMPTY_FLOAT_ARRAY;
+        public float[] iterPerSecond = ArrayUtils.EMPTY_FLOAT_ARRAY;
 
         /**
          * probability of selecting each can (roulette weight), updated each cycle
@@ -47,12 +49,13 @@ public class Focus {
 
         public Causable[] active = new Causable[0];
 
+
         @Override
         public String toString() {
 
             return Joiner.on("\n").join(IntStream.range(0, active.length).mapToObj(
                     x -> n4(weight[x]) + "=" + active[x] +
-                            "@" + n2(time[x] * 1E3) + "uS x " + n2(supply[x])
+                            "@" + n2(time[x] * 1E3) + "uS x " + n2(supplied[x])
             ).iterator());
         }
 
@@ -76,36 +79,45 @@ public class Focus {
         public void update(FastCoWList<Causable> can) {
             active = can.copy;
             int n = active.length;
-            if (n > 0) {
-                time = can.map(c -> c.can.iterationTimeSum(), time);
-                supply = can.map(c -> (float) c.can.supply(), supply);
+            if (n <= 0) {
+                return;
+            }
+            if (time.length != n) {
+                //realloc
+                time = new float[n];
+                supplied = new float[n];
+                iterPerSecond = new float[n];
+            }
+            for (int i = 0; i < n; i++) {
+                can.get(i).can.commit(i, time, supplied, iterPerSecond);
+            }
 
-                float margin = 1f / n;
+//                float margin = 1f / n;
 
 //                if (timeNormalized.length!=n)
 //                    timeNormalized = new float[n];
 
-                float iterSum = 0;
-                float timeMax = 0;
-                int iters = 0;
-                for (float i : time) {
-                    if (i > Float.MIN_NORMAL) {
-                        iterSum += i;
-                        if (i > timeMax)
-                            timeMax = i;
-                        iters++;
-                    }
+            float iterSum = 0;
+            float timeMax = 0;
+//                int iters = 0;
+            for (float i : time) {
+                if (i > Float.MIN_NORMAL) {
+                    iterSum += i;
+                    if (i > timeMax)
+                        timeMax = i;
+//                        iters++;
                 }
+            }
 
-                if (timeMax < Float.MIN_NORMAL)
-                    timeMax = 1f; //artificial
+            if (timeMax < Float.MIN_NORMAL)
+                timeMax = 1f; //artificial
 
-                for (int i = 0; i < n; i++) {
-                    float ii = time[i];
-                    if (ii < Float.MIN_NORMAL) {
-                        time[i] = timeMax;
-                    }
+            for (int i = 0; i < n; i++) {
+                float ii = time[i];
+                if (ii < Float.MIN_NORMAL) {
+                    time[i] = timeMax;
                 }
+            }
 
 //                if (iters < 2) {
 //                    Arrays.fill(timeNormalized, 1f); //all the same
@@ -116,9 +128,7 @@ public class Focus {
 //                                0, timeMax), 0 - margin, +1f + margin);
 //                    }
 //                }
-            } else {
-                return;
-            }
+
 
             weight = Util.map(n, (int i) ->
                     active[i].value(), weight);
@@ -210,6 +220,69 @@ public class Focus {
         }
     }
 
+    /**
+     * denoising autoencoder revaluator
+     */
+    public static class AERevaluator extends DefaultRevaluator {
+
+        private final Random rng;
+
+
+        public float learning_rate = 0.05f;
+
+        public float[] cur, next;
+        public Autoencoder ae;
+
+        /**
+         * hidden to visible neuron ratio
+         */
+        private float hiddenMultipler = 0.5f;
+
+        float feedback = 0.5f;
+        private float[] tmp;
+
+        public AERevaluator(Random rng) {
+            super();
+            this.momentum = 0f;
+            this.rng = rng;
+        }
+
+        @Override
+        public void update(long time, int dur, FasterList<Cause> causes, float[] goal) {
+            super.update(time, dur, causes, goal);
+
+            int numCauses = causes.size();
+            if (numCauses < 2)
+                return;
+
+            if (ae == null || ae.hidden() != numCauses) {
+                int numHidden = Math.round(hiddenMultipler * numCauses);
+
+                ae = new Autoencoder(numCauses, numHidden, rng);
+                cur = new float[numCauses];
+                tmp = new float[numHidden];
+            }
+
+
+            for (int i = 0; i < numCauses; i++)
+                cur[i] = /*Util.tanhFast*/(causes.get(i).value());
+
+            next = ae.reconstruct(cur, tmp, true, false);
+            ae.put(cur, learning_rate, 0.01f, 0f, true, false);
+
+            //float momentum = 0.5f;
+            //float noise = 0.1f;
+            for (int i = 0; i < numCauses; i++) {
+                //float j = Util.tanhFast((float) (cur[i] + next[i]));
+                float j = /*((rng.nextFloat()-0.5f)*2*noise)*/ +
+                        //((float) (next[i]));
+                        //(float)( Math.abs(next[i]) > Math.abs(cur[i]) ? next[i] : cur[i]);
+                        (float) ((1f - feedback) * cur[i] + feedback * next[i]);
+                causes.get(i).setValue(j);
+            }
+        }
+    }
+
     public static class DefaultRevaluator implements Exec.Revaluator {
 
         final RecycledSummaryStatistics[] causeSummary = new RecycledSummaryStatistics[MetaGoal.values().length];
@@ -223,7 +296,8 @@ public class Focus {
 //                    0f;
                 //0.5f;
                 //0.75f;
-                0.95f;
+                0.9f;
+        //0.95f;
 
         final static double minUpdateDurs = 1f;
 
@@ -234,7 +308,7 @@ public class Focus {
 
             if (lastUpdate == ETERNAL)
                 lastUpdate = time;
-            double dt = (time - lastUpdate) / ((double)dur);
+            double dt = (time - lastUpdate) / ((double) dur);
             if (dt < minUpdateDurs)
                 return;
             lastUpdate = time;
@@ -297,7 +371,8 @@ public class Focus {
 
 
         this.revaluator =
-                new DefaultRevaluator();
+                //new DefaultRevaluator();
+                new AERevaluator(nar.random());
         //new RBMRevaluator(nar.random());
 
         n.serviceAddOrRemove.on((xa) -> {
@@ -314,39 +389,39 @@ public class Focus {
         n.onCycle(this::update);
     }
 
-    public void run(FloatSupplier kontinueDT) {
+    public void run(LongSupplier runUntil) {
 
 
-        float dt;
-        while ((dt = kontinueDT.asFloat()) == dt) {
+        long until;
+        while ((until = runUntil.getAsLong()) != ETERNAL) {
 
-            try {
-                Schedule s = schedule.read();
+            Schedule s = schedule.read();
 
-                float[] cw = s.weight;
+            float[] cw = s.weight;
+            if (cw.length == 0)
+                continue;
 
-                Causable[] can = s.active;
-                float[] time = s.time;
-                float[] supply = s.supply;
-                if (cw.length == 0)
-                    continue;
+            float[] iterPerSecond = s.iterPerSecond;
+            Causable[] can = s.active;
 
-                final int PLAY_BATCH = 8;
-                float subDT = dt/PLAY_BATCH;
-                for (int i = 0; i < PLAY_BATCH; i++) {
+            /** jiffy temporal granularity time constant */
+            float jiffy = 0.001f; //1mS
+
+            do {
+                try {
                     int x = Roulette.decideRoulette(cw, rng);
                     Causable cx = can[x];
                     AtomicBoolean cb = cx.busy;
 
                     int completed;
                     if (cb == null) {
-                        completed = run(cx, subDT, supply[x], time[x]);
+                        completed = run(cx, iterPerSecond[x], jiffy);
                     } else {
                         if (cb.compareAndSet(false, true)) {
                             float weightSaved = cw[x];
                             cw[x] = 0; //hide from being selected by other threads
                             try {
-                                completed = run(cx, subDT, supply[x], time[x]);
+                                completed = run(cx, iterPerSecond[x], jiffy);
                             } finally {
                                 cb.set(false);
                                 cw[x] = weightSaved;
@@ -359,17 +434,17 @@ public class Focus {
                     if (completed < 0) {
                         cw[x] = 0;
                     }
+                } catch (Throwable t) {
+                    t.printStackTrace();
                 }
-            } catch (Throwable t) {
-                t.printStackTrace();
-            }
 
+            } while (System.nanoTime() < until);
         }
 
     }
 
-    private int run(Causable cx, float dt, float supply, float time) {
-        int iters = (int) Math.ceil(Math.max(1, supply) * (dt / time));
+    private int run(Causable cx, float iterPerSecond, float time) {
+        int iters = Math.max(1, (int) (iterPerSecond * time));
         return cx.run(nar, iters);
     }
 

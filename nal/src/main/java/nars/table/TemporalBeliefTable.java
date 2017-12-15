@@ -24,8 +24,8 @@ public interface TemporalBeliefTable extends TaskTable, Iterable<Task> {
      * range will be between 0 and 1
      */
     static float temporalTaskPriority(Task t, long start, long end, int dur) {
-        if (t.isDeleted())
-            return Float.NEGATIVE_INFINITY;
+//        if (t.isDeleted())
+//            return Float.NEGATIVE_INFINITY;
 
         //return ((1+t.conf()) * (1+t.priElseZero())) / (1f + Math.abs((start+end)/2 - t.mid())/((float)dur));
         //return t.conf() / (1f + t.distanceTo(start, end)/((float)dur));

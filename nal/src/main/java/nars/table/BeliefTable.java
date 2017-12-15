@@ -222,18 +222,19 @@ public interface BeliefTable extends TaskTable {
 
         //project if different occurrence
 
-        boolean relevantTime = answer.isEternal() || start==ETERNAL || Interval.intersect(start, end, answer.start(), answer.end())!=null;
+        boolean relevantTime = answer.isEternal() || start==ETERNAL || !answer.isDuring(start,end);
 
         if (/*!answer.isEternal() && */!relevantTime) {
 
-            Truth aProj = answer.truth(start, end, dur, nar);
+            long t = answer.theNearestTimeWithin(start, end);
+            Truth aProj = answer.truth(t, t, dur, nar);
             if (aProj != null) {
 
                 final Task aa = answer;
                 Task a = Task.tryTask(answer.term(), answer.punc(), aProj, (content, truth) -> new NALTask(
                         content,
                         aa.punc(),
-                        truth, nar.time(), start, end,
+                        truth, nar.time(), t, t,
                         (question != null) ?
                                 Stamp.zip(aa.stamp(), question.stamp(), 0.5f) : aa.stamp()));
                 if (a == null)

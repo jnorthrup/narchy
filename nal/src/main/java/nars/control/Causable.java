@@ -67,7 +67,7 @@ abstract public class Causable extends NARService {
             long end = System.nanoTime();
 
             if (completed >= 0)
-                can.update(completed, (end - start) / 1.0E9);
+                can.done(completed, (end - start) / 1.0E9);
         } catch (Exception e) {
             if (Param.DEBUG)
                 throw new RuntimeException(e);

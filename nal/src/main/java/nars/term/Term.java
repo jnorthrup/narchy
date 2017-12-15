@@ -36,7 +36,7 @@ import nars.term.atom.Int;
 import nars.term.container.Subterms;
 import nars.term.container.TermVector;
 import nars.term.subst.MapSubst;
-import nars.term.subst.MapSubst1;
+import nars.term.subst.Subst;
 import nars.term.subst.Unify;
 import nars.term.transform.CompoundTransform;
 import nars.term.transform.Retemporalize;
@@ -806,15 +806,15 @@ public interface Term extends Termed, Comparable<Termed> {
 
     @Nullable
     default Term replace(/*@NotNull*/ Map<Term, Term> m) {
-        return transform((m.size() == 1) ?
-                new MapSubst1(m.entrySet().iterator().next())
-                :
-                new MapSubst(m)
-        );
+        Subst s = MapSubst.the(m);
+        return s!=null ? transform(s) : this;
     }
 
     default Term replace(Term from, Term to) {
-        return equals(from) ? to : transform(new MapSubst1(from, to));
+        if (from.equals(to))
+            return this;
+        else
+            return equals(from) ? to : (impossibleSubTerm(from) ? this : transform(new MapSubst.MapSubst1(from, to)));
     }
 
     default Term neg() {

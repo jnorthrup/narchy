@@ -107,7 +107,7 @@ public class TaskRule extends TaskMatch {
     @Override
     protected void accept(Task X, Map<Term, Term> xy) {
 
-        Term y = output.transform(new MapSubst(xy));
+        Term y = output.replace(xy);
         if (y instanceof Variable || y instanceof Bool) return;
 
         //        if (r == null)

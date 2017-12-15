@@ -236,8 +236,8 @@ public class Autoencoder {
 			}
 
 			zi = sigmoid ?
-					//Util.sigmoid(zi)
-					(Util.tanhFast(zi) + 1) / 2f
+					Util.sigmoid(zi)
+					//(Util.tanhFast(zi) + 1) / 2f
 					:
 					zi;
 
@@ -260,7 +260,13 @@ public class Autoencoder {
 	public float put(float[] x, float learningRate,
 					 float noiseLevel, float corruptionRate,
 					 boolean sigmoid) {
-		return put(x, learningRate, noiseLevel, corruptionRate, sigmoid, true, sigmoid);
+		return put(x, learningRate, noiseLevel, corruptionRate, sigmoid, sigmoid);
+	}
+
+	public float put(float[] x, float learningRate,
+					 float noiseLevel, float corruptionRate,
+					 boolean sigmoidEnc, boolean sigmoidDec) {
+		return put(x, learningRate, noiseLevel, corruptionRate, sigmoidEnc, true, sigmoidDec);
 	}
 
 	/** returns the total error (not sqr(error) and not avg_error = error sum divided by # items) */
@@ -333,12 +339,14 @@ public class Autoencoder {
 		return decode(encode(x, y, sigmoidIn, normalize), sigmoidOut);
 	}
 
-	public float[] reconstruct(float[] x, float[] z) {
+	public float[] reconstruct(float[] x) {
 		float[] y = new float[this.y.length];
 
-		decode(encode(x, y, true, true), false);
+		return reconstruct(x, y, true, true);
+	}
 
-		return z;
+	public float[] reconstruct(float[] x, float[] yTmp, boolean sigmoidEnc, boolean sigmoidDec) {
+		return decode(encode(x, yTmp, sigmoidEnc, true), sigmoidDec);
 	}
 
 	public int decide(Deciding d) {
@@ -383,4 +391,7 @@ public class Autoencoder {
 	}
 
 
+	public int hidden() {
+		return y.length;
+	}
 }

@@ -22,39 +22,49 @@ public class Can {
 
     final DoubleAdder iterationTime = new DoubleAdder();
     public final DoubleAdder supply = new DoubleAdder();
-//    final static int WINDOW = 8;
-//    protected final DescriptiveStatistics value = new DescriptiveStatistics(WINDOW);
 
-    /**
-     * next iterations, to be solved
-     */
-    public final DoubleVar iterations;
+    final static int WINDOW = 8;
+    protected final DescriptiveStatistics iterPerSecond = new DescriptiveStatistics(WINDOW);
+
+    private final String id;
+//    protected final DescriptiveStatistics value = new DescriptiveStatistics(WINDOW);
+//
+//    /**
+//     * next iterations, to be solved
+//     */
+//    public final DoubleVar iterations;
 
     public Can() {
         this(String.valueOf(ids.incrementAndGet()));
     }
 
     public Can(String id) {
-        iterations = new DoubleVar(id);
+        this.id = id;
+        //iterations = new DoubleVar(id);
     }
 
-    /**
-     * in seconds
-     */
-    public float iterationTimeSum() {
-        double s = iterationTime.sumThenReset();
-        if (s!=s) return 0f;
-        return (float) s;
-    }
 
-    /**
-     * max iterations that can/should be requested
-     */
-    public double supply() {
+    public final void commit(int i, float[] time, float[] supplied, float[] iterPerSecond) {
         double s = supply.sumThenReset();
-        if (s != s) return 0;
-        return s;
+        if (s != s) s = 0;
+        supplied[i] = (float) s;
+
+        double t = iterationTime.sumThenReset();
+        if (t!=t) t = 0;
+        time[i] = (float) t;
+
+        double r;
+        if (Math.abs(s) < 0.01f || Math.abs(t) < 1E-9 /* nanosecond resolution */) {
+            r = 0;
+        } else {
+            r = s / t;
+            this.iterPerSecond.addValue(r);
+        }
+        double rMean = this.iterPerSecond.getMean();
+        if (rMean!=rMean) rMean = 0;
+        iterPerSecond[i] = (float)rMean;
     }
+
 
 //    /**
 //     * relative value of an iteration; ie. past value estimate divided by the actual supplied unit count
@@ -69,18 +79,13 @@ public class Can {
     /**
      * totalTime in sec
      */
-    public void update(int supplied, double totalTimeSec) {
+    public void done(int supplied, double totalTimeSec) {
         supply.add(supplied);
         if (supplied > 0) {
-//            value.addValue(totalValue / supplied);
             iterationTime.add(totalTimeSec);
         }
     }
 
-    public final void commit(double iterations) {
-        this.iterations.value(iterations);
-//        commit();
-    }
 
 //    /** called after the iteration variable has been set */
 //    public void commit() {
@@ -89,7 +94,8 @@ public class Can {
 
     @Override
     public String toString() {
-        return iterations.name;
+        return id;
+        //return iterations.name;
 //        return iterations.name + "{" +
 //                "iterations=" + iterations() +
 //                ", value=" + n4(value()) +
@@ -97,14 +103,14 @@ public class Can {
 //                ", supply=" + n2(supply.getMax()) +
 //                '}';
     }
-
-    /** estimated iterations this should be run next, given the value and historically estimated cost */
-    public int iterations() {
-        return (int) Math.ceil(iterations.value());
-    }
-    public double iterationsRaw() {
-        return iterations.value();
-    }
+//
+//    /** estimated iterations this should be run next, given the value and historically estimated cost */
+//    public int iterations() {
+//        return (int) Math.ceil(iterations.value());
+//    }
+    //public double iterationsRaw() {
+//        return iterations.value();
+//    }
 
 
 

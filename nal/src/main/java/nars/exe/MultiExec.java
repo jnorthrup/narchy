@@ -79,23 +79,23 @@ public class MultiExec extends AbstractExec {
 
     protected void runner() {
 
-
-//        long last = System.nanoTime();
-//        while (true) {
-
-
-
-
-//            long now = System.nanoTime();
-            float dt =
-//                    cycleTimeNanos/1E9f;
-                    0.005f; //fixed JIFFY
-//            last = now;
-
-
-
-
             focus.run(() -> {
+
+                @Deprecated float throttle = nar.loop.throttle.floatValue();
+
+                double cycleTime = nar.loop.cycleTime.getMean();
+                if (cycleTime!=cycleTime)
+                    cycleTime = 0.1f; //10hz alpha
+
+                if (throttle < 1f) {
+                    long sleepTime = Math.round(((1.0 - throttle) * (cycleTime * 1E9)) / 1.0E6f);
+                    if (sleepTime > 0)
+                        Util.sleep(sleepTime);
+                }
+
+                long cycleNanosRemain = Math.round(cycleTime * throttle * 1E9);
+
+                long cycleStart = System.nanoTime();
 
                 int qq = q.size();
                 if (qq > 0) {
@@ -110,19 +110,12 @@ public class MultiExec extends AbstractExec {
                             break;
 
                     } while (true);//--WORK_SHARE > 0);
+
+                    long postWork = System.nanoTime();
+                    cycleNanosRemain = Math.max(0, cycleNanosRemain - (postWork - cycleStart));
                 }
 
-                @Deprecated float throttle = nar.loop.throttle.floatValue(); //HACK
-
-                if (throttle < 1f) {
-                    double cycleTime = nar.loop.cycleTime.getMean();
-                    double cycleTimeNanos = cycleTime * 1E9;
-                    long sleepTime = Math.round(((1.0 - throttle) * (cycleTimeNanos)) / 1.0E6f);
-                    if (sleepTime > 0)
-                        Util.sleep(sleepTime);
-                }
-
-                return dt * throttle;
+                return cycleStart + cycleNanosRemain;
             });
 
 //        }

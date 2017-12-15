@@ -155,15 +155,15 @@ public class PoleCart extends NAgentX {
 
 
 
-        new BeliefPredict(
-                new Termed[] { xVel, angVel, x},
-                8,
-                12,
-                new Termed[] { angX, angY, angVel, xVel },
-                //new LivePredictor.LSTMPredictor(0.1f, 2),
-                new LivePredictor.MLPPredictor(0.1f),
-                nar
-        );
+//        new BeliefPredict(
+//                new Termed[] { xVel, angVel, x},
+//                8,
+//                12,
+//                new Termed[] { angX, angY, angVel, xVel },
+//                //new LivePredictor.LSTMPredictor(0.1f, 2),
+//                new LivePredictor.MLPPredictor(0.1f),
+//                nar
+//        );
 
         SpaceGraph.window(Vis.beliefCharts(100,
                 Lists.newArrayList(x, xVel,

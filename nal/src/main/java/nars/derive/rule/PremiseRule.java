@@ -384,9 +384,9 @@ public class PremiseRule /*extends GenericCompound*/ {
 //                            break;
 
                         //NOTE THIS SHOULD ACTUALLY BE CALLED dtBeforeAfterOrEternal or something
-                        case "dtEventsOrEternals":
-                            pres.add(TaskBeliefOccurrence.eventsOrEternals);
-                            break;
+//                        case "dtEventsOrEternals":
+//                            pres.add(TaskBeliefOccurrence.eventsOrEternals);
+//                            break;
                         case "dtAfter":
                             pres.add(TaskBeliefOccurrence.after);
                             break;

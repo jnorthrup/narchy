@@ -20,7 +20,7 @@ abstract public class Loop {
 
     public final AtomicReference<Thread> thread = new AtomicReference();
 
-    protected final int windowLength = 4;
+    protected final int windowLength = 8;
 
     private float lag, lagSum;
 

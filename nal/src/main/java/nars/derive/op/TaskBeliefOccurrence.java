@@ -29,19 +29,19 @@ abstract public class TaskBeliefOccurrence extends AbstractPred<Derivation> {
 //        }
 //    };
 
-    /**
-     * same eternality
-     */
-    public static final PrediTerm eventsOrEternals = new TaskBeliefOccurrence("eventsOrEternals") {
-
-        @Override
-        public boolean test(Derivation m) {
-            Task b = m.belief;
-            if (b == null)
-                return false;
-            return m.task.isEternal() == b.isEternal();
-        }
-    };
+//    /**
+//     * same eternality
+//     */
+//    public static final PrediTerm eventsOrEternals = new TaskBeliefOccurrence("eventsOrEternals") {
+//
+//        @Override
+//        public boolean test(Derivation m) {
+//            Task b = m.belief;
+//            if (b == null)
+//                return false;
+//            return m.task.isEternal() == b.isEternal();
+//        }
+//    };
 
     /**
      * both task and belief are temporal or belief precedes task

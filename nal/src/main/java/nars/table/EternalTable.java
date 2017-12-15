@@ -6,8 +6,8 @@ import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.BaseConcept;
-import nars.link.Tasklinks;
 import nars.control.Cause;
+import nars.link.Tasklinks;
 import nars.task.NALTask;
 import nars.task.Revision;
 import nars.term.Term;
@@ -80,8 +80,6 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         }
     };
 
-    @Nullable
-    private Truth truth;
 
     public EternalTable(int initialCapacity) {
         super();
@@ -111,7 +109,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                 //TODO can be accelerated by batch remove operation
                 Task x = strongest();
                 while (c < s--) {
-                    ((NALTask)removeLast()).delete(x);
+                    ((NALTask) removeLast()).delete(x);
                 }
 
                 resize(c);
@@ -187,7 +185,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     void removeTask(/*@NotNull*/ Task t, @Nullable String reason) {
 //        if (reason!=null && Param.DEBUG && t instanceof MutableTask)
 //            ((MutableTask)t).log(reason);
-        ((NALTask)t).delete(strongest());
+        ((NALTask) t).delete(strongest());
     }
 
     /**
@@ -197,7 +195,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
      */
     @Nullable
     private /*Revision*/Task tryRevision(/*@NotNull*/ Task y /* input */,
-                                         @Nullable NAR nar) {
+                                                      @Nullable NAR nar) {
 
         Object[] list = this.list;
         int bsize = list.length;
@@ -272,17 +270,17 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         Truth revisionTruth = conclusion;
         Task prevBelief = oldBelief;
         Task x = Task.tryTask(t, y.punc(), conclusion, (term, truth) ->
-            new NALTask(t,
-                    y.punc(),
-                    revisionTruth,
-                    nar.time() /* creation time */,
-                    ETERNAL, ETERNAL,
-                    Stamp.zip(prevBelief.stamp(), y.stamp(), 0.5f /* TODO proportionalize */)
-            )
+                new NALTask(t,
+                        y.punc(),
+                        revisionTruth,
+                        nar.time() /* creation time */,
+                        ETERNAL, ETERNAL,
+                        Stamp.zip(prevBelief.stamp(), y.stamp(), 0.5f /* TODO proportionalize */)
+                )
         );
-        if (x!=null) {
+        if (x != null) {
             x.priSet(BudgetFunctions.fund(Math.max(prevBelief.priElseZero(), y.priElseZero()), false, prevBelief, y));
-            ((NALTask)x).cause = Cause.zip(nar.causeCapacity.intValue(), y, prevBelief);
+            ((NALTask) x).cause = Cause.zip(nar.causeCapacity.intValue(), y, prevBelief);
 
             if (Param.DEBUG)
                 x.log("Insertion Revision");
@@ -341,13 +339,14 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     @Override
     public boolean removeTask(Task x) {
 
-        x.delete();
-
-        int index = indexOf(x, this);
-        if (index == -1)
-            return false; //HACK avoid synchronizing if the item isnt present
 
         synchronized (this) {
+            x.delete();
+
+            int index = indexOf(x, this);
+            if (index == -1)
+                return false;
+
             int findAgainToBeSure = indexOf(x, this);
             return (findAgainToBeSure != -1) && remove(findAgainToBeSure) != null;
         }
@@ -382,10 +381,10 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
             if (revised != null) {
                 if (revised == input) {
                     //already present duplicate
-                    if (!input.isInput()) {
-                        return; //so ignore if derived
-                    } else {
+                    if (input.isInput()) {
                         activated = input;
+                    } else {
+                        return; //so ignore if derived
                     }
                 } else if (revised.equals(input)) { //HACK todo avoid this duplcate equals which is already known from tryRevision
 
@@ -441,8 +440,6 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
      * returns true if it was inserted, false if not
      */
     private boolean insert(/*@NotNull*/ Task input) {
-
-        Truth before = this.truth;
 
         Task displaced = put(input);
 

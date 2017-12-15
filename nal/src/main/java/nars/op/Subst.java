@@ -5,14 +5,16 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
 import nars.term.container.Subterms;
-import nars.term.subst.MapSubst1;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.Null;
 
 
+/**
+ * if STRICT is 4th argument, then there will only be a valid result
+ * if the input has changed (not if nothing changed, and not if the attempted change had no effect)
+ */
 public class Subst extends Functor {
 
     //TODO use special symbol encoding to avoid collision with equivalent normal input
@@ -40,14 +42,9 @@ public class Subst extends Functor {
 
         final Term y = xx.sub(2); //replacement term (y)
 
-        Term result;
-        if (x.equals(y) || !input.containsRecursively(x)) {
-            result = xx.subEquals(3, STRICT) ? Null : input; //no change would be applied
-        }else if (input.equals(x)) { //direct replacement
-            result = y; //TODO add STRICT condition here?
-        } else {
-            result = input.replace(x, y);
-        }
+        Term result = input.replace(x, y);
+        if (xx.subEquals(3, STRICT) && input.equals(result))
+            return Null;
 
 //        if (!(result instanceof Bool && !result.equals(input))) {
 ////            //add mapping in parent

@@ -47,7 +47,7 @@ public class UnifySubst extends Unify {
         //        } catch (InvalidTermException e) {
 //            return null;
 //        }
-            Term aa = a.transform(new MapSubst(xy));
+            Term aa = a.replace(xy);
             if (aa!=null) {
                 if (!target.test(aa)) {
                     stop();
