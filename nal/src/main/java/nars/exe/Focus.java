@@ -2,6 +2,7 @@ package nars.exe;
 
 import com.google.common.base.Joiner;
 import jcog.Services;
+import jcog.Texts;
 import jcog.Util;
 import jcog.decide.Roulette;
 import jcog.learn.Autoencoder;
@@ -228,58 +229,53 @@ public class Focus {
         private final Random rng;
 
 
-        public float learning_rate = 0.05f;
+        public float learning_rate = 0.1f;
+        float NOISE = 0.01f;
 
-        public float[] cur, next;
+        public float[] next;
         public Autoencoder ae;
 
         /**
          * hidden to visible neuron ratio
          */
-        private float hiddenMultipler = 0.5f;
+        private float hiddenMultipler = 0.05f;
 
-        float feedback = 0.5f;
         private float[] tmp;
 
         public AERevaluator(Random rng) {
             super();
-            this.momentum = 0.5f;
+            this.momentum = 0.9f;
             this.rng = rng;
         }
 
         @Override
-        public void update(long time, int dur, FasterList<Cause> causes, float[] goal) {
-            super.update(time, dur, causes, goal);
+        protected void update(float[] val) {
 
-            int numCauses = causes.size();
+            int numCauses = val.length;
             if (numCauses < 2)
                 return;
 
-            if (ae == null || ae.hidden() != numCauses) {
+            if (ae == null || ae.inputs() != numCauses) {
                 int numHidden = Math.round(hiddenMultipler * numCauses);
 
                 ae = new Autoencoder(numCauses, numHidden, rng);
-                cur = new float[numCauses];
                 tmp = new float[numHidden];
             }
 
+            next = ae.reconstruct(val, tmp, true, false);
 
-            for (int i = 0; i < numCauses; i++)
-                cur[i] = /*Util.tanhFast*/(causes.get(i).value());
+            float err = ae.put(val, learning_rate, NOISE, 0f, true, false);
 
-            next = ae.reconstruct(cur, tmp, true, false);
-            ae.put(cur, learning_rate, 0.01f, 0f, true, false);
-
-            //float momentum = 0.5f;
-            //float noise = 0.1f;
-            for (int i = 0; i < numCauses; i++) {
-                //float j = Util.tanhFast((float) (cur[i] + next[i]));
-                float j = /*((rng.nextFloat()-0.5f)*2*noise)*/ +
-                        //((float) (next[i]));
-                        //(float)( Math.abs(next[i]) > Math.abs(cur[i]) ? next[i] : cur[i]);
-                        (float) ((1f - feedback) * cur[i] + feedback * next[i]);
-                causes.get(i).setValue(j);
-            }
+//            //float momentum = 0.5f;
+//            //float noise = 0.1f;
+//            for (int i = 0; i < numCauses; i++) {
+//                //float j = Util.tanhFast((float) (cur[i] + next[i]));
+//                float j = /*((rng.nextFloat()-0.5f)*2*noise)*/ +
+//                        //((float) (next[i]));
+//                        //(float)( Math.abs(next[i]) > Math.abs(cur[i]) ? next[i] : cur[i]);
+//                        (float) ((1f - feedback) * cur[i] + feedback * next[i]);
+//                causes.get(i).setValue(j);
+//            }
         }
     }
 
@@ -303,6 +299,9 @@ public class Focus {
 
         long lastUpdate = ETERNAL;
 
+        /** intermediate calculation buffer */
+        float[] val = ArrayUtils.EMPTY_FLOAT_ARRAY;
+
         @Override
         public void update(long time, int dur, FasterList<Cause> causes, float[] goal) {
 
@@ -318,7 +317,12 @@ public class Focus {
             }
 
             int cc = causes.size();
-            for (int i = 0, causesSize = cc; i < causesSize; i++) {
+
+            if (val.length!=cc) {
+                val = new float[cc];
+            }
+
+            for (int i = 0; i < cc; i++) {
                 causes.get(i).commit(causeSummary);
             }
 
@@ -333,18 +337,18 @@ public class Focus {
 //        }
 
             final float momentum = (float) Math.pow(this.momentum, dt);
-            for (int i = 0, causesSize = cc; i < causesSize; i++) {
+            for (int i = 0; i < cc; i++) {
                 Cause c = causes.get(i);
 
                 Traffic[] cg = c.goalValue;
 
                 //mix the weighted current values of each purpose, each independently normalized against the values (the reason for calculating summary statistics in previous step)
-                float next = 0;
+                float v = 0;
                 for (int j = 0; j < goals; j++) {
-                    next += goal[j] * cg[j].current;
+                    v += goal[j] * cg[j].current;
                 }
 
-                float prev = c.value();
+                //float prev = c.value();
 
 //                    0.99f * (1f - Util.unitize(
 //                            Math.abs(next) / (1 + Math.max(Math.abs(next), Math.abs(prev)))));
@@ -357,9 +361,21 @@ public class Focus {
 //                float den = an + ap;
 //                float m = den > Float.MIN_NORMAL ? (ap / den) : 0f;
 //                m = Util.lerp(m, momentum, 0.99f);
-                float m = momentum;
-                c.setValue(m * prev + (1f - m) * next);
+
+                float prev = val[i];
+                float next = momentum * prev + (1f - momentum) * v;
+                val[i] = next;
             }
+
+            update(val);
+
+            for (int i = 0; i < cc; i++)
+                causes.get(i).setValue(val[i]);
+        }
+
+        /** subclasses can implement their own filters and post-processing of the value vector */
+        protected void update(float[] val) {
+
         }
 
     }

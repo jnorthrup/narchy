@@ -2141,6 +2141,12 @@ public enum Util {
         return (float) (a * Math.sqrt(1f - x0 * x0 * 4) + b);
     }
 
+    /* domain: [0..1], range: [0..1] */
+    public static float smoothDischarge(float x) {
+        x = unitize(x);
+        return 2*(x-1)/(x-2);
+    }
+
 
 //    public static <T>  Collector<T, ?, List<T>> toListOrNullIfEmpty() {
 //        return new Collectors.CollectorImpl<>((Supplier<List<T>>) ArrayList::new, List::add,

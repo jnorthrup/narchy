@@ -2,6 +2,7 @@ package nars.op.stm;
 
 import jcog.Util;
 import jcog.list.FasterList;
+import jcog.pri.Priority;
 import jcog.pri.VLink;
 import nars.*;
 import nars.bag.BagClustering;
@@ -15,7 +16,6 @@ import nars.term.Term;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.util.BudgetFunctions;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
@@ -277,7 +277,7 @@ public class ConjClustering extends Causable {
                                 //priMin;
                                 (priMin + priMax) / 2f;
 
-                        m.priSet(BudgetFunctions.fund(pri, true, uu));
+                        m.priSet(Priority.fund(pri, true, uu));
                         tasksCreated++;
                         gen.add(m);
                     } else {

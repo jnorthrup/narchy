@@ -9,6 +9,65 @@ import static jcog.Util.lerp;
  * Mutable Prioritized
  */
 public interface Priority extends Prioritized {
+    static Prioritized fund(float maxPri, boolean copyOrTransfer, Priority... src) {
+        float priSum = Math.min(maxPri, Pri.sum(src));
+        float perSrc = priSum / src.length;
+
+        Priority u = new Pri(0f);
+        for (Priority t : src) {
+            u.take(t, perSrc, true, copyOrTransfer);
+        }
+        return u;
+    }
+
+    /**
+     * balance the priorities of 2 existing budgets ('a' and 'b')
+     * which transfer some of their budget to the resulting new budget.
+     * This new budget will have already been created with a priority (resultPri)
+     * of a value less than the existing priority sum.
+     * a strength parameter (0 < s < 1) indicates the proportional balance
+     * to source the necessary budget from each respective parent. ex: 0.5 is
+     * equally balanced, while 0.75f means that the budget discount to 'b' will
+     * be 3x higher than that which is subtracted from 'a'.
+     *
+     * if either input budget is null or deleted (non-exists), the burden will shift
+     * to the other budget (if exists). if neither exists, no effect results.
+     */
+    static void balancePri(Priority a, Priority b, float resultPri, float aStrength) {
+
+        boolean aExist = !a.isDeleted();
+        boolean bExist = !b.isDeleted();
+        if (!bExist && !aExist) {
+            //do nothing, the sources are non-existant
+        }
+        else if (aExist && bExist) {
+
+            float bPriNext = b.pri() - resultPri * aStrength;
+            float aPriNext = a.pri() - resultPri * (1f - aStrength);
+
+            if (aPriNext < 0f) {
+                bPriNext -= -aPriNext; //subtract remainder from the other
+                aPriNext = 0f;
+            }
+            if (bPriNext < 0f) {
+                aPriNext -= -bPriNext; //subtract remainder from the other
+                bPriNext = 0f;
+            }
+
+            //assert (!((aPriNext < 0) || (bPriNext < 0))); //throw new RuntimeException("revision budget underflow");
+
+            //apply the changes
+            a.priSet(aPriNext);
+            b.priSet(bPriNext);
+        } else if (aExist /*&& !bExist*/) {
+            //take from 'a' only
+            a.priSub(resultPri);
+        } else if (bExist /*&& !aExist*/) {
+            //take from 'b' only
+            b.priSub(resultPri);
+        }
+    }
+
     /**
      * Change priority value
      *

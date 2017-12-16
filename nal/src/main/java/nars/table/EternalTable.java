@@ -1,6 +1,7 @@
 package nars.table;
 
 import com.google.common.collect.Streams;
+import jcog.pri.Priority;
 import jcog.sort.SortedArray;
 import nars.NAR;
 import nars.Param;
@@ -13,7 +14,6 @@ import nars.task.Revision;
 import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.util.BudgetFunctions;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -279,7 +279,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                 )
         );
         if (x != null) {
-            x.priSet(BudgetFunctions.fund(Math.max(prevBelief.priElseZero(), y.priElseZero()), false, prevBelief, y));
+            x.priSet(Priority.fund(Math.max(prevBelief.priElseZero(), y.priElseZero()), false, prevBelief, y));
             ((NALTask) x).cause = Cause.zip(nar.causeCapacity.intValue(), y, prevBelief);
 
             if (Param.DEBUG)

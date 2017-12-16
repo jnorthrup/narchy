@@ -206,28 +206,43 @@ public abstract class Param extends Services<Term, NAR> {
 
 
     public static float derivationPriority(Task t, Derivation d) {
-        //float p = 1f / (1f + ((float)t.complexity())/termVolumeMax.floatValue());
 
         float discount = 1f;
 
         int dCompl =
                 t.complexity();
-        //t.volume();
-        int pCompl = d.parentComplexity;
-        float relGrowth =
-                unitize(((float) pCompl) / (pCompl + dCompl));
+                //t.volume();
 
-        //relGrowth *= relGrowth; //^2
+        {
+            //relative growth compared to parent complexity
+//        int pCompl = d.parentComplexity;
+//        float relGrowth =
+//                unitize(((float) pCompl) / (pCompl + dCompl));
+//        discount *= (relGrowth);
+        }
 
-        discount *= (relGrowth);
+        {
+            //absolute size relative to limit
+            //float p = 1f / (1f + ((float)t.complexity())/termVolumeMax.floatValue());
+        }
+
+        {
+            //absolute size relative to limit minus paretn complexity (headroom)
+            float complexityHeadroom = Math.max(1, d.termVolMax - d.parentComplexity);
+            float headroomConsumed = (dCompl / (dCompl + complexityHeadroom));
+            discount *= 1f - headroomConsumed;
+        }
+
 
         Truth tr = t.truth();
         if (/* belief or goal */ tr != null) {
 
             //prefer confidence, relative to the premise which formed it
-            float parentConf = d.single ? d.premiseEviSingle : d.premiseEviDouble;
-            if (parentConf > 0) {
-                float relConf = unitize(tr.evi() / parentConf);
+            float parentEvi = d.single ? d.premiseEviSingle : d.premiseEviDouble;
+            if (parentEvi > 0) {
+                float derivedEvi = tr.evi();
+                //float relConf = unitize(derivedEvi / parentEvi);
+                float relConf = derivedEvi / (derivedEvi + parentEvi);
 
                 discount *= relConf;
             }

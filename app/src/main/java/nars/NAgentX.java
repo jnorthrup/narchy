@@ -165,7 +165,7 @@ abstract public class NAgentX extends NAgent {
                 .deriverAdd(7, 8)
                 //.deriverAdd("goal_analogy.nal")
                 .deriverAdd("motivation.nal")
-                .deriverAdd("list.nal")
+                //.deriverAdd("list.nal")
                 .index(
                         new CaffeineIndex(200 * 1024)
                         // new PriMapTermIndex()
@@ -185,13 +185,13 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(32);
+        n.termVolumeMax.set(40);
 
-        n.beliefConfidence(0.9f);
-        n.goalConfidence(0.9f);
+        n.beliefConfidence(0.75f);
+        n.goalConfidence(0.75f);
 
 
-        float priFactor = 0.3f;
+        float priFactor = 0.5f;
         n.DEFAULT_BELIEF_PRIORITY = 1f * priFactor;
         n.DEFAULT_GOAL_PRIORITY = 1f * priFactor;
         n.DEFAULT_QUESTION_PRIORITY = 1f * priFactor;
@@ -200,7 +200,7 @@ abstract public class NAgentX extends NAgent {
         NAgent a = init.apply(n);
 
         new Deriver(a.fire(), Deriver.deriver(6, 7,
-                "motivation.nal", "goal_analogy.nal").apply(n).deriver, n) {
+                "motivation.nal"/*, "goal_analogy.nal"*/).apply(n).deriver, n) {
             @Override
             protected long matchTime(Task task) {
 

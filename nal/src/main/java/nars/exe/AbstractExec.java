@@ -71,17 +71,17 @@ abstract public class AbstractExec extends Exec {
         active =
                 concurrent() ?
 
-                        new ConcurrentCurveBag<>(
-                                Param.activateMerge, new HashMap<>(CAPACITY),
-                                nar.random(), CAPACITY)
+//                        new ConcurrentCurveBag<>(
+//                                Param.activateMerge, new HashMap<>(CAPACITY),
+//                                nar.random(), CAPACITY)
 
-//                        new PriorityHijackBag<Activate,Activate>(CAPACITY, 4) {
-//
-//                            @Override
-//                            public Activate key(Activate value) {
-//                                return value;
-//                            }
-//                        }
+                        new PriorityHijackBag<Activate,Activate>(CAPACITY+7, 4) {
+
+                            @Override
+                            public Activate key(Activate value) {
+                                return value;
+                            }
+                        }
                         :
 
                         new CurveBag<>(

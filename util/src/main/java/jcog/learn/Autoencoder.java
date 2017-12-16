@@ -394,4 +394,8 @@ public class Autoencoder {
 	public int hidden() {
 		return y.length;
 	}
+
+	public int inputs() {
+		return xx.length;
+	}
 }
