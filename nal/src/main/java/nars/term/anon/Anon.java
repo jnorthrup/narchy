@@ -131,7 +131,6 @@ public class Anon {
         assert (x.isNormalized());
         Term y = put(x);
         if (y == null || y instanceof Bool) {
-            put(x); //temporary
             throw new RuntimeException("Anon fail for term: " + t);
         }
         if (y instanceof Compound) {

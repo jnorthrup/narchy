@@ -27,6 +27,7 @@ import nars.truth.Truth;
 import nars.truth.func.TruthOperator;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.impl.factory.Maps;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
@@ -167,7 +168,8 @@ public class Derivation extends Unify {
 
         derivedTerm = new Versioned(this, 3);
 
-        anon = new CachedAnon(16);
+        //anon = new CachedAnon(16);
+        anon = new Anon();
 //            @Override
 //            public Term get(Term x) {
 //                Term y = super.get(x);
@@ -323,8 +325,12 @@ public class Derivation extends Unify {
         this.single = false;
         this.evidenceDouble = evidenceSingle = null;
         this.dtSingle = this.dtDouble = null;
+        this.concOcc[0] = this.concOcc[1] = ETERNAL;
 
         this.task = this.belief = this._task = this._belief = null;
+        this.beliefTerm = null;
+        this.beliefTruth = this.taskTruth = null;
+
         this.size = 0; //HACK instant revert to zero
         this.xy.map.clear(); //must also happen to be consistent
         this.derivedTerm.clear();
@@ -342,12 +348,13 @@ public class Derivation extends Unify {
     /**
      * must call reset() immediately before or after calling this.
      */
-    public void set(Task _task, final Task _belief, Term beliefTerm) {
+    public void set(Task _task, final Task _belief, Term _beliefTerm) {
 
 
         final Task task = this.task = anon.put(this._task = _task);
         if (task == null)
-            throw new NullPointerException(_task + " could not be anonymized");
+            throw new NullPointerException(_task + " could not be anonymized: " +
+                    _task.term().anon() + " , " + anon.put(this._task = _task)) ;
 
         if (_belief != null) {
             if ((this.belief = anon.put(this._belief = _belief)) == null)
@@ -355,21 +362,21 @@ public class Derivation extends Unify {
         } else {
             this.belief = null;
         }
-        beliefTerm = anon.put(beliefTerm);
-
-
         final Term taskTerm = this.taskTerm = task.term();
+        final Term beliefTerm = this.beliefTerm = anon.put(_beliefTerm);
+
+
         this.termSub0Struct = taskTerm.structure();
         this.termSub0op = taskTerm.op().id;
 
 
-        this.concOcc[0] = this.concOcc[1] = ETERNAL;
 
 //        int ttv = taskTerm.vars();
 //        if (ttv > 0 && bt.vars() > 0) {
 //            bt = bt.normalize(ttv); //shift variables up to be unique compared to taskTerm's
 //        }
-        this.beliefTerm = beliefTerm;
+        if (taskTerm == null || beliefTerm == null)
+            throw new RuntimeException("wtf");
         this.parentComplexity =
                 //Util.sum(
                 Math.max(

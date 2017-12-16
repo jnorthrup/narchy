@@ -8,11 +8,11 @@ import nars.term.anon.DirectCompoundTransform;
 import nars.term.sub.Subterms;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.List;
 import java.util.function.IntSupplier;
 
 import static nars.Op.CONJ;
+import static nars.Op.Null;
 import static nars.Op.Temporal;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -37,16 +37,21 @@ public interface Retemporalize extends DirectCompoundTransform {
 
         switch (x.op()) {
             case CONJ:
-                if ((xs.subs() == 2) &&
-                        xs.hasAny(Temporal) && xs.OR(y -> y.isAny(Temporal)) ||
-                        xs.sub(0).unneg().equals(xs.sub(1).unneg())) {
+
+                int n = xs.subs();
+                if (((n == 2) &&
+                        (
+                            xs.isTemporal()
+                                ||
+                            (xs.sub(0).unneg().equals(xs.sub(1).unneg())))
+                        )) {
                     return XTERNAL;
                 } else {
                     return DTERNAL; //simple
                 }
             case IMPL:
                 //impl pred is always non-neg
-                return xs.hasAny(Temporal) && xs.OR(y -> y.isAny(Temporal)) ||
+                return xs.hasAny(CONJ) ||
                         xs.sub(0).unneg().equals(xs.sub(1)) ? XTERNAL : DTERNAL;
             default:
                 throw new UnsupportedOperationException();
@@ -56,33 +61,46 @@ public interface Retemporalize extends DirectCompoundTransform {
 
     @Nullable
     @Override
-    default Term transform(Compound x, Op op, int dt) {
+    default Term transform(final Compound x, Op op, int dt) {
+        int dtNext;
+        if (op.temporal) {
+            dtNext = dt(x);
+            Subterms xx = x.subterms();
+            if (op == CONJ && xx.hasAny(CONJ)) {
+                //recursive conj, decompose to events
+                ArrayHashSet<Term> s = new ArrayHashSet();
+                x.eventsWhile((when, zz) -> {
+                    if (!zz.equals(x)) {
+                        s.add(zz);
+                    }
+                    return true;
+                }, 0, false, false, false, 0);
+                if (s.size() > 1) {
+                    List<Term> sl = s.list;
+                    sl.replaceAll((zz) -> zz.transform(Retemporalize.this));
+                    return CONJ.the(XTERNAL, sl);
+                }
+            }
+            if (dt == dtNext && !xx.hasAny(Temporal))
+                return x; //no change
+
+        } else {
+            if (!x.hasAny(Temporal))
+                return x;
+
+            assert (dt == DTERNAL);
+            dtNext = DTERNAL;
+        }
+
+        return DirectCompoundTransform.super.transform(x, op, dtNext);
+    }
+
+    @Override
+    default Term transform(Compound x) {
         if (!x.hasAny(Temporal)) {
             return x;
         } else {
-            int dtNext;
-            if (op.temporal) {
-                dtNext = dt(x);
-                if (dtNext == XTERNAL && op == CONJ && x.subterms().hasAny(CONJ)) {
-                    //recursive conj, decompose to events
-                    ArrayHashSet<Term> s = new ArrayHashSet();
-                    x.eventsWhile((when, zz) -> {
-                        if (!zz.equals(x)) {
-                            s.add(zz);
-                        }
-                        return true;
-                    }, 0, false, false, false, 0);
-                    if (s.size() > 2) {
-                        s.list.replaceAll((zz)-> zz.transform(Retemporalize.this));
-                        return CONJ.the(XTERNAL, s.list);
-                    }
-                }
-                if (dt == dtNext && !x.subterms().hasAny(Temporal))
-                    return x; //no change
-            } else {
-                dtNext = dt;
-            }
-            return DirectCompoundTransform.super.transform(x, op, dtNext);
+            return DirectCompoundTransform.super.transform(x);
         }
     }
 

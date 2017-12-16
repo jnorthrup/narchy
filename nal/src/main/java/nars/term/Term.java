@@ -413,7 +413,7 @@ public interface Term extends Termed, Comparable<Termed> {
      */
     default boolean isAny(int bitsetOfOperators) {
         int s = op().bit;
-        return (s & bitsetOfOperators) == s;
+        return (bitsetOfOperators & s) > 0;
     }
 
 //    /** for multiple Op comparsions, use Op.or to produce an int and call isAny(int vector) */

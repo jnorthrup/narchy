@@ -29,6 +29,7 @@ import nars.task.util.InvalidTaskException;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.anon.Anom;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.sub.Subterms;

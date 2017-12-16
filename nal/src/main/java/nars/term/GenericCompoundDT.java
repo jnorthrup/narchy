@@ -159,10 +159,7 @@ public class GenericCompoundDT /*extends ProxyTerm<Compound>*/ implements Compou
         return transform(t);
     }
 
-    @Override
-    public @Nullable Term transform(CompoundTransform t) {
-        return t.transform(this, op(), dt);
-    }
+
 
 
     @Override

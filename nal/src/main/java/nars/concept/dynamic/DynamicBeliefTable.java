@@ -160,8 +160,20 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
 
 
                     if (templateSubs == 2) {
-                        artificialDT = (start != end && end - start < Integer.MAX_VALUE) ?
-                                ((int) (end - start)) : nar.dur();
+                        if (start != end && end - start < Integer.MAX_VALUE) {
+                            if (end!=start) {
+                                artificialDT = (int) (end - start);
+                            } else {
+                                artificialDT =
+                                    (template.sub(0).unneg().equals(template.sub(1).unneg())) ?
+                                        nar.dur() :
+                                        0; //ok for simultaneous
+                            }
+                        } else {
+                            artificialDT = nar.dur();
+                        }
+
+
                     } else /*(if (templateSubs > 2)*/ {
                         assert (templateSubs > 2);
                         artificialDT = 0; //commutive conjunction

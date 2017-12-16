@@ -70,11 +70,13 @@ abstract public class DynamicTruthModel {
             if (negated)
                 it = it.unneg();
 
-            Concept subConcept = n.concept(it);
+            Concept subConcept = n.conceptualize(it);
             if (!(subConcept instanceof TaskConcept)) {
                 if (!(subConcept == null || !(subConcept instanceof NodeConcept)))
                     throw new RuntimeException(it + " does not reference a TaskConcept: " + subConcept);
 
+                //TEMPORARY
+                n.conceptualize(it);
                 return null;
             }
 

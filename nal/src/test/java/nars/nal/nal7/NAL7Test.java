@@ -1351,7 +1351,7 @@ public class NAL7Test extends NALTest {
         */
 
         test
-
+                .log()
                 .inputAt(1, "(a). :|:")
                 .inputAt(2, "((b) &&+3 (d)). :|:")
                 .mustBelieve(cycles, "(((a) &&+1 (b)) &&+3 (d))", 1f, 0.81f, 1)

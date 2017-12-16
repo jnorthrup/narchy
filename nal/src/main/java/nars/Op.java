@@ -156,7 +156,8 @@ public enum Op {
             int absoluteness = 0, trues = 0;
             for (Term t : u) {
                 if (t instanceof Bool) {
-                    if (t == Null) return Null;
+                    if (t == Null)
+                        return Null;
                     if (t == False) {
                         absoluteness = -1;
                     } else if (t == True) {
@@ -1806,7 +1807,7 @@ public enum Op {
             if (x == True) {
                 //everything intersects with the "all", so remove this TRUE below
                 trues++;
-            } else if (x == False) {
+            } else if (x == Null || x == False) {
                 return Null;
             }
         }

@@ -220,16 +220,22 @@ public class ConjClustering extends Causable {
                 boolean involved = false;
                 LongObjectPair<Term> ps = pair(zs, xt);
                 Term xtNeg = xt.neg();
+
+                //TODO fairly decide midpoint if the conj cant hold both endpoints:
+
                 if (!vv.containsKey(pair(zs, xtNeg)) && null == vv.putIfAbsent(ps, t)) {
                     vol += xtv;
                     involved = true;
                 }
 
                 if (ze != zs) {
-                    LongObjectPair<Term> pe = pair(ze, xt);
-                    if (!vv.containsKey(pair(ze, xtNeg)) && null == vv.putIfAbsent(pe, t)) { //end point, if different from start
-                        vol += xtv;
-                        involved = true;
+                    //endpoint
+                    if (vol + xtv + 1 < volMax) {
+                        LongObjectPair<Term> pe = pair(ze, xt);
+                        if (!vv.containsKey(pair(ze, xtNeg)) && null == vv.putIfAbsent(pe, t)) { //end point, if different from start
+                            vol += xtv;
+                            involved = true;
+                        }
                     }
                 }
 

@@ -20,7 +20,7 @@ public interface TaskRegion extends HyperRegion, Tasked {
     /**
      * cost of stretching a node by freq
      */
-    float FREQ_COST = 4f;
+    float FREQ_COST = 1.5f;
     /**
      * cost of stretching a node by conf
      */
@@ -182,7 +182,7 @@ public interface TaskRegion extends HyperRegion, Tasked {
 
         long s = this.start();
         if (s == ETERNAL)
-            return (a + b) / 2L; //use midpoint of the two if this task is eternal
+            return ETERNAL;
 
         long e = this.end();
         if ((a >= s) && (b <= e)) {

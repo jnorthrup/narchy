@@ -335,8 +335,8 @@ public abstract class Param extends Services<Term, NAR> {
 
     public final static int UnificationStackMax = 64; //how many assignments can be stored in the 'versioning' maps
 
-    /** estimate initial capacity for variable unification maps */
-    public static final int UnificationVariableCapInitial = 8;
+//    /** estimate initial capacity for variable unification maps */
+//    public static final int UnificationVariableCapInitial = 8;
 
 
     //public static final boolean DEBUG_BAG_MASS = false;

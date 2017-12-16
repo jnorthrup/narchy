@@ -719,7 +719,7 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     @Nullable
     default Term transform(CompoundTransform t) {
-        return t.transform(this, op(), DTERNAL);
+        return t.transform(this);
     }
 
     @Override
@@ -771,24 +771,14 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     @Nullable
     default Term temporalize(Retemporalize r) {
-//        return r.transform(this, op(), DTERNAL);
-//        if (!hasAny(Op.Temporal))
-//            return this;
-//        else {
-//            Op o = op();
-//            boolean ot = o.temporal;
-//            int dt = ot ? r.dt(this) : DTERNAL;
-//
-        Term t = r.transform(this, op(), dt());
+        Term t = r.transform(this);
         return t == null ? Null : t; //why happens Null?
-//        }
     }
 
     /*@NotNull*/
     @Override
     default Term root() {
-        Term term = temporalize(Retemporalize.retemporalizeRoot);
-        return term == null ? Null : term;
+        return temporalize(Retemporalize.retemporalizeRoot);
     }
 
 

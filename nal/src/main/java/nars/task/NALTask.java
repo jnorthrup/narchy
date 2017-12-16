@@ -8,6 +8,8 @@ import nars.Task;
 import nars.control.Cause;
 import nars.task.util.InvalidTaskException;
 import nars.term.Term;
+import nars.term.anon.Anom;
+import nars.term.atom.Atom;
 import nars.truth.DiscreteTruth;
 import nars.truth.Truth;
 import nars.truth.Truthed;
@@ -52,7 +54,7 @@ public class NALTask extends Pri implements Task {
                 throw new InvalidTaskException(term, "null truth");
         }
 
-        if (Param.DEBUG_EXTRA)
+        if (Param.DEBUG)
             Task.validTaskTerm(term, punc, false);
 
         this.term = term;

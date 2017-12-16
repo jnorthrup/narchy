@@ -5,8 +5,10 @@ import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.concept.builder.ConceptBuilder;
 import nars.concept.builder.DefaultConceptBuilder;
 import nars.control.Deriver;
+import nars.derive.rule.PremiseRuleSet;
 import nars.exe.Exec;
 import nars.exe.UniExec;
+import nars.index.term.PatternIndex;
 import nars.index.term.TermIndex;
 import nars.index.term.map.CaffeineIndex;
 import nars.index.term.map.MapTermIndex;
@@ -100,12 +102,19 @@ public class NARS {
     /**
      * adds a deriver with the provided rulesets
      */
-    public NARS deriverAdd(String... rules) {
+    public NARS deriverAdd(String... ruleFiles) {
         deriverAdd(
-                Deriver.deriver(1, 9, rules)
+                Deriver.deriver(1, 9, ruleFiles)
         );
         return this;
     }
+    public NARS deriverAddRules(String... rules) {
+        deriverAdd(
+                Deriver.deriver((n) -> new PremiseRuleSet(new PatternIndex(), n, rules))
+        );
+        return this;
+    }
+
 
 
     public NARS deriverAdd(Function<NAR, Deriver> dBuilder) {

@@ -226,8 +226,10 @@ public class TaskTest {
             assertEquals(sta, t.myNearestTimeTo(0, 1));
             assertEquals(sta, t.myNearestTimeTo(0, mid));
             assertEquals(end, t.myNearestTimeTo(30, 40));
+            assertEquals((9+21)/2, t.myNearestTimeTo(9, 21)); //midpoint
+        } else {
+            assertEquals(ETERNAL, t.myNearestTimeTo(9, 21)); //midpoint
         }
-        assertEquals((9+21)/2, t.myNearestTimeTo(9, 21)); //midpoint
 
 
         return t;

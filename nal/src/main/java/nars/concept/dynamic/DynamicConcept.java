@@ -2,6 +2,7 @@ package nars.concept.dynamic;
 
 import nars.NAR;
 import nars.concept.TaskConcept;
+import nars.concept.builder.DefaultConceptBuilder;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
@@ -10,12 +11,9 @@ import org.jetbrains.annotations.NotNull;
 /** just a marker class for a TaskConcept with DynamicBeliefTables */
 public final class DynamicConcept extends TaskConcept {
 
-    @NotNull
-    @Deprecated final NAR nar;
 
-    public DynamicConcept(@NotNull Term term, BeliefTable beliefs, BeliefTable goals, NAR nar) {
-        super(term, beliefs, goals, nar.terms.conceptBuilder);
-        this.nar = nar;
+    public DynamicConcept(Term term, BeliefTable beliefs, BeliefTable goals, DefaultConceptBuilder conceptBuilder) {
+        super(term, beliefs, goals, conceptBuilder);
     }
 
 

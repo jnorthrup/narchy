@@ -11,6 +11,7 @@ import nars.derive.constraint.MatchConstraint;
 import nars.derive.mutate.Termutator;
 import nars.index.term.NewCompound;
 import nars.term.Term;
+import nars.term.TermHashMap;
 import nars.term.Termlike;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.NotNull;
@@ -85,7 +86,7 @@ public abstract class Unify extends Versioning implements Subst {
         this.random = random;
         this.type = type;
 
-        xy = new ConstrainedVersionMap(this, Param.UnificationVariableCapInitial);
+        xy = new ConstrainedVersionMap(this);
         //this.free = new Versioned<>(this, 4); //task, belief, subIfUnifies + ?
         //this.freeCount = new Versioned<>(versioning, 8);
 
@@ -360,8 +361,11 @@ public abstract class Unify extends Versioning implements Subst {
     }
 
     private class ConstrainedVersionMap extends VersionMap<Term, Term> {
-        public ConstrainedVersionMap(Versioning versioning, int mapCap) {
-            super(versioning, mapCap, 1);
+        public ConstrainedVersionMap(Versioning versioning) {
+            super(versioning,
+                //4
+                new TermHashMap<>(),
+            1);
         }
 
 //        @Nullable

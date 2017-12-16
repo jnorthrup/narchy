@@ -16,11 +16,13 @@ public interface DirectCompoundTransform extends CompoundTransform {
 
 
     @Override
-    default @Nullable Term transform(Compound x, Op op, int dt) {
+    default Term transform(Compound x) {
         Op o = x.op();
         if (o == NEG) {
             Term x0 = x.unneg();
-            Term y = x0.transform(this);
+            Term y = x0 instanceof Compound ?
+                    CompoundTransform.super.transform((Compound) x0) :
+                    applyTermOrNull(x0);
             if (y == null)
                 return null;
             else if (y!=x0)
@@ -28,17 +30,23 @@ public interface DirectCompoundTransform extends CompoundTransform {
             else
                 return x; //unmodified
         }
-
-//            } else if (dt == DTERNAL && !o.commute(DTERNAL, x.subs())) {
-//
-//                //replace in same positions, avoiding the more detailed term building processes
-//
-//                return transformDirect(o, x);
-//
-//            } else {
-            return CompoundTransform.super.transform(x, op, dt);
-//            }
+        return CompoundTransform.super.transform(x);
     }
+
+//    @Override
+//    default @Nullable Term transform(Compound x, Op op, int dt) {
+//
+//
+////            } else if (dt == DTERNAL && !o.commute(DTERNAL, x.subs())) {
+////
+////                //replace in same positions, avoiding the more detailed term building processes
+////
+////                return transformDirect(o, x);
+////
+////            } else {
+//            return CompoundTransform.super.transform(x, op, dt);
+////            }
+//    }
 
 //        protected Term transformDirect(Op o, Compound x) {
 //

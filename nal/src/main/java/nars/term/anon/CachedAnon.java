@@ -3,6 +3,7 @@ package nars.term.anon;
 import jcog.memoize.LinkedMRUMemoize;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.atom.Atom;
 
 public class CachedAnon extends Anon {
 
@@ -34,8 +35,9 @@ public class CachedAnon extends Anon {
     @Override
     protected Term putTransformed(Term x) {
         Term y = super.putTransformed(x);
-        if (y instanceof Compound)
+        if (y instanceof Compound) {
             cache.putIfAbsent(y, x);
+        }
         return y;
     }
 }

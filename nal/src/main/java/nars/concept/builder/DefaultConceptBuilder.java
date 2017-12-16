@@ -109,7 +109,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
 
                         Subterms subjsubs = subj.subterms();
-                        if (validDynamicSubterms(subjsubs)) {
+                        {
                             int s = subjsubs.subs();
                             FasterList<Term> lx = new FasterList(0, new Term[s]);
                             if (subj instanceof Int.IntRange || so == PROD && subj.hasAny(INT)) {
@@ -187,8 +187,9 @@ public class DefaultConceptBuilder implements ConceptBuilder {
                         //(M --> P), (M --> S), notSet(S), notSet(P), neqCom(S,P) |- (M --> (P | S)), (Belief:Union)
                         //(M --> P), (M --> S), notSet(S), notSet(P), neqCom(S,P) |- (M --> (P - S)), (Belief:Difference)
                         Compound cpred = (Compound) pred;
-                        if (validDynamicSubterms(cpred.subterms())) {
+                        {
                             int s = cpred.subs();
+                            //TODO use a List for unrolling IntRange's
                             Term[] x = new Term[s];
                             boolean valid = true;
                             for (int i = 0; i < s; i++) {
@@ -243,6 +244,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
                 break;
 
             case DIFFe:
+                //root DIFFe (not subj or pred of an inh)
                 if (validDynamicSubterms(ts))
                     dmt = new DynamicTruthModel.Difference(ts.arrayShared());
                 break;
@@ -253,20 +255,13 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
         if (dmt != null) {
 
-            BeliefTable beliefs = dmt != null ?
-                    new DynamicBeliefTable(t, newTemporalBeliefTable(t), dmt, true) :
-                    beliefTable(t, true);
+            return new DynamicConcept(t,
+                    new DynamicBeliefTable(t, newTemporalBeliefTable(t), dmt, true),
+                    goalable(t) ?
+                        new DynamicBeliefTable(t, newTemporalBeliefTable(t), dmt, false) :
+                        BeliefTable.Empty,
+                    this);
 
-            BeliefTable goals;
-            if (goalable(t)) {
-                goals = dmt != null ?
-                        new DynamicBeliefTable(t, newTemporalBeliefTable(t), dmt, true) :
-                        beliefTable(t, false);
-            } else {
-                goals = BeliefTable.Empty;
-            }
-
-            return new DynamicConcept(t, beliefs, goals, nar);
         } else {
             return new TaskConcept(t, this);
         }
@@ -308,7 +303,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
 
     final static Predicate<Term> validDynamicSubterm = x ->
-            Task.validTaskTerm(x.unneg());
+            x!=null && Task.validTaskTerm(x.unneg());
 
     private static boolean validDynamicSubterms(Subterms subterms) {
         return subterms.AND(validDynamicSubterm);
@@ -328,11 +323,11 @@ public class DefaultConceptBuilder implements ConceptBuilder {
     @Nullable
     public Termed apply(Term t, Termed prev) {
         if (prev != null) {
-            if (prev instanceof Concept) {
+            //if (prev instanceof Concept) {
                 Concept c = ((Concept) prev);
                 if (!c.isDeleted())
                     return c;
-            }
+            //}
         }
 
         //already a concept, or non-conceptualizable:  assume it is from here

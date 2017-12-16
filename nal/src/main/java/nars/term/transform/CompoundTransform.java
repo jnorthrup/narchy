@@ -65,7 +65,7 @@ public interface CompoundTransform extends TermContext {
                 int xes = xe.subs();
 
                 if (y == null) {
-                    y = new NewCompound(PROD, s - 1 + xes /*estimate */); //create anyway because this will signal if it was just empty
+                    y = new NewCompound( null,s - 1 + xes /*estimate */); //create anyway because this will signal if it was just empty
                     if (i > 0) x.forEach(y::add, 0, i); //add previously skipped subterms
                 }
 
@@ -89,7 +89,7 @@ public interface CompoundTransform extends TermContext {
                     }
 
                     if (y == null) {
-                        y = new NewCompound(PROD, s);
+                        y = new NewCompound(null, s);
                         if (i > 0) x.forEach(y::add, 0, i); //add previously skipped subterms
                     }
                 }
@@ -133,6 +133,11 @@ public interface CompoundTransform extends TermContext {
             return subterm;
         }
     };
+
+    default Term transform(Compound x) {
+        return transform(x, x.op(), x.dt());
+    }
+
 
 //    CompoundTransform Identity = (parent, subterm) -> subterm;
 

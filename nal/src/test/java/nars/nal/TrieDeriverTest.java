@@ -208,12 +208,12 @@ static PrediTerm<Derivation> the(PremiseRuleSet r) {
         tests.forEach(TestNAR::test);
     }
 
-    public TestNAR test(int tlMax, String... rules) throws Narsese.NarseseException {
+    public TestNAR test(int tlMax, String... rules) {
         return test(tlMax, false, rules);
     }
 
     public TestNAR test(int tlMax, boolean debug, String... rules) {
-        NAR n = new NARS().deriverAdd(rules).get();
+        NAR n = new NARS().deriverAddRules(rules).get();
         TestNAR t = new TestNAR(n);
         tests.add(t);
         return t;

@@ -7,6 +7,7 @@ import nars.Task;
 import nars.control.Derivation;
 import nars.task.TimeFusion;
 import nars.term.Term;
+import nars.term.TermHashMap;
 import nars.term.Termed;
 import nars.term.atom.Bool;
 
@@ -50,6 +51,7 @@ public class DeriveTime extends TimeGraph {
 
     @Override
     public void clear() {
+        super.clear();
         cache.clear();
     }
 
@@ -233,7 +235,6 @@ public class DeriveTime extends TimeGraph {
 //
 //        }
 
-
         ArrayHashSet<Event> solutions = cache!=null ? solveCached(pattern) : solveAll(pattern);
 
         Event event = solutions.first();
@@ -354,7 +355,6 @@ public class DeriveTime extends TimeGraph {
     protected ArrayHashSet<Event> solveCached(Term pattern) {
         return cache.computeIfAbsent(pattern, this::solveAll);
     }
-
 
 
     protected ArrayHashSet<Event> solveAll(Term pattern) {

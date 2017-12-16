@@ -127,11 +127,20 @@ public final class Conclusion extends AbstractPred<Derivation> {
         }
 
 
-        if (d.concPunc==BELIEF || d.concPunc==GOAL) {
-            //only should eliminate XTERNAL from beliefs and goals.  ok if it's in questions/quests since it's the only way to express indefinite temporal repetition
+        if (d.temporal) {
+            if (d.concPunc == BELIEF || d.concPunc == GOAL) {
+                //only should eliminate XTERNAL from beliefs and goals.  ok if it's in questions/quests since it's the only way to express indefinite temporal repetition
+                //c2 = c2.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
+                //if (c2 == null)
+                //  return false;
+                if (c2.hasXternal()) {
+                    return false;
+                } else {
+
+                }
+            }
+        } else {
             c2 = c2.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
-            if (c2 == null)
-                return false;
         }
 
         c2 = c2.normalize();
