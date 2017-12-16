@@ -56,7 +56,9 @@ public class Activate extends PLink<Concept> implements Termed {
 
 
         //TODO add a termlink vs. tasklink balance parameter
-        int TERMLINKS_SAMPLED = (int) Math.ceil((float) Math.sqrt(premisesMax));
+        int TERMLINKS_PROPAGATED =
+                premisesMax;
+                //(int) Math.ceil((float) Math.sqrt(premisesMax));
 
 //        int tlSampled = Math.min(ntermlinks, TERMLINKS_SAMPLED);
 //        FasterList<PriReference<Term>> terml = new FasterList(tlSampled);
@@ -95,7 +97,7 @@ public class Activate extends PLink<Concept> implements Termed {
                     Premise p = new Premise(tasklink, term,
 
                             //targets:
-                            randomTemplateConcepts(conceptualizedTemplates, rng, TERMLINKS_SAMPLED /* heuristic */, nar)
+                            randomTemplateConcepts(conceptualizedTemplates, rng, TERMLINKS_PROPAGATED /* heuristic */, nar)
 
                     );
 

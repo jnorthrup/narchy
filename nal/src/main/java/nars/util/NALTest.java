@@ -50,6 +50,8 @@ public abstract class NALTest {
 
         this.testInfo = i;
 
+        test.nar.time.synch(test.nar);
+
         test.test();
 
         nar.stop();

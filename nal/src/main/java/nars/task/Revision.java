@@ -2,7 +2,6 @@ package nars.task;
 
 import jcog.Util;
 import jcog.list.FasterList;
-import jcog.math.Interval;
 import jcog.pri.Pri;
 import jcog.pri.Prioritized;
 import nars.NAR;
@@ -138,7 +137,7 @@ public class Revision {
 //                    aProp, curDepth, rng, mergeOrChoose).neg();
 //        }
 
-        assert(dt!=XTERNAL);
+        assert (dt != XTERNAL);
 
         int len = a.subs();
         if (len > 0) {
@@ -150,7 +149,7 @@ public class Revision {
                     return a;
                 }
 
-                if (!mergeOrChoose && dtCommutes && !a.subterms().hasAny(Op.CONJ) && !b.subterms().hasAny(Op.CONJ) ) {
+                if (!mergeOrChoose && dtCommutes && !a.subterms().hasAny(Op.CONJ) && !b.subterms().hasAny(Op.CONJ)) {
                     return choose(a, b, aProp, rng);
                 } else {
                     switch (ao) {
@@ -388,7 +387,7 @@ public class Revision {
 //                return null;
 
 
-        TaskTimeJoint joint = new TaskTimeJoint(as, a.end(), bs, b.end(), nar);
+        TimeFusion joint = new TimeFusion(as, a.end(), bs, b.end());
         factor *= joint.factor;
         if (factor < Prioritized.EPSILON) return null;
 
@@ -400,7 +399,7 @@ public class Revision {
 
         float confMin =
                 0;
-                //nar.confMin.floatValue();
+        //nar.confMin.floatValue();
         Truth rawTruth = revise(a, b, factor, c2wSafe(confMin));
         if (rawTruth == null)
             return null;
@@ -646,86 +645,6 @@ public class Revision {
         return d / depth;
     }
 
-    public static final class TaskTimeJoint {
-
-        public final float factor;
-        public final long unionStart;
-        public final long unionEnd;
-
-        public TaskTimeJoint(long as, long ae, long bs, long be, NAR nar) {
-            this(as, ae, bs, be, 0.1f, nar);
-        }
-
-        /**
-         * strict is a threshold value in 0..1.0 of evidence discount between
-         * the cases of full or partial overlap, or
-         * if there is no overlap then the discount applies in
-         * proportion to how much separation exists.
-         *
-         * if strict==0, then cases where no overlap occurs are not tolerated
-         * and the resulting factor is zero.
-         *
-         * otherwise, for values greater than 0, some separation is tolerated
-         * in proportion to the length of the involved tasks
-         *
-         *                                                   strict
-         *                                                      x
-         * 0 <-- no overlap (to increasing separation distance) | partial overlap | full overlap > +1.0
-         */
-        public TaskTimeJoint(long as, long ae, long bs, long be, float strict, NAR nar) {
-
-            Interval ai = new Interval(as, ae);
-            Interval bi = new Interval(bs, be);
-
-            Interval uu = ai.union(bi);
-            this.unionStart = uu.a;
-            this.unionEnd = uu.b;
-
-            long u = uu.length();
-            Interval ii = ai.intersection(bi);
-            if (ii != null) {
-                //partial intersection, weaken the union
-                this.factor = Util.lerp( (1f+ii.length()) / (1f+ u), strict, 1f);
-            } else {
-                //no intersection
-                if (strict==0) {
-                    this.factor = 0;
-                } else {
-                    long al = ai.length();
-                    long bl = bi.length();
-                    long separation = u - al - bl; assert(separation > 0);
-                    float separationRatio = ((float)separation) / (1+Math.min(al, bl));
-                    this.factor = Util.lerp(1f / (1f + separationRatio), 0, strict);
-        //
-        //
-        //            float factor = 1f;
-        //            if (u > s) {
-        //
-        //                /** account for how much the merge stretches the truth beyond the range of the inputs */
-        //                long separation = u - s;
-        //                if (separation > 0) {
-        //                    //int hd = nar.dur();
-        //                    int minterval = Math.min(al, bl);// + hd; //+hd to pad the attention surrounding point0like events
-        //                    if (separation < minterval) {
-        //                        factor = 1f - separation / ((float) minterval);
-        //                    } else {
-        //                        factor = 0; //too separate
-        //                    }
-        //
-        //
-        ////                    factor = 1f - (separation / (separation + (float) u));
-        //
-        //                }
-        //            }
-        //
-        //            this.factor = factor;
-
-                }
-            }
-
-
-        }
-    }
 }
 
 //    /** get the task which occurrs nearest to the target time */

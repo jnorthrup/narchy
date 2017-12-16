@@ -147,7 +147,7 @@ public abstract class Time implements Clock, Serializable {
     }
 
     public void cycle(NAR n) {
-        n.input(exeScheduled());
+        synch(n);
     }
 
 

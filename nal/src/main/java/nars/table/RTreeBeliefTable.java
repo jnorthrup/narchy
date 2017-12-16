@@ -57,7 +57,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
     static final int SCAN_DIVISIONS = 5;
 
     public static final int MIN_TASKS_PER_LEAF = 2;
-    public static final int MAX_TASKS_PER_LEAF = 4;
+    public static final int MAX_TASKS_PER_LEAF = 3;
     public static final Spatialization.DefaultSplits SPLIT =
             Spatialization.DefaultSplits.AXIAL; //Spatialization.DefaultSplits.LINEAR; //<- probably doesnt work here
 

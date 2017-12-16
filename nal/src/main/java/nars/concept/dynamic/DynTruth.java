@@ -1,5 +1,6 @@
 package nars.concept.dynamic;
 
+import jcog.Util;
 import jcog.list.FasterList;
 import nars.NAR;
 import nars.Op;
@@ -7,6 +8,7 @@ import nars.Param;
 import nars.Task;
 import nars.control.Cause;
 import nars.task.NALTask;
+import nars.task.TimeFusion;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.truth.Stamp;
@@ -83,17 +85,23 @@ public final class DynTruth {
             return null;
 
         Term c = this.term;
-        long[] se = TaskRegion.range(e);
-        long start = se[0];
-        long end = se[1];
-//        long eviRange = end - start;
-//        int termRange = c.dtRange();
+        long start, end;
+        if (!c.op().temporal) {
+            //dilute the evidence in proportion to temporal sparseness for non-temporal results
+            TimeFusion se = TimeFusion.the(e);
+            evi *= se.factor;
+            if (evi < eviMin)
+                return null;
+            start = se.unionStart;
+            end = se.unionEnd;
+        } else {
+            start = end = e.minValue(TaskRegion::start); //left-align
+        }
 
+//        int termRange = c.dtRange();
+//        long eviRange = end - start;
 //        float rangeCoherence = eviRange==termRange ? 1f :
 //                1f - ((float)Math.abs(eviRange - termRange))/Math.max(eviRange, termRange)/nar.dur();
-//        evi *= rangeCoherence;
-//        if (evi < eviMin)
-//            return null;
 
         //TODO compute max valid overlap to terminate the zip early
         ObjectFloatPair<long[]> ss = Stamp.zip(e, Param.STAMP_CAPACITY);

@@ -38,14 +38,14 @@ public class Premise {
 
     static final Logger logger = LoggerFactory.getLogger(Premise.class);
 
-    public final PriReference<Task> task;
+    public final PriReference<Task> taskLink;
     public final Term termLink;
 
     @Nullable
     public final Collection<Concept> links;
 
     public Premise(PriReference<Task> tasklink, Term termlink, Collection<Concept> links) {
-        this.task = tasklink;
+        this.taskLink = tasklink;
         this.termLink = termlink;
         this.links = links;
     }
@@ -75,7 +75,7 @@ public class Premise {
 
         //nar.emotion.count("Premise_run");
 
-        final Task task = this.task.get();
+        final Task task = this.taskLink.get();
         if (task == null || task.isDeleted()) {
 //            Task fwd = task.meta("@");
 //            if (fwd!=null)
@@ -182,7 +182,7 @@ public class Premise {
 
                             @Nullable Task answered = task.onAnswered(match, n);
                             if (answered != null) {
-                                n.emotion.onAnswer(this.task, answered);
+                                n.emotion.onAnswer(this.taskLink, answered);
                             }
 
                             if (match.isBelief()) {
@@ -250,7 +250,7 @@ public class Premise {
          *  and inversely proportional to the increase in term complexity of the
          *  unified variable.  ie. $x -> (y)  would get a stronger link than  $x -> (y,z)
          */
-        PriReference<Task> taskLink = this.task;
+        PriReference<Task> taskLink = this.taskLink;
         Term moreConstantTerm = moreConstant.term();
         Term lessConstantTerm = lessConstant.term();
         float pri = taskLink.priElseZero() * Util.unitize(lessConstantTerm.volume() / ((float) moreConstantTerm.volume()));

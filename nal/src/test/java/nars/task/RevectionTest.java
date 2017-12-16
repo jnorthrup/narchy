@@ -1,6 +1,7 @@
 package nars.task;
 
 import com.google.common.collect.Lists;
+import jcog.math.Interval;
 import nars.*;
 import nars.term.Term;
 import nars.test.analyze.BeliefAnalysis;
@@ -380,4 +381,52 @@ public class RevectionTest {
 
     }
 
+    @Test public void testTimeFusion_Pairs() {
+        //point overlap
+        assertTimeFusion(1, 1, 1f, new Interval(1), new Interval(1));
+
+        //range overlap
+        assertTimeFusion(1, 2, 1f, new Interval(1,2), new Interval(1,2));
+
+        //partial range overlap
+        assertTimeFusion(1, 2, 0.75f, new Interval(1,1), new Interval(1,2));
+
+        //end-to-end point joint
+        assertTimeFusion(1, 2, 0.5f, new Interval(1), new Interval(2));
+
+        //end-to-end range joint
+        assertTimeFusion(1, 4, 0.5f, new Interval(1,2), new Interval(3, 4));
+
+        //gap
+        assertTimeFusion(1, 3, 1/3f, new Interval(1,1), new Interval(3,3));
+    }
+
+    @Test public void testTimeFusion_Triples() {
+        //point overlap
+        assertTimeFusion(1, 1, 1f, new Interval(1), new Interval(1), new Interval(1));
+
+        //range overlap
+        assertTimeFusion(1, 2, 1f, new Interval(1,2), new Interval(1,2), new Interval(1,2));
+
+        //partial range overlap
+        assertTimeFusion(1, 2, 0.833f, new Interval(1,1), new Interval(1,2), new Interval(1,2));
+        assertTimeFusion(1, 2, 2/3f, new Interval(1,1), new Interval(1,1), new Interval(1,2));
+
+        //end-to-end point joint
+        assertTimeFusion(1, 3, 1/3f, new Interval(1), new Interval(2), new Interval(3));
+
+        //end-to-end range joint
+        assertTimeFusion(1, 6, 1/3f, new Interval(1,2), new Interval(3, 4), new Interval(5, 6));
+
+        //gap
+        assertTimeFusion(1, 5, 1/5f, new Interval(1), new Interval(3), new Interval(5));
+
+    }
+
+    static void assertTimeFusion(long start, long end, float factor, Interval... ii) {
+        TimeFusion a = new TimeFusion(ii);
+        assertEquals(start, a.unionStart);
+        assertEquals(end, a.unionEnd);
+        assertEquals(factor, a.factor, 0.001f);
+    }
 }

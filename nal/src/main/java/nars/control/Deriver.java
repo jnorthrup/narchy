@@ -154,7 +154,7 @@ public class Deriver extends Causable {
                 if (p.match(d, this::matchTime, matchTTL) != null) {
 
                     float strength =
-                            a.priElseZero() * p.task.priElseZero() * nar.amp(d.parentCause); //absolute task * absolute concept
+                            p.taskLink.priElseZero() * nar.amp(d._task); //absolute task * absolute concept
                             //p.task.priElseZero()                                 //absolute
                             //p.task.priElseZero() / nar.priDefault(p.task.punc()) //relative
 

@@ -191,7 +191,7 @@ abstract public class NAgentX extends NAgent {
         n.goalConfidence(0.9f);
 
 
-        float priFactor = 0.5f;
+        float priFactor = 0.25f;
         n.DEFAULT_BELIEF_PRIORITY = 1f * priFactor;
         n.DEFAULT_GOAL_PRIORITY = 1f * priFactor;
         n.DEFAULT_QUESTION_PRIORITY = 1f * priFactor;
@@ -199,17 +199,19 @@ abstract public class NAgentX extends NAgent {
 
         NAgent a = init.apply(n);
 
-        new Deriver(a.fire(), Deriver.deriver(6, 7,
-                "motivation.nal"/*, "goal_analogy.nal"*/).apply(n).deriver, n) {
+        new Deriver(a.fire(), Deriver.deriver(1, 8,
+                "motivation.nal",
+                "goal_analogy.nal"
+        ).apply(n).deriver, n) {
             @Override
             protected long matchTime(Task task) {
 
-                if (task.isEternal()) {
-                    return ETERNAL;
-                } else {
+//                if (task.isEternal()) {
+//                    return ETERNAL;
+//                } else {
                     return this.now +
-                            Util.sqr(n.random().nextInt(4)) * n.dur(); //forward
-                }
+                            Util.sqr(n.random().nextInt(3)) * n.dur(); //forward
+//                }
 
             }
         };

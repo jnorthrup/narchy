@@ -1,5 +1,6 @@
 package nars.term.sub;
 
+import com.google.common.base.Joiner;
 import jcog.TODO;
 import jcog.list.FasterList;
 import nars.$;
@@ -23,9 +24,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
 
 
 /**
@@ -433,16 +431,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 
     static String toString(/*@NotNull*/ Subterms t) {
-        StringBuilder sb = new StringBuilder("{[(");
-        int s = t.subs();
-        for (int i = 0; i < s; i++) {
-            sb.append(t.sub(i));
-            if (i < s - 1)
-                sb.append(", ");
-        }
-        sb.append(")]}");
-        return sb.toString();
-
+        return '(' + Joiner.on(',').join(t) + ')';
     }
 
     /**
@@ -753,23 +742,24 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        return X.unifyCommute(Y, u);
 //    }
 
-    /**
-     * commutes for unify
-     */
-    static boolean communify(int Xdt) {
-        return Xdt == XTERNAL || Xdt == DTERNAL || Xdt == 0;
-    }
+//    /**
+//     * commutes for unify
+//     */
+//    static boolean communify(int Xdt) {
+//        return Xdt == XTERNAL || Xdt == DTERNAL || Xdt == 0;
+//    }
 
     default boolean unifyLinear(Subterms Y, /*@NotNull*/ Unify u) {
-        if (equals(Y))
-            return true;
+        return equals(Y) || ANDwith((xi,i)->xi.unify(Y.sub(i), u));
 
-        int s = subs();
-        for (int i = 0; i < s; i++) {
-            if (!sub(i).unify(Y.sub(i), u))
-                return false;
-        }
-        return true;
+//        if (equals(Y))
+//            return true;
+//        int s = subs();
+//        for (int i = 0; i < s; i++) {
+//            if (!sub(i).unify(Y.sub(i), u))
+//                return false;
+//        }
+//        return true;
 
 //        /**
 //         * a branch for comparing a particular permutation, called from the main next()
@@ -820,8 +810,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default boolean unifyCommute(Subterms y, /*@NotNull*/ Unify u) {
 
 
-        boolean v = Unify.relevantVariables(this) || u.relevantVariables(y);
-        if (!v)
+        if (u.constant(this, y))
             return y.equals(this);
 
         //if there are no variables of the matching type, then it seems CommutivePermutations wouldnt match anyway
@@ -837,16 +826,15 @@ public interface Subterms extends Termlike, Iterable<Term> {
         Map<Term,byte[]> constCommon = new LinkedHashMap<>(0);
 
         forEach(x -> {
-            if (!u.relevantVariables(x)) {
-                if (yys.contains(x)) //attempt to eliminate a common constant term
-                    constCommon.compute(x, (k, vv)-> {
-                        if (vv == null) {
-                            vv = new byte[]{1, 0};
-                        } else {
-                            vv[0]++;
-                        }
-                        return vv;
-                    });
+            if (u.constant(x) && yys.contains(x)) { //attempt to eliminate a common constant term
+                constCommon.compute(x, (k, vv)-> {
+                    if (vv == null) {
+                        vv = new byte[]{1, 0};
+                    } else {
+                        vv[0]++;
+                    }
+                    return vv;
+                });
             }
         });
 
@@ -860,8 +848,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                     vv[1]++;
             });
             constCommon.values().forEach(vv -> {
-               byte min = (byte) Math.min(vv[0], vv[1]);
-               vv[0] = vv[1] = min;
+                vv[0] = vv[1] = (byte) Math.min(vv[0], vv[1]);
             });
 
 

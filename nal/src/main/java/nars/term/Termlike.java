@@ -2,6 +2,7 @@ package nars.term;
 
 import nars.Op;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
+import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -207,6 +208,24 @@ public interface Termlike {
             if (!p.test(sub(i)))
                 return false;
         return true;
+    }
+
+    /** supplies the current index as 2nd lambda argument */
+    default boolean ANDwith(/*@NotNull*/ ObjectIntPredicate<Term> p) {
+        int s = subs();
+        for (int i = 0; i < s; i++)
+            if (!p.accept(sub(i), i))
+                return false;
+        return true;
+    }
+
+    /** supplies the current index as 2nd lambda argument */
+    default boolean ORwith(/*@NotNull*/ ObjectIntPredicate<Term> p) {
+        int s = subs();
+        for (int i = 0; i < s; i++)
+            if (p.accept(sub(i), i))
+                return true;
+        return false;
     }
 
     default boolean ANDrecurse(/*@NotNull*/ Predicate<Term> p) {

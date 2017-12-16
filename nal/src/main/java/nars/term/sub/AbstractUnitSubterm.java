@@ -2,6 +2,7 @@ package nars.term.sub;
 
 import jcog.Util;
 import nars.term.Term;
+import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 
 
 import java.util.Iterator;
@@ -13,6 +14,10 @@ abstract public class AbstractUnitSubterm implements Subterms {
 
     abstract public Term sub();
 
+    @Override
+    public String toString() {
+        return "(" + sub() + ')';
+    }
 
     @Override
     public Term[] arrayClone() {
@@ -90,6 +95,16 @@ abstract public class AbstractUnitSubterm implements Subterms {
     @Override
     public Iterator<Term> iterator() {
         return com.google.common.collect.Iterators.singletonIterator(sub());
+    }
+
+    @Override
+    public int intify(IntObjectToIntFunction<Term> reduce, int v) {
+        return sub().intify(reduce, v);
+    }
+
+    @Override
+    public int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
+        return reduce.intValueOf(v, sub());
     }
 
 }

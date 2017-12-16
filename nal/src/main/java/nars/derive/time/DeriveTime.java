@@ -5,7 +5,7 @@ import jcog.math.Interval;
 import nars.Op;
 import nars.Task;
 import nars.control.Derivation;
-import nars.task.Revision;
+import nars.task.TimeFusion;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
@@ -418,7 +418,7 @@ public class DeriveTime extends TimeGraph {
                     s = ii.a;
                     e = x.op()!=IMPL ? ii.b : ii.a;
                 } else {
-                    Revision.TaskTimeJoint joint = new Revision.TaskTimeJoint(task.start(), task.end(), belief.start(), belief.end(), d.nar);
+                    TimeFusion joint = new TimeFusion(task.start(), task.end(), belief.start(), belief.end());
 //                    if (joint.factor <= Pri.EPSILON) //allow for questions/quests, if this ever happens
 //                        return null;
 

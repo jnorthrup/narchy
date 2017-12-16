@@ -188,6 +188,7 @@ public class ConjClustering extends Causable {
             float conf = 1f;
             float priMax = Float.NEGATIVE_INFINITY, priMin = Float.POSITIVE_INFINITY;
             int vol = 0;
+            int maxVolume = 0;
 
             do {
                 if (!gg.hasNext())
@@ -211,6 +212,7 @@ public class ConjClustering extends Causable {
                 }
 
                 int xtv = xt.volume();
+                maxVolume = Math.max(maxVolume, xt.volume());
                 if (vol + xtv + 1 >= volMax || conf * tx.conf() < confMin) {
                     continue; //cant go any further with this task
                 }
@@ -272,12 +274,18 @@ public class ConjClustering extends Causable {
 
                         m.cause = Cause.zip(nar.causeCapacity.intValue(), uu);
 
-                        float pri =
+                        float priAvg =
                                 //priMax;
                                 //priMin;
                                 (priMin + priMax) / 2f;
 
-                        m.priSet(Priority.fund(pri, true, uu));
+                        //complexity deduction
+                        //  how much more complex the conjunction is than the most complex of its ingredients
+                        int v = cp.getOne().volume();
+                        float cmplFactor =
+                                ((float)v) / (v + maxVolume);
+
+                        m.priSet(Priority.fund(priAvg * cmplFactor , true, uu));
                         tasksCreated++;
                         gen.add(m);
                     } else {

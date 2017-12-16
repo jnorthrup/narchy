@@ -10,10 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.IntFunction;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 /**
  * Less-safe faster FastList with direct array access
@@ -195,6 +192,15 @@ public class FasterList<X> extends FastList<X> {
         return max;
     }
 
+    public long minValue(ToLongFunction<? super X> function) {
+        long min = Long.MAX_VALUE;
+        for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
+            long y = function.applyAsLong(this.get(i));
+            if (y < min)
+                min = y;
+        }
+        return min;
+    }
     public X maxBy(float mustExceed, FloatFunction<? super X> function) {
 
         if (ArrayIterate.isEmpty(items)) {

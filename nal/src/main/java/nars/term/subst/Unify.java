@@ -340,20 +340,23 @@ public abstract class Unify extends Versioning implements Subst {
     public final int now() {
         return this.size;
     }
+//
+//    /** returns the updated value */
+//    public int addTTL(int x) {
+//        return this.ttl += x;
+//    }
 
-    /** returns the updated value */
-    public int addTTL(int x) {
-        return this.ttl += x;
+    public boolean constant(Termlike xsubs, Termlike ysubs) {
+        //return relevantVariables(xsubs) || (varSymmetric && relevantVariables(ysubs));
+        return constant(xsubs) && (!varSymmetric || constant(ysubs));
     }
 
-    public boolean relevantVariables(Termlike xsubs, Termlike ysubs) {
-        return relevantVariables(xsubs) || (varSymmetric && relevantVariables(ysubs));
-    }
-
-    public static boolean relevantVariables(Termlike x) {
-        return //type == null ?
-                x.hasAny(Op.VAR_DEP.bit | Op.VAR_INDEP.bit | Op.VAR_QUERY.bit) || x.varPattern() > 0;
-                //x.hasAny(type);
+    /** whether is constant with respect to the current matched variable type */
+    public boolean constant(Termlike x) {
+        return !(type == null ?
+                x.hasAny(Op.VAR_DEP.bit | Op.VAR_INDEP.bit | Op.VAR_QUERY.bit) || x.varPattern() > 0 :
+                x.hasAny(type)
+        );
     }
 
     private class ConstrainedVersionMap extends VersionMap<Term, Term> {

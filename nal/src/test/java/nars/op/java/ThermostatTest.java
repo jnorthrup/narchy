@@ -1,12 +1,14 @@
 package nars.op.java;
 
 import jcog.Util;
-import nars.*;
-import nars.op.Implier;
+import nars.$;
+import nars.NAR;
+import nars.NARS;
+import nars.Param;
 import nars.op.stm.ConjClustering;
 import nars.task.NALTask;
-import nars.task.NativeTask;
 import nars.time.Tense;
+import org.intelligentjava.machinelearning.decisiontree.feature.P;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -73,13 +75,14 @@ public class ThermostatTest {
         static Consumer<Thermostat> change(boolean isHot, boolean shouldHot) {
             return x -> {
                 x.is(isHot ? hot : cold);
-                x.should(shouldHot? hot : cold);
+                x.should(shouldHot ? hot : cold);
             };
         }
     }
 
 
-    @Test @Disabled
+    @Test
+    @Disabled
     public void test1() {
         Param.DEBUG = true;
         final int DUR = 15;
@@ -90,7 +93,7 @@ public class ThermostatTest {
         n.freqResolution.set(0.05f);
         n.confResolution.set(0.02f);
 
-        new ConjClustering(n, BELIEF, (t)->true, 4, 16);
+        new ConjClustering(n, BELIEF, (t) -> true, 4, 16);
 
         n.priDefault(BELIEF, 0.2f);
 
@@ -103,14 +106,13 @@ public class ThermostatTest {
 //                pretend = true;
 //            }
 
-            @Override
-            protected @Nullable synchronized Object invoked(Object obj, Method wrapped, Object[] args, Object result) {
+            @Override @Nullable
+            protected synchronized Object invoked(Object obj, Method wrapped, Object[] args, Object result) {
 
-                n.time.synch(n);
+                //n.time.synch(n);
+                //n.runLater(nn -> nn.run(DUR)); //queue some thinking cycles
 
                 Object y = super.invoked(obj, wrapped, args, result);
-
-                n.run(DUR);
 
                 return y;
             }
@@ -167,7 +169,6 @@ public class ThermostatTest {
         }
 
 
-
         n.clear();
 
         System.out.println("VALIDATING");
@@ -186,32 +187,46 @@ public class ThermostatTest {
 
 //        try {
 
-             //make cold
+        //make cold
 //            n.input(new NALTask($.$("a_Thermostat(should,(),0)"),
 //                    BELIEF, $.t(1f, 0.99f),
 //                    n.time(), n.time(), n.time()+1000,
 //                    n.time.nextInputStamp()).pri(1f));
 
-            env.x.should(0);
-            env.x.is();
+        Thermostat t = env.x;
+        t.should(0);
 
-//            n.input(new NALTask($.$("a_Thermostat(is,(),0)"),
+        int periods = 3000;
+//        {
+//            n.input(new NALTask($.$safe("(a_Thermostat(is,(),#x) && a_Thermostat(should,(),#x))"),
 //                    GOAL, $.t(1f, 0.99f),
-//                    n.time(), n.time(), n.time()+1000,
+//                    n.time(), n.time(), n.time() + periods,
 //                    n.time.nextInputStamp()).pri(1f));
-//            n.input(new NALTask($.$("a_Thermostat(is,(),3)"),
+//        }
+        {
+//            n.input(new NALTask($.$safe("a_Thermostat(is,(),0)"),
+//                    GOAL, $.t(1f, 0.9f),
+//                    n.time(), n.time(), n.time() + periods,
+//                    n.time.nextInputStamp()).pri(1f));
+            n.input(new NALTask($.$safe("(a_Thermostat(is,(),0) && --a_Thermostat(is,(),3))"),
+                    GOAL, $.t(1f, 0.9f),
+                    n.time(), n.time(), n.time() + periods,
+                    n.time.nextInputStamp()).pri(1f));
+
+        }
+        {
+//            n.input(new NALTask($.$safe("a_Thermostat(is,(),3)"),
 //                    GOAL, $.t(0f, 0.99f),
 //                    n.time(), n.time(), n.time()+1000,
 //                    n.time.nextInputStamp()).pri(1f));
+        }
 
-//        } catch (Narsese.NarseseException e) {
-//            e.printStackTrace();
-//        }
+        while (t.is() != t.should()) {
+            int period = 250;
+            t.report();
+            n.run(period);
+        }
 
-        while (env.x.is()!=0)
-            n.run(100);
-
-        env.x.report();
         System.out.println("good job nars!");
         n.believe($.the("good"), Tense.Present);
 

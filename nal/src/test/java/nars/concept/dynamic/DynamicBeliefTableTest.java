@@ -10,6 +10,7 @@ import nars.truth.Truth;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
+import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
@@ -139,6 +140,24 @@ public class DynamicBeliefTableTest {
     }
 
     @Test
+    public void testDynamicConjunctionEternal() throws Narsese.NarseseException {
+        NAR n = NARS.tmp();
+        n.believe($("x"));
+        n.believe($("y"));
+        n.believe($("--z"));
+        //n.run(1);
+//        TaskConcept cc = (TaskConcept) n.conceptualize($("(x && y)"));
+
+//        DynamicBeliefTable xtable = (DynamicBeliefTable) (cc.beliefs());
+
+        for (long w : new long[] { ETERNAL, 0, 1 }) { //since it's eternal, it will be equal to any time calculated
+            assertEquals($.t(1, 0.81f), n.truth($("(x && y)"), BELIEF, w));
+            assertEquals($.t(0, 0.81f), n.truth($("(x && --y)"), BELIEF, w));
+            assertEquals($.t(1, 0.81f), n.truth($("(x && --z)"), BELIEF, w));
+        }
+    }
+
+    @Test
     public void testDynamicConjunction2Temporal() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
         n.believe($("(x)"), (long) 0, 1f, 0.9f);
@@ -154,8 +173,8 @@ public class DynamicBeliefTableTest {
         assertNotNull(xt);
         assertTrue($.t(1f, 0.81f).equals(xt.truth(n), 0.1f), xt.truth(n).toString());
 
-        assertEquals(0.74f, xtable.generate($("((x) &&+6 (y))"), 0, 0, n).conf(), 0.05f);
         assertEquals(0.81f, xtable.generate($("((x) &&+4 (y))"), 0, 0, n).conf(), 0.05f); //best match to the input
+        assertEquals(0.74f, xtable.generate($("((x) &&+6 (y))"), 0, 0, n).conf(), 0.05f);
         assertEquals(0.75f, xtable.generate($("((x) &&+2 (y))"), 0, 0, n).conf(), 0.05f);
         assertEquals(0.75f, xtable.generate($("((x) &&+0 (y))"), 0, 0, n).conf(), 0.05f);
         assertEquals(0.62f, xtable.generate($("((x) &&-32 (y))"), 0, 0, n).conf(), 0.1f);

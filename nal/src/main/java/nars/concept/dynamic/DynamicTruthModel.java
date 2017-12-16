@@ -72,8 +72,8 @@ abstract public class DynamicTruthModel {
 
             Concept subConcept = n.concept(it);
             if (!(subConcept instanceof TaskConcept)) {
-                assert(subConcept == null || !(subConcept instanceof NodeConcept)):
-                        it + " does not name a TaskConcept";
+                if (!(subConcept == null || !(subConcept instanceof NodeConcept)))
+                    throw new RuntimeException(it + " does not reference a TaskConcept: " + subConcept);
 
                 return null;
             }

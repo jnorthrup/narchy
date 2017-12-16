@@ -110,8 +110,7 @@ public class Derivation extends Unify {
     public Truth taskTruth, beliefTruth;
     public Term taskTerm;
     public Term beliefTerm;
-    public Task task;
-    public Task belief;
+    public Task task, belief, _task, _belief;
     public byte taskPunct;
 
     /**
@@ -145,8 +144,6 @@ public class Derivation extends Unify {
     /**
      * original non-anonymized tasks
      */
-    public Task _task;
-    public Task _belief;
     public TruthOperator truthFunction;
 
 
@@ -327,6 +324,7 @@ public class Derivation extends Unify {
         this.evidenceDouble = evidenceSingle = null;
         this.dtSingle = this.dtDouble = null;
 
+        this.task = this.belief = this._task = this._belief = null;
         this.size = 0; //HACK instant revert to zero
         this.xy.map.clear(); //must also happen to be consistent
         this.derivedTerm.clear();

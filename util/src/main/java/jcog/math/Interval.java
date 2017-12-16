@@ -13,6 +13,10 @@ public class Interval {
 	public final long a;
 	public final long b;
 
+	public Interval(long a) {
+		this(a,a);
+	}
+
 	public Interval(long a, long b) {
 		if (b >= a) {
 			this.a = a;

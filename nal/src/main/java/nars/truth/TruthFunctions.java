@@ -26,8 +26,6 @@ import nars.$;
 import nars.Param;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
 import static jcog.Util.or;
 import static nars.$.t;
 import static nars.util.UtilityFunctions.and;
@@ -47,18 +45,11 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion
      */
     public static Truth conversion(/*@NotNull*/ Truth t, float minConf) {
-        float cc = t.freqTimesConf();
-        if (cc > 0) {
-            float c = w2c(cc);
-            if (c >= minConf)
-                return t(1, c);
-        }
-        return null;
+        float c = w2cSafe(t.freqTimesConf());
+        return c >= minConf ? t(1, c) : null;
     }
 
     /* ----- Single argument functions, called in StructuralRules ----- */
-
-
 
 
     /**
@@ -131,7 +122,7 @@ public final class TruthFunctions {
     @Nullable
     public static Truth analogy(/*@NotNull*/ Truth a, float bf, float bc, float minConf) {
         float c = and(a.conf(), bc, bf);
-        return c < minConf ? null : t(and(a.freq(), bf), c);
+        return c >= minConf ? t(and(a.freq(), bf), c) : null;
     }
 
     @Nullable
@@ -162,13 +153,11 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion, or null if either truth is analytic already
      */
     public static Truth induction(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
-        float cc = a.conf() * b.freqTimesConf();
-        if (cc > 0) {
-            float c = w2c(cc); //and(a.conf(),b.freq(),b.conf())
-            if (c >= minConf)
-                return $.t(a.freq(), c);
-        }
-        return null;
+        float c = w2cSafe(a.conf() * b.freqTimesConf()); //and(a.conf(),b.freq(),b.conf())
+        if (c >= minConf)
+            return $.t(a.freq(), c);
+        else
+            return null;
     }
 
 
@@ -191,13 +180,8 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion
      */
     public static Truth exemplification(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
-        float cc = a.freqTimesConf() * b.freqTimesConf();
-        if (cc > 0) {
-            float c = w2c(cc);
-            if (c >= minConf)
-                return t(1, c);
-        }
-        return null;
+        float c = w2cSafe(a.freqTimesConf() * b.freqTimesConf());
+        return c >= minConf ? t(1, c) : null;
     }
 
 
@@ -222,14 +206,12 @@ public final class TruthFunctions {
 
 
         float f0 = or(f1, f2);
-        float cc = and(f0, a.conf(), b.conf());
-        if (cc > 0) {
-            float c = w2c(cc);
-            if (c >= minConf) {
-                float f = (Util.equals(f0, 0, Param.TRUTH_EPSILON)) ? 0 : (and(f1, f2) / f0);
-                return t(f, c);
-            }
+        float c = w2cSafe(and(f0, a.conf(), b.conf()));
+        if (c >= minConf) {
+            float f = (Util.equals(f0, 0, Param.TRUTH_EPSILON)) ? 0 : (and(f1, f2) / f0);
+            return t(f, c);
         }
+
         return null;
     }
 
@@ -373,7 +355,7 @@ public final class TruthFunctions {
     public static Truth intersection(Truth v1, /*@NotNull*/ Truth v2, float minConf) {
         float c =
                 and(v1.conf(), v2.conf());
-                //w2c(and(v1.evi(), v2.evi()));
+        //w2c(and(v1.evi(), v2.evi()));
         return (c < minConf) ?
                 null :
                 t(and(v1.freq(), v2.freq()), c);
@@ -509,6 +491,7 @@ public final class TruthFunctions {
     public static float c2w(float c) {
         return c2w(c, Param.HORIZON);
     }
+
     public static float c2wSafe(float c) {
         return c2wSafe(c, Param.HORIZON);
     }
@@ -521,7 +504,7 @@ public final class TruthFunctions {
      * @return The corresponding weight of evidence, a non-negative real number
      */
     private static float c2w(float c, float horizon) {
-        assert(c == c && (c < MAX_CONF) && c > Pri.EPSILON);
+        assert (c == c && (c < MAX_CONF) && c > Pri.EPSILON);
         return c2wSafe(c, horizon);
     }
 

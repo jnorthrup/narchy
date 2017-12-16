@@ -180,7 +180,7 @@ public abstract class TermVector implements Subterms {
 
     @Override
     public String toString() {
-        return '(' + Joiner.on(',').join(arrayClone()) + ')';
+        return '(' + Joiner.on(',').join(arrayShared()) + ')';
     }
 
 

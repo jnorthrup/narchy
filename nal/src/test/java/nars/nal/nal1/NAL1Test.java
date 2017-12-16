@@ -121,13 +121,17 @@ public class NAL1Test extends NALTest {
 
     @Test
     public void conversion() throws nars.Narsese.NarseseException {
-
-        TestNAR test = this.test;
         test.believe("<bird --> swimmer>")
             .ask("<swimmer --> bird>") //.en("Is swimmer a type of bird?");
             .mustOutput(CYCLES, "<swimmer --> bird>. %1.00;0.47%");
     }
 
+    @Test
+    public void conversionNeg() throws nars.Narsese.NarseseException {
+        test.believe("--plant:animal") //animal isnt a type of plant
+            .ask("animal:plant") //.en("Is plant a type of animal?");
+            .mustOutput(CYCLES, "animal:plant. %0.00;0.47%"); //plant probably is not a type of animal
+    }
 
 
 

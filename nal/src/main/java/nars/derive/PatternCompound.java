@@ -229,7 +229,7 @@ abstract public class PatternCompound extends GenericCompoundDT {
                             return ((EllipsisMatch) v).rematch(y, yFree);
                         } else {
                             //single-term matched for the ellipsis, so wont be EllipsisMatch instance
-                            if (!u.relevantVariables(v) && !yFree.remove(v))
+                            if (u.constant(v) && !yFree.remove(v))
                                 return false;
                         }
                     }
@@ -281,7 +281,7 @@ abstract public class PatternCompound extends GenericCompoundDT {
 //                } else {
 
 
-                boolean xConst = !u.relevantVariables(x);
+                boolean xConst = u.constant(x);
                 if (!xConst) {
 //                    //try to resolve an already assigned and thus resolvable to constant
 //                    @Nullable Term previouslyMatched = u.xy(x);

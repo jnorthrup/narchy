@@ -38,18 +38,18 @@ public class AIMATests {
                 "A",
                 "B");
 
-        assertBelief(true, "Q", 2000);
+        assertBelief(true, "Q", 2500);
 
     }
 
     @Test
     public void testWeaponsDomain() throws Narsese.NarseseException {
 
-        n.freqResolution.set(0.02f);
+        n.freqResolution.set(0.05f);
         n.confResolution.set(0.02f);
-        n.priDefault(QUESTION, 0.5f);
+        n.priDefault(QUESTION, 0.75f);
         n.priDefault(BELIEF, 0.2f);
-        n.termVolumeMax.set(24);
+        n.termVolumeMax.set(28);
 
         //new QuerySpider(n);
         //new PrologCore(n);
@@ -93,7 +93,7 @@ public class AIMATests {
 //        n.concept($.$("Criminal")).print();
 
 
-        n.run(4000);
+        n.run(1000);
 
 //        if (!questions.isEmpty()) {
 //            System.out.println("Questions Generated:");

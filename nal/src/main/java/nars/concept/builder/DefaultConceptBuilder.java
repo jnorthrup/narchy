@@ -308,7 +308,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
 
     final static Predicate<Term> validDynamicSubterm = x ->
-            Task.validTaskTerm(x);
+            Task.validTaskTerm(x.unneg());
 
     private static boolean validDynamicSubterms(Subterms subterms) {
         return subterms.AND(validDynamicSubterm);

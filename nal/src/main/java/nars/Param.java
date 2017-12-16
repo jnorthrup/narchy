@@ -119,19 +119,19 @@ public abstract class Param extends Services<Term, NAR> {
             //0;
             //Integer.MAX_VALUE;
             //8;
-            64;
+            16;
 
 
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmax = new MutableInteger(384);
-    public final MutableInteger matchTTLmin = new MutableInteger(128);
+    public final MutableInteger matchTTLmax = new MutableInteger(128);
+    public final MutableInteger matchTTLmin = new MutableInteger(48);
 
     /**
      * how much percent of a premise's allocated TTL can be used in the belief matching phase.
      */
-    public static final float BELIEF_MATCH_TTL_FRACTION = 0.25f;
+    public static final float BELIEF_MATCH_TTL_FRACTION = 0.1f;
 
     public static final int TTL_PREMISE_MIN =
             Param.TTL_UNIFY * 2 +

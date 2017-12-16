@@ -2,6 +2,7 @@ package nars.term.sub;
 
 import jcog.list.ArrayIterator;
 import nars.term.Term;
+import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 
 import java.util.Iterator;
 import java.util.function.Consumer;
@@ -146,6 +147,16 @@ public class ArrayTermVector extends TermVector {
         for (Term i : t)
             if (!p.test(i))
                 return false;
+        return true;
+    }
+
+    @Override
+    public boolean ANDwith(ObjectIntPredicate<Term> p) {
+        Term[] t = this.terms;
+        for (int i = 0, tLength = t.length; i < tLength; i++) {
+            if (!p.accept(t[i], i))
+                return false;
+        }
         return true;
     }
 

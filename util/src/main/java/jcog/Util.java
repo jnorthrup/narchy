@@ -1262,6 +1262,20 @@ public enum Util {
         return y;
     }
 
+    public static <X> long sum(ToLongFunction<X> value, X... xx) {
+        long y = 0;
+        for (X x : xx)
+            y += value.applyAsLong(x);
+        return y;
+    }
+
+    public static <X> long min(ToLongFunction<X> value, X... xx) {
+        long y = Long.MAX_VALUE;
+        for (X x : xx)
+            y = Math.min(y, value.applyAsLong(x));
+        return y;
+    }
+
     public static <X> boolean sumBetween(ToIntFunction<X> value, int min, int max, X... xx) {
         int y = 0;
         for (X x : xx) {

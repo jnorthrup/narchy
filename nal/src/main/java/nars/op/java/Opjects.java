@@ -502,7 +502,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
             register(id, instance);
             return (T) f.create(ArrayUtils.EMPTY_CLASS_ARRAY, ArrayUtils.EMPTY_OBJECT_ARRAY,
                     (self, thisMethod, proceed, args) ->
-                            invoked(instance, thisMethod, args, thisMethod.invoke(instance, args))
+                            tryInvoked(instance, thisMethod, args, thisMethod.invoke(instance, args))
             );
         } catch (Throwable e) {
             throw new RuntimeException(e);
@@ -738,18 +738,23 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
             result = t;
         }
 
-        return invoked(obj, wrapper, args, result);
+        return tryInvoked(obj, wrapper, args, result);
     }
 
     @Nullable
-    protected Object invoked(Object obj, Method wrapped, Object[] args, Object result) {
+    protected final Object tryInvoked(Object obj, Method wrapped, Object[] args, Object result) {
         if (methodExclusions.contains(wrapped.getName()))
             return result;
 
+        return invoked(obj, wrapped, args, result);
+    }
+
+    protected Object invoked(Object obj, Method wrapped, Object[] args, Object result) {
         Instance in = (Instance) objToTerm.get(obj);
         return (in == null) ?
                 result :
                 in.update(obj, wrapped, args, result);
+
     }
 
 
