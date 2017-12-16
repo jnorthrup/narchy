@@ -6,7 +6,7 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.learn.MLPMap;
 import nars.*;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.concept.Concept;
 import nars.concept.GoalActionConcept;
 import nars.gui.BeliefTableChart;
@@ -140,7 +140,7 @@ public class Recog2D extends NAgentX {
 
     public Surface conceptTraining(Outputs tv, NAR nar) {
 
-        LinkedHashMap<BaseConcept, Outputs.Neuron> out = tv.out;
+        LinkedHashMap<TaskConcept, Outputs.Neuron> out = tv.out;
 
         Plot2D p;
 
@@ -469,8 +469,8 @@ public class Recog2D extends NAgentX {
         }
 
 
-        final LinkedHashMap<BaseConcept, Neuron> out;
-        BaseConcept[] outVector;
+        final LinkedHashMap<TaskConcept, Neuron> out;
+        TaskConcept[] outVector;
 
         final int states;
 
@@ -524,7 +524,7 @@ public class Recog2D extends NAgentX {
     //                            //.timing(0, 1) //synchronous feed
 
             ).peek(c -> out.put(c, new Neuron()))
-                    .toArray(BaseConcept[]::new);
+                    .toArray(TaskConcept[]::new);
 
 
             a.onFrame(() -> {

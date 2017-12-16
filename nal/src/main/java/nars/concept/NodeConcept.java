@@ -1,0 +1,226 @@
+package nars.concept;
+
+import jcog.bag.Bag;
+import jcog.data.map.CompactArrayMap;
+import jcog.pri.PriReference;
+import nars.NAR;
+import nars.Op;
+import nars.Param;
+import nars.Task;
+import nars.concept.builder.ConceptBuilder;
+import nars.concept.state.ConceptState;
+import nars.link.TermLinks;
+import nars.table.BeliefTable;
+import nars.table.QuestionTable;
+import nars.term.Term;
+import nars.term.Termed;
+
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Stream;
+
+import static nars.concept.state.ConceptState.Deleted;
+import static nars.concept.state.ConceptState.New;
+
+/** a 'blank' concept which does not store any tasks */
+public class NodeConcept implements Concept {
+
+    public final Term term;
+    public final Bag<Task, PriReference<Task>> taskLinks;
+    public final Bag<Term, PriReference<Term>> termLinks;
+    public transient ConceptState state = Deleted;
+    private final List<Termed> templates;
+
+    private final int hash;
+
+    protected final CompactArrayMap<String, Object> meta = new CompactArrayMap<>();
+
+    public NodeConcept(Term term, NAR nar) {
+        this(term, nar.terms.conceptBuilder);
+    }
+
+    public NodeConcept(Term term, ConceptBuilder b) {
+        this(term, b.newLinkBags(term));
+    }
+
+    public NodeConcept(Term term, Bag[] bags) {
+        assert (term.op().conceptualizable);
+        this.term = term;
+        this.termLinks = bags[0];
+        this.taskLinks = bags[1];
+        this.state = New;
+        this.hash = term.hashCode();
+
+        templates = buildTemplates(term);
+        if (Param.DEBUG_EXTRA) {
+            for (Termed target : templates) {
+                if (!target.term().equals(target.term().root())) {
+                    throw new RuntimeException("attempted non-root linkage: " + target);
+                }
+            }
+        }
+
+    }
+
+
+    @Override public BeliefTable beliefs() { return BeliefTable.Empty; }
+
+    @Override public BeliefTable goals() { return BeliefTable.Empty; }
+
+    @Override public QuestionTable questions() { return QuestionTable.Empty; }
+
+    @Override public QuestionTable quests() { return QuestionTable.Empty; }
+
+    /** called during initializer to cache the templates. override to define custom template patterns */
+    protected List<Termed> buildTemplates(Term term) {
+        return TermLinks.templates(term);
+    }
+
+
+    @Override
+    public Term term() {
+        return term;
+    }
+
+
+    @Override
+    public final /*@NotNull*/ Op op() {
+        return term.op();
+    }
+
+
+    @Override
+    public Bag<Task, PriReference<Task>> tasklinks() {
+        return taskLinks;
+    }
+
+    @Override
+    public Bag<Term, PriReference<Term>> termlinks() {
+        return termLinks;
+    }
+
+
+    @Override
+    public List<Termed> templates() {
+        return templates;
+    }
+
+    @Override
+    public Stream<Task> tasks(boolean includeBeliefs, boolean includeQuestions, boolean includeGoals, boolean includeQuests) {
+        return Stream.empty();
+    }
+
+    @Override
+    public final ConceptState state() {
+        return state;
+    }
+
+    @Override
+    public ConceptState state(ConceptState state) {
+        ConceptState current = this.state;
+        if (current != state) {
+            this.state = state;
+            stateChanged();
+        }
+        return state;
+    }
+
+    protected void stateChanged() {
+        termLinks.setCapacity(state.linkCap(this, true));
+        taskLinks.setCapacity(state.linkCap(this, false));
+    }
+
+
+    @Override
+    public final boolean equals(Object obj) {
+        //return this == obj || term.equals(obj);
+        //return this == obj || (obj instanceof Termed && term.equals(((Termed) obj).term()));
+        return this == obj || (term.equals(((Termed) obj).term()));
+    }
+
+    @Override
+    public final int hashCode() {
+        return hash;
+    }
+
+    @Override
+    public final String toString() {
+        return term.toString();
+    }
+
+    @Override
+    public int subs() {
+        return term.subs();
+    }
+
+
+    @Override
+    public int varIndep() {
+        return term.varIndep();
+    }
+
+    @Override
+    public int varDep() {
+        return term.varDep();
+    }
+
+    @Override
+    public int varQuery() {
+        return term.varQuery();
+    }
+
+    @Deprecated
+    @Override
+    public int varPattern() {
+        return term.varPattern();
+    }
+
+    @Deprecated
+    @Override
+    public int complexity() {
+        return term.complexity();
+    }
+
+    @Deprecated
+    @Override
+    public int structure() {
+        return term.structure();
+    }
+
+    @Override
+    public int volume() {
+        return term.volume();
+    }
+
+
+    @Override
+    public boolean isNormalized() {
+        return term.isNormalized(); //compound concepts may be un-normalized
+    }
+
+    @Override
+    public void delete( NAR nar) {
+        termLinks.delete();
+        taskLinks.delete();
+        meta.clear();
+        state(ConceptState.Deleted);
+    }
+
+
+    @Override
+    public <X> X meta(String key, Function<String,Object> valueIfAbsent) {
+        return (X) meta.computeIfAbsent(key, valueIfAbsent);
+    }
+
+    @Override
+    public void meta(String key, Object value) {
+        meta.put(key, value);
+    }
+
+    @Override
+    public <X> X meta(String key) {
+        return (X) meta.get(key);
+    }
+
+
+}

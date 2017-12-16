@@ -7,10 +7,16 @@ import nars.NAR;
 import nars.Task;
 import nars.bag.leak.LeakBack;
 import nars.concept.Concept;
+import nars.concept.NodeConcept;
+import nars.concept.builder.DefaultConceptBuilder;
 import nars.link.CauseLink;
 import nars.term.Term;
+import nars.term.Termed;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  *  Anonymizing spider which creates anonymous meta-concepts
@@ -60,10 +66,14 @@ public class Anoncepts extends LeakBack {
         if (a == null)  //?<- why would this, if it does
             return 0;
 
-        float pri = task.priElseZero();
+        Concept c = nar.concept(a); //HACK
+        if (c == null) {
+            nar.terms.set(a, c = new AnonConcept(a, nar));
+        }
 
+        float pri = task.priElseZero();
         float cr = conceptActivationRate.floatValue();
-        Concept c = nar.activate(a, pri * cr);
+        c = nar.activate(c, pri * cr);
         if (c == null)
             return 0;  //???
 
@@ -72,5 +82,15 @@ public class Anoncepts extends LeakBack {
         c.termlinks().putAsync(new CauseLink.PriCauseLink<>(taskTerm, pri * cr, cid));
 
         return 1;
+    }
+
+    private static class AnonConcept extends NodeConcept {
+        public AnonConcept(Term a, NAR nar) {
+            super(a, nar);
+        }
+
+        @Override protected List<Termed> buildTemplates(Term term) {
+            return Collections.emptyList();
+        }
     }
 }

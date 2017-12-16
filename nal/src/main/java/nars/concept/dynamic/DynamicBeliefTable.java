@@ -5,7 +5,7 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.link.Tasklinks;
 import nars.table.DefaultBeliefTable;
 import nars.table.TemporalBeliefTable;
@@ -40,7 +40,7 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
     }
 
     @Override
-    public void add(Task input, BaseConcept concept, NAR nar) {
+    public void add(Task input, TaskConcept concept, NAR nar) {
 
         if (!input.isInput()) {
 

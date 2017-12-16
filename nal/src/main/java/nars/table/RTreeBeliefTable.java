@@ -10,7 +10,7 @@ import jcog.tree.rtree.*;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.link.Tasklinks;
 import nars.task.NALTask;
 import nars.task.Revision;
@@ -351,7 +351,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
     }
 
     @Override
-    public void add(Task x, BaseConcept c, NAR n) {
+    public void add(Task x, TaskConcept c, NAR n) {
 
         if (x instanceof SignalTask) {
             SignalTask sx = (SignalTask) x;

@@ -74,7 +74,7 @@ public class SensorConcept extends WiredConcept implements FloatFunction<Term>, 
 
 
     @Override
-    public void process(Task t, NAR n) {
+    public void add(Task t, NAR n) {
 
         //feedback prefilter non-signal beliefs
         if (t.isBelief() && !(t instanceof SignalTask)) {
@@ -83,7 +83,7 @@ public class SensorConcept extends WiredConcept implements FloatFunction<Term>, 
                 return; //rejected
         }
 
-        super.process(t, n);
+        super.add(t, n);
     }
 
     @Nullable

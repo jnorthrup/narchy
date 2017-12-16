@@ -94,8 +94,8 @@ public class MIDI {
             nar.on(c);
 
             //c.beliefs().capacity(1, c.beliefs().capacity());
-            c.process(new NALTask(c.term(), BELIEF, $.t(0f, 0.35f), 0, ETERNAL, ETERNAL, nar.time.nextInputStamp()), nar);
-            c.process(new NALTask(c.term(), GOAL, $.t(0f, 0.1f), 0, ETERNAL, ETERNAL, nar.time.nextInputStamp()), nar);
+            c.add(new NALTask(c.term(), BELIEF, $.t(0f, 0.35f), 0, ETERNAL, ETERNAL, nar.time.nextInputStamp()), nar);
+            c.add(new NALTask(c.term(), GOAL, $.t(0f, 0.1f), 0, ETERNAL, ETERNAL, nar.time.nextInputStamp()), nar);
             nar.onCycle(n -> {
 
                 float v = volume[finalI];

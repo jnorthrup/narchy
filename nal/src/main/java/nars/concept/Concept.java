@@ -183,9 +183,6 @@ public interface Concept extends Termed, MetaMap {
     List<Termed> templates();
 
 
-    void process(Task task, /*@NotNull*/ NAR n);
-
-    void value(Task t, float activation, NAR n);
 
     Stream<Task> tasks(boolean includeBeliefs, boolean includeQuestions, boolean includeGoals, boolean includeQuests);
 

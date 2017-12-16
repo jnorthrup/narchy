@@ -4,7 +4,8 @@ import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.concept.BaseConcept;
+import nars.concept.NodeConcept;
+import nars.concept.TaskConcept;
 import nars.concept.PermanentConcept;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -34,7 +35,7 @@ import static nars.time.Tense.ETERNAL;
  * <patham9_> 4. the system wont try to execute and pursue things in the current moment which are "sheduled" to be in the future.
  * <patham9_> 5. the system wont pursue a goal it already pursued for the same reason (due to revision, it is related to 1)
  */
-public class Operator extends BaseConcept implements PermanentConcept, Atomic {
+public class Operator extends NodeConcept implements PermanentConcept, Atomic {
 
     public static final String LOG_FUNCTOR = String.valueOf(Character.valueOf((char) 8594)); //RIGHT ARROW
 

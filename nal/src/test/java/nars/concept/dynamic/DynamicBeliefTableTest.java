@@ -1,11 +1,8 @@
 package nars.concept.dynamic;
 
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
-import nars.concept.BaseConcept;
+import nars.*;
 import nars.concept.Concept;
+import nars.concept.TaskConcept;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Int;
@@ -14,6 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
 import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -80,6 +78,7 @@ public class DynamicBeliefTableTest {
         assertEquals("%0.0;.81%", n.beliefTruth(x23, ETERNAL).toString());
         assertEquals("%0.0;.73%", n.beliefTruth(x123, ETERNAL).toString());
     }
+
     @Test
     public void testDynamicIntVectorRange() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
@@ -101,7 +100,6 @@ public class DynamicBeliefTableTest {
     }
 
 
-
     @Test
     public void testDynamicConjunction3() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
@@ -110,7 +108,7 @@ public class DynamicBeliefTableTest {
         n.believe("a:z", 1f, 0.9f);
         n.run(1);
 
-        BaseConcept cc = ((BaseConcept) n.conceptualize($("(&&, a:x, a:y, a:z)")));
+        TaskConcept cc = ((TaskConcept) n.conceptualize($("(&&, a:x, a:y, a:z)")));
         Truth now = n.beliefTruth(cc, n.time());
         assertNotNull(now);
         assertTrue($.t(1f, 0.73f).equals(now, 0.1f), now + " truth at " + n.time());
@@ -119,7 +117,7 @@ public class DynamicBeliefTableTest {
 
         //test unknown:
         {
-            BaseConcept ccn = (BaseConcept) n.conceptualize($("(&&, a:x, a:w)"));
+            TaskConcept ccn = (TaskConcept) n.conceptualize($("(&&, a:x, a:w)"));
             Truth nown = n.beliefTruth(ccn, n.time());
             assertNull(nown);
         }
@@ -146,7 +144,7 @@ public class DynamicBeliefTableTest {
         n.believe($("(y)"), (long) 4, 1f, 0.9f);
         n.run(2);
         n.time.dur(8);
-        BaseConcept cc = (BaseConcept) n.conceptualize($("((x) && (y))"));
+        TaskConcept cc = (TaskConcept) n.conceptualize($("((x) && (y))"));
 
         DynamicBeliefTable xtable = (DynamicBeliefTable) (cc.beliefs());
         Compound template = $("((x) &&+4 (y))");
@@ -164,5 +162,18 @@ public class DynamicBeliefTableTest {
 
     }
 
+    @Test
+    public void testDynamicConceptValid() throws Narsese.NarseseException {
+        Term c =
+                //$.$("( &&+- ,(--,($1 ==>+- (((joy-->fz)&&fwd) &&+- $1))),(joy-->fz),fwd)");
+                Op.CONJ.the(XTERNAL,
+                        $.$("(--,($1 ==>+- (((joy-->fz)&&fwd) &&+- $1)))"),
+                        $.$("(joy-->fz)"),
+                        $.$("fwd")
+                ).normalize();
+
+        assertTrue(c instanceof Compound, ()->c.toString());
+        assertTrue(Task.validTaskTerm(c), ()->c + " should be a valid task term");
+    }
 
 }

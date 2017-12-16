@@ -2,7 +2,7 @@ package nars.table;
 
 import nars.NAR;
 import nars.Task;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -20,7 +20,7 @@ public interface TaskTable extends Iterable<Task> {
      * @return: the input task itself, it it was added to the table
      * an existing equivalent task if this was a duplicate
      */
-    void add(Task t, BaseConcept c, NAR n);
+    void add(Task t, TaskConcept c, NAR n);
 
 
     int capacity();

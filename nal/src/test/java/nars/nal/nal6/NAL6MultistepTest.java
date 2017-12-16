@@ -3,7 +3,7 @@ package nars.nal.nal6;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.concept.Concept;
 import nars.time.Tense;
 import nars.truth.Truth;
@@ -101,13 +101,13 @@ public class NAL6MultistepTest {
                 "(earthquake)?"
         );
 
-        BaseConcept burglary = null, earthquake = null;
+        TaskConcept burglary = null, earthquake = null;
         for (int i = 0; i < 5; i++) {
             // burglary.print();  earthquake.print();
             //long now = d.time();
             n.run(100);
-            burglary = (BaseConcept) n.conceptualize("(burglary)");
-            earthquake = (BaseConcept)n.conceptualize("(earthquake)");            // burglary.print();  earthquake.print();
+            burglary = (TaskConcept) n.conceptualize("(burglary)");
+            earthquake = (TaskConcept)n.conceptualize("(earthquake)");            // burglary.print();  earthquake.print();
             System.out.println("burglary=" + n.beliefTruth(burglary,0) + "\tearthquake=" + earthquake.beliefs().truth(Tense.ETERNAL, n));
         }
 

@@ -1,7 +1,7 @@
 package nars.term;
 
 import nars.*;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.concept.Concept;
 import nars.term.transform.Retemporalize;
 import org.jetbrains.annotations.NotNull;
@@ -391,7 +391,7 @@ public class TemporalTermTest {
 
         n.run(2);
 
-        BaseConcept a = (BaseConcept) n.conceptualize("(((SELF,#1)-->at) && goto(#1)).");
+        TaskConcept a = (TaskConcept) n.conceptualize("(((SELF,#1)-->at) && goto(#1)).");
         Concept a0 = n.conceptualize("(goto(#1) && ((SELF,#1)-->at)).");
         assertNotNull(a);
         assertSame(a, a0);
@@ -524,7 +524,7 @@ public class TemporalTermTest {
 
         n.input("(x ==>+0 y).", "(x ==>+1 y).").run(2);
 
-        BaseConcept xImplY = (BaseConcept) n.conceptualize(t);
+        TaskConcept xImplY = (TaskConcept) n.conceptualize(t);
         assertNotNull(xImplY);
 
         assertEquals("(x==>y)", xImplY.toString());
@@ -550,8 +550,17 @@ public class TemporalTermTest {
     @Test public void testEmbeddedChangedRoot() throws Narsese.NarseseException {
         assertEquals("(a ==>+- (b&&c))",
                 $.$("(a ==> (b &&+1 c))").root().toString());
-        assertEquals("(a ==>+- ((b&&c) &&+- d))",
-                $.$("(a ==> (b &&+1 (c &&+1 d)))").root().toString());
+    }
+    @Test public void testEmbeddedChangedRoot2() throws Narsese.NarseseException {
+        Term x = nars.$.$("(a ==> (b &&+1 (c &&+1 d)))");
+        assertEquals("(a ==>+- ( &&+- ,b,c,d))", x.root().toString());
+    }
+
+    @Test public void testEmbeddedChangedRoot3() throws Narsese.NarseseException {
+        for (String conj : new String[] { "&&", "&|" }) {
+            Term x = nars.$.$("(a ==> (b &&+1 (c " + conj + " d)))");
+            assertEquals("(a ==>+- ((c&&d) &&+- b))", x.root().toString());
+        }
     }
 
     @Test
@@ -748,7 +757,7 @@ public class TemporalTermTest {
         assertEquals("((--,x) &&+- x)", cn.root().toString());
 
         Term d = $.$("(x &&+1 (y &&+1 z))");
-        assertEquals("((x&&y) &&+- z)", d.root().toString());
+        assertEquals("( &&+- ,x,y,z)", d.root().toString());
 
     }
 

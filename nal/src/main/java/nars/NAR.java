@@ -11,9 +11,10 @@ import jcog.exe.Cycler;
 import jcog.list.FasterList;
 import jcog.math.MutableInteger;
 import jcog.pri.Pri;
+import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import nars.Narsese.NarseseException;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.concept.Concept;
 import nars.concept.builder.ConceptBuilder;
 import nars.concept.state.ConceptState;
@@ -871,8 +872,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         assert (concept.op().conceptualizable) : "asking for truth of unconceptualizable: " + concept; //filter NEG etc
 
         @Nullable Concept c = concept(concept);
-        if (c instanceof BaseConcept) {
-            BaseConcept tc = (BaseConcept) c;
+        if (c instanceof TaskConcept) {
+            TaskConcept tc = (TaskConcept) c;
             BeliefTable table;
             switch (punc) {
                 case BELIEF:
@@ -1476,10 +1477,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     public Task answer(Term c, byte punc, long start, long end) {
         assert (punc == BELIEF || punc == GOAL);
         Concept concept = concept(c);
-        if (!(concept instanceof BaseConcept))
+        if (!(concept instanceof TaskConcept))
             return null;
 
-        return ((BeliefTable) ((BaseConcept) concept).table(punc)).answer(start, end, c, this);
+        return ((BeliefTable) ((TaskConcept) concept).table(punc)).answer(start, end, c, this);
     }
 
     public SortedMap<String, Object> stats(Appendable out) {
@@ -1516,6 +1517,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      */
     public float amp(short[] effect) {
         return Math.max(Pri.EPSILON, 1f + Util.tanhFast(value(effect)));
+    }
+
+    public final float amp(Task task) {
+        return amp(task.cause());
     }
 
     public float value(short[] effect) {
@@ -1670,5 +1675,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     public Stream<Service<NAR>> services() {
         return services.values().stream();
     }
+
 
 }

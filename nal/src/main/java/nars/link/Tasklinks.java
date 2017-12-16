@@ -8,6 +8,7 @@ import jcog.pri.op.PriForget;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
+import nars.concept.TaskConcept;
 import nars.table.TemporalBeliefTable;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
@@ -40,7 +41,7 @@ public class Tasklinks {
     }
 
     /** if NAR is null, then only inserts tasklink.  otherwise it proceeds with activation */
-    public static void linkTask(Task t, float pri, Concept cc, @Nullable NAR nar) {
+    public static void linkTask(Task t, float pri, /*Task*/Concept cc, @Nullable NAR nar) {
 
         boolean activate = nar!=null;
 
@@ -57,7 +58,7 @@ public class Tasklinks {
             float conceptActivation = pri;
             if (conceptActivation > 0) {
                 nar.activate(cc, conceptActivation);
-                nar.emotion.onActivate(t, conceptActivation, cc, nar);
+                nar.emotion.onActivate(t, conceptActivation, (TaskConcept) cc, nar);
             }
         }
     }

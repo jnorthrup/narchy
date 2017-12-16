@@ -284,6 +284,7 @@ public class TermReductionsTest extends NarseseTest {
                         .conceptual().toString());
     }
 
+
     @Test
     public void testConjRepeatPosNeg() {
         Term x = $.the("x");

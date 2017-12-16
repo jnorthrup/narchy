@@ -3,7 +3,7 @@ package nars.op.video;
 import jcog.Util;
 import nars.NAR;
 import nars.NAgent;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.control.DurService;
 import nars.truth.Truth;
 import nars.util.signal.Sensor2D;
@@ -60,7 +60,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
     public int update(int x, int y) {
 
 
-        BaseConcept s = cam.matrix[x][y];
+        TaskConcept s = cam.matrix[x][y];
         Truth b = s.beliefs().truth(now, nar);
         float bf = b != null ? b.freq() : 0.5f;
 

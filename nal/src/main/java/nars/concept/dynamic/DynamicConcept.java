@@ -1,14 +1,14 @@
 package nars.concept.dynamic;
 
 import nars.NAR;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 
 
 /** just a marker class for a TaskConcept with DynamicBeliefTables */
-public final class DynamicConcept extends BaseConcept {
+public final class DynamicConcept extends TaskConcept {
 
     @NotNull
     @Deprecated final NAR nar;

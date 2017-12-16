@@ -2,7 +2,7 @@ package nars.op.mental;
 
 import jcog.bag.Bag;
 import nars.NAR;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.concept.Concept;
 import nars.concept.state.ConceptState;
 import nars.table.BeliefTable;
@@ -24,7 +24,7 @@ import java.util.List;
  * <p>
  * seen from a superterm containing one, it appears as a simple volume=2 concept meanwhile it could be aliasing a concept much larger than it. common "phrase" concepts with a volume >> 2 are good candidates for abbreviation. but when printed, the default toString() method is proxied so it will automatically decompress on output (or other serialization).
  */
-public final class AliasConcept extends BaseConcept {
+public final class AliasConcept extends TaskConcept {
 
 
 

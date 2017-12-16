@@ -2,7 +2,7 @@ package nars.task;
 
 import com.google.common.collect.Lists;
 import nars.*;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.concept.dynamic.DynamicBeliefTable;
 import nars.table.BeliefTable;
 import nars.test.TestNAR;
@@ -214,7 +214,7 @@ public class BeliefTableTest {
     }
 
     static void assertDuration(NAR n, String c, long start, long end) throws Narsese.NarseseException {
-        BaseConcept cc = (BaseConcept) n.conceptualize(c);
+        TaskConcept cc = (TaskConcept) n.conceptualize(c);
         assertNotNull(cc,c + " unconceptualized");
 
         List<Task> tt = Lists.newArrayList(cc.beliefs());
@@ -242,7 +242,7 @@ public class BeliefTableTest {
             //assertTrue(5 <= cb.size());
 
             String abpill = "((a==>b)-->[pill])";
-            BaseConcept cc = (BaseConcept) n.conceptualize(abpill); //iterator().next().get();//((ArrayBag<Concept>) cb).get(0).get();
+            TaskConcept cc = (TaskConcept) n.conceptualize(abpill); //iterator().next().get();//((ArrayBag<Concept>) cb).get(0).get();
             assertNotNull(cc);
 
             String correctMerge = "((a ==>+4 b)-->[pill])";

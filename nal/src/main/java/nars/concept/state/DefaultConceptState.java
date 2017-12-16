@@ -2,7 +2,7 @@ package nars.concept.state;
 
 import jcog.Util;
 import jcog.math.MutableInteger;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.concept.Concept;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import org.jetbrains.annotations.NotNull;
@@ -81,7 +81,7 @@ public final class DefaultConceptState extends ConceptState {
 
 
     @Override
-    public int beliefCap(BaseConcept concept, boolean beliefOrGoal, boolean eternalOrTemporal) {
+    public int beliefCap(TaskConcept concept, boolean beliefOrGoal, boolean eternalOrTemporal) {
         int max, min;
 
         if (beliefOrGoal) {
@@ -119,7 +119,7 @@ public final class DefaultConceptState extends ConceptState {
     }
 
     @Override
-    public final int questionCap(BaseConcept concept, boolean questionOrQuest) {
+    public final int questionCap(TaskConcept concept, boolean questionOrQuest) {
         return Util.lerp( 1f - Math.min(1f,(((float)concept.volume()) / 32)), 1, questionsMax.intValue());
     }
 

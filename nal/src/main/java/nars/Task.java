@@ -6,6 +6,7 @@ import jcog.bloom.hash.BytesHashProvider;
 import jcog.list.FasterList;
 import jcog.pri.PLink;
 import nars.concept.Concept;
+import nars.concept.TaskConcept;
 import nars.op.Operator;
 import nars.task.DerivedTask;
 import nars.task.ITask;
@@ -106,6 +107,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //        return validTaskTerm(t, (byte) 0, null, safe);
 //    }
 
+
+    static boolean validTaskTerm(Term t) {
+        return validTaskTerm(t, (byte)0, true);
+    }
+
     static boolean validTaskTerm(@Nullable Term t, byte punc, boolean safe) {
 
         if (t == null)
@@ -116,21 +122,24 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //            if ((t = t.normalize()) == null)
 //                return fail(t, "not normalizable", safe);
 
-            if (!t.isNormalized())
-                return fail(t, "task term not a normalized Compound", safe);
+            if (!t.isNormalized()) {
+                //HACK
+                @Nullable Term tt = t.normalize();
+                if (!tt.equals(t))
+                    return fail(t, "task term not a normalized Compound", safe);
+            }
         }
 
         Op o = t.op();
 
-        if (!o.conceptualizable)
+        if (o == NEG || !o.conceptualizable)
             return fail(t, "not conceptualizable", safe);
 
-        if (o == NEG)
-            //must be applied before instantiating Task
-            return fail(t, "negation operator invalid for task term", safe);
+        if (t.hasAny(Op.VAR_PATTERN))
+             return fail(t, "term has pattern variables", safe);
 
-        if (!t.hasAny(Op.ATOM.bit | Op.INT.bit | Op.VAR_PATTERN.bit))
-            return fail(t, "filter terms which have been completely variable-ized", safe); //filter any terms that have been completely variable introduced
+        if (!t.hasAny(Op.ATOM.bit | Op.INT.bit | Op.varBits))
+            return fail(t, "term has no substance", safe);
 
         if (punc == Op.BELIEF || punc == Op.GOAL) {
             if (t.hasVarQuery())
@@ -180,8 +189,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                     //Trie<ByteList, ByteSet> m = new Trie(Tries.TRIE_SEQUENCER_BYTE_LIST);
                     List</* length, */ ByteList> statements = new FasterList<>();
                     ByteObjectHashMap<List<ByteList>> indepVarPaths = new ByteObjectHashMap<>();
-                    int visitVector = Op.VAR_INDEP.bit | Op.StatementBits;
-                    t.pathsTo((x) -> x.op().in(visitVector) ? x : null, x -> x.hasAny(visitVector), (ByteList path, Term indepVarOrStatement) -> {
+
+                    t.pathsTo(
+                            x -> (x.op().statement && x.varIndep() > 0) || (x.op()==VAR_INDEP) ? x : null,
+                            x -> x.hasAny(Op.StatementBits | Op.VAR_INDEP.bit),
+                            (ByteList path, Term indepVarOrStatement) -> {
                         if (path.isEmpty())
                             return true; //skip the input term
 
@@ -236,7 +248,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
 
                             nextStatement:
-                            for (ByteList statement : statements) {
+                            for (int i1 = 0, statementsSize = statements.size(); i1 < statementsSize; i1++) {
+                                ByteList statement = statements.get(i1);
                                 statementNum++;
                                 int statementPathLength = statement.size();
                                 if (statementPathLength > pSize)
@@ -955,8 +968,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             Concept c = concept(n, true);
             if (c != null) {
 
+                if (!(c instanceof TaskConcept)) {
+                    throw new RuntimeException(c + " is not a TaskConcept yet a task expects to add itself to it");
+                }
 
-                c.process(this, n);
+                ((TaskConcept)c).add(this, n);
             }
 
         }

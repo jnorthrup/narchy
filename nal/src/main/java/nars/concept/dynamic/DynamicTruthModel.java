@@ -6,7 +6,8 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
-import nars.concept.BaseConcept;
+import nars.concept.NodeConcept;
+import nars.concept.TaskConcept;
 import nars.concept.Concept;
 import nars.table.BeliefTable;
 import nars.term.Compound;
@@ -70,14 +71,18 @@ abstract public class DynamicTruthModel {
                 it = it.unneg();
 
             Concept subConcept = n.concept(it);
-            if (subConcept == null)
-                return null; //ok just missing
+            if (!(subConcept instanceof TaskConcept)) {
+                assert(subConcept == null || !(subConcept instanceof NodeConcept)):
+                        it + " does not name a TaskConcept";
+
+                return null;
+            }
 
 
             Task bt;
             Term ot;
             Truth nt;
-            BeliefTable table = (BeliefTable) ((BaseConcept) subConcept).table(beliefOrGoal ? BELIEF : GOAL);
+            BeliefTable table = (BeliefTable) ((TaskConcept) subConcept).table(beliefOrGoal ? BELIEF : GOAL);
             if (evi) {
                 //task
 

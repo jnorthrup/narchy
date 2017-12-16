@@ -2,7 +2,7 @@ package nars.task;
 
 import jcog.bag.Bag;
 import nars.*;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.concept.state.DefaultConceptState;
 import nars.term.Compound;
 import nars.term.Term;
@@ -237,7 +237,7 @@ public class RevisionTest {
 
         n.run(1);
 
-        BaseConcept c = (BaseConcept) n.conceptualize("(x ==> y)");
+        TaskConcept c = (TaskConcept) n.conceptualize("(x ==> y)");
         c.print();
         Task t = n.answer(c.term(), BELIEF, ETERNAL);
         assertEquals(0.5f, t.freq(), 0.01f);

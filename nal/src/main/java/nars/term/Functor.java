@@ -5,7 +5,8 @@ import jcog.util.TriFunction;
 import nars.$;
 import nars.NAR;
 import nars.Op;
-import nars.concept.BaseConcept;
+import nars.concept.NodeConcept;
+import nars.concept.TaskConcept;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.concept.builder.ConceptBuilder;
@@ -30,7 +31,7 @@ import static nars.term.atom.Atomic.the;
  * a result Term from the TermContainer arguments of
  * a function term, for example: f(x) or f(x, y).
  */
-abstract public class Functor extends BaseConcept implements PermanentConcept, Function<Subterms, Term>, Atomic {
+abstract public class Functor extends NodeConcept implements PermanentConcept, Function<Subterms, Term>, Atomic {
 
     protected Functor(@NotNull String atom) {
         this(fName(atom));

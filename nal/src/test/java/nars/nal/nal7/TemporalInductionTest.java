@@ -3,8 +3,7 @@ package nars.nal.nal7;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.Param;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.test.TestNAR;
 import org.jetbrains.annotations.NotNull;
@@ -108,7 +107,7 @@ public class TemporalInductionTest {
 
         //n.forEachConcept(Concept::print);
 
-        BaseConcept c = (BaseConcept) n.conceptualize("a:b");
+        TaskConcept c = (TaskConcept) n.conceptualize("a:b");
         assertNotNull(c);
         //assertEquals("(b-->a). 5+0 %.50;.95%", c.getBeliefs().top(n.time()).toStringWithoutBudget());
 

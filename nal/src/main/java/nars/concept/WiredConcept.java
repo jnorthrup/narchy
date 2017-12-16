@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
  * to make them directly reflect the sensor concept as the authority.
  *
  * */
-public class WiredConcept extends BaseConcept implements PermanentConcept {
+public class WiredConcept extends TaskConcept implements PermanentConcept {
 
     public static final FloatSupplier DEFAULT_RESOLUTION = () -> 0.01f;
     public FloatSupplier resolution;

@@ -3,7 +3,7 @@ package nars.table;
 import jcog.math.Interval;
 import nars.NAR;
 import nars.Task;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.task.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -81,7 +81,7 @@ public interface TemporalBeliefTable extends TaskTable, Iterable<Task> {
     TemporalBeliefTable Empty = new TemporalBeliefTable() {
 
         @Override
-        public void add(@NotNull Task t, BaseConcept c, NAR n) {
+        public void add(@NotNull Task t, TaskConcept c, NAR n) {
 
         }
 

@@ -1,5 +1,6 @@
 package nars.term.transform;
 
+import jcog.data.ArrayHashSet;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
@@ -64,17 +65,17 @@ public interface Retemporalize extends DirectCompoundTransform {
                 dtNext = dt(x);
                 if (dtNext == XTERNAL && op == CONJ && x.subterms().hasAny(CONJ)) {
                     //recursive conj, decompose to events
-                    SortedSet<Term> s = new TreeSet();
-                    x.events(a -> {
-                        Term zz = a.getTwo();
+                    ArrayHashSet<Term> s = new ArrayHashSet();
+                    x.eventsWhile((when, zz) -> {
                         if (!zz.equals(x)) {
-                            Term yy = zz.transform(this);
-                            assert (yy != null);
-                            s.add(yy);
+                            s.add(zz);
                         }
-                    });
-                    if (s.size() > 2)
-                        return CONJ.the(XTERNAL, s);
+                        return true;
+                    }, 0, false, false, false, 0);
+                    if (s.size() > 2) {
+                        s.list.replaceAll((zz)-> zz.transform(Retemporalize.this));
+                        return CONJ.the(XTERNAL, s.list);
+                    }
                 }
                 if (dt == dtNext && !x.subterms().hasAny(Temporal))
                     return x; //no change

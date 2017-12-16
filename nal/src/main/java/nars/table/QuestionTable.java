@@ -4,7 +4,7 @@ import jcog.data.map.MRUCache;
 import jcog.list.ArrayIterator;
 import nars.NAR;
 import nars.Task;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.link.Tasklinks;
 import nars.task.NALTask;
 
@@ -40,7 +40,7 @@ public interface QuestionTable extends TaskTable {
         }
 
         @Override
-        public void add(/*@NotNull*/ Task t, BaseConcept c, NAR n) {
+        public void add(/*@NotNull*/ Task t, TaskConcept c, NAR n) {
 
         }
 
@@ -106,7 +106,7 @@ public interface QuestionTable extends TaskTable {
         }
 
         @Override
-        public void add(/*@NotNull*/ Task t, BaseConcept c, NAR n) {
+        public void add(/*@NotNull*/ Task t, TaskConcept c, NAR n) {
             Task u;
             float tPri = t.priElseZero();
 

@@ -8,8 +8,9 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.concept.Concept;
+import nars.concept.NodeConcept;
 import nars.concept.dynamic.DynamicBeliefTable;
 import nars.concept.dynamic.DynamicConcept;
 import nars.concept.dynamic.DynamicTruthModel;
@@ -23,6 +24,8 @@ import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.sub.Subterms;
 import nars.term.var.Variable;
+import org.eclipse.collections.api.list.MutableList;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -84,7 +87,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
     }
 
 
-    private BaseConcept newTaskConcept(final Term t) {
+    private TaskConcept taskConcept(final Term t) {
         DynamicTruthModel dmt = null;
 
         final Subterms ts = t.subterms();
@@ -106,7 +109,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
 
                         Subterms subjsubs = subj.subterms();
-                        if (validUnwrappableSubterms(subjsubs)) {
+                        if (validDynamicSubterms(subjsubs)) {
                             int s = subjsubs.subs();
                             FasterList<Term> lx = new FasterList(0, new Term[s]);
                             if (subj instanceof Int.IntRange || so == PROD && subj.hasAny(INT)) {
@@ -134,7 +137,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
                             }
 
 
-                            if (lx.size() > 1 && validUnwrappableSubterms(lx)) {
+                            if (lx.size() > 1 && validDynamicSubterms(lx)) {
                                 Term[] x = lx.toArrayRecycled(Term[]::new);
                                 switch (so) {
                                     case INT:
@@ -184,13 +187,13 @@ public class DefaultConceptBuilder implements ConceptBuilder {
                         //(M --> P), (M --> S), notSet(S), notSet(P), neqCom(S,P) |- (M --> (P | S)), (Belief:Union)
                         //(M --> P), (M --> S), notSet(S), notSet(P), neqCom(S,P) |- (M --> (P - S)), (Belief:Difference)
                         Compound cpred = (Compound) pred;
-                        if (validUnwrappableSubterms(cpred.subterms())) {
+                        if (validDynamicSubterms(cpred.subterms())) {
                             int s = cpred.subs();
                             Term[] x = new Term[s];
                             boolean valid = true;
                             for (int i = 0; i < s; i++) {
                                 Term y;
-                                if (!validUnwrappableSubterm.test(y = INH.the(subj, cpred.sub(i)))) {
+                                if (!validDynamicSubterm.test(y = INH.the(subj, cpred.sub(i)))) {
                                     valid = false;
                                     break;
                                 }
@@ -234,13 +237,13 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
             case CONJ:
                 //allow variables onlyif they are not themselves direct subterms of this
-                if (validUnwrappableSubterms(ts)) {
+                if (validDynamicSubterms(ts)) {
                     dmt = DynamicTruthModel.Intersection.conj;
                 }
                 break;
 
             case DIFFe:
-                if (validUnwrappableSubterms(ts))
+                if (validDynamicSubterms(ts))
                     dmt = new DynamicTruthModel.Difference(ts.arrayShared());
                 break;
 
@@ -265,7 +268,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
             return new DynamicConcept(t, beliefs, goals, nar);
         } else {
-            return new BaseConcept(t, this);
+            return new TaskConcept(t, this);
         }
     }
 
@@ -304,17 +307,15 @@ public class DefaultConceptBuilder implements ConceptBuilder {
     }
 
 
-    final static Predicate<Term> validUnwrappableSubterm = x -> !(x instanceof Bool) && !(x.unneg() instanceof Variable);
+    final static Predicate<Term> validDynamicSubterm = x ->
+            Task.validTaskTerm(x);
 
-    private static boolean validUnwrappableSubterms(@NotNull Subterms subterms) {
-        return subterms.AND(validUnwrappableSubterm);
+    private static boolean validDynamicSubterms(Subterms subterms) {
+        return subterms.AND(validDynamicSubterm);
     }
 
-    private static boolean validUnwrappableSubterms(@NotNull List<Term> subterms) {
-        for (Term t : subterms)
-            if (!validUnwrappableSubterm.test(t))
-                return false;
-        return true;
+    private static boolean validDynamicSubterms(MutableList<Term> subterms) {
+        return subterms.allSatisfy(DefaultConceptBuilder.validDynamicSubterm::test);
     }
 
     @Override
@@ -346,20 +347,16 @@ public class DefaultConceptBuilder implements ConceptBuilder {
             return null;
         }
 
-        boolean validForTask = Task.validTaskTerm(t, (byte) 0,  /*nar -- checked above */ true);
         Concept c;
-        if (validForTask) {
-            c = newTaskConcept(t);
-        } else {
-            //empty belief tables
-            c = new BaseConcept(t,
-                    BeliefTable.Empty, BeliefTable.Empty, QuestionTable.Empty, QuestionTable.Empty,
-                    newLinkBags(t));
-        }
+        if (Task.validTaskTerm(t))
+            c = taskConcept(t);
+        else
+            c = new NodeConcept(t, newLinkBags(t));
 
         c.state(awake);
         return c;
     }
+
 
     @NotNull
     @Override
@@ -401,8 +398,8 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 ////                return new SynchronizedUnifiedMap(0, loadFactor);
 ////            }
 //        } else {
-            //return new UnifiedMap(0, loadFactor);
-            return new HashMap(0, loadFactor);
+            return new UnifiedMap(0, loadFactor);
+            //return new HashMap(0, loadFactor);
 //        }
 
     }

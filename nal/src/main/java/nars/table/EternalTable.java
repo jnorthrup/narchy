@@ -6,7 +6,7 @@ import jcog.sort.SortedArray;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.control.Cause;
 import nars.link.Tasklinks;
 import nars.task.NALTask;
@@ -53,7 +53,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         }
 
         @Override
-        public void add(/*@NotNull*/ Task input, BaseConcept c, /*@NotNull*/ NAR nar) {
+        public void add(/*@NotNull*/ Task input, TaskConcept c, /*@NotNull*/ NAR nar) {
             //nothing
         }
 
@@ -355,7 +355,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     }
 
     @Override
-    public void add(/*@NotNull*/ Task input, BaseConcept c, /*@NotNull*/ NAR nar) {
+    public void add(/*@NotNull*/ Task input, TaskConcept c, /*@NotNull*/ NAR nar) {
 
         int cap = capacity();
         if (cap == 0) {

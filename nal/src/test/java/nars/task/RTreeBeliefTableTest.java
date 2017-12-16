@@ -3,7 +3,7 @@ package nars.task;
 import jcog.math.MultiStatistics;
 import jcog.meter.event.CSVOutput;
 import nars.*;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.table.RTreeBeliefTable;
 import nars.term.Term;
@@ -23,7 +23,7 @@ public class RTreeBeliefTableTest {
     @Test
     public void testBasicOperations() throws Narsese.NarseseException {
         NAR n = NARS.shell();
-        BaseConcept X = (BaseConcept) n.conceptualize($.$("a:b"));
+        TaskConcept X = (TaskConcept) n.conceptualize($.$("a:b"));
         RTreeBeliefTable r = new RTreeBeliefTable();
         r.setCapacity(4);
 
@@ -72,14 +72,14 @@ public class RTreeBeliefTableTest {
     static Task add(RTreeBeliefTable r, Termed x, float freq, float conf, int start, int end, NAR n) {
         Task a = $.belief(x.term(), freq, conf).time(start, start, end).apply(n);
         a.pri(0.5f);
-        r.add(a, (BaseConcept) n.concept(x), n);
+        r.add(a, (TaskConcept) n.concept(x), n);
         return a;
     }
 
     @Test
     public void testProjection() throws Narsese.NarseseException {
         NAR n = NARS.shell();
-        BaseConcept x = (BaseConcept) n.conceptualize($.$("a:b"));
+        TaskConcept x = (TaskConcept) n.conceptualize($.$("a:b"));
         RTreeBeliefTable r = new RTreeBeliefTable();
         r.setCapacity(4);
 
@@ -145,7 +145,7 @@ public class RTreeBeliefTableTest {
 
         //n.log();
 
-        BaseConcept c = (BaseConcept) n.conceptualize(term);
+        TaskConcept c = (TaskConcept) n.conceptualize(term);
         @NotNull BeliefTable cb = true ? c.beliefs() : c.goals();
         cb.setCapacity(0, cap);
 

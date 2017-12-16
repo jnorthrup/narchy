@@ -1,6 +1,6 @@
 package nars.concept.state;
 
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.concept.Concept;
 import nars.term.atom.Atom;
 import org.jetbrains.annotations.NotNull;
@@ -20,9 +20,9 @@ public abstract class ConceptState extends Atom {
 
     public abstract int linkCap(Concept concept, boolean termOrTask);
 
-    public abstract int beliefCap(BaseConcept concept, boolean beliefOrGoal, boolean eternalOrTemporal);
+    public abstract int beliefCap(TaskConcept concept, boolean beliefOrGoal, boolean eternalOrTemporal);
 
-    public abstract int questionCap(BaseConcept concept, boolean questionOrQuest);
+    public abstract int questionCap(TaskConcept concept, boolean questionOrQuest);
 
 
     public static final ConceptState New = new EmptyConceptState("new");
@@ -40,12 +40,12 @@ public abstract class ConceptState extends Atom {
         }
 
         @Override
-        public int beliefCap(BaseConcept concept, boolean beliefOrGoal, boolean eternalOrTemporal) {
+        public int beliefCap(TaskConcept concept, boolean beliefOrGoal, boolean eternalOrTemporal) {
             return 0;
         }
 
         @Override
-        public int questionCap(BaseConcept concept, boolean questionOrQuest) {
+        public int questionCap(TaskConcept concept, boolean questionOrQuest) {
             return 0;
         }
     };
@@ -63,12 +63,12 @@ public abstract class ConceptState extends Atom {
         }
 
         @Override
-        public int beliefCap(BaseConcept concept, boolean beliefOrGoal, boolean eternalOrTemporal) {
+        public int beliefCap(TaskConcept concept, boolean beliefOrGoal, boolean eternalOrTemporal) {
             return 0;
         }
 
         @Override
-        public int questionCap(BaseConcept concept, boolean questionOrQuest) {
+        public int questionCap(TaskConcept concept, boolean questionOrQuest) {
             return 0;
         }
     }

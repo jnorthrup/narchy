@@ -1,10 +1,9 @@
 package nars.table;
 
-import jcog.math.Interval;
 import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.Task;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.control.Cause;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -80,7 +79,7 @@ public interface BeliefTable extends TaskTable {
 
 
         @Override
-        public void add(/*@NotNull*/ Task input, BaseConcept concept, /*@NotNull*/ NAR nar) {
+        public void add(/*@NotNull*/ Task input, TaskConcept concept, /*@NotNull*/ NAR nar) {
 
         }
 
@@ -147,7 +146,7 @@ public interface BeliefTable extends TaskTable {
      * attempt to insert a task; returns what was input or null if nothing changed (rejected)
      */
     @Override
-    void add(/*@NotNull*/ Task input, BaseConcept concept, /*@NotNull*/ NAR nar);
+    void add(/*@NotNull*/ Task input, TaskConcept concept, /*@NotNull*/ NAR nar);
 
 
 

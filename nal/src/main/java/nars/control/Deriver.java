@@ -153,10 +153,12 @@ public class Deriver extends Causable {
 
                 if (p.match(d, this::matchTime, matchTTL) != null) {
 
-                    int deriveTTL = Util.lerp(
-                            //p.task.priElseZero() / nar.priDefault(p.task.punc()), //relative
-                            p.task.priElseZero(),                                   //absolute
-                            ttlMin, ttlMax);
+                    float strength =
+                            a.priElseZero() * p.task.priElseZero() * nar.amp(d.parentCause); //absolute task * absolute concept
+                            //p.task.priElseZero()                                 //absolute
+                            //p.task.priElseZero() / nar.priDefault(p.task.punc()) //relative
+
+                    int deriveTTL = Util.lerp(strength,ttlMin, ttlMax);
 
                     d.derive(deriveTTL);
 

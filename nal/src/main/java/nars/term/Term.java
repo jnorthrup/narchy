@@ -235,8 +235,8 @@ public interface Term extends Termed, Comparable<Termed> {
             if (!receiver.test(EmptyByteList, ss))
                 return false;
         }
-        if (this.subs() > 0 && descendIf.test(this)) {
-            return pathsTo(new ByteArrayList(0), this.subterms(), descendIf, target, receiver);
+        if (this.subs() > 0) {
+            return pathsTo(this, new ByteArrayList(0), descendIf, target, receiver);
         } else {
             return true;
         }
@@ -265,28 +265,37 @@ public interface Term extends Termed, Comparable<Termed> {
         return null;
     }
 
-    static <X> boolean pathsTo(/*@NotNull*/ ByteArrayList p, Subterms superTerm, Predicate<Term> descendIf,/*@NotNull*/ Function<Term, X> subterm, BiPredicate<ByteList, X> receiver) {
+    static <X> boolean pathsTo(Term that, /*@NotNull*/ ByteArrayList p, Predicate<Term> descendIf,/*@NotNull*/ Function<Term, X> subterm, BiPredicate<ByteList, X> receiver) {
+        if (!descendIf.test(that))
+            return true;
 
+        Subterms superTerm = that.subterms();
 
         int ppp = p.size();
 
         int n = superTerm.subs();
         for (int i = 0; i < n; i++) {
 
-            p.add((byte) i);
+            p.add((byte) i); //push
 
             Term s = superTerm.sub(i);
-            X ss = subterm.apply(s);
 
+            boolean kontinue = true;
+            X ss = subterm.apply(s);
             if (ss != null) {
                 if (!receiver.test(p, ss))
-                    return false;
+                    kontinue = false;
             }
 
-            if (s.subs() > 0 && !pathsTo(p, s.subterms(), descendIf, subterm, receiver))
-                return false;
+            if (s.subs() > 0) {
+                if (!pathsTo(s, p, descendIf, subterm, receiver))
+                    kontinue = false;
+            }
 
-            p.removeAtIndex(ppp);
+            p.removeAtIndex(ppp); //pop
+
+            if (!kontinue)
+                return false;
         }
 
         return true;

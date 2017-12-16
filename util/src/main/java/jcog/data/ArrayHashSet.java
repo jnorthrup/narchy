@@ -92,7 +92,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 	};
 
     private HashSet<X> set;
-	private List<X> list;
+	public List<X> list;
 
 	final static List EMPTY_LIST = List.of();
 	

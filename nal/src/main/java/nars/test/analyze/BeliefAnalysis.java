@@ -6,7 +6,7 @@ import nars.$;
 import nars.NAR;
 import nars.Narsese;
 import nars.Task;
-import nars.concept.BaseConcept;
+import nars.concept.TaskConcept;
 import nars.concept.Concept;
 import nars.table.BeliefTable;
 import nars.term.Term;
@@ -61,21 +61,21 @@ public class BeliefAnalysis implements Termed {
 	}
 
 	@Nullable
-	public BaseConcept concept() {
-		return (BaseConcept) nar.concept(term);
+	public TaskConcept concept() {
+		return (TaskConcept) nar.concept(term);
 	}
 
 	@Nullable
 	public BeliefTable beliefs() {
 		Concept c = concept();
-		if (!(c instanceof BaseConcept))
+		if (!(c instanceof TaskConcept))
 			return BeliefTable.Empty;
 		return c.beliefs();
 	}
 	@Nullable
 	public BeliefTable goals() {
 		Concept c = concept();
-		if (!(c instanceof BaseConcept))
+		if (!(c instanceof TaskConcept))
 			return BeliefTable.Empty;
 		return c.goals();
 	}

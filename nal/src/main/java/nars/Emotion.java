@@ -7,6 +7,7 @@ import jcog.meter.event.BufferedFloatGuage;
 import jcog.pri.Pri;
 import jcog.pri.PriReference;
 import nars.concept.Concept;
+import nars.concept.TaskConcept;
 import nars.control.MetaGoal;
 import nars.term.Compound;
 import nars.util.ConcurrentMonitorRegistry;
@@ -324,7 +325,7 @@ public class Emotion extends ConcurrentMonitorRegistry {
         busy(pri, (int) Math.ceil(vol ));
     }
 
-    public void onActivate(Task t, float activation, Concept taskConcept, NAR n) {
+    public void onActivate(Task t, float activation, TaskConcept taskConcept, NAR n) {
         taskActivations.increment();
         taskConcept.value(t, activation, n);
     }
