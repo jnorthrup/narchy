@@ -185,10 +185,10 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(40);
+        n.termVolumeMax.set(36);
 
-        n.beliefConfidence(0.75f);
-        n.goalConfidence(0.75f);
+        n.beliefConfidence(0.9f);
+        n.goalConfidence(0.9f);
 
 
         float priFactor = 0.5f;
@@ -283,7 +283,7 @@ abstract public class NAgentX extends NAgent {
 //        });
 
 
-        new Anoncepts(8, n);
+        //new Anoncepts(8, n);
 
 //        new Implier(2f, a,
 //                1

@@ -124,8 +124,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
             if (!t.isNormalized()) {
                 //HACK
-                @Nullable Term tt = t.normalize();
-                if (!tt.equals(t))
+                @Nullable Term Normalized = t.normalize();
+                if (!Normalized.equals(t))
                     return fail(t, "task term not a normalized Compound", safe);
             }
         }
@@ -969,7 +969,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             if (c != null) {
 
                 if (!(c instanceof TaskConcept)) {
-                    throw new RuntimeException(c + " is not a TaskConcept yet a task expects to add itself to it");
+                    if (isBeliefOrGoal() || Param.DEBUG_EXTRA)
+                        throw new RuntimeException(c + " is not a TaskConcept yet a task expects to add itself to it");
+                    else
+                        return null; //ignore question about the functor/etc
                 }
 
                 ((TaskConcept)c).add(this, n);

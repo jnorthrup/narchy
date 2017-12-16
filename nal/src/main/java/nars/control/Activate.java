@@ -80,7 +80,7 @@ public class Activate extends PLink<Concept> implements Termed {
         List<Premise> next = new FasterList(premisesMax);
         final int[] remaining = {premisesMax};
 
-        ((TaskLinkCurveBag)tasklinks).sample((Bag.BagCursor<PriReference<Task>>) tasklink -> {
+        ((TaskLinkCurveBag)tasklinks).sample(tasklink -> {
 
             int termlinksSampled = Math.min(Math.max(1,
                     (int) Math.ceil(
@@ -110,10 +110,10 @@ public class Activate extends PLink<Concept> implements Termed {
         }, (tl)->{
             Task x = tl.get();
             if (x == null)
-                return Float.NaN;
+                return 0; //deleted
             float p = tl.pri();
             if (p!=p)
-                return Float.NaN; //deleted
+                return 0; //deleted
             else
                 return p * nar.amp(x.cause());
         });
@@ -132,10 +132,7 @@ public class Activate extends PLink<Concept> implements Termed {
 //                        nar.concept(t.get())
 //                ).filter(Objects::nonNull).collect(toList());
 //            }
-        {
-            //Util.selectRoulette(templateConcepts.length, )
-
-        }
+        //Util.selectRoulette(templateConcepts.length, )
 
 
         int tts = tt.size();

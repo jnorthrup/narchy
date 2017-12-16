@@ -20,8 +20,8 @@ import static spacegraph.layout.Grid.col;
  */
 public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
 
-    float alpha = 0.075f; //this represents the overall rate; the sub-block rate will be a fraction of this
-    float noise = (float) Math.sqrt(alpha);
+    float alpha = 0.02f; //this represents the overall rate; the sub-block rate will be a fraction of this
+    float noise = alpha/2;
 
     public static final MetaBits NoMetaBits = (x, y) -> Util.EmptyFloatArray;
     private final NAR nar;
