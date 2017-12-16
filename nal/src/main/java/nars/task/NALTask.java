@@ -11,6 +11,7 @@ import nars.term.Term;
 import nars.truth.DiscreteTruth;
 import nars.truth.Truth;
 import nars.truth.Truthed;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,10 +32,12 @@ public class NALTask extends Pri implements Task {
 
     public final long[] stamp;
 
-    /** cause zero is reserved for unknown causes, as a catch-all */
-    public static final short[] UnknownCause = { 0 };
+//    /** cause zero is reserved for unknown causes, as a catch-all */
+//    public static final short[] UnknownCause = { 0 };
 
-    public short[] cause = UnknownCause;
+    public short[] cause =
+            ArrayUtils.EMPTY_SHORT_ARRAY;
+            //UnknownCause;
 
     final int hash;
 
@@ -243,12 +246,6 @@ public class NALTask extends Pri implements Task {
 //        //t.log("Projected")
 //        return t;
 //    }
-
-    public Task clone(Term x) {
-        Task t = new NALTask(x, punc, truth, creation, start(), end(), stamp);
-        t.priSet(this);
-        return t;
-    }
 
     @Override
     public final float freq() {

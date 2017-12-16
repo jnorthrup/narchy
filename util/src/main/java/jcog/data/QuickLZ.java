@@ -65,6 +65,11 @@ public final class QuickLZ {
         fast_write(dst, 5, size_compressed, 4);
     }
 
+    public static byte[] compress(byte[] source) {
+        return compress(source, 3);
+    }
+
+    /** level=(1|3) */
     public static byte[] compress(byte[] source, int level) {
         int src = 0;
         int dst = DEFAULT_HEADERLEN + CWORD_LEN;

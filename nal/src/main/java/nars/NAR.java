@@ -1514,8 +1514,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      * 0     -> amp=1
      * +Infinity -> amp=2
      */
-    public float evaluate(short[] effect) {
-        return Math.max(Pri.EPSILON, 1f + Util.tanhFast(MetaGoal.privaluate(causes, effect)));
+    public float amp(short[] effect) {
+        return Math.max(Pri.EPSILON, 1f + Util.tanhFast(value(effect)));
+    }
+
+    public float value(short[] effect) {
+        return MetaGoal.privaluate(causes, effect);
     }
 
 //    /**

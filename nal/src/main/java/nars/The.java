@@ -9,6 +9,7 @@ import jcog.memoize.SoftMemoize;
 import nars.derive.match.Ellipsis;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.NewCompound;
+import nars.term.SubtermsKey;
 import nars.term.Term;
 import nars.term.anon.AnonID;
 import nars.term.anon.AnonVector;
@@ -87,7 +88,7 @@ public enum The {
         };
 
 
-        static final Function<NewCompound, nars.term.sub.Subterms> rawSubtermBuilderBuilder = (n) -> RawSubtermBuilder.apply(n.subs);
+        static final Function<SubtermsKey, nars.term.sub.Subterms> rawSubtermBuilderBuilder = (n) -> RawSubtermBuilder.apply(n.commit());
 
         public static final Supplier<Function<Term[], nars.term.sub.Subterms>> SoftSubtermBuilder = () ->
                 new MemoizeSubtermBuilder(new SoftMemoize<>(rawSubtermBuilderBuilder, 256 * 1024, true));
@@ -100,26 +101,29 @@ public enum The {
 
 
         public static final Supplier<Function<Term[], nars.term.sub.Subterms>> HijackSubtermBuilder = () ->
-                new Function<>() {
-
-                    final HijackMemoize<NewCompound, nars.term.sub.Subterms> cache
-                            = new HijackMemoize<>((x) -> RawSubtermBuilder.apply(x.subs),
-                            128 * 1024 + 7 /* ~prime */, 4);
-
-                    @Override
-                    public nars.term.sub.Subterms apply(Term[] o) {
-                        return cache.apply(
-                                new NewCompound(PROD, o).commit()
-                        );
-                    }
-                };
+                new MemoizeSubtermBuilder(new HijackMemoize(rawSubtermBuilderBuilder,
+                            128 * 1024 + 7 /* ~prime-ish maybe */,
+                            4));
+//                new Function<>() {
+//
+//                    final HijackMemoize<NewCompound, nars.term.sub.Subterms> cache
+//                            = new HijackMemoize<>((x) -> RawSubtermBuilder.apply(x.subs),
+//                            128 * 1024 + 7 /* ~prime */, 4);
+//
+//                    @Override
+//                    public nars.term.sub.Subterms apply(Term[] o) {
+//                        return cache.apply(
+//                                new NewCompound(PROD, o).commit()
+//                        );
+//                    }
+//                };
 
         public static Function<Term[], nars.term.sub.Subterms> the =
                 //CaffeineSubtermBuilder.get();
                 RawSubtermBuilder;
 
         private static class MemoizeSubtermBuilder implements Function<Term[], nars.term.sub.Subterms> {
-            final Memoize<NewCompound, nars.term.sub.Subterms> cache;
+            final Memoize<SubtermsKey, nars.term.sub.Subterms> cache;
 
             /**
              * TODO make adjustable
@@ -127,7 +131,7 @@ public enum The {
             int maxVol = 10;
             final int minSubterms = 2;
 
-            private MemoizeSubtermBuilder(Memoize<NewCompound, nars.term.sub.Subterms> cache) {
+            private MemoizeSubtermBuilder(Memoize<SubtermsKey, nars.term.sub.Subterms> cache) {
                 this.cache = cache;
             }
 
@@ -136,7 +140,7 @@ public enum The {
                 if (terms.length < minSubterms || Util.sumExceeds(Term::volume, maxVol, terms))
                     return RawSubtermBuilder.apply(terms);
                 else
-                    return cache.apply(new NewCompound(PROD, terms).commit());
+                    return cache.apply(SubtermsKey.the(terms));
             }
         }
 
@@ -217,4 +221,5 @@ public enum The {
         //HijackCompoundBuilder;
 
     }
+
 }

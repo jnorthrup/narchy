@@ -12,6 +12,7 @@ import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
+import nars.concept.builder.TaskLinkCurveBag;
 import nars.link.Tasklinks;
 import nars.link.TermLinks;
 import nars.term.Term;
@@ -20,7 +21,6 @@ import nars.term.Termed;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Predicate;
 
 /**
  * concept firing, activation, etc
@@ -65,7 +65,7 @@ public class Activate extends PLink<Concept> implements Termed {
 //        if (termlSize <= 0) return null;
 
 
-        final Bag<Task, PriReference<Task>> tasklinks = id.tasklinks();
+        final Bag tasklinks = id.tasklinks();
         long now = nar.time();
         int dur = nar.dur();
         tasklinks.commit(PriForget.forget(tasklinks, linkForgetting, Pri.EPSILON, (r)-> new Tasklinks.TaskLinkForget(r, now, dur)));
@@ -80,7 +80,7 @@ public class Activate extends PLink<Concept> implements Termed {
         List<Premise> next = new FasterList(premisesMax);
         final int[] remaining = {premisesMax};
 
-        tasklinks.sample((Predicate<PriReference<Task>>) tasklink -> {
+        ((TaskLinkCurveBag)tasklinks).sample((Bag.BagCursor<PriReference<Task>>) tasklink -> {
 
             int termlinksSampled = Math.min(Math.max(1,
                     (int) Math.ceil(
@@ -106,7 +106,16 @@ public class Activate extends PLink<Concept> implements Termed {
                 --remaining[0];
             });
 
-            return (remaining[0] > 0);
+            return (remaining[0] > 0) ? Bag.BagSample.Next : Bag.BagSample.Stop;
+        }, (tl)->{
+            Task x = tl.get();
+            if (x == null)
+                return Float.NaN;
+            float p = tl.pri();
+            if (p!=p)
+                return Float.NaN; //deleted
+            else
+                return p * nar.amp(x.cause());
         });
 
         return next;

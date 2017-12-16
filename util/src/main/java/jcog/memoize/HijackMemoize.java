@@ -45,7 +45,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
         }
 
         @Override
-        public boolean equals(@NotNull Object obj) {
+        public boolean equals(Object obj) {
             StrongPair h = (StrongPair) obj;
             return hash == h.hash && x.equals(h.x);
         }
@@ -69,7 +69,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
         private final int hash;
         private float pri;
 
-        public SoftPair(@NotNull X x, @NotNull Y y, float pri) {
+        public SoftPair(X x, Y y, float pri) {
             super(y);
             this.x = x;
             this.hash = x.hashCode();
@@ -169,9 +169,18 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
     //hit + miss + reject = total insertions
 
 
-    public HijackMemoize(@NotNull Function<X, Y> f, int initialCapacity, int reprobes) {
+    public HijackMemoize(Function<X, Y> f, int initialCapacity, int reprobes) {
         super(initialCapacity, reprobes);
+        resize(initialCapacity);
         this.func = f;
+    }
+
+    @Override
+    protected void resize(int newSpace) {
+        if (space() > newSpace)
+            return; //dont shrink
+
+        super.resize(newSpace);
     }
 
     public float statReset(ObjectLongProcedure<String> eachStat) {
@@ -181,7 +190,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
         eachStat.accept("M" /* miss */, M = miss.getThenZero());
         eachStat.accept("R" /* reject */, R = reject.getThenZero());
         eachStat.accept("E" /* evict */, E = evict.getThenZero());
-        return (H / ((float) (H + M + R + E)));
+        return (H / ((float) (H + M + R /* + E */)));
     }
 
     /**
@@ -189,7 +198,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
      * easier items will introduce lower priority, allowing
      * harder items to sustain longer
      */
-    public float value(@NotNull X x) {
+    public float value(X x) {
         return 0.5f;
         //return reprobes * 2 * CACHE_HIT_BOOST;
     }
@@ -197,7 +206,6 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
     @Override
     public void setCapacity(int i) {
         super.setCapacity(i);
-        resize(i);
 
         float boost = i > 0 ?
                 //0.02f
@@ -243,7 +251,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
     }
 
     @Nullable
-    public Y getIfPresent(@NotNull Object k) {
+    public Y getIfPresent(Object k) {
         Computation<X, Y> exists = get(k);
         if (exists != null) {
             Y e = exists.get();
@@ -257,7 +265,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
     }
 
     @Nullable
-    public Y removeIfPresent(@NotNull X x) {
+    public Y removeIfPresent(X x) {
         @Nullable Computation<X, Y> exists = remove(x);
         if (exists != null) {
             return exists.get();
@@ -267,7 +275,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
 
     @Override
     @Nullable
-    public Y apply(@NotNull X x) {
+    public Y apply(X x) {
         Y y = getIfPresent(x);
         if (y == null) {
             y = func.apply(x);
@@ -278,7 +286,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
 
     /** produces the memoized computation instance for insertion into the bag.
      * here it can choose the implementation to use: strong, soft, weak, etc.. */
-    @NotNull public Computation<X, Y> computation(@NotNull X x, Y y) {
+    public Computation<X, Y> computation(X x, Y y) {
         //return new SoftPair<>(x, y, 0.5f);
         return new StrongPair<>(x, y, 0.5f);
     }
@@ -310,7 +318,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
     }
 
     @Override
-    public void onRemove(@NotNull HijackMemoize.Computation<X, Y> value) {
+    public void onRemove(HijackMemoize.Computation<X, Y> value) {
         value.delete();
         evict.inc();
     }
@@ -327,7 +335,8 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
             sb.append(k).append('=').append(v).append(' ');
         });
         sb.setLength(sb.length() - 1); //remove last ' '
-        sb.insert(0, Texts.n2(100f * rate) + "% ");
+        sb.append(" D=").append(Texts.n2percent(density()));
+        sb.insert(0, Texts.n2percent(rate));
         return sb.toString();
     }
 

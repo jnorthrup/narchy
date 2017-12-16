@@ -23,7 +23,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
     /**
      * must remain final for global consistency
      */
-    private final static int MIN_COMPRESSION_BYTES = 72;
+    private final static int MIN_COMPRESSION_BYTES = 64;
 
     static final int MIN_GROWTH_BYTES = 64;
 
@@ -178,12 +178,12 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
 
 
     @Override
-    public final void write(@NotNull byte[] bytes) {
+    public final void write(byte[] bytes) {
         this.write(bytes, 0, bytes.length);
     }
 
     @Override
-    public final void write(@NotNull byte[] bytes, int off, int len) {
+    public final void write(byte[] bytes, int off, int len) {
         int position = ensureSized(len);
         System.arraycopy(bytes, off, this.bytes, position, len);
         this.len = position + len;
@@ -222,6 +222,8 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
             byte[] b = this.bytes;
             if (force || b.length != l || forceIfSameAs == bytes)
                 this.bytes = Arrays.copyOfRange(b, 0, l);
+        } else {
+            this.bytes = ArrayUtils.EMPTY_BYTE_ARRAY;
         }
     }
 
@@ -369,7 +371,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
     }
 
     @Override
-    public void writeUTF(@NotNull String s) {
+    public void writeUTF(String s) {
 
         throw new UnsupportedOperationException("yet");
 
@@ -407,7 +409,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
         return this;
     }
 
-    public void appendTo(@NotNull DataOutput out) throws IOException {
+    public void appendTo(DataOutput out) throws IOException {
         out.write(bytes, 0, len);
     }
 

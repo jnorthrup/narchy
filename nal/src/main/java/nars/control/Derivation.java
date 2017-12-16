@@ -344,19 +344,19 @@ public class Derivation extends Unify {
     /**
      * must call reset() immediately before or after calling this.
      */
-    public void set(Task _task, Task belief, Term beliefTerm) {
+    public void set(Task _task, final Task _belief, Term beliefTerm) {
 
 
         final Task task = this.task = anon.put(this._task = _task);
         if (task == null)
             throw new NullPointerException(_task + " could not be anonymized");
 
-        if (belief != null) {
-            belief = anon.put(this._belief = belief);
-            if (belief == null)
-                throw new NullPointerException();
+        if (_belief != null) {
+            if ((this.belief = anon.put(this._belief = _belief)) == null)
+                throw new NullPointerException(_belief + " could not be anonymized");
+        } else {
+            this.belief = null;
         }
-        this.belief = belief;
         beliefTerm = anon.put(beliefTerm);
 
 
@@ -391,8 +391,8 @@ public class Derivation extends Unify {
         long[] taskStamp = task.stamp();
         this.overlapSingle = Stamp.cyclicity(taskStamp);
 
-        if (belief != null) {
-            this.beliefTruth = belief.truth();
+        if (_belief != null) {
+            this.beliefTruth = _belief.truth();
 
             /** to compute the time-discounted truth, find the minimum distance
              *  of the tasks considering their dtRange
@@ -407,8 +407,9 @@ public class Derivation extends Unify {
 //            this.beliefTruth = beliefTruth;
 //            }
 
-            long[] beliefStamp = belief.stamp();
+            long[] beliefStamp = _belief.stamp();
             this.overlapDouble =
+
                     //Math.min(1, Util.sum(
 //                    Util.or(
 //                            //Util.max(
@@ -428,17 +429,17 @@ public class Derivation extends Unify {
         Op bOp = beliefTerm.op();
         this.termSub1op = bOp.id;
 
-        this.eternal = task.isEternal() && (belief == null || belief.isEternal());
-        this.temporal = !eternal || (taskTerm.isTemporal() || (belief != null && beliefTerm.isTemporal()));
+        this.eternal = task.isEternal() && (_belief == null || _belief.isEternal());
+        this.temporal = !eternal || (taskTerm.isTemporal() || (_belief != null && beliefTerm.isTemporal()));
 
-        this.parentCause = belief != null ?
-                Cause.zip(nar.causeCapacity.intValue(), task, belief) :
-                task.cause();
+        this.parentCause = _belief != null ?
+                Cause.zip(nar.causeCapacity.intValue(), _task, _belief) :
+                _task.cause();
 
-        float taskPri = task.priElseZero();
+        float taskPri = _task.priElseZero();
         this.premisePri =
                 //p.priElseZero(); //use the premise pri directly
-                belief == null ? taskPri : Param.TaskBeliefDerivation.apply(taskPri, belief.priElseZero());
+                _belief == null ? taskPri : Param.TaskBeliefDerivation.apply(taskPri, _belief.priElseZero());
 
 //        float parentValue =
 //                //nar.evaluate(parentCause); /* value of the parent cause as a multiplier above and below 1.0x */

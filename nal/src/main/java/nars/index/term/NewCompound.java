@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.byt.DynBytes;
+import jcog.data.byt.RawBytes;
 import jcog.list.FasterList;
 import nars.Op;
 import nars.term.Term;
@@ -44,6 +45,10 @@ public class NewCompound extends /*HashCached*/DynBytes implements ProtoCompound
         this.op = op;
         this.size = prepopulated.size();
         this.subs = prepopulated instanceof FasterList ? ((FasterList<Term>) prepopulated).toArrayRecycled(Term[]::new) : prepopulated.toArray(new Term[size]);
+    }
+
+    public NewCompound(Term[] prepopulated) {
+        this(null, prepopulated);
     }
 
     public NewCompound(@Nullable Op op, Term[] prepopulated) {
@@ -130,6 +135,23 @@ public class NewCompound extends /*HashCached*/DynBytes implements ProtoCompound
 //        }
 
 
+        update();
+
+//        } finally {
+//            bytePool.release(bbTmp);
+//        }
+
+        this.hash = hash(0, len);
+        if (this.hash == 0) this.hash = 1;
+        return this;
+    }
+
+    public RawBytes raw() {
+        update();
+        return new RawBytes(bytes);
+    }
+
+    public byte[] update() {
         int volume = Util.sum(Term::volume, subs);
 
         //ArrayPool<byte[]> bytePool = ArrayPool.bytes();
@@ -148,14 +170,7 @@ public class NewCompound extends /*HashCached*/DynBytes implements ProtoCompound
 
         compress();
         compact(bbTmp, false);
-
-//        } finally {
-//            bytePool.release(bbTmp);
-//        }
-
-        this.hash = hash(0, len);
-        if (this.hash == 0) this.hash = 1;
-        return this;
+        return bytes;
     }
 
     @Override

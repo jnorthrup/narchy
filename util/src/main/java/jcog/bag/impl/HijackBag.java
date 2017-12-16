@@ -164,7 +164,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         //return false;
     }
 
-    protected final void resize(int newSpace) {
+    protected void resize(int newSpace) {
         final AtomicReferenceArray<V>[] prev = new AtomicReferenceArray[1];
 
         //ensures sure only the thread successful in changing the map instance is the one responsible for repopulating it,
@@ -177,17 +177,14 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             } else return x;
         })) {
 
-            List<V> lost = new FasterList<>();
 
             //copy items from the previous map into the new map. they will be briefly invisibile while they get transferred.  TODO verify
             forEachActive(this, prev[0], (b) -> {
                 if (put(b) == null)
-                    lost.add(b);
+                    _onRemoved(b);
             });
 
             commit(null);
-
-            lost.forEach(this::_onRemoved);
         }
     }
 

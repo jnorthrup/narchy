@@ -156,7 +156,7 @@ public class TaskRule extends TaskMatch {
         if (!Task.validTaskTerm(y, X.punc(), true))
             return;
 
-        Task Y = ((NALTask)X).clone(y);
+        Task Y = Task.clone(X, y);
         if (Y != null) {
             logger.info("{}\t{}", X, Y);
             nar.input(Y);

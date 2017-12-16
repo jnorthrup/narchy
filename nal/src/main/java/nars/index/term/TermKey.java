@@ -33,7 +33,7 @@ public class TermKey extends HashCachedBytes {
      * term with volume byte prepended for sorting by volume
      */
     @NotNull
-    public static TermKey term(@NotNull Term x) {
+    public static TermKey term(Term x) {
         TermKey y = new TermKey(x.volume() * 4 + 64 /* ESTIMATE */);
         try {
 
@@ -62,7 +62,7 @@ public class TermKey extends HashCachedBytes {
         super(len);
     }
 
-    public TermKey(@NotNull Task task) {
+    public TermKey(Task task) {
         super(task.volume() * 4 + 64 /* ESTIMATE */);
         try {
 
@@ -101,7 +101,7 @@ public class TermKey extends HashCachedBytes {
         throw new UnsupportedOperationException();
     }
 
-    static void writeTermSeq(@NotNull DataOutput out, @NotNull Term term, boolean includeTemporal) throws IOException {
+    static void writeTermSeq(@NotNull DataOutput out, Term term, boolean includeTemporal) throws IOException {
 
 
         if (term instanceof Atomic) {

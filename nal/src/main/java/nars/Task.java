@@ -288,6 +288,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return clone(x, x.term(), x.truth(), newPunc);
     }
 
+
     @Nullable
     static NALTask clone(Task x, Term newContent, Truth newTruth, byte newPunc) {
 
@@ -314,11 +315,16 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         if (xp == xp)
             y.priSet(xp); //otherwise leave deleted
 
+        short[] xc = x.cause();
+        if (xc.length > 0)
+            y.cause = xc.clone(); //clone necessary?
+
         //y.meta.putAll(x.meta());
         return y;
     }
 
-//    @Nullable
+
+    //    @Nullable
 //    static boolean taskStatementValid(/*@NotNull*/Compound t, boolean safe) {
 //        return taskStatementValid(t, (byte) 0, safe); //ignore the punctuation-specific conditions
 //    }

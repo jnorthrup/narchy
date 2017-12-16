@@ -686,5 +686,10 @@ public enum Texts {
             s = " " + s;
         return s;
     }
+
+    public static String n2percent(float rate) {
+        return n2(100f * rate) + '%';
+    }
+
 }
 

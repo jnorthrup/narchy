@@ -15,6 +15,8 @@ public class TaskLinkCurveBag extends CurveBag<PriReference<Task>> {
         super(Param.tasklinkMerge, sharedMap, rng, 0);
     }
 
+
+
     @Override
     public void onRemove(PriReference<Task> value) {
         float p = ((PLinkUntilDeleted) value).priBeforeDeletion;

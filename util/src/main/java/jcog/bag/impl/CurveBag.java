@@ -8,6 +8,7 @@ import jcog.pri.Prioritized;
 import jcog.pri.Priority;
 import jcog.pri.op.PriMerge;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,6 +19,8 @@ import java.util.Random;
  * ArrayBag with a randomized sampling range
  */
 public class CurveBag<X extends Priority> extends PriArrayBag<X> {
+
+    public static final int SAMPLE_WINDOW_SIZE = 8;
 
     /** TODO pass random as argument to sample(..) rather than store field here */
     @Deprecated @Nullable
@@ -59,6 +62,10 @@ public class CurveBag<X extends Priority> extends PriArrayBag<X> {
 
     @Override
     public Bag<X, X> sample(BagCursor<? super X> each) {
+        return sample(each, this::pri);
+    }
+
+    public Bag<X, X> sample(BagCursor<? super X> each, FloatFunction<X> pri) {
 
         final Random random = random();
 
@@ -72,7 +79,7 @@ public class CurveBag<X extends Priority> extends PriArrayBag<X> {
 
 
 
-            int windowCap = Math.min(s, 8); //ESTIMATE HUERISTIC
+            int windowCap = Math.min(s, SAMPLE_WINDOW_SIZE); //ESTIMATE HUERISTIC
             float[] wPri = new float[windowCap];
             Object[] wVal = new Object[windowCap];
 
@@ -98,7 +105,7 @@ public class CurveBag<X extends Priority> extends PriArrayBag<X> {
 
                 if (v != null) {
                     wVal[windowCap - 1 - prefilled] = v;
-                    wPri[windowCap - 1 - prefilled] = pri(v);
+                    wPri[windowCap - 1 - prefilled] = pri.floatValueOf(v);
                     if (++prefilled >= windowCap)
                         break;
                 } else {
@@ -116,13 +123,13 @@ public class CurveBag<X extends Priority> extends PriArrayBag<X> {
                 float p;
                 if (v0 == null) {
                     nulls++;
-                } else  if ((p = pri(v0)) == p /* not deleted*/) {
+                } else  if ((p = pri.floatValueOf(v0)) == p /* not deleted*/) {
                     nulls=0; //reset contiguous null counter
 
                     //shift window down, erasing value (if any) in position 0
                     System.arraycopy(wVal, 1, wVal, 0, windowCap - 1);
-                    System.arraycopy(wPri, 1, wPri, 0, windowCap - 1);
                     wVal[windowCap - 1] = v0;
+                    System.arraycopy(wPri, 1, wPri, 0, windowCap - 1);
                     wPri[windowCap - 1] = Util.max(p, Pri.EPSILON); //to differentiate from absolute zero
 
                     int which = Roulette.decideRoulette(windowCap, (r) -> wPri[r], random);
@@ -168,6 +175,8 @@ public class CurveBag<X extends Priority> extends PriArrayBag<X> {
         }
 
     }
+
+
 
     @Override
     public Random random() {
