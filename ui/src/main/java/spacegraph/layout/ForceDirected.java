@@ -127,19 +127,13 @@ public class ForceDirected implements spacegraph.phys.constraint.BroadConstraint
         v3 delta = v();
         delta.sub(yp.transform(), xp.transform());
 
-        float len = delta.lengthSquared();
-        if (!Float.isFinite(len))
+        float lenSq = delta.lengthSquared();
+        if (!Float.isFinite(lenSq))
             return;
 
-        len -= idealDist;
-        if (len < 0) {
+        if (lenSq < idealDist*idealDist)
             return;
-        }
-//        if (len < BulletGlobals.FLT_EPSILON)
-//            return;
 
-
-        //v3 delta2 = v(delta);
 
         delta.normalize();
         //delta.scale((speed / (1 + /&xp.mass() /* + yp.mass()*/) ) * len );

@@ -77,7 +77,7 @@ public class Taskify extends AbstractPred<Derivation> {
             return spam(d, Param.TTL_DERIVE_TASK_FAIL);
         }
 
-        if (same(x0, t, d.task, d.freqRes) || (d.belief != null && same(x0, t, d.belief, d.freqRes))) {
+        if (same(x0, t, d._task, d.freqRes) || (d._belief != null && same(x0, t, d._belief, d.freqRes))) {
             //created a duplicate of the task
             return spam(d, Param.TTL_DERIVE_TASK_SAME);
         }

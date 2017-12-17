@@ -42,7 +42,7 @@ public abstract class Param extends Services<Term, NAR> {
     public static final float MUTATE_INT_CONTAINING_TERMS_RATE = 0.25f;
 
 
-    public final FloatParam forgetRate = new FloatParam(PriForget.FORGET_TEMPERATURE_DEFAULT, 0f, 1f);
+    public final FloatParam forgetRate = new FloatParam(PriForget.FORGET_TEMPERATURE_DEFAULT, 0f, 2f);
 
     /** hard limit to prevent infinite looping */
     public static final int MAX_TASK_FORWARD_HOPS = 8;

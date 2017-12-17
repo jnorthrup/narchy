@@ -85,7 +85,7 @@ public class DeriveTime extends TimeGraph {
 
         know(task);
 
-        if (!single && belief != null && !belief.equals(task)) {
+        if (!single && d._belief != null && !d._belief.equals(d._task)) {
 
             know(belief);
 

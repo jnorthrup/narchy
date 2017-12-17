@@ -14,7 +14,7 @@ public class CachedAnon extends Anon {
     }
 
     public CachedAnon(int capacity) {
-        cache = new LinkedMRUMemoize.LinkedMRUMemoizeRecurseable<>(super::_get, capacity);
+        cache = new LinkedMRUMemoize.LinkedMRUMemoizeRecurseable<>(super::get, capacity);
     }
 
     @Override
@@ -24,20 +24,20 @@ public class CachedAnon extends Anon {
     }
 
     @Override
-    public Term _get(Term x) {
+    public Term get(Term x) {
         if ((x instanceof Compound)) {
             return cache.apply(x);
         } else {
-            return super._get(x);
+            return super.get(x);
         }
     }
 
-    @Override
-    protected Term putTransformed(Term x) {
-        Term y = super.putTransformed(x);
-        if (y instanceof Compound) {
-            cache.putIfAbsent(y, x);
-        }
-        return y;
-    }
+//    @Override
+//    protected Term putTransformed(Term x) {
+//        Term y = super.putTransformed(x);
+//        if (y instanceof Compound) {
+//            cache.putIfAbsent(y, x);
+//        }
+//        return y;
+//    }
 }

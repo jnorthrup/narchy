@@ -325,8 +325,19 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
 
         long timeMS = System.currentTimeMillis();
 
-        gl.glEnable(GL2.GL_DEPTH_TEST);
-        forEach(s -> render(s,timeMS));
+        forEach(s -> s.renderAbsolute(gl, timeMS));
+
+        forEach(s -> s.forEachBody(body -> {
+
+            gl.glPushMatrix();
+
+            Draw.transform(gl, body.transform);
+
+            s.renderRelative(gl, body);
+
+            gl.glPopMatrix();
+
+        }));
     }
 
 
@@ -781,25 +792,6 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
     }
 
 
-    public final void render(Spatial<?> s, long timeMS) {
-
-        GL2 gl = this.gl;
-
-        s.renderAbsolute(gl, timeMS);
-
-        s.forEachBody(body -> {
-
-            gl.glPushMatrix();
-
-            Draw.transform(gl, body.transform);
-
-            s.renderRelative(gl, body);
-
-            gl.glPopMatrix();
-
-        });
-
-    }
 
 
     //    public void clientResetScene() {

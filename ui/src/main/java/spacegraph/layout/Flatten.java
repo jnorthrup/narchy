@@ -17,7 +17,7 @@ public class Flatten<X> implements SpaceTransform<X>, Consumer<Spatial<X>> {
     private final Quaternion up = new Quaternion().setFromAngleNormalAxis(0, new float[] { 0,0,1});
 
 
-    private final float zTolerance = 0.01f;
+    private final float zTolerance = 5f;
 
     float zSpeed;
     float rotateRate;
@@ -51,9 +51,9 @@ public class Flatten<X> implements SpaceTransform<X>, Consumer<Spatial<X>> {
                 b.linearVelocity.z *= zSpeed;
                 b.transform.z *= zSpeed;
             } else {
-                b.linearVelocity.z = 0;
-                b.transform.z = 0;
+                //dont affect
             }
+
             s.rotate(up, rotateRate, new Quaternion());
 
 

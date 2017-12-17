@@ -33,10 +33,7 @@ public interface ITask extends Priority {
 
 
 
-    default byte punc() {
-        return 0;
-    }
-
+    byte punc();
 
     default boolean isInput() {
         return false;

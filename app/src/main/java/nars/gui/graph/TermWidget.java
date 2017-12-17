@@ -1,5 +1,6 @@
 package nars.gui.graph;
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import nars.term.Termed;
 import spacegraph.SimpleSpatial;
@@ -88,10 +89,16 @@ abstract public class TermWidget<T extends Termed> extends Cuboid<T> {
 
     @Override
     public void renderAbsolute(GL2 gl, long timeMS) {
+//        gl.glDepthMask(false); //disable writing to depth buffer
+//        gl.glDisable(GL.GL_DEPTH_BUFFER_BIT);
+
         render(gl, this,
                 //(float)Math.PI * 2 * (timeMS % 4000) / 4000f,
                 0,
                 edges());
+
+//        gl.glDepthMask(true);
+//        gl.glEnable(GL.GL_DEPTH_BUFFER_BIT);
 
         if (touched) {
             gl.glPushMatrix();

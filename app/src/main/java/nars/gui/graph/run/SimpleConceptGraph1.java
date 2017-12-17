@@ -9,7 +9,10 @@ import nars.control.Activate;
 import nars.gui.graph.DynamicConceptSpace;
 import nars.task.ITask;
 import nars.task.NALTask;
+import nars.test.DeductiveChainTest;
 import nars.test.DeductiveMeshTest;
+
+import static nars.test.DeductiveChainTest.inh;
 
 public class SimpleConceptGraph1 extends DynamicConceptSpace {
 
@@ -51,7 +54,7 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
         //Param.TRACE = true;
         NAR n = NARS.threadSafe();
         float fps = 16;
-        n.conceptActivation.set(0.2f);
+        //n.conceptActivation.set(0.2f);
 
         //csvPriority(n, "/tmp/x.csv");
 
@@ -70,7 +73,7 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
 //        n.inputAt(2, "b:a.");
 //        n.inputAt(3, "c:b.");
 
-        //new DeductiveChainTest(n, 8,  2048, inh);
+        new DeductiveChainTest(n, 8,  2048, inh);
         //n.mix.stream("Derive").setValue(0.005f); //quiet derivation
         //n.focus.activationRate.setValue(0.05f);
 
@@ -96,7 +99,7 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
         SimpleConceptGraph1 cs = new SimpleConceptGraph1(n,
                 /* TODO */ 128, 5);
 
-        cs.show(800, 800, false);
+        cs.show(1400, 1200, true);
 
 
 
@@ -106,7 +109,7 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
 //        for (int i = 1; i < 24; i++)
 //            n.inputAt(i*2,"(" + ((char)('a' + i)) + "). :|:");
 
-        new DeductiveMeshTest(n, new int[]{3, 2}, 16384);
+        //new DeductiveMeshTest(n, new int[]{3, 2}, 16384);
 
 
         //n.onCycle(nn->{System.out.println(nn.time() + "\n" + n.exe.stats() + "\n\n");});
@@ -117,9 +120,9 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
 
         //n.run(600);
         //n.log();
-        n.input(
-                "(a-->b).", "(b-->c)."
-        );
+//        n.input(
+//                "(a-->b).", "(b-->c)."
+//        );
 //        n.input(
 //                "(c-->d).","(d-->e).","(e-->a).",
 //                "(a<->x)!"

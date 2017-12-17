@@ -43,7 +43,7 @@ public class NALTask extends Pri implements Task {
 
     final int hash;
 
-    public final CompactArrayMap<String,Object> meta = new CompactArrayMap();
+    public final CompactArrayMap<String,Object> meta;
 
 
     public NALTask(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws InvalidTaskException {
@@ -115,6 +115,7 @@ public class NALTask extends Pri implements Task {
         this.hash = h;
         this.creation = creation;
 
+        this.meta = (!(this instanceof SignalTask)) ? new CompactArrayMap() : null;
         //READY
     }
 
@@ -193,19 +194,23 @@ public class NALTask extends Pri implements Task {
             if (Param.DEBUG) {
                 //dont clear meta if debugging
             } else {
-                this.meta.clearExcept("@");
+                CompactArrayMap<String, Object> m = this.meta;
+                if (m!=null)
+                    m.clearExcept("@");
             }
             return true;
         }
         return false;
     }
 
-    public boolean delete(@NotNull Task forwardTo) {
+    public boolean delete(Task forwardTo) {
         if (super.delete()) {
-            if (Param.DEBUG)
-                meta.put("@", forwardTo);
-            else
-                meta.clearPut("@", forwardTo);
+            if (meta!=null) {
+                if (Param.DEBUG)
+                    meta.put("@", forwardTo);
+                else
+                    meta.clearPut("@", forwardTo);
+            }
 
             return true;
         }
@@ -213,7 +218,6 @@ public class NALTask extends Pri implements Task {
     }
 
 
-    @NotNull
     @Override
     @Deprecated
     public String toString() {
@@ -222,32 +226,21 @@ public class NALTask extends Pri implements Task {
 
     @Override
     public <X> X meta(String key, Function<String,Object> valueIfAbsent) {
-        return (X) meta.computeIfAbsent(key, valueIfAbsent);
+        CompactArrayMap<String, Object> m = this.meta;
+        return m != null ? (X) m.computeIfAbsent(key, valueIfAbsent) : null;
     }
 
     @Override
     public void meta(String key, Object value) {
-        meta.put(key, value);
+        CompactArrayMap<String, Object> m = this.meta;
+        if (m!=null) m.put(key, value);
     }
 
     @Override
     public <X> X meta(String key) {
-        return (X) meta.get(key);
+        CompactArrayMap<String, Object> m = this.meta;
+        return m!=null ? (X) m.get(key) : null;
     }
-
-//    @Nullable
-//    public Task project(long newStart, int dur, float confMin) {
-//        float newConf = conf(newStart, dur);
-//        if (newConf < confMin)
-//            return null;
-//
-//
-//        ImmutableTask t = new ImmutableTask(term, punc, $.t(freq(), newConf), creation, newStart, newStart, stamp);
-//        t.setPriority(this);
-//        //t.meta
-//        //t.log("Projected")
-//        return t;
-//    }
 
     @Override
     public final float freq() {
@@ -298,19 +291,5 @@ public class NALTask extends Pri implements Task {
         }
     }
 
-    /**
-     * rtree cost heuristic; constant result
-     */
-    @Override
-    public float freqCost() {
-        return 1;
-    }
 
-    /**
-     * rtree cost heuristic; constant result
-     */
-    @Override
-    public float confCost() {
-        return 1;
-    }
 }

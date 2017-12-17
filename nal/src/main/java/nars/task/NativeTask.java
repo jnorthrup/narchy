@@ -18,6 +18,11 @@ import java.util.function.Consumer;
 public abstract class NativeTask implements ITask {
 
     @Override
+    public byte punc() {
+        return 0;
+    }
+
+    @Override
     public float pri() {
         return 1;
     }

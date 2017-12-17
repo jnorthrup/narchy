@@ -683,8 +683,8 @@ public enum Draw {
         gl.glVertex3f(sx + vv.x, sy + vv.y, sz + vv.z); //right base
 
         gl.glVertex3f( //right base
-                sx + -vv.x, sy + -vv.y, sz + -vv.z //full triangle
-                //sx, sy, sz  //half triangle
+                //sx + -vv.x, sy + -vv.y, sz + -vv.z //full triangle
+                sx, sy, sz  //half triangle
         );
 
         gl.glColor4f(e.r / 2f, e.g / 2f, e.b / 2f, e.a * 2 / 3);

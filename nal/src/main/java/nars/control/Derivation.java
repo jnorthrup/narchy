@@ -168,8 +168,8 @@ public class Derivation extends Unify {
 
         derivedTerm = new Versioned(this, 3);
 
-        //anon = new CachedAnon(16);
-        anon = new Anon();
+        anon = new CachedAnon(16);
+        //anon = new Anon();
 //            @Override
 //            public Term get(Term x) {
 //                Term y = super.get(x);

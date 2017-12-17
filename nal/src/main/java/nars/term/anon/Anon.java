@@ -2,6 +2,7 @@ package nars.term.anon;
 
 import jcog.list.FasterList;
 import nars.Task;
+import nars.task.NALTaskProxyForOtherContent;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
@@ -44,7 +45,7 @@ public class Anon {
         return (byte) s;
     };
 
-    final CompoundTransform PUT = new DirectCompoundTransform() {
+    final CompoundTransform PUT = new /*Direct*/CompoundTransform() {
 
 //        @Override
 //        protected @Nullable Term transformDirect(Op o, Term[] yy) {
@@ -66,7 +67,7 @@ public class Anon {
         }
     };
 
-    final CompoundTransform GET = new DirectCompoundTransform() {
+    final CompoundTransform GET = new /*Direct*/CompoundTransform() {
 
 //        @Override
 //        protected Term transformDirect(Op o, Compound x) {
@@ -80,7 +81,7 @@ public class Anon {
 
         @Override
         public @Nullable Term applyTermOrNull(Term t) {
-            return _get(t); //may be called more directly
+            return get(t); //may be called more directly
         }
 
         @Override
@@ -112,10 +113,6 @@ public class Anon {
     }
 
     public Term get(Term x) {
-        return _get(x);
-    }
-
-    protected Term _get(Term x) {
         if (x instanceof Anom) {
             return rev.get(((Anom) x).id); //assume it is an int
         } else if (x instanceof Atomic) {
@@ -138,7 +135,8 @@ public class Anon {
                 ((TermVector) yy).setNormalized();
         }
 
-        return Task.clone(t, y);
+        //return Task.clone(t, y);
+        return new NALTaskProxyForOtherContent(y, t);
     }
 
 

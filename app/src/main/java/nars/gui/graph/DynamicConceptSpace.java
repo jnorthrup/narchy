@@ -128,9 +128,8 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
 
             updated.set(false);
         }
-        List<ConceptWidget> r = next.read();
 
-        return r;
+        return next.read();
     }
 
     public class ConceptVis2 implements TermWidget.TermVis<ConceptWidget>, BiConsumer<ConceptWidget, PriReference<? extends Termed>> {

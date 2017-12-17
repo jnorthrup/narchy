@@ -54,7 +54,6 @@ public abstract class DynamicListSpace<X,Y extends Spatial<X>> extends ListSpace
     public boolean animate(float dt) {
 
         //updateIfNotBusy(this::render);
-        render();
 
         return true;
     }
@@ -85,9 +84,8 @@ public abstract class DynamicListSpace<X,Y extends Spatial<X>> extends ListSpace
     }
 
 
-
-    /** swap buffers */
-    protected void render() {
+    @Override
+    public void update(SpaceGraph<X> s) {
 
         List<? extends Spatial<X>> prev = this.active;
 
@@ -104,6 +102,8 @@ public abstract class DynamicListSpace<X,Y extends Spatial<X>> extends ListSpace
             if (!x.preactive)
                 x.order = -1;
         });
+
+        super.update(s);
     }
 
 
@@ -140,7 +140,7 @@ public abstract class DynamicListSpace<X,Y extends Spatial<X>> extends ListSpace
 
 
 
-        AbstractSpace ss = flat ? with(new Flatten(0.1f, 0.25f)) : this;
+        AbstractSpace ss = flat ? with(new Flatten(0.25f, 0.25f)) : this;
         SpaceGraph<Term> s = new SpaceGraph<>(ss);
 
         EdgeDirected fd = new EdgeDirected();
@@ -149,11 +149,13 @@ public abstract class DynamicListSpace<X,Y extends Spatial<X>> extends ListSpace
 
         //s.ortho(Vis.logConsole(nar, 90, 40, new FloatParam(0f)).opacity(0.25f));
 
-        window(
-                grid(reflect(fd)
-                    , reflect(((DynamicConceptSpace)this).vis)
-                ),
-                        400, 400);
+        if (this instanceof DynamicConceptSpace) {
+            window(
+                    grid(reflect(fd)
+                            , reflect(((DynamicConceptSpace) this).vis)
+                    ),
+                    400, 400);
+        }
 
         //Vis.conceptsWindow2D
         s
