@@ -318,39 +318,16 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
 
     @Override
-    @Nullable
-    public Termed apply(Term t, Termed prev) {
-        if (prev != null) {
-            //if (prev instanceof Concept) {
-                Concept c = ((Concept) prev);
-                if (!c.isDeleted())
-                    return c;
-            //}
-        }
-
-        //already a concept, or non-conceptualizable:  assume it is from here
-        if (!t.op().conceptualizable) {
-            return t;
-        }
-
-
-        if (t.volume() > nar.termVolumeMax.intValue()) {
-//            if (Param.DEBUG)
-//                throw new UnsupportedOperationException("tried to conceptualize concept too large");
-            return null;
-        }
-
+    public Termed build(Term t) {
         Concept c;
         if (Task.validTaskTerm(t))
             c = taskConcept(t);
         else
             c = new NodeConcept(t, newLinkBags(t));
 
-        c.state(awake);
         return c;
     }
 
-    
     @Override
     public ConceptState init() {
         return init;
