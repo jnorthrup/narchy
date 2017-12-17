@@ -80,6 +80,7 @@ public class MultiExec extends AbstractExec {
     protected void runner() {
 
             focus.run(() -> {
+                long cycleStart = System.nanoTime();
 
                 @Deprecated float throttle = nar.loop.throttle.floatValue();
 
@@ -94,8 +95,10 @@ public class MultiExec extends AbstractExec {
                 }
 
                 long cycleNanosRemain = Math.round(cycleTime * throttle * 1E9);
+                long minPlay =
+                        0;
+                        //cycleNanosRemain/2;
 
-                long cycleStart = System.nanoTime();
 
                 int qq = q.size();
                 if (qq > 0) {
@@ -112,7 +115,7 @@ public class MultiExec extends AbstractExec {
                     } while (true);//--WORK_SHARE > 0);
 
                     long postWork = System.nanoTime();
-                    cycleNanosRemain = Math.max(0, cycleNanosRemain - (postWork - cycleStart));
+                    cycleNanosRemain = Math.max(minPlay, cycleNanosRemain - (postWork - cycleStart));
                 }
 
                 return cycleStart + cycleNanosRemain;

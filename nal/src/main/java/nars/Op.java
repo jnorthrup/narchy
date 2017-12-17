@@ -2,7 +2,7 @@ package nars;
 
 
 import jcog.TODO;
-import jcog.bag.impl.hijack.LambdaMemoizer;
+import jcog.Util;
 import jcog.list.FasterList;
 import jcog.memoize.HijackMemoize;
 import nars.derive.match.EllipsisMatch;
@@ -36,7 +36,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -2164,15 +2163,43 @@ public enum Op {
 
         }
 
-        static final Function<Object[],Term> theCached;
-        static {
-            theCached = LambdaMemoizer.memoize(CONJBuilder.class,
-                    "the", new Class[] { int.class, Term[].class },
-                    (f) -> new HijackMemoize<>(f, 8192, 3)
-            );
-        }
+//        static final Function<Object[],Term> theCached;
+//        static {
+//            theCached = LambdaMemoizer.memoize(CONJBuilder.class,
+//                    "the", new Class[] { int.class, Term[].class },
+//                    (f) -> new HijackMemoize<>(f, 8192, 3)
+//            );
+//        }
+        final static HijackMemoize<IntArrayPair<Term>,Term> theCached = new HijackMemoize<>((dt_u)->{
+            return the(dt_u.one, dt_u.two);
+        }, 8 * 1024, 4);
+
         public static Term theCached(int dt, Term[] u) {
-            return theCached.apply(new Object[] { dt, u });
+            //return theCached.apply(new Object[] { dt, u });
+            return theCached.apply(new IntArrayPair(dt, u));
+        }
+
+        static class IntArrayPair<X> {
+            public final int one;
+            public final X[] two;
+            private final int hash;
+
+            IntArrayPair(int one, X... two) {
+                this.one = one;
+                this.two = two;
+                this.hash = Util.hashCombine(one, Arrays.hashCode(two));
+            }
+
+            @Override
+            public int hashCode() {
+                return hash;
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                IntArrayPair p = (IntArrayPair)obj;
+                return hash == p.hash && Arrays.equals(two, p.two);
+            }
         }
 
     }

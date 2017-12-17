@@ -15,9 +15,11 @@ public class LambdaMemoizerTest {
     @Test
     public void test1() throws NoSuchMethodException {
 
-        Function<Object[],Integer> cachingSlowFunction =
-                LambdaMemoizer.memoize(LambdaMemoizerTest.class, "slowFunction", int.class,
-                        (f) -> new HijackMemoize<>(f, 16, 3));
+
+        LambdaMemoizer.MemoizeBuilder<Integer> m =
+                f -> new HijackMemoize<>(f, 16, 3);
+        Function<Object[], Integer> cachingSlowFunction = LambdaMemoizer.memoize(
+                LambdaMemoizerTest.class, "slowFunction", new Class[]{int.class}, m);
 
         /* warmup */
         cachingSlowFunction.apply(new Object[] { 3 });

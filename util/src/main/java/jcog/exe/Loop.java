@@ -24,15 +24,17 @@ abstract public class Loop {
 
     private float lag, lagSum;
 
-    /** in seconds */
+    /**
+     * in seconds
+     */
     public final DescriptiveStatistics dutyTime = new DescriptiveStatistics(windowLength); //in millisecond
     public final DescriptiveStatistics cycleTime = new DescriptiveStatistics(windowLength); //in millisecond
 
 
-
     public static Loop of(Runnable iteration) {
         return new Loop() {
-            @Override public boolean next() {
+            @Override
+            public boolean next() {
                 iteration.run();
                 return true;
             }
@@ -103,7 +105,8 @@ abstract public class Loop {
                 if ((prevThread = thread.getAndSet(null)) != null) {
                     try {
                         prevThread.stop();
-                    } catch (Throwable ignored) { }
+                    } catch (Throwable ignored) {
+                    }
                     logger.info("stop {}", this);
                 }
             } else if (prevPeriodMS >= 0) {
@@ -115,15 +118,20 @@ abstract public class Loop {
         return false;
     }
 
-    public void stop()  {
+    public void stop() {
         setPeriodMS(-1);
     }
 
-    /** for subclass overriding; called from the looping thread */
+    /**
+     * for subclass overriding; called from the looping thread
+     */
     protected void onStart() {
 
     }
-    /** for subclass overriding; called from the looping thread */
+
+    /**
+     * for subclass overriding; called from the looping thread
+     */
     protected void onStop() {
 
     }
@@ -132,7 +140,7 @@ abstract public class Loop {
      * dont call this directly
      */
     protected final void run() {
-        assert(thread.get() == Thread.currentThread());
+        assert (thread.get() == Thread.currentThread());
 
         onStart();
 
@@ -158,31 +166,31 @@ abstract public class Loop {
             }
 
 
-            if (periodMS > 0) {
-                long afterTime = System.nanoTime();
+            long afterTime = System.nanoTime();
 
 
-                long frameTime = afterTime - beforeTime;
+            long frameTime = afterTime - beforeTime;
 
-                long frameTimeMS = frameTime/1000000;
-                lagSum += (this.lag = Math.max(0, (frameTimeMS /*nano to ms */  - periodMS) / ((float) periodMS)));
+            long frameTimeMS = frameTime / 1000000;
+            lagSum += (this.lag = Math.max(0, (frameTimeMS /*nano to ms */ - periodMS) / ((float) periodMS)));
 
-                //System.out.println(getClass() + " " + frameTime + " " + periodMS + " " + lag);
+            //System.out.println(getClass() + " " + frameTime + " " + periodMS + " " + lag);
 
-                double frameTimeS = (frameTime) / 1.0E9;
-                this.dutyTime.addValue(frameTimeS);
+            double frameTimeS = (frameTime) / 1.0E9;
+            this.dutyTime.addValue(frameTimeS);
 
-                Util.sleep((int)( periodMS - frameTimeMS) ); //((long) this.dutyTime.getMean()) ));
+            int sleepTime = (int) (periodMS - frameTimeMS);
+            if (sleepTime > 0)
+                Util.sleep(sleepTime); //((long) this.dutyTime.getMean()) ));
 
-                long prevBeforeTime = beforeTime;
-                beforeTime = System.nanoTime();
-                this.cycleTime.addValue( (beforeTime - prevBeforeTime)/1.0E9 );
+//            } else {
+//                //Thread.yield();
+//                //Thread.onSpinWait();
+//            }
 
-            } else {
-                //Thread.yield();
-                //Thread.onSpinWait();
-            }
-
+            long prevBeforeTime = beforeTime;
+            beforeTime = System.nanoTime();
+            this.cycleTime.addValue((beforeTime - prevBeforeTime) / 1.0E9);
         }
 
         stop();
@@ -201,7 +209,7 @@ abstract public class Loop {
     public void join() {
         try {
             Thread t = thread.get();
-            if (t!=null) {
+            if (t != null) {
                 t.join();
             } else {
                 throw new RuntimeException("not started");
@@ -216,7 +224,9 @@ abstract public class Loop {
         return thread.get();
     }
 
-    /** lag in proportion to the current FPS, >= 0 */
+    /**
+     * lag in proportion to the current FPS, >= 0
+     */
     public float lag() {
         return lag;
     }

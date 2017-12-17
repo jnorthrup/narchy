@@ -26,6 +26,7 @@ public final class VLink<X> extends PLink<X> {
      */
     public int centroid = -1;
 
+
     public VLink(X t, float pri, double[] coord) {
         super(t, pri);
         this.coord = coord;
