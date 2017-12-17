@@ -15,7 +15,7 @@ import java.util.*;
  * <p>
  * TODO integrate this with HijackMemoize
  */
-class Memoizer implements InvocationHandler {
+class Memoizer0 implements InvocationHandler {
     /**
      * Default: 1024 elements
      */
@@ -53,12 +53,12 @@ class Memoizer implements InvocationHandler {
                                  final int maxElements, final long expireMillis) //
     {
         final Class<?> clazz = origin.getClass();
-        final Memoizer memoizer = new Memoizer(origin, maxElements, expireMillis);
+        final Memoizer0 memoizer = new Memoizer0(origin, maxElements, expireMillis);
         return Proxy.newProxyInstance(clazz.getClassLoader(), //
                 clazz.getInterfaces(), memoizer);
     }
 
-    private Memoizer(final Object object, final int size, final long expireMillis) {
+    private Memoizer0(final Object object, final int size, final long expireMillis) {
         this.object = object;
         this.expireMillis = expireMillis;
         this.cache = allocCache(size);
@@ -196,7 +196,7 @@ class Memoizer implements InvocationHandler {
             final long cacheMillis = 1000; // 1 second
             final SampleInterface[] samples = {
                     new SampleSlowImpl(), //
-                    (SampleInterface) Memoizer.memoize(new SampleSlowImpl(), cacheElements, cacheMillis)
+                    (SampleInterface) Memoizer0.memoize(new SampleSlowImpl(), cacheElements, cacheMillis)
             };
             //
             for (int k = 0; k < samples.length; k++) {

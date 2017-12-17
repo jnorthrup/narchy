@@ -88,17 +88,7 @@ public class Premise {
         }
 
 
-        Concept taskConcept = task.concept(n, true);
-        if (taskConcept == null) {
-            if (Param.DEBUG) {
-                //HACK disable this error print-out if the problem is just excess term volume
-                if (task.volume() < n.termVolumeMax.intValue() || Param.DEBUG_EXTRA)
-                    logger.warn("{} unconceptualizable", task); //WHY was task even created
-                //assert (false) : task + " could not be conceptualized"; //WHY was task even created
-            }
-            task.delete();
-            return null;
-        }
+        //n.conceptualize(task.term(), (c)->{});
 
 
         Collection<Concept> l = links;
@@ -155,9 +145,7 @@ public class Premise {
         //QUESTION ANSWERING and TERMLINK -> TEMPORALIZED BELIEF TERM projection
         Task belief = null;
 
-        final Concept beliefConcept = n.conceptualize(beliefTerm);
-
-
+        final Concept beliefConcept = n.concept(beliefTerm);
         if (beliefConcept != null) {
 
             if (!beliefTerm.hasVarQuery()) { //doesnt make sense to look for a belief in a term with query var, it will have none
@@ -215,7 +203,7 @@ public class Premise {
             if (unifiedBelief) {
                 Concept originalBeliefConcept = n.concept(this.termLink);
                 if (originalBeliefConcept!=null)
-                    linkVariable(taskConcept, originalBeliefConcept, beliefConcept);
+                    linkVariable(originalBeliefConcept, beliefConcept);
             }
 
         }
@@ -243,7 +231,7 @@ public class Premise {
     /**
      * x has variables, y unifies with x and has less or no variables
      */
-    private void linkVariable(Concept taskConcept, Concept lessConstant, Concept moreConstant) {
+    private void linkVariable(Concept lessConstant, Concept moreConstant) {
 
 
         /** creates a tasklink/termlink proportional to the tasklink's priority

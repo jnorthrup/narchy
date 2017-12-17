@@ -2,12 +2,14 @@ package nars.concept.builder;
 
 import jcog.bag.Bag;
 import nars.NAR;
+import nars.concept.Concept;
 import nars.concept.state.ConceptState;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
 import nars.table.TemporalBeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.function.BiFunction;
 
@@ -31,7 +33,7 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
     ConceptBuilder Null = new ConceptBuilder() {
 
         @Override
-        public Termed apply(Term term, Termed termed) {
+        public Termed build(Term term) {
             return term;
         }
 
@@ -79,4 +81,21 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
 
 
     Bag[] newLinkBags(Term term);
+
+    Termed build(Term term);
+
+
+    @Override
+    default Termed apply(Term t, Termed prev) {
+        if (prev != null) {
+            //if (prev instanceof Concept) {
+                Concept c = ((Concept) prev);
+                if (!c.isDeleted())
+                    return c;
+            //}
+        }
+
+        return build(t);
+    }
+
 }

@@ -130,36 +130,29 @@ public enum TermLinks {
     @Nullable
     public static Concept linkTemplate(Term srcTerm, Bag srcTermLinks, Termed target, float priForward, float priReverse, BatchActivation a, NAR nar, MutableFloat refund) {
 
-
-//        if (targetTerm instanceof Bool)
-//            throw new RuntimeException("invalid termlink for " + srcTerm);
-        assert (!(srcTerm instanceof Bool));
-        //assert (!(targetTerm instanceof Bool));
-
-
-
-        Term targetTerm;
+        Term targetTerm = null;
         boolean reverseLinked = false;
-        Concept c = nar.conceptualize(target);
-        if (c != null && !srcTerm.equals(c.term())) {
-
-            c.termlinks().put(
-                    new PLink(srcTerm, priReverse), refund
-            );
-            float priSum = priForward + priReverse;
-            a.put(c, priSum);
-            reverseLinked = true;
-            targetTerm = c.term();
-        } else {
-            c = null;
-            targetTerm = target.term();
+        Concept c = null;
+        if (!target.equals(srcTerm)) {
+            c = nar.conceptualize(target);
+            if (c != null) {
+                c.termlinks().put(
+                        new PLink<>(srcTerm, priReverse), refund
+                );
+                a.put(c, priForward + priReverse);
+                reverseLinked = true;
+                targetTerm = c.term();
+            }
         }
+
+        if (targetTerm == null)
+            targetTerm = target.term();
 
         if (!reverseLinked)
             refund.add(priReverse);
 
         srcTermLinks.put(
-                new PLink(targetTerm, priForward), refund
+                new PLink<>(targetTerm, priForward), refund
         );
 
         return c;

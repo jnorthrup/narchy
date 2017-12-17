@@ -1,5 +1,6 @@
 package nars.index.term;
 
+import com.google.common.util.concurrent.Futures;
 import nars.NAR;
 import nars.Op;
 import nars.concept.Concept;
@@ -17,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -28,15 +31,18 @@ import static nars.Op.Null;
 public abstract class TermIndex implements TermContext {
 
 
-    private static final Logger logger = LoggerFactory.getLogger(TermIndex.class);
     public final ConceptBuilder conceptBuilder = new DefaultConceptBuilder();
     public NAR nar;
 
     /**
-     * internal get procedure
+     * internal get procedure (synchronous)
      */
     @Nullable
     public abstract Termed get(/*@NotNull*/ Term key, boolean createIfMissing);
+
+    public CompletableFuture<Termed> getAsync(Term key, boolean createIfMissing) {
+        return CompletableFuture.completedFuture(get(key, createIfMissing));
+    }
 
     @Override
     public final Termed apply(Term term) {
@@ -113,15 +119,12 @@ public abstract class TermIndex implements TermContext {
             y = ct.term();
         } else {
             y = x.term().conceptual();
-            if (y == Null)
+            if (!y.op().conceptualizable)
                 return null;
         }
         
         @Nullable Termed c = get(y, createIfMissing);
-        if (!(c instanceof Concept)) {
-//            if (createIfMissing) {
-//                throw new Concept.InvalidConceptException(term, "Failed to builder concept");
-//            }
+        if (c == null) {
             return null;
         }
 

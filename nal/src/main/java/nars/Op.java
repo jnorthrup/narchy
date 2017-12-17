@@ -2,7 +2,9 @@ package nars;
 
 
 import jcog.TODO;
+import jcog.bag.impl.hijack.LambdaMemoizer;
 import jcog.list.FasterList;
+import jcog.memoize.HijackMemoize;
 import nars.derive.match.EllipsisMatch;
 import nars.derive.match.Ellipsislike;
 import nars.op.mental.AliasConcept;
@@ -34,6 +36,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -129,380 +132,15 @@ public enum Op {
      * conjunction
      */
     CONJ("&&", true, 5, Args.GTETwo) {
+
+
         @Override
         public Term _the(int dt, Term[] u) {
-
-            final int n = u.length;
-            switch (n) {
-
-                case 0:
-                    return True;
-
-                case 1:
-                    Term only = u[0];
-                    if (only instanceof EllipsisMatch) {
-                        return _the(dt, ((EllipsisMatch) only).arrayShared()); //unwrap
-                    }
-
-                    //preserve unitary ellipsis for patterns etc
-                    return only instanceof Ellipsislike ?
-                            new CachedUnitCompound(CONJ, only) //special; preserve the surrounding conjunction
-                            :
-                            only;
-
-            }
-
-
-            int absoluteness = 0, trues = 0;
-            for (Term t : u) {
-                if (t instanceof Bool) {
-                    if (t == Null)
-                        return Null;
-                    if (t == False) {
-                        absoluteness = -1;
-                    } else if (t == True) {
-                        trues++;
-                        if (absoluteness >= 0)
-                            absoluteness = +1; //only if not false, so false overrides
-                    }
-                }
-            }
-            if (absoluteness == -1) return False;
-            if (absoluteness == +1) {
-                if (concurrent(dt)) {
-
-                    //TODO special case where only one item is left, can avoid reconstructing
-
-                    //filter out all boolean terms
-
-                    int size = u.length - trues;
-                    if (size == 0)
-                        return True;
-
-                    Term[] y = new Term[size];
-                    int j = 0;
-                    for (int i = 0; j < y.length; i++) {
-                        Term uu = u[i];
-                        if (uu != True) // && (!uu.equals(False)))
-                            y[j++] = uu;
-                    }
-
-                    assert (j == y.length);
-
-                    return CONJ.the(dt, y);
-                } else {
-                    //nothing we can really do. maybe insert a depvar
-                    return Null;
-                }
-            }
-
-            if (u.length == 2 && (dt == 0 || dt == DTERNAL)) {
-                if (conegated(u[0], u[1]))
-                    return Null;
-            }
-
-
-            Term ci;
-            switch (dt) {
-                case 0:
-                    ci = null;
-                    for (int i = 0; i < u.length; i++) {
-
-//                    //PROMOTE DTERNAL to ZERO
-//                    if (u[i].op() == CONJ && u[i].dt() == DTERNAL) {
-//                        u[i] = u[i].dt(0);
-//                    }
-
-                        //HACK cut to prevent infinite recursion due to impl conj reduction
-//                    if (u[0].op() == IMPL && u[0].containsRecursively(u[1].unneg())) {
-//                        Term ui = u[0];
-//                        int id = ui.dt();
-//
-//                        {
-//                            Term uis = ui.sub(0);
-//                            if (uis.equals(u[1]))
-//                                continue; //already absorbed into the subject
-//                            if (uis.op() == CONJ) {
-//                                LongObjectHashMap<Term> uism = uis.eventMap(0);
-//                                Term uismNOW = uism.get(0);
-//                                if (uismNOW.equals(u[1]))
-//                                    return True;
-//                                if (uismNOW.unneg().equals(u[1]))
-//                                    return Null; //co-negation
-//                            }
-//                        }
-//
-//                        if (id == DTERNAL || id == 0) { //simultaneous with now
-//                            Term uip = ui.sub(1);
-//                            if (uip.equals(u[1]))
-//                                return True;
-//                            if (uip.op() == CONJ) {
-//                                LongObjectHashMap<Term> uipm = uip.eventMap(0);
-//                                Term uipmNOW = uipm.get(0);
-//                                if (uipmNOW.equals(u[1]))
-//                                    return True;
-//                                if (uipmNOW.unneg().equals(u[1]))
-//                                    return Null; //co-negation
-//                            }
-//                        }
-//                    }
-
-                        ci = i > 0 ? conjMerge(ci, 0, u[i], 0) : u[0];
-                        if (ci instanceof Bool)
-                            return ci;
-                    }
-
-                    break;
-                case DTERNAL:
-
-                    return junctionFlat(dt, u);
-
-
-                //sequence or xternal
-                //assert (n == 2) : "invalid non-commutive conjunction arity!=2, arity=" + n;
-
-                //rebalance and align
-                //convention: left align all sequences
-                //ex: (x &&+ (y &&+ z))
-                //      becomes
-                //    ((x &&+ y) &&+ z)
-
-
-//                int eventsLeft = a.eventCount();
-//                int eventsRight = b.eventCount();
-//                assert(eventsLeft > 0);
-//                assert(eventsRight > 0);
-//                boolean heavyLeft = (eventsLeft - eventsRight) > 1;
-//                boolean heavyRight = (eventsRight - eventsLeft) > 0; // notice the difference in 0, 1. if the # of events is odd, left gets it
-
-
-                case XTERNAL:
-
-                    //TODO junctionFlat any embedded XTERNAL CONJ subterms?
-
-
-                    switch (u.length) {
-                        case 0:
-                            return True;
-
-                        case 1:
-                            return u[0];
-
-                        case 2: {
-
-                            u = u.clone();
-                            Arrays.sort(u); //dont use Terms.sorted which will de-duplicate and remove (x &&+1 x) cases.
-
-                            Term a = u[0];
-                            Term b = u[1];
-                            if (a.op() == CONJ && a.dt() == XTERNAL && a.subs() == 2) {
-
-                                int va = a.volume();
-                                int vb = b.volume();
-
-                                if (va > vb) {
-                                    Term[] aa = a.subterms().arrayShared();
-                                    int va0 = aa[0].volume();
-                                    int va1 = aa[1].volume();
-                                    int vamin = Math.min(va0, va1);
-
-                                    //if left remains heavier by donating its smallest
-                                    if ((va - vamin) > (vb + vamin)) {
-                                        int min = va0 <= va1 ? 0 : 1;
-                                        return CONJ.the(XTERNAL,
-                                                CONJ.the(XTERNAL, b, aa[min] /* a to b */),
-                                                aa[1 - min]);
-                                    }
-                                }
-
-                            }
-                            break;
-                        }
-
-                        default:
-                            u = Terms.sorted(u);
-
-                            //allow co-negations, etc.
-
-//                            Term x = junctionFlat(DTERNAL, u);
-//                            if (x instanceof Bool) return x;
-//                            return x.dt(XTERNAL);
-                            break;
-                    }
-
-                    return u.length > 1 ? compound(CONJ, XTERNAL, u) : u[0];
-
-                default: {
-                    assert (n == 2);
-
-                    Term a = u[0];
-                    Term b = u[1];
-                    ci = (dt >= 0) ?
-                            conjMerge(a, 0, b, +dt + a.dtRange()) :
-                            conjMerge(b, 0, a, -dt + b.dtRange());
-                }
-            }
-
-
-            return implInConjReduce(ci);
-
+            return CONJBuilder.theCached(dt, u);
+            //memoized.apply(new Object[] { dt, u });
+            //return CONJBuilder.the(dt, u);
         }
 
-
-        /**
-         * flattening conjunction builder, for (commutive) multi-arg conjunction and disjunction (dt == 0 ar DTERNAL)
-         * see: https://en.wikipedia.org/wiki/Boolean_algebra#Monotone_laws
-         */
-        /*@NotNull*/
-        private Term junctionFlat(int dt, final Term[] u) {
-
-            //TODO if there are no negations in u then an accelerated construction is possible
-
-            assert (u.length > 1 && (dt == 0 || dt == DTERNAL)); //throw new RuntimeException("should only have been called with dt==0 or dt==DTERNAL");
-
-
-//            //simple accelerated case:
-//            if (u.length == 2 && !u[0].hasAny(CONJ) && !u[1].hasAny(CONJ)) { //if it's simple
-//
-//                //already checked in callee
-//                //if (u[0].unneg().equals(u[1].unneg()))
-//                //    return False; //co-neg
-//
-//                return Op.implInConjReduction(compound(CONJ, dt, u));
-//            }
-
-
-            ObjectByteHashMap<Term> s = new ObjectByteHashMap<>(u.length);
-
-            Term uu = flatten(CONJ, u, dt, s);
-            if (uu != null) {
-                assert (uu instanceof Bool);
-                return uu;
-            }
-
-            if (s.isEmpty())
-                return True; //? does this happen
-
-            final SortedSet<Term> cs = junctionGroupNonDTSubterms(s);
-            if (!cs.isEmpty()) {
-
-
-                //annihilate common terms inside and outside of disjunction
-                //      ex:
-                //          -X &&  ( X ||  Y)
-                //          -X && -(-X && -Y)  |-   -X && Y
-                Iterator<Term> csi = cs.iterator();
-                List<Term> csa = null;
-                while (csi.hasNext()) {
-                    Term x = csi.next();
-
-                    if (x.op() == NEG) {
-                        Term x0 = x.sub(0);
-                        if (x0.op() == CONJ && commute(x0.dt(), x0.subs())) { //DISJUNCTION
-                            Term disj = x.unneg();
-                            SortedSet<Term> disjSubs = disj.subterms().toSortedSet();
-                            //factor out occurrences of the disj's contents outside the disjunction, so remove from inside it
-                            if (disjSubs.removeAll(cs)) {
-                                //reconstruct disj if changed
-                                csi.remove();
-
-                                if (!disjSubs.isEmpty()) {
-                                    if (csa == null)
-                                        csa = $.newArrayList(1);
-                                    csa.add(
-                                            CONJ.the(disj.dt(), sorted(disjSubs)).neg()
-                                    );
-                                }
-                            }
-                        }
-                    }
-                }
-                if (csa != null)
-                    cs.addAll(csa);
-
-                if (cs.size() == 1)
-                    return cs.first();
-
-                Term[] scs = sorted(cs);
-
-//                boolean dtChange = false;
-
-                //promote DTERNAL to ZERO if any components are ZERO
-//                if (dt == DTERNAL) {
-//                    for (Term x : scs) {
-//                        if (x.op() == CONJ && x.dt() == 0) {
-//                            dt = 0;
-//                            dtChange = true;
-//                            break;
-//                        }
-//                    }
-//                }
-
-
-                return (/*dtChange || */!Arrays.equals(scs, u)) ?
-                        CONJ.the(dt, scs) : //changed, recurse
-                        Op.implInConjReduce(compound(CONJ, dt, scs));
-            }
-
-            return Null;
-        }
-
-
-//        /**
-//         * array implementation of the conjunction true/false filter
-//         */
-//        @NotNull
-//        private Term[] conjTrueFalseFilter(@NotNull Term... u) {
-//            int trues = 0; //# of True subterms that can be eliminated
-//            for (Term x : u) {
-//                if (x == True) {
-//                    trues++;
-//                } else if (x == False) {
-//
-//                    //false subterm in conjunction makes the entire condition false
-//                    //this will eventually reduce diectly to false in this method's only callee HACK
-//                    return FalseArray;
-//                }
-//            }
-//
-//            if (trues == 0)
-//                return u;
-//
-//            int ul = u.length;
-//            if (ul == trues)
-//                return TrueArray; //reduces to an Imdex itself
-//
-//            Term[] y = new Term[ul - trues];
-//            int j = 0;
-//            for (int i = 0; j < y.length; i++) {
-//                Term uu = u[i];
-//                if (!(uu == True)) // && (!uu.equals(False)))
-//                    y[j++] = uu;
-//            }
-//
-//            assert (j == y.length);
-//
-//            return y;
-//        }
-
-        /**
-         * this is necessary to keep term structure consistent for intermpolation.
-         * by grouping all non-sequence subterms into its own subterm, future
-         * flattening and intermpolation is prevented from destroying temporal
-         * measurements.
-         *
-         */
-        private SortedSet<Term> junctionGroupNonDTSubterms(ObjectByteMap<Term> s) {
-
-            TreeSet<Term> outer = new TreeSet<>();
-
-            for (ObjectBytePair<Term> xn : s.keyValuesView()) {
-                outer.add(xn.getOne().negIf(xn.getTwo() < 0));
-            }
-            return outer;
-
-
-        }
 
     },
 
@@ -2149,5 +1787,393 @@ public enum Op {
         public Term unneg() {
             return True;
         } //doesnt change
+    }
+
+    public static class CONJBuilder {
+        public static Term the(int dt, Term[] u) {
+
+            final int n = u.length;
+            switch (n) {
+
+                case 0:
+                    return True;
+
+                case 1:
+                    Term only = u[0];
+                    if (only instanceof EllipsisMatch) {
+                        return the(dt, ((EllipsisMatch) only).arrayShared()); //unwrap
+                    }
+
+                    //preserve unitary ellipsis for patterns etc
+                    return only instanceof Ellipsislike ?
+                            new CachedUnitCompound(CONJ, only) //special; preserve the surrounding conjunction
+                            :
+                            only;
+
+            }
+
+
+            int absoluteness = 0, trues = 0;
+            for (Term t : u) {
+                if (t instanceof Bool) {
+                    if (t == Null)
+                        return Null;
+                    if (t == False) {
+                        absoluteness = -1;
+                    } else if (t == True) {
+                        trues++;
+                        if (absoluteness >= 0)
+                            absoluteness = +1; //only if not false, so false overrides
+                    }
+                }
+            }
+            if (absoluteness == -1) return False;
+            if (absoluteness == +1) {
+                if (concurrent(dt)) {
+
+                    //TODO special case where only one item is left, can avoid reconstructing
+
+                    //filter out all boolean terms
+
+                    int size = u.length - trues;
+                    if (size == 0)
+                        return True;
+
+                    Term[] y = new Term[size];
+                    int j = 0;
+                    for (int i = 0; j < y.length; i++) {
+                        Term uu = u[i];
+                        if (uu != True) // && (!uu.equals(False)))
+                            y[j++] = uu;
+                    }
+
+                    assert (j == y.length);
+
+                    return CONJ.the(dt, y);
+                } else {
+                    //nothing we can really do. maybe insert a depvar
+                    return Null;
+                }
+            }
+
+            if (u.length == 2 && (dt == 0 || dt == DTERNAL)) {
+                if (conegated(u[0], u[1]))
+                    return Null;
+            }
+
+
+            Term ci;
+            switch (dt) {
+                case 0:
+                    ci = null;
+                    for (int i = 0; i < u.length; i++) {
+
+//                    //PROMOTE DTERNAL to ZERO
+//                    if (u[i].op() == CONJ && u[i].dt() == DTERNAL) {
+//                        u[i] = u[i].dt(0);
+//                    }
+
+                        //HACK cut to prevent infinite recursion due to impl conj reduction
+//                    if (u[0].op() == IMPL && u[0].containsRecursively(u[1].unneg())) {
+//                        Term ui = u[0];
+//                        int id = ui.dt();
+//
+//                        {
+//                            Term uis = ui.sub(0);
+//                            if (uis.equals(u[1]))
+//                                continue; //already absorbed into the subject
+//                            if (uis.op() == CONJ) {
+//                                LongObjectHashMap<Term> uism = uis.eventMap(0);
+//                                Term uismNOW = uism.get(0);
+//                                if (uismNOW.equals(u[1]))
+//                                    return True;
+//                                if (uismNOW.unneg().equals(u[1]))
+//                                    return Null; //co-negation
+//                            }
+//                        }
+//
+//                        if (id == DTERNAL || id == 0) { //simultaneous with now
+//                            Term uip = ui.sub(1);
+//                            if (uip.equals(u[1]))
+//                                return True;
+//                            if (uip.op() == CONJ) {
+//                                LongObjectHashMap<Term> uipm = uip.eventMap(0);
+//                                Term uipmNOW = uipm.get(0);
+//                                if (uipmNOW.equals(u[1]))
+//                                    return True;
+//                                if (uipmNOW.unneg().equals(u[1]))
+//                                    return Null; //co-negation
+//                            }
+//                        }
+//                    }
+
+                        ci = i > 0 ? conjMerge(ci, 0, u[i], 0) : u[0];
+                        if (ci instanceof Bool)
+                            return ci;
+                    }
+
+                    break;
+                case DTERNAL:
+
+                    return junctionFlat(dt, u);
+
+
+                //sequence or xternal
+                //assert (n == 2) : "invalid non-commutive conjunction arity!=2, arity=" + n;
+
+                //rebalance and align
+                //convention: left align all sequences
+                //ex: (x &&+ (y &&+ z))
+                //      becomes
+                //    ((x &&+ y) &&+ z)
+
+
+//                int eventsLeft = a.eventCount();
+//                int eventsRight = b.eventCount();
+//                assert(eventsLeft > 0);
+//                assert(eventsRight > 0);
+//                boolean heavyLeft = (eventsLeft - eventsRight) > 1;
+//                boolean heavyRight = (eventsRight - eventsLeft) > 0; // notice the difference in 0, 1. if the # of events is odd, left gets it
+
+
+                case XTERNAL:
+
+                    //TODO junctionFlat any embedded XTERNAL CONJ subterms?
+
+
+                    switch (u.length) {
+                        case 0:
+                            return True;
+
+                        case 1:
+                            return u[0];
+
+                        case 2: {
+
+                            u = u.clone();
+                            Arrays.sort(u); //dont use Terms.sorted which will de-duplicate and remove (x &&+1 x) cases.
+
+                            Term a = u[0];
+                            Term b = u[1];
+                            if (a.op() == CONJ && a.dt() == XTERNAL && a.subs() == 2) {
+
+                                int va = a.volume();
+                                int vb = b.volume();
+
+                                if (va > vb) {
+                                    Term[] aa = a.subterms().arrayShared();
+                                    int va0 = aa[0].volume();
+                                    int va1 = aa[1].volume();
+                                    int vamin = Math.min(va0, va1);
+
+                                    //if left remains heavier by donating its smallest
+                                    if ((va - vamin) > (vb + vamin)) {
+                                        int min = va0 <= va1 ? 0 : 1;
+                                        return CONJ.the(XTERNAL,
+                                                CONJ.the(XTERNAL, b, aa[min] /* a to b */),
+                                                aa[1 - min]);
+                                    }
+                                }
+
+                            }
+                            break;
+                        }
+
+                        default:
+                            u = Terms.sorted(u);
+
+                            //allow co-negations, etc.
+
+//                            Term x = junctionFlat(DTERNAL, u);
+//                            if (x instanceof Bool) return x;
+//                            return x.dt(XTERNAL);
+                            break;
+                    }
+
+                    return u.length > 1 ? compound(CONJ, XTERNAL, u) : u[0];
+
+                default: {
+                    assert (n == 2);
+
+                    Term a = u[0];
+                    Term b = u[1];
+                    ci = (dt >= 0) ?
+                            conjMerge(a, 0, b, +dt + a.dtRange()) :
+                            conjMerge(b, 0, a, -dt + b.dtRange());
+                }
+            }
+
+
+            return implInConjReduce(ci);
+
+        }
+
+
+        /**
+         * flattening conjunction builder, for (commutive) multi-arg conjunction and disjunction (dt == 0 ar DTERNAL)
+         * see: https://en.wikipedia.org/wiki/Boolean_algebra#Monotone_laws
+         */
+        /*@NotNull*/
+        static Term junctionFlat(int dt, final Term[] u) {
+
+            //TODO if there are no negations in u then an accelerated construction is possible
+
+            assert (u.length > 1 && (dt == 0 || dt == DTERNAL)); //throw new RuntimeException("should only have been called with dt==0 or dt==DTERNAL");
+
+
+//            //simple accelerated case:
+//            if (u.length == 2 && !u[0].hasAny(CONJ) && !u[1].hasAny(CONJ)) { //if it's simple
+//
+//                //already checked in callee
+//                //if (u[0].unneg().equals(u[1].unneg()))
+//                //    return False; //co-neg
+//
+//                return Op.implInConjReduction(compound(CONJ, dt, u));
+//            }
+
+
+            ObjectByteHashMap<Term> s = new ObjectByteHashMap<>(u.length);
+
+            Term uu = flatten(CONJ, u, dt, s);
+            if (uu != null) {
+                assert (uu instanceof Bool);
+                return uu;
+            }
+
+            if (s.isEmpty())
+                return True; //? does this happen
+
+            final SortedSet<Term> cs = junctionGroupNonDTSubterms(s);
+            if (!cs.isEmpty()) {
+
+
+                //annihilate common terms inside and outside of disjunction
+                //      ex:
+                //          -X &&  ( X ||  Y)
+                //          -X && -(-X && -Y)  |-   -X && Y
+                Iterator<Term> csi = cs.iterator();
+                List<Term> csa = null;
+                while (csi.hasNext()) {
+                    Term x = csi.next();
+
+                    if (x.op() == NEG) {
+                        Term x0 = x.sub(0);
+                        if (x0.op() == CONJ && CONJ.commute(x0.dt(), x0.subs())) { //DISJUNCTION
+                            Term disj = x.unneg();
+                            SortedSet<Term> disjSubs = disj.subterms().toSortedSet();
+                            //factor out occurrences of the disj's contents outside the disjunction, so remove from inside it
+                            if (disjSubs.removeAll(cs)) {
+                                //reconstruct disj if changed
+                                csi.remove();
+
+                                if (!disjSubs.isEmpty()) {
+                                    if (csa == null)
+                                        csa = $.newArrayList(1);
+                                    csa.add(
+                                            CONJ.the(disj.dt(), sorted(disjSubs)).neg()
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+                if (csa != null)
+                    cs.addAll(csa);
+
+                if (cs.size() == 1)
+                    return cs.first();
+
+                Term[] scs = sorted(cs);
+
+//                boolean dtChange = false;
+
+                //promote DTERNAL to ZERO if any components are ZERO
+//                if (dt == DTERNAL) {
+//                    for (Term x : scs) {
+//                        if (x.op() == CONJ && x.dt() == 0) {
+//                            dt = 0;
+//                            dtChange = true;
+//                            break;
+//                        }
+//                    }
+//                }
+
+
+                return (/*dtChange || */!Arrays.equals(scs, u)) ?
+                        CONJ.the(dt, scs) : //changed, recurse
+                        Op.implInConjReduce(compound(CONJ, dt, scs));
+            }
+
+            return Null;
+        }
+
+
+//        /**
+//         * array implementation of the conjunction true/false filter
+//         */
+//        @NotNull
+//        private Term[] conjTrueFalseFilter(@NotNull Term... u) {
+//            int trues = 0; //# of True subterms that can be eliminated
+//            for (Term x : u) {
+//                if (x == True) {
+//                    trues++;
+//                } else if (x == False) {
+//
+//                    //false subterm in conjunction makes the entire condition false
+//                    //this will eventually reduce diectly to false in this method's only callee HACK
+//                    return FalseArray;
+//                }
+//            }
+//
+//            if (trues == 0)
+//                return u;
+//
+//            int ul = u.length;
+//            if (ul == trues)
+//                return TrueArray; //reduces to an Imdex itself
+//
+//            Term[] y = new Term[ul - trues];
+//            int j = 0;
+//            for (int i = 0; j < y.length; i++) {
+//                Term uu = u[i];
+//                if (!(uu == True)) // && (!uu.equals(False)))
+//                    y[j++] = uu;
+//            }
+//
+//            assert (j == y.length);
+//
+//            return y;
+//        }
+
+        /**
+         * this is necessary to keep term structure consistent for intermpolation.
+         * by grouping all non-sequence subterms into its own subterm, future
+         * flattening and intermpolation is prevented from destroying temporal
+         * measurements.
+         *
+         */
+        static SortedSet<Term> junctionGroupNonDTSubterms(ObjectByteMap<Term> s) {
+
+            TreeSet<Term> outer = new TreeSet<>();
+
+            for (ObjectBytePair<Term> xn : s.keyValuesView()) {
+                outer.add(xn.getOne().negIf(xn.getTwo() < 0));
+            }
+            return outer;
+
+
+        }
+
+        static final Function<Object[],Term> theCached;
+        static {
+            theCached = LambdaMemoizer.memoize(CONJBuilder.class,
+                    "the", new Class[] { int.class, Term[].class },
+                    (f) -> new HijackMemoize<>(f, 8192, 3)
+            );
+        }
+        public static Term theCached(int dt, Term[] u) {
+            return theCached.apply(new Object[] { dt, u });
+        }
+
     }
 }

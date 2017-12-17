@@ -965,18 +965,20 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
         if (!cmd) {
 
-            Concept c = concept(n, true);
-            if (c != null) {
-
-                if (!(c instanceof TaskConcept)) {
+            n.conceptualize(term(), c->{
+                if (c instanceof TaskConcept) {
+                    ((TaskConcept)c).add(this, n);
+                }
+                else {
                     if (isBeliefOrGoal() || Param.DEBUG_EXTRA)
                         throw new RuntimeException(c + " is not a TaskConcept yet a task expects to add itself to it");
-                    else
-                        return null; //ignore question about the functor/etc
                 }
-
-                ((TaskConcept)c).add(this, n);
-            }
+            });
+//            Concept c = concept(n, true);
+//            if (c != null) {
+//
+//
+//            }
 
         }
 

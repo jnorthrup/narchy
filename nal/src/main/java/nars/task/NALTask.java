@@ -115,7 +115,7 @@ public class NALTask extends Pri implements Task {
         this.hash = h;
         this.creation = creation;
 
-        this.meta = (!(this instanceof SignalTask)) ? new CompactArrayMap() : null;
+        this.meta = new CompactArrayMap();
         //READY
     }
 

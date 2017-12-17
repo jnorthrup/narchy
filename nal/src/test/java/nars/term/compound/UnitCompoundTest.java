@@ -24,9 +24,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UnitCompoundTest {
 
     @Test
-    public void testUnitCompound_viaNeg() {
+    public void testUnitCompound_viaProd() {
         Atomic x = Atomic.the("x");
-        assertEqual(NEG, x, (Compound) Neg.the(x));
+        assertEqual(PROD, x, new CachedUnitCompound(PROD, x));
     }
 
     @Test
@@ -69,30 +69,30 @@ public class UnitCompoundTest {
         assertEquals("x", c.sub(1).toString());
     }
 
-    @Test
-    public void testUnitCompoundNeg() {
-        Atomic x = Atomic.the("x");
-
-        Term u = x.neg();
-
-        CachedCompound g = new CachedCompound(NEG, new TermVector1(x));
-        assertNotSame(u, g);
-        assertEquals(u, g);
-        assertEquals(g, u);
-        assertEquals(u, u);
-        assertEquals(g, g);
-        assertEquals(u.subs(), g.subs());
-        assertEquals(u.dt(), g.dt());
-        assertEquals(u.subterms(), g.subterms());
-        assertEquals(g.subterms(), u.subterms()); //reverse
-        assertEquals(u.hashCode(), g.hashCode());
-        assertEquals(((Compound)u).hashCodeSubterms(), g.hashCodeSubterms());
-        assertEquals(u.toString(), g.toString());
-        assertEquals(0, u.compareTo(g));
-        assertEquals(0, g.compareTo(u));
-        assertEquals(g.structure(), u.structure());
-        assertEquals(g.volume(), u.volume());
-    }
+//    @Test
+//    public void testUnitCompoundNeg() {
+//        Atomic x = Atomic.the("x");
+//
+//        Term u = x.neg();
+//
+//        CachedCompound g = new CachedUnitCompound(NEG, new TermVector1(x));
+//        assertNotSame(u, g);
+//        assertEquals(u, g);
+//        assertEquals(g, u);
+//        assertEquals(u, u);
+//        assertEquals(g, g);
+//        assertEquals(u.subs(), g.subs());
+//        assertEquals(u.dt(), g.dt());
+//        assertEquals(u.subterms(), g.subterms());
+//        assertEquals(g.subterms(), u.subterms()); //reverse
+//        assertEquals(u.hashCode(), g.hashCode());
+//        assertEquals(((Compound)u).hashCodeSubterms(), g.hashCodeSubterms());
+//        assertEquals(u.toString(), g.toString());
+//        assertEquals(0, u.compareTo(g));
+//        assertEquals(0, g.compareTo(u));
+//        assertEquals(g.structure(), u.structure());
+//        assertEquals(g.volume(), u.volume());
+//    }
 
     @Test
     public void testRecursiveContains() throws Narsese.NarseseException {

@@ -1667,7 +1667,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
 
     public Concept activate(Termed t, float activationApplied) {
-        Concept c = concept(t, true);
+        Concept c = concept(t, false /* true */);
         if (c != null)
             exe.activate(c, activationApplied);
         return c;
@@ -1678,4 +1678,16 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     }
 
 
+    public void conceptualize(Term term, Consumer<Concept> with) {
+        if (exe.concurrent()) {
+            terms.getAsync(term, true).thenAccept((t) -> with.accept((Concept) t) /* HACK */);
+        } else {
+            Concept x = conceptualize(term);
+            if (x!=null) {
+                with.accept(x);
+            } else {
+                //TODO
+            }
+        }
+    }
 }

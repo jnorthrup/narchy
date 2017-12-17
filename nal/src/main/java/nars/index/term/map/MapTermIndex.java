@@ -27,11 +27,6 @@ public class MapTermIndex extends MaplikeTermIndex {
     @Nullable
     @Override
     public Termed get(Term x, boolean createIfMissing) {
-
-        //assert(!(x instanceof Variable)): "variables should not be stored in index";
-        if (!x.op().conceptualizable)
-            return x;
-
         if (createIfMissing) {
             return concepts.compute(x, conceptBuilder);
         } else {

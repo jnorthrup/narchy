@@ -4,21 +4,18 @@ import jcog.data.ArrayHashSet;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.anon.DirectCompoundTransform;
 import nars.term.sub.Subterms;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.function.IntSupplier;
 
 import static nars.Op.CONJ;
-import static nars.Op.Null;
 import static nars.Op.Temporal;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
 @FunctionalInterface
-public interface Retemporalize extends DirectCompoundTransform {
+public interface Retemporalize extends CompoundTransform {
 
     @Override
     int dt(Compound x);
@@ -31,28 +28,30 @@ public interface Retemporalize extends DirectCompoundTransform {
     Retemporalize retemporalizeXTERNALToZero = new RetemporalizeFromTo(XTERNAL, 0);
 
     Retemporalize retemporalizeRoot = x -> {
-        Subterms xs = x.subterms();
 
         //any inside impl/conjunctions will disqualify the simple DTERNAL root form, but only in the next layer
 
         switch (x.op()) {
-            case CONJ:
-
+            case CONJ: {
+                Subterms xs = x.subterms();
                 int n = xs.subs();
                 if (((n == 2) &&
                         (
-                            xs.isTemporal()
-                                ||
-                            (xs.sub(0).unneg().equals(xs.sub(1).unneg())))
-                        )) {
+                                xs.isTemporal()
+                                        ||
+                                        (xs.sub(0).unneg().equals(xs.sub(1).unneg())))
+                )) {
                     return XTERNAL;
                 } else {
                     return DTERNAL; //simple
                 }
-            case IMPL:
+            }
+            case IMPL: {
+                Subterms xs = x.subterms();
                 //impl pred is always non-neg
                 return xs.hasAny(CONJ) ||
                         xs.sub(0).unneg().equals(xs.sub(1)) ? XTERNAL : DTERNAL;
+            }
             default:
                 throw new UnsupportedOperationException();
         }
@@ -75,8 +74,8 @@ public interface Retemporalize extends DirectCompoundTransform {
                     }
                     return true;
                 }, 0, false, false, false, 0);
-                if (s.size() > 1) {
-                    List<Term> sl = s.list;
+                List<Term> sl = s.list;
+                if (sl.size() > 1) {
                     sl.replaceAll((zz) -> zz.transform(Retemporalize.this));
                     return CONJ.the(XTERNAL, sl);
                 }
@@ -90,7 +89,7 @@ public interface Retemporalize extends DirectCompoundTransform {
             dtNext = DTERNAL;
         }
 
-        return DirectCompoundTransform.super.transform(x, op, dtNext);
+        return CompoundTransform.super.transform(x, op, dtNext);
     }
 
     @Override
@@ -98,7 +97,7 @@ public interface Retemporalize extends DirectCompoundTransform {
         if (!x.hasAny(Temporal)) {
             return x;
         } else {
-            return DirectCompoundTransform.super.transform(x);
+            return CompoundTransform.super.transform(x);
         }
     }
 
