@@ -76,9 +76,9 @@ abstract public class DurService extends NARService implements Runnable {
     }
 
     @Override
-    public synchronized void stop() {
+    public synchronized void off() {
         enabled = false;
-        super.stop();
+        super.off();
     }
 
     @Override

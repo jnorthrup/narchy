@@ -393,8 +393,8 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 ////                return new SynchronizedUnifiedMap(0, loadFactor);
 ////            }
 //        } else {
-            return new UnifiedMap(0, loadFactor);
-            //return new HashMap(0, loadFactor);
+            //return new UnifiedMap(0, loadFactor);
+            return new HashMap(0, loadFactor);
 //        }
 
     }

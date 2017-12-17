@@ -45,11 +45,13 @@ public class AIMATests {
     @Test
     public void testWeaponsDomain() throws Narsese.NarseseException {
 
-        n.freqResolution.set(0.05f);
-        n.confResolution.set(0.02f);
-        n.priDefault(QUESTION, 0.75f);
+        n.freqResolution.set(0.2f);
+        n.confResolution.set(0.05f);
+        n.confMin.set(0.03f);
+        n.priDefault(QUESTION, 0.95f);
         n.priDefault(BELIEF, 0.2f);
         n.termVolumeMax.set(28);
+        //n.conceptActivation.set(0.5f);
 
         //new QuerySpider(n);
         //new PrologCore(n);
@@ -84,16 +86,17 @@ public class AIMATests {
 //        n.input("Criminal(?x)?");
 //                n.input("Criminal(?x)?");
 
-//        n.run(100);
+        n.run(500);
+//        n.clear();
+//        n.log();
         n.question($.$("Criminal(?x)"), ETERNAL, (q,a)->{
             System.out.println(a);
         });
-//        n.run(1);
-//        n.concept($.$("Criminal")).tasklinks().commit();
-//        n.concept($.$("Criminal")).print();
+        n.run(1);
+        n.concept($.$("Criminal")).print();
 
 
-        n.run(1000);
+        n.run(1500);
 
 //        if (!questions.isEmpty()) {
 //            System.out.println("Questions Generated:");

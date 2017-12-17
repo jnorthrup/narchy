@@ -274,10 +274,6 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
         return body.mass();
     }
 
-    @Override
-    public void renderAbsolute(GL2 gl, long timeMS) {
-        super.renderAbsolute(gl, timeMS);
-    }
 
     @Override protected void colorshape(GL2 gl) {
         gl.glColor4fv(shapeColor, 0);

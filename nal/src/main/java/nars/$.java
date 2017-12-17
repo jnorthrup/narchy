@@ -23,7 +23,7 @@ import nars.term.atom.Int;
 import nars.term.compound.CachedCompound;
 import nars.term.sub.Subterms;
 import nars.term.obj.JsonTerm;
-import nars.term.var.AbstractVariable;
+import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarPattern;
 import nars.term.var.Variable;
@@ -397,14 +397,14 @@ public enum $ {
      * unnormalized variable
      */
     public static Variable v(char ch, @NotNull String name) {
-        return v(AbstractVariable.typeIndex(ch), name);
+        return v(NormalizedVariable.typeIndex(ch), name);
     }
 
     /**
      * normalized variable
      */
-    public static AbstractVariable v(/*@NotNull*/ Op type, byte id) {
-        return AbstractVariable.the(type, id);
+    public static NormalizedVariable v(/*@NotNull*/ Op type, byte id) {
+        return NormalizedVariable.the(type, id);
     }
 
     public static <T extends Term> T conj(Term... a) {

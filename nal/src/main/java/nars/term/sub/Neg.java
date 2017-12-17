@@ -21,6 +21,16 @@ public class Neg extends UnitCompound {
         }
     }
 
+    @Override
+    public Term neg() {
+        return sub;
+    }
+
+    @Override
+    public Term unneg() {
+        return sub;
+    }
+
     private Neg(Term negated) {
         this.sub = negated;
     }

@@ -4,8 +4,11 @@ import jcog.Util;
 import jcog.math.Interval;
 import nars.Param;
 import nars.task.util.TaskRegion;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+
+import static nars.time.Tense.ETERNAL;
 
 public final class TimeFusion {
 
@@ -15,6 +18,8 @@ public final class TimeFusion {
 
     public TimeFusion(long as, long ae, long bs, long be) {
         this(new Interval(as, ae), new Interval(bs, be));
+        assert(as <= ae);
+        assert(bs <= be);
     }
 
     public TimeFusion(Interval... x) {
@@ -37,14 +42,42 @@ public final class TimeFusion {
 
     }
 
+    @Nullable
     public static TimeFusion the(List<? extends TaskRegion> e) {
         int n = e.size();
         assert (n > 1);
         Interval[] ii = new Interval[n];
+        int eternals = 0;
         for (int j = 0; j < n; j++) {
             TaskRegion ee = e.get(j);
-            ii[j] = new Interval(ee.start(), ee.end());
+            long s = ee.start();
+            if (s == ETERNAL) {
+                eternals++;
+                //leave a blank spot we will fill it in after
+                continue;
+            } else {
+                //TODO see if s == ETERNAL
+                ii[j] = new Interval(s, ee.end());
+            }
         }
+        if (eternals == n) {
+            return null; //all eternal, no discount need apply
+        } else if (eternals > 0) {
+            long max = Long.MIN_VALUE, min = Long.MAX_VALUE;
+            for (Interval i : ii) {
+                if (i!=null) {
+                    if (i.a < min) min = i.a;
+                    if (i.b > max) max = i.b;
+                }
+            }
+            Interval entire = new Interval(min, max);
+            for (int j = 0, iiLength = ii.length; j < iiLength; j++) {
+                Interval i = ii[j];
+                if (i == null)
+                    ii[j] = entire;
+            }
+        }
+
         return new TimeFusion(ii);
     }
 

@@ -2,7 +2,7 @@ package nars.derive.match;
 
 import nars.$;
 import nars.term.Term;
-import nars.term.var.AbstractVariable;
+import nars.term.var.NormalizedVariable;
 import nars.term.var.Variable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +14,7 @@ import static nars.Op.VAR_PATTERN;
  */
 public class EllipsisOneOrMore extends Ellipsis {
 
-    public EllipsisOneOrMore(@NotNull AbstractVariable /*Variable*/ name) {
+    public EllipsisOneOrMore(@NotNull NormalizedVariable /*Variable*/ name) {
         super(name, 1); //TODO decide if EllipsisTransform, a subclass, needs its own uniqueness hashmask
     }
 

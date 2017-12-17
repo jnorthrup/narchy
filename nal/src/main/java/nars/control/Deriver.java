@@ -40,12 +40,12 @@ public class Deriver extends Causable {
      * loads default deriver rules, specified by a range (inclusive) of levels. this allows creation
      * of multiple deriver layers each targetting a specific range of the NAL spectrum
      */
-    public static Function<NAR, Deriver> deriver(int minLevel, int maxLevel, String... additional) {
-        assert ((minLevel <= maxLevel && maxLevel > 0) || additional.length > 0);
+    public static Function<NAR, Deriver> deriver(int minLevel, int maxLevel, String... extraFiles) {
+        assert ((minLevel <= maxLevel && maxLevel > 0) || extraFiles.length > 0);
 
         return deriver(nar ->
                 PremiseRuleSet.rules(nar, new PatternIndex(),
-                        Derivers.standard(minLevel, maxLevel, additional)
+                        Derivers.standard(minLevel, maxLevel, extraFiles)
                 ));
     }
 

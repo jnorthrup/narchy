@@ -341,6 +341,9 @@ public class Revision {
             Task x = a;
             a = b;
             b = x;
+            long xs = as;
+            as = bs;
+            bs = xs;
         }
         assert (bs != ETERNAL);
         assert (as != ETERNAL);

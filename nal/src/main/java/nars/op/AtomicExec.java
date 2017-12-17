@@ -129,7 +129,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
             });
             active.commit();
             if (active.isEmpty()) {
-                onCycle.stop();
+                onCycle.off();
                 onCycle = null;
             }
             if (!toInvoke.isEmpty()) {

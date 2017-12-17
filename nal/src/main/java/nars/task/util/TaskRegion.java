@@ -20,50 +20,13 @@ public interface TaskRegion extends HyperRegion, Tasked {
     /**
      * cost of stretching a node by freq
      */
-    float FREQ_COST = 1.5f;
+    float FREQ_COST = 2f;
     /**
      * cost of stretching a node by conf
      */
-    float CONF_COST = 0.1f;
+    float CONF_COST = 0.5f;
 
-    /**
-     * nearest point between starts and ends (inclusive) to the point 'x'
-     */
-    @Deprecated
-    static long theNearestTimeWithin(long x, long starts, long ends) {
-        assert (ends >= starts);
 
-        if (x == ETERNAL) {
-            if (starts == ETERNAL)
-                return ETERNAL; //the avg of eternal with eternal produces 0 which is not right
-            else
-                return (starts + ends) / 2; //midpoint
-        } else if (x <= starts) {
-            return starts; //point or at or beyond the start
-        } else if (x >= ends) {
-            return ends; //at or beyond the end
-        } else {
-            return x; //internal: x is between starts,ends
-        }
-    }
-
-//    static long furthestBetween(long s, long e, long when) {
-//        assert (when != ETERNAL);
-//
-//        if (s == ETERNAL) {
-//            return when;
-//        } else if (when < s || e == s) {
-//            return e; //point or at or beyond the start
-//        } else if (when > e) {
-//            return s; //at or beyond the end
-//        } else {
-//            //internal, choose most distant endpoint
-//            if (Math.abs(when - s) > Math.abs(when - e))
-//                return s;
-//            else
-//                return e;
-//        }
-//    }
 
     @Override
     boolean equals(Object obj);
@@ -328,17 +291,17 @@ public interface TaskRegion extends HyperRegion, Tasked {
 
     default float timeCost() {
 
-        return 1 + (float) range(0) * TIME_COST;
+        return (1 + (float) range(0)) * TIME_COST;
 
         //return 1 + (float) Math.log(range(0)+1) /* * 1 */;
     }
 
     default float freqCost() {
-        return 1 + (float) range(1) * FREQ_COST;
+        return (1 + (float) range(1)) * FREQ_COST;
     }
 
     default float confCost() {
-        return 1 + (float) range(2) * CONF_COST;
+        return (1 + (float) range(2)) * CONF_COST;
     }
 
     @Override

@@ -86,8 +86,8 @@ public class InterNARTest {
                 b.run(1);
             }
 
-            ai.stop();
-            bi.stop();
+            ai.off();
+            bi.off();
 //            a.stop();
 //            b.stop();
 

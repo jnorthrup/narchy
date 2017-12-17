@@ -126,16 +126,10 @@ public class ActiveQuestionTask extends NALTask implements Consumer<Task> {
         return x;
     }
 
-    public Task onAnswer(Task answer) {
+    protected Task onAnswer(Task answer) {
         //answer = super.onAnswered(answer, nar);
         answers.putAsync(new PLink<>(answer, answer.priElseZero()));
         return answer;
     }
 
-//    @Override
-//    public Task onAnswered(Task answer, NAR nar) {
-//        //answer = super.onAnswered(answer, nar);
-//        answers.putAsync(new PLinkUntilDeleted<>(answer, answer.priElseZero()));
-//        return answer;
-//    }
 }

@@ -52,7 +52,7 @@ public class MutableLayout extends Layout {
     }
 
     @Override
-    public void stop() {
+    public synchronized void stop() {
         children.clear();
         super.stop();
     }

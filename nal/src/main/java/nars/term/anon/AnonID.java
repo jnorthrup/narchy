@@ -2,7 +2,7 @@ package nars.term.anon;
 
 import nars.Op;
 import nars.term.Term;
-import nars.term.var.AbstractVariable;
+import nars.term.var.NormalizedVariable;
 
 /**
  * indicates the term has an anonymous, canonical identifier (16-bit short)
@@ -69,7 +69,7 @@ public interface AnonID extends Term {
                 default:
                     throw new UnsupportedOperationException();
             }
-            return AbstractVariable.the(o, num);
+            return NormalizedVariable.the(o, num);
         }
     }
 

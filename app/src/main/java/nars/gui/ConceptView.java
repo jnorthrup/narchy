@@ -61,11 +61,12 @@ public class ConceptView extends Grid {
         super.start(parent);
         on = DurService.on(nar, this::update);
     }
-
     @Override
     public synchronized void stop() {
-        on.stop();
-        on = null;
+        if (on!=null) {
+            on.off();
+            on = null;
+        }
         super.stop();
     }
 }

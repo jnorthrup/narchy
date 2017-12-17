@@ -2,7 +2,7 @@ package nars.derive.match;
 
 import nars.$;
 import nars.term.Term;
-import nars.term.var.AbstractVariable;
+import nars.term.var.NormalizedVariable;
 import nars.term.var.Variable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +14,7 @@ import static nars.Op.VAR_PATTERN;
  */
 public class EllipsisZeroOrMore extends Ellipsis {
 
-    public EllipsisZeroOrMore(AbstractVariable /*Variable*/ name) {
+    public EllipsisZeroOrMore(NormalizedVariable /*Variable*/ name) {
         super(name, 0);
     }
 

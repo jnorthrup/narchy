@@ -26,10 +26,12 @@ public class GenericCompoundDT /*extends ProxyTerm<Compound>*/ implements Compou
     private Compound ref;
 
     public GenericCompoundDT(Compound base, int dt) {
-        this.ref = base;
+
+        Op op = base.op();
 
         Subterms s = base.subterms();
-        Op op = base.op();
+
+        this.ref = base;
 
         if (!(dt == XTERNAL || Math.abs(dt) < Param.DT_ABS_LIMIT))
             throw new InvalidTermException(base.op(), dt, s, "exceeded DT limit");

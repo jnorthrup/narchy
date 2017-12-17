@@ -9,7 +9,7 @@ import static nars.Op.VAR_PATTERN;
 /**
  * normalized pattern variable
  */
-public class VarPattern extends AbstractVariable {
+public class VarPattern extends NormalizedVariable {
 
     public VarPattern(byte id) {
         super(VAR_PATTERN, id);

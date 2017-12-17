@@ -125,8 +125,8 @@ public abstract class Param extends Services<Term, NAR> {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmax = new MutableInteger(128);
-    public final MutableInteger matchTTLmin = new MutableInteger(48);
+    public final MutableInteger matchTTLmax = new MutableInteger(256);
+    public final MutableInteger matchTTLmin = new MutableInteger(128);
 
     /**
      * how much percent of a premise's allocated TTL can be used in the belief matching phase.

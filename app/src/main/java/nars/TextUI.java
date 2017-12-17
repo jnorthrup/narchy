@@ -112,7 +112,7 @@ public class TextUI {
             synchronized (terminal) {
                 thread = new Thread(this);
                 thread.setUncaughtExceptionHandler((t, e) -> {
-                    stop();
+                    off();
                 });
                 thread.start();
             }
@@ -120,7 +120,7 @@ public class TextUI {
 
         @Override
         protected void stop(NAR nar) {
-            stop();
+            off();
             super.stop(nar);
         }
 
@@ -146,7 +146,7 @@ public class TextUI {
 
                         @Override
                         public void onClose() {
-                            stop();
+                            off();
                         }
 
                         @Override
@@ -159,7 +159,7 @@ public class TextUI {
                 screen.startScreen();
             } catch (IOException e) {
                 logger.warn("{} {}", this, e.getMessage());
-                stop();
+                off();
                 return;
             }
 
@@ -263,9 +263,9 @@ public class TextUI {
             tui.addWindowAndWait(window);
         }
 
-        public final synchronized void stop() {
+        public final synchronized void off() {
 
-            super.stop();
+            super.off();
 
             if (screen != null) {
                 try {
@@ -423,7 +423,7 @@ public class TextUI {
             public synchronized void onRemoved(Container container) {
                 super.onRemoved(container);
                 removeAllComponents();
-                on.stop();
+                on.off();
             }
 
             private final StringBuilder sb = new StringBuilder(1024);
@@ -510,7 +510,7 @@ public class TextUI {
 
             @Override
             public synchronized void onRemoved(Container container) {
-                update.stop();
+                update.off();
                 super.onRemoved(container);
                 clearItems();
             }

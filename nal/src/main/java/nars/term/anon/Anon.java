@@ -10,8 +10,7 @@ import nars.term.atom.Bool;
 import nars.term.sub.Subterms;
 import nars.term.sub.TermVector;
 import nars.term.transform.CompoundTransform;
-import nars.term.var.UnnormalizedVariable;
-import nars.term.var.Variable;
+import nars.term.var.NormalizedVariable;
 import org.eclipse.collections.api.block.function.primitive.ByteFunction;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
@@ -96,11 +95,11 @@ public class Anon {
     }
 
     public Term put(Term x) {
-        if (x instanceof Variable) {
+        if (x instanceof NormalizedVariable) {
             //assert (!(x instanceof UnnormalizedVariable));
-            if (x instanceof UnnormalizedVariable)
-                throw new RuntimeException("unnormalized variable in Anon");
-            return x; //ignore normalized variables
+//            if (x instanceof UnnormalizedVariable)
+//                throw new RuntimeException("unnormalized variable for Anon: " + x);
+            return x; //ignore normalized variables since they are AnonID
         } else if (x instanceof Atomic) {
             return Anom.the[fwd.getIfAbsentPutWithKey(x, nextUniqueAtom)];
         } else {

@@ -66,7 +66,7 @@ public interface Retemporalize extends DirectCompoundTransform {
         if (op.temporal) {
             dtNext = dt(x);
             Subterms xx = x.subterms();
-            if (op == CONJ && xx.hasAny(CONJ)) {
+            if (dtNext == XTERNAL && op == CONJ && xx.hasAny(CONJ)) {
                 //recursive conj, decompose to events
                 ArrayHashSet<Term> s = new ArrayHashSet();
                 x.eventsWhile((when, zz) -> {
@@ -85,8 +85,6 @@ public interface Retemporalize extends DirectCompoundTransform {
                 return x; //no change
 
         } else {
-            if (!x.hasAny(Temporal))
-                return x;
 
             assert (dt == DTERNAL);
             dtNext = DTERNAL;
@@ -136,20 +134,20 @@ public interface Retemporalize extends DirectCompoundTransform {
         }
     }
 
-    final class RetemporalizeFromToFunc implements Retemporalize {
-
-        final int from;
-        final IntSupplier to;
-
-        public RetemporalizeFromToFunc(int from, IntSupplier to) {
-            this.from = from;
-            this.to = to;
-        }
-
-        @Override
-        public int dt(Compound x) {
-            int dt = x.dt();
-            return dt == from ? to.getAsInt() : dt;
-        }
-    }
+//    final class RetemporalizeFromToFunc implements Retemporalize {
+//
+//        final int from;
+//        final IntSupplier to;
+//
+//        public RetemporalizeFromToFunc(int from, IntSupplier to) {
+//            this.from = from;
+//            this.to = to;
+//        }
+//
+//        @Override
+//        public int dt(Compound x) {
+//            int dt = x.dt();
+//            return dt == from ? to.getAsInt() : dt;
+//        }
+//    }
 }

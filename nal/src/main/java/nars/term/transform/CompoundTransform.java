@@ -9,10 +9,9 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.sub.Subterms;
-import nars.term.var.AbstractVariable;
+import nars.term.var.NormalizedVariable;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.PROD;
 import static nars.Op.VAR_QUERY;
 
 /**
@@ -128,7 +127,7 @@ public interface CompoundTransform extends TermContext {
         @Override
         public Term apply(Term subterm) {
             if (subterm.op() == VAR_QUERY) {
-                return $.varDep((((AbstractVariable) subterm).anonNum()));
+                return $.varDep((((NormalizedVariable) subterm).anonNum()));
             }
             return subterm;
         }

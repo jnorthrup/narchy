@@ -255,6 +255,12 @@ public class TemporalTermTest {
 
     }
 
+    @Test public void testRetemporalization1() throws Narsese.NarseseException {
+        assertEquals("a(x,(--,((--,((6-->ang) &&+1384 (6-->ang)))&&(6-->ang))))",
+                $.$("a(x,(--,((--,((6-->ang) &&+1384 (6-->ang))) &&+- (6-->ang))))").temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL).toString()
+        );
+    }
+
     @Test
     public void testCommutiveTemporalityConjEquiv() {
 //        testParse("((#1-->$2) <=>-20 ({(row,3)}-->$2))", "(({(row,3)}-->$1) <=>+20 (#2-->$1))");

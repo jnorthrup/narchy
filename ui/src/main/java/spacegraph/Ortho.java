@@ -187,13 +187,13 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
 
     @Override
     public void windowDestroyNotify(WindowEvent e) {
-
+        visible = false;
+        stop();
     }
 
     @Override
     public void windowDestroyed(WindowEvent e) {
-        visible = false;
-        stop();
+
     }
 
     @Override

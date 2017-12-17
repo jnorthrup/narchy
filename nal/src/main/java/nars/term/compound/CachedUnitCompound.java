@@ -3,6 +3,8 @@ package nars.term.compound;
 import nars.Op;
 import nars.term.Term;
 
+import static nars.Op.NEG;
+
 
 /** 1-element Compound impl */
 public class CachedUnitCompound extends UnitCompound {
@@ -18,12 +20,18 @@ public class CachedUnitCompound extends UnitCompound {
     private final Term sub;
 
     public CachedUnitCompound(/*@NotNull*/ Op op, /*@NotNull*/ Term sub) {
+        assert(op!=NEG); //makes certain assumptions that it's not NEG op, use Neg.java for that
+
         this.sub = sub;
         this.op = op;
         this.chash = super.hashCode();
         this.cstruct = op.bit | sub.structure();
     }
 
+    @Override
+    public final Term unneg() {
+        return this;
+    }
 
     @Override
     public final Term sub() {

@@ -10,6 +10,7 @@ import nars.term.sub.TermVector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.Op.NEG;
 import static nars.time.Tense.DTERNAL;
 
 
@@ -43,12 +44,19 @@ public class CachedCompound implements Compound {
 
     public CachedCompound(/*@NotNull*/ Op op, Subterms subterms) {
 
+        assert(op!=NEG); //makes certain assumptions that it's not NEG op, use Neg.java for that
+
         this.op = op;
 
         this.hash = Util.hashCombine((this.subterms = subterms).hashCode(), op.id);
 
         this._structure = Compound.super.structure();
         this._volume = Compound.super.volume();
+    }
+
+    @Override
+    public Term unneg() {
+        return this;
     }
 
     @Override

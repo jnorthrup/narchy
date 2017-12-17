@@ -9,7 +9,7 @@ import static nars.Op.VAR_QUERY;
 /**
  * normalized query variable
  */
-public final class VarQuery extends AbstractVariable {
+public final class VarQuery extends NormalizedVariable {
 
     public VarQuery(byte id) {
         super(VAR_QUERY, id);

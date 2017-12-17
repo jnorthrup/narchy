@@ -10,7 +10,7 @@ import static nars.Op.VAR_INDEP;
 /**
  * normalized indep var
  */
-public final class VarIndep extends AbstractVariable {
+public final class VarIndep extends NormalizedVariable {
 
     public VarIndep(byte id) {
         super(VAR_INDEP, id);

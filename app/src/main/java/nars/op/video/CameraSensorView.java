@@ -41,7 +41,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
     @Override
     public void stop() {
         super.stop();
-        if (on!=null) { on.stop(); this.on = null; }
+        if (on!=null) { on.off(); this.on = null; }
     }
 
 

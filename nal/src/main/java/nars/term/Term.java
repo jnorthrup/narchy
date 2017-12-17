@@ -40,7 +40,7 @@ import nars.term.subst.Subst;
 import nars.term.subst.Unify;
 import nars.term.transform.CompoundTransform;
 import nars.term.transform.Retemporalize;
-import nars.term.var.AbstractVariable;
+import nars.term.var.NormalizedVariable;
 import nars.term.var.Variable;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
@@ -590,7 +590,7 @@ public interface Term extends Termed, Comparable<Termed> {
             if (h != 0)
                 return h;
 
-            if (this instanceof AbstractVariable || this instanceof Int) {
+            if (this instanceof NormalizedVariable || this instanceof Int) {
                 return 0; //hashcode was all that needed compared
             } else if (this instanceof Int.IntRange) {
                 return Long.compareUnsigned(((Int.IntRange) this).hash64(), ((Int.IntRange) y).hash64());

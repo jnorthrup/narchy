@@ -14,7 +14,6 @@ import nars.gui.Vis;
 import nars.gui.graph.EdgeDirected;
 import nars.gui.graph.run.SimpleConceptGraph1;
 import nars.index.term.map.CaffeineIndex;
-import nars.op.Anoncepts;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.op.video.*;
@@ -71,7 +70,6 @@ import java.util.stream.Stream;
 import static nars.$.$;
 import static nars.Op.BELIEF;
 import static nars.gui.Vis.reflect;
-import static nars.time.Tense.ETERNAL;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.layout.Grid.*;
 
@@ -181,7 +179,10 @@ abstract public class NAgentX extends NAgent {
         n.conceptActivation.set(0.1f);
 
         n.dtMergeOrChoose.set(true);
-        n.dtDither.set(0.5f);
+        n.dtDither.set(
+            1f
+            //0.5f
+        );
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
@@ -540,7 +541,7 @@ abstract public class NAgentX extends NAgent {
             @Override
             public void stop() {
                 super.stop();
-                on.stop();
+                on.off();
             }
         };
     }
@@ -569,7 +570,7 @@ abstract public class NAgentX extends NAgent {
             @Override
             public void stop() {
                 super.stop();
-                on.stop();
+                on.off();
             }
         };
 

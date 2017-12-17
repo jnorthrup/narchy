@@ -1,6 +1,5 @@
 package spacegraph.render;
 
-import com.jogamp.common.os.Platform;
 import com.jogamp.nativewindow.WindowClosingProtocol;
 import com.jogamp.newt.event.*;
 import com.jogamp.newt.opengl.GLWindow;
@@ -12,34 +11,44 @@ import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.gl2.GLUT;
 import jcog.Util;
 import jcog.exe.Loop;
-import jogamp.opengl.FPSCounterImpl;
+import jcog.list.FastCoWList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
-import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 
 
 public abstract class JoglSpace implements GLEventListener, WindowListener {
 
-    final static int FPS_IDEAL = 30;
-    //public static final int FPS_MIN = 15; //min acceptable FPS
 
+    final static int RENDER_FPS_IDEAL = 30;
+    final static int UPDATE_FPS_IDEAL = 15;
 
     //protected static final MyFPSAnimator a = new MyFPSAnimator(JoglSpace.FPS_IDEAL, FPS_MIN, FPS_IDEAL);
     protected static final GameAnimatorControl a;
+
+    private static final Loop u;
+    boolean ready = true;
 
     static {
 //        GLCapabilitiesImmutable cfg = newDefaultConfig();
 //        sharedDrawable = GLDrawableFactory.getFactory(cfg.getGLProfile()).createDummyAutoDrawable(null, true, cfg, null);
 //        sharedDrawable.display(); // triggers GLContext object creation and native realization.
 //        Draw.init(sharedDrawable.getGL().getGL2());
-        a = new GameAnimatorControl(FPS_IDEAL);
+        a = new GameAnimatorControl(RENDER_FPS_IDEAL);
+        u = new Loop(UPDATE_FPS_IDEAL) {
+            @Override public boolean next() {
+                windows.forEach(JoglSpace::updateIfReady);
+//                windows.forEach(w->{
+//                    w.window.getScreen().getDisplay().getEDTUtil().invoke(true, w::update);
+//                });
+                return true;
+            }
+        };
+        //window.getScreen().getDisplay().getEDTUtil().invoke(false, updater);
     }
 
     public static final GLU glu = new GLU();
@@ -49,51 +58,50 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
     public GLWindow window;
     protected GL2 gl;
 
+    boolean visible;
 
     protected JoglSpace() {
         super();
         //frameTimeMS = new PeriodMeter(toString(), 8);
     }
 
-    public static GLWindow window(JoglSpace j) {
+    static GLWindow window(JoglSpace j) {
         return window(config(), j);
     }
 
-    public static GLWindow window(GLCapabilitiesImmutable config, JoglSpace j) {
+    static GLWindow window(GLCapabilitiesImmutable config, JoglSpace j) {
 
 
 
         GLWindow w = GLWindow.create(config);
         w.addGLEventListener(j);
         w.addWindowListener(j);
+
         //w.setSharedContext(sharedDrawable.getContext());
 
-
-        //TODO FPSAnimator
-        start(w);
 
         return w;
     }
 
-    public static final Set<GLWindow> windows = Collections.newSetFromMap(new ConcurrentHashMap<>());
-
     static final Logger logger = LoggerFactory.getLogger(JoglSpace.class);
 
-    private static synchronized void start(GLWindow w) {
+    private static final FastCoWList<JoglSpace> windows = new FastCoWList<>(16, JoglSpace[]::new);
 
-        if (!windows.isEmpty()) {
-            if (!windows.add(w))
-                return;
-        } else {
-            a.start();
-            windows.add(w);
-        }
+    private static void start(JoglSpace j) {
+
+//        if (!windows.isEmpty()) {
+//        } else {
+//            //a.start();
+//
+//        }
+        GLWindow w = j.window;
+        windows.add(j);
 
         w.addWindowListener(new WindowAdapter() {
 
             @Override
             public void windowDestroyed(WindowEvent e) {
-                if (windows.remove(w)) {
+                if (windows.remove(j)) {
                     //synchronized (a) {
                     a.remove(w);
                 }
@@ -109,9 +117,9 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
         });
 
         a.add(w);
-
-
     }
+
+
 
     @Override
     public final void init(GLAutoDrawable drawable) {
@@ -119,10 +127,11 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
 
         this.gl = drawable.getGL().getGL2();
 
-        if (!gl.getGLProfile().isHardwareRasterizer()) {
-            gl.setSwapInterval(4); //reduce CPU strain
-        } else {
+
+        if (gl.getGLProfile().isHardwareRasterizer()) {
             gl.setSwapInterval(0); //0=disable vsync
+        } else {
+            gl.setSwapInterval(4); //reduce CPU strain
         }
 
         //printHardware();
@@ -238,12 +247,21 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
 
     abstract protected void render();
 
+    protected final void updateIfReady() {
+        if (ready) {
+            ready = false;
+            update();
+        }
+    }
+
     @Override
     public final void display(GLAutoDrawable drawable) {
 
         //long start = System.currentTimeMillis();
+
         render();
-        update();
+        ready = true;
+
         //long now = System.currentTimeMillis();
         //frameTimeMS.hit(now - start);
 
@@ -256,8 +274,10 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
 
     public synchronized GLWindow show(String title, int w, int h, int x, int y) {
 
-        if (window != null)
+        if (window != null) {
+            //TODO apply w,h,x,y to the existing window
             return window;
+        }
 
         GLWindow g = window(this);
         g.setTitle(title);
@@ -268,8 +288,10 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
             g.setPosition(x, y);
         }
         g.setVisible(true);
-        return this.window = g;
 
+        start(this);
+
+        return this.window = g;
     }
 
     public GLWindow show(String title, int w, int h) {
@@ -295,59 +317,42 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
 
     /* from: Jake2's */
     public static class GameAnimatorControl extends AnimatorBase {
-        final FPSCounterImpl fpsCounter;
+//        final FPSCounterImpl fpsCounter;
         private final Loop loop;
-        private final float fps;
-        private boolean pauseIssued;
-        private boolean quitIssued;
+
+        //private boolean pauseIssued;
+        //private boolean quitIssued;
         public boolean isAnimating;
+        private boolean paused = false;
 
         GameAnimatorControl(float initialFPS) {
             super();
 
-            this.fps = initialFPS;
-            setIgnoreExceptions(true);
+            setIgnoreExceptions(false);
             setPrintExceptions(false);
 
-            final boolean isARM = Platform.CPUFamily.ARM == Platform.getCPUFamily();
-            fpsCounter = new FPSCounterImpl();
-            fpsCounter.setUpdateFPSFrames(isARM ? 60 : 4 * 60, System.err);
+//            fpsCounter = new FPSCounterImpl();
+//            final boolean isARM = Platform.CPUFamily.ARM == Platform.getCPUFamily();
+//            fpsCounter.setUpdateFPSFrames(isARM ? 60 : 4 * 60, System.err);
             this.loop = new Loop(-1) {
-
-
-                public boolean justStarted = true;
-
 
                 @Override
                 protected void onStart() {
-                    animThread = Thread.currentThread();
+                    isAnimating = true;
                 }
 
                 @Override
                 public boolean next() {
 
-
-                    if (justStarted) {
-                        justStarted = false;
-
-                        isAnimating = true;
-                        if (drawablesEmpty) {
-                            pauseIssued = true; // isAnimating:=false @ pause below
-                        } else {
-                            pauseIssued = false;
-                            setDrawablesExclCtxState(exclusiveContext); // may re-enable exclusive context
-                        }
-                        //GameAnimatorControl.this.notifyAll(); // Wakes up 'waitForStartedCondition' sync -and resume from pause or drawablesEmpty
-
-                    }
-                    if (!pauseIssued && !quitIssued) { // RUN
+                    if (!drawablesEmpty && !paused) { // RUN
                         try {
                             display();
                         } catch (final UncaughtAnimatorException dre) {
-                            quitIssued = true;
+                            //quitIssued = true;
                             dre.printStackTrace();
                         }
-                    } else if (pauseIssued && !quitIssued) { // PAUSE
+                    }
+                    /*else if (pauseIssued && !quitIssued) { // PAUSE
 //                        if (DEBUG) {
 //                            System.err.println("FPSAnimator pausing: " + alreadyPaused + ", " + Thread.currentThread() + ": " + toString());
 //                        }
@@ -374,7 +379,7 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
 //                                GameAnimatorControl.this.notifyAll();
 //                            }
 //                        }
-                    }
+                    }*/
                     return true;
 
                 }
@@ -438,6 +443,8 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
             animThread = loop.thread();
             loop.runFPS(initialFPS);
             setExclusiveContext(animThread);
+            setDrawablesExclCtxState(exclusiveContext); // may re-enable exclusive context
+
         }
 
         @Override
@@ -452,7 +459,7 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
 
         @Override
         public final boolean stop() {
-            quitIssued = true;
+            //quitIssued = true;
             return true;
         }
 
@@ -463,13 +470,13 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
 //                System.err.println("GLCtx Pause Anim: "+Thread.currentThread().getName());
 //                Thread.dumpStack();
 //            }
-            pauseIssued = true;
+            paused = true;
             return true;
         }
 
         @Override
         public final boolean resume() {
-            pauseIssued = false;
+            paused = false;
             return true;
         }
 
@@ -481,12 +488,12 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
 
         @Override
         public final boolean isAnimating() {
-            return !pauseIssued; // null != window && !shouldPause;
+            return isAnimating;
         }
 
         @Override
         public final boolean isPaused() {
-            return pauseIssued;
+            return paused;
         }
 
 

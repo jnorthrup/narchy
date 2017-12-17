@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Consumer;
 
 import static nars.Op.*;
+import static nars.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.c2wSafe;
 
 /**
@@ -89,11 +90,15 @@ public final class DynTruth {
         if (!c.op().temporal) {
             //dilute the evidence in proportion to temporal sparseness for non-temporal results
             TimeFusion se = TimeFusion.the(e);
-            evi *= se.factor;
-            if (evi < eviMin)
-                return null;
-            start = se.unionStart;
-            end = se.unionEnd;
+            if (se!=null) {
+                evi *= se.factor;
+                if (evi < eviMin)
+                    return null;
+                start = se.unionStart;
+                end = se.unionEnd;
+            } else {
+                start = end = ETERNAL;
+            }
         } else {
             start = end = e.minValue(TaskRegion::start); //left-align
         }
@@ -134,7 +139,7 @@ public final class DynTruth {
             return null;
 
         NALTask dyn = new NALTask(c, beliefOrGoal ? Op.BELIEF : Op.GOAL,
-                tr, nar.time(), start, c.op().temporal ? start : end, stamp);
+                tr, nar.time(), start, (start == ETERNAL || c.op().temporal) ? start : end, stamp);
         dyn.cause = cause(nar);
         dyn.priSet(priority);
 

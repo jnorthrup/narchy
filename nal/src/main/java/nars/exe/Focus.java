@@ -414,14 +414,16 @@ public class Focus {
             Schedule s = schedule.read();
 
             float[] cw = s.weight;
-            if (cw.length == 0)
+            if (cw.length == 0) {
+                Thread.yield();
                 continue;
+            }
 
             float[] iterPerSecond = s.iterPerSecond;
             Causable[] can = s.active;
 
             /** jiffy temporal granularity time constant */
-            float jiffy = 0.001f; //1mS
+            float jiffy = 0.0005f; //1mS
 
             do {
                 try {
@@ -460,7 +462,7 @@ public class Focus {
     }
 
     private int run(Causable cx, float iterPerSecond, float time) {
-        int iters = Math.max(1, (int) (iterPerSecond * time));
+        int iters = Math.max(1, Math.round(iterPerSecond * time));
         return cx.run(nar, iters);
     }
 

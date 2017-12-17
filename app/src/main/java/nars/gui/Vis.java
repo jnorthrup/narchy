@@ -8,7 +8,9 @@ import jcog.pri.PriReference;
 import nars.$;
 import nars.NAR;
 import nars.NAgent;
+import nars.NAgentX;
 import nars.concept.Concept;
+import nars.control.DurService;
 import nars.term.Termed;
 import nars.truth.Truth;
 import spacegraph.Surface;
@@ -331,7 +333,7 @@ public class Vis {
     public static class EmotionPlot extends Grid implements Consumer<NAR> {
 
         private final int plotHistory;
-        private final On on;
+        private DurService on;
         Plot2D plot1, plot2, plot3, plot4;
 
         public EmotionPlot(int plotHistory, NAgent a) {
@@ -374,17 +376,20 @@ public class Vis {
 //            plot4.add("Sad", nar.emotion.sad::getSum);
 //                plot4.add("Errr", ()->nar.emotion.errr.getSum());
 
-            on = nar.onCycle(this);
+            on = a.onFrame(this);
         }
 
         @Override
-        public void stop() {
+        public synchronized void stop() {
+            if (on!=null) {
+                on.off();
+                on = null;
+            }
             super.stop();
-            on.off();
         }
 
         @Override
-        public void accept(NAR nar) {
+        public void accept(NAR a) {
             plot1.update();
             plot2.update();
             plot3.update();
@@ -395,7 +400,7 @@ public class Vis {
     public static class BeliefChartsGrid extends Grid implements Consumer<NAR> {
 
         private final int window;
-        private final On on;
+        private final DurService on;
         long[] btRange;
 
         public BeliefChartsGrid(Iterable<?> ii, NAR nar, int window) {
@@ -410,7 +415,7 @@ public class Vis {
 
             if (!s.isEmpty()) {
                 set(s);
-                on = nar.onCycle(this);
+                on = DurService.on(nar, this);
             } else {
                 on = null;
                 set(label("(empty)"));
@@ -420,8 +425,10 @@ public class Vis {
 
         @Override
         public void stop() {
-            if (on != null)
+            super.stop();
+            if (on != null) {
                 on.off();
+            }
         }
 
         @Override

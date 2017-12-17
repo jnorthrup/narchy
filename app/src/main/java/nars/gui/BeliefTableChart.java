@@ -2,16 +2,17 @@ package nars.gui;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.event.On;
 import nars.NAR;
 import nars.Task;
 import nars.concept.TaskConcept;
 import nars.concept.Concept;
+import nars.control.DurService;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
 import nars.truth.TruthWave;
 import nars.truth.Truthed;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
 import spacegraph.render.Draw;
 import spacegraph.widget.text.Label;
@@ -19,13 +20,12 @@ import spacegraph.widget.windo.Widget;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 import static java.lang.Math.PI;
 import static nars.time.Tense.ETERNAL;
 
 
-public class BeliefTableChart extends Widget implements Consumer<NAR> {
+public class BeliefTableChart extends Widget {
 
     public static final float baseTaskSize = 0.04f;
     public static final float CROSSHAIR_THICK = 3;
@@ -36,7 +36,7 @@ public class BeliefTableChart extends Widget implements Consumer<NAR> {
     final TruthWave goalProj;
 
     final AtomicBoolean redraw;
-    private final On on;
+    private DurService on;
 
 
     TaskConcept cc; //cached concept
@@ -93,12 +93,26 @@ public class BeliefTableChart extends Widget implements Consumer<NAR> {
 
         //setAutoSwapBufferMode(true);
 
-        on = n.onCycle(this);
+
 
         redraw.set(true);
 
     }
 
+    @Override
+    public synchronized void start(@Nullable Surface parent) {
+        super.start(parent);
+        on = DurService.on(nar, this::update);
+    }
+
+    @Override
+    public void stop() {
+        if (on!=null) {
+            on.off();
+            on = null;
+        }
+        super.stop();
+    }
 
     @Override
     public Surface hide() {
@@ -487,8 +501,4 @@ public class BeliefTableChart extends Widget implements Consumer<NAR> {
     }
 
 
-    @Override
-    public final void accept(NAR nar) {
-        update(nar);
-    }
 }

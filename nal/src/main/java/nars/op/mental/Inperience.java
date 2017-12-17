@@ -1,5 +1,7 @@
 package nars.op.mental;
 
+import com.google.common.hash.BloomFilter;
+import jcog.bloom.StableBloomFilter;
 import jcog.math.FloatParam;
 import nars.$;
 import nars.NAR;
@@ -66,6 +68,8 @@ public class Inperience extends LeakBack {
     public static final ImmutableSet<Atomic> operators = Sets.immutable.of(
             believe, want, wonder, evaluate, reflect);
 
+    final StableBloomFilter<Task> bloomFilter;
+
 //    static final Atomic[] NON_INNATE_BELIEF_ATOMICs = {
 ////            the("remind"),
 ////            the("doubt"),
@@ -92,6 +96,8 @@ public class Inperience extends LeakBack {
 //        );
         this.nar = n;
 
+
+        this.bloomFilter = Task.newBloomFilter(1024, n.random());
 
 //        n.eventConceptProcess.on(p -> {
 //            Task belief = p.belief();
@@ -122,6 +128,9 @@ public class Inperience extends LeakBack {
 
         boolean full = in.bag.isFull();
 
+        if (!bloomFilter.addIfMissing(next))
+            return false; //repeated
+
         if (next.op() == INH && next.subIs(1, ATOM) && operators.contains(next.sub(1)))
             return false; //prevent directly re-experiencing an inperience
 
@@ -136,6 +145,9 @@ public class Inperience extends LeakBack {
 
             //belief = true;
         } else {
+            if (next.term().hasXternal())
+                return false;
+
             //belief = false;
         }
 

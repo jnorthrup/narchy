@@ -12,8 +12,7 @@ import nars.task.NALTask;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.var.AbstractVariable;
-import nars.term.var.Variable;
+import nars.term.var.NormalizedVariable;
 import nars.truth.Truthed;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.slf4j.Logger;
@@ -380,13 +379,13 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
                     return new Struct(op.str, st);
             }
 
-        } else if (term instanceof AbstractVariable) {
+        } else if (term instanceof NormalizedVariable) {
             switch (term.op()) {
                 case VAR_QUERY:
                 case VAR_PATTERN:
                 case VAR_DEP: //?? as if atomic
                 case VAR_INDEP: //??
-                    return new Var("_" + (((AbstractVariable) term).anonNum()));
+                    return new Var("_" + (((NormalizedVariable) term).anonNum()));
 
                     //return new Struct("'#" + ((Variable) term).id() + '\'');
             }

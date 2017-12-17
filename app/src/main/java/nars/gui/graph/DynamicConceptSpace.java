@@ -91,7 +91,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
 
     @Override
     public synchronized void stop() {
-        on.stop();
+        on.off();
         on = null;
         super.stop();
     }

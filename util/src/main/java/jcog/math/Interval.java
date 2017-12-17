@@ -1,5 +1,6 @@
 package jcog.math;
 
+import org.apache.commons.math3.exception.MathRuntimeException;
 import org.jetbrains.annotations.Nullable;
 
 import static java.lang.Math.max;
@@ -22,8 +23,7 @@ public class Interval {
 			this.a = a;
 			this.b = b;
 		} else {
-			this.a = b;
-			this.b = a;
+			throw new RuntimeException("wrong Interval ordering; b >= a but attempted creation of: [" + a + ".." + b + "]");
 		}
 	}
 

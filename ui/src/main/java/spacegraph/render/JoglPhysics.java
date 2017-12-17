@@ -306,7 +306,7 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
         if (simulating) {
             // NOTE: SimpleDynamics world doesn't handle fixed-time-stepping
             dyn.update(
-                    Math.max(dt, 1000000f / FPS_IDEAL) / 1000000.f, maxSubsteps
+                    Math.max(dt, 1000000f / RENDER_FPS_IDEAL) / 1000000.f, maxSubsteps
                     //clock.getTimeThenReset()
             );
         }

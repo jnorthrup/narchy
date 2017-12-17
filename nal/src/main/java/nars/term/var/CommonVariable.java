@@ -57,24 +57,24 @@ public final class CommonVariable extends UnnormalizedVariable {
         Op Aop = A.op();
         assert(B.op()==Aop);
 
-        boolean aa = A instanceof AbstractVariable;
-        boolean bb = B instanceof AbstractVariable;
+        boolean aa = A instanceof NormalizedVariable;
+        boolean bb = B instanceof NormalizedVariable;
         if (aa && bb) {
-            byte ai = ((AbstractVariable)A).anonNum();
-            byte bi = ((AbstractVariable)B).anonNum();
+            byte ai = ((NormalizedVariable)A).anonNum();
+            byte bi = ((NormalizedVariable)B).anonNum();
             return new CommonVariable(Aop, ai, bi);
         }
 
         if (!aa && bb) {
             ImmutableByteSet ai = ((CommonVariable)A).vars;
-            byte bi = ((AbstractVariable)B).anonNum();
+            byte bi = ((NormalizedVariable)B).anonNum();
             if (ai.contains(bi))
                 return A;
             return new CommonVariable(Aop, ai.newWith(bi));
         }
 
         if (aa && !bb) {
-            byte ai = ((AbstractVariable)A).anonNum();
+            byte ai = ((NormalizedVariable)A).anonNum();
             ImmutableByteSet bi = ((CommonVariable)B).vars;
             if (bi.contains(ai))
                 return B;

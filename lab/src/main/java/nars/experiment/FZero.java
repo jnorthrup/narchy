@@ -3,10 +3,7 @@ package nars.experiment;
 import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.learn.LivePredictor;
-import nars.$;
-import nars.NAR;
-import nars.NAgentX;
-import nars.Task;
+import nars.*;
 import nars.concept.ScalarConcepts;
 import nars.concept.SensorConcept;
 import nars.gui.Vis;
@@ -37,6 +34,8 @@ public class FZero extends NAgentX {
 
     public static void main(String[] args) {
 
+        //Param.DEBUG = true;
+
         float fps = 40f;
 
         NAgentX.runRT((n) -> {
@@ -44,7 +43,7 @@ public class FZero extends NAgentX {
             FZero a = null;
             n.freqResolution.set(0.03f);
             n.confResolution.set(0.02f);
-            n.confMin.set(0.04f);
+            n.confMin.set(0.02f);
             a = new FZero(n);
             a.happy.resolution(0.05f);
 

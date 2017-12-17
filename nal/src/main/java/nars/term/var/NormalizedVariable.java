@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
  * Normalized variable
  * "highly immutable" and re-used
  */
-public abstract class AbstractVariable implements Variable, AnonID {
+public abstract class NormalizedVariable implements Variable, AnonID {
 
 
     public final short id;
@@ -46,7 +46,7 @@ public abstract class AbstractVariable implements Variable, AnonID {
 
     private final byte[] bytes;
 
-    protected AbstractVariable(/*@NotNull*/ Op type, byte num) {
+    protected NormalizedVariable(/*@NotNull*/ Op type, byte num) {
         assert(num > 0);
         assert(num < Byte.MAX_VALUE);
 
@@ -79,8 +79,8 @@ public abstract class AbstractVariable implements Variable, AnonID {
     @Override
     public final boolean equals(Object obj) {
         return obj == this ||
-                (obj instanceof AbstractVariable
-                        && ((AbstractVariable) obj).id == id);
+                (obj instanceof NormalizedVariable
+                        && ((NormalizedVariable) obj).id == id);
     }
 
 
@@ -125,7 +125,7 @@ public abstract class AbstractVariable implements Variable, AnonID {
     /**
      * numerically-indexed variable instance cache; prevents duplicates and speeds comparisons
      */
-    private static final AbstractVariable[][] varCache = new AbstractVariable[4][Param.MAX_VARIABLE_CACHED_PER_TYPE];
+    private static final NormalizedVariable[][] varCache = new NormalizedVariable[4][Param.MAX_VARIABLE_CACHED_PER_TYPE];
 
     @NotNull
     public static Op typeIndex(char c) {
@@ -189,7 +189,7 @@ public abstract class AbstractVariable implements Variable, AnonID {
      * TODO move this to TermBuilder
      */
     @NotNull
-    static AbstractVariable vNew(/*@NotNull*/ Op type, byte id) {
+    static NormalizedVariable vNew(/*@NotNull*/ Op type, byte id) {
         switch (type) {
             case VAR_PATTERN:
                 return new VarPattern(id);
@@ -204,10 +204,10 @@ public abstract class AbstractVariable implements Variable, AnonID {
         }
     }
 
-    public static AbstractVariable the(/*@NotNull*/ Op type, byte id) {
+    public static NormalizedVariable the(/*@NotNull*/ Op type, byte id) {
         assert(id > 0);
         if (id < Param.MAX_VARIABLE_CACHED_PER_TYPE) {
-            return varCache[AbstractVariable.opToVarIndex(type)][id];
+            return varCache[NormalizedVariable.opToVarIndex(type)][id];
         } else {
             return vNew(type, id);
         }

@@ -4,7 +4,7 @@ import nars.$;
 import nars.Op;
 import nars.term.Term;
 import nars.term.sub.Subterms;
-import nars.term.var.AbstractVariable;
+import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.Variable;
 import org.jetbrains.annotations.NotNull;
@@ -64,7 +64,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
 
 
         public static Ellipsis make(byte serial, int minArity) {
-            AbstractVariable v = $.v(VAR_PATTERN, serial);
+            NormalizedVariable v = $.v(VAR_PATTERN, serial);
             switch (minArity) {
                 case 0:
                     return new EllipsisZeroOrMore(v);
@@ -98,7 +98,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
 //    }
 
 
-    protected Ellipsis(AbstractVariable target, int minArity) {
+    protected Ellipsis(NormalizedVariable target, int minArity) {
         super(VAR_PATTERN, target.toString());
             // + (minArity == 0 ? "..*" : "..+")
         assert(target.op()==VAR_PATTERN); //only VAR_PATTERN for now

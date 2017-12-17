@@ -96,9 +96,9 @@ public class Abbreviation/*<S extends Term>*/ extends TaskService {
     }
 
     @Override
-    public synchronized void stop() {
-        onDur.stop();
-        super.stop();
+    public synchronized void off() {
+        onDur.off();
+        super.off();
     }
 
     protected void update(NAR nar) {
