@@ -6,7 +6,6 @@ import jcog.bag.util.SpinMutex;
 import jcog.bag.util.Treadmill2;
 import jcog.data.array.Arrays;
 import jcog.decide.Roulette;
-import jcog.list.FasterList;
 import jcog.math.AtomicFloat;
 import jcog.pri.Pri;
 import jcog.pri.Prioritized;
@@ -15,6 +14,7 @@ import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.ref.ReferenceQueue;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -59,6 +59,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     private static final SpinMutex mutex = new Treadmill2();
     private static final AtomicInteger serial = new AtomicInteger(0);
+
 
 
     /**
@@ -352,15 +353,19 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
                         } else {
                             //attempt HIJACK (tm)
-                            if ((power = replace(power, existing))==Float.POSITIVE_INFINITY) {
+                            float powerDelta;
+                            if ((powerDelta = replace(power, existing))==Float.POSITIVE_INFINITY) {
                                 if (map.compareAndSet(i, existing, incoming)) { //inserted
                                     toRemove = existing;
                                     toReturn = toAdd = incoming;
                                     break inserting; //hijacked replaceable slot, done
                                 }
                             } else {
-                                if (power < 0)
-                                    break inserting; //dead, rejected
+                                if (powerDelta < 0) {
+                                    power += powerDelta / reprobes;
+//                                    if (power < 0)
+//                                        break inserting; //dead, rejected
+                                }
                             }
 
                         }
@@ -449,13 +454,12 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     /**
      * can override in subclasses for custom replacement policy.
-     * true allows the incoming to replace the existing.
-     * <p>
+     *
      * a potential eviction can be intercepted here
      *
-     * returns Float.POSITIVE_INFINITY if the incoming value 'won' the fight,
-     * otherwise returns a discounted incoming value representing the 'damage' from incurred
-     * by the fight
+     * returns Float.POSITIVE_INFINITY if the incoming value 'won' the fight against the existing,
+     * otherwise returns a discounted incoming value representing the 'damage' sustained
+     * during the fight
      */
     protected float replace(float i, V existing) {
         float e = pri(existing);
@@ -465,9 +469,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             return i - e;
         }
     }
-
     protected boolean replace(float incoming, float existing) {
-        return hijackSoftmax(incoming, existing);
+        return hijackFair(incoming, existing);
     }
 
     @Nullable
@@ -476,24 +479,23 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         return update(k, null, REMOVE, null);
     }
 
-    protected boolean hijackSoftmax(float newPri, float oldPri) {
-        return hijackSoftmax(newPri, oldPri, 1f);
+    protected boolean hijackFair(float newPri, float oldPri) {
+        return hijackFair(newPri, oldPri, 1f);
     }
-
-    protected boolean hijackSoftmax(float newPri, float oldPri, float temperature) {
+    /** roulette fair */
+    protected boolean hijackFair(float newPri, float oldPri, float temperature) {
 
 
         float priEpsilon = Prioritized.EPSILON;
 
         if (oldPri > priEpsilon) {
-            assert (temperature < reprobes);
+            //assert (temperature < reprobes);
 
-            float newPriSlice = newPri / (reprobes / temperature);
+            float newPriSlice = temperature * newPri / reprobes;
             float thresh = newPriSlice / (newPriSlice + oldPri);
             return random().nextFloat() < thresh;
         } else {
-            return (newPri >= priEpsilon) || random().nextBoolean();// / reprobes;
-            // random.nextBoolean(); //50/50 chance
+            return (newPri >= priEpsilon) || (random().nextFloat() < (1f/reprobes));
         }
     }
 

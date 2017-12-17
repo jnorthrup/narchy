@@ -103,23 +103,9 @@ public enum The {
         public static final Supplier<Function<Term[], nars.term.sub.Subterms>> HijackSubtermBuilder = () ->
                 new MemoizeSubtermBuilder(new HijackMemoize(rawSubtermBuilderBuilder,
                             128 * 1024 + 7 /* ~prime-ish maybe */,
-                            4));
-//                new Function<>() {
-//
-//                    final HijackMemoize<NewCompound, nars.term.sub.Subterms> cache
-//                            = new HijackMemoize<>((x) -> RawSubtermBuilder.apply(x.subs),
-//                            128 * 1024 + 7 /* ~prime */, 4);
-//
-//                    @Override
-//                    public nars.term.sub.Subterms apply(Term[] o) {
-//                        return cache.apply(
-//                                new NewCompound(PROD, o).commit()
-//                        );
-//                    }
-//                };
+                            5));
 
         public static Function<Term[], nars.term.sub.Subterms> the =
-                //CaffeineSubtermBuilder.get();
                 RawSubtermBuilder;
 
         private static class MemoizeSubtermBuilder implements Function<Term[], nars.term.sub.Subterms> {
@@ -128,8 +114,8 @@ public enum The {
             /**
              * TODO make adjustable
              */
-            int maxVol = 10;
-            final int minSubterms = 2;
+            int maxVol = 16;
+            final int minSubterms = 1;
 
             private MemoizeSubtermBuilder(Memoize<SubtermsKey, nars.term.sub.Subterms> cache) {
                 this.cache = cache;

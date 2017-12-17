@@ -55,11 +55,11 @@ public class DefaultConceptBuilder implements ConceptBuilder {
     }
 
 
-    @NotNull
+    
     private final ConceptState init;
-    @NotNull
+    
     private final ConceptState awake;
-    @NotNull
+    
     private final ConceptState sleep;
     private NAR nar;
 
@@ -74,9 +74,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
         CurveBag<PriReference<Task>> taskbag =
                 new TaskLinkCurveBag(newBagMap(v), rng);
 
-        return new Bag[] {  termbag, taskbag }
-
-                ;
+        return new Bag[] {  termbag, taskbag };
 //        } else {
 //            return new Bag[]{
 //                    new MyDefaultHijackBag(Param.termlinkMerge),
@@ -314,7 +312,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
     }
 
     @Override
-    public void start(@NotNull NAR nar) {
+    public void start( NAR nar) {
         this.nar = nar;
     }
 
@@ -352,26 +350,24 @@ public class DefaultConceptBuilder implements ConceptBuilder {
         return c;
     }
 
-
-    @NotNull
+    
     @Override
     public ConceptState init() {
         return init;
     }
-
-    @NotNull
+    
     @Override
     public ConceptState awake() {
         return awake;
     }
 
-    @NotNull
+    
     @Override
     public ConceptState sleep() {
         return sleep;
     }
 
-    @NotNull
+    
     public static Map newBagMap(int volume) {
         //int defaultInitialCap = 0;
         float loadFactor = 0.75f;

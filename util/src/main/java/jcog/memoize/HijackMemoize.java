@@ -1,17 +1,20 @@
 package jcog.memoize;
 
 import jcog.Texts;
+import jcog.Util;
 import jcog.bag.impl.HijackBag;
 import jcog.bag.impl.hijack.PriorityHijackBag;
 import jcog.data.MwCounter;
-import jcog.math.random.XorShift128PlusRandom;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.pri.PLink;
 import jcog.pri.Prioritized;
 import jcog.pri.Priority;
+import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectLongProcedure;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -26,14 +29,18 @@ import static jcog.Texts.n4;
  */
 public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Computation<X, Y>> implements Memoize<X, Y> {
 
-    private final Random rng = new XorShift128PlusRandom();
+    float DEFAULT_VALUE = 0.1f;
+    boolean soft = true;
+    private final Random rng = new XoRoShiRo128PlusRandom(1);
 
     public interface Computation<X, Y> extends Priority, Supplier<Y> {
-        /** 'x', the parameter to the function */
+        /**
+         * 'x', the parameter to the function
+         */
         X x();
     }
 
-    public static class StrongPair<X, Y> extends PLink<Y> implements Computation<X,Y> {
+    public static class StrongPair<X, Y> extends PLink<Y> implements Computation<X, Y> {
 
         public final X x;
         private final int hash;
@@ -43,6 +50,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
             this.x = x;
             this.hash = x.hashCode();
         }
+
 
         @Override
         public boolean equals(Object obj) {
@@ -61,9 +69,8 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
         }
     }
 
-    public static class SoftPair<X, Y> extends SoftReference<Y>
-            ///*WeakReference*/SoftReference<V>
-            implements Computation<X, Y> {
+
+    public static class SoftPair<X, Y> extends SoftReference<Y> implements Computation<X, Y> {
 
         public final X x;
         private final int hash;
@@ -76,12 +83,10 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
             this.pri = pri;
         }
 
-
         @Override
         public final X x() {
             return x;
         }
-
 
         @Override
         public boolean equals(Object obj) {
@@ -96,14 +101,11 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
 
         @Override
         public float priSet(float p) {
-//            if (get()!=null)
             float r = this.pri;
             if (r != r)
                 return Float.NaN;
 
-            return this.pri = p;
-//            else
-//                return Float.NaN;
+            return this.pri = Util.clamp(p, 0, 1);
         }
 
 
@@ -114,12 +116,12 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
 
         @Override
         public String toString() {
-            return '$' + n4(pri) + ' ' + x;
+            return '$' + n4(pri) + ' ' + get();
         }
 
         @Override
         public boolean delete() {
-            super.clear();
+            clear();
             this.pri = Float.NaN;
             return true;
         }
@@ -137,18 +139,19 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
 
         @Override
         public float pri() {
-            float p = pri;
-            if (p==p) {
-                Y x = get();
-                if (x != null)
-                    return pri;
-            }
-            return Float.NaN;
+            return pri;
+//            float p = pri;
+//            if (p == p) {
+//                Y x = get();
+//                if (x != null)
+//                    return pri;
+//            }
+//            return Float.NaN;
         }
 
         @Override
         public boolean isDeleted() {
-            float p = pri();
+            float p = pri;
             return p != p;
         }
 
@@ -176,6 +179,13 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
     }
 
     @Override
+    protected Computation<X, Y> merge(Computation<X, Y> existing, Computation<X, Y> incoming, @Nullable MutableFloat overflowing) {
+        if (soft && existing.isDeleted())
+            return incoming; //check if the existing has been collected
+        return super.merge(existing, incoming, overflowing);
+    }
+
+    @Override
     protected void resize(int newSpace) {
         if (space() > newSpace)
             return; //dont shrink
@@ -199,7 +209,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
      * harder items to sustain longer
      */
     public float value(X x) {
-        return 0.5f;
+        return DEFAULT_VALUE;
         //return reprobes * 2 * CACHE_HIT_BOOST;
     }
 
@@ -208,7 +218,6 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
         super.setCapacity(i);
 
         float boost = i > 0 ?
-                //0.02f
                 (float) (1f / Math.sqrt(capacity()))
                 : 0;
 
@@ -216,7 +225,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
         // for example, 1/(N*reprobes)
         // to ammortize additional attempts where the cut was not necessary
         //TODO make this a momentum parameter
-        float cut = boost / (reprobes * 2);
+        float cut = boost / (reprobes / 2f);
 
         assert (cut > Prioritized.EPSILON);
 
@@ -284,20 +293,24 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
         return y;
     }
 
-    /** produces the memoized computation instance for insertion into the bag.
-     * here it can choose the implementation to use: strong, soft, weak, etc.. */
+    /**
+     * produces the memoized computation instance for insertion into the bag.
+     * here it can choose the implementation to use: strong, soft, weak, etc..
+     */
     public Computation<X, Y> computation(X x, Y y) {
-        //return new SoftPair<>(x, y, 0.5f);
-        return new StrongPair<>(x, y, 0.5f);
+        float vx = value(x);
+        return soft ?
+                new SoftPair<>(x, y, vx) :
+                new StrongPair<>(x, y, vx);
     }
 
     @Override
     protected float replace(float incoming, Computation<X, Y> existing) {
-        float remain = super.replace(incoming, existing);
-        if (remain!=Float.POSITIVE_INFINITY) {
+        float damage = super.replace(incoming, existing);
+        if (damage != Float.POSITIVE_INFINITY) {
             existing.priSub(CACHE_DENY_DAMAGE);
         }
-        return remain;
+        return damage;
     }
 
     @Override

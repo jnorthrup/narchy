@@ -116,6 +116,7 @@ public interface Priority extends Prioritized {
 //    }
 
     default float priSub(float toSubtract) {
+        assert(toSubtract >= 0);
         //setPri(priElseZero() - toSubtract);
         return priAdd(-toSubtract);
     }

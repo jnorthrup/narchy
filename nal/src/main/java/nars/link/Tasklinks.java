@@ -15,6 +15,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
+import static nars.truth.TruthFunctions.w2c;
+import static nars.truth.TruthFunctions.w2cSafe;
+
 public class Tasklinks {
 
     public static void linkTask(Task t, Concept cc, NAR nar) {
@@ -98,7 +101,7 @@ public class Tasklinks {
             Task t = b.get();
             float rate =
                   t.isBeliefOrGoal() ?
-                        1f - TemporalBeliefTable.temporalTaskPriority(t, now, now, dur) :
+                        1f - w2cSafe(TemporalBeliefTable.temporalTaskPriority(t, now, now, dur)) :
                         1f;
             b.priSub(priRemoved * rate);
         }
