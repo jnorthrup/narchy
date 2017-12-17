@@ -1,6 +1,9 @@
 package spacegraph.widget.button;
 
+import com.jogamp.opengl.GL2;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
+import spacegraph.render.Draw;
 import spacegraph.widget.text.Label;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -25,7 +28,7 @@ public class CheckBox extends ToggleButton {
         on((a, e) -> b.value(e));
     }
 
-    public CheckBox(String text, ToggleAction on) {
+    public CheckBox(String text, ObjectBooleanProcedure<ToggleButton> on) {
         this(text);
         on(on);
     }
@@ -43,15 +46,28 @@ public class CheckBox extends ToggleButton {
 //    }
 
 
-
     @Override
     public ToggleButton set(boolean on) {
         label.set((on ? "[X] " : "[ ] ") + text);
-        return super.set(on);
+        super.set(on);
+        return this;
     }
 
     public void setText(String s) {
         this.text = s;
     }
 
+    public static class ColorToggle extends ToggleButton {
+        public float r, g, b;
+
+        public ColorToggle(float r, float g, float b) {
+            this.r = r; this.g = g; this.b = b;
+        }
+
+        @Override
+        protected void paintContent(GL2 gl, float x, float y, float w, float h) {
+            gl.glColor4f(r, g, b, 0.95f);
+            Draw.rect(gl, x, y, w, h);
+        }
+    }
 }

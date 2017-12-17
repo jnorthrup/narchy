@@ -176,7 +176,7 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
         //gl.glEnable(GL_POINT_SPRITE);
         //gl.glEnable(GL_POINT_SMOOTH);
         gl.glEnable(GL_LINE_SMOOTH);
-        //gl.glEnable(GL_POLYGON_SMOOTH); //[Polygon smooth] is not a recommended method for anti-aliasing. Use Multisampling instead.
+        gl.glEnable(GL_POLYGON_SMOOTH); //[Polygon smooth] is not a recommended method for anti-aliasing. Use Multisampling instead.
 //        gl.glEnable(GL2.GL_MULTISAMPLE);
 
 //        gl.glShadeModel(
@@ -221,13 +221,15 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
         //gl.glEnable(GL2.GL_LIGHTING); // Enable Lighting
 
 
+        gl.glDisable(GL2.GL_SCISSOR_TEST);
+
         gl.glEnable(GL2.GL_BLEND);
         gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        gl.glBlendEquation(GL_FUNC_ADD);
+        //gl.glBlendEquation(GL_FUNC_ADD);
 
 
-        gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
-        gl.glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+        //gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
+        //gl.glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
 
         //loadGLTexture(gl);
 

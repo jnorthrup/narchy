@@ -1,5 +1,6 @@
 package spacegraph.layout;
 
+import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
 
 import java.util.Collection;
@@ -19,6 +20,12 @@ public class MutableLayout extends Layout {
 
     public MutableLayout(List<Surface> children) {
         set(children);
+    }
+
+    @Override
+    public synchronized void start(@Nullable Surface parent) {
+        super.start(parent);
+        children.forEach(c -> c.start(this));
     }
 
     @Override
@@ -91,7 +98,7 @@ public class MutableLayout extends Layout {
                     if (old != null) {
                         old.stop();
                     }
-                    if (neww != null) {
+                    if (neww != null && parent!=null) {
                         neww.start(MutableLayout.this);
                     }
                 }

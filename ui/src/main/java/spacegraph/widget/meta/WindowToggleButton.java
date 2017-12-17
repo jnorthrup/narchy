@@ -4,6 +4,7 @@ import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.event.WindowListener;
 import com.jogamp.newt.event.WindowUpdateEvent;
 import com.jogamp.newt.opengl.GLWindow;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import spacegraph.SpaceGraph;
 import spacegraph.input.Finger;
 import spacegraph.widget.button.CheckBox;
@@ -14,7 +15,7 @@ import java.util.function.Supplier;
 /** toggle button, which when actived, creates a window, and when inactivated destroys it
  *  TODO window width, height parameters
  * */
-public class WindowToggleButton extends CheckBox implements ToggleButton.ToggleAction, WindowListener {
+public class WindowToggleButton extends CheckBox implements WindowListener, ObjectBooleanProcedure<ToggleButton> {
 
     private final Supplier spacer;
 
@@ -37,7 +38,7 @@ public class WindowToggleButton extends CheckBox implements ToggleButton.ToggleA
     }
 
     @Override
-    public void onChange(ToggleButton t, boolean enabled) {
+    public void value(ToggleButton t, boolean enabled) {
         SpaceGraph space = this.space;
         synchronized (spacer) {
             if (enabled) {
@@ -101,4 +102,6 @@ public class WindowToggleButton extends CheckBox implements ToggleButton.ToggleA
     public void windowRepaint(WindowUpdateEvent e) {
 
     }
+
+
 }

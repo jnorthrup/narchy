@@ -51,31 +51,39 @@ public class Sketch2DBitmap extends Sketch2D {
     int radius = 3;
 
     FastBlur fb;
+
     @Override
     public Surface onTouch(Finger finger, v2 hitPoint, short[] buttons) {
 
 
         if (hitPoint != null && buttons != null && buttons.length > 0 && buttons[0] == 1) {
 
-            if (fb==null)
-                 fb = new FastBlur(pw, ph);
+            if (fb == null)
+                fb = new FastBlur(pw, ph);
 
             int ax = Math.round(hitPoint.x * pw);
 
             int ay = Math.round((1f - hitPoint.y) * ph);
-            gfx.setColor(Color.ORANGE);
+
+            int R = Math.round(paintR * 255f);
+            int G = Math.round(paintG * 255f);
+            int B = Math.round(paintB * 255f);
+            int RGB = R << 16 | G << 8 | B;
             for (int i = 0; i < density; i++) {
                 int px = (int) (ax + rng.nextGaussian() * radius);
                 if (px >= 0 && px < pw) {
                     int py = (int) (ay + rng.nextGaussian() * radius);
                     if (py >= 0 && py < ph) {
-                        pix[py * pw + px] = 0xff << 24 | 230 << 16 | 90 << 8;
+                        pix[py * pw + px] = RGB;
                     }
                 }
             }
-            //gfx.fillOval(ax, ay, 5, 5);
-            if (rng.nextInt(16)==0)
-                fb.blur(pix, pw, ph, 1);
+
+//gfx.setColor(Color.ORANGE);
+//            //gfx.fillOval(ax, ay, 5, 5);
+
+//            if (rng.nextInt(16)==0)
+//                fb.blur(pix, pw, ph, 1);
 
             update();
             return this;
@@ -88,6 +96,19 @@ public class Sketch2DBitmap extends Sketch2D {
     protected void paintComponent(GL2 gl) {
         bmp.paint(gl, bounds);
     }
+
+    private float paintR = 0.75f, paintG = 0.75f, paintB = 0.75f;
+
+    /**
+     * set paint (foreground) color
+     */
+    public void color(float r, float g, float b) {
+        this.paintR = r;
+        this.paintG = g;
+        this.paintB = b;
+    }
+
+
 
     static class FastBlur {
 
@@ -104,8 +125,6 @@ public class Sketch2DBitmap extends Sketch2D {
             g = new int[wh];
             b = new int[wh];
             vmin = new int[Math.max(w, h)];
-
-
 
 
         }
@@ -129,7 +148,7 @@ public class Sketch2DBitmap extends Sketch2D {
             int routsum, goutsum, boutsum;
             int rinsum, ginsum, binsum;
             div = radius + radius + 1;
-            if (stack == null || stack.length!=div) {
+            if (stack == null || stack.length != div) {
                 stack = new int[div][3];
 
                 int divsum = (div + 1) >> 1;

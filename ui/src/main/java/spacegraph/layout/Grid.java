@@ -70,8 +70,6 @@ public class Grid extends MutableLayout {
     @Override
     public void doLayout() {
 
-        assert(parent!=null);
-
         int n = children.size();
         if (n == 0)
             return;

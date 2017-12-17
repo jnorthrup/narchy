@@ -58,11 +58,11 @@ public class VSplit<X extends Surface, Y extends Surface> extends MutableLayout 
     }
 
     public final void top(X s) {
-        s.start(this);
+        //s.start(this);
         children.set(0, s);
     }
     public final void bottom(Y s) {
-        s.start(this);
+        //s.start(this);
         children.set(1, s);
     }
 
