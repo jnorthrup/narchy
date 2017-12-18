@@ -241,10 +241,6 @@ public abstract class ConsoleAgent extends NAgentX {
             return c;
         }
 
-        @Override
-        protected void paintComponent(GL2 gl) {
-
-        }
 
 
         //final TextCharacter space = new TextCharacter(' ');

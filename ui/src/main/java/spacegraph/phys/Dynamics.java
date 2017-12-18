@@ -530,7 +530,7 @@ public class Dynamics<X> extends Collisions<X> {
 
         if (!constraints.isEmpty()) {
             sortedConstraints.clear();
-            constraints.forEach(sortedConstraints::add);
+            sortedConstraints.addAll(constraints);
 
             //Collections.sort(sortedConstraints, sortConstraintOnIslandPredicate);
             MiscUtil.quickSort(sortedConstraints, sortConstraintOnIslandPredicate);
@@ -596,7 +596,7 @@ public class Dynamics<X> extends Collisions<X> {
                     float motionThresh = body.getCcdSquareMotionThreshold();
 
                     if (motionThresh != 0f && motionThresh < squareMotion) {
-                        try {
+
                             if (body.shape().isConvex()) {
                                 BulletStats.gNumClampedCcdMotions++;
 
@@ -619,8 +619,7 @@ public class Dynamics<X> extends Collisions<X> {
                                     //System.out.printf("clamped integration to hit fraction = %f\n", sweepResults.closestHitFraction);
                                 }
                             }
-                        } finally {
-                        }
+
                     }
 
                     body.proceedToTransform(predictedTrans);

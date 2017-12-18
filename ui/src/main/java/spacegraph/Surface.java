@@ -59,8 +59,8 @@ abstract public class Surface {
     }
 
 
-    public AspectAlign align(AspectAlign.Align align, float aspectRatio) {
-        return new AspectAlign(this, aspectRatio, align, 1f);
+    public AspectAlign align(AspectAlign.Align align) {
+        return new AspectAlign(this, 1f, align, 1f);
     }
 
 
@@ -133,7 +133,7 @@ abstract public class Surface {
     }
 
 
-    abstract protected void paint(GL2 gl);
+    abstract protected void paint(GL2 gl, int dtMS);
 
     public Surface move(float dx, float dy) {
         pos(bounds.move(dx, dy));
@@ -142,15 +142,15 @@ abstract public class Surface {
 
     public void print(PrintStream out, int indent) {
         out.print(Texts.repeat("  ", indent));
-        out.println(this.toString());
+        out.println(this);
     }
 
-    public final void render(GL2 gl) {
+    public final void render(GL2 gl, int dtMS) {
 
         if (!visible)
             return;
 
-        paint(gl);
+        paint(gl, dtMS);
 
     }
 

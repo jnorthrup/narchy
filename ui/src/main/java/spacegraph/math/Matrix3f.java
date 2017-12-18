@@ -1217,7 +1217,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
         for (int j = 0; j < 3; j++) {
             int i, k;
             int target, p1, p2;
-            double sum, temp;
+            double sum;
 
             // Determine elements of upper diagonal matrix U
             for (i = 0; i < j; i++) {
@@ -1238,6 +1238,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
             // intermediate elements of lower diagonal matrix L.
             double big = 0.0;
             int imax = -1;
+            double temp;
             for (i = j; i < 3; i++) {
                 target = mtx + (3 * i) + j;
                 sum = matrix0[target];

@@ -423,163 +423,153 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 		SubSimplexClosestResult tempResult = new SubSimplexClosestResult();
 		tempResult.reset();
 
-			v3 tmp = new v3();
-			v3 q = new v3();
+		v3 tmp = new v3();
+		v3 q = new v3();
 
-			// Start out assuming point inside all halfspaces, so closest to itself
-			finalResult.closestPointOnSimplex.set(p);
-			finalResult.usedVertices.reset();
-			finalResult.usedVertices.usedVertexA = true;
-			finalResult.usedVertices.usedVertexB = true;
-			finalResult.usedVertices.usedVertexC = true;
-			finalResult.usedVertices.usedVertexD = true;
+		// Start out assuming point inside all halfspaces, so closest to itself
+		finalResult.closestPointOnSimplex.set(p);
+		finalResult.usedVertices.reset();
+		finalResult.usedVertices.usedVertexA = true;
+		finalResult.usedVertices.usedVertexB = true;
+		finalResult.usedVertices.usedVertexC = true;
+		finalResult.usedVertices.usedVertexD = true;
 
-			int pointOutsideABC = pointOutsideOfPlane(p, a, b, c, d);
-			int pointOutsideACD = pointOutsideOfPlane(p, a, c, d, b);
-			int	pointOutsideADB = pointOutsideOfPlane(p, a, d, b, c);
-			int	pointOutsideBDC = pointOutsideOfPlane(p, b, d, c, a);
+		int pointOutsideABC = pointOutsideOfPlane(p, a, b, c, d);
+		int pointOutsideACD = pointOutsideOfPlane(p, a, c, d, b);
+		int pointOutsideADB = pointOutsideOfPlane(p, a, d, b, c);
+		int pointOutsideBDC = pointOutsideOfPlane(p, b, d, c, a);
 
-		   if (pointOutsideABC < 0 || pointOutsideACD < 0 || pointOutsideADB < 0 || pointOutsideBDC < 0)
-		   {
-			   finalResult.degenerate = true;
-			   return false;
-		   }
+		if (pointOutsideABC < 0 || pointOutsideACD < 0 || pointOutsideADB < 0 || pointOutsideBDC < 0) {
+			finalResult.degenerate = true;
+			return false;
+		}
 
-		   if (pointOutsideABC == 0 && pointOutsideACD == 0 && pointOutsideADB == 0 && pointOutsideBDC == 0)
-			 {
-				 return false;
-			 }
+		if (pointOutsideABC == 0 && pointOutsideACD == 0 && pointOutsideADB == 0 && pointOutsideBDC == 0) {
+			return false;
+		}
 
 
-			float bestSqDist = Float.MAX_VALUE;
-			// If point outside face abc then compute closest point on abc
-			if (pointOutsideABC != 0) 
-			{
-				closestPtPointTriangle(p, a, b, c,tempResult);
-				q.set(tempResult.closestPointOnSimplex);
+		float bestSqDist = Float.MAX_VALUE;
+		// If point outside face abc then compute closest point on abc
+		if (pointOutsideABC != 0) {
+			closestPtPointTriangle(p, a, b, c, tempResult);
+			q.set(tempResult.closestPointOnSimplex);
 
-				tmp.sub(q, p);
-				float sqDist = tmp.dot(tmp);
-				// Update best closest point if (squared) distance is less than current best
-				if (sqDist < bestSqDist) {
-					bestSqDist = sqDist;
-					finalResult.closestPointOnSimplex.set(q);
-					//convert result bitmask!
-					finalResult.usedVertices.reset();
-					finalResult.usedVertices.usedVertexA = tempResult.usedVertices.usedVertexA;
-					finalResult.usedVertices.usedVertexB = tempResult.usedVertices.usedVertexB;
-					finalResult.usedVertices.usedVertexC = tempResult.usedVertices.usedVertexC;
-					finalResult.setBarycentricCoordinates(
-							tempResult.barycentricCoords[VERTA],
-							tempResult.barycentricCoords[VERTB],
-							tempResult.barycentricCoords[VERTC],
-							0
-					);
-
-				}
-			}
-
-
-			// Repeat test for face acd
-			if (pointOutsideACD != 0) 
-			{
-				closestPtPointTriangle(p, a, c, d,tempResult);
-				q.set(tempResult.closestPointOnSimplex);
+			tmp.sub(q, p);
+			float sqDist = tmp.dot(tmp);
+			// Update best closest point if (squared) distance is less than current best
+			if (sqDist < bestSqDist) {
+				bestSqDist = sqDist;
+				finalResult.closestPointOnSimplex.set(q);
 				//convert result bitmask!
+				finalResult.usedVertices.reset();
+				finalResult.usedVertices.usedVertexA = tempResult.usedVertices.usedVertexA;
+				finalResult.usedVertices.usedVertexB = tempResult.usedVertices.usedVertexB;
+				finalResult.usedVertices.usedVertexC = tempResult.usedVertices.usedVertexC;
+				finalResult.setBarycentricCoordinates(
+						tempResult.barycentricCoords[VERTA],
+						tempResult.barycentricCoords[VERTB],
+						tempResult.barycentricCoords[VERTC],
+						0
+				);
 
-				tmp.sub(q, p);
-				float sqDist = tmp.dot(tmp);
-				if (sqDist < bestSqDist) 
-				{
-					bestSqDist = sqDist;
-					finalResult.closestPointOnSimplex.set(q);
-					finalResult.usedVertices.reset();
-					finalResult.usedVertices.usedVertexA = tempResult.usedVertices.usedVertexA;
-
-					finalResult.usedVertices.usedVertexC = tempResult.usedVertices.usedVertexB;
-					finalResult.usedVertices.usedVertexD = tempResult.usedVertices.usedVertexC;
-					finalResult.setBarycentricCoordinates(
-							tempResult.barycentricCoords[VERTA],
-							0,
-							tempResult.barycentricCoords[VERTB],
-							tempResult.barycentricCoords[VERTC]
-					);
-
-				}
 			}
-			// Repeat test for face adb
+		}
 
 
-			if (pointOutsideADB != 0)
-			{
-				closestPtPointTriangle(p, a, d, b,tempResult);
-				q.set(tempResult.closestPointOnSimplex);
-				//convert result bitmask!
+		// Repeat test for face acd
+		if (pointOutsideACD != 0) {
+			closestPtPointTriangle(p, a, c, d, tempResult);
+			q.set(tempResult.closestPointOnSimplex);
+			//convert result bitmask!
 
-				tmp.sub(q, p);
-				float sqDist = tmp.dot(tmp);
-				if (sqDist < bestSqDist) 
-				{
-					bestSqDist = sqDist;
-					finalResult.closestPointOnSimplex.set(q);
-					finalResult.usedVertices.reset();
-					finalResult.usedVertices.usedVertexA = tempResult.usedVertices.usedVertexA;
-					finalResult.usedVertices.usedVertexB = tempResult.usedVertices.usedVertexC;
+			tmp.sub(q, p);
+			float sqDist = tmp.dot(tmp);
+			if (sqDist < bestSqDist) {
+				bestSqDist = sqDist;
+				finalResult.closestPointOnSimplex.set(q);
+				finalResult.usedVertices.reset();
+				finalResult.usedVertices.usedVertexA = tempResult.usedVertices.usedVertexA;
 
-					finalResult.usedVertices.usedVertexD = tempResult.usedVertices.usedVertexB;
-					finalResult.setBarycentricCoordinates(
-							tempResult.barycentricCoords[VERTA],
-							tempResult.barycentricCoords[VERTC],
-							0,
-							tempResult.barycentricCoords[VERTB]
-					);
+				finalResult.usedVertices.usedVertexC = tempResult.usedVertices.usedVertexB;
+				finalResult.usedVertices.usedVertexD = tempResult.usedVertices.usedVertexC;
+				finalResult.setBarycentricCoordinates(
+						tempResult.barycentricCoords[VERTA],
+						0,
+						tempResult.barycentricCoords[VERTB],
+						tempResult.barycentricCoords[VERTC]
+				);
 
-				}
 			}
-			// Repeat test for face bdc
+		}
+		// Repeat test for face adb
 
 
-			if (pointOutsideBDC != 0)
-			{
-				closestPtPointTriangle(p, b, d, c,tempResult);
-				q.set(tempResult.closestPointOnSimplex);
-				//convert result bitmask!
-				tmp.sub(q, p);
-				float sqDist = tmp.dot(tmp);
-				if (sqDist < bestSqDist) 
-				{
-					//bestSqDist = sqDist;
-					finalResult.closestPointOnSimplex.set(q);
-					finalResult.usedVertices.reset();
-					//
-					finalResult.usedVertices.usedVertexB = tempResult.usedVertices.usedVertexA;
-					finalResult.usedVertices.usedVertexC = tempResult.usedVertices.usedVertexC;
-					finalResult.usedVertices.usedVertexD = tempResult.usedVertices.usedVertexB;
+		if (pointOutsideADB != 0) {
+			closestPtPointTriangle(p, a, d, b, tempResult);
+			q.set(tempResult.closestPointOnSimplex);
+			//convert result bitmask!
 
-					finalResult.setBarycentricCoordinates(
-							0,
-							tempResult.barycentricCoords[VERTA],
-							tempResult.barycentricCoords[VERTC],
-							tempResult.barycentricCoords[VERTB]
-					);
+			tmp.sub(q, p);
+			float sqDist = tmp.dot(tmp);
+			if (sqDist < bestSqDist) {
+				bestSqDist = sqDist;
+				finalResult.closestPointOnSimplex.set(q);
+				finalResult.usedVertices.reset();
+				finalResult.usedVertices.usedVertexA = tempResult.usedVertices.usedVertexA;
+				finalResult.usedVertices.usedVertexB = tempResult.usedVertices.usedVertexC;
 
-				}
+				finalResult.usedVertices.usedVertexD = tempResult.usedVertices.usedVertexB;
+				finalResult.setBarycentricCoordinates(
+						tempResult.barycentricCoords[VERTA],
+						tempResult.barycentricCoords[VERTC],
+						0,
+						tempResult.barycentricCoords[VERTB]
+				);
+
 			}
+		}
+		// Repeat test for face bdc
 
-			//help! we ended up full !
 
-			if (finalResult.usedVertices.usedVertexA &&
-				finalResult.usedVertices.usedVertexB &&
-				finalResult.usedVertices.usedVertexC &&
-				finalResult.usedVertices.usedVertexD) 
-			{
-				return true;
+		if (pointOutsideBDC != 0) {
+			closestPtPointTriangle(p, b, d, c, tempResult);
+			q.set(tempResult.closestPointOnSimplex);
+			//convert result bitmask!
+			tmp.sub(q, p);
+			float sqDist = tmp.dot(tmp);
+			if (sqDist < bestSqDist) {
+				//bestSqDist = sqDist;
+				finalResult.closestPointOnSimplex.set(q);
+				finalResult.usedVertices.reset();
+				//
+				finalResult.usedVertices.usedVertexB = tempResult.usedVertices.usedVertexA;
+				finalResult.usedVertices.usedVertexC = tempResult.usedVertices.usedVertexC;
+				finalResult.usedVertices.usedVertexD = tempResult.usedVertices.usedVertexB;
+
+				finalResult.setBarycentricCoordinates(
+						0,
+						tempResult.barycentricCoords[VERTA],
+						tempResult.barycentricCoords[VERTC],
+						tempResult.barycentricCoords[VERTB]
+				);
+
 			}
+		}
 
-			return true;
+		//help! we ended up full !
 
-
+//			if (finalResult.usedVertices.usedVertexA &&
+//				finalResult.usedVertices.usedVertexB &&
+//				finalResult.usedVertices.usedVertexC &&
+//				finalResult.usedVertices.usedVertexD)
+//			{
+//				return true;
+//			}
+//
+		return true;
 	}
+
 	
 	/**
 	 * Clear the simplex, remove all the vertices.

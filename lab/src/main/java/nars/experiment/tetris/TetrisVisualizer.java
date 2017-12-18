@@ -84,7 +84,7 @@ public class TetrisVisualizer extends Surface {
 	}*/
 
     @Override
-    public void paint(GL2 g) {
+    public void paint(GL2 g, int dtMS) {
         //g.setPaintMode();
         if (blocks != null && tetris != null)
             blocks.render(g, tetris.seen);

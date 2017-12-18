@@ -9,6 +9,7 @@ import jcog.tree.rtree.point.Float2D;
 public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D> {
 
     public static final RectFloat2D Unit = new RectFloat2D(0, 0, 1, 1);
+    public static final RectFloat2D Zero = new RectFloat2D(0, 0, 0, 0);
 
     public final Float2D min;
     public final Float2D max;

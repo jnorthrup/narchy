@@ -88,7 +88,7 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 	public v3 localGetSupportingVertexWithoutMargin(v3 vec0, v3 out) {
 		v3 supVec = out;
 		supVec.set(0f, 0f, 0f);
-		float newDot, maxDot = -1e30f;
+		float newDot, maxDot = BulletGlobals.SIMD_EPSILON; //BulletGlobals.SIMD_EPSILON /*-1e30f*/;
 
 		v3 vec = new v3(vec0);
 		float lenSqr = vec.lengthSquared();
@@ -126,7 +126,7 @@ public class ConvexHullShape extends PolyhedralConvexShape {
 		// use 'w' component of supportVerticesOut?
 		for (int i = 0; i < numVectors; i++) {
             //supportVerticesOut[i][3] = btScalar(-1e30);
-            wcoords[i] = -1e30f;
+            wcoords[i] = BulletGlobals.SIMD_EPSILON /*-1e30f*/;
         }
 		v3 vtx = new v3();
 		for (int i = 0; i < points.size(); i++) {

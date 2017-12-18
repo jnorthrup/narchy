@@ -34,7 +34,7 @@ public abstract class ConsoleSurface extends AbstractConsoleSurface {
     }
 
     @Override
-    public void paint(GL2 gl) {
+    public void paintIt(GL2 gl) {
         Draw.bounds(gl, this, this::doPaint);
     }
 

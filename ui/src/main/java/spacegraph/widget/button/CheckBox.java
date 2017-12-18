@@ -3,6 +3,7 @@ package spacegraph.widget.button;
 import com.jogamp.opengl.GL2;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
+import spacegraph.AspectAlign;
 import spacegraph.render.Draw;
 import spacegraph.widget.text.Label;
 
@@ -18,8 +19,9 @@ public class CheckBox extends ToggleButton {
 
     public CheckBox(String text) {
         this.text = text;
-        label = new Label("");
-        children.add(/*new AspectAlign*/(label));
+
+        children.add((label = new Label("")).scale(0.8f).align(AspectAlign.Align.LeftCenter));
+
         set(false);
     }
 
@@ -48,7 +50,7 @@ public class CheckBox extends ToggleButton {
 
     @Override
     public ToggleButton set(boolean on) {
-        label.set((on ? "[X] " : "[ ] ") + text);
+        label.text((on ? "[X] " : "[ ] ") + text);
         super.set(on);
         return this;
     }
@@ -65,9 +67,9 @@ public class CheckBox extends ToggleButton {
         }
 
         @Override
-        protected void paintContent(GL2 gl, float x, float y, float w, float h) {
+        protected void paintIt(GL2 gl) {
             gl.glColor4f(r, g, b, 0.95f);
-            Draw.rect(gl, x, y, w, h);
+            Draw.rect(gl, bounds);
         }
     }
 }

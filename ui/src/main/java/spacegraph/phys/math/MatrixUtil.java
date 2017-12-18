@@ -155,14 +155,19 @@ public class MatrixUtil {
 		assert (d != 0f);
 		float s = 2f / d;
 		float xs = x * s, ys = y * s, zs = z * s;
-		float wx = w * xs, wy = w * ys, wz = w * zs;
-		float xx = x * xs, xy = x * ys, xz = x * zs;
-		float yy = y * ys, yz = y * zs, zz = z * zs;
+		float yy = y * ys, zz = z * zs;
 		dest.m00 = 1f - (yy + zz);
+		float xy = x * ys;
+		float wz = w * zs;
 		dest.m01 = xy - wz;
+		float xz = x * zs;
+		float wy = w * ys;
 		dest.m02 = xz + wy;
 		dest.m10 = xy + wz;
+		float xx = x * xs;
 		dest.m11 = 1f - (xx + zz);
+		float yz = y * zs;
+		float wx = w * xs;
 		dest.m12 = yz - wx;
 		dest.m20 = xz - wy;
 		dest.m21 = yz + wx;
@@ -178,14 +183,19 @@ public class MatrixUtil {
 		assert (d != 0f);
 		float s = 2f / d;
 		float xs = x * s, ys = y * s, zs = z * s;
-		float wx = w * xs, wy = w * ys, wz = w * zs;
-		float xx = x * xs, xy = x * ys, xz = x * zs;
-		float yy = y * ys, yz = y * zs, zz = z * zs;
+		float yy = y * ys, zz = z * zs;
 		dest.m00 = 1f - (yy + zz);
+		float xy = x * ys;
+		float wz = w * zs;
 		dest.m01 = xy - wz;
+		float xz = x * zs;
+		float wy = w * ys;
 		dest.m02 = xz + wy;
 		dest.m10 = xy + wz;
+		float xx = x * xs;
 		dest.m11 = 1f - (xx + zz);
+		float yz = y * zs;
+		float wx = w * xs;
 		dest.m12 = yz - wx;
 		dest.m20 = xz - wy;
 		dest.m21 = yz + wx;
@@ -280,19 +290,19 @@ public class MatrixUtil {
 		float m00 = co_x * s;
 		float m01 = cofac(mat, 0, 2, 2, 1) * s;
 		float m02 = cofac(mat, 0, 1, 1, 2) * s;
-		float m10 = co_y * s;
 		float m11 = cofac(mat, 0, 0, 2, 2) * s;
 		float m12 = cofac(mat, 0, 2, 1, 0) * s;
-		float m20 = co_z * s;
 		float m21 = cofac(mat, 0, 1, 2, 0) * s;
 		float m22 = cofac(mat, 0, 0, 1, 1) * s;
 		
 		mat.m00 = m00;
 		mat.m01 = m01;
 		mat.m02 = m02;
+		float m10 = co_y * s;
 		mat.m10 = m10;
 		mat.m11 = m11;
 		mat.m12 = m12;
+		float m20 = co_z * s;
 		mat.m20 = m20;
 		mat.m21 = m21;
 		mat.m22 = m22;
@@ -313,7 +323,6 @@ public class MatrixUtil {
 		rot.setIdentity();
 		for (int step = maxSteps; step > 0; step--) {
 			// find off-diagonal element [p][q] with largest magnitude
-			int p = 0;
 			int q = 1;
 			int r = 2;
 			float max = Math.abs(mat.m01);
@@ -324,6 +333,7 @@ public class MatrixUtil {
 				max = v;
 			}
 			v = Math.abs(mat.m12);
+			int p = 0;
 			if (v > max) {
 				p = 1;
 				q = 2;

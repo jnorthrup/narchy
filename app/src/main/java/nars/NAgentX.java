@@ -382,15 +382,15 @@ abstract public class NAgentX extends NAgent {
                                 w -> new FloatSlider(n.want[w], -2f, +2f) {
 
                                     @Override
-                                    protected void paint(GL2 gl) {
+                                    protected void paintIt(GL2 gl) {
                                         if (auto.on()) {
                                             value(n.want[w]);
                                         }
-                                        super.paint(gl);
+                                        super.paintIt(gl);
                                     }
                                 }
-                                        .label(MetaGoal.values()[w].name())
-                                        .draw(BaseSlider.Knob)
+                                        .text(MetaGoal.values()[w].name())
+                                        .type(BaseSlider.Knob)
                                         .on((s, v) -> {
                                             if (!auto.on())
                                                 n.want[w] = v;

@@ -26,19 +26,19 @@ public class Scale extends Layout {
     }
 
     @Override
-    public void start(@Nullable Surface parent) {
+    public synchronized void start(@Nullable Surface parent) {
         super.start(parent);
         the.start(this);
     }
 
     @Override
-    public void stop() {
+    public synchronized void stop() {
         the.stop();
         super.stop();
     }
 
     @Override
-    protected void doLayout() {
+    protected void doLayout(int dtMS) {
 
         //        v2 scale = this.scale;
 //

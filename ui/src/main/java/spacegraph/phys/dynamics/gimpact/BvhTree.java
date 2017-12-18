@@ -37,7 +37,7 @@ import spacegraph.phys.math.VectorUtil;
 class BvhTree {
 
 	protected int num_nodes;
-	protected BvhTreeNodeArray node_array = new BvhTreeNodeArray();
+	protected final BvhTreeNodeArray node_array = new BvhTreeNodeArray();
 	
 	protected static int _calc_splitting_axis(BvhDataArray primitive_boxes, int startIndex, int endIndex) {
 		v3 means = new v3();

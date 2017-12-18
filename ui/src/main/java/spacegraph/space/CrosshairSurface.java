@@ -25,7 +25,7 @@ public class CrosshairSurface extends Surface implements MouseListener {
 
 
     @Override
-    protected void paint(GL2 gl) {
+    protected void paint(GL2 gl, int dtMS) {
         gl.glPushMatrix();
 
         if (!mouseEnabled) {

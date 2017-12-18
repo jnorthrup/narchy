@@ -1,5 +1,6 @@
 package spacegraph.widget.windo;
 
+import com.jcraft.jsch.JSchException;
 import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.Util;
@@ -23,6 +24,8 @@ import spacegraph.widget.slider.FloatSlider;
 import spacegraph.widget.slider.XYSlider;
 import spacegraph.widget.text.Label;
 
+import java.io.IOException;
+
 import static spacegraph.layout.Grid.*;
 
 /**
@@ -31,6 +34,21 @@ import static spacegraph.layout.Grid.*;
 abstract public class Widget extends Stacking {
 
     @Nullable Finger touchedBy;
+
+    /** z-raise/depth: a state indicating push/pull (ex: buttons)
+     * positive: how lowered the button is: 0= not touched, to 1=push through the screen
+     *     zero: neutral state, default for components
+     * negative: how raised
+     * */
+    protected float dz = 0;
+
+     /** indicates current level of activity of this component, which can be raised by various
+      *  user and system actions and expressed in different visual metaphors.
+      *  positive: active, hot, important
+      *      zero: neutral
+      *  negative: disabled, hidden, irrelevant
+      */
+    float temperature = 0;
 
 
 //MARGIN
@@ -54,7 +72,7 @@ abstract public class Widget extends Stacking {
     }
 
     public Widget(Surface... child) {
-        set(child);
+        children(child);
     }
 
     @Override
@@ -62,41 +80,72 @@ abstract public class Widget extends Stacking {
         return true;
     }
 
-    @Override
-    protected void paint(GL2 gl) {
 
-        paintComponent(gl);
+    public void prePaint(int dtMS) {
 
-        super.paint(gl);
+        if (dtMS > 0) {
+            if (touchedBy != null) {
+                temperature = Math.min(1f, temperature + dtMS / 100f);
+            }
 
-//        /*if (Param.DEBUG)*/ {
-//            Draw.colorHash(gl, hashCode(), 0.5f);
-//            String s = "g:" + scaleGlobal;
-//            Draw.text(gl, s, 0.025f, 0.5f, 0, 0);
-//            String s2 = "l:" + scaleLocal;
-//            Draw.text(gl, s2, 0.025f, 0.5f, 1f, 0);
-//        }
-
-        //rainbow backgrounds
-        //Draw.colorHash(gl, this.hashCode(), 0.8f, 0.2f, 0.25f);
-        //Draw.rect(gl, 0, 0, 1, 1);
-
-
-        if (touchedBy != null) {
-            Draw.colorHash(gl, getClass().hashCode(), 0.5f);
-            //gl.glColor3f(1f, 1f, 0f);
-            gl.glLineWidth(4);
-            Draw.rectStroke(gl, x(), y(), w(), h());
+            if (temperature != 0) {
+                float decayRate = (float)Math.exp(-dtMS / 1000f);
+                temperature *= decayRate;
+                if (Math.abs(temperature) < 0.01f)
+                    temperature = 0f;
+            }
         }
 
 
     }
 
 
-    abstract protected void paintComponent(GL2 gl);
+    @Override
+    protected void paintBelow(GL2 gl) {
+
+        if (tangible()) {
+            float dim = 1f - (dz /* + if disabled, dim further */) / 3f;
+            float bri = 0.25f * dim;
+            float r, g, b;
+            r = g = b = bri;
 
 
-//    @Override
+            float t = this.temperature;
+            if (t >= 0) {
+                //fire palette TODO improve
+                //            r += t / 2f;
+                //            g += t / 4f;
+
+                r += t / 4f;
+                g += t / 4f;
+                b += t / 4f;
+            } else {
+                //ice palette TODO improve
+                b += -t / 2f;
+                g += -t / 4f;
+            }
+
+            gl.glColor4f(r, g, b, 0.5f);
+
+            Draw.rect(gl, bounds);
+        }
+
+                //rainbow backgrounds
+        //Draw.colorHash(gl, this.hashCode(), 0.8f, 0.2f, 0.25f);
+        //Draw.rect(gl, 0, 0, 1, 1);
+    }
+
+    @Override
+    protected void paintAbove(GL2 gl) {
+        if (touchedBy != null) {
+            Draw.colorHash(gl, getClass().hashCode(), 0.5f + dz/2f);
+            //gl.glColor3f(1f, 1f, 0f);
+            gl.glLineWidth(6 + dz*6);
+            Draw.rectStroke(gl, x(), y(), w(), h());
+        }
+    }
+
+    //    @Override
 //    protected boolean onTouching(v2 hitPoint, short[] buttons) {
 ////        int leftTransition = buttons[0] - (touchButtons[0] ? 1 : 0);
 ////
@@ -130,7 +179,7 @@ abstract public class Widget extends Stacking {
         return super.onTouching(finger, hitPoint, buttons);
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException, JSchException {
 
         SpaceGraph s = SpaceGraph.window(
 
@@ -165,10 +214,10 @@ abstract public class Widget extends Stacking {
                 col(
                         new Label("label"),
                         new FloatSlider("solid slider", .25f  /* pause */, 0, 1),
-                        new FloatSlider("knob slider", 0.75f, 0, 1).draw(BaseSlider.Knob)
+                        new FloatSlider("knob slider", 0.75f, 0, 1).type(BaseSlider.Knob)
                 ),
                 new XYSlider(),
-                new DummyConsole().align(AspectAlign.Align.Center, 1f)
+                new DummyConsole().align(AspectAlign.Align.Center)
             );
     }
 

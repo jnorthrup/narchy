@@ -4,7 +4,6 @@ import com.jogamp.nativewindow.util.Point;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.GL2;
-import jcog.data.map.MRUCache;
 import jcog.list.FasterList;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.input.FPSLook;
@@ -20,12 +19,10 @@ import spacegraph.widget.meta.ReflectionSurface;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 /**
  * Created by me on 6/20/16.
@@ -37,7 +34,6 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
 
     final List<AbstractSpace<X, Spatial<X>>> inputs = new FasterList<>(1);
 
-    final MRUCache<X, Spatial<X>> atoms;
 
     final List<Ortho> preAdd = new FasterList();
     final List<Consumer<SpaceGraph>> frameListeners = new FasterList();
@@ -46,7 +42,6 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
     @Override
     public void windowDestroyed(WindowEvent windowEvent) {
         super.windowDestroyed(windowEvent);
-        atoms.clear();//invalidateAll();
         orthos.clear();
         inputs.clear();
         frameListeners.clear();
@@ -59,28 +54,6 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
      * will not be visible but once were and may become visible again
      */
     public SpaceGraph() {
-        super();
-
-        final int MAX_ATOMS = 4096; //TODO make parameter
-        atoms = new MRUCache<>(MAX_ATOMS) {
-            @Override
-            protected void onEvict(Map.Entry<X, Spatial<X>> entry) {
-                SpaceGraph.this.remove(entry.getValue());
-            }
-        };
-//        Cache<X, Spatial<X>> atoms =
-//                //new NonBlockingHashMap(cacheCapacity);
-//                //new ConcurrentHashMap<>(cacheCapacity);
-//                Caffeine.newBuilder()
-//                        //.softValues().builder();
-//                        .removalListener((X k, Spatial<X> v, RemovalCause c) -> {
-//                            if (v!=null)
-//                                v.delete(dyn);
-//                        })
-//                        //.maximumSize(cacheCapacity)
-//                        .weakValues()
-//                        .build();
-//        this.atoms = atoms;
 
     }
 
@@ -140,30 +113,7 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
         }
     }
 
-
-    public <Y extends Spatial<X>> Y getOrAdd(X x, Function<X,Y> materializer) {
-        //Spatial y = atoms.get(x, materializer);
-        Spatial y = atoms.computeIfAbsent(x, materializer);
-        y.activate();
-        return (Y) y;
-    }
-
-    public <Y extends Spatial<X>> Y get(Object x) {
-        //Spatial y = atoms.getIfPresent(x);
-        Spatial y = atoms.get(x);
-        if (y != null)
-            y.activate();
-        return (Y) y;
-    }
-
-    final Queue<Spatial> toRemove = new ConcurrentLinkedQueue();
-
-    public void remove(X x) {
-        Spatial<X> y = atoms.remove(x);
-        if (y != null) {
-            remove(y);
-        }
-    }
+    final Queue<Spatial> toRemove = new ArrayBlockingQueue(1024);
 
     public void remove(Spatial<X> y) {
         toRemove.add(y);
@@ -213,7 +163,6 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
     }
 
 
-
     @NotNull
     @Override
     public Iterator<Spatial<X>> iterator() {
@@ -229,9 +178,22 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
     }
 
     @Override
-    protected void render() {
-        super.render();
-        renderHUD();
+    protected void render(int dtMS) {
+        super.render(dtMS);
+        int facialsSize = orthos.size();
+        if (facialsSize > 0) {
+
+            ortho();
+
+            gl.glDisable(GL2.GL_DEPTH_TEST);
+
+            GL2 gl = this.gl;
+            for (int i = 0; i < facialsSize; i++) {
+                orthos.get(i).render(gl, dtMS);
+            }
+
+            gl.glEnable(GL2.GL_DEPTH_TEST);
+        }
     }
 
     @Override
@@ -247,24 +209,6 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
         frameListeners.forEach(f -> f.accept(this));
     }
 
-    protected void renderHUD() {
-
-        int facialsSize = orthos.size();
-        if (facialsSize > 0) {
-
-            ortho();
-
-            gl.glDisable(GL2.GL_DEPTH_TEST);
-
-            GL2 gl = this.gl;
-            for (int i = 0; i < facialsSize; i++) {
-                orthos.get(i).render(gl);
-            }
-
-            gl.glEnable(GL2.GL_DEPTH_TEST);
-        }
-    }
-
 
     final void update(AbstractSpace<X, Spatial<X>> s) {
 
@@ -275,7 +219,7 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
     }
 
     public String summary() {
-        return this.atoms.size() + " cached; " + "\t" + dyn.summary();
+        return dyn.summary();
     }
 
 //    void print(AbstractSpace s) {
@@ -310,7 +254,7 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
         updateWindowInfo();
     }
 
-    private AtomicBoolean gettingScreenPointer = new AtomicBoolean(false);
+    private final AtomicBoolean gettingScreenPointer = new AtomicBoolean(false);
 
     private void updateWindowInfo() {
         GLWindow rww = window;
@@ -379,7 +323,6 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
         camPos.set(x, y, z);
         return this;
     }
-
 
 
     //    public static class PickDragMouse extends SpaceMouse {

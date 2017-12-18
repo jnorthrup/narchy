@@ -1,6 +1,7 @@
 package nars;
 
 import jcog.Texts;
+import jcog.list.FasterList;
 import nars.concept.Concept;
 import nars.op.DepIndepVarIntroduction;
 import nars.op.Operator;
@@ -339,7 +340,7 @@ public class Builtin {
             } else {
                 //recursive event-based decomposition and recomposition
 
-                List<LongObjectPair<Term>> ee = t.eventList();
+                FasterList<LongObjectPair<Term>> ee = t.eventList();
                 int toRemove = nar.random().nextInt(ee.size());
                 ee.remove(toRemove);
 
@@ -380,7 +381,7 @@ public class Builtin {
             if (conj.op() != CONJ || conj.impossibleSubTerm(event))
                 return Null;
             if (conj.dt() != DTERNAL) {
-                FastList<LongObjectPair<Term>> events = conj.eventList();
+                FasterList<LongObjectPair<Term>> events = conj.eventList();
                 int found = -1;
                 int es = events.size();
                 assert(es>1);
@@ -402,7 +403,7 @@ public class Builtin {
             if (conj.op() != CONJ || conj.impossibleSubTerm(event))
                 return Null;
             if (conj.dt() != DTERNAL) {
-                FastList<LongObjectPair<Term>> events = conj.eventList();
+                FasterList<LongObjectPair<Term>> events = conj.eventList();
                 assert (events.get(0).getOne() == 0);
                 LongObjectPair<Term> first = events.get(0);
                 Term firstTerm = first.getTwo();

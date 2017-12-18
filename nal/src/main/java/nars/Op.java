@@ -720,7 +720,7 @@ public enum Op {
         }
 
 
-        List<LongObjectPair<Term>> events = new FasterList<>(eventSet.size());
+        FasterList<LongObjectPair<Term>> events = new FasterList<>(eventSet.size());
         eventSet.forEachKeyValue((w, t) -> events.add(PrimitiveTuples.pair(w, t)));
         return conj(events);
 
@@ -766,11 +766,13 @@ public enum Op {
      * constructs a correctly merged conjunction from a list of events
      */
     /*@NotNull*/
-    public static Term conj(List<LongObjectPair<Term>> events) {
+    public static Term conj(FasterList<LongObjectPair<Term>> events) {
 
         int ee = events.size();
         if (ee > 1) {
-            events.sort(LongObjectPair::compareTo);
+            //events.sort(LongObjectPair::compareTo);
+            events.sortThis(LongObjectPair::compareTo);
+
             ListIterator<LongObjectPair<Term>> ii = events.listIterator();
             long prevtime = ETERNAL;
             while (ii.hasNext()) {
@@ -1329,7 +1331,7 @@ public enum Op {
                                     subject,
                                     /*subject.dt()!=DTERNAL ? Op.conj(se.toList()) :
                                         CONJ.the(DTERNAL, (Collection)se.collect(x->x.getTwo())),*/
-                                    predicate.dt() != DTERNAL ? Op.conj(pe.toList()) :
+                                    predicate.dt() != DTERNAL ? Op.conj(new FasterList<>(pe)) :
                                             CONJ.the(DTERNAL, pe.collect(LongObjectPair::getTwo))
                             );
                         }

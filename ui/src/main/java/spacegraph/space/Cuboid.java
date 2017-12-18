@@ -147,8 +147,8 @@ public class Cuboid<X> extends SimpleSpatial<X> {
 
 
     @Override
-    public final void renderRelative(GL2 gl, Collidable body) {
-        super.renderRelative(gl, body);
+    public final void renderRelative(GL2 gl, Collidable body, int dtMS) {
+        super.renderRelative(gl, body, dtMS);
 
 
         if (front != null) {
@@ -167,7 +167,7 @@ public class Cuboid<X> extends SimpleSpatial<X> {
             //float tw = t.x;
             //float th = t.y;
             //gl.glDepthMask(false);
-            front.render(gl);
+            front.render(gl, dtMS);
             //gl.glDepthMask(true);
 
             //gl.glPopMatrix();
@@ -175,8 +175,8 @@ public class Cuboid<X> extends SimpleSpatial<X> {
     }
 
     @Override
-    public void renderAbsolute(GL2 gl, long timeMS) {
-        super.renderAbsolute(gl, timeMS);
+    public void renderAbsolute(GL2 gl, int dtMS) {
+        super.renderAbsolute(gl, dtMS);
 
         //display pick location (debugging)
         if (mousePick != null) {

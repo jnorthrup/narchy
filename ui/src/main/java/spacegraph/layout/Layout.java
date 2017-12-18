@@ -28,7 +28,7 @@ abstract public class Layout extends Surface {
         mustLayout = true;
     }
 
-    abstract protected void doLayout();
+    abstract protected void doLayout(int dtMS);
 
     @Override
     public void print(PrintStream out, int indent) {
@@ -51,16 +51,40 @@ abstract public class Layout extends Surface {
         return null;
     }
 
+    protected void paintAbove(GL2 gl) {
+
+    }
+    protected void paintBelow(GL2 gl) {
+
+    }
+
+    /** paints the component above the background drawn ahead of this */
+    protected void paintIt(GL2 gl) {
+
+    }
+
     @Override
-    protected void paint(GL2 gl) {
+    protected final void paint(GL2 gl, int dtMS) {
 
         //TODO maybe in a separate update thread
         if (mustLayout) {
-            doLayout();
+            doLayout(dtMS);
             mustLayout = false;
         }
 
-        forEach(c -> c.render(gl));
+        prePaint(dtMS);
+
+        paintBelow(gl);
+
+        paintIt(gl);
+
+        forEach(c -> c.render(gl, dtMS)); //render children, if any
+
+        paintAbove(gl);
+    }
+
+    protected void prePaint(int dtMS) {
+
     }
 
 

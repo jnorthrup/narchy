@@ -135,7 +135,7 @@ public class PhyWall extends Wall {
         boolean updated = false;
 
         @Override
-        protected void paint(GL2 gl) {
+        protected void paintIt(GL2 gl) {
             if (updated && busy.compareAndSet(false, true)) {
                 SimpleBoxShape bs = (SimpleBoxShape) spatial.shape;
                 float w = bs.x();
@@ -174,7 +174,7 @@ public class PhyWall extends Wall {
                 busy.set(false);
             }
 
-            super.paint(gl);
+            super.paintIt(gl);
         }
 
         /**

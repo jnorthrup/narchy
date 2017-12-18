@@ -3,12 +3,10 @@ package nars.gui;
 import com.google.common.collect.Lists;
 import com.jogamp.opengl.GL2;
 import jcog.bag.Bag;
-import jcog.event.On;
 import jcog.pri.PriReference;
 import nars.$;
 import nars.NAR;
 import nars.NAgent;
-import nars.NAgentX;
 import nars.concept.Concept;
 import nars.control.DurService;
 import nars.term.Termed;
@@ -144,7 +142,7 @@ public class Vis {
             Plot2D p = new Plot2D(plotHistory, Plot2D.Line /*BarWave*/) {
 
                 @Override
-                protected void paint(GL2 gl) {
+                protected void paint(GL2 gl, int dtMS) {
                     Concept concept = a.nar.concept(t);
 
                     bb[0] = a.nar.beliefTruth(concept, a.nar.time());
@@ -156,7 +154,7 @@ public class Vis {
                     backgroundColor[2] = b >= 0 ? b / 4f : 0;
                     backgroundColor[3] = 0.9f;
 
-                    super.paint(gl);
+                    super.paint(gl, dtMS);
                 }
             };
             p.setTitle(t.toString());
@@ -350,7 +348,7 @@ public class Vis {
             plot2 = new Plot2D(plotHistory, Plot2D.Line);
             plot3 = new Plot2D(plotHistory, Plot2D.Line);
             plot4 = new Plot2D(plotHistory, Plot2D.Line);
-            set(plot1, plot2, plot3, plot4);
+            children(plot1, plot2, plot3, plot4);
 
             //plot1.add("Conf", nar.emotion.confident::getSum);
             plot2.add("Busy", nar.emotion.busyVol::getSum);
@@ -414,11 +412,11 @@ public class Vis {
                     .map(c -> new BeliefTableChart(nar, c, btRange)).collect(toList());
 
             if (!s.isEmpty()) {
-                set(s);
+                children(s);
                 on = DurService.on(nar, this);
             } else {
                 on = null;
-                set(label("(empty)"));
+                children(label("(empty)"));
             }
 
         }

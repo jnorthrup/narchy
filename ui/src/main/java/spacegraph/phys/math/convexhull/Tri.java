@@ -29,7 +29,7 @@ package spacegraph.phys.math.convexhull;
  */
 class Tri extends Int3 {
 	
-	public Int3 n = new Int3();
+	public final Int3 n = new Int3();
 	public int id;
 	public int vmax;
 	public float rise;

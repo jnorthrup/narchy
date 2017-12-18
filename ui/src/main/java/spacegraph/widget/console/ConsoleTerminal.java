@@ -95,7 +95,7 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
     }
 
     @Override
-    public void start(@Nullable Surface parent) {
+    public synchronized void start(@Nullable Surface parent) {
         super.start(parent);
 
         term.addVirtualTerminalListener(listener = new VirtualTerminalListener() {
@@ -127,7 +127,7 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
     }
 
     @Override
-    public void stop() {
+    public synchronized void stop() {
         super.stop();
 
         onDestroyed();
@@ -139,7 +139,7 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
     }
 
     @Override
-    public void paintComponent(GL2 gl) {
+    public void paintIt(GL2 gl) {
 
         tex.paint(gl, bounds);
         

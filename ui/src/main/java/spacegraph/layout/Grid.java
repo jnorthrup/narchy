@@ -38,13 +38,13 @@ public class Grid extends MutableLayout {
     public Grid(float aspect, Surface... children) {
         super();
         this.gridAspect = (aspect);
-        set(children);
+        children(children);
     }
 
     public Grid(float aspect, List<Surface> children) {
         super();
         this.gridAspect = (aspect);
-        set(children);
+        children(children);
     }
 
     public boolean isGrid() {
@@ -68,7 +68,7 @@ public class Grid extends MutableLayout {
 //    }
 
     @Override
-    public void doLayout() {
+    public void doLayout(int dtMS) {
 
         int n = children.size();
         if (n == 0)

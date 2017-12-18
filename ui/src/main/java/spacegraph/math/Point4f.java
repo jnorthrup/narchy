@@ -144,21 +144,20 @@ public class Point4f extends Tuple4f {
     }
 
 
- /**
-   * Computes the square of the distance between this point and point p1.
-   * @param p1 the other point
-   * @return the square of distance between these two points as a float
-   */
-  public final float distanceSquared(Point4f p1)
-    {
-      float dy, dz, dw;
-
-        float dx = this.x - p1.x;
-        dy = this.y-p1.y;
-      dz = this.z-p1.z;
-      dw = this.w-p1.w;
-      return (dx*dx+dy*dy+dz*dz+dw*dw);
-    }
+// /**
+//   * Computes the square of the distance between this point and point p1.
+//   * @param p1 the other point
+//   * @return the square of distance between these two points as a float
+//   */
+//  public final float distanceSquared(Point4f p1)
+//    {
+//
+//        float dx = this.x - p1.x;
+//        float dy = this.y - p1.y;
+//        float dz = this.z - p1.z;
+//        float dw = this.w - p1.w;
+//        return (dx*dx+dy*dy+dz*dz+dw*dw);
+//    }
 
 
   /**
@@ -168,13 +167,12 @@ public class Point4f extends Tuple4f {
    */
   public final float distance(Point4f p1)
     {
-      float dy, dz, dw;
 
         float dx = this.x - p1.x;
-        dy = this.y-p1.y;
-      dz = this.z-p1.z;
-      dw = this.w-p1.w;
-      return (float) Math.sqrt(dx*dx+dy*dy+dz*dz+dw*dw);
+        float dy = this.y - p1.y;
+        float dz = this.z - p1.z;
+        float dw = this.w - p1.w;
+        return (float) Math.sqrt(dx*dx+dy*dy+dz*dz+dw*dw);
     }
 
 
@@ -200,11 +198,10 @@ public class Point4f extends Tuple4f {
     */
   public final float distanceLinf(Point4f p1)
     {
-       float t2;
         float t1 = Math.max(Math.abs(this.x - p1.x), Math.abs(this.y - p1.y));
-        t2 = Math.max( Math.abs(this.z-p1.z), Math.abs(this.w-p1.w));
- 
-       return(Math.max(t1,t2));
+        float t2 = Math.max(Math.abs(this.z - p1.z), Math.abs(this.w - p1.w));
+
+        return(Math.max(t1,t2));
 
     }
 

@@ -58,7 +58,7 @@ class ConvexTriangleCallback extends TriangleCallback {
 	private float collisionMarginTriangle;
 	
 	public int triangleCount;
-	public PersistentManifold manifoldPtr;
+	public final PersistentManifold manifoldPtr;
 	
 	public ConvexTriangleCallback(Intersecter intersecter, Collidable body0, Collidable body1, boolean isSwapped) {
 		this.intersecter = intersecter;

@@ -30,8 +30,8 @@ package spacegraph.phys.math.convexhull;
  */
 public class HullFlags {
 	
-	public static int TRIANGLES     = 1 << 0; // report results as triangles, not polygons.
-	public static int REVERSE_ORDER = 1 << 1; // reverse order of the triangle indices.
-	public static int DEFAULT       = TRIANGLES;
+	public static final int TRIANGLES     = 1 << 0; // report results as triangles, not polygons.
+	public static final int REVERSE_ORDER = 1 << 1; // reverse order of the triangle indices.
+	public static final int DEFAULT       = TRIANGLES;
 	
 }

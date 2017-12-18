@@ -114,9 +114,9 @@ public abstract class Spatial<X> implements Active {
 
     @Nullable abstract public List<TypedConstraint> constraints();
 
-    public abstract void renderAbsolute(GL2 gl, long timeMS);
+    public abstract void renderAbsolute(GL2 gl, int dtMS);
 
-    public abstract void renderRelative(GL2 gl, Collidable body);
+    public abstract void renderRelative(GL2 gl, Collidable body, int dtMS);
 
     public void delete(Dynamics dyn) {
         order = -1;

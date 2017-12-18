@@ -176,8 +176,8 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
         //gl.glEnable(GL_POINT_SPRITE);
         //gl.glEnable(GL_POINT_SMOOTH);
         gl.glEnable(GL_LINE_SMOOTH);
-        gl.glEnable(GL_POLYGON_SMOOTH); //[Polygon smooth] is not a recommended method for anti-aliasing. Use Multisampling instead.
-//        gl.glEnable(GL2.GL_MULTISAMPLE);
+        //gl.glEnable(GL_POLYGON_SMOOTH); //[Polygon smooth] is not a recommended method for anti-aliasing. Use Multisampling instead.
+        gl.glEnable(GL2.GL_MULTISAMPLE);
 
 //        gl.glShadeModel(
 //            GL_SMOOTH
@@ -319,13 +319,13 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
 
 
 
-    @Override protected void render() {
+    @Override protected void render(int dtMS) {
+
         clear();
-        updateCamera();
 
-        long timeMS = System.currentTimeMillis();
+        updateCamera(dtMS);
 
-        forEach(s -> s.renderAbsolute(gl, timeMS));
+        forEach(s -> s.renderAbsolute(gl, dtMS));
 
         forEach(s -> s.forEachBody(body -> {
 
@@ -333,7 +333,7 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
 
             Draw.transform(gl, body.transform);
 
-            s.renderRelative(gl, body);
+            s.renderRelative(gl, body, dtMS);
 
             gl.glPopMatrix();
 
@@ -396,7 +396,7 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
 //    final Quat4f roll = new Quat4f(); //stack.quats.get();
 //    final Quat4f rot = new Quat4f(); //stack.quats.get();
 
-    protected void updateCamera() {
+    protected void updateCamera(int dtMS) {
         perspective();
     }
 

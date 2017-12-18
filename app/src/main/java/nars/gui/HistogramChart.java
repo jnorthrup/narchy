@@ -54,7 +54,7 @@ public class HistogramChart extends Surface {
 //    }
 
     @Override
-    protected void paint(GL2 gl) {
+    protected void paint(GL2 gl, int dtMS) {
 
         float[] data = this.data.get();
 

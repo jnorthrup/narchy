@@ -87,7 +87,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
 
         SpaceGraph.window(new Surface() {
             @Override
-            protected void paint(GL2 gl) {
+            protected void paint(GL2 gl, int dtMS) {
                 int nodes = net.size();
                 for (int i = 0; i < nodes; i++) {
                     Centroid n = net.node(i);

@@ -229,10 +229,10 @@ public class TasksView extends MutableLayout {
             return h(); //HACK
         }
 
-        @Override
-        protected void paintBackColor(GL2 gl) {
-            gl.glColor4f(r, g, b, a);
-        }
+//        @Override
+//        protected void paintBackColor(GL2 gl) {
+//            gl.glColor4f(r, g, b, a);
+//        }
     }
 
 }

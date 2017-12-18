@@ -30,6 +30,7 @@ import com.jogamp.opengl.util.ImmModeSink;
 import com.jogamp.opengl.util.texture.Texture;
 import jcog.Util;
 import jcog.list.FasterList;
+import jcog.tree.rtree.rect.RectFloat2D;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
 import org.jetbrains.annotations.NotNull;
@@ -854,9 +855,11 @@ public enum Draw {
 
 
     public static void bounds(GL2 gl, Surface s, Consumer<GL2> c) {
-        float x = s.x();
-        float y = s.y();
-        bounds(gl, x, y, s.w(), s.h(), c);
+        bounds(gl, s.bounds, c);
+    }
+
+    public static void bounds(GL2 gl, RectFloat2D s, Consumer<GL2> c) {
+        bounds(gl, s.min.x, s.min.y, s.w(), s.h(), c);
     }
 
     public static void bounds(GL2 gl, float x1, float y1, float w, float h, Consumer<GL2> c) {
@@ -865,6 +868,15 @@ public enum Draw {
         gl.glScalef(w, h, 1);
         c.accept(gl);
         gl.glPopMatrix();
+    }
+
+    public static void rect(GL2 gl, RectFloat2D bounds) {
+        RectFloat2D b = bounds;
+        float x = b.min.x;
+        float y = b.min.y;
+        float w = b.max.x - b.min.x;
+        float h = b.max.y - b.min.y;
+        Draw.rect(gl, x, y, w, h);
     }
 
 

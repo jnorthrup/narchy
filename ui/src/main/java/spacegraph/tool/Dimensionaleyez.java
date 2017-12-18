@@ -86,7 +86,7 @@ public class Dimensionaleyez extends SimpleSpatial {
 
 
     @Override
-    public void renderRelative(GL2 gl, Collidable body) {
+    public void renderRelative(GL2 gl, Collidable body, int dtMS) {
 
         float s = scale.floatValue();
         n.forEachNode((NeuralGasMap.AECentroid n) -> {

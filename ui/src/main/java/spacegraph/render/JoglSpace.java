@@ -245,7 +245,9 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
 
     abstract protected void update();
 
-    abstract protected void render();
+    /** dtMS - time transpired since last call (millisecons)
+     * @param dtMS*/
+    abstract protected void render(int dtMS);
 
     protected final void updateIfReady() {
         if (ready) {
@@ -254,12 +256,17 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
         }
     }
 
+    long lastFrameStartMS = System.currentTimeMillis();
+
     @Override
     public final void display(GLAutoDrawable drawable) {
 
-        //long start = System.currentTimeMillis();
+        long nowMS = System.currentTimeMillis();
+        long dtMS = nowMS - lastFrameStartMS;
+        if (dtMS > Integer.MAX_VALUE) dtMS = Integer.MAX_VALUE;
+        this.lastFrameStartMS = nowMS;
 
-        render();
+        render((int)dtMS);
         ready = true;
 
         //long now = System.currentTimeMillis();

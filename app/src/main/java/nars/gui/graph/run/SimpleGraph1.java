@@ -9,6 +9,7 @@ import nars.gui.DynamicListSpace;
 import nars.gui.graph.TermWidget;
 import nars.term.Term;
 import spacegraph.SpaceGraph;
+import spacegraph.SpatialCache;
 import spacegraph.render.Draw;
 import spacegraph.space.EDraw;
 
@@ -39,11 +40,16 @@ public class SimpleGraph1 extends DynamicListSpace<Term,TermWidget<Term>> {
             x.attractionDist = 1;
         });
     };
+    private SpatialCache<Term,DefaultTermWidget> cache;
 
     public SimpleGraph1() {
         super();
     }
 
+    @Override
+    public void start(SpaceGraph<Term> space) {
+        cache = new SpatialCache(space, 64);
+    }
 
     final Random rng = new XoRoShiRo128PlusRandom(1);
 
@@ -70,11 +76,11 @@ public class SimpleGraph1 extends DynamicListSpace<Term,TermWidget<Term>> {
             //HACK todo use proxyterms in a cache
             //c.termlinks().clear();
 
-            DefaultTermWidget src = space.getOrAdd(x, DefaultTermWidget::new);
+            DefaultTermWidget src = cache.getOrAdd(x, DefaultTermWidget::new);
 
             g.successors(x).forEach((Term y) ->
                     src.edges.add(new EDraw<>(
-                            src, space.getOrAdd(y, DefaultTermWidget::new), 0.5f)));
+                            src, cache.getOrAdd(y, DefaultTermWidget::new), 0.5f)));
 
             n2.add(src);
         });

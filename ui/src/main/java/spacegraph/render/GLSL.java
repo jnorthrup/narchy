@@ -133,7 +133,7 @@ public class GLSL extends Surface {
 
 
     @Override
-    public void paint(GL2 gl) {
+    public void paint(GL2 gl, int dtMS) {
         Draw.bounds(gl, this, this::doPaint);
     }
 

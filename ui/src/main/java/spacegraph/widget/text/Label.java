@@ -1,23 +1,26 @@
 package spacegraph.widget.text;
 
 import com.jogamp.opengl.GL2;
-import spacegraph.Surface;
+import jcog.tree.rtree.rect.RectFloat2D;
+import spacegraph.AspectAlign;
 import spacegraph.math.Color4f;
 import spacegraph.render.Draw;
-
-import static com.jogamp.opengl.GL.GL_COLOR_LOGIC_OP;
-import static com.jogamp.opengl.GL.GL_INVERT;
 
 /**
  * Created by me on 7/29/16.
  */
-public class Label extends Surface {
+public class Label extends AspectAlign {
 
     private String value = "(null)";
 
-    public float fontScaleX = 1f, fontScaleY = 1f;
-    public final Color4f color = new Color4f(1f, 1f, 1f, 1f);
-    public float lineWidth = 3f;
+    public float textScaleX = 1f, textScaleY = 1f;
+    public final Color4f textColor = new Color4f(1f, 1f, 1f, 1f);
+    public float textThickness = 3f;
+
+
+    /** inner rectangle in which the text is actually rendered, after calculating
+     * aspect ratio, scale and alignment */
+    private RectFloat2D innerBounds = RectFloat2D.Zero;
 
     public Label() {
         this("");
@@ -25,55 +28,60 @@ public class Label extends Surface {
 
     public Label(String s) {
         super();
-        set(s);
+        text(s);
     }
 
 
-
     @Override
-    public void paint(GL2 gl) {
+    protected void doLayout(float tx, float ty, float tw, float th) {
+        innerBounds = new RectFloat2D(tx, ty, tx+tw, ty+th);
+
         int len = value.length();
         if (len == 0) return;
 
         float charAspect = 1.4f;
-        this.fontScaleX = 1f / len;
-        this.fontScaleY = 1 * charAspect;
+        this.textScaleX = 1f / len;
+        this.textScaleY = 1 * charAspect;
 
-        float visAspect = h() / w();
-        if (fontScaleY / fontScaleX <= visAspect) {
-            this.fontScaleX = 1f / (charAspect * len);
-            this.fontScaleY = fontScaleX * charAspect;
+        float visAspect = th / tw;
+        if (textScaleY / textScaleX <= visAspect) {
+            this.textScaleX = 1f / (charAspect * len);
+            this.textScaleY = textScaleX * charAspect;
         } else {
 
-            this.fontScaleY = fontScaleX / visAspect;
+            this.textScaleY = textScaleX / visAspect;
         }
 
-        if (fontScaleY > 1f) {
-            fontScaleY = 1f;
-            fontScaleX = 1f / (charAspect * len);
+        if (textScaleY > 1f) {
+            textScaleY = 1f;
+            textScaleX = 1f / (charAspect * len);
         }
 
-        Draw.bounds(gl, this, this::paintUnit);
+    }
+
+    @Override
+    protected void paintIt(GL2 gl) {
+        Draw.bounds(gl, innerBounds, this::paintUnit);
     }
 
     void paintUnit(GL2 gl) {
 
 
-        color.apply(gl);
-        gl.glLineWidth(lineWidth);
+        textColor.apply(gl);
+        gl.glLineWidth(textThickness);
         //float dz = 0.1f;
-        Draw.text(gl, value(), fontScaleX, fontScaleY, 0, 0.5f - fontScaleY / 2f, 0, Draw.TextAlignment.Left);
+        Draw.text(gl, text(), textScaleX, textScaleY, 0, 0.5f - textScaleY / 2f, 0, Draw.TextAlignment.Left);
 
     }
 
 
-    public void set(String newValue) {
-
+    public Label text(String newValue) {
         this.value = newValue;
-
+        layout();
+        return this;
     }
 
-    public String value() {
+    public String text() {
         return value;
     }
 
@@ -83,19 +91,19 @@ public class Label extends Surface {
     }
 
 
-    /**
-     * label which paints in XOR so it contrasts with what is underneath
-     */
-    public static class XorLabel extends Label {
-        @Override
-        public void paint(GL2 gl) {
-            //https://www.opengl.org/discussion_boards/showthread.php/179116-drawing-using-xor
-            gl.glEnable(GL_COLOR_LOGIC_OP);
-            gl.glLogicOp(GL_INVERT);
-
-            super.paint(gl);
-            gl.glDisable(GL_COLOR_LOGIC_OP);
-        }
-    }
+//    /**
+//     * label which paints in XOR so it contrasts with what is underneath
+//     */
+//    public static class XorLabel extends Label {
+//        @Override
+//        public void paintIt(GL2 gl) {
+//            //https://www.opengl.org/discussion_boards/showthread.php/179116-drawing-using-xor
+//            gl.glEnable(GL_COLOR_LOGIC_OP);
+//            gl.glLogicOp(GL_INVERT);
+//
+//            super.paint(gl);
+//            gl.glDisable(GL_COLOR_LOGIC_OP);
+//        }
+//    }
 
 }

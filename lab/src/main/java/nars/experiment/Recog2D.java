@@ -158,7 +158,7 @@ public class Recog2D extends NAgentX {
 
                 row(out.entrySet().stream().map(ccnn -> new Surface() {
                     @Override
-                    protected void paint(GL2 gl) {
+                    protected void paint(GL2 gl, int dtMS) {
                         Concept c = ccnn.getKey();
                         Outputs.Neuron nn = ccnn.getValue();
 

@@ -77,10 +77,10 @@ public class BeliefTableChart extends Widget {
         this.range = range;
 
         label = new Label(this.term.toString());
-        label.color.a(0.5f);
+        label.textColor.a(0.5f);
         //label.scale(0.5f, 0.5f);
 
-        set(label);
+        children(label);
 
         redraw = new AtomicBoolean(false);
 
@@ -215,7 +215,7 @@ public class BeliefTableChart extends Widget {
     }
 
     @Override
-    protected void paintComponent(GL2 ggl) {
+    protected void paintIt(GL2 ggl) {
 
         /*if (!redraw.compareAndSet(true, false)) {
             return;
@@ -282,7 +282,7 @@ public class BeliefTableChart extends Widget {
             } else {
                 termString = term.toString();
             }
-            label.set(termString);
+            label.text(termString);
         });
 
         //        gl.glColor4f(0.75f, 0.75f, 0.75f, 0.8f + 0.2f * cp);

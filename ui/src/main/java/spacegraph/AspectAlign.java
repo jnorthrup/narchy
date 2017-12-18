@@ -12,7 +12,7 @@ public class AspectAlign extends Layout {
     /**
      * not used unless aspect ratio is set to non-NaN value
      */
-    protected Align align;
+    protected Align align = Align.Center;
 
     /**
      * height/width target aspect ratio; if aspect is NaN, no adjustment applied
@@ -26,6 +26,14 @@ public class AspectAlign extends Layout {
     protected float scaleX, scaleY;
 
     public final Surface the;
+
+    protected AspectAlign() {
+        this(1f);
+    }
+
+    protected AspectAlign(float scale) {
+        this(null, 1f, Center, scale);
+    }
 
     public AspectAlign(Surface the) {
         this(the, 1f, Center, 1f);
@@ -49,19 +57,26 @@ public class AspectAlign extends Layout {
     }
 
     @Override
-    public void start(@Nullable Surface parent) {
+    public synchronized void start(@Nullable Surface parent) {
         super.start(parent);
-        the.start(this);
+        if (the!=null) the.start(this);
     }
 
     @Override
-    public void stop() {
-        the.stop();
+    public synchronized void stop() {
+        if (the!=null) the.stop();
         super.stop();
     }
 
+    public AspectAlign scale(float sx, float sy) {
+        this.scaleX = sx;
+        this.scaleY = sy;
+        layout(); //TODO only if changed
+        return this;
+    }
+
     @Override
-    protected void doLayout() {
+    protected void doLayout(int dtMS) {
 
         //        v2 scale = this.scale;
 //
@@ -118,6 +133,10 @@ public class AspectAlign extends Layout {
                 tx = x() + (w - tw) / 2f;
                 ty = y() + (h - th) / 2f;
                 break;
+            case LeftCenter:
+                tx = x();
+                ty = y() + (h - th) / 2f;
+                break;
 
             case RightTop:
                 tx = bounds.max.x - tw;
@@ -134,7 +153,7 @@ public class AspectAlign extends Layout {
                 break;
 
             case LeftTop:
-                tx = bounds.min.x;
+                tx = x();
                 ty = bounds.max.y - th;
                 break;
 
@@ -146,7 +165,12 @@ public class AspectAlign extends Layout {
 
         }
 
-        the.pos(tx, ty, tx+tw, ty+th);
+        doLayout(tx, ty, tw, th);
+    }
+
+    protected void doLayout(float tx, float ty, float tw, float th) {
+        if (the!=null)
+            the.pos(tx, ty, tx+tw, ty+th);
     }
 
     public spacegraph.AspectAlign align(Align align) {
@@ -154,19 +178,20 @@ public class AspectAlign extends Layout {
         return this;
     }
 
-    @Override
-    public spacegraph.AspectAlign align(Align align, float aspect) {
-        this.aspect = aspect;
-        return align(align);
-    }
 
-    public spacegraph.AspectAlign align(Align align, float width, float height) {
-        return align(align, height / width);
-    }
+
+//    public spacegraph.AspectAlign align(Align align, float width, float height) {
+//        return align(align, height / width);
+//    }
 
     @Override
     public void forEach(Consumer<Surface> o) {
-        o.accept(the);
+        if (the!=null)
+            o.accept(the);
+    }
+
+    public AspectAlign scale(float s) {
+        return scale(s, s);
     }
 
     public enum Align {

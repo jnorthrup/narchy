@@ -207,7 +207,7 @@ public abstract class TriangleMeshShape extends ConcaveShape {
 	}
 
 	private static class FilteredCallback extends InternalTriangleIndexCallback {
-		public TriangleCallback callback;
+		public final TriangleCallback callback;
 		public final v3 aabbMin = new v3();
 		public final v3 aabbMax = new v3();
 

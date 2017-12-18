@@ -4,7 +4,6 @@ import jcog.data.ArrayHashSet;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.layout.Grid;
-import spacegraph.layout.Stacking;
 import spacegraph.widget.button.ToggleButton;
 
 import java.util.Collections;

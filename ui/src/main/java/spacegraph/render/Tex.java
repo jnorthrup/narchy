@@ -29,7 +29,7 @@ public class Tex {
     public GLProfile profile;
     private TextureData nextData;
     public int[] array;
-    private IntBuffer buffer;
+
     private Object src;
 
     public final void paint(GL2 gl, RectFloat2D bounds) {
@@ -82,7 +82,7 @@ public class Tex {
         if (nextData == null || this.src != iimage) {
 
             //buffer = IntBuffer.allocate(pixels);
-            buffer = IntBuffer.wrap(array);
+            IntBuffer buffer = IntBuffer.wrap(array);
             nextData = new TextureData(profile, GL_RGB,
                     width, height,
                     0 /* border */,
@@ -103,7 +103,7 @@ public class Tex {
     private class TexSurface extends Surface {
 
         @Override
-        protected void paint(GL2 gl) {
+        protected void paint(GL2 gl, int dtMS) {
             Tex.this.paint(gl, bounds);
         }
     }

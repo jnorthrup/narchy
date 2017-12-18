@@ -74,7 +74,8 @@ class Int3 {
 		}
 	}
 	
-	public boolean equals(Int3 i) {
+	public boolean equals(Object ii) {
+		Int3 i = (Int3)ii;
 		return (x == i.x && y == i.y && z == i.z);
 	}
 	

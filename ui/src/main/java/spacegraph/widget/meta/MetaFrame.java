@@ -71,13 +71,13 @@ public class MetaFrame extends Widget {
     }
 
     @Override
-    public void doLayout() {
+    public void doLayout(int dtMS) {
         pos(base.bounds);
-        super.doLayout();
+        super.doLayout(dtMS);
     }
 
     @Override
-    protected void paintComponent(GL2 gl) {
+    protected void paintIt(GL2 gl) {
 
     }
 }

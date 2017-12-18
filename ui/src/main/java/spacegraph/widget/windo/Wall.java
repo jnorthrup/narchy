@@ -120,8 +120,9 @@ public class Wall extends Stacking {
             return null;
         }
 
-        /** affects external from internal action */
-        @Override public void doLayout() {
+        /** affects external from internal action
+         * @param dtMS*/
+        @Override public void doLayout(int dtMS) {
 
             float xx = cbounds.X.floatValue();
             float yy = cbounds.Y.floatValue();
@@ -129,7 +130,7 @@ public class Wall extends Stacking {
             float hh = cbounds.H.floatValue();
             super.pos(xx - ww / 2, yy - hh / 2, xx + ww / 2, yy + hh / 2);
 
-            super.doLayout();
+            super.doLayout(dtMS);
         }
     }
 
@@ -142,7 +143,7 @@ public class Wall extends Stacking {
 //    }
 
     @Override
-    public void doLayout() {
+    public void doLayout(int dtMS) {
         //super.doLayout();
 
         model.update();
@@ -158,7 +159,7 @@ public class Wall extends Stacking {
 
     public Windo addWindo(Surface content) {
         Windo w = addWindo();
-        w.set(new Scale(content, 1f - Windo.resizeBorder));
+        w.children(new Scale(content, 1f - Windo.resizeBorder));
         return w;
     }
 

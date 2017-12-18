@@ -6,6 +6,7 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedur
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
+import spacegraph.Surface;
 import spacegraph.input.Finger;
 import spacegraph.math.v2;
 import spacegraph.render.Draw;
@@ -17,7 +18,7 @@ import static spacegraph.layout.Grid.grid;
 /**
  * abstract 1D slider/scrollbar
  */
-public class BaseSlider extends Widget {
+public class BaseSlider extends Surface {
 
 
     /** dead-zone at the edges to latch min/max values */
@@ -41,18 +42,16 @@ public class BaseSlider extends Widget {
     }
 
     @Override
-    protected void paintComponent(GL2 gl) {
-        gl.glPushMatrix();
-        gl.glTranslatef(x(), y(), 0);
-        gl.glScalef(w(), h(), 1);
-        draw.value(this.p, gl);
-        gl.glPopMatrix();
+    protected void paint(GL2 gl, int dtMS) {
+        Draw.bounds(gl, bounds, (g)->{
+            draw.value(this.p, g);
+        });
     }
 
 
     FloatObjectProcedure<GL2> draw = SolidLeft;
 
-    public BaseSlider draw(FloatObjectProcedure<GL2> draw) {
+    public BaseSlider type(FloatObjectProcedure<GL2> draw) {
         this.draw = draw;
         return this;
     }
@@ -142,11 +141,16 @@ public class BaseSlider extends Widget {
     }
 
     public static final FloatObjectProcedure<GL2> SolidLeft = (p, gl) -> {
-        gl.glColor4f(1f - p, p, 0f, 0.8f);
-
-        float W = 1;
+        float W = 1; //TODO use correct w() and h()
         float H = 1;
         float barSize = W * p;
+
+        //inset
+        gl.glColor4f(0f, 0f, 0f, 0.5f);
+        Draw.rect(gl, barSize, 0, W-barSize, H);
+
+        //growing knob from left
+        gl.glColor4f(0.75f * 1f - p, 0.75f * p, 0f, 0.8f);
         Draw.rect(gl, 0, 0, barSize, H);
     };
 
@@ -156,8 +160,8 @@ public class BaseSlider extends Widget {
         float W = 1;
         float H = 1;
         float x = W * p;
-        gl.glColor4f(0.5f, 0.5f, 0.5f, 0.2f);
-        Draw.rect(gl, 0, 0, W, H);
+//        gl.glColor4f(0.5f, 0.5f, 0.5f, 0.2f);
+//        Draw.rect(gl, 0, 0, W, H);
         gl.glColor4f(1f - p, p, 0f, 0.75f);
         Draw.rect(gl, x-knobWidth/2f, 0, knobWidth, H);
 

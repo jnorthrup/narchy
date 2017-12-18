@@ -24,12 +24,16 @@
 package spacegraph.phys.math;
 
 import jcog.list.FasterList;
+import org.apache.commons.lang3.ArrayUtils;
 import spacegraph.phys.util.FloatArrayList;
 import spacegraph.phys.util.IntArrayList;
 import spacegraph.phys.util.OArrayList;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+
+import static java.util.Collections.swap;
 
 /**
  * Miscellaneous utility functions.
@@ -169,42 +173,42 @@ public class MiscUtil {
 		pArr.setFast(k - 1, temp);
 	}
 
-	/**
-	 * Sorts list using heap sort.<p>
-	 * 
-	 * Implementation from: http://www.csse.monash.edu.au/~lloyd/tildeAlgDS/Sort/Heap/
-	 */
-	public static <T> void heapSort(FasterList<T> list, Comparator<T> comparator) {
-		/* sort a[0..N-1],  N.B. 0 to N-1 */
-		int k;
-		int n = list.size();
-		for (k = n / 2; k > 0; k--) {
-			downHeap(list, k, n, comparator);
-		}
-
-		/* a[1..N] is now a heap */
-		while (n >= 1) {
-			swap(list, 0, n - 1); /* largest of a[0..n-1] */
-
-			n = n - 1;
-			/* restore a[1..i-1] heap */
-			downHeap(list, 1, n, comparator);
-		}
-	}
-
-	private static <T> void swap(FasterList<T> list, int index0, int index1) {
-        //return array[index];
-        T temp = list.get(index0);
-        //return array[index];
-        list.setFast(index0, list.get(index1));
-		list.setFast(index1, temp);
-	}
-
-	private static  void swap(int[][] list, int index0, int index1) {
-		int[] temp = list[index0];
-		list[index0] = list[index1];
-		list[index1] = temp;
-	}
+//	/**
+//	 * Sorts list using heap sort.<p>
+//	 *
+//	 * Implementation from: http://www.csse.monash.edu.au/~lloyd/tildeAlgDS/Sort/Heap/
+//	 */
+//	public static <T> void heapSort(FasterList<T> list, Comparator<T> comparator) {
+//		/* sort a[0..N-1],  N.B. 0 to N-1 */
+//		int k;
+//		int n = list.size();
+//		for (k = n / 2; k > 0; k--) {
+//			downHeap(list, k, n, comparator);
+//		}
+//
+//		/* a[1..N] is now a heap */
+//		while (n >= 1) {
+//			swap(list, 0, n - 1); /* largest of a[0..n-1] */
+//
+//			n = n - 1;
+//			/* restore a[1..i-1] heap */
+//			downHeap(list, 1, n, comparator);
+//		}
+//	}
+//
+//	private static <T> void swap(FasterList<T> list, int index0, int index1) {
+//        //return array[index];
+//        T temp = list.get(index0);
+//        //return array[index];
+//        list.setFast(index0, list.get(index1));
+//		list.setFast(index1, temp);
+//	}
+//
+//	private static  void swap(int[][] list, int index0, int index1) {
+//		int[] temp = list[index0];
+//		list[index0] = list[index1];
+//		list[index1] = temp;
+//	}
 
 	/**
 	 * Sorts list using quick sort.<p>
@@ -231,6 +235,7 @@ public class MiscUtil {
             while (comparator.compare(x, list.get(j)) < 0) j--;
 			
 			if (i <= j) {
+				//TODO: list.swap(i,i)
 				swap(list, i, j);
 				i++;
 				j--;
@@ -270,7 +275,7 @@ public class MiscUtil {
 			while (x[0] < list[j][0]) j--;
 
 			if (i <= j) {
-				swap(list, i, j);
+				ArrayUtils.swap(list, i, j);
 				i++;
 				j--;
 			}

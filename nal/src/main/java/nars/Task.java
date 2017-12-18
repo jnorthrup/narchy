@@ -187,7 +187,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
 
                     //Trie<ByteList, ByteSet> m = new Trie(Tries.TRIE_SEQUENCER_BYTE_LIST);
-                    List</* length, */ ByteList> statements = new FasterList<>();
+                    FasterList</* length, */ ByteList> statements = new FasterList<>();
                     ByteObjectHashMap<List<ByteList>> indepVarPaths = new ByteObjectHashMap<>();
 
                     t.pathsTo(
@@ -222,7 +222,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                     });
 
                     if (statements.size() > 1) {
-                        statements.sort(Comparator.comparingInt(PrimitiveIterable::size));
+                        statements.sortThisByInt(PrimitiveIterable::size);
+                        //Comparator.comparingInt(PrimitiveIterable::size));
                     }
 
                     boolean rootIsStatement = t.op().statement;

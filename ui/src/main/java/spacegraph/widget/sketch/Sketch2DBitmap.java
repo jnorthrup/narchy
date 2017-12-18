@@ -33,7 +33,7 @@ public class Sketch2DBitmap extends Sketch2D {
     }
 
     @Override
-    public void start(@Nullable Surface parent) {
+    public synchronized void start(@Nullable Surface parent) {
         super.start(parent);
         bmp.profile = parent.root().gl().getGLProfile();
         update();
@@ -93,7 +93,7 @@ public class Sketch2DBitmap extends Sketch2D {
     }
 
     @Override
-    protected void paintComponent(GL2 gl) {
+    protected void paintIt(GL2 gl) {
         bmp.paint(gl, bounds);
     }
 

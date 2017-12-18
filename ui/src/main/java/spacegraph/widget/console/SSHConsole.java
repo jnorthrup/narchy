@@ -18,7 +18,7 @@ import java.io.PipedOutputStream;
 public class SSHConsole extends ConsoleTerminal {
 
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException, JSchException {
 
         SpaceGraph.window(new SSHConsole(
                 "gest", "localhost", "tseg",

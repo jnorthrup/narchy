@@ -25,12 +25,12 @@ public abstract class AbstractSpatial<X> extends Spatial<X> {
     }
 
     @Override
-    public void renderAbsolute(GL2 gl, long timeMS) {
+    public void renderAbsolute(GL2 gl, int dtMS) {
         //blank
     }
 
     @Override
-    public void renderRelative(GL2 gl, Collidable body) {
+    public void renderRelative(GL2 gl, Collidable body, int dtMS) {
 
         colorshape(gl);
         Draw.draw(gl, body.shape());

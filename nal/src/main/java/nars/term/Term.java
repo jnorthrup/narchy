@@ -23,6 +23,7 @@ package nars.term;
 
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
+import jcog.list.FasterList;
 import nars.$;
 import nars.IO;
 import nars.Op;
@@ -688,16 +689,18 @@ public interface Term extends Termed, Comparable<Termed> {
     /**
      * event list, sorted by time
      */
-    default FastList<LongObjectPair<Term>> eventList() {
+    default FasterList<LongObjectPair<Term>> eventList() {
         return eventList(0);
     }
 
     /**
      * event list, sorted by time
      */
-    default FastList<LongObjectPair<Term>> eventList(int offset) {
+    default FasterList<LongObjectPair<Term>> eventList(int offset) {
         MutableSet<LongObjectPair<Term>> s = eventSet(offset);
-        return (FastList) s.toSortedList();
+        FasterList l = new FasterList(s);
+        l.sortThis();
+        return l;
     }
 
     default boolean eventsWhile(LongObjectPredicate<Term> whileEachEvent, long dt) {

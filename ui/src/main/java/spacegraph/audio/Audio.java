@@ -114,7 +114,7 @@ public class Audio implements Runnable {
 			Mixer m = AudioSystem.getMixer(mixerinfo[i]);
 			Line.Info[] lineinfo = m.getSourceLineInfo();
 			for (int j = 0; j < lineinfo.length; j++) {
-				System.out.println("  - " + lineinfo[j].toString());
+				System.out.println("  - " + lineinfo[j]);
 			}
 		}
 	}

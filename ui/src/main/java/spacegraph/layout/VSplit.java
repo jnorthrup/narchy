@@ -1,5 +1,6 @@
 package spacegraph.layout;
 
+import jcog.Util;
 import spacegraph.Surface;
 
 /**
@@ -10,7 +11,7 @@ public class VSplit<X extends Surface, Y extends Surface> extends MutableLayout 
     public float split; //0.5f = middle, 0.0 = all top, 1.0 = all bottom
 
     public VSplit() {
-        this(null, null);
+        super();
     }
 
     public VSplit(X top, Y bottom) {
@@ -23,15 +24,23 @@ public class VSplit<X extends Surface, Y extends Surface> extends MutableLayout 
     }
 
 
-    public void set(X top, Y bottom, float split) {
+    public void set(float split) {
+        float s = this.split;
         this.split = split;
+        if (!Util.equals(s, split, 0.001f)) {
+            layout();
+        }
+    }
+
+    public void set(X top, Y bottom, float split) {
+        set(split);
         top(top);
         bottom(bottom);
         layout();
     }
 
     @Override
-    public void doLayout() {
+    public void doLayout(int dtMS) {
 
         float margin = 0.0f;
         //float content = 1f - margin;
@@ -54,7 +63,7 @@ public class VSplit<X extends Surface, Y extends Surface> extends MutableLayout 
             bottom.pos(X,  Y, X+w, Ysplit);
         }
 
-        super.doLayout();
+        super.doLayout(dtMS);
     }
 
     public final void top(X s) {

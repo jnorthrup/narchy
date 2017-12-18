@@ -40,7 +40,7 @@ public class ReflectionSurface<X> extends Grid {
 
         collect(x, l, 0);
 
-        set(l);
+        children(l);
     }
 
     private void collect(Object y, List<Surface> l, int depth) {
@@ -150,8 +150,8 @@ public class ReflectionSurface<X> extends Grid {
         }
 
         @Override
-        public String labelText() {
-            return k + "=" + super.labelText();
+        public String text() {
+            return k + "=" + super.text();
         }
     }
 }

@@ -196,11 +196,11 @@ public class Revision {
     }
 
     private static Term dtMergeConjMerge(Term a, long dt, Term b, float aProp, float v, Random rng) {
-        FastList<LongObjectPair<Term>> ab = Op.conjMerge(a, 0, b, dt).eventList();
+        FasterList<LongObjectPair<Term>> ab = Op.conjMerge(a, 0, b, dt).eventList();
 
         //it may not be valid to choose subsets of the events, in a case like where >1 occurrences of $ must remain parent
 
-        FastList<LongObjectPair<Term>> x = new FasterList(ab);
+        FasterList<LongObjectPair<Term>> x = new FasterList(ab);
         int max = 1 + x.size() / 2; //HALF
         int all = x.size();
         int excess = all - max;

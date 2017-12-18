@@ -27,7 +27,7 @@ public class BitmapMatrixView extends Surface {
     private final Tex bmp;
 
     @Override
-    protected void paint(GL2 gl) {
+    protected void paint(GL2 gl, int dtMS) {
         bmp.paint(gl, bounds);
     }
 
@@ -110,40 +110,28 @@ public class BitmapMatrixView extends Surface {
     public BitmapMatrixView(float[] d, int stride, ViewFunction1D view) {
         this((int) Math.floor(((float) d.length) / stride), stride, (x, y) -> {
             int i = y * stride + x;
-            if (i < d.length)
-                return view.update(d[i]);
-            else
-                return 0;
+            return i < d.length ? view.update(d[i]) : 0;
         });
     }
 
     public BitmapMatrixView(IntToFloatFunction d, int len, int stride, ViewFunction1D view) {
         this((int) Math.floor(((float) len) / stride), stride, (x, y) -> {
             int i = y * stride + x;
-            if (i < len)
-                return view.update(d.valueOf(i));
-            else
-                return 0;
+            return i < len ? view.update(d.valueOf(i)) : 0;
         });
     }
 
     public BitmapMatrixView(double[] d, int stride, ViewFunction1D view) {
         this((int) Math.floor(((float) d.length) / stride), stride, (x, y) -> {
             int i = y * stride + x;
-            if (i < d.length)
-                return view.update((float) d[i]);
-            else
-                return 0;
+            return i < d.length ? view.update((float) d[i]) : 0;
         });
     }
 
     public <P extends FloatSupplier> BitmapMatrixView(P[] d, int stride, ViewFunction1D view) {
         this((int) Math.floor(((float) d.length) / stride), stride, (x, y) -> {
             int i = y * stride + x;
-            if (i < d.length)
-                return view.update(d[i].asFloat());
-            else
-                return 0;
+            return i < d.length ? view.update(d[i].asFloat()) : 0;
         });
     }
 //    public BitmapMatrixView(Tensor t, int stride, ViewFunction1D view) {

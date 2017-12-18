@@ -222,7 +222,7 @@ public class Windo extends Widget {
     }
 
     @Override
-    protected void paintComponent(GL2 gl) {
+    protected void paintIt(GL2 gl) {
         paintBack(gl);
 
 
@@ -306,14 +306,14 @@ public class Windo extends Widget {
 
             Wall.CSurface content = win.wall().newCurface(id);
 
-            set(content);
+            children(content);
             //set(new Scale(new PushButton("?"), 0.9f));
             this.posRel = new v2(Float.NEGATIVE_INFINITY, 0);
             this.sizeRel = new v2(0.1f, 0.2f);
         }
 
         @Override
-        public void doLayout() {
+        public void doLayout(int dtMS) {
             float W = win.w();
             float H = win.h();
             {
@@ -336,7 +336,7 @@ public class Windo extends Widget {
                 }
             }
 
-            super.doLayout();
+            super.doLayout(dtMS);
         }
 
         @Override

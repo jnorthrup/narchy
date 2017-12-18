@@ -39,7 +39,7 @@ public class BagClustering<X> {
      * TODO allow dynamic change
      */
     private final short clusters;
-    public Flip<List<VLink<X>>> sorted = new Flip(FasterList::new);
+    public Flip<FasterList<VLink<X>>> sorted = new Flip(FasterList::new);
 
     public BagClustering(Dimensionalize<X> model, int centroids, int initialCap) {
 
@@ -171,9 +171,10 @@ public class BagClustering<X> {
                         bag.forEach(this::learn);
                     }
 
-                    List<VLink<X>> x = sorted.write();
+                    FasterList<VLink<X>> x = sorted.write();
                     x.clear();
                     bag.forEach(x::add);
+                    x.sortThisByInt(xx -> xx.centroid );
                     x.sort(Comparator.comparingInt(a -> a.centroid));
                     takeSortedClusters.accept(x);
                     sorted.commit();

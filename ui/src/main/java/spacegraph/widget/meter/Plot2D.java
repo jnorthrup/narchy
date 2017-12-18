@@ -150,11 +150,11 @@ public class Plot2D extends Surface {
                 limit();
                 if (v != v) {
                     //throw new RuntimeException("invalid value");
-                    add(Float.NaN);
+                    super.add(Float.NaN);
                 } else {
                     if (v < min) v = min;
                     if (v > max) v = max;
-                    add((float) v);
+                    super.add((float) v);
                 }
 
             }
@@ -169,7 +169,7 @@ public class Plot2D extends Surface {
             @Override
             public void update() {
                 limit();
-                add((float) valueFunc.getAsDouble());
+                super.add((float) valueFunc.getAsDouble());
                 autorange();
             }
         });
@@ -178,7 +178,7 @@ public class Plot2D extends Surface {
     }
 
     @Override
-    protected void paint(GL2 gl) {
+    protected void paint(GL2 gl, int dtMS) {
         Draw.bounds(gl, x(), y(), w(),h(), this::paintUnit);
     }
 
@@ -396,11 +396,7 @@ public class Plot2D extends Surface {
                 width = series.size();
                 yHeights = new float[width];
                 view = new BitmapMatrixView(width, yRes, (int x, int y)->{
-                    if ((y * yRes) < yHeights[x]) {
-                        return Draw.rgbInt(255,255,255);
-                    } else {
-                        return 0;
-                    }
+                    return (y * yRes) < yHeights[x] ? Draw.rgbInt(255, 255, 255) : 0;
                 });
             }
 
@@ -421,7 +417,7 @@ public class Plot2D extends Surface {
         @Override
         public void draw(List<Series> series, GL2 g, float minValue, float maxValue) {
             if (ready.get()) {
-                view.render(g);
+                view.render(g, 0);
             } else {
                 BitmapWave.this.series = series.get(0);
                 this.gl = g;

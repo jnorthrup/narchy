@@ -31,7 +31,7 @@ public class ConceptView extends Grid {
 
         io.term.setForegroundColor(TextColor.ANSI.WHITE);
 
-        set(io);
+        children(io);
 
     }
 

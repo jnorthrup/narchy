@@ -396,7 +396,7 @@ public class GImpactMeshShape extends GImpactShape {
         @Override
         public GImpactShape setMargin(float margin) {
             primitive_manager.margin = margin;
-            postUpdate();
+            super.postUpdate();
             return null;
         }
 
@@ -408,7 +408,7 @@ public class GImpactMeshShape extends GImpactShape {
         @Override
         public void setLocalScaling(v3 scaling) {
             primitive_manager.scale.set(scaling);
-            postUpdate();
+            super.postUpdate();
         }
 
         @Override

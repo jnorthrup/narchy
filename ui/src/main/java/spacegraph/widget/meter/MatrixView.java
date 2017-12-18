@@ -107,40 +107,28 @@ public class MatrixView extends Widget {
     public MatrixView(float[] d, int stride, ViewFunction1D view) {
         this(stride, (int) Math.ceil(((float) d.length) / stride), (x, y, gl) -> {
             int i = y * stride + x;
-            if (i < d.length)
-                return view.update(d[i], gl);
-            else
-                return Float.NaN;
+            return i < d.length ? view.update(d[i], gl) : Float.NaN;
         });
     }
 
     public MatrixView(IntToFloatFunction d, int len, int stride, ViewFunction1D view) {
         this(stride, (int) Math.ceil(((float) len) / stride), (x, y, gl) -> {
             int i = y * stride + x;
-            if (i < len)
-                return view.update(d.valueOf(i), gl);
-            else
-                return Float.NaN;
+            return i < len ? view.update(d.valueOf(i), gl) : Float.NaN;
         });
     }
 
     public MatrixView(double[] d, int stride, ViewFunction1D view) {
         this(stride, (int) Math.ceil(((float) d.length) / stride), (x, y, gl) -> {
             int i = y * stride + x;
-            if (i < d.length)
-                return view.update((float) d[i], gl);
-            else
-                return Float.NaN;
+            return i < d.length ? view.update((float) d[i], gl) : Float.NaN;
         });
     }
 
     public <P extends FloatSupplier> MatrixView(P[] d, int stride, ViewFunction1D view) {
         this(stride, (int) Math.ceil(((float) d.length) / stride), (x, y, gl) -> {
             int i = y * stride + x;
-            if (i < d.length)
-                return view.update(d[i].asFloat(), gl);
-            else
-                return Float.NaN;
+            return i < d.length ? view.update(d[i].asFloat(), gl) : Float.NaN;
         });
     }
 //    public MatrixView(Tensor t, int stride, ViewFunction1D view) {
@@ -171,7 +159,7 @@ public class MatrixView extends Widget {
     }
 
     @Override
-    protected void paintComponent(GL2 gl) {
+    protected void paintIt(GL2 gl) {
 
         float h = this.h;
         float w = this.w;

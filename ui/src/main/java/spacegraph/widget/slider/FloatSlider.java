@@ -5,29 +5,35 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.math.FloatParam;
 import jcog.math.FloatSupplier;
+import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.AspectAlign;
+import spacegraph.Scale;
 import spacegraph.Surface;
 import spacegraph.widget.text.Label;
+import spacegraph.widget.windo.Widget;
 
 /**
  * Created by me on 11/18/16.
  */
-public class FloatSlider extends BaseSlider {
+public class FloatSlider extends Widget {
 
-    private final float max;
-    private final float min;
     final Label label = new Label();
     public FloatSupplier input;
     private String labelText = "";
 
+    private final BaseSlider slider;
+
     public FloatSlider(float v, float min, float max) {
-        super((v - min) / (max - min));
 
-        set(/*new AspectAlign*/(label));
-        updateLabel();
 
-        this.min = min;
-        this.max = max;
+
+        children(
+            new Scale((slider = new XSlider(v, min, max)), 0.95f),
+            label.scale(0.8f).align(AspectAlign.Align.Center)
+        );
+        updateText();
 
     }
 
@@ -40,51 +46,84 @@ public class FloatSlider extends BaseSlider {
     public FloatSlider(FloatParam f) {
         this(f.floatValue(), f.min, f.max);
         input = f;
-        on((s, v) -> f.set(v));
+        slider.on((s, v) -> f.set(v));
     }
 
-    public FloatSlider label(String label) {
+    public FloatSlider text(String label) {
         this.labelText = label;
-        updateLabel();
+        updateText();
         return this;
     }
 
     @Override
-    public void start(@Nullable Surface parent) {
+    public synchronized void start(@Nullable Surface parent) {
         super.start(parent);
-        updateLabel();
+        updateText();
     }
 
-    @Override
-    protected void changed(float p) {
-        super.changed(p);
-        updateLabel();
+    private void updateText() {
+        this.label.text(text());
     }
 
-    private void updateLabel() {
-        this.label.set(labelText());
+    public String text() {
+        return this.labelText + Texts.n2(slider.value());
     }
 
-    @Override
-    protected void paintComponent(GL2 gl) {
-        if (input != null)
-            value(input.asFloat());
-
-        super.paintComponent(gl);
+    public FloatSlider type(FloatObjectProcedure<GL2> t) {
+        slider.type(t);
+        return this;
     }
 
-    public String labelText() {
-        return this.labelText + Texts.n2(value());
+    public double value() {
+        return slider.value();
+    }
+    public void value(float v) {
+        slider.value(v);
+    }
+    public FloatSlider on(ObjectFloatProcedure<BaseSlider> c) {
+        slider.on(c);
+        return this;
     }
 
-    @Override
-    protected float p(float v) {
-        return (Util.clamp(v, min, max) - min) / (max - min);
-    }
+    private class XSlider extends BaseSlider {
 
-    @Override
-    protected float v(float p) {
-        return Util.clamp(p, 0, 1f) * (max - min) + min;
-    }
+        private final float min;
+        private final float max;
 
+        public XSlider(float v, float min, float max) {
+            super((v - min) / (max - min));
+            this.min = min;
+            this.max = max;
+        }
+
+        @Override
+        protected void paint(GL2 gl, int dtMS) {
+//            super.paint(gl, dtMS);
+//        }
+//
+//        @Override
+//        protected void paintIt(GL2 gl) {
+            if (input != null)
+                value(input.asFloat());
+
+            super.paint(gl, dtMS);
+        }
+
+        @Override
+        protected void changed(float p) {
+            super.changed(p);
+            updateText();
+        }
+
+        @Override
+        protected float p(float v) {
+            return (Util.clamp(v, min, max) - min) / (max - min);
+        }
+
+        @Override
+        protected float v(float p) {
+            return Util.clamp(p, 0, 1f) * (max - min) + min;
+        }
+
+    }
 }

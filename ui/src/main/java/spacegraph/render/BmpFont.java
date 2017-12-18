@@ -183,7 +183,7 @@ public class BmpFont {
 
 
             @Override
-            protected void paint(GL2 gl) {
+            protected void paint(GL2 gl, int dtMS) {
                 if (f == null)
                     f = BmpFont.the(gl);
 

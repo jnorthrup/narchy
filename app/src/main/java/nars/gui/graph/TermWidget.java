@@ -88,7 +88,7 @@ abstract public class TermWidget<T extends Termed> extends Cuboid<T> {
     }
 
     @Override
-    public void renderAbsolute(GL2 gl, long timeMS) {
+    public void renderAbsolute(GL2 gl, int dtMS) {
 //        gl.glDepthMask(false); //disable writing to depth buffer
 //        gl.glDisable(GL.GL_DEPTH_BUFFER_BIT);
 

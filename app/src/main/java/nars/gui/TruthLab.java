@@ -59,7 +59,7 @@ public class TruthLab extends Grid {
 
         List<Surface> cc = $.newArrayList();
         views.forEach(l -> cc.addAll(l.update(n, start, end, samplePeriod)));
-        set(cc);
+        children(cc);
         layout();
     }
 
@@ -105,7 +105,7 @@ public class TruthLab extends Grid {
 
 
         @Override
-        protected void paint(GL2 gl) {
+        protected void paint(GL2 gl, int dtMS) {
             float sw = 0.9f * timeScale;
             float sh = 0.9f;
 

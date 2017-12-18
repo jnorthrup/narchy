@@ -29,7 +29,7 @@ public class GridTex extends Surface {
     }
 
     @Override
-    protected void paint(GL2 gl) {
+    protected void paint(GL2 gl, int dtMS) {
 
         if (tex.texture == null) {
             tex.update(rr128, 128, 128);

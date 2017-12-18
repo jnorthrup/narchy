@@ -30,10 +30,10 @@ public class ZoomOrtho extends Ortho {
     final static short MOVE_WINDOW_BUTTON = 2;
 
     private int[] panStart = null;
-    private int[] moveTarget = new int[2];
+    private final int[] moveTarget = new int[2];
     @Deprecated
-    private int[] resizeTarget = new int[2];
-    private int[] windowStart = new int[2];
+    private final int[] resizeTarget = new int[2];
+    private final int[] windowStart = new int[2];
     private InsetsImmutable windowInsets;
 
     final HUD hud = new HUD();
@@ -74,19 +74,19 @@ public class ZoomOrtho extends Ortho {
 
         setSurface(new Surface() { //dummy HACK
             @Override
-            protected void paint(GL2 gl) {
+            protected void paint(GL2 gl, int dtMS) {
             }
         });
 
         super.start(s);
 
         //call this after the window is ready in case the surface wants early access to the GL context
-        hud.set(initContent); initContent = null;
+        hud.children(initContent); initContent = null;
     }
 
     @Override
     public void setSurface(Surface content) {
-        hud.set(content);
+        hud.children(content);
     }
 
 //    @Override
@@ -265,7 +265,7 @@ public class ZoomOrtho extends Ortho {
 
         float zoomMult = Util.clamp(1f + -dWheel * zoomRate, 0.5f, 1.5f);
 
-        AnimVector2f s = (AnimVector2f) this.scale;
+        AnimVector2f s = this.scale;
         float psx = s.targetX();
         float psy = psx;
         float sx = psx * zoomMult;
@@ -293,7 +293,7 @@ public class ZoomOrtho extends Ortho {
         }
 
         @Override
-        public void start(@Nullable Surface parent) {
+        public synchronized void start(@Nullable Surface parent) {
             super.start(parent);
             root().onLog(t -> {
 
@@ -311,7 +311,7 @@ public class ZoomOrtho extends Ortho {
         final Widget bottomRightMenu = new Widget() {
 
             @Override
-            protected void paintComponent(GL2 gl) {
+            protected void paintIt(GL2 gl) {
 
             }
         };

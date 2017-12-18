@@ -98,11 +98,12 @@ public class SequentialImpulseConstrainer extends Constrainer {
         });
 
         // initialize default friction/contact funcs
-        int i, j;
-        for (i = 0; i < MAX_CONTACT_SOLVER_TYPES; i++) {
-            for (j = 0; j < MAX_CONTACT_SOLVER_TYPES; j++) {
-                contactDispatch[i][j] = ContactConstraint.resolveSingleCollision;
-                frictionDispatch[i][j] = ContactConstraint.resolveSingleFriction;
+        for (int i = 0; i < MAX_CONTACT_SOLVER_TYPES; i++) {
+            ContactSolverFunc[] ci = this.contactDispatch[i];
+            ContactSolverFunc[] fi = this.frictionDispatch[i];
+            for (int j = 0; j < MAX_CONTACT_SOLVER_TYPES; j++) {
+                ci[j] = ContactConstraint.resolveSingleCollision;
+                fi[j] = ContactConstraint.resolveSingleFriction;
             }
         }
     }
@@ -144,7 +145,7 @@ public class SequentialImpulseConstrainer extends Constrainer {
         Dynamic rb = Dynamic.ifDynamic(collidable);
         if (rb != null) {
             rb.getAngularVelocity(solverBody.angularVelocity);
-            solverBody.centerOfMassPosition.set(collidable.getWorldTransform(new Transform()));
+            solverBody.centerOfMassPosition.set(collidable.transform);
             solverBody.friction = collidable.getFriction();
             solverBody.invMass = rb.getInvMass();
             rb.getLinearVelocity(solverBody.linearVelocity);
@@ -152,7 +153,7 @@ public class SequentialImpulseConstrainer extends Constrainer {
             solverBody.angularFactor = rb.getAngularFactor();
         } else {
             solverBody.angularVelocity.set(0f, 0f, 0f);
-            solverBody.centerOfMassPosition.set(collidable.getWorldTransform(new Transform()));
+            solverBody.centerOfMassPosition.set(collidable.transform);
             solverBody.friction = collidable.getFriction();
             solverBody.invMass = 0f;
             solverBody.linearVelocity.set(0f, 0f, 0f);
@@ -185,11 +186,10 @@ public class SequentialImpulseConstrainer extends Constrainer {
             //      btVector3 vel = vel1 - vel2;
             //      btScalar  rel_vel = contactConstraint.m_contactNormal.dot(vel);
 
-            float rel_vel;
             float vel1Dotn = contactConstraint.contactNormal.dot(body1.pushVelocity) + contactConstraint.relpos1CrossNormal.dot(body1.turnVelocity);
             float vel2Dotn = contactConstraint.contactNormal.dot(body2.pushVelocity) + contactConstraint.relpos2CrossNormal.dot(body2.turnVelocity);
 
-            rel_vel = vel1Dotn - vel2Dotn;
+            float rel_vel = vel1Dotn - vel2Dotn;
 
             float positionalError = -contactConstraint.penetration * solverInfo.erp2 / solverInfo.timeStep;
             //      btScalar positionalError = contactConstraint.m_penetration;
@@ -430,7 +430,6 @@ public class SequentialImpulseConstrainer extends Constrainer {
             //		END_PROFILE("refreshManifolds");
             //	//#endif //FORCE_REFESH_CONTACT_MANIFOLDS
 
-            Transform tmpTrans = new Transform();
 
             //int sizeofSB = sizeof(btSolverBody);
             //int sizeofSC = sizeof(btSolverConstraint);
@@ -547,8 +546,8 @@ public class SequentialImpulseConstrainer extends Constrainer {
                             cp.getPositionWorldOnA(pos1);
                             cp.getPositionWorldOnB(pos2);
 
-                            rel_pos1.sub(pos1, colObj0.getWorldTransform(tmpTrans));
-                            rel_pos2.sub(pos2, colObj1.getWorldTransform(tmpTrans));
+                            rel_pos1.sub(pos1, colObj0.transform);
+                            rel_pos2.sub(pos2, colObj1.transform);
 
                             relaxation = 1f;
                             float rel_vel;

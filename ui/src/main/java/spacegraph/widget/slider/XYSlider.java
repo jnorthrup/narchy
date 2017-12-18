@@ -31,7 +31,7 @@ public class XYSlider extends Widget {
 
 
     @Override
-    protected void paintComponent(GL2 gl) {
+    protected void paintIt(GL2 gl) {
         Draw.bounds(gl, this, this::paintUnit);
     }
 

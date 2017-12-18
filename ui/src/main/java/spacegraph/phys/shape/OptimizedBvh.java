@@ -73,7 +73,7 @@ public class OptimizedBvh implements Serializable {
 	private final v3 bvhAabbMax = new v3();
 	private final v3 bvhQuantization = new v3();
 	
-	protected TraversalMode traversalMode = TraversalMode.STACKLESS;
+	protected final TraversalMode traversalMode = TraversalMode.STACKLESS;
 	protected final FasterList<BvhSubtreeInfo> SubtreeHeaders = new FasterList<>();
 	// This is only used for serialization so we don't have to add serialization directly to btAlignedObjectArray
 	protected int subtreeHeaderCount;
@@ -203,7 +203,7 @@ public class OptimizedBvh implements Serializable {
 	}
 
 	private static class NodeTriangleCallback extends InternalTriangleIndexCallback {
-		public FasterList<OptimizedBvhNode> triangleNodes;
+		public final FasterList<OptimizedBvhNode> triangleNodes;
 
 		public NodeTriangleCallback(FasterList<OptimizedBvhNode> triangleNodes) {
 			this.triangleNodes = triangleNodes;
@@ -239,8 +239,8 @@ public class OptimizedBvh implements Serializable {
 	private static class QuantizedNodeTriangleCallback extends InternalTriangleIndexCallback {
 		//protected final BulletStack stack = BulletStack.get();
 
-		public QuantizedBvhNodes triangleNodes;
-		public OptimizedBvh optimizedTree; // for quantization
+		public final QuantizedBvhNodes triangleNodes;
+		public final OptimizedBvh optimizedTree; // for quantization
 
 		public QuantizedNodeTriangleCallback(QuantizedBvhNodes triangleNodes, OptimizedBvh tree) {
 			this.triangleNodes = triangleNodes;

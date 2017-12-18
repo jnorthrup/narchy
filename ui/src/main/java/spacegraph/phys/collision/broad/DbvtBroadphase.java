@@ -52,15 +52,15 @@ public class DbvtBroadphase extends Broadphase {
 	public static final int STAGECOUNT  = 2; // Number of stages
 
 	public final Dbvt[] sets = new Dbvt[2];                        // Dbvt sets
-	public DbvtProxy[] stageRoots = new DbvtProxy[STAGECOUNT + 1]; // Stages list
-	public OverlappingPairCache paircache;                         // Pair cache
-	public float predictedframes;                                  // Frames predicted
+	public final DbvtProxy[] stageRoots = new DbvtProxy[STAGECOUNT + 1]; // Stages list
+	public final OverlappingPairCache paircache;                         // Pair cache
+	public final float predictedframes;                                  // Frames predicted
 	public int stageCurrent;                                       // Current stage
-	public int fupdates;                                           // % of fixed updates per frame
-	public int dupdates;                                           // % of dynamic updates per frame
+	public final int fupdates;                                           // % of fixed updates per frame
+	public final int dupdates;                                           // % of dynamic updates per frame
 	public int pid;                                                // Parse id
 	public int gid;                                                // Gen id
-	public boolean releasepaircache;                               // Release pair cache on delete
+	public final boolean releasepaircache;                               // Release pair cache on delete
 	final DbvtAabbMm bounds = new DbvtAabbMm();
 
 	final OArrayList<Dbvt.Node[]> collideStack = new OArrayList<>(DOUBLE_STACKSIZE);

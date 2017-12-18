@@ -15,11 +15,11 @@ public class MutableLayout extends Layout {
 
     public MutableLayout(Surface... children) {
         super();
-        set(children);
+        children(children);
     }
 
     public MutableLayout(List<Surface> children) {
-        set(children);
+        children(children);
     }
 
     @Override
@@ -29,11 +29,11 @@ public class MutableLayout extends Layout {
     }
 
     @Override
-    public void doLayout() {
+    public void doLayout(int dtMS) {
         children.forEach(Surface::layout);
     }
 
-    public Layout set(Surface... next) {
+    public Layout children(Surface... next) {
         synchronized (children) {
             if (!equals(this.children, next)) {
                 children.clear();
@@ -47,7 +47,7 @@ public class MutableLayout extends Layout {
         return this;
     }
 
-    public Layout set(List<Surface> next) {
+    public Layout children(List<Surface> next) {
         synchronized (children) {
             if (!equals(this.children, next)) {
                 children.clear();
