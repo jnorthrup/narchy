@@ -77,7 +77,7 @@ public class Taskify extends AbstractPred<Derivation> {
             return spam(d, Param.TTL_DERIVE_TASK_FAIL);
         }
 
-        if (same(x0, t, d._task, d.freqRes) || (d._belief != null && same(x0, t, d._belief, d.freqRes))) {
+        if (same(t, d._task, d.freqRes) || (d._belief != null && same(t, d._belief, d.freqRes))) {
             //created a duplicate of the task
             return spam(d, Param.TTL_DERIVE_TASK_SAME);
         }
@@ -111,7 +111,7 @@ public class Taskify extends AbstractPred<Derivation> {
         return true; //just does
     }
 
-    protected boolean same(Term anonTerm, Task derived, Task parent, float truthResolution) {
+    protected boolean same(Task derived, Task parent, float truthResolution) {
         if (parent.isDeleted())
             return false;
 
@@ -119,7 +119,7 @@ public class Taskify extends AbstractPred<Derivation> {
 
         if (FILTER_SIMILAR_DERIVATIONS) {
             //test for same punc, term, start/end, freq, but different conf
-            if (parent.term().equals(anonTerm) && parent.punc() == derived.punc() && parent.start() == derived.start() && parent.end() == derived.end()) {
+            if (parent.term().equals(derived.term()) && parent.punc() == derived.punc() && parent.start() == derived.start() && parent.end() == derived.end()) {
                 /*if (Arrays.equals(derived.stamp(), parent.stamp()))*/
                 if (parent.isQuestOrQuestion() ||
                         (Util.equals(parent.freq(), derived.freq(), truthResolution) &&

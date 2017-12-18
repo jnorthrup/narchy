@@ -163,7 +163,7 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
-    @AllowOverlap
+    //@AllowOverlap
     AbductionRecursivePB() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
