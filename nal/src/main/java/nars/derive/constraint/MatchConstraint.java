@@ -1,5 +1,9 @@
 package nars.derive.constraint;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.MultimapBuilder;
+import com.google.common.primitives.Floats;
 import jcog.TODO;
 import jcog.Util;
 import jcog.list.FasterList;
@@ -16,6 +20,8 @@ import org.jetbrains.annotations.NotNull;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -26,7 +32,7 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
     public final Term target;
 
     protected MatchConstraint(Term target, String func, Term... args) {
-        super($.p(target, $.func(func, args)));
+        super($.func("unifyIf", target, $.func(func, args)));
         this.target = target;
     }
 
@@ -69,16 +75,16 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
             IntIntPair rr = ranges.get(0);
 
 
-            List<PrediTerm<?>> l = new FasterList();
+            List<PrediTerm<Derivation>> l = new FasterList();
             int i;
             for (i = 0; i < start; i++) {
                 l.add(a.cond[i]);
             }
-            l.add(
-                new MatchConstraint.CompoundConstraint(
-                        Util.map(MatchConstraint.class::cast, MatchConstraint[]::new, ArrayUtils.subarray(a.cond, rr.getOne(), rr.getTwo()+1))
-                )
-            );
+
+            CompoundConstraint.the(
+                    Util.map(MatchConstraint.class::cast, MatchConstraint[]::new, ArrayUtils.subarray(a.cond, rr.getOne(), rr.getTwo()+1))
+            ).forEach(l::add);
+
             i = end+1;
             for ( ; i < a.cond.length; i++) {
                 l.add(a.cond[i]);
@@ -146,15 +152,48 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
 
 
         private final MatchConstraint[] cache;
+        final Term target;
 
-        public CompoundConstraint(MatchConstraint[] c) {
-            super(/*$.func("MatchConstraint",*/ $.sete(c)/*)*/);
+        /** groups the constraints into their respective targets */
+        public static Iterable<PrediTerm<Derivation>> the(MatchConstraint[] c) {
+            assert(c.length > 1);
+            ListMultimap<Term, MatchConstraint> m = MultimapBuilder.hashKeys().arrayListValues().build();
+            for (MatchConstraint x : c) {
+                m.put(x.target, x);
+            }
+            return ()->m.asMap().entrySet().stream().map(e -> {
+                Collection<MatchConstraint> cc = e.getValue();
+                MatchConstraint[] d = cc.toArray(new MatchConstraint[cc.size()]);
+                assert(d.length > 0);
+                if (d.length == 1) {
+                    return (PrediTerm<Derivation>)d[0];
+                } else {
+                    Arrays.sort(d, PrediTerm.sortByCost);
+                    return new CompoundConstraint(d);
+                }
+            }).iterator();
+
+
+        }
+
+        private CompoundConstraint(MatchConstraint[] c) {
+            super($.func("unifyIf", c[0].target, $.sete(c)));
             this.cache = c;
+            this.target = c[0].target;
+            for (int i = 1; i < c.length; i++) {
+                if (!c[i].target.equals(target))
+                    throw new RuntimeException();
+            }
+        }
+
+        @Override
+        public float cost() {
+            return Util.sum(MatchConstraint::cost, cache);
         }
 
         @Override
         public boolean test(Derivation derivation) {
-            return derivation.constrain(cache);
+            return derivation.constrain(target, cache);
         }
     }
 

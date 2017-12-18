@@ -14,7 +14,6 @@ import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.ref.ReferenceQueue;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -353,21 +352,14 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
                         } else {
                             //attempt HIJACK (tm)
-                            float powerDelta;
-                            if ((powerDelta = replace(power, existing))==Float.POSITIVE_INFINITY) {
+
+                            if (replace(power, existing)) {
                                 if (map.compareAndSet(i, existing, incoming)) { //inserted
                                     toRemove = existing;
                                     toReturn = toAdd = incoming;
                                     break inserting; //hijacked replaceable slot, done
                                 }
-                            } else {
-                                if (powerDelta < 0) {
-                                    power += powerDelta / reprobes;
-//                                    if (power < 0)
-//                                        break inserting; //dead, rejected
-                                }
                             }
-
                         }
 
                     }
@@ -453,22 +445,16 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     protected abstract V merge(V existing, V incoming, @Nullable MutableFloat overflowing);
 
     /**
+     * true if the incoming priority is sufficient to replace the existing value
      * can override in subclasses for custom replacement policy.
      *
      * a potential eviction can be intercepted here
-     *
-     * returns Float.POSITIVE_INFINITY if the incoming value 'won' the fight against the existing,
-     * otherwise returns a discounted incoming value representing the 'damage' sustained
-     * during the fight
      */
-    protected float replace(float i, V existing) {
+    protected boolean replace(float i, V existing) {
         float e = pri(existing);
-        if (e != e || replace(i, e)) {
-            return Float.POSITIVE_INFINITY;
-        } else {
-            return i - e;
-        }
+        return e != e || replace(i, e) ? true : false;
     }
+
     protected boolean replace(float incoming, float existing) {
         return hijackFair(incoming, existing);
     }

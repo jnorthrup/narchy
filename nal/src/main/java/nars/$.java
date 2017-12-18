@@ -147,12 +147,12 @@ public enum $ {
     }
 
 
-    public static @NotNull Term func(@NotNull String opTerm, @NotNull Term... arg) {
+    public static Term func(String opTerm, Term... arg) {
         return func(Atomic.the(opTerm), arg);
     }
 
 
-    public static @NotNull Term func(@NotNull String opTerm, @NotNull String... arg) throws Narsese.NarseseException {
+    public static Term func(String opTerm, String... arg) throws Narsese.NarseseException {
         return func(Atomic.the(opTerm), $.array(arg));
     }
 
@@ -592,11 +592,11 @@ public enum $ {
     /**
      * negates each entry in the array
      */
-    public static void neg(@NotNull Term[] array) {
+    public static void neg(Term[] array) {
         Util.map(Term::neg, array, array);
     }
 
-    public static Atomic the(@NotNull byte[] id) {
+    public static Atomic the(byte[] id) {
         return Atomic.the(new String(id));
     }
 
@@ -604,7 +604,7 @@ public enum $ {
         return the(new byte[]{c});
     }
 
-    public static Term[] the(@NotNull int... i) {
+    public static Term[] the(int... i) {
         int l = i.length;
         Term[] x = new Term[l];
         for (int j = 0; j < l; j++) {

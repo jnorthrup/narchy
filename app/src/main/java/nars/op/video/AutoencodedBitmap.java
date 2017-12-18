@@ -2,7 +2,6 @@ package nars.op.video;
 
 import jcog.learn.Autoencoder;
 import jcog.math.random.XoRoShiRo128PlusRandom;
-import jcog.math.random.XorShift128PlusRandom;
 import nars.util.signal.Bitmap2D;
 
 /**

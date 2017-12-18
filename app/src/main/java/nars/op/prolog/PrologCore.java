@@ -236,7 +236,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
                 //only input if NARS doesnt have any belief or only has a weak belief for this fact
                 if (currentBelief == null || currentBelief.conf() < confThreshold.floatValue()*existingAnswerThreshold) {
 
-                    logger.info("{}\t{}\t{}", answer.goal, nterm); //TODO input
+                    logger.info("{}\t{}", answer.goal, nterm); //TODO input
 
                     boolean truth = answer.getVarValue("F").isEqual(ONE);
 
@@ -248,7 +248,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
                 }
 
             } else {
-                logger.error("{}\t{}\t{} (not a compound)", answer.goal, nterm); //TODO input
+                logger.error("{}\t{} (not a compound)", answer.goal, nterm); //TODO input
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -15,11 +15,11 @@ import static spacegraph.layout.Grid.grid;
 /**
  * main UI entry point
  */
-public class UI {
+public class GUI {
 
-    static final Logger logger = LoggerFactory.getLogger(UI.class);
+    static final Logger logger = LoggerFactory.getLogger(GUI.class);
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
         NAR nar = NARchy.ui();
 

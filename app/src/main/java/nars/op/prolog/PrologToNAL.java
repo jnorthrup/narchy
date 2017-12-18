@@ -10,6 +10,7 @@ import jcog.Util;
 import nars.$;
 import nars.Op;
 import nars.term.Term;
+import nars.term.Termlike;
 import nars.term.var.Variable;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -61,13 +62,13 @@ public class PrologToNAL {
 
                     if (pre.varQuery()>0 && post.varQuery()>0) {
                         MutableSet<nars.term.var.Variable> prev = new UnifiedSet();
-                        pre.recurseTerms(aa -> aa.hasVarQuery(), (a) -> {
+                        pre.recurseTerms(Termlike::hasVarQuery, (a) -> {
                             if (a.op() == Op.VAR_QUERY)
                                 prev.add((Variable)a);
                             return true;
                         }, null);
                         MutableSet<nars.term.var.Variable> posv = new UnifiedSet();
-                        post.recurseTerms(aa -> aa.hasVarQuery(), (a) -> {
+                        post.recurseTerms(Termlike::hasVarQuery, (a) -> {
                             if (a.op() == Op.VAR_QUERY)
                                 posv.add((Variable)a);
                             return true;

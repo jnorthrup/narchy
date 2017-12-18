@@ -102,9 +102,9 @@ abstract public class NAgentX extends NAgent {
 
     public static NAR runRT(Function<NAR, NAgent> init, float narFPS, float agentFPS) {
 
-        The.Subterms.the =
+        //The.Subterms.the =
                 //The.Subterms.CaffeineSubtermBuilder.get();
-                The.Subterms.HijackSubtermBuilder.get();
+                //The.Subterms.HijackSubtermBuilder.get();
 
         //The.Subterms.SoftSubtermBuilder.get();
 //        The.Compound.the =
@@ -161,11 +161,11 @@ abstract public class NAgentX extends NAgent {
                 .deriverAdd(6, 6)
                 //.deriverAdd(6,6) //extra NAL6
                 .deriverAdd(7, 8)
-                //.deriverAdd("goal_analogy.nal")
+                .deriverAdd("goal_analogy.nal")
                 .deriverAdd("motivation.nal")
                 //.deriverAdd("list.nal")
                 .index(
-                        new CaffeineIndex(200 * 1024)
+                        new CaffeineIndex(300 * 1024)
                         // new PriMapTermIndex()
                         //new CaffeineIndex2(64 * 1024)
                         //new CaffeineIndex2(-1)
@@ -176,7 +176,7 @@ abstract public class NAgentX extends NAgent {
 
         n.defaultWants();
 
-        n.conceptActivation.set(0.1f);
+        n.conceptActivation.set(0.25f);
 
         n.dtMergeOrChoose.set(true);
         n.dtDither.set(

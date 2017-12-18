@@ -224,12 +224,12 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
         gl.glDisable(GL2.GL_SCISSOR_TEST);
 
         gl.glEnable(GL2.GL_BLEND);
-        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        //gl.glBlendEquation(GL_FUNC_ADD);
+//        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//        gl.glBlendEquation(GL2.GL_FUNC_ADD);
 
 
-        //gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
-        //gl.glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
+        gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+        gl.glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
 
         //loadGLTexture(gl);
 
@@ -342,8 +342,8 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
 
 
     protected void clear() {
-        //clearMotionBlur(0.35f);
-        clearComplete();
+        clearMotionBlur(0.5f);
+        //clearComplete();
 
     }
 
@@ -357,9 +357,9 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
 //        gl.glClear(GL.GL_DEPTH_BUFFER_BIT | GL.GL_COLOR_BUFFER_BIT);
 
         //if(i == 0)
-        gl.glAccum(GL2.GL_LOAD, rate);
+        gl.glAccum(GL2.GL_LOAD, 0.5f);
         //else
-        gl.glAccum(GL2.GL_ACCUM, 1f-rate);
+        gl.glAccum(GL2.GL_ACCUM, 0.5f);
 
 //        i++;
 //

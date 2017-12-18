@@ -431,11 +431,11 @@ public class KIF {
      * @param parenLevel - if the paren level is > 1 then the term appears
      * nested in a statement and the argument number is ignored.
      */
-    private String createKey(String sval,
-            boolean inAntecedent,
-            boolean inConsequent,
-            int argumentNum,
-            int parenLevel) {
+    private static String createKey(String sval,
+                                    boolean inAntecedent,
+                                    boolean inConsequent,
+                                    int argumentNum,
+                                    int parenLevel) {
 
         if (sval == null) {
             sval = "null";
@@ -471,7 +471,7 @@ public class KIF {
      * @param str - the string to be tested.
      * @param c - the character to be counted.
      */
-    private int countChar(String str, char c) {
+    private static int countChar(String str, char c) {
 
         int len = 0;
         char[] cArray = str.toCharArray();

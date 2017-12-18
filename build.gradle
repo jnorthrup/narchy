@@ -9,6 +9,8 @@ buildscript {
         maven {
             url "http://jcenter.bintray.com"
         }
+        //maven { url "https://oss.sonatype.org/content/groups/public/" }
+
     }
     dependencies {
 //        classpath 'com.kncept.junit5.reporter:junit-reporter:1.0.0'

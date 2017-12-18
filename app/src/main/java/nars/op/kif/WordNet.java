@@ -68,7 +68,7 @@ public class WordNet {
      *
      * @return A File object
      */
-    public File getWnFile(String key) {
+    public static File getWnFile(String key) {
         File theFile = null;
         try {
             String pattern = null;
@@ -173,7 +173,7 @@ public class WordNet {
      * regexPatternStrings and puts the resulting compiled Pattern objects in
      * the Pattern[] regexPatterns.
      */
-    private void compileRegexPatterns() {
+    private static void compileRegexPatterns() {
         System.out.println("INFO in WordNet.compileRegexPatterns(): compiling patterns");
         regexPatterns = new Pattern[regexPatternStrings.length];
         for (int i = 0; i < regexPatternStrings.length; i++) {
@@ -293,7 +293,7 @@ public class WordNet {
      * ***************************************************************
      * Return an ArrayList of the string split by spaces.
      */
-    private ArrayList splitToArrayList(String st) {
+    private static ArrayList splitToArrayList(String st) {
 
         String[] sentar = st.split(" ");
         ArrayList words = new ArrayList(Arrays.asList(sentar));
@@ -439,7 +439,7 @@ public class WordNet {
             //                   " " + synset + " " + avp.value);
             al.add(avp);
         }
-        if ((pointers != null && !pointers.isEmpty()) && (!pointers.isEmpty()) && !" ".equals(pointers)) {
+        if (!pointers.isEmpty() && !" ".equals(pointers)) {
             // Only for verbs may we have the following leftover
             // f_cnt + f_num  w_num  [ +  f_num  w_num...] 
             if (synset.charAt(0) == '2') {
@@ -1115,9 +1115,9 @@ public class WordNet {
             SUMOterm = SUMOterm.replaceAll("[+=@]", "");
         }
         ArrayList result = new ArrayList();
-        result.add((new Integer(POS)) + synset);
+        result.add((Integer.valueOf(POS)) + synset);
         result.add(SUMOterm);
-        result.add((new Integer(bestTotal)).toString());
+        result.add((Integer.valueOf(bestTotal)).toString());
         return result;
     }
 
@@ -1158,7 +1158,7 @@ public class WordNet {
                 String synset = (String) al.get(0); // 9-digit
                 String SUMOterm = (String) al.get(1);
                 String bestTotal = (String) al.get(2);
-                int total = new Integer(bestTotal);
+                int total = Integer.valueOf(bestTotal);
                 if (total > bestScore) {
                     bestScore = total;
                     POS = i;
@@ -1173,7 +1173,7 @@ public class WordNet {
      * ***************************************************************
      * Remove punctuation and contractions from a sentence.
      */
-    private String removePunctuation(String sentence) {
+    private static String removePunctuation(String sentence) {
 
         Matcher m;
 
@@ -1336,7 +1336,7 @@ public class WordNet {
                 }
                 baseDirFile = new File(WordNet.baseDir);
                 wn = new WordNet();
-                wn.compileRegexPatterns();
+                WordNet.compileRegexPatterns();
                 wn.readNouns();
                 wn.readVerbs();
                 wn.readAdjectives();
@@ -2217,7 +2217,7 @@ public class WordNet {
     /**
      * ***************************************************************
      */
-    private String senseKeyPOS(String senseKey) {
+    private static String senseKeyPOS(String senseKey) {
 
         if (senseKey == null || senseKey.isEmpty()) {
             return "";
@@ -2236,7 +2236,7 @@ public class WordNet {
     /**
      * ***************************************************************
      */
-    private String senseKeySenseNum(String senseKey) {
+    private static String senseKeySenseNum(String senseKey) {
 
         if (senseKey == null) {
             return "";
@@ -2280,7 +2280,7 @@ public class WordNet {
      * ***************************************************************
      */
     @SuppressWarnings("HardcodedFileSeparator")
-    private String processWordForProlog(String word) {
+    private static String processWordForProlog(String word) {
 
         String result = word;
         int start = 0;
@@ -2407,7 +2407,7 @@ public class WordNet {
      * ***************************************************************
      * Double any single quotes that appear.
      */
-    public String processPrologString(String doc) {
+    public static String processPrologString(String doc) {
 
         int start = 0;
         while (doc.indexOf('\'', start) > -1) {
@@ -2490,7 +2490,7 @@ public class WordNet {
     /**
      * ***************************************************************
      */
-    public void computeSentenceTerms() {
+    public static void computeSentenceTerms() {
 
         System.out.println("INFO in WordNet.computeSentenceTerms(): computing terms");
 

@@ -68,7 +68,7 @@ public class TextUI {
         return vt;
     }
 
-    public TextUI(NAR n, Terminal t, float fps) throws IOException {
+    public TextUI(NAR n, Terminal t, float fps) {
         this.nar = n;
         TextGUI session = new TextGUI(n, t, fps);
         sessions.add(session);
@@ -263,6 +263,7 @@ public class TextUI {
             tui.addWindowAndWait(window);
         }
 
+        @Override
         public final synchronized void off() {
 
             super.off();

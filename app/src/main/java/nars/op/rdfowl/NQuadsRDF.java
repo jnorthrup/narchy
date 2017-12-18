@@ -478,7 +478,7 @@ public abstract class NQuadsRDF {
      * @return the formatted QName for the tag.
      */
     @NotNull
-    private String formatTag(@NotNull QName qname) {
+    private static String formatTag(@NotNull QName qname) {
         String prefix = qname.getPrefix();
         String suffix = qname.getLocalPart();
 
@@ -495,7 +495,7 @@ public abstract class NQuadsRDF {
      * @param name the input camel cased name.
      * @return the "english" name.
      */
-    private String getEnglishName(@NotNull String name) {
+    private static String getEnglishName(@NotNull String name) {
         StringBuilder englishNameBuilder = new StringBuilder();
         char[] namechars = name.toCharArray();
         for (int i = 0; i < namechars.length; i++) {

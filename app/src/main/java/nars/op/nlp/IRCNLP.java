@@ -37,7 +37,7 @@ import static nars.time.Tense.ETERNAL;
  * ((($x --> (/,hear,#c,_)) &&+1 ($y --> (/,hear,#c,_))) ==> bigram($x,$y)).
  */
 public class IRCNLP extends IRC {
-    private static final Logger logger = LoggerFactory.getLogger(IRCAgent.class);
+    private static final Logger logger = LoggerFactory.getLogger(IRCNLP.class);
 
     //private final Talk talk;
     private final NAR nar;
@@ -375,9 +375,7 @@ public class IRCNLP extends IRC {
 
         try {
             bot.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (IrcException e) {
+        } catch (IOException | IrcException e) {
             e.printStackTrace();
         }
 

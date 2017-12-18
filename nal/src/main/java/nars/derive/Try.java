@@ -5,8 +5,10 @@ import jcog.decide.Roulette;
 import nars.$;
 import nars.control.Cause;
 import nars.control.Derivation;
+import nars.term.Term;
 import org.roaringbitmap.RoaringBitmap;
 
+import java.util.Arrays;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
@@ -20,7 +22,10 @@ public class Try extends AbstractPred<Derivation> {
     public final Cause[] causes;
 
     Try(PrediTerm<Derivation>[] branches, Cause[] causes) {
-        super($.func("try", branches));
+        super($.func("try",
+                branches.length < 127 ? branches :
+                new Term[] {  $.the(Arrays.toString(branches)) } //HACK
+        ));
         this.branches = branches;
         this.causes = causes;
     }

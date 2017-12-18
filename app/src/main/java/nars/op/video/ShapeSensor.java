@@ -564,8 +564,8 @@ public class ShapeSensor implements Runnable {
 
         private void computeOffsetAndScale(BufferedImage img, ScaleOffset so) {
 //		if( scaling != ScaleOptions.NONE ) {
-            double ratioW = (double) getWidth() / (double) img.getWidth();
-            double ratioH = (double) getHeight() / (double) img.getHeight();
+            double ratioW = (double) getWidth() / img.getWidth();
+            double ratioH = (double) getHeight() / img.getHeight();
 
             so.scale = Math.min(ratioW, ratioH);
 //			if( scaling == ScaleOptions.DOWN && so.scale >= 1 )
@@ -689,7 +689,7 @@ public class ShapeSensor implements Runnable {
             Point2D_I32 p1 = vertexes.get(i + 1);
             g2.drawLine(p0.x, p0.y, p1.x, p1.y);
         }
-        if (loop && vertexes.size() > 0) {
+        if (loop && !vertexes.isEmpty()) {
             Point2D_I32 p0 = vertexes.get(0);
             Point2D_I32 p1 = vertexes.get(vertexes.size() - 1);
             g2.drawLine(p0.x, p0.y, p1.x, p1.y);

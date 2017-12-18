@@ -83,19 +83,25 @@ public final class Conclude {
         final Term taskPattern = rule.getTask();
         final Term beliefPattern = rule.getBelief();
 
-        boolean taskIsPatVar = taskPattern.op() == Op.VAR_PATTERN;
-        boolean belIsPatVar = beliefPattern.op() == Op.VAR_PATTERN;
+        Op to = taskPattern.op();
+        boolean taskIsPatVar = to == Op.VAR_PATTERN;
+        Op bo = beliefPattern.op();
+        boolean belIsPatVar = bo == Op.VAR_PATTERN;
 
-        if (!taskIsPatVar)
-            pre.add(new AbstractPatternOp.PatternOp(0, taskPattern.op()));
-        if (!belIsPatVar)
-            pre.add(new AbstractPatternOp.PatternOp(1, beliefPattern.op()));
-
-        if (!taskIsPatVar)
+        if (!taskIsPatVar) {
+            pre.add(new AbstractPatternOp.PatternOp(0, to));
             pre.addAll(SubTermStructure.get(0, taskPattern.structure()));
+        }
+        if (!belIsPatVar) {
+            if (to == bo) {
+                pre.add(new AbstractPatternOp.TaskBeliefOpEqual());
+            } else {
+                pre.add(new AbstractPatternOp.PatternOp(1, bo));
+                pre.addAll(SubTermStructure.get(1, beliefPattern.structure()));
+            }
+        }
 
-        if (!belIsPatVar)
-            pre.addAll(SubTermStructure.get(1, beliefPattern.structure()));
+
 
         //        } else {
         //            if (x0.containsTermRecursively(x1)) {
@@ -146,13 +152,10 @@ public final class Conclude {
     }
 
     private static boolean taskFirst(Term task, Term belief) {
+        return true;
+    }
 
-
-        Ellipsis taskEllipsis = Ellipsis.firstEllipsisRecursive(task);
-//        if (taskEllipsis instanceof EllipsisTransform) {
-//            //belief must be matched first especially for EllipsisTransform
-//            return false;
-//        }
+    private static boolean taskFirst0(Term task, Term belief) {
 
         if (belief.subs() == 0) {
             return false;
@@ -162,18 +165,20 @@ public final class Conclude {
         }
 
         //prefer non-ellipsis matches first
+        Ellipsis taskEllipsis = Ellipsis.firstEllipsisRecursive(task);
+        if (taskEllipsis != null) {
+            return false; //match belief first
+        }
         Ellipsis beliefEllipsis = Ellipsis.firstEllipsisRecursive(belief);
         if (beliefEllipsis != null) {
-            return true;
+            return true; //match task first
         }
-        if (taskEllipsis != null) {
-            return false;
-        }
-
 
         //return task.volume() >= belief.volume();
 
-        return task.volume() <= belief.volume(); //might fold better
+        int tv = task.volume();
+        int bv = belief.volume();
+        return (tv < bv);
 
         //return task.varPattern() <= belief.varPattern();
     }

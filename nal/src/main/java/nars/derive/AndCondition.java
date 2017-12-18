@@ -4,6 +4,7 @@ import jcog.Util;
 import nars.$;
 import nars.term.Term;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -128,8 +129,10 @@ public final class AndCondition<D> extends AbstractPred<D> {
             return yy;
     }
 
-
-
+    @Override
+    public float cost() {
+        return Util.sum((FloatFunction<PrediTerm>) PrediTerm::cost, cond);
+    }
 
 
     /*public AndCondition(@NotNull BooleanCondition<C>[] p) {

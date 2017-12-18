@@ -30,7 +30,7 @@ abstract public class TaskPolarity extends AbstractPred<Derivation> {
 
         @Override
         public float cost() {
-            return 0.5f;
+            return 0.75f;
         }
     };
     public static final PrediTerm<Derivation> taskPos = new TaskPolarity("TaskPos") {
@@ -65,7 +65,7 @@ abstract public class TaskPolarity extends AbstractPred<Derivation> {
 
     @Override
     public float cost() {
-        return 0.1f;
+        return 0.2f;
     }
 
     protected TaskPolarity(String x) {

@@ -1,5 +1,6 @@
 package nars.derive;
 
+import jcog.TODO;
 import jcog.Util;
 import nars.term.Term;
 
@@ -29,7 +30,7 @@ public interface PrediTerm<X> extends Term, Predicate<X> {
     static Comparator<PrediTerm<?>> sort(ToIntFunction<PrediTerm<?>> count) {
         return (a, b) -> {
 
-            if (a.equals(b)) return 0;
+            //if (a.equals(b)) return 0; //doesnt seem to happen
 
             float ac = count.applyAsInt(a) / a.cost();
             float bc = count.applyAsInt(b) / b.cost();
@@ -53,7 +54,7 @@ public interface PrediTerm<X> extends Term, Predicate<X> {
      * warning: these need to return constant values for sort consistency
      */
     default float cost() {
-        return 1;
+        throw new TODO();
     }
 
 //    /** returns null on success; returns this instance on the test failure. go figure */

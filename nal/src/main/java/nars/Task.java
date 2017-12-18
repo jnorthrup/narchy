@@ -124,8 +124,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
             if (!t.isNormalized()) {
                 //HACK
-                @Nullable Term Normalized = t.normalize();
-                if (!Normalized.equals(t))
+                @Nullable Term n = t.normalize();
+                if (!n.equals(t))
                     return fail(t, "task term not a normalized Compound", safe);
             }
         }

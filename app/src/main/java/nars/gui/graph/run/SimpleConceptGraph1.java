@@ -10,7 +10,6 @@ import nars.gui.graph.DynamicConceptSpace;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.test.DeductiveChainTest;
-import nars.test.DeductiveMeshTest;
 
 import static nars.test.DeductiveChainTest.inh;
 
@@ -48,7 +47,7 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
 //        }
 //    }
 
-    public static void main(String[] args) throws Narsese.NarseseException {
+    public static void main(String[] args) {
 
 //        Param.DEBUG = true;
         //Param.TRACE = true;
@@ -179,8 +178,8 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
                 "time", "ALL_Pri", "NAL_Pri", "ConceptFire_Pri", "busy");
 
         MultiStatistics<ITask> exeTasks = new MultiStatistics<ITask>()
-                .classify("NALTask", x -> x instanceof NALTask)
-                .classify("ConceptFire", x -> x instanceof Activate)
+                .classify("NALTask", NALTask.class::isInstance)
+                .classify("ConceptFire", Activate.class::isInstance)
                 ;
 //        n.onCycle((nn)->{
 //            n.exe.forEach(exeTasks);

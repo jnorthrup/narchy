@@ -305,7 +305,7 @@ public class KB {
      * @return a String indicating any errors, or the empty string if there were
      * no errors.
      */
-    public String cache() {
+    public static String cache() {
 
 //        System.out.println("ENTER KB.cache()");
 //        String result = "";
@@ -420,7 +420,7 @@ public class KB {
      *
      * @return The int value 1 if a new entry is added, else 0.
      */
-    private int addRelationCacheEntry(RelationCache cache, String keyTerm, String valueTerm) {
+    private static int addRelationCacheEntry(RelationCache cache, String keyTerm, String valueTerm) {
         int count = 0;
         if ((cache != null) && (keyTerm != null) && (valueTerm != null)) {
             Set valueSet = (Set) cache.get(keyTerm);
@@ -1384,7 +1384,7 @@ public class KB {
      */
     public ArrayList ask(String kind, int argnum, String term) {
 
-        return (ArrayList) formulas.get(kind.compareTo("arg") == 0 ? kind + '-' + new Integer(argnum) + '-' + term : kind + '-' + term);
+        return (ArrayList) formulas.get(kind.compareTo("arg") == 0 ? kind + '-' + Integer.valueOf(argnum) + '-' + term : kind + '-' + term);
     }
 
     /**
@@ -1497,7 +1497,7 @@ public class KB {
      * exist, and so could not be written for some rule. A value of -1
      * probably means that some error occurred.
      */
-    private long writeUserAssertion(String formula, String fname) throws IOException {
+    private static long writeUserAssertion(String formula, String fname) throws IOException {
 
         long flen = -1L;
         FileWriter fr = null;
@@ -1817,7 +1817,7 @@ public class KB {
      * ***************************************************************
      * Create an ArrayList of the specific size, filled with empty strings.
      */
-    private ArrayList arrayListWithBlanks(int size) {
+    private static ArrayList arrayListWithBlanks(int size) {
 
         ArrayList al = new ArrayList(size);
         for (int i = 0; i < size; i++) {
@@ -1914,10 +1914,10 @@ public class KB {
                 if (arg1.equalsIgnoreCase(lingua)) {
                     key = f.getArgument(2);
                     format = f.getArgument(3);
-                    if (format.length() > 0 && format.charAt(0) == '\"') {
+                    if (!format.isEmpty() && format.charAt(0) == '\"') {
                         format = format.substring(1);
                     }
-                    if (format.length() > 0 && format.charAt(format.length() - 1) == '\"') {
+                    if (!format.isEmpty() && format.charAt(format.length() - 1) == '\"') {
                         format = format.substring(0, format.length() - 1);
                     }
                     if (format.indexOf('$') < 0) {
@@ -1944,10 +1944,10 @@ public class KB {
                 if (arg1.equalsIgnoreCase(lingua)) {
                     key = f.getArgument(2);
                     format = f.getArgument(3);
-                    if (format.length() > 0 && format.charAt(0) == '\"') {
+                    if (!format.isEmpty() && format.charAt(0) == '\"') {
                         format = format.substring(1);
                     }
-                    if (format.length() > 0 && format.charAt(format.length() - 1) == '\"') {
+                    if (!format.isEmpty() && format.charAt(format.length() - 1) == '\"') {
                         format = format.substring(0, format.length() - 1);
                     }
                     //if (format.indexOf("$") < 0)
@@ -2360,7 +2360,7 @@ public class KB {
             for (String[] aPatternArray : patternArray) {
                 pName = aPatternArray[0];
                 p = Pattern.compile(aPatternArray[1]);
-                groupN = new Integer(aPatternArray[2]);
+                groupN = Integer.valueOf(aPatternArray[2]);
                 pVal = new ArrayList();
                 pVal.add(p);
                 pVal.add(groupN);
@@ -2848,7 +2848,7 @@ public class KB {
      */
     public static boolean isVariable(String obj) {
         if (Formula.isNonEmptyString(obj)) {
-            return (obj.length() > 0 && obj.charAt(0) == '?' || obj.length() > 0 && obj.charAt(0) == '@');
+            return (!obj.isEmpty() && obj.charAt(0) == '?' || !obj.isEmpty() && obj.charAt(0) == '@');
         }
         return false;
     }
@@ -3208,7 +3208,7 @@ public class KB {
     /**
      * *************************************************************
      */
-    private void writePrologFormulas(ArrayList forms, PrintWriter pr) {
+    private static void writePrologFormulas(ArrayList forms, PrintWriter pr) {
 
         TreeSet ts = new TreeSet(forms);
         if (forms != null) {
@@ -3402,9 +3402,9 @@ public class KB {
                 Formula f2 = (Formula) o2;
                 int fileCompare = f1.sourceFile.compareTo(f2.sourceFile);
                 if (fileCompare == 0) {
-                    fileCompare = (new Integer(f1.startLine)).compareTo(f2.startLine);
+                    fileCompare = Integer.compare(f1.startLine, f2.startLine);
                     if (fileCompare == 0) {
-                        fileCompare = (new Long(f1.endFilePosition)).compareTo(f2.endFilePosition);
+                        fileCompare = Long.compare(f1.endFilePosition, f2.endFilePosition);
                     }
                 }
                 return fileCompare;

@@ -31,8 +31,29 @@ public enum AbstractPatternOp  {
 
 
         @Override
-        public boolean test(@NotNull Derivation ff) {
+        public boolean test(Derivation ff) {
             return (taskOrBelief == 0 ? ff.termSub0op : ff.termSub1op) == opOrdinal;
+        }
+
+        @Override
+        public float cost() {
+            return 0.1f;
+        }
+    }
+   public static final class TaskBeliefOpEqual extends AbstractPred<Derivation> {
+
+        public TaskBeliefOpEqual() {
+            super($.the(TaskBeliefOpEqual.class.getSimpleName()));
+        }
+
+       @Override
+       public boolean equals(Object o) {
+           return super.equals(o);
+       }
+
+       @Override
+        public boolean test(Derivation ff) {
+            return ff.termSub0op == ff.termSub1op;
         }
 
         @Override

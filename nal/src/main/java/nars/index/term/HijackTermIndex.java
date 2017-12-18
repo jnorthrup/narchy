@@ -75,7 +75,7 @@ public class HijackTermIndex extends MaplikeTermIndex {
             }
 
             @Override
-            protected float replace(float incoming, PriReference<Termed> existing) {
+            protected boolean replace(float incoming, PriReference<Termed> existing) {
 
                 boolean existingPermanent = existing.get() instanceof PermanentConcept;
 
@@ -84,7 +84,7 @@ public class HijackTermIndex extends MaplikeTermIndex {
 //                        //throw new RuntimeException("unresolvable hash collision between PermanentConcepts: " + incoming.get() + " , " + existing.get());
 //                        return false;
 //                    }
-                    return -1; //automatic lose
+                    return false; //automatic lose
                 }
 //                boolean incomingPermanent = incoming.get() instanceof PermanentConcept;
 //                if (incomingPermanent)

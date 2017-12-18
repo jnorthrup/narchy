@@ -678,14 +678,13 @@ public enum Draw {
         gl.glBegin(GL2.GL_TRIANGLES);
 
         gl.glColor4f(e.r, e.g, e.b, e.a);
-        //gl.glNormal3f(0,0,1);
         gl.glNormal3f(ww.x, ww.y, ww.z);
 
         gl.glVertex3f(sx + vv.x, sy + vv.y, sz + vv.z); //right base
 
         gl.glVertex3f( //right base
-                //sx + -vv.x, sy + -vv.y, sz + -vv.z //full triangle
-                sx, sy, sz  //half triangle
+                sx + -vv.x, sy + -vv.y, sz + -vv.z //full triangle
+                //sx, sy, sz  //half triangle
         );
 
         gl.glColor4f(e.r / 2f, e.g / 2f, e.b / 2f, e.a * 2 / 3);

@@ -63,9 +63,13 @@ public abstract class Unify extends Versioning implements Subst {
      */
     public int dur = -1;
 
-    /** whether the variable unification allows to happen in reverse (a variable in Y can unify a constant in X) */
+    /**
+     * whether the variable unification allows to happen in reverse (a variable in Y can unify a constant in X)
+     */
     public boolean varSymmetric = true;
-    /** whether common variables are allowed to be substituted on variable match */
+    /**
+     * whether common variables are allowed to be substituted on variable match
+     */
     public boolean varCommonalize = true;
 
 //    /**
@@ -75,7 +79,7 @@ public abstract class Unify extends Versioning implements Subst {
 
 
     /**
-     * @param type       if null, unifies any variable type.  if non-null, only unifies that type
+     * @param type   if null, unifies any variable type.  if non-null, only unifies that type
      * @param random
      */
     protected Unify(@Nullable Op type, Random random, int stackMax, int initialTTL) {
@@ -118,7 +122,7 @@ public abstract class Unify extends Versioning implements Subst {
             }
         } else {
             tryMatch();
-            assert(matches == null);
+            assert (matches == null);
             matches = Collections.emptySet();//indicates that there was a match, by being non-null
         }
     }
@@ -175,7 +179,7 @@ public abstract class Unify extends Versioning implements Subst {
      * of a matching context
      * <p>
      * setting finish=false allows matching in pieces before finishing
-     *
+     * <p>
      * NOT thread safe, use from single thread only at a time
      */
     public boolean unify(Term x, Term y, boolean finish) {
@@ -197,7 +201,7 @@ public abstract class Unify extends Versioning implements Subst {
             if (finish) {
                 tryMatches();
 
-                boolean matched = matches!=null;
+                boolean matched = matches != null;
                 matches = null;
                 return matched;
 
@@ -205,7 +209,7 @@ public abstract class Unify extends Versioning implements Subst {
             return true;
         }
 
-        assert(matches == null);
+        assert (matches == null);
         return false;
     }
 
@@ -326,8 +330,8 @@ public abstract class Unify extends Versioning implements Subst {
 //                return true;
 //            else
 
-                //return y0.equals(y);// || unify(y0, y);
-                return y0.equals(y);
+            //return y0.equals(y);// || unify(y0, y);
+            return y0.equals(y);
 
         } else /*if (matchType(x0))*/ {
 
@@ -337,7 +341,9 @@ public abstract class Unify extends Versioning implements Subst {
 
     }
 
-    /** stack counter, not time */
+    /**
+     * stack counter, not time
+     */
     public final int now() {
         return this.size;
     }
@@ -352,7 +358,9 @@ public abstract class Unify extends Versioning implements Subst {
         return constant(xsubs) && (!varSymmetric || constant(ysubs));
     }
 
-    /** whether is constant with respect to the current matched variable type */
+    /**
+     * whether is constant with respect to the current matched variable type
+     */
     public boolean constant(Termlike x) {
         return !(type == null ?
                 x.hasAny(Op.VAR_DEP.bit | Op.VAR_INDEP.bit | Op.VAR_QUERY.bit) || x.varPattern() > 0 :
@@ -363,9 +371,9 @@ public abstract class Unify extends Versioning implements Subst {
     private class ConstrainedVersionMap extends VersionMap<Term, Term> {
         public ConstrainedVersionMap(Versioning versioning) {
             super(versioning,
-                //4
-                new TermHashMap<>(),
-            1);
+                    //4
+                    new TermHashMap<>(),
+                    1);
         }
 
 //        @Nullable
@@ -398,7 +406,7 @@ public abstract class Unify extends Versioning implements Subst {
 //            }
 //            return false;
 //        }
-        
+
         @Override
         protected Versioned newEntry(Term key) {
             return new ConstrainedVersionedTerm();
@@ -416,7 +424,6 @@ public abstract class Unify extends Versioning implements Subst {
     }
 
     final class ConstrainedVersionedTerm extends Versioned<Term> {
-
 
 
         /**
@@ -448,7 +455,7 @@ public abstract class Unify extends Versioning implements Subst {
 
         @Override
         public void pop() {
-            if (this.size!=0) {
+            if (this.size != 0) {
                 //assert(this.size > 0);
                 this.size = 0;
                 this.items[0] = null;
@@ -483,9 +490,13 @@ public abstract class Unify extends Versioning implements Subst {
     }
 
 
-    public boolean constrain(MatchConstraint... cc) {
-        for (MatchConstraint m : cc) {
-            Versioned<Term> v = xy.getOrCreateIfAbsent(m.target);
+    public boolean constrain(MatchConstraint m) {
+        return constrain(m.target, m);
+    }
+
+    public boolean constrain(Term target, MatchConstraint... mm) {
+        Versioned<Term> v = xy.getOrCreateIfAbsent(target);
+        for (MatchConstraint m : mm) {
             if (!((ConstrainedVersionedTerm) v).constrain(m)) {
                 return false;
             }

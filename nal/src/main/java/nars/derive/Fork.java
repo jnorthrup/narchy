@@ -1,8 +1,10 @@
 package nars.derive;
 
+import jcog.Util;
 import nars.$;
 import nars.control.Derivation;
 import nars.term.Term;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
@@ -19,7 +21,13 @@ public class Fork extends AbstractPred<Derivation> {
 
     protected Fork(PrediTerm[] actions) {
         super($.s((Term[]) actions));
+        assert (actions.length > 0);
         this.branches = actions;
+    }
+
+    @Override
+    public float cost() {
+        return Util.sum((FloatFunction<PrediTerm>) PrediTerm::cost, branches);
     }
 
     @Override

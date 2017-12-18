@@ -234,7 +234,7 @@ public enum LanguageFormatter {
                                 i = line.indexOf('|', i) + 1;
                             }
                             languageKeyArray.add(line.substring(i, i + 2));
-                        } else if (line.length() > 0 && line.charAt(0) == ';' || line.isEmpty()) {  // ignore comment lines
+                        } else if (!line.isEmpty() && line.charAt(0) == ';' || line.isEmpty()) {  // ignore comment lines
                         } else if (line.indexOf('|') > -1) { // Line with phrase alternates in different languages.
                             newLine = new HashMap();
                             key = line.substring(0, line.indexOf('|'));
@@ -498,7 +498,7 @@ public enum LanguageFormatter {
             String arg = f.car();
             String result = nlStmtPara(arg, false, phraseMap, termMap, language, depth + 1);
 
-            if (result != null && !result.isEmpty() && !result.isEmpty()) {
+            if (result != null && !result.isEmpty()) {
                 args.add(result);
             } else {
                 System.out.println("INFO in LanguageFormatter.paraphraseLogicalOperators(): bad result for: " + arg);
@@ -776,7 +776,7 @@ public enum LanguageFormatter {
         strFormat = expandStar(f, strFormat, language);
 
         int num = 1;                                          // handle arguments
-        String argPointer = '%' + (new Integer(num)).toString();
+        String argPointer = '%' + (Integer.valueOf(num)).toString();
         while (strFormat.contains(argPointer)) {
             // System.out.println("INFO in LanguageFormatter.paraphraseWithFormat(): Statement: " + f.theFormula);
             // System.out.println("arg: " + f.getArgument(num));
@@ -784,7 +784,7 @@ public enum LanguageFormatter {
             // System.out.println("str: " + strFormat);
             strFormat = strFormat.replace(argPointer, nlStmtPara(f.getArgument(num), isNegMode, phraseMap, termMap, language, 1));
             num++;
-            argPointer = '%' + (new Integer(num)).toString();
+            argPointer = '%' + (Integer.valueOf(num)).toString();
         }
 
         // System.out.println("str: " + strFormat);

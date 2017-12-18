@@ -81,7 +81,7 @@ public class SoNAR extends TimerTask {
         }
     }
 
-    public SoNAR(NAR n) throws LineUnavailableException {
+    public SoNAR(NAR n) {
         this(n, new Audio(32));
     }
 

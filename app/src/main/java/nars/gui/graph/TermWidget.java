@@ -1,6 +1,5 @@
 package nars.gui.graph;
 
-import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import nars.term.Termed;
 import spacegraph.SimpleSpatial;

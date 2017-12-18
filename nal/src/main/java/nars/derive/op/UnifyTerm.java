@@ -24,6 +24,7 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
         this.pattern = pattern;
     }
 
+
     public static Atomic label(int subterm) {
         return (subterm == 0 ? PremiseRule.Task : PremiseRule.Belief);
     }

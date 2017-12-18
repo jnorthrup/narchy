@@ -26,8 +26,8 @@ public class NARBenchmark {
     @Param("8000")
     String cycles;
 
-    @Param({"heap", "hijack", "caffeine"})
-    String subtermBuilder;
+//    @Param({"heap", "hijack", "caffeine"})
+//    String subtermBuilder;
 
     @Param({"12", "24" })
     String termVolumeMax;
@@ -38,12 +38,12 @@ public class NARBenchmark {
     @Setup
     public void start() {
         Function<Term[], Subterms> h = null;
-        switch (subtermBuilder) {
-            case "heap": h = The.Subterms.RawSubtermBuilder; break;
-            case "hijack": h = The.Subterms.HijackSubtermBuilder.get(); break;
-            case "caffeine": h = The.Subterms.CaffeineSubtermBuilder.get(); break;
-        }
-        The.Subterms.the = h;
+//        switch (subtermBuilder) {
+//            case "heap": h = The.Subterms.RawSubtermBuilder; break;
+//            case "hijack": h = The.Subterms.HijackSubtermBuilder.get(); break;
+//            case "caffeine": h = The.Subterms.CaffeineSubtermBuilder.get(); break;
+//        }
+//        The.Subterms.the = h;
 
         n = NARS.tmp();
         n.nal(Integer.parseInt(nalLevel));

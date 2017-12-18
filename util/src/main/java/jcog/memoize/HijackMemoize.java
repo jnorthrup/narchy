@@ -14,7 +14,6 @@ import org.eclipse.collections.api.block.procedure.primitive.ObjectLongProcedure
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.lang.ref.ReferenceQueue;
 import java.lang.ref.SoftReference;
 import java.util.Random;
 import java.util.function.Consumer;
@@ -305,12 +304,12 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
     }
 
     @Override
-    protected float replace(float incoming, Computation<X, Y> existing) {
-        float damage = super.replace(incoming, existing);
-        if (damage != Float.POSITIVE_INFINITY) {
+    protected boolean replace(float incoming, Computation<X, Y> existing) {
+        if (!super.replace(incoming, existing)) {
             existing.priSub(CACHE_DENY_DAMAGE);
+            return false;
         }
-        return damage;
+        return true;
     }
 
     @Override

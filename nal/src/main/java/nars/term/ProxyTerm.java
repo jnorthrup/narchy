@@ -80,7 +80,11 @@ public class ProxyTerm<T extends Term> implements Term, CompoundDT {
 
 
     @Override public boolean equals(Object o) {
-        return this == o || ref.equals(o);
+        if (this == o) return true;
+        if (o instanceof ProxyTerm) {
+            o = ((ProxyTerm)o).ref;
+        }
+        return ref.equals(o);
     }
 
     @Override
