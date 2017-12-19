@@ -20,6 +20,8 @@ import org.eclipse.collections.api.tuple.primitive.IntFloatPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntFloatHashMap;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+
 import static nars.Op.CONJ;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -52,7 +54,7 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
 
                 if ((matched.start() <= input.start() && matched.end() >= input.end()) &&
                         matched.term().equals(input.term()) &&
-                        Stamp.equalsIgnoreCyclic(matched.stamp(), input.stamp())) {
+                        Arrays.equals(matched.stamp(), input.stamp())) {
 
                     if (PredictionFeedback.absorb(matched, input, start, end, nar)) {
                         Tasklinks.linkTask(matched, matched.priElseZero(), concept, nar);

@@ -1,6 +1,5 @@
 package nars.task;
 
-import jcog.Util;
 import jcog.data.map.CompactArrayMap;
 import jcog.pri.Pri;
 import nars.Param;
@@ -8,8 +7,6 @@ import nars.Task;
 import nars.control.Cause;
 import nars.task.util.InvalidTaskException;
 import nars.term.Term;
-import nars.term.anon.Anom;
-import nars.term.atom.Atom;
 import nars.truth.DiscreteTruth;
 import nars.truth.Truth;
 import nars.truth.Truthed;
@@ -44,6 +41,7 @@ public class NALTask extends Pri implements Task {
     final int hash;
 
     public final CompactArrayMap<String,Object> meta;
+    private boolean cyclic;
 
 
     public NALTask(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws InvalidTaskException {
@@ -123,12 +121,26 @@ public class NALTask extends Pri implements Task {
         return Task.equal(this, t);
     }
 
+    @Override
+    public void setCyclic(boolean c) {
+        this.cyclic = c;
+    }
+
+    @Override
+    public boolean isCyclic() {
+        return cyclic;
+    }
+
 
     /**
      * combine cause: should be called in all Task bags and belief tables on merge
      */
     public void causeMerge(Task incoming) {
         if (incoming == this) return;
+        if (!Arrays.equals(cause(), incoming.cause())) {
+            return; //dont merge if they are duplicates, it's pointless here
+        }
+
         int causeCap = Math.min(Param.CAUSE_LIMIT, incoming.cause().length + cause().length); //TODO use NAR's?
         this.cause = Cause.zip(causeCap, this, incoming);
         Param.taskMerge.merge(this, incoming);

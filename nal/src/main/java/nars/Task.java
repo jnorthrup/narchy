@@ -323,7 +323,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return clone(x, x.term(), x.truth(), newPunc);
     }
 
-
     @Nullable
     static NALTask clone(Task x, Term newContent, Truth newTruth, byte newPunc) {
 
@@ -401,6 +400,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         }
 
     }
+
 
     /**
      * amount of evidence measured at a given time with a given duration window

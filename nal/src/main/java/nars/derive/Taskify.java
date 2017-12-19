@@ -12,11 +12,9 @@ import nars.term.Term;
 import nars.term.pred.AbstractPred;
 import nars.truth.Truth;
 import org.apache.commons.lang3.ArrayUtils;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.function.BiFunction;
 
 import static nars.Param.FILTER_SIMILAR_DERIVATIONS;
@@ -25,8 +23,11 @@ public class Taskify extends AbstractPred<Derivation> {
 
     final static BiFunction<DerivedTask, DerivedTask, DerivedTask> DUPLICATE_DERIVATION_MERGE = (pp, tt) -> {
         pp.priMax(tt.pri());
-        if (!Arrays.equals(pp.cause(), tt.cause())) //dont merge if they are duplicates, it's pointless here
-            pp.causeMerge(tt);
+        pp.causeMerge(tt);
+
+        if (pp.isCyclic() && !tt.isCyclic())
+            pp.setCyclic(false); //propagate uncyclic state for the surviving task
+
         return pp;
     };
     private final static Logger logger = LoggerFactory.getLogger(Taskify.class);
@@ -78,11 +79,13 @@ public class Taskify extends AbstractPred<Derivation> {
             return spam(d, Param.TTL_DERIVE_TASK_FAIL);
         }
 
+        if (d.single)
+            t.setCyclic(true);
+
         if (same(t, d._task, d.freqRes) || (d._belief != null && same(t, d._belief, d.freqRes))) {
             //created a duplicate of the task
             return spam(d, Param.TTL_DERIVE_TASK_SAME);
         }
-
 
         float priority = Param.derivationPriority(t, d)
                 //* channel.amp()
@@ -129,6 +132,9 @@ public class Taskify extends AbstractPred<Derivation> {
                     if (Param.DEBUG_SIMILAR_DERIVATIONS)
                         logger.warn("similar derivation to parent:\n\t{} {}\n\t{}", derived, parent, channel.ruleString);
 
+
+                    if (parent.isCyclic() && !derived.isCyclic())
+                        parent.setCyclic(false);
 
                     if (parent instanceof DerivedTask) {
                         parent.priMax(derived.priElseZero());

@@ -23,6 +23,16 @@ public class NALTaskProxyForOtherContent implements Task {
     }
 
     @Override
+    public void setCyclic(boolean b) {
+        //ignore
+    }
+
+    @Override
+    public boolean isCyclic() {
+        return task.isCyclic();
+    }
+
+    @Override
     public Term term() {
         return term;
     }

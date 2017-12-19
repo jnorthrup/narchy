@@ -24,7 +24,6 @@ import jcog.Util;
 import jcog.io.BinTxt;
 import nars.Op;
 import nars.Param;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.iterator.MutableLongIterator;
 import org.eclipse.collections.api.set.primitive.LongSet;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
@@ -133,12 +132,16 @@ public interface Stamp {
         return toSetArray(c, maxLen);
     }
 
-    /** computes an estimate of self-overlap of a stamp
-     * TODO refine */
-    static float cyclicity(long[] s) {
+//    /** computes an estimate of self-overlap of a stamp
+//     * TODO refine */
+//    static float cyclicity(long[] s) {
+//
+//        return isCyclic(s) ? (float) (0.9f / Math.sqrt(s.length-1)) : 0;
+//    }
 
-        return isCyclic(s) ? (float) (0.9f / Math.sqrt(s.length-1)) : 0;
-    }
+    boolean isCyclic();
+
+    void setCyclic(boolean b);
 
     /*@NotNull*/
     default StringBuilder appendOccurrenceTime(/*@NotNull*/ StringBuilder sb) {
@@ -207,15 +210,14 @@ public interface Stamp {
 
         for (int i = 0; i < len; i++) {
 
-            if (ev[i] == Long.MAX_VALUE && i == len - 1) {
-                buffer.append(';'); //trailing cyclic value
-            } else {
-                BinTxt.append(buffer, ev[i]);
-            }
+            BinTxt.append(buffer, ev[i]);
             if (i < (len - 1)) {
                 buffer.append(Op.STAMP_SEPARATOR);
             }
         }
+
+        if (isCyclic())
+            buffer.append('©'); //ASCII 184 trailing cyclic value
 
         buffer.append(Op.STAMP_CLOSER); //.append(' ');
 
@@ -432,7 +434,6 @@ public interface Stamp {
         }
 
         LongHashSet l = new LongHashSet(maxLen);
-        boolean preCyclic = false;
         int done = 0;
 
         int repeats = 0;
@@ -443,19 +444,12 @@ public interface Stamp {
             Stamp si = s.get(i);
             long[] x = si.stamp();
             int xl = x.length;
-            boolean c = (x[xl - 1] == Long.MAX_VALUE);
-            int r;
-            if (c) {
-                preCyclic = true;
-                r = xl-1;
-            } else {
-                r = xl;
-            }
+            int r = xl;
             totalEvidence += r;
             ptr[i] = (byte)r;
         }
 
-        int limit = (maxLen - (preCyclic ? 1 : 0));
+        int limit = maxLen;
         boolean halted = false;
         main: while (done<S && l.size() < limit) {
             done = 0;
@@ -468,8 +462,6 @@ public interface Stamp {
                     continue;
                 }
                 if (!l.add(x[xi])) {
-                    if (repeats == 0)
-                        limit--; //subtract one from the limit for the eventual cyclic that needs to be at the end
                     repeats++;
                 }
 
@@ -498,68 +490,72 @@ public interface Stamp {
         int ls = l.size();
         assert(ls <= limit);
 
-        boolean cyclic = preCyclic | (repeats > 0);
-
-        long[] e = new long[ls + (cyclic ? 1 : 0)];
+        long[] e = new long[ls];
         MutableLongIterator ll = l.longIterator();
         int k = 0;
         while (ll.hasNext()) {
             e[k++] = ll.next();
         }
 
-        if (cyclic)
-            e[k] = Long.MAX_VALUE;
-
         if (ls > 1)
             Arrays.sort(e);
 
-        return pair(e, (((float)repeats)/totalEvidence));
+        //HACK count cyclic as part of the scalar returned, but this isnt an accurate value
+        float overlap = ((float) repeats) / totalEvidence;
+        for (int i = 0, sSize = s.size(); i < sSize; i++) {
+            Stamp x = s.get(i);
+            if (x.isCyclic())
+                overlap += 1f/sSize;
+        }
+
+        return pair(e, Util.unitize(overlap));
     }
 
 
     /** cyclic tasks are indicated with a final value of Long.MAX_VALUE */
-    static boolean isCyclic(/*@NotNull*/ long[] e) {
-        int length = e.length;
-        return (length > 1 && e[length -1] == Long.MAX_VALUE);
+    @Deprecated static boolean isCyclic(/*@NotNull*/ long[] e) {
+        return false;
+//        int length = e.length;
+//        return (length > 1 && e[length -1] == Long.MAX_VALUE);
     }
 
-    static long[] uncyclic(/*@NotNull*/ long[] assumedCyclic) {
+//    static long[] uncyclic(/*@NotNull*/ long[] assumedCyclic) {
+//
+//        return ArrayUtils.remove(assumedCyclic, assumedCyclic.length-1);
+//    }
+//    static long[] cyclic(/*@NotNull*/ long[] x) {
+//        int l = x.length;
+//
+//        if (isCyclic(x))
+//            return x;
+//
+//        long[] y;
+//        if (l >= Param.STAMP_CAPACITY) {
+//            y = new long[Param.STAMP_CAPACITY];
+//            //shift left by one to leave the last entry free
+//            System.arraycopy(x, 1, y, 0, Param.STAMP_CAPACITY -1);
+//        } else {
+//            y = new long[l+1];
+//            System.arraycopy(x, 0, y, 0, l);
+//        }
+//
+//        y[y.length-1] = Long.MAX_VALUE;
+//        return y;
+//    }
 
-        return ArrayUtils.remove(assumedCyclic, assumedCyclic.length-1);
-    }
-    static long[] cyclic(/*@NotNull*/ long[] x) {
-        int l = x.length;
-
-        if (isCyclic(x))
-            return x;
-
-        long[] y;
-        if (l >= Param.STAMP_CAPACITY) {
-            y = new long[Param.STAMP_CAPACITY];
-            //shift left by one to leave the last entry free
-            System.arraycopy(x, 1, y, 0, Param.STAMP_CAPACITY -1);
-        } else {
-            y = new long[l+1];
-            System.arraycopy(x, 0, y, 0, l);
-        }
-
-        y[y.length-1] = Long.MAX_VALUE;
-        return y;
-    }
-
-    static boolean equalsIgnoreCyclic(long[] a, long[] b) {
-        boolean aCyclic = isCyclic(a);
-        if (aCyclic ^ isCyclic(b)) {
-            int alen = a.length;
-            if (aCyclic) {
-                if (alen != b.length+1) return false;
-                return Util.equals(a, b, alen-1);
-            } else {
-                if (alen != b.length-1) return false;
-                return Util.equals(a, b, alen);
-            }
-        } else {
-            return Util.equals(a, b);
-        }
-    }
+//    static boolean equalsIgnoreCyclic(long[] a, long[] b) {
+//        boolean aCyclic = isCyclic(a);
+//        if (aCyclic ^ isCyclic(b)) {
+//            int alen = a.length;
+//            if (aCyclic) {
+//                if (alen != b.length+1) return false;
+//                return Util.equals(a, b, alen-1);
+//            } else {
+//                if (alen != b.length-1) return false;
+//                return Util.equals(a, b, alen);
+//            }
+//        } else {
+//            return Util.equals(a, b);
+//        }
+//    }
 }

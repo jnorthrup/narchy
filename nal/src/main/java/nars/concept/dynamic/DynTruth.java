@@ -140,6 +140,7 @@ public final class DynTruth {
 
         NALTask dyn = new NALTask(c, beliefOrGoal ? Op.BELIEF : Op.GOAL,
                 tr, nar.time(), start, (start == ETERNAL || c.op().temporal) ? start : end, stamp);
+        if (ss.getTwo() > 0) dyn.setCyclic(true);
         dyn.cause = cause(nar);
         dyn.priSet(priority);
 

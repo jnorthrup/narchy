@@ -392,7 +392,7 @@ public class Derivation extends ProtoDerivation {
         }
 
         long[] taskStamp = task.stamp();
-        this.overlapSingle = Stamp.cyclicity(taskStamp);
+        this.overlapSingle = task.isCyclic() ? 1 : 0; //Stamp.cyclicity(taskStamp);
 
         if (_belief != null) {
             beliefTruth = _belief.truth();
@@ -420,7 +420,7 @@ public class Derivation extends ProtoDerivation {
 //                            Stamp.overlapFraction(taskStamp, beliefStamp),
 //                            Stamp.cyclicity(beliefStamp)
 //                    );
-                    Stamp.overlapFraction(taskStamp, beliefStamp);
+                    Math.max(task.isCyclic() ? 1 : 0, Stamp.overlapFraction(taskStamp, beliefStamp));
         } else {
             beliefTruth = null;
             this.overlapDouble = 0;
@@ -484,7 +484,9 @@ public class Derivation extends ProtoDerivation {
     @Nullable
     public long[] evidenceSingle() {
         if (evidenceSingle == null) {
-            evidenceSingle = Stamp.cyclic(task.stamp());
+            evidenceSingle =
+                task.stamp();
+                //Stamp.cyclic(task.stamp());
         }
         return evidenceSingle;
     }
