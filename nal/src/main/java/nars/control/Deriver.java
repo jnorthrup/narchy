@@ -142,7 +142,7 @@ public class Deriver extends Causable {
         int ttlMax = nar.matchTTLmax.intValue();
 
 
-        int premisesRemain[] = new int[]{work};
+//        int premisesRemain[] = new int[]{work};
 
         //hard limit on # of concepts processed. since usually there will be >1 premises per concept, this will normally not be exhausted
         int conceptsRemain[] = new int[]{work};
@@ -163,9 +163,9 @@ public class Deriver extends Causable {
                     int deriveTTL = Util.lerp(strength,ttlMin, ttlMax);
 
                     d.derive(deriveTTL);
-
-                    if (--premisesRemain[0] <= 0)
-                        return false; //done
+//
+//                    if (--premisesRemain[0] <= 0)
+//                        return false; //done
                 }
             }
 
@@ -174,7 +174,7 @@ public class Deriver extends Causable {
 
         int derived = d.commit(nar::input);
 
-        return work - premisesRemain[0];
+        return work - conceptsRemain[0];
     }
 
 

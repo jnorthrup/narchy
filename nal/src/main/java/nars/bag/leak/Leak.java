@@ -29,4 +29,8 @@ public class Leak<X, Y> {
     public void clear() {
         bag.clear();
     }
+
+    public boolean isEmpty() {
+        return bag.isEmpty();
+    }
 }

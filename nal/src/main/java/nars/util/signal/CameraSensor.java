@@ -48,6 +48,7 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
 
     private long lastUpdate;
     int pixelsRemainPerUpdate = 0;
+    static final int minUpdateDurs = 1;
 
     //private long stamp;
 
@@ -222,7 +223,7 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
         int totalPixels = pixels.size();
 
         long now = nar.time();
-        if (this.lastUpdate != now) {
+        if (now - this.lastUpdate >= nar.dur() * minUpdateDurs) {
             src.update(1);
             pixelsRemainPerUpdate = totalPixels;
             this.lastUpdate = now;

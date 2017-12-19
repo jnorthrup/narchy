@@ -67,8 +67,12 @@ public abstract class TaskLeak extends Causable {
     protected int next(NAR nar, int work) {
 //        return in.commit(nar.time(), dt, nar.dur(),
 //                work/((float)in.bag.capacity()));
-        in.commit(nar.time(),  nar.dur(), 1);
-        return 1;
+
+        if (in.isEmpty())
+            return -1; //done for the cycle
+
+        float done = in.commit(nar.time(),  nar.dur(), work);
+        return Math.round(done);
     }
 
     public final void accept(NAR nar, Task t) {

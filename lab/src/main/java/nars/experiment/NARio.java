@@ -325,7 +325,7 @@ public class NARio extends NAgentX {
 //            }
 
 
-        }, 16);
+        }, 24);
 
 
 //        ArrayList<PLink<Concept>> x = Lists.newArrayList(nar.conceptsActive());

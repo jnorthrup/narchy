@@ -153,7 +153,7 @@ abstract public class NAgentX extends NAgent {
                 .exe(new MultiExec
                         //Intense
                         //CoolNQuiet
-                        (512, THREADS, 1024))
+                        (1024, THREADS, 512))
 
                 .time(clock)
                 .deriverAdd(1, 1)
@@ -192,7 +192,7 @@ abstract public class NAgentX extends NAgent {
         n.goalConfidence(0.9f);
 
 
-        float priFactor = 0.25f;
+        float priFactor = 0.5f;
         n.DEFAULT_BELIEF_PRIORITY = 1f * priFactor;
         n.DEFAULT_GOAL_PRIORITY = 1f * priFactor;
         n.DEFAULT_QUESTION_PRIORITY = 1f * priFactor;

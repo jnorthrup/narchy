@@ -85,7 +85,7 @@ public class TrieDeriverTest {
         System.out.println(d);
 
         String ds = d.toString();
-        assertTrue(ds.contains("&|?2"));
+        assertTrue(ds.contains("?2&|"));
         assertTrue(ds.contains("&&+- ?2"));
 
 
