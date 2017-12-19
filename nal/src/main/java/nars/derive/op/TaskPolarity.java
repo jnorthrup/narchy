@@ -1,19 +1,20 @@
 package nars.derive.op;
 
 import nars.control.Derivation;
-import nars.derive.AbstractPred;
-import nars.derive.PrediTerm;
+import nars.control.ProtoDerivation;
+import nars.term.pred.AbstractPred;
+import nars.term.pred.PrediTerm;
 import nars.truth.Truth;
 
 /**
  * task truth is postiive
  */
-abstract public class TaskPolarity extends AbstractPred<Derivation> {
+abstract public class TaskPolarity extends AbstractPred<ProtoDerivation> {
 
 
-//    public static final PrediTerm<Derivation> taskContainsBelief = new TaskPolarity("TaskContainsBelief") {
+//    public static final PrediTerm<ProtoDerivation> taskContainsBelief = new TaskPolarity("TaskContainsBelief") {
 //        @Override
-//        public boolean test(Derivation m) {
+//        public boolean test(ProtoDerivation m) {
 //            return m.taskTerm.contains(m.beliefTerm) || (m.taskTerm.hasAny(Op.NEG) && m.taskTerm.contains(m.beliefTerm.neg()));
 //        }
 //
@@ -22,9 +23,9 @@ abstract public class TaskPolarity extends AbstractPred<Derivation> {
 //            return 0.5f;
 //        }
 //    };
-    public static final PrediTerm<Derivation> taskContainsBeliefRecursively = new TaskPolarity("TaskContainsBelief") {
+    public static final PrediTerm<ProtoDerivation> taskContainsBeliefRecursively = new TaskPolarity("TaskContainsBelief") {
         @Override
-        public boolean test(Derivation m) {
+        public boolean test(ProtoDerivation m) {
             return m.taskTerm.containsRecursively(m.beliefTerm);
         }
 
@@ -33,31 +34,31 @@ abstract public class TaskPolarity extends AbstractPred<Derivation> {
             return 0.75f;
         }
     };
-    public static final PrediTerm<Derivation> taskPos = new TaskPolarity("TaskPos") {
+    public static final PrediTerm<ProtoDerivation> taskPos = new TaskPolarity("TaskPos") {
         @Override
-        public boolean test(Derivation m) {
+        public boolean test(ProtoDerivation m) {
             Truth t = m.taskTruth;
             return (t != null && t.freq() >= 0.5f);
         }
 
     };
-    public static final PrediTerm<Derivation> taskNeg = new TaskPolarity("TaskNeg") {
+    public static final PrediTerm<ProtoDerivation> taskNeg = new TaskPolarity("TaskNeg") {
         @Override
-        public boolean test(Derivation m) {
+        public boolean test(ProtoDerivation m) {
             Truth t = m.taskTruth;
             return (t != null && t.freq() < 0.5f);
         }
     };
-    public static final PrediTerm<Derivation> beliefPos = new TaskPolarity("BeliefPos") {
+    public static final PrediTerm<ProtoDerivation> beliefPos = new TaskPolarity("BeliefPos") {
         @Override
-        public boolean test(Derivation d) {
+        public boolean test(ProtoDerivation d) {
             Truth B = d.beliefTruth;
             return B != null && B.freq() >= 0.5f;
         }
     };
-    public static final PrediTerm<Derivation> beliefNeg = new TaskPolarity("BeliefNeg") {
+    public static final PrediTerm<ProtoDerivation> beliefNeg = new TaskPolarity("BeliefNeg") {
         @Override
-        public boolean test(Derivation d) {
+        public boolean test(ProtoDerivation d) {
             Truth B = d.beliefTruth;
             return B != null && B.freq() < 0.5f;
         }

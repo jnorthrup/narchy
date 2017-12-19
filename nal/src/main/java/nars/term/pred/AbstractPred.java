@@ -1,8 +1,9 @@
-package nars.derive;
+package nars.term.pred;
 
 import nars.$;
 import nars.term.ProxyTerm;
 import nars.term.Term;
+import nars.term.pred.PrediTerm;
 
 /**
  * Created by me on 4/21/17.

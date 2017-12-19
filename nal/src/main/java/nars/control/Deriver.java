@@ -6,6 +6,7 @@ import nars.derive.*;
 import nars.derive.instrument.DebugDerivationPredicate;
 import nars.derive.rule.PremiseRuleSet;
 import nars.index.term.PatternIndex;
+import nars.term.pred.PrediTerm;
 
 import java.io.PrintStream;
 import java.util.function.Consumer;
@@ -32,7 +33,8 @@ public class Deriver extends Causable {
     public static Function<NAR, Deriver> deriver(Function<NAR, PremiseRuleSet> rules) {
         return (nar) ->
                 new Deriver(PrediTrie.the(rules.apply(nar),
-                        Param.TRACE ? DebugDerivationPredicate::new : null
+                        //Param.TRACE ? DebugDerivationPredicate::new : null
+                        null
                 ), nar);
     }
 
@@ -66,7 +68,7 @@ public class Deriver extends Causable {
         this.source = source;
         this.nar = nar;
 
-        PrediTrie.DeriverRoot root = (PrediTrie.DeriverRoot) (deriver);
+        DeriverRoot root = (DeriverRoot) (deriver);
         Try t = root.can;
         subCauses = t.causes;
 

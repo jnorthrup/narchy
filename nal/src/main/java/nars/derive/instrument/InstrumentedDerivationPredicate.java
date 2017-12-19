@@ -1,8 +1,9 @@
 package nars.derive.instrument;
 
 import nars.control.Derivation;
-import nars.derive.AbstractPred;
-import nars.derive.PrediTerm;
+import nars.control.ProtoDerivation;
+import nars.term.pred.AbstractPred;
+import nars.term.pred.PrediTerm;
 import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 

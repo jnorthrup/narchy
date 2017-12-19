@@ -4,7 +4,7 @@ import jcog.event.On;
 import nars.$;
 import nars.NAR;
 import nars.Task;
-import nars.derive.PrediTerm;
+import nars.term.pred.PrediTerm;
 import nars.term.Term;
 import nars.util.SoftException;
 import org.jetbrains.annotations.NotNull;

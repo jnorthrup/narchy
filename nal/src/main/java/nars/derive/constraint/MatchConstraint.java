@@ -1,17 +1,15 @@
 package nars.derive.constraint;
 
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
-import com.google.common.primitives.Floats;
 import jcog.TODO;
 import jcog.Util;
 import jcog.list.FasterList;
 import nars.$;
 import nars.control.Derivation;
-import nars.derive.AbstractPred;
-import nars.derive.AndCondition;
-import nars.derive.PrediTerm;
+import nars.term.pred.AbstractPred;
+import nars.term.pred.AndCondition;
+import nars.term.pred.PrediTerm;
 import nars.term.Term;
 import nars.term.subst.Unify;
 import org.apache.commons.lang3.ArrayUtils;

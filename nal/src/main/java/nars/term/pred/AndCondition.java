@@ -1,4 +1,4 @@
-package nars.derive;
+package nars.term.pred;
 
 import jcog.Util;
 import nars.$;
@@ -12,9 +12,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-/**
- * TODO generify beyond only Derivation
- */
+
 public final class AndCondition<D> extends AbstractPred<D> {
 
     @Override
@@ -36,7 +34,6 @@ public final class AndCondition<D> extends AbstractPred<D> {
 //        this(p.toArray(new PrediTerm[p.size()]));
 //    }
 
-    @NotNull
     public final PrediTerm<D>[] cond;
 
     public static @Nullable <D> PrediTerm<D> the(List<PrediTerm<D>> cond) {
@@ -80,10 +77,10 @@ public final class AndCondition<D> extends AbstractPred<D> {
     }
 
     public PrediTerm<D> first() {
-        return cond[0];
+        return Util.first(cond);
     }
     public PrediTerm<D> last() {
-        return cond[cond.length-1];
+        return Util.last(cond);
     }
 
     /** chase the last of the last of the last(...etc.) condition in any number of recursive AND's */
@@ -106,7 +103,7 @@ public final class AndCondition<D> extends AbstractPred<D> {
         return transform(o -> o, f);
     }
 
-    public PrediTerm<D> transform(Function<AndCondition,PrediTerm<D>> outer, Function<PrediTerm<D>, PrediTerm<D>> f) {
+    public PrediTerm<D> transform(Function<AndCondition<D>,PrediTerm<D>> outer, Function<PrediTerm<D>, PrediTerm<D>> f) {
         PrediTerm[] yy = transformedConditions(f);
         PrediTerm<D> z = yy != cond ? AndCondition.the(yy) : this;
         if (z instanceof AndCondition)
@@ -134,42 +131,11 @@ public final class AndCondition<D> extends AbstractPred<D> {
         return Util.sum((FloatFunction<PrediTerm>) PrediTerm::cost, cond);
     }
 
-
-    /*public AndCondition(@NotNull BooleanCondition<C>[] p) {
-        this(TermVector.the((Term[])p));
-    }*/
-
-
-    //    /** just attempts to evaluate the condition, causing any desired side effects as a result */
-//    @Override public final void accept(@NotNull PremiseEval m, int now) {
-//        booleanValueOf(m, now);
-////        m.revert(now);
-//    }
-
-
     public @Nullable PrediTerm<D> without(PrediTerm<D> condition) {
         PrediTerm[] x = ArrayUtils.remove(cond, ArrayUtils.indexOf(cond, condition)); assert(x.length != cond.length);
         return AndCondition.the(x);
     }
 
-//    @Override
-//    public PrediTerm exec(D d, CPU c) {
-//
-//        int i;
-//        final int cacheLength = cache.length;
-//        for (i = 0; i < cacheLength; i++) {
-//            PrediTerm p = cache[i];
-//
-//            //if p.exec returns the same value (stored in 'q') and not a different or null, this is the signal that p.test FAILED
-//            PrediTerm q = p.exec(d, c);
-//            if (q == p)
-//                break;
-//        }
-//
-//        ((Derivation)d).use((1+i) * Param.TTL_PREDICATE);
-//
-//        return null;
-//    }
 
 
 }

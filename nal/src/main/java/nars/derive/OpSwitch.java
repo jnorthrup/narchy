@@ -2,8 +2,10 @@ package nars.derive;
 
 import nars.$;
 import nars.Op;
-import nars.control.Derivation;
+import nars.control.ProtoDerivation;
 import nars.term.Term;
+import nars.term.pred.AbstractPred;
+import nars.term.pred.PrediTerm;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,14 +15,14 @@ import java.util.function.Function;
 /**
  * TODO generify key/value
  */
-public final class OpSwitch extends AbstractPred<Derivation> {
+public final class OpSwitch<D extends ProtoDerivation> extends AbstractPred<D> {
 
-    public final EnumMap<Op, PrediTerm<Derivation>> cases;
+    public final EnumMap<Op, PrediTerm<D>> cases;
     public final PrediTerm[] swtch;
     public final boolean taskOrBelief;
 
-        @Override
-    public boolean test(Derivation m) {
+    @Override
+    public boolean test(ProtoDerivation m) {
 
         PrediTerm p = branch(m);
         if (p != null)
@@ -29,11 +31,12 @@ public final class OpSwitch extends AbstractPred<Derivation> {
         return true;
     }
 
-    @Override public float cost() {
+    @Override
+    public float cost() {
         return 0.25f;
     }
 
-    OpSwitch(boolean taskOrBelief, @NotNull EnumMap<Op, PrediTerm<Derivation>> cases) {
+    OpSwitch(boolean taskOrBelief, @NotNull EnumMap<Op, PrediTerm<D>> cases) {
         super(/*$.impl*/ $.func("op", $.the(taskOrBelief ? "task" : "belief"), $.p(cases.entrySet().stream().map(e -> $.p($.quote(e.getKey().toString()), e.getValue())).toArray(Term[]::new))));
 
         swtch = new PrediTerm[24]; //check this range
@@ -43,11 +46,11 @@ public final class OpSwitch extends AbstractPred<Derivation> {
     }
 
     @Override
-    public PrediTerm<Derivation> transform(Function<PrediTerm<Derivation>, PrediTerm<Derivation>> f) {
-        EnumMap<Op, PrediTerm<Derivation>> e2 = cases.clone();
+    public PrediTerm<D> transform(Function<PrediTerm<D>, PrediTerm<D>> f) {
+        EnumMap<Op, PrediTerm<D>> e2 = cases.clone();
         final boolean[] changed = {false};
         e2.replaceAll(((k, x) -> {
-            PrediTerm<Derivation> y = x.transform(f);
+            PrediTerm<D> y = x.transform(f);
             if (y != x)
                 changed[0] = true;
             return y;
@@ -59,15 +62,13 @@ public final class OpSwitch extends AbstractPred<Derivation> {
     }
 
 
-
-
     @Nullable
-    public PrediTerm<Derivation> branch(Derivation m) {
+    public PrediTerm<D> branch(ProtoDerivation m) {
         return swtch[taskOrBelief ? m.taskOp : m.beliefOp];
     }
 
 //    @Override
-//    public PrediTerm<Derivation> exec(Derivation d, CPU cpu) {
+//    public PrediTerm<D> exec(Derivation d, CPU cpu) {
 //        return branch(d);
 //    }
 

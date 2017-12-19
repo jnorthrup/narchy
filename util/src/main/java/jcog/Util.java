@@ -2116,6 +2116,10 @@ public enum Util {
         return count.updateValue(key, branchBit, (x) -> (byte) (x | branchBit));
     }
 
+    public static <X> X first(X[] x) {
+        return x[0];
+    }
+
     public static <X> X last(X[] x) {
         return x[x.length - 1];
     }

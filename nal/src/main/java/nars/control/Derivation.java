@@ -3,7 +3,6 @@ package nars.control;
 import jcog.pri.Pri;
 import jcog.version.Versioned;
 import nars.*;
-import nars.derive.PrediTerm;
 import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
 import nars.op.Subst;
@@ -20,8 +19,8 @@ import nars.term.anon.CachedAnon;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.pred.PrediTerm;
 import nars.term.sub.Subterms;
-import nars.term.subst.Unify;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthOperator;
@@ -96,7 +95,7 @@ public class Derivation extends ProtoDerivation {
      */
     public long time = ETERNAL;
 
-    public Truth taskTruth, beliefTruth;
+
     public Task _task;
     public Task _belief;
 
@@ -296,8 +295,9 @@ public class Derivation extends ProtoDerivation {
     }
 
     public Derivation reset() {
+        super.reset();
+
         anon.clear();
-        termutes.clear();
         preToPost.clear();
         this.forEachMatch = null;
         this.concTruth = null;
@@ -307,14 +307,10 @@ public class Derivation extends ProtoDerivation {
         this.evidenceDouble = evidenceSingle = null;
         this.dtSingle = this.dtDouble = null;
         this.concOcc[0] = this.concOcc[1] = ETERNAL;
-
-        this.task = this.belief = this._task = this._belief = null;
-        this.beliefTerm = null;
-        this.beliefTruth = this.taskTruth = null;
-
-        this.size = 0; //HACK instant revert to zero
-        this.xy.map.clear(); //must also happen to be consistent
+        this._task = this._belief = null;
         this.derivedTerm.clear();
+
+
         //        if (revert(0)) {
         //remove common variable entries because they will just consume memory if retained as empty
 //            xy.map.keySet().removeIf(k -> {
@@ -335,7 +331,7 @@ public class Derivation extends ProtoDerivation {
         final Task task = this.task = anon.put(this._task = _task);
         if (task == null)
             throw new NullPointerException(_task + " could not be anonymized: " +
-                    _task.term().anon() + " , " + anon.put(this._task = _task)) ;
+                    _task.term().anon() + " , " + anon.put(this._task = _task));
 
         if (_belief != null) {
             if ((this.belief = anon.put(this._belief = _belief)) == null)
@@ -349,7 +345,6 @@ public class Derivation extends ProtoDerivation {
 
         this.termSub0Struct = taskTerm.structure();
         this.taskOp = taskTerm.op().id;
-
 
 
 //        int ttv = taskTerm.vars();

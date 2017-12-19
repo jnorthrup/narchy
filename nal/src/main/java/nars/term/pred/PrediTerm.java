@@ -1,13 +1,17 @@
-package nars.derive;
+package nars.term.pred;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.list.FasterList;
 import nars.term.Term;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
+import java.util.stream.Stream;
 
 /**
  * a term representing a predicate (boolean-returning) function of a state
@@ -15,7 +19,6 @@ import java.util.function.ToIntFunction;
  * @param X the type of state that is relevant to implementations
  */
 public interface PrediTerm<X> extends Term, Predicate<X> {
-
 
 
     Comparator<PrediTerm> sortByCost = (a, b) -> {
@@ -42,6 +45,35 @@ public interface PrediTerm<X> extends Term, Predicate<X> {
 
     static <X> PrediTerm<X>[] transform(Function<PrediTerm<X>, PrediTerm<X>> f, PrediTerm[] cache) {
         return Util.map(x -> x.transform(f), new PrediTerm[cache.length], cache);
+    }
+
+    static PrediTerm compileSeq(PrediTerm[] p) {
+        switch (p.length) {
+            case 0: return null;
+            case 1: return p[0];
+            default:
+                //PrediTerm[] pp = p.clone();
+                FasterList<PrediTerm> pp = new FasterList(p);
+                Iterator<PrediTerm> ppp = pp.iterator();
+                while (ppp.hasNext()) {
+                    if (!ppp.next().remainInAND(p))
+                        ppp.remove();
+                }
+                if (pp.size() > 1)
+                    pp.sort(sortByCost);
+
+                return AndCondition.the(pp.toArrayRecycled(PrediTerm[]::new));
+        }
+    }
+
+    @Nullable
+    static <X> PrediTerm<X> ifThen(Stream<PrediTerm<X>> cond, @Nullable PrediTerm<X> conseq) {
+        return
+            compileSeq(
+                    (conseq != null ? Stream.concat(cond, Stream.of(conseq)) : cond)
+                        .toArray(PrediTerm[]::new)
+            )
+        ;
     }
 
     default PrediTerm<X> transform(Function<PrediTerm<X>, PrediTerm<X>> f) {

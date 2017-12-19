@@ -5,6 +5,7 @@ import nars.NAR;
 import nars.Op;
 import nars.control.Cause;
 import nars.control.Derivation;
+import nars.control.ProtoDerivation;
 import nars.derive.constraint.MatchConstraint;
 import nars.derive.match.Ellipsis;
 import nars.derive.op.AbstractPatternOp;
@@ -15,6 +16,8 @@ import nars.derive.rule.PremiseRule;
 import nars.index.term.PatternIndex;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.pred.AndCondition;
+import nars.term.pred.PrediTerm;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 
@@ -77,7 +80,7 @@ public final class Conclude {
 
     }
 
-    public static void match(final PremiseRule rule, List<PrediTerm<Derivation>> pre, List<PrediTerm<Derivation>> post, @NotNull SortedSet<MatchConstraint> constraints, PatternIndex index, NAR nar) {
+    public static void match(final PremiseRule rule, List<PrediTerm<ProtoDerivation>> pre, List<PrediTerm<Derivation>> post, @NotNull SortedSet<MatchConstraint> constraints, PatternIndex index, NAR nar) {
 
         PrediTerm<Derivation> conc = the(rule, index, nar);
 

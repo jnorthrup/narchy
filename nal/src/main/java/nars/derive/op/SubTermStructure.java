@@ -3,9 +3,9 @@ package nars.derive.op;
 import nars.$;
 import nars.Op;
 import nars.control.Derivation;
-import nars.derive.AbstractPred;
-import nars.derive.PrediTerm;
-import nars.derive.constraint.OpIs;
+import nars.control.ProtoDerivation;
+import nars.term.pred.AbstractPred;
+import nars.term.pred.PrediTerm;
 
 import java.util.Collections;
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * requires a specific subterm to have minimum bit structure
  */
-public final class SubTermStructure extends AbstractPred<Derivation> {
+public final class SubTermStructure extends AbstractPred<ProtoDerivation> {
 
     /** higher number means a stucture with more enabled bits will be decomposed to its components */
     public static final int SPLIT_THRESHOLD = 3;
@@ -73,7 +73,7 @@ public final class SubTermStructure extends AbstractPred<Derivation> {
     }
 
     @Override
-    public boolean test(Derivation ff) {
+    public boolean test(ProtoDerivation ff) {
         //if the OR produces a different result compared to subterms,
         // it means there is some component of the other term which is not found
         //return ((possibleSubtermStructure | existingStructure) != existingStructure);

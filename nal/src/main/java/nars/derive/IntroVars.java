@@ -3,6 +3,7 @@ package nars.derive;
 import nars.control.Derivation;
 import nars.op.DepIndepVarIntroduction;
 import nars.term.Term;
+import nars.term.pred.AbstractPred;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 

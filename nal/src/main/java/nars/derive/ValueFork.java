@@ -6,6 +6,9 @@ import nars.$;
 import nars.control.Cause;
 import nars.control.Derivation;
 import nars.derive.op.UnifyTerm;
+import nars.term.pred.AbstractPred;
+import nars.term.pred.AndCondition;
+import nars.term.pred.PrediTerm;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.List;
@@ -14,7 +17,7 @@ import java.util.function.Function;
 /**
  * AIKR value-determined fork (aka choice-point)
  */
-public class ValueFork extends Fork {
+public class ValueFork extends ForkDerivation<Derivation> {
 
     final Taskify[] conc;
 

@@ -6,7 +6,7 @@ import nars.NARS;
 import nars.Narsese;
 import nars.control.Derivation;
 import nars.control.Deriver;
-import nars.derive.PrediTerm;
+import nars.term.pred.PrediTerm;
 import nars.derive.PrediTrie;
 import nars.derive.instrument.DebugDerivationPredicate;
 import nars.derive.rule.PremiseRule;

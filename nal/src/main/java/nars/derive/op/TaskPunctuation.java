@@ -1,15 +1,16 @@
 package nars.derive.op;
 
 import nars.control.Derivation;
-import nars.derive.AbstractPred;
-import nars.derive.PrediTerm;
+import nars.control.ProtoDerivation;
+import nars.term.pred.AbstractPred;
+import nars.term.pred.PrediTerm;
 
 import static nars.Op.*;
 
 /**
  * Created by me on 8/27/15.
  */
-final public class TaskPunctuation extends AbstractPred<Derivation> {
+final public class TaskPunctuation extends AbstractPred<ProtoDerivation> {
 
     public final byte punc;
 
@@ -24,7 +25,7 @@ final public class TaskPunctuation extends AbstractPred<Derivation> {
 
 
     @Override
-    public final boolean test( Derivation m) {
+    public final boolean test(ProtoDerivation m) {
         return m.taskPunct == punc;
     }
 
@@ -33,12 +34,12 @@ final public class TaskPunctuation extends AbstractPred<Derivation> {
         return 0.1f;
     }
 
-    public static final PrediTerm<Derivation> Belief = new TaskPunctuation(BELIEF);
-    public static final PrediTerm<Derivation> Goal = new TaskPunctuation(GOAL);
+    public static final PrediTerm<ProtoDerivation> Belief = new TaskPunctuation(BELIEF);
+    public static final PrediTerm<ProtoDerivation> Goal = new TaskPunctuation(GOAL);
 
-    public static final PrediTerm<Derivation> BeliefOrGoal = new AbstractPred<Derivation>("task:\".!\"") {
+    public static final PrediTerm<ProtoDerivation> BeliefOrGoal = new AbstractPred<ProtoDerivation>("task:\".!\"") {
         @Override
-        public boolean test( Derivation o) {
+        public boolean test(ProtoDerivation o) {
             byte c = o.taskPunct;
             return c == BELIEF || c == GOAL;
         }
@@ -50,10 +51,9 @@ final public class TaskPunctuation extends AbstractPred<Derivation> {
     };
 
 
+    public static final PrediTerm<ProtoDerivation> Question = new TaskPunctuation(QUESTION);
 
-    public static final PrediTerm<Derivation> Question = new TaskPunctuation(QUESTION);
-
-    public static final PrediTerm<Derivation> Quest = new TaskPunctuation(QUEST);
+    public static final PrediTerm<ProtoDerivation> Quest = new TaskPunctuation(QUEST);
 
 
 }

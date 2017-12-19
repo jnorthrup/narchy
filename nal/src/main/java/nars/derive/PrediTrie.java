@@ -5,10 +5,14 @@ import jcog.tree.perfect.TrieNode;
 import nars.$;
 import nars.Op;
 import nars.control.Derivation;
+import nars.control.ProtoDerivation;
 import nars.derive.constraint.MatchConstraint;
 import nars.derive.op.TaskBeliefOp;
 import nars.derive.rule.PremiseRuleSet;
 import nars.term.Term;
+import nars.term.pred.AndCondition;
+import nars.term.pred.Fork;
+import nars.term.pred.PrediTerm;
 import nars.util.TermTrie;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
@@ -25,14 +29,14 @@ import java.util.stream.StreamSupport;
  */
 public final class PrediTrie {
 
-    final TermTrie<PrediTerm<Derivation>, PrediTerm<Derivation>> pre;
+    final TermTrie<PrediTerm<Derivation>, PrediTerm<Derivation>> path;
     final FasterList<ValueFork> postChoices = new FasterList();
 
     public PrediTrie(PremiseRuleSet r) {
 
-        pre = new TermTrie<>();
+        path = new TermTrie<>();
 
-        Map<Set<Term>, RoaringBitmap> pre = new HashMap<>(r.size());
+        Map<Set<PrediTerm<ProtoDerivation>>, RoaringBitmap> post = new HashMap<>(r.size());
         List<PrediTerm<Derivation>> conclusions = $.newArrayList(r.size() * 4);
 
         ObjectIntHashMap<Term> preconditionCount = new ObjectIntHashMap(256);
@@ -43,14 +47,14 @@ public final class PrediTrie {
 
             for (PostCondition p : rule.POST) {
 
-                Pair<Set<Term>, PrediTerm<Derivation>> c = rule.build(p);
+                Pair<Set<PrediTerm<ProtoDerivation>>, PrediTerm<Derivation>> c = rule.build(p);
 
                 c.getOne().forEach((k) -> preconditionCount.addToValue(k, 1));
 
                 int id = conclusions.size();
                 conclusions.add(c.getTwo());
 
-                pre.computeIfAbsent(c.getOne(), (x) -> new RoaringBitmap()).add(id);
+                post.computeIfAbsent(c.getOne(), (x) -> new RoaringBitmap()).add(id);
 
 
             }
@@ -60,26 +64,27 @@ public final class PrediTrie {
 //            preconditionCount.keyValuesView().toSortedListBy((x)->x.getTwo()).forEach((x)->System.out.println(Texts.iPad(x.getTwo(),3) + "\t" + x.getOne() ));
 
 
-        Comparator<PrediTerm<?>> sort = PrediTerm.sort(preconditionCount::get);
+        Comparator sort = PrediTerm.sort(preconditionCount::get);
 
         List<List<Term>> paths = $.newArrayList();
-        pre.forEach((k, v) -> {
+        post.forEach((k, v) -> {
 
             FasterList<PrediTerm<Derivation>> path = new FasterList(k);
             path.sort(sort);
 
-            PrediTerm<Derivation>[] ll = StreamSupport.stream(v.spliterator(), false).map((i) -> conclusions.get(i).transform((Function) null)).toArray(PrediTerm[]::new);
+            PrediTerm<Derivation>[] ll = StreamSupport.stream(v.spliterator(), false)
+                    .map((i) -> conclusions.get(i).transform((Function) null)).toArray(PrediTerm[]::new);
             assert (ll.length != 0);
 
             ValueFork cx = ValueFork.the(ll, postChoices, v);
             path.add(cx.valueBranch);
-            this.pre.put(path, cx);
+            this.path.put(path, cx);
         });
 
     }
 
 
-    public static PrediTerm<Derivation> the(PremiseRuleSet r, Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
+    public static DeriverRoot the(PremiseRuleSet r, Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
         PrediTrie t = new PrediTrie(r);
 
         FasterList<ValueFork> pc = t.postChoices;
@@ -91,7 +96,7 @@ public final class PrediTrie {
                 if (xx instanceof AndCondition) {
                     PrediTerm yy = ((AndCondition) xx).transform((y) -> {
                         if (y instanceof AndCondition) {
-                            return MatchConstraint.combineConstraints((AndCondition)y);
+                            return MatchConstraint.combineConstraints((AndCondition) y);
                         }
                         return y;
                     }, (sub) -> sub);
@@ -101,46 +106,20 @@ public final class PrediTrie {
 
         }
         return new DeriverRoot(//AndCondition.the(
-                PrediTrie.compile(t.pre, each),
+                PrediTrie.compile(t.path, each),
                 new Try(t.postChoices.toArrayRecycled(ValueFork[]::new)));
-    }
-
-    static public final class DeriverRoot extends AbstractPred<Derivation> {
-
-        public final PrediTerm<Derivation> what;
-        public final Try can;
-
-        public DeriverRoot(PrediTerm<Derivation> what, Try can) {
-            super($.p(what, can ));
-            this.what = what;
-            this.can = can;
-        }
-
-        @Override
-        public boolean test(Derivation x) {
-            int ttl = x.ttl;
-            x.ttl = Integer.MAX_VALUE;
-
-            what.test(x);
-
-            x.ttl = ttl;  //HACK forward the specified TTL for use during the possibility phase
-
-            can.test(x);
-
-            return true;
-        }
     }
 
 
     public PrediTerm<Derivation> compile(Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
-        return compile(pre, each);
+        return compile(path, each);
     }
 
-    public static PrediTerm<Derivation> compile(TermTrie<PrediTerm<Derivation>, PrediTerm<Derivation>> trie, Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
-        List<PrediTerm<Derivation>> bb = compile(trie.root);
-        PrediTerm[] roots = bb.toArray(new PrediTerm[bb.size()]);
+    static <D extends ProtoDerivation> PrediTerm<D> compile(TermTrie<PrediTerm<D>, PrediTerm<D>> trie, Function<PrediTerm<D>, PrediTerm<D>> each) {
+        List<PrediTerm<D>> bb = compile(trie.root);
+        PrediTerm<D>[] roots = bb.toArray(new PrediTerm[bb.size()]);
 
-        PrediTerm<Derivation> tf = Fork.fork(roots);
+        PrediTerm tf = Fork.fork(roots, x -> new ForkDerivation(x));
         if (each != null)
             tf = tf.transform(each);
 
@@ -148,22 +127,24 @@ public final class PrediTrie {
     }
 
 
-    static List<PrediTerm<Derivation>> compile(@NotNull TrieNode<List<PrediTerm<Derivation>>, PrediTerm<Derivation>> node) {
+    static <D extends ProtoDerivation> List<PrediTerm<D>> compile(TrieNode<List<PrediTerm<D>>, PrediTerm<D>> node) {
 
 
-        List<PrediTerm<Derivation>> bb = $.newArrayList(node.childCount());
+        List<PrediTerm<D>> bb = $.newArrayList(node.childCount());
 //        assert(node.getKey()!=null);
 //        assert(node.getValue()!=null);
 
         node.forEach(n -> {
 
-            List<PrediTerm<Derivation>> conseq = compile(n);
+            var conseq = compile(n);
 
             int nStart = n.start();
             int nEnd = n.end();
-            PrediTerm<Derivation> branch = TrieDeriver.ifThen(
-                    TrieDeriver.conditions(n.seq().stream().skip(nStart).limit(nEnd - nStart)),
-                    !conseq.isEmpty() ? (PrediTerm<Derivation>) Fork.fork(conseq.toArray(new PrediTerm[conseq.size()])) : null
+            PrediTerm<D> branch = PrediTerm.ifThen(
+                    n.seq().stream().skip(nStart).limit(nEnd - nStart),
+                    !conseq.isEmpty() ?
+                            Fork.fork(conseq.toArray(new PrediTerm[conseq.size()]), x -> new ForkDerivation(x))
+                            : null
             );
 
             if (branch != null)
@@ -173,7 +154,7 @@ public final class PrediTrie {
         return compileSwitch(bb);
     }
 
-    protected static List<PrediTerm<Derivation>> compileSwitch(List<PrediTerm<Derivation>> bb) {
+    protected static <D extends ProtoDerivation> List<PrediTerm<D>> compileSwitch(List<PrediTerm<D>> bb) {
 
         bb = factorSubOpToSwitch(bb, true, 2);
         bb = factorSubOpToSwitch(bb, false, 2);
@@ -182,10 +163,10 @@ public final class PrediTrie {
     }
 
     @NotNull
-    private static List<PrediTerm<Derivation>> factorSubOpToSwitch(@NotNull List<PrediTerm<Derivation>> bb, boolean taskOrBelief, int minToCreateSwitch) {
+    private static <D extends ProtoDerivation> List<PrediTerm<D>> factorSubOpToSwitch(List<PrediTerm<D>> bb, boolean taskOrBelief, int minToCreateSwitch) {
         if (!bb.isEmpty()) {
-            Map<TaskBeliefOp, PrediTerm<Derivation>> cases = $.newHashMap(8);
-            List<PrediTerm<Derivation>> removed = $.newArrayList(); //in order to undo
+            Map<TaskBeliefOp, PrediTerm<D>> cases = $.newHashMap(8);
+            List<PrediTerm<D>> removed = $.newArrayList(); //in order to undo
             bb.removeIf(p -> {
                 if (p instanceof AndCondition) {
                     AndCondition ac = (AndCondition) p;
@@ -214,9 +195,9 @@ public final class PrediTrie {
                     throw new RuntimeException("switch fault");
                 }
 
-                EnumMap<Op, PrediTerm<Derivation>> caseMap = new EnumMap(Op.class);
+                EnumMap<Op, PrediTerm<D>> caseMap = new EnumMap(Op.class);
                 cases.forEach((c, p) -> caseMap.put(Op.values()[c.op], p));
-                bb.add(new OpSwitch(taskOrBelief, caseMap));
+                bb.add(new OpSwitch<D>(taskOrBelief, caseMap));
             } else {
                 bb.addAll(removed); //undo
             }

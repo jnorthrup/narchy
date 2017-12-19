@@ -1,7 +1,6 @@
-package nars.derive;
+package nars.term.pred;
 
 import nars.$;
-import nars.control.Derivation;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,11 +12,11 @@ import java.util.function.Function;
  * <p>
  * TODO generify beyond only Derivation
  */
-public class Fork extends AbstractPred<Derivation> {
+public class Fork<X> extends AbstractPred<X> {
 
-    public final PrediTerm<Derivation>[] branches;
+    public final PrediTerm<X>[] branches;
 
-    protected Fork(PrediTerm[] actions) {
+    protected Fork(PrediTerm<X>[] actions) {
         super($.s((Term[]) actions));
         assert (actions.length > 0);
         this.branches = actions;
@@ -29,25 +28,20 @@ public class Fork extends AbstractPred<Derivation> {
     }
 
     @Override
-    public PrediTerm<Derivation> transform(Function<PrediTerm<Derivation>, PrediTerm<Derivation>> f) {
-        return fork(PrediTerm.transform(f, branches));
+    public PrediTerm<X> transform(Function<PrediTerm<X>, PrediTerm<X>> f) {
+        return fork(PrediTerm.transform(f, branches), x -> new Fork(x));
     }
 
     /**
      * simple exhaustive impl
      */
     @Override
-    public boolean test(Derivation m) {
-
-        int before = m.now();
+    public boolean test(X x) {
 
         for (PrediTerm c : branches) {
 
-            c.test(m);
+            c.test(x);
 
-            if (!m.revertLive(before)) { //maybe possible to eliminate for pre's
-                return false;
-            }
         }
 
         return true;
@@ -84,14 +78,14 @@ public class Fork extends AbstractPred<Derivation> {
 //    }
 
     @Nullable
-    public static PrediTerm<Derivation> fork(PrediTerm<Derivation>[] n) {
+    public static <X> PrediTerm<X> fork(PrediTerm<X>[] n, Function<PrediTerm<? extends X>[], PrediTerm<X>> builder) {
         switch (n.length) {
             case 0:
                 return null;
             case 1:
                 return n[0];
             default:
-                return new Fork(n);
+                return builder.apply(n);
         }
     }
 

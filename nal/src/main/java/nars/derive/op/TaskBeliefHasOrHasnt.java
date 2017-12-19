@@ -2,13 +2,14 @@ package nars.derive.op;
 
 import nars.$;
 import nars.control.Derivation;
-import nars.derive.AbstractPred;
+import nars.control.ProtoDerivation;
+import nars.term.pred.AbstractPred;
 
 
 /**
  * Created by me on 5/19/17.
  */
-public final class TaskBeliefHasOrHasnt extends AbstractPred<Derivation> {
+public final class TaskBeliefHasOrHasnt extends AbstractPred<ProtoDerivation> {
     private final int structure;
     private final boolean task;
     private final boolean belief;
@@ -23,7 +24,7 @@ public final class TaskBeliefHasOrHasnt extends AbstractPred<Derivation> {
     }
 
     @Override
-    public boolean test(Derivation derivation) {
+    public boolean test(ProtoDerivation derivation) {
         return includeOrExclude ==
                ((!task || derivation.taskTerm.hasAny(structure))
                     &&

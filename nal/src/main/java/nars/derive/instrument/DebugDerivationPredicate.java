@@ -2,9 +2,9 @@ package nars.derive.instrument;
 
 import jcog.Texts;
 import nars.control.Derivation;
-import nars.derive.AndCondition;
-import nars.derive.Fork;
-import nars.derive.PrediTerm;
+import nars.term.pred.AndCondition;
+import nars.term.pred.Fork;
+import nars.term.pred.PrediTerm;
 import nars.derive.op.UnifyTerm;
 import org.fusesource.jansi.Ansi;
 

@@ -5,6 +5,7 @@ import nars.control.Derivation;
 import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
 import nars.term.Term;
+import nars.term.pred.AbstractPred;
 import nars.term.transform.Retemporalize;
 
 import static nars.Op.*;

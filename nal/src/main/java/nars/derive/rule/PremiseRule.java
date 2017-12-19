@@ -7,6 +7,7 @@ import nars.NAR;
 import nars.Op;
 import nars.The;
 import nars.control.Derivation;
+import nars.control.ProtoDerivation;
 import nars.derive.*;
 import nars.derive.constraint.*;
 import nars.derive.op.*;
@@ -18,6 +19,8 @@ import nars.term.Termed;
 import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.pred.AndCondition;
+import nars.term.pred.PrediTerm;
 import nars.term.sub.Subterms;
 import nars.term.transform.CompoundTransform;
 import nars.truth.func.BeliefFunction;
@@ -56,7 +59,7 @@ public class PremiseRule /*extends GenericCompound*/ {
     /**
      * conditions which can be tested before unification
      */
-    private PrediTerm[] PRE;
+    private PrediTerm<ProtoDerivation>[] PRE;
 
     /**
      * consequences applied after unification
@@ -68,7 +71,7 @@ public class PremiseRule /*extends GenericCompound*/ {
 
 
     final SortedSet<MatchConstraint> constraints = new TreeSet(PrediTerm.sortByCost);
-    final List<PrediTerm<Derivation>> pre = $.newArrayList();
+    final List<PrediTerm<ProtoDerivation>> pre = $.newArrayList();
     final List<PrediTerm<Derivation>> post = $.newArrayList();
 
     PremiseRule(Pair<PremiseRule, String> x) {
@@ -107,7 +110,7 @@ public class PremiseRule /*extends GenericCompound*/ {
     /**
      * compiles the conditions which are necessary to activate this rule
      */
-    public Pair<Set<Term>, PrediTerm<Derivation>> build(PostCondition post) {
+    public Pair<Set<PrediTerm<ProtoDerivation>>, PrediTerm<Derivation>> build(PostCondition post) {
 
         byte puncOverride = post.puncOverride;
 
@@ -138,7 +141,7 @@ public class PremiseRule /*extends GenericCompound*/ {
                 new Solve.SolvePuncOverride(ii, puncOverride, belief, goal);
 
         //PREFIX
-        Set<Term> precon = newHashSet(4); //for ensuring uniqueness / no duplicates
+        Set<PrediTerm<ProtoDerivation>> precon = newHashSet(4); //for ensuring uniqueness / no duplicates
 
         addAll(precon, PRE);
 

@@ -2,13 +2,14 @@ package nars.derive.op;
 
 import nars.Task;
 import nars.control.Derivation;
-import nars.derive.AbstractPred;
-import nars.derive.PrediTerm;
+import nars.control.ProtoDerivation;
+import nars.term.pred.AbstractPred;
+import nars.term.pred.PrediTerm;
 
 /**
  * fast task/belief occurrence tests
  */
-abstract public class TaskBeliefOccurrence extends AbstractPred<Derivation> {
+abstract public class TaskBeliefOccurrence extends AbstractPred<ProtoDerivation> {
 
     TaskBeliefOccurrence(String x) {
         super(x);
@@ -35,7 +36,7 @@ abstract public class TaskBeliefOccurrence extends AbstractPred<Derivation> {
 //    public static final PrediTerm eventsOrEternals = new TaskBeliefOccurrence("eventsOrEternals") {
 //
 //        @Override
-//        public boolean test(Derivation m) {
+//        public boolean test(ProtoDerivation m) {
 //            Task b = m.belief;
 //            if (b == null)
 //                return false;
@@ -49,7 +50,7 @@ abstract public class TaskBeliefOccurrence extends AbstractPred<Derivation> {
     public static final PrediTerm after = new TaskBeliefOccurrence("after") {
 
         @Override
-        public boolean test(Derivation m) {
+        public boolean test(ProtoDerivation m) {
             Task b = m.belief;
             if (b == null)
                 return false;
@@ -64,7 +65,7 @@ abstract public class TaskBeliefOccurrence extends AbstractPred<Derivation> {
     public static final PrediTerm afterOrEternals = new TaskBeliefOccurrence("afterOrEternals") {
 
         @Override
-        public boolean test(Derivation m) {
+        public boolean test(ProtoDerivation m) {
             Task b = m.belief;
             if (b == null)
                 return false;

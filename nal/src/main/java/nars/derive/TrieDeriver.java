@@ -1,16 +1,19 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.list.FasterList;
 import nars.Op;
 import nars.control.Derivation;
+import nars.control.ProtoDerivation;
 import nars.derive.op.UnifyTerm;
+import nars.term.pred.AbstractPred;
+import nars.term.pred.AndCondition;
+import nars.term.pred.Fork;
+import nars.term.pred.PrediTerm;
 import nars.util.TermTrie;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.Iterator;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -31,10 +34,10 @@ public enum TrieDeriver {
 
         TermTrie.indent(indent);
 
-        if (p instanceof PrediTrie.DeriverRoot) {
+        if (p instanceof DeriverRoot) {
 
-            PrediTrie.DeriverRoot r = (PrediTrie.DeriverRoot) p;
-            print(AndCondition.the(r.what,r.can) /* HACK */, out, indent);
+            DeriverRoot r = (DeriverRoot) p;
+            print(AndCondition.the(new PrediTerm[] { r.what,r.can } ) /* HACK */, out, indent);
 
         } else if (p instanceof UnifyTerm.UnifySubtermThenConclude) {
             UnifyTerm.UnifySubtermThenConclude u = (UnifyTerm.UnifySubtermThenConclude)p;
@@ -135,7 +138,7 @@ public enum TrieDeriver {
 //            out.println("}");
 
         } else if (p instanceof OpSwitch) {
-            OpSwitch sw = (OpSwitch) p;
+            OpSwitch<?> sw = (OpSwitch) p;
             //TermTrie.indent(indent);
             //out.println("SubTermOp" + sw.subterm + " {");
             for (PrediTerm b : sw.cases.values()) {
@@ -203,7 +206,7 @@ public enum TrieDeriver {
 //            out.println("}");
 
         } else if (x instanceof OpSwitch) {
-            OpSwitch sw = (OpSwitch) x;
+            OpSwitch<?> sw = (OpSwitch) x;
             //TermTrie.indent(indent);
             //out.println("SubTermOp" + sw.subterm + " {");
             for (PrediTerm y : sw.cases.values()) {
@@ -288,35 +291,6 @@ public enum TrieDeriver {
 //    }
 
 
-    @Nullable
-    public static PrediTerm<Derivation> ifThen(Stream<PrediTerm<Derivation>> cond, @Nullable PrediTerm<Derivation> conseq) {
-        return
-            TrieDeriver.compileSeq(
-                    (conseq != null ? Stream.concat(cond, Stream.of(conseq)) : cond)
-                        .toArray(PrediTerm[]::new)
-            )
-        ;
-    }
-
-    static PrediTerm compileSeq(PrediTerm[] p) {
-        switch (p.length) {
-            case 0: return null;
-            case 1: return p[0];
-            default:
-                //PrediTerm[] pp = p.clone();
-                FasterList<PrediTerm> pp = new FasterList(p);
-                Iterator<PrediTerm> ppp = pp.iterator();
-                while (ppp.hasNext()) {
-                    if (!ppp.next().remainInAND(p))
-                        ppp.remove();
-                }
-                if (pp.size() > 1)
-                    pp.sort(PrediTerm.sortByCost);
-
-                return AndCondition.the(pp.toArrayRecycled(PrediTerm[]::new));
-        }
-    }
-
     public static void print(PrediTerm<Derivation> d) {
         print(d, System.out);
     }
@@ -386,34 +360,34 @@ public enum TrieDeriver {
 //        return curr;
 //    }
 
-    @NotNull
-    static Stream<PrediTerm<Derivation>> conditions(@NotNull Stream<PrediTerm<Derivation>> t) {
-
+//    @NotNull
+//    static Stream<PrediTerm<ProtoDerivation>> conditions(@NotNull Stream<PrediTerm<ProtoDerivation>> t) {
 //
-//            final AtomicReference<UnificationPrototype> unificationParent = new AtomicReference<>(null);
-//
-//            return t.filter(x -> {
-//                if (x instanceof Conclude) {
-//                    //link this derivation action to the previous Match,
-//                    //allowing multiple derivations to fold within a Match's actions
-//                    UnificationPrototype mt = unificationParent.getAndSet(null);
-//                    if (mt == null) {
-//                        throw new RuntimeException("detached Derive action: " + x + " in branch: " + t);
-//                        //System.err.println("detached Derive action: " + x + " in branch: " + t);
-//                    } else {
-//                        mt.derive((Conclude) x);
-//                    }
-//                    return false;
-//                } else if (x instanceof BoolPred) {
-//                    if (x instanceof UnificationPrototype) {
-//
-//                        unificationParent.set((UnificationPrototype) x);
-//                    }
-//                }
-//                return true;
-        /*filter(x -> !(x instanceof Conclude)).*/
-        return t;
-    }
+////
+////            final AtomicReference<UnificationPrototype> unificationParent = new AtomicReference<>(null);
+////
+////            return t.filter(x -> {
+////                if (x instanceof Conclude) {
+////                    //link this derivation action to the previous Match,
+////                    //allowing multiple derivations to fold within a Match's actions
+////                    UnificationPrototype mt = unificationParent.getAndSet(null);
+////                    if (mt == null) {
+////                        throw new RuntimeException("detached Derive action: " + x + " in branch: " + t);
+////                        //System.err.println("detached Derive action: " + x + " in branch: " + t);
+////                    } else {
+////                        mt.derive((Conclude) x);
+////                    }
+////                    return false;
+////                } else if (x instanceof BoolPred) {
+////                    if (x instanceof UnificationPrototype) {
+////
+////                        unificationParent.set((UnificationPrototype) x);
+////                    }
+////                }
+////                return true;
+//        /*filter(x -> !(x instanceof Conclude)).*/
+//        return t;
+//    }
 
 
     //    @NotNull

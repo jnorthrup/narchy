@@ -26,7 +26,7 @@ import jcog.data.sexpression.Pair;
 import nars.$;
 import nars.IO;
 import nars.Op;
-import nars.derive.AbstractPred;
+import nars.term.pred.AbstractPred;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.TermContext;
 import nars.term.anon.Anon;

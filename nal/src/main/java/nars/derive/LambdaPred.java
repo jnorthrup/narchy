@@ -2,6 +2,7 @@ package nars.derive;
 
 import nars.$;
 import nars.term.Term;
+import nars.term.pred.AbstractPred;
 
 import java.util.function.Predicate;
 
