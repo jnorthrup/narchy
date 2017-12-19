@@ -64,7 +64,7 @@ public class Hear extends Loop {
         @NotNull List<Narsese.NarseseException> errors = $.newArrayList();
 
         try {
-            Narsese.parse().tasks(msg, parsed, nar);
+            Narsese.the().tasks(msg, parsed, nar);
         } catch (Narsese.NarseseException ignored) {
             //ignore and continue below
         }

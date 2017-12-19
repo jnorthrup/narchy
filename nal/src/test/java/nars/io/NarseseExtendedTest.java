@@ -105,7 +105,7 @@ public class NarseseExtendedTest extends NarseseTest {
 
 
     static void eqTerm(@NotNull String shorter, String expected) {
-        Narsese p = Narsese.parse();
+        Narsese p = Narsese.the();
 
 
         try {
@@ -121,7 +121,7 @@ public class NarseseExtendedTest extends NarseseTest {
 
 
     static void eqTask(String x, String b) throws Narsese.NarseseException {
-        Task a = Narsese.parse().task(x + '.', NARS.shell());
+        Task a = Narsese.the().task(x + '.', NARS.shell());
         assertNotNull(a);
         assertEquals(b, a.term().toString());
     }
@@ -153,7 +153,7 @@ public class NarseseExtendedTest extends NarseseTest {
 
     @Test
     public void testNamespaceLikeJSON() throws Narsese.NarseseException {
-        Narsese p = Narsese.parse();
+        Narsese p = Narsese.the();
         Term a = Narsese.term("{ a:x, b:{x,y} }");
         assertNotNull(a);
         assertEquals(Narsese.term("{<{x,y}-->b>, <x-->a>}"), a);

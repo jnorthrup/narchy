@@ -25,7 +25,7 @@ public class FileInput {
         return t;
     }
     public static List<Task> tasks(@NotNull final NAR nar, @NotNull File input) throws IOException, Narsese.NarseseException {
-        return Narsese.parse().tasks(load(input), nar);
+        return Narsese.the().tasks(load(input), nar);
     }
 
     public static String load(@NotNull String path) throws IOException {

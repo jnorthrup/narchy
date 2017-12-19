@@ -46,7 +46,7 @@ public class PremiseRuleTest {
     @Test
     public void testParser() throws Narsese.NarseseException {
 
-        final Narsese p = Narsese.parse();
+        final Narsese p = Narsese.the();
 
         //NAR p = new NAR(new Default());
 

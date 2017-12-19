@@ -84,7 +84,14 @@ public class MultiExec extends AbstractExec {
 
                 @Deprecated float throttle = nar.loop.throttle.floatValue();
 
-                double cycleTime = nar.loop.cycleTime.getMean();
+                float subCycle = 0.5f;
+                double cycleTime = subCycle * nar.loop.periodMS.intValue()/1000f;
+
+                if (cycleTime < 0) {
+                    Util.sleep(1);
+                    cycleTime = 0.1;
+                }
+
                 if (cycleTime!=cycleTime)
                     cycleTime = 0.1f; //10hz alpha
 

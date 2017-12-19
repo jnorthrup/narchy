@@ -343,6 +343,11 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
 //            fpsCounter.setUpdateFPSFrames(isARM ? 60 : 4 * 60, System.err);
             this.loop = new Loop(-1) {
 
+
+                {
+                    setExclusiveContext(animThread);
+                }
+
                 @Override
                 protected void onStart() {
                     isAnimating = true;
@@ -447,9 +452,7 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
 
 
 
-            animThread = loop.thread();
             loop.runFPS(initialFPS);
-            setExclusiveContext(animThread);
             setDrawablesExclCtxState(exclusiveContext); // may re-enable exclusive context
 
         }

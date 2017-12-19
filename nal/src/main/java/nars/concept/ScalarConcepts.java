@@ -2,6 +2,7 @@ package nars.concept;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import jcog.Util;
+import jcog.math.AtomicFloat;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
@@ -32,7 +33,7 @@ import static nars.Op.BELIEF;
 public class ScalarConcepts extends NARService implements Iterable<SensorConcept>, Consumer<NAR>, FloatSupplier {
 
 
-    final AtomicDouble value = new AtomicDouble();
+    final AtomicFloat value = new AtomicFloat();
     public final CauseChannel<ITask> in;
 
     @Override

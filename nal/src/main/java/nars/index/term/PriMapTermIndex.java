@@ -155,7 +155,7 @@ public class PriMapTermIndex extends MaplikeTermIndex {
                 if (probe == null)
                     probe = Iterables.cycle(concepts::linkIterator).iterator();
 
-                int num = Math.round(concepts.cleaner.periodMS.get() * itemsPerMS * evictPower);
+                int num = Math.round(concepts.cleaner.periodMS.intValue() * itemsPerMS * evictPower);
                 for (int i = 0; probe.hasNext() && i < num; i++) {
                     TLink<Term, Concept> next = probe.next();
                     Concept c = next.get();

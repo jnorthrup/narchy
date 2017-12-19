@@ -2,7 +2,10 @@ package jcog.exe;
 
 import jcog.Texts;
 import jcog.Util;
+import jcog.math.MutableInteger;
+import org.apache.commons.lang3.mutable.MutableFloat;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.util.SortedMap;
@@ -18,7 +21,7 @@ abstract public class Loop {
 
     protected static final Logger logger = getLogger(Loop.class);
 
-    public final AtomicReference<Thread> thread = new AtomicReference();
+    private Thread thread = null;
 
     protected final int windowLength = 8;
 
@@ -46,7 +49,7 @@ abstract public class Loop {
      * 0: loop at full speed
      * > 0: delay in milliseconds
      */
-    public final AtomicInteger periodMS = new AtomicInteger(-1);
+    public final MutableInteger periodMS = new MutableInteger(-1);
 
 
     @Override
@@ -79,7 +82,7 @@ abstract public class Loop {
     }
 
     public boolean isRunning() {
-        return thread.get() != null;
+        return thread != null;
     }
 
     public final Loop runFPS(float fps) {
@@ -92,21 +95,20 @@ abstract public class Loop {
         return this;
     }
 
-    public final boolean setPeriodMS(int nextPeriodMS) {
+    public synchronized final boolean setPeriodMS(int nextPeriodMS) {
         int prevPeriodMS;
         if ((prevPeriodMS = periodMS.getAndSet(nextPeriodMS)) != nextPeriodMS) {
             if (prevPeriodMS < 0 && nextPeriodMS >= 0) {
-                Thread myNewThread = new Thread(this::run);
-                if (thread.compareAndSet(null, myNewThread)) {
-                    myNewThread.start();
-                }
+                Thread myNewThread = newThread();
+                myNewThread.start();
             } else if (prevPeriodMS >= 0 && nextPeriodMS < 0) {
-                Thread prevThread;
-                if ((prevThread = thread.getAndSet(null)) != null) {
+                Thread prevThread = this.thread;
+                if (prevThread!= null) {
                     try {
                         prevThread.stop();
                     } catch (Throwable ignored) {
                     }
+                    this.thread = null;
                     logger.info("stop {}", this);
                 }
             } else if (prevPeriodMS >= 0) {
@@ -116,6 +118,15 @@ abstract public class Loop {
             return true;
         }
         return false;
+    }
+
+    protected synchronized Thread newThread() {
+        if (this.thread!=null)
+            throw new RuntimeException("thread already started: " + thread);
+
+        Thread t = new Thread(this::run);
+        this.thread = t;
+        return t;
     }
 
     public void stop() {
@@ -139,8 +150,7 @@ abstract public class Loop {
     /**
      * dont call this directly
      */
-    protected final void run() {
-        assert (thread.get() == Thread.currentThread());
+    private synchronized final void run() {
 
         onStart();
 
@@ -201,14 +211,14 @@ abstract public class Loop {
     }
 
     protected int nextPeriodMS() {
-        return this.periodMS.get();
+        return this.periodMS.intValue();
     }
 
     abstract public boolean next();
 
     public void join() {
         try {
-            Thread t = thread.get();
+            Thread t = thread;
             if (t != null) {
                 t.join();
             } else {
@@ -219,10 +229,6 @@ abstract public class Loop {
         }
     }
 
-
-    public Thread thread() {
-        return thread.get();
-    }
 
     /**
      * lag in proportion to the current FPS, >= 0

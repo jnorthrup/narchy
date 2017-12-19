@@ -423,7 +423,7 @@ public class Focus {
             Causable[] can = s.active;
 
             /** jiffy temporal granularity time constant */
-            float jiffy = 0.0002f; //in seconds
+            float jiffy = 0.002f; //in seconds
 
             do {
                 try {

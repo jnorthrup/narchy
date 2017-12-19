@@ -57,7 +57,7 @@ public class TemporalTermTest {
     public void testCoNegatedSubtermTask() throws Narsese.NarseseException {
 
         //allowed
-        assertNotNull(Narsese.parse().task("((x) &&+1 (--,(x))).", n));
+        assertNotNull(Narsese.the().task("((x) &&+1 (--,(x))).", n));
 
         //not allowed
         assertInvalidTask("((x) && (--,(x))).");
@@ -96,7 +96,7 @@ public class TemporalTermTest {
 
     public void assertInvalidTask(@NotNull String ss) {
         try {
-            Narsese.parse().task(ss, n);
+            Narsese.the().task(ss, n);
             fail("");
         } catch (Exception e) {
             assertTrue(true);

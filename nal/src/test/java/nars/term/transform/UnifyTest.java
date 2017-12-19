@@ -45,7 +45,7 @@ public class UnifyTest {
 //    }
 
     static /**/ Compound pattern(/**/ String s) throws Narsese.NarseseException {
-        return (Compound) new PatternIndex().pattern(Narsese.parse().term(s, false));
+        return (Compound) new PatternIndex().pattern(Narsese.the().term(s, false));
     }
 
     
@@ -56,7 +56,7 @@ public class UnifyTest {
         //NAR nar = NARS.shell();
         try {
 
-            Compound t2 = (Compound) Narsese.parse().term(s2, true);
+            Compound t2 = (Compound) Narsese.the().term(s2, true);
             assertNotNull(t2);
 
             Compound t1;
@@ -64,7 +64,7 @@ public class UnifyTest {
                 t1 = pattern(s1); //special handling for ellipsis
                 assertNotNull(t1);
             } else {
-                t1 = (Compound) Narsese.parse().term(s1, true);
+                t1 = (Compound) Narsese.the().term(s1, true);
             }
 
 

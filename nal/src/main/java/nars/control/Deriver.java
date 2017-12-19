@@ -100,8 +100,10 @@ public class Deriver extends Causable {
 
             //return task.nearestTimeTo(now);
 
-            return nar.random().nextBoolean() ?
-                    now : task.myNearestTimeTo(now);
+            return task.myNearestTimeTo(now);
+
+//            return nar.random().nextBoolean() ?
+//                    now : task.myNearestTimeTo(now);
 
             //        return nar.random().nextBoolean() ?
             //                task.nearestTimeTo(now) :

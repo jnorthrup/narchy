@@ -23,7 +23,7 @@ public class ChangedTextInput {
 	}
 
 	public boolean set(@NotNull String s) throws Narsese.NarseseException {
-        return enable() && set(Narsese.parse().tasks(s, nar));
+        return enable() && set(Narsese.the().tasks(s, nar));
 	}
 
 	public boolean set(@NotNull List<Task> s) {

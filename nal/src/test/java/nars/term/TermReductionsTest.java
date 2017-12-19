@@ -5,7 +5,6 @@ import nars.*;
 import nars.io.NarseseTest;
 import nars.task.util.InvalidTaskException;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
@@ -379,7 +378,7 @@ public class TermReductionsTest extends NarseseTest {
         //the repeats in the conjunction term can be replaced with a single event with equivalent start/stop time
         assertEquals(
                 "$.50 (x). 0⋈10 %1.0;.90%",
-                Narsese.parse().task("((x) &&+10 (x)). :|:", NARS.shell()).toString());
+                Narsese.the().task("((x) &&+10 (x)). :|:", NARS.shell()).toString());
     }
 
     @Test

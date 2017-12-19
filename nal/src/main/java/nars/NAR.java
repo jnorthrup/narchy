@@ -11,7 +11,6 @@ import jcog.exe.Cycler;
 import jcog.list.FasterList;
 import jcog.math.MutableInteger;
 import jcog.pri.Pri;
-import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import nars.Narsese.NarseseException;
 import nars.concept.TaskConcept;
@@ -29,7 +28,6 @@ import nars.task.util.InvalidTaskException;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.anon.Anom;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.sub.Subterms;
@@ -345,12 +343,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
     @NotNull
     public Task inputAndGet(@NotNull String taskText) throws Narsese.NarseseException {
-        return inputAndGet(Narsese.parse().task(taskText, this));
+        return inputAndGet(Narsese.the().task(taskText, this));
     }
 
     @NotNull
     public List<Task> input(@NotNull String text) throws NarseseException, InvalidTaskException {
-        List<Task> l = Narsese.parse().tasks(text, this);
+        List<Task> l = Narsese.the().tasks(text, this);
         input(l);
         return l;
     }
@@ -1078,7 +1076,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
             List<Task> yy = $.newArrayList(tt.length);
             for (String s : tt) {
                 try {
-                    yy.addAll(Narsese.parse().tasks(s, this));
+                    yy.addAll(Narsese.the().tasks(s, this));
                 } catch (NarseseException e) {
                     logger.error("{} for: {}", e, s);
                     e.printStackTrace();

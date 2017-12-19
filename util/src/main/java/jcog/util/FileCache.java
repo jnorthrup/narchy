@@ -3,6 +3,7 @@ package jcog.util;
 import jcog.Util;
 import jcog.list.FasterList;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -82,4 +83,38 @@ public class FileCache {
 
 
     }
+
+    static final Logger logger = LoggerFactory.getLogger(FileCache.class);
+
+    public static <X> byte[] fileCache(String baseName, Supplier<byte[]> o) throws IOException {
+
+        String tempDir = Util.tempDir();
+
+        File cached = new File(tempDir, baseName);
+        if (cached.exists()) {
+            //try read
+            try {
+
+                InputStream ff = new FileInputStream(cached);
+                byte[] b = ff.readAllBytes();
+                logger.warn("cache loaded {}: ({} bytes, from {})", cached.getAbsolutePath(), cached.length(), new Date(cached.lastModified()));
+                ff.close();
+                return b;
+
+            } catch (Exception e) {
+                logger.warn("{}, regenerating..", e);
+                //continue below
+            }
+        }
+
+        byte[] instanced = o.get();
+
+        FileOutputStream dout = new FileOutputStream(cached.getAbsolutePath());
+        dout.write(instanced);
+        dout.close();
+        logger.warn("cache saved {}: ({} bytes)", cached.getAbsolutePath(), instanced.length);
+
+        return instanced;
+    }
+
 }

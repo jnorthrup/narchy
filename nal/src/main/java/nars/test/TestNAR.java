@@ -432,7 +432,7 @@ public class TestNAR {
 
     @NotNull
     private TestNAR mustEmit(@NotNull Topic<Tasked>[] c, long withinCycles, @NotNull String task) throws Narsese.NarseseException {
-        Task t = Narsese.parse().task(task, nar);
+        Task t = Narsese.the().task(task, nar);
         //TODO avoid reparsing term from string
 
         long now = time();

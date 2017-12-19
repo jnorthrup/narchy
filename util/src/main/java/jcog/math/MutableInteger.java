@@ -312,6 +312,12 @@ public class MutableInteger extends Number implements Comparable, Mutable {
         return String.valueOf(value);
     }
 
+    public int getAndSet(int x) {
+        int p = this.value;
+        this.value = x;
+        return p;
+    }
+
 //  protected int compare(Object o1, Object o2) {
 //
 //    if (o1 == null) {

@@ -16,6 +16,7 @@ import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.subst.UnifySubst;
+import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,7 @@ import java.util.Collection;
 import java.util.function.ToLongFunction;
 
 import static nars.Op.BELIEF;
+import static nars.Op.IMPL;
 import static nars.link.Tasklinks.linkTask;
 import static nars.time.Tense.ETERNAL;
 
@@ -214,13 +216,23 @@ public class Premise {
 
             if (belief.equals(task)) { //do not repeat the same task for belief
                 belief = null; //force structural transform; also prevents potential inductive feedback loop
+            } else if (belief.op().temporal && !belief.isEternal() && !belief.isDuring(task.start(), task.end())) {
+                Truth projected = belief.truth(belief.theNearestTimeWithin(task.start(), task.end()), n.dur());
+                if (projected == null) {
+                    belief = null; //too weak
+                } else {
+                    belief = Task.clone(belief, belief.term(), projected, belief.punc());
+                }
             }
+
+
         }
 
         if (beliefTerm instanceof Bool) {
             //logger.warn("{} produced Bool beliefTerm", this);
             return null;
         }
+
 
         //assert (!(beliefTerm instanceof Bool)): "beliefTerm boolean; termLink=" + termLink + ", belief=" + belief;
 

@@ -58,6 +58,8 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.net.URL;
+import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -2163,6 +2165,46 @@ public enum Util {
     public static float smoothDischarge(float x) {
         x = unitize(x);
         return 2*(x-1)/(x-2);
+    }
+
+    /**
+     * Get the location from which the supplied object's class was loaded.
+     *
+     * @param object the object for whose class the location should be retrieved
+     * @return an {@code Optional} containing the URL of the class' location; never
+     * {@code null} but potentially empty
+     */
+    @Nullable public static URL locate(ClassLoader loader, String className) {
+        // determine class loader
+
+        if (loader == null) {
+            loader = ClassLoader.getSystemClassLoader();
+            while (loader != null && loader.getParent() != null) {
+                loader = loader.getParent();
+            }
+        }
+        // try finding resource by name
+        if (loader != null) {
+
+            //className = className.replace(".", "/") + ".class";
+            try {
+                return (loader.getResource(className));
+            }
+            catch (Throwable ignore) {
+                /* ignore */
+            }
+        }
+//        // try protection domain
+//        try {
+//            CodeSource codeSource = c.getProtectionDomain().getCodeSource();
+//            if (codeSource != null) {
+//                return (codeSource.getLocation());
+//            }
+//        }
+//        catch (SecurityException ignore) {
+//            /* ignore */
+//        }
+        return null;
     }
 
 

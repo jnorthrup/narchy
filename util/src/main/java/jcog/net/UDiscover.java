@@ -53,7 +53,7 @@ abstract public class UDiscover<P> extends Loop {
             ms.setReuseAddress(true);
 
             //ms.setTrafficClass();
-            ms.setSoTimeout(periodMS.get() /* assuming it isnt changed while running but the initial value should be reasonable.. */);
+            ms.setSoTimeout(periodMS.intValue() /* assuming it isnt changed while running but the initial value should be reasonable.. */);
             ms.joinGroup(ia);
 
             theirID = new byte[MAX_PAYLOAD_ID];
