@@ -24,10 +24,6 @@ public class Taskify extends AbstractPred<Derivation> {
     final static BiFunction<DerivedTask, DerivedTask, DerivedTask> DUPLICATE_DERIVATION_MERGE = (pp, tt) -> {
         pp.priMax(tt.pri());
         pp.causeMerge(tt);
-
-        if (pp.isCyclic() && !tt.isCyclic())
-            pp.setCyclic(false); //propagate uncyclic state for the surviving task
-
         return pp;
     };
     private final static Logger logger = LoggerFactory.getLogger(Taskify.class);

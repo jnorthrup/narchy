@@ -161,7 +161,7 @@ abstract public class NAgentX extends NAgent {
                 .deriverAdd(6, 6)
                 //.deriverAdd(6,6) //extra NAL6
                 .deriverAdd(7, 8)
-                .deriverAdd("goal_analogy.nal")
+                //.deriverAdd("goal_analogy.nal")
                 .deriverAdd("motivation.nal")
                 //.deriverAdd("list.nal")
                 .index(
@@ -201,8 +201,8 @@ abstract public class NAgentX extends NAgent {
         NAgent a = init.apply(n);
 
         new Deriver(a.fire(), Deriver.deriver(1, 8,
-                "motivation.nal",
-                "goal_analogy.nal"
+                "motivation.nal"
+                //"goal_analogy.nal"
         ).apply(n).deriver, n) {
             @Override
             protected long matchTime(Task task) {

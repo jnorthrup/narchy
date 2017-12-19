@@ -52,23 +52,40 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     /** assumes identity and hash have been tested already */
     static boolean equal(Task a, Task b) {
 
-        long[] evidence = a.stamp();
 
+        if (a.punc() != b.punc())
+            return false;
+
+        long[] evidence = a.stamp();
         if ((!Arrays.equals(evidence, b.stamp())))
             return false;
 
         if (evidence.length > 1) {
-            if (!Objects.equals(a.truth(), b.truth()))
-                return false;
+            Truth at = a.truth();
+            Truth bt = b.truth();
+            if (at == null) {
+                if (bt!=null) return false;
+            } else {
+                if (bt==null || !at.equals(bt)) return false;
+            }
 
             if ((a.start() != b.start()) || (a.end() != b.end()))
                 return false;
         }
 
-        if (a.punc() != b.punc())
-            return false;
+        if (a.term().equals(b.term())) {
 
-        return a.term().equals(b.term());
+            //clear cyclic state if either is not cyclic
+            boolean ac = a.isCyclic();
+            boolean bc = b.isCyclic();
+            if (!ac && bc)
+                b.setCyclic(false);
+            else if (ac && !bc)
+                a.setCyclic(false);
+
+            return true;
+        }
+        return false;
     }
 
     static void proof(/*@NotNull*/Task task, int indent, /*@NotNull*/StringBuilder sb) {
