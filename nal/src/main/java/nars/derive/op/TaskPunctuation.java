@@ -1,6 +1,5 @@
 package nars.derive.op;
 
-import nars.control.Derivation;
 import nars.control.ProtoDerivation;
 import nars.term.pred.AbstractPred;
 import nars.term.pred.PrediTerm;
@@ -26,7 +25,7 @@ final public class TaskPunctuation extends AbstractPred<ProtoDerivation> {
 
     @Override
     public final boolean test(ProtoDerivation m) {
-        return m.taskPunct == punc;
+        return m.taskPunc == punc;
     }
 
     @Override
@@ -40,7 +39,7 @@ final public class TaskPunctuation extends AbstractPred<ProtoDerivation> {
     public static final PrediTerm<ProtoDerivation> BeliefOrGoal = new AbstractPred<ProtoDerivation>("task:\".!\"") {
         @Override
         public boolean test(ProtoDerivation o) {
-            byte c = o.taskPunct;
+            byte c = o.taskPunc;
             return c == BELIEF || c == GOAL;
         }
 

@@ -3,7 +3,6 @@ package nars.control;
 import jcog.Util;
 import nars.*;
 import nars.derive.*;
-import nars.derive.instrument.DebugDerivationPredicate;
 import nars.derive.rule.PremiseRuleSet;
 import nars.index.term.PatternIndex;
 import nars.term.pred.PrediTerm;
@@ -32,7 +31,7 @@ public class Deriver extends Causable {
 
     public static Function<NAR, Deriver> deriver(Function<NAR, PremiseRuleSet> rules) {
         return (nar) ->
-                new Deriver(PrediTrie.the(rules.apply(nar),
+                new Deriver(TrieDeriver.the(rules.apply(nar),
                         //Param.TRACE ? DebugDerivationPredicate::new : null
                         null
                 ), nar);
@@ -51,16 +50,16 @@ public class Deriver extends Causable {
                 ));
     }
 
-    public final PrediTerm<Derivation> deriver;
+    public final DeriverRoot deriver;
     private final NAR nar;
 
-    public Deriver(PrediTerm<Derivation> deriver, NAR nar) {
+    public Deriver(DeriverRoot deriver, NAR nar) {
         this(nar.exe::fire, deriver, nar);
     }
 
     static volatile int serial = 0;
 
-    public Deriver(Consumer<Predicate<Activate>> source, PrediTerm<Derivation> deriver, NAR nar) {
+    public Deriver(Consumer<Predicate<Activate>> source, DeriverRoot deriver, NAR nar) {
         super(null,
                 $.func("deriver", $.the(serial++)) //HACK
         );

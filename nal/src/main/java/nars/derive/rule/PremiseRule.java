@@ -390,30 +390,31 @@ public class PremiseRule /*extends GenericCompound*/ {
 //                    termHasAny(taskPattern, beliefPattern, pres, constraints, X, oh);
 //                    break;
 
-                case "time":
-                    switch (XString) {
-//                        case "dtEvents":
-//                            pres.add(TaskBeliefOccurrence.bothEvents);
-//                            minNAL = 7;
+//                case "time":
+//                    switch (XString) {
+////                        case "dtEvents":
+////                            pres.add(TaskBeliefOccurrence.bothEvents);
+////                            minNAL = 7;
+////                            break;
+//
+//                        //NOTE THIS SHOULD ACTUALLY BE CALLED dtBeforeAfterOrEternal or something
+////                        case "dtEventsOrEternals":
+////                            pres.add(TaskBeliefOccurrence.eventsOrEternals);
+////                            break;
+//
+//                        case "dtAfter":
+//                            pres.add(TaskBeliefOccurrence.after);
 //                            break;
-
-                        //NOTE THIS SHOULD ACTUALLY BE CALLED dtBeforeAfterOrEternal or something
-//                        case "dtEventsOrEternals":
-//                            pres.add(TaskBeliefOccurrence.eventsOrEternals);
+//                        case "dtAfterOrEternals":
+//                            pres.add(TaskBeliefOccurrence.afterOrEternals);
 //                            break;
-                        case "dtAfter":
-                            pres.add(TaskBeliefOccurrence.after);
-                            break;
-                        case "dtAfterOrEternals":
-                            pres.add(TaskBeliefOccurrence.afterOrEternals);
-                            break;
-
-
-                        default:
-                            throw new UnsupportedOperationException("time(" + XString + ") unknown");
-                            //TODO warn about missing ones
-                    }
-                    break;
+//
+//
+//                        default:
+//                            throw new UnsupportedOperationException("time(" + XString + ") unknown");
+//                            //TODO warn about missing ones
+//                    }
+//                    break;
 
 //                case "temporal":
 //                    pres.add( Temporality.either;

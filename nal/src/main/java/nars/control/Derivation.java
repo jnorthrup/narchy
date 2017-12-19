@@ -3,6 +3,7 @@ package nars.control;
 import jcog.pri.Pri;
 import jcog.version.Versioned;
 import nars.*;
+import nars.derive.DeriverRoot;
 import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
 import nars.op.Subst;
@@ -27,7 +28,6 @@ import nars.truth.func.TruthOperator;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.impl.factory.Maps;
 import org.jetbrains.annotations.Nullable;
-import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -84,6 +84,12 @@ public class Derivation extends ProtoDerivation {
     public float confMin;
 
 
+    public Task task;
+    public Task belief;
+
+    public Truth taskTruth;
+    public Truth beliefTruth;
+
     /**
      * current MatchTerm to receive matches at the end of the Termute chain; set prior to a complete match by the matchee
      */
@@ -108,19 +114,22 @@ public class Derivation extends ProtoDerivation {
     public float premisePri;
     public short[] parentCause;
 
-    public PrediTerm<Derivation> deriver;
+    public DeriverRoot deriver;
     public boolean single;
     public int parentComplexity;
 
-    /**
-     * choices mapping the available post targets
-     */
-    public final RoaringBitmap preToPost = new RoaringBitmap();
 
     public float premiseEviSingle;
     public float premiseEviDouble;
     private long[] evidenceDouble, evidenceSingle;
     public DeriveTime dtSingle = null, dtDouble = null;
+
+
+    /**
+     * whether either the task or belief are events and thus need to be considered with respect to time
+     */
+    public boolean temporal;
+    public boolean eternal;
 
     /**
      * original non-anonymized tasks
@@ -236,7 +245,7 @@ public class Derivation extends ProtoDerivation {
 //        }
     }
 
-    public Derivation cycle(NAR nar, PrediTerm<Derivation> deriver) {
+    public Derivation cycle(NAR nar, DeriverRoot deriver) {
         NAR pnar = this.nar;
         if (pnar != nar) {
             init(nar);
@@ -299,6 +308,11 @@ public class Derivation extends ProtoDerivation {
 
         anon.clear();
         preToPost.clear();
+
+        this.task = this.belief = null;
+
+        this.beliefTruth = this.taskTruth = null;
+
         this.forEachMatch = null;
         this.concTruth = null;
         this.concPunc = 0;
@@ -322,8 +336,15 @@ public class Derivation extends ProtoDerivation {
         return this;
     }
 
+
+    protected void setTruth(Truth taskTruth, Truth beliefTruth) {
+        this.taskPolarity = (this.taskTruth = taskTruth) != null ? polarity(taskTruth) : 0;
+        this.beliefPolarity = (this.beliefTruth = beliefTruth) != null ? polarity(beliefTruth) : 0;
+    }
+
     /**
      * must call reset() immediately before or after calling this.
+     * TODO move some of these to a superclass method which sets the variables in its scope
      */
     public void set(Task _task, final Task _belief, Term _beliefTerm) {
 
@@ -343,8 +364,8 @@ public class Derivation extends ProtoDerivation {
         final Term beliefTerm = this.beliefTerm = anon.put(_beliefTerm);
 
 
-        this.termSub0Struct = taskTerm.structure();
-        this.taskOp = taskTerm.op().id;
+        this._taskStruct = taskTerm.structure();
+        this._taskOp = taskTerm.op().id;
 
 
 //        int ttv = taskTerm.vars();
@@ -360,20 +381,21 @@ public class Derivation extends ProtoDerivation {
                 );
 
 
-        switch (this.taskPunct = task.punc()) {
+        Truth taskTruth, beliefTruth;
+        switch (this.taskPunc = task.punc()) {
             case QUESTION:
             case QUEST:
-                this.taskTruth = null;
+                taskTruth = null;
                 break;
             default:
-                this.taskTruth = task.truth();
+                taskTruth = task.truth();
         }
 
         long[] taskStamp = task.stamp();
         this.overlapSingle = Stamp.cyclicity(taskStamp);
 
         if (_belief != null) {
-            this.beliefTruth = _belief.truth();
+            beliefTruth = _belief.truth();
 
             /** to compute the time-discounted truth, find the minimum distance
              *  of the tasks considering their dtRange
@@ -400,15 +422,16 @@ public class Derivation extends ProtoDerivation {
 //                    );
                     Stamp.overlapFraction(taskStamp, beliefStamp);
         } else {
-            this.beliefTruth = null;
+            beliefTruth = null;
             this.overlapDouble = 0;
         }
 
+        setTruth(taskTruth, beliefTruth);
 
-        this.termSub1Struct = beliefTerm.structure();
+        this._beliefStruct = beliefTerm.structure();
 
         Op bOp = beliefTerm.op();
-        this.beliefOp = bOp.id;
+        this._beliefOp = bOp.id;
 
         this.eternal = task.isEternal() && (_belief == null || _belief.isEternal());
         this.temporal = !eternal || (taskTerm.isTemporal() || (_belief != null && beliefTerm.isTemporal()));
@@ -429,7 +452,7 @@ public class Derivation extends ProtoDerivation {
 //        this.premisePri *= parentValue;
 
 
-        this.premiseEviSingle = this.taskTruth != null ? taskTruth.evi() : 0;
+        this.premiseEviSingle = taskTruth != null ? taskTruth.evi() : 0;
         this.premiseEviDouble = beliefTruth != null ?
                 Math.min(premiseEviSingle, beliefTruth.evi()) : //to be fair to the lesser confidence
                 premiseEviSingle;

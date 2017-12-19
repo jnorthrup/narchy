@@ -2,7 +2,6 @@ package nars.derive.op;
 
 import nars.$;
 import nars.Op;
-import nars.control.Derivation;
 import nars.control.ProtoDerivation;
 import nars.term.pred.AbstractPred;
 import nars.term.pred.PrediTerm;
@@ -77,7 +76,7 @@ public final class SubTermStructure extends AbstractPred<ProtoDerivation> {
         //if the OR produces a different result compared to subterms,
         // it means there is some component of the other term which is not found
         //return ((possibleSubtermStructure | existingStructure) != existingStructure);
-        return Op.hasAll((subterm == 0 ? ff.termSub0Struct : ff.termSub1Struct), bits);
+        return Op.hasAll((subterm == 0 ? ff._taskStruct : ff._beliefStruct), bits);
     }
 
     static int filter(/*@NotNull*/ Op matchingType, int bits) {

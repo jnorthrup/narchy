@@ -2,7 +2,6 @@ package nars.derive.op;
 
 import nars.$;
 import nars.Op;
-import nars.control.Derivation;
 import nars.control.ProtoDerivation;
 import nars.term.pred.AbstractPred;
 
@@ -29,9 +28,9 @@ public final class TaskBeliefOp extends AbstractPred<ProtoDerivation> {
 
     @Override
     public boolean test(ProtoDerivation derivation) {
-        return (!task || derivation.taskOp == op)
+        return (!task || derivation._taskOp == op)
                 &&
-                (!belief || derivation.beliefOp == op);
+                (!belief || derivation._beliefOp == op);
     }
 
 //    static boolean isSequence(int dt) {

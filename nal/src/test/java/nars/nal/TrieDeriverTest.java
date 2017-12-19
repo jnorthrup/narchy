@@ -7,7 +7,7 @@ import nars.Narsese;
 import nars.control.Derivation;
 import nars.control.Deriver;
 import nars.term.pred.PrediTerm;
-import nars.derive.PrediTrie;
+import nars.derive.TrieDeriver;
 import nars.derive.instrument.DebugDerivationPredicate;
 import nars.derive.rule.PremiseRule;
 import nars.derive.rule.PremiseRuleSet;
@@ -96,7 +96,7 @@ public class TrieDeriverTest {
     }
 
 static PrediTerm<Derivation> the(PremiseRuleSet r) {
-        return PrediTrie.the(r, (x) -> x);
+        return TrieDeriver.the(r, (x) -> x);
     }
 
 

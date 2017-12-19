@@ -64,7 +64,7 @@ public final class OpSwitch<D extends ProtoDerivation> extends AbstractPred<D> {
 
     @Nullable
     public PrediTerm<D> branch(ProtoDerivation m) {
-        return swtch[taskOrBelief ? m.taskOp : m.beliefOp];
+        return swtch[taskOrBelief ? m._taskOp : m._beliefOp];
     }
 
 //    @Override

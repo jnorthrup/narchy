@@ -140,7 +140,7 @@ abstract public class Solve extends AbstractPred<Derivation> {
 
         @Override
         public byte punc(Derivation d) {
-            return d.taskPunct;
+            return d.taskPunc;
         }
 
     }

@@ -4,6 +4,7 @@ import jcog.pri.Priority;
 import nars.Task;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.truth.DiscreteTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,6 +19,7 @@ public class NALTaskProxyForOtherContent implements Task {
     public NALTaskProxyForOtherContent(Term term, Task task) {
         this.term = term;
         this.task = task;
+
     }
 
     @Override
@@ -26,13 +28,13 @@ public class NALTaskProxyForOtherContent implements Task {
     }
 
     @Override
-    public int hashCode() {
-        throw new UnsupportedOperationException(); //because with different content, the hash would differ
+    public boolean equals(Object obj) {
+        return Task.equal(this, (Task)obj);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        throw new UnsupportedOperationException(); //because with different content, the hash would differ
+    public int hashCode() {
+        return hash(term(), (DiscreteTruth)truth(), punc(), start(), end(), stamp());
     }
 
     @Override

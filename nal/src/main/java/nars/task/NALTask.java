@@ -91,33 +91,14 @@ public class NALTask extends Pri implements Task {
         assert (punc == COMMAND || (stamp.length > 0)) : "non-command tasks must have non-empty stamp";
         this.stamp = stamp;
 
-        //CALCULATE HASH
-        int h = Util.hashCombine(
-                term.hashCode(),
-                punc,
-                Arrays.hashCode(stamp)
-        );
-
-        if (stamp.length > 1) {
-
-            if (start != ETERNAL) {
-                h = Util.hashCombine(
-                        Long.hashCode(start),
-                        Long.hashCode(end), h
-                );
-            }
-
-            DiscreteTruth t = this.truth;
-            if (t != null)
-                h = Util.hashCombine(t.hash, h);
-        }
-
-        this.hash = h;
+        this.hash = hash(term, this.truth, punc, start, end, stamp);
         this.creation = creation;
 
         this.meta = new CompactArrayMap();
         //READY
     }
+
+
 
     @Override
     public final int hashCode() {
@@ -127,10 +108,18 @@ public class NALTask extends Pri implements Task {
     @Override
     public final boolean equals(Object that) {
         if (this == that) return true;
-        if (!(that instanceof Tasked)) return false;
-        Task t = ((Tasked) that).task();
-        if (this == t) return true;
-        if (hash != t.hashCode()) return false;
+        Task t;
+        if (that instanceof Task) {
+            if (hash != that.hashCode()) return false;
+            t = (Task) that;
+        } else if (that instanceof Tasked) {
+
+            t = ((Tasked) that).task();
+            if (this == that) return true;
+            if (hash != that.hashCode()) return false;
+        } else {
+            return false;
+        }
         return Task.equal(this, t);
     }
 

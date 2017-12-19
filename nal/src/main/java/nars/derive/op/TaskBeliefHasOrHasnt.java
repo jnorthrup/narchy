@@ -1,7 +1,6 @@
 package nars.derive.op;
 
 import nars.$;
-import nars.control.Derivation;
 import nars.control.ProtoDerivation;
 import nars.term.pred.AbstractPred;
 

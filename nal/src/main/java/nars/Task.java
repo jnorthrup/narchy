@@ -19,10 +19,7 @@ import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.term.var.VarIndep;
 import nars.time.Tense;
-import nars.truth.PreciseTruth;
-import nars.truth.Stamp;
-import nars.truth.Truth;
-import nars.truth.Truthed;
+import nars.truth.*;
 import org.eclipse.collections.api.PrimitiveIterable;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.tuple.Pair;
@@ -52,6 +49,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     Task[] EmptyArray = new Task[0];
     long[] ETERNAL_ETERNAL = {Tense.ETERNAL, Tense.ETERNAL};
 
+    /** assumes identity and hash have been tested already */
     static boolean equal(Task a, Task b) {
 
         long[] evidence = a.stamp();
@@ -107,6 +105,29 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //        return validTaskTerm(t, (byte) 0, null, safe);
 //    }
 
+    default int hash(Term term, DiscreteTruth truth, byte punc, long start, long end, long[] stamp) {
+        int h = Util.hashCombine(
+                term.hashCode(),
+                punc,
+                Arrays.hashCode(stamp)
+        );
+
+        if (stamp.length > 1) {
+
+            if (start != ETERNAL) {
+                h = Util.hashCombine(
+                        Long.hashCode(start),
+                        Long.hashCode(end), h
+                );
+            }
+
+            DiscreteTruth t = truth;
+            if (t != null)
+                h = Util.hashCombine(t.hash, h);
+        }
+
+        return h;
+    }
 
     static boolean validTaskTerm(Term t) {
         return validTaskTerm(t, (byte)0, true);

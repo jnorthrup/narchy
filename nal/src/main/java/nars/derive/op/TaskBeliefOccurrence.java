@@ -44,35 +44,35 @@ abstract public class TaskBeliefOccurrence extends AbstractPred<ProtoDerivation>
 //        }
 //    };
 
-    /**
-     * both task and belief are temporal or belief precedes task
-     */
-    public static final PrediTerm after = new TaskBeliefOccurrence("after") {
-
-        @Override
-        public boolean test(ProtoDerivation m) {
-            Task b = m.belief;
-            if (b == null)
-                return false;
-            Task t = m.task;
-            return (!t.isEternal() && !b.isEternal()) && (t.start() >= b.start());
-        }
-    };
-
-    /**
-     * both task and belief are eternal, or belief precedes task
-     */
-    public static final PrediTerm afterOrEternals = new TaskBeliefOccurrence("afterOrEternals") {
-
-        @Override
-        public boolean test(ProtoDerivation m) {
-            Task b = m.belief;
-            if (b == null)
-                return false;
-            Task t = m.task;
-            boolean ete = t.isEternal();
-            return (ete == b.isEternal()) && (ete || t.start() >= b.end());
-        }
-    };
+//    /**
+//     * both task and belief are temporal or belief precedes task
+//     */
+//    public static final PrediTerm after = new TaskBeliefOccurrence("after") {
+//
+//        @Override
+//        public boolean test(ProtoDerivation m) {
+//            Task b = m.belief;
+//            if (b == null)
+//                return false;
+//            Task t = m.task;
+//            return (!t.isEternal() && !b.isEternal()) && (t.start() >= b.start());
+//        }
+//    };
+//
+//    /**
+//     * both task and belief are eternal, or belief precedes task
+//     */
+//    public static final PrediTerm afterOrEternals = new TaskBeliefOccurrence("afterOrEternals") {
+//
+//        @Override
+//        public boolean test(ProtoDerivation m) {
+//            Task b = m.belief;
+//            if (b == null)
+//                return false;
+//            Task t = m.task;
+//            boolean ete = t.isEternal();
+//            return (ete == b.isEternal()) && (ete || t.start() >= b.end());
+//        }
+//    };
 
 }
