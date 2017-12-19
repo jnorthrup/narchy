@@ -34,7 +34,6 @@ public class GUI {
 //        }
 
 
-        nar.startFPS(5f);
 
 
         nar.runLater(()-> {
@@ -59,13 +58,7 @@ public class GUI {
             } catch (Throwable t) {
                 //2. if that fails:
                 logger.info("Fallback to Terminal UI");
-                DefaultTerminalFactory tf = new DefaultTerminalFactory();
-                try {
-                    Terminal tt = tf.createTerminal();
-                    new TextUI(nar, tt, 8f);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                new Shell(nar);
             }
 
         });

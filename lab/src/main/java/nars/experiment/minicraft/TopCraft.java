@@ -85,7 +85,7 @@ public class TopCraft extends NAgentX {
         pixels = senseCameraRetina("cam", ()->craft.image, 32,32);
         //pixels = addFreqCamera("see", ()->craft.image, 64,64, (v) -> $.t( v, alpha));
 
-        senseCameraReduced($.the("camr"), (Supplier)()->craft.image, 10,15,2,3);
+        senseCameraReduced($.the("camr"), (Supplier)()->craft.image, 10,12,4,3);
                 //.resolution(0.5f);
 
         int nx = 8;

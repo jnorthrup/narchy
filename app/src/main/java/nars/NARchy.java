@@ -15,14 +15,16 @@ import static nars.Op.BELIEF;
 
 public class NARchy extends NARS {
 
+    public static final float INITIAL_FPS = 5f;
+
     public static NAR ui() {
         NAR nar = new DefaultNAR(8, true)
-                .exe(new AbstractExec(64) {
-                    @Override
-                    public boolean concurrent() {
-                        return true;
-                    }
-                })
+//                .exe(new AbstractExec(64) {
+//                    @Override
+//                    public boolean concurrent() {
+//                        return true;
+//                    }
+//                })
                 .time(new RealTime.CS().durFPS(10f))
                 //.memory("/tmp/nal")
                 .get();
@@ -33,6 +35,8 @@ public class NARchy extends NARS {
 
         //Hear.wiki(nar);
         //installSpeech(nar);
+
+        nar.startFPS(INITIAL_FPS);
 
         return nar;
     }

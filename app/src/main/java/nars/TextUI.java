@@ -5,6 +5,7 @@ import com.google.common.collect.Sets;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TerminalTextUtils;
 import com.googlecode.lanterna.TextColor;
+import com.googlecode.lanterna.graphics.Scrollable;
 import com.googlecode.lanterna.graphics.SimpleTheme;
 import com.googlecode.lanterna.graphics.ThemeDefinition;
 import com.googlecode.lanterna.gui2.*;
@@ -219,43 +220,71 @@ public class TextUI {
 //                }).withBorder(Borders.singleLine("This is a button")));
 
 
-            Panel p = new Panel(new BorderLayout());
+            Panel aux = new Panel(new BorderLayout());
+            TextBox console = new TextBox( "sdfs");
+            console.setReadOnly(true);
 
-            Component options = Panels.horizontal(
-                    new CheckBox("Pause"),
-                    new ComboBox<>("Log", "Concepts")
+            LinearLayout cols = new LinearLayout(Direction.HORIZONTAL);
+            Panel p = new Panel(cols); //BorderLayout());
+            p.addComponent(console);
+            p.addComponent(aux);
+
+
+//            Component options = Panels.horizontal(
+//                    new CheckBox("Pause"),
+//                    new ComboBox<>("Log", "Concepts")
+//            );
+
+            Runnable defaultMenu;
+            Panel menu = Panels.horizontal(
+
+
+                    //options,
+                    new Button("Tasks", defaultMenu = () -> {
+                        aux.addComponent(new TaskListBox(64), CENTER);
+                    }),
+                    new Button("Concepts", () -> {
+                        aux.addComponent(new BagListBox<Activate>(64) {
+                            @Override
+                            public void update() {
+                                nar.conceptsActive().forEach(this::add);
+                                super.update();
+                            }
+                        }, CENTER);
+                    }),
+                    new Button("Stats", () -> {
+                        aux.addComponent(new EmotionDashboard(), CENTER);
+                    })
             );
 
-            p.addComponent(Panels.vertical(
-                    options
-            ), TOP);
 
-
-            ActionListBox menu = new ActionListBox();
-            Runnable defaultMenu;
-            menu.addItem("Tasks", defaultMenu = () -> {
-                p.addComponent(new TaskListBox(64), CENTER);
-            });
-
-            menu.addItem("Concepts", () -> {
-                p.addComponent(new BagListBox<Activate>(64) {
-                    @Override
-                    public void update() {
-                        nar.conceptsActive().forEach(this::add);
-                        super.update();
-                    }
-                }, CENTER);
-            });
-
-            menu.addItem("Stats", () -> {
-                p.addComponent(new EmotionDashboard(), CENTER);
-            });
+//            ActionListBox menu = new ActionListBox();
+//            menu.addItem("Tasks", defaultMenu = () -> {
+//                p.addComponent(new TaskListBox(64), CENTER);
+//            });
+//
+//            menu.addItem("Concepts", () -> {
+//                p.addComponent(new BagListBox<Activate>(64) {
+//                    @Override
+//                    public void update() {
+//                        nar.conceptsActive().forEach(this::add);
+//                        super.update();
+//                    }
+//                }, CENTER);
+//            });
+//
+//            menu.addItem("Stats", () -> {
+//                p.addComponent(new EmotionDashboard(), CENTER);
+//            });
 
 
             final InputTextBox input = new InputTextBox();
-            p.addComponent(menu, LEFT);
-            p.addComponent(input, BOTTOM);
-            window.setComponent(p);
+
+            Panel q = new Panel(new BorderLayout());
+            q.addComponent(p, CENTER);
+            q.addComponent(input, BOTTOM);
+            q.addComponent(menu, TOP);
+            window.setComponent(q);
 
             tui.getGUIThread().invokeLater(defaultMenu);
             tui.getGUIThread().invokeLater(input::takeFocus);
@@ -281,7 +310,7 @@ public class TextUI {
                 Component cc = c.getComponent();
                 cc.onRemoved(null);
                 if (cc instanceof Panel) {
-                    ((Panel)cc).removeAllComponents(); //note this may only affect the first layer only
+                    ((Panel) cc).removeAllComponents(); //note this may only affect the first layer only
                 }
             });
             w.forEach(Window::close);
@@ -396,7 +425,7 @@ public class TextUI {
                 int cols = graphics.getSize().getColumns() - 1;
                 label = TerminalTextUtils.fitString(label, cols);
                 int w = TerminalTextUtils.getColumnWidth(label);
-                graphics.putString(0, 0, Strings.padEnd(label, cols-w, ' '));
+                graphics.putString(0, 0, Strings.padEnd(label, cols - w, ' '));
             }
         }
 
@@ -451,7 +480,7 @@ public class TextUI {
         }
 
         class BagListBox<X extends Prioritized> extends AbstractListBox {
-            protected final ArrayBag<X,PriReference<X>> bag;
+            protected final ArrayBag<X, PriReference<X>> bag;
 
 
             protected final AtomicBoolean paused = new AtomicBoolean(false);
@@ -471,9 +500,11 @@ public class TextUI {
                 this.autoupdate = autoupdate;
                 visible.set(capacity);
 
-                bag = new ConcurrentArrayBag<>(PriMerge.replace,capacity * 2) {
+                bag = new ConcurrentArrayBag<>(PriMerge.replace, capacity * 2) {
 
-                    @Nullable @Override public X key(PriReference<X> x) {
+                    @Nullable
+                    @Override
+                    public X key(PriReference<X> x) {
                         return x.get();
                     }
                 };

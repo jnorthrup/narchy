@@ -107,7 +107,7 @@ public class Taskify extends AbstractPred<Derivation> {
     }
 
 
-    private static boolean spam(@NotNull Derivation p, int cost) {
+    private static boolean spam(Derivation p, int cost) {
         p.use(cost);
         return true; //just does
     }
