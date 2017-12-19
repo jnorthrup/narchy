@@ -57,6 +57,14 @@ public interface PrediTerm<X> extends Term, Predicate<X> {
         throw new TODO();
     }
 
+    /** optimization subsumption: determines whether this predicate
+     * should remain when appearing in an AND condition of the
+     * specified predicates.  one of the 'p' in the array will be this instance
+     */
+    default boolean remainInAND(PrediTerm[] p) {
+        return true;
+    }
+
 //    /** returns null on success; returns this instance on the test failure. go figure */
 //    default PrediTerm<X> exec(X context, CPU cpu) {
 //        if (!test(context))

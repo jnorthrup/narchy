@@ -1,11 +1,9 @@
 package nars.derive.op;
 
 import nars.$;
-import nars.Op;
 import nars.control.Derivation;
 import nars.derive.AbstractPred;
 import nars.term.Term;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * a condition on the op of a pattern term (task=0, or belief=1)
@@ -17,29 +15,7 @@ public enum AbstractPatternOp  {
         return $.func(c.getSimpleName(), $.the(subterm) , $.quote(param));
     }
 
-    public static final class PatternOp extends AbstractPred<Derivation> {
 
-        public final int taskOrBelief;
-        public final int opOrdinal;
-
-
-        public PatternOp(int taskOrBelief, /*@NotNull*/ Op op) {
-            super(name(PatternOp.class, taskOrBelief, op.str));
-            this.taskOrBelief = taskOrBelief;
-            this.opOrdinal = op.id;
-        }
-
-
-        @Override
-        public boolean test(Derivation ff) {
-            return (taskOrBelief == 0 ? ff.termSub0op : ff.termSub1op) == opOrdinal;
-        }
-
-        @Override
-        public float cost() {
-            return 0.1f;
-        }
-    }
    public static final class TaskBeliefOpEqual extends AbstractPred<Derivation> {
 
         public TaskBeliefOpEqual() {
@@ -47,13 +23,8 @@ public enum AbstractPatternOp  {
         }
 
        @Override
-       public boolean equals(Object o) {
-           return super.equals(o);
-       }
-
-       @Override
         public boolean test(Derivation ff) {
-            return ff.termSub0op == ff.termSub1op;
+            return ff.taskOp == ff.beliefOp;
         }
 
         @Override

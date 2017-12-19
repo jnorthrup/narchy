@@ -1,6 +1,7 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.list.FasterList;
 import nars.Op;
 import nars.control.Derivation;
 import nars.derive.op.UnifyTerm;
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
+import java.util.Iterator;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -29,7 +31,12 @@ public enum TrieDeriver {
 
         TermTrie.indent(indent);
 
-        if (p instanceof UnifyTerm.UnifySubtermThenConclude) {
+        if (p instanceof PrediTrie.DeriverRoot) {
+
+            PrediTrie.DeriverRoot r = (PrediTrie.DeriverRoot) p;
+            print(AndCondition.the(r.what,r.can) /* HACK */, out, indent);
+
+        } else if (p instanceof UnifyTerm.UnifySubtermThenConclude) {
             UnifyTerm.UnifySubtermThenConclude u = (UnifyTerm.UnifySubtermThenConclude)p;
             out.println("unify(" + UnifyTerm.label(u.subterm) + "," + u.pattern + ") {");
             print(u.eachMatch, out, indent+2);
@@ -61,7 +68,7 @@ public enum TrieDeriver {
 
         } else if (p instanceof OpSwitch) {
             OpSwitch sw = (OpSwitch) p;
-            out.println("switch(op(" + (sw.subterm == 0 ? "task" : "belief") + ")) {");
+            out.println("switch(op(" + (sw.taskOrBelief ? "task" : "belief") + ")) {");
             int i = -1;
             for (PrediTerm b : sw.swtch) {
                 i++;
@@ -283,9 +290,31 @@ public enum TrieDeriver {
 
     @Nullable
     public static PrediTerm<Derivation> ifThen(Stream<PrediTerm<Derivation>> cond, @Nullable PrediTerm<Derivation> conseq) {
-        return AndCondition.the(
-                (conseq != null ? Stream.concat(cond, Stream.of(conseq)) : cond).toArray(PrediTerm[]::new)
-        );
+        return
+            TrieDeriver.compileSeq(
+                    (conseq != null ? Stream.concat(cond, Stream.of(conseq)) : cond)
+                        .toArray(PrediTerm[]::new)
+            )
+        ;
+    }
+
+    static PrediTerm compileSeq(PrediTerm[] p) {
+        switch (p.length) {
+            case 0: return null;
+            case 1: return p[0];
+            default:
+                //PrediTerm[] pp = p.clone();
+                FasterList<PrediTerm> pp = new FasterList(p);
+                Iterator<PrediTerm> ppp = pp.iterator();
+                while (ppp.hasNext()) {
+                    if (!ppp.next().remainInAND(p))
+                        ppp.remove();
+                }
+                if (pp.size() > 1)
+                    pp.sort(PrediTerm.sortByCost);
+
+                return AndCondition.the(pp.toArrayRecycled(PrediTerm[]::new));
+        }
     }
 
     public static void print(PrediTerm<Derivation> d) {

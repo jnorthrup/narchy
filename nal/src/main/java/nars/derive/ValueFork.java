@@ -153,6 +153,11 @@ public class ValueFork extends Fork {
         }
 
         @Override
+        public float cost() {
+            return Integer.MAX_VALUE; //post-condition: must be the last element in any sequence
+        }
+
+        @Override
         public boolean test(Derivation derivation) {
             derivation.preToPost.add(id);
             return true;

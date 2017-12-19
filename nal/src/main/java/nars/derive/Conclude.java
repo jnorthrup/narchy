@@ -9,6 +9,7 @@ import nars.derive.constraint.MatchConstraint;
 import nars.derive.match.Ellipsis;
 import nars.derive.op.AbstractPatternOp;
 import nars.derive.op.SubTermStructure;
+import nars.derive.op.TaskBeliefOp;
 import nars.derive.op.UnifyTerm;
 import nars.derive.rule.PremiseRule;
 import nars.index.term.PatternIndex;
@@ -89,14 +90,14 @@ public final class Conclude {
         boolean belIsPatVar = bo == Op.VAR_PATTERN;
 
         if (!taskIsPatVar) {
-            pre.add(new AbstractPatternOp.PatternOp(0, to));
+            pre.add(new TaskBeliefOp(to, true, false));
             pre.addAll(SubTermStructure.get(0, taskPattern.structure()));
         }
         if (!belIsPatVar) {
             if (to == bo) {
                 pre.add(new AbstractPatternOp.TaskBeliefOpEqual());
             } else {
-                pre.add(new AbstractPatternOp.PatternOp(1, bo));
+                pre.add(new TaskBeliefOp(bo, false, true));
                 pre.addAll(SubTermStructure.get(1, beliefPattern.structure()));
             }
         }

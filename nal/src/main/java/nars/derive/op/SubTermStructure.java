@@ -4,6 +4,8 @@ import nars.$;
 import nars.Op;
 import nars.control.Derivation;
 import nars.derive.AbstractPred;
+import nars.derive.PrediTerm;
+import nars.derive.constraint.OpIs;
 
 import java.util.Collections;
 import java.util.List;
@@ -56,7 +58,19 @@ public final class SubTermStructure extends AbstractPred<Derivation> {
 
     }
 
-
+    @Override
+    public boolean remainInAND(PrediTerm[] p) {
+        for (PrediTerm x : p) {
+            if (x instanceof TaskBeliefOp) {
+                TaskBeliefOp t = (TaskBeliefOp)x;
+                if (((subterm == 0 && t.task) || (subterm == 1 && t.belief)) &&
+                    (1 << t.op == bits)) {
+                    return false; //the TaskBeliefOp test is equivalent to this, being more specific
+                }
+            }
+        }
+        return true;
+    }
 
     @Override
     public boolean test(Derivation ff) {

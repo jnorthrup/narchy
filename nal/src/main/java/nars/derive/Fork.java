@@ -1,10 +1,8 @@
 package nars.derive;
 
-import jcog.Util;
 import nars.$;
 import nars.control.Derivation;
 import nars.term.Term;
-import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
@@ -27,7 +25,7 @@ public class Fork extends AbstractPred<Derivation> {
 
     @Override
     public float cost() {
-        return Util.sum((FloatFunction<PrediTerm>) PrediTerm::cost, branches);
+        return Integer.MAX_VALUE; //post-condition: must be the last element in any sequence
     }
 
     @Override
@@ -47,8 +45,9 @@ public class Fork extends AbstractPred<Derivation> {
 
             c.test(m);
 
-            if (!m.revertLive(before)) //maybe possible to eliminate for pre's
+            if (!m.revertLive(before)) { //maybe possible to eliminate for pre's
                 return false;
+            }
         }
 
         return true;

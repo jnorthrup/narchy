@@ -66,7 +66,8 @@ public class Deriver extends Causable {
         this.source = source;
         this.nar = nar;
 
-        Try t = (Try) ((AndCondition) (deriver)).cond[((AndCondition) (deriver)).cond.length - 1]; //HACK
+        PrediTrie.DeriverRoot root = (PrediTrie.DeriverRoot) (deriver);
+        Try t = root.can;
         subCauses = t.causes;
 
         nar.on(this);

@@ -17,7 +17,7 @@ public final class OpSwitch extends AbstractPred<Derivation> {
 
     public final EnumMap<Op, PrediTerm<Derivation>> cases;
     public final PrediTerm[] swtch;
-    public final int subterm;
+    public final boolean taskOrBelief;
 
         @Override
     public boolean test(Derivation m) {
@@ -33,12 +33,12 @@ public final class OpSwitch extends AbstractPred<Derivation> {
         return 0.25f;
     }
 
-    OpSwitch(int subterm, @NotNull EnumMap<Op, PrediTerm<Derivation>> cases) {
-        super(/*$.impl*/ $.p($.the("op" + subterm), $.p(cases.entrySet().stream().map(e -> $.p($.quote(e.getKey().toString()), e.getValue())).toArray(Term[]::new))));
+    OpSwitch(boolean taskOrBelief, @NotNull EnumMap<Op, PrediTerm<Derivation>> cases) {
+        super(/*$.impl*/ $.func("op", $.the(taskOrBelief ? "task" : "belief"), $.p(cases.entrySet().stream().map(e -> $.p($.quote(e.getKey().toString()), e.getValue())).toArray(Term[]::new))));
 
         swtch = new PrediTerm[24]; //check this range
         cases.forEach((k, v) -> swtch[k.id] = v);
-        this.subterm = subterm;
+        this.taskOrBelief = taskOrBelief;
         this.cases = cases;
     }
 
@@ -55,7 +55,7 @@ public final class OpSwitch extends AbstractPred<Derivation> {
         if (!changed[0])
             return this;
         else
-            return new OpSwitch(subterm, e2);
+            return new OpSwitch(taskOrBelief, e2);
     }
 
 
@@ -63,7 +63,7 @@ public final class OpSwitch extends AbstractPred<Derivation> {
 
     @Nullable
     public PrediTerm<Derivation> branch(Derivation m) {
-        return swtch[((subterm == 0) ? m.termSub0op : m.termSub1op)];
+        return swtch[taskOrBelief ? m.taskOp : m.beliefOp];
     }
 
 //    @Override

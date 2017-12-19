@@ -6,7 +6,7 @@ import nars.$;
 import nars.Op;
 import nars.control.Derivation;
 import nars.derive.constraint.MatchConstraint;
-import nars.derive.op.AbstractPatternOp;
+import nars.derive.op.TaskBeliefOp;
 import nars.derive.rule.PremiseRuleSet;
 import nars.term.Term;
 import nars.util.TermTrie;
@@ -100,10 +100,35 @@ public final class PrediTrie {
             }
 
         }
-        return AndCondition.the(
+        return new DeriverRoot(//AndCondition.the(
                 PrediTrie.compile(t.pre, each),
                 new Try(t.postChoices.toArrayRecycled(ValueFork[]::new)));
+    }
 
+    static public final class DeriverRoot extends AbstractPred<Derivation> {
+
+        public final PrediTerm<Derivation> what;
+        public final Try can;
+
+        public DeriverRoot(PrediTerm<Derivation> what, Try can) {
+            super($.p(what, can ));
+            this.what = what;
+            this.can = can;
+        }
+
+        @Override
+        public boolean test(Derivation x) {
+            int ttl = x.ttl;
+            x.ttl = Integer.MAX_VALUE;
+
+            what.test(x);
+
+            x.ttl = ttl;  //HACK forward the specified TTL for use during the possibility phase
+
+            can.test(x);
+
+            return true;
+        }
     }
 
 
@@ -150,24 +175,24 @@ public final class PrediTrie {
 
     protected static List<PrediTerm<Derivation>> compileSwitch(List<PrediTerm<Derivation>> bb) {
 
-        bb = factorSubOpToSwitch(bb, 0, 2);
-        bb = factorSubOpToSwitch(bb, 1, 2);
+        bb = factorSubOpToSwitch(bb, true, 2);
+        bb = factorSubOpToSwitch(bb, false, 2);
 
         return bb;
     }
 
     @NotNull
-    private static List<PrediTerm<Derivation>> factorSubOpToSwitch(@NotNull List<PrediTerm<Derivation>> bb, int subterm, int minToCreateSwitch) {
+    private static List<PrediTerm<Derivation>> factorSubOpToSwitch(@NotNull List<PrediTerm<Derivation>> bb, boolean taskOrBelief, int minToCreateSwitch) {
         if (!bb.isEmpty()) {
-            Map<AbstractPatternOp.PatternOp, PrediTerm<Derivation>> cases = $.newHashMap(8);
+            Map<TaskBeliefOp, PrediTerm<Derivation>> cases = $.newHashMap(8);
             List<PrediTerm<Derivation>> removed = $.newArrayList(); //in order to undo
             bb.removeIf(p -> {
                 if (p instanceof AndCondition) {
                     AndCondition ac = (AndCondition) p;
                     return ac.OR(x -> {
-                        if (x instanceof AbstractPatternOp.PatternOp) {
-                            AbstractPatternOp.PatternOp so = (AbstractPatternOp.PatternOp) x;
-                            if (so.taskOrBelief == subterm) {
+                        if (x instanceof TaskBeliefOp) {
+                            TaskBeliefOp so = (TaskBeliefOp) x;
+                            if (so.task == taskOrBelief && so.belief == !taskOrBelief) {
                                 PrediTerm acw = ac.without(so);
                                 if (null == cases.putIfAbsent(so, acw)) {
                                     removed.add(p);
@@ -190,8 +215,8 @@ public final class PrediTrie {
                 }
 
                 EnumMap<Op, PrediTerm<Derivation>> caseMap = new EnumMap(Op.class);
-                cases.forEach((c, p) -> caseMap.put(Op.values()[c.opOrdinal], p));
-                bb.add(new OpSwitch(subterm, caseMap));
+                cases.forEach((c, p) -> caseMap.put(Op.values()[c.op], p));
+                bb.add(new OpSwitch(taskOrBelief, caseMap));
             } else {
                 bb.addAll(removed); //undo
             }

@@ -27,7 +27,6 @@ import nars.truth.Truth;
 import nars.truth.func.TruthOperator;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.impl.factory.Maps;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
@@ -44,7 +43,7 @@ import static nars.time.Tense.ETERNAL;
 /**
  * evaluates a premise (task, belief, termlink, taskLink, ...) to derive 0 or more new tasks
  */
-public class Derivation extends Unify {
+public class Derivation extends ProtoDerivation {
 
     public static final Atomic TaskTerm = Atomic.the("_taskTerm");
     public static final Atomic BeliefTerm = Atomic.the("_beliefTerm");
@@ -90,18 +89,7 @@ public class Derivation extends Unify {
      * current MatchTerm to receive matches at the end of the Termute chain; set prior to a complete match by the matchee
      */
     public PrediTerm<Derivation> forEachMatch;
-    /**
-     * op ordinals: 0=task, 1=belief
-     */
-    public byte termSub0op;
-    public byte termSub1op;
 
-
-    /**
-     * structs, 0=task, 1=belief
-     */
-    public int termSub0Struct;
-    public int termSub1Struct;
 
     /**
      * current NAR time, set at beginning of derivation
@@ -109,15 +97,8 @@ public class Derivation extends Unify {
     public long time = ETERNAL;
 
     public Truth taskTruth, beliefTruth;
-    public Term taskTerm;
-    public Term beliefTerm;
-    public Task task, belief, _task, _belief;
-    public byte taskPunct;
-
-    /**
-     * whether either the task or belief are events and thus need to be considered with respect to time
-     */
-    public boolean temporal, eternal;
+    public Task _task;
+    public Task _belief;
 
 
     /**
@@ -367,7 +348,7 @@ public class Derivation extends Unify {
 
 
         this.termSub0Struct = taskTerm.structure();
-        this.termSub0op = taskTerm.op().id;
+        this.taskOp = taskTerm.op().id;
 
 
 
@@ -432,7 +413,7 @@ public class Derivation extends Unify {
         this.termSub1Struct = beliefTerm.structure();
 
         Op bOp = beliefTerm.op();
-        this.termSub1op = bOp.id;
+        this.beliefOp = bOp.id;
 
         this.eternal = task.isEternal() && (_belief == null || _belief.isEternal());
         this.temporal = !eternal || (taskTerm.isTemporal() || (_belief != null && beliefTerm.isTemporal()));
