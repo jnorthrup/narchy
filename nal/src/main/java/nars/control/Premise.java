@@ -216,16 +216,7 @@ public class Premise {
 
             if (belief.equals(task)) { //do not repeat the same task for belief
                 belief = null; //force structural transform; also prevents potential inductive feedback loop
-            } else if (belief.op().temporal && !belief.isEternal() && !belief.isDuring(task.start(), task.end())) {
-                Truth projected = belief.truth(belief.theNearestTimeWithin(task.start(), task.end()), n.dur());
-                if (projected == null) {
-                    belief = null; //too weak
-                } else {
-                    belief = Task.clone(belief, belief.term(), projected, belief.punc());
-                }
             }
-
-
         }
 
         if (beliefTerm instanceof Bool) {

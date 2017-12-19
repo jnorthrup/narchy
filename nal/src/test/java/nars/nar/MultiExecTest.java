@@ -74,7 +74,7 @@ public class MultiExecTest {
         });
 
         Loop l = n.startFPS(50f);
-        Util.pause(1000);
+        Util.sleep(1000);
         l.stop();
 
         System.out.println(a.executed);

@@ -24,6 +24,8 @@ import java.util.function.Consumer;
 import java.util.function.LongPredicate;
 import java.util.stream.Stream;
 
+import static nars.time.Tense.ETERNAL;
+
 public class MultiExec extends AbstractExec {
 
 
@@ -77,80 +79,96 @@ public class MultiExec extends AbstractExec {
     }
 
 
+    /**
+     * period to sleep while NAR is not looping, but not stopped
+     */
+    int idlePeriodMS = 50;
+
     protected void runner() {
 
-            focus.run(() -> {
-                long cycleStart = System.nanoTime();
 
-                @Deprecated float throttle = nar.loop.throttle.floatValue();
+        while (running) {
 
-                float subCycle = 0.5f;
-                double cycleTime = subCycle * nar.loop.periodMS.intValue()/1000f;
+            if (!nar.loop.isRunning()) {
+                Util.sleep(idlePeriodMS);
+            } else {
 
-                if (cycleTime < 0) {
-                    Util.sleep(1);
-                    cycleTime = 0.1;
-                }
+                focus.run(() -> {
+                    long cycleStart = System.nanoTime();
 
-                if (cycleTime!=cycleTime)
-                    cycleTime = 0.1f; //10hz alpha
+                    @Deprecated float throttle = nar.loop.throttle.floatValue();
 
-                if (throttle < 1f) {
-                    long sleepTime = Math.round(((1.0 - throttle) * (cycleTime * 1E9)) / 1.0E6f);
-                    if (sleepTime > 0)
-                        Util.sleep(sleepTime);
-                }
+                    float subCycle = 0.5f;
+                    double cycleTime = subCycle * nar.loop.periodMS.intValue() / 1000f;
 
-                long cycleNanosRemain = Math.round(cycleTime * throttle * 1E9);
-                long minPlay =
-                        0;
-                        //cycleNanosRemain/2;
+                    if (!nar.loop.isRunning()) {
+                        return ETERNAL; //break
+                    }
+
+                    if (cycleTime != cycleTime)
+                        cycleTime = 0.1f; //10hz alpha
+
+                    if (throttle < 1f) {
+                        long sleepTime = Math.round(((1.0 - throttle) * (cycleTime * 1E9)) / 1.0E6f);
+                        if (sleepTime > 0)
+                            Util.sleep(sleepTime);
+                    }
+
+                    long cycleNanosRemain = Math.round(cycleTime * throttle * 1E9);
+                    //long minPlay =
+                    //0;
+                    //cycleNanosRemain/2;
 
 
-                int qq = q.size();
-                if (qq > 0) {
+                    int qq = q.size();
+                    if (qq > 0) {
 //                    int WORK_SHARE =
 //                            (int) Math.ceil(((float) qq) / Math.max(1, (threads - 1)));
-                    do {
+                        do {
 
-                        ITask i = q.poll();
-                        if (i != null)
-                            execute(i);
-                        else
-                            break;
+                            ITask i = q.poll();
+                            if (i != null)
+                                execute(i);
+                            else
+                                break;
 
-                    } while (true);//--WORK_SHARE > 0);
+                        } while (true);//--WORK_SHARE > 0);
 
-                    long postWork = System.nanoTime();
-                    cycleNanosRemain = Math.max(minPlay, cycleNanosRemain - (postWork - cycleStart));
-                }
+                        //long postWork = System.nanoTime();
+                        //cycleNanosRemain = Math.max(minPlay, cycleNanosRemain - (postWork - cycleStart));
+                    }
 
-                return cycleStart + cycleNanosRemain;
-            });
+                    return cycleStart + cycleNanosRemain;
+                });
+            }
 
-//        }
+        }
     }
 
     boolean running = false;
 
     @Override
-    public synchronized void start(NAR nar) {
-        this.focus = new Focus(nar);
-        super.start(nar);
-        for (int i = 0; i < threads; i++)
-            exe.execute(this::runner);
-        running = true;
+    public void start(NAR nar) {
+        synchronized (exe) {
+            this.focus = new Focus(nar);
+            super.start(nar);
+            for (int i = 0; i < threads; i++)
+                exe.execute(this::runner);
+            running = true;
+        }
     }
 
     @Override
-    public synchronized void stop() {
-        if (exe instanceof AffinityExecutor)
-            ((AffinityExecutor) exe).stop();
-        else
-            ((ExecutorService) exe).shutdownNow();
+    public void stop() {
+        synchronized (exe) {
+            if (exe instanceof AffinityExecutor)
+                ((AffinityExecutor) exe).stop();
+            else
+                ((ExecutorService) exe).shutdownNow();
 
-        super.stop();
-        running = false;
+            super.stop();
+            running = false;
+        }
     }
 
     protected boolean isWorker(Thread t) {

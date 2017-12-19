@@ -204,17 +204,17 @@ abstract public class NAgentX extends NAgent {
                 "motivation.nal"
                 //"goal_analogy.nal"
         ).apply(n).deriver, n) {
-            @Override
-            protected long matchTime(Task task) {
-
-//                if (task.isEternal()) {
-//                    return ETERNAL;
-//                } else {
-                    return this.now +
-                            Util.sqr(n.random().nextInt(3)) * n.dur(); //forward
-//                }
-
-            }
+//            @Override
+//            protected long matchTime(Task task) {
+//
+////                if (task.isEternal()) {
+////                    return ETERNAL;
+////                } else {
+//                    return this.now +
+//                            Util.sqr(n.random().nextInt(3)) * n.dur(); //forward
+////                }
+//
+//            }
         };
 
         Loop aLoop = a.runFPS(agentFPS);
@@ -683,11 +683,11 @@ abstract public class NAgentX extends NAgent {
                         SimpleConceptGraph1 sg;
                         SpaceGraph s = new SpaceGraph<>(
                                 sg = new SimpleConceptGraph1(nar,
-                                        64, 7)
+                                        128, 8)
                         );
                         EdgeDirected fd = new EdgeDirected();
                         s.dyn.addBroadConstraint(fd);
-                        fd.attraction.set(fd.attraction.get() * 4);
+                        fd.attraction.set(fd.attraction.get() * 8);
 
                         s.add(new Ortho(
                                 //window(

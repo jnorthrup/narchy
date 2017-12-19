@@ -456,7 +456,7 @@ public class Focus {
                     t.printStackTrace();
                 }
 
-            } while (System.nanoTime() < until);
+            } while (System.nanoTime() <= until);
         }
 
     }

@@ -337,9 +337,34 @@ public class Derivation extends ProtoDerivation {
     }
 
 
-    protected void setTruth(Truth taskTruth, Truth beliefTruth) {
+    protected void setTruth() {
+
+        Truth taskTruth;
+        switch (this.taskPunc = task.punc()) {
+            case QUESTION:
+            case QUEST:
+                taskTruth = null;
+                break;
+            default:
+                taskTruth = task.truth();
+        }
         this.taskPolarity = (this.taskTruth = taskTruth) != null ? polarity(taskTruth) : 0;
-        this.beliefPolarity = (this.beliefTruth = beliefTruth) != null ? polarity(beliefTruth) : 0;
+
+        if (belief != null) {
+            long ts = task.start();
+            long te = task.end();
+
+            if ((this.beliefTruth = belief.truth(belief.theNearestTimeWithin(ts, te), dur))!=null) {
+                this.beliefPolarity = polarity(this.beliefTruth);
+            } else {
+                this.beliefPolarity = 0;
+            }
+
+        } else {
+            this.beliefTruth = null;
+            this.beliefPolarity = 0;
+        }
+
     }
 
     /**
@@ -367,13 +392,12 @@ public class Derivation extends ProtoDerivation {
         this._taskStruct = taskTerm.structure();
         this._taskOp = taskTerm.op().id;
 
+        setTruth();
 
 //        int ttv = taskTerm.vars();
 //        if (ttv > 0 && bt.vars() > 0) {
 //            bt = bt.normalize(ttv); //shift variables up to be unique compared to taskTerm's
 //        }
-        if (taskTerm == null || beliefTerm == null)
-            throw new RuntimeException("wtf");
         this.parentComplexity =
                 //Util.sum(
                 Math.max(
@@ -381,21 +405,11 @@ public class Derivation extends ProtoDerivation {
                 );
 
 
-        Truth taskTruth, beliefTruth;
-        switch (this.taskPunc = task.punc()) {
-            case QUESTION:
-            case QUEST:
-                taskTruth = null;
-                break;
-            default:
-                taskTruth = task.truth();
-        }
 
         long[] taskStamp = task.stamp();
         this.overlapSingle = task.isCyclic() ? 1 : 0; //Stamp.cyclicity(taskStamp);
 
         if (_belief != null) {
-            beliefTruth = _belief.truth();
 
             /** to compute the time-discounted truth, find the minimum distance
              *  of the tasks considering their dtRange
@@ -422,11 +436,9 @@ public class Derivation extends ProtoDerivation {
 //                    );
                     Math.max(task.isCyclic() ? 1 : 0, Stamp.overlapFraction(taskStamp, beliefStamp));
         } else {
-            beliefTruth = null;
             this.overlapDouble = 0;
         }
 
-        setTruth(taskTruth, beliefTruth);
 
         this._beliefStruct = beliefTerm.structure();
 

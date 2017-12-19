@@ -77,8 +77,8 @@ public abstract class ProtoDerivation extends Unify {
 
             DynBytes k = new DynBytes(96);
 
-            d.taskTerm.append((ByteArrayDataOutput)k);
-            d.beliefTerm.append((ByteArrayDataOutput)k);
+            d.taskTerm.root().append((ByteArrayDataOutput)k);
+            d.beliefTerm.root().append((ByteArrayDataOutput)k);
             k.writeByte(d.taskPunc);
             //2 bits for each polarity, each one offset by +1 (because it ranges from -1..+1)
             k.writeByte(((d.taskPolarity+1)<<2) | (d.beliefPolarity+1) );

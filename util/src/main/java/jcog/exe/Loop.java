@@ -95,21 +95,27 @@ abstract public class Loop {
         return this;
     }
 
-    public synchronized final boolean setPeriodMS(int nextPeriodMS) {
+    public final boolean setPeriodMS(int nextPeriodMS) {
         int prevPeriodMS;
         if ((prevPeriodMS = periodMS.getAndSet(nextPeriodMS)) != nextPeriodMS) {
             if (prevPeriodMS < 0 && nextPeriodMS >= 0) {
-                Thread myNewThread = newThread();
-                myNewThread.start();
+                synchronized (periodMS) {
+                    Thread myNewThread = newThread();
+                    myNewThread.start();
+                }
             } else if (prevPeriodMS >= 0 && nextPeriodMS < 0) {
-                Thread prevThread = this.thread;
-                if (prevThread!= null) {
-                    try {
-                        prevThread.stop();
-                    } catch (Throwable ignored) {
+                synchronized (periodMS) {
+                    Thread prevThread = this.thread;
+                    if (prevThread != null) {
+                        this.thread = null;
+                        try {
+                            prevThread.interrupt();
+                            //prevThread.stop();
+                        } catch (Throwable ii) {
+                            ii.printStackTrace();
+                        }
+                        logger.info("stop {}", this);
                     }
-                    this.thread = null;
-                    logger.info("stop {}", this);
                 }
             } else if (prevPeriodMS >= 0) {
                 //change speed

@@ -356,7 +356,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
 ////
 ////                float angle = 45 + belief.freq() * 180f + (goal.freq() - 0.5f) * 90f;
 //                //angle / 360f
-            Draw.colorHash(cw.id, cw.shapeColor);// * or(belief.conf(), goal.conf()), 0.9f, cw.shapeColor);
+            Draw.colorHash(cw.id.hashCode(), cw.shapeColor, 0.1f + 0.9f * p);// * or(belief.conf(), goal.conf()), 0.9f, cw.shapeColor);
 
             cw.edges.write().clear();
             cw.id.tasklinks().forEach(x -> this.accept(cw, x));

@@ -11,6 +11,7 @@ import nars.op.Operator;
 import nars.task.DerivedTask;
 import nars.task.ITask;
 import nars.task.NALTask;
+import nars.task.SignalTask;
 import nars.task.util.AnswerBag;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
@@ -29,7 +30,9 @@ import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 import java.util.function.BiFunction;
 
 import static java.util.Collections.singleton;
@@ -49,7 +52,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     Task[] EmptyArray = new Task[0];
     long[] ETERNAL_ETERNAL = {Tense.ETERNAL, Tense.ETERNAL};
 
-    /** assumes identity and hash have been tested already */
+    /**
+     * assumes identity and hash have been tested already
+     */
     static boolean equal(Task a, Task b) {
 
 
@@ -64,9 +69,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             Truth at = a.truth();
             Truth bt = b.truth();
             if (at == null) {
-                if (bt!=null) return false;
+                if (bt != null) return false;
             } else {
-                if (bt==null || !at.equals(bt)) return false;
+                if (bt == null || !at.equals(bt)) return false;
             }
 
             if ((a.start() != b.start()) || (a.end() != b.end()))
@@ -147,7 +152,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     }
 
     static boolean validTaskTerm(Term t) {
-        return validTaskTerm(t, (byte)0, true);
+        return validTaskTerm(t, (byte) 0, true);
     }
 
     static boolean validTaskTerm(@Nullable Term t, byte punc, boolean safe) {
@@ -174,7 +179,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             return fail(t, "not conceptualizable", safe);
 
         if (t.hasAny(Op.VAR_PATTERN))
-             return fail(t, "term has pattern variables", safe);
+            return fail(t, "term has pattern variables", safe);
 
         if (!t.hasAny(Op.ATOM.bit | Op.INT.bit | Op.varBits))
             return fail(t, "term has no substance", safe);
@@ -229,19 +234,19 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                     ByteObjectHashMap<List<ByteList>> indepVarPaths = new ByteObjectHashMap<>();
 
                     t.pathsTo(
-                            x -> (x.op().statement && x.varIndep() > 0) || (x.op()==VAR_INDEP) ? x : null,
+                            x -> (x.op().statement && x.varIndep() > 0) || (x.op() == VAR_INDEP) ? x : null,
                             x -> x.hasAny(Op.StatementBits | Op.VAR_INDEP.bit),
                             (ByteList path, Term indepVarOrStatement) -> {
-                        if (path.isEmpty())
-                            return true; //skip the input term
+                                if (path.isEmpty())
+                                    return true; //skip the input term
 
-                        if (indepVarOrStatement.op() == VAR_INDEP) {
-                            indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).anonNum(), FasterList::new).add(
-                                    path.toImmutable()
-                            );
-                        } else {
-                            statements.add(path.toImmutable());
-                        }
+                                if (indepVarOrStatement.op() == VAR_INDEP) {
+                                    indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).anonNum(), FasterList::new).add(
+                                            path.toImmutable()
+                                    );
+                                } else {
+                                    statements.add(path.toImmutable());
+                                }
 //
 //                        Term t = null; //root
 //                        int pathLength = path.size();
@@ -256,8 +261,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //                            }
 //                        }
 
-                        return true;
-                    });
+                                return true;
+                            });
 
                     if (statements.size() > 1) {
                         statements.sortThisByInt(PrimitiveIterable::size);
@@ -327,7 +332,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         else
             throw new InvalidTaskException(t, reason);
     }
-
 
 
     @Nullable
@@ -938,88 +942,89 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
         //invoke possible functor and apply aliases
 
-        Term x = term();
+        Term x = term(), y;
 
-        Term y = x.eval(n.terms.intern());
+        if (this instanceof SignalTask) {
+            //HACK - fast track insertion, expect no evaluation surprises, etc.
+            y = x;
+        } else {
+            y = x.eval(n.terms.intern());
 
-        if (!x.equals(y)) {
+            if (!x.equals(y)) {
 
-            //clone a new task because it has changed
+                //clone a new task because it has changed
 
-            Task result;
-            if (y instanceof Bool && isQuestOrQuestion()) {
-                //convert to implicit answer
-                byte p = isQuestion() ? BELIEF : GOAL;
-                result = clone(this, x.term(), $.t(y == True ? 1f : 0f, n.confDefault(p)), p);
-            } else {
-                if (y.op() == Op.BOOL)
-                    return null;
+                Task result;
+                if (y instanceof Bool && isQuestOrQuestion()) {
+                    //convert to implicit answer
+                    byte p = isQuestion() ? BELIEF : GOAL;
+                    result = clone(this, x.term(), $.t(y == True ? 1f : 0f, n.confDefault(p)), p);
+                } else {
+                    if (y.op() == Op.BOOL)
+                        return null;
 
-                @Nullable ObjectBooleanPair<Term> yy = tryContent(y, punc(), !isInput() || !Param.DEBUG_EXTRA);
-                    /* the evaluated result here acts as a memoization of possibly many results
-                       depending on whether the functor is purely static in which case
-                       it would be the only one.
-                     */
-                result = yy != null ? clone(this, yy.getOne().negIf(yy.getTwo())) : null;
+                    @Nullable ObjectBooleanPair<Term> yy = tryContent(y, punc(), !isInput() || !Param.DEBUG_EXTRA);
+                        /* the evaluated result here acts as a memoization of possibly many results
+                           depending on whether the functor is purely static in which case
+                           it would be the only one.
+                         */
+                    result = yy != null ? clone(this, yy.getOne().negIf(yy.getTwo())) : null;
+                }
+
+                delete();
+
+                if (result == null) {
+                    return null; //result = Operator.log(n.time(), $.p(x, y));
+                } else {
+                    return result.run(n); //recurse
+                }
+
             }
 
-            delete();
+            //invoke possible Operation
+            boolean cmd = isCommand();
 
-            if (result == null) {
-                return null; //result = Operator.log(n.time(), $.p(x, y));
-            } else {
-                return result.run(n); //recurse
-            }
-
-        }
-
-        //invoke possible Operation
-        boolean cmd = isCommand();
-
-        if (cmd || (isGoal() && !isEternal())) {
-            //resolve possible functor in goal or command (TODO question functors)
-            //the eval step producing 'y' above will have a reference to any resolved functor concept
-            Pair<Operator, Term> o = Op.functor(y, (i) -> {
-                Concept operation = n.concept(i);
-                return operation instanceof Operator ? (Operator) operation : null;
-            });
-            if (o != null) {
-                try {
-                    //TODO add a pre-test guard here to avoid executing a task which will be inconsequential anyway
-                    Task yy = o.getOne().execute.apply(this, n);
-                    if (yy != null && !this.equals(yy)) {
-                        return singleton(yy);
+            if (cmd || (isGoal() && !isEternal())) {
+                //resolve possible functor in goal or command (TODO question functors)
+                //the eval step producing 'y' above will have a reference to any resolved functor concept
+                Pair<Operator, Term> o = Op.functor(y, (i) -> {
+                    Concept operation = n.concept(i);
+                    return operation instanceof Operator ? (Operator) operation : null;
+                });
+                if (o != null) {
+                    try {
+                        //TODO add a pre-test guard here to avoid executing a task which will be inconsequential anyway
+                        Task yy = o.getOne().execute.apply(this, n);
+                        if (yy != null && !this.equals(yy)) {
+                            return singleton(yy);
+                        }
+                    } catch (Throwable xtt) {
+                        //n.logger.error("{} {}", this, t);
+                        return singleton(Operator.error(this, xtt, n.time()));
                     }
-                } catch (Throwable xtt) {
-                    //n.logger.error("{} {}", this, t);
-                    return singleton(Operator.error(this, xtt, n.time()));
+                    if (cmd) {
+                        n.eventTask.emit(this);
+                        return null;
+                    }
+                    //otherwise: allow processing goal
                 }
-                if (cmd) {
-                    n.eventTask.emit(this);
-                    return null;
-                }
-                //otherwise: allow processing goal
             }
-        }
 
-        if (!cmd) {
-
-            n.conceptualize(term(), c->{
-                if (c instanceof TaskConcept) {
-                    ((TaskConcept)c).add(this, n);
-                }
-                else {
-                    if (isBeliefOrGoal() || Param.DEBUG_EXTRA)
-                        throw new RuntimeException(c + " is not a TaskConcept yet a task expects to add itself to it");
-                }
-            });
-//            Concept c = concept(n, true);
-//            if (c != null) {
-//
-//
-//            }
+            if (cmd) {
+                return null; //skip insertion below
+            }
 
         }
+
+
+        n.conceptualize(term(), c -> {
+            if (c instanceof TaskConcept) {
+                ((TaskConcept) c).add(this, n);
+            } else {
+                if (isBeliefOrGoal() || Param.DEBUG_EXTRA)
+                    throw new RuntimeException(c + " is not a TaskConcept yet a task expects to add itself to it");
+            }
+        });
 
         return null;
     }

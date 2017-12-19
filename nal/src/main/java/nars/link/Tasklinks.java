@@ -89,11 +89,13 @@ public class Tasklinks {
     public static class TaskLinkForget extends PriForget<PriReference<Task>> {
         private final long now;
         private final int dur;
+        private final int total;
 
-        public TaskLinkForget(float r, long now, int dur) {
+        public TaskLinkForget(float r, long now, int dur, int total) {
             super(r);
             this.now = now;
             this.dur = dur;
+            this.total = Math.max(1, total);
         }
 
         @Override
@@ -101,7 +103,7 @@ public class Tasklinks {
             Task t = b.get();
             float rate =
                   t.isBeliefOrGoal() ?
-                        1f - w2cSafe(TemporalBeliefTable.temporalTaskPriority(t, now, now, dur)) :
+                        1f - w2cSafe(TemporalBeliefTable.temporalTaskPriority(t, now, now, dur))/total :
                         1f;
             b.priSub(priRemoved * rate);
         }
