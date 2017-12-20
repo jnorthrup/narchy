@@ -28,7 +28,7 @@ public class NLPTest {
         //n.quaMin.setValue(0.1f);
         n.freqResolution.set(0.1f);
 
-        n.onOpArgs("say", (args, nn) -> {
+        n.onOpN("say", (args, nn) -> {
             System.err.println(Joiner.on(" ").join(args));
         });
 

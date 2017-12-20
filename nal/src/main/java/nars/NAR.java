@@ -12,6 +12,7 @@ import jcog.list.FasterList;
 import jcog.math.MutableInteger;
 import jcog.pri.Pri;
 import jcog.pri.Prioritized;
+import jcog.util.TriConsumer;
 import nars.Narsese.NarseseException;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
@@ -77,21 +78,17 @@ import static org.fusesource.jansi.Ansi.ansi;
  */
 public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles<NAR>, Cycler {
 
+
+
     public Logger logger;
 
-    static final Set<String> logEvents = Set.of("eventTask", "eventOut");
+    static final Set<String> logEvents = Set.of("eventTask");
     static final String VERSION = "NARchy v?.?";
 
     public final Exec exe;
     public final transient Topic<NAR> eventClear = new ListTopic<>();
     public final transient Topic<NAR> eventCycle = new ListTopic<>();
     public final transient Topic<Task> eventTask = new ListTopic<>();
-
-    /**
-     * general output event stream
-     */
-    public final transient Topic eventOut = new ListTopic<>();
-
 
     public final Emotion emotion;
 
@@ -133,6 +130,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
             concepts.start(this);
             Builtin.init(this);
         }
+
 
         exe.start(this);
     }
@@ -296,9 +294,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
             stop();
 
+            time.clear(this);
             time.reset();
 
             exe.start(this);
+
+            logger.info("reset");
 
         }
 
@@ -312,8 +313,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      */
     public void clear() {
         synchronized (exe) {
-            time.clear(this);
+
             eventClear.emit(this);
+
+            logger.info("cleared");
         }
     }
 
@@ -624,9 +627,26 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     /**
      * simplified wrapper for use cases where only the arguments of an operation task, and not the task itself matter
      */
-    public final void onOpArgs(@NotNull String atom, @NotNull BiConsumer<Subterms, NAR> exe) {
+    public final void onOpN(@NotNull String atom, @NotNull BiConsumer<Subterms, NAR> exe) {
         onOp(atom, (task, nar) -> {
             exe.accept(task.term().sub(0).subterms(), nar);
+            return null;
+        });
+    }
+
+    public final void onOp1(@NotNull String atom, @NotNull BiConsumer<Term, NAR> exe) {
+        onOp(atom, (task, nar) -> {
+            Subterms ss = task.term().sub(0).subterms();
+            if (ss.subs() == 1)
+                exe.accept(ss.sub(0), nar);
+            return null;
+        });
+    }
+    public final void onOp2(@NotNull String atom, @NotNull TriConsumer<Term, Term, NAR> exe) {
+        onOp(atom, (task, nar) -> {
+            Subterms ss = task.term().sub(0).subterms();
+            if (ss.subs() == 2)
+                exe.accept(ss.sub(0), ss.sub(1), nar);
             return null;
         });
     }
@@ -1506,6 +1526,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     }
 
     public final void out(Object x) {
-        eventOut.emit(x);
+        eventTask.emit(Operator.log(time(), x));
     }
 }

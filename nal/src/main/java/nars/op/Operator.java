@@ -88,12 +88,8 @@ public class Operator extends NodeConcept implements PermanentConcept, Atomic {
         return new NALTask(content, Op.COMMAND, null, when, when, when, ArrayUtils.EMPTY_LONG_ARRAY);
     }
 
-    public static Task log(long when, @NotNull Object content) {
+    public static Task log(long when, Object content) {
         return Operator.command(LOG_FUNCTOR, when, $.the(content));
-    }
-
-    public static Task log(@NotNull Term content) {
-        return log(ETERNAL, content);
     }
 
     static Task command(String func, long now, @NotNull Term... args) {

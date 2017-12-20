@@ -811,7 +811,7 @@ public enum $ {
 //    }
 
     @NotNull
-    public static String unquote(@NotNull Term s) {
+    public static String unquote(Term s) {
         return unquote(s.toString());
     }
 

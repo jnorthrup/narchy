@@ -16,21 +16,31 @@ public class NARjs {
 
 	final ScriptEngine js = factory.getEngineByName("JavaScript");
 
-	public NARjs() throws ScriptException {
-		js.eval("load('nashorn:mozilla_compat.js')");
+	private static final ThreadLocal<NARjs> the = ThreadLocal.withInitial(NARjs::new);
 
-		js.eval("importPackage('java.lang')");
-		js.eval("importPackage('java.other')");
-		js.eval("importPackage('java.io')");
+	public static NARjs the() {
+		return the.get();
+	}
 
-		js.eval("importPackage('nars.core')");
-		js.eval("importPackage('nars.nal')");
-		js.eval("importPackage('nars.nal.nal7')");
-		js.eval("importPackage('nars.builder')");
-		js.eval("importPackage('nars.io')");
-		js.eval("importPackage('nars.gui')");
+	private NARjs() {
+		try {
+			js.eval("load('nashorn:mozilla_compat.js')");
 
-		js.eval("function newDefaultNAR() { var x = new DefaultNARBuilder().builder(); new TextOutput(x, System.out); return x; }");
+			js.eval("importPackage('java.lang')");
+			js.eval("importPackage('java.other')");
+			js.eval("importPackage('java.io')");
+
+			js.eval("importPackage('nars')");
+		} catch (ScriptException e) {
+			throw new RuntimeException(e);
+		}
+
+//		js.eval("importPackage('nars.nal')");
+//		js.eval("importPackage('nars.nal.nal7')");
+//		js.eval("importPackage('nars.builder')");
+//		js.eval("importPackage('nars.io')");
+//		js.eval("importPackage('nars.gui')");
+//		js.eval("function newDefaultNAR() { var x = new DefaultNARBuilder().builder(); new TextOutput(x, System.out); return x; }");
 	}
 
 	public Object eval(String s) throws ScriptException {
@@ -41,8 +51,8 @@ public class NARjs {
 		System.out.println("Help coming soon.");
 	}
 
-	public static void main(String[] args) throws ScriptException, java.io.IOException {
-		NARjs j = new NARjs();
+	public static void main(String[] args) throws java.io.IOException {
+		NARjs j = NARjs.the();
 
 		System.out.println(NAR.VERSION
 				+ " Javascript Console - :h for help, :q to exit");

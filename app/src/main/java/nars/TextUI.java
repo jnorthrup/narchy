@@ -333,15 +333,19 @@ public class TextUI {
                     if (!t.isEmpty()) {
 
                         try {
-                            nar.input(t);
-                        } catch (Narsese.NarseseException e) {
-
                             try {
-                                Hear.hear(nar, t, "console", 100);
-                            } catch (Exception e1) {
-                                nar.input(Operator.log(nar.time(), e1));
-                            }
+                                nar.input(t);
+                            } catch (Narsese.NarseseException e) {
 
+                                try {
+                                    Hear.hear(nar, t, "console", 100);
+                                } catch (Exception e1) {
+                                    nar.input(Operator.log(nar.time(), e1));
+                                }
+
+                            }
+                        } catch (Throwable tt) {
+                            nar.input(Operator.log(nar.time(), $.p(t, tt.toString())));
                         }
 
                     }

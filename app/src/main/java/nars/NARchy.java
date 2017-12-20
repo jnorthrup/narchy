@@ -1,11 +1,13 @@
 package nars;
 
 import com.google.common.base.Joiner;
-import nars.exe.AbstractExec;
+import nars.exe.MultiExec;
 import nars.op.AtomicExec;
 import nars.op.Operator;
+import nars.op.java.Opjects;
 import nars.op.nlp.Hear;
 import nars.op.stm.ConjClustering;
+import nars.term.atom.Atomic;
 import nars.term.sub.Subterms;
 import nars.time.RealTime;
 import nars.time.Tense;
@@ -20,6 +22,7 @@ public class NARchy extends NARS {
 
     public static NAR ui() {
         NAR nar = new DefaultNAR(8, true)
+                .exe(new MultiExec(512, 2, 256))
 //                .exe(new AbstractExec(64) {
 //                    @Override
 //                    public boolean concurrent() {
@@ -31,10 +34,10 @@ public class NARchy extends NARS {
                 .get();
 
 
-        ConjClustering conjClusterB = new ConjClustering(nar, BELIEF, (t->t.isInput()), 16, 64);
+        ConjClustering conjClusterB = new ConjClustering(nar, BELIEF, (Task::isInput), 16, 64);
         //ConjClustering conjClusterG = new ConjClustering(nar, GOAL, true, false, 16, 64);
 
-        Hear.wiki(nar);
+        Hear.readURL(nar);
 
         installSpeech(nar);
 
@@ -43,23 +46,63 @@ public class NARchy extends NARS {
         return nar;
     }
 
-    public static void installSpeech(NAR nar) {
-        nar.runLater(()-> {
-            MaryTTSpeech.speak(""); //forces load of TTS so it will be ready ASAP and not load on the first use
-            nar.onOp("speak", new AtomicExec((t, n) -> {
+    public static class Speech {
+        private final NAR nar;
+        private final AtomicExec sayer;
+        private final Opjects op;
+
+        public Speech() {
+            //for proxy
+            nar = null; sayer = null; op = null;
+        }
+
+        public Speech(NAR nar) {
+            this.nar = nar;
+
+            nar.onOp("say", sayer = new AtomicExec((t, n) -> {
                 @Nullable Subterms args = Operator.args(t);
                 if (args.AND(x -> !x.op().var)) {
                     String text = Joiner.on(", ").join(args);
                     if (text.isEmpty())
                         return;
-                    if (text.charAt(0) != '"')
-                        text = "\"" + text + '"';
 
-                    n.believe($.func("speak", args.arrayShared()), Tense.Present);
+//                    Term tokens = $.conj(Twokenize.twokenize(text).stream()
+//                            .map(x -> $.func("say", $.the(x.toString())))
+//                            .toArray(Term[]::new));
 
                     MaryTTSpeech.speak(text);
+
+                    Atomic qt = $.quote(text);
+                    n.believe($.func("say", qt), Tense.Present);
+                    Hear.hearText(n, $.unquote(qt), n.self().toString(), 200, this.nar.priDefault(BELIEF));
                 }
             }, 0.51f));
+
+
+            this.op = new Opjects(nar);
+            op.the("speech", this);
+        }
+
+
+        public void quiet() {
+            sayer.exeThresh.set(1f);
+        }
+
+        public void normal() {
+            sayer.exeThresh.set(0.75f);
+        }
+
+        public void chatty() {
+            sayer.exeThresh.set(0.51f);
+        }
+    }
+
+    public static void installSpeech(NAR nar) {
+
+
+        //MaryTTSpeech.speak(""); //forces load of TTS so it will be ready ASAP and not load on the first use
+
+        new Speech(nar);
 
 //            try {
 //                nar.believe($.$("(hear:$1 ==> speak:$1)"), Tense.Eternal);
@@ -68,6 +111,6 @@ public class NARchy extends NARS {
 //            } catch (Narsese.NarseseException e) {
 //                e.printStackTrace();
 //            }
-        });
+
     }
 }

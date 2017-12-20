@@ -471,19 +471,34 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         }
 
         @Override
-        protected boolean exePrefilter(Task x) {
+        protected Task exePrefilter(Task x) {
+
+            if (!x.isCommand() && x.freq() <= 0.5f + Param.TRUTH_EPSILON)
+                return null; //dont even think about executing it, but pass thru to reasoner
 
 
             if (x.meta("pretend") != null)
-                return false; //filter instructive tasks (would cause feedback loop)
+                return null; //filter instructive tasks (would cause feedback loop)
 
+            boolean input = x.isInput();
             Subterms args = validArgs(Operator.args(x));
-            if (args == null)
-                return false;
-            if (null == validMethod(args.sub(0)))
-                return false;
+            if (args == null) {
+                if (input)
+                    return Operator.log(x.creation(),"Invalid opject argument pattern: " + x.term());
+                else
+                    return null;
+            }
+
+            if (null == validMethod(args.sub(0))) {
+                if (input)
+                    return Operator.log(x.creation(),"Unknown opject method: " + x.term());
+                else
+                    return null;
+            }
+
             //TODO other prefilter conditions
-            return true;
+
+            return x;
         }
     }
 
@@ -571,7 +586,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
             if (method == null)
                 return;
 
-            Term methodArgs = args.sub(1);
+            Term methodArgs = args.subs() > 1 ? args.sub(1) : Op.ZeroProduct;
 
             boolean maWrapped = methodArgs.op() == PROD;
 
@@ -590,10 +605,15 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
             if (evoked(task, objArgs)) {
 
-                nar.runLater(() -> {
+                Pair<Pair<Class, Term>, Pair<List<Class<?>>, Term>> methodKey = pair(pair(c, method), pair(types, Operator.func(taskTerm)));
+                final MethodHandle mm = methodArgCache.apply(methodKey);
+                if (mm == null) {
+                    if (task.isInput())
+                        n.input(Operator.log(n.time(), methodKey + " unresolved"));
+                    return;
+                }
 
-                    final MethodHandle mm = methodArgCache.apply(pair(pair(c, method), pair(types, Operator.func(taskTerm))));
-                    if (mm == null) return;
+                nar.runLater(() -> {
 
                     if (invokingGoal.get() != null)
                         throw new TODO("we need a stack: " + invokingGoal.get() + " -> " + task);
@@ -617,7 +637,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     }
 
     protected boolean evoked(Task task, Object[] args) {
-        if (task.meta("pretend") == null)
+        if (!task.isInput() && task.meta("pretend") == null)
             logger.info("evoke: {}", Param.DEBUG ? task.proof() : task);
 
         return true;
@@ -625,13 +645,14 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
     protected Subterms validArgs(Subterms args) {
         int a = args.subs();
-        if (a == 2 || (a == 3 && args.sub(2).op() == VAR_DEP)) {
-            return args;
-        } else {
-            //this is likely a goal from the NAR to itself about a desired result state
-            //used during reasoning
-            //anyway it is invalid for invocation (u
-            return null;
+        switch (a) {
+            case 1: //1 argument could be a void invocation
+            case 2:
+                return args.sub(0).op() == ATOM ? args : null;
+            case 3:
+                return args.sub(0).op() == ATOM && args.sub(2).op() == VAR_DEP ? args : null;
+            default:
+                return null;
         }
     }
 

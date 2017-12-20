@@ -57,7 +57,7 @@ public class OperatorTest {
         n.input("status(sys)");
 
         String s = b.toString();
-        assertTrue(s.startsWith("eventOut: ("), ()->s);
+        assertTrue(s.startsWith("→(("), ()->s);
     }
 
     @Test

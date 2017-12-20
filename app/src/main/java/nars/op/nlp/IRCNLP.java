@@ -220,7 +220,7 @@ public class IRCNLP extends IRC {
 
     void hear(String text, String src) {
 
-        Hear.hear(nar, text, src, (t) -> {
+        Hear.hearIfNotNarsese(nar, text, src, (t) -> {
             return new Hear(nar, Hear.tokenize(t.toLowerCase()), src, 200);
 //            Compound f = $.func("SENTENCE", Hear.tokenize(t));
 //            nar.believe(0.5f, f, Tense.Present, 1f, 0.9f);
@@ -368,7 +368,7 @@ public class IRCNLP extends IRC {
 //            }
 //        };
 
-        Hear.wiki(n);
+        Hear.readURL(n);
         n.logPriMin(System.out, 0.9f);
 
         n.start();

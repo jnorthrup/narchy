@@ -242,7 +242,7 @@ public class IRCAgent extends IRC {
                 //"#nars"
         );
 
-        n.onOpArgs("trace", (arg, nn) -> {
+        n.onOpN("trace", (arg, nn) -> {
             if (arg.subs() > 0) {
                 switch (arg.sub(0).toString()) {
                     case "on": bot.setTrace(true); break;

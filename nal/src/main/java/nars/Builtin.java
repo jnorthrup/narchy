@@ -18,6 +18,7 @@ import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
+import javax.script.ScriptException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
@@ -29,6 +30,7 @@ import static nars.term.Functor.f0;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Built-in set of default Functors and Operators, registered into a NAR on initialization
@@ -437,7 +439,8 @@ public class Builtin {
 
         nar.on(f0("self", nar::self));
 
-        nar.on(Functor.f1("status", (Function<Term, Term>) (what -> {
+        nar.on(Functor.f1("the", (Function<Term, Term>) (what -> {
+
 
             if (what instanceof Atom) {
                 switch (what.toString()) {
@@ -451,7 +454,11 @@ public class Builtin {
                 }
             }
 
-            return $.quote($.p($.quote(what.getClass().toString()), $.quote(what.toString())));
+            Object x = nar.concept(what);
+            if (x == null)
+                x = what;
+
+            return $.quote($.p($.quote(x.getClass().toString()), $.quote(x.toString())));
         })));
 
 
@@ -504,16 +511,30 @@ public class Builtin {
     }
 
     public static void registerOperators(NAR nar) {
-        nar.onOp("assertEquals", (task, nn) -> {
-            //String msg = op + "(" + Joiner.on(',').join(args) + ')';
-            @Nullable Subterms args = Operator.args(task);
-            if (args.subs() == 2) {
-                //assertEquals(/*msg,*/ 2, args.subs());
-                assertEquals(/*msg,*/ args.sub(0), args.sub(1));
-            }
+        new System(nar);
+
+        nar.onOp1("assertTrue", (x, nn) -> {
+            if (!x.op().var)
+                assertTrue(/*msg,*/ x == True);
         });
 
-        new System(nar);
+        nar.onOp2("assertEquals", (x, y, nn) -> {
+            if (!x.op().var && !y.op().var)
+                assertEquals(/*msg,*/ x, y);
+        });
+
+        nar.onOp1("js", (code, nn) -> {
+            if (code.op()==ATOM) {
+                String js = $.unquote(code);
+                Object result;
+                try {
+                    result = NARjs.the().eval(js);
+                } catch (ScriptException e) {
+                    result = e;
+                }
+                nn.input(Operator.log(nar.time(), $.p(code, $.the(result)) ));
+            }
+        });
     }
 
     public static class System {
@@ -540,6 +561,31 @@ public class Builtin {
             java.lang.System.exit(0);
         }
 
+        /** NAR clear */
+        public void clear() {
+            nar.clear();
+        }
+
+        public void reset() {
+            nar.reset();
+        }
+        public void stop() {
+            nar.stop();
+        }
+        public void start() {
+            nar.start();
+        }
+        public void startFPS(int fps) {
+            nar.startFPS(fps);
+        }
+
+        public void save(Object target) {
+            //TODO
+        }
+        public void load(Object source) {
+            //TODO
+        }
+
 //        nar.on("concept", (Operator) (op, a, nn) -> {
 //            Concept c = nn.concept(a[0]);
 //            Command.log(nn,
@@ -548,27 +594,18 @@ public class Builtin {
 //            );
 //        });
 
-        public void log(Term x) {
+        public void log(Object x) {
             nar.logger.info(" {}", x);
         }
+
+        //        nar.onOpArgs("error", (t, n) -> NAR.logger.error(" {}", t));
+
 //
 //        BiConsumer<Task, NAR> log = (t, n) -> NAR.logger.info(" {}", t);
 //        nar.onOp("log", log);
 //        nar.onOp(Operator.LOG_FUNCTOR, log);
 //
-//        nar.onOpArgs("error", (t, n) -> NAR.logger.error(" {}", t));
-//
-//        nar.onOp("reset", (t, nn) -> {
-//            nn.runLater(nn::reset);
-//        });
-//
-//        nar.onOp("clear", (t, n) -> {
-//            n.runLater(() -> {
-//                n.clear();
-//                n.input(Operator.log(n.time(), "ready"));
-//            });
-//        });
-//
+
 
 
 //        nar.on(Functor.f("top", (args) -> {

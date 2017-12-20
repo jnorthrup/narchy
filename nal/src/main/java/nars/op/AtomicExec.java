@@ -31,7 +31,7 @@ import static nars.time.Tense.ETERNAL;
 public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
     //    private final float minPeriod;
-    private final MutableFloat desireThresh;
+    public final MutableFloat exeThresh;
 
 //    /**
 //     * time of the current rising edge, or ETERNAL if not activated
@@ -68,14 +68,14 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
     public AtomicExec(BiConsumer<Task, NAR> exe, MutableFloat dThresh) {
         this.exe = exe;
         active.setCapacity(ACTIVE_CAPACITY);
-        this.desireThresh = dThresh;
+        this.exeThresh = dThresh;
     }
 
     /**
      * implementations can override this to prefilter invalid operation patterns
      */
-    protected boolean exePrefilter(Task x) {
-        return true;
+    protected Task exePrefilter(Task x) {
+        return x;
     }
 
     final AtomicBoolean busy = new AtomicBoolean(false);
@@ -104,7 +104,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
             long start = now - dur / 2;
             long end = now + dur / 2;
             List<Task> toInvoke = $.newArrayList(0);
-            float desireThresh = this.desireThresh.floatValue();
+            float desireThresh = this.exeThresh.floatValue();
             active.forEach(x -> {
                 Term xx = x.get();
                 Concept c = n.concept(xx);
@@ -155,25 +155,34 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
         //TODO handle CMD's
 
-        if (x.freq() <= 0.5f + Param.TRUTH_EPSILON)
-            return x; //dont even think about executing it, but pass thru to reasoner
+        Task y = exePrefilter(x);
+        if ( y != x )
+            return y; //transformed
+        if (y == null)
+            return x; //pass-through to reasoner
 
-        if (!exePrefilter(x))
-            return x; //pass thru to reasoner
+        x = y;
 
-        active.put(new PLink(x.term().root() /* incase it contains temporal, we will dynamically match task anyway on invocation */,
-                x.priElseZero()
-        ));
+        if (x.isCommand()) {
+            //immediately execute
+            exe.accept(x, n);
+            return null; //absorbed
+        } else {
 
-        if (onCycle == null) {
-            synchronized (active) {
-                if (onCycle==null) {
-                    onCycle = DurService.on(n, this::update);
+            active.put(new PLink(x.term().root() /* incase it contains temporal, we will dynamically match task anyway on invocation */,
+                    x.priElseZero()
+            ));
+
+            if (onCycle == null) {
+                synchronized (active) {
+                    if (onCycle == null) {
+                        onCycle = DurService.on(n, this::update);
+                    }
                 }
             }
-        }
 
-        return x;
+            return x;
+        }
     }
 
 

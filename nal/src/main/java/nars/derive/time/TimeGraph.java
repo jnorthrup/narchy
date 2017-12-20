@@ -500,7 +500,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     }
 
     private boolean solveDT(Term x, long start, long ddt, Predicate<Event> each) {
-        assert (ddt < Integer.MAX_VALUE);
+        assert (ddt < Integer.MAX_VALUE): ddt + " dt calculated";
         int dt = (int) ddt;
         Term y = dt(x, dt);
 

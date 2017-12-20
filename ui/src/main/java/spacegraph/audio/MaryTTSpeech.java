@@ -113,6 +113,8 @@ public class MaryTTSpeech {
     public static DDSoundProducer speech(String text) throws SynthesisException {
 
 
+
+
         AudioInputStream audio = marytts.generateAudio(text);
         double[] x = MaryAudioUtils.getSamplesAsDoubleArray(audio);
 
