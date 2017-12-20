@@ -119,7 +119,7 @@ public abstract class Param extends Services<Term, NAR> {
             //0;
             //Integer.MAX_VALUE;
             //8;
-            16;
+            32;
 
 
     /**
@@ -428,7 +428,7 @@ public abstract class Param extends Services<Term, NAR> {
     }
 
     @Nullable
-    public static PreciseTruth truth(@Nullable Task topEternal, long start, long end, int dur, @NotNull Iterable<? extends Tasked> tasks) {
+    public static PreciseTruth truth(@Nullable Task topEternal, long start, long end, int dur, Iterable<? extends Tasked> tasks) {
 
         assert (dur > 0);
 

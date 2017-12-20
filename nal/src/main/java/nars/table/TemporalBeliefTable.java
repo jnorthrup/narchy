@@ -1,10 +1,10 @@
 package nars.table;
 
-import jcog.math.Interval;
+import jcog.Skill;
 import nars.NAR;
 import nars.Task;
 import nars.concept.TaskConcept;
-import nars.task.SignalTask;
+import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +17,8 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 
+/** https://en.wikipedia.org/wiki/Compressed_sensing */
+@Skill("Compressed_sensing")
 public interface TemporalBeliefTable extends TaskTable, Iterable<Task> {
 
 

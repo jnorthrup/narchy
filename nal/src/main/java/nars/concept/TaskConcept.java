@@ -170,21 +170,6 @@ public class TaskConcept extends NodeConcept implements Concept {
     }
 
 
-    /*@NotNull*/
-    public final TaskTable table(byte punc) {
-        switch (punc) {
-            case BELIEF:
-                return beliefs();
-            case GOAL:
-                return goals();
-            case QUESTION:
-                return questions();
-            case QUEST:
-                return quests();
-            default:
-                throw new UnsupportedOperationException("what kind of punctuation is: '" + punc + "'");
-        }
-    }
 
     public void forEachTask(boolean includeConceptBeliefs, boolean includeConceptQuestions, boolean includeConceptGoals, boolean includeConceptQuests, @NotNull Consumer<Task> each) {
         if (includeConceptBeliefs && beliefs != null) beliefs.forEachTask(each);

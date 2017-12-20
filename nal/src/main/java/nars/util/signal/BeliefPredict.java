@@ -8,7 +8,7 @@ import nars.NAR;
 import nars.control.CauseChannel;
 import nars.control.DurService;
 import nars.task.ITask;
-import nars.task.SignalTask;
+import nars.task.signal.SignalTask;
 import nars.term.Termed;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;

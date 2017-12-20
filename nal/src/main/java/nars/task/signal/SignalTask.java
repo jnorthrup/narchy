@@ -1,15 +1,16 @@
-package nars.task;
+package nars.task.signal;
 
 
+import nars.task.NALTask;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.procedure.primitive.LongObjectProcedure;
 
-/**
- * Created by me on 2/12/17.
- */
+
 public class SignalTask extends NALTask {
 
+
+    //TODO add slidingStart ability
 
     /**
      * because this is an input task, its hash and equality will not depend on this value so it is free to change to represent a growing duration
@@ -59,7 +60,7 @@ public class SignalTask extends NALTask {
         }
     }
 
-    public static final LongObjectProcedure<SignalTask> Frozen = (l, w) -> { /* nothing */ };
 
+    protected static final LongObjectProcedure<SignalTask> Frozen = (l, w) -> { /* nothing */ };
 
 }

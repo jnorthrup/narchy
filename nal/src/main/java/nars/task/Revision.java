@@ -401,13 +401,27 @@ public class Revision {
 //        if (factor < Prioritized.EPSILON) return null;
 
         float confMin =
-                0;
-        //nar.confMin.floatValue();
-        Truth rawTruth = revise(a, b, factor, c2wSafe(confMin));
+                Param.TRUTH_EPSILON;
+
+        long start = joint.unionStart;
+        long end = joint.unionEnd;
+
+        Truth an = a.truth(start, end, dur);
+        if (an == null)
+            return null;
+        Truth bn = b.truth(start, end, dur);
+        if (bn == null)
+            return null;
+        float aw = a.isQuestOrQuestion() ? 0.5f : an.conf(); //question
+        float bw = bn.conf();
+        if (aw < confMin && bw < confMin)
+            return null; //fail if both are below
+
+        Truth rawTruth = revise(an, bn, factor, c2wSafe(confMin));
         if (rawTruth == null)
             return null;
 
-        float maxEviAB = Math.max(a.evi(), b.evi());
+        float maxEviAB = Math.max(an.evi(), bn.evi());
         float evi = rawTruth.evi();
         if (maxEviAB < evi) {
             //more evidence overlap indicates redundant information, so reduce the confWeight (measure of evidence) by this amount
@@ -441,11 +455,8 @@ public class Revision {
 
         assert (a.punc() == b.punc());
 
-        long start = joint.unionStart;
-        long end = joint.unionEnd;
 
-        float aw = a.isQuestOrQuestion() ? 0 : a.conf(start, end, dur); //question
-        float bw = b.conf(start, end, dur);
+
         float aProp = aw / (aw + bw);
 
         Term cc = null;

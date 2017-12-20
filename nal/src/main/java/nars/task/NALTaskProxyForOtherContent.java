@@ -44,7 +44,7 @@ public class NALTaskProxyForOtherContent implements Task {
 
     @Override
     public int hashCode() {
-        return hash(term(), (DiscreteTruth)truth(), punc(), start(), end(), stamp());
+        return Task.hash(term(), (DiscreteTruth)truth(), punc(), start(), end(), stamp());
     }
 
     @Override

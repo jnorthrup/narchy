@@ -137,7 +137,7 @@ public class GoalActionConcept extends ActionConcept {
                 if (goal == null) {
                     goal = belief.withEvi(hope); //what one images will happen maybe is what one wants
                 } else {
-                    goal = Revision.revise(goal, belief.withEvi(hope), Math.abs(belief.freq()-goal.freq()), 0 );
+                    //goal = Revision.revise(goal, belief.withEvi(hope), Math.abs(belief.freq()-goal.freq()), 0 );
                 }
 
             }

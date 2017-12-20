@@ -18,7 +18,7 @@ import nars.NAgent;
 import nars.control.CauseChannel;
 import nars.task.ITask;
 import nars.task.NALTask;
-import nars.task.SignalTask;
+import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.util.signal.Bitmap2D;

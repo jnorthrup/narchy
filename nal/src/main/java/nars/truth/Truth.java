@@ -37,6 +37,12 @@ import static nars.truth.TruthFunctions.w2cSafe;
 /** scalar (1D) truth value "frequency", stored as a floating point value */
 public interface Truth extends Truthed {
 
+    @Override
+    float freq();
+
+    @Override
+    float conf();
+
     static float eternalize(float conf) {
         return w2c(conf);
     }
@@ -61,13 +67,7 @@ public interface Truth extends Truthed {
 //    };
 
 
-    /**
-     * Get the frequency value
-     *
-     * @return The frequency value
-     */
-    @Override
-    float freq();
+
 
 
     @Nullable

@@ -1,5 +1,7 @@
 package jcog.bag.impl;
 
+import jcog.Paper;
+import jcog.Skill;
 import jcog.Util;
 import jcog.bag.Bag;
 import jcog.bag.util.SpinMutex;
@@ -29,11 +31,12 @@ import java.util.stream.Stream;
 import static jcog.bag.impl.HijackBag.Mode.*;
 
 /**
- * the superclass's treadmill's extra data slots are used for storing:
- * 0=size
- * 1=capacity
- * this saves the space otherwise necessary for 2 additional AtomicInteger instances
+ * unsorted priority queue with stochastic replacement policy
+ * <p>
+ * it uses a AtomicReferenceArray<> to hold the data but Unsafe CAS operations might perform better (i couldnt get them to work like NBHM does).  this is necessary when an index is chosen for replacement that it makes certain it was replacing the element it thought it was (that it hadnt been inter-hijacked by another thread etc).  on an insert i issue a ticket to the thread and store this in a small ConcurrentHashMap<X,Integer>.  this spins in a busy putIfAbsent loop until it can claim the ticket for the object being inserted. this is to prevent the case where two threads try to insert the same object and end-up puttnig two copies in adjacent hash indices.  this should be rare so the putIfAbsent should usually work on the first try.  when it exits the update critical section it removes the key,value ticket freeing it for another thread.  any onAdded and onRemoved subclass event handling happen outside of this critical section, and all cases seem to be covered.
  */
+@Paper
+@Skill("https://en.wikipedia.org/wiki/Concurrent_computing")
 public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     private static final AtomicIntegerFieldUpdater<HijackBag> sizeUpdater =

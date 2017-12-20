@@ -14,7 +14,7 @@ import nars.concept.TaskConcept;
 import nars.link.Tasklinks;
 import nars.task.NALTask;
 import nars.task.Revision;
-import nars.task.SignalTask;
+import nars.task.signal.SignalTask;
 import nars.task.Tasked;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeRange;
@@ -37,6 +37,7 @@ import java.util.stream.Stream;
 import static nars.table.TemporalBeliefTable.temporalTaskPriority;
 import static nars.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.c2w;
+import static nars.truth.TruthFunctions.c2wSafe;
 
 public class RTreeBeliefTable implements TemporalBeliefTable {
 
@@ -643,7 +644,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
                 timeDist /= PRESENT_AND_FUTURE_BOOST; //shrink the apparent time if it's present and future
 
             float evi =
-                    c2w((float) r.coord(true, 2)); //max
+                    c2wSafe((float) r.coord(true, 2)); //max
 //            float dt =
 //                    (float) r.range(1);
             //(float)r.coord(false, 2); //min

@@ -26,6 +26,7 @@ import static jcog.Util.unitize;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static nars.truth.TruthFunctions.c2w;
+import static nars.truth.TruthFunctions.c2wSafe;
 
 /**
  * Created by me on 9/30/16.
@@ -443,7 +444,7 @@ public interface NAct {
 
 
             float confMin = n.confMin.floatValue();
-            float eviMin = c2w(confMin);
+            float eviMin = c2wSafe(confMin);
             float feedbackConf =
                     n.confDefault(GOAL);
                     //confMin * 4;

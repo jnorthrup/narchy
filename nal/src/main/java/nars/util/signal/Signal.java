@@ -4,7 +4,10 @@ import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.task.SignalTask;
+import nars.task.signal.LinearTruthlet;
+import nars.task.signal.RangeTruthlet;
+import nars.task.signal.SignalTask;
+import nars.task.signal.TruthletTask;
 import nars.term.Term;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
@@ -78,7 +81,8 @@ public class Signal {
                         )) {
 
                     //TODO move the task construction out of this critical update section?
-                    next = task(term, tt,
+                    next = taskStart(last,
+                            term, tt,
                             now, now + lookAheadDurs * dur,
                             stamper.getAsLong());
 
@@ -100,7 +104,7 @@ public class Signal {
                 return null;  //dont re-input the task, just stretch it where it is in the temporal belief table
             } else {
                 if (last != null) {
-                    last.end(next!=null ? now-1 : now); //one cycle ago so as not to overlap during the new task's start time
+                    last.end(Math.max(last.start(), (next!=null ? now-1 : now))); //one cycle ago so as not to overlap during the new task's start time
                 }
                 return this.last = next; //new or null input; stretch will be assigned on first insert to the belief table (if this happens)
             }
@@ -111,8 +115,25 @@ public class Signal {
         }
     }
 
-    public SignalTask task(Term term, Truth t, long start, long end, long stamp) {
-        SignalTask s = new SignalTask(term, punc, t, start, end, stamp);
+    public SignalTask taskStart(SignalTask last, Term term, Truth t, long start, long end, long stamp) {
+
+
+        float fStart;
+        float fNext = t.freq();
+        if (last == null || Math.abs(last.end() - start) > 1) {
+            fStart = fNext;
+        } else {
+            Truth le = last.truth(last.end(), 1);
+            if (le != null) {
+                fStart = le.freq();
+                ((LinearTruthlet)(((TruthletTask)last).truthlet)).freqEnd = fNext;
+            } else fStart = fNext;
+        }
+
+        SignalTask s = new TruthletTask(term, punc,
+                    new LinearTruthlet(start, fStart, end, fNext, t.evi()),
+                    stamp);
+
         s.priMax(pri.asFloat());
         return s;
     }

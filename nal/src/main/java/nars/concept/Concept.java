@@ -28,6 +28,7 @@ import nars.Task;
 import nars.concept.state.ConceptState;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
+import nars.table.TaskTable;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.util.SoftException;
@@ -37,6 +38,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+
+import static nars.Op.*;
 
 public interface Concept extends Termed, MetaMap {
 
@@ -72,6 +75,22 @@ public interface Concept extends Termed, MetaMap {
         return out;
     }
 
+
+    /*@NotNull*/
+    default TaskTable table(byte punc) {
+        switch (punc) {
+            case BELIEF:
+                return beliefs();
+            case GOAL:
+                return goals();
+            case QUESTION:
+                return questions();
+            case QUEST:
+                return quests();
+            default:
+                throw new UnsupportedOperationException("what kind of punctuation is: '" + punc + "'");
+        }
+    }
 
     String printIndent = "  \t";
 

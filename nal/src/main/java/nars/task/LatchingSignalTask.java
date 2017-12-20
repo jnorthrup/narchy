@@ -1,5 +1,6 @@
 package nars.task;
 
+import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
 

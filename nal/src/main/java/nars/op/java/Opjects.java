@@ -19,7 +19,9 @@ import nars.op.Operator;
 import nars.task.ITask;
 import nars.task.LatchingSignalTask;
 import nars.task.NALTask;
-import nars.task.SignalTask;
+import nars.task.signal.SignalTask;
+import nars.task.signal.Truthlet;
+import nars.task.signal.TruthletTask;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.sub.Subterms;
@@ -43,6 +45,7 @@ import java.util.function.Predicate;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.Op.*;
+import static nars.truth.TruthFunctions.c2w;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 
@@ -312,9 +315,11 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                 long start = now;
                 long end = now + dur;
 
-                SignalTask next = new SignalTask(nt,
-                        BELIEF, $.t(f, nar.confDefault(BELIEF)),
-                        start, end, nar.time.nextStamp());
+                SignalTask next = new TruthletTask(nt, BELIEF,
+                        Truthlet.impulse(start, end, 1f,0f,
+                            c2w(nar.confDefault(BELIEF))
+                        ),
+                        nar);
 
                 if (Param.DEBUG)
                     next.log("Invoked");
@@ -338,20 +343,20 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
                 i.add(next);
 
-                if (cause != null && !next.term().equals(cause.term())) {
-                    //input quenching invocation belief term corresponding to the goal
-                    SignalTask quench = new SignalTask(cause.term(), BELIEF,
-                            $.t(1f - next.freq(), next.conf()), //equal and opposite
-                            start, end,
-                            nar.time.nextStamp() //next.stamp[0]
-                    );
-                    quench.priMax(next.priElseZero());
-                    quench.causeMerge(next);
-                    quench.meta("@", next);
-                    if (Param.DEBUG)
-                        quench.log("InvoQuench");
-                    i.add(quench);
-                }
+//                if (cause != null && !next.term().equals(cause.term())) {
+//                    //input quenching invocation belief term corresponding to the goal
+//                    SignalTask quench = new SignalTask(cause.term(), BELIEF,
+//                            $.t(1f - next.freq(), next.conf()), //equal and opposite
+//                            start, end,
+//                            nar.time.nextStamp() //next.stamp[0]
+//                    );
+//                    quench.priMax(next.priElseZero());
+//                    quench.causeMerge(next);
+//                    quench.meta("@", next);
+//                    if (Param.DEBUG)
+//                        quench.log("InvoQuench");
+//                    i.add(quench);
+//                }
 
                 nar.input(i);
             };

@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.Task;
-import nars.task.SignalTask;
+import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;

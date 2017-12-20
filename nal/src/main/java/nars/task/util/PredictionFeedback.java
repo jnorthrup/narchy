@@ -8,7 +8,7 @@ import nars.control.MetaGoal;
 import nars.table.BeliefTable;
 import nars.table.DefaultBeliefTable;
 import nars.task.NALTask;
-import nars.task.SignalTask;
+import nars.task.signal.SignalTask;
 import nars.truth.Stamp;
 
 import java.util.List;

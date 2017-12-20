@@ -19,6 +19,8 @@ import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
+import static nars.truth.TruthFunctions.c2w;
+import static nars.truth.TruthFunctions.c2wSafe;
 
 
 public class NALTask extends Pri implements Task {
@@ -89,7 +91,7 @@ public class NALTask extends Pri implements Task {
         assert (punc == COMMAND || (stamp.length > 0)) : "non-command tasks must have non-empty stamp";
         this.stamp = stamp;
 
-        this.hash = hash(term, this.truth, punc, start, end, stamp);
+        this.hash = Task.hash(term, this.truth, punc, start, end, stamp);
         this.creation = creation;
 
         this.meta = new CompactArrayMap();
@@ -244,18 +246,18 @@ public class NALTask extends Pri implements Task {
     }
 
     @Override
-    public final float freq() {
+    public float freq() {
         return truth.freq;
     }
 
     @Override
-    public final float conf() {
+    public float conf() {
         return truth.conf;
     }
 
     @Override
-    public final float evi() {
-        return truth.evi();
+    public float evi() {
+        return c2wSafe(conf());
     }
 
 
@@ -268,7 +270,7 @@ public class NALTask extends Pri implements Task {
     public float coordF(boolean maxOrMin, int dimension) {
         switch (dimension) {
             case 0:
-                return maxOrMin ? end : start;
+                return maxOrMin ? end() : start();
             case 1:
                 return truth.freq;
             case 2:
@@ -282,7 +284,7 @@ public class NALTask extends Pri implements Task {
     public final double range(int dim) {
         switch (dim) {
             case 0:
-                return end - start;
+                return end() - start();
             case 1:
                 return 0;
             case 2:

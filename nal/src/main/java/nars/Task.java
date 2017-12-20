@@ -11,7 +11,7 @@ import nars.op.Operator;
 import nars.task.DerivedTask;
 import nars.task.ITask;
 import nars.task.NALTask;
-import nars.task.SignalTask;
+import nars.task.signal.SignalTask;
 import nars.task.util.AnswerBag;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
@@ -53,10 +53,17 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     long[] ETERNAL_ETERNAL = {Tense.ETERNAL, Tense.ETERNAL};
 
     /**
-     * assumes identity and hash have been tested already
+     * assumes identity and hash have been tested already.
+     *
+     * if evidence is of length 1 (such as input or signal tasks,), the system
+     *      assumes that its ID is unique (or most likely unique)
+     *      and this becomes the only identity condition.
+     *      (start/stop and truth are not considered for equality)
+     *      this allows these values to mutate dynamically
+     *      while the system runs without causing hash or equality
+     *      inconsistency.  see hash()
      */
     static boolean equal(Task a, Task b) {
-
 
         if (a.punc() != b.punc())
             return false;
@@ -93,6 +100,34 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return false;
     }
 
+    /** see equals() */
+    static int hash(Term term, DiscreteTruth truth, byte punc, long start, long end, long[] stamp) {
+        int h = Util.hashCombine(
+                term.hashCode(),
+                punc
+        );
+
+        if (stamp.length > 1) {
+
+            if (truth != null)
+                h = Util.hashCombine(h, truth.hash);
+
+            if (start != ETERNAL) {
+                h = Util.hashCombine(h,
+                        Long.hashCode(start),
+                        Long.hashCode(end)
+                );
+            }
+
+            h = Util.hashCombine(h, Arrays.hashCode(stamp));
+
+        } else {
+            h = Util.hashCombine(h, Long.hashCode(stamp[0]));
+        }
+
+        return h;
+    }
+
     static void proof(/*@NotNull*/Task task, int indent, /*@NotNull*/StringBuilder sb) {
         //TODO StringBuilder
 
@@ -127,29 +162,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //        return validTaskTerm(t, (byte) 0, null, safe);
 //    }
 
-    default int hash(Term term, DiscreteTruth truth, byte punc, long start, long end, long[] stamp) {
-        int h = Util.hashCombine(
-                term.hashCode(),
-                punc,
-                Arrays.hashCode(stamp)
-        );
 
-        if (stamp.length > 1) {
-
-            if (start != ETERNAL) {
-                h = Util.hashCombine(
-                        Long.hashCode(start),
-                        Long.hashCode(end), h
-                );
-            }
-
-            DiscreteTruth t = truth;
-            if (t != null)
-                h = Util.hashCombine(t.hash, h);
-        }
-
-        return h;
-    }
 
     static boolean validTaskTerm(Term t) {
         return validTaskTerm(t, (byte) 0, true);

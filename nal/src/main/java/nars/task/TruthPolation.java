@@ -6,6 +6,7 @@ import jcog.decide.Roulette;
 import nars.Param;
 import nars.Task;
 import nars.truth.PreciseTruth;
+import nars.truth.Truth;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 
 import java.util.Random;
@@ -46,10 +47,13 @@ public interface TruthPolation extends Consumer<Tasked> {
         @Override
         public void accept(Tasked t) {
             Task task = t.task();
-            float tw = task.evi(start, end, dur);
-            if (tw > 0) {
-                eviSum += tw;
-                wFreqSum += tw * task.freq();
+            Truth tt = task.truth(start, end, dur, 0);
+            if (tt!=null) {
+                float tw = tt.evi();
+                if (tw > 0) {
+                    eviSum += tw;
+                    wFreqSum += tw * tt.freq();
+                }
             }
 
         }

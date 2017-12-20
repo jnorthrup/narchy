@@ -90,12 +90,12 @@ public class ThermostatTest {
         NAR n = NARS.tmp();
         n.time.dur(DUR);
         n.termVolumeMax.set(24);
-        n.freqResolution.set(0.05f);
-        n.confResolution.set(0.02f);
+        n.freqResolution.set(0.2f);
+        n.confResolution.set(0.03f);
 
         new ConjClustering(n, BELIEF, (t) -> true, 4, 16);
 
-        n.priDefault(BELIEF, 0.2f);
+        n.priDefault(BELIEF, 0.3f);
 
         //n.logPriMin(System.out, 0.5f);
         n.logWhen(System.out, false, true, true);
@@ -109,10 +109,12 @@ public class ThermostatTest {
             @Override @Nullable
             protected synchronized Object invoked(Object obj, Method wrapped, Object[] args, Object result) {
 
-                //n.time.synch(n);
+                n.time.synch(n);
                 //n.runLater(nn -> nn.run(DUR)); //queue some thinking cycles
 
                 Object y = super.invoked(obj, wrapped, args, result);
+
+                n.run(DUR);
 
                 return y;
             }
@@ -204,14 +206,14 @@ public class ThermostatTest {
 //                    n.time.nextInputStamp()).pri(1f));
 //        }
         {
-//            n.input(new NALTask($.$safe("a_Thermostat(is,(),0)"),
-//                    GOAL, $.t(1f, 0.9f),
-//                    n.time(), n.time(), n.time() + periods,
-//                    n.time.nextInputStamp()).pri(1f));
-            n.input(new NALTask($.$safe("(a_Thermostat(is,(),0) && --a_Thermostat(is,(),3))"),
+            n.input(new NALTask($.$safe("a_Thermostat(is,(),0)"),
                     GOAL, $.t(1f, 0.9f),
                     n.time(), n.time(), n.time() + periods,
                     n.time.nextInputStamp()).pri(1f));
+//            n.input(new NALTask($.$safe("(a_Thermostat(is,(),0) && --a_Thermostat(is,(),3))"),
+//                    GOAL, $.t(1f, 0.9f),
+//                    n.time(), n.time(), n.time() + periods,
+//                    n.time.nextInputStamp()).pri(1f));
 
         }
         {
@@ -222,7 +224,7 @@ public class ThermostatTest {
         }
 
         while (t.is() != t.should()) {
-            int period = 250;
+            int period = 1000;
             t.report();
             n.run(period);
         }

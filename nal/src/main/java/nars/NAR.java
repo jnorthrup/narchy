@@ -862,6 +862,14 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         return truth(concept, punc, when, when);
     }
 
+    @Nullable public final BeliefTable truths(Termed concept, byte punc) {
+        assert(punc == BELIEF || punc == GOAL);
+        @Nullable Concept c = conceptualize(concept);
+        if (c == null)
+            return null;
+        return (BeliefTable) c.table(punc);
+    }
+
     /**
      * returns concept belief/goal truth evaluated at a given time
      */

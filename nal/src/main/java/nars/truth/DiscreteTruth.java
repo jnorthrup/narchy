@@ -5,6 +5,7 @@ import nars.Param;
 import org.jetbrains.annotations.NotNull;
 
 import static nars.truth.TruthFunctions.c2w;
+import static nars.truth.TruthFunctions.c2wSafe;
 
 
 /**
@@ -18,6 +19,8 @@ public final class DiscreteTruth implements Truth {
      */
     static final int hashDiscreteness16 = Short.MAX_VALUE - 1;
 
+    public static DiscreteTruth Null = new DiscreteTruth(0xffffffff);
+
     public final float freq, conf;
     public final int hash;
 
@@ -30,6 +33,11 @@ public final class DiscreteTruth implements Truth {
                 this.freq = Truth.freq(f, epsilon),
                 this.conf = Truth.conf(c, epsilon)
         );
+    }
+    private DiscreteTruth(int hash) {
+        this.freq = Float.NaN;
+        this.conf = Float.NaN;
+        this.hash = hash;
     }
 
     /**
@@ -79,7 +87,7 @@ public final class DiscreteTruth implements Truth {
 
     @Override
     public float evi() {
-        return c2w(conf);
+        return c2wSafe(conf);
     }
 
     @NotNull

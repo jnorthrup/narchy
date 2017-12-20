@@ -504,7 +504,7 @@ public final class TruthFunctions {
      * @return The corresponding weight of evidence, a non-negative real number
      */
     private static float c2w(float c, float horizon) {
-        assert (c == c && (c < MAX_CONF) && c > Pri.EPSILON);
+        assert (c == c && (c <= MAX_CONF) && c >= Param.TRUTH_EPSILON);
         return c2wSafe(c, horizon);
     }
 
