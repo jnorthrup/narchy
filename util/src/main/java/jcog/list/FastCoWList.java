@@ -7,6 +7,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.function.Consumer;
 import java.util.function.IntFunction;
 
 public class FastCoWList<X> extends FasterList<X> {
@@ -26,6 +27,7 @@ public class FastCoWList<X> extends FasterList<X> {
                                   toArrayRecycled(arrayBuilder);
     }
 
+
     @Override
     public Iterator<X> iterator() {
         return copy.length> 0 ? ArrayIterator.get(copy) : Collections.emptyIterator();
@@ -37,6 +39,15 @@ public class FastCoWList<X> extends FasterList<X> {
     }
 
     @Override
+    public synchronized void clear() {
+        int s = size();
+        if (s > 0) {
+            super.clear();
+            commit();
+        }
+    }
+
+    @Override
     public synchronized boolean add(X o) {
         if(super.add(o)) {
             commit();
@@ -44,6 +55,13 @@ public class FastCoWList<X> extends FasterList<X> {
         }
         return false;
     }
+
+    @Override
+    public void forEach(Consumer c) {
+        for (X x : copy)
+            c.accept(x);
+    }
+
 
     @Override
     public synchronized boolean remove(Object o) {

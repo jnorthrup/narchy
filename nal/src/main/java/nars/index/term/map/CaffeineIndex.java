@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 
@@ -94,7 +95,7 @@ public class CaffeineIndex extends MaplikeTermIndex implements CacheLoader<Term,
     @Override
     public Termed get(Term x, boolean createIfMissing) {
         if (createIfMissing)
-            return concepts.get(x, conceptBuilder::build);
+            return concepts.get(x, conceptBuilder::apply);
         else
             return concepts.getIfPresent(x);
     }
@@ -102,7 +103,7 @@ public class CaffeineIndex extends MaplikeTermIndex implements CacheLoader<Term,
     @Override
     public CompletableFuture<Termed> getAsync(Term x, boolean createIfMissing) {
         if (createIfMissing)
-            return conceptsAsync.get(x, conceptBuilder::build);
+            return conceptsAsync.get(x, (Function<? super Term, ? extends Termed>) conceptBuilder::apply);
         else
             return conceptsAsync.getIfPresent(x);
     }

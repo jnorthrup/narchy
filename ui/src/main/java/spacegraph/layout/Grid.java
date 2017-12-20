@@ -70,7 +70,8 @@ public class Grid extends MutableLayout {
     @Override
     public void doLayout(int dtMS) {
 
-        int n = children.size();
+        Surface[] children = this.children.copy;
+        int n = children.length;
         if (n == 0)
             return;
 
@@ -109,23 +110,23 @@ public class Grid extends MutableLayout {
             } else if (x == 1) {
                 a = Float.POSITIVE_INFINITY; //column
             } else {
-                layoutGrid(x, y, margin);
+                layoutGrid(children, x, y, margin);
                 return;
             }
         }
 
         if (a == 0) {
             //horizontal
-            layoutGrid(n, 1, margin);
+            layoutGrid(children, n, 1, margin);
         } else /*if (!Float.isFinite(aa))*/ {
             //vertical
-            layoutGrid(1, n, margin);
+            layoutGrid(children, 1, n, margin);
         }
 
 
     }
 
-    private void layoutGrid(int nx, int ny, float margin) {
+    private void layoutGrid(Surface[] children, int nx, int ny, float margin) {
         int i = 0;
 
         float hm = margin/2f;
@@ -138,7 +139,8 @@ public class Grid extends MutableLayout {
         float dy = ny > 0 ? (1f-hm)/ny : 0;
         float dyc = (1f - my)/ny;
 
-        int n = children.size();
+
+        int n = children.length;
 
         float py = ((ny-1) * dy) + hm;
 
@@ -154,7 +156,7 @@ public class Grid extends MutableLayout {
             for (int x = 0; x < nx; x++) {
                 //System.out.println("\t" + px + " " + py);
 
-                Surface c = children.get(i);
+                Surface c = children[i];
 
                 float x1 = px * W;
                 float y1 = py * H;

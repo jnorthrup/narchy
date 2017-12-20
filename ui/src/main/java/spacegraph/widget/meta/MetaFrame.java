@@ -32,6 +32,8 @@ public class MetaFrame extends Widget {
 
     public static void toggle(Widget base) {
         SurfaceRoot r = base.root();
+        if (r == null) //not attached
+            return;
 
         MetaFrame existing = (MetaFrame) r.the(MetaFrame.class);
         if (existing != null && existing.base == base) {

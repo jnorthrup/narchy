@@ -1017,7 +1017,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         }
 
 
-        n.conceptualize(term(), c -> {
+        n.conceptualize(y, c -> {
             if (c instanceof TaskConcept) {
                 ((TaskConcept) c).add(this, n);
             } else {

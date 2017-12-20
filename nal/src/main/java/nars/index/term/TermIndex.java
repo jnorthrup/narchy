@@ -123,29 +123,7 @@ public abstract class TermIndex implements TermContext {
                 return null;
         }
         
-        @Nullable Termed c = get(y, createIfMissing);
-        if (c == null) {
-            return null;
-        }
-
-        Concept cc = (Concept) c;
-        ConceptState s = cc.state();
-
-        if (s == ConceptState.Deleted) {
-            //probably just a race condition fluke when this occurrs
-            //and without looping again (and again) this should just give up
-
-//            if (createIfMissing)
-//                throw new RuntimeException("TermIndex impl should not return a deleted concept without trying to create a new one");
-//            else
-                return null;
-        }
-
-        if (s == ConceptState.New) {
-            cc.state(conceptBuilder.init());
-        }
-
-        return cc;
+        return (Concept)get(y, createIfMissing);
     }
 
     protected final void onRemove(Termed value) {

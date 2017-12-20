@@ -9,6 +9,7 @@ import spacegraph.math.v2;
 import spacegraph.widget.windo.Widget;
 
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 import static java.lang.System.arraycopy;
 import static java.util.Arrays.fill;
@@ -21,7 +22,9 @@ import static java.util.Arrays.fill;
  */
 public class Finger {
 
-    /** exclusive state which may be requested by a surface */
+    /**
+     * exclusive state which may be requested by a surface
+     */
     Fingering fingering = null;
 
     /**
@@ -155,7 +158,9 @@ public class Finger {
         return released(button) && !dragging(button);
     }
 
-    /** acquire an exclusive fingering state */
+    /**
+     * acquire an exclusive fingering state
+     */
     public synchronized boolean tryFingering(Fingering f) {
         if (fingering == null) {
             fingering = f;
@@ -166,4 +171,34 @@ public class Finger {
         return false;
     }
 
+    public static Consumer<Finger> clicked(int button, Runnable clicked) {
+        return clicked(button, clicked, null, null, null);
+    }
+    public static Consumer<Finger> clicked(int button, Runnable clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
+
+        final boolean[] idle = {true};
+
+        if (becameIdle!=null) becameIdle.run();
+
+        return (finger) -> {
+
+            if (finger != null) {
+                if (finger.clickReleased(button)) {
+                    if (clicked!=null) clicked.run();
+                    idle[0] = false;
+                } else if (finger.pressed(button)) {
+                    if (armed!=null) armed.run();
+                    idle[0] = false;
+                } else {
+                    if (hover!=null) hover.run();
+                    idle[0] = false;
+                }
+            } else {
+                if (becameIdle!=null && !idle[0]) {
+                    becameIdle.run();
+                    idle[0] = true;
+                }
+            }
+        };
+    }
 }

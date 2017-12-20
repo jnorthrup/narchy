@@ -6,6 +6,8 @@ import spacegraph.input.Finger;
 import spacegraph.widget.text.Label;
 import spacegraph.widget.windo.Widget;
 
+import java.util.function.Consumer;
+
 /**
  * Created by me on 11/12/16.
  */
@@ -13,24 +15,21 @@ public abstract class AbstractButton extends Widget {
 
     private boolean pressed;
 
+    Consumer<Finger> pressable = Finger.clicked(0, ()->{
+        dz = 0;
+        onClick();
+    }, ()-> {
+        dz = 0.5f;
+    }, () -> {
+        dz = 0f;
+    }, () -> {
+        dz = 0f;
+    });
+
     @Override
     public void touch(@Nullable Finger finger) {
         super.touch(finger);
-
-        boolean nowPressed = false;
-        if (finger != null) {
-            if (finger.clickReleased(0)) {
-                dz = 0;
-                onClick();
-            } else if (finger.pressed(0)) {
-                dz = 0.5f;
-            } else {
-                dz = 0;
-            }
-        } else {
-            dz = 0;
-        }
-
+        pressable.accept(finger);
     }
 
     protected abstract void onClick();

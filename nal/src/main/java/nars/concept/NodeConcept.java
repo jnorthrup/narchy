@@ -28,7 +28,7 @@ public class NodeConcept implements Concept {
     public final Term term;
     public final Bag<Task, PriReference<Task>> taskLinks;
     public final Bag<Term, PriReference<Term>> termLinks;
-    public transient ConceptState state = Deleted;
+    public transient ConceptState state = New;
     private final List<Termed> templates;
 
     private final int hash;
@@ -48,7 +48,6 @@ public class NodeConcept implements Concept {
         this.term = term;
         this.termLinks = bags[0];
         this.taskLinks = bags[1];
-        this.state = New;
         this.hash = term.hashCode();
 
         templates = buildTemplates(term);

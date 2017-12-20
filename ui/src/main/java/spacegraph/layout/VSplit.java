@@ -19,8 +19,8 @@ public class VSplit<X extends Surface, Y extends Surface> extends MutableLayout 
     }
 
     public VSplit(X top, Y bottom, float split) {
-        super(null,null);
-        set(top, bottom, split);
+        super(top,bottom);
+        set(split);
     }
 
 
@@ -33,9 +33,8 @@ public class VSplit<X extends Surface, Y extends Surface> extends MutableLayout 
     }
 
     public void set(X top, Y bottom, float split) {
+        children(top, bottom);
         set(split);
-        top(top);
-        bottom(bottom);
         layout();
     }
 

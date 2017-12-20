@@ -43,7 +43,7 @@ public class Tex {
             profile = gl.getGLProfile();
         }
 
-        if (nextData!=null && textureUpdated.compareAndSet(true, false)) {
+        if (nextData != null && textureUpdated.compareAndSet(true, false)) {
 
             if (texture == null) {
                 texture = TextureIO.newTexture(gl, nextData);
@@ -62,6 +62,8 @@ public class Tex {
     }
 
     public void update(BufferedImage iimage) {
+        if (profile == null)
+            return;
 
         if (nextData == null || this.src != iimage) {
             update(((DataBufferInt) (iimage.getRaster().getDataBuffer())).getData(), iimage.getWidth(), iimage.getHeight());
@@ -70,30 +72,21 @@ public class Tex {
         textureUpdated.set(true);
     }
 
-    public void update(int[] iimage, int width, int height) {
+    protected void update(int[] iimage, int width, int height) {
 
         this.src = iimage;
         this.array = iimage;
-        textureUpdated.set(true);
-
-        if (profile == null)
-            return;
-
-        if (nextData == null || this.src != iimage) {
-
-            //buffer = IntBuffer.allocate(pixels);
-            IntBuffer buffer = IntBuffer.wrap(array);
-            nextData = new TextureData(profile, GL_RGB,
-                    width, height,
-                    0 /* border */,
-                    GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV,
-                    mipmap,
-                    false,
-                    false,
-                    buffer, null
-            );
-        }
-
+        //buffer = IntBuffer.allocate(pixels);
+        IntBuffer buffer = IntBuffer.wrap(array);
+        nextData = new TextureData(profile, GL_RGB,
+                width, height,
+                0 /* border */,
+                GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV,
+                mipmap,
+                false,
+                false,
+                buffer, null
+        );
     }
 
     public Surface view() {

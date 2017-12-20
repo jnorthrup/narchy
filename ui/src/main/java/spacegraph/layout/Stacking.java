@@ -18,4 +18,16 @@ public class Stacking extends MutableLayout {
         super.doLayout(dtMS);
     }
 
+    public void add(Surface s) {
+        if (children.add(s))
+            layout();
+    }
+    public boolean remove(Surface s) {
+        if (children.remove(s)) {
+            layout();
+            return true;
+        }
+        return false;
+    }
+
 }

@@ -1,16 +1,20 @@
 package spacegraph.layout;
 
+import jcog.list.FastCoWList;
 import org.jetbrains.annotations.Nullable;
+import org.w3c.dom.ls.LSException;
 import spacegraph.Surface;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
+import java.util.function.IntFunction;
 
 public class MutableLayout extends Layout {
 
-    public final CopyOnWriteArrayList<Surface> children = new Children();
+
+    public final FastCoWList<Surface> children = new Children(0);
 
 
     public MutableLayout(Surface... children) {
@@ -69,7 +73,19 @@ public class MutableLayout extends Layout {
         children.forEach(o);
     }
 
-    private class Children extends CopyOnWriteArrayList<Surface> {
+
+    final static Surface[] EMPTY_SURFACE_ARRAY = new Surface[0];
+
+    static final IntFunction<Surface[]> NEW_SURFACE_ARRAY = (i)->{
+        return i == 0 ? EMPTY_SURFACE_ARRAY : new Surface[i];
+    };
+
+    private class Children extends FastCoWList<Surface> {
+
+        public Children(int capacity) {
+            super(capacity, NEW_SURFACE_ARRAY);
+        }
+
         @Override
         public boolean add(Surface surface) {
             synchronized (children) {

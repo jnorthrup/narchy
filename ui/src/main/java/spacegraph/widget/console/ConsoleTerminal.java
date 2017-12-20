@@ -12,8 +12,6 @@ import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminalListener;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
-import org.eclipse.collections.api.set.primitive.ImmutableCharSet;
-import org.eclipse.collections.impl.factory.primitive.CharSets;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
 import spacegraph.render.Tex;
@@ -47,14 +45,15 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
     }
 
 
+
     private void render() {
-        needFullRedraw.set(true);
-        while (needFullRedraw.compareAndSet(true, false)) {
-            if (updateBackBuffer()) {
-                tex.update(backbuffer);
-                needFullRedraw.set(false);
-                break;
-            }
+        if (needUpdate.compareAndSet(true, false)) {
+            updateBackBuffer();
+            tex.update(backbuffer);
+
+            //            if (updateBackBuffer()) {
+//                tex.update(backbuffer);
+//            }
         }
     }
 
@@ -103,7 +102,7 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
 
             @Override
             public void onFlush() {
-                render();
+                needUpdate.set(true);
             }
 
             @Override
@@ -113,7 +112,7 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
 
             @Override
             public void onClose() {
-                onDestroyed();
+                //onDestroyed();
             }
 
             @Override
@@ -122,6 +121,7 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
             }
         });
 
+        needUpdate.set(true);
         //term.addInput(KeyStroke.fromString("<pageup>")); //HACK trigger redraw
 
     }
@@ -130,23 +130,18 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
     public synchronized void stop() {
         super.stop();
 
-        onDestroyed();
-
+        //onDestroyed();
 
         term.close();
         term.removeVirtualTerminalListener(listener);
-
     }
 
     @Override
     public void paintIt(GL2 gl) {
-
+        render();
         tex.paint(gl, bounds);
-        
-        if (needFullRedraw.get()) {
-            render();
-        }
     }
+
 
     @Override
     public int[] getCursorPos() {
@@ -247,20 +242,24 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
         return true;
     }
 
+    @Override
+    public void resize(int cols, int rows) {
+        super.resize(cols, rows);
 
-    private static final ImmutableCharSet TYPED_KEYS_TO_IGNORE = CharSets.immutable.of('\n', '\t', '\r', '\b', '\u001b', '\u007f');
+        term.setTerminalSize(new TerminalSize(cols, rows));
+    }
+//
+//    private static final ImmutableCharSet TYPED_KEYS_TO_IGNORE = CharSets.immutable.of('\n', '\t', '\r', '\b', '\u001b', '\u007f');
+//
+//    private boolean cursorIsVisible;
+//    private boolean enableInput;
 
-    private boolean cursorIsVisible;
-    private boolean enableInput;
 
+//    private final boolean blinkOn;
 
-    private final boolean blinkOn;
+    private final AtomicBoolean needUpdate = new AtomicBoolean(true);
+//    private TerminalPosition lastDrawnCursorPosition;
 
-    private final AtomicBoolean needFullRedraw = new AtomicBoolean(true);
-    private TerminalPosition lastDrawnCursorPosition;
-
-    private final int lastComponentWidth;
-    private final int lastComponentHeight;
     private BufferedImage backbuffer;
     Color cursorColor = Color.ORANGE;
 
@@ -278,13 +277,13 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
     {
 
 
-        this.cursorIsVisible = true;
-        this.enableInput = false;
-        this.lastDrawnCursorPosition = null;
-        this.lastComponentHeight = 0;
-        this.lastComponentWidth = 0;
+//        this.cursorIsVisible = true;
+//        this.enableInput = false;
+//        this.lastDrawnCursorPosition = null;
+//        this.lastComponentHeight = 0;
+//        this.lastComponentWidth = 0;
+//        this.blinkOn = true;
         this.backbuffer = null;
-        this.blinkOn = true;
 
         setFontSize(24);
 
@@ -318,13 +317,13 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
     }
 
 
-    synchronized void onCreated() {
-        this.enableInput = true;
-    }
-
-    synchronized void onDestroyed() {
-        this.enableInput = false;
-    }
+//    synchronized void onCreated() {
+//        this.enableInput = true;
+//    }
+//
+//    synchronized void onDestroyed() {
+//        this.enableInput = false;
+//    }
 
 
     private int getWidth() {
@@ -395,8 +394,8 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
 
         term.forEachLine(firstVisibleRowIndex, lastVisibleRowIndex, (row, bufferLine) -> {
 
-            if (needFullRedraw.get())
-                return;
+            if (needUpdate.get())
+                return; //restart
 
             for (int column = 0; column < cols; ++column) {
                 TextCharacter textCharacter = bufferLine.getCharacterAt(column);
@@ -413,10 +412,10 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
             }
 
         });
-        if (needFullRedraw.get())
+        if (needUpdate.get())
             return false;
 
-        this.lastDrawnCursorPosition = cursorPosition;
+        //this.lastDrawnCursorPosition = cursorPosition;
         return true;
     }
 

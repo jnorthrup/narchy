@@ -7,25 +7,130 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
-import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.IOSafeTerminal;
 import com.googlecode.lanterna.terminal.TerminalResizeListener;
 import com.googlecode.lanterna.terminal.swing.*;
+import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
+import org.jetbrains.annotations.Nullable;
+import spacegraph.Scale;
+import spacegraph.SpaceGraph;
+import spacegraph.Surface;
+import spacegraph.input.Finger;
+import spacegraph.layout.Grid;
+import spacegraph.layout.VSplit;
+import spacegraph.math.v2;
+import spacegraph.widget.console.ConsoleTerminal;
+import spacegraph.widget.slider.XYSlider;
+import spacegraph.widget.text.LabeledPane;
+import spacegraph.widget.windo.Widget;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 public class Shell {
 
     public static final float TERMINAL_DISPLAY_FPS = 8f;
 
     public Shell(NAR nar) {
-        DefaultTerminalFactory tf = new DefaultTerminalFactory();
+
+        //newSwingFrame(nar);
+        newGLFrame(nar);
+    }
+
+    public static class ConsoleWidget extends Widget {
+
+        private final ConsoleTerminal console;
+        AtomicBoolean menuShown = new AtomicBoolean(false);
+
+        public ConsoleWidget(VirtualTerminal term) {
+
+
+            Surface menu = new Scale(new LabeledPane("Text Scale", new Grid(
+                new XYSlider()
+            )), 0.5f);
+
+            this.console = new ConsoleTerminal(term) {
+
+                float charAspect = 1.6f;
+
+                //target rows to cols ratio
+                //float areaAspect = (80f/25f)/(charAspect);
+
+                float scale = 80f;
+
+                Consumer<Finger> pressable = Finger.clicked(0, ()->{
+                        if (menuShown.compareAndSet(false, true)) {
+                            add(menu);
+                        } else  if (menuShown.compareAndSet(true, false)) {
+                            remove(menu);
+                        }
+                });
+
+                @Override
+                public void prePaint(int dtMS) {
+                    super.prePaint(dtMS);
+                }
+
+                @Override
+                public void touch(@Nullable Finger finger) {
+                    super.touch(finger);
+                    pressable.accept(finger);
+                }
+
+                @Override
+                public synchronized void start(@Nullable Surface parent) {
+                    super.start(parent);
+                }
+
+                @Override
+                public void doLayout(int dtMS) {
+                    super.doLayout(dtMS);
+
+                    float cc, rr;
+                    float boundsAspect = h() / w();
+                    if (boundsAspect >= 1) {
+                        //taller
+                        cc = scale / boundsAspect;
+                        rr = cc / charAspect;
+                        //System.out.println(bounds + " taller: " + cc + "x" + rr);
+                    } else {
+                        //wider
+                        cc = scale;
+                        rr = cc * (boundsAspect / charAspect);
+                        //System.out.println(bounds + "  wider: " + cc + "x" + rr);
+                    }
+
+                    resize(Math.max(2, Math.round(cc)), Math.max(2, Math.round(rr)));
+                }
+
+            };
+
+
+            children(console);
+        }
+    }
+
+    public void newGLFrame(NAR nar) {
+
+        ConsoleWidget c = new ConsoleWidget(new TextUI(nar).session(TERMINAL_DISPLAY_FPS));
+
+        SpaceGraph.window(
+                c,
+                1000, 800
+        );
+
+    }
+
+
+    public void newSwingFrame(NAR nar) {
+
+        //DefaultTerminalFactory tf = new DefaultTerminalFactory();
         //tf.setForceTextTerminal(true);
 //        try {
 //          //Terminal tt = tf.createTerminal();
@@ -33,20 +138,20 @@ public class Shell {
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
-            MySwingTerminalFrame tt = new MySwingTerminalFrame(
-                    "",
-                    null,
-                    null,
-                    //null
-                    SwingTerminalFontConfiguration.newInstance(
-                            new Font("Monospaced",Font.PLAIN,32))
-                    ,null,
-                    EnumSet.of(TerminalEmulatorAutoCloseTrigger.CloseOnExitPrivateMode).toArray(new TerminalEmulatorAutoCloseTrigger[1]));
-            tt.setSize(800,800);
-            tt.setVisible(true);
+
+        MySwingTerminalFrame tt = new MySwingTerminalFrame(
+                "",
+                null,
+                null,
+                //null
+                new SwingTerminalFontConfiguration(true, AWTTerminalFontConfiguration.BoldMode.EVERYTHING_BUT_SYMBOLS, new Font("Monospaced", Font.PLAIN, 28)),
+                null,
+                EnumSet.of(TerminalEmulatorAutoCloseTrigger.CloseOnExitPrivateMode).toArray(new TerminalEmulatorAutoCloseTrigger[1]));
+        tt.setSize(800, 800);
+        tt.setVisible(true);
 
 
-            new TextUI(nar, tt, TERMINAL_DISPLAY_FPS);
+        new TextUI(nar, tt, TERMINAL_DISPLAY_FPS);
     }
 
     public static void main(String[] args) {
@@ -129,8 +234,10 @@ public class Shell {
             this.autoCloseTriggers = EnumSet.copyOf(Arrays.asList(autoCloseTriggers));
             this.disposed = false;
 
-            getContentPane().setLayout(new BorderLayout());
-            getContentPane().add(swingTerminal, BorderLayout.CENTER);
+            swingTerminal.setIgnoreRepaint(true);
+            setContentPane(swingTerminal);
+//            getContentPane().setLayout(new BorderLayout());
+//            getContentPane().add(swingTerminal, BorderLayout.CENTER);
             setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             setBackground(Color.BLACK); //This will reduce white flicker when resizing the window
             pack();

@@ -353,6 +353,8 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
     @Override
     public void add(Task x, TaskConcept c, NAR n) {
 
+        assert(capacity > 0);
+
         if (x instanceof SignalTask) {
             SignalTask sx = (SignalTask) x;
 

@@ -5,16 +5,15 @@ import com.google.common.collect.Sets;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TerminalTextUtils;
 import com.googlecode.lanterna.TextColor;
-import com.googlecode.lanterna.graphics.Scrollable;
 import com.googlecode.lanterna.graphics.SimpleTheme;
 import com.googlecode.lanterna.graphics.ThemeDefinition;
 import com.googlecode.lanterna.gui2.*;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.TerminalScreen;
+import com.googlecode.lanterna.terminal.ExtendedTerminal;
 import com.googlecode.lanterna.terminal.MouseCaptureMode;
 import com.googlecode.lanterna.terminal.Terminal;
-import com.googlecode.lanterna.terminal.ansi.ANSITerminal;
 import com.googlecode.lanterna.terminal.ansi.TelnetTerminal;
 import com.googlecode.lanterna.terminal.ansi.TelnetTerminalServer;
 import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
@@ -43,6 +42,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Supplier;
 
 import static com.googlecode.lanterna.gui2.BorderLayout.Location.*;
 import static com.googlecode.lanterna.gui2.Window.Hint.NO_POST_RENDERING;
@@ -130,8 +130,8 @@ public class TextUI {
 
 
             try {
-                if (terminal instanceof ANSITerminal)
-                    ((ANSITerminal) terminal).setMouseCaptureMode(MouseCaptureMode.CLICK);
+                if (terminal instanceof ExtendedTerminal)
+                    ((ExtendedTerminal) terminal).setMouseCaptureMode(MouseCaptureMode.CLICK);
 
                 if (terminal instanceof VirtualTerminal)
                     ((VirtualTerminal) terminal).addVirtualTerminalListener(new VirtualTerminalListener() {
@@ -220,14 +220,7 @@ public class TextUI {
 //                }).withBorder(Borders.singleLine("This is a button")));
 
 
-            Panel aux = new Panel(new BorderLayout());
-            TextBox console = new TextBox( "sdfs");
-            console.setReadOnly(true);
-
-            LinearLayout cols = new LinearLayout(Direction.HORIZONTAL);
-            Panel p = new Panel(cols); //BorderLayout());
-            p.addComponent(console);
-            p.addComponent(aux);
+            Panel center = new Panel(new BorderLayout());
 
 
 //            Component options = Panels.horizontal(
@@ -235,58 +228,52 @@ public class TextUI {
 //                    new ComboBox<>("Log", "Concepts")
 //            );
 
-            Runnable defaultMenu;
-            Panel menu = Panels.horizontal(
+            Supplier<Component> defaultMenu;
 
+            ComboBox menu = new ComboBox();
+            menu.addItem(new View("Tasks", defaultMenu = () -> {
+                return new TaskListBox(64);
+            }));
+            menu.addItem(new View("Concepts", () -> {
+                return new BagListBox<Activate>(64) {
+                    @Override
+                    public void update() {
+                        nar.conceptsActive().forEach(this::add);
+                        super.update();
+                    }
+                };
+            }));
+            menu.addItem(new View("Stats", () -> {
+                return new EmotionDashboard();
+            }));
+            menu.addListener(new ComboBox.Listener() {
+                View e = null;
 
-                    //options,
-                    new Button("Tasks", defaultMenu = () -> {
-                        aux.addComponent(new TaskListBox(64), CENTER);
-                    }),
-                    new Button("Concepts", () -> {
-                        aux.addComponent(new BagListBox<Activate>(64) {
-                            @Override
-                            public void update() {
-                                nar.conceptsActive().forEach(this::add);
-                                super.update();
-                            }
-                        }, CENTER);
-                    }),
-                    new Button("Stats", () -> {
-                        aux.addComponent(new EmotionDashboard(), CENTER);
-                    })
-            );
+                @Override
+                public void onSelectionChanged(int selectedIndex, int previousSelection) {
+                    View v = ((View) menu.getSelectedItem());
+                    if (v == e) return;
+                    center.addComponent(v.builder.get(), CENTER);
+                    this.e = v;
+                }
+            });
 
-
-//            ActionListBox menu = new ActionListBox();
-//            menu.addItem("Tasks", defaultMenu = () -> {
-//                p.addComponent(new TaskListBox(64), CENTER);
-//            });
-//
-//            menu.addItem("Concepts", () -> {
-//                p.addComponent(new BagListBox<Activate>(64) {
-//                    @Override
-//                    public void update() {
-//                        nar.conceptsActive().forEach(this::add);
-//                        super.update();
-//                    }
-//                }, CENTER);
-//            });
-//
-//            menu.addItem("Stats", () -> {
-//                p.addComponent(new EmotionDashboard(), CENTER);
-//            });
-
+            center.addComponent(defaultMenu.get(), CENTER);
 
             final InputTextBox input = new InputTextBox();
 
-            Panel q = new Panel(new BorderLayout());
-            q.addComponent(p, CENTER);
-            q.addComponent(input, BOTTOM);
-            q.addComponent(menu, TOP);
-            window.setComponent(q);
+            Panel root = new Panel(new BorderLayout());
 
-            tui.getGUIThread().invokeLater(defaultMenu);
+            Panel top = new Panel(new BorderLayout());
+            {
+                top.addComponent(Panels.horizontal(menu, new Separator(Direction.VERTICAL)), LEFT);
+                top.addComponent(input, CENTER);
+            }
+
+            root.addComponent(center, CENTER);
+            root.addComponent(top, TOP);
+            window.setComponent(root);
+
             tui.getGUIThread().invokeLater(input::takeFocus);
 
             tui.addWindowAndWait(window);
@@ -330,6 +317,7 @@ public class TextUI {
         private class InputTextBox extends TextBox {
             public InputTextBox() {
                 super(new TerminalSize(20, 1));
+                setHorizontalFocusSwitching(true);
                 setVerticalFocusSwitching(true);
             }
 
@@ -357,6 +345,7 @@ public class TextUI {
                         }
 
                     }
+                    runOnGUIThreadIfExistsOtherwiseRunDirect(InputTextBox.this::takeFocus);
                 }
                 return r;
             }
@@ -596,6 +585,20 @@ public class TextUI {
     }
 
 
+    private class View {
+        private final String label;
+        private final Supplier<Component> builder;
+
+        public View(String label, Supplier<Component> builder) {
+            this.label = label;
+            this.builder = builder;
+        }
+
+        @Override
+        public String toString() {
+            return label;
+        }
+    }
 }
 
 //                p.addComponent(new AbstractInteractableComponent() {

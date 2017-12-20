@@ -41,12 +41,11 @@ abstract public class Layout extends Surface {
     }
 
 
-
     @Override
     public Surface pos(RectFloat2D r) {
         RectFloat2D b = this.bounds;
         super.pos(r);
-        if (bounds!=b) //if different
+        if (bounds != b) //if different
             layout();
         return null;
     }
@@ -54,11 +53,14 @@ abstract public class Layout extends Surface {
     protected void paintAbove(GL2 gl) {
 
     }
+
     protected void paintBelow(GL2 gl) {
 
     }
 
-    /** paints the component above the background drawn ahead of this */
+    /**
+     * paints the component above the background drawn ahead of this
+     */
     protected void paintIt(GL2 gl) {
 
     }
@@ -105,11 +107,11 @@ abstract public class Layout extends Surface {
 
             //HACK
             final Surface[] found = {null};
-        float fx = finger.hit.x;
-        float fy = finger.hit.y;
+            float fx = finger.hit.x;
+            float fy = finger.hit.y;
             forEach(c -> {
 
-                if (found[0]!=null) //TODO use whileEach() with a predicate for fast terminate
+                if (found[0] != null) //TODO use whileEach() with a predicate for fast terminate
                     return;
 
                 //TODO factor in the scale if different from 1
@@ -134,14 +136,14 @@ abstract public class Layout extends Surface {
 
                     Surface s = c.onTouch(finger, relativeHit, buttons);
                     if (s != null) {
-                        if (found[0]==null || found[0].bounds.cost() > s.bounds.cost())
+                        if (found[0] == null || found[0].bounds.cost() > s.bounds.cost())
                             found[0] = s; //FIFO
                     }
                 }
 
             });
 
-            if ((found[0])!=null)
+            if ((found[0]) != null)
                 return found[0];
         }
 

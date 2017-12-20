@@ -1,6 +1,7 @@
 package spacegraph.widget.slider;
 
 import com.jogamp.opengl.GL2;
+import spacegraph.Surface;
 import spacegraph.input.Finger;
 import spacegraph.math.v2;
 import spacegraph.render.Draw;
@@ -9,12 +10,12 @@ import spacegraph.widget.windo.Widget;
 /**
  * Created by me on 6/26/16.
  */
-public class XYSlider extends Widget {
+public class XYSlider extends Surface {
 
     final v2 knob = new v2(0.5f, 0.5f);
 
-    private final float knobWidth = 0.25f;
-    private final float crosshairWidth = knobWidth/6f;
+    private final float knobWidth = 0.2f;
+    private final float crosshairWidth = knobWidth/10f;
 
     public XYSlider() {
         super();
@@ -31,7 +32,10 @@ public class XYSlider extends Widget {
 
 
     @Override
-    protected void paintIt(GL2 gl) {
+    protected void paint(GL2 gl, int dtMS) {
+        gl.glColor4f(0f, 0f, 0f, 0.8f); //background
+        Draw.rect(gl, bounds);
+
         Draw.bounds(gl, this, this::paintUnit);
     }
 

@@ -58,7 +58,7 @@ public class Tasklinks {
                 nar.eventTask.emit(t);
             }
 
-            float conceptActivation = pri;
+            float conceptActivation = pri * nar.amp(t.cause());
             if (conceptActivation > 0) {
                 nar.activate(cc, conceptActivation);
                 nar.emotion.onActivate(t, conceptActivation, (TaskConcept) cc, nar);

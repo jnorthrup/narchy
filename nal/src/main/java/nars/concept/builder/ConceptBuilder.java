@@ -10,6 +10,7 @@ import nars.table.TemporalBeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiFunction;
 
@@ -84,9 +85,8 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
 
     Termed build(Term term);
 
-
     @Override
-    default Termed apply(Term t, Termed prev) {
+    default Termed apply(Term x, Termed prev) {
         if (prev != null) {
             //if (prev instanceof Concept) {
                 Concept c = ((Concept) prev);
@@ -95,7 +95,24 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
             //}
         }
 
-        return build(t);
+        return apply(x);
+    }
+
+    @Nullable
+    default Termed apply(Term x) {
+        Termed y = build(x);
+        if (y == null) {
+            return null;
+        }
+
+        Concept c = (Concept) y;
+        ConceptState s = c.state();
+
+        if (s == ConceptState.New || s == ConceptState.Deleted) {
+            c.state(init());
+        }
+
+        return c;
     }
 
 }
