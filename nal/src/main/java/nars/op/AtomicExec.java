@@ -153,6 +153,8 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
     @Override
     public @Nullable Task apply(Task x, NAR n) {
 
+        //TODO handle CMD's
+
         if (x.freq() <= 0.5f + Param.TRUTH_EPSILON)
             return x; //dont even think about executing it, but pass thru to reasoner
 

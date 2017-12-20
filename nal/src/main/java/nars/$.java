@@ -64,6 +64,78 @@ import static nars.time.Tense.DTERNAL;
 public enum $ {
     ;
 
+    static {
+        Thread.currentThread().setName("$");
+
+        //System.setProperty("Log4jContextSelector", "org.apache.logging.log4j.core.async.AsyncLoggerContextSelector");  //http://logging.apache.org/log4j/2.x/log4j-core/apidocs/org/apache/logging/log4j/core/async/AsyncLogger.html
+
+        //System.setProperty("org.slf4j.simpleLogger.cacheOutputStream", "true");
+
+//        ServiceLoader.loadInstalled(DoesntSuckLoggerFactory.class);
+//
+//        DoesntSuckLoggerFactory f = (DoesntSuckLoggerFactory) LoggerFactory.getILoggerFactory();
+
+//        SimpleLogger LOG = (SimpleLogger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+//        System.out.println(LOG);
+
+
+//            //http://logback.qos.ch/manual/layouts.html
+//
+//            Logger LOG = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
+//            LoggerContext loggerContext = LOG.getLoggerContext();
+//            // we are not interested in auto-configuration
+//            loggerContext.reset();
+//
+//            PatternLayoutEncoder logEncoder = new PatternLayoutEncoder();
+//            logEncoder.setContext(loggerContext);
+//            //logEncoder.setPattern("\\( %highlight(%level),%green(%thread),%yellow(%logger{0}) \\): \"%message\".%n");
+//            logEncoder.setPattern("\\( %green(%thread),%highlight(%logger{0}) \\): \"%message\".%n");
+//
+//            logEncoder.start();
+//
+//
+//            ConsoleAppender c = new ConsoleAppender();
+//            c.setContext(loggerContext);
+//            c.setEncoder(logEncoder);
+//            c.setImmediateFlush(false);
+//            //c.setWithJansi(true);
+//            c.start();
+//
+//            LOG.addAppender(c);
+
+////            SyslogAppender syslog = new SyslogAppender();
+////            syslog.setPort(5000);
+////            syslog.setFacility("LOCAL6");
+////            syslog.setContext(loggerContext);
+////            syslog.setCharset(Charset.forName("UTF8"));
+////            syslog.start();
+////            LOG.addAppender(syslog);
+//
+////            SocketAppender sa = new SocketAppender();
+////            sa.setName("socketlog");
+////            sa.setContext(loggerContext);
+////            sa.setQueueSize(1);
+////            sa.setEventDelayLimit(Duration.buildByMilliseconds(100));
+////            sa.setRemoteHost("localhost");
+////            sa.setPort(4560);
+////            sa.setIncludeCallerData(true);
+////            sa.setReconnectionDelay(Duration.buildByMilliseconds(200));
+////            sa.start();
+////            LOG.addAppender(sa);
+//
+////        logRoot.debug("Message 1");
+////        logRoot.info("Message 1");
+////        logRoot.warn("Message 2");
+////        logRoot.error("Message 2");
+//
+//
+////        } catch (Throwable t) {
+////            System.err.println("Logging Disabled: " + t);
+////        }
+//        }
+
+    }
+
     public static <T extends Term> T $(String term) throws Narsese.NarseseException {
         return (T) Narsese.term(term, true);
     }
@@ -432,7 +504,7 @@ public enum $ {
         return CONJ.the(0, s);
     }
 
-    public static Term parallel(@NotNull Collection<Term> s) {
+    public static Term parallel(Collection<Term> s) {
         return CONJ.the(0, s);
     }
 
@@ -443,74 +515,7 @@ public enum $ {
     }
 
 
-    //class Logging {
-    static {
-        Thread.currentThread().setName("$");
 
-//        ServiceLoader.loadInstalled(DoesntSuckLoggerFactory.class);
-//
-//        DoesntSuckLoggerFactory f = (DoesntSuckLoggerFactory) LoggerFactory.getILoggerFactory();
-
-//        SimpleLogger LOG = (SimpleLogger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
-//        System.out.println(LOG);
-
-
-//            //http://logback.qos.ch/manual/layouts.html
-//
-//            Logger LOG = (ch.qos.logback.classic.Logger) LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
-//            LoggerContext loggerContext = LOG.getLoggerContext();
-//            // we are not interested in auto-configuration
-//            loggerContext.reset();
-//
-//            PatternLayoutEncoder logEncoder = new PatternLayoutEncoder();
-//            logEncoder.setContext(loggerContext);
-//            //logEncoder.setPattern("\\( %highlight(%level),%green(%thread),%yellow(%logger{0}) \\): \"%message\".%n");
-//            logEncoder.setPattern("\\( %green(%thread),%highlight(%logger{0}) \\): \"%message\".%n");
-//
-//            logEncoder.start();
-//
-//
-//            ConsoleAppender c = new ConsoleAppender();
-//            c.setContext(loggerContext);
-//            c.setEncoder(logEncoder);
-//            c.setImmediateFlush(false);
-//            //c.setWithJansi(true);
-//            c.start();
-//
-//            LOG.addAppender(c);
-
-////            SyslogAppender syslog = new SyslogAppender();
-////            syslog.setPort(5000);
-////            syslog.setFacility("LOCAL6");
-////            syslog.setContext(loggerContext);
-////            syslog.setCharset(Charset.forName("UTF8"));
-////            syslog.start();
-////            LOG.addAppender(syslog);
-//
-////            SocketAppender sa = new SocketAppender();
-////            sa.setName("socketlog");
-////            sa.setContext(loggerContext);
-////            sa.setQueueSize(1);
-////            sa.setEventDelayLimit(Duration.buildByMilliseconds(100));
-////            sa.setRemoteHost("localhost");
-////            sa.setPort(4560);
-////            sa.setIncludeCallerData(true);
-////            sa.setReconnectionDelay(Duration.buildByMilliseconds(200));
-////            sa.start();
-////            LOG.addAppender(sa);
-//
-////        logRoot.debug("Message 1");
-////        logRoot.info("Message 1");
-////        logRoot.warn("Message 2");
-////        logRoot.error("Message 2");
-//
-//
-////        } catch (Throwable t) {
-////            System.err.println("Logging Disabled: " + t);
-////        }
-//        }
-
-    }
 
 
     public static Term diffi(Term a, Term b) {

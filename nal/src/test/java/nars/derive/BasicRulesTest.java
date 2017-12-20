@@ -14,9 +14,6 @@ public class BasicRulesTest {
         //Deriver d = Deriver.defaults;
 
         NAR n = NARS.shell();
-        n.nal(3);
-
-
 
         /*new NARStream(n).forEachCycle(() -> {
             n.memory.getControl().forEach(p -> {

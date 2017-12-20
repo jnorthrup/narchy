@@ -9,9 +9,6 @@ import org.junit.jupiter.api.Test;
 
 public class NAL4MultistepTest extends NALTest {
 
-    @BeforeEach
-    public void nal() { test.nar.nal(4); }
-
 
     @Test
     public void nal4_everyday_reasoning() {

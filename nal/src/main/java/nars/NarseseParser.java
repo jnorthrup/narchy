@@ -21,6 +21,8 @@ import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 import static nars.$.neg;
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
@@ -32,14 +34,16 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         return sequence(
                 zeroOrMore(
 
+                        s(),
                         firstOf(
                                 LineComment(),
-                                Task()
+                                Task(),
+                                TermCommandTask()
                         )
 
 
                 ),
-                s() //optional trailing whitespace
+                s()
         );
     }
 
@@ -151,27 +155,28 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     //    }
 
 
-    //    public Rule TermEOF() {
-    //        return sequence( s(), Term(), s(), eof() );
-    //    }
-    //    public Rule TaskEOF() {
-    //        return sequence( s(), Task(), s(), eof() );
-    //    }
+
+    public Rule TermCommandTask() {
+        return sequence(
+                Term(),
+                s(),
+                eof(),
+                push(newTask(1f,';', the(pop()), null, Tense.Eternal))
+        );
+    }
 
     public Rule Task() {
 
         Var<Float> budget = new Var();
         Var<Character> punc = new Var(Op.COMMAND);
-        Var<Term> term = new Var();
         Var<Truth> truth = new Var();
         Var<Tense> tense = new Var(Tense.Eternal);
 
         return sequence(
-                s(),
 
                 optional(Budget(budget)),
 
-                Term(true, false, true), term.set(the(pop())),
+                Term(),
 
                 s(),
 
@@ -181,10 +186,13 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                 optional(Truth(truth, tense), s()),
 
-                push(new Object[]{budget.get(), term.get(), punc.get(), truth.get(), tense.get()})
-                //push(getTask(budget, term, punc, truth, tense))
+                push(newTask(budget.get(), punc.get(),  the(pop()), truth.get(), tense.get()))
 
         );
+    }
+
+    public static Object newTask(Float budget, Character punc, Term term, Truth truth, Tense tense) {
+        return new Object[]{budget, term, punc, truth, tense };
     }
 
 
@@ -310,7 +318,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
     @Override
     public Rule Term() {
-        return Term(true, true, true);
+        return Term(true, true);
     }
 
     //    Rule nothing() {
@@ -319,7 +327,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
 
     @Cached
-    public Rule Term(boolean oper, boolean meta, boolean temporal) {
+    public Rule Term(boolean oper, boolean temporal) {
         /*
                  <term> ::= <word>                             // an atomic constant term
                         | <variable>                         // an atomic variable term
@@ -327,8 +335,8 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         | <statement>                        // a statement can serve as a term
         */
 
-        return seq(
-                s(),
+        return seq( s(),
+
                 firstOf(
 
                         QuotedAtom(),
@@ -336,7 +344,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         seq(oper, ColonReverseInheritance()),
 
                         //negation shorthand
-                        seq(NEG.str, Term(true, false, true), push(($.the(pop())).neg())),
+                        seq(NEG.str, Term(), push(($.the(pop())).neg())),
 
 
                         //TODO match Ellipsis as an optional continuation of the prefix variable that was already parsed.\
@@ -345,7 +353,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         //same for ColonReverseInheritance, just continue and wrap
 
 
-                        seq(meta, Ellipsis()),
+                        Ellipsis(),
 
 
                         seq(SETe.str,
@@ -360,26 +368,8 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                         ),
 
-
                         //Functional form of an Operation, ex: operate(p1,p2), TODO move to FunctionalOperationTerm() rule
-                        seq(oper,
-
-                                Atom(),
-                                //Term(false, false), //<-- allows non-atom terms for operator names
-                                //Atom(), //push(nonNull($.oper((String)pop()))), // <-- allows only atoms for operator names, normal
-
-                                COMPOUND_TERM_OPENER, s(),
-
-                                //push((pop())),
-
-                                firstOf(
-                                        seq(COMPOUND_TERM_CLOSER, push(ZeroProduct)),// nonNull($.exec((Term)pop())) )),
-                                        MultiArgTerm(PROD, COMPOUND_TERM_CLOSER, false, false)
-                                ),
-
-                                push(INH.the(DTERNAL, (Term) pop(), $.the(pop())))
-
-                        ),
+                        seq(oper, Function()),
 
                         seq(temporal, TemporalRelation()),
 
@@ -411,7 +401,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                         NumberAtom(),
 
-                        Atom(),
+                        AtomStr(),
 
                         Variable(),
 
@@ -423,10 +413,25 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                 ),
 
-                firstOf(eof(), s()),
+                s()
+        );
+    }
 
-                //ATOM
-                push((pop()))
+    public Rule Function() {
+        return seq(
+
+                AtomStr(),
+                //Term(false, false), //<-- allows non-atom terms for operator names
+                //Atom(), //push(nonNull($.oper((String)pop()))), // <-- allows only atoms for operator names, normal
+
+                COMPOUND_TERM_OPENER, s(),
+
+                firstOf(
+                        seq(COMPOUND_TERM_CLOSER, push(ZeroProduct)),// nonNull($.exec((Term)pop())) )),
+                        MultiArgTerm(PROD, COMPOUND_TERM_CLOSER, false, false)
+                ),
+
+                push( INH.the(DTERNAL, (Term) pop(), $.the(pop())))
 
         );
     }
@@ -443,12 +448,12 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                 "&|", s(), ",", s(),
 
-                Term(true, false, true),
+                Term(),
                 oneOrMore(sequence(
 
                         sepArgSep(),
 
-                        Term(true, false, true)
+                        Term()
                 )),
                 s(),
                 COMPOUND_TERM_CLOSER,
@@ -459,18 +464,19 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
     @Deprecated
     public Rule TemporalRelation() {
+
         return seq(
 
                 COMPOUND_TERM_OPENER,
                 s(),
-                Term(true, false, true),
+                Term(),
                 s(),
                 firstOf(
                         seq(OpTemporal(), CycleDelta()),
                         seq(OpTemporalParallel(), push(0) /* dt=0 */)
                 ),
                 s(),
-                Term(true, false, true),
+                Term(),
                 s(),
                 COMPOUND_TERM_CLOSER,
 
@@ -514,7 +520,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
     /**
      * an atomic term, returns a String because the result may be used as a Variable name
      */
-    public Rule Atom() {
+    public Rule AtomStr() {
         return seq(
                 ValidAtomCharMatcher,
                 push(match())
@@ -564,9 +570,9 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
      */
     public Rule ColonReverseInheritance() {
         return sequence(
-                Term(false, false, false),
+                Term(false, false),
                 ':',
-                Term(true, false, true),
+                Term(),
 
                 push($.inh(the(pop()), the(pop())))
                 ///*push(Compound.class), */push(the(pop())), push(the(pop())),
@@ -618,40 +624,30 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         );
     }
 
-    Rule AnyStringExceptQuote() {
-        //TODO handle \" escape
-        return zeroOrMore(noneOf("\""));
-    }
-
-
-    Rule AnyString() {
-        return zeroOrMore(ANY);
-    }
-
+//    Rule AnyStringExceptQuote() {
+//        //TODO handle \" escape
+//        return zeroOrMore(noneOf("\""));
+//    }
+//
+//    Rule AnyString() {
+//        return zeroOrMore(ANY);
+//    }
 
     Rule Variable() {
-        /*
-           <variable> ::= "$"<word>                          // independent variable
-                        | "#"[<word>]                        // dependent variable
-                        | "?"[<word>]                        // query variable in question
-                        | "%"[<word>]                        // pattern variable in rule
-        */
-        return
-                firstOf(
-                        seq("_", push(Op.Imdex)),
-                        seq(
-                                anyOf(new char[]{
-                                        Op.VAR_INDEP.ch,
-                                        Op.VAR_DEP.ch,
-                                        Op.VAR_QUERY.ch,
-                                        Op.VAR_PATTERN.ch
-                                }),
-                                push(match()),
-                                Atom(),
-                                swap(),
-                                push($.v(((CharSequence) pop()).charAt(0), (String) pop()))
-                        )
-                );
+        return firstOf(
+                seq("_", push(Op.Imdex)),
+                seq(Op.VAR_INDEP.ch, Variable(VAR_INDEP)),
+                seq(Op.VAR_DEP.ch, Variable(VAR_DEP)),
+                seq(Op.VAR_QUERY.ch, Variable(VAR_QUERY)),
+                seq(Op.VAR_PATTERN.ch, Variable(VAR_PATTERN))
+            );
+    }
+
+    Rule Variable(Op varType) {
+        return seq(
+            AtomStr(),
+            push($.v(varType, (String) pop()))
+        );
     }
 
     //Rule CompoundTerm() {
@@ -772,9 +768,9 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                 push(Compound.class),
 
-                "||", push(Op.PROD),
+                "||", s(),push(Op.PROD),
 
-                zeroOrMore(sequence(
+                oneOrMore(sequence(
                         sepArgSep(),
                         Term()
                 )),
@@ -783,14 +779,13 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                 ')',
 
-                push(conj2disj(popTerm(CONJ)))
+                push(conj2disj(popTerms(new Op[] { PROD } /* HACK */)))
         );
     }
 
-    static Term conj2disj(Term x) {
-        Term[] t = x.subterms().arrayClone();
-        neg(t);
-        return CONJ.the(DTERNAL, t).neg();
+    static Term conj2disj(List<Term> subterms) {
+        subterms.replaceAll(Term::neg);
+        return CONJ.the(DTERNAL, subterms).neg();
     }
     //    /**
     //     * operation()
@@ -851,6 +846,9 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         Op[] opp = new Op[1];
         opp[0] = op;
         FasterList<Term> vectorterms = popTerms(opp);
+        if (vectorterms == null)
+            return Null;
+
         op = opp[0];
 
         if (op == null)
@@ -898,6 +896,8 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 //Term t = $.the((String) p);
                 tt.add(Atomic.the((String) p));
             } else if (p instanceof Term) {
+                if (p == Null)
+                    return null;
                 tt.add(p);
             } else if (p instanceof Op) {
 

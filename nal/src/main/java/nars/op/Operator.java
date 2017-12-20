@@ -20,6 +20,7 @@ import java.util.function.BiFunction;
 
 import static nars.Op.ATOM;
 import static nars.Op.INH;
+import static nars.Op.Null;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -78,7 +79,7 @@ public class Operator extends NodeConcept implements PermanentConcept, Atomic {
         //ExceptionUtils.printRootCauseStackTrace(error, new PrintWriter(ss));
         return Operator.command("error", when, $.quote(x.toString()),
                 //$.quote(ss.toString())
-                $.quote(error.getMessage())
+                error!=null ? $.quote(error.getMessage()!=null ? error.getMessage() : error.toString()) : $.the("?") //TODO stack trace or something
         );
     }
 

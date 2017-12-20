@@ -1,5 +1,6 @@
 package nars.time;
 
+import jcog.Texts;
 import nars.NAR;
 import org.jetbrains.annotations.NotNull;
 
@@ -30,7 +31,7 @@ public abstract class RealTime extends Time {
     }
 
 
-    public final float secondsToUnits(float s) {
+    public final double secondsToUnits(double s) {
         return s / unitsToSeconds(1);
     }
 
@@ -64,12 +65,12 @@ public abstract class RealTime extends Time {
 
     protected abstract long realtime();
 
-    float secondsSinceStart() {
+    double secondsSinceStart() {
         return unitsToSeconds(t - start);
     }
 
-    protected final float unitsToSeconds(long l) {
-        return l / ((float)unitsPerSecod);
+    protected final double unitsToSeconds(long l) {
+        return l / ((double)unitsPerSecod);
     }
 
     @Override
@@ -90,7 +91,7 @@ public abstract class RealTime extends Time {
         return this;
     }
 
-    public Time durSeconds(float seconds) {
+    public Time durSeconds(double seconds) {
         return dur((int) Math.ceil(secondsToUnits(seconds)));
     }
 
@@ -100,9 +101,14 @@ public abstract class RealTime extends Time {
         return dur;
     }
 
-    public Time durFPS(float fps) {
-        durSeconds(1f/fps);
+    public Time durFPS(double fps) {
+        durSeconds(1.0/fps);
         return this;
+    }
+
+    @Override
+    protected String durationString(long time) {
+        return Texts.timeStr(unitsToSeconds(time) * 1.0E9);
     }
 
     /** decisecond (0.1) accuracy */

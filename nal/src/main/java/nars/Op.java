@@ -1833,6 +1833,8 @@ public enum Op {
 
 
     public final Term the(int dt, /*@NotNull*/ Collection<Term> sub) {
+        if (sub == null)
+            return Null;
         int s = sub.size();
         return _the(dt, commute(dt, s) ? sorted(sub) : sub.toArray(new Term[s]));
     }

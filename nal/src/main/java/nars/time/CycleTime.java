@@ -58,6 +58,11 @@ public class CycleTime extends Time {
         t += dt;
     }
 
+    @Override
+    protected String durationString(long time) {
+        return time + " cyc";
+    }
+
     @NotNull
     @Override
     public String toString() {

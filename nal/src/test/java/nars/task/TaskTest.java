@@ -130,11 +130,11 @@ public class TaskTest {
 
         //Param.DEBUG = true;
 
-        Task x = n.inputAndGet("<a --> b>.");
+        Task x = n.inputTask("<a --> b>.");
         assertArrayEquals(new long[]{1}, x.stamp());
         n.run();
 
-        Task y = n.inputAndGet("<b --> c>.");
+        Task y = n.inputTask("<b --> c>.");
         assertArrayEquals(new long[]{2}, y.stamp());
         n.run();
 
@@ -144,7 +144,7 @@ public class TaskTest {
 
         n.run(10);
 
-        Task q = n.inputAndGet("<c --> d>.");
+        Task q = n.inputTask("<c --> d>.");
         assertArrayEquals(new long[]{5}, q.stamp());
 
     }
@@ -157,7 +157,6 @@ public class TaskTest {
         //this.activeTasks = activeTasks;
         NAR d = new NARS().get();
         //d.log();
-        d.nal(2);
         d.input("<a --> b>.", "<b --> c>.");
 
         long[] ev = {1, 2};

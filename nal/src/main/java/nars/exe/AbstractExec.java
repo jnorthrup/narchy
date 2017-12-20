@@ -12,6 +12,7 @@ import nars.control.Activate;
 import nars.task.ITask;
 
 import java.util.HashMap;
+import java.util.Random;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -81,7 +82,13 @@ abstract public class AbstractExec extends Exec {
                             public Activate key(Activate value) {
                                 return value;
                             }
+
+                            @Override
+                            protected Random random() {
+                                return nar.random();
+                            }
                         }
+
                         :
 
                         new CurveBag<>(
@@ -89,7 +96,6 @@ abstract public class AbstractExec extends Exec {
                                 nar.random(), CAPACITY);
 
         super.start(nar);
-
     }
 
 

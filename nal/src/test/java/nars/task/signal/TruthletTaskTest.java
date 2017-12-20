@@ -12,6 +12,7 @@ import static nars.Op.BELIEF;
 import static nars.truth.TruthFunctions.c2w;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TruthletTaskTest {
 
@@ -47,7 +48,7 @@ public class TruthletTaskTest {
         for (int i = -1; i < 5; i++) {
             Truth ti = xb.truth(i, n);
             if (i < 0 || i > 3) {
-                assertNull(ti);
+                assertTrue(ti.conf() < 0.9f); //fade out
             } else {
                 assertEquals(0.9f, ti.conf());
                 float f = ti.freq();

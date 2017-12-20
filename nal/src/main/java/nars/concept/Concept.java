@@ -100,7 +100,7 @@ public interface Concept extends Termed, MetaMap {
     default void print(Appendable out, boolean showbeliefs, boolean showgoals, boolean showtermlinks, boolean showtasklinks) {
 
         try {
-            out.append("concept: ").append(toString()).append('\n');
+            out.append("concept: ").append(toString()).append('\t').append(getClass().toString()).append('\n');
 
             Consumer<PriReference> printBagItem = b -> {
                 try {

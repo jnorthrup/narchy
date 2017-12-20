@@ -619,7 +619,7 @@ public enum Texts {
      * @return String formatted as - yyyy.MM.dd HH:mm:ss
      * from: https://github.com/ethereum/ethereumj/blob/develop/ethereumj-core/src/main/java/org/ethereum/util/Utils.java
      */
-    public static String longToDateTime(long timestamp) {
+    public static String dateStr(long timestamp) {
         Date date = new Date(timestamp * 1000);
         DateFormat formatter = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
         return formatter.format(date);
@@ -627,10 +627,10 @@ public enum Texts {
 
 
     /**
-     * string repr of an amount of milliseconds
+     * string repr of an amount of nanoseconds
      * from: https://github.com/ethereum/ethereumj/blob/develop/ethereumj-core/src/main/java/org/ethereum/util/Utils.java
      */
-    public static String strNS(double ns) {
+    public static String timeStr(double ns) {
         if (ns < 1000) return n4(ns) + "ns";
         ns /= 1E3;
         if (ns < 1000) return n4(ns) + "us";

@@ -1,17 +1,19 @@
 package codi;
 
 
-import jcog.math.random.XorShift128PlusRandom;
+import jcog.Util;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.Random;
 
 public class CA extends JFrame implements Runnable {
 
-    protected int stepDelayMS = 10;
+    protected int stepDelayMS = 100;
 
-    protected boolean NoStepDelay;
+    protected boolean NoStepDelay = false;
     protected long MaxSteps;
     protected int SpaceSizeX;
     protected int SpaceSizeY;
@@ -31,7 +33,7 @@ public class CA extends JFrame implements Runnable {
     protected Graphics offGraphics;
     protected Dimension offDimension;
     protected boolean CLRGraphicsAfterStep;
-    final protected Random random = new XorShift128PlusRandom(1);
+    final protected Random random = new XoRoShiRo128PlusRandom(1);
     protected boolean bFirstStart;
     protected boolean bInitedNew;
 
@@ -42,10 +44,10 @@ public class CA extends JFrame implements Runnable {
 
     public CA() {
 
+
         running = true;
-        NoStepDelay = true;
-        MaxSteps = 100;
-        SpaceSizeX = 80;
+        MaxSteps = 10;
+        SpaceSizeX = 30;
         SpaceSizeY = 30;
         SpaceSizeZ = 1;
         SpaceSize = SpaceSizeX * SpaceSizeY * SpaceSizeZ;
@@ -56,12 +58,14 @@ public class CA extends JFrame implements Runnable {
         CellSizeY = 2;
         CAFrameSizeX = SpaceSizeX * CellSizeX;
         CAFrameSizeY = SpaceSizeY * CellSizeY;
-        Random random = new Random();
         bFirstStart = true;
         CLRGraphicsAfterStep = true;
     }
 
     public void init() {
+
+        setIgnoreRepaint(true);
+
         // determine the AnimationStepDelay
         setBackground(background);
         setForeground(foreground);
@@ -70,7 +74,6 @@ public class CA extends JFrame implements Runnable {
         bInitedNew = true;
         repaint(); //Display CA
     }
-
 
 
 //    public void stop() {
@@ -90,18 +93,14 @@ public class CA extends JFrame implements Runnable {
         // Remember the starting time.
         long startTime = System.currentTimeMillis();
         // Remember which thread we are.
-        Thread currentThread = Thread.currentThread();
+//        Thread currentThread = Thread.currentThread();
         // This is the animation loop.
         while (running) {
             repaint(); // Step and Display CA.
             // Delay depending on how far we are behind.
             if (!NoStepDelay) {
-                try {
-                    startTime += stepDelayMS;
-                    Thread.sleep(Math.max(0, startTime - System.currentTimeMillis()));
-                } catch (InterruptedException ignored) {
-                    break;
-                } // thrown by sleep
+                startTime += stepDelayMS;
+                Util.sleep(Math.max(0, startTime - System.currentTimeMillis()));
             }
         }
     }
@@ -114,15 +113,17 @@ public class CA extends JFrame implements Runnable {
     @Override
     public void update(Graphics g) {
         // To how the init configuration don't step the first time.
-        if (!bInitedNew) StepCA();
-        else bInitedNew = false;
+//        if (!bInitedNew)
+         StepCA();
+//        else bInitedNew = false;
         // Create the offscreen graphics context, if not exists.
         Dimension d = size();
         if ((offGraphics == null)
                 || (d.width != offDimension.width)
                 || (d.height != offDimension.height)) {
             offDimension = d;
-            offImage = createImage(d.width, d.height);
+            offImage = new BufferedImage(d.width, d.height, BufferedImage.TYPE_INT_RGB);
+            offImage.setAccelerationPriority(1f);
             offGraphics = offImage.getGraphics();
         }
         // Erase the previous image.
@@ -150,12 +151,10 @@ public class CA extends JFrame implements Runnable {
                 CASpace[i][ii] = (random.nextInt() % 2) * (random.nextInt() % 2);
             }
         // copy to CASpaceOld
-        try {
-            for (int ix = 0; ix < SpaceSizeX; ix++)
-                System.arraycopy(CASpace[ix], 0, CASpaceOld[ix], 0, SpaceSizeY);
-        } catch (RuntimeException ignored) {
-            System.out.println("arraycopy error!");
-        }
+
+        for (int ix = 0; ix < SpaceSizeX; ix++)
+            System.arraycopy(CASpace[ix], 0, CASpaceOld[ix], 0, SpaceSizeY);
+
     }
 
     protected void StepCA() {
@@ -163,47 +162,51 @@ public class CA extends JFrame implements Runnable {
         // We wrap the borders.
         // Brian's brain (0=ready, 1=activ, 2,4,8,..=recover)
         long CountZeroCells = 0;
-        for (int i = 0; i < SpaceSizeX; i++)
+        int[][] c = CASpaceOld;
+        for (int i = 0; i < SpaceSizeX; i++) {
             for (int ii = 0; ii < SpaceSizeY; ii++) {
-                if (CASpaceOld[i][ii] == 0) {
+                if (c[i][ii] == 0) {
                     CountZeroCells++;
-                    int iNeighbourSum = (CASpaceOld[(i + SpaceSizeX - 1) % SpaceSizeX]
+                    int iNeighbourSum = (c[(i + SpaceSizeX - 1) % SpaceSizeX]
                             [(ii + SpaceSizeY + 1) % SpaceSizeY] & 1)
-                            + (CASpaceOld[(i + SpaceSizeX - 1) % SpaceSizeX]
+                            + (c[(i + SpaceSizeX - 1) % SpaceSizeX]
                             [(ii + SpaceSizeY + 0) % SpaceSizeY] & 1)
-                            + (CASpaceOld[(i + SpaceSizeX - 1) % SpaceSizeX]
+                            + (c[(i + SpaceSizeX - 1) % SpaceSizeX]
                             [(ii + SpaceSizeY - 1) % SpaceSizeY] & 1)
-                            + (CASpaceOld[(i + SpaceSizeX + 0) % SpaceSizeX]
+                            + (c[(i + SpaceSizeX + 0) % SpaceSizeX]
                             [(ii + SpaceSizeY + 1) % SpaceSizeY] & 1)
-                            + (CASpaceOld[(i + SpaceSizeX + 0) % SpaceSizeX]
+                            + (c[(i + SpaceSizeX + 0) % SpaceSizeX]
                             [(ii + SpaceSizeY - 1) % SpaceSizeY] & 1)
-                            + (CASpaceOld[(i + SpaceSizeX + 1) % SpaceSizeX]
+                            + (c[(i + SpaceSizeX + 1) % SpaceSizeX]
                             [(ii + SpaceSizeY + 1) % SpaceSizeY] & 1)
-                            + (CASpaceOld[(i + SpaceSizeX + 1) % SpaceSizeX]
+                            + (c[(i + SpaceSizeX + 1) % SpaceSizeX]
                             [(ii + SpaceSizeY + 0) % SpaceSizeY] & 1)
-                            + (CASpaceOld[(i + SpaceSizeX + 1) % SpaceSizeX]
+                            + (c[(i + SpaceSizeX + 1) % SpaceSizeX]
                             [(ii + SpaceSizeY - 1) % SpaceSizeY] & 1);
                     if (iNeighbourSum >= 2) CASpace[i][ii] = 1;
-                } else CASpace[i][ii] = (CASpaceOld[i][ii] * 2) % 4;
+                } else {
+                    CASpace[i][ii] = (c[i][ii] * 2) % 4;
+                }
             }
-        if ((CountZeroCells == SpaceSize) || (CountCAStps > MaxSteps)) InitCA();
-        // copy to CASpaceOld
-        try {
-            for (int ix = 0; ix < SpaceSizeX; ix++)
-                System.arraycopy(CASpace[ix], 0, CASpaceOld[ix], 0, SpaceSizeY);
-        } catch (RuntimeException ignored) {
-            System.out.println("arraycopy error!");
         }
+
+        if ((CountZeroCells == SpaceSize) || (CountCAStps > MaxSteps))
+            InitCA();
+
+        // copy to CASpaceOld
+        for (int ix = 0; ix < SpaceSizeX; ix++)
+            System.arraycopy(CASpace[ix], 0, c[ix], 0, SpaceSizeY);
+
     }
 
     protected void DrawCAFrame(Graphics g) {
-        g.setColor(getForeground());
-        g.drawLine(Offset - 1, Offset - 1, Offset - 1, Offset + CAFrameSizeY);
-        g.drawLine(Offset - 1, Offset - 1, Offset + CAFrameSizeX, Offset - 1);
-        g.drawLine(Offset + CAFrameSizeX, Offset - 1,
-                Offset + CAFrameSizeX, Offset + CAFrameSizeY);
-        g.drawLine(Offset - 1, Offset + CAFrameSizeY,
-                Offset + CAFrameSizeX, Offset + CAFrameSizeY);
+//        g.setColor(getForeground());
+//        g.drawLine(Offset - 1, Offset - 1, Offset - 1, Offset + CAFrameSizeY);
+//        g.drawLine(Offset - 1, Offset - 1, Offset + CAFrameSizeX, Offset - 1);
+//        g.drawLine(Offset + CAFrameSizeX, Offset - 1,
+//                Offset + CAFrameSizeX, Offset + CAFrameSizeY);
+//        g.drawLine(Offset - 1, Offset + CAFrameSizeY,
+//                Offset + CAFrameSizeX, Offset + CAFrameSizeY);
     }
 
     protected void DrawCA(Graphics g) {
@@ -217,23 +220,27 @@ public class CA extends JFrame implements Runnable {
                 PosY += CellSizeY;
                 // drawPoint does not exist
                 if (CASpace[i][ii] > 0) {
+                    Color c;
                     switch (CASpace[i][ii]) {
                         //case 0: g.setColor(Color.white);  break;
                         case 1:
-                            g.setColor(Color.black);
+                            c = (Color.black);
                             break;
                         case 2:
-                            g.setColor(Color.blue);
+                            c = (Color.blue);
                             break;
                         case 4:
-                            g.setColor(Color.getColor("00000F"));
+                            c = (Color.CYAN); //getColor("00000F"));
                             break;
                         case 8:
-                            g.setColor(Color.getColor("000010"));
+                            //g.setColor(Color.getColor("000010"));
+                            c = Color.MAGENTA;
                             break;
                         default:
-                            g.setColor(Color.getColor("888888"));
+                            c = Color.DARK_GRAY;
+                            break;
                     }
+                    g.setColor(c);
                     g.fillRect(PosX, PosY, CellSizeX, CellSizeY);
                 }
             }

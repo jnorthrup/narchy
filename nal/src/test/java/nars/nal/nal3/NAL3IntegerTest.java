@@ -11,10 +11,6 @@ public class NAL3IntegerTest extends NALTest {
 
     public static final int cycles = 2500;
 
-    @BeforeEach
-    public void nal() {
-        test.nar.nal(3);
-    }
 
     @Test
     public void testIntRangeStructuralDecomposition() {

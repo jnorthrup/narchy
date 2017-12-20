@@ -14,12 +14,6 @@ public class NAL6Test extends NALTest {
 
     final int cycles = 2500;
 
-    @BeforeEach
-    public void nal() {
-        test.nar.nal(6);
-    }
-
-
     @Test
     public void variable_unification1() {
         test

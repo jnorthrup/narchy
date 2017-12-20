@@ -20,8 +20,6 @@ import static nars.perf.JmhBenchmark.perf;
 @Disabled
 public class NARBenchmark {
 
-    @Param("6")
-    String nalLevel;
 
     @Param("8000")
     String cycles;
@@ -46,7 +44,6 @@ public class NARBenchmark {
 //        The.Subterms.the = h;
 
         n = NARS.tmp();
-        n.nal(Integer.parseInt(nalLevel));
         n.termVolumeMax.set(Integer.parseInt(termVolumeMax));
 
         //n.inputActivation.setValue(0.5f);

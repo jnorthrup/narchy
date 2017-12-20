@@ -79,10 +79,9 @@ public class Focus {
 
         public void update(FastCoWList<Causable> can) {
             active = can.copy;
-            int n = active.length;
-            if (n <= 0) {
+            if (active == null)
                 return;
-            }
+            int n = active.length;
             if (time.length != n) {
                 //realloc
                 time = new float[n];

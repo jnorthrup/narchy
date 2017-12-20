@@ -77,7 +77,6 @@ public class Activate extends PLink<Concept> implements Termed {
 
         Random rng = nar.random();
 
-
         //apply the nar valuation to further refine selection of the tasks collected in the oversample prestep
         List<Premise> next = new FasterList(premisesMax);
         final int[] remaining = {premisesMax};
@@ -191,13 +190,6 @@ public class Activate extends PLink<Concept> implements Termed {
     public boolean delete() {
         throw new UnsupportedOperationException();
     }
-
-    //    protected int premise(Derivation d, Premise p, Consumer<DerivedTask> x, int ttlPerPremise) {
-//        int ttl = p.run(d, ttlPerPremise);
-//        //TODO record ttl usage
-//        return ttl;
-//    }
-
 
     @Override
     public Term term() {

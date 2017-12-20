@@ -142,7 +142,6 @@ public class QuestionTest {
         IntFunction<NAR> narProvider = (seed) -> {
             NAR d = NARS.tmp();
             d.random().setSeed(seed);
-            d.nal(4);
             d.termVolumeMax.set(16);
             d.freqResolution.set(0.1f);
             return d;

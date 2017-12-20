@@ -130,7 +130,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         return f(termAtom, 1, (tt) -> ff.apply(tt.sub(0)));
     }
 
-    public static <X extends Term> LambdaFunctor f1(@NotNull String termAtom, @NotNull Function<X, Term> ff) {
+    public static LambdaFunctor f1(@NotNull String termAtom, @NotNull Function<Term, Term> ff) {
         return f1(fName(termAtom), safeFunctor(ff));
     }
 
@@ -142,12 +142,12 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         });
     }
 
-    @NotNull
-    static <X extends Term> Function<Term, Term> safeFunctor(@NotNull Function<X, Term> ff) {
+
+    static Function<Term, Term> safeFunctor(@NotNull Function<Term, Term> ff) {
         return x ->
                 (x == null) ? null
                         :
-                        ff.apply((X) x);
+                        ff.apply(x);
     }
 
     /**

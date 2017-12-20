@@ -121,7 +121,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
             h = Util.hashCombine(h, Arrays.hashCode(stamp));
 
-        } else {
+        } else if (stamp.length > 0) {
             h = Util.hashCombine(h, Long.hashCode(stamp[0]));
         }
 
@@ -957,6 +957,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
         Term x = term(), y;
 
+        boolean cmd = isCommand();
+
         if (this instanceof SignalTask) {
             //HACK - fast track insertion, expect no evaluation surprises, etc.
             y = x;
@@ -971,7 +973,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                 if (y instanceof Bool && isQuestOrQuestion()) {
                     //convert to implicit answer
                     byte p = isQuestion() ? BELIEF : GOAL;
-                    result = clone(this, x.term(), $.t(y == True ? 1f : 0f, n.confDefault(p)), p);
+                    result = clone(this, x, $.t(y == True ? 1f : 0f, n.confDefault(p)), p);
                 } else {
                     if (y.op() == Op.BOOL)
                         return null;
@@ -995,10 +997,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             }
 
             //invoke possible Operation
-            boolean cmd = isCommand();
 
             if (cmd || (isGoal() && !isEternal())) {
-                //resolve possible functor in goal or command (TODO question functors)
+                //resolve possible functor in goal or command
+                //TODO question functors
                 //the eval step producing 'y' above will have a reference to any resolved functor concept
                 Pair<Operator, Term> o = Op.functor(y, (i) -> {
                     Concept operation = n.concept(i);
@@ -1022,22 +1024,21 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                     //otherwise: allow processing goal
                 }
             }
-
-            if (cmd) {
-                return null; //skip insertion below
-            }
-
         }
 
 
-        n.conceptualize(y, c -> {
-            if (c instanceof TaskConcept) {
-                ((TaskConcept) c).add(this, n);
-            } else {
-                if (isBeliefOrGoal() || Param.DEBUG_EXTRA)
-                    throw new RuntimeException(c + " is not a TaskConcept yet a task expects to add itself to it");
-            }
-        });
+        if (!cmd) {
+            n.conceptualize(y, c -> {
+                if (c instanceof TaskConcept) {
+                    ((TaskConcept) c).add(this, n);
+                } else {
+                    if (isBeliefOrGoal() || Param.DEBUG_EXTRA)
+                        throw new RuntimeException(c + " is not a TaskConcept yet a task expects to add itself to it");
+                }
+            });
+        } else {
+            n.out(term());
+        }
 
         return null;
     }

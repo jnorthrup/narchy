@@ -71,10 +71,8 @@ public class Grid extends MutableLayout {
     public void doLayout(int dtMS) {
 
         Surface[] children = this.children.copy;
+        if (children == null) return;
         int n = children.length;
-        if (n == 0)
-            return;
-
         float a = gridAspect;
 //        if ((n < 3) && !((a==0) || (a == Float.POSITIVE_INFINITY)))
 //            a = 0; //use linear layout for small n

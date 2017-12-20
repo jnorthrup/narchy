@@ -871,7 +871,6 @@ public class UnifyTest {
     void testIntroduction(String subj, Op relation, String pred, String belief,  String concl) {
 
         NAR n = NARS.shell();
-        n.nal(6);
 
         new TestNAR(n)
                 .believe('(' + subj + ' ' + relation + ' ' + pred + ')')

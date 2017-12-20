@@ -33,7 +33,7 @@ public class TermIOTest {
     }
 
     void assertEqualTask(@NotNull String orig) throws Narsese.NarseseException {
-        assertEqualSerialize(nar.inputAndGet(orig));
+        assertEqualSerialize(nar.inputTask(orig));
     }
 
     static void assertEqualSerialize(@NotNull Object orig) {
@@ -172,7 +172,7 @@ public class TermIOTest {
 
     @Test
     public void testTaskSerialization2() throws Narsese.NarseseException {
-        assertEqualSerialize(nar.inputAndGet("$0.3 (a-->(bd))! %1.0;0.8%"));
+        assertEqualSerialize(nar.inputTask("$0.3 (a-->(bd))! %1.0;0.8%"));
     }
 
     @Test
@@ -186,7 +186,7 @@ public class TermIOTest {
                 .run(16);
         a
                 .output(baos, true)
-                .run(1);
+                .stop()
         ;
 
         byte[] x = baos.toByteArray();

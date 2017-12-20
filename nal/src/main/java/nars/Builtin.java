@@ -1,25 +1,28 @@
 package nars;
 
-import jcog.Texts;
 import jcog.list.FasterList;
 import nars.concept.Concept;
 import nars.op.DepIndepVarIntroduction;
 import nars.op.Operator;
 import nars.op.Subst;
 import nars.op.data.*;
+import nars.op.java.Opjects;
 import nars.term.Functor;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.atom.Int;
 import nars.term.sub.Subterms;
 import nars.term.var.Variable;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
-import org.eclipse.collections.impl.list.mutable.FastList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
-import java.util.function.BiConsumer;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.Random;
+import java.util.TreeSet;
+import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.term.Functor.f0;
@@ -28,9 +31,16 @@ import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
- * Built-in functors, ie. the standard core function set
+ * Built-in set of default Functors and Operators, registered into a NAR on initialization
+ * Provides the standard core function library
  */
 public class Builtin {
+
+    public static void init(NAR nar) {
+        registerFunctors(nar);
+        registerOperators(nar);
+    }
+
 
     //TODO: http://software-lab.de/doc/ref.html#fun
     //TODO: https://openreview.net/pdf?id=ByldLrqlx (section F)
@@ -43,14 +53,14 @@ public class Builtin {
             Subst.the,
 
             /** applies the changes in structurally similar terms "from" and "to" to the target term */
-            Functor.f3((Atom)$.the("substDiff"), (target, from, to) -> {
+            Functor.f3((Atom) $.the("substDiff"), (target, from, to) -> {
                 if (from.equals(to))
                     return Null; //only interested in when there is a difference to apply
 
                 int n;
                 if (from.op() == to.op() && (n = from.subs()) == to.subs()) {
                     //likely they have the same structure
-                    Map<Term,Term> m = null; //lazy alloc
+                    Map<Term, Term> m = null; //lazy alloc
                     for (int i = 0; i < n; i++) {
                         Term f = from.sub(i);
                         Term t = to.sub(i);
@@ -59,9 +69,9 @@ public class Builtin {
                             m.put(f, t);
                         }
                     }
-                    if (m!=null) { //can be empty in 'dt' cases
+                    if (m != null) { //can be empty in 'dt' cases
                         Term y = target.replace(m);
-                        if (y!=null && !y.equals(target))
+                        if (y != null && !y.equals(target))
                             return y;
                     }
                 }
@@ -72,7 +82,7 @@ public class Builtin {
              *  if not present, returns Null
              * */
             //Functor.f2("numIndicesOf", (x,y) -> {
-            Functor.f2("indicesOf", (x,y) -> {
+            Functor.f2("indicesOf", (x, y) -> {
                 int s = x.subs();
                 if (s > 0) {
                     TreeSet<Term> indices = null; //lazy alloc
@@ -91,8 +101,8 @@ public class Builtin {
                 }
                 return Null;
             }),
-            Functor.f2("keyValues", (x,y) -> {
-            //Functor.f2("indicesOf", (x,y) -> {
+            Functor.f2("keyValues", (x, y) -> {
+                //Functor.f2("indicesOf", (x,y) -> {
                 int s = x.subs();
                 if (s > 0) {
                     TreeSet<Term> indices = null; //lazy alloc
@@ -106,8 +116,10 @@ public class Builtin {
                         return Null;
                     else {
                         switch (indices.size()) {
-                            case 0: return Null; //shouldnt happen
-                            case 1: return indices.first();
+                            case 0:
+                                return Null; //shouldnt happen
+                            case 1:
+                                return indices.first();
                             default:
                                 //return $.secte(indices);
                                 return $.sete(indices);
@@ -117,7 +129,7 @@ public class Builtin {
                 return Null;
             }),
 
-            Functor.f2("varMask", (x,y) -> {
+            Functor.f2("varMask", (x, y) -> {
                 int s = x.subs();
                 if (s > 0) {
                     Term[] t = new Term[s];
@@ -139,8 +151,6 @@ public class Builtin {
             Functor.f1Const("toString", x -> $.quote(x.toString())),
             Functor.f1Const("toChars", x -> $.p(x.toString().toCharArray(), $::the)),
             Functor.f1Const("complexity", x -> $.the(x.complexity())),
-
-            Functor.r0("shutdown", () -> () -> System.exit(0)),
 
 
             new flat.flatProduct(),
@@ -178,10 +188,7 @@ public class Builtin {
     };
 
 
-    /**
-     * generate all NAR-contextualized functors
-     */
-    public static void load(NAR nar) {
+    public static void registerFunctors(NAR nar) {
         for (Concept t : Builtin.statik) {
             nar.on(t);
         }
@@ -251,28 +258,32 @@ public class Builtin {
             if (oo == INT) {
                 if (t instanceof Int.IntRange) {
                     //select random location in the int and split either up or down
-                    Int.IntRange i = (Int.IntRange)t;
+                    Int.IntRange i = (Int.IntRange) t;
                     Random rng = nar.random();
-                    if (i.min+1 == i.max) {
+                    if (i.min + 1 == i.max) {
                         //arity=2
                         return Int.the(rng.nextBoolean() ? i.min : i.max);
-                    } else if (i.min+2 == i.max) {
+                    } else if (i.min + 2 == i.max) {
                         //arity=3
                         switch (rng.nextInt(4)) {
-                            case 0: return Int.the(i.min);
-                            case 1: return Int.range(i.min, i.min+1);
-                            case 2: return Int.range(i.min+1, i.min+2);
-                            case 3: return Int.the(i.max);
+                            case 0:
+                                return Int.the(i.min);
+                            case 1:
+                                return Int.range(i.min, i.min + 1);
+                            case 2:
+                                return Int.range(i.min + 1, i.min + 2);
+                            case 3:
+                                return Int.the(i.max);
                             default:
                                 throw new UnsupportedOperationException();
                         }
                     } else {
                         int split =
-                                (i.max + i.min)/2; //midpoint, deterministic
-                                //rng.nextInt(i.max-i.min-2);
+                                (i.max + i.min) / 2; //midpoint, deterministic
+                        //rng.nextInt(i.max-i.min-2);
                         return (rng.nextBoolean()) ?
-                                Int.range(i.min, split+1) :
-                                Int.range(split+1, i.max);
+                                Int.range(i.min, split + 1) :
+                                Int.range(split + 1, i.max);
                     }
                 }
 
@@ -294,7 +305,7 @@ public class Builtin {
                     int n = nar.random().nextInt(2);
                     return oo.the(t.sub(n)) /* keep the remaining term wrapped in a set */;
                 default:
-                    Term[] y = dropRandom(nar.random(), t.subterms());
+                    Term[] y = Terms.dropRandom(nar.random(), t.subterms());
                     return oo.the(y);
             }
         }));
@@ -309,7 +320,7 @@ public class Builtin {
 
 
             TreeSet<Term> s = t.subterms().toSortedSet();
-            if (!s.removeIf(x -> x.unneg().op()==VAR_DEP))
+            if (!s.removeIf(x -> x.unneg().op() == VAR_DEP))
                 return t;
 
             return CONJ.the(t.dt(), s);
@@ -334,7 +345,7 @@ public class Builtin {
                         break;
 
                     default:
-                        r = CONJ.the(tdt, dropRandom(nar.random(), t.subterms()));
+                        r = CONJ.the(tdt, Terms.dropRandom(nar.random(), t.subterms()));
                         break;
                 }
             } else {
@@ -384,7 +395,7 @@ public class Builtin {
                 FasterList<LongObjectPair<Term>> events = conj.eventList();
                 int found = -1;
                 int es = events.size();
-                assert(es>1);
+                assert (es > 1);
                 for (int i = 0; i < es; i++) {
                     if (events.get(i).getTwo().equals(event)) {
                         found = i;
@@ -420,91 +431,29 @@ public class Builtin {
             }
         }));
 
-        nar.onOp("assertEquals", (task, nn) -> {
-            //String msg = op + "(" + Joiner.on(',').join(args) + ')';
-            @Nullable Subterms args = Operator.args(task);
-            if (args.subs()==2) {
-                //assertEquals(/*msg,*/ 2, args.subs());
-                assertEquals(/*msg,*/ args.sub(0), args.sub(1));
-            }
-        });
-
-        nar.on(f0("self", nar::self));
-
 
         nar.on(Functor.f1Concept("belief", nar, (c, n) -> $.quote(n.belief(c.term(), n.time()))));
         nar.on(Functor.f1Concept("goal", nar, (c, n) -> $.quote(n.goal(c.term(), n.time()))));
 
-//        nar.on("concept", (Operator) (op, a, nn) -> {
-//            Concept c = nn.concept(a[0]);
-//            Command.log(nn,
-//                (c != null) ?
-//                    quote(c.print(new StringBuilder(1024))) : $.func("unknown", a[0])
-//            );
-//        });
+        nar.on(f0("self", nar::self));
 
-        BiConsumer<Task, NAR> log = (t, n) -> NAR.logger.info(" {}", t);
-        nar.onOp("log", log);
-        nar.onOp(Operator.LOG_FUNCTOR, log);
+        nar.on(Functor.f1("status", (Function<Term, Term>) (what -> {
 
-        nar.onOpArgs("error", (t, n) -> NAR.logger.error(" {}", t));
-
-        nar.onOp("reset", (t, nn) -> {
-            nn.runLater(nn::reset);
-        });
-
-        nar.onOp("clear", (t, n) -> {
-            n.runLater(() -> {
-                n.clear();
-                n.input(Operator.log(n.time(), "ready"));
-            });
-        });
-
-        nar.onOpLogged("stat", (t, n) ->
-                $.p(
-                        $.quote(n.emotion.summary()),
-                        $.quote(n.terms.summary()),
-                        $.quote(n.emotion.summary()),
-                        $.quote(n.exe.toString())
-                )
-        );
-
-        nar.on(Functor.f("top", (args) -> {
-
-            String query;
-            if (args.subs() > 0 && args.sub(0) instanceof Atom) {
-                query = $.unquote(args.sub(0)).toLowerCase();
-            } else {
-                query = null;
-
+            if (what instanceof Atom) {
+                switch (what.toString()) {
+                    case "sys":
+                        return $.p(
+                                $.quote(nar.emotion.summary()),
+                                $.quote(nar.terms.summary()),
+                                $.quote(nar.emotion.summary()),
+                                $.quote(nar.exe.toString())
+                        );
+                }
             }
 
-            int MAX_RESULT_LENGTH = 10;
-            List<Term> rows = $.newArrayList(MAX_RESULT_LENGTH);
-            //TODO use Exe stream() methods
-            nar.conceptsActive().forEach(bc -> {
-                if (rows.size() < MAX_RESULT_LENGTH && (query == null || bc.toString().toLowerCase().contains(query))) {
-                    rows.add($.p(
-                            bc.get().term(),
-                            $.the('$' + Texts.n4(bc.pri())))
-                    );
-                }
-            });
-            return $.p(rows);
+            return $.quote($.p($.quote(what.getClass().toString()), $.quote(what.toString())));
+        })));
 
-//            else
-//                for (PLink<Concept> bc : ii) {
-//                    b.append(bc.get()).append('=').append(Texts.n2(bc.pri())).append("  ");
-//                    if (b.length() > MAX_RESULT_LENGTH)
-//                        break;
-//                }
-//            }
-
-            //Command.log(n, b.toString());
-            //"core pri: " + cbag.active.priMin() + "<" + Texts.n4(cbag.active.priHistogram(new double[5])) + ">" + cbag.active.priMax());
-
-        }));
-//
 
 //            /** slice(<compound>,<selector>)
 //            selector :-
@@ -552,6 +501,111 @@ public class Builtin {
             }
             return null;
         }));
+    }
+
+    public static void registerOperators(NAR nar) {
+        nar.onOp("assertEquals", (task, nn) -> {
+            //String msg = op + "(" + Joiner.on(',').join(args) + ')';
+            @Nullable Subterms args = Operator.args(task);
+            if (args.subs() == 2) {
+                //assertEquals(/*msg,*/ 2, args.subs());
+                assertEquals(/*msg,*/ args.sub(0), args.sub(1));
+            }
+        });
+
+        new System(nar);
+    }
+
+    public static class System {
+
+        private final NAR nar;
+        private final Opjects opj;
+
+        public System() {
+            //used by the proxy instance
+            this.nar = null;
+            this.opj = null;
+        }
+
+        public System(NAR n) {
+            this.nar = n;
+            opj = new Opjects(n);
+            opj.the("sys", this);
+        }
+
+        /**
+         * shutdown, terminates VM
+         */
+        public void off() {
+            java.lang.System.exit(0);
+        }
+
+//        nar.on("concept", (Operator) (op, a, nn) -> {
+//            Concept c = nn.concept(a[0]);
+//            Command.log(nn,
+//                (c != null) ?
+//                    quote(c.print(new StringBuilder(1024))) : $.func("unknown", a[0])
+//            );
+//        });
+
+        public void log(Term x) {
+            nar.logger.info(" {}", x);
+        }
+//
+//        BiConsumer<Task, NAR> log = (t, n) -> NAR.logger.info(" {}", t);
+//        nar.onOp("log", log);
+//        nar.onOp(Operator.LOG_FUNCTOR, log);
+//
+//        nar.onOpArgs("error", (t, n) -> NAR.logger.error(" {}", t));
+//
+//        nar.onOp("reset", (t, nn) -> {
+//            nn.runLater(nn::reset);
+//        });
+//
+//        nar.onOp("clear", (t, n) -> {
+//            n.runLater(() -> {
+//                n.clear();
+//                n.input(Operator.log(n.time(), "ready"));
+//            });
+//        });
+//
+
+
+//        nar.on(Functor.f("top", (args) -> {
+//
+//            String query;
+//            if (args.subs() > 0 && args.sub(0) instanceof Atom) {
+//                query = $.unquote(args.sub(0)).toLowerCase();
+//            } else {
+//                query = null;
+//
+//            }
+//
+//            int MAX_RESULT_LENGTH = 10;
+//            List<Term> rows = $.newArrayList(MAX_RESULT_LENGTH);
+//            //TODO use Exe stream() methods
+//            nar.conceptsActive().forEach(bc -> {
+//                if (rows.size() < MAX_RESULT_LENGTH && (query == null || bc.toString().toLowerCase().contains(query))) {
+//                    rows.add($.p(
+//                            bc.get().term(),
+//                            $.the('$' + Texts.n4(bc.pri())))
+//                    );
+//                }
+//            });
+//            return $.p(rows);
+//
+////            else
+////                for (PLink<Concept> bc : ii) {
+////                    b.append(bc.get()).append('=').append(Texts.n2(bc.pri())).append("  ");
+////                    if (b.length() > MAX_RESULT_LENGTH)
+////                        break;
+////                }
+////            }
+//
+//            //Command.log(n, b.toString());
+//            //"core pri: " + cbag.active.priMin() + "<" + Texts.n4(cbag.active.priHistogram(new double[5])) + ">" + cbag.active.priMax());
+//
+//        }));
 
 
 //                Functor.f0("help", () -> {
@@ -618,21 +672,8 @@ public class Builtin {
 //            }
 //        });
 
-    }
 
-    static Term[] dropRandom(Random random, Subterms t) {
-        int size = t.subs();
-        assert (size > 1);
-        Term[] y = new Term[size - 1];
-        int except = random.nextInt(size);
-        for (int i = 0, j = 0; i < size; i++) {
-            if (i != except) {
-                y[j++] = t.sub(i);
-            }
-        }
-        return y;
     }
-
 
 //    public final AbstractOperator[] defaultOperators = {
 //

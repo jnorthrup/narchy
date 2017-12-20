@@ -17,7 +17,6 @@ public class NAL5Test extends NALTest {
     @BeforeEach
     public void nal() {
 
-        test.nar.nal(5);
         test.nar.termVolumeMax.set(24);
     }
 

@@ -57,7 +57,7 @@ public abstract class NativeTask implements ITask {
 
         final Runnable run;
 
-        public RunTask(@NotNull Runnable runnable) {
+        public RunTask(Runnable runnable) {
             run = runnable;
         }
 
@@ -130,60 +130,60 @@ public abstract class NativeTask implements ITask {
         }
     }
 
-    public static class SleepTask extends NativeTask {
-
-        private final AtomicInteger ms;
-        final int toSleep;
-
-        public SleepTask(int ms, int divisor) {
-            this.ms = new AtomicInteger(ms);
-            this.toSleep = Math.max(1,ms/divisor);
-        }
-
-        @Override
-        public String toString() {
-            return "sleep(" + ms + "ms)";
-        }
-
-        @Override
-        public @Nullable Iterable<? extends ITask> run(NAR n) {
-            /** min executor load to allow sleeping */
-
-            if (n.exe.load() >= 1f-1f/(1+n.exe.concurrency())) //<-TODO estimate this without seeing the sleep or maybe this is just a hack and a different throttle system will work better
-                return null;
-
-            if (ms.addAndGet(-toSleep) >= toSleep) {
-                n.exe.add(this); //re-input for another thread to continue sleeping
-            }
-
-            Util.pause(toSleep);
-
-            return null;
-        }
-    }
-
-    /**
-     * wraps a Runnable
-     */
-    public static class NARTask extends NativeTask {
-
-        final Consumer run;
-
-        public NARTask(@NotNull Consumer<NAR> runnable) {
-            run = runnable;
-        }
-
-        @Override
-        public String toString() {
-            return run.toString();
-        }
-
-        @Override
-        public @Nullable Iterable<? extends ITask> run(NAR x) {
-            run.accept(x);
-            return null;
-        }
-
-    }
+//    public static class SleepTask extends NativeTask {
+//
+//        private final AtomicInteger ms;
+//        final int toSleep;
+//
+//        public SleepTask(int ms, int divisor) {
+//            this.ms = new AtomicInteger(ms);
+//            this.toSleep = Math.max(1,ms/divisor);
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return "sleep(" + ms + "ms)";
+//        }
+//
+//        @Override
+//        public @Nullable Iterable<? extends ITask> run(NAR n) {
+//            /** min executor load to allow sleeping */
+//
+//            if (n.exe.load() >= 1f-1f/(1+n.exe.concurrency())) //<-TODO estimate this without seeing the sleep or maybe this is just a hack and a different throttle system will work better
+//                return null;
+//
+//            if (ms.addAndGet(-toSleep) >= toSleep) {
+//                n.exe.add(this); //re-input for another thread to continue sleeping
+//            }
+//
+//            Util.pause(toSleep);
+//
+//            return null;
+//        }
+//    }
+//
+//    /**
+//     * wraps a Runnable
+//     */
+//    public static class NARTask extends NativeTask {
+//
+//        final Consumer run;
+//
+//        public NARTask(@NotNull Consumer<NAR> runnable) {
+//            run = runnable;
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return run.toString();
+//        }
+//
+//        @Override
+//        public @Nullable Iterable<? extends ITask> run(NAR x) {
+//            run.accept(x);
+//            return null;
+//        }
+//
+//    }
 
 }

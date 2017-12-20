@@ -14,15 +14,19 @@ public class ListTopic<V> extends jcog.list.FastCoWList<Consumer<V>> implements 
     @Override
     public final void emit(V x) {
         final Consumer[] cc = this.copy;
-        for (Consumer c : cc)
-            c.accept(x);
+        if (cc!=null) {
+            for (Consumer c : cc)
+                c.accept(x);
+        }
     }
 
     @Override
     public void emitAsync(V x, Executor executorService) {
         final Consumer[] cc = this.copy;
-        for (Consumer c : cc)
-            executorService.execute(()->c.accept(x));
+        if (cc!=null) {
+            for (Consumer c : cc)
+                executorService.execute(() -> c.accept(x));
+        }
     }
 
     @Override public final void enable(Consumer<V> o) {

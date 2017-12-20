@@ -77,8 +77,6 @@ public class RevisionTest {
         Param.DEBUG = true;
 
         NAR n = newNAR(6);
-        n.nal(1);
-
 
         //arbitrary time delays in which to observe that certain behavior does not happen
 

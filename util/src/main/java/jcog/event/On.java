@@ -1,5 +1,7 @@
 package jcog.event;
 
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +43,7 @@ abstract public class On<V> {
     }
 
     public static class Weak<V> extends On<V> implements Consumer<V> {
+
 
         protected static final Logger logger = LoggerFactory.getLogger(Weak.class);
 

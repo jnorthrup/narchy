@@ -708,6 +708,18 @@ public enum Terms {
     }
 
 
+    public static Term[] dropRandom(Random random, Subterms t) {
+        int size = t.subs();
+        assert (size > 1);
+        Term[] y = new Term[size - 1];
+        int except = random.nextInt(size);
+        for (int i = 0, j = 0; i < size; i++) {
+            if (i != except) {
+                y[j++] = t.sub(i);
+            }
+        }
+        return y;
+    }
 }
 
 

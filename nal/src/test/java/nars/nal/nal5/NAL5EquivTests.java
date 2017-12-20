@@ -14,10 +14,6 @@ import static nars.time.Tense.ETERNAL;
 public class NAL5EquivTests extends NALTest {
     final int cycles = 50;
 
-    @BeforeEach
-    public void nal() {
-        test.nar.nal(5);
-    }
 
     @Test
     public void comparisonEqui() {

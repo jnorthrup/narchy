@@ -13,10 +13,6 @@ public class NAL4NewTest extends NALTest {
 
     public static final int CYCLES = 450;
 
-    @BeforeEach
-    public void nal() { test.nar.nal(4); }
-
-
     @Test
     public void testCompositionFromProductInh() throws nars.Narsese.NarseseException {
         //((A..+) --> Z), (X --> Y), contains(A..+,X), task("?") |- ((A..+) --> (substitute(A..+,X,Y))), (Belief:BeliefStructuralDeduction, Punctuation:Belief)

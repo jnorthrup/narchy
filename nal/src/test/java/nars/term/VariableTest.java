@@ -214,7 +214,7 @@ public class VariableTest {
         System.out.println(task);
 
 
-        Task t2 = n.inputAndGet(t + '.');
+        Task t2 = n.inputTask(t + '.');
         System.out.println(t2);
 
         //TextOutput.out(n);

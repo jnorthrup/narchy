@@ -36,7 +36,6 @@ public class NAL6MultistepTest {
 //                query(earthquake).
 
         NAR n = NARS.tmp();
-        n.nal(6);
 
         //d.log();
         n.input(
@@ -87,7 +86,6 @@ public class NAL6MultistepTest {
 //                query(earthquake).
 
         NAR n = new NARS().get();
-        n.nal(6);
 
         //d.log();
         n.input(

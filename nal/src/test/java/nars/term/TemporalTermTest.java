@@ -28,7 +28,7 @@ public class TemporalTermTest {
     @Test
     public void parsedCorrectOccurrenceTime() throws Narsese.NarseseException {
         long now = n.time();
-        Task t = n.inputAndGet("b:a. :\\:");
+        Task t = n.inputTask("b:a. :\\:");
         assertEquals(now, t.creation());
         assertEquals(now - 1, t.start());
     }
@@ -190,9 +190,9 @@ public class TemporalTermTest {
     @Test
     public void testAtemporalizationSharesNonTemporalSubterms() throws Narsese.NarseseException {
 
-        Task a = n.inputAndGet("((x) ==>+10 (y)).");
-        Task c = n.inputAndGet("((x) ==>+9 (y)).");
-        Task b = n.inputAndGet("((x) <-> (y)).");
+        Task a = n.inputTask("((x) ==>+10 (y)).");
+        Task c = n.inputTask("((x) ==>+9 (y)).");
+        Task b = n.inputTask("((x) <-> (y)).");
         n.run();
 
         @NotNull Term aa = a.term();

@@ -179,10 +179,6 @@ public class NARS {
         return new DefaultNAR(8, true).get();
     }
 
-    public NARS nal(int nal) {
-        postInit.add((x) -> x.nal(nal));
-        return this;
-    }
 
     public NARS threadable() {
         index = () -> new CaffeineIndex(64 * 1024 /*HACK */);
@@ -199,7 +195,7 @@ public class NARS {
      * an empty deriver, but allows any kind of term
      */
     public static NAR shell() {
-        return tmp(0).nal(8);
+        return tmp(0);
     }
 
     public NARS memory(String s) {
@@ -211,14 +207,14 @@ public class NARS {
             } catch (FileNotFoundException ignored) {
                 //ignore
             } catch (IOException e) {
-                NAR.logger.error("input: {} {}", s, e);
+                n.logger.error("input: {} {}", s, e);
             }
 
             Runnable save = () -> {
                 try {
                     n.outputBinary(f, false);
                 } catch (IOException e) {
-                    NAR.logger.error("output: {} {}", s, e);
+                    n.logger.error("output: {} {}", s, e);
                 }
             };
             Runtime.getRuntime().addShutdownHook(new Thread(save));
@@ -240,11 +236,10 @@ public class NARS {
     @Deprecated
     public static class DefaultNAR extends NARS {
 
-        final int nal;
 
         public DefaultNAR(int nal, boolean threadSafe) {
 
-            this.nal = nal;
+
 
             if (nal > 0)
                 deriverAdd(1, nal);
@@ -257,7 +252,6 @@ public class NARS {
         @Override
         protected void init(NAR nar) {
 
-            nar.nal(nal);
 
             nar.termVolumeMax.set(38);
             //nar.confMin.setValue(0.05f);
@@ -266,8 +260,7 @@ public class NARS {
             nar.DEFAULT_GOAL_PRIORITY = 0.5f;
             nar.DEFAULT_QUEST_PRIORITY = nar.DEFAULT_QUESTION_PRIORITY = 0.5f;
 
-            if (nal >= 7)
-                new STMLinkage(nar, 1, false);
+            new STMLinkage(nar, 1, false);
 
             nar.defaultWants();
 

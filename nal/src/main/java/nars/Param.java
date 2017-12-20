@@ -559,7 +559,4 @@ public abstract class Param extends Services<Term, NAR> {
     }
 
 
-    abstract public int nal();
-
-
 }

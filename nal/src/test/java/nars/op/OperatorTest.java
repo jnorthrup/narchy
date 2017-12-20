@@ -1,10 +1,12 @@
 package nars.op;
 
 import nars.*;
+import nars.concept.Concept;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.test.TestNAR;
 import nars.time.Tense;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -40,8 +42,22 @@ public class OperatorTest {
         n.run(1);
 
         assertTrue(invoked.get());
+    }
+
+    /** tests Builtin.System and evaluating a term input as a command */
+    @Test public void testStat() throws Narsese.NarseseException {
+        NAR n = NARS.tmp();
 
 
+        @Nullable Concept statusFunctor = n.concept($.the("status"));
+        statusFunctor.print();
+
+        StringBuilder b = new StringBuilder();
+        n.log(b);
+        n.input("status(sys)");
+
+        String s = b.toString();
+        assertTrue(s.startsWith("eventOut: ("), ()->s);
     }
 
     @Test

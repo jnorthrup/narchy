@@ -780,7 +780,7 @@ public class TermReductionsTest extends NarseseTest {
     public void testInvalidStatementIndepVarTask() {
         NAR t = NARS.shell();
         try {
-            t.inputAndGet("at($1,$2,$3)");
+            t.inputTask("at($1,$2,$3)");
             fail("");
         } catch (Narsese.NarseseException | InvalidTaskException e) {
             assertTrue(true);

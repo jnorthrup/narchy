@@ -4,6 +4,7 @@ import com.google.common.base.Joiner;
 import nars.exe.AbstractExec;
 import nars.op.AtomicExec;
 import nars.op.Operator;
+import nars.op.nlp.Hear;
 import nars.op.stm.ConjClustering;
 import nars.term.sub.Subterms;
 import nars.time.RealTime;
@@ -15,7 +16,7 @@ import static nars.Op.BELIEF;
 
 public class NARchy extends NARS {
 
-    public static final float INITIAL_FPS = 5f;
+    public static final float INITIAL_FPS = 25f;
 
     public static NAR ui() {
         NAR nar = new DefaultNAR(8, true)
@@ -33,8 +34,9 @@ public class NARchy extends NARS {
         ConjClustering conjClusterB = new ConjClustering(nar, BELIEF, (t->t.isInput()), 16, 64);
         //ConjClustering conjClusterG = new ConjClustering(nar, GOAL, true, false, 16, 64);
 
-        //Hear.wiki(nar);
-        //installSpeech(nar);
+        Hear.wiki(nar);
+
+        installSpeech(nar);
 
         nar.startFPS(INITIAL_FPS);
 

@@ -15,10 +15,7 @@ public class NAL3Test extends NALTest {
 
     public static final int cycles = 2500;
 
-    @BeforeEach
-    public void nal() {
-        test.nar.nal(3);
-    }
+
 
 //    @Override
 //    protected NAR nar() {

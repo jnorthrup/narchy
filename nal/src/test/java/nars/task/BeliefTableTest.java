@@ -141,10 +141,10 @@ public class BeliefTableTest {
 
     @Test
     public void testLinearTruthpolation() throws Narsese.NarseseException {
-        NAR n = new NARS().get();
+        NAR n = NARS.tmp();
         n.time.dur(5);
         n.inputAt(10, "(x). :|:");
-        n.run(10);
+        n.run(11);
         //with duration = 5, the evidence surrounding a point
         // belief/goal will decay in the +/- 2.5 radius of time surrounding it.
 
