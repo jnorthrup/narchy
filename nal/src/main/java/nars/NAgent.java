@@ -22,14 +22,13 @@ import nars.term.atom.Atomic;
 import nars.term.var.Variable;
 import nars.truth.DiscreteTruth;
 import nars.truth.Truth;
+import org.intelligentjava.machinelearning.decisiontree.feature.P;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -118,7 +117,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         ).relax(0.01f);
 
         this.happy = new ActionInfluencingSensorConcept(happyTerm, happyValue);
-        alwaysWant(happy, nar.confDefault(GOAL));
+        alwaysWant(happy, nar.confDefault(GOAL)/2f);
 
 
 
@@ -287,31 +286,48 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     public Consumer<Predicate<Activate>> fire() {
         return new Consumer<>() {
 
-            final Concept[] concepts;
+            final Termed[] concepts;
 
             {
-                List<Concept> cc = $.newArrayList();
-                cc.addAll(actions.keySet());
-                cc.addAll(sensors.keySet());
-                cc.add(happy);
-                assert (!cc.isEmpty());
-                concepts = cc.toArray(new Concept[cc.size()]);
+                Set<Termed> cp = concepts();
+                this.concepts = cp.toArray(new Termed[cp.size()]);
             }
 
             @Override
             public void accept(Predicate<Activate> p) {
                 Activate a;
+                int maxMissing = concepts.length;
                 do {
                     int c = nar.random().nextInt(concepts.length);
-                    Concept cc = concepts[c];
-                    a = new Activate(cc, pri(cc));
-                } while (p.test(a));
+                    Termed t = concepts[c];
+                    Concept cc = nar.concept(t);
+                    if (cc!=null)
+                        a = new Activate(cc, pri(cc));
+                    else {
+                        if (maxMissing-- <= 0) //safety exit
+                            break;
+                        else {
+                            a = null;
+                            continue;
+                        }
+                    }
+                } while (a!=null && p.test(a));
             }
 
             private float pri(Concept cc) {
                 return 1f; //TODO
             }
         };
+    }
+
+    /** concepts involved in this agent */
+    public Set<Termed> concepts() {
+        Set<Termed> cc = new HashSet();
+        cc.add(happy);
+
+        cc.addAll(actions.keySet());
+        cc.addAll(sensors.keySet());
+        return cc;
     }
 
 

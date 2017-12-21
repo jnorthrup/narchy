@@ -55,7 +55,7 @@ public class NAL4MultistepTest extends NALTest {
         tester.ask("<blue --> likes>"); //cats like blue?
 
         //tester.mustBelieve(time, "<(cat,blue) --> likes>", 1.0f, 0.42f);
-        tester.mustBelieve(time, "<blue --> likes>", 1.0f, 0.45f /* 0.45? */);
+        tester.mustBelieve(time, "<blue --> likes>", 1.0f, 0.4f /* 0.45? */);
 
     }
 

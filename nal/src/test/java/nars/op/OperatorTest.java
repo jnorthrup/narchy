@@ -45,25 +45,26 @@ public class OperatorTest {
     }
 
     /** tests Builtin.System and evaluating a term input as a command */
-    @Test public void testStat() throws Narsese.NarseseException {
+    @Test public void testThe() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
 
 
-        @Nullable Concept statusFunctor = n.concept($.the("status"));
+        @Nullable Concept statusFunctor = n.concept($.the("the"));
         statusFunctor.print();
 
         StringBuilder b = new StringBuilder();
         n.log(b);
-        n.input("status(sys)");
+        n.input("the(sys)");
 
         String s = b.toString();
-        assertTrue(s.startsWith("→(("), ()->s);
+        assertTrue(s.contains("→(("), ()->s);
     }
 
     @Test
     public void testAtomicExec() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
         final int[] count = {0};
+        n.log();
         n.onOp("x", new AtomicExec((x, nar) -> {
             System.err.println("INVOKE " + x);
             count[0]++;

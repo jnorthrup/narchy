@@ -180,6 +180,30 @@ public interface TaskRegion extends HyperRegion, Tasked {
         else
             return Math.min(d, Math.abs(e - when));
     }
+    default long minDistanceTo(long a, long b) {
+
+        if (a == b)
+            return minDistanceTo(a);
+
+        long s = start();
+        if (s == ETERNAL)
+            return 0;
+
+        assert (a != ETERNAL && b!= ETERNAL);
+        assert( b >= a);
+        long e = end();
+        if (s <= a && e >= b)
+            return 0;
+        long sa = Math.abs(s - a);
+        long sb = Math.abs(s - b);
+        if (s == e)
+            return Math.min(sa, sb);
+        else {
+            long ea = Math.abs(e - a);
+            long eb = Math.abs(e - b);
+            return Math.min(Math.min(sa, sb), Math.min(ea, eb));
+        }
+    }
 
 //    /**
 //     * TODO see if this can be made faster

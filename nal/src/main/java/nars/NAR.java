@@ -338,7 +338,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      * parses one and only task
      */
     @NotNull
-    public <T extends Task> T inputTask(@NotNull String taskText) throws Narsese.NarseseException {
+    public <T extends Task> T inputTask(String taskText) throws Narsese.NarseseException {
         return (T) inputTask(Narsese.the().task(taskText, (this)));
     }
 

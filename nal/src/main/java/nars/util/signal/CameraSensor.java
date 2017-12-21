@@ -35,6 +35,7 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
 
     public final List<PixelConcept> pixels;
     public final CauseChannel<ITask> in;
+    public final Term root;
 
     float resolution = 0.01f;//Param.TRUTH_EPSILON;
 
@@ -59,6 +60,7 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
     public CameraSensor(@Nullable Term root, P src, NAR n) {
         super(src, src.width(), src.height(), n);
 
+        this.root = root;
         this.w = src.width();
         this.h = src.height();
         numPixels = w * h;

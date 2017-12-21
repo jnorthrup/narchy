@@ -19,7 +19,7 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
     }
 
 
-//    /**
+    //    /**
 //     * resets the best values, effectively setting a the minimum entry requirement
 //     * untested
 //     */
@@ -37,13 +37,22 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
     @Override
     public int add(E element, float elementRank, FloatFunction<E> cmp) {
         //TODO TEST THIS
-        if (size == list.length) {
+        int s = this.size;
+        if (s == list.length) {
 //            assert (last() == min):
 //                    last() + "=last but min=" + min;
 
             if (elementRank >= admitThresh) {
                 reject(element);
                 return -1; //insufficient
+            }
+        }
+
+
+        //identity test
+        for (int i = 0; i < s; i++) {
+            if (list[i] == element) {
+                return -1; //duplicate
             }
         }
 
@@ -132,14 +141,15 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
 
     public float maxValue() {
         E f = first();
-        if (f!=null)
+        if (f != null)
             return rank.floatValueOf(f);
         else
             return Float.NaN;
     }
+
     public float minValue() {
         E f = last();
-        if (f!=null)
+        if (f != null)
             return rank.floatValueOf(f);
         else
             return Float.NaN;

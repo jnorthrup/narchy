@@ -49,14 +49,14 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
     /**
      * max allowed truths to be truthpolated in one test
      */
-    static final int TRUTHPOLATION_LIMIT = 6;
+    static final int TRUTHPOLATION_LIMIT = 8;
 
     public static final float PRESENT_AND_FUTURE_BOOST = 2f;
 
     static final int SCAN_DIVISIONS = 5;
 
     public static final int MIN_TASKS_PER_LEAF = 2;
-    public static final int MAX_TASKS_PER_LEAF = 3;
+    public static final int MAX_TASKS_PER_LEAF = 4;
     public static final Spatialization.DefaultSplits SPLIT =
             Spatialization.DefaultSplits.AXIAL; //Spatialization.DefaultSplits.LINEAR; //<- probably doesnt work here
 
@@ -70,11 +70,15 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
          ((ConcurrentRTree<TaskRegion>) tree).write(treeRW -> {
 
             boolean removed = treeRW.remove(task);
+            if (!removed) {
+                return;
+            }
 
             change.run();
 
-            boolean added = treeRW.add(task);
-
+            if (!task.isDeleted()) {
+                boolean added = treeRW.add(task);
+            }
         });
     }
 
@@ -128,7 +132,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
             int maxTruths = TRUTHPOLATION_LIMIT;
             int maxTries = (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY));
             TopN<TaskRegion> tt = new TopN<>(new TaskRegion[maxTruths], strongestTask);
-            scan(tt, start, end, maxTries, RTreeBeliefTable.ONLY_NEED_ONE_AFTER_THAT_SCANNED_RANGE_THANKS);
+            scan(tt, start-dur, end+dur, maxTries, RTreeBeliefTable.ONLY_NEED_ONE_AFTER_THAT_SCANNED_RANGE_THANKS);
 
             if (!tt.isEmpty()) {
                 return Param.truth(ete, start, end, dur, tt);
@@ -234,7 +238,8 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
             }
 
 
-            int maxTries = Math.min(s, maxAttempts);
+            int maxTries = Math.min(s*2 /* in case the same task is encountered twice HACK*/,
+                    maxAttempts);
 
             //scan
             Predicate<TaskRegion> update = new ScanLimiter(u, maxTries);

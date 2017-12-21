@@ -42,7 +42,7 @@ public interface NARIn {
 
 
     /** parses one and only task */
-    @NotNull default <T extends Task> T inputTask(@NotNull T t) {
+    @NotNull default <T extends Task> T inputTask(T t) {
         input(t);
         return t;
     }

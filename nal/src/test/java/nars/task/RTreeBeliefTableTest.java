@@ -84,16 +84,18 @@ public class RTreeBeliefTableTest {
         r.setCapacity(4);
 
         add(r, x, 1f, 0.9f, 0, 1, n);
-        assertEquals(1f, r.truth(0, 0, null, 1).freq());
-
         add(r, x, 0f, 0.9f, 2, 3, n);
-        assertEquals(0f, r.truth(3, 3, null, 1).freq());
 
+        assertEquals(1f, r.truth(0, 0, null, 1).freq());
+        assertEquals("%.65;.93%", r.truth(0, 1, null, 1).toString());
+        assertEquals("%.65;.93%", r.truth(1, 1, null, 1).toString());
         assertEquals("%.50;.95%", r.truth(1, 2, null, 1).toString());
+        assertEquals("%.35;.93%", r.truth(2, 3, null, 1).toString());
+        assertEquals(0f, r.truth(3, 3, null, 1).freq());
 
         assertEquals("%0.0;.83%", r.truth(4, 4, null, 1).toString());
         assertEquals("%0.0;.83%", r.truth(4, 5, null, 1).toString());
-        assertEquals("%0.0;.72%", r.truth(5, 5, null, 1).toString());
+        assertEquals("%0.0;.78%", r.truth(5, 5, null, 1).toString());
     }
 
 

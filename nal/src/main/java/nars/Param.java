@@ -429,22 +429,23 @@ public abstract class Param extends Services<Term, NAR> {
     }
 
     @Nullable
-    public static PreciseTruth truth(@Nullable Task topEternal, long start, long end, int dur, Iterable<? extends Tasked> tasks) {
+    public static PreciseTruth truth(@Nullable Task topEternal, long start, long end, int dur, Iterable<? extends Tasked> temporals) {
 
         assert (dur > 0);
 
         TruthPolation t =
                 //new TruthPolation.TruthPolationBasic(start, end, dur);
+                TruthPolation.TruthPolationBasic.autoRange(start, end, dur, temporals);
                 //new TruthPolation.TruthPolationConf(start, end, dur);
         //new TruthPolation.TruthPolationConf(start, end, dur);
-                new TruthPolation.TruthPolationGreedy(start, end, dur, ThreadLocalRandom.current());
+                //new TruthPolation.TruthPolationGreedy(start, end, dur, ThreadLocalRandom.current());
         //..SoftMax..
         //new TruthPolation.TruthPolationRoulette(start, end, dur, ThreadLocalRandom.current());
         //new TruthPolationWithVariance(when, dur);
 
         // Contribution of each task's truth
         // use forEach instance of the iterator(), since HijackBag forEach should be cheaper
-        tasks.forEach(t);
+        temporals.forEach(t);
         if (topEternal != null) {
             t.accept(topEternal);
         }

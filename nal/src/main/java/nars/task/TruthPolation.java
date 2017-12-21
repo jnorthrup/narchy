@@ -13,6 +13,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
+import static nars.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.w2c;
 import static nars.truth.TruthFunctions.w2cSafe;
 
@@ -38,6 +39,25 @@ public interface TruthPolation extends Consumer<Tasked> {
         final long start, end;
         final int dur;
 
+
+        /**
+         * computes an adjusted durability no larger than the minimum
+         * distance to the target range provided by the input tasks.
+         * uses the temporals that will be accepted later to determine the duration on a setup pass
+         */
+        public static TruthPolationBasic autoRange(long start, long end, int dur, Iterable<? extends Tasked> temporals) {
+            if (start!=ETERNAL) {
+                int minDur = dur;
+                for (Tasked t : temporals) {
+                    long dd = t.task().minDistanceTo(start, end);
+                    assert(dd < Integer.MAX_VALUE);
+                    minDur = Math.min(minDur, (int)dd);
+                }
+                dur = Math.max(1, minDur);
+            }
+            return new TruthPolationBasic(start, end, dur);
+        }
+
         public TruthPolationBasic(long start, long end, int dur) {
             this.start = start;
             this.end = end;
@@ -48,7 +68,7 @@ public interface TruthPolation extends Consumer<Tasked> {
         public void accept(Tasked t) {
             Task task = t.task();
             Truth tt = task.truth(start, end, dur, 0);
-            if (tt!=null) {
+            if (tt != null) {
                 float tw = tt.evi();
                 if (tw > 0) {
                     eviSum += tw;
@@ -75,6 +95,7 @@ public interface TruthPolation extends Consumer<Tasked> {
 
         }
     }
+
 
     class TruthPolationConf implements TruthPolation {
         float confSum, wFreqSum;
@@ -107,7 +128,7 @@ public interface TruthPolation extends Consumer<Tasked> {
                 if (c < Param.TRUTH_EPSILON)
                     return null; //high-pass conf filter
 
-                return new PreciseTruth(f, Util.min(1f - Param.TRUTH_EPSILON,  c));
+                return new PreciseTruth(f, Util.min(1f - Param.TRUTH_EPSILON, c));
 
             } else {
                 return null;
@@ -128,6 +149,7 @@ public interface TruthPolation extends Consumer<Tasked> {
         public TruthPolationGreedy(long start, long end, int dur) {
             this(start, end, dur, null);
         }
+
         public TruthPolationGreedy(long start, long end, int dur, Random rng) {
             this.start = start;
             this.end = end;
@@ -156,8 +178,11 @@ public interface TruthPolation extends Consumer<Tasked> {
 
             float g;
             switch (s) {
-                case 0: return null;
-                case 1: g = f.get(0); break;
+                case 0:
+                    return null;
+                case 1:
+                    g = f.get(0);
+                    break;
                 default: {
                     Random r;
                     if (rng == null)
@@ -207,6 +232,7 @@ public interface TruthPolation extends Consumer<Tasked> {
 
         }
     }
+
     class TruthPolationRoulette implements TruthPolation {
 
         final long start, end;
@@ -272,7 +298,7 @@ public interface TruthPolation extends Consumer<Tasked> {
             if (tw > 0) {
 
                 if (!task.isEternal())
-                    tw = tw/(1f + ((float)task.range())/dur); //dilute the long task in proportion to how many durations it consumes beyond point-like (=0)
+                    tw = tw / (1f + ((float) task.range()) / dur); //dilute the long task in proportion to how many durations it consumes beyond point-like (=0)
 
                 eviSum += tw;
 

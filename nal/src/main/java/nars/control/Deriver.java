@@ -66,10 +66,7 @@ public class Deriver extends Causable {
         this.deriver = deriver;
         this.source = source;
         this.nar = nar;
-
-        DeriverRoot root = (DeriverRoot) (deriver);
-        Try t = root.can;
-        subCauses = t.causes;
+        this.subCauses = deriver.can.causes;
 
         nar.on(this);
     }
