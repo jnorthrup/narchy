@@ -22,8 +22,10 @@ public class ImpulseTruthlet extends ProxyTruthlet {
             super.truth(when, freqEvi);
         } else {
             freqEvi[0] = freqOtherwise;
-            long dist = Math.min(Math.abs(start()-when), Math.abs(end()-when));
-            freqEvi[1] = (float) Param.evi(eviOtherwise, dist, range());
+            long s = start();
+            long e = end();
+            long dist = Math.min(Math.abs(s -when), Math.abs(e -when));
+            freqEvi[1] = (float) Param.evi(eviOtherwise, dist, Math.max(1,(e-s)/2));
         }
     }
 

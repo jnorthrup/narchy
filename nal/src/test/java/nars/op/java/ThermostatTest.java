@@ -87,11 +87,14 @@ public class ThermostatTest {
         Param.DEBUG = true;
         final int DUR = 15;
 
+        final int thinkDurs = 4;
+
         NAR n = NARS.tmp();
+
         n.time.dur(DUR);
-        n.termVolumeMax.set(24);
-        n.freqResolution.set(0.2f);
-        n.confResolution.set(0.03f);
+        n.termVolumeMax.set(20);
+        n.freqResolution.set(0.05f);
+        n.confResolution.set(0.05f);
 
         new ConjClustering(n, BELIEF, (t) -> true, 4, 16);
 
@@ -114,7 +117,8 @@ public class ThermostatTest {
 
                 Object y = super.invoked(obj, wrapped, args, result);
 
-                n.run(DUR);
+
+                n.run(DUR*thinkDurs);
 
                 return y;
             }
@@ -198,22 +202,17 @@ public class ThermostatTest {
         Thermostat t = env.x;
         t.should(0);
 
-        int periods = 3000;
-//        {
-//            n.input(new NALTask($.$safe("(a_Thermostat(is,(),#x) && a_Thermostat(should,(),#x))"),
-//                    GOAL, $.t(1f, 0.99f),
-//                    n.time(), n.time(), n.time() + periods,
-//                    n.time.nextInputStamp()).pri(1f));
-//        }
+        int periods = 300;
+
         {
             n.input(new NALTask($.$safe("a_Thermostat(is,(),0)"),
-                    GOAL, $.t(1f, 0.9f),
+                    GOAL, $.t(1f, 0.95f),
                     n.time(), n.time(), n.time() + periods,
                     n.time.nextInputStamp()).pri(1f));
-//            n.input(new NALTask($.$safe("(a_Thermostat(is,(),0) && --a_Thermostat(is,(),3))"),
-//                    GOAL, $.t(1f, 0.9f),
-//                    n.time(), n.time(), n.time() + periods,
-//                    n.time.nextInputStamp()).pri(1f));
+            n.input(new NALTask($.$safe("a_Thermostat(is,(),3)"),
+                    GOAL, $.t(0f, 0.95f),
+                    n.time(), n.time(), n.time() + periods,
+                    n.time.nextInputStamp()).pri(1f));
 
         }
         {
