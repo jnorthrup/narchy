@@ -14,12 +14,11 @@ import nars.concept.TaskConcept;
 import nars.link.Tasklinks;
 import nars.task.NALTask;
 import nars.task.Revision;
-import nars.task.signal.SignalTask;
 import nars.task.Tasked;
+import nars.task.signal.SignalTask;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeRange;
 import nars.term.Term;
-import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.LongObjectProcedure;
@@ -36,7 +35,6 @@ import java.util.stream.Stream;
 
 import static nars.table.TemporalBeliefTable.temporalTaskPriority;
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.TruthFunctions.c2w;
 import static nars.truth.TruthFunctions.c2wSafe;
 
 public class RTreeBeliefTable implements TemporalBeliefTable {
@@ -62,35 +60,26 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
     public static final Spatialization.DefaultSplits SPLIT =
             Spatialization.DefaultSplits.AXIAL; //Spatialization.DefaultSplits.LINEAR; //<- probably doesnt work here
 
-    public static final BiPredicate<Collection, TimeRange> ONLY_NEED_ONE_AFTER_THAT_SCANNED_RANGE_THANKS = (u, r) -> {
-        return u.isEmpty(); //quit after even only one, now that an entire range has been scanned
-    };
-
 
     private int capacity;
 
     final Space<TaskRegion> tree;
 
-    /**
-     * TODO only needs to be stored in the SignalTask instance
-     */
-    @Deprecated
-    final LongObjectProcedure<SignalTask> stretch;
+    @Override
+    public void update(SignalTask task, Runnable change) {
+         ((ConcurrentRTree<TaskRegion>) tree).write(treeRW -> {
+
+            boolean removed = treeRW.remove(task);
+
+            change.run();
+
+            boolean added = treeRW.add(task);
+
+        });
+    }
 
     public RTreeBeliefTable() {
-
         tree = new ConcurrentRTree<>(new RTree<>(RTreeBeliefModel.the));
-
-        stretch = (newEnd, task) ->
-                ((ConcurrentRTree<TaskRegion>) tree).write(treeRW -> {
-
-                    boolean removed = treeRW.remove(task);
-
-                    task.slidingEnd = newEnd;
-
-                    boolean added = treeRW.add(task);
-
-                });
     }
 
 //    private static final class TopDeleteVictims extends TopN<TaskRegion> {
@@ -114,23 +103,22 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
     @Override
     public Truth truth(long start, long end, EternalTable eternal, int dur) {
 
-        final Task ete = eternal != null ? eternal.strongest() : null;
-
-        if (start == ETERNAL) {
-            TaskRegion r = ((TaskRegion) tree.root().bounds());
-            if (r == null)
-                return ete != null ? ete.truth() : null;
-
-            start = r.start();
-            end = r.end();
-        }
-
         assert (end >= start);
 
+        final Task ete = eternal != null ? eternal.strongest() : null;
 
         int s = size();
-        if (s > 0) {
+        x: if (s > 0) {
 
+            if (start == ETERNAL) {
+                TaskRegion r = ((TaskRegion) tree.root().bounds());
+                if (r == null)
+                    break x;
+                    //return ete != null ? ete.truth() : null;
+
+                start = r.start();
+                end = r.end();
+            }
 
             FloatFunction<Task> ts = taskStrength(start, end);
             FloatFunction<TaskRegion> strongestTask =
@@ -142,28 +130,8 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
             TopN<TaskRegion> tt = new TopN<>(new TaskRegion[maxTruths], strongestTask);
             scan(tt, start, end, maxTries, RTreeBeliefTable.ONLY_NEED_ONE_AFTER_THAT_SCANNED_RANGE_THANKS);
 
-
             if (!tt.isEmpty()) {
-
-                //                Iterable<? extends Tasked> ii;
-                //                if (anyMatchTime) {
-                //                    //tt.removeIf((x) -> !x.task().during(when));
-                //                    ii = Iterables.filter(tt, (x) -> x.task().during(when));
-                //                } else {
-                //                    ii = tt;
-                //                }
-
-                //applying eternal should not influence the scan for temporal so it is left null here
-
-                PreciseTruth t = Param.truth(ete, start, end, dur, tt);
-                return t;
-
-//                if (t != null /*&& t.conf() >= confMin*/) {
-//                    //return t.ditherFreqConf(nar.truthResolution.floatValue(), nar.confMin.floatValue(), 1f);
-//                } else {
-//                    return null;
-//                }
-
+                return Param.truth(ete, start, end, dur, tt);
             }
         }
 
@@ -224,14 +192,8 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
                         return b;
                 }
 
-                if (Util.equals(a.freq(), b.freq(), nar.freqResolution.asFloat())) {
-                    return a; //has higher relevance
-                }
-
                 //otherwise interpolate
                 Task c = Revision.merge(a, b, start, nar);
-
-
                 if (c != null) {
 
                     if (c.equals(a))
@@ -354,26 +316,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
     @Override
     public void add(Task x, TaskConcept c, NAR n) {
 
-        assert(capacity > 0);
-
-        if (x instanceof SignalTask) {
-            SignalTask sx = (SignalTask) x;
-
-            if (sx.stretch == null) {
-                sx.stretch = this.stretch;
-            } else {
-//                if (sx.stretch == null) {
-//                    System.err.println("wtf rtree");
-//                assert (sx.stretch == null); //should only be input once, when it has no stretch to update otherwise
-//                }
-
-                return; //but it can happen in multithread conditions?
-            }
-        }
-
-
-        float activation = x.priElseZero();
-
+        assert (capacity > 0);
 
         ObjectBooleanHashMap<Task> changes = new ObjectBooleanHashMap<>(1);
         ((ConcurrentRTree<TaskRegion>) tree).write(treeRW -> {
@@ -403,10 +346,10 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
         if (x.isDeleted()) {
             Task xisting = x.meta("merge");
             if (xisting != null) {
-                Tasklinks.linkTask(xisting, activation, c, n);
+                float incoming = x.priElseZero();
+                Tasklinks.linkTask(xisting, incoming, c, n); //use incoming priority but the existing task instance
             }
         }
-
     }
 
     boolean ensureCapacity(Space<TaskRegion> treeRW, @Nullable Task inputRegion, ObjectBooleanHashMap<Task> changes, NAR nar) {
@@ -751,16 +694,13 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
         tree.forEach(t -> {
 //            Task tt = t.task();
 //            if (tt != null)
-            each.accept((Task)t);
+            each.accept((Task) t);
         });
     }
 
     @Override
     public boolean removeTask(Task x) {
-        return tree.remove(
-                x
-                //new TaskLinkRegion(x)
-        );
+        return tree.remove( x );
     }
 
 
@@ -773,6 +713,10 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
         forEachTask(t -> out.println(t.toString(true)));
         tree.stats().print(out);
     }
+
+    private static final BiPredicate<Collection, TimeRange> ONLY_NEED_ONE_AFTER_THAT_SCANNED_RANGE_THANKS = (u, r) -> {
+        return u.isEmpty(); //quit after even only one, now that an entire range has been scanned
+    };
 
     private static final class RTreeBeliefModel extends Spatialization<TaskRegion> {
 

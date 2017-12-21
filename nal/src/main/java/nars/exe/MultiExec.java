@@ -41,6 +41,7 @@ public class MultiExec extends AbstractExec {
     LongPredicate isActiveThreadId = (x) -> false;
     public Focus focus;
 
+
     public MultiExec(int concepts, int threads, int qSize) {
         this(concepts, threads, qSize, true);
     }
@@ -70,12 +71,6 @@ public class MultiExec extends AbstractExec {
             });
         }
 
-        deferred = x -> {
-            if (x instanceof Task)
-                execute(x);
-            else
-                q.offer(x);
-        };
     }
 
 
@@ -239,6 +234,10 @@ public class MultiExec extends AbstractExec {
     public void execute(Runnable r) {
         add(new NativeTask.RunTask(r));
     }
+    @Override
+    public void execute(Consumer<NAR> r) {
+        add(new NativeTask.NARTask(r));
+    }
 
     @Override
     protected synchronized void clear() {
@@ -252,12 +251,12 @@ public class MultiExec extends AbstractExec {
 
     final Consumer<ITask> immediate = this::execute;
 
-    final Consumer<ITask> deferred;
-
-    @Override
-    public void add(Iterator<? extends ITask> input) {
-        input.forEachRemaining(add());
-    }
+    final Consumer<ITask> deferred = x -> {
+            if (x instanceof Task)
+                execute(x);
+            else
+                queue(x);
+        };
 
     /**
      * the input procedure according to the current thread
@@ -272,18 +271,27 @@ public class MultiExec extends AbstractExec {
     }
 
     @Override
+    public void add(Iterator<? extends ITask> input) {
+        input.forEachRemaining(add());
+    }
+
+    @Override
     public void add(ITask t) {
         if ((t instanceof Task) || (isWorker(Thread.currentThread()))) {
             execute(t);
         } else {
-            while (!q.offer(t)) {
-                if (!running) {
-                    throw new RuntimeException("work queue exceeded capacity while not running");
-                }
-                ITask next = q.poll();
-                if (next != null)
-                    execute(next);
+            queue(t);
+        }
+    }
+
+    protected void queue(ITask t) {
+        while (!q.offer(t)) {
+            if (!running) {
+                throw new RuntimeException("work queue exceeded capacity while not running");
             }
+            ITask next = q.poll();
+            if (next != null)
+                execute(next);
         }
     }
 

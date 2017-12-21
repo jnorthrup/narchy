@@ -8,6 +8,7 @@ import nars.control.Cause;
 import nars.task.util.InvalidTaskException;
 import nars.term.Term;
 import nars.truth.DiscreteTruth;
+import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import org.apache.commons.lang3.ArrayUtils;
@@ -26,7 +27,7 @@ import static nars.truth.TruthFunctions.c2wSafe;
 public class NALTask extends Pri implements Task {
 
     public final Term term;
-    public final DiscreteTruth truth;
+    public final Truth truth;
     public final byte punc;
 
     private final long creation, start, end;
@@ -59,11 +60,7 @@ public class NALTask extends Pri implements Task {
 
         this.term = term;
 
-        this.truth =
-                truth == null ? null :
-                        truth instanceof DiscreteTruth ?
-                                ((DiscreteTruth) truth) :
-                                new DiscreteTruth(truth.freq(), truth.conf());
+        this.truth = truth!=null ? truthify(truth.truth()) : null;
 
         this.punc = punc;
 
@@ -98,6 +95,13 @@ public class NALTask extends Pri implements Task {
         //READY
     }
 
+    /** get an appropriate representation of the truth for use as an instance in a new NALTask */
+    static Truth truthify(@Nullable Truth truth) {
+        if (truth instanceof PreciseTruth)
+            return new DiscreteTruth(truth.freq(), truth.conf());
+        else
+            return truth; //already DiscreteTruth, or Truthlet
+    }
 
 
     @Override
@@ -247,12 +251,12 @@ public class NALTask extends Pri implements Task {
 
     @Override
     public float freq() {
-        return truth.freq;
+        return truth.freq();
     }
 
     @Override
     public float conf() {
-        return truth.conf;
+        return truth.conf();
     }
 
     @Override
@@ -272,9 +276,9 @@ public class NALTask extends Pri implements Task {
             case 0:
                 return maxOrMin ? end() : start();
             case 1:
-                return truth.freq;
+                return truth.freq();
             case 2:
-                return truth.conf;
+                return truth.conf();
             default:
                 throw new UnsupportedOperationException();
         }

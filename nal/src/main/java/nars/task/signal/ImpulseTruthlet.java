@@ -1,5 +1,7 @@
 package nars.task.signal;
 
+import nars.Param;
+
 /** an impulse function which provides contrasting truth wave
  * before, during, and after the specified duration (pulse).
  */
@@ -15,21 +17,13 @@ public class ImpulseTruthlet extends ProxyTruthlet {
     }
 
     @Override
-    public long start() {
-        return super.start() - Math.max(1,defined.range()/2);
-    }
-    @Override
-    public long end() {
-        return super.end() + Math.max(1,defined.range()/2);
-    }
-
-    @Override
     public void truth(long when, float[] freqEvi) {
         if (defined.containsTime(when)) {
             super.truth(when, freqEvi);
         } else {
             freqEvi[0] = freqOtherwise;
-            freqEvi[1] = eviOtherwise;
+            long dist = Math.min(Math.abs(start()-when), Math.abs(end()-when));
+            freqEvi[1] = (float) Param.evi(eviOtherwise, dist, range());
         }
     }
 

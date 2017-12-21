@@ -116,12 +116,12 @@ public class GoalActionAsyncConcept extends ActionConcept {
 
         if (g!=null)
             //fg = feedGoal.task(term, g, goalTime-dur, goalTime, nar.time.nextStamp()); //allow the feedback goal (Ex: curiosity) to override, otherwise use the current goal
-            fg = feedGoal.set(term, g, stamper, goalTime, dur, nar);
+            fg = feedGoal.set(this, g, stamper, goalTime, dur, nar);
         else
             fg = null;
         in.input(
             fg,
-            fb = feedBelief.set(term, f, stamper, beliefTime, dur, nar)
+            fb = feedBelief.set(this, f, stamper, beliefTime, dur, nar)
         );
 
         PredictionFeedback.accept(feedBelief.get() /* in case stretched */, beliefs, nar);

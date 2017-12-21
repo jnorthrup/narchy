@@ -16,6 +16,7 @@ import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -116,6 +117,14 @@ abstract public class Exec implements Executor {
             ForkJoinPool.commonPool().execute(async);
         } else {
             async.run();
+        }
+    }
+
+    public void execute(Consumer<NAR> r) {
+        if (concurrent()) {
+            ForkJoinPool.commonPool().execute(()->r.accept(nar));
+        } else {
+            r.accept(nar);
         }
     }
 

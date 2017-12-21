@@ -2,6 +2,7 @@ package nars.bag;
 
 import jcog.bag.Bag;
 import jcog.bag.impl.ConcurrentArrayBag;
+import jcog.bag.impl.HijackBag;
 import jcog.learn.gng.NeuralGasNet;
 import jcog.learn.gng.impl.Centroid;
 import jcog.list.FasterList;
@@ -9,6 +10,7 @@ import jcog.pri.Prioritized;
 import jcog.pri.VLink;
 import jcog.pri.op.PriMerge;
 import jcog.util.Flip;
+import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -49,14 +51,32 @@ public class BagClustering<X> {
 
         this.net = new NeuralGasNet(model.dims, centroids, model::distanceSq);
 
-        this.bag = new ConcurrentArrayBag<>(PriMerge.max, initialCap) {
+//        this.bag = new ConcurrentArrayBag<>(PriMerge.max, initialCap) {
+//
+//            @Nullable
+//            @Override
+//            public X key(VLink<X> x) {
+//                return x.id;
+//            }
+//
+//        };
 
-            @Nullable
+        this.bag = new HijackBag<X, VLink<X>>(initialCap, 4) {
             @Override
-            public X key(VLink<X> x) {
-                return x.id;
+            protected VLink<X> merge(VLink<X> existing, VLink<X> incoming, @Nullable MutableFloat overflowing) {
+                existing.priMax(incoming.priElseZero());
+                return existing;
             }
 
+            @Override
+            public float pri(VLink<X> key) {
+                return key.pri();
+            }
+
+            @Override
+            public X key(VLink<X> value) {
+                return value.get();
+            }
         };
     }
 

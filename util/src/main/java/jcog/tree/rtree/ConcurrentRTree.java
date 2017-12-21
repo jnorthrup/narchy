@@ -161,7 +161,8 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
 
     @Override
     public int size() {
-        return readOptimistic(tree::size);
+        return tree.size();
+        //return readOptimistic(tree::size);
     }
 
     @Override
@@ -171,6 +172,7 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
 
     @Override
     public void forEach(Consumer<? super T> consumer) {
+
         read(()->tree.forEach(consumer));
     }
 

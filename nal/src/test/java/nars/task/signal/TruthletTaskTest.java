@@ -29,39 +29,61 @@ public class TruthletTaskTest {
         for (int i = -1; i < 5; i++) {
             Truth ti = xb.truth(i, n);
             assertEquals((i <= 0 || i >= 3) ? 0 : 1, ti.freq());
-            assertEquals(conf, ti.conf());
+            if (i >=1 && i <= 2)
+                assertEquals(conf, ti.conf());
+            else
+                assertTrue(conf > ti.conf());
             System.out.println(i + ": " + ti);
         }
 
     }
 
     @Test
-    public void testLinearTruthlet() {
-        NAR n = NARS.tmp();
-        Term x = $.the("x");
+    public void test_LinearTruthlet_And_SustainTruthlet() {
+
         float conf = 0.9f;
-        n.input(new TruthletTask(x, BELIEF,
-                Truthlet.slope(0, 1f, 3, 0f, c2w(conf)), n)
-        );
 
-        BeliefTable xb = n.truths(x, BELIEF);
-        for (int i = -1; i < 5; i++) {
-            Truth ti = xb.truth(i, n);
-            if (i < 0 || i > 3) {
-                assertTrue(ti.conf() < 0.9f); //fade out
-            } else {
-                assertEquals(0.9f, ti.conf());
-                float f = ti.freq();
-                switch (i) {
-                    case 0: assertEquals(1f, f, 0.01f); break;
-                    case 1: assertEquals(0.666f, f, 0.01f); break;
-                    case 2: assertEquals(0.333f, f, 0.01f); break;
-                    case 3: assertEquals(0f, f, 0.01f); break;
+        RangeTruthlet s = Truthlet.slope(0, 1f, 3, 0f, c2w(conf));
+        for (Truthlet t : new Truthlet[]{s, new SustainTruthlet(s)}) {
+
+            NAR n = NARS.tmp();
+            Term x = $.the("x");
+
+            System.out.println(t);
+
+            n.input(new TruthletTask(x, BELIEF, t, n));
+
+            BeliefTable xb = n.truths(x, BELIEF);
+            for (int i = -3; i < 7; i++) {
+                Truth ti = xb.truth(i, n);
+                if (i < 0 || i > 3) {
+                    if (t instanceof SustainTruthlet) {
+                        assertTrue(ti.conf() < 0.9f); //fade out
+                    } else {
+                        assertNull(ti);
+                    }
+                } else {
+                    assertEquals(0.9f, ti.conf());
+                    float f = ti.freq();
+                    switch (i) {
+                        case 0:
+                            assertEquals(1f, f, 0.01f);
+                            break;
+                        case 1:
+                            assertEquals(0.666f, f, 0.01f);
+                            break;
+                        case 2:
+                            assertEquals(0.333f, f, 0.01f);
+                            break;
+                        case 3:
+                            assertEquals(0f, f, 0.01f);
+                            break;
+                    }
                 }
+
+
+                System.out.println(i + ": " + ti);
             }
-
-
-            System.out.println(i + ": " + ti);
         }
 
     }

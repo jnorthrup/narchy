@@ -28,7 +28,7 @@ public class FloatTable<H> {
 
     public FloatTable<H> print(PrintStream out) {
         System.out.println(Joiner.on("\t").join(cols));
-        rows.stream().map(x -> Texts.n4(x)).forEach(out::println);
+        rows.stream().map(Texts::n4).forEach(out::println);
         return this;
     }
 

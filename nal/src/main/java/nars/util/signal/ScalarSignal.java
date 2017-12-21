@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.Task;
+import nars.concept.SensorConcept;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -21,20 +22,17 @@ import static nars.Op.BELIEF;
 
 /**
  * Generates temporal tasks in reaction to the change in a scalar numeric value
- *
+ * <p>
  * when NAR wants to update the signal, it will call Function.apply. it can return
  * an update Task, or null if no change
  */
-public class ScalarSignal extends Signal implements  DoubleSupplier {
-
+public class ScalarSignal extends Signal implements DoubleSupplier {
 
 
     private final Term term;
 
 
-
     private final FloatFunction<Term> value;
-    @NotNull
     private final FloatToObjectFunction<Truth> truthFloatFunction;
 
 
@@ -44,56 +42,38 @@ public class ScalarSignal extends Signal implements  DoubleSupplier {
     public final static FloatToFloatFunction direct = n -> n;
 
 
-
     public ScalarSignal(NAR n, Term t, FloatFunction<Term> value, @Nullable FloatToObjectFunction<Truth> truthFloatFunction, FloatSupplier resolution) {
         super(BELIEF, resolution);
 
-        pri(()->n.priDefault(BELIEF));
+        pri(() -> n.priDefault(BELIEF));
         this.term = t;
         this.value = value;
-        this.truthFloatFunction = truthFloatFunction == null ? (v)->null : truthFloatFunction;
+        this.truthFloatFunction = truthFloatFunction == null ? (v) -> null : truthFloatFunction;
     }
 
 
-    public byte punc() { return punc; }
-
-//    /** clears timing information so it thinks it will need to input on next attempt */
-//    public void ready() {
-//        this.lastInputTime = nar.time() - minTimeBetweenUpdates;
-//    }
+    public byte punc() {
+        return punc;
+    }
 
 
-    /** does not input the task, only generates it.
-     *  the time is specified instead of obtained from NAR so that
-     *  all sensor readings can be timed with perfect consistency within the same cycle
-     * */
-    public Task update( NAR nar, long now, int dur) {
+    /**
+     * does not input the task, only generates it.
+     * the time is specified instead of obtained from NAR so that
+     * all sensor readings can be timed with perfect consistency within the same cycle
+     */
+    public Task update(SensorConcept c, NAR nar, long now, int dur) {
 
-        //long now = nar.time();
+        float next = Util.unitize(Util.round(value.floatValueOf(term), resolution.asFloat()));
 
-        //update previous task: extend its end time to current time
-//        if (current!=null && current.isDeleted())  {
-//            currentValue = Float.NaN; //force re-input
-//        }
+        currentValue = (next);
 
-        //int timeSinceLastInput = (int) (now - lastInputTime);
+        Truth truth = (next == next) ? truthFloatFunction.valueOf(next) : null;
 
-
-
-            float nextRaw = value.floatValueOf(term);
-            float cur = currentValue;
-
-            float next = Util.unitize(Util.round(nextRaw, resolution.asFloat()));
-
-            currentValue = (next);
-
-            Truth truth = (next == next) ? truthFloatFunction.valueOf(next) : null;
-
-            Task nextTask = set(term,
-                    truth,
-                    stamp(truth, nar),
-                    now, dur, nar);
-            return nextTask;
+        return set(c,
+                truth,
+                stamp(truth, nar),
+                now, dur, nar);
     }
 
     protected LongSupplier stamp(Truth currentBelief, NAR nar) {
@@ -101,31 +81,22 @@ public class ScalarSignal extends Signal implements  DoubleSupplier {
     }
 
 
-
-
-
-//    protected float conf(float v) {
-//        return confFactor;
-//    }
-//    protected float freq(float v) {
-//        return v;
-//    }
-
     public float freq() {
         SignalTask t = get();
-        if (t !=null)
+        if (t != null)
             return t.freq();
         else
             return Float.NaN;
     }
 
 
-
-
-    /** provides an immediate truth assessment with the last known signal value */
-    @Nullable public final Truth truth() {
+    /**
+     * provides an immediate truth assessment with the last known signal value
+     */
+    @Nullable
+    public final Truth truth() {
         Task t = get();
-        return t!=null ? t.truth() : null;
+        return t != null ? t.truth() : null;
     }
 
     //    public float pri(float v, long now, float prevV, long lastV) {

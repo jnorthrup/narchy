@@ -57,7 +57,7 @@ public enum The {
                     (nc) -> {
                         return _compound(Op.values()[nc.one], nc.two);
                     }, 256 * 1024
-                    , 4);
+                    , 4, false);
     //, false);
 
     public static Term compound(Op o, Term... u) {

@@ -101,7 +101,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     }
 
     /** see equals() */
-    static int hash(Term term, DiscreteTruth truth, byte punc, long start, long end, long[] stamp) {
+    static int hash(Term term, Truth truth, byte punc, long start, long end, long[] stamp) {
         int h = Util.hashCombine(
                 term.hashCode(),
                 punc
@@ -110,7 +110,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         if (stamp.length > 1) {
 
             if (truth != null)
-                h = Util.hashCombine(h, truth.hash);
+                h = Util.hashCombine(h, truth.hashCode());
 
             if (start != ETERNAL) {
                 h = Util.hashCombine(h,

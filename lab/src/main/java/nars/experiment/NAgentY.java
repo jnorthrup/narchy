@@ -84,7 +84,7 @@ abstract public class NAgentY extends NAgentX {
             long pStart = now;
             long pEnd = now + nar.dur();
             LongSupplier stamper = nar.time::nextStamp;
-            belief.set(term(), $.t(freq, nar.confDefault(BELIEF)), stamper, pStart, nar.dur(), nar);
+            belief.set(this, $.t(freq, nar.confDefault(BELIEF)), stamper, pStart, nar.dur(), nar);
         }
 
         public void enable() {

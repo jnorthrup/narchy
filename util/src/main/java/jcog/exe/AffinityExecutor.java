@@ -73,13 +73,11 @@ public class AffinityExecutor implements Executor {
     static final AtomicInteger serial = new AtomicInteger(0);
 
     public void stop() {
-
-            threads.removeIf(t -> {
-                t.stop();
-                return true;
-            });
-            assert (threads.isEmpty());
-
+        threads.removeIf(t -> {
+            if (t.isAlive())
+                t.interrupt();
+            return true;
+        });
     }
 
 

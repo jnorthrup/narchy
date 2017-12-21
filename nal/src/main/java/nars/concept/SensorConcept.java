@@ -88,7 +88,7 @@ public class SensorConcept extends WiredConcept implements FloatFunction<Term>, 
 
     @Nullable
     public Task update(long time, int dur, NAR n) {
-        Task x = sensor.update(n, time, dur);
+        Task x = sensor.update(this, n, time, dur);
 
         PredictionFeedback.accept(sensor.get() /* get() again in case x is stretched it will be null */, beliefs, n);
 

@@ -106,7 +106,7 @@ public class BeliefTableChart extends Widget {
     }
 
     @Override
-    public void stop() {
+    public synchronized void stop() {
         if (on!=null) {
             on.off();
             on = null;
@@ -114,11 +114,11 @@ public class BeliefTableChart extends Widget {
         super.stop();
     }
 
-    @Override
-    public Surface hide() {
-        on.off();
-        return this;
-    }
+//    @Override
+//    public Surface hide() {
+//        on.off();
+//        return this;
+//    }
 
     public void update(NAR nar) {
 

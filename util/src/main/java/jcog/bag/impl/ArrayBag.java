@@ -86,7 +86,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             this.capacity = newCapacity;
             //synchronized (items) {
             if (this.size() > newCapacity)
-                commit(null, true);
+                commit(null);
             //}
             //return true;
         }
@@ -654,11 +654,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     @Override
             /*@NotNull*/
     public Bag<X, Y> commit(Consumer<Y> update) {
-        commit(update, false);
-        return this;
-    }
 
-    private void commit(@Nullable Consumer<Y> update, boolean checkCapacity) {
 
 //        if (update == null && !checkCapacity) {
 //            synchronized (items) {
@@ -670,25 +666,26 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 //            return;
 //        }
 
-        @Nullable List<Y> trash = null;
-        synchronized (items) {
-            if (size() == 0)
-                return;
+        if (size() > 0) {
+            @Nullable List<Y> trash = null;
+            synchronized (items) {
 
-            trash = update(null, update, true);
+                trash = update(null, update, true);
 
-            if (trash != null) {
-                trash.forEach(this::mapRemove);
+                if (trash != null) {
+                    trash.forEach(this::mapRemove);
+                }
+
+                ensureSorted();
             }
 
-            ensureSorted();
+            //then outside the synch:
+            if (trash != null) {
+                trash.forEach(this::onRemove);
+            }
         }
 
-        //then outside the synch:
-        if (trash != null) {
-            trash.forEach(this::onRemove);
-        }
-
+        return this;
     }
 
 
@@ -719,6 +716,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     @Override
     public void clear() {
         //TODO do onRemoved outside synch
+
         synchronized (items) {
             //map is possibly shared with another bag. only remove the items from it which are present in items
             items.forEach(x -> {

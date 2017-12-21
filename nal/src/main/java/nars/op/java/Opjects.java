@@ -17,15 +17,14 @@ import nars.control.CauseChannel;
 import nars.op.AtomicExec;
 import nars.op.Operator;
 import nars.task.ITask;
-import nars.task.LatchingSignalTask;
 import nars.task.NALTask;
 import nars.task.signal.SignalTask;
+import nars.task.signal.SustainTruthlet;
 import nars.task.signal.Truthlet;
 import nars.task.signal.TruthletTask;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.sub.Subterms;
-import nars.truth.Truth;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.tuple.Pair;
@@ -198,15 +197,15 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
     }
 
-    static class ValueSignalTask extends LatchingSignalTask {
-
-        final Object value;
-
-        public ValueSignalTask(Term t, byte punct, Truth truth, long start, long end, long stamp, Object value) {
-            super(t, punct, truth, start, end, stamp);
-            this.value = value; //weakref?
-        }
-    }
+//    static class ValueSignalTask extends LatchingSignalTask {
+//
+//        final Object value;
+//
+//        public ValueSignalTask(Term t, byte punct, Truth truth, long start, long end, long stamp, Object value) {
+//            super(t, punct, truth, start, end, stamp);
+//            this.value = value; //weakref?
+//        }
+//    }
 
     interface InstanceMethodValueModel {
 
@@ -613,7 +612,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                     return;
                 }
 
-                nar.runLater(() -> {
+                //nar.runLater(() -> {
 
                     if (invokingGoal.get() != null)
                         throw new TODO("we need a stack: " + invokingGoal.get() + " -> " + task);
@@ -630,7 +629,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                         invokingGoal.set(null);
                     }
 
-                });
+                //});
             }
 
         };

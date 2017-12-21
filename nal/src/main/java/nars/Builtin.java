@@ -558,6 +558,8 @@ public class Builtin {
          * shutdown, terminates VM
          */
         public void off() {
+
+            nar.stop();
             java.lang.System.exit(0);
         }
 
@@ -569,9 +571,7 @@ public class Builtin {
         public void reset() {
             nar.reset();
         }
-        public void stop() {
-            nar.stop();
-        }
+
         public void start() {
             nar.start();
         }

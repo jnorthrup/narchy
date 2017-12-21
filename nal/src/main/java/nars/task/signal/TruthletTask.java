@@ -1,11 +1,14 @@
 package nars.task.signal;
 
-import jcog.TODO;
 import nars.NAR;
+import nars.concept.Concept;
+import nars.table.DefaultBeliefTable;
 import nars.term.Term;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Consumer;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
@@ -26,8 +29,27 @@ public class TruthletTask extends SignalTask {
         super(t, punct, truth, XTERNAL, XTERNAL, stamp);
         assert (punct == BELIEF || punct == GOAL);
         this.truthlet = truth;
-        this.slidingEnd = end();
     }
+
+
+
+
+    /**
+     * should be called only from the stretch procedure
+     */
+    public void updateTime(Concept c, long nextStart, long nextEnd) {
+        if (nextStart == start() && nextEnd == end())
+            return; //no change
+        else
+            update(c, (tt)-> tt.truthlet.setTime(nextStart, nextEnd));
+    }
+
+    public void update(Concept c, Consumer<TruthletTask> t) {
+        ((DefaultBeliefTable)c.table(punc)).temporal.update(this, ()->{
+            t.accept(TruthletTask.this);
+        });
+    }
+
 
     @Override
     public long start() {
@@ -39,24 +61,11 @@ public class TruthletTask extends SignalTask {
         return truthlet.end();
     }
 
-    public void end(long newEnd) {
-
-        if (truthlet instanceof RangeTruthlet) {
-
-            super.end(newEnd); //HACK
-
-            ((RangeTruthlet) truthlet).end = newEnd;
-
-        } else {
-            throw new TODO();
-        }
-    }
-
     @Nullable
     public final Truth truth(long when, long dur, float minConf) {
         Truth t = truth(when);
         if (t != null) {
-            if (t.conf() >= minConf)
+            if (minConf == 0 || t.conf() >= minConf)
                 return t;
         }
         return null;
@@ -99,5 +108,9 @@ public class TruthletTask extends SignalTask {
     @Override
     public float evi(long when, long dur) {
         return truthlet.truth(when)[1];
+    }
+
+    public void updateEnd(Concept c, long nextEnd) {
+        updateTime(c, start(), nextEnd);
     }
 }

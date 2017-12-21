@@ -153,7 +153,7 @@ abstract public class NAgentX extends NAgent {
                 .exe(new MultiExec
                         //Intense
                         //CoolNQuiet
-                        (512, THREADS, 1024))
+                        (512, THREADS, 64))
 
                 .time(clock)
                 .deriverAdd(1, 1)
@@ -165,7 +165,7 @@ abstract public class NAgentX extends NAgent {
                 .deriverAdd("motivation.nal")
                 //.deriverAdd("list.nal")
                 .index(
-                        new CaffeineIndex(300 * 1024)
+                        new CaffeineIndex(400 * 1024)
                         // new PriMapTermIndex()
                         //new CaffeineIndex2(64 * 1024)
                         //new CaffeineIndex2(-1)

@@ -4,15 +4,14 @@ import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.task.signal.LinearTruthlet;
-import nars.task.signal.RangeTruthlet;
-import nars.task.signal.SignalTask;
-import nars.task.signal.TruthletTask;
+import nars.concept.Concept;
+import nars.task.signal.*;
 import nars.term.Term;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.LongSupplier;
 
 /**
@@ -40,7 +39,7 @@ public class Signal {
     final byte punc;
 
     private static final int lookAheadDurs = 0;
-    private SignalTask last;
+    private final AtomicReference<TruthletTask> current = new AtomicReference(null);
 
 
     public Signal(byte punc, FloatSupplier resolution) {
@@ -50,24 +49,24 @@ public class Signal {
     }
 
     public SignalTask get() {
-        return last;
+        return current.get();
     }
 
-    public Task set(Term term, @Nullable Truth nextTruth, LongSupplier stamper, long now, int dur, NAR nar) {
+    public Task set(Concept c, @Nullable Truth nextTruth, LongSupplier stamper, long now, int dur, NAR nar) {
 
 //        if (!busy.compareAndSet(false, true))
 //            return last;
 //        try {
-        synchronized (resolution) {
 
-            SignalTask last = this.last;
+
+            TruthletTask last = this.current.get();
             if (last == null && nextTruth == null)
                 return null;
 
             @Nullable PreciseTruth tt = nextTruth != null ? nextTruth.dither(nar) : null;
 
 
-            SignalTask next;
+            TruthletTask next;
             if (tt == null) {
                 //no signal
                 next = null;
@@ -76,15 +75,15 @@ public class Signal {
 
                 if (last == null ||
                         last.isDeleted() ||
-                        (!last.truth.equals(tt, nar.freqResolution.floatValue()) ||
+                        (!last.truth(last.end()).equals(tt, nar.freqResolution.floatValue()) ||
                                 (Param.SIGNAL_LATCH_TIME_MAX != Integer.MAX_VALUE && now - last.start() >= dur * Param.SIGNAL_LATCH_TIME_MAX)
                         )) {
 
                     //TODO move the task construction out of this critical update section?
-                    next = taskStart(last,
-                            term, tt,
+                    next = taskStart(c, last,
+                            tt,
                             now, now + lookAheadDurs * dur,
-                            stamper.getAsLong());
+                            stamper.getAsLong(), dur);
 
                 } else {
 
@@ -99,39 +98,42 @@ public class Signal {
             if (last == next) {
                 if (last != null) {
                     last.pri(pri.asFloat());
-                    last.grow(now);
+                    last.updateEnd(c, now);
                 }
                 return null;  //dont re-input the task, just stretch it where it is in the temporal belief table
             } else {
                 if (last != null) {
-                    last.end(Math.max(last.start(), (next!=null ? now-1 : now))); //one cycle ago so as not to overlap during the new task's start time
+                    last.updateEnd(c, Math.max(last.start(), (next!=null ? now-1 : now))); //one cycle ago so as not to overlap during the new task's start time
                 }
-                return this.last = next; //new or null input; stretch will be assigned on first insert to the belief table (if this happens)
+                if (current.compareAndSet(last, next))
+                    return next; //new or null input; stretch will be assigned on first insert to the belief table (if this happens)
+                else
+                    return get(); //the next latest
             }
 
 //        } finally {
 //            busy.set(false);
 //        }
-        }
+
     }
 
-    public SignalTask taskStart(SignalTask last, Term term, Truth t, long start, long end, long stamp) {
+    public TruthletTask taskStart(Concept c, SignalTask last, Truth t, long start, long end, long stamp, int dur) {
 
 
-        float fStart;
+
         float fNext = t.freq();
-        if (last == null || Math.abs(last.end() - start) > 1) {
-            fStart = fNext;
-        } else {
+        if (last != null && Math.abs(last.end() - start) <= dur/2 && last.range() <= dur) {
+            //use a sloped connector to the previous task if it happens soon enough again (no temporal gap between them) and if its range is short enough
             Truth le = last.truth(last.end(), 1);
             if (le != null) {
-                fStart = le.freq();
-                ((LinearTruthlet)(((TruthletTask)last).truthlet)).freqEnd = fNext;
-            } else fStart = fNext;
+                ((TruthletTask)last).update(c, (tt)->{
+                    ((LinearTruthlet)((((ProxyTruthlet)tt.truthlet)).defined)).freqEnd = fNext;
+                });
+            }
         }
 
-        SignalTask s = new TruthletTask(term, punc,
-                    new LinearTruthlet(start, fStart, end, fNext, t.evi()),
+        TruthletTask s = new TruthletTask(c.term(), punc,
+                    new SustainTruthlet(new LinearTruthlet(start, fNext, end, fNext, t.evi())),
                     stamp);
 
         s.priMax(pri.asFloat());

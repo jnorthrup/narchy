@@ -78,7 +78,7 @@ public class Focus {
 //        }
 
         public void update(FastCoWList<Causable> can) {
-            active = can.copy;
+            final Causable[] active = this.active = can.copy;
             if (active == null)
                 return;
             int n = active.length;
@@ -97,15 +97,11 @@ public class Focus {
 //                if (timeNormalized.length!=n)
 //                    timeNormalized = new float[n];
 
-            float iterSum = 0;
             float timeMax = 0;
-//                int iters = 0;
             for (float i : time) {
                 if (i > Float.MIN_NORMAL) {
-                    iterSum += i;
                     if (i > timeMax)
                         timeMax = i;
-//                        iters++;
                 }
             }
 
@@ -134,11 +130,10 @@ public class Focus {
                     active[i].value(), weight);
 
             float[] minmax = Util.minmax(weight);
+            float lowMargin = (minmax[1] - minmax[0])/n;
             for (int i = 0; i < n; i++)
-                weight[i] = normalize(
-                        normalize(weight[i], minmax[0], minmax[1]),
-                        -1f / n, +1f) / time[i];
-            //* (1f - timeNormalized[i]);
+                weight[i] =
+                        normalize(weight[i], minmax[0]-lowMargin, minmax[1])/time[i];
         }
     }
 

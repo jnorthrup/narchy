@@ -14,6 +14,12 @@ abstract public class RangeTruthlet extends Truthlet {
     }
 
     @Override
+    public void setTime(long newStart, long newEnd) {
+        this.start = newStart;
+        this.end = newEnd;
+    }
+
+    @Override
     public long start() {
         return start;
     }

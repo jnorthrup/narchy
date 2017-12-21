@@ -22,7 +22,7 @@ public final class DeriverRoot extends AbstractPred<Derivation> {
 
     Memoize<ProtoDerivation.PremiseKey,int[]> cache =
             new HijackMemoize<>(ProtoDerivation.PremiseKey::solve,
-                    64 * 1024, 5);
+                    64 * 1024, 5, false);
 
     @Override
     public boolean test(Derivation x) {

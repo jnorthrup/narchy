@@ -77,14 +77,18 @@ public interface TemporalBeliefTable extends TaskTable, Iterable<Task> {
 
     void setCapacity(int temporals);
 
-    default Consumer<Task> stretch(SignalTask changed) {
-        throw new UnsupportedOperationException();
-    }
+
+    void update(SignalTask x, Runnable change);
 
     TemporalBeliefTable Empty = new TemporalBeliefTable() {
 
         @Override
-        public void add(@NotNull Task t, TaskConcept c, NAR n) {
+        public void add(Task t, TaskConcept c, NAR n) {
+
+        }
+
+        @Override
+        public void update(SignalTask x, Runnable change) {
 
         }
 

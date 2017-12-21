@@ -108,6 +108,8 @@ abstract public class Causable extends NARService {
      */
     public abstract float value();
 
+
+
 //    public final static class InvokeCause extends NativeTask {
 //
 //        public final Causable cause;

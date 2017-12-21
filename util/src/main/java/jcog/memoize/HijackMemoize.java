@@ -28,8 +28,8 @@ import static jcog.Texts.n4;
  */
 public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Computation<X, Y>> implements Memoize<X, Y> {
 
-    float DEFAULT_VALUE = 0.1f;
-    boolean soft = true;
+    float DEFAULT_VALUE;
+    final boolean soft;
     private final Random rng = new XoRoShiRo128PlusRandom(1);
 
     public interface Computation<X, Y> extends Priority, Supplier<Y> {
@@ -172,9 +172,14 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
 
 
     public HijackMemoize(Function<X, Y> f, int initialCapacity, int reprobes) {
+        this(f, initialCapacity, reprobes, true);
+    }
+    public HijackMemoize(Function<X, Y> f, int initialCapacity, int reprobes, boolean soft) {
         super(initialCapacity, reprobes);
         resize(initialCapacity);
         this.func = f;
+        this.soft = soft;
+        this.DEFAULT_VALUE = 0.5f/reprobes;
     }
 
     @Override

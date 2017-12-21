@@ -162,28 +162,28 @@ public abstract class NativeTask implements ITask {
 //        }
 //    }
 //
-//    /**
-//     * wraps a Runnable
-//     */
-//    public static class NARTask extends NativeTask {
-//
-//        final Consumer run;
-//
-//        public NARTask(@NotNull Consumer<NAR> runnable) {
-//            run = runnable;
-//        }
-//
-//        @Override
-//        public String toString() {
-//            return run.toString();
-//        }
-//
-//        @Override
-//        public @Nullable Iterable<? extends ITask> run(NAR x) {
-//            run.accept(x);
-//            return null;
-//        }
-//
-//    }
+    /**
+     * wraps a Runnable
+     */
+    public static class NARTask extends NativeTask {
+
+        final Consumer run;
+
+        public NARTask(@NotNull Consumer<NAR> runnable) {
+            run = runnable;
+        }
+
+        @Override
+        public String toString() {
+            return run.toString();
+        }
+
+        @Override
+        public @Nullable Iterable<? extends ITask> run(NAR x) {
+            run.accept(x);
+            return null;
+        }
+
+    }
 
 }

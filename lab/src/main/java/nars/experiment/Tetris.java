@@ -788,6 +788,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 System.out.println();
             });
 
+
             n.stats(System.out);
         }
     }

@@ -62,7 +62,7 @@ public class TruthWave {
     /**
      * clears and fills this wave with the data from a table
      */
-    public void set(@NotNull BeliefTable b, long now, int dur, NAR nar, long minT, long maxT) {
+    public void set(BeliefTable b, long now, int dur, NAR nar, long minT, long maxT) {
         int s = b.size();
         if (s == 0) {
             this.current = null;
@@ -93,7 +93,7 @@ public class TruthWave {
             if (start == start) {
                 float ends = t[ii + 1];
 
-                float oo = (starts + ends) / 2; //midpoint
+                //float oo = (starts + ends) / 2; //midpoint
 
                 if (ends > end) end = ends;
                 if (starts < start) start = starts;

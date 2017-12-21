@@ -1,10 +1,10 @@
 package nars.task.signal;
 
-public class ProxyTruthlet extends Truthlet {
+public class ProxyTruthlet<T extends Truthlet> extends Truthlet {
 
-    public Truthlet defined;
+    public T defined;
 
-    public ProxyTruthlet(Truthlet defined) {
+    public ProxyTruthlet(T defined) {
         this.defined = defined;
     }
 
@@ -16,6 +16,11 @@ public class ProxyTruthlet extends Truthlet {
     @Override
     public long end() {
         return defined.end();
+    }
+
+    @Override
+    public void setTime(long newStart, long newEnd) {
+       defined.setTime(newStart, newEnd);
     }
 
     @Override

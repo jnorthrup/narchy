@@ -73,7 +73,7 @@ public class BeliefActionConcept extends ActionConcept {
 
         Task x;
         if (belief!=null) {
-            x = feedback.set(term(), belief, nar.time::nextStamp, nowStart, dur, nar);
+            x = feedback.set(this, belief, nar.time::nextStamp, nowStart, dur, nar);
         } else {
             x = feedback.get();
         }

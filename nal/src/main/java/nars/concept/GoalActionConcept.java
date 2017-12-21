@@ -110,7 +110,7 @@ public class GoalActionConcept extends ActionConcept {
 ////                            + now / (curiPeriod * (2 * Math.PI) * dur)) + 1f)/2f;
 //
             goal = $.t(f, curiConf);
-            fg = action.set(term, goal, stamper, now, dur, nar);
+            fg = action.set(this, goal, stamper, now, dur, nar);
 //            curious = true;
 //
 ////                Truth ct = $.t(f, cc);
@@ -142,14 +142,14 @@ public class GoalActionConcept extends ActionConcept {
 
             }
 
-            fg = action.set(term(), goal, stamper, now, dur, nar);
+            fg = action.set(this, goal, stamper, now, dur, nar);
         }
 
 
 
         Truth motorFeedback = this.motor.motor(belief, goal);
 
-        Task fb = feedback.set(term, motorFeedback, stamper, now, dur, nar);
+        Task fb = feedback.set(this, motorFeedback, stamper, now, dur, nar);
 
         return Stream.of(fb, fg).filter(Objects::nonNull);
         //return Stream.of(fb, fg).filter(Objects::nonNull);

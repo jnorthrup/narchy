@@ -22,14 +22,23 @@ abstract public class Truthlet implements Truth {
         return e - s;
     }
 
+    abstract public void setTime(long newStart, long newEnd);
+
     @Override
     public float freq() {
-
         return freq(mid()); //HACK
-        //...return freq(start()) + freq(end()) + fMid;
     }
+
+    @Override
+    public float evi() {
+        return evi(mid()); //HACK
+    }
+
     public float freq(long when) {
         return truth(when)[0];
+    }
+    public float evi(long when) {
+        return truth(when)[1];
     }
 
     @Override
@@ -72,7 +81,7 @@ abstract public class Truthlet implements Truth {
         return new FlatTruthlet(start, end, freq, evi);
     }
 
-    public static Truthlet slope(long start, float startFreq, long end, float endFreq, float evi) {
+    public static LinearTruthlet slope(long start, float startFreq, long end, float endFreq, float evi) {
         return new LinearTruthlet(start, startFreq, end, endFreq, evi);
     }
 
