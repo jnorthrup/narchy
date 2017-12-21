@@ -1,5 +1,6 @@
 package nars.term.pred;
 
+import jcog.list.FasterList;
 import nars.$;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +17,7 @@ public class Fork<X> extends AbstractPred<X> {
 
     public final PrediTerm<X>[] branches;
 
-    protected Fork(PrediTerm<X>[] actions) {
+    public Fork(PrediTerm<X>[] actions) {
         super($.s((Term[]) actions));
         assert (actions.length > 0);
         this.branches = actions;
@@ -78,7 +79,7 @@ public class Fork<X> extends AbstractPred<X> {
 //    }
 
     @Nullable
-    public static <X> PrediTerm<X> fork(PrediTerm<X>[] n, Function<PrediTerm<? extends X>[], PrediTerm<X>> builder) {
+    public static <X> PrediTerm<X> fork(PrediTerm<X>[] n, Function<PrediTerm<X>[], PrediTerm<X>> builder) {
         switch (n.length) {
             case 0:
                 return null;

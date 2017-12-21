@@ -20,7 +20,7 @@ public final class OpIsNot extends MatchConstraint {
     }
 
     @Override
-    public boolean invalid(@NotNull Term y, @NotNull Unify f) {
+    public boolean invalid(Term y, Unify f) {
         return y.op().in(op);
     }
 

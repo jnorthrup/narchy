@@ -32,7 +32,7 @@ public final class TaskBeliefHasOrHasnt extends AbstractPred<ProtoDerivation> {
 
     @Override
     public float cost() {
-        return 0.15f;
+        return 0.1f;
     }
 }
 

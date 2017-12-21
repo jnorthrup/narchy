@@ -42,13 +42,13 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
          */
         private final int subterm;
 
-        public UnifySubterm(int subterm, @NotNull Term pattern) {
+        public UnifySubterm(int subterm, Term pattern) {
             super($.func("unify", UnifyTerm.label(subterm), pattern), pattern);
             this.subterm = subterm;
         }
 
         @Override
-        public final boolean test(@NotNull Derivation d) {
+        public final boolean test(Derivation d) {
             return d.use(Param.TTL_UNIFY) && pattern.unify(subterm == 0 ? d.taskTerm : d.beliefTerm, d);
         }
 
@@ -65,12 +65,11 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
          */
         public final int subterm;
         public final PrediTerm<Derivation> eachMatch;
-        private final Conclusion conc;
 
         public UnifySubtermThenConclude(int subterm, /*@NotNull*/ Term pattern, /*@NotNull*/ PrediTerm<Derivation> eachMatch) {
             super($.func("unify", label(subterm), pattern, eachMatch), pattern);
             this.subterm = subterm;
-            this.conc = ((Conclusion)(AndCondition.first(eachMatch)));
+//            this.conc = ((Conclusion)(AndCondition.first(eachMatch)));
 
             this.eachMatch = eachMatch;
             //final int requiredVars = conc.uniqueVars!=null ? conc.uniqueVars.size() : 0;
@@ -90,7 +89,7 @@ abstract public class UnifyTerm extends AbstractPred<Derivation> {
         }
 
         @Override
-        public final boolean test(@NotNull Derivation d) {
+        public final boolean test(Derivation d) {
 
             d.forEachMatch = eachMatch;
             d.unify(pattern, subterm == 0 ? d.taskTerm : d.beliefTerm, true);

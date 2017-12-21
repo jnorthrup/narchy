@@ -16,7 +16,10 @@ import nars.term.pred.AndCondition;
 import nars.term.pred.Fork;
 import nars.term.pred.PrediTerm;
 import nars.util.TermTrie;
+import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.Pair;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -123,37 +126,42 @@ public final class TrieDeriver {
         if (p instanceof DeriverRoot) {
 
             DeriverRoot r = (DeriverRoot) p;
-            print(AndCondition.the(new PrediTerm[] { r.what,r.can } ) /* HACK */, out, indent);
+            print(AndCondition.the(new PrediTerm[]{r.what, r.can}) /* HACK */, out, indent);
 
         } else if (p instanceof UnifyTerm.UnifySubtermThenConclude) {
-            UnifyTerm.UnifySubtermThenConclude u = (UnifyTerm.UnifySubtermThenConclude)p;
+            UnifyTerm.UnifySubtermThenConclude u = (UnifyTerm.UnifySubtermThenConclude) p;
             out.println("unify(" + UnifyTerm.label(u.subterm) + "," + u.pattern + ") {");
-            print(u.eachMatch, out, indent+2);
-            TermTrie.indent(indent); out.println("}");
+            print(u.eachMatch, out, indent + 2);
+            TermTrie.indent(indent);
+            out.println("}");
         } else if (p instanceof AndCondition) {
             out.println("and {");
             AndCondition ac = (AndCondition) p;
             for (PrediTerm b : ac.cond) {
                 print(b, out, indent + 2);
             }
-            TermTrie.indent(indent); out.println("}");
+            TermTrie.indent(indent);
+            out.println("}");
         } else if (p instanceof Try) {
             out.println("eval {");
             Try ac = (Try) p;
             int i = 0;
             for (PrediTerm b : ac.branches) {
-                TermTrie.indent(indent + 2); out.println(i + ":");
+                TermTrie.indent(indent + 2);
+                out.println(i + ":");
                 print(b, out, indent + 4);
                 i++;
             }
-            TermTrie.indent(indent); out.println("}");
+            TermTrie.indent(indent);
+            out.println("}");
         } else if (p instanceof Fork) {
             out.println(Util.className(p) + " {");
             Fork ac = (Fork) p;
             for (PrediTerm b : ac.branches) {
                 print(b, out, indent + 2);
             }
-            TermTrie.indent(indent); out.println("}");
+            TermTrie.indent(indent);
+            out.println("}");
 
         } else if (p instanceof OpSwitch) {
             OpSwitch sw = (OpSwitch) p;
@@ -166,10 +174,12 @@ public final class TrieDeriver {
                 TermTrie.indent(indent + 2);
                 out.println('"' + Op.values()[i].toString() + "\": {");
                 print(b, out, indent + 4);
-                TermTrie.indent(indent + 2); out.println("}");
+                TermTrie.indent(indent + 2);
+                out.println("}");
 
             }
-            TermTrie.indent(indent); out.println("}");
+            TermTrie.indent(indent);
+            out.println("}");
         } else {
             out.print( /*Util.className(p) + ": " +*/ p);
             out.println();
@@ -328,16 +338,16 @@ public final class TrieDeriver {
 //        out.println("}");
     }
 
-
-    public PrediTerm<Derivation> compile(Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
-        return compile(path, each);
-    }
+//
+//    public PrediTerm<Derivation> compile(Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
+//        return compile(path, each);
+//    }
 
     static <D extends ProtoDerivation> PrediTerm<D> compile(TermTrie<PrediTerm<D>, PrediTerm<D>> trie, Function<PrediTerm<D>, PrediTerm<D>> each) {
         List<PrediTerm<D>> bb = compile(trie.root);
         PrediTerm<D>[] roots = bb.toArray(new PrediTerm[bb.size()]);
 
-        PrediTerm tf = Fork.fork(roots, x -> new ForkDerivation(x));
+        PrediTerm tf = Fork.fork(roots, x -> new Fork(x));
         if (each != null)
             tf = tf.transform(each);
 
@@ -354,14 +364,16 @@ public final class TrieDeriver {
 
         node.forEach(n -> {
 
-            var conseq = compile(n);
+            List<PrediTerm<D>> branches = compile(n);
 
             int nStart = n.start();
             int nEnd = n.end();
-            PrediTerm<D> branch = PrediTerm.ifThen(
+            PrediTerm<D> branch = PrediTerm.compileAnd(
                     n.seq().stream().skip(nStart).limit(nEnd - nStart),
-                    !conseq.isEmpty() ?
-                            Fork.fork(conseq.toArray(new PrediTerm[conseq.size()]), x -> new ForkDerivation(x))
+                    !branches.isEmpty() ?
+                            factorFork(branches, (PrediTerm<D>[] ff) -> new Fork(ff))
+//                            Fork.fork(branches.toArray(new PrediTerm[branches.size()]),
+//                                    x -> new Fork(x))
                             : null
             );
 
@@ -371,6 +383,106 @@ public final class TrieDeriver {
 
         return compileSwitch(bb);
     }
+
+    private static class SubCond {
+        public final PrediTerm p;
+        final RoaringBitmap branches = new RoaringBitmap();
+
+        private SubCond(PrediTerm p, int branch) {
+            this.p = p;
+            branches.add(branch);
+        }
+
+        void bump(int branch) {
+            branches.add(branch);
+        }
+
+        static void bumpCond(Map<PrediTerm, SubCond> conds, PrediTerm p, int branch) {
+            if (p.cost() == Integer.MAX_VALUE)
+                return; //postcondition
+
+            conds.compute(p, (xx, e) -> {
+                if (e == null) {
+                    e = new SubCond(xx, branch);
+                } else {
+                    e.bump(branch);
+                }
+                return e;
+            });
+        }
+
+        @Override
+        public String toString() {
+            return p + " x " + branches;
+        }
+
+        public int size() {
+            return branches.getCardinality();
+        }
+
+
+        public float costIfBranch() {
+            int s = size();
+            if (s > 1)
+                return s * p.cost();
+            else
+                return Float.NEGATIVE_INFINITY;
+        }
+    }
+
+    private static <X> PrediTerm<X> factorFork(List<PrediTerm<X>> x, Function<PrediTerm<X>[], PrediTerm<X>> builder) {
+
+        int n = x.size();
+        if (n == 0)
+            return null;
+
+        if (n == 1)
+            return x.get(0);
+
+        MutableMap<PrediTerm, SubCond> conds = new UnifiedMap();
+        for (int b = 0, xSize = n; b < xSize; b++) {
+            PrediTerm p = x.get(b);
+            if (p instanceof AndCondition) {
+                for (PrediTerm xx : ((AndCondition<PrediTerm>) p).cond)
+                    SubCond.bumpCond(conds, xx, b);
+            } else if (p instanceof Fork) {
+                //ignore
+            } else {
+                SubCond.bumpCond(conds, p, b);
+            }
+        }
+
+        SubCond fx = conds.maxBy(xx -> xx.costIfBranch());
+        if (fx.size() < 2) {
+            //nothing to factor
+        } else {
+            List<PrediTerm> bundle = $.newArrayList();
+            int i = 0;
+            Iterator<PrediTerm<X>> xx = x.iterator();
+            while (xx.hasNext()) {
+                PrediTerm<X> px = xx.next();
+                if (fx.branches.contains(i)) {
+                    xx.remove();
+
+                    if (px instanceof AndCondition) {
+                        px = AndCondition.the(ArrayUtils.removeAllOccurences(((AndCondition) px).cond, fx.p));
+                        bundle.add(px);
+                    } else {
+
+                    }
+                }
+                i++;
+            }
+            assert(bundle.size()>1);
+            x.add(AndCondition.the(fx.p, Fork.fork(bundle.toArray(new PrediTerm[bundle.size()]), builder)));
+
+            if (x.size() == 1)
+                return x.get(0);
+        }
+
+        return Fork.fork(x.toArray(new PrediTerm[x.size()]), builder);
+    }
+
 
     protected static <D extends ProtoDerivation> List<PrediTerm<D>> compileSwitch(List<PrediTerm<D>> bb) {
 
@@ -495,7 +607,7 @@ public final class TrieDeriver {
 //    }
 
 
-    //    public void recurse(@NotNull CauseEffect each) {
+//    public void recurse(@NotNull CauseEffect each) {
 //        for (BoolCondition p : roots) {
 //            recurse(null, p, each);
 //        }
@@ -578,137 +690,137 @@ public final class TrieDeriver {
 //    }
 
 
-    //    @NotNull
-    //    private static ProcTerm compileActions(@NotNull List<ProcTerm> t) {
-    //
-    //        switch (t.size()) {
-    //            case 0: return null;
-    //            case 1:
-    //                return t.get(0);
-    //            default:
-    //                //optimization: find expression prefix types common to all, and see if a switch can be formed
-    //
-    //        }
-    //
-    //    }
+//    @NotNull
+//    private static ProcTerm compileActions(@NotNull List<ProcTerm> t) {
+//
+//        switch (t.size()) {
+//            case 0: return null;
+//            case 1:
+//                return t.get(0);
+//            default:
+//                //optimization: find expression prefix types common to all, and see if a switch can be formed
+//
+//        }
+//
+//    }
 
-    //    //TODO not complete
-    //    protected void compile(@NotNull ProcTerm p) throws IOException, CannotCompileException, NotFoundException {
-    //        StringBuilder s = new StringBuilder();
-    //
-    //        final String header = "public final static String wtf=" +
-    //                '"' + this + ' ' + new Date() + "\"+\n" +
-    //                "\"COPYRIGHT (C) OPENNARS. ALL RIGHTS RESERVED.\"+\n" +
-    //                "\"THIS SOURCE CODE AND ITS GENERATOR IS PROTECTED BY THE AFFERO GENERAL PUBLIC LICENSE: https://gnu.org/licenses/agpl.html\"+\n" +
-    //                "\"http://github.com/opennars/opennars\";\n";
-    //
-    //        //System.out.print(header);
-    //        p.appendJavaProcedure(s);
-    //
-    //
-    //        ClassPool pool = ClassPool.getDefault();
-    //        pool.importPackage("nars.truth");
-    //        pool.importPackage("nars.nal");
-    //
-    //        CtClass cc = pool.makeClass("nars.nal.CompiledDeriver");
-    //        CtClass parent = pool.get("nars.nal.Deriver");
-    //
-    //        cc.addField(CtField.make(header, cc));
-    //
-    //        cc.setSuperclass(parent);
-    //
-    //        //cc.addConstructor(parent.getConstructors()[0]);
-    //
-    //        String initCode = "nars.Premise p = m.premise;";
-    //
-    //        String m = "public void run(nars.nal.PremiseMatch m) {\n" +
-    //                '\t' + initCode + '\n' +
-    //                '\t' + s + '\n' +
-    //                '}';
-    //
-    //        System.out.println(m);
-    //
-    //
-    //        cc.addMethod(CtNewMethod.make(m, cc));
-    //        cc.writeFile("/tmp");
-    //
-    //        //System.out.println(cc.toBytecode());
-    //        System.out.println(cc);
-    //    }
-    //
+//    //TODO not complete
+//    protected void compile(@NotNull ProcTerm p) throws IOException, CannotCompileException, NotFoundException {
+//        StringBuilder s = new StringBuilder();
+//
+//        final String header = "public final static String wtf=" +
+//                '"' + this + ' ' + new Date() + "\"+\n" +
+//                "\"COPYRIGHT (C) OPENNARS. ALL RIGHTS RESERVED.\"+\n" +
+//                "\"THIS SOURCE CODE AND ITS GENERATOR IS PROTECTED BY THE AFFERO GENERAL PUBLIC LICENSE: https://gnu.org/licenses/agpl.html\"+\n" +
+//                "\"http://github.com/opennars/opennars\";\n";
+//
+//        //System.out.print(header);
+//        p.appendJavaProcedure(s);
+//
+//
+//        ClassPool pool = ClassPool.getDefault();
+//        pool.importPackage("nars.truth");
+//        pool.importPackage("nars.nal");
+//
+//        CtClass cc = pool.makeClass("nars.nal.CompiledDeriver");
+//        CtClass parent = pool.get("nars.nal.Deriver");
+//
+//        cc.addField(CtField.make(header, cc));
+//
+//        cc.setSuperclass(parent);
+//
+//        //cc.addConstructor(parent.getConstructors()[0]);
+//
+//        String initCode = "nars.Premise p = m.premise;";
+//
+//        String m = "public void run(nars.nal.PremiseMatch m) {\n" +
+//                '\t' + initCode + '\n' +
+//                '\t' + s + '\n' +
+//                '}';
+//
+//        System.out.println(m);
+//
+//
+//        cc.addMethod(CtNewMethod.make(m, cc));
+//        cc.writeFile("/tmp");
+//
+//        //System.out.println(cc.toBytecode());
+//        System.out.println(cc);
+//    }
+//
 
-    //final static Logger logger = LoggerFactory.getLogger(TrieDeriver.class);
-
-
-    //    final static void run(RuleMatch m, List<TaskRule> rules, int level, Consumer<Task> t) {
-    //
-    //        final int nr = rules.size();
-    //        for (int i = 0; i < nr; i++) {
-    //
-    //            TaskRule r = rules.get(i);
-    //            if (r.minNAL > level) continue;
-    //
-    //            PostCondition[] pc = m.run(r);
-    //            if (pc != null) {
-    //                for (PostCondition p : pc) {
-    //                    if (p.minNAL > level) continue;
-    //                    ArrayList<Task> Lx = m.apply(p);
-    //                    if(Lx!=null) {
-    //                        for (Task x : Lx) {
-    //                            if (x != null)
-    //                                t.accept(x);
-    //                        }
-    //                    }
-    //                    /*else
-    //                        System.out.println("Post exit: " + r + " on " + m.premise);*/
-    //                }
-    //            }
-    //        }
-    //    }
+//final static Logger logger = LoggerFactory.getLogger(TrieDeriver.class);
 
 
-    //    static final class Return extends Atom implements ProcTerm {
-    //
-    //        public static final ProcTerm the = new Return();
-    //
-    //        private Return() {
-    //            super("return");
-    //        }
-    //
-    //
-    //        @Override
-    //        public void appendJavaProcedure(@NotNull StringBuilder s) {
-    //            s.append("return;");
-    //        }
-    //
-    //        @Override
-    //        public void accept(PremiseEval versioneds) {
-    //            System.out.println("why call this");
-    //            //throw new UnsupportedOperationException("should not be invoked");
-    //        }
-    //
-    //    }
+//    final static void run(RuleMatch m, List<TaskRule> rules, int level, Consumer<Task> t) {
+//
+//        final int nr = rules.size();
+//        for (int i = 0; i < nr; i++) {
+//
+//            TaskRule r = rules.get(i);
+//            if (r.minNAL > level) continue;
+//
+//            PostCondition[] pc = m.run(r);
+//            if (pc != null) {
+//                for (PostCondition p : pc) {
+//                    if (p.minNAL > level) continue;
+//                    ArrayList<Task> Lx = m.apply(p);
+//                    if(Lx!=null) {
+//                        for (Task x : Lx) {
+//                            if (x != null)
+//                                t.accept(x);
+//                        }
+//                    }
+//                    /*else
+//                        System.out.println("Post exit: " + r + " on " + m.premise);*/
+//                }
+//            }
+//        }
+//    }
 
-    //    /** just evaluates a boolean condition HACK */
-    //    static final class If extends GenericCompound implements ProcTerm {
-    //
-    //
-    //        public final transient @NotNull BoolCondition cond;
-    //
-    //
-    //        public If(@NotNull BoolCondition cond) {
-    //            super(Op.IMPLICATION,
-    //                    TermVector.the( cond, Return.the)
-    //            );
-    //
-    //            this.cond = cond;
-    //        }
-    //
-    //        @Override public void accept(@NotNull PremiseEval m) {
-    //            final int stack = m.now();
-    //            cond.booleanValueOf(m);
-    //            m.revert(stack);
-    //        }
-    //
-    //    }
+
+//    static final class Return extends Atom implements ProcTerm {
+//
+//        public static final ProcTerm the = new Return();
+//
+//        private Return() {
+//            super("return");
+//        }
+//
+//
+//        @Override
+//        public void appendJavaProcedure(@NotNull StringBuilder s) {
+//            s.append("return;");
+//        }
+//
+//        @Override
+//        public void accept(PremiseEval versioneds) {
+//            System.out.println("why call this");
+//            //throw new UnsupportedOperationException("should not be invoked");
+//        }
+//
+//    }
+
+//    /** just evaluates a boolean condition HACK */
+//    static final class If extends GenericCompound implements ProcTerm {
+//
+//
+//        public final transient @NotNull BoolCondition cond;
+//
+//
+//        public If(@NotNull BoolCondition cond) {
+//            super(Op.IMPLICATION,
+//                    TermVector.the( cond, Return.the)
+//            );
+//
+//            this.cond = cond;
+//        }
+//
+//        @Override public void accept(@NotNull PremiseEval m) {
+//            final int stack = m.now();
+//            cond.booleanValueOf(m);
+//            m.revert(stack);
+//        }
+//
+//    }
 

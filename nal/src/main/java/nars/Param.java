@@ -125,7 +125,7 @@ public abstract class Param extends Services<Term, NAR> {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmax = new MutableInteger(32);
+    public final MutableInteger matchTTLmax = new MutableInteger(64);
     public final MutableInteger matchTTLmin = new MutableInteger(16);
 
     /**

@@ -47,7 +47,7 @@ public interface PrediTerm<X> extends Term, Predicate<X> {
         return Util.map(x -> x.transform(f), new PrediTerm[cache.length], cache);
     }
 
-    static PrediTerm compileSeq(PrediTerm[] p) {
+    static PrediTerm compileAnd(PrediTerm[] p) {
         switch (p.length) {
             case 0: return null;
             case 1: return p[0];
@@ -67,9 +67,10 @@ public interface PrediTerm<X> extends Term, Predicate<X> {
     }
 
     @Nullable
-    static <X> PrediTerm<X> ifThen(Stream<PrediTerm<X>> cond, @Nullable PrediTerm<X> conseq) {
+    static <X> PrediTerm<X> compileAnd(Stream<PrediTerm<X>> cond, @Nullable PrediTerm<X> conseq) {
         return
-            compileSeq(
+            //AndCondition.the
+            compileAnd(
                     (conseq != null ? Stream.concat(cond, Stream.of(conseq)) : cond)
                         .toArray(PrediTerm[]::new)
             )

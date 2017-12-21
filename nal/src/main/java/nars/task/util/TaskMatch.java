@@ -18,7 +18,7 @@ import java.util.function.Predicate;
  */
 abstract public class TaskMatch  implements Consumer<Task>, Predicate<Task> {
 
-    @NotNull protected final NAR nar;
+    protected final NAR nar;
     private final On on;
     private PrediTerm<Term> term;
     //private final BoolPred<Truth> truth = null;
