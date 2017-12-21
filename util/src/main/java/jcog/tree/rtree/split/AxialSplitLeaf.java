@@ -66,9 +66,9 @@ public final class AxialSplitLeaf<T> implements Split<T> {
         final Leaf<T> l1Node = model.transfer(leaf, sortedMbr, 0, size/2);
         final Leaf<T> l2Node = model.transfer(leaf, sortedMbr, size / 2, size);
 
-        if ((l1Node.size()+l2Node.size() != size+0))
+        if ((l1Node.size()+l2Node.size() != size))
             throw new RuntimeException("fix: leaf.contains(t)=" + leaf.contains(t, model.bounds(t), model));
-        assert (l1Node.size()+l2Node.size() == size+0);
+        assert (l1Node.size()+l2Node.size() == size);
 
         leaf.transfer(l1Node, l2Node, t, model);
 

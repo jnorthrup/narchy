@@ -35,9 +35,10 @@ public class SustainTruthlet extends ProxyTruthlet<RangeTruthlet> {
                 dist = Math.abs(when - (w = end()));
             }
 
-            float[] x = super.truth(w);
-            freqEvi[0] = x[0];
-            freqEvi[1] = (float) Param.evi(x[1], dist, /* dur */ 1 + range() / 2); //dist is relative to the event's range
+            super.truth(w, freqEvi);
+            float f = freqEvi[0];
+            if (f == f)
+                freqEvi[1] = (float) Param.evi(freqEvi[1], dist, /* dur */ 1 + range() / 2); //dist is relative to the event's range
 
         }
     }

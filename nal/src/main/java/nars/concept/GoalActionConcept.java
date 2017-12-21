@@ -80,10 +80,10 @@ public class GoalActionConcept extends ActionConcept {
         float cur = curiosity.floatValue();
 
 
-        Truth belief, goal;
+        Truth goal;
         ITask fg;
 
-        belief = this.beliefs().truth(pStart, pEnd, nar);
+        Truth belief = this.beliefs().truth(pStart, pEnd, nar);
 
         if (nar.random().nextFloat() < cur) {
 //            // curiosity override
@@ -130,17 +130,17 @@ public class GoalActionConcept extends ActionConcept {
             goal = this.goals().truth(pStart, pEnd, nar);
 
             //HACK EXPERIMENT combine belief and goal
-            if (belief!=null) {
+            //if (belief!=null) {
 
-                float hope = belief.eviEternalized();
+                //float hope = belief.eviEternalized();
 
-                if (goal == null) {
-                    goal = belief.withEvi(hope); //what one images will happen maybe is what one wants
-                } else {
+                //if (goal == null) {
+                    //goal = belief.withEvi(hope); //what one images will happen maybe is what one wants
+                //} else {
                     //goal = Revision.revise(goal, belief.withEvi(hope), Math.abs(belief.freq()-goal.freq()), 0 );
-                }
+                //}
 
-            }
+            //}
 
             fg = action.set(this, goal, stamper, now, dur, nar);
         }

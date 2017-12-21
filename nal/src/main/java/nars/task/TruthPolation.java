@@ -123,8 +123,11 @@ public interface TruthPolation extends Consumer<Tasked> {
         final int dur;
         private final Random rng;
         float bestE = Float.NEGATIVE_INFINITY;
-        final FloatArrayList bestF = new FloatArrayList();
+        final FloatArrayList bestF = new FloatArrayList(4);
 
+        public TruthPolationGreedy(long start, long end, int dur) {
+            this(start, end, dur, null);
+        }
         public TruthPolationGreedy(long start, long end, int dur, Random rng) {
             this.start = start;
             this.end = end;
@@ -141,6 +144,7 @@ public interface TruthPolation extends Consumer<Tasked> {
             }
             if (e >= bestE) {
                 bestF.add(task.freq());
+                bestE = e;
             }
         }
 
@@ -154,8 +158,15 @@ public interface TruthPolation extends Consumer<Tasked> {
             switch (s) {
                 case 0: return null;
                 case 1: g = f.get(0); break;
-                default:
-                    g = f.get(rng.nextInt(s)); break;
+                default: {
+                    Random r;
+                    if (rng == null)
+                        r = ThreadLocalRandom.current();
+                    else
+                        r = rng;
+                    g = f.get(r.nextInt(s));
+                    break;
+                }
             }
 
             return new PreciseTruth(g, bestE, false);

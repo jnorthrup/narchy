@@ -88,8 +88,9 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     public float reward;
     public final NAR nar;
     private int dur;
-    private final NALTask happyGoal;
+
     public final FloatParam motivation = new FloatParam(1f, 0f, 1f);
+    private List<Task> always = $.newArrayList();
 
     protected NAgent(@NotNull NAR nar) {
         this("", nar);
@@ -117,14 +118,9 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         ).relax(0.01f);
 
         this.happy = new ActionInfluencingSensorConcept(happyTerm, happyValue);
+        alwaysWant(happy, nar.confDefault(GOAL));
 
 
-        //this.happy = senseNumber(happyTerm, happyValue);
-
-
-        this.happyGoal = new NALTask(happy.term(), GOAL, $.t(1f, nar.confDefault(GOAL)), now,
-                ETERNAL, ETERNAL,
-                nar.time.nextInputStamp());
 
 //        this.reward = senseNumber(new FloatPolarNormalized(() -> rewardCurrent), ScalarConcepts.Mirror,
 //                id == null ?
@@ -145,6 +141,14 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 //        if (id == null) id = $.quote(getClass().toString());
 
         nar.on(this);
+    }
+
+    public NALTask alwaysWant(Termed x, float conf) {
+        NALTask t = new NALTask(x.term(), GOAL, $.t(1f, conf), now,
+                ETERNAL, ETERNAL,
+                nar.time.nextInputStamp());
+        always.add(t);
+        return t;
     }
 
     @Deprecated
@@ -227,13 +231,16 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     }
 
-    private void happy(float activation) {
-        happyGoal.priMax(
-                //nar.priDefault(GOAL)
-                activation
-        );
-        nar.input(happyGoal);
-        nar.activate(happy, activation);
+    protected void always(float activation) {
+        for (int i = 0, alwaysSize = always.size(); i < alwaysSize; i++) {
+            Task x = always.get(i);
+            x.priMax(
+                    //nar.priDefault(GOAL)
+                    activation
+            );
+            nar.input(x);
+            nar.activate(x, activation);
+        }
     }
 
 
@@ -246,7 +253,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
         this.now = nar.time();
 
-        happy(motivation.floatValue());
+        always(motivation.floatValue());
 
         float r = reward = act();
 
@@ -327,20 +334,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
 
             //            final Task[] prevHappy = new Task[1];
-            predictors.add(() -> {
-//                if (prevHappy[0]!=null)
-//                    prevHappy[0].delete();
 
-                float happysadPri = a.nar.priDefault(GOAL);// * 2f;
-//                long nt = nar.time();
-//                Task he = new NALTask(happy.term(), GOAL, $.t(1f, nar.confDefault(GOAL)), nt,
-//                        //ETERNAL, ETERNAL,
-//                        nt, nt + nar.dur(),
-//                        nar.time.nextInputStamp());
-                a.happyGoal.priMax(happysadPri);
-//                prevHappy[0] = he;
-                return a.happyGoal;
-            });
 //                Task se = new NALTask(sad.term(), GOAL, $.t(0f, nar.confDefault(GOAL)), nar.time(), ETERNAL, ETERNAL, nar.time.nextInputStamp());
 //                se.pri(happysadPri);
 //                predictors.add(() -> {

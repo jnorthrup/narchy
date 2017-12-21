@@ -69,6 +69,7 @@ import java.util.stream.Stream;
 
 import static nars.$.$;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static nars.gui.Vis.reflect;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.layout.Grid.*;
@@ -88,11 +89,11 @@ abstract public class NAgentX extends NAgent {
     public NAgentX(String id, NAR nar) {
         super(id, nar);
 
-        new ActionInfluencingSensorConcept(
+        ActionInfluencingSensorConcept joy = new ActionInfluencingSensorConcept(
                 id != null ? $.inh($.the("joy"), id) : $.the("joy"),
                 new FloatPolarNormalized(new FloatFirstOrderDifference(nar::time,
                         () -> reward)));
-
+        alwaysWant(joy, nar.confDefault(GOAL)/2f);
     }
 
     public static NAR runRT(Function<NAR, NAgent> init, float fps) {
@@ -165,7 +166,7 @@ abstract public class NAgentX extends NAgent {
                 .deriverAdd("motivation.nal")
                 //.deriverAdd("list.nal")
                 .index(
-                        new CaffeineIndex(400 * 1024)
+                        new CaffeineIndex(80 * 1024)
                         // new PriMapTermIndex()
                         //new CaffeineIndex2(64 * 1024)
                         //new CaffeineIndex2(-1)

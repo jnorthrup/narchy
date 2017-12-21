@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static jcog.Util.unitize;
@@ -433,10 +434,10 @@ public abstract class Param extends Services<Term, NAR> {
         assert (dur > 0);
 
         TruthPolation t =
-                new TruthPolation.TruthPolationBasic(start, end, dur);
+                //new TruthPolation.TruthPolationBasic(start, end, dur);
                 //new TruthPolation.TruthPolationConf(start, end, dur);
         //new TruthPolation.TruthPolationConf(start, end, dur);
-                //new TruthPolation.TruthPolationGreedy(start, end, dur, ThreadLocalRandom.current());
+                new TruthPolation.TruthPolationGreedy(start, end, dur, ThreadLocalRandom.current());
         //..SoftMax..
         //new TruthPolation.TruthPolationRoulette(start, end, dur, ThreadLocalRandom.current());
         //new TruthPolationWithVariance(when, dur);
