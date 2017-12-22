@@ -22,7 +22,7 @@ public class CachedCompound implements Compound {
     /**
      * subterm vector
      */
-    private Subterms subterms;
+    private final Subterms subterms;
 
 
     /**
@@ -50,8 +50,8 @@ public class CachedCompound implements Compound {
 
         this.hash = Util.hashCombine((this.subterms = subterms).hashCode(), op.id);
 
-        this._structure = Compound.super.structure();
-        this._volume = Compound.super.volume();
+        this._structure = subterms.structure() | op.bit;
+        this._volume = subterms.volume();
     }
 
     @Override
@@ -128,38 +128,41 @@ public class CachedCompound implements Compound {
     public final boolean equals(@Nullable Object that) {
         if (this == that) return true;
 
-        if (that instanceof CachedCompound) {
-            CachedCompound them = (CachedCompound) that;
-            Subterms mySubs = subterms;
-            Subterms theirSubs = them.subterms;
-            if (mySubs != theirSubs) {
-                if (!mySubs.equals(theirSubs))
-                    return false;
+        if (!(that instanceof Compound) || hash != that.hashCode())
+            return false;
+        return Compound.equals(this, (Term) that);
 
-                if (mySubs instanceof TermVector && theirSubs instanceof TermVector) {
-                    //prefer the earlier instance for sharing
-                    if ((((TermVector) mySubs).serial) < (((TermVector) theirSubs).serial)) {
-                        them.subterms = mySubs;
-                    } else {
-                        this.subterms = theirSubs;
-                    }
-                }
-
-            }
-
-            //assert(dt()==DTERNAL && them.dt()==DTERNAL);
-            if (op != them.op)
-                return false;
-
-            equivalent((CachedCompound) that);
-            return true;
-
-        } else {
-            if (!(that instanceof Term) || hash != that.hashCode())
-                return false;
-
-            return Compound.equals(this, (Term) that);
-        }
+//        if (that instanceof CachedCompound) {
+////            CachedCompound them = (CachedCompound) that;
+////            Subterms mySubs = subterms;
+////            Subterms theirSubs = them.subterms;
+////            if (mySubs != theirSubs) {
+////                if (!mySubs.equals(theirSubs))
+////                    return false;
+////
+////                if (mySubs instanceof TermVector && theirSubs instanceof TermVector) {
+////                    //prefer the earlier instance for sharing
+////                    if ((((TermVector) mySubs).serial) < (((TermVector) theirSubs).serial)) {
+////                        them.subterms = mySubs;
+////                    } else {
+////                        this.subterms = theirSubs;
+////                    }
+////                }
+////
+////            }
+////
+////            //assert(dt()==DTERNAL && them.dt()==DTERNAL);
+////            if (op != them.op)
+////                return false;
+////
+////            equivalent((CachedCompound) that);
+////            return true;
+//
+//        } else {
+//
+//
+//            return Compound.equals(this, (Term) that);
+//        }
     }
 
     /**

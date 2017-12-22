@@ -75,9 +75,13 @@ public class Versioning<X>
     }
 
     /** returns remaining TTL */
-    public final int stop() {
-        int t = ttl;
+    public final void stop() {
         setTTL(0);
+    }
+
+    public final int getAndStop() {
+        int t = ttl;
+        stop();
         return t;
     }
 

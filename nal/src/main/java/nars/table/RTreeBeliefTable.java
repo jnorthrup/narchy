@@ -1,6 +1,7 @@
 package nars.table;
 
 import com.google.common.collect.Iterators;
+import jcog.data.SimpleIntSet;
 import jcog.math.CachedFloatFunction;
 import jcog.sort.Top;
 import jcog.sort.Top2;
@@ -25,6 +26,7 @@ import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -754,7 +756,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
     private final static class ScanFilter extends TopN<TaskRegion> implements Predicate<TaskRegion> {
         int attemptsRemain;
 
-        final IntHashSet tried = new IntHashSet(16);
+        final SimpleIntSet tried = new SimpleIntSet(16);
 
         public ScanFilter(TaskRegion[] taskRegions, FloatFunction<TaskRegion> strongestTask, int maxTries) {
             super(taskRegions, strongestTask);

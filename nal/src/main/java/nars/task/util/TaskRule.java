@@ -75,7 +75,7 @@ public class TaskRule extends TaskMatch {
         @Override
         public void tryMatch() {
             accept(x, xy);
-            setTTL(0);
+            stop();
         }
 
     }

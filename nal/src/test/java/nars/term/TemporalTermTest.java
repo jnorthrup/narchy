@@ -1100,4 +1100,15 @@ public class TemporalTermTest {
 //        assertFalse("concurrent (by duration range)", Tense.after(3, 4, 3));
 //
 //    }
+
+    @Test public void testImpossibleSubtermWrong() throws Narsese.NarseseException {
+        Term sooper=$.$("(cam(0,0) &&+3 ({(0,0)}-->#1))");
+        Term sub = $.$("cam(0,0)");
+        assertTrue(sooper.contains(sub));
+        assertTrue(!sooper.impossibleSubTerm(sub));
+        assertEquals(0, sooper.subTimeSafe(sub));
+
+        //(({(0,0)}-->shape)&|cam(0,0))
+        //cam(0,0)
+    }
 }

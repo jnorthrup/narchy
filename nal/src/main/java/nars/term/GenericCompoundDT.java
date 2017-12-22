@@ -55,7 +55,7 @@ public class GenericCompoundDT /*extends ProxyTerm<Compound>*/ implements Compou
         }
 
 
-        if (dt!=DTERNAL && dt < 0 && op == CONJ && s.subs()==2) {
+        if (dt != DTERNAL && dt < 0 && op == CONJ && s.subs() == 2) {
             //make sure it's always positive so there is only one form of the commutive equivalent
             if (s.sub(0).equals(s.sub(1)))
                 dt = -dt; //Math.abs(dt);
@@ -162,12 +162,11 @@ public class GenericCompoundDT /*extends ProxyTerm<Compound>*/ implements Compou
     }
 
 
-
-
     @Override
     public boolean equals(Object that) {
         if (this == that) return true;
-
+        if (!(that instanceof Compound))
+            return false;
 
         if (that instanceof GenericCompoundDT) {
             GenericCompoundDT cthat = (GenericCompoundDT) that;
@@ -193,11 +192,9 @@ public class GenericCompoundDT /*extends ProxyTerm<Compound>*/ implements Compou
 
         } else {
 
-            if (!(that instanceof Term) || hashDT != that.hashCode())
-                return false;
-
-            return Compound.equals(this, (Term)that);
+            return (hashDT == that.hashCode()) && Compound.equals(this, (Term) that);
         }
+
     }
 
 
@@ -277,9 +274,6 @@ public class GenericCompoundDT /*extends ProxyTerm<Compound>*/ implements Compou
     public final int dt() {
         return dt;
     }
-
-
-
 
 
     //    @Override

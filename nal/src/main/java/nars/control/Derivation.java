@@ -562,13 +562,13 @@ public class Derivation extends ProtoDerivation {
 
         activator.commit(nar);
 
-        //experimental normalization
-        final float[] priSum = {0};
-        derivations.values().forEach(dd -> priSum[0] = dd.priElseZero());
-        if (priSum[0] > 1f) {
-            float factor = 1f/priSum[0];
-            derivations.values().forEach(dd -> dd.priMult(factor));
-        }
+//        //experimental normalization
+//        final float[] priSum = {0};
+//        derivations.values().forEach(dd -> priSum[0] = dd.priElseZero());
+//        if (priSum[0] > 1f) {
+//            float factor = 1f/priSum[0];
+//            derivations.values().forEach(dd -> dd.priMult(factor));
+//        }
 
         int s = derivations.size();
         if (s > 0) {

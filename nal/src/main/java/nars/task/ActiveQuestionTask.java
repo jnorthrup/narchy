@@ -95,7 +95,7 @@ public class ActiveQuestionTask extends NALTask implements Consumer<Task> {
         public void tryMatch() {
             //accept(x, xy);
             this.match = true;
-            setTTL(0); //accept only one
+            stop(); //accept only one
         }
 
     }

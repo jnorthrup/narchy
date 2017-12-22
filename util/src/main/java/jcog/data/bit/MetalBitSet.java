@@ -159,11 +159,11 @@ abstract public class MetalBitSet {
 
     }
 
-    public static MetalBitSet bits(int choices) {
-        if (choices < 32) {
+    public static MetalBitSet bits(int size) {
+        if (size < 32) {
             return new IntBitSet();
         } else {
-            return new LongArrayBitSet(choices);
+            return new LongArrayBitSet(size);
         }
     }
 }

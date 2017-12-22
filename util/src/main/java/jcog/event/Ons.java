@@ -31,10 +31,10 @@ public class Ons extends FasterList<On> {
         clear();
     }
 
-    public Ons add(On<?>... elements) {
-        Collections.addAll(this, elements);
-        return this;
-    }
+//    public Ons add(On<?>... elements) {
+//        Collections.addAll(this, elements);
+//        return this;
+//    }
 
 
 }
