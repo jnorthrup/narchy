@@ -1,14 +1,9 @@
 package nars.control;
 
 import com.google.common.io.ByteArrayDataOutput;
-import jcog.Util;
 import jcog.data.byt.DynBytes;
-import nars.IO;
 import nars.Op;
-import nars.Task;
 import nars.term.Term;
-import nars.term.Termed;
-import nars.term.pred.PrediTerm;
 import nars.term.subst.Unify;
 import nars.truth.Truth;
 import org.apache.commons.lang3.ArrayUtils;
@@ -43,7 +38,8 @@ public abstract class ProtoDerivation extends Unify {
     /**
      * choices mapping the available post targets
      */
-    public final RoaringBitmap preToPost = new RoaringBitmap();
+    public final RoaringBitmap can = new RoaringBitmap();
+    public int[] will = ArrayUtils.EMPTY_INT_ARRAY;
 
     public ProtoDerivation(@Nullable Op type, Random random, int stackMax, int initialTTL) {
         super(type, random, stackMax, initialTTL);
@@ -103,8 +99,9 @@ public abstract class ProtoDerivation extends Unify {
             derivation.ttl = Integer.MAX_VALUE;
             derivation.deriver.what.test(derivation);
 
-            int[] result = derivation.preToPost.toArray();
-            if (result.length == 0) return ArrayUtils.EMPTY_INT_ARRAY; //use the common zero array reference
+            int[] result = derivation.can.toArray();
+            if (result.length == 0)
+                return ArrayUtils.EMPTY_INT_ARRAY; //use the common zero array reference
 
             //dont retain references to the rules or the derivation if cached
             this.derivation = null;

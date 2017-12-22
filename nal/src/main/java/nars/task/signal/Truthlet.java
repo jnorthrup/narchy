@@ -76,6 +76,11 @@ abstract public class Truthlet implements Truth {
                 flat(start, end, freqOn, evi), freqOff, evi
         );
     }
+    public static Truthlet step(float freqBefore, long start, float freqOn, long end, float freqAfter, float evi) {
+        return new StepTruthlet(
+                freqBefore, flat(start, end, freqOn, evi), freqAfter, evi
+        );
+    }
 
     public static Truthlet flat(long start, long end, float freq, float evi) {
         return new FlatTruthlet(start, end, freq, evi);

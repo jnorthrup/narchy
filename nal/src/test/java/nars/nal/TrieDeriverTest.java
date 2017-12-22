@@ -6,7 +6,7 @@ import nars.NARS;
 import nars.Narsese;
 import nars.control.Derivation;
 import nars.control.Deriver;
-import nars.term.pred.PrediTerm;
+import nars.derive.DeriverRoot;
 import nars.derive.TrieDeriver;
 import nars.derive.instrument.DebugDerivationPredicate;
 import nars.derive.rule.PremiseRule;
@@ -14,6 +14,7 @@ import nars.derive.rule.PremiseRuleSet;
 import nars.index.term.PatternIndex;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.pred.PrediTerm;
 import nars.test.TestNAR;
 import net.byteseek.utils.collections.IdentityHashSet;
 import org.eclipse.collections.api.tuple.Pair;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static nars.Op.QUEST;
@@ -36,8 +38,8 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TrieDeriverTest {
 
 
-
-    @Test public void printTrie() {
+    @Test
+    public void printTrie() {
 
         Deriver.print(NARS.tmp(), System.out);
     }
@@ -73,7 +75,7 @@ public class TrieDeriverTest {
         };
 
 
-        PrediTerm d = the(new PremiseRuleSet(idx, NARS.shell(),
+        DeriverRoot d = the(new PremiseRuleSet(idx, NARS.shell(),
                 "Y, Y |- (?1 &&+0 Y), ()",
                 "X, X |- (?1 &&+- X), ()"
         ));
@@ -95,7 +97,7 @@ public class TrieDeriverTest {
         //assertTrue(d.trie.getSummary().contains("..+"));
     }
 
-static PrediTerm<Derivation> the(PremiseRuleSet r) {
+    static DeriverRoot the(PremiseRuleSet r) {
         return TrieDeriver.the(r, (x) -> x);
     }
 
@@ -116,19 +118,21 @@ static PrediTerm<Derivation> the(PremiseRuleSet r) {
         PremiseRuleSet src =
                 new PremiseRuleSet(parsed, pi, NARS.shell());
         assertNotEquals(0, src.size());
-        PrediTerm<Derivation> d = the(src);
+        DeriverRoot d = the(src);
 
         if (debug) {
             //d.printRecursive();
-            d = d.transform(DebugDerivationPredicate::new);
+            PrediTerm<Derivation> dd = d.what.transform(DebugDerivationPredicate::new);
         }
 
         Set<Term> byEquality = new HashSet();
         Set<Term> byIdentity = new IdentityHashSet();
-        d.recurseTerms(a -> {
+        Consumer<Term> adder = a -> {
             byEquality.add(a);
             byIdentity.add(a);
-        });
+        };
+        d.what.recurseTerms(adder);
+        d.can.recurseTerms(adder);
 
 //        if (debug) {
 //            System.out.println("           volume: " + d.volume());
@@ -170,7 +174,7 @@ static PrediTerm<Derivation> the(PremiseRuleSet r) {
     public void testConclusionFold() throws Narsese.NarseseException {
 
         TestNAR t = test(64,
-        "(A --> B), C, task(\"?\") |- (A --> C), (Punctuation:Question)",
+                "(A --> B), C, task(\"?\") |- (A --> C), (Punctuation:Question)",
                 "(A --> B), C, task(\"?\") |- (A ==> C), (Punctuation:Question)"
         );
 //        PrediTerm<Derivation> d = t.nar.derivation().deriver;

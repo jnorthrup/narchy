@@ -137,6 +137,7 @@ public class Derivation extends ProtoDerivation {
     public TruthOperator truthFunction;
 
 
+
 //    private transient Term[][] currentMatch;
 
 //    public /*static*/ final Cache<Transformation, Term> transformsCache; //works in static mode too
@@ -307,7 +308,6 @@ public class Derivation extends ProtoDerivation {
         super.reset();
 
         anon.clear();
-        preToPost.clear();
 
         this.task = this.belief = null;
 
@@ -368,10 +368,13 @@ public class Derivation extends ProtoDerivation {
     }
 
     /**
+     * setup the derivation for the ProtoDerivation stage
+     *
      * must call reset() immediately before or after calling this.
+     *
      * TODO move some of these to a superclass method which sets the variables in its scope
      */
-    public void set(Task _task, final Task _belief, Term _beliefTerm) {
+    public void proto(Task _task, final Task _belief, Term _beliefTerm) {
 
 
         final Task task = this.task = anon.put(this._task = _task);
@@ -392,8 +395,18 @@ public class Derivation extends ProtoDerivation {
         this._taskStruct = taskTerm.structure();
         this._taskOp = taskTerm.op().id;
 
+        this._beliefStruct = beliefTerm.structure();
+
+        Op bOp = beliefTerm.op();
+        this._beliefOp = bOp.id;
+
         setTruth();
 
+
+    }
+
+    /** called after protoderivation has returned some possible Try's */
+    public boolean derive() {
 //        int ttv = taskTerm.vars();
 //        if (ttv > 0 && bt.vars() > 0) {
 //            bt = bt.normalize(ttv); //shift variables up to be unique compared to taskTerm's
@@ -434,16 +447,14 @@ public class Derivation extends ProtoDerivation {
 //                            Stamp.overlapFraction(taskStamp, beliefStamp),
 //                            Stamp.cyclicity(beliefStamp)
 //                    );
-                    Math.max(task.isCyclic() ? 1 : 0, Stamp.overlapFraction(taskStamp, beliefStamp));
+                    (task.isCyclic() || belief.isCyclic()) ?
+                            1 :
+                            Stamp.overlapFraction(taskStamp, beliefStamp);
+
         } else {
             this.overlapDouble = 0;
         }
 
-
-        this._beliefStruct = beliefTerm.structure();
-
-        Op bOp = beliefTerm.op();
-        this._beliefOp = bOp.id;
 
         this.eternal = task.isEternal() && (_belief == null || _belief.isEternal());
         this.temporal = !eternal || (taskTerm.isTemporal() || (_belief != null && beliefTerm.isTemporal()));
@@ -469,12 +480,8 @@ public class Derivation extends ProtoDerivation {
                 Math.min(premiseEviSingle, beliefTruth.evi()) : //to be fair to the lesser confidence
                 premiseEviSingle;
 
-    }
 
-    public void derive(int ttl) {
-        setTTL(ttl);
-        assert (ttl > 0);
-        deriver.test(this);
+        return true;
     }
 
     @Override
@@ -538,7 +545,6 @@ public class Derivation extends ProtoDerivation {
     public void clear() {
         derivations.clear();
         termutes.clear();
-        preToPost.clear();
         time = ETERNAL;
         super.clear();
     }

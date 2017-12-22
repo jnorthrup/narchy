@@ -126,8 +126,8 @@ public abstract class Param extends Services<Term, NAR> {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmax = new MutableInteger(64);
-    public final MutableInteger matchTTLmin = new MutableInteger(16);
+    public final MutableInteger matchTTLmax = new MutableInteger(512);
+    public final MutableInteger matchTTLmin = new MutableInteger(256);
 
     /**
      * how much percent of a premise's allocated TTL can be used in the belief matching phase.
@@ -434,8 +434,8 @@ public abstract class Param extends Services<Term, NAR> {
         assert (dur > 0);
 
         TruthPolation t =
-                //new TruthPolation.TruthPolationBasic(start, end, dur);
-                TruthPolation.TruthPolationBasic.autoRange(start, end, dur, temporals);
+                new TruthPolation.TruthPolationBasic(start, end, dur);
+                //TruthPolation.TruthPolationBasic.autoRange(start, end, dur, temporals);
                 //new TruthPolation.TruthPolationConf(start, end, dur);
         //new TruthPolation.TruthPolationConf(start, end, dur);
                 //new TruthPolation.TruthPolationGreedy(start, end, dur, ThreadLocalRandom.current());

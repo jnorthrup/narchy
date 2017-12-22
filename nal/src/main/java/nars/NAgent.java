@@ -117,7 +117,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         ).relax(0.01f);
 
         this.happy = new ActionInfluencingSensorConcept(happyTerm, happyValue);
-        alwaysWant(happy, nar.confDefault(GOAL)/2f);
+        alwaysWant(happy, nar.confDefault(GOAL));
 
 
 

@@ -9,14 +9,12 @@ import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import nars.NAR;
 import nars.Op;
-import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.subst.UnifySubst;
-import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +23,6 @@ import java.util.Collection;
 import java.util.function.ToLongFunction;
 
 import static nars.Op.BELIEF;
-import static nars.Op.IMPL;
 import static nars.link.Tasklinks.linkTask;
 import static nars.time.Tense.ETERNAL;
 
@@ -227,7 +224,7 @@ public class Premise {
 
         //assert (!(beliefTerm instanceof Bool)): "beliefTerm boolean; termLink=" + termLink + ", belief=" + belief;
 
-        d.reset().set(task, belief, beliefTerm);
+        d.reset().proto(task, belief, beliefTerm);
         return d;
     }
 
@@ -256,8 +253,13 @@ public class Premise {
 
     }
 
-
-
+    @Override
+    public String toString() {
+        return "Premise(" +
+                taskLink +
+                " * " + termLink +
+                ')';
+    }
 
 
 //    public void merge(Premise incoming) {

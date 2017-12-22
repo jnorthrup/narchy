@@ -18,7 +18,6 @@ import nars.truth.Truth;
 import nars.truth.Truthed;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
-import org.eclipse.collections.impl.list.mutable.FastList;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectLongHashMap;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -394,6 +393,7 @@ public class Revision {
         factor *= joint.factor;
         if (factor < Prioritized.EPSILON) return null;
 
+
         int dur = nar.dur();
 //        float intermvalDistance = dtDiff(a.term(), b.term()) /
 //                ((1 + Math.max(a.term().dtRange(), b.term().dtRange())) * dur);
@@ -406,16 +406,13 @@ public class Revision {
         long start = joint.unionStart;
         long end = joint.unionEnd;
 
-        Truth an = a.truth(start, end, dur);
+
+        Truth an = a.truth(start, end, dur, confMin);
         if (an == null)
             return null;
-        Truth bn = b.truth(start, end, dur);
+        Truth bn = b.truth(start, end, dur, confMin);
         if (bn == null)
             return null;
-        float aw = a.isQuestOrQuestion() ? 0.5f : an.conf(); //question
-        float bw = bn.conf();
-        if (aw < confMin && bw < confMin)
-            return null; //fail if both are below
 
         Truth rawTruth = revise(an, bn, factor, c2wSafe(confMin));
         if (rawTruth == null)
@@ -424,7 +421,7 @@ public class Revision {
         float maxEviAB = Math.max(an.evi(), bn.evi());
         float evi = rawTruth.evi();
         if (maxEviAB < evi) {
-            //more evidence overlap indicates redundant information, so reduce the confWeight (measure of evidence) by this amount
+            //more evidence overlap indicates redundant information, so reduce the increase in confWeight (measure of evidence) by this amount
             //TODO weight the contributed overlap amount by the relative confidence provided by each task
             float overlapDiscount = Stamp.overlapFraction(a.stamp(), b.stamp());
             //        factor *= overlapDiscount;
@@ -439,8 +436,8 @@ public class Revision {
         }
 
 
-        Truth finalTruth = rawTruth.dither(nar);
-        if (finalTruth == null)
+        Truth cTruth = rawTruth.dither(nar);
+        if (cTruth == null)
             return null;
 
 
@@ -456,78 +453,73 @@ public class Revision {
         assert (a.punc() == b.punc());
 
 
-
-        float aProp = aw / (aw + bw);
+        float aProp = a.isQuestOrQuestion() ? 0.5f : an.evi() / (an.evi() + bn.evi());
 
         Term cc = null;
 
         Term at = a.term();
         Term bt = b.term();
+        if (!at.equals(bt)) {
 
-        //Term atConceptual = at.conceptual();
-        //if (Param.DEBUG) assert(bt.conceptual().equals(atConceptual)): at + " and " + bt + " may not belong in the same concept";
+            //Term atConceptual = at.conceptual();
+            //if (Param.DEBUG) assert(bt.conceptual().equals(atConceptual)): at + " and " + bt + " may not belong in the same concept";
 
-        for (int i = 0; i < Param.MAX_TERMPOLATE_RETRIES; i++) {
-            Term t;
-            if (at.equals(bt)) {
-                t = at;
-                i = Param.MAX_TERMPOLATE_RETRIES; //no need to retry
-            } else {
-                try {
+            for (int i = 0; i < Param.MAX_TERMPOLATE_RETRIES; i++) {
+                Term t;
+                if (at.equals(bt)) {
+                    t = at;
+                    i = Param.MAX_TERMPOLATE_RETRIES; //no need to retry
+                } else {
                     long dt = bs - as;
                     t = intermpolate(at, dt, bt, aProp, nar);
                     if (t == null || !t.op().conceptualizable)
                         continue;
 
-                } catch (Throwable ett) {
-                    //TODO this probably means conjunction need to be merged by events
-                    if (Param.DEBUG_EXTRA)
-                        logger.warn("{} + {} ==> {}", at, bt, ett.getMessage());
-                    continue;
-                    //return null;
+                }
+
+
+                ObjectBooleanPair<Term> ccp = Task.tryContent(t, a.punc(), true);
+                if (ccp != null) {
+
+                    cc = ccp.getOne();
+                    assert (cc.isNormalized());
+
+                    if (ccp.getTwo())
+                        cTruth = cTruth.neg();
+                    break;
                 }
             }
 
+            if (cc == null)
+                return null;
 
-            ObjectBooleanPair<Term> ccp = Task.tryContent(t, a.punc(), true);
-            if (ccp != null) {
 
-                cc = ccp.getOne();
-                assert (cc.isNormalized());
+            //        if (cc.op() == CONJ) {
+            //            long mid = Util.lerp(aProp, b.mid(), a.mid());
+            //            long range = cc.op() == CONJ ?
+            //                    cc.dtRange() :
+            //                    (Util.lerp(aProp, b.range(), a.range()));
+            //            start = mid - range / 2;
+            //            end = start + range;
+            //        } else {
+            //            if (u > s) {
+            //                start = end = Util.lerp(aProp, b.mid(), a.mid());
+            //            } else {
 
-                if (ccp.getTwo())
-                    finalTruth = finalTruth.neg();
-                break;
-            }
+            //            }
+            //        }
+        } else {
+            cc = at;
         }
 
-        if (cc == null)
-            return null;
 
-
-        //        if (cc.op() == CONJ) {
-//            long mid = Util.lerp(aProp, b.mid(), a.mid());
-//            long range = cc.op() == CONJ ?
-//                    cc.dtRange() :
-//                    (Util.lerp(aProp, b.range(), a.range()));
-//            start = mid - range / 2;
-//            end = start + range;
-//        } else {
-//            if (u > s) {
-//                start = end = Util.lerp(aProp, b.mid(), a.mid());
-//            } else {
-
-//            }
-//        }
-
-
-        if (equivalent(a, finalTruth, start, end, cc, nar))
+        if (equalOrWeaker(a, cTruth, start, end, cc, nar))
             return a;
-        if (equivalent(b, finalTruth, start, end, cc, nar))
+        if (equalOrWeaker(b, cTruth, start, end, cc, nar))
             return b;
 
         NALTask t = new NALTask(cc, a.punc(),
-                finalTruth,
+                cTruth,
                 now, start, end,
                 Stamp.zip(a.stamp(), b.stamp(), aProp) //get a stamp collecting all evidence from the table, since it all contributes to the result
         );
@@ -540,13 +532,16 @@ public class Revision {
 
         if (Param.DEBUG)
             t.log("Revection Merge");
+
         return t;
     }
 
-    public static boolean equivalent(Task input, Truth output, long start, long end, Term cc, NAR nar) {
-        Truth bt = input.truth();
-        if (input.conf() >= output.conf() && Util.equals(input.freq(), output.freq(), nar.freqResolution.asFloat())) {
-            return cc.equals(input.term()) && start == input.start() && end == input.end();
+    static boolean equalOrWeaker(Task input, Truth output, long start, long end, Term cc, NAR nar) {
+        Truth inTruth = input.truth();
+        if ((inTruth.conf() - output.conf() <= nar.confResolution.floatValue())) {
+            if (Util.equals(inTruth.freq(), output.freq(), nar.freqResolution.asFloat())) {
+                return cc.equals(input.term()) && start >= input.start() && end <= input.end();
+            }
         }
         return false;
     }

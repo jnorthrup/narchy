@@ -19,7 +19,7 @@ import static nars.time.Tense.XTERNAL;
  */
 public class TruthletTask extends SignalTask {
 
-    public final Truthlet truthlet;
+    public Truthlet truthlet;
 
     public TruthletTask(Term t, byte punct, Truthlet truth, NAR n) {
         this(t, punct, truth, n.time.nextStamp());
@@ -42,6 +42,13 @@ public class TruthletTask extends SignalTask {
             return; //no change
         else
             update(c, (tt)-> tt.truthlet.setTime(nextStart, nextEnd));
+    }
+
+    public void update(NAR n, Consumer<TruthletTask> t) {
+        Concept c = concept(n, true);
+        if (c != null) {
+            update(c, t);
+        }
     }
 
     public void update(Concept c, Consumer<TruthletTask> t) {
@@ -113,4 +120,20 @@ public class TruthletTask extends SignalTask {
     public void updateEnd(Concept c, long nextEnd) {
         updateTime(c, start(), nextEnd);
     }
+
+    public void truth(Truthlet newTruthlet, NAR n) {
+        Concept c = concept(n, true);
+        if (c!=null) {
+            truth(newTruthlet, c);
+        }
+    }
+
+    public void truth(Truthlet newTruthlet, Concept c) {
+        if (truthlet!=newTruthlet) {
+            update(c, (tt) -> {
+                tt.truthlet = newTruthlet;
+            });
+        }
+    }
+
 }

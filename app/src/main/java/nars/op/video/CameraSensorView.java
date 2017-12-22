@@ -22,7 +22,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
     private final NAR nar;
     private DurService on;
     private float maxConceptPriority;
-    private long now;
+    private long start, end;
     int dur;
 
     public CameraSensorView(Sensor2D cam, NAgent a) {
@@ -47,8 +47,10 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
 
     public void accept(NAR nn) {
-        now = nn.time();
+        long now = nn.time();
         dur = nn.dur();
+        this.start = now - dur/2;
+        this.end = now + dur/2;
         maxConceptPriority = 1;
         update();
 //            nar instanceof Default ?
@@ -61,10 +63,10 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
 
         TaskConcept s = cam.matrix[x][y];
-        Truth b = s.beliefs().truth(now, nar);
+        Truth b = s.beliefs().truth(start, end, nar);
         float bf = b != null ? b.freq() : 0.5f;
 
-        Truth d = s.goals().truth(now, nar);
+        Truth d = s.goals().truth(start, end, nar);
         float R = bf*0.75f, G = bf*0.75f, B = bf*0.75f;
         if (d!=null) {
             float f = d.expectation();

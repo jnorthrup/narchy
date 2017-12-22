@@ -154,12 +154,13 @@ public class FasterList<X> extends FastList<X> {
         return items;
     }
 
-    public void compact() {
+    public FasterList<X> compact() {
         Object[] i = items;
         int s = size;
         if (i.length != s) {
             items = Arrays.copyOf(items, size);
         }
+        return this;
     }
 
     /**

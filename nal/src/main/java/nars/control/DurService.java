@@ -7,7 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * executes approximately once every N durations
@@ -55,6 +57,16 @@ abstract public class DurService extends NARService implements Runnable {
             @Override
             protected void run(NAR n, long dt) {
                 r.accept(n);
+            }
+        };
+    }
+
+    public static DurService onWhile(NAR nar, Predicate<NAR> r) {
+        return new DurService(nar) {
+            @Override protected void run(NAR n, long dt) {
+                if (!r.test(n)) {
+                    off();
+                }
             }
         };
     }

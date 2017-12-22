@@ -133,7 +133,7 @@ public class Signal {
         }
 
         TruthletTask s = new TruthletTask(c.term(), punc,
-                    new SustainTruthlet(new LinearTruthlet(start, fNext, end, fNext, t.evi())),
+                    new SustainTruthlet(new LinearTruthlet(start, fNext, end, fNext, t.evi()), dur),
                     stamp);
 
         s.priMax(pri.asFloat());

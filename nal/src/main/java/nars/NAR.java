@@ -1526,7 +1526,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
     public void conceptualize(Term term, Consumer<Concept> with) {
         if (exe.concurrent()) {
-            terms.getAsync(term, true).thenAccept((t) -> with.accept((Concept) t) /* HACK */);
+            terms.conceptAsync(term, true, with);
         } else {
             Concept x = conceptualize(term);
             if (x != null) {

@@ -200,9 +200,9 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
                 Task c = Revision.merge(a, b, start, nar);
                 if (c != null) {
 
-                    if (c.equals(a))
+                    if (c == a) //c.equals(a))
                         return a;
-                    if (c.equals(b))
+                    if (c == b) //c.equals(b))
                         return b;
 
                     int dur = nar.dur();

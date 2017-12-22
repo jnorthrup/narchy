@@ -2,44 +2,46 @@ package nars.derive;
 
 import jcog.memoize.HijackMemoize;
 import jcog.memoize.Memoize;
-import nars.$;
 import nars.control.Derivation;
 import nars.control.ProtoDerivation;
-import nars.term.pred.AbstractPred;
 import nars.term.pred.PrediTerm;
+import org.apache.commons.lang3.ArrayUtils;
 
-public final class DeriverRoot extends AbstractPred<Derivation> {
+/** what -> can */
+public final class DeriverRoot {
 
     public final PrediTerm<Derivation> what;
     public final Try can;
 
-
     public DeriverRoot(PrediTerm<Derivation> what, Try can) {
-        super($.p(what, can ));
+        //this.id = ($.p(what, can ));
         this.what = what;
         this.can = can;
     }
 
-    Memoize<ProtoDerivation.PremiseKey,int[]> cache =
+    Memoize<ProtoDerivation.PremiseKey,int[]> whatCached =
             new HijackMemoize<>(ProtoDerivation.PremiseKey::solve,
                     64 * 1024, 5, false);
 
-    @Override
-    public boolean test(Derivation x) {
-        int ttl = x.ttl;
-
-
-        int[] preToPost = cache.apply(new ProtoDerivation.PremiseKey(x));
-        if (preToPost.length > 0) {
-
-            x.preToPost.add(preToPost);
-
-            x.ttl = ttl;  //HACK forward the specified TTL for use during the possibility phase
-
-            can.test(x);
-        }
-
-        return true;
+    /** 1. CAN (proto) stage */
+    public boolean proto(Derivation x) {
+        x.can.clear();
+        int[] trys = x.will = whatCached.apply(new ProtoDerivation.PremiseKey(x));
+        return trys.length > 0 ? true : false;
     }
 
+    /** 2. TRY stage */
+    public void derive(Derivation x, int ttl) {
+        if (x.derive()) {
+            x.setTTL(ttl);
+            can.test(x);
+        }
+    }
+
+    public void printRecursive() {
+
+        what.printRecursive();
+        can.printRecursive();
+
+    }
 }

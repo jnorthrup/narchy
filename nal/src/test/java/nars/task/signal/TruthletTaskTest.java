@@ -44,7 +44,7 @@ public class TruthletTaskTest {
         float conf = 0.9f;
 
         RangeTruthlet s = Truthlet.slope(0, 1f, 3, 0f, c2w(conf));
-        for (Truthlet t : new Truthlet[]{s, new SustainTruthlet(s)}) {
+        for (Truthlet t : new Truthlet[]{s, new SustainTruthlet(s, 1)}) {
 
             NAR n = NARS.tmp();
             Term x = $.the("x");

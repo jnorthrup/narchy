@@ -1,6 +1,7 @@
 package nars.task.signal;
 
 import jcog.Skill;
+import nars.NAR;
 import nars.Param;
 
 /** fades evidence before the beginning and after the end of a defined RangeTruthlet
@@ -14,32 +15,45 @@ import nars.Param;
 @Skill({"Sustain","Audio_feedback"})
 public class SustainTruthlet extends ProxyTruthlet<RangeTruthlet> {
 
-    public SustainTruthlet(RangeTruthlet r) {
+    int dur;
+
+    public SustainTruthlet(RangeTruthlet r, NAR nar) {
+        this(r, nar.dur());
+    }
+
+    public SustainTruthlet(RangeTruthlet r, int dur) {
         super(r);
+        this.dur = dur;
     }
 
     @Override
     public void truth(long when, float[] freqEvi) {
-        super.truth(when, freqEvi);
-        if (!containsTime(when) && freqEvi[0] != freqEvi[0]) {
 
-            long dist;
-            long start = start();
+        long dist;
+        long start, end;
 
-            long w;
-            //nearest endpoint
-            if (when < start) {
-                w = start;
-                dist = Math.abs(start - when);
-            } else {
-                dist = Math.abs(when - (w = end()));
-            }
+        long w;
+        //nearest endpoint
+        if (when < (start=start())) {
+            dist = Math.abs((w = start) - when);
+        } else if (when > (end=end())) {
+            dist = Math.abs(when - (w = end));
+        } else {
+            dist = 0; //contained; use full internal value
+            w = when;
+        }
 
-            super.truth(w, freqEvi);
+        super.truth(w, freqEvi);
+        if (dist > 0) {
             float f = freqEvi[0];
             if (f == f)
-                freqEvi[1] = (float) Param.evi(freqEvi[1], dist, /* dur */ 1 + range() / 2); //dist is relative to the event's range
-
+                freqEvi[1] = (float) Param.evi(freqEvi[1], dist, /* dur */ dur()); //dist is relative to the event's range
         }
+
+    }
+
+    public long dur() {
+        //return 1 + range() / 2;
+        return dur;
     }
 }

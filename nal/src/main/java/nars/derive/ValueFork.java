@@ -162,7 +162,7 @@ public class ValueFork extends ForkDerivation<Derivation> {
 
         @Override
         public boolean test(Derivation derivation) {
-            derivation.preToPost.add(id);
+            derivation.can.add(id);
             return true;
         }
     }

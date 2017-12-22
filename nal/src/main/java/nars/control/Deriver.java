@@ -1,11 +1,14 @@
 package nars.control;
 
 import jcog.Util;
-import nars.*;
-import nars.derive.*;
+import nars.$;
+import nars.NAR;
+import nars.Param;
+import nars.Task;
+import nars.derive.DeriverRoot;
+import nars.derive.TrieDeriver;
 import nars.derive.rule.PremiseRuleSet;
 import nars.index.term.PatternIndex;
-import nars.term.pred.PrediTerm;
 
 import java.io.PrintStream;
 import java.util.function.Consumer;
@@ -23,7 +26,7 @@ import static nars.time.Tense.ETERNAL;
  */
 public class Deriver extends Causable {
 
-    private final Consumer<Predicate<Activate>> source;
+    private final Consumer<Predicate<Activate>> concepts;
     private final Cause[] subCauses;
     private float minPremisesPerConcept = 1;
     private float maxPremisesPerConcept = 3;
@@ -64,7 +67,7 @@ public class Deriver extends Causable {
                 $.func("deriver", $.the(serial++)) //HACK
         );
         this.deriver = deriver;
-        this.source = source;
+        this.concepts = source;
         this.nar = nar;
         this.subCauses = deriver.can.causes;
 
@@ -146,25 +149,31 @@ public class Deriver extends Causable {
         //hard limit on # of concepts processed. since usually there will be >1 premises per concept, this will normally not be exhausted
         int conceptsRemain[] = new int[]{work};
 
-        source.accept(a -> {
+        now = nar.time();
 
-            now = nar.time();
+        concepts.accept(a -> {
 
-            for (Premise p : a.premises(nar, d.activator, premises(a))) {
+            for (Premise premise : a.premises(nar, d.activator, premises(a))) {
 
-                if (p.match(d, this::matchTime, matchTTL) != null) {
+                if (premise.match(d, this::matchTime, matchTTL) != null) {
 
-                    float strength =
-                            p.taskLink.priElseZero() * nar.amp(d._task); //absolute task * absolute concept
-                            //p.task.priElseZero()                                 //absolute
-                            //p.task.priElseZero() / nar.priDefault(p.task.punc()) //relative
+                    boolean derivable = deriver.proto(d);
+                    if (derivable) {
 
-                    int deriveTTL = Util.lerp(strength,ttlMin, ttlMax);
+                        float strength =
+                                premise.taskLink.priElseZero() * nar.amp(d._task); //absolute task * absolute concept
 
-                    d.derive(deriveTTL);
-//
-//                    if (--premisesRemain[0] <= 0)
-//                        return false; //done
+                        //p.task.priElseZero()                                 //absolute
+                        //p.task.priElseZero() / nar.priDefault(p.task.punc()) //relative
+
+                        int deriveTTL = Util.lerp(strength, ttlMin, ttlMax);
+
+                        deriver.derive(d, deriveTTL);
+                    }
+
+                    //System.err.println(derivable + " " + premise.taskLink.get() + "\t" + premise.termLink + "\t" + d.can + " ..+" + d.derivations.size());
+
+
                 }
             }
 
@@ -197,7 +206,8 @@ public class Deriver extends Causable {
     public static void print(NAR n, PrintStream p) {
         derivers(n).forEach(d -> {
             p.println(d);
-            TrieDeriver.print(d.deriver, p);
+            TrieDeriver.print(d.deriver.what, p);
+            TrieDeriver.print(d.deriver.can, p);
             p.println();
         });
     }

@@ -1630,7 +1630,16 @@ public enum Op {
 //        }
 //    }
 
-    private static boolean containEachOther(Term x, Term y, Predicate<Term> delim) {
+
+    public static boolean equalsOrContainEachOther(Term x, Term y) {
+        return x.unneg().equals(y.unneg()) || containEachOther(x, y);
+    }
+
+    public static boolean containEachOther(Term x, Term y) {
+        return containEachOther(x, y, recursiveCommonalityDelimeterStrong);
+    }
+
+    public static boolean containEachOther(Term x, Term y, Predicate<Term> delim) {
         int xv = x.volume();
         int yv = y.volume();
         if (xv == yv)

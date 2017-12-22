@@ -130,6 +130,14 @@ public class Services<X, C>  {
 
         default void delete() {        }
 
+
+        default boolean isOn() {
+            return state() == Services.ServiceState.On;
+        }
+
+        default boolean isOff() {
+            return state() == Services.ServiceState.Off;
+        }
     }
 
     public static abstract class AbstractService<C> extends AtomicReference<ServiceState> implements Service<C> {

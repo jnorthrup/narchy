@@ -122,8 +122,35 @@ public abstract class TermIndex implements TermContext {
             if (!y.op().conceptualizable)
                 return null;
         }
-        
+
         return (Concept)get(y, createIfMissing);
+    }
+
+    public final void conceptAsync(Termed x, boolean createIfMissing, Consumer<Concept> with) {
+
+        Term y;
+        if (x instanceof Concept) {
+            Concept ct = (Concept) x;
+            if (!ct.isDeleted()) {
+                with.accept(ct);
+                return; //assumes an existing Concept index isnt a different copy than what is being passed as an argument
+            }
+            //otherwise if it is deleted, continue
+            y = ct.term();
+        } else {
+            y = x.term().conceptual();
+            if (!y.op().conceptualizable)
+                return; //TODO error?
+        }
+
+        getAsync(y, createIfMissing).handle((t, e) -> {
+                    if (e!=null) {
+                        e.printStackTrace();
+                    } else {
+                        with.accept((Concept) t);
+                    }
+                    return this;
+                });
     }
 
     protected final void onRemove(Termed value) {

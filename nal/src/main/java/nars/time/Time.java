@@ -99,7 +99,13 @@ public abstract class Time implements Clock, Serializable {
     }
 
     private final void at(SchedTask event) {
-        pendingSched.add(event);
+        //pendingSched.add(event);
+        try {
+            pendingSched.put(event);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         long w = event.when;
         scheduledNext.updateAndGet((z) -> Math.min(z, w));
     }

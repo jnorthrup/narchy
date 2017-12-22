@@ -2,20 +2,37 @@ package nars.term.transform;
 
 import jcog.data.ArrayHashSet;
 import nars.Op;
+import nars.Task;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Terms;
+import nars.term.atom.Bool;
 import nars.term.sub.Subterms;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Predicate;
 
-import static nars.Op.CONJ;
-import static nars.Op.Temporal;
+import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
 @FunctionalInterface
 public interface Retemporalize extends CompoundTransform {
+
+
+    Predicate<Term> isCommutiveConjOrImpl = xx -> {
+        switch (xx.op()) {
+            case CONJ:
+                int xdt = xx.dt();
+                if (xdt == DTERNAL || xdt == 0 || xdt == XTERNAL)
+                    return true;
+                break;
+            case IMPL:
+                return true;
+        }
+        return xx.hasAny(IMPL);
+    };
 
     @Override
     int dt(Compound x);
@@ -35,16 +52,20 @@ public interface Retemporalize extends CompoundTransform {
             case CONJ: {
                 Subterms xs = x.subterms();
                 int n = xs.subs();
+
+                if (xs.OR(isCommutiveConjOrImpl))
+                    return XTERNAL;
+
                 if (((n == 2) &&
-                        (
-                                xs.isTemporal()
-                                        ||
-                                        (xs.sub(0).unneg().equals(xs.sub(1).unneg())))
+                        (//xs.isTemporal() ||
+                                (xs.sub(0).unneg().equals(xs.sub(1).unneg()))
+                                //Op.equalsOrContainEachOther(xs.sub(0), xs.sub(1))
+                    )
                 )) {
                     return XTERNAL;
-                } else {
-                    return DTERNAL; //simple
                 }
+
+                return DTERNAL; //simple, if possible
             }
             case IMPL: {
                 Subterms xs = x.subterms();
@@ -56,7 +77,6 @@ public interface Retemporalize extends CompoundTransform {
                 throw new UnsupportedOperationException();
         }
     };
-
 
     @Nullable
     @Override
@@ -77,11 +97,20 @@ public interface Retemporalize extends CompoundTransform {
                 List<Term> sl = s.list;
                 if (sl.size() > 1) {
                     sl.replaceAll((zz) -> zz.transform(Retemporalize.this));
-                    return CONJ.the(XTERNAL, sl);
+                    return CONJ.the(XTERNAL, sl).transform(this);
                 }
             }
             if (dt == dtNext && !xx.hasAny(Temporal))
                 return x; //no change
+
+            //HACK
+            Term c1 = CompoundTransform.super.transform(x, op, dtNext);
+            if (c1 instanceof Bool) {
+                //oops we need XTERNAL
+                return CompoundTransform.super.transform(x, op, XTERNAL);
+            } else {
+                return c1;
+            }
 
         } else {
 

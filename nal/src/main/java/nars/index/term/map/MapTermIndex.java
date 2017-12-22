@@ -34,7 +34,6 @@ public class MapTermIndex extends MaplikeTermIndex {
         }
     }
 
-    @NotNull
     @Override
     public String summary() {
         return concepts.size() + " concepts";

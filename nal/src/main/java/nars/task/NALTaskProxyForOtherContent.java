@@ -23,6 +23,11 @@ public class NALTaskProxyForOtherContent implements Task {
     }
 
     @Override
+    public String toString() {
+        return appendTo(null).toString();
+    }
+
+    @Override
     public void setCyclic(boolean b) {
         //ignore
     }

@@ -1,6 +1,7 @@
 package nars.link;
 
 import jcog.bag.Bag;
+import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
 import jcog.pri.PLink;
 import jcog.pri.Pri;
@@ -34,35 +35,37 @@ public enum TermLinks {
 
         if (term.subs() > 0) {
 
-            List<Termed> templates;
-
-            Set<Termed> tc =
+            ArrayHashSet<Termed> tc =
                     //new UnifiedSet<>(id.volume() /* estimate */);
-                    new HashSet<>(term.volume());
+                    new ArrayHashSet<>(term.volume());
 
-            TermLinks.templates(term, tc, layers(term));
+            if (!term.equals(term.conceptual())) {
+                throw new RuntimeException("templates only should be generated for rooted terms:\n\t" + term + "\n\t" + term.conceptual());
+            }
+
+            TermLinks.templates(term, tc, 0, layers(term));
 
             int tcs = tc.size();
-
             if (tcs > 0)
-                return new FasterList<>(tc.toArray(new Termed[tcs])); //store as list for compactness and fast iteration
+                return ((FasterList)tc.list).compact(); //store as list for compactness and fast iteration
             else
                 return emptyList();
+
         } else {
 
             //return List.of(term);
-            return List.of(); //atomic self term-link disabled
+            return emptyList(); //atomic self term-link disabled
         }
     }
 
     /**
      * recurses
      */
-    static void templates(Term root, Set<Termed> tc, int layersRemain) {
+    static void templates(Term _x, Set<Termed> tc, int depth, int maxDepth) {
 
-        Term b = root.unneg().root();
+        Term x = _x;
 
-        Op o = b.op();
+        Op o = x.op();
         switch (o) {
             case VAR_QUERY:
             case VAR_DEP:
@@ -72,18 +75,28 @@ public enum TermLinks {
 
         }
 
-        if (!tc.add(b))
+        if ((depth > 0 || selfTermLink(x)) && !(tc.add(x)))
             return; //already added
 
-        if ((layersRemain <= 1) || !o.conceptualizable)
+        if ((depth == maxDepth) || !o.conceptualizable)
             return;
 
-        Subterms bb = b.subterms();
+        Subterms bb = x.subterms();
         int bs = bb.subs();
         if (bs > 0) {
-            int r = layersRemain - 1;
-            bb.forEach(s -> templates(s, tc, r));
+            bb.forEach(s -> templates(s, tc, depth+1, maxDepth));
         }
+    }
+
+    /** determines ability to structural transform, so those terms which have no structural transforms should not link to themselves */
+    static boolean selfTermLink(Term b) {
+        switch (b.op()) {
+            case INH:
+            case SIM:
+            case IMPL:
+                return false;
+        }
+        return true;
     }
 
     /**

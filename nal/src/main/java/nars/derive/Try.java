@@ -49,19 +49,19 @@ public class Try extends AbstractPred<Derivation> {
     @Override
     public boolean test(Derivation d) {
 
-        RoaringBitmap choices = d.preToPost;
-        int N = choices.getCardinality();
+        int[] choices = d.will;
+        int N = choices.length;
         switch (N) {
             case 0:
                 return false;
             case 1:
 
-                branches[choices.first()].test(d);
+                branches[choices[0]].test(d);
 
                 break;
             default:
 
-                int[] c = choices.toArray();
+                int[] c = choices;
                 float[] w = Util.marginMax(N, x ->
                         Util.sum(Cause::value, ((ValueFork)(branches[c[x]])).causes), //sum of downstream cause values
                         1f / N, 0
@@ -75,8 +75,6 @@ public class Try extends AbstractPred<Derivation> {
 
                 break;
         }
-
-        choices.clear();
 
         return false;
     }
