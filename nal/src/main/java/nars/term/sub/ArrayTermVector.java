@@ -1,6 +1,7 @@
 package nars.term.sub;
 
 import jcog.list.ArrayIterator;
+import nars.Param;
 import nars.term.Term;
 import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 
@@ -104,7 +105,7 @@ public class ArrayTermVector extends TermVector {
 
     @Override
     public final Term[] arrayShared() {
-        return terms;
+        return Param.TERM_ARRAY_SHARE ? terms : terms.clone();
     }
 
     @Override

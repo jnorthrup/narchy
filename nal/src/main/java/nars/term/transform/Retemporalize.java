@@ -25,7 +25,7 @@ public interface Retemporalize extends CompoundTransform {
         switch (xx.op()) {
             case CONJ:
                 int xdt = xx.dt();
-                if (xdt == DTERNAL || xdt == 0 || xdt == XTERNAL)
+                if (xdt == DTERNAL || xdt == 0)
                     return true;
                 break;
             case IMPL:

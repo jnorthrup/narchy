@@ -447,7 +447,7 @@ public class Derivation extends ProtoDerivation {
 //                            Stamp.overlapFraction(taskStamp, beliefStamp),
 //                            Stamp.cyclicity(beliefStamp)
 //                    );
-                    (task.isCyclic() || belief.isCyclic()) ?
+                    (task.isCyclic() /* || belief.isCyclic()*/) ?
                             1 :
                             Stamp.overlapFraction(taskStamp, beliefStamp);
 
@@ -561,6 +561,14 @@ public class Derivation extends ProtoDerivation {
     public int commit(Consumer<Collection<DerivedTask>> target) {
 
         activator.commit(nar);
+
+        //experimental normalization
+        final float[] priSum = {0};
+        derivations.values().forEach(dd -> priSum[0] = dd.priElseZero());
+        if (priSum[0] > 1f) {
+            float factor = 1f/priSum[0];
+            derivations.values().forEach(dd -> dd.priMult(factor));
+        }
 
         int s = derivations.size();
         if (s > 0) {

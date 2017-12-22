@@ -42,6 +42,9 @@ public abstract class Param extends Services<Term, NAR> {
      */
     public static final float MUTATE_INT_CONTAINING_TERMS_RATE = 0.25f;
 
+    /** TODO eventually make it safe to set this to true */
+    public static final boolean TERM_ARRAY_SHARE = false;
+
 
     public final FloatParam forgetRate = new FloatParam(PriForget.FORGET_TEMPERATURE_DEFAULT, 0f, 2f);
 
@@ -126,8 +129,8 @@ public abstract class Param extends Services<Term, NAR> {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmax = new MutableInteger(512);
-    public final MutableInteger matchTTLmin = new MutableInteger(256);
+    public final MutableInteger matchTTLmax = new MutableInteger(256);
+    public final MutableInteger matchTTLmin = new MutableInteger(64);
 
     /**
      * how much percent of a premise's allocated TTL can be used in the belief matching phase.

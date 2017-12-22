@@ -39,8 +39,10 @@ public enum TermLinks {
                     //new UnifiedSet<>(id.volume() /* estimate */);
                     new ArrayHashSet<>(term.volume());
 
-            if (!term.equals(term.conceptual())) {
-                throw new RuntimeException("templates only should be generated for rooted terms:\n\t" + term + "\n\t" + term.conceptual());
+            if (Param.DEBUG_EXTRA) {
+                if (!term.equals(term.conceptual())) {
+                    throw new RuntimeException("templates only should be generated for rooted terms:\n\t" + term + "\n\t" + term.conceptual());
+                }
             }
 
             TermLinks.templates(term, tc, 0, layers(term));
@@ -65,45 +67,46 @@ public enum TermLinks {
 
         Term x = _x;
 
-        Op o = x.op();
-        switch (o) {
-            case VAR_QUERY:
-            case VAR_DEP:
-            case VAR_INDEP:
-                //return; //NO
-                break; //YES
-
-        }
+//        switch (o) {
+//            case VAR_QUERY:
+//            case VAR_DEP:
+//            case VAR_INDEP:
+//                //return; //NO
+//                break; //YES
+//
+//        }
 
         if ((depth > 0 || selfTermLink(x)) && !(tc.add(x)))
             return; //already added
 
-        if ((depth == maxDepth) || !o.conceptualizable)
+        Op o = x.op();
+        if ((++depth >= maxDepth) || !o.conceptualizable)
             return;
 
         Subterms bb = x.subterms();
         int bs = bb.subs();
         if (bs > 0) {
-            bb.forEach(s -> templates(s, tc, depth+1, maxDepth));
+            int nextDepth = depth;
+            bb.forEach(s -> templates(s.unneg(), tc, nextDepth, maxDepth));
         }
+    }
+
+
+    /** whether to allow formation of the premise */
+    public static boolean premise(Term task, Term term) {
+        return true;
     }
 
     /** determines ability to structural transform, so those terms which have no structural transforms should not link to themselves */
     static boolean selfTermLink(Term b) {
-        switch (b.op()) {
-            case INH:
-            case SIM:
-            case IMPL:
-                return false;
-        }
         return true;
     }
 
     /**
      * includes the host as layer 0, so if this returns 1 it will only include the host
      */
-    static int layers(Term host) {
-        switch (host.op()) {
+    static int layers(Term x) {
+        switch (x.op()) {
 
 
             case SETe:
@@ -135,7 +138,7 @@ public enum TermLinks {
 //                    return 3;
 
             default:
-                throw new UnsupportedOperationException("unhandled operator type: " + host.op());
+                throw new UnsupportedOperationException("unhandled operator type: " + x.op());
 
         }
     }

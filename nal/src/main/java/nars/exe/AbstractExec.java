@@ -24,7 +24,7 @@ abstract public class AbstractExec extends Exec {
 
     private final int CAPACITY;
 
-    protected Bag<Activate, Activate> active;
+    public Bag<Activate, Activate> active;
     //protected Baggie<Concept> active;
 
     protected AbstractExec(int capacity) {

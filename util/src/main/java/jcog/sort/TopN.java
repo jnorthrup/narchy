@@ -36,8 +36,9 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
 
     @Override
     public int add(E element, float elementRank, FloatFunction<E> cmp) {
-        //TODO TEST THIS
+
         int s = this.size;
+
         if (s == list.length) {
 //            assert (last() == min):
 //                    last() + "=last but min=" + min;
@@ -49,12 +50,6 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
         }
 
 
-        //identity test
-        for (int i = 0; i < s; i++) {
-            if (list[i] == element) {
-                return -1; //duplicate
-            }
-        }
 
         int r = super.add(element, elementRank, cmp);
         if (r >= 0) {

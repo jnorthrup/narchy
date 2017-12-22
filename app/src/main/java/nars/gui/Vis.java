@@ -315,18 +315,6 @@ public class Vis {
         return new ReflectionSurface<>(c);
     }
 
-    public static Surface audioCapture() {
-        AudioSource audio = new AudioSource(3, 20);
-        WaveCapture au = new WaveCapture(
-                audio,
-                //new SineSource(128),
-                20);
-
-        return row(
-                au.newMonitorPane(),
-                new FloatSlider(audio.gain)
-        );
-    }
 
     public static class EmotionPlot extends Grid implements Consumer<NAR> {
 

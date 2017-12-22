@@ -1,6 +1,5 @@
 package nars.control;
 
-import jcog.Util;
 import jcog.bag.Bag;
 import jcog.decide.Roulette;
 import jcog.list.FasterList;
@@ -18,24 +17,32 @@ import nars.link.TermLinks;
 import nars.term.Term;
 import nars.term.Termed;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+
+import static nars.link.Tasklinks.linkTask;
 
 /**
  * concept firing, activation, etc
  */
 public class Activate extends PLink<Concept> implements Termed {
 
-    /** controls the rate at which tasklinks 'spread' to interact with termlinks */
+    /**
+     * controls the rate at which tasklinks 'spread' to interact with termlinks
+     */
     static int termlinksPerTasklink = 3;
 
     public Activate(Concept c, float pri) {
         super(c, pri);
     }
 
-    /** hypothesize premises, up to a max specified # */
-    /*@NotNull*/ public Iterable<Premise> premises(NAR nar, BatchActivation ba, int premisesMax) {
+    /**
+     * hypothesize premises, up to a max specified #
+     */
+    /*@NotNull*/
+    public Iterable<Premise> premises(NAR nar, BatchActivation ba, int premisesMax) {
 
         assert (premisesMax > 0);
 
@@ -56,9 +63,11 @@ public class Activate extends PLink<Concept> implements Termed {
 
 
         //TODO add a termlink vs. tasklink balance parameter
-        int TERMLINKS_PROPAGATED =
-                premisesMax;
-                //(int) Math.ceil((float) Math.sqrt(premisesMax));
+        int TEMPLATES_LINKED_PER_TASKLINK =
+                //premisesMax;
+                Math.max(1, Math.round(id.templates().size()/((((float)(premisesMax) / termlinksPerTasklink)))));
+
+        //(int) Math.ceil((float) Math.sqrt(premisesMax));
 
 //        int tlSampled = Math.min(ntermlinks, TERMLINKS_SAMPLED);
 //        FasterList<PriReference<Term>> terml = new FasterList(tlSampled);
@@ -71,7 +80,7 @@ public class Activate extends PLink<Concept> implements Termed {
         long now = nar.time();
         int dur = nar.dur();
         int ntasklinks = tasklinks.size();
-        tasklinks.commit(PriForget.forget(tasklinks, linkForgetting, Pri.EPSILON, (r)-> new Tasklinks.TaskLinkForget(r, now, dur, tasklinks.capacity())));
+        tasklinks.commit(PriForget.forget(tasklinks, linkForgetting, Pri.EPSILON, (r) -> new Tasklinks.TaskLinkForget(r, now, dur, tasklinks.capacity())));
         if (ntasklinks == 0)
             return Collections.emptyList();
 
@@ -81,39 +90,54 @@ public class Activate extends PLink<Concept> implements Termed {
         List<Premise> next = new FasterList(premisesMax);
         final int[] remaining = {premisesMax};
 
-        ((TaskLinkCurveBag)tasklinks).sample(tasklink -> {
+        ((TaskLinkCurveBag) tasklinks).sample(tasklink -> {
 
-            int termlinksSampled = Math.min(Math.max(1,
-                    (int) Math.ceil(
-                        Util.normalize(tasklink.priElseZero(), tasklinks.priMin(), tasklinks.priMax())
-                            * termlinksPerTasklink)),
-                    remaining[0]);
+            int termlinksSampled = termlinksPerTasklink;
+//            int termlinksSampled = Math.min(Math.max(1,
+//                    (int) Math.ceil(
+//                            Util.normalize(tasklink.priElseZero(), tasklinks.priMin(), tasklinks.priMax())
+//                                    * termlinksPerTasklink)),
+//                    remaining[0]);
 
-            termlinks.sample(termlinksSampled, (termlink)->{
-                final Term term = termlink.get();
-                if (term != null) {
+            Task task = tasklink.get();
+            if (task != null) { //HACK
 
-                    Premise p = new Premise(tasklink, term,
 
-                            //targets:
-                            randomTemplateConcepts(conceptualizedTemplates, rng, TERMLINKS_PROPAGATED /* heuristic */, nar)
 
-                    );
+                //propagate this task via tasklinks inserted to random template concepts
+                //does not activate those concepts
+                //TODO also use BatchActivator
+                Collection<Concept> l = randomTemplateConcepts(
+                        conceptualizedTemplates, rng, TEMPLATES_LINKED_PER_TASKLINK /* heuristic */, nar);
+                if (l != null)
+                    linkTask(task, l);
 
-                    next.add(p);
+                Term tasklinkTerm = task.term();
 
-                }
+                termlinks.sample(termlinksSampled, (termlink) -> {
+                    final Term term = termlink.get();
 
-                --remaining[0];
-            });
+                    if (TermLinks.premise(tasklinkTerm, term)) {
+
+                        Premise p = new Premise(tasklink, term);
+
+                        next.add(p);
+                    }
+
+
+                    --remaining[0];
+                });
+            } else {
+                --remaining[0]; //safety misfire decrement
+            }
 
             return (remaining[0] > 0) ? Bag.BagSample.Next : Bag.BagSample.Stop;
-        }, (tl)->{
+        }, (tl) -> {
             Task x = tl.get();
             if (x == null)
                 return 0; //deleted
             float p = tl.pri();
-            if (p!=p)
+            if (p != p)
                 return 0; //deleted
             else
                 return p * nar.amp(x.cause());
@@ -145,8 +169,8 @@ public class Activate extends PLink<Concept> implements Termed {
 
             List<Concept> uu = $.newArrayList(count);
             Roulette.selectRouletteUnique(tts, (w) -> {
-                //return tt.get(w).volume(); //biased toward larger template components so the activation trickles down to atoms with less probabilty
-                return 1f; //flat
+                return tt.get(w).volume(); //biased toward larger template components so the activation trickles down to atoms with less probabilty
+                //return 1f; //flat
             }, (z) -> {
                 uu.add(tt.get(z));
                 return (uu.size() < count);

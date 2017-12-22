@@ -22,7 +22,7 @@ public class NARchy extends NARS {
 
     public static NAR ui() {
         NAR nar = new DefaultNAR(8, true)
-                .exe(new MultiExec(512, 2, 256))
+                .exe(new MultiExec(512, 2, 64))
 //                .exe(new AbstractExec(64) {
 //                    @Override
 //                    public boolean concurrent() {
@@ -81,6 +81,8 @@ public class NARchy extends NARS {
 
             this.op = new Opjects(nar);
             op.the("speech", this);
+
+            chatty();
         }
 
 
@@ -104,13 +106,15 @@ public class NARchy extends NARS {
 
         new Speech(nar);
 
-//            try {
-//                nar.believe($.$("(hear:$1 ==> speak:$1)"), Tense.Eternal);
-//                nar.believe($.$("(speak:$1 ==> hear:$1)"), Tense.Eternal);
-//                nar.goal($.$("(hear:#1 &| speak:#1)"), Tense.Eternal, 1f);
-//            } catch (Narsese.NarseseException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                //nar.believe($.$("(hear:$1 ==>+1 say:$1)"), Tense.Eternal);
+                //nar.believe($.$("(say:$1 ==>+1 hear:$1)"), Tense.Eternal);
+                nar.goal($.$("say(#1)"), Tense.Eternal, 1f);
+                nar.goal($.$("(hear:#1 &&+1 say:#1)"), Tense.Eternal, 1f);
+                nar.goal($.$("((hear(#1) &&+1 hear(#2)) &&+1 say(#1,#2))"), Tense.Eternal, 1f);
+            } catch (Narsese.NarseseException e) {
+                e.printStackTrace();
+            }
 
     }
 }

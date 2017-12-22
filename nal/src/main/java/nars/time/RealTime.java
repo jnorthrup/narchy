@@ -28,6 +28,7 @@ public abstract class RealTime extends Time {
         super();
         this.unitsPerSecod = unitsPerSecond;
         this.t = this.t0 = this.start = relativeToStart ? realtime() : 0L;
+        reset();
     }
 
 

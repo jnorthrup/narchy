@@ -143,6 +143,7 @@ public abstract class TermIndex implements TermContext {
                 return; //TODO error?
         }
 
+
         getAsync(y, createIfMissing).handle((t, e) -> {
                     if (e!=null) {
                         e.printStackTrace();

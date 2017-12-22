@@ -58,8 +58,10 @@ abstract public class DynamicTruthModel {
                     subEnd = end;
                 } else {
                     int dt = superterm.subTimeSafe(it, odt);
-                    if (dt==DTERNAL)
+                    if (dt==DTERNAL) {
+                        superterm.subTimeSafe(it, odt);
                         throw new RuntimeException(it + " not found in superterm: " + superterm + " -> " + Arrays.toString(inputs));
+                    }
                     //assert (dt != DTERNAL): it + " not found in superterm: " + superterm;
                     subStart = start + dt;
                     subEnd = end + dt;

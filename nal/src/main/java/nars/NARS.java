@@ -6,6 +6,7 @@ import nars.concept.builder.ConceptBuilder;
 import nars.concept.builder.DefaultConceptBuilder;
 import nars.control.Deriver;
 import nars.derive.rule.PremiseRuleSet;
+import nars.exe.AbstractExec;
 import nars.exe.Exec;
 import nars.exe.UniExec;
 import nars.index.term.PatternIndex;
@@ -239,19 +240,21 @@ public class NARS {
 
         public DefaultNAR(int nal, boolean threadSafe) {
 
-
-
             if (nal > 0)
                 deriverAdd(1, nal);
 
             if (threadSafe)
                 index = () -> new CaffeineIndex(64 * 1024);
 
+            if (nal >= 7) {
+                then((nn)->new STMLinkage(nn, 1, false));
+            }
         }
 
         @Override
         protected void init(NAR nar) {
 
+            nar.conceptActivation.set( 1f/((AbstractExec)nar.exe).active.capacity() );
 
             nar.termVolumeMax.set(38);
             //nar.confMin.setValue(0.05f);
@@ -260,7 +263,6 @@ public class NARS {
             nar.DEFAULT_GOAL_PRIORITY = 0.5f;
             nar.DEFAULT_QUEST_PRIORITY = nar.DEFAULT_QUESTION_PRIORITY = 0.5f;
 
-            new STMLinkage(nar, 1, false);
 
             nar.defaultWants();
 

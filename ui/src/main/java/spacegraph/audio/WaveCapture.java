@@ -70,10 +70,8 @@ public class WaveCapture extends Loop {
         Plot2D audioPlot = new Plot2D(bufferSamples, Plot2D.Line);//, bufferSamples, 450, 60);
         audioPlot.add(rawWave);
 
-        //Plot2D.BitmapWave wav2 = new Plot2D.BitmapWave();
         Plot2D audioPlot2 = new Plot2D(bufferSamples, Plot2D.Line);
         audioPlot2.add(wavelet1d);
-
 
         BitmapMatrixView freqHistory = new BitmapMatrixView(freqSamplesPerFrame, historyFrames, (x, y) -> {
             if (data == null)
@@ -84,15 +82,22 @@ public class WaveCapture extends Loop {
         });
 
 
-        Grid v = new Grid(VERTICAL,
+        Grid v = new Grid(
                 audioPlot,
-                audioPlot2, freqHistory);
+                audioPlot2,
+                freqHistory
+        );
+
+        if (source instanceof AudioSource)
+            v.children.add(new FloatSlider(((AudioSource)source).gain));
+
         eachBuffer.on(() -> {
             freqHistory.update();
             audioPlot.update();
             audioPlot2.update();
             //wav2.update();
         });
+
 
 //
 //        //noinspection OverlyComplexAnonymousInnerClass
@@ -360,21 +365,5 @@ public class WaveCapture extends Loop {
         return true;
     }
 
-    public static void main(String[] args) {
-        AudioSource audio = new AudioSource(7, 20);
-        WaveCapture au = new WaveCapture(
-                audio,
-                //new SineSource(128),
-                20);
-
-        SpaceGraph.window(row(
-                au.newMonitorPane(),
-                new FloatSlider(audio.gain)
-        ), 1200, 1200);
-
-//            b.setScene(new Scene(au.newMonitorPane(), 500, 400));
-//            b.show();
-//        });
-    }
 
 }

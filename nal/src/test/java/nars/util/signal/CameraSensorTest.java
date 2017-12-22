@@ -71,7 +71,7 @@ public class CameraSensorTest {
     }
 
     static void assertEquals(CameraSensor c, float[][] f, NAR n) {
-        final float tolerance = 0.1f;
+        final float tolerance = 0.35f;
         for (int i = 0; i < c.width; i++) {
             for (int j = 0; j < c.height; j++) {
                 SensorConcept p = c.matrix[i][j];

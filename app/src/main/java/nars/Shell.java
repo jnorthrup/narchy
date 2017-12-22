@@ -11,6 +11,7 @@ import com.googlecode.lanterna.terminal.IOSafeTerminal;
 import com.googlecode.lanterna.terminal.TerminalResizeListener;
 import com.googlecode.lanterna.terminal.swing.*;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
+import nars.audio.NARHear;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Scale;
 import spacegraph.SpaceGraph;
@@ -18,7 +19,6 @@ import spacegraph.Surface;
 import spacegraph.input.Finger;
 import spacegraph.layout.Grid;
 import spacegraph.layout.VSplit;
-import spacegraph.math.v2;
 import spacegraph.widget.console.ConsoleTerminal;
 import spacegraph.widget.slider.XYSlider;
 import spacegraph.widget.text.LabeledPane;
@@ -39,8 +39,10 @@ public class Shell {
 
     public Shell(NAR nar) {
 
-        //newSwingFrame(nar);
-        newGLFrame(nar);
+
+        shellGL(nar);
+        //shellSwing(nar);
+
     }
 
     public static class ConsoleWidget extends Widget {
@@ -90,7 +92,6 @@ public class Shell {
 
                 @Override
                 public void doLayout(int dtMS) {
-                    super.doLayout(dtMS);
 
                     float cc, rr;
                     float boundsAspect = h() / w();
@@ -107,6 +108,8 @@ public class Shell {
                     }
 
                     resize(Math.max(2, Math.round(cc)), Math.max(2, Math.round(rr)));
+
+                    super.doLayout(dtMS);
                 }
 
             };
@@ -116,19 +119,25 @@ public class Shell {
         }
     }
 
-    public void newGLFrame(NAR nar) {
+    public void shellGL(NAR nar) {
 
         ConsoleWidget c = new ConsoleWidget(new TextUI(nar).session(TERMINAL_DISPLAY_FPS));
 
+        NARHear audio = new NARHear(nar);
+        audio.runFPS(0.2f);
+        audio.sensors.keySet().forEach(s -> s.sensor.pri(()->0.05f));
+
+
         SpaceGraph.window(
-                c,
+                //c,
+                new VSplit(c, audio.newMonitorPane(), 0.1f),
                 1000, 800
         );
 
     }
 
 
-    public void newSwingFrame(NAR nar) {
+    public void shellSwing(NAR nar) {
 
         //DefaultTerminalFactory tf = new DefaultTerminalFactory();
         //tf.setForceTextTerminal(true);

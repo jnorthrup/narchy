@@ -1,7 +1,6 @@
 package nars.table;
 
 import com.google.common.collect.Iterators;
-import jcog.Util;
 import jcog.math.CachedFloatFunction;
 import jcog.sort.Top;
 import jcog.sort.Top2;
@@ -21,12 +20,11 @@ import nars.task.util.TimeRange;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.eclipse.collections.api.block.procedure.primitive.LongObjectProcedure;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectBooleanHashMap;
+import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -67,7 +65,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
 
     @Override
     public void update(SignalTask task, Runnable change) {
-         ((ConcurrentRTree<TaskRegion>) tree).write(treeRW -> {
+        ((ConcurrentRTree<TaskRegion>) tree).write(treeRW -> {
 
             boolean removed = treeRW.remove(task);
             if (!removed) {
@@ -112,13 +110,14 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
         final Task ete = eternal != null ? eternal.strongest() : null;
 
         int s = size();
-        x: if (s > 0) {
+        x:
+        if (s > 0) {
 
             if (start == ETERNAL) {
                 TaskRegion r = ((TaskRegion) tree.root().bounds());
                 if (r == null)
                     break x;
-                    //return ete != null ? ete.truth() : null;
+                //return ete != null ? ete.truth() : null;
 
                 start = r.start();
                 end = r.end();
@@ -130,9 +129,15 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
 
 
             int maxTruths = TRUTHPOLATION_LIMIT;
+
             int maxTries = (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY));
-            TopN<TaskRegion> tt = new TopN<>(new TaskRegion[maxTruths], strongestTask);
-            scan(tt, start-dur, end+dur, maxTries, RTreeBeliefTable.ONLY_NEED_ONE_AFTER_THAT_SCANNED_RANGE_THANKS);
+            maxTries = Math.min(s * 2 /* in case the same task is encountered twice HACK*/,
+                    maxTries);
+
+            //scan
+            ScanFilter tt = new ScanFilter(new TaskRegion[maxTruths], strongestTask, maxTries);
+
+            scan(tt, start - dur, end + dur, RTreeBeliefTable.ONLY_NEED_ONE_AFTER_THAT_SCANNED_RANGE_THANKS);
 
             if (!tt.isEmpty()) {
                 return Param.truth(ete, start, end, dur, tt);
@@ -171,8 +176,8 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
                 new CachedFloatFunction<>(t -> +ts.floatValueOf((Task) t));
 
         int maxTries = (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY));
-        Top2<TaskRegion> tt = new Top2<>(strongestTask);
-        scan(tt, start, end, maxTries, ONLY_NEED_ONE_AFTER_THAT_SCANNED_RANGE_THANKS);
+        ScanFilter tt = new ScanFilter(new TaskRegion[2], strongestTask, maxTries);
+        scan(tt, start, end, ONLY_NEED_ONE_AFTER_THAT_SCANNED_RANGE_THANKS);
 
         switch (tt.size()) {
 
@@ -180,11 +185,11 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
                 return null;
 
             case 1:
-                return tt.a.task();
+                return tt.first().task();
 
             default:
-                Task a = tt.a.task();
-                Task b = tt.b.task();
+                Task a = tt.first().task();
+                Task b = tt.last().task();
 
                 if (template != null) {
                     //choose if either one (but not both or neither) matches template's time
@@ -222,27 +227,21 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
      * however maybe the quality can be specified in terms that are compared
      * only after the pair has been scanned making the order irrelevant.
      */
-    private <X extends Collection> X scan(X u, long _start, long _end, int maxAttempts, BiPredicate<X, TimeRange> continueScanning) {
+    private void scan(ScanFilter update, long _start, long _end, BiPredicate<ScanFilter, TimeRange> continueScanning) {
 
 
         ((ConcurrentRTree<TaskRegion>) tree).readOptimistic((Space<TaskRegion> tree) -> {
 
-            u.clear(); //in case of optimisticRead, if tried twice
+            update.clear(); //in case of optimisticRead, if tried twice
 
             int s = tree.size();
             if (s == 0)
                 return;
             if (s == 1) {
-                tree.forEach(u::add);
+                tree.forEach(update::add);
                 return;
             }
 
-
-            int maxTries = Math.min(s*2 /* in case the same task is encountered twice HACK*/,
-                    maxAttempts);
-
-            //scan
-            Predicate<TaskRegion> update = new ScanLimiter(u, maxTries);
 
             TaskRegion bounds = (TaskRegion) (tree.root().bounds());
 
@@ -285,7 +284,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
 //                        tree.whileEachIntersecting(r.set(leftStart, leftMid), update);
 //                }
 
-                if (/*attempts[0] >= maxTries || */!continueScanning.test(u, r.set(leftStart, rightEnd)))
+                if (/*attempts[0] >= maxTries || */!continueScanning.test(update, r.set(leftStart, rightEnd)))
                     break;
 
                 leftMid = leftStart - 1;
@@ -309,8 +308,6 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
             } while (true);
 
         });
-
-        return u;
     }
 
     @Override
@@ -705,7 +702,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
 
     @Override
     public boolean removeTask(Task x) {
-        return tree.remove( x );
+        return tree.remove(x);
     }
 
 
@@ -719,7 +716,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
         tree.stats().print(out);
     }
 
-    private static final BiPredicate<Collection, TimeRange> ONLY_NEED_ONE_AFTER_THAT_SCANNED_RANGE_THANKS = (u, r) -> {
+    private static final BiPredicate<ScanFilter, TimeRange> ONLY_NEED_ONE_AFTER_THAT_SCANNED_RANGE_THANKS = (u, r) -> {
         return u.isEmpty(); //quit after even only one, now that an entire range has been scanned
     };
 
@@ -754,18 +751,31 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
 
     }
 
-    private final static class ScanLimiter implements Predicate<TaskRegion> {
-        private final Collection<TaskRegion> target;
+    private final static class ScanFilter extends TopN<TaskRegion> implements Predicate<TaskRegion> {
         int attemptsRemain;
 
-        public ScanLimiter(Collection<TaskRegion> u, int maxTries) {
+        final IntHashSet tried = new IntHashSet(16);
+
+        public ScanFilter(TaskRegion[] taskRegions, FloatFunction<TaskRegion> strongestTask, int maxTries) {
+            super(taskRegions, strongestTask);
             this.attemptsRemain = maxTries;
-            this.target = u;
         }
+
 
         @Override
         public boolean test(TaskRegion x) {
-            target.add(x);
+            //identity test, relatively fast
+            main: if (!tried.add(x.hashCode())) {
+                int s = size;
+                TaskRegion[] l = list;
+                for (int i = 0; i < s; i++) {
+                    if (l[i] == x) {
+                        break main; //duplicate
+                    }
+                }
+            } else {
+                add(x);
+            }
             return --attemptsRemain > 0;
         }
     }

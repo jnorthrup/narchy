@@ -7,6 +7,7 @@ import jcog.data.byt.DynBytes;
 import jcog.data.byt.RawBytes;
 import jcog.list.FasterList;
 import nars.Op;
+import nars.Param;
 import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -99,17 +100,21 @@ public class NewCompound extends /*HashCached*/DynBytes implements ProtoCompound
     @Override
     public Term[] arrayShared() {
         compact(); //compact the key
+        if (Param.TERM_ARRAY_SHARE) {
 
-        int s = this.size;
-        Term[] ss = this.subs;
-        this.subs = null; //clear reference to the array from this point
-        return ss.length == s ? ss : Arrays.copyOfRange(ss, 0, s);
+            Term[] ss = this.subs;
+            this.subs = null; //clear reference to the array from this point
+            int s = this.size;
+            return ss.length == s ? ss : Arrays.copyOfRange(ss, 0, s);
+        } else {
+            return arrayClone();
+        }
     }
 
 
     @Override
     public Term[] arrayClone() {
-        return arrayShared().clone();
+        return Arrays.copyOfRange(subs, 0, size);
     }
 
 //    @Override

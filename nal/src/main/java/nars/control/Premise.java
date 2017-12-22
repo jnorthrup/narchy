@@ -40,13 +40,11 @@ public class Premise {
     public final PriReference<Task> taskLink;
     public final Term termLink;
 
-    @Nullable
-    public final Collection<Concept> links;
 
-    public Premise(PriReference<Task> tasklink, Term termlink, Collection<Concept> links) {
+
+    public Premise(PriReference<Task> tasklink, Term termlink) {
         this.taskLink = tasklink;
         this.termLink = termlink;
-        this.links = links;
     }
 
     /**
@@ -90,10 +88,6 @@ public class Premise {
         //n.conceptualize(task.term(), (c)->{});
 
 
-        Collection<Concept> l = links;
-        if (l != null) {
-            linkTask(task, l);
-        }
 
         int dur = d.dur;
         long now = d.time;
