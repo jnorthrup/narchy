@@ -5,6 +5,7 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.list.FasterList;
 import jcog.memoize.HijackMemoize;
+import jcog.memoize.Memoize;
 import nars.derive.match.EllipsisMatch;
 import nars.derive.match.Ellipsislike;
 import nars.op.mental.AliasConcept;
@@ -34,6 +35,8 @@ import org.eclipse.collections.impl.tuple.Tuples;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.roaringbitmap.PeekableIntIterator;
+import org.roaringbitmap.RoaringBitmap;
 
 import java.io.IOException;
 import java.util.*;
@@ -56,7 +59,7 @@ public enum Op {
 
     NEG("--", 1, Args.One) {
         @Override
-        public Term _the(int dt, Term[] u) {
+        public Term __the(int dt, Term[] u) {
             assert (u.length == 1); //assert (dt == DTERNAL || dt == XTERNAL);
             return Neg.the(u[0]);
         }
@@ -70,7 +73,7 @@ public enum Op {
      */
     SECTe("&", true, 3, Args.GTETwo) {
         @Override
-        public Term _the(int dt, Term[] u) {
+        public Term __the(int dt, Term[] u) {
             return intersect(Int.intersect(u),
                     SECTe,
                     SETe,
@@ -83,7 +86,7 @@ public enum Op {
      */
     SECTi("|", true, 3, Args.GTETwo) {
         @Override
-        public Term _the(int dt, Term[] u) {
+        public Term __the(int dt, Term[] u) {
             return intersect(Int.intersect(u),
                     SECTi,
                     SETi,
@@ -96,7 +99,7 @@ public enum Op {
      */
     DIFFe("~", false, 3, Args.Two) {
         @Override
-        public Term _the(int dt, Term[] u) {
+        public Term __the(int dt, Term[] u) {
             return differ(this, u);
         }
     },
@@ -106,7 +109,7 @@ public enum Op {
      */
     DIFFi("-", false, 3, Args.Two) {
         @Override
-        public Term _the(int dt, Term[] u) {
+        public Term __the(int dt, Term[] u) {
             return differ(this, u);
         }
     },
@@ -122,7 +125,7 @@ public enum Op {
         @Override
         public Term the(int dt, Term... t) {
             assert (dt == DTERNAL);
-            return (t.length == 0) ? ZeroProduct : compound(PROD, DTERNAL, t);
+            return (t.length == 0) ? ZeroProduct : super.the(dt, t);
         }
     },
 
@@ -132,7 +135,7 @@ public enum Op {
      */
     CONJ("&&", true, 5, Args.GTETwo) {
         @Override
-        public Term _the(int dt, Term[] u) {
+        public Term __the(int dt, Term[] u) {
             final int n = u.length;
             switch (n) {
 
@@ -256,17 +259,18 @@ public enum Op {
                     break;
                 case DTERNAL:
 
-                    return junctionFlat(dt, u);
+                    ci = junctionFlat(dt, u);
+                    break;
 
 
-                //sequence or xternal
-                //assert (n == 2) : "invalid non-commutive conjunction arity!=2, arity=" + n;
+                    //sequence or xternal
+                    //assert (n == 2) : "invalid non-commutive conjunction arity!=2, arity=" + n;
 
-                //rebalance and align
-                //convention: left align all sequences
-                //ex: (x &&+ (y &&+ z))
-                //      becomes
-                //    ((x &&+ y) &&+ z)
+                    //rebalance and align
+                    //convention: left align all sequences
+                    //ex: (x &&+ (y &&+ z))
+                    //      becomes
+                    //    ((x &&+ y) &&+ z)
 
 
 //                int eventsLeft = a.eventCount();
@@ -345,8 +349,48 @@ public enum Op {
             }
 
 
-            return implInConjReduce(ci);
+            if (ci.op()==CONJ && ci.hasAny(NEG) && ci.subterms().hasAny(CONJ)) {
+                int ciDT = ci.dt();
+                if (ciDT == 0 || ciDT == DTERNAL) {
+                    //(NOT (x AND y)) AND (NOT x) == NOT X
+                    int s = ci.subs();
+                    RoaringBitmap ni = null, nc = null;
+                    for (int i = 0; i < s; i++) {
+                        Term cii = ci.sub(i);
+                        if (cii.op() == NEG) {
+                            if (cii.unneg().op()==CONJ) {
+                                if (nc == null) nc = new RoaringBitmap();
+                                nc.add(i);
+                            } else {
+                                if (ni == null) ni = new RoaringBitmap();
+                                ni.add(i);
+                            }
+                        }
+                    }
+                    if (nc!=null && ni!=null)  {
+                        RoaringBitmap toRemove = new RoaringBitmap();
+                        int[] bb = ni.toArray();
+                        PeekableIntIterator cc = nc.getIntIterator();
+                        while (cc.hasNext()) {
+                            for (int j = 0; j < bb.length; j++) {
+                                int cci = cc.next();
+                                Term NC = ci.sub(cci).unneg();
+                                Term NX = ci.sub(bb[j]).unneg();
+                                if (NC.contains(NX)) {
+                                    toRemove.add(cci);
+                                }
+                            }
+                        }
+                        if (toRemove.getCardinality() > 0) {
+                            return CONJ.the(ciDT, ci.subterms().termsExcept(toRemove));
+                        }
+                    }
 
+
+                }
+            }
+
+            return implInConjReduce(ci);
 
 
             //memoized.apply(new Object[] { dt, u });
@@ -1110,9 +1154,10 @@ public enum Op {
      * precondition combiner: a combination nconjunction/implication reduction
      */
     static private Term implInConjReduce(final Term conj /* possibly a conjunction */) {
+        if (conj.op() != CONJ)
+            return conj;
 
-
-        if (!conj.hasAny(IMPL) || conj.op() != CONJ)
+        if (!conj.hasAny(IMPL))
             return conj; //fall-through
 
         int conjDT = conj.dt();
@@ -1837,7 +1882,7 @@ public enum Op {
     }
 
     public final boolean commute(int dt, int size) {
-        return size > 1 && commutative && Op.concurrent(dt);
+        return commutative && size > 1 && Op.concurrent(dt);
     }
 
 
@@ -1853,8 +1898,24 @@ public enum Op {
         return _the(dt, commute(dt, u.length) ? sorted(u) : u);
     }
 
+    final static Memoize<IntArrayPair<Term>, Term> preCompoundCached =
+            new HijackMemoize<>(
+                    (nc) -> {
+                        return Op.values()[nc.one].__the(DTERNAL, nc.two);
+                    }, 256 * 1024
+                    , 4, false);
+
+    protected final Term _the(int dt, Term[] u) {
+        if (dt == DTERNAL && The.cacheable(u)) {
+            return preCompoundCached.apply(new IntArrayPair<>(ordinal(), u));
+        } else {
+            //TODO cache temporals
+            return __the(dt, u);
+        }
+    }
+
     /*@NotNull*/
-    protected Term _the(int dt, Term[] u) {
+    protected Term __the(int dt, Term[] u) {
 
         if (statement) {
             if (u.length == 1) { //similarity has been reduced
@@ -2103,7 +2164,7 @@ public enum Op {
 
             return (/*dtChange || */!Arrays.equals(scs, u)) ?
                     CONJ.the(dt, scs) : //changed, recurse
-                    Op.implInConjReduce(compound(CONJ, dt, scs));
+                    compound(CONJ, dt, scs);
         }
 
         return Null;

@@ -31,7 +31,7 @@ public interface Termlike {
     int subs();
 
     /**
-     * volume = 1 + total volume of terms = complexity of subterms - # variable instances
+     * syntactic volume = 1 + total volume of terms = complexity of subterms - # variable instances
      */
     default int volume() {
         return 1 + sum(Term::volume);
@@ -39,7 +39,7 @@ public interface Termlike {
 
 
     /**
-     * complexity 1 + total complexity number of leaf terms, excluding variables which have a complexity of zero
+     * syntactic complexity 1 + total complexity number of leaf terms, excluding variables which have a complexity of zero
      */
     default int complexity() {
         return 1 + sum(Term::complexity);
@@ -297,7 +297,7 @@ public interface Termlike {
      * total # of variables, excluding pattern variables
      */
     default int vars() {
-        return hasAny(VAR_INDEP.bit | Op.VAR_DEP.bit | VAR_QUERY.bit) ?
+        return hasAny(VAR_INDEP.bit | VAR_DEP.bit | VAR_QUERY.bit) ?
                 sum(Term::vars) : 0;
     }
 
@@ -305,7 +305,7 @@ public interface Termlike {
      * # of contained dependent variables in subterms (1st layer only)
      */
     default int varDep() {
-        return hasAny(Op.VAR_DEP) ? sum(Term::varDep) : 0;
+        return hasAny(VAR_DEP) ? sum(Term::varDep) : 0;
     }
 
     default int varIndep() {
@@ -369,39 +369,6 @@ public interface Termlike {
         return x != null && x.op() == o;
     }
 
-
-//    /**
-//     * compares this term's op with 'thisOp', then performs subIs(i, sub)
-//     */
-//    default boolean isAndSubEquals(Op thisOp, int i, Term sub) {
-//        if (op() != thisOp)
-//            return false;
-//
-//        return sub(i).equals(sub);
-//    }
-
-//    /**
-//     * if type is null, returns total # of variables
-//     */
-//    default int vars(@Nullable Op type) {
-//        if (type == null)
-//            return vars() + varPattern();
-//
-//        switch (type) {
-//            case VAR_PATTERN:
-//                return varPattern();
-//            case VAR_QUERY:
-//                return varQuery();
-//            case VAR_DEP:
-//                return varDep();
-//            case VAR_INDEP:
-//                return varIndep();
-//            default:
-//                throw new UnsupportedOperationException();
-//        }
-//
-//
-//    }
 
 
 }

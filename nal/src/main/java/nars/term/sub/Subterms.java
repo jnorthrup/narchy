@@ -20,6 +20,7 @@ import org.eclipse.collections.impl.factory.Sets;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
+import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -914,6 +915,19 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        } else /* yss!=xss */ {
 //            return false; //TODO this may possibly be handled
 //        }
+    }
+
+    default Term[] termsExcept(RoaringBitmap indices) {
+        int numRemoved = indices.getCardinality();
+        int size = subs();
+        int newSize = size - numRemoved;
+        Term[] t = new Term[newSize];
+        int j = 0;
+        for (int i = 0; i < size; i++) {
+            if (!indices.contains(i))
+                t[j++] = sub(i);
+        }
+        return t;
     }
 
     default Term[] termsExcept(Collection<Term> except) {

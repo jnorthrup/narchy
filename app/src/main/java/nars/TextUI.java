@@ -119,10 +119,6 @@ public class TextUI {
             }
         }
 
-        @Override
-        protected void stopping(NAR nar) {
-            off();
-        }
 
         @Override
         public void run() {

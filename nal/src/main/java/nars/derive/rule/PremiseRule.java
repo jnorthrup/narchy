@@ -248,7 +248,7 @@ public class PremiseRule /*extends GenericCompound*/ {
         Term[] postcons = ((Subterms) id.sub(1)).arrayClone();
 
 
-        Set<PrediTerm> pres =
+        Set<PrediTerm<ProtoDerivation>> pres =
                 //Global.newArrayList(precon.length);
                 new TreeSet(); //for consistent ordering to maximize folding
 
@@ -300,12 +300,14 @@ public class PremiseRule /*extends GenericCompound*/ {
 
                 case "neq":
                     //neqPrefilter(pres, taskTermPattern, beliefTermPattern, X, Y, neq);
+                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
                     neq(constraints, X, Y); //should the constraints be ommited in this case?
                     break;
 
 
                 case "neqAndCom":
                     //neqPrefilter(pres, taskTermPattern, beliefTermPattern, X, Y, neq);
+                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
                     neq(constraints, X, Y);
                     constraints.add(new CommonSubtermConstraint(X, Y));
                     constraints.add(new CommonSubtermConstraint(Y, X));
@@ -317,7 +319,7 @@ public class PremiseRule /*extends GenericCompound*/ {
 //                    constraints.add(new NoCommonSubtermConstraint(Y, X, false));
 //                    break;
                 case "neqRCom":
-                    //neqPrefilter(pres, taskTermPattern, beliefTermPattern, X, Y, neqRCom);
+                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
                     constraints.add(new NoCommonSubtermConstraint(X, Y, true));
                     constraints.add(new NoCommonSubtermConstraint(Y, X, true));
                     break;
@@ -643,20 +645,26 @@ public class PremiseRule /*extends GenericCompound*/ {
         return this;
     }
 
-    private static void termIs(Set<PrediTerm> pres, Term taskPattern, Term beliefPattern, SortedSet<MatchConstraint> constraints, Term x, Op v) {
+    private void neqPrefilter(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, Term y) {
+        if ((taskPattern.equals(x) && beliefPattern.equals(y)) || (taskPattern.equals(y) && beliefPattern.equals(x))) {
+            pres.add(TaskBeliefInequal.the);
+        }
+    }
+
+    private static void termIs(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, SortedSet<MatchConstraint> constraints, Term x, Op v) {
         constraints.add(new OpIs(x, v));
         includesOp(pres, taskPattern, beliefPattern, x, v);
     }
-    private static void termIsAny(Set<PrediTerm> pres, Term taskPattern, Term beliefPattern, SortedSet<MatchConstraint> constraints, Term x, int struct) {
+    private static void termIsAny(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, SortedSet<MatchConstraint> constraints, Term x, int struct) {
         constraints.add(new OpIsAny(x, struct));
         includesOp(pres, taskPattern, beliefPattern, x, struct, true);
     }
 
-    private static void includesOp(Set<PrediTerm> pres, Term taskPattern, Term beliefPattern, Term x, Op o) {
+    private static void includesOp(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, Op o) {
         includesOp(pres, taskPattern, beliefPattern, x, o.bit, true);
     }
 
-    private static void includesOp(Set<PrediTerm> pres, Term taskPattern, Term beliefPattern, Term x, int struct, boolean includeExclude) {
+    private static void includesOp(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, int struct, boolean includeExclude) {
         boolean inTask = taskPattern.equals(x) || taskPattern.containsRecursively(x);
         boolean inBelief = beliefPattern.equals(x) || beliefPattern.containsRecursively(x);
         if (inTask || inBelief)
@@ -664,7 +672,7 @@ public class PremiseRule /*extends GenericCompound*/ {
     }
 
 
-    private static void termIsNot(Set<PrediTerm> pres, Term taskPattern, Term beliefPattern, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term x, int struct) {
+    private static void termIsNot(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term x, int struct) {
         constraints.add(new OpIsNot(x, struct));
         includesOp(pres, taskPattern, beliefPattern, x, struct, false);
     }

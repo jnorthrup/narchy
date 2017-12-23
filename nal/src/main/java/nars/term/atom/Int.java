@@ -2,6 +2,7 @@ package nars.term.atom;
 
 import com.google.common.collect.*;
 import jcog.TODO;
+import jcog.Texts;
 import jcog.Util;
 import jcog.math.Interval;
 import nars.$;
@@ -113,7 +114,7 @@ public class Int implements Intlike {
 
     @Override
     public int hashCode() {
-        return id * 31;
+        return (id+1) * 31;
     }
 
     @Override

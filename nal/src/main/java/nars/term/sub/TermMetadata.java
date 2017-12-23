@@ -4,14 +4,17 @@ import jcog.Util;
 import nars.Op;
 import nars.Param;
 import nars.term.Term;
+import nars.term.Termlike;
 
-public class TermMetadata {
+/** cached values for term/subterm metadata */
+abstract public class TermMetadata implements Termlike {
 
     /**
      * bitvector of subterm types, indexed by Op.id and OR'd into by each subterm
      * low-entropy, use 'hash' for normal hash operations.
      */
     public final int structure;
+
     /**
      * stored as volume+1 as if this termvector were already wrapped in its compound
      */
@@ -98,11 +101,7 @@ public class TermMetadata {
         return volume;
     }
 
-    /**
-     * report the term's syntactic complexity
-     *
-     * @return the complexity value
-     */
+
     public final int complexity() {
         return complexity;
     }

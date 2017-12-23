@@ -651,7 +651,7 @@ public enum Texts {
     /**
      * from: https://github.com/ethereum/ethereumj/blob/develop/ethereumj-core/src/main/java/org/ethereum/util/Utils.java
      */
-    public static String stringifyByteCount(long size) {
+    public static String byteCountString(long size) {
         if (size < 2 * (1L << 10)) return size + "b";
         if (size < 2 * (1L << 20)) return String.format("%dKb", size / (1L << 10));
         if (size < 2 * (1L << 30)) return String.format("%dMb", size / (1L << 20));

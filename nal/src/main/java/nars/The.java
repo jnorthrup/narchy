@@ -9,12 +9,14 @@ import nars.derive.match.Ellipsis;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.NewCompound;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.anon.AnonID;
 import nars.term.anon.AnonVector;
 import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
 import nars.term.sub.ArrayTermVector;
+import nars.term.sub.Subterms;
 import nars.term.sub.UnitSubterm;
 import nars.term.var.UnnormalizedVariable;
 
@@ -38,30 +40,42 @@ public enum The {
         return subterms(s.toArray(new Term[s.size()]));
     }
 
-    static nars.term.sub.Subterms _subterms(Collection<? extends Term> s) {
-        return _subterms(s.toArray(new Term[s.size()]));
-    }
+//    static nars.term.sub.Subterms _subterms(Collection<? extends Term> s) {
+//        return _subterms(s.toArray(new Term[s.size()]));
+//    }
 
     public static nars.term.sub.Subterms subterms(Term... s) {
         //return The.Subterms.the.apply(s);
-        return compound(PROD, s).subterms();
+        //return compound(PROD, s).subterms();
+        return PROD.the(s).subterms();
     }
 
     static nars.term.sub.Subterms _subterms(Term... s) {
         return Subterms.RawSubtermBuilder.apply(s);
     }
 
-    final static Memoize<IntArrayPair<Term>, Term> compoundCached =
-            new HijackMemoize<>(
-                    //CaffeineMemoize.build(
-                    (nc) -> {
-                        return _compound(Op.values()[nc.one], nc.two);
-                    }, 256 * 1024
-                    , 4, false);
+//    final static Memoize<IntArrayPair<Term>, Term> compoundCached =
+//            new HijackMemoize<>(
+//                    //CaffeineMemoize.build(
+//                    (nc) -> {
+//                        return _compound(Op.values()[nc.one], nc.two);
+//                    }, 256 * 1024
+//                    , 4, false);
     //, false);
 
     public static Term compound(Op o, Term... u) {
 
+//        boolean cache = cacheable(u);
+//
+//        if (!cache) {
+            return _compound(o, u);
+//        } else {
+//            //System.out.println(o + " " + Arrays.toString(u));
+//            return compoundCached.apply(new IntArrayPair(o.id, u));
+//        }
+    }
+
+    public static boolean cacheable(Term[] u) {
         boolean cache = true;
 
         for (Term x : u) {
@@ -71,12 +85,7 @@ public enum The {
                 break;
             }
         }
-
-        if (!cache)
-            return _compound(o, u);
-
-        //System.out.println(o + " " + Arrays.toString(u));
-        return compoundCached.apply(new IntArrayPair(o.id, u));
+        return cache;
     }
 
     public static Term _compound(Op o, Term... subterms) {

@@ -43,10 +43,10 @@ public abstract class Param extends Services<Term, NAR> {
     public static final float MUTATE_INT_CONTAINING_TERMS_RATE = 0.25f;
 
     /** allow leaking of internal Term[] arrays for read-only purposes */
-    public static final boolean TERM_ARRAY_SHARE = false;
+    public static final boolean TERM_ARRAY_SHARE = true;
 
-    /** min ratio of effective priority to input priority */
-    public static final float ACTIVATION_THRESHOLD = 0.5f;
+    /** min ratio of effective priority to input priority necessary for certain novel-only actions */
+    public static final float ACTIVATION_THRESHOLD = 0.1f;
 
     public static boolean DEBUG_FILTER_DUPLICATE_MATCHES = Param.DEBUG_EXTRA;
 
@@ -134,8 +134,8 @@ public abstract class Param extends Services<Term, NAR> {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmax = new MutableInteger(64);
-    public final MutableInteger matchTTLmin = new MutableInteger(32);
+    public final MutableInteger matchTTLmax = new MutableInteger(48);
+    public final MutableInteger matchTTLmin = new MutableInteger(24);
 
     /**
      * how much percent of a premise's allocated TTL can be used in the belief matching phase.

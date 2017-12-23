@@ -2,6 +2,7 @@ package nars.term.transform;
 
 import nars.$;
 import nars.Op;
+import nars.The;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.NewCompound;
 import nars.index.term.TermContext;
@@ -13,6 +14,7 @@ import nars.term.var.NormalizedVariable;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.VAR_QUERY;
+import static nars.time.Tense.DTERNAL;
 
 /**
  * I = input term type, T = transformable subterm type

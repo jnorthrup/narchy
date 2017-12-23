@@ -963,9 +963,9 @@ public class TemporalTermTest {
 
         String st = "((--,(happy)) && (--,((--,(o))&&(happy))))";
         Compound t = $.$(st);
-        assertEquals("((--,((--,(o))&&(happy)))&&(--,(happy)))", t.toString());
+        assertEquals("(--,(happy))", t.toString());
         Term xe = t.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
-        assertEquals("((--,((--,(o))&&(happy)))&&(--,(happy)))", xe.toString());
+        assertEquals("(--,(happy))", xe.toString());
 
         //TODO this will require a refactor allowing arbitrary function mapping matched dt source value to a target dt
 //        Term xz = $.terms.retemporalize(t, $.terms.retemporalizeZero);
@@ -1060,10 +1060,10 @@ public class TemporalTermTest {
         assertEquals("((--,((--,(o)) &&+- (happy))) &&+- (--,(happy)))", u.toString());
 
         Term ye = u.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
-        assertEquals("((--,((--,(o))&&(happy)))&&(--,(happy)))", ye.toString());
+        assertEquals("(--,(happy))", ye.toString());
 
         Term yz = u.temporalize(Retemporalize.retemporalizeXTERNALToZero);
-        assertEquals("((--,((--,(o))&|(happy)))&|(--,(happy)))", yz.toString());
+        assertEquals("(--,(happy))", yz.toString());
 
     }
 
