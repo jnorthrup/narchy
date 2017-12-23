@@ -47,6 +47,9 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
         assert(xs > 1);
         assert(xs == y.subs());
 
+        if (y.subs()==2 && y.sub(0).equals(y.sub(1)))
+            throw new RuntimeException("pointless permute");
+
         this.y = y.subterms();
         this.x = x.subterms();
     }

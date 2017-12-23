@@ -154,7 +154,7 @@ public interface Truth extends Truthed {
 //    }
 
     /** the negated (1 - freq) of this truth value */
-    @NotNull default Truth neg() {
+    default Truth neg() {
         return new PreciseTruth(1f - freq(), conf());
     }
 
@@ -162,7 +162,11 @@ public interface Truth extends Truthed {
         return x!=null && Util.equals(freq(), x.freq(), tolerance) && Util.equals(conf(), x.conf(), tolerance);
     }
 
-    @NotNull
+    default boolean equals(Truthed x, NAR nar) {
+        return Util.equals(freq(), x.freq(), nar.freqResolution.floatValue()) &&
+                Util.equals(conf(), x.conf(), nar.confResolution.floatValue());
+    }
+
     default Truth negIf(boolean negate) {
         return negate ? neg() : this;
     }

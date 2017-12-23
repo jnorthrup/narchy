@@ -19,6 +19,7 @@ import java.util.Random;
 import static nars.$.$;
 import static nars.Op.PROD;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class AnonTest {
 
@@ -27,6 +28,9 @@ public class AnonTest {
         assertAnon("_0", "a");
         assertAnon("#1", $.varDep(1)); //unchanged
         assertAnon("_0", $.the(2)); //int remaps to internal int
+
+        assertNotEquals(Anom.the(0), $.the(0));
+        assertNotEquals(Anom.the(2), $.the(2));
     }
 
     @Test

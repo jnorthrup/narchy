@@ -29,6 +29,15 @@ public class ListTopic<V> extends jcog.list.FastCoWList<Consumer<V>> implements 
         }
     }
 
+// TODO
+//    public void emitAsync(V x, Consumer<Iterable<Consumer<V>>> executorService) {
+//        final Consumer[] cc = this.copy;
+//        if (cc!=null) {
+//            for (Consumer c : cc)
+//                executorService.execute(() -> c.accept(x));
+//        }
+//    }
+
     @Override public final void enable(Consumer<V> o) {
         add(o);
     }

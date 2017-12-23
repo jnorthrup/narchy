@@ -33,6 +33,9 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
 
 
 
+    /** indicates if the resulting ordering is different from the input order */
+    public boolean orderChangedOrDeduplicated = false;
+
     public SortedList(int capacity) {
         super(capacity);
     }
@@ -65,8 +68,10 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
 
 
         int s = size;
-        if (s == 0)
-            return super.add(o);
+        if (s == 0) {
+            super.addWithoutResizeCheck(o);
+            return true;
+        }
 
 
         //binary search
@@ -89,7 +94,8 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
             } else {
                 // key found, insert after it
                 //if (!allowDuplicate)
-                    return false;
+                orderChangedOrDeduplicated = true;
+                return false;
 //                super.add(mid, o);
 //                return true;
             }
@@ -98,6 +104,7 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
         if (low == s) {
             super.addWithoutResizeCheck(o); //HACK for using FastList
         } else {
+            orderChangedOrDeduplicated = true;
             super.add(low, o);
         }
 

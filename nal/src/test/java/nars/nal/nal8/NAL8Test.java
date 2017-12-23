@@ -25,7 +25,7 @@ public class NAL8Test extends NALTest {
 
     @BeforeEach
     public void setTolerance() {
-        test.truthTolerance(NAL7Test.TRUTH_TOLERANCE_FOR_PROJECTIONS);
+        test.confTolerance(NAL7Test.TRUTH_TOLERANCE_FOR_PROJECTIONS);
         test.nar.time.dur(3);
     }
 
@@ -751,7 +751,7 @@ public class NAL8Test extends NALTest {
     public void implDecomposeGoalAfterPosNeg() {
 
         test
-                .truthTolerance(0.15f)
+                .confTolerance(0.15f)
                 .inputAt(3, "(--(a) ==>+2 (b)). :|:")
                 .inputAt(5, "(b)! :|:")
                 .mustGoal(cycles, "(a)", 0f, 0.45f, 3)
@@ -793,7 +793,7 @@ public class NAL8Test extends NALTest {
     public void implDecomposeGoalBeforeTemporalImpl() {
         //predictive impl
         test
-                .truthTolerance(0.05f)
+                .confTolerance(0.05f)
                 //.log()
                 .inputAt(1, "(x ==>-1 y). :|:") //should not affect the fact that the goal is relative to the 'y!' task, except it is slightly weaker
                 .inputAt(2, "y! :|:")

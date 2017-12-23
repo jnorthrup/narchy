@@ -1,5 +1,6 @@
 package nars.derive.time;
 
+import jcog.Util;
 import jcog.data.ArrayHashSet;
 import jcog.math.Interval;
 import nars.Op;
@@ -134,7 +135,7 @@ public class DeriveTime extends TimeGraph {
             if (Math.abs(dt) < dither)
                 return 0; //present moment
 
-            //return Util.round(dt, dither);
+            return Util.round(dt, dither);
 
         }
 

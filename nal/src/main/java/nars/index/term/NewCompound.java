@@ -157,7 +157,7 @@ public class NewCompound extends /*HashCached*/DynBytes implements ProtoCompound
     }
 
     public byte[] update() {
-        int volume = Util.sum(Term::volume, subs);
+        int volume = Util.sum(Term::volume, size, subs);
 
         //ArrayPool<byte[]> bytePool = ArrayPool.bytes();
         int bv = volume * 8;
@@ -243,6 +243,10 @@ public class NewCompound extends /*HashCached*/DynBytes implements ProtoCompound
 
     protected void _add(Term x) {
         subs[size++] = x;
+    }
+
+    public int size() {
+        return size;
     }
 
     private void appendKey(Term x) {

@@ -310,9 +310,9 @@ public class FZero extends NAgentX {
 //        });
         actionUnipolar($.the("fwd"), (a) -> {
             if (a > 0.5f)
-                fz.vehicleMetrics[0][6] = /*+=*/ (a - 0.5f) * 2f * (fwdSpeed);
+                fz.vehicleMetrics[0][6] = /*+=*/ (a - 0.5f) * 2f * (fwdSpeed); //gas
             else
-                fz.vehicleMetrics[0][6] = /*+=*/ (1f - (0.5f - a) * 2f) * (fwdSpeed);
+                fz.vehicleMetrics[0][6] *= (1f - (0.5f - a) * 2f); //brake
             return a;
         });
 //        //eternal bias to stop
@@ -320,13 +320,16 @@ public class FZero extends NAgentX {
 //        nar.goal(f[1].term, Tense.Eternal, 0f, 0.01f);
         actionBipolar($.the("x"), true, (a) -> {
             float deadZone =
-                    0;
-            //1 / 6f;
+                    //0;
+                    1 / 6f;
             float aa = a;
             if (Math.abs(a) > deadZone) {
                 if (a > 0) a -= deadZone;
                 else a += deadZone;
-                fz.playerAngle += (a*a*a) * rotSpeed;
+                fz.playerAngle +=
+                        //(a*a*a) *
+                        a *
+                        rotSpeed;
                 return aa;
             }
 

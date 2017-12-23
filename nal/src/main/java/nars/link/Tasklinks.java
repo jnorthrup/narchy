@@ -2,10 +2,12 @@ package nars.link;
 
 import jcog.bag.Bag;
 import jcog.pri.PLinkUntilDeleted;
+import jcog.pri.Pri;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import jcog.pri.op.PriForget;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
@@ -15,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 
-import static nars.truth.TruthFunctions.w2c;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 public class Tasklinks {
@@ -44,24 +45,39 @@ public class Tasklinks {
     }
 
     /** if NAR is null, then only inserts tasklink.  otherwise it proceeds with activation */
-    public static void linkTask(Task t, float pri, /*Task*/Concept cc, @Nullable NAR nar) {
+    public static void linkTask(Task t, float _pri, /*Task*/Concept cc, @Nullable NAR nar) {
+
+        final float inPri = Math.max(_pri, Pri.EPSILON);
 
         boolean activate = nar!=null;
 
         MutableFloat overflow = activate ? new MutableFloat() : null;
-        linkTask(t, pri, cc.tasklinks(), overflow);
+        linkTask(t, inPri, cc.tasklinks(), overflow);
 
         if (activate) {
-            pri -= overflow.floatValue();
+            float o = overflow.floatValue();
+            assert(o >= 0);
+            float efPri = Math.max(0, inPri - o); //efective priority between 0 and pri
 
-            if (pri >= Prioritized.EPSILON_VISIBLE) {
-                nar.eventTask.emit(t);
+
+            {
+
+                //activation is the ratio between the effective priority and the input priority, a value between 0 and 1.0
+                //it is a measure of the 'novelty' of a task as reduced by the priority of an equivalent existing tasklink
+
+                float activation = inPri > Float.MIN_NORMAL ? efPri / inPri : 0;
+                if (activation >= Param.ACTIVATION_THRESHOLD)
+                    nar.eventTask.emit(t);
+
+                if (activation > Float.MIN_NORMAL)
+                    ((TaskConcept) cc).value(t, activation, nar);
             }
 
-            float conceptActivation = pri * nar.amp(t.cause());
+            nar.emotion.onActivate(t);
+
+            float conceptActivation = efPri * nar.amp(t.cause());
             if (conceptActivation > 0) {
                 nar.activate(cc, conceptActivation);
-                nar.emotion.onActivate(t, conceptActivation, (TaskConcept) cc, nar);
             }
         }
     }

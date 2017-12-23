@@ -120,9 +120,8 @@ public class TextUI {
         }
 
         @Override
-        protected void stop(NAR nar) {
+        protected void stopping(NAR nar) {
             off();
-            super.stop(nar);
         }
 
         @Override

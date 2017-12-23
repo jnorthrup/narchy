@@ -1,7 +1,9 @@
 package nars.term.atom;
 
+import jcog.Util;
 import nars.Op;
 import nars.term.Term;
+import nars.term.sub.TermMetadata;
 import org.jetbrains.annotations.NotNull;
 
 import static nars.Op.ATOM;
@@ -76,5 +78,9 @@ public class Atom extends AtomicConst {
     }
 
 
+    @Override
+    public void collectMetadata(TermMetadata.SubtermMetadataCollector s) {
+       s.collectNonVar(ATOM, hash);
+    }
 }
 

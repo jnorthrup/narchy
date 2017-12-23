@@ -254,7 +254,7 @@ public class NARS {
         @Override
         protected void init(NAR nar) {
 
-            nar.conceptActivation.set( 1f/((AbstractExec)nar.exe).active.capacity() );
+            nar.conceptActivation.set( 2f/((AbstractExec)nar.exe).active.capacity() );
 
             nar.termVolumeMax.set(38);
             //nar.confMin.setValue(0.05f);

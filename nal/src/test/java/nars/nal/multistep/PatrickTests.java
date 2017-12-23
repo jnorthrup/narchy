@@ -4,8 +4,6 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.control.Deriver;
-import nars.control.Derivers;
 import nars.test.TestNAR;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Disabled;
@@ -48,7 +46,7 @@ public class PatrickTests extends NALTest {
 
         TestNAR tt = test;
         tt.nar.freqResolution.set(0.05f);
-        tt.truthTolerance(0.2f);
+        tt.confTolerance(0.2f);
 
         tt
 //.log()
@@ -120,9 +118,9 @@ public class PatrickTests extends NALTest {
         //Param.TRACE = true;
 
 
-        tt.truthTolerance(0.1f);
+        tt.confTolerance(0.1f);
 //        MetaGoal.Desire.want(nar.want, 0.5f);
-        tt.nar.freqResolution.set(0.03f);
+        tt.nar.freqResolution.set(0.04f);
         tt.nar.confResolution.set(0.02f);
         //tt.nar.DEFAULT_BELIEF_PRIORITY = 0.1f;
         tt.nar.time.dur(10);

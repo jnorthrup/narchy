@@ -22,11 +22,9 @@ import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectBooleanHashMap;
-import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -56,7 +54,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
     static final int SCAN_DIVISIONS = 5;
 
     public static final int MIN_TASKS_PER_LEAF = 2;
-    public static final int MAX_TASKS_PER_LEAF = 4;
+    public static final int MAX_TASKS_PER_LEAF = 3;
     public static final Spatialization.DefaultSplits SPLIT =
             Spatialization.DefaultSplits.AXIAL; //Spatialization.DefaultSplits.LINEAR; //<- probably doesnt work here
 
@@ -160,7 +158,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
 //    }
 
     @Override
-    public Task match(long start, long end, @Nullable Term template, NAR nar) {
+    public Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter) {
 
         int s = size();
         if (s == 0) //quick exit
@@ -178,7 +176,7 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
                 new CachedFloatFunction<>(t -> +ts.floatValueOf((Task) t));
 
         int maxTries = (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY));
-        ScanFilter tt = new ScanFilter(new TaskRegion[2], strongestTask, maxTries);
+        ScanFilter tt = new ScanFilter(new TaskRegion[2], strongestTask, maxTries, filter);
         scan(tt, start, end, ONLY_NEED_ONE_AFTER_THAT_SCANNED_RANGE_THANKS);
 
         switch (tt.size()) {
@@ -754,29 +752,40 @@ public class RTreeBeliefTable implements TemporalBeliefTable {
     }
 
     private final static class ScanFilter extends TopN<TaskRegion> implements Predicate<TaskRegion> {
+        private final Predicate<Task> filter;
         int attemptsRemain;
 
-        final SimpleIntSet tried = new SimpleIntSet(16);
+        ///final SimpleIntSet tried = new SimpleIntSet(4);
 
         public ScanFilter(TaskRegion[] taskRegions, FloatFunction<TaskRegion> strongestTask, int maxTries) {
+            this(taskRegions, strongestTask, maxTries, null);
+        }
+
+        public ScanFilter(TaskRegion[] taskRegions, FloatFunction<TaskRegion> strongestTask, int maxTries, Predicate<Task> filter) {
             super(taskRegions, strongestTask);
             this.attemptsRemain = maxTries;
+            this.filter = filter;
         }
 
 
         @Override
         public boolean test(TaskRegion x) {
-            //identity test, relatively fast
-            main: if (!tried.add(x.hashCode())) {
+
+            boolean duplicate = false;
+            /*if (!tried.add(x.hashCode()))*/ {
                 int s = size;
                 TaskRegion[] l = list;
                 for (int i = 0; i < s; i++) {
                     if (l[i] == x) {
-                        break main; //duplicate
+                        duplicate = true;
+                        break;
                     }
                 }
-            } else {
-                add(x);
+            }
+
+            if (!duplicate) {
+                if (filter == null || (!(x instanceof Task)) || filter.test((Task)x))
+                    add(x);
             }
             return --attemptsRemain > 0;
         }

@@ -105,8 +105,8 @@ public interface NARIn {
                 tt = stepUntil.apply(now);
                 kontinue = true;
             }
-            t.truth(tt, nn);
             t.priMax(pri);
+            t.truth(tt, true, nn);
             return kontinue;
         });
     }

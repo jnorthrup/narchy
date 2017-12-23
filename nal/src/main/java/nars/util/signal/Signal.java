@@ -75,7 +75,7 @@ public class Signal {
 
                 if (last == null ||
                         last.isDeleted() ||
-                        (!last.truth(last.end()).equals(tt, nar.freqResolution.floatValue()) ||
+                        (!last.truth(last.end()).equals(tt, nar) ||
                                 (Param.SIGNAL_LATCH_TIME_MAX != Integer.MAX_VALUE && now - last.start() >= dur * Param.SIGNAL_LATCH_TIME_MAX)
                         )) {
 
@@ -102,12 +102,12 @@ public class Signal {
                 }
                 return null;  //dont re-input the task, just stretch it where it is in the temporal belief table
             } else {
-                if (last != null) {
-                    last.updateEnd(c, Math.max(last.start(), (next!=null ? now-1 : now))); //one cycle ago so as not to overlap during the new task's start time
-                }
-                if (current.compareAndSet(last, next))
+                if (current.compareAndSet(last, next)) {
+                    if (last != null) {
+                        last.updateEnd(c, Math.max(last.start(), (next!=null ? now-1 : now))); //one cycle ago so as not to overlap during the new task's start time
+                    }
                     return next; //new or null input; stretch will be assigned on first insert to the belief table (if this happens)
-                else
+                } else
                     return get(); //the next latest
             }
 

@@ -35,10 +35,12 @@ import nars.util.SoftException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import static jcog.Texts.n4;
 import static nars.Op.*;
 
 public interface Concept extends Termed, MetaMap {
@@ -208,6 +210,15 @@ public interface Concept extends Termed, MetaMap {
     default Stream<Task> tasks() {
         return tasks(true,true,true,true);
     }
+
+    default void printSummary(PrintStream out, NAR n) {
+        out.println(term() +
+                "\t" +
+                "belief=" + beliefs().truth(n.time(), n) + " $" + n4(beliefs().priSum()) + " , " +
+                "goal=" +   goals().truth(n.time(), n)+ " $" + n4(goals().priSum())
+        );
+    }
+
 
 
     /**

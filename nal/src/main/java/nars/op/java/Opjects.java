@@ -122,7 +122,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 //    private final float metadataPriority = 0.1f;
 
     final static ThreadLocal<Task> invokingGoal = new ThreadLocal<>();
-    private final CauseChannel<ITask> in;
+    protected final CauseChannel<ITask> in;
 
     //TODO use Triple<> not Pair<Pair<>>
     private final SoftMemoize<Pair<Pair<Class, Term>, Pair<List<Class<?>>, Term /* func */>>, MethodHandle> methodArgCache = new SoftMemoize<>((xx) -> {
@@ -294,7 +294,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     final InstanceMethodValueModel pointTasks = new PointMethodValueModel();
     final Function<String, InstanceMethodValueModel> valueModel = (x) -> pointTasks /* memoryless */;
 
-    public static class PointMethodValueModel implements InstanceMethodValueModel {
+    public class PointMethodValueModel implements InstanceMethodValueModel {
 
         private final float invocationBeliefFreq = 1.0f;
 
@@ -312,10 +312,10 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                     f = 1 - f;
                 }
                 long start = now;
-                long end = now + dur;
+                long end = now;
 
                 SignalTask next = new TruthletTask(nt, BELIEF,
-                        Truthlet.impulse(start, end, 1f,0f,
+                        Truthlet.impulse(start, end, f,1-f,
                             c2w(nar.confDefault(BELIEF))
                         ),
                         nar);
@@ -341,6 +341,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                     i.add(cause);
 
                 i.add(next);
+                Opjects.this.in.input(i);
 
 //                if (cause != null && !next.term().equals(cause.term())) {
 //                    //input quenching invocation belief term corresponding to the goal
@@ -357,7 +358,8 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 //                    i.add(quench);
 //                }
 
-                nar.input(i);
+
+
             };
         }
     }
@@ -636,8 +638,8 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     }
 
     protected boolean evoked(Task task, Object[] args) {
-        if (!task.isInput() && task.meta("pretend") == null)
-            logger.info("evoke: {}", Param.DEBUG ? task.proof() : task);
+        //if (!task.isInput() && task.meta("pretend") == null)
+            //logger.info("evoke: {}", Param.DEBUG ? task.proof() : task);
 
         return true;
     }

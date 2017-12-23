@@ -240,7 +240,7 @@ public class NARio extends NAgentX {
 
     int lastCoins;
 
-    public final FloatParam Depress = new FloatParam(0.15f, 0f, 1f);
+    public final FloatParam Depress = new FloatParam(0f, 0f, 1f);
     public final FloatParam MoveRight = new FloatParam(0.25f, 0f, 1f);
     public final FloatParam EarnCoin = new FloatParam(0.95f, 0f, 1f);
 

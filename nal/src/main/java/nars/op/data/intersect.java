@@ -7,6 +7,8 @@ import nars.term.Terms;
 import nars.term.atom.Int;
 import nars.term.atom.Intlike;
 
+import static nars.Op.INT;
+
 public class intersect extends Functor.BinaryFunctor {
 
     public static final intersect the = new intersect();
@@ -25,11 +27,11 @@ public class intersect extends Functor.BinaryFunctor {
 //        Op aop = a.op();
 //        if (b.op() == aop)
 
-        if (a instanceof Int.IntRange && b instanceof Intlike) {
+        if (a instanceof Int.IntRange && b.op()==INT) {
            return ((Int.IntRange)a).intersect(b);
         }
 
-            return Terms.intersect(a.op(), a.subterms(), b.subterms());
+        return Terms.intersect(a.op(), a.subterms(), b.subterms());
 //        else
 //            return null;
     }

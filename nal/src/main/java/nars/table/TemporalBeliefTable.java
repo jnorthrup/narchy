@@ -7,7 +7,6 @@ import nars.concept.TaskConcept;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -66,7 +65,7 @@ public interface TemporalBeliefTable extends TaskTable, Iterable<Task> {
 
     /** finds or generates the strongest match to the specified parameters.
      * Task against is an optional argument which can be used to compare internal temporal dt structure for similarity */
-    Task match(long start, long end, @Nullable Term against, NAR nar);
+    Task match(long start, long end, @Nullable Term against, NAR nar, Predicate<Task> filter);
 
     /** estimates the truth value for the provided time.
      * the eternal table's top value, if existent, contributes a 'background'
@@ -139,7 +138,7 @@ public interface TemporalBeliefTable extends TaskTable, Iterable<Task> {
         }
 
         @Override
-        public Task match(long start, long end, @Nullable Term against, NAR nar) {
+        public Task match(long start, long end, @Nullable Term against, NAR nar, Predicate<Task> filter) {
             return null;
         }
 

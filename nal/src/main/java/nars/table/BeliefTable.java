@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.PrintStream;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.time.Tense.ETERNAL;
@@ -84,10 +85,9 @@ public interface BeliefTable extends TaskTable {
         }
 
         @Override
-        public Task match(long start, long end, @Nullable Term template, NAR nar) {
+        public Task match(long start, long end, Term template, NAR nar, Predicate<Task> accept) {
             return null;
         }
-
 
         @Override
         public void print(/*@NotNull*/ PrintStream out) {
@@ -197,7 +197,11 @@ public interface BeliefTable extends TaskTable {
         return truth(when, when, nar);
     }
 
-    Task match(long start, long end, @Nullable Term template, NAR nar);
+    Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> accept);
+
+    default Task match(long start, long end, @Nullable Term template, NAR nar) {
+        return match(start, end, template, nar, (each)->true);
+    }
 
     default Task match(long when, @Nullable Term template, NAR nar) {
         return match(when, when, template, nar);

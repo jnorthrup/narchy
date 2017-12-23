@@ -848,7 +848,7 @@ public enum $ {
     }
 
     public static int intValue(Term intTerm) throws NumberFormatException {
-        if (intTerm instanceof Int)
+        if (intTerm instanceof Int && intTerm.op()==INT)
             return ((Int) intTerm).id;
 //        if (intTerm instanceof Atom) {
 //            String xs = intTerm.toString();
@@ -859,7 +859,7 @@ public enum $ {
     }
 
     public static int intValue(Term intTerm, int ifNotInt) {
-        if (intTerm instanceof Int)
+        if (intTerm instanceof Int && intTerm.op()==INT)
             return ((Int) intTerm).id;
         else
             return ifNotInt;

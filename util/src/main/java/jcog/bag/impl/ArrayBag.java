@@ -403,15 +403,13 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                     Y y = (Y) x;
                     float yp = priUpdate(y);
                     if (yp!=yp) {
-                        if (remove(key(y))==y)
-                            onRemove(y);
+                        remove(key(y));
                     } else {
 
                         BagSample next = each.next(y);
-                        if (next.remove) {
-                            if (remove(key(y))==y)
-                                onRemove(y);
-                        }
+
+                        if (next.remove)
+                            remove(key(y));
 
                         if (next.stop)
                             return this;
@@ -428,9 +426,14 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     @Nullable
     @Override
     public Y remove(/*@NotNull*/ X x) {
+        Y removed;
         synchronized (items) {
-            return super.remove(x);
+            removed = super.remove(x);
         }
+        if (removed!=null) {
+            onRemove(removed);
+        }
+        return removed;
     }
 
 
@@ -582,8 +585,9 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         boolean atCap = s == capacity;
 
         int posBefore = items.indexOf(existing, this);
-        if (posBefore == -1)
-            throw new RuntimeException("Bag Map and List became unsynchronized"); //TODO handle better. this will indicate an implementation problem.  it shouldnt happen normally
+        if (posBefore == -1) {
+            throw new RuntimeException("Bag Map and List became unsynchronized: " + existing + " not found"); //TODO handle better. this will indicate an implementation problem.  it shouldnt happen normally
+        }
 
         float priBefore = existing.priUpdate();
         Y result;
@@ -703,15 +707,6 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
             return 32;
     }
 
-
-    public @Nullable Y remove(boolean topOrBottom) {
-        @Nullable Y x = topOrBottom ? top() : bottom();
-        if (x != null) {
-            remove(key(x));
-            return x;
-        }
-        return null;
-    }
 
     @Override
     public void clear() {

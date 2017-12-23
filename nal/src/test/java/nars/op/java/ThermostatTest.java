@@ -1,20 +1,12 @@
 package nars.op.java;
 
-import jcog.Services;
 import jcog.Util;
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Param;
+import nars.*;
 import nars.control.DurService;
 import nars.op.stm.ConjClustering;
-import nars.task.NALTask;
-import nars.task.signal.Truthlet;
 import nars.term.Term;
 import nars.time.Tense;
-import nars.truth.PreciseTruth;
 import nars.truth.Truth;
-import org.intelligentjava.machinelearning.decisiontree.feature.P;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -24,7 +16,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 
 public class ThermostatTest {
 
@@ -71,10 +62,12 @@ public class ThermostatTest {
         }
 
         private void should(int x) {
+            System.err.println("temperature should " + x);
             this.target = x;
         }
 
         private void is(int x) {
+            System.err.println("temperature is " + x);
             this.current = x;
         }
 
@@ -93,29 +86,36 @@ public class ThermostatTest {
         Param.DEBUG = true;
         final int DUR = 5;
 
+        final int subTrainings = 1;
         final int thinkDurs = 1;
 
         NAR n = NARS.tmp();
 
         n.time.dur(DUR);
-        n.termVolumeMax.set(24);
-        n.freqResolution.set(0.05f);
-        n.confResolution.set(0.05f);
+        n.termVolumeMax.set(30);
+        n.freqResolution.set(0.1f);
+        n.confResolution.set(0.1f);
+
+        float exeThresh = 0.55f;
 
         new ConjClustering(n, BELIEF, (t) -> true, 4, 16);
 
-        n.priDefault(BELIEF, 0.3f);
+        //n.priDefault(BELIEF, 0.3f);
 
         //n.logPriMin(System.out, 0.5f);
-        n.logWhen(System.out, false, true, true);
+        //n.logWhen(System.out, false, true, true);
+        //n.log();
 
-        Teacher<Thermostat> env = new Teacher<Thermostat>(new Opjects(n) {
+        boolean[] training = new boolean[]{true};
+
+        Opjects op = new Opjects(n) {
 
 //            {
 //                pretend = true;
 //            }
 
-            @Override @Nullable
+            @Override
+            @Nullable
             protected synchronized Object invoked(Object obj, Method wrapped, Object[] args, Object result) {
 
                 //n.time.synch(n);
@@ -124,7 +124,8 @@ public class ThermostatTest {
                 Object y = super.invoked(obj, wrapped, args, result);
 
 
-                n.run(DUR*thinkDurs);
+                if (training[0])
+                    n.run(DUR * thinkDurs);
 
                 return y;
             }
@@ -147,7 +148,10 @@ public class ThermostatTest {
 //
 //            }
 
-        }, Thermostat.class);
+        };
+
+        Teacher<Thermostat> env = new Teacher<Thermostat>(op, Thermostat.class);
+
 
 
         Consumer<Thermostat>
@@ -158,37 +162,49 @@ public class ThermostatTest {
         Predicate<Thermostat> isCold = x -> x.is() == Thermostat.cold;
         Predicate<Thermostat> isHot = x -> x.is() == Thermostat.hot;
 
-        for (Consumer<Thermostat> condition : new Consumer[]{hotToCold, coldToCold}) {
-            env.teach("cold", condition, x -> {
-                x.up(); //demonstrate no change
-                x.report();
-                while (x.is() > Thermostat.cold) x.down();
-                x.report();
-                x.down(); //demonstrate no change
-                x.report();
-            }, isCold);
-        }
+        boolean stupid = true;
+        training:
+        do {
 
-        for (Consumer<Thermostat> condition : new Consumer[]{coldToHot, hotToHot}) {
-            env.teach("hot", condition, x -> {
-                x.down(); //demonstrate no change
-                x.report();
-                while (!isHot.test(x)) x.up();
-                x.report();
-                x.up(); //demonstrate no change
-                x.report();
-            }, isHot);
-        }
+            training[0] = true;
+
+            op.executionThreshold.set(1f);
+            for (int i = 0; i < subTrainings; i++) {
+                for (Consumer<Thermostat> condition : new Consumer[]{hotToCold, coldToCold}) {
+                    env.teach("cold", condition, x -> {
+                        x.up(); //demonstrate no change
+                        x.report();
+                        while (x.is() > Thermostat.cold) x.down();
+                        x.report();
+                        x.down(); //demonstrate no change
+                        x.report();
+                    }, isCold);
+                }
+
+                for (Consumer<Thermostat> condition : new Consumer[]{coldToHot, hotToHot}) {
+                    env.teach("hot", condition, x -> {
+                        x.down(); //demonstrate no change
+                        x.report();
+                        while (!isHot.test(x)) x.up();
+                        x.report();
+                        x.up(); //demonstrate no change
+                        x.report();
+                    }, isHot);
+                }
+
+                n.run(thinkDurs * n.dur());
+            }
 
 
-        n.clear();
+            System.out.println("VALIDATING");
+            System.out.println();
+            training[0] = false;
+            op.executionThreshold.set(exeThresh);
 
-        System.out.println("VALIDATING");
-        System.out.println();
 
 
 //        n.log();
-        //n.run(100);
+            //n.run(100);
 //        n.logWhen(System.out, false, true, true);
 
 //        new Implier(n, new float[] { 1f },
@@ -199,34 +215,60 @@ public class ThermostatTest {
 
 //        try {
 
-        //make cold
+            //make cold
 //            n.input(new NALTask($.$("a_Thermostat(should,(),0)"),
 //                    BELIEF, $.t(1f, 0.99f),
 //                    n.time(), n.time(), n.time()+1000,
 //                    n.time.nextInputStamp()).pri(1f));
 
-        Thermostat t = env.x;
-        t.should(0);
-
-        int periods = 300;
+            Thermostat t = env.x;
 
 
-        {
-            Term cold = $.$safe("a_Thermostat(is,(),0)");
-            Term hot =  $.$safe("a_Thermostat(is,(),3)");
-            Truth goalTruth = $.t(1f, 0.95f);
 
-            DurService xPos = n.wantWhile(cold, goalTruth, (w) ->
-                t.is() != t.should()
-            );
-            DurService xNeg = n.wantWhile(hot, goalTruth.neg(), (w) ->
-                t.is() != t.should()
-            );
-            while (t.is() != t.should()) {
-                int period = 1000;
+            {
+
+                //n.clear();
+
+                t.is(3);
+                t.should(0);
+                n.run(thinkDurs*n.dur());
+
+                Term cold = $.$safe("a_Thermostat(is,(),0)");
+                //Term cold = $.$safe("(a_Thermostat(is,(),0) &| --a_Thermostat(is,(),3))");
+                //Term hot = $.$safe("a_Thermostat(is,(),3)");
+                Truth goalTruth = $.t(1f, 0.9f);
+
+                final int[] maxTries = {8};
+                DurService xPos = n.wantWhile(cold, goalTruth, new TaskConceptLogger(n, (w) ->
+                        (--maxTries[0] >= 0) && (t.is() != t.should())
+                ));
+//                DurService xNeg = n.wantWhile(hot, goalTruth.neg(), (w) ->
+//                        t.is() != t.should()
+//                );
+
+                n.run(1);
+
+                while (xPos.isOn()) {
+                    int period = 1000;
+                    //t.report();
+                    n.run(period);
+                }
+
+                xPos.off();
+                //xNeg.off();
+
                 t.report();
-                n.run(period);
-            }
+
+                if (t.is() == t.should()) {
+                    System.out.println("good job nars!");
+                    n.believe($.the("good"), Tense.Present);
+                    stupid = false;
+                } else {
+                    System.out.println("bad job nars! try again");
+                    n.believe($.the("bad"), Tense.Present);
+                }
+                n.run(thinkDurs * n.dur());
+
 
 //            n.input(new NALTask($.$safe("a_Thermostat(is,(),0)"),
 //                    GOAL, $.t(1f, 0.95f),
@@ -237,7 +279,8 @@ public class ThermostatTest {
 //                    n.time(), n.time(), n.time() + periods,
 //                    n.time.nextInputStamp()).pri(1f));
 
-        }
+            }
+        } while (stupid);
         {
 //            n.input(new NALTask($.$safe("a_Thermostat(is,(),3)"),
 //                    GOAL, $.t(0f, 0.99f),
@@ -251,9 +294,24 @@ public class ThermostatTest {
 //            n.run(period);
 //        }
 
-        System.out.println("good job nars!");
-        n.believe($.the("good"), Tense.Present);
 
+    }
+
+    private class TaskConceptLogger implements Predicate<Task> {
+        private final Predicate<Task> pred;
+        private final NAR nar;
+
+        public TaskConceptLogger(NAR n, Predicate<Task> o) {
+            this.pred = o;
+            this.nar = n;
+        }
+
+        @Override
+        public boolean test(Task task) {
+            boolean result = pred.test(task);
+            task.concept(nar, false).printSummary(System.out, nar);
+            return result;
+        }
     }
 
 //    @Test

@@ -227,7 +227,7 @@ public enum MetaGoal {
             cc.forEach(c -> {
 
                 int i = 0;
-                for (Traffic t : c.goalValue) {
+                for (Traffic t : c.goal) {
                     MetaGoal m = MetaGoal.values()[i];
                     double tt = t.total;
                     if (tt != 0) {

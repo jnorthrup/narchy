@@ -29,7 +29,7 @@ public class NAL7Test extends NALTest {
 
     @BeforeEach
     public void setTolerance() {
-        test.truthTolerance(TRUTH_TOLERANCE_FOR_PROJECTIONS);
+        test.confTolerance(TRUTH_TOLERANCE_FOR_PROJECTIONS);
     }
 
 //    private static final Path tmpDir;
@@ -745,7 +745,7 @@ public class NAL7Test extends NALTest {
             $.75;.06;.12$ ((p2) ==>+0 (--,(p3))). 1-1 %1.0;.45% {1-1: 5;7} ((%1,%2,time(dtAfterReverse),neq(%1,%2),notImplicationOrEquivalence(%1),notImplicationOrEquivalence(%2)),((%2==>%1),((Abduction-->Belief)))) */
 
         test
-                .truthTolerance(0.1f)
+                .confTolerance(0.1f)
                 .inputAt(0, "(a). :|:")
                 .inputAt(0, "((a) ==>+1 (b)). :|:")
                 .mustNotOutput(cycles, "(b)", BELIEF, ETERNAL)

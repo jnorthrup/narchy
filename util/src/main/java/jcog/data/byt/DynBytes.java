@@ -3,7 +3,6 @@ package jcog.data.byt;
 import com.google.common.io.ByteArrayDataOutput;
 import org.apache.commons.lang3.ArrayUtils;
 import org.iq80.snappy.Snappy;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.DataOutput;
 import java.io.IOException;
@@ -208,15 +207,15 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
         return bytes;
     }
 
-    public void compact() {
-        compact(false);
+    public byte[] compact() {
+        return compact(false);
     }
 
-    public final void compact(boolean force) {
-        compact(null, force);
+    public final byte[] compact(boolean force) {
+        return compact(null, force);
     }
 
-    public final void compact(byte[] forceIfSameAs, boolean force) {
+    public final byte[] compact(byte[] forceIfSameAs, boolean force) {
         int l = this.len;
         if (l > 0) {
             byte[] b = this.bytes;
@@ -225,6 +224,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
         } else {
             this.bytes = ArrayUtils.EMPTY_BYTE_ARRAY;
         }
+        return bytes;
     }
 
 
@@ -415,6 +415,14 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes 
 
     public void writeUnsignedByte(int i) {
         writeByte(i & 0xff);
+    }
+
+    public void clear() {
+        len = 0;
+    }
+
+    public RawBytes rawCopy() {
+        return new RawBytes(compact(true));
     }
 
 //    @Override

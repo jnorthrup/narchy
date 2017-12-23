@@ -102,6 +102,15 @@ abstract public class NAgentX extends NAgent {
                 new FloatPolarNormalized(new FloatFirstOrderDifference(nar::time,
                         () -> reward)));
         alwaysWant(joy, nar.confDefault(GOAL)/2f);
+
+        Param.DEBUG = true;
+        nar.onTask(x -> {
+            if (x.isBeliefOrGoal() && x.isEternal()) {
+                //if (x.isInput())
+                if (!always.contains(x))
+                    System.err.println(x.proof());
+            }
+        });
     }
 
     public static NAR runRT(Function<NAR, NAgent> init, float fps) {
@@ -170,11 +179,10 @@ abstract public class NAgentX extends NAgent {
                 .deriverAdd(6, 6)
                 //.deriverAdd(6,6) //extra NAL6
                 .deriverAdd(7, 8)
-                //.deriverAdd("goal_analogy.nal")
                 .deriverAdd("motivation.nal")
                 //.deriverAdd("list.nal")
                 .index(
-                        new CaffeineIndex(80 * 1024)
+                        new CaffeineIndex(200 * 1024)
                         // new PriMapTermIndex()
                         //new CaffeineIndex2(64 * 1024)
                         //new CaffeineIndex2(-1)
@@ -185,7 +193,7 @@ abstract public class NAgentX extends NAgent {
 
         n.defaultWants();
 
-        n.conceptActivation.set(0.25f);
+        n.conceptActivation.set(0.05f);
 
         n.dtMergeOrChoose.set(true);
         n.dtDither.set(
@@ -195,13 +203,13 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(48);
+        n.termVolumeMax.set(32);
 
         n.beliefConfidence(0.9f);
         n.goalConfidence(0.9f);
 
 
-        float priFactor = 0.5f;
+        float priFactor = 0.1f;
         n.DEFAULT_BELIEF_PRIORITY = 1f * priFactor;
         n.DEFAULT_GOAL_PRIORITY = 1f * priFactor;
         n.DEFAULT_QUESTION_PRIORITY = 1f * priFactor;
@@ -211,7 +219,6 @@ abstract public class NAgentX extends NAgent {
 
         new Deriver(a.fire(), Deriver.deriver(1, 8,
                 "motivation.nal"
-                //"goal_analogy.nal"
         ).apply(n).deriver, n) {
 //            @Override
 //            protected long matchTime(Task task) {
@@ -530,7 +537,7 @@ abstract public class NAgentX extends NAgent {
                             r = 0;
                         }
 
-                        float t = Util.sum(((FloatFunction<Traffic>) (p -> Math.abs(p.current + p.prev))), c.goalValue) / 2f;
+                        float t = Util.sum(((FloatFunction<Traffic>) (p -> Math.abs(p.current + p.prev))), c.goal) / 2f;
 
                         b = Math.max(r, g) / 2f * Util.unitize(t);
 

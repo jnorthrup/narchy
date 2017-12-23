@@ -1,5 +1,6 @@
 package nars.control;
 
+import jcog.Texts;
 import jcog.math.AtomicFloat;
 
 /** concurrent traffic accumulator;
@@ -22,5 +23,10 @@ public class Traffic extends AtomicFloat {
         this.prev = this.current;
         double next = getAndSet(0f);
         this.total += (this.current = (float) next);
+    }
+
+    @Override
+    public String toString() {
+        return Texts.n4(current) + "/" + Texts.n4(total);
     }
 }

@@ -1,4 +1,6 @@
 //GOAL ANALOGIES
+// TODO add negation forms
+
 //1. IMPL=based
 (P-->C), (A ==> (Q-->C)), neq(Q,P), task("!") |- (A ==>+- (P-->C)), (Punctuation:Question)
   (C-->P), (A ==> (C-->Q)), neq(Q,P), task("!") |- (A ==>+- (C-->P)), (Punctuation:Question)

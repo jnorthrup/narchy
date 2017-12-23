@@ -159,7 +159,7 @@ public class NAL8EternalMixTest extends NALTest {
     public void goal_deduction_delayed_impl() {
 
         TestNAR tester = test;
-        tester.truthTolerance(0.2f);
+        tester.confTolerance(0.2f);
 
         tester.input("x:y!");
         tester.inputAt(10, "(goto(z) ==>+5 x:y). :|:");
@@ -315,7 +315,7 @@ public class NAL8EternalMixTest extends NALTest {
     public void condition_belief_deduction_2() {
 
         test
-                .truthTolerance(0.1f)
+                .confTolerance(0.1f)
                 .input("on({t002},{t003}). :|:")
                 .inputAt(2, "(on({t002},#1) &&+0 at(SELF,#1)).")
                 .mustBelieve(cycles, "at(SELF,{t003})", 1.0f, 0.23f, 0)

@@ -1,6 +1,8 @@
 package jcog.data.byt;
 
+import com.google.common.primitives.Bytes;
 import jcog.Util;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -8,7 +10,7 @@ import java.util.Arrays;
 /**
  * Created by me on 12/20/16.
  */
-public class ArrayBytes implements AbstractBytes, Serializable /*implements CharSequence*/ {
+public class ArrayBytes implements AbstractBytes, Serializable, Comparable<ArrayBytes> /*implements CharSequence*/ {
 
     public final byte[] bytes;
 
@@ -65,4 +67,8 @@ public class ArrayBytes implements AbstractBytes, Serializable /*implements Char
         return new String(bytes);
     }
 
+    @Override
+    public int compareTo(ArrayBytes o) {
+        return Arrays.compare(bytes, o.bytes);
+    }
 }

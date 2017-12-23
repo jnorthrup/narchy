@@ -43,7 +43,12 @@ public abstract class Param extends Services<Term, NAR> {
     public static final float MUTATE_INT_CONTAINING_TERMS_RATE = 0.25f;
 
     /** allow leaking of internal Term[] arrays for read-only purposes */
-    public static final boolean TERM_ARRAY_SHARE = true;
+    public static final boolean TERM_ARRAY_SHARE = false;
+
+    /** min ratio of effective priority to input priority */
+    public static final float ACTIVATION_THRESHOLD = 0.5f;
+
+    public static boolean DEBUG_FILTER_DUPLICATE_MATCHES = Param.DEBUG_EXTRA;
 
 
     public final FloatParam forgetRate = new FloatParam(PriForget.FORGET_TEMPERATURE_DEFAULT, 0f, 2f);
@@ -61,7 +66,7 @@ public abstract class Param extends Services<Term, NAR> {
     /**
      * how many INT terms are canonically interned/cached. [0..n)
      */
-    public final static int MAX_CACHED_INTS = 64;
+    public final static int MAX_INTERNED_INTS = 64;
 
 
     public static final boolean FILTER_SIMILAR_DERIVATIONS = true;

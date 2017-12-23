@@ -1,7 +1,6 @@
 package nars;
 
 
-import com.google.common.collect.Sets;
 import com.google.common.primitives.Longs;
 import jcog.Util;
 import jcog.event.ListTopic;
@@ -235,7 +234,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
             x.put("time", time());
 
-            emotion.stat(x);
 
             //x.put("term index", terms.summary());
 
@@ -591,7 +589,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
                 Task t = (Task) v;
                 long now = time();
                 int dur = dur();
-                return past && t.isBefore(now - dur) || (future && t.isAfter(now + dur)) ||
+                return (past && t.isBefore(now - dur)) || (future && t.isAfter(now + dur)) ||
                         (present && !t.isBefore(now - dur) && !t.isAfter(now + dur));
             }
             return false;
@@ -609,7 +607,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
     public final void input(ITask x) {
         if (x == null) return;
-        exe.add(x);
+        exe.execute(x);
     }
 
     @Override
@@ -620,7 +618,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     /**
      * asynchronously adds the service
      */
-    public void on(@NotNull NARService s) {
+    public void on(NARService s) {
         runLater(() -> add(s.term(), s));
     }
 
@@ -1085,12 +1083,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
     public void input(Iterable<? extends ITask> tasks) {
         if (tasks == null) return;
-        exe.add(tasks);
+        exe.execute(tasks);
     }
 
     public final void input(Stream<? extends ITask> tasks) {
         //if (tasks == null) return;
-        exe.add(tasks.filter(Objects::nonNull));
+        exe.execute(tasks.filter(Objects::nonNull));
     }
 
     @Override
@@ -1481,13 +1479,17 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
                 if (x instanceof NALTask) {
                     NALTask t = (NALTask) x;
                     int tcl = t.cause.length;
-                    if (tcl == 0 || (tcl == 1 && t.cause[0] == 0)) {
+                    if (tcl == 0) {
 //                        assert (sharedOneElement[0] == ci);
                         t.cause = new short[]{ci}; //sharedOneElement;
                     } else {
-                        //concat
-                        t.cause = Arrays.copyOf(t.cause, tcl + 1);
-                        t.cause[tcl] = ci;
+                        if (tcl == 1 && t.cause[0] == ci)
+                            return; //already equivalent
+                        else {
+                            //concat
+                            t.cause = Arrays.copyOf(t.cause, tcl + 1);
+                            t.cause[tcl] = ci;
+                        }
                     }
                 }
             });

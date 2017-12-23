@@ -174,7 +174,7 @@ public class Builtin {
 
             Functor.f2("subterm", (Term x, Term index) -> {
                 try {
-                    if (index instanceof Int) {
+                    if (index instanceof Int && index.op()==INT) {
                         return x.sub($.intValue(index));
                     }
                 } catch (NumberFormatException ignored) {

@@ -11,6 +11,7 @@ import nars.index.term.TermContext;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.sub.TermMetadata;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.set.mutable.primitive.ByteHashSet;
@@ -32,7 +33,7 @@ public class Int implements Intlike {
     private final byte[] bytesCached;
 
     public static Int the(int i) {
-        if (i >= 0 && i < Param.MAX_CACHED_INTS) {
+        if (i >= 0 && i < Param.MAX_INTERNED_INTS) {
             return digits[i];
         } else {
             return new Int(i);
@@ -49,10 +50,10 @@ public class Int implements Intlike {
 
     public final int id;
 
-    protected static final Int[] digits = new Int[Param.MAX_CACHED_INTS];
+    protected static final Int[] digits = new Int[Param.MAX_INTERNED_INTS];
 
     static {
-        for (int i = 0; i < Param.MAX_CACHED_INTS; i++) {
+        for (int i = 0; i < Param.MAX_INTERNED_INTS; i++) {
             digits[i] = new Int(i);
         }
     }
@@ -73,6 +74,10 @@ public class Int implements Intlike {
         this.bytesCached = b;
     }
 
+    @Override
+    public final void collectMetadata(TermMetadata.SubtermMetadataCollector s) {
+        s.collectNonVar(op(), hashCode());
+    }
 
     @Override
     public byte[] bytes() {
@@ -113,7 +118,13 @@ public class Int implements Intlike {
 
     @Override
     public boolean equals(Object obj) {
-        return this == obj || (obj instanceof Int && id == ((Int) obj).id);
+        if (this == obj) return true;
+        if (id >= Param.MAX_INTERNED_INTS && obj instanceof Int) { //dont need to check if this is an interned Int
+            Int o = (Int) obj;
+            if ((id == o.id) && (o.op()==INT)) //HACK check for op because Anom extends Int
+                return true;
+        }
+        return false;
     }
 
     @Override
@@ -270,7 +281,7 @@ public class Int implements Intlike {
                     if (Param.DEBUG)
                         throw new TODO();
                 }
-            } else if (b instanceof Int) {
+            } else if (b.op()==INT) {
                 Int bb = (Int) b;
                 int bbi = bb.id;
                 if (min == bbi) {
@@ -292,7 +303,7 @@ public class Int implements Intlike {
                 IntRange bb = (IntRange) b;
                 if (connects(bb))
                     return Int.range(range().intersection(bb.range()));
-            } else if (b instanceof Int) {
+            } else if (b.op()==INT) {
                 if (intersects((Int) b))
                     return b;
             }
@@ -418,7 +429,7 @@ public class Int implements Intlike {
                         Term xpp = x.subs() > 0 ? x.subPath(pp) : x;
 
                         boolean connected;
-                        if (xpp instanceof Intlike) {
+                        if (xpp.op()==INT) {
                             connected = (f.range().isConnected(((Intlike) xpp).range()));
                         } else {
                             connected = false;
@@ -500,7 +511,7 @@ public class Int implements Intlike {
     public static RangeSet<Integer> ranges(List<Term> term) {
         TreeRangeSet<Integer> r = TreeRangeSet.create();
         for (Term x : term) {
-            if (x instanceof Intlike) {
+            if (x.op()==INT) {
                 r.add(((Intlike) x).range());
             }
         }

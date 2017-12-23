@@ -21,8 +21,6 @@ public interface Prioritized extends Deleteable {
      */
     float EPSILON =             0.0001f;
 
-    /** epsilon necessary to cause a visible disturbance */
-    float EPSILON_VISIBLE =     0.01f;
 
 
     /**

@@ -168,7 +168,7 @@ public class ConceptWidget extends TermWidget<Concept> {
 
         float termlinkPri, tasklinkPri;
         boolean inactive;
-        final static float priTHRESH = Pri.EPSILON_VISIBLE;
+        final static float priTHRESH = Pri.EPSILON;
 
         public ConceptEdge(ConceptWidget src, ConceptWidget target, float pri) {
             super(src, target, pri);

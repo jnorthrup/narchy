@@ -18,6 +18,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
+import static nars.Op.INT;
 
 
 /**
@@ -88,7 +89,7 @@ public class DefaultTermizer implements Termizer {
     @Override public Object object(Term t) {
 
         if (t == NULL) return null;
-        if (t instanceof Int)
+        if (t instanceof Int && t.op()==INT)
             return ((Int)t).id;
 
         Object x = termToObj.get(t);

@@ -32,12 +32,14 @@ public abstract class ActionConcept extends WiredConcept {
 
         super.value(t, activation, n);
 
-        long now = n.time();
-        if (t.isGoal() && !t.isBefore(now) && t.creation() <= now) {
-            MetaGoal.learn(MetaGoal.Action, t.cause(),
-                    t.conf(),
-                    //activation * t.conf(),
-                    n);
+        if (t.isGoal()) {
+            long now = n.time();
+            if (!t.isBefore(now - n.dur()/2)) { //present or future
+                float str = (1f + t.conf()) * activation; //at minimum 1, even for ~0 conf, same as super.value
+                MetaGoal.learn(MetaGoal.Action, t.cause(),
+                        str,
+                        n);
+            }
         }
     }
 

@@ -171,8 +171,6 @@ public final class Branch<T> implements Node<T, Node<T, ?>> {
             final int bestLeaf = chooseLeaf(t, tRect, parent, model);
 
             Node nextBest = child[bestLeaf].add(t, this, model, added);
-            assert (added[0]);
-
             if (nextBest == null) {
                 return null; //merged
             }

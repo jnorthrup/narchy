@@ -74,6 +74,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     public final AtomicBoolean enabled = new AtomicBoolean(true);
 
     public final SensorConcept happy;
+    private final CauseChannel<ITask> in;
     ///public final SensorConcept sad;
 
     public boolean trace;
@@ -89,7 +90,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     private int dur;
 
     public final FloatParam motivation = new FloatParam(1f, 0f, 1f);
-    private List<Task> always = $.newArrayList();
+    protected List<Task> always = $.newArrayList();
 
     protected NAgent(@NotNull NAR nar) {
         this("", nar);
@@ -103,6 +104,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         super(null, id);
 
         this.nar = nar;
+        this.in = nar.newCauseChannel(this);
 
         this.now = ETERNAL; //not started
 
@@ -146,6 +148,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         NALTask t = new NALTask(x.term(), GOAL, $.t(1f, conf), now,
                 ETERNAL, ETERNAL,
                 nar.time.nextInputStamp());
+
         always.add(t);
         return t;
     }
@@ -192,11 +195,6 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         return nar;
     }
 
-    @Override
-    public void stop(NAR nar) {
-        nar.stop();
-    }
-
 
     /**
      * interpret motor states into env actions
@@ -237,9 +235,11 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
                     //nar.priDefault(GOAL)
                     activation
             );
-            nar.input(x);
-            nar.activate(x, activation);
+
+            //nar.activate(x, activation);
         }
+
+        in.input(always);
     }
 
 

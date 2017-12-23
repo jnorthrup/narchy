@@ -114,29 +114,6 @@ public class TermVector1 extends TermVector /*implements Set<Term>*/ {
         return Iterators.singletonIterator(sub);
     }
 
-//    @NotNull
-//    @Override
-//    public Term[] toArray() {
-//        return subtermsArray();
-//    }
-//
-//    @NotNull
-//    @Override
-//    public <T> T[] toArray(T[] ts) {
-//        throw new UnsupportedOperationException();
-//    }
-
-
-//    public boolean containsAll(Collection<?> collection) {
-//        int cs = collection.size();
-//        switch (cs) {
-//            case 0:
-//                throw new UnsupportedOperationException(); //?
-//            case 1:
-//                return the.equals(collection.iterator().next());
-//        }
-//        return false;
-//    }
 
     @Override
     public void forEach(Consumer<? super Term> action, int start, int stop) {
@@ -149,13 +126,6 @@ public class TermVector1 extends TermVector /*implements Set<Term>*/ {
     public void forEach(Consumer<? super Term> action) {
         action.accept(sub);
     }
-
-//    @Override public boolean equalTo(@NotNull TermContainer b) {
-//        return //(hashCode() == b.hashCode()) &&
-//                (b.size()==1) &&
-//                the.equals(b.sub(0));
-//    }
-
 
     @Override
     public final boolean contains(Term t) {
@@ -170,31 +140,6 @@ public class TermVector1 extends TermVector /*implements Set<Term>*/ {
     @Override
     public boolean AND(Predicate<Term> p) {
         return p.test(sub);
-    }
-
-    @Override
-    public int varIndep() {
-        return sub.varIndep();
-    }
-
-    @Override
-    public int varDep() {
-        return sub.varDep();
-    }
-
-    @Override
-    public int varQuery() {
-        return sub.varQuery();
-    }
-
-    @Override
-    public int varPattern() {
-        return sub.varPattern();
-    }
-
-    @Override
-    public int vars() {
-        return sub.vars();
     }
 
 

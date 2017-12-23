@@ -113,11 +113,13 @@ abstract public class DynamicTruthModel {
                 ot = null;
             }
 
-            if (!add(i, d, nt.negIf(negated), confMin))
+            nt = nt.negIf(negated);
+
+            if (!add(i, d, nt, confMin))
                 return null;
 
             if (evi) {
-                d.e.add(bt);
+                d.add(bt, nt);
 
                 if (!inputs[i].equals(ot)) {
                     //template has changed

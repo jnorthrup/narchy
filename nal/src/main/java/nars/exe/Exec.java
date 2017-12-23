@@ -32,21 +32,37 @@ abstract public class Exec implements Executor {
     private On onClear;
 
 
-    /**
-     * schedules the task for execution but makes no guarantee it will ever actually execute
-     */
-    abstract public void add(/*@NotNull*/ ITask input);
-
-    public void add(/*@NotNull*/ Iterator<? extends ITask> input) {
-        input.forEachRemaining(this::add);
+    public void execute(/*@NotNull*/ Iterator<? extends ITask> input) {
+        input.forEachRemaining(this::execute);
     }
 
-    public final void add(/*@NotNull*/ Iterable<? extends ITask> input) {
-        add(input.iterator());
+    public final void execute(/*@NotNull*/ Iterable<? extends ITask> input) {
+        execute(input.iterator());
     }
 
-    public void add(/*@NotNull*/ Stream<? extends ITask> input) {
-        add(input.iterator());
+    public void execute(/*@NotNull*/ Stream<? extends ITask> input) {
+        execute(input.iterator());
+    }
+
+
+    public void execute(Object t) {
+        if (t instanceof ITask)
+            execute((ITask) t);
+        else if (t instanceof Consumer)
+            ((Consumer) t).accept(nar);
+        else if (t instanceof Runnable)
+            execute((Runnable) t);
+        else
+            throw new UnsupportedOperationException(t + " unexecutable");
+    }
+
+    @Override
+    public void execute(Runnable async) {
+        if (concurrent()) {
+            ForkJoinPool.commonPool().execute(async);
+        } else {
+            async.run();
+        }
     }
 
     protected void execute(ITask x) {
@@ -55,7 +71,7 @@ abstract public class Exec implements Executor {
 
             Iterable<? extends ITask> y = x.run(nar);
             if (y != null)
-                add(y.iterator());
+                execute(y.iterator());
 
         } catch (Throwable e) {
             if (Param.DEBUG) {
@@ -111,18 +127,9 @@ abstract public class Exec implements Executor {
     }
 
 
-    @Override
-    public void execute(Runnable async) {
-        if (concurrent()) {
-            ForkJoinPool.commonPool().execute(async);
-        } else {
-            async.run();
-        }
-    }
-
     public void execute(Consumer<NAR> r) {
         if (concurrent()) {
-            ForkJoinPool.commonPool().execute(()->r.accept(nar));
+            ForkJoinPool.commonPool().execute(() -> r.accept(nar));
         } else {
             r.accept(nar);
         }
@@ -142,9 +149,6 @@ abstract public class Exec implements Executor {
     }
 
 
-
-
-
     abstract public void activate(Concept c, float activationApplied);
 
     public interface Revaluator {
@@ -152,6 +156,10 @@ abstract public class Exec implements Executor {
          * goal and goalSummary instances correspond to the possible MetaGoal's enum
          */
         void update(long time, int dur, FasterList<Cause> causes, float[] goal);
+
+        default void update(NAR nar) {
+            update(nar.time(), nar.dur(), nar.causes, nar.want);
+        }
     }
 
 }

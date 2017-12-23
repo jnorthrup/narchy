@@ -120,7 +120,7 @@ public enum Terms {
 //    }
 //
 //
-//    public static boolean equalSubjectPredicateInRespectToImageAndProduct(@NotNull Compound A, @NotNull Compound B) {
+//    public static boolean equalSubjectPredicateInRespectToImageAndProduct(Compound A, Compound B) {
 //
 //        if (A.equals(B)) {
 //            return true;
@@ -209,7 +209,7 @@ public enum Terms {
 //
 //    }
 //
-//    private static boolean containsAll(@NotNull TermContainer sat, Term ta, @NotNull TermContainer sbt, Term tb) {
+//    private static boolean containsAll(TermContainer sat, Term ta, TermContainer sbt, Term tb) {
 //        //set for fast containment check
 //        Set<Term> componentsA = sat.toSet();
 //        componentsA.add(ta);
@@ -229,7 +229,7 @@ public enum Terms {
 
 
     @NotNull
-    public static Term[] reverse(@NotNull Term[] arg) {
+    public static Term[] reverse(Term[] arg) {
         int l = arg.length;
         Term[] r = new Term[l];
         for (int i = 0; i < l; i++) {
@@ -242,7 +242,7 @@ public enum Terms {
     /**
      * warning may rearrange items in the input
      */
-    public static Term[] sorted(@NotNull Term... arg) {
+    public static Term[] sorted(Term... arg) {
         int len = arg.length;
         switch (len) {
 
@@ -250,13 +250,12 @@ public enum Terms {
                 return Term.EmptyArray;
 
             case 1:
-                return arg; //new Term[] { arg[0] };
+                return arg;
+
             case 2:
                 Term a = arg[0];
                 Term b = arg[1];
                 int c = a.compareTo(b);
-
-
                 if (c < 0) return arg; //same as input //new Term[]{a, b};
                 else if (c > 0) return new Term[]{b, a};
                 else /*if (c == 0)*/ return new Term[]{a}; //equal
@@ -264,19 +263,24 @@ public enum Terms {
 
                 //TODO fast sorted array for arg.length == 3 ?
 
-            default:
-                return new SortedList<>(arg, new Term[arg.length]).toArrayRecycled(Term[]::new);
+            default: {
+                SortedList<Term> sl = new SortedList<>(arg, new Term[arg.length]);
+                if (sl.orderChangedOrDeduplicated)
+                    return sl.toArrayRecycled(Term[]::new);
+                else
+                    return arg; //input is already sorted and de-duplicated
+            }
 
             //return sortUniquely(arg); //<- may also work but seems slower
 
         }
     }
 
-    public static void printRecursive(@NotNull PrintStream out, @NotNull Term x) {
+    public static void printRecursive(PrintStream out, Term x) {
         printRecursive(out, x, 0);
     }
 
-    static void printRecursive(@NotNull PrintStream out, @NotNull Term x, int level) {
+    static void printRecursive(PrintStream out, Term x, int level) {
         //indent
         for (int i = 0; i < level; i++)
             out.print("  ");
@@ -297,11 +301,11 @@ public enum Terms {
     /**
      * for printing complex terms as a recursive tree
      */
-    public static void printRecursive(Term x, @NotNull Consumer<String> c) {
+    public static void printRecursive(Term x, Consumer<String> c) {
         printRecursive(x, 0, c);
     }
 
-    public static void printRecursive(Term x, int level, @NotNull Consumer<String> c) {
+    public static void printRecursive(Term x, int level, Consumer<String> c) {
         //indent
         StringBuilder line = new StringBuilder();
         for (int i = 0; i < level; i++)
@@ -318,7 +322,7 @@ public enum Terms {
     }
 
 
-    public static int maxLevel(@NotNull Term term) {
+    public static int maxLevel(Term term) {
         int[] max = {0};
         term.recurseTerms((t) -> {
             int m = t.op().minLevel;
@@ -329,7 +333,7 @@ public enum Terms {
     }
 
     @Nullable
-    public static Term[] concat(@Nullable Term[] a, @NotNull Term... b) {
+    public static Term[] concat(@Nullable Term[] a, Term... b) {
 
         if (a == null) {
             return null;
@@ -355,7 +359,7 @@ public enum Terms {
     /**
      * returns lev distance divided by max(a.length(), b.length()
      */
-    public static float levenshteinDistancePercent(@NotNull CharSequence a, @NotNull CharSequence b) {
+    public static float levenshteinDistancePercent(CharSequence a, CharSequence b) {
         int len = Math.max(a.length(), b.length());
         if (len == 0) return 0f;
         return Texts.levenshteinDistance(a, b) / ((float) len);
@@ -384,13 +388,13 @@ public enum Terms {
     }
 
 
-    public static boolean allNegated(@NotNull Subterms subterms) {
+    public static boolean allNegated(Subterms subterms) {
         return subterms.hasAny(Op.NEG) && subterms.AND((Term t) -> t.op() == NEG);
     }
 
 
 //    @Nullable
-//    public static Term atemporalize(@NotNull Term c) {
+//    public static Term atemporalize(Term c) {
 //        if (c instanceof Compound)
 //            return atemporalize((Compound)c);
 //        return c;
@@ -401,7 +405,7 @@ public enum Terms {
 //     * returns the most optimal subterm that can be replaced with a variable, or null if one does not meet the criteria
 //     */
 //    @Nullable
-//    public static Term[] substMaximal(@NotNull Compound c, @NotNull Predicate<Term> include, int minCount, int minScore) {
+//    public static Term[] substMaximal(Compound c, Predicate<Term> include, int minCount, int minScore) {
 //        HashBag<Term> uniques = subtermScore(c,
 //                t -> include.test(t) ? t.volume() : 0 //sum by complexity if passes include filter
 //        );
@@ -429,7 +433,7 @@ public enum Terms {
 //     * returns the most optimal subterm that can be replaced with a variable, or null if one does not meet the criteria
 //     */
 //    @Nullable
-//    public static Term[] substRoulette(@NotNull Compound c, @NotNull Predicate<Term> include, int minCount, Random rng) {
+//    public static Term[] substRoulette(Compound c, Predicate<Term> include, int minCount, Random rng) {
 //        HashBag<Term> uniques = subtermScore(c,
 //                t -> include.test(t) ? 1 : 0 //sum by complexity if passes include filter
 //        );
@@ -723,7 +727,7 @@ public enum Terms {
 }
 
 
-//    private static boolean equalsAnonymous(@NotNull TermContainer a, @NotNull TermContainer b) {
+//    private static boolean equalsAnonymous(TermContainer a, TermContainer b) {
 //        if (a.volume() == b.volume()) {
 //            int n = a.size();
 //            if (n == b.size()) {

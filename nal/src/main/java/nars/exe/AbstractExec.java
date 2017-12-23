@@ -44,11 +44,7 @@ abstract public class AbstractExec extends Exec {
         //active.put(c, activationApplied);
     }
 
-    @Override
-    public void add(ITask t) {
-        if (t!=null)
-            execute(t);
-    }
+
 
     @Override
     public void fire(Predicate<Activate> each) {

@@ -325,9 +325,8 @@ public class Emotion extends ConcurrentMonitorRegistry {
         busy(pri, (int) Math.ceil(vol ));
     }
 
-    public void onActivate(Task t, float activation, TaskConcept taskConcept, NAR n) {
+    public void onActivate(Task t) {
         taskActivations.increment();
-        taskConcept.value(t, activation, n);
     }
 
     public void onAnswer(PriReference<Task> questionLink, @Nullable Task answer) {

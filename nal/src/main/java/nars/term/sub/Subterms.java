@@ -889,6 +889,23 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         } else /*if (xss == xss)*/ {
 
+            boolean allEqual = true;
+            for (int i = 1; i < ys.length; i++) {
+                if (!ys[0].equals(ys[i])) {
+                    allEqual = false;
+                    break;
+                }
+            }
+            if (allEqual) {
+                //all equal, so the same value must unify to both X's subterms
+                //no permutation necessary
+                for (int i = 0; i < ys.length; i++) {
+                    if (!xs[i].unify(ys[0], u))
+                        return false;
+                }
+                return true;
+            }
+
             u.termutes.add(new CommutivePermutations(
                     $.pFast(The.subterms(xs)),
                     $.pFast(The.subterms(ys))));

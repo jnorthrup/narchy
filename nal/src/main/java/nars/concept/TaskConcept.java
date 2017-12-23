@@ -8,7 +8,6 @@ import nars.concept.builder.ConceptBuilder;
 import nars.control.MetaGoal;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
-import nars.table.TaskTable;
 import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -136,9 +135,10 @@ public class TaskConcept extends NodeConcept implements Concept {
 
         byte punc = t.punc();
         if (punc == BELIEF || punc == GOAL) {
+            float str = (1f + t.conf()) * activation; //at minimum 1, even for ~0 conf
             MetaGoal.learn(
                     punc == BELIEF ? MetaGoal.Believe : MetaGoal.Desire,
-                    t.cause(), t.conf() * activation, n);
+                    t.cause(), str, n);
         }
 
 

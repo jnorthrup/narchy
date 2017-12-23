@@ -1256,11 +1256,23 @@ public enum Util {
             y += value.floatValueOf(x);
         return y;
     }
+    public static <X> double sum(ToDoubleFunction<X> value, X... xx) {
+        double y = 0;
+        for (X x : xx)
+            y += value.applyAsDouble(x);
+        return y;
+    }
+
 
     public static <X> int sum(ToIntFunction<X> value, X... xx) {
+        return sum(value, xx.length, xx);
+    }
+
+    public static <X> int sum(ToIntFunction<X> value, int n, X... xx) {
         int y = 0;
-        for (X x : xx)
-            y += value.applyAsInt(x);
+        for (int i = 0, xxLength = n; i < xxLength; i++) {
+            y += value.applyAsInt(xx[i]);
+        }
         return y;
     }
 

@@ -495,7 +495,14 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
      * since CONJ will be constructed with conjMerge, if x is conj the dt between events must be calculated from start-start. otherwise it is implication and this is measured internally
      */
     static long dt(Term x, Event aa, Event bb) {
-        return bb.when() - aa.when();
+        long bWhen = bb.when();
+        long aWhen = aa.when();
+        assert(aWhen!=XTERNAL);
+        assert(bWhen!=XTERNAL);
+        if (aWhen == ETERNAL || bWhen == ETERNAL)
+            return DTERNAL;
+        else
+            return bWhen - aWhen;
         //return bb.start() - (x.op() == CONJ ? aa.start() : aa.end());
     }
 

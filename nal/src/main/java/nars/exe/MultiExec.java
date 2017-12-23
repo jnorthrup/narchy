@@ -34,7 +34,7 @@ public class MultiExec extends AbstractExec {
     protected Executor exe;
 
     protected int threads;
-    final MultithreadConcurrentQueue<ITask> q;
+    final MultithreadConcurrentQueue q;
 
     final List<Thread> activeThreads = $.newArrayList();
     LongSet activeThreadIds = new LongHashSet();
@@ -121,9 +121,9 @@ public class MultiExec extends AbstractExec {
 //                            (int) Math.ceil(((float) qq) / Math.max(1, (threads - 1)));
                         do {
 
-                            ITask i = q.poll();
+                            Object i = q.poll();
                             if (i != null)
-                                execute(i);
+                                executeInline(i);
                             else
                                 break;
 
@@ -140,7 +140,7 @@ public class MultiExec extends AbstractExec {
         }
     }
 
-    boolean running = false;
+    boolean running;
 
     @Override
     public void start(NAR nar) {
@@ -232,11 +232,12 @@ public class MultiExec extends AbstractExec {
 
     @Override
     public void execute(Runnable r) {
-        add(new NativeTask.RunTask(r));
+        execute((Object)r);
     }
+
     @Override
     public void execute(Consumer<NAR> r) {
-        add(new NativeTask.NARTask(r));
+        execute((Object)r);
     }
 
     @Override
@@ -249,9 +250,9 @@ public class MultiExec extends AbstractExec {
     }
 
 
-    final Consumer<ITask> immediate = this::execute;
+    final Consumer immediate = this::executeInline;
 
-    final Consumer<ITask> deferred = x -> {
+    final Consumer deferred = x -> {
             if (x instanceof Task)
                 execute(x);
             else
@@ -261,37 +262,49 @@ public class MultiExec extends AbstractExec {
     /**
      * the input procedure according to the current thread
      */
-    protected Consumer<ITask> add() {
+    protected Consumer add() {
         return isWorker(Thread.currentThread()) ? immediate : deferred;
     }
 
     @Override
-    public void add(Stream<? extends ITask> input) {
+    public void execute(Stream<? extends ITask> input) {
         input.forEach(add());
     }
 
     @Override
-    public void add(Iterator<? extends ITask> input) {
+    public void execute(Iterator<? extends ITask> input) {
         input.forEachRemaining(add());
     }
 
     @Override
-    public void add(ITask t) {
-        if ((t instanceof Task) || (isWorker(Thread.currentThread()))) {
-            execute(t);
+    public void execute(Object t) {
+        if ((t instanceof Task)) {
+            execute((ITask)t);
         } else {
-            queue(t);
+            if (isWorker(Thread.currentThread())) {
+                executeInline(t);
+            } else {
+                queue(t);
+            }
         }
     }
 
-    protected void queue(ITask t) {
+    void executeInline(Object t) {
+        if (t instanceof Runnable) {
+            ((Runnable)t).run();
+        } else {
+            super.execute(t);
+        }
+    }
+
+    protected void queue(Object t) {
         while (!q.offer(t)) {
             if (!running) {
                 throw new RuntimeException("work queue exceeded capacity while not running");
             }
-            ITask next = q.poll();
+            Object next = q.poll();
             if (next != null)
-                execute(next);
+                super.execute(next);
         }
     }
 

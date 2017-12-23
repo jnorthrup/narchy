@@ -2,7 +2,6 @@ package nars.exe;
 
 import com.google.common.base.Joiner;
 import jcog.Services;
-import jcog.Texts;
 import jcog.Util;
 import jcog.decide.Roulette;
 import jcog.learn.Autoencoder;
@@ -250,7 +249,7 @@ public class Focus {
                 return;
 
             if (ae == null || ae.inputs() != numCauses) {
-                int numHidden = Math.round(hiddenMultipler * numCauses);
+                int numHidden = Math.max(2,Math.round(hiddenMultipler * numCauses));
 
                 ae = new Autoencoder(numCauses, numHidden, rng);
                 tmp = new float[numHidden];
@@ -334,7 +333,7 @@ public class Focus {
             for (int i = 0; i < cc; i++) {
                 Cause c = causes.get(i);
 
-                Traffic[] cg = c.goalValue;
+                Traffic[] cg = c.goal;
 
                 //mix the weighted current values of each purpose, each independently normalized against the values (the reason for calculating summary statistics in previous step)
                 float v = 0;
@@ -477,7 +476,7 @@ public class Focus {
 
             schedule.commit();
 
-            revaluator.update(nar.time(), nar.dur(), nar.causes, nar.want);
+            revaluator.update(nar);
 
         } finally {
             busy.set(false);

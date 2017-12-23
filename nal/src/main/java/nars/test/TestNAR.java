@@ -41,7 +41,8 @@ public class TestNAR {
     static final boolean collectTrace = false;
 
     public int temporalTolerance;
-    float truthTolerance = Param.TESTS_TRUTH_ERROR_TOLERANCE;
+    float freqTolerance = Param.TESTS_TRUTH_ERROR_TOLERANCE;
+    float confTolerance = Param.TESTS_TRUTH_ERROR_TOLERANCE;
 
     @NotNull
     public final NAR nar;
@@ -91,8 +92,8 @@ public class TestNAR {
         //eventMeters = new EventCount(nar).eventMeters;
     }
 
-    public TestNAR truthTolerance(float truthTolerance) {
-        this.truthTolerance = truthTolerance;
+    public TestNAR confTolerance(float t) {
+        this.confTolerance = t;
         return this;
     }
 
@@ -397,11 +398,12 @@ public class TestNAR {
         cycleStart -= tt;
         cycleEnd += tt;
 
-        float h = truthTolerance / 2.0f;
+        float hf = freqTolerance / 2.0f;
+        float hc = confTolerance / 2.0f;
         TaskCondition tc =
                 new TaskCondition(nar,
                         cycleStart, cycleEnd,
-                        sentenceTerm, punc, freqMin - h, freqMax + h, confMin - h, confMax + h, start, end);
+                        sentenceTerm, punc, freqMin - hf, freqMax + hf, confMin - hc, confMax + hc, start, end);
 
 
         for (Topic<Tasked> cc : c) {

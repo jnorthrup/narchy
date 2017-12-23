@@ -28,9 +28,13 @@ public class NARService extends Services.AbstractService<NAR> implements Termed 
     }
 
     @Override
-    protected void start(NAR nar) {
-        ons = new Ons();
-        ons.add(nar.eventClear.on(n -> clear()));
+    protected synchronized void start(NAR nar) {
+        ons = new Ons(nar.eventClear.on(n -> clear())) {
+            @Override public void off() {
+                super.off();
+                stop(nar);
+            }
+        };
     }
 
     public void clear() {
@@ -39,8 +43,13 @@ public class NARService extends Services.AbstractService<NAR> implements Termed 
 
 
     @Override
-    protected void stop(NAR nar) {
-        off();
+    protected final synchronized void stop(NAR nar) {
+        stopping(nar);
+        nar.remove(this.id);
+    }
+
+    protected void stopping(NAR nar) {
+
     }
 
     public synchronized void off() {

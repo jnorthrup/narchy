@@ -491,9 +491,9 @@ public interface NAct {
                         //experimental: lessen by a factor of how equally confident each goal is
                         if (fair) {
                             //fully fair
-                            //df *= eMin / eMax;
+                                df *= eMin / eMax;
                             //semi-fair
-                            df *= 0.5f + 0.5f * (eMin / eMax); //reduction by at most half
+                                //df *= 0.5f + 0.5f * (eMin / eMax); //reduction by at most half
                         }
                         //df *= 1f - Math.abs(e[0] - e[1]) / eMax;
                         //df *= Util.sqr(eMin / eMax); //more cautious

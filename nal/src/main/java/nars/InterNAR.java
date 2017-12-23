@@ -45,8 +45,7 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
     }
 
     @Override
-    protected synchronized void stop(NAR nar)  {
-        super.stop(nar);
+    protected void stopping(NAR nar)  {
         if (peer!=null) {
             peer.stop();
             peer = null;

@@ -35,6 +35,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.sub.Subterms;
+import nars.term.sub.TermMetadata;
 import nars.term.sub.TermVector;
 import nars.term.subst.MapSubst;
 import nars.term.subst.Subst;
@@ -51,7 +52,6 @@ import org.eclipse.collections.api.list.primitive.ImmutableByteList;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.factory.primitive.ByteLists;
-import org.eclipse.collections.impl.list.mutable.FastList;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
@@ -161,9 +161,11 @@ public interface Term extends Termed, Comparable<Termed> {
      */
     boolean isTemporal();
 
-    /** whether this term contains any XTERNAL relations */
+    /**
+     * whether this term contains any XTERNAL relations
+     */
     default boolean hasXternal() {
-        if (dt()==XTERNAL) return true;
+        if (dt() == XTERNAL) return true;
 
         Subterms xs = subterms();
         return xs.isTemporal() && xs.OR(Term::hasXternal);
@@ -488,6 +490,7 @@ public interface Term extends Termed, Comparable<Termed> {
     default int subTimeSafe(/*@NotNull*/ Term x, int after) {
         return equals(x) ? 0 : DTERNAL;
     }
+
     default int subTimeSafe(/*@NotNull*/ Term x) {
         return subTimeSafe(x, 0);
     }
@@ -525,25 +528,24 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
 
-
     default List<ByteList> pathsTo(Term target, int minLengthOfPathToReturn) {
 
         if (impossibleSubTerm(target))
             return List.of();
 
         List<ByteList> list = $.newArrayList(0);
-        pathsTo( target, minLengthOfPathToReturn > 0 ?
-                    (l, t) -> {
-                        if (l.size() >= minLengthOfPathToReturn)
-                            list.add(l);
-                        return true;
-                    }
+        pathsTo(target, minLengthOfPathToReturn > 0 ?
+                (l, t) -> {
+                    if (l.size() >= minLengthOfPathToReturn)
+                        list.add(l);
+                    return true;
+                }
                 :
-                    (l, t) -> {
-                        //simpler version when min=0
-                        list.add(l.toImmutable());
-                        return true;
-                    }
+                (l, t) -> {
+                    //simpler version when min=0
+                    list.add(l.toImmutable());
+                    return true;
+                }
         );
         return list;
     }
@@ -591,7 +593,7 @@ public interface Term extends Termed, Comparable<Termed> {
             if (h != 0)
                 return h;
 
-            if (this instanceof NormalizedVariable || this instanceof Int) {
+            if (this instanceof NormalizedVariable || this instanceof Int) { //includes Anom (extends Int)
                 return 0; //hashcode was all that needed compared
             } else if (this instanceof Int.IntRange) {
                 return Long.compareUnsigned(((Int.IntRange) this).hash64(), ((Int.IntRange) y).hash64());
@@ -708,7 +710,7 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     default boolean eventsWhile(LongObjectPredicate<Term> whileEachEvent, long dt,
-                boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal, int level) {
+                                boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal, int level) {
         return whileEachEvent.accept(dt, this);
     }
 
@@ -814,14 +816,14 @@ public interface Term extends Termed, Comparable<Termed> {
 
     @Nullable
     default Term normalize() {
-        return normalize((byte)0);
+        return normalize((byte) 0);
     }
 
 
     @Nullable
     default Term replace(/*@NotNull*/ Map<Term, Term> m) {
         Subst s = MapSubst.the(m);
-        return s!=null ? transform(s) : this;
+        return s != null ? transform(s) : this;
     }
 
     default Term replace(Term from, Term to) {
@@ -848,5 +850,20 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
 
+    default void collectMetadata(TermMetadata.SubtermMetadataCollector s) {
+        s.varPattern += varPattern();
+
+        int xstructure = structure();
+        if ((xstructure & VAR_DEP.bit) > 0)
+            s.varDep += varDep();
+        if ((xstructure & VAR_INDEP.bit) > 0)
+            s.varIndep += varIndep();
+        if ((xstructure & VAR_QUERY.bit) > 0)
+            s.varQuery += varQuery();
+        s.structure |= xstructure;
+
+        s.vol += volume();
+        s.hash = Util.hashCombine(s.hash, hashCode());
+    }
 }
 

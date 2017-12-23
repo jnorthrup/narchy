@@ -71,8 +71,8 @@ public class CurveBag<X extends Priority> extends PriArrayBag<X> {
 
         restart:
         while (true) {
-            final Object[] map = this.items.list;
-            final int s = Math.min(size(), map.length);
+            final Object[] ii = this.items.list;
+            final int s = Math.min(size(), ii.length);
             if (s <= 0)
                 return this;
 
@@ -94,7 +94,7 @@ public class CurveBag<X extends Priority> extends PriArrayBag<X> {
 
             boolean direction = random.nextBoolean();
             while ((nulls+prefilled) < s && size() > 0) {
-                X v = (X) map[i];
+                X v = (X) ii[i];
 
                 //move ahead now in case it terminates on the first try, it wont remain on the same value when the next phase starts
                 if (direction) {
@@ -119,7 +119,7 @@ public class CurveBag<X extends Priority> extends PriArrayBag<X> {
 
             nulls = 0;
             while (nulls < s && size() > 0) {
-                X v0 = (X) map[i];
+                X v0 = (X) ii[i];
                 float p;
                 if (v0 == null) {
                     nulls++;
@@ -139,14 +139,13 @@ public class CurveBag<X extends Priority> extends PriArrayBag<X> {
 
                     BagSample next = each.next(v);
                     if (next.remove) {
-                        if (remove(key(v))==v) {
-                            onRemove(v);
-                        }
+                        remove(key(v));
                     }
 
                     if (next.stop) {
                         break;
                     } else if (next.remove) {
+
                         //prevent the removed item from further selection
                         if (which==windowCap-1) {
                             //if it's in the last place, it will be replaced in next cycle anyway
@@ -158,10 +157,13 @@ public class CurveBag<X extends Priority> extends PriArrayBag<X> {
                             ArrayUtils.swap(wPri, 0, which);
                         }
                     }
+                } else {
+                    //deleted
+                     remove(key(v0));
                 }
 
 
-                if (map != this.items.list)
+                if (ii != this.items.list)
                     continue restart;
 
                 if (direction) {

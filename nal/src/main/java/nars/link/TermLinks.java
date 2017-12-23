@@ -234,7 +234,7 @@ public enum TermLinks {
                     boolean changed = false;
                     for (int i = 0; i < xx.length; i++) {
                         Term y = xx[i];
-                        if (y instanceof Int) {
+                        if (y instanceof Int && y.op()==INT) {
                             int shift =
                                     rng.nextInt(3) - 1;
                             //nar.random().nextInt(5) - 2;

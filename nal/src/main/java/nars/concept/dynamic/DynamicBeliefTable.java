@@ -21,6 +21,7 @@ import org.eclipse.collections.impl.map.mutable.primitive.IntFloatHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
 import static nars.time.Tense.DTERNAL;
@@ -254,8 +255,8 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
     }
 
     @Override
-    public Task match(long start, long end, Term template, NAR nar) {
-        Task x = super.match(start, end, template, nar);
+    public Task match(long start, long end, Term template, NAR nar, Predicate<Task> filter) {
+        Task x = super.match(start, end, template, nar, filter);
 
 
         Task y = generate(template, start, end, nar);

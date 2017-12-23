@@ -2,6 +2,7 @@ package nars.term.atom;
 
 import jcog.Util;
 import nars.Op;
+import nars.term.sub.TermMetadata;
 
 import static java.lang.System.arraycopy;
 
@@ -49,6 +50,7 @@ public abstract class AtomicConst implements Atomic {
         sbytes[3] = c;
         return sbytes;
     }
+
 
     @Override
     public final byte[] bytes() {

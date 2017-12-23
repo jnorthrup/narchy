@@ -188,7 +188,10 @@ public class Premise {
                                 focus;
                     }
 
-                    belief = beliefConcept.beliefs().match(focusStart, focusEnd, beliefTerm, n);
+                    belief = beliefConcept.beliefs().match(focusStart, focusEnd, beliefTerm, n,
+                        beliefConcept.term().equals(task.term().conceptual()) ? (x)->{
+                            return !x.equals(task);
+                        } : null);
                 }
             }
 

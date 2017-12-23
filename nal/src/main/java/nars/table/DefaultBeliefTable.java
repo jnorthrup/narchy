@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 
@@ -111,11 +112,13 @@ public class DefaultBeliefTable implements BeliefTable {
      * get the most relevant belief/goal with respect to a specific time.
      */
     @Override
-    public Task match(long start, long end, Term template, NAR nar) {
+    public Task match(long start, long end, Term template, NAR nar, Predicate<Task> filter) {
 
-        final Task ete = eternal.strongest();
+        Task ete = eternal.strongest();
+        if (filter!=null && ete!=null && !filter.test(ete))
+            ete = null;
 
-        Task tmp = temporal.match(start, end, template, nar);
+        Task tmp = temporal.match(start, end, template, nar, filter);
 
         if (tmp == null) {
             return ete;

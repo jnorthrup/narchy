@@ -88,7 +88,7 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
-    @AllowOverlap
+    //@AllowOverlap
     DeductionRecursive() {
         @Override
         public Truth apply(Truth T, Truth B, NAR m, float minConf) {
@@ -96,7 +96,7 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
-    @AllowOverlap
+    //@AllowOverlap
     DeductionRecursivePB() {
         @Override
         public Truth apply(Truth T, Truth B, NAR m, float minConf) {

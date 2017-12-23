@@ -2,6 +2,7 @@ package nars.task.signal;
 
 import nars.NAR;
 import nars.concept.Concept;
+import nars.link.Tasklinks;
 import nars.table.DefaultBeliefTable;
 import nars.term.Term;
 import nars.truth.PreciseTruth;
@@ -47,7 +48,9 @@ public class TruthletTask extends SignalTask {
     public void update(NAR n, Consumer<TruthletTask> t) {
         Concept c = concept(n, true);
         if (c != null) {
+
             update(c, t);
+
         }
     }
 
@@ -105,6 +108,7 @@ public class TruthletTask extends SignalTask {
         return truth(when);
     }
 
+
     public @Nullable Truth truth(long when) {
         float[] tl = truthlet.truth(when);
         float f = tl[0];
@@ -121,18 +125,17 @@ public class TruthletTask extends SignalTask {
         updateTime(c, start(), nextEnd);
     }
 
-    public void truth(Truthlet newTruthlet, NAR n) {
-        Concept c = concept(n, true);
-        if (c!=null) {
-            truth(newTruthlet, c);
-        }
-    }
-
-    public void truth(Truthlet newTruthlet, Concept c) {
+    public void truth(Truthlet newTruthlet, boolean relink, NAR n) {
         if (truthlet!=newTruthlet) {
-            update(c, (tt) -> {
-                tt.truthlet = newTruthlet;
-            });
+            Concept c = concept(n, true);
+            if (c != null) {
+                update(c, (tt) -> {
+                    tt.truthlet = newTruthlet;
+                    if (relink) {
+                        Tasklinks.linkTask(this, pri, c, n);
+                    }
+                });
+            }
         }
     }
 

@@ -37,6 +37,7 @@ public final class DynTruth {
     public float conf; //running product
 
     Term term = null;
+    private float maxComponentEvi = 0;
 
     public DynTruth(FasterList<Task> e) {
         //this.t = t;
@@ -85,6 +86,19 @@ public final class DynTruth {
         if (evi < eviMin)
             return null;
 
+        //TODO compute max valid overlap to terminate the zip early
+        ObjectFloatPair<long[]> ss = Stamp.zip(e, Param.STAMP_CAPACITY);
+        float overlap = ss.getTwo();
+        if (overlap > 0) {
+            if (evi > maxComponentEvi) {
+                evi = Util.lerp(overlap, evi, maxComponentEvi); //reduce to the maximum component evidence in proportion to the overlap
+            }
+        }
+        if (evi < eviMin)
+            return null;
+        long[] stamp = ss.getOne();
+
+
         Term c = this.term;
         long start, end;
         if (!c.op().temporal) {
@@ -100,21 +114,21 @@ public final class DynTruth {
                 start = end = ETERNAL;
             }
         } else {
-            start = end = e.minValue(TaskRegion::start); //left-align
+            long min = Long.MAX_VALUE;
+            for (int i = 0, thisSize = e.size(); i < thisSize; i++) {
+                long y = e.get(i).start(); //left-align
+                if (y!=ETERNAL) {
+                    if (y < min)
+                        min = y;
+                }
+            }
+
+            if (min == Long.MAX_VALUE)
+                min = ETERNAL; //all eternal
+
+            start = end = min;
         }
 
-//        int termRange = c.dtRange();
-//        long eviRange = end - start;
-//        float rangeCoherence = eviRange==termRange ? 1f :
-//                1f - ((float)Math.abs(eviRange - termRange))/Math.max(eviRange, termRange)/nar.dur();
-
-        //TODO compute max valid overlap to terminate the zip early
-        ObjectFloatPair<long[]> ss = Stamp.zip(e, Param.STAMP_CAPACITY);
-        float overlap = ss.getTwo();
-        evi *= (1f-overlap);
-        if (evi < eviMin)
-            return null;
-        long[] stamp = ss.getOne();
 
         float f;
         if (c.op() == NEG) {
@@ -153,4 +167,8 @@ public final class DynTruth {
     }
 
 
+    void add(Task task, Truth sampled) {
+        e.add(task);
+        maxComponentEvi = Math.max(maxComponentEvi, sampled.evi());
+    }
 }

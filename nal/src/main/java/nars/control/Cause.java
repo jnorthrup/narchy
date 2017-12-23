@@ -31,7 +31,7 @@ public class Cause implements Comparable<Cause> {
     /** the value measured contributed by its effect on each MetaGoal.
      *  the index corresponds to the ordinal of MetaGoal enum entries.
      *  these values are used in determining the scalar 'value' field on each update. */
-    public final Traffic[] goalValue;
+    public final Traffic[] goal;
 
 
     public float value() {
@@ -66,9 +66,9 @@ public class Cause implements Comparable<Cause> {
     public Cause(short id, @Nullable Object name) {
         this.id = id;
         this.name = name!=null ? name : id;
-        goalValue = new Traffic[MetaGoal.values().length];
-        for (int i = 0; i < goalValue.length; i++) {
-            goalValue[i] = new Traffic();
+        goal = new Traffic[MetaGoal.values().length];
+        for (int i = 0; i < goal.length; i++) {
+            goal[i] = new Traffic();
         }
     }
 
@@ -207,13 +207,13 @@ public class Cause implements Comparable<Cause> {
 
     /** learn the utility of this cause with regard to a goal. */
     public final void learn(MetaGoal p, float v) {
-        p.learn(goalValue, v);
+        p.learn(goal, v);
     }
 
 
     public void commit(RecycledSummaryStatistics[] valueSummary) {
-        for (int i = 0, purposeLength = goalValue.length; i < purposeLength; i++) {
-            Traffic p = goalValue[i];
+        for (int i = 0, purposeLength = goal.length; i < purposeLength; i++) {
+            Traffic p = goal[i];
             p.commit();
             valueSummary[i].accept(p.current);
         }

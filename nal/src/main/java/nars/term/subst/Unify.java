@@ -1,7 +1,11 @@
 package nars.term.subst;
 
+import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import jcog.data.byt.AbstractBytes;
+import jcog.data.byt.DynBytes;
+import jcog.data.byt.RawBytes;
+import jcog.list.FasterList;
 import jcog.version.VersionMap;
 import jcog.version.Versioned;
 import jcog.version.Versioning;
@@ -19,10 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.LinkedHashSet;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 
 
 /* recurses a pair of compound term tree's subterms
@@ -114,16 +115,26 @@ public abstract class Unify extends Versioning implements Subst {
 
     protected void nextMatch(boolean termuting) {
         if (termuting) {
-            if (matches == null)
+
+            if (Param.DEBUG_FILTER_DUPLICATE_MATCHES && matches == null)
                 matches = new UnifiedSet(1);
 
-            if (matches.add(((ConstrainedVersionMap) xy).snapshot())) {
+            if (!Param.DEBUG_FILTER_DUPLICATE_MATCHES || matches.add(((ConstrainedVersionMap) xy).snapshot())) {
+
                 tryMatch(); //new unique match
+
+            } else {
+                //duplicate
+                throw new UnsupportedOperationException("duplicate match");
             }
         } else {
+
             tryMatch();
-            assert (matches == null);
-            matches = Collections.emptySet();//indicates that there was a match, by being non-null
+
+            if (Param.DEBUG_FILTER_DUPLICATE_MATCHES) {
+                assert (matches == null);
+                matches = Collections.emptySet();//indicates that there was a match, by being non-null
+            }
         }
     }
 
@@ -413,13 +424,29 @@ public abstract class Unify extends Versioning implements Subst {
         }
 
         public AbstractBytes snapshot() {
-            int ss = xy.size();
-            if (ss == 0)
-                return AbstractBytes.EMPTY;
+            List<RawBytes> pre = new FasterList<>(8);
+            DynBytes b = new DynBytes(64);
+            xy.forEach((x,y)->{
+                x.append((ByteArrayDataOutput) b);
+                b.writeByte(0); //separator
+                y.append((ByteArrayDataOutput)b);
+                pre.add(b.rawCopy());
+                b.clear();
+            });
 
-            NewCompound s = new NewCompound(null, ss * 2);
-            xy.forEachSorted(s::add);
-            return s.commit();
+            int s = pre.size();
+            switch (s) {
+                case 0: return AbstractBytes.EMPTY;
+                case 1:
+                    return pre.get(0);
+                default:
+                    Collections.sort(pre);
+                    for (RawBytes r : pre) {
+                        b.write(r.bytes);
+                    }
+                    //b.compact();
+                    return b;
+            }
         }
     }
 
