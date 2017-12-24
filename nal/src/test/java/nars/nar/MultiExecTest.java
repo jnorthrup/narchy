@@ -18,10 +18,8 @@ import org.eclipse.collections.impl.map.mutable.primitive.ByteIntHashMap;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
-import java.util.function.DoubleFunction;
 import java.util.function.ToDoubleFunction;
 
-import static jcog.Texts.n4;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MultiExecTest {

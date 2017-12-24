@@ -80,7 +80,8 @@ public class Activate extends PLink<Concept> implements Termed {
         long now = nar.time();
         int dur = nar.dur();
         int ntasklinks = tasklinks.size();
-        tasklinks.commit(PriForget.forget(tasklinks, linkForgetting, Pri.EPSILON, (r) -> new Tasklinks.TaskLinkForget(r, now, dur, tasklinks.capacity())));
+        tasklinks.commit(PriForget.forget(tasklinks, linkForgetting, Pri.EPSILON, (r) ->
+                new Tasklinks.TaskLinkForget(r, now, dur)));
         if (ntasklinks == 0)
             return Collections.emptyList();
 

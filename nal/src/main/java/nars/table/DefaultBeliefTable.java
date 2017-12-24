@@ -1,14 +1,11 @@
 package nars.table;
 
-import com.google.common.collect.Iterators;
 import nars.NAR;
 import nars.Task;
 import nars.concept.TaskConcept;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -29,8 +26,8 @@ public class DefaultBeliefTable implements BeliefTable {
     }
 
     @Override
-    public Stream<Task> stream() {
-        return Stream.concat(eternal.stream(), temporal.stream()).filter(x -> !x.isDeleted());
+    public Stream<Task> streamTasks() {
+        return Stream.concat(eternal.streamTasks(), temporal.streamTasks()).filter(x -> !x.isDeleted());
     }
 
     /**
@@ -52,15 +49,15 @@ public class DefaultBeliefTable implements BeliefTable {
         eternal.clear();
     }
 
-    @NotNull
-    @Override
-    @Deprecated
-    public final Iterator<Task> iterator() {
-        return Iterators.concat(
-                eternal.iterator(),
-                temporal.iterator()
-        );
-    }
+//    @NotNull
+//    @Override
+//    @Deprecated
+//    public final Iterator<Task> iterator() {
+//        return Iterators.concat(
+//                eternal.iterator(),
+//                temporal.iterator()
+//        );
+//    }
 
     @Override
     public void forEachTask(boolean includeEternal, long minT, long maxT, Consumer<? super Task> x) {
@@ -70,10 +67,10 @@ public class DefaultBeliefTable implements BeliefTable {
         temporal.whileEach(minT, maxT, (t)-> { x.accept(t); return true; });
     }
 
-    @Override
-    public void forEach(Consumer<? super Task> action) {
-        forEachTask(action);
-    }
+//    @Override
+//    public void forEach(Consumer<? super Task> action) {
+//        forEachTask(action);
+//    }
 
     @Override
     public final void forEachTask(Consumer<? super Task> action) {

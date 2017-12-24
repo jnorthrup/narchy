@@ -241,8 +241,8 @@ public class HijackTermIndex extends MaplikeTermIndex {
     }
 
     protected float score(Concept c) {
-        float beliefConf = w2c((float) c.beliefs().stream().mapToDouble(t -> t.evi(now, dur)).average().orElse(0));
-        float goalConf = w2c((float) c.goals().stream().mapToDouble(t -> t.evi(now, dur)).average().orElse(0));
+        float beliefConf = w2c((float) c.beliefs().streamTasks().mapToDouble(t -> t.evi(now, dur)).average().orElse(0));
+        float goalConf = w2c((float) c.goals().streamTasks().mapToDouble(t -> t.evi(now, dur)).average().orElse(0));
         float talCap = c.tasklinks().size() / (1f + c.tasklinks().capacity());
         float telCap = c.termlinks().size() / (1f + c.termlinks().capacity());
         return Util.or(((talCap + telCap) / 2f), (beliefConf + goalConf) / 2f) /

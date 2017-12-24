@@ -93,7 +93,9 @@ public class Deriver extends Causable {
         assert (now != ETERNAL);
 
         if (task.isEternal()) {
-            return ETERNAL;
+            return
+                    //ETERNAL;
+                    now;
         } else {
 
             //return now;

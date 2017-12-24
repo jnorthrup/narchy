@@ -1,6 +1,5 @@
 package nars.term.atom;
 
-import jcog.Util;
 import nars.Op;
 import nars.term.Term;
 import nars.term.sub.TermMetadata;

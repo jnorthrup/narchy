@@ -2,8 +2,8 @@ package nars.op.mental;
 
 import jcog.bag.Bag;
 import nars.NAR;
-import nars.concept.TaskConcept;
 import nars.concept.Concept;
+import nars.concept.TaskConcept;
 import nars.concept.state.ConceptState;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;

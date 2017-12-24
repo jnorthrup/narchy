@@ -13,6 +13,7 @@ import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
+import static java.util.stream.Collectors.toList;
 import static jcog.Texts.n4;
 import static nars.Op.BELIEF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -132,7 +133,7 @@ public class RTreeBeliefTableTest {
 
     @Test
     public void testAccuracySquareWave() {
-        testAccuracy(1, 1, 5, 5, stepFunction);
+        testAccuracy(1, 1, 7, 5, stepFunction);
     }
 
     static void testAccuracy(int dur, int period, int end, int cap, LongToFloatFunction func) {
@@ -161,8 +162,12 @@ public class RTreeBeliefTableTest {
             System.out.print(time + "=" + f + "\t");
             n.input($.task(term, BELIEF, f, 0.9f).time(time).setPriThen(0.5f).apply(n));
             n.run(period);
+            c.beliefs().print();
+            System.out.println();
+
             //numTasks++;
         }
+        System.out.println();
         System.out.println();
 
 
@@ -173,7 +178,7 @@ public class RTreeBeliefTableTest {
                 .value("pri", (t) -> t.pri())
                 .value2D("truth", (t) -> new float[]{t.freq(), t.conf()})
                 .value("freqErr", (t) -> Math.abs(((t.freq() - 0.5f) * 2f) - func.valueOf(t.mid())))
-                .add(c.beliefs());
+                .add(c.beliefs().streamTasks().collect(toList()));
 
         System.out.println();
         m.print();

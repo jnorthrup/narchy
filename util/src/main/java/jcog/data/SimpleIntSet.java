@@ -17,8 +17,7 @@ import java.util.*;
 public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
 
     private static final int DEFAULT_CAPACITY = 4;
-
-    private float loadFactor;
+    private static final float loadFactor = 0.75f;
 
     private int size = 0;
     /**
@@ -26,7 +25,6 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
      */
     private MetalBitSet status;
     private int[] keys;
-    private final static boolean OCCUPIED = true;
 
     /**
      * Creates a new empty integer set
@@ -43,18 +41,6 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
      * @param capacity the number of items to store
      */
     public SimpleIntSet(int capacity) {
-        this(capacity, 0.75f);
-    }
-
-    /**
-     * Creates an empty integer set pre-allocated to store a specific number of
-     * items
-     *
-     * @param capacity   the number of items to store
-     * @param loadFactor the maximum ratio of used to un-used storage
-     */
-    public SimpleIntSet(int capacity, float loadFactor) {
-        this.loadFactor = loadFactor;
         int size = getNextPow2TwinPrime((int) Math.max(capacity / loadFactor, 4));
         alloc(size);
         this.size = 0;

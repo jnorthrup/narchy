@@ -22,7 +22,6 @@ import nars.term.atom.Atomic;
 import nars.term.var.Variable;
 import nars.truth.DiscreteTruth;
 import nars.truth.Truth;
-import org.intelligentjava.machinelearning.decisiontree.feature.P;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;

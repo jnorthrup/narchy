@@ -3,14 +3,11 @@ package nars.derive.op;
 import nars.$;
 import nars.Param;
 import nars.control.Derivation;
-import nars.term.pred.AbstractPred;
-import nars.term.pred.AndCondition;
-import nars.derive.Conclusion;
-import nars.term.pred.PrediTerm;
 import nars.derive.rule.PremiseRule;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import org.jetbrains.annotations.NotNull;
+import nars.term.pred.AbstractPred;
+import nars.term.pred.PrediTerm;
 
 /**
  * Created by me on 5/26/16.

@@ -101,31 +101,31 @@ public class CompactArrayMap<K, V> extends FasterList {
     }
 
     /** override for alternate equality test */
-    public boolean keyEquals(Object a, Object b) {
+    boolean keyEquals(Object a, Object b) {
         return a.equals(b);
     }
 
     @Override
     public void clear() {
-        synchronized(this) {
+        //synchronized(this) {
             items = null;
-        }
+        //}
     }
 
     public void clearExcept(K key) {
-        synchronized(this) {
+        //synchronized(this) {
             V exist = get(key);
             clear();
             if (exist!=null)
                 put(key, exist);
-        }
+        //}
     }
 
     public void clearPut(K key, V value) {
-        synchronized(this) {
+        //synchronized(this) {
             clear();
             if (value!=null)
                 put(key, value);
-        }
+        //}
     }
 }

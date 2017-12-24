@@ -1,10 +1,9 @@
 package nars.derive.instrument;
 
 import nars.control.Derivation;
-import nars.control.ProtoDerivation;
+import nars.term.Term;
 import nars.term.pred.AbstractPred;
 import nars.term.pred.PrediTerm;
-import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 
 abstract public class InstrumentedDerivationPredicate extends AbstractPred<Derivation> {

@@ -13,7 +13,6 @@ import nars.Op;
 import nars.Param;
 import nars.derive.constraint.MatchConstraint;
 import nars.derive.mutate.Termutator;
-import nars.index.term.NewCompound;
 import nars.term.Term;
 import nars.term.TermHashMap;
 import nars.term.Termlike;

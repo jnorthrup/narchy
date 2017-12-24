@@ -2,29 +2,34 @@ package nars.task.signal;
 
 public class ProxyTruthlet<T extends Truthlet> extends Truthlet {
 
-    public T defined;
+    public T ref;
 
-    public ProxyTruthlet(T defined) {
-        this.defined = defined;
+    public ProxyTruthlet(T ref) {
+        this.ref = ref;
     }
 
     @Override
-    public long start() {
-        return defined.start();
+    public final long start() {
+        return ref.start();
     }
 
     @Override
-    public long end() {
-        return defined.end();
+    public final long end() {
+        return ref.end();
+    }
+
+    @Override
+    public final boolean intersects(long start, long end) {
+        return ref.intersects(start, end);
     }
 
     @Override
     public void setTime(long newStart, long newEnd) {
-       defined.setTime(newStart, newEnd);
+       ref.setTime(newStart, newEnd);
     }
 
     @Override
     public void truth(long when, float[] freqEvi) {
-        defined.truth(when, freqEvi);
+        ref.truth(when, freqEvi);
     }
 }

@@ -8,9 +8,9 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
-import nars.concept.TaskConcept;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
+import nars.concept.TaskConcept;
 import nars.concept.dynamic.DynamicBeliefTable;
 import nars.concept.dynamic.DynamicConcept;
 import nars.concept.dynamic.DynamicTruthModel;
@@ -25,11 +25,11 @@ import nars.term.atom.Int;
 import nars.term.sub.Subterms;
 import nars.term.var.Variable;
 import org.eclipse.collections.api.list.MutableList;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Random;
 import java.util.function.Predicate;
 
 import static nars.Op.*;

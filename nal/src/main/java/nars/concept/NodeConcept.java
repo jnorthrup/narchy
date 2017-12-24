@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static nars.concept.state.ConceptState.Deleted;
 import static nars.concept.state.ConceptState.New;
 
 /** a 'blank' concept which does not store any tasks */

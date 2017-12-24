@@ -8,7 +8,6 @@ import nars.Task;
 import nars.control.Derivation;
 import nars.task.TimeFusion;
 import nars.term.Term;
-import nars.term.TermHashMap;
 import nars.term.Termed;
 import nars.term.atom.Bool;
 
@@ -17,7 +16,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import static nars.Op.*;
+import static nars.Op.CONJ;
+import static nars.Op.IMPL;
 import static nars.time.Tense.*;
 
 

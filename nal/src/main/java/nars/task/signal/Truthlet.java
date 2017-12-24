@@ -4,7 +4,7 @@ import jcog.Paper;
 import jcog.Skill;
 import nars.truth.Truth;
 
-import static nars.truth.TruthFunctions.c2wSafe;
+import static nars.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 /** wavelet-like freq/evidence function */
@@ -15,8 +15,8 @@ abstract public class Truthlet implements Truth {
     abstract public long start();
     abstract public long end();
 
-    public final long mid() { return (start() + end())/2L; }
-    public final long range() {
+    public long mid() { return (start() + end())/2L; }
+    public long range() {
         long e = end();
         long s = start();
         return e - s;
@@ -49,7 +49,9 @@ abstract public class Truthlet implements Truth {
         return w2cSafe(truth(when)[1]);
     }
 
-    public boolean containsTime(long when) {
+    public final boolean containsTime(long when) {
+        if (when == ETERNAL)
+            return true;
         long s = start();
         if (when == s) return true;
         long e = end();
@@ -90,4 +92,7 @@ abstract public class Truthlet implements Truth {
         return new LinearTruthlet(start, startFreq, end, endFreq, evi);
     }
 
+    public boolean intersects(long start, long end) {
+        return start <= end() && end >= start();
+    }
 }

@@ -2,10 +2,8 @@ package nars.term.transform;
 
 import jcog.data.ArrayHashSet;
 import nars.Op;
-import nars.Task;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.atom.Bool;
 import nars.term.sub.Subterms;
 import org.jetbrains.annotations.Nullable;

@@ -8,7 +8,6 @@ import nars.control.Derivation;
 import nars.term.Term;
 import nars.term.pred.AbstractPred;
 import nars.term.pred.PrediTerm;
-import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
 import java.util.function.Function;

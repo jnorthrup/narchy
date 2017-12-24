@@ -2,8 +2,6 @@ package nars.nal.nal1;
 
 import nars.NAR;
 import nars.NARS;
-import nars.Param;
-import nars.test.TestNAR;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
 

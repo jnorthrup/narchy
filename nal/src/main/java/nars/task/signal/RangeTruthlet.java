@@ -1,8 +1,5 @@
 package nars.task.signal;
 
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.XTERNAL;
-
 abstract public class RangeTruthlet extends Truthlet {
 
     public long start, end;
@@ -20,12 +17,12 @@ abstract public class RangeTruthlet extends Truthlet {
     }
 
     @Override
-    public long start() {
+    public final long start() {
         return start;
     }
 
     @Override
-    public long end() {
+    public final long end() {
         return end;
     }
 

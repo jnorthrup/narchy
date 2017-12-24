@@ -11,14 +11,18 @@ import java.util.Arrays;
  * 1: float freq min..max
  * 2: float conf min..max
  */
-public class TasksRegion implements TaskRegion {
+public final class TasksRegion implements TaskRegion {
+
+
+
 
     public final long start;
     public final long end; //allow end to stretch for ongoing tasks
 
     public final float freqMin, freqMax, confMin, confMax;
 
-//    private final int serial;
+//    static private volatile int SERIAL = 0;
+//    public final int serial = SERIAL++;
 
     @Override
     public final long start() {
@@ -35,11 +39,10 @@ public class TasksRegion implements TaskRegion {
 //        return obj != null && (this == obj || (task != null && Objects.equals(task, ((TaskRegion) obj).task())));
 //    }
 
-    @Override
-    public int hashCode() {
-        //return serial;
-        throw new UnsupportedOperationException();
-    }
+//    @Override
+//    public int hashCode() {
+//        return serial;
+//    }
 
     @Override
     public String toString() {
@@ -53,10 +56,10 @@ public class TasksRegion implements TaskRegion {
         this.freqMax = freqMax;
         this.confMin = confMin;
         this.confMax = confMax;
-        //this.serial = serials.incrementAndGet();
     }
 
     //private static final AtomicInteger serials = new AtomicInteger(0);
+
 
 
 

@@ -3,7 +3,6 @@ package nars.term.anon;
 import jcog.memoize.LinkedMRUMemoize;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.Atom;
 
 public class CachedAnon extends Anon {
 

@@ -12,7 +12,6 @@ import nars.table.TemporalBeliefTable;
 import nars.task.util.PredictionFeedback;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.list.MutableList;

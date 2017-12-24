@@ -44,9 +44,9 @@ public class Spatialization<T> {
         return split.split(t, leaf, this);
     }
 
-    public double perimeter(T c) {
-        return bounds(c).perimeter();
-    }
+//    public double perimeter(T c) {
+//        return bounds(c).perimeter();
+//    }
 
     /** called when add encounters an equivalent (but different) instance */
     protected void merge(T existing, T incoming) {

@@ -16,7 +16,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import static nars.Op.*;
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 
 public class TaskConcept extends NodeConcept implements Concept {
 
@@ -188,10 +189,10 @@ public class TaskConcept extends NodeConcept implements Concept {
     @Override
     public Stream<Task> tasks(boolean includeBeliefs, boolean includeQuestions, boolean includeGoals, boolean includeQuests) {
         List<Stream<Task>> s = new FasterList<>();
-        if (includeBeliefs) s.add(beliefs.stream());
-        if (includeGoals) s.add(goals.stream());
-        if (includeQuestions) s.add(questions.stream());
-        if (includeQuests) s.add(quests.stream());
+        if (includeBeliefs) s.add(beliefs.streamTasks());
+        if (includeGoals) s.add(goals.streamTasks());
+        if (includeQuestions) s.add(questions.streamTasks());
+        if (includeQuests) s.add(quests.streamTasks());
         return s.stream().flatMap(x -> x);
     }
 

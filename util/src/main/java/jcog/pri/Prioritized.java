@@ -2,6 +2,8 @@ package jcog.pri;
 
 
 import jcog.Texts;
+import jcog.Util;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.fusesource.jansi.Ansi;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +23,9 @@ public interface Prioritized extends Deleteable {
      */
     float EPSILON =             0.0001f;
 
+    public static float sum(Prioritized... src) {
+        return Util.sum(Prioritized::priElseZero, src);
+    }
 
 
     /**
@@ -116,7 +121,7 @@ public interface Prioritized extends Deleteable {
         assert (target == target);
         assert (l > 0);
 
-        float ss = sum(Prioritized::priElseZero, xx);
+        float ss = sum(xx);
         if (ss <= Pri.EPSILON)
             return;
 

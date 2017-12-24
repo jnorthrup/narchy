@@ -35,7 +35,6 @@ public class BeliefTableChart extends Widget {
     final TruthWave goals;
     final TruthWave goalProj;
 
-    final AtomicBoolean redraw;
     private DurService on;
 
 
@@ -82,20 +81,12 @@ public class BeliefTableChart extends Widget {
 
         children(label);
 
-        redraw = new AtomicBoolean(false);
-
         beliefs = new TruthWave(0);
         beliefProj = new TruthWave(0);
         goals = new TruthWave(0);
         goalProj = new TruthWave(0);
 
         beliefTheta = goalTheta = 0;
-
-        //setAutoSwapBufferMode(true);
-
-
-
-        redraw.set(true);
 
     }
 
@@ -122,10 +113,7 @@ public class BeliefTableChart extends Widget {
 
     public void update(NAR nar) {
 
-        if (!redraw.compareAndSet(true, false)) {
-            return;
-        }
-        try {
+
 
             long now = this.now = nar.time();
             int dur = this.dur = nar.dur();
@@ -165,9 +153,7 @@ public class BeliefTableChart extends Widget {
                 beliefProj.clear();
                 goalProj.clear();
             }
-        } finally {
-            redraw.set(true);
-        }
+
 
     }
 

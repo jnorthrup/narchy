@@ -1,12 +1,10 @@
 package nars.concept;
 
-import com.google.common.util.concurrent.AtomicDouble;
 import jcog.Util;
 import jcog.math.AtomicFloat;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
-import nars.NAgent;
 import nars.control.CauseChannel;
 import nars.control.NARService;
 import nars.task.ITask;

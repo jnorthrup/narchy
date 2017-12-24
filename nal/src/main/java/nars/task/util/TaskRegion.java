@@ -148,6 +148,9 @@ public interface TaskRegion extends HyperRegion, Tasked {
             return ETERNAL;
 
         long e = this.end();
+        if (s == e)
+            return s;
+
         if ((a >= s) && (b <= e)) {
             return (a + b) / 2L; //midpoint of the contained range surrounded by this
         } else if (a < s && b > e) {
@@ -315,17 +318,18 @@ public interface TaskRegion extends HyperRegion, Tasked {
 
     default float timeCost() {
 
-        return (1 + (float) range(0)) * TIME_COST;
+        return ( (float) range(0)) * TIME_COST;
 
-        //return 1 + (float) Math.log(range(0)+1) /* * 1 */;
+//        float r = (float) range(0);
+//        return r == 0 ? 0 : (float) (Math.log(1 + r) * TIME_COST);
     }
 
     default float freqCost() {
-        return (1 + (float) range(1)) * FREQ_COST;
+        return ( (float) range(1)) * FREQ_COST;
     }
 
     default float confCost() {
-        return (1 + (float) range(2)) * CONF_COST;
+        return ( (float) range(2)) * CONF_COST;
     }
 
     @Override
@@ -340,9 +344,10 @@ public interface TaskRegion extends HyperRegion, Tasked {
 
     @Override
     default TaskRegion mbr(HyperRegion r) {
-        if (this == r)
+        if (contains(r))
             return this;
         else {
+
             if (r instanceof Task) {
                 //accelerated mbr
                 Task er = (Task) r;
@@ -458,5 +463,12 @@ public interface TaskRegion extends HyperRegion, Tasked {
 
     default boolean isDuring(long start, long end) {
         return Interval.intersect(start, end, start(), end())!=null;
+    }
+
+    default boolean intersects(long start, long end) {
+        return start <= end() && end >= start();
+    }
+    default boolean contains(long start, long end) {
+        return start <= start() && end >= end();
     }
 }

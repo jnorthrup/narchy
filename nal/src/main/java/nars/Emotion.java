@@ -6,8 +6,6 @@ import com.netflix.servo.monitor.StepCounter;
 import jcog.meter.event.BufferedFloatGuage;
 import jcog.pri.Pri;
 import jcog.pri.PriReference;
-import nars.concept.Concept;
-import nars.concept.TaskConcept;
 import nars.control.MetaGoal;
 import nars.term.Compound;
 import nars.util.ConcurrentMonitorRegistry;
@@ -34,8 +32,9 @@ public class Emotion extends ConcurrentMonitorRegistry {
      */
     public final Counter busyPri = new StepCounter(id("busyPri"));
 
+
     public final Counter conceptFires = new BasicCounter(id("concept fire count"));
-    public final Counter taskActivations = new BasicCounter(id("task activations"));
+    public final Counter taskActivations_x100 = new BasicCounter(id("task activations x100"));
     public final Counter conceptFirePremises = new BasicCounter(id("concept fire premises"));
 
     public final Counter taskDerived = new BasicCounter(id("task derived"));
@@ -325,8 +324,9 @@ public class Emotion extends ConcurrentMonitorRegistry {
         busy(pri, (int) Math.ceil(vol ));
     }
 
-    public void onActivate(Task t) {
-        taskActivations.increment();
+    /** effective activation percentage */
+    public void onActivate(Task t, float activation) {
+        taskActivations_x100.increment(Math.round(activation*100));
     }
 
     public void onAnswer(PriReference<Task> questionLink, @Nullable Task answer) {

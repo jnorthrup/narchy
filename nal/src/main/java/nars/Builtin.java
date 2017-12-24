@@ -16,7 +16,6 @@ import nars.term.sub.Subterms;
 import nars.term.var.Variable;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
-import org.jetbrains.annotations.Nullable;
 
 import javax.script.ScriptException;
 import java.util.Arrays;

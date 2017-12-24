@@ -1,9 +1,6 @@
 package nars.task.signal;
 
-import jcog.Skill;
 import jcog.Util;
-import nars.Param;
-import nars.truth.Truth;
 
 import static nars.time.Tense.ETERNAL;
 

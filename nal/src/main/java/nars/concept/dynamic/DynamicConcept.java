@@ -1,11 +1,9 @@
 package nars.concept.dynamic;
 
-import nars.NAR;
 import nars.concept.TaskConcept;
 import nars.concept.builder.DefaultConceptBuilder;
 import nars.table.BeliefTable;
 import nars.term.Term;
-import org.jetbrains.annotations.NotNull;
 
 
 /** just a marker class for a TaskConcept with DynamicBeliefTables */

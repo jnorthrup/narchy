@@ -34,6 +34,16 @@ public abstract class UnitCompound implements Compound {
     }
 
 
+    @Override
+    public final int opX() {
+        return Term.opX(op(), 1);
+    }
+
+    @Override
+    public final int subs() {
+        return 1;
+    }
+
     /*@NotNull*/
     @Override
     public String toString() {

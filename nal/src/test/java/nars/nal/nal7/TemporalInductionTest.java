@@ -11,7 +11,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static nars.Op.NEG;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

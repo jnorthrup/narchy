@@ -1,7 +1,7 @@
 package nars.concept.state;
 
-import nars.concept.TaskConcept;
 import nars.concept.Concept;
+import nars.concept.TaskConcept;
 import nars.term.atom.Atom;
 import org.jetbrains.annotations.NotNull;
 

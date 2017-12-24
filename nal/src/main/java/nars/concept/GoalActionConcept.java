@@ -7,7 +7,6 @@ import nars.NAR;
 import nars.NAct;
 import nars.Task;
 import nars.task.ITask;
-import nars.task.Revision;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.util.signal.Signal;

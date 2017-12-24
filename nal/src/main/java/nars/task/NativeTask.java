@@ -1,13 +1,11 @@
 package nars.task;
 
 import com.google.common.primitives.Longs;
-import jcog.Util;
 import jcog.pri.Priority;
 import nars.NAR;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**

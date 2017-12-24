@@ -87,7 +87,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     }
 
     @Override
-    public Stream<Task> stream() {
+    public Stream<Task> streamTasks() {
         return Streams.stream(iterator());
     }
 

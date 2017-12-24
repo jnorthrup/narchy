@@ -19,11 +19,9 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
 import java.util.function.ToLongFunction;
 
 import static nars.Op.BELIEF;
-import static nars.link.Tasklinks.linkTask;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -181,11 +179,13 @@ public class Premise {
                         focusStart = focusEnd = ETERNAL;
                     } else {
                         focusStart =
+                                focus - dur/2;
                                 //focus - dur;
-                                focus;
+                                //focus;
                         focusEnd =
+                                focus + dur/2;
                                 //focus + dur;
-                                focus;
+                                //focus;
                     }
 
                     belief = beliefConcept.beliefs().match(focusStart, focusEnd, beliefTerm, n,

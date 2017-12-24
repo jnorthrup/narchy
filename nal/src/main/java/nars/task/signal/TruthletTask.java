@@ -71,6 +71,11 @@ public class TruthletTask extends SignalTask {
         return truthlet.end();
     }
 
+    @Override
+    public boolean intersects(long start, long end) {
+        return truthlet.intersects(start, end);
+    }
+
     @Nullable
     public final Truth truth(long when, long dur, float minConf) {
         Truth t = truth(when);

@@ -1,10 +1,6 @@
 package nars.term.sub;
 
-import jcog.Util;
 import nars.term.Term;
-
-import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /** minimal light-weight wrapper of a single term as a Subterms impl */
 public class UnitSubterm extends AbstractUnitSubterm  {

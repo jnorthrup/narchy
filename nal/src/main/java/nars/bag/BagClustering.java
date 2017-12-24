@@ -2,7 +2,6 @@ package nars.bag;
 
 import jcog.bag.Bag;
 import jcog.bag.impl.ConcurrentArrayBag;
-import jcog.bag.impl.HijackBag;
 import jcog.learn.gng.NeuralGasNet;
 import jcog.learn.gng.impl.Centroid;
 import jcog.list.FasterList;
@@ -10,7 +9,6 @@ import jcog.pri.Prioritized;
 import jcog.pri.VLink;
 import jcog.pri.op.PriMerge;
 import jcog.util.Flip;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;

@@ -1,24 +1,24 @@
 package jcog.tree.rtree;
 
-        /*
-         * #%L
-         * Conversant RTree
-         * ~~
-         * Conversantmedia.com © 2016, Conversant, Inc. Conversant® is a trademark of Conversant, Inc.
-         * ~~
-         * Licensed under the Apache License, Version 2.0 (the "License");
-         * you may not use this file except in compliance with the License.
-         * You may obtain a copy of the License at
-         *
-         *      http://www.apache.org/licenses/LICENSE-2.0
-         *
-         * Unless required by applicable law or agreed to in writing, software
-         * distributed under the License is distributed on an "AS IS" BASIS,
-         * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-         * See the License for the specific language governing permissions and
-         * limitations under the License.
-         * #L%
-         */
+/*
+ * #%L
+ * Conversant RTree
+ * ~~
+ * Conversantmedia.com © 2016, Conversant, Inc. Conversant® is a trademark of Conversant, Inc.
+ * ~~
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 
 import jcog.tree.rtree.util.Stats;
 import jcog.util.LambdaStampedLock;
@@ -33,7 +33,7 @@ import java.util.stream.Stream;
  */
 public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
 
-    public final RTree<T> tree;
+    private final Space<T> tree;
 
 //  TODO move this to a subclass
 //    final QueueLock<T> toAdd, toRemove;
@@ -45,7 +45,7 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
 //        }
 
 
-    public ConcurrentRTree(RTree<T> tree) {
+    public ConcurrentRTree(Space<T> tree) {
         super();
         this.tree = tree;
     }
@@ -112,32 +112,33 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
     }
 
 
-
     @Override
     public boolean remove(T x) {
-        return write(()->tree.remove(x));
+        return write(() -> tree.remove(x));
     }
 
     public void removeAll(Iterable<? extends T> t) {
-        write(()->t.forEach(this::remove));
+        write(() -> t.forEach(this::remove));
     }
 
 
-    public void read(Consumer<RTree<T>> x) {
-        read(()->x.accept(tree));
+    public void read(Consumer<Space<T>> x) {
+        read(() -> x.accept(tree));
     }
 
-    /** doesnt lock, use at your own risk */
-    public void readDirect(Consumer<RTree<T>> x) {
+    /**
+     * doesnt lock, use at your own risk
+     */
+    public void readDirect(Consumer<Space<T>> x) {
         x.accept(tree);
     }
 
     public void write(Consumer<Space<T>> x) {
-        write(()->x.accept(tree));
+        write(() -> x.accept(tree));
     }
 
     public void readOptimistic(Consumer<Space<T>> x) {
-        readOptimistic(()->{
+        readOptimistic(() -> {
             x.accept(tree);
         });
     }
@@ -156,7 +157,7 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
      */
     @Override
     public void replace(T told, T tnew) {
-        write(()->tree.replace(told, tnew));
+        write(() -> tree.replace(told, tnew));
     }
 
     @Override
@@ -173,26 +174,32 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
     @Override
     public void forEach(Consumer<? super T> consumer) {
 
-        read(()->tree.forEach(consumer));
+        read(() -> tree.forEach(consumer));
     }
 
     @Override
     public void whileEachContaining(HyperRegion rect, Predicate<T> t) {
-        read(()->tree.whileEachContaining(rect, t));
+        read(() -> tree.whileEachContaining(rect, t));
     }
 
     @Override
     public void whileEachIntersecting(HyperRegion rect, Predicate<T> t) {
-        read(()->tree.whileEachIntersecting(rect, t));
+        read(() -> tree.whileEachIntersecting(rect, t));
     }
 
-    /** warning: not locked */
-    @Override public Stream<T> stream() {
+    /**
+     * warning: not locked
+     */
+    @Override
+    public Stream<T> stream() {
         return root().stream();
     }
 
-    /** warning: not locked */
-    @Override public Iterator<T> iterator() {
+    /**
+     * warning: not locked
+     */
+    @Override
+    public Iterator<T> iterator() {
         return stream().iterator();
     }
 
@@ -208,14 +215,13 @@ public class ConcurrentRTree<T> extends LambdaStampedLock implements Space<T> {
 
     @Override
     public boolean contains(T t, HyperRegion b, Spatialization<T> model) {
-        return read(()->tree.contains(t, b, model));
+        return read(() -> tree.contains(t, b, model));
     }
 
     @Override
     public boolean contains(T t) {
-        return read(()->tree.contains(t));
+        return read(() -> tree.contains(t));
     }
-
 
 
 }

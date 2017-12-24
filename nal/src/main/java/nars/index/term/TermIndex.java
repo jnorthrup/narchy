@@ -1,29 +1,22 @@
 package nars.index.term;
 
-import com.google.common.util.concurrent.Futures;
 import nars.NAR;
 import nars.Op;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.concept.builder.ConceptBuilder;
 import nars.concept.builder.DefaultConceptBuilder;
-import nars.concept.state.ConceptState;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.transform.CompoundTransform;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-
-import static nars.Op.Null;
 
 /**
  *

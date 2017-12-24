@@ -13,13 +13,11 @@ import nars.concept.Concept;
 import nars.control.BatchActivation;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.sub.Subterms;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;

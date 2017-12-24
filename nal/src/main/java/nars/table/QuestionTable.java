@@ -1,15 +1,12 @@
 package nars.table;
 
 import jcog.data.map.MRUCache;
-import jcog.list.ArrayIterator;
 import nars.NAR;
 import nars.Task;
 import nars.concept.TaskConcept;
 import nars.link.Tasklinks;
 import nars.task.NALTask;
 
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -35,7 +32,7 @@ public interface QuestionTable extends TaskTable {
     class NullQuestionTable implements QuestionTable {
 
         @Override
-        public Stream<Task> stream() {
+        public Stream<Task> streamTasks() {
             return Stream.empty();
         }
 
@@ -44,10 +41,6 @@ public interface QuestionTable extends TaskTable {
 
         }
 
-        @Override
-        public Iterator<Task> iterator() {
-            return Collections.emptyIterator();
-        }
 
         @Override
         public void clear() {
@@ -127,14 +120,14 @@ public interface QuestionTable extends TaskTable {
             return capacity;
         }
 
+//
+//        @Override
+//        public Iterator<Task> iterator() {
+//            return ArrayIterator.get(toArray());
+//        }
 
         @Override
-        public Iterator<Task> iterator() {
-            return ArrayIterator.get(toArray());
-        }
-
-        @Override
-        public Stream<Task> stream() {
+        public Stream<Task> streamTasks() {
             Task[] t = toArray();
             return t.length > 0 ? Stream.of(t) : Stream.empty();
         }

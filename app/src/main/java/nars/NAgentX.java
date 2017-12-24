@@ -2,6 +2,7 @@ package nars;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.constraint.continuous.C;
 import jcog.exe.Loop;
 import jcog.list.FasterList;
 import jcog.math.FloatFirstOrderDifference;
@@ -103,14 +104,15 @@ abstract public class NAgentX extends NAgent {
                         () -> reward)));
         alwaysWant(joy, nar.confDefault(GOAL)/2f);
 
-        Param.DEBUG = true;
-        nar.onTask(x -> {
-            if (x.isBeliefOrGoal() && x.isEternal()) {
-                //if (x.isInput())
-                if (!always.contains(x))
-                    System.err.println(x.proof());
-            }
-        });
+        if (Param.DEBUG) {
+            nar.onTask(x -> {
+                if (x.isBeliefOrGoal() && x.isEternal()) {
+                    //if (x.isInput())
+                    if (!always.contains(x))
+                        System.err.println(x.proof());
+                }
+            });
+        }
     }
 
     public static NAR runRT(Function<NAR, NAgent> init, float fps) {
@@ -171,7 +173,7 @@ abstract public class NAgentX extends NAgent {
                 .exe(new MultiExec
                         //Intense
                         //CoolNQuiet
-                        (512, THREADS, 64))
+                        (512, THREADS, 32))
 
                 .time(clock)
                 .deriverAdd(1, 1)
@@ -191,7 +193,7 @@ abstract public class NAgentX extends NAgent {
                 )
                 .get();
 
-        n.defaultWants();
+        //n.defaultWants();
 
         n.conceptActivation.set(0.05f);
 
@@ -203,13 +205,13 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(32);
+        n.termVolumeMax.set(34);
 
         n.beliefConfidence(0.9f);
         n.goalConfidence(0.9f);
 
 
-        float priFactor = 0.1f;
+        float priFactor = 0.4f;
         n.DEFAULT_BELIEF_PRIORITY = 1f * priFactor;
         n.DEFAULT_GOAL_PRIORITY = 1f * priFactor;
         n.DEFAULT_QUESTION_PRIORITY = 1f * priFactor;

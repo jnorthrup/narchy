@@ -1,7 +1,5 @@
 package nars.task.signal;
 
-import jcog.Util;
-
 public class FlatTruthlet extends RangeTruthlet {
 
     public float freq, evi;

@@ -139,6 +139,16 @@ public class IntTest {
         assertEquals(Null, $("(((happy-(0,0))-(0,0))-->tetris)"));
     }
 
+    @Test public void testNonRangeableIntersection() throws Narsese.NarseseException {
+        String rangeable = Arrays.toString(Int.intersect(
+                $("(isRow,(6,true),true)"), $("(isRow,(7,true),true)"))).toString();
+        String nonrangeable = Arrays.toString(Int.intersect(
+                $("(isRow,(6,true),true)"), $("(isRow,(7,false),true)"))).toString();
+        assertEquals("[(isRow,(6..7,true),true)]", rangeable);
+        assertEquals("[(isRow,(6,true),true), (isRow,(7,false),true)]", nonrangeable);
+
+    }
+
 }
 
 ///**

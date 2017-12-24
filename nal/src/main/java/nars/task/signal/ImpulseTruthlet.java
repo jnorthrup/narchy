@@ -19,7 +19,7 @@ public class ImpulseTruthlet extends ProxyTruthlet {
 
     @Override
     public void truth(long when, float[] freqEvi) {
-        if (defined.containsTime(when)) {
+        if (ref.containsTime(when)) {
             super.truth(when, freqEvi);
         } else {
             freqEvi[0] = freqInactive;

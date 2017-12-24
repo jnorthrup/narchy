@@ -3,7 +3,6 @@ package nars.derive.op;
 import nars.control.ProtoDerivation;
 import nars.term.pred.AbstractPred;
 import nars.term.pred.PrediTerm;
-import nars.truth.Truth;
 
 /**
  * task truth is postiive

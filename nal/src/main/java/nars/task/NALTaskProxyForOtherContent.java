@@ -2,7 +2,6 @@ package nars.task;
 
 import jcog.pri.Priority;
 import nars.Task;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.truth.DiscreteTruth;
 import nars.truth.Truth;

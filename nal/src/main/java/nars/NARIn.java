@@ -6,7 +6,6 @@ import nars.task.ITask;
 import nars.task.signal.Truthlet;
 import nars.task.signal.TruthletTask;
 import nars.term.Term;
-import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

@@ -1,6 +1,5 @@
 package nars.op.java;
 
-import com.google.common.base.Strings;
 import nars.*;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

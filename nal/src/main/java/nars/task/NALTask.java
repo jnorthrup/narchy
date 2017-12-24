@@ -20,7 +20,6 @@ import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.TruthFunctions.c2w;
 import static nars.truth.TruthFunctions.c2wSafe;
 
 

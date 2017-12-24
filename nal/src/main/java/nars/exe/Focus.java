@@ -398,67 +398,7 @@ public class Focus {
         n.onCycle(this::update);
     }
 
-    public void run(LongSupplier runUntil) {
 
-
-        long until;
-        while ((until = runUntil.getAsLong()) != ETERNAL) {
-
-            Schedule s = schedule.read();
-
-            float[] cw = s.weight;
-            if (cw.length == 0) {
-                Thread.yield();
-                continue;
-            }
-
-            float[] iterPerSecond = s.iterPerSecond;
-            Causable[] can = s.active;
-
-            /** jiffy temporal granularity time constant */
-            float jiffy = 0.0005f; //in seconds
-
-            do {
-                try {
-                    int x = Roulette.decideRoulette(cw, rng);
-                    Causable cx = can[x];
-                    AtomicBoolean cb = cx.busy;
-
-                    int completed;
-                    if (cb == null) {
-                        completed = run(cx, iterPerSecond[x], jiffy);
-                    } else {
-                        if (cb.compareAndSet(false, true)) {
-                            float weightSaved = cw[x];
-                            cw[x] = 0; //hide from being selected by other threads
-                            try {
-                                completed = run(cx, iterPerSecond[x], jiffy);
-                            } finally {
-                                cb.set(false);
-                                cw[x] = weightSaved;
-                            }
-                        } else {
-                            continue;
-                        }
-                    }
-
-                    if (completed < 0) {
-                        cw[x] = 0;
-                    }
-                } catch (Throwable t) {
-                    t.printStackTrace();
-                }
-
-            } while (System.nanoTime() <= until);
-        }
-
-    }
-
-    private int run(Causable cx, float iterPerSecond, float time) {
-        int iters = Math.max(1, Math.round(iterPerSecond * time));
-        //System.out.println(cx + " x " + iters);
-        return cx.run(nar, iters);
-    }
 
     final AtomicBoolean busy = new AtomicBoolean(false);
 

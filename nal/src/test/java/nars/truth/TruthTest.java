@@ -4,9 +4,6 @@ import jcog.math.random.XorShift128PlusRandom;
 import nars.$;
 import nars.Param;
 import nars.task.Revision;
-import nars.truth.DiscreteTruth;
-import nars.truth.Truth;
-import nars.truth.TruthFunctions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

@@ -2,8 +2,8 @@ package nars.derive.op;
 
 import nars.$;
 import nars.control.ProtoDerivation;
-import nars.term.pred.AbstractPred;
 import nars.term.Term;
+import nars.term.pred.AbstractPred;
 
 /**
  * a condition on the op of a pattern term (task=0, or belief=1)

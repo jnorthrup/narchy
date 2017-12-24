@@ -4,7 +4,6 @@ import nars.$;
 import nars.NAR;
 import nars.term.Term;
 import nars.time.Tense;
-import org.slf4j.LoggerFactory;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;

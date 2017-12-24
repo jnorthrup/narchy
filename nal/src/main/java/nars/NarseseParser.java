@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-import static nars.$.neg;
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
 

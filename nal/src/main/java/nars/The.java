@@ -1,22 +1,18 @@
 package nars;
 
 import jcog.memoize.CaffeineMemoize;
-import jcog.memoize.HijackMemoize;
-import jcog.memoize.Memoize;
 import jcog.memoize.SoftMemoize;
 import nars.derive.PatternCompound;
 import nars.derive.match.Ellipsis;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.NewCompound;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.anon.AnonID;
 import nars.term.anon.AnonVector;
 import nars.term.atom.Bool;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
 import nars.term.sub.ArrayTermVector;
-import nars.term.sub.Subterms;
 import nars.term.sub.UnitSubterm;
 import nars.term.var.UnnormalizedVariable;
 
@@ -25,7 +21,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static nars.Op.*;
+import static nars.Op.Null;
+import static nars.Op.PROD;
 
 /**
  * The the

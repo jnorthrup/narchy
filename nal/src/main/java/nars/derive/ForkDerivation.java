@@ -1,6 +1,5 @@
 package nars.derive;
 
-import nars.control.Derivation;
 import nars.control.ProtoDerivation;
 import nars.term.pred.Fork;
 import nars.term.pred.PrediTerm;

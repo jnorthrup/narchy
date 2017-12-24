@@ -5,7 +5,6 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.concept.NodeConcept;
-import nars.concept.TaskConcept;
 import nars.concept.PermanentConcept;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -20,8 +19,6 @@ import java.util.function.BiFunction;
 
 import static nars.Op.ATOM;
 import static nars.Op.INH;
-import static nars.Op.Null;
-import static nars.time.Tense.ETERNAL;
 
 /**
  * Operator interface specifically for goal and command punctuation

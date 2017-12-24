@@ -1,6 +1,5 @@
 package nars.truth;
 
-import nars.truth.Stamp;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
@@ -223,10 +222,6 @@ public class StampTest {
     @Test public void testOverlapFraction2() {
         assertEquals(1/3f, Stamp.overlapFraction(a(1,2), a(2,3)), 0.01f);
         assertEquals(2/3f, Stamp.overlapFraction(a(1,2), a(1,2,3)), 0.01f);
-
-        //include one or both cyclics
-        assertEquals(1/3f, Stamp.overlapFraction(a(1,2), a(2,3, Long.MAX_VALUE)), 0.01f); //cyclic unaffected result
-        assertEquals(1/3f, Stamp.overlapFraction(a(1,2, Long.MAX_VALUE), a(2,3, Long.MAX_VALUE)), 0.01f); //cyclic unaffected result
 
         //12345
         //------

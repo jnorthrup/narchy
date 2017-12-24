@@ -49,8 +49,8 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
     public void accept(NAR nn) {
         long now = nn.time();
         dur = nn.dur();
-        this.start = now - dur/2;
-        this.end = now + dur/2;
+        this.start = now - dur;
+        this.end = now + dur;
         maxConceptPriority = 1;
         update();
 //            nar instanceof Default ?

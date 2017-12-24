@@ -1902,7 +1902,7 @@ public enum Op {
             new HijackMemoize<>(
                     (nc) -> {
                         return Op.values()[nc.one].__the(DTERNAL, nc.two);
-                    }, 256 * 1024
+                    }, 128 * 1024
                     , 4, false);
 
     protected final Term _the(int dt, Term[] u) {

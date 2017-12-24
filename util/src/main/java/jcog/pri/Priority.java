@@ -10,7 +10,7 @@ import static jcog.Util.lerp;
  */
 public interface Priority extends Prioritized {
     static Prioritized fund(float maxPri, boolean copyOrTransfer, Priority... src) {
-        float priSum = Math.min(maxPri, Pri.sum(src));
+        float priSum = Math.min(maxPri, Prioritized.sum(src));
         float perSrc = priSum / src.length;
 
         Priority u = new Pri(0f);
@@ -83,7 +83,12 @@ public interface Priority extends Prioritized {
     /**
      * returns null if already deleted
      */
-    @Nullable Priority clonePri();
+    @Nullable @Deprecated default Priority clonePri() {
+        //throw new UnsupportedOperationException();
+        float p = pri();
+        return p != p /* deleted? */ ? null : new Pri(p);
+    }
+
 
 
     default float priMax(float max) {
@@ -114,6 +119,11 @@ public interface Priority extends Prioritized {
 //        float before = priElseZero();
 //        return priSet(before + notNaN(toAdd)) - before;
 //    }
+
+    default Priority setPriThen(float p) {
+        priSet(p);
+        return this;
+    }
 
     default float priSub(float toSubtract) {
         assert(toSubtract >= 0): "trying to subtract negative priority: " + toSubtract;

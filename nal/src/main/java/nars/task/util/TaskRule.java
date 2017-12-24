@@ -1,12 +1,10 @@
 package nars.task.util;
 
 import nars.*;
-import nars.task.NALTask;
 import nars.term.Compound;
 import nars.term.InvalidTermException;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.subst.MapSubst;
 import nars.term.subst.Unify;
 import nars.term.transform.VariableNormalization;
 import nars.term.var.Variable;

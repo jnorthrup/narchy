@@ -19,7 +19,6 @@ import nars.op.Operator;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.signal.SignalTask;
-import nars.task.signal.SustainTruthlet;
 import nars.task.signal.Truthlet;
 import nars.task.signal.TruthletTask;
 import nars.term.Term;

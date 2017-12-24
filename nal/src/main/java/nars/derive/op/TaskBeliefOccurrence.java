@@ -1,10 +1,7 @@
 package nars.derive.op;
 
-import nars.Task;
-import nars.control.Derivation;
 import nars.control.ProtoDerivation;
 import nars.term.pred.AbstractPred;
-import nars.term.pred.PrediTerm;
 
 /**
  * fast task/belief occurrence tests

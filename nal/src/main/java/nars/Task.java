@@ -20,7 +20,10 @@ import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.term.var.VarIndep;
 import nars.time.Tense;
-import nars.truth.*;
+import nars.truth.PreciseTruth;
+import nars.truth.Stamp;
+import nars.truth.Truth;
+import nars.truth.Truthed;
 import org.eclipse.collections.api.PrimitiveIterable;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.tuple.Pair;
@@ -447,16 +450,17 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      */
     default float evi(long when, final long dur) {
 
-        Truth t = truth();
-        long a = start();
+
+        long s = start();
 
 
-        if (a == ETERNAL)
+        if (s == ETERNAL)
             return this.evi();
         else if (when == ETERNAL)
             return this.eviEternalized();
         else {
 
+            Truth t = truth();
             float cw = t.evi();
 //            long z = end();
             //assert (z >= a) : this + " has mismatched start/end times";

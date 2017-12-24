@@ -4,7 +4,6 @@ import jcog.Util;
 import nars.Param;
 import org.jetbrains.annotations.NotNull;
 
-import static nars.truth.TruthFunctions.c2w;
 import static nars.truth.TruthFunctions.c2wSafe;
 
 

@@ -10,14 +10,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class Pri implements Priority {
 
-    /**
-     * The relative share of time resource to be allocated
-     */
     protected float pri;
-
-//    public Pri() {
-//        pri = Float.NaN;
-//    }
 
     public Pri(Prioritized b) {
         this(b.pri());
@@ -28,37 +21,9 @@ public class Pri implements Priority {
     }
 
 
-
-    @Nullable
-    @Deprecated @Override
-    public Priority clonePri() {
-//        throw new UnsupportedOperationException();
-        float p = pri;
-        return p != p /* deleted? */ ? null : new Pri(p);
-    }
-
-    /**
-     * Get priority value
-     *
-     * @return The current priority
-     */
     @Override
     public final float pri() {
         return pri;
-    }
-
-
-
-
-    /** duplicate of Prioritized's impl, for speed (hopefully) */
-    @Override public float priElseNeg1() {
-        float p = pri; //pri() if there are any subclasses they should call pri()
-        return p == p ? p : -1;
-    }
-    /** duplicate of Prioritized's impl, for speed (hopefully) */
-    @Override public float priElseZero() {
-        float p = pri; //pri() if there are any subclasses they should call pri()
-        return p == p ? p : 0;
     }
 
     @Override
@@ -77,15 +42,6 @@ public class Pri implements Priority {
 
 
 
-//    public boolean equals(Object that) {
-//        throw new UnsupportedOperationException();
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        throw new UnsupportedOperationException();
-//     }
-
     /**
      * Fully display the BudgetValue
      *
@@ -100,17 +56,5 @@ public class Pri implements Priority {
     public final float priSet(float p) {
         return this.pri = Util.unitize(p);
     }
-
-    public Pri setPriThen(float p) {
-        priSet(p);
-        return this;
-    }
-
-
-
-    public static float sum(Prioritized... src) {
-        return Util.sum(Prioritized::priElseZero, src);
-    }
-
 
 }

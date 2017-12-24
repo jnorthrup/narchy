@@ -2,7 +2,6 @@ package nars.task;
 
 import jcog.Util;
 import jcog.math.Interval;
-import nars.Param;
 import nars.task.util.TaskRegion;
 import org.jetbrains.annotations.Nullable;
 

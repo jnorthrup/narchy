@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static java.util.stream.Collectors.toList;
 import static nars.Op.BELIEF;
 import static nars.task.RevisionTest.x;
 import static nars.time.Tense.*;
@@ -217,7 +218,7 @@ public class BeliefTableTest {
         TaskConcept cc = (TaskConcept) n.conceptualize(c);
         assertNotNull(cc,c + " unconceptualized");
 
-        List<Task> tt = Lists.newArrayList(cc.beliefs());
+        List<Task> tt = cc.beliefs().streamTasks().collect(toList());
         assertTrue(cc.beliefs() instanceof DynamicBeliefTable || !tt.isEmpty(), c + " not believed");
 
         if (!tt.isEmpty()) {

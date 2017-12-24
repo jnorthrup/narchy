@@ -8,13 +8,11 @@ import nars.index.term.TermKey;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.sub.Neg;
 import nars.term.sub.TermVector1;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
-import static nars.Op.NEG;
 import static nars.Op.PROD;
 import static org.junit.jupiter.api.Assertions.*;
 

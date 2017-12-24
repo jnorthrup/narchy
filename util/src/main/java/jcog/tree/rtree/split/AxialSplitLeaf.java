@@ -39,7 +39,7 @@ public final class AxialSplitLeaf<T> implements Split<T> {
     public Node<T, ?> split(T t, Leaf<T> leaf, Spatialization<T> model) {
 
 
-        HyperRegion r = leaf.region;
+        HyperRegion r = leaf.bounds;
 
         final int nD = r.dim();
 

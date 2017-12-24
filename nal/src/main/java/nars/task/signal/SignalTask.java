@@ -1,11 +1,9 @@
 package nars.task.signal;
 
 
-import nars.concept.Concept;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.eclipse.collections.api.block.procedure.primitive.LongObjectProcedure;
 
 
 public class SignalTask extends NALTask {

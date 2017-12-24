@@ -1,9 +1,6 @@
 package nars.term.sub;
 
 import com.google.common.base.Joiner;
-import jcog.Util;
-import nars.Op;
-import nars.Param;
 import nars.term.Term;
 
 import java.util.Iterator;

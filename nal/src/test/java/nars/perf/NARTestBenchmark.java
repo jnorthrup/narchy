@@ -2,9 +2,6 @@ package nars.perf;
 
 import jcog.Util;
 import nars.nal.nal1.NAL1Test;
-import nars.nal.nal6.NAL6Test;
-import nars.nal.nal7.NAL7Test;
-import nars.op.java.ThermostatTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.platform.engine.discovery.ClassSelector;
 import org.junit.platform.engine.discovery.DiscoverySelectors;

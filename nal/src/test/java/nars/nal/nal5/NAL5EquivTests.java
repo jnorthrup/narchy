@@ -2,7 +2,6 @@ package nars.nal.nal5;
 
 import nars.test.TestNAR;
 import nars.util.NALTest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 

@@ -8,7 +8,6 @@ import nars.Task;
 import nars.bag.leak.LeakBack;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
-import nars.concept.builder.DefaultConceptBuilder;
 import nars.link.CauseLink;
 import nars.term.Term;
 import nars.term.Termed;

@@ -1,6 +1,5 @@
 package nars.op.mental;
 
-import com.google.common.hash.BloomFilter;
 import jcog.bloom.StableBloomFilter;
 import jcog.math.FloatParam;
 import nars.$;

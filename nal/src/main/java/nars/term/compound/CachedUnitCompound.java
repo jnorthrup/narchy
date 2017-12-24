@@ -38,6 +38,7 @@ public class CachedUnitCompound extends UnitCompound {
         return sub;
     }
 
+
     @Override
     public final int structure() {
         return cstruct;

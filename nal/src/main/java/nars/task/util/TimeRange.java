@@ -24,37 +24,35 @@ public class TimeRange implements HyperRegion {
     }
 
     @Override
-    public HyperRegion mbr(HyperRegion r) {
+    public final HyperRegion mbr(HyperRegion r) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public int dim() {
+    public final int dim() {
         return 3;
     }
 
     @Override
     public boolean intersects(HyperRegion x) {
         var t = (TaskRegion)x;
-//        if (t == null)
-//            throw new NullPointerException(); //HACK this shouldnt happen
-        return start <= t.end() && end >= t.start();
+        return t.intersects(start, end);
     }
 
 
     @Override
     public boolean contains(HyperRegion x) {
         var t = (TaskRegion)x;
-        return start <= t.start() && end >= t.end();
+        return t.contains(start, end);
     }
 
     @Override
-    public double coord(boolean maxOrMin, int dimension) {
+    public final double coord(boolean maxOrMin, int dimension) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public float coordF(boolean maxOrMin, int dimension) {
+    public final float coordF(boolean maxOrMin, int dimension) {
         throw new UnsupportedOperationException();
     }
 }

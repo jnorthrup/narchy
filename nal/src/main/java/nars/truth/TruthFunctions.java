@@ -21,7 +21,6 @@
 package nars.truth;
 
 import jcog.Util;
-import jcog.pri.Pri;
 import nars.$;
 import nars.Param;
 import org.jetbrains.annotations.Nullable;

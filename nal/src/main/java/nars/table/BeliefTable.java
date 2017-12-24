@@ -12,7 +12,7 @@ import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.*;
+import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -29,13 +29,8 @@ public interface BeliefTable extends TaskTable {
     BeliefTable Empty = new BeliefTable() {
 
         @Override
-        public Stream<Task> stream() {
+        public Stream<Task> streamTasks() {
             return Stream.empty();
-        }
-
-        @Override
-        public Iterator<Task> iterator() {
-            return Collections.emptyIterator();
         }
 
         @Override
@@ -93,12 +88,6 @@ public interface BeliefTable extends TaskTable {
         public void print(/*@NotNull*/ PrintStream out) {
 
         }
-
-        @Override
-        public Spliterator<Task> spliterator() {
-            return Spliterators.emptySpliterator();
-        }
-
 
         @Override
         public Truth truth(long start, long end, NAR nar) {
@@ -167,7 +156,7 @@ public interface BeliefTable extends TaskTable {
 //    }
 
     default float priSum() {
-        return (float) stream().mapToDouble(Prioritized::pri).sum();
+        return (float) streamTasks().mapToDouble(Prioritized::pri).sum();
     }
 
 

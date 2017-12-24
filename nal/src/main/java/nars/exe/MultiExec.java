@@ -3,12 +3,14 @@ package nars.exe;
 import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import jcog.Util;
+import jcog.decide.Roulette;
 import jcog.exe.AffinityExecutor;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import nars.NAR;
 import nars.Task;
+import nars.control.Causable;
 import nars.task.ITask;
-import nars.task.NativeTask;
 import org.eclipse.collections.api.set.primitive.LongSet;
 import org.eclipse.collections.impl.factory.primitive.LongSets;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
@@ -17,17 +19,24 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.LongPredicate;
 import java.util.stream.Stream;
 
-import static nars.time.Tense.ETERNAL;
-
 public class MultiExec extends AbstractExec {
 
+    /**
+     * period to sleep while NAR is not looping, but not stopped
+     */
+    int idleSleepPeriodMS = 50;
+
+    /** duty cycle proportion , fraction of the main NAR cycle */
+    float subCycle = 0.75f;
 
     static final Logger logger = LoggerFactory.getLogger(MultiExec.class);
 
@@ -74,70 +83,126 @@ public class MultiExec extends AbstractExec {
     }
 
 
-    /**
-     * period to sleep while NAR is not looping, but not stopped
-     */
-    int idlePeriodMS = 50;
 
+
+    /** stages (3): SLEEP, WORK, PLAY */
     protected void runner() {
 
+
+        Random rng =
+                //nar.random();
+                new XoRoShiRo128PlusRandom(System.nanoTime());
 
         while (running) {
 
             if (!nar.loop.isRunning()) {
-                Util.sleep(idlePeriodMS);
-            } else {
-
-                focus.run(() -> {
-                    long cycleStart = System.nanoTime();
-
-                    @Deprecated float throttle = nar.loop.throttle.floatValue();
-
-                    float subCycle = 0.5f;
-                    double cycleTime = subCycle * nar.loop.periodMS.intValue() / 1000f;
-
-                    if (!nar.loop.isRunning()) {
-                        return ETERNAL; //break
-                    }
-
-                    if (cycleTime != cycleTime)
-                        cycleTime = 0.1f; //10hz alpha
-
-                    if (throttle < 1f) {
-                        long sleepTime = Math.round(((1.0 - throttle) * (cycleTime * 1E9)) / 1.0E6f);
-                        if (sleepTime > 0)
-                            Util.sleep(sleepTime);
-                    }
-
-                    long cycleNanosRemain = Math.round(cycleTime * throttle * 1E9);
-                    //long minPlay =
-                    //0;
-                    //cycleNanosRemain/2;
-
-
-                    int qq = q.size();
-                    if (qq > 0) {
-//                    int WORK_SHARE =
-//                            (int) Math.ceil(((float) qq) / Math.max(1, (threads - 1)));
-                        do {
-
-                            Object i = q.poll();
-                            if (i != null)
-                                executeInline(i);
-                            else
-                                break;
-
-                        } while (true);//--WORK_SHARE > 0);
-
-                        //long postWork = System.nanoTime();
-                        //cycleNanosRemain = Math.max(minPlay, cycleNanosRemain - (postWork - cycleStart));
-                    }
-
-                    return cycleStart + cycleNanosRemain;
-                });
+                Util.sleep(idleSleepPeriodMS);
+                continue;
             }
 
+            long cycleStart = System.nanoTime();
+
+
+
+            double cycleTime = subCycle * nar.loop.periodMS.intValue() / 1000f;
+
+            if (!nar.loop.isRunning()) {
+                continue;
+            }
+
+            if (cycleTime != cycleTime)
+                cycleTime = 0.1f; //10hz alpha
+
+            long cycleNanosRemain = Math.round(cycleTime * 1E9);
+
+            float throttle = nar.loop.throttle.floatValue();
+            if (throttle < 1f) {
+                long sleepTime = Math.round(((1.0 - throttle) * (cycleTime * 1E9)) / 1.0E6f);
+                if (sleepTime > 0) {
+                    Util.sleep(sleepTime - 1);
+                    cycleNanosRemain -= sleepTime;
+                }
+            }
+
+
+
+            int qq = q.size();
+            if (qq > 0) {
+
+                long minPlay =
+                    0;
+                    //cycleNanosRemain/2;
+
+                int WORK_SHARE =
+                        (int) Math.ceil(((float) qq) / Math.max(1, (threads - 1)));
+                do {
+
+                    Object i = q.poll();
+                    if (i != null)
+                        executeInline(i);
+                    else
+                        break;
+
+                } while (--WORK_SHARE > 0);
+
+                long postWork = System.nanoTime();
+                cycleNanosRemain = Math.max(minPlay, cycleNanosRemain - (postWork - cycleStart));
+            }
+
+            long runUntil = cycleStart + cycleNanosRemain;
+            /** jiffy temporal granularity time constant */
+            float jiffy = (float) (nar.loop.jiffy.floatValue() * cycleTime);
+
+            Focus.Schedule s = focus.schedule.read();
+
+            float[] cw = s.weight;
+            if (cw.length == 0) {
+                continue;
+            }
+
+            float[] iterPerSecond = s.iterPerSecond;
+            Causable[] can = s.active;
+
+            do {
+                try {
+                    int x = Roulette.decideRoulette(cw, rng);
+                    Causable cx = can[x];
+                    AtomicBoolean cb = cx.busy;
+
+                    int completed;
+                    if (cb == null) {
+                        completed = run(cx, iterPerSecond[x], jiffy);
+                    } else {
+                        if (cb.compareAndSet(false, true)) {
+                            float weightSaved = cw[x];
+                            cw[x] = 0; //hide from being selected by other threads
+                            try {
+                                completed = run(cx, iterPerSecond[x], jiffy);
+                            } finally {
+                                cb.set(false);
+                                cw[x] = weightSaved;
+                            }
+                        } else {
+                            continue;
+                        }
+                    }
+
+                    if (completed < 0) {
+                        cw[x] = 0;
+                    }
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+
+            } while (System.nanoTime() <= runUntil);
+
         }
+    }
+
+    private int run(Causable cx, float iterPerSecond, float time) {
+        int iters = Math.max(1, Math.round(iterPerSecond * time));
+        //System.out.println(cx + " x " + iters);
+        return cx.run(nar, iters);
     }
 
     boolean running;
@@ -232,12 +297,12 @@ public class MultiExec extends AbstractExec {
 
     @Override
     public void execute(Runnable r) {
-        execute((Object)r);
+        execute((Object) r);
     }
 
     @Override
     public void execute(Consumer<NAR> r) {
-        execute((Object)r);
+        execute((Object) r);
     }
 
     @Override
@@ -253,11 +318,11 @@ public class MultiExec extends AbstractExec {
     final Consumer immediate = this::executeInline;
 
     final Consumer deferred = x -> {
-            if (x instanceof Task)
-                execute(x);
-            else
-                queue(x);
-        };
+        if (x instanceof Task)
+            execute(x);
+        else
+            queue(x);
+    };
 
     /**
      * the input procedure according to the current thread
@@ -279,7 +344,7 @@ public class MultiExec extends AbstractExec {
     @Override
     public void execute(Object t) {
         if ((t instanceof Task)) {
-            execute((ITask)t);
+            execute((ITask) t);
         } else {
             if (isWorker(Thread.currentThread())) {
                 executeInline(t);
@@ -291,7 +356,7 @@ public class MultiExec extends AbstractExec {
 
     void executeInline(Object t) {
         if (t instanceof Runnable) {
-            ((Runnable)t).run();
+            ((Runnable) t).run();
         } else {
             super.execute(t);
         }

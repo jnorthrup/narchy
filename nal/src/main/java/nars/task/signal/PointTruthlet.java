@@ -5,12 +5,12 @@ public abstract class PointTruthlet extends Truthlet {
     long when;
 
     @Override
-    public long start() {
+    public final long start() {
         return when;
     }
 
     @Override
-    public long end() {
+    public final long end() {
         return when;
     }
 

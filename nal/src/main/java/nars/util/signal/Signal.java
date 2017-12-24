@@ -6,7 +6,6 @@ import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.task.signal.*;
-import nars.term.Term;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -38,7 +37,7 @@ public class Signal {
 
     final byte punc;
 
-    private static final int lookAheadDurs = 0;
+    private static final int lookAheadDurs = 1;
     private final AtomicReference<TruthletTask> current = new AtomicReference(null);
 
 
@@ -82,7 +81,7 @@ public class Signal {
                     //TODO move the task construction out of this critical update section?
                     next = taskStart(c, last,
                             tt,
-                            now, now + lookAheadDurs * dur,
+                            now, now + lookAheadDurs * dur/2,
                             stamper.getAsLong(), dur);
 
                 } else {
@@ -98,7 +97,7 @@ public class Signal {
             if (last == next) {
                 if (last != null) {
                     last.pri(pri.asFloat());
-                    last.updateEnd(c, now);
+                    last.updateEnd(c, now + lookAheadDurs * dur/2);
                 }
                 return null;  //dont re-input the task, just stretch it where it is in the temporal belief table
             } else {
@@ -127,13 +126,14 @@ public class Signal {
             Truth le = last.truth(last.end(), 1);
             if (le != null) {
                 ((TruthletTask)last).update(c, (tt)->{
-                    ((LinearTruthlet)((((ProxyTruthlet)tt.truthlet)).defined)).freqEnd = fNext;
+                    ((LinearTruthlet)((((ProxyTruthlet)tt.truthlet)).ref)).freqEnd = fNext;
+                    //((LinearTruthlet)tt.truthlet).freqEnd = fNext;
                 });
             }
         }
 
         TruthletTask s = new TruthletTask(c.term(), punc,
-                    new SustainTruthlet(new LinearTruthlet(start, fNext, end, fNext, t.evi()), dur),
+                    new SustainTruthlet(new LinearTruthlet(start, fNext, end, fNext, t.evi()), 1 /*dur*/),
                     stamp);
 
         s.priMax(pri.asFloat());

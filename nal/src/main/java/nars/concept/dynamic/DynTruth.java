@@ -9,7 +9,6 @@ import nars.Task;
 import nars.control.Cause;
 import nars.task.NALTask;
 import nars.task.TimeFusion;
-import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;

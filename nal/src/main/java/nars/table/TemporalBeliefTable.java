@@ -9,8 +9,6 @@ import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -18,7 +16,7 @@ import java.util.stream.Stream;
 
 /** https://en.wikipedia.org/wiki/Compressed_sensing */
 @Skill("Compressed_sensing")
-public interface TemporalBeliefTable extends TaskTable, Iterable<Task> {
+public interface TemporalBeliefTable extends TaskTable {
 
 
     /**
@@ -37,7 +35,9 @@ public interface TemporalBeliefTable extends TaskTable, Iterable<Task> {
 //        //float fdur = dur;
 //        //float range = t.range();
         return
+
                 t.evi(start, end, dur)
+                //t.evi() * (1/(1+t.minDistanceTo(start, end)/dur))
                 //t.evi() * (1+Interval.intersectLength(start, end, t.start(), t.end()))
 
 ////                //t.conf(now, dur) *
@@ -112,13 +112,9 @@ public interface TemporalBeliefTable extends TaskTable, Iterable<Task> {
             return 0;
         }
 
-        @Override
-        public Iterator<Task> iterator() {
-            return Collections.emptyIterator();
-        }
 
         @Override
-        public Stream<Task> stream() {
+        public Stream<Task> streamTasks() {
             return Stream.empty();
         }
 

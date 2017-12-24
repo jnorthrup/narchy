@@ -4,6 +4,8 @@ import jcog.Skill;
 import nars.NAR;
 import nars.Param;
 
+import static nars.time.Tense.ETERNAL;
+
 /** fades evidence before the beginning and after the end of a defined RangeTruthlet
  *
  *   -  - - --- -----*
@@ -28,6 +30,9 @@ public class SustainTruthlet extends ProxyTruthlet<RangeTruthlet> {
 
     @Override
     public void truth(long when, float[] freqEvi) {
+
+        if (when == ETERNAL)
+            when = mid();
 
         long dist;
         long start, end;

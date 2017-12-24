@@ -4,7 +4,6 @@ import jcog.Util;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 
-
 import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;

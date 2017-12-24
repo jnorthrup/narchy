@@ -36,20 +36,18 @@ import java.util.stream.Stream;
  * <p>
  * Created by jcairns on 4/30/15.
  * <p>
- * TODO just extend FastList<>
  */
-public class Leaf<T> implements Node<T, T> {
+public class Leaf<T> extends AbstractNode<T, T> {
 
     public final T[] data;
-    public short size;
-    public HyperRegion region;
+
 
     protected Leaf(int mMax) {
         this((T[]) new Object[mMax]);
     }
 
-    protected Leaf(T[] arrayInit) {
-        this.region = null;
+    private Leaf(T[] arrayInit) {
+        this.bounds = null;
         this.data = arrayInit;
         this.size = 0;
     }
@@ -100,7 +98,7 @@ public class Leaf<T> implements Node<T, T> {
             Node<T, ?> next;
 
             if (size < model.max) {
-                region = region != null ? region.mbr(tb) : tb;
+                grow(tb);
 
                 data[size++] = t;
 
@@ -117,6 +115,8 @@ public class Leaf<T> implements Node<T, T> {
             return (parent == null && ctm) ? null : this;
         }
     }
+
+
 
 
     @Override
@@ -140,7 +140,7 @@ public class Leaf<T> implements Node<T, T> {
     @Override
     public boolean contains(T t, HyperRegion b, Spatialization<T> model) {
 
-        if (!region.contains(b))
+        if (!bounds.contains(b))
             return false;
 
         final int s = size;
@@ -158,17 +158,6 @@ public class Leaf<T> implements Node<T, T> {
 
     @Override
     public Node<T, ?> remove(final T t, HyperRegion xBounds, Spatialization<T> model, boolean[] removed) {
-
-
-//        while (i < size && (data[i] != t) && (!data[i].equals(t))) {
-//            i++;
-//        }
-//
-//        int j = i;
-//
-//        while (j < size && ((data[j] == t) || data[j].equals(t))) {
-//            j++;
-//        }
 
         final int size = this.size;
         if (size == 0)
@@ -195,26 +184,11 @@ public class Leaf<T> implements Node<T, T> {
         this.size -= 1;
         removed[0] = true;
 
-        region = this.size > 0 ? HyperRegion.mbr(model.bounds, data, this.size) : null;
+        bounds = this.size > 0 ? HyperRegion.mbr(model.bounds, data, this.size) : null;
 
         return this;
 
     }
-
-//    @Override
-//    public double perimeter(Spatialization<T> model) {
-//        double maxVolume = 0;
-//        final int s = size;
-//        T[] data = this.data;
-//        for (int i = 0; i < s; i++) {
-//            T c = data[i];
-//            double vol = model.perimeter(c);
-//            if (vol > maxVolume)
-//                maxVolume = vol;
-//        }
-//        return maxVolume;
-//    }
-
 
     @Override
     public Node<T, ?> update(final T told, final T tnew, Spatialization<T> model) {
@@ -223,7 +197,7 @@ public class Leaf<T> implements Node<T, T> {
             return this;
 
         T[] data = this.data;
-        HyperRegion r = this.region;
+        HyperRegion r = null;
         for (int i = 0; i < s; i++) {
             if (data[i].equals(told)) {
                 data[i] = tnew;
@@ -232,7 +206,7 @@ public class Leaf<T> implements Node<T, T> {
             r = i == 0 ? model.bounds(data[0]) : r.mbr(model.bounds(data[i]));
         }
 
-        this.region = r;
+        this.bounds = r;
 
         return this;
     }
@@ -242,12 +216,15 @@ public class Leaf<T> implements Node<T, T> {
     public boolean intersecting(HyperRegion rect, Predicate<T> t, Spatialization<T> model) {
         short s = this.size;
         if (s > 0) {
-            HyperRegion r = this.region;
-            if (r!=null && rect.intersects(r)) {
+            HyperRegion r = this.bounds;
+            if (r == null) return true;
+
+            if (rect.intersects(r)) {
+                boolean fullyContained = rect.contains(r); //if it contains this node, then we dont need to test intersection for each child
                 T[] data = this.data;
                 for (int i = 0; i < s; i++) {
                     T d = data[i];
-                    if (d != null && rect.intersects(model.bounds(d)) && !t.test(d))
+                    if (d != null && (fullyContained || rect.intersects(model.bounds(d))) && !t.test(d))
                         return false;
                 }
             }
@@ -259,12 +236,13 @@ public class Leaf<T> implements Node<T, T> {
     public boolean containing(HyperRegion rect, Predicate<T> t, Spatialization<T> model) {
         short s = this.size;
         if (s > 0) {
-            HyperRegion r = this.region;
+            HyperRegion r = this.bounds;
             if (r!=null && rect.intersects(r)) { //not sure why but it seems this has to be intersects and not contains
+                boolean fullyContained = rect.contains(r); //if it contains this node, then we dont need to test intersection for each child
                 T[] data = this.data;
                 for (int i = 0; i < s; i++) {
                     T d = data[i];
-                    if (d != null && rect.contains(model.bounds(d)) && !t.test(d))
+                    if (d != null && (fullyContained || rect.contains(model.bounds(d))) && !t.test(d))
                         return false;
                 }
             }
@@ -272,30 +250,11 @@ public class Leaf<T> implements Node<T, T> {
         return true;
     }
 
-//    @Override
-//    public void intersectingNodes(/*@NotNull */HyperRegion rect, Predicate<Node<T, ?>> t, Spatialization<T> model) {
-//        if (size > 0 && (region.intersects(rect) || region.contains(rect)))
-//            t.test(this);
-//    }
-
-
-    @Override
-    public int size() {
-        return size;
-    }
-
 
     @Override
     public boolean isLeaf() {
         return true;
     }
-
-    /*@NotNull*/
-    @Override
-    public HyperRegion bounds() {
-        return region;
-    }
-
 
     @Override
     public void forEach(Consumer<? super T> consumer) {
@@ -379,6 +338,6 @@ public class Leaf<T> implements Node<T, T> {
 
     @Override
     public String toString() {
-        return "Leaf" + '{' + region + 'x' + size + '}';
+        return "Leaf" + '{' + bounds + 'x' + size + '}';
     }
 }

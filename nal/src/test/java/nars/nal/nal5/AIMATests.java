@@ -45,11 +45,11 @@ public class AIMATests {
     @Test
     public void testWeaponsDomain() throws Narsese.NarseseException {
 
-        n.freqResolution.set(0.2f);
-        n.confResolution.set(0.05f);
-        n.confMin.set(0.03f);
-        n.priDefault(QUESTION, 0.95f);
-        n.priDefault(BELIEF, 0.2f);
+        n.freqResolution.set(0.1f);
+        n.confResolution.set(0.02f);
+        n.confMin.set(0.02f);
+        n.priDefault(QUESTION, 0.75f);
+        n.priDefault(BELIEF, 0.5f);
         n.termVolumeMax.set(28);
         //n.conceptActivation.set(0.5f);
 
@@ -86,7 +86,7 @@ public class AIMATests {
 //        n.input("Criminal(?x)?");
 //                n.input("Criminal(?x)?");
 
-        n.run(500);
+        n.run(2500);
 //        n.clear();
 //        n.log();
         n.question($.$("Criminal(?x)"), ETERNAL, (q,a)->{

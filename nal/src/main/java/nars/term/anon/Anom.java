@@ -6,10 +6,8 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.AtomicConst;
 import nars.term.atom.Int;
-import nars.term.sub.TermMetadata;
 
 import static nars.Op.ATOM;
-import static nars.Op.INT;
 
 /* indexed anonymous term */
 public final class Anom extends Int implements AnonID {

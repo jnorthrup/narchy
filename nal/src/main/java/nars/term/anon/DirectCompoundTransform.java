@@ -4,7 +4,6 @@ import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.transform.CompoundTransform;
-import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.NEG;
 

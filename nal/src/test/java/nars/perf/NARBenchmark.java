@@ -3,7 +3,6 @@ package nars.perf;
 
 import nars.NAR;
 import nars.NARS;
-import nars.The;
 import nars.term.Term;
 import nars.term.sub.Subterms;
 import nars.test.DeductiveMeshTest;

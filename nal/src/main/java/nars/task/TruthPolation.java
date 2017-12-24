@@ -51,7 +51,12 @@ public interface TruthPolation extends Consumer<Tasked> {
                 for (Tasked t : temporals) {
                     long dd = t.task().minDistanceTo(start, end);
                     assert(dd < Integer.MAX_VALUE);
-                    minDur = Math.min(minDur, (int)dd);
+                    if (dd == 0) {
+                        minDur = 0; //minimum possible
+                        break;
+                    } else {
+                        minDur = Math.min(minDur, (int) dd);
+                    }
                 }
                 dur = Math.max(1, minDur);
             }

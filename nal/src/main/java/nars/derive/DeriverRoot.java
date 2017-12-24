@@ -5,7 +5,6 @@ import jcog.memoize.Memoize;
 import nars.control.Derivation;
 import nars.control.ProtoDerivation;
 import nars.term.pred.PrediTerm;
-import org.apache.commons.lang3.ArrayUtils;
 
 /** what -> can */
 public final class DeriverRoot {

@@ -1,6 +1,5 @@
 package nars.term.pred;
 
-import jcog.list.FasterList;
 import nars.$;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;

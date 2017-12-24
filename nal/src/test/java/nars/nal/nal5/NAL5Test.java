@@ -459,7 +459,7 @@ public class NAL5Test extends NALTest {
         tester.believe("<(&&,<R --> [f]>,<R --> [w]>) ==> <R --> [l]>>", 0.9f, 0.9f);
         tester.believe("<(&&,<R --> [f]>,<R --> b>) ==> <R --> [l]>>");
         tester.mustBelieve(cycles * 4, "<<R --> b> ==> <R --> [w]>>", 1f, 0.42f /*0.36f*/);
-        tester.mustBelieve(cycles * 4, "<<R --> [w]> ==> <R --> b>>", 0.90f, 0.37f /*0.45f*/);
+        tester.mustBelieve(cycles * 4, "<<R --> [w]> ==> <R --> b>>", 0.90f, 0.36f /*0.45f*/);
     }
 
     @Test

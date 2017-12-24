@@ -5,7 +5,6 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Int;
-import nars.term.atom.Intlike;
 
 import static nars.Op.INT;
 

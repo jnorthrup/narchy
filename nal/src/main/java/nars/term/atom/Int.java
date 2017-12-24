@@ -2,7 +2,6 @@ package nars.term.atom;
 
 import com.google.common.collect.*;
 import jcog.TODO;
-import jcog.Texts;
 import jcog.Util;
 import jcog.math.Interval;
 import nars.$;
@@ -347,18 +346,26 @@ public class Int implements Intlike {
 //
 //    }
 
-    public static Term[] intersect(final Term[] subs) {
+    public static Term[] intersect(final Term... subs) {
 
-
-        boolean anyInts = false;
-        for (Term x : subs) {
-            if (x.hasAny(Op.INT)) {
-                anyInts = true;
-                break;
-            }
-        }
-        if (!anyInts)
+        if (subs.length < 2)
             return subs;
+
+
+        int equalVolume = Integer.MAX_VALUE, equalStructure = Integer.MAX_VALUE;
+        for (int i = 0, subsLength = subs.length; i < subsLength; i++) {
+            Term x = subs[i];
+            if (!x.hasAny(Op.INT)) {
+                return subs; //a term without integer
+            }
+            int xVol = x.volume();
+            if (i == 0) equalVolume = xVol;
+            else if (xVol!=equalVolume) return subs; //a term with non-matching volume
+
+            int xStruct = x.structure();
+            if (i == 0) equalStructure = x.structure();
+            else if (xStruct!=equalStructure) return subs; //a term with non-matching volume
+        }
 
         //paths * extracted sequence of numbers at given path for each subterm
         Map<ByteList, Pair<ByteHashSet, List<Term>>> data = new HashMap();
@@ -366,10 +373,31 @@ public class Int implements Intlike {
 
         //analyze subtermss
         final int[] i = {0};
+
+        //if a subterm is not an integer, check for equality of atoms (structure already compared abovec)
+        final boolean[] valid = {true};
+        subs[0].pathsTo(x -> x.op() != INT ? x : null, d -> true, (p, t) -> {
+            if (p.size()>0 && !t.hasAny(INT)) {
+                //of course the root term will be unique
+                //and we expect differences but only in the INT
+                for (int others = 1; others < subs.length; others++) {
+                    if (!subs[others].subPath(p).equals(t)) {
+                        valid[0] = false;
+                        return false;
+                    }
+                }
+            }
+            return true;
+        });
+        if (!valid[0])
+            return subs;
+
         for (Term f : subs) {
 //        for (int i = 0; i < subCount; i++) {
-//            //if a subterm is not an integer, check for equality of atoms (structure already compared abovec)
+//            /
 //             Term f = subs.term(i);
+
+
 
             //first subterm: infer location of all inductables
             int ii = i[0]++;
