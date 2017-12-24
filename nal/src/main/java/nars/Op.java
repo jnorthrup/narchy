@@ -202,7 +202,7 @@ public enum Op {
 
             if (u.length == 2 && (dt == 0 || dt == DTERNAL)) {
                 if (conegated(u[0], u[1]))
-                    return Null;
+                    return False;
             }
 
 

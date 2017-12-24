@@ -84,7 +84,7 @@ public class ThermostatTest {
     @Disabled
     public void test1() {
         Param.DEBUG = true;
-        final int DUR = 5;
+        final int DUR = 10;
 
         final int subTrainings = 1;
         final int thinkDurs = 1;
@@ -93,8 +93,8 @@ public class ThermostatTest {
 
         n.time.dur(DUR);
         n.termVolumeMax.set(30);
-        n.freqResolution.set(0.1f);
-        n.confResolution.set(0.1f);
+        n.freqResolution.set(0.2f);
+        n.confResolution.set(0.04f);
 
         float exeThresh = 0.55f;
 

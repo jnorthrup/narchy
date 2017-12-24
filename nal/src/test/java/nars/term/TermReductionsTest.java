@@ -231,6 +231,7 @@ public class TermReductionsTest extends NarseseTest {
 //        assertInvalidTerms("<R ==> <P<=>Q>>");
 //    }
 
+
     @Test
     public void testConjPosNegElimination1() throws Narsese.NarseseException {
         //  (a ∧ ¬(a ∧ b))  =⇒ ¬b WRONG
@@ -761,21 +762,54 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testConegatedConjunctionTerms0() throws Narsese.NarseseException {
-        assertEquals(Null, $("(#1 && (--,#1))"));
-        assertEquals(Null, $("(#1 &| (--,#1))"));
-        assertEquals(Null, parallel(varDep(1), varDep(1).neg()));
+    public void testConjPosNeg() throws Narsese.NarseseException {
+        //     (x and not(x)) = False
+        // not (x and not(x)) = True
+        assertEquals(False, $.$("(x && --x)"));
+        assertEquals(True, $.$("--(x && --x)"));
+        assertEquals(True, $.$("(||, x, --x)"));
 
-        assertEquals(Null, $("(&&, #1, (--,#1), (x))"));
-        assertEquals(Null, $("(&&, --(#1 && (--,#1)), (x))"));
+        assertEquals("y", $.$("(y && --(&&,x,--x))").toString());
+    }
+
+    @Test
+    public void testConegatedConjunctionTerms0() throws Narsese.NarseseException {
+        assertEquals(False, $("(#1 && (--,#1))"));
+        assertEquals(False, $("(#1 &| (--,#1))"));
+        assertEquals(False, parallel(varDep(1), varDep(1).neg()));
+
+        assertEquals(False, $("(&&, #1, (--,#1), (x))"));
+        assertEquals(False, $("(&|, #1, (--,#1), (x))"));
+
+        assertEquals("(x)", $("(&&, --(#1 && (--,#1)), (x))").toString());
 
         assertSame($("((x) &&+1 --(x))").op(), CONJ);
         assertSame($("(#1 &&+1 (--,#1))").op(), CONJ);
 
 
     }
+    @Test
+    public void testCoNegatedJunction() throws Narsese.NarseseException {
+        //the conegation cancels out conflicting terms
+
+        assertEquals(False, $("(&&,x,a:b,(--,a:b))"));
+
+        assertEquals(False, $("(&&, (a), (--,(a)), (b))"));
+        assertEquals(False, $("(&&, (a), (--,(a)), (b), (c))"));
 
 
+        assertEquals(False, $("(&&,x,y,a:b,(--,a:b))"));
+    }
+  @Test
+    public void testCoNegatedDisjunction() throws Narsese.NarseseException {
+
+        assertEquals(True,
+                $("(||,x,a:b,(--,a:b))"));
+
+        assertEquals(True,
+                $("(||,x,y,a:b,(--,a:b))"));
+
+    }
     @Test
     public void testInvalidStatementIndepVarTask() {
         NAR t = NARS.shell();
@@ -836,30 +870,10 @@ public class TermReductionsTest extends NarseseTest {
                 $("(--(p) && --(q))").toString());
     }
 
-    @Test
-    public void testCoNegatedJunction() throws Narsese.NarseseException {
-        //the conegation cancels out conflicting terms
-
-        assertEquals(Null, $("(&&,x,a:b,(--,a:b))"));
-
-        assertEquals(Null, $("(&&, (a), (--,(a)), (b))")); //a cancels, reduce to 'b'
-        assertEquals(Null, $("(&&, (a), (--,(a)), (b), (c))"));
 
 
-        assertEquals(Null, $("(&&,x,y,a:b,(--,a:b))"));
-    }
 
 
-    @Test
-    public void testCoNegatedDisjunction() throws Narsese.NarseseException {
-
-        assertEquals(Null,
-                $("(||,x,a:b,(--,a:b))"));
-
-        assertEquals(Null,
-                $("(||,x,y,a:b,(--,a:b))"));
-
-    }
 
     @Test
     public void testFilterCommutedWithCoNegatedSubterms() throws Narsese.NarseseException {
@@ -993,12 +1007,12 @@ public class TermReductionsTest extends NarseseTest {
     public void testCommutizeRepeatingConjunctions() throws Narsese.NarseseException {
         assertEquals("a",
                 $("(a &&+1 a)").dt(DTERNAL).toString());
-        assertEquals(Null,
+        assertEquals(False,
                 $("(a &&+1 --a)").dt(DTERNAL));
 
         assertEquals("a",
                 $("(a &&+1 a)").dt(0).toString());
-        assertEquals(Null,
+        assertEquals(False,
                 $("(a &&+1 --a)").dt(0));
 
         assertEquals("(a &&+- a)",

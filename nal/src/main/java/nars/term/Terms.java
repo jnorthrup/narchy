@@ -594,15 +594,13 @@ public enum Terms {
             if (xx != null) {
                 if (xx == True) {
                     if (falses > 0)
-                        return Null;
+                        return False;
                     trues++;
-                }
-                else if (xx == False) {
+                }else if (xx == False) {
                     if (trues > 0)
-                        return Null;
+                        return False;
                     falses++;
-                }
-                else if (xx == Null)
+                } else if (xx == Null)
                     return Null;
             }
         }
@@ -634,7 +632,7 @@ public enum Terms {
 
         } else {
             if (!testCoNegate(x, s))
-                return Null;
+                return False;
 
             if (x.op() == CONJ) {
                 int xdt = x.dt();
@@ -647,7 +645,7 @@ public enum Terms {
                     byte earlyExisting = s.getIfAbsent(earlyUnneg, (byte) 0);
                     if (earlyExisting != 0) {
                         if (early.op() == NEG ^ (earlyExisting == -1))
-                            return Null; //wrong polarity
+                            return False; //wrong polarity
                         else {
                             //subsume the existing term by removing it from the list, since it is part of 'x' which has been added in entirity already
                             s.remove(earlyUnneg);
