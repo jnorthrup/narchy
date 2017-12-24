@@ -172,36 +172,41 @@ public enum Op {
                 }
             }
             if (absoluteness == -1) return False;
+
+            boolean cdt = concurrent(dt);
             if (absoluteness == +1) {
-                if (concurrent(dt)) {
-
-                    //TODO special case where only one item is left, can avoid reconstructing
-
+                {
                     //filter out all boolean terms
-
-                    int size = u.length - trues;
-                    if (size == 0)
-                        return True;
-
-                    Term[] y = new Term[size];
-                    int j = 0;
-                    for (int i = 0; j < y.length; i++) {
-                        Term uu = u[i];
-                        if (uu != True) // && (!uu.equals(False)))
-                            y[j++] = uu;
+                    int sizeAfterTrueRemoved = u.length - trues;
+                    switch (sizeAfterTrueRemoved) {
+                        case 0:
+                            return True;
+                        case 1: {
+                            for (int i = 0; i < u.length; i++) {
+                                Term uu = u[i];
+                                if (uu != True)
+                                    return uu;
+                            }
+                            throw new RuntimeException("should have found non-True term to return");
+                        }
+                        default: {
+                            Term[] y = new Term[sizeAfterTrueRemoved];
+                            int j = 0;
+                            for (int i = 0; j < y.length; i++) {
+                                Term uu = u[i];
+                                if (uu != True)
+                                    y[j++] = uu;
+                            }
+                            assert (j == y.length);
+                            return CONJ.the(dt, y);
+                        }
                     }
 
-                    assert (j == y.length);
-
-                    return CONJ.the(dt, y);
-                } else {
-                    //nothing we can really do. maybe insert a depvar
-                    return Null;
                 }
             }
 
-            if (u.length == 2 && (dt == 0 || dt == DTERNAL)) {
-                if (conegated(u[0], u[1]))
+            if (cdt && u.length == 2) {
+                if (conegated(u[0], u[1])) //fast conegation check, rather than the exhaustive multi-term one ahead
                     return False;
             }
 
@@ -263,14 +268,14 @@ public enum Op {
                     break;
 
 
-                    //sequence or xternal
-                    //assert (n == 2) : "invalid non-commutive conjunction arity!=2, arity=" + n;
+                //sequence or xternal
+                //assert (n == 2) : "invalid non-commutive conjunction arity!=2, arity=" + n;
 
-                    //rebalance and align
-                    //convention: left align all sequences
-                    //ex: (x &&+ (y &&+ z))
-                    //      becomes
-                    //    ((x &&+ y) &&+ z)
+                //rebalance and align
+                //convention: left align all sequences
+                //ex: (x &&+ (y &&+ z))
+                //      becomes
+                //    ((x &&+ y) &&+ z)
 
 
 //                int eventsLeft = a.eventCount();
@@ -349,7 +354,7 @@ public enum Op {
             }
 
 
-            if (ci.op()==CONJ && ci.hasAny(NEG) && ci.subterms().hasAny(CONJ)) {
+            if (ci.op() == CONJ && ci.hasAny(NEG) && ci.subterms().hasAny(CONJ)) {
                 int ciDT = ci.dt();
                 if (ciDT == 0 || ciDT == DTERNAL) {
                     //(NOT (x AND y)) AND (NOT x) == NOT X
@@ -358,7 +363,7 @@ public enum Op {
                     for (int i = 0; i < s; i++) {
                         Term cii = ci.sub(i);
                         if (cii.op() == NEG) {
-                            if (cii.unneg().op()==CONJ) {
+                            if (cii.unneg().op() == CONJ) {
                                 if (nc == null) nc = new RoaringBitmap();
                                 nc.add(i);
                             } else {
@@ -367,7 +372,7 @@ public enum Op {
                             }
                         }
                     }
-                    if (nc!=null && ni!=null)  {
+                    if (nc != null && ni != null) {
                         RoaringBitmap toRemove = new RoaringBitmap();
                         int[] bb = ni.toArray();
                         PeekableIntIterator cc = nc.getIntIterator();

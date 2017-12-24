@@ -149,7 +149,9 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     }
 
     public Event event(Term t, long when, boolean add) {
-        assert (!(t instanceof Bool));
+        if (t instanceof Bool)
+            return null;
+
         Event e =
                 when == TIMELESS ? new Relative(t) : new Absolute(t, when);
         return add ? add(e).id : event(e);

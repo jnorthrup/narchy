@@ -442,6 +442,7 @@ public interface NAct {
 
 
 
+            float freqEps = n.freqResolution.floatValue();
             float confMin = n.confMin.floatValue();
             float eviMin = c2wSafe(confMin);
             float feedbackConf =
@@ -512,15 +513,21 @@ public interface NAct {
 
                 if (y == y) {
                     //y: (-1..+1)
-                    float yp = y >= 0 ? y : 0;
-                    float yn = y >= 0 ? 0 : -y;
-                    //float yp = y >= 0 ? 0.5f + y/2f : 0.5f - y/2f;
-                    //float yn = y >= 0 ? 0.5f - y/2f : 0.5f + y/2f;
+                    //float yp = y >= 0 ? y : 0;
+                    //float yn = y >= 0 ? 0 : -y;
+                    float yp = y >= 0 ? 0.5f + y/2f : 0.5f - y/2f;
+                    float yn = y >= 0 ? 0.5f - y/2f : 0.5f + y/2f;
 
                     //float yf = (y / 2f)+0.5f; //0..+1
 
-                    Pb = $.t(yp, feedbackConf);
-                    Nb = $.t(yn, feedbackConf);
+                    float pbf =
+                            yp;
+                            //yp > freqEps ? yp / 2f + 0.5f : 0;
+                    float nbf =
+                            //yn > freqEps ? yn / 2f + 0.5f : 0;
+                            yn;
+                    Pb = $.t(pbf, feedbackConf);
+                    Nb = $.t(nbf, feedbackConf);
 
                     float goalEvi =
                             eviMin;

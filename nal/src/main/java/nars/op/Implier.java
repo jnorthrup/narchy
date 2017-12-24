@@ -218,7 +218,7 @@ public class Implier extends DurService {
             float strength = this.strength.floatValue();
 
             goalTruth.forEach((t, a) -> {
-                @Nullable Truth uu = a.commitSum().dither(freqRes, confRes, confMin,  strength);
+                @Nullable Truth uu = t.hasXternal() ? null : a.commitSum().dither(freqRes, confRes, confMin,  strength);
                 if (uu != null) {
                     float c = uu.conf();
                     NALTask y;

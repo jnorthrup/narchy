@@ -392,6 +392,8 @@ public class Int implements Intlike {
         if (!valid[0])
             return subs;
 
+        //TODO merge this with the previous loop, simplifying everything
+
         for (Term f : subs) {
 //        for (int i = 0; i < subCount; i++) {
 //            /

@@ -772,6 +772,12 @@ public class TermReductionsTest extends NarseseTest {
         assertEquals("y", $.$("(y && --(&&,x,--x))").toString());
     }
 
+    @Test public void testTrueFalseInXternal() {
+        assertEquals("x", CONJ.the(XTERNAL, $.the("x"), True).toString());
+        assertEquals(False, CONJ.the(XTERNAL, $.the("x"), False));
+        assertEquals(Null, CONJ.the(XTERNAL, $.the("x"), Null));
+    }
+
     @Test
     public void testConegatedConjunctionTerms0() throws Narsese.NarseseException {
         assertEquals(False, $("(#1 && (--,#1))"));
