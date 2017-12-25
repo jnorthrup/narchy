@@ -1,5 +1,6 @@
 package nars.concept.dynamic;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.list.FasterList;
 import nars.NAR;
@@ -134,8 +135,13 @@ abstract public class DynamicTruthModel {
             assert(!d.e.isEmpty());
             if (outputs != null) {
                 Term reconstructed = superterm.op().the(DT, outputs);
-                if (reconstructed instanceof Bool)
-                    return null;
+                if (reconstructed instanceof Bool) {
+                    if (reconstructed == True ) {
+                        throw new TODO("absolute true result"); //dont interfere with callee's calculation
+                    } else {
+                        return null;
+                    }
+                }
                 d.term = reconstructed;
             } else
                 d.term = superterm;
@@ -153,7 +159,7 @@ abstract public class DynamicTruthModel {
         return d;
     }
 
-    abstract public  Term[] components(Term superterm);
+    abstract public Term[] components(Term superterm);
 
     //protected abstract DynTruth eval(Compound template, long when, boolean stamp, NAR n);
 

@@ -23,14 +23,17 @@ import org.jetbrains.annotations.Nullable;
  */
 public class Cause implements Comparable<Cause> {
 
-    /** current scalar utility estimate for this cause's support of the current MetaGoal's.
-     *  may be positive or negative, and is in relation to other cause's values
+    /**
+     * current scalar utility estimate for this cause's support of the current MetaGoal's.
+     * may be positive or negative, and is in relation to other cause's values
      */
     private float value = 0;
 
-    /** the value measured contributed by its effect on each MetaGoal.
-     *  the index corresponds to the ordinal of MetaGoal enum entries.
-     *  these values are used in determining the scalar 'value' field on each update. */
+    /**
+     * the value measured contributed by its effect on each MetaGoal.
+     * the index corresponds to the ordinal of MetaGoal enum entries.
+     * these values are used in determining the scalar 'value' field on each update.
+     */
     public final Traffic[] goal;
 
 
@@ -38,23 +41,31 @@ public class Cause implements Comparable<Cause> {
         return value;
     }
 
-    /** 0..+1 */
+    /**
+     * 0..+1
+     */
     public float amp() {
-        return gain()/2f;
+        return gain() / 2f;
     }
 
-    /** 0..+2 */
+    /**
+     * 0..+2
+     */
     public float gain() {
-         return Util.tanhFast(value)+1f;
+        return Util.tanhFast(value) + 1f;
     }
 
-    /** value may be in any range (not normalized); 0 is neutral */
+    /**
+     * value may be in any range (not normalized); 0 is neutral
+     */
     public void setValue(float nextValue) {
         value = nextValue;
     }
 
 
-    /** internally assigned id */
+    /**
+     * internally assigned id
+     */
     public final short id;
 
     public final Object name;
@@ -65,7 +76,7 @@ public class Cause implements Comparable<Cause> {
 
     public Cause(short id, @Nullable Object name) {
         this.id = id;
-        this.name = name!=null ? name : id;
+        this.name = name != null ? name : id;
         goal = new Traffic[MetaGoal.values().length];
         for (int i = 0; i < goal.length; i++) {
             goal[i] = new Traffic();
@@ -84,7 +95,7 @@ public class Cause implements Comparable<Cause> {
 
     @Override
     public boolean equals(Object obj) {
-        return this == obj || id == ((Cause)obj).id;
+        return this == obj || id == ((Cause) obj).id;
     }
 
     @Override
@@ -95,7 +106,8 @@ public class Cause implements Comparable<Cause> {
     public static short[] zip(int causeCapacity, @Nullable Task... e) {
         short[] a = e[0].cause();
         switch (e.length) {
-            case 0: throw new NullPointerException();
+            case 0:
+                throw new NullPointerException();
             case 1:
                 return a;
 
@@ -108,8 +120,9 @@ public class Cause implements Comparable<Cause> {
                 if (b.length == 0)
                     return a;
 
-                if (Util.equals(a,b))
-                    return a;
+                //allow multiples because then they will reinforce the undiluted combined value if distinct vaclues are added later
+//                if (Util.equals(a,b))
+//                    return a;
 
                 return zip(causeCapacity, a, b);
             default:
@@ -159,7 +172,7 @@ public class Cause implements Comparable<Cause> {
                 nonEmpties++;
             }
         }
-        if (nonEmpties==1)
+        if (nonEmpties == 1)
             return lastNonEmpty;
         if (totalItems == 0)
             return ArrayUtils.EMPTY_SHORT_ARRAY;
@@ -167,28 +180,19 @@ public class Cause implements Comparable<Cause> {
         boolean enough = (totalItems < maxLen);
         ShortIterable l;
         ShortPredicate adder;
-        //if (enough) {
-            AwesomeShortArrayList ll = new AwesomeShortArrayList(totalItems);
-            //l = ll;
-            //adder = ll::add;
-        /*} else {
-            ShortHashSet ll = new ShortHashSet(maxLen);
-            l = ll;
-            adder = ll::add;
-        }*/
-
-
+        AwesomeShortArrayList ll = new AwesomeShortArrayList(totalItems);
 
         int ls = 0;
         int n = 0;
         int done;
-        main: do {
+        main:
+        do {
             done = 0;
             for (int i = 0; i < ss; i++) {
                 short[] c = s[i];
                 int cl = c.length;
                 if (n < cl) {
-                    if (ll.add/*adder.accept*/(c[cl-1-n])) {
+                    if (ll.add/*adder.accept*/(c[cl - 1 - n])) {
                         if (++ls >= maxLen)
                             break main;
                     }
@@ -199,13 +203,15 @@ public class Cause implements Comparable<Cause> {
             n++;
         } while (done < ss);
 
-        assert(ls > 0);
+        assert (ls > 0);
         short[] lll = ll.toArray();
-        assert(lll.length == ls);
+        assert (lll.length == ls);
         return lll;
     }
 
-    /** learn the utility of this cause with regard to a goal. */
+    /**
+     * learn the utility of this cause with regard to a goal.
+     */
     public final void learn(MetaGoal p, float v) {
         p.learn(goal, v);
     }
@@ -220,16 +226,14 @@ public class Cause implements Comparable<Cause> {
     }
 
 
-
-
-
-    static class AwesomeShortArrayList extends ShortArrayList {
+    static final class AwesomeShortArrayList extends ShortArrayList {
 
         public AwesomeShortArrayList(int cap) {
             super(cap);
         }
 
-        @Override public short[] toArray() {
+        @Override
+        public short[] toArray() {
             if (this.size() == items.length)
                 return items;
             else

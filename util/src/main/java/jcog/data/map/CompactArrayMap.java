@@ -6,21 +6,13 @@ import jcog.list.FasterList;
 import java.util.Arrays;
 import java.util.function.Function;
 
-/**
- * TODO dont extend FasterList because 'size' field isnt used. removals will involve CoW
- */
-public class CompactArrayMap<K, V> extends FasterList {
 
-    //final Object lock = new Object();
+public class CompactArrayMap<K, V>  {
+
+    Object[] items = null;
 
     public CompactArrayMap() {
-        this(0);
     }
-
-    public CompactArrayMap(int initialCapacity) {
-        super(initialCapacity);
-    }
-
 
     public boolean containsValue(Object aValue) {
         throw new TODO();
@@ -46,9 +38,9 @@ public class CompactArrayMap<K, V> extends FasterList {
         return null;
     }
 
-    @Override
     public int size() {
-        throw new UnsupportedOperationException();
+        Object[] i = this.items;
+        return i.length/2;
     }
 
     public void put(K key, V value) {
@@ -86,7 +78,7 @@ public class CompactArrayMap<K, V> extends FasterList {
     }
 
 
-    @Override
+
     public boolean remove(Object object) {
         throw new UnsupportedOperationException("use removeKey");
     }
@@ -105,7 +97,7 @@ public class CompactArrayMap<K, V> extends FasterList {
         return a.equals(b);
     }
 
-    @Override
+
     public void clear() {
         //synchronized(this) {
             items = null;

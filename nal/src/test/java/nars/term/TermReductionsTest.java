@@ -773,13 +773,17 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test public void testTrueFalseInXternal() {
-        assertEquals("x", CONJ.the(XTERNAL, $.the("x"), True).toString());
-        assertEquals(False, CONJ.the(XTERNAL, $.the("x"), False));
-        assertEquals(Null, CONJ.the(XTERNAL, $.the("x"), Null));
+        for (int i : new int[] { XTERNAL, 0, DTERNAL }) {
+            assertEquals("x", CONJ.the(i, $.the("x"), True).toString());
+            assertEquals(False, CONJ.the(i, $.the("x"), False));
+            assertEquals(Null, CONJ.the(i, $.the("x"), Null));
+        }
     }
 
     @Test
     public void testConegatedConjunctionTerms0() throws Narsese.NarseseException {
+        assertEquals("((--,#1) &&+- #1)", $("(#1 &&+- (--,#1))").toString());
+        assertEquals("(#1 &&+1 (--,#1))", $("(#1 &&+1 (--,#1))").toString());
         assertEquals(False, $("(#1 && (--,#1))"));
         assertEquals(False, $("(#1 &| (--,#1))"));
         assertEquals(False, parallel(varDep(1), varDep(1).neg()));

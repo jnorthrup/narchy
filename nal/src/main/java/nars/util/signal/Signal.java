@@ -126,9 +126,8 @@ public class Signal {
             Truth le = last.truth(last.end(), dur);
             if (le != null) {
                 ((TruthletTask)last).update(c, (tt)->{
-                    LinearTruthlet l = (LinearTruthlet) ((((ProxyTruthlet) tt.truthlet)).ref);
-                    l.freqEnd = fNext;
-                    l.end = start;
+                    ((LinearTruthlet)((((ProxyTruthlet)tt.truthlet)).ref)).freqEnd = fNext;
+                    ((LinearTruthlet)((((ProxyTruthlet)tt.truthlet)).ref)).end = end;
                     //((LinearTruthlet)tt.truthlet).freqEnd = fNext;
                 });
             }

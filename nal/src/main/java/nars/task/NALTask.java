@@ -96,8 +96,11 @@ public class NALTask extends Pri implements Task {
 
     /** get an appropriate representation of the truth for use as an instance in a new NALTask */
     static Truth truthify(@Nullable Truth truth) {
+        float c = truth.conf();
+        if (c < Param.TRUTH_EPSILON)
+            throw new RuntimeException("no evidence");
         if (truth instanceof PreciseTruth)
-            return new DiscreteTruth(truth.freq(), truth.conf());
+            return new DiscreteTruth(truth.freq(), c);
         else
             return truth; //already DiscreteTruth, or Truthlet
     }
