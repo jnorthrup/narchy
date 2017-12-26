@@ -1,6 +1,7 @@
 package nars.derive;
 
 import nars.NAR;
+import nars.Op;
 import nars.control.Derivation;
 import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
@@ -52,6 +53,8 @@ public final class Conclusion extends AbstractPred<Derivation> {
         int volMax = d.termVolMax;
         if (c1 == null || !c1.op().conceptualizable || c1.volume() > volMax || c1.hasAny(/*BOOL,*/VAR_PATTERN) )
             return false;
+        if (!c1.hasAny(Op.ATOM))
+            return false; //entirely variablized
 
         d.concEviFactor = 1f;
         final long[] occ = d.concOcc;
@@ -102,10 +105,6 @@ public final class Conclusion extends AbstractPred<Derivation> {
 //                }
 //                return false;
 //            }
-
-            if ((d.concPunc==BELIEF || d.concPunc==GOAL) &&
-                    w2cSafe(d.concEviFactor * d.concTruth.evi()) < d.confMin)
-                return false;
 
             //invalid or impossible temporalization; could not determine temporal attributes. seems this can happen normally
             if (c2 == null || c2.volume() > volMax || !c2.op().conceptualizable/*|| (Math.abs(occReturn[0]) > 2047483628)*/ /* long cast here due to integer wraparound */) {

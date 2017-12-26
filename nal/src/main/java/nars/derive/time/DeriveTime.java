@@ -62,18 +62,18 @@ public class DeriveTime extends TimeGraph {
         this.task = copy.task;
         this.belief = copy.belief;
         this.dither = copy.dither;
-        this.byTerm.putAll(copy.byTerm); //TODO wrap rather than copy
+        //this.byTerm.putAll(copy.byTerm); //TODO wrap rather than copy
         if (transformedTask!=null) {
             Event y = know(transformedTask, task.start());
-            link(know(task.term(), task.start()), 0, y);
+            //link(know(task.term(), task.start()), 0, y);
             Event yNeg = know(transformedTask.neg(), task.start());
-            link(know(task.term().neg(), task.start()), 0, yNeg);
+            //link(know(task.term().neg(), task.start()), 0, yNeg);
         }
         if (transformedBelief!=null) {
             Event y = know(transformedBelief, belief.start());
-            link(know(belief.term(), belief.start()), 0, y);
+            //link(know(belief.term(), belief.start()), 0, y);
             Event yNeg = know(transformedBelief.neg(), belief.start());
-            link(know(belief.term().neg(), belief.start()), 0, yNeg);
+            //link(know(belief.term().neg(), belief.start()), 0, yNeg);
         }
     }
 
@@ -312,20 +312,28 @@ public class DeriveTime extends TimeGraph {
         occ[1] = es;
 
         if (es == ETERNAL) {
+
             if (task.isEternal() && (belief==null || belief.isEternal())) {
                 //its supposed to be eternal
             } else {
-
-                if (task.isEternal() && (belief != null && !belief.isEternal())) {
-                    es = belief.start();
-                } else if (!task.isEternal() && (belief != null && belief.isEternal())) {
-                    es = task.start();
-                } else {
-                    throw new RuntimeException("temporalization fault");
-                }
-                occ[0] = es;
-                occ[1] = es;
+                //throw new RuntimeException("temporalization fault");
+                return null;
             }
+
+//            if (task.isEternal() && (belief==null || belief.isEternal())) {
+//                //its supposed to be eternal
+//            } else {
+//
+//                if (task.isEternal() && (belief != null && !belief.isEternal())) {
+//                    es = belief.start();
+//                } else if (!task.isEternal() && (belief != null && belief.isEternal())) {
+//                    es = task.start();
+//                } else {
+//                    throw new RuntimeException("temporalization fault");
+//                }
+//                occ[0] = es;
+//                occ[1] = es;
+//            }
         }
 //        if (occ[0] != ETERNAL) {
 //            if (st.op()!=CONJ && occ[1]==occ[0]) {
@@ -404,38 +412,72 @@ public class DeriveTime extends TimeGraph {
         long[] occ = d.concOcc;
         long s, e;
         boolean te = task.isEternal();
-        //couldnt solve the start time, so inherit from task or belief as appropriate
-        if (!d.single && !te && (belief != null && !belief.isEternal())) {
-
-                //joint is a procedure for extending / blending non-temporal terms.
-                //since conj is temporal use strict
-                boolean strict = x.op()==CONJ;
-
-                if (strict) {
-                    Interval ii = Interval.intersect(task.start(), task.end(), belief.start(), belief.end());
-                    if (ii == null)
-                        return null; //too distant, evidence lacks
-
-                    s = ii.a;
-                    e = x.op()!=IMPL ? ii.b : ii.a;
+        if (te && (belief==null || belief.isEternal())) {
+            //entirely eternal
+            s = e = ETERNAL;
+        } else {
+            boolean taskEvent = !task.term().op().temporal;
+            if (belief == null) {
+                if (!taskEvent) {
+                    //transformed task term, should have been solved
+                    return null;
                 } else {
+                    //event: inherit task time
+                    s = task.start();
+                    e = task.end();
+                }
+            } else {
+                boolean beliefEvent = !belief.term().op().temporal;
+                if (!taskEvent && !beliefEvent) {
+                    //two events: fuse time
                     TimeFusion joint = new TimeFusion(task.start(), task.end(), belief.start(), belief.end());
-//                    if (joint.factor <= Pri.EPSILON) //allow for questions/quests, if this ever happens
-//                        return null;
+                    //                    if (joint.factor <= Pri.EPSILON) //allow for questions/quests, if this ever happens
+                    //                        return null;
 
                     s = joint.unionStart;
                     e = joint.unionEnd;
                     d.concEviFactor *= joint.factor;
+                } else {
+                    //either task or belief were temporal, so should have been solved
+                    return null;
                 }
-
-
-        } else if (d.single || (!te && (belief == null || belief.isEternal()))) {
-            s = task.start();
-            e = task.end();
-        } else {
-            s = belief.start();
-            e = belief.end();
+            }
         }
+
+
+
+//        //couldnt solve the start time, so inherit from task or belief as appropriate
+//        if (!d.single && !te && (belief != null && !belief.isEternal())) {
+//
+//                //joint is a procedure for extending / blending non-temporal terms.
+//                //since conj is temporal use strict
+//                boolean strict = x.op()==CONJ;
+//
+//                if (strict) {
+//                    Interval ii = Interval.intersect(task.start(), task.end(), belief.start(), belief.end());
+//                    if (ii == null)
+//                        return null; //too distant, evidence lacks
+//
+//                    s = ii.a;
+//                    e = x.op()!=IMPL ? ii.b : ii.a;
+//                } else {
+//                    TimeFusion joint = new TimeFusion(task.start(), task.end(), belief.start(), belief.end());
+////                    if (joint.factor <= Pri.EPSILON) //allow for questions/quests, if this ever happens
+////                        return null;
+//
+//                    s = joint.unionStart;
+//                    e = joint.unionEnd;
+//                    d.concEviFactor *= joint.factor;
+//                }
+//
+//
+//        } else if (d.single || (!te && (belief == null || belief.isEternal()))) {
+//            s = task.start();
+//            e = task.end();
+//        } else {
+//            s = belief.start();
+//            e = belief.end();
+//        }
 
         eternalCheck(s);
 

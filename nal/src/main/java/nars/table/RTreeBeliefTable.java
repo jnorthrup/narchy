@@ -203,7 +203,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 }
 
                 //otherwise interpolate
-                Task c = Revision.merge(a, b, start, nar);
+                Task c = Revision.merge(a, b, start, 0 /* TODO */, nar);
                 if (c != null) {
 
                     if (c == a) //c.equals(a))
@@ -501,7 +501,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             if (aPri!=aPri) //already deleted
                 return true;
 
-            Task c = Revision.merge(at, bt, nar.time(), nar);
+            Task c = Revision.merge(at, bt, nar.time(), 0, nar);
             if (c != null && !c.equals(a) && !c.equals(b)) {
 
                 boolean allowMerge;

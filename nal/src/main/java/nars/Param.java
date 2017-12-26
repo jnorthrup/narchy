@@ -49,7 +49,7 @@ public abstract class Param extends Services<Term, NAR> {
     public static boolean DEBUG_FILTER_DUPLICATE_MATCHES = Param.DEBUG_EXTRA;
 
 
-    public final FloatParam forgetRate = new FloatParam(PriForget.FORGET_TEMPERATURE_DEFAULT, 0f, 2f);
+    public final FloatParam forgetRate = new FloatParam(0.9f, 0f, 2f);
 
     /** hard limit to prevent infinite looping */
     public static final int MAX_TASK_FORWARD_HOPS = 8;
@@ -209,7 +209,9 @@ public abstract class Param extends Services<Term, NAR> {
      * abs(term.dt()) safety limit for non-dternal/non-xternal temporal compounds
      */
     @Deprecated
-    public static int DT_ABS_LIMIT = Integer.MAX_VALUE / 256;
+    public static int DT_ABS_LIMIT =
+            Integer.MAX_VALUE / 1024;
+            //Integer.MAX_VALUE / 16384;
 
 
     public static float derivationPriority(Task t, Derivation d) {

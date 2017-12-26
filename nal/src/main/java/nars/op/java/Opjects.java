@@ -395,7 +395,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
             Consumer<NAR> update = belief.update(this, cause, obj, method, args, nextValue);
             if (update!=null) {
-                nar.runLater(update);
+                nar.run/*Later*/(update);
             }
 
             return nextValue;

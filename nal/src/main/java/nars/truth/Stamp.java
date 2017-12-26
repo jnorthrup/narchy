@@ -500,13 +500,13 @@ public interface Stamp {
         if (ls > 1)
             Arrays.sort(e);
 
-        //HACK count cyclic as part of the scalar returned, but this isnt an accurate value
         float overlap = ((float) repeats) / totalEvidence;
-        for (int i = 0, sSize = s.size(); i < sSize; i++) {
-            Stamp x = s.get(i);
-            if (x.isCyclic())
-                overlap += 1f/sSize;
-        }
+//        //HACK count cyclic as part of the scalar returned, but this isnt an accurate value
+//        for (int i = 0, sSize = s.size(); i < sSize; i++) {
+//            Stamp x = s.get(i);
+//            if (x.isCyclic())
+//                overlap += 1f/sSize;
+//        }
 
         return pair(e, Util.unitize(overlap));
     }

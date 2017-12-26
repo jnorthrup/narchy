@@ -151,17 +151,20 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
                 onCycle = null;
             }
             if (!evoke.isEmpty()) {
-                n.run(() -> {
+                //n.run(() -> {
+                try {
                     for (int i = 0, toInvokeSize = evoke.size(); i < toInvokeSize; i++) {
                         Task tt = evoke.get(i);
                         if (!tt.isDeleted()) {
                             exe.accept(tt, n);
                         }
                         boolean d = dispatched.remove(tt.term().conceptual());
-                        assert(d);
+                        assert (d);
                     }
+                } finally {
                     busy.set(false);
-                });
+                }
+                //});
             } else {
                 busy.set(false);
             }

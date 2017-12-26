@@ -269,7 +269,10 @@ public class ConjClustering extends Causable {
 
             //TODO discount based on evidential overlap? needs N-way overlapFraction function
 
-            PreciseTruth t = Truth.the(freq, c2wSafe(conf), nar);
+            ObjectFloatPair<long[]> evidence = Stamp.zip(actualTasks, Param.STAMP_CAPACITY);
+            float overlap = evidence.getTwo();
+            float e = c2wSafe(conf) * (1f - overlap);
+            PreciseTruth t = Truth.the(freq, e, nar);
             if (t != null) {
 
                 Term cj = Op.conj(new FasterList(vv.keySet()));
@@ -277,7 +280,7 @@ public class ConjClustering extends Causable {
                     ObjectBooleanPair<Term> cp = Task.tryContent(cj.normalize(), punc, true);
                     if (cp != null) {
 
-                        ObjectFloatPair<long[]> evidence = Stamp.zip(actualTasks, Param.STAMP_CAPACITY);
+
                         NALTask m = new STMClusterTask(cp, t, start, end, evidence.getOne(), punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
                         if (evidence.getTwo() > 0) m.setCyclic(true);
 

@@ -20,11 +20,11 @@ public interface TaskRegion extends HyperRegion, Tasked {
     /**
      * cost of stretching a node by freq
      */
-    float FREQ_COST = 2f;
+    float FREQ_COST = 1f;
     /**
      * cost of stretching a node by conf
      */
-    float CONF_COST = 0.5f;
+    float CONF_COST = 1f;
 
 
 

@@ -162,7 +162,7 @@ public class ActivateTest {
     @Test
     public void testTemplatesWithQueryVar() throws Narsese.NarseseException {
         testTemplates("(x --> ?1)",
-                "[(x-->?1), x, ?1]");
+                "[(x-->?1), x]");
     }
 
     @Test

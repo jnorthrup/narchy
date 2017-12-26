@@ -190,12 +190,16 @@ public interface Truth extends Truthed {
     }
 
     static float freq(float f, float epsilon) {
-        assert(f==f);
+        assert(f==f): "invalid freq: " + f;
         return unitize(round(f, epsilon));
     }
 
     static float conf(float c, float epsilon) {
-        assert(c==c && c >= Param.TRUTH_EPSILON);
+        assert(c==c && c >= Param.TRUTH_EPSILON): "invalid conf: " + c;
+        return confSafe(c, epsilon);
+    }
+
+    static float confSafe(float c, float epsilon) {
         return clamp(
                 //ceil(c, epsilon), //optimistic
                 round(c, epsilon), //semi-optimistic: adds evidence when rounding up, loses evidence when rounding down
@@ -216,8 +220,8 @@ public interface Truth extends Truthed {
         float c = w2cDithered(evi() * eviGain, confRes);
         return c < confMin ? null : new PreciseTruth(freq(freq(), freqRes), c);
     }
-    @Nullable default DiscreteTruth ditherDiscrete(float freqRes, float confRes, float confMin, float eviGain) {
-        float c = w2cDithered(evi() * eviGain, confRes);
+    @Nullable default DiscreteTruth ditherDiscrete(float freqRes, float confRes, float confMin, float newEvi) {
+        float c = w2cDithered(newEvi, confRes);
         return c < confMin ? null : new DiscreteTruth(freq(freq(), freqRes), c);
     }
 
@@ -231,7 +235,7 @@ public interface Truth extends Truthed {
     }
 
     static float w2cDithered(float evi, float confRes) {
-        return conf(w2cSafe(evi), confRes);
+        return confSafe(w2cSafe(evi), confRes);
     }
 
     @Override
@@ -254,6 +258,8 @@ public interface Truth extends Truthed {
     }
 
     default PreciseTruth withEvi(float e) {
+        if (e == 0)
+            return null;
         return new PreciseTruth(freq(), e, false);
     }
 

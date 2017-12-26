@@ -11,7 +11,7 @@ import spacegraph.render.Draw;
  */
 public class Label extends AspectAlign {
 
-    private String value = "(null)";
+    private String text = "(null)";
 
     public float textScaleX = 1f, textScaleY = 1f;
     public final Color4f textColor = new Color4f(1f, 1f, 1f, 1f);
@@ -21,6 +21,7 @@ public class Label extends AspectAlign {
     /** inner rectangle in which the text is actually rendered, after calculating
      * aspect ratio, scale and alignment */
     private RectFloat2D innerBounds = RectFloat2D.Zero;
+    private float textY;
 
     public Label() {
         this("");
@@ -36,7 +37,7 @@ public class Label extends AspectAlign {
     protected void doLayout(float tx, float ty, float tw, float th) {
         innerBounds = new RectFloat2D(tx, ty, tx+tw, ty+th);
 
-        int len = value.length();
+        int len = text().length();
         if (len == 0) return;
 
         float charAspect = 1.4f;
@@ -48,7 +49,6 @@ public class Label extends AspectAlign {
             this.textScaleX = 1f / (charAspect * len);
             this.textScaleY = textScaleX * charAspect;
         } else {
-
             this.textScaleY = textScaleX / visAspect;
         }
 
@@ -57,6 +57,7 @@ public class Label extends AspectAlign {
             textScaleX = 1f / (charAspect * len);
         }
 
+        textY = 0.5f - textScaleY / 2f;
     }
 
     @Override
@@ -70,24 +71,24 @@ public class Label extends AspectAlign {
         textColor.apply(gl);
         gl.glLineWidth(textThickness);
         //float dz = 0.1f;
-        Draw.text(gl, text(), textScaleX, textScaleY, 0, 0.5f - textScaleY / 2f, 0, Draw.TextAlignment.Left);
+        Draw.text(gl, text(), textScaleX, textScaleY, 0, textY, 0, Draw.TextAlignment.Left);
 
     }
 
 
     public Label text(String newValue) {
-        this.value = newValue;
+        this.text = newValue;
         layout();
         return this;
     }
 
     public String text() {
-        return value;
+        return text;
     }
 
     @Override
     public String toString() {
-        return "Label[" + value + ']';
+        return "Label[" + text() + ']';
     }
 
 

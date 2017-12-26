@@ -40,12 +40,15 @@ public class MetaFrame extends Widget {
             //toggle off: detach
             r.the(MetaFrame.class, null, null);
 
+            r.unzoom();
+
         } else {
             //toggle on: attach
+
             MetaFrame mfer = new MetaFrame(base);
             r.the(MetaFrame.class, mfer, mfer::close);
-
             base.children.add(mfer);
+
             r.zoom(base.cx(), base.cy(), base.w(), base.h());
         }
     }

@@ -8,6 +8,7 @@ import nars.control.Derivation;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
 import nars.task.NALTask;
+import nars.task.TimeFusion;
 import nars.term.Term;
 import nars.term.pred.AbstractPred;
 import nars.truth.Truth;
@@ -53,7 +54,10 @@ public class Taskify extends AbstractPred<Derivation> {
 
         Truth tru = d.concTruth;
         if (tru!=null) {
-            tru = tru.ditherDiscrete(d.freqRes, d.confRes, d.confMin, d.concEviFactor);
+            tru = tru.ditherDiscrete(d.freqRes, d.confRes, d.confMin,
+                    //TimeFusion.eviEternalize(tru.evi(), d.concEviFactor)
+                    tru.evi() * d.concEviFactor
+            );
             if (tru == null)
                 return false;
         }

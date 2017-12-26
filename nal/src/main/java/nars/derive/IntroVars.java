@@ -1,5 +1,6 @@
 package nars.derive;
 
+import nars.Op;
 import nars.control.Derivation;
 import nars.op.DepIndepVarIntroduction;
 import nars.term.Term;
@@ -26,8 +27,12 @@ public class IntroVars extends AbstractPred<Derivation> {
         if (!(y.op().conceptualizable) || (y.equals(x) /* keep only if it differs */)) {
             return false;
         } else {
-            p.derivedTerm.set(y);
-            return true;
+            if (!y.hasAny(Op.ATOM)) {
+                return false; //entirely variablized
+            } else {
+                p.derivedTerm.set(y);
+                return true;
+            }
         }
     }
 }

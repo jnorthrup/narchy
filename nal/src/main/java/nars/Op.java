@@ -923,7 +923,9 @@ public enum Op {
     static public Term conjMerge(Term a, long aStart, Term b, long bStart) {
 
         if (a.eventCount() == 1 && b.eventCount() == 1) {
-            return conjSeqFinal((int) (bStart - aStart), a, b);
+            long bo = bStart - aStart;
+            assert(bo < Integer.MAX_VALUE);
+            return conjSeqFinal((int) bo, a, b);
         }
 
         LongObjectHashMap<Collection<Term>> eventSets = new LongObjectHashMap();

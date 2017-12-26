@@ -30,6 +30,9 @@ public class OpjectsTest {
     @Test
     public void testSelfInvocation() throws Narsese.NarseseException {
         final NAR n = NARS.tmp();
+        n.time.dur(3);
+
+        Param.DEBUG = true;
 
         Set<Task> evokes = new HashSet();
         final Opjects objs = new Opjects(n) {
@@ -45,7 +48,7 @@ public class OpjectsTest {
         n.onTask(sb::append);
         n.log();
 
-        n.input("x(set,(1))! :|:");
+        n.input("x(set,1)! :|:");
         n.run(1);
         n.run(1);
 

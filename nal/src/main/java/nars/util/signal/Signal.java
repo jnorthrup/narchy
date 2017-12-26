@@ -37,7 +37,7 @@ public class Signal {
 
     final byte punc;
 
-    private static final int lookAheadDurs = 1;
+    private static final int lookAheadDurs = 0;
     private final AtomicReference<TruthletTask> current = new AtomicReference(null);
 
 
@@ -146,8 +146,10 @@ public class Signal {
         }
 
         TruthletTask s = new TruthletTask(c.term(), punc,
-                    new SustainTruthlet(new LinearTruthlet(start, fNext, end, fNext, t.evi()), 1),
-                    stamp
+                    new SustainTruthlet(
+                            new LinearTruthlet(start, fNext, end, fNext, t.evi()
+                            ), 1)
+                ,stamp
         );
 
 

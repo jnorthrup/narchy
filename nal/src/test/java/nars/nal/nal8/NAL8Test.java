@@ -25,7 +25,7 @@ public class NAL8Test extends NALTest {
 
     @BeforeEach
     public void setTolerance() {
-        test.confTolerance(NAL7Test.TRUTH_TOLERANCE_FOR_PROJECTIONS);
+        test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.time.dur(3);
     }
 

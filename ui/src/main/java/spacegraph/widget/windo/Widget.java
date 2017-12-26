@@ -175,6 +175,7 @@ abstract public class Widget extends Stacking {
     protected boolean onTouching(Finger finger, v2 hitPoint, short[] buttons) {
         if (finger != null && finger.clickReleased(2)) { //released right button
             MetaFrame.toggle(this);
+            return true;
         }
         return super.onTouching(finger, hitPoint, buttons);
     }

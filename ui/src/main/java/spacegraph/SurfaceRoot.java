@@ -21,6 +21,7 @@ public interface SurfaceRoot {
     Ortho scale(float sx, float sy);
 
     void zoom(float x, float y, float sx, float sy);
+    void unzoom();
 
     /** receives notifications, logs, etc */
     On onLog(Consumer o);
@@ -45,5 +46,6 @@ public interface SurfaceRoot {
     default Object the(Class key) {
         return the(key.toString());
     }
+
 
 }

@@ -3,6 +3,7 @@ package nars.task;
 import jcog.Util;
 import jcog.math.Interval;
 import nars.task.util.TaskRegion;
+import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -17,13 +18,13 @@ public final class TimeFusion {
 
     public TimeFusion(long as, long ae, long bs, long be) {
         this(new Interval(as, ae), new Interval(bs, be));
-        assert(as <= ae);
-        assert(bs <= be);
+        assert (as <= ae);
+        assert (bs <= be);
     }
 
-    public TimeFusion(Interval... x) {
+    TimeFusion(Interval... x) {
 
-        assert(x.length > 1);
+        assert (x.length > 1);
 
         Interval uu = x[0];
         for (int n = 1, xLength = x.length; n < xLength; n++) {
@@ -36,7 +37,7 @@ public final class TimeFusion {
 
         long lenSum = Util.sum(Interval::length, x);
         int n = x.length;
-        this.factor = ((float)(n + lenSum)) / (n + uLen * n); //ratio of how much the union is filled with respect to the number of tasks being overlapped
+        this.factor = ((float) (n + lenSum)) / (n + uLen * n); //ratio of how much the union is filled with respect to the number of tasks being overlapped
 
 
     }
@@ -64,7 +65,7 @@ public final class TimeFusion {
         } else if (eternals > 0) {
             long max = Long.MIN_VALUE, min = Long.MAX_VALUE;
             for (Interval i : ii) {
-                if (i!=null) {
+                if (i != null) {
                     if (i.a < min) min = i.a;
                     if (i.b > max) max = i.b;
                 }
@@ -78,6 +79,14 @@ public final class TimeFusion {
         }
 
         return new TimeFusion(ii);
+    }
+
+    public static float eviEternalize(float evi, float concEviFactor) {
+        if (concEviFactor != 1) {
+            float eviEternal = Truth.eternalize(evi);
+            evi = eviEternal + Util.lerp(concEviFactor, 0, evi - eviEternal);
+        }
+        return evi;
     }
 
 

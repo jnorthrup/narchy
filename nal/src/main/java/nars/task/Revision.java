@@ -2,8 +2,6 @@ package nars.task;
 
 import jcog.Util;
 import jcog.list.FasterList;
-import jcog.pri.Pri;
-import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -43,22 +41,23 @@ public class Revision {
     @Nullable
     public static Truth revise(/*@NotNull*/ Truthed a, /*@NotNull*/ Truthed b, float factor, float minEvi) {
 
-        float w1 = a.evi() * factor;
+        float w1 = a.evi();
 //        if (w1 < Prioritized.EPSILON)
 //            return null;
 
-        float w2 = b.evi() * factor;
+        float w2 = b.evi();
 //        if (w2 < Prioritized.EPSILON)
 //            return null;
 
-        float w = (w1 + w2);
-
+        float w = w1 + w2;
+        float e = //TimeFusion.eviEternalize((w1 + w2), factor);
+                (w1+w2)*factor;
 
         return w <= minEvi ?
                 null :
                 new PreciseTruth(
                         (w1 * a.freq() + w2 * b.freq()) / w,
-                        w,
+                        e,
                         false
                 );
     }
@@ -122,7 +121,7 @@ public class Revision {
 
 
     /*@NotNull*/
-    static Term intermpolate(/*@NotNull*/ Term a, long dt, /*@NotNull*/ Term b, float aProp, float curDepth, /*@NotNull*/ Random rng, boolean mergeOrChoose) {
+    static Term intermpolate(/*@NotNull*/ Term a, long bOffset, /*@NotNull*/ Term b, float aProp, float curDepth, /*@NotNull*/ Random rng, boolean mergeOrChoose) {
 
         Op ao = a.op();
         Op bo = b.op();
@@ -136,26 +135,28 @@ public class Revision {
 //                    aProp, curDepth, rng, mergeOrChoose).neg();
 //        }
 
-        assert (dt != XTERNAL);
-
         int len = a.subs();
         if (len > 0) {
 
             if (ao.temporal) {
-                boolean dtCommutes = dt == 0 || dt == DTERNAL;
 
-                if (a.equals(b) && dtCommutes) {
+                if (a.equals(b) && bOffset == 0) {
                     return a;
                 }
 
-                if (!mergeOrChoose && dtCommutes && !a.subterms().hasAny(Op.CONJ) && !b.subterms().hasAny(Op.CONJ)) {
+                if (!mergeOrChoose) {
                     return choose(a, b, aProp, rng);
                 } else {
                     switch (ao) {
                         case CONJ:
-                            return dtMergeConjMerge(a, dt, b, aProp, curDepth, rng);
+                             if (!a.subterms().hasAny(Op.CONJ) && !b.subterms().hasAny(Op.CONJ)) {
+                                return dtMergeDirect(a, b, aProp, curDepth, rng, mergeOrChoose);
+                             } else {
+                                 //event-based merge
+                                 return dtMergeConjMerge(a, bOffset, b, aProp, curDepth, rng);
+                             }
                         case IMPL:
-                            return dtMergeImpl(a, b, aProp, curDepth, rng, mergeOrChoose);
+                            return dtMergeDirect(a, b, aProp, curDepth, rng, mergeOrChoose);
                         default:
                             throw new RuntimeException();
                     }
@@ -194,8 +195,8 @@ public class Revision {
 
     }
 
-    private static Term dtMergeConjMerge(Term a, long dt, Term b, float aProp, float v, Random rng) {
-        FasterList<LongObjectPair<Term>> ab = Op.conjMerge(a, 0, b, dt).eventList();
+    private static Term dtMergeConjMerge(Term a, long bOffset, Term b, float aProp, float v, Random rng) {
+        FasterList<LongObjectPair<Term>> ab = Op.conjMerge(a, 0, b, bOffset).eventList();
 
         //it may not be valid to choose subsets of the events, in a case like where >1 occurrences of $ must remain parent
 
@@ -226,7 +227,7 @@ public class Revision {
 
 
     /*@NotNull*/
-    private static Term dtMergeImpl(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp, float depth, /*@NotNull*/ Random rng, boolean mergeOrChoose) {
+    private static Term dtMergeDirect(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp, float depth, /*@NotNull*/ Random rng, boolean mergeOrChoose) {
 
         int adt = a.dt();
 
@@ -256,14 +257,17 @@ public class Revision {
 //        }
 
         int dt;
-        if (adt == DTERNAL)
-            dt = bdt;
-        else if (bdt == DTERNAL)
-            dt = adt;
-        else {
-            dt = mergeOrChoose ?
-                    lerp(aProp, bdt, adt) :
-                    ((choose(a, b, aProp, rng) == a) ? adt : bdt);
+
+
+        if (mergeOrChoose) {
+            if (adt == DTERNAL || adt == XTERNAL)
+                dt = bdt;
+            else if (bdt == DTERNAL || bdt == XTERNAL)
+                dt = adt;
+            else
+                dt = lerp(aProp, bdt, adt);
+        } else {
+            dt = (choose(a, b, aProp, rng) == a) ? adt : bdt;
         }
 
 
@@ -326,7 +330,9 @@ public class Revision {
 
 
     @Nullable
-    public static Task merge(/*@NotNull*/ Task a, /*@NotNull*/ Task b, long now, NAR nar) {
+    public static Task merge(/*@NotNull*/ Task a, /*@NotNull*/ Task b, long now, float minEvi, NAR nar) {
+        assert (!a.isEternal() && !b.isEternal()) : "can not merge eternal tasks";
+
 //        if (a.op() == CONJ) {
 //            //avoid intermpolation of 2 conjunctions with opposite polarities
 //            if (!a.term().equals(b.term())
@@ -354,7 +360,6 @@ public class Revision {
         //float bb = be * (1 + bi.length());
         //float p = aa / (aa + bb);
 
-        float factor = 1f;
 
         //relate high frequency difference with low confidence
 //        float freqDiscount =
@@ -389,11 +394,6 @@ public class Revision {
 //                return null;
 
 
-        TimeFusion joint = new TimeFusion(as, a.end(), bs, b.end());
-        factor *= joint.factor;
-        if (factor < Prioritized.EPSILON) return null;
-
-
         int dur = nar.dur();
 //        float intermvalDistance = dtDiff(a.term(), b.term()) /
 //                ((1 + Math.max(a.term().dtRange(), b.term().dtRange())) * dur);
@@ -403,6 +403,7 @@ public class Revision {
         float confMin =
                 Param.TRUTH_EPSILON;
 
+        TimeFusion joint = new TimeFusion(as, a.end(), bs, b.end());
         long start = joint.unionStart;
         long end = joint.unionEnd;
 
@@ -414,27 +415,34 @@ public class Revision {
         if (bn == null)
             return null;
 
-        Truth rawTruth = revise(an, bn, factor, c2wSafe(confMin));
-        if (rawTruth == null)
+        Truth rawTruth = revise(an, bn, joint.factor, c2wSafe(confMin));
+        if (rawTruth == null || rawTruth.evi() < minEvi)
             return null;
 
-        float maxEviAB = Math.max(an.evi(), bn.evi());
-        float evi = rawTruth.evi();
-        if (maxEviAB < evi) {
-            //more evidence overlap indicates redundant information, so reduce the increase in confWeight (measure of evidence) by this amount
-            //TODO weight the contributed overlap amount by the relative confidence provided by each task
-            float overlapDiscount = Stamp.overlapFraction(a.stamp(), b.stamp());
-            //        factor *= overlapDiscount;
-            //        if (factor < Prioritized.EPSILON) return null;
-
-            float eviDiscount = (evi - maxEviAB) * overlapDiscount;
-            float newEvi = evi - eviDiscount;
-            if (!Util.equals(evi, newEvi, Pri.EPSILON)) {
-                rawTruth = rawTruth.withEvi(newEvi);
-            }
-
+        //ObjectFloatPair<long[]> s = Stamp.zip(new FasterList(a, b), Param.STAMP_CAPACITY);
+        float overlapDiscount = Stamp.overlapFraction(a.stamp(), b.stamp());
+        if (overlapDiscount > 0) {
+            rawTruth = rawTruth.withEvi(rawTruth.evi() * (1f - overlapDiscount));
+            if (rawTruth == null || rawTruth.evi() < minEvi)
+                return null;
         }
 
+////        float maxEviAB = Math.max(an.evi(), bn.evi());
+//        float evi = rawTruth.evi();
+//        if (maxEviAB < evi) {
+//            //more evidence overlap indicates redundant information, so reduce the increase in confWeight (measure of evidence) by this amount
+//            //TODO weight the contributed overlap amount by the relative confidence provided by each task
+//            //        factor *= overlapDiscount;
+//            //        if (factor < Prioritized.EPSILON) return null;
+//
+//            float eviDiscount = (evi - maxEviAB) * overlapDiscount;
+//            float newEvi = evi - eviDiscount;
+//            if (!Util.equals(evi, newEvi, Pri.EPSILON)) {
+//                rawTruth = rawTruth.withEvi(newEvi);
+//            }
+//
+//        }
+//
 
         Truth cTruth = rawTruth.dither(nar);
         if (cTruth == null)

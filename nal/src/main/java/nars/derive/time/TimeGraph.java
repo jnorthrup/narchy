@@ -12,6 +12,7 @@ import jcog.data.graph.hgraph.Search;
 import jcog.list.FasterList;
 import nars.$;
 import nars.Op;
+import nars.Param;
 import nars.Task;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -49,6 +50,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
     private static final boolean allowSelfLoops = true;
+    private static final boolean dternalAsZero = true;
 
     public static class TimeSpan {
         public final long dt;
@@ -61,8 +63,12 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
         public static TimeSpan the(long dt) {
             assert (dt != TIMELESS);
-            assert (dt != XTERNAL);
-//            assert (dt != ETERNAL);
+            if (Param.DEBUG_EXTRA) {
+                if (dt == XTERNAL) //TEMPORARY
+                    throw new RuntimeException("probably meant to use XTERNAL");
+                if (dt == DTERNAL) //TEMPORARY
+                    throw new RuntimeException("probably meant to use ETERNAL");
+            }
 
             if (dt == 0) {
                 return TS_ZERO;
@@ -180,6 +186,9 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
             if (x.hashCode() > y.hashCode()) { //TODO write real comparator
                 swap = true;
+            } else {
+                if (dt == 0 && x.id.unneg().equals(y.id.unneg()))
+                    return; //throw new RuntimeException("instantaneous self loop");
             }
         } else if (vc > 0) {
             swap = true;
@@ -207,7 +216,11 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 //        if (!tRoot.equals(eventTerm))
 //            byTerm.put(tRoot, event);
 
-        int eventDT = eventTerm.dt();
+        int edt = eventTerm.dt(), eventDT;
+        if (dternalAsZero && edt == DTERNAL)
+            eventDT = 0;
+        else
+            eventDT = edt;
 
         switch (eventTerm.op()) {
 //            case NEG:
@@ -535,11 +548,14 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
      * ex: dithering
      */
     protected Term dt(Term x, int dt) {
+        if (dt == DTERNAL) {
+            return x.dt(DTERNAL);
+        }
 
         //CONSTRUCT NEW TERM
         Term y;
         if (x.op() != CONJ) {
-            y = x.dt((dt != XTERNAL && dt != DTERNAL) ? dt - x.sub(0).dtRange() : dt); //IMPL
+            y = x.dt(dt != XTERNAL ? dt - x.sub(0).dtRange() : dt); //IMPL
         } else {
             int early = Op.conjEarlyLate(x, true);
             if (early == 1)
@@ -841,7 +857,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                         //compute from one end to the other, summing dt in the correct direction along the way
                         //special handling for encountered absolute terms and DTERNAL
 
-                        dt = pathTime(path, true);
+                        dt = pathTime(path, false);
                     }
                     if (dt == TIMELESS)
                         return null;

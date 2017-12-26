@@ -15,6 +15,7 @@ import spacegraph.phys.util.AnimVector2f;
 import spacegraph.phys.util.AnimVector3f;
 import spacegraph.phys.util.Animated;
 
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -68,17 +69,19 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
         return window.gl();
     }
 
-    final Map<String,Pair<Object,Runnable>> singletons = new HashMap();
+    final Map<String, Pair<Object, Runnable>> singletons = new HashMap();
 
 
-    @Override public synchronized Object the(String key) {
+    @Override
+    public synchronized Object the(String key) {
         synchronized (singletons) {
             Pair<Object, Runnable> x = singletons.get(key);
             return x == null ? null : x.getOne();
         }
     }
 
-    @Override public void the(String key, Object added, Runnable onRemove) {
+    @Override
+    public void the(String key, Object added, Runnable onRemove) {
         synchronized (singletons) {
 
             Pair<Object, Runnable> removed = null;
@@ -140,19 +143,50 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
 
 
     float zoomMargin = 0.25f;
+    final ArrayDeque<RectFloat2D> zoomStack = new ArrayDeque();
+    static final int ZOOM_STACK_MAX = 8; //FOR safety
 
     @Override
-    public synchronized void zoom(float x, float y, float sx, float sy) {
+    public void zoom(float x, float y, float sx, float sy) {
 
-        cam.set(x, y);
-        float s = Math.max(sx,sy) * (1 + zoomMargin);
-        scale.set(W/s, H/s);
+        synchronized (zoomStack) {
+
+
+            cam.set(x, y);
+            float s0 = Math.max(sx, sy) * (1 + zoomMargin);
+            scale(W / s0, H / s0);
+
+            float s = scale.x;
+            RectFloat2D nextZoom = new RectFloat2D(cam.x - s / 2, cam.y - s / 2, cam.x + s / 2, cam.y + s / 2);
+
+            ///if (!zoomStack.isEmpty()) {
+//                if (!zoomStack.getLast().contains(nextZoom)) {
+//                    zoomStack.clear();
+/*                } else */ if (zoomStack.size() > ZOOM_STACK_MAX) {
+                    zoomStack.removeFirst();
+                }
+            //}
+            zoomStack.addLast(nextZoom);
+
+        }
 
     }
 
     @Override
+    public void unzoom() {
+        synchronized (zoomStack) {
+            if (!zoomStack.isEmpty()) {
+                RectFloat2D z = zoomStack.removeLast();
+                scale(z.w(), z.h());
+                cam.set((float) z.center(0), (float) z.center(1));
+            }
+        }
+    }
+
+    @Override
     public Ortho scale(float sx, float sy) {
-        scale.set(sx, sy);
+        float s = Math.max(sx, sy);
+        scale.set(s, s);
         return this;
     }
 
@@ -274,8 +308,8 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
             float sx = e.getX();
             float sy = H - e.getY();
 
-            wmx = +cam.x + (-0.5f*W + sx)/scale.x;
-            wmy = +cam.y + (-0.5f*H + sy)/scale.x;
+            wmx = +cam.x + (-0.5f * W + sx) / scale.x;
+            wmy = +cam.y + (-0.5f * H + sy) / scale.x;
 
             updateMouse(e, sx, sy, buttonsDown);
             return true;
@@ -308,7 +342,7 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
         //if (lx >= 0 && ly >= 0 && lx <= 1f && ly <= 1f) {
         if ((s = finger.on(sx, sy, wmx, wmy, buttonsDown)) != null) {
             log("on", s);
-            if (e!=null)
+            if (e != null)
                 e.setConsumed(true);
             return s;
         } else {
@@ -324,7 +358,7 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
         //float sy = scale.y;
         gl.glTranslatef(W / 2f, H / 2f, 0);
         gl.glScalef(sx, sx, 1);
-        gl.glTranslatef(-cam.x, -cam.y , 0);
+        gl.glTranslatef(-cam.x, -cam.y, 0);
         //gl.glTranslatef((sx) * -cam.x, sy * -cam.y, 0);
 
         surface.render(gl, dtMS);
@@ -334,7 +368,7 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
 
         surface.pos(0, 0, W, H);
 
-        scale.set(1, 1);
+        scale(1, 1);
         cam.set(W / 2f, H / 2f);
 
         layout();
