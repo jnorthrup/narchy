@@ -380,11 +380,11 @@ public class Focus {
 
 
         this.revaluator =
-                //new DefaultRevaluator();
-                new AERevaluator(nar.random());
+                new DefaultRevaluator();
+                //new AERevaluator(nar.random());
         //new RBMRevaluator(nar.random());
 
-        n.serviceAddOrRemove.on((xa) -> {
+        n.services.serviceAddOrRemove.on((xa) -> {
             Services.Service<NAR> x = xa.getOne();
             if (x instanceof Causable) {
                 Causable c = (Causable) x;

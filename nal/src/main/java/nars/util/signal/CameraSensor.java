@@ -11,6 +11,7 @@ import nars.control.CauseChannel;
 import nars.task.ITask;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +37,7 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
     public final List<PixelConcept> pixels;
     public final CauseChannel<ITask> in;
     public final Term root;
+    private final Int2Function<Term> pixelTerm;
 
     float resolution = 0.01f;//Param.TRUTH_EPSILON;
 
@@ -68,11 +70,11 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
         this.in = n.newCauseChannel(this);
 
 
+        pixelTerm = RadixProduct(root, w, h, RADIX);
         pixels = encode(
-                RadixProduct(root, w, h, RADIX)
                 //RadixRecurse(root, w, h, RADIX)
                 //InhRecurse(root, w, h, RADIX)
-                , n);
+                n);
 
         lastUpdate = n.time();
     }
@@ -167,13 +169,13 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
     }
 
 
-    public List<PixelConcept> encode(Int2Function<Term> cellTerm, NAR nar) {
+    public List<PixelConcept> encode( NAR nar) {
         List<PixelConcept> l = $.newArrayList();
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
 
                 //TODO support multiple coordinate termizations
-                Term cell = cellTerm.get(x, y);
+                Term cell = pixelTerm.get(x, y);
 
 
                 PixelConcept sss = new PixelConcept(cell, x, y, nar);
@@ -319,7 +321,7 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
 
     public class PixelConcept extends SensorConcept {
 
-//        //private final int x, y;
+        private final int x, y;
         //private final TermContainer templates;
 
         PixelConcept(Term cell, int x, int y, NAR nar) {
@@ -328,8 +330,8 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
             this.resolution = () -> CameraSensor.this.resolution;
             sensor.pri(pixelPri);
 
-            //            this.x = x;
-//            this.y = y;
+            this.x = x;
+            this.y = y;
 
             //                List<Term> s = $.newArrayList(4);
 //                //int extraSize = subs.size() + 4;
@@ -341,17 +343,23 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
 //
 //                return TermVector.the(s);
 
-            //this.templates = new PixelNeighborsXYRandom(x, y, w, h, 1);
+//            this.templates = new PixelNeighborsXYRandom(x, y, w, h, 1);
         }
 
+        @Override
+        protected List<Termed> buildTemplates(Term term) {
+            List<Termed> l = super.buildTemplates(term);
+            for (int i = x - 1; i <= x + 1; i++) {
+                for (int j = y - 1; j <= y + 1; j++) {
+                    if (i == x && j == y) continue;
+                    if (i < 0 || j < 0 || i >= w || j >= h) continue;
+                    l.add(pixelTerm.get(i, j));
+                }
+            }
+            return l;
+        }
 
-        //        @Override
-//        public TermContainer templates() {
-//            return templates;
-//        }
-
-
-        //        @Override
+//        @Override
 //        protected LongSupplier update(Truth currentBelief, @NotNull NAR nar) {
 //            return ()->nextStamp;
 //        }

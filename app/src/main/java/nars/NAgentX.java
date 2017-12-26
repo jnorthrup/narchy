@@ -1,22 +1,18 @@
 package nars;
 
-import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.constraint.continuous.C;
 import jcog.exe.Loop;
 import jcog.list.FasterList;
 import jcog.math.FloatFirstOrderDifference;
-import jcog.math.FloatParam;
 import jcog.math.FloatPolarNormalized;
 import jcog.pri.mix.control.MixContRL;
 import nars.control.*;
 import nars.exe.MultiExec;
+import nars.gui.ExecCharts;
 import nars.gui.Vis;
 import nars.gui.graph.EdgeDirected;
 import nars.gui.graph.run.SimpleConceptGraph1;
 import nars.index.term.map.CaffeineIndex;
-import nars.op.Anoncepts;
-import nars.op.Implier;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.op.video.*;
@@ -40,40 +36,34 @@ import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunctio
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.AspectAlign;
 import spacegraph.Ortho;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.layout.Grid;
-import spacegraph.layout.VSplit;
-import spacegraph.render.Draw;
-import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.ConsoleTerminal;
 import spacegraph.widget.meta.WindowToggleButton;
-import spacegraph.widget.meter.BitmapMatrixView;
 import spacegraph.widget.meter.Plot2D;
 import spacegraph.widget.meter.TreeChart;
-import spacegraph.widget.slider.BaseSlider;
-import spacegraph.widget.slider.FloatSlider;
+import spacegraph.widget.tab.TabPane;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.LinkedHashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 import static nars.$.$;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
+import static nars.gui.Vis.bagHistogram;
 import static nars.gui.Vis.reflect;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.layout.Grid.*;
@@ -197,7 +187,7 @@ abstract public class NAgentX extends NAgent {
 
         //n.defaultWants();
 
-        n.conceptActivation.set(0.05f);
+        n.conceptActivation.set(0.75f);
 
         n.dtMergeOrChoose.set(true);
         n.dtDither.set(
@@ -367,58 +357,21 @@ abstract public class NAgentX extends NAgent {
 
 //            window(new ConceptView(a.happy,n), 800, 600);
 
-            window(new Vis.EmotionPlot(64, a), 500, 500);
 
-            window(grid(Vis.reflect(n)), 700, 600);
-
-            Surface exePanel = row(
-                    Vis.reflect(n.loop)
-            );
-
-
-            window(
-                    new VSplit(exePanel,
-                            col(
-                                    //metaGoalChart(a),
-                                    row(
-                                            metaGoalPlot(a),
-                                            metaGoalControls(n)
-                                    )),
-                            0.9f), 800, 800);
+            window(new TabPane(Map.of(
+                "nar", ()->Vis.reflect(n),
+                "exe", ()-> ExecCharts.exePanel(n),
+                "emote", ()-> new Vis.EmotionPlot(64, a),
+                "concepts", ()-> bagHistogram((Iterable) ()->n.conceptsActive().iterator(), 8)
+            )), 800, 800);
+//            window(
+//                    ExecCharts.exePanel(n, a), 800, 800);
 
         });
 
         return n;
     }
 
-    private static Surface metaGoalControls(NAR n) {
-        CheckBox auto = new CheckBox("Auto");
-        //auto.set(true);
-
-        Grid g = grid(
-                Stream.concat(
-                        Stream.of(auto),
-                        IntStream.range(0, n.want.length).mapToObj(
-                                w -> new FloatSlider(n.want[w], -2f, +2f) {
-
-                                    @Override
-                                    protected void paintIt(GL2 gl) {
-                                        if (auto.on()) {
-                                            value(n.want[w]);
-                                        }
-                                        super.paintIt(gl);
-                                    }
-                                }
-                                        .text(MetaGoal.values()[w].name())
-                                        .type(BaseSlider.Knob)
-                                        .on((s, v) -> {
-                                            if (!auto.on())
-                                                n.want[w] = v;
-                                        })
-                        )).toArray(Surface[]::new));
-
-        return g;
-    }
 
     /**
      * increments/decrements within a finite set of powers-of-two so that harmonics
@@ -490,7 +443,7 @@ abstract public class NAgentX extends NAgent {
         }
 
         @Override
-        public int compareTo(@NotNull IntObjectPair<StepController> o) {
+        public int compareTo(IntObjectPair<StepController> o) {
             throw new UnsupportedOperationException();
         }
     }
@@ -566,38 +519,8 @@ abstract public class NAgentX extends NAgent {
         };
     }
 
-    private static Surface metaGoalPlot(NAgent a) {
-        NAR nar = a.nar;
 
-        int s = nar.causes.size();
-
-        FloatParam gain = new FloatParam(20f, 0f, 20f);
-
-        BitmapMatrixView bmp = new BitmapMatrixView((i) ->
-                Util.tanhFast(
-                        gain.floatValue() * nar.causes.get(i).value()
-                ),
-                //Util.tanhFast(nar.causes.get(i).value()),
-                s, Math.max(1, (int) Math.ceil(Math.sqrt(s))),
-                Draw::colorBipolar) {
-
-            final DurService on;
-
-            {
-                on = a.onFrame(this::update);
-            }
-
-            @Override
-            public void stop() {
-                super.stop();
-                on.off();
-            }
-        };
-
-        return new VSplit(bmp, Vis.reflect(gain), 0.1f);
-    }
-
-//    public static class NARSView extends Grid {
+    //    public static class NARSView extends Grid {
 //
 //
 //        public NARSView(NAR n, NAgent a) {
@@ -698,12 +621,14 @@ abstract public class NAgentX extends NAgent {
                             ).forEach(Task::delete);
                         });
                     }),
-                    new WindowToggleButton("top", () -> (new ConsoleTerminal(new nars.TextUI(nar).session(20f)))),
+
+                    new WindowToggleButton("top", () -> new ConsoleTerminal(new nars.TextUI(nar).session(10f))),
+
                     new WindowToggleButton("concept graph", () -> {
                         SimpleConceptGraph1 sg;
                         SpaceGraph s = new SpaceGraph<>(
                                 sg = new SimpleConceptGraph1(nar,
-                                        128, 8)
+                                        64, 8)
                         );
                         EdgeDirected fd = new EdgeDirected();
                         s.dyn.addBroadConstraint(fd);

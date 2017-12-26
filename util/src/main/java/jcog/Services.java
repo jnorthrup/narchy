@@ -225,7 +225,7 @@ public class Services<X, C>  {
 
 //    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Services.class);
 
-    protected final ConcurrentMap<X, Service<C>> services;
+    public final ConcurrentMap<X, Service<C>> services;
 
     public Services(C id) {
         this(id, ForkJoinPool.commonPool());
@@ -243,7 +243,7 @@ public class Services<X, C>  {
      * @throws IllegalArgumentException if not all services are {@linkplain ServiceState#NEW new} or if there
      *                                  are any duplicate services.
      */
-    protected Services(@Nullable C id, Executor exe) {
+    public Services(@Nullable C id, Executor exe) {
         this.id = id == null ? (C)this : id;
         this.exe = exe;
         this.services = new ConcurrentHashMap<>();

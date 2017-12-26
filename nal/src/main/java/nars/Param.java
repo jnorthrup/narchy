@@ -27,7 +27,7 @@ import static nars.control.MetaGoal.*;
 /**
  * NAR Parameters
  */
-public abstract class Param extends Services<Term, NAR> {
+public abstract class Param {
 
 
     /**
@@ -548,8 +548,8 @@ public abstract class Param extends Services<Term, NAR> {
     }
 
 
-    Param(Executor exe) {
-        super(null, exe);
+    Param() {
+
         beliefConfidence(0.9f);
         goalConfidence(0.9f);
     }

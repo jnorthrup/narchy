@@ -93,7 +93,7 @@ public enum GoalFunction implements TruthOperator {
     },
 
 
-    //@AllowOverlap
+    @AllowOverlap
     @SinglePremise
     StructuralReduction() {
         @Override
@@ -102,7 +102,7 @@ public enum GoalFunction implements TruthOperator {
         }
     },
 
-    //@AllowOverlap
+    @AllowOverlap
     @SinglePremise
     StructuralDeduction() {
         @Override
@@ -111,7 +111,7 @@ public enum GoalFunction implements TruthOperator {
         }
     },
 
-    //@AllowOverlap
+    @AllowOverlap
     BeliefStructuralDeduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {

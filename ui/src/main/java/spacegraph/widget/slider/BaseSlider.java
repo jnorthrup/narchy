@@ -160,8 +160,10 @@ public class BaseSlider extends Surface {
         float W = 1;
         float H = 1;
         float x = W * p;
-//        gl.glColor4f(0.5f, 0.5f, 0.5f, 0.2f);
-//        Draw.rect(gl, 0, 0, W, H);
+
+        gl.glColor4f(0f, 0f, 0f, 0.5f);
+        Draw.rect(gl, 0, 0, W, H);
+
         gl.glColor4f(1f - p, p, 0f, 0.75f);
         Draw.rect(gl, x-knobWidth/2f, 0, knobWidth, H);
 

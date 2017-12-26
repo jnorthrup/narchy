@@ -2,6 +2,7 @@ package nars;
 
 
 import com.google.common.primitives.Longs;
+import jcog.Services;
 import jcog.Util;
 import jcog.event.ListTopic;
 import jcog.event.On;
@@ -89,6 +90,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     public final transient Topic<NAR> eventCycle = new ListTopic<>();
     public final transient Topic<Task> eventTask = new ListTopic<>();
 
+    public final Services<Term, NAR> services;
+
     public final Emotion emotion;
 
     public final Time time;
@@ -107,7 +110,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
 
     public NAR(@NotNull TermIndex concepts, @NotNull Exec exe, @NotNull Time time, @NotNull Random rng, @NotNull ConceptBuilder conceptBuilder) {
-        super(exe);
 
         this.random = rng;
 
@@ -117,6 +119,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         time.reset();
 
         this.exe = exe;
+        services = new Services(this, exe);
 
         this.emotion = new Emotion(this);
 
@@ -619,7 +622,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      * asynchronously adds the service
      */
     public void on(NARService s) {
-        runLater(() -> add(s.term(), s));
+        runLater(() -> services.add(s.term(), s));
     }
 
     /**
@@ -783,7 +786,6 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     /**
      * Exits an iteration loop if running
      */
-    @Override
     public NAR stop() {
 
         synchronized (exe) {
@@ -792,7 +794,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
             time.synch(this);
 
-            super.stop();
+            services.stop();
 
             exe.stop();
         }
@@ -1521,8 +1523,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         return c;
     }
 
-    public Stream<Service<NAR>> services() {
-        return services.values().stream();
+    public Stream<Services.Service<NAR>> services() {
+        return services.stream();
     }
 
 

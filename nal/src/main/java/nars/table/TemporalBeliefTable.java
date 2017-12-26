@@ -82,8 +82,8 @@ public interface TemporalBeliefTable extends TaskTable {
     TemporalBeliefTable Empty = new TemporalBeliefTable() {
 
         @Override
-        public void add(Task t, TaskConcept c, NAR n) {
-
+        public boolean add(Task t, TaskConcept c, NAR n) {
+            return false;
         }
 
         @Override

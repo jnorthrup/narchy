@@ -691,6 +691,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         @Override
         public List<Termed> templates() {
             List<Termed> superTemplates = super.templates();
+            //HACK
             if (templatesPlusActions == null || templatesPlusActions.size() != (superTemplates.size() + actions.size())) {
                 List<Termed> l = $.newArrayList(superTemplates.size() + actions.size());
                 l.addAll(superTemplates);

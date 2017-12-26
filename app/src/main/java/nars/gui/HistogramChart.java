@@ -55,6 +55,13 @@ public class HistogramChart extends Surface {
 
     @Override
     protected void paint(GL2 gl, int dtMS) {
+        Draw.bounds(gl, this, this::paintUnit);
+    }
+
+    protected void paintUnit(GL2 gl) {
+
+        gl.glColor4f(0f, 0f, 0f, 0.5f);
+        Draw.rect(gl, 0, 0, 1, 1);
 
         float[] data = this.data.get();
 

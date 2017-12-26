@@ -53,8 +53,8 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         }
 
         @Override
-        public void add(/*@NotNull*/ Task input, TaskConcept c, /*@NotNull*/ NAR nar) {
-            //nothing
+        public boolean add(/*@NotNull*/ Task input, TaskConcept c, /*@NotNull*/ NAR nar) {
+            return false;
         }
 
 
@@ -355,14 +355,14 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     }
 
     @Override
-    public void add(/*@NotNull*/ Task input, TaskConcept c, /*@NotNull*/ NAR nar) {
+    public boolean add(/*@NotNull*/ Task input, TaskConcept c, /*@NotNull*/ NAR nar) {
 
         int cap = capacity();
         if (cap == 0) {
             //may be deleted already
             /*if (input.isInput())
                 throw new RuntimeException("input task rejected (0 capacity): " + input + " "+ this + " " + this.capacity());*/
-            return;
+            return false;
         }
 
         Task activated;
@@ -384,7 +384,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                     if (input.isInput()) {
                         activated = input;
                     } else {
-                        return; //so ignore if derived
+                        return false; //so ignore if derived
                     }
                 } else if (revised.equals(input)) { //HACK todo avoid this duplcate equals which is already known from tryRevision
 
@@ -432,6 +432,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
         if (activated != null)
             Tasklinks.linkTask(activated, iPri, c, nar);
+        return true;
     }
 
 

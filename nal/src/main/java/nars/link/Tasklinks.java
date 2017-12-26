@@ -119,10 +119,10 @@ public class Tasklinks {
             float rate;
             if (t.isBeliefOrGoal()) {
                 //decrease rate in proximity to now or the future
-                if (t.isEternal() || t.isBefore(now - dur))
-                    rate = 1f;
+                if (t.isEternal() || !t.isBefore(now - dur))
+                    rate = 0.5f; //slower forget
                 else {
-                    rate = 0.5f;
+                    rate = 1f; //full forget
                 }
             } else {
                 rate = 1f; //full forget

@@ -2,7 +2,6 @@ package nars.gui;
 
 import com.google.common.collect.Lists;
 import com.jogamp.opengl.GL2;
-import jcog.bag.Bag;
 import jcog.pri.PriReference;
 import nars.$;
 import nars.NAR;
@@ -12,8 +11,6 @@ import nars.control.DurService;
 import nars.term.Termed;
 import nars.truth.Truth;
 import spacegraph.Surface;
-import spacegraph.audio.AudioSource;
-import spacegraph.audio.WaveCapture;
 import spacegraph.layout.Grid;
 import spacegraph.layout.Stacking;
 import spacegraph.math.Color3f;
@@ -21,7 +18,6 @@ import spacegraph.widget.console.ConsoleTerminal;
 import spacegraph.widget.console.TextEdit;
 import spacegraph.widget.meta.ReflectionSurface;
 import spacegraph.widget.meter.Plot2D;
-import spacegraph.widget.slider.FloatSlider;
 import spacegraph.widget.text.Label;
 import spacegraph.widget.text.LabeledPane;
 
@@ -94,7 +90,7 @@ public class Vis {
         return col(
                 Vis.pane("Concept Priority Distribution (0..1)",
                         new HistogramChart(
-                                () -> Bag.histogram(bag, d),
+                                () -> PriReference.histogram(bag, d),
                                 new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f))
                 )
 //                Vis.pane("Concept Volume",

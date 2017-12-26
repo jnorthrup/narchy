@@ -16,10 +16,10 @@ public interface TaskTable  {
     /**
      * attempt to insert a task.
      *
-     * @return: the input task itself, it it was added to the table
-     * an existing equivalent task if this was a duplicate
+     * @return: whether the table was possibly modified.  if async or unsure, return
+     * true to be safe
      */
-    void add(Task t, TaskConcept c, NAR n);
+    boolean add(Task t, TaskConcept c, NAR n);
 
 
     int capacity();

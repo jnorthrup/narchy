@@ -75,8 +75,8 @@ public interface BeliefTable extends TaskTable {
 
 
         @Override
-        public void add(/*@NotNull*/ Task input, TaskConcept concept, /*@NotNull*/ NAR nar) {
-
+        public boolean add(/*@NotNull*/ Task input, TaskConcept concept, /*@NotNull*/ NAR nar) {
+            return false;
         }
 
         @Override
@@ -135,7 +135,7 @@ public interface BeliefTable extends TaskTable {
      * attempt to insert a task; returns what was input or null if nothing changed (rejected)
      */
     @Override
-    void add(/*@NotNull*/ Task input, TaskConcept concept, /*@NotNull*/ NAR nar);
+    boolean add(/*@NotNull*/ Task input, TaskConcept concept, /*@NotNull*/ NAR nar);
 
 
 

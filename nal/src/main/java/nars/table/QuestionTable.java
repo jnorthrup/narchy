@@ -37,8 +37,8 @@ public interface QuestionTable extends TaskTable {
         }
 
         @Override
-        public void add(/*@NotNull*/ Task t, TaskConcept c, NAR n) {
-
+        public boolean add(/*@NotNull*/ Task t, TaskConcept c, NAR n) {
+            return false;
         }
 
 
@@ -99,7 +99,7 @@ public interface QuestionTable extends TaskTable {
         }
 
         @Override
-        public void add(/*@NotNull*/ Task t, TaskConcept c, NAR n) {
+        public boolean add(/*@NotNull*/ Task t, TaskConcept c, NAR n) {
             Task u;
             float tPri = t.priElseZero();
 
@@ -109,10 +109,13 @@ public interface QuestionTable extends TaskTable {
                     return prev;
                 });
             }
+            Tasklinks.linkTask(u, tPri, c, n);
             if (u != t) {
                 t.delete();
+                return false;
+            } else {
+                return true;
             }
-            Tasklinks.linkTask(u, tPri, c, n);
         }
 
         @Override

@@ -150,15 +150,6 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
     public void zoom(float x, float y, float sx, float sy) {
 
         synchronized (zoomStack) {
-
-
-            cam.set(x, y);
-            float s0 = Math.max(sx, sy) * (1 + zoomMargin);
-            scale(W / s0, H / s0);
-
-            float s = scale.x;
-            RectFloat2D nextZoom = new RectFloat2D(cam.x - s / 2, cam.y - s / 2, cam.x + s / 2, cam.y + s / 2);
-
             ///if (!zoomStack.isEmpty()) {
 //                if (!zoomStack.getLast().contains(nextZoom)) {
 //                    zoomStack.clear();
@@ -166,7 +157,15 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
                     zoomStack.removeFirst();
                 }
             //}
-            zoomStack.addLast(nextZoom);
+            float s = scale.x;
+            RectFloat2D curZoom = new RectFloat2D(cam.x - s / 2, cam.y - s / 2, cam.x + s / 2, cam.y + s / 2);
+            zoomStack.addLast(curZoom);
+
+
+
+            cam.set(x, y);
+            float s0 = Math.max(sx, sy) * (1 + zoomMargin);
+            scale(W / s0, H / s0);
 
         }
 

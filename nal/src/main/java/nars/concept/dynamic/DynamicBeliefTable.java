@@ -42,7 +42,7 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
     }
 
     @Override
-    public void add(Task input, TaskConcept concept, NAR nar) {
+    public boolean add(Task input, TaskConcept concept, NAR nar) {
 
         if (!input.isInput()) {
 
@@ -58,14 +58,14 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
 
                     if (PredictionFeedback.absorb(matched, input, start, end, nar)) {
                         Tasklinks.linkTask(matched, matched.priElseZero(), concept, nar);
-                        return;
+                        return false;
                     }
 
                 }
             }
         }
 
-        super.add(input, concept, nar);
+        return super.add(input, concept, nar);
     }
 
     @Nullable

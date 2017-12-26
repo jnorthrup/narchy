@@ -45,7 +45,7 @@ public class NARService extends Services.AbstractService<NAR> implements Termed 
     @Override
     protected final synchronized void stop(NAR nar) {
         stopping(nar);
-        nar.remove(this.id);
+        nar.services.remove(this.id);
     }
 
     protected void stopping(NAR nar) {

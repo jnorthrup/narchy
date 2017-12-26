@@ -1,6 +1,5 @@
 package nars.table;
 
-import com.google.common.collect.Iterators;
 import jcog.list.FasterList;
 import jcog.math.CachedFloatFunction;
 import jcog.sort.Top;
@@ -14,7 +13,6 @@ import nars.concept.TaskConcept;
 import nars.link.Tasklinks;
 import nars.task.NALTask;
 import nars.task.Revision;
-import nars.task.Tasked;
 import nars.task.signal.SignalTask;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeRange;
@@ -24,7 +22,6 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -315,9 +312,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     @Override
-    public void add(Task x, TaskConcept c, NAR n) {
+    public boolean add(Task x, TaskConcept c, NAR n) {
 
         assert (capacity > 0);
+
+        float incoming = x.priElseZero();
 
         List<Task> added = new FasterList<>(2);
         write(treeRW -> {
@@ -342,10 +341,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (x.isDeleted()) {
             Task xisting = x.meta("merge");
             if (xisting != null) {
-                float incoming = x.priElseZero();
                 Tasklinks.linkTask(xisting, incoming, c, n); //use incoming priority but the existing task instance
             }
+            return false;
+        } else {
+            return true;
         }
+
     }
 
     boolean ensureCapacity(Space<TaskRegion> treeRW, @Nullable Task inputRegion, Consumer<Task> added, NAR nar) {
