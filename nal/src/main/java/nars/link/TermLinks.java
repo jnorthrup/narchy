@@ -65,19 +65,16 @@ public enum TermLinks {
 
         Term x = _x;
 
-//        switch (o) {
-//            case VAR_QUERY:
-//            case VAR_DEP:
-//            case VAR_INDEP:
-//                //return; //NO
-//                break; //YES
-//
-//        }
+        Op o = x.op();
+        switch (o) {
+            case VAR_QUERY:
+                return; //NO
+        }
 
         if ((depth > 0 || selfTermLink(x)) && !(tc.add(x)))
             return; //already added
 
-        Op o = x.op();
+
         if ((++depth >= maxDepth) || !o.conceptualizable)
             return;
 

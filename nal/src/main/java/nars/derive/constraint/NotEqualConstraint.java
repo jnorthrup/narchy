@@ -24,7 +24,7 @@ public final class NotEqualConstraint extends MatchConstraint {
         return canNotEqual!=null &&
                 //Terms.equalAtemporally(y, canNotEqual);
                 //y.equals(canNotEqual);
-                y.equals(canNotEqual);
+                y.equalsRoot(canNotEqual);
     }
 
 

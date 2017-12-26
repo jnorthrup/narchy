@@ -654,7 +654,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
         Task forward = meta("@");
         long s, e;
-        if (forward == null || (forward != answer && forward.conf(s = start(), e = end(), nar.dur()) < answer.conf(s, e))) {
+        int dur = nar.dur();
+        if (forward == null || (forward != answer && forward.conf(s = start(), e = end(), dur) < answer.conf(s, e, dur))) {
             meta("@", answer); //forward to the top answer if this ever gets deleted
         }
 

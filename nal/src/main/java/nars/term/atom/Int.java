@@ -3,6 +3,8 @@ package nars.term.atom;
 import com.google.common.collect.*;
 import jcog.TODO;
 import jcog.Util;
+import jcog.data.SimpleIntSet;
+import jcog.list.FasterList;
 import jcog.math.Interval;
 import nars.$;
 import nars.Op;
@@ -13,16 +15,17 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.sub.TermMetadata;
 import org.eclipse.collections.api.list.primitive.ByteList;
-import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.impl.set.mutable.primitive.ByteHashSet;
-import org.eclipse.collections.impl.tuple.Tuples;
+import org.eclipse.collections.api.list.primitive.ImmutableByteList;
 import org.jetbrains.annotations.Nullable;
+import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
+import java.util.function.IntConsumer;
 
 import static com.google.common.collect.BoundType.OPEN;
 import static nars.Op.INT;
 import static nars.Op.Null;
+import static nars.term.Terms.sorted;
 
 /**
  * 32-bit signed integer
@@ -113,7 +116,7 @@ public class Int implements Intlike {
 
     @Override
     public int hashCode() {
-        return (id+1) * 31;
+        return (id + 1) * 31;
     }
 
     @Override
@@ -121,7 +124,7 @@ public class Int implements Intlike {
         if (this == obj) return true;
         if (id >= Param.MAX_INTERNED_INTS && obj instanceof Int) { //dont need to check if this is an interned Int
             Int o = (Int) obj;
-            if ((id == o.id) && (o.op()==INT)) //HACK check for op because Anom extends Int
+            if ((id == o.id) && (o.op() == INT)) //HACK check for op because Anom extends Int
                 return true;
         }
         return false;
@@ -158,6 +161,10 @@ public class Int implements Intlike {
         return range(span.lowerEndpoint(), span.upperEndpoint() - ((span.upperBoundType() == OPEN ? 1 : 0)));
     }
 
+    @Override
+    public void forEachInt(IntConsumer c) {
+        c.accept(id);
+    }
 
     /**
      * a contiguous range of 1 or more integers
@@ -184,6 +191,13 @@ public class Int implements Intlike {
             Util.int2Bytes(min, b, 2);
             Util.int2Bytes(min, b, 6);
             this.bytesCached = b;
+        }
+
+        @Override
+        public void forEachInt(IntConsumer c) {
+            for (int i = min; i <= max; i++) {
+                c.accept(i);
+            }
         }
 
         @Override
@@ -281,15 +295,15 @@ public class Int implements Intlike {
                     if (Param.DEBUG)
                         throw new TODO();
                 }
-            } else if (b.op()==INT) {
+            } else if (b.op() == INT) {
                 Int bb = (Int) b;
                 int bbi = bb.id;
                 if (min == bbi) {
-                    return Int.range(min+1, max);
+                    return Int.range(min + 1, max);
                 } else if (max == bbi) {
-                    return Int.range(min, max-1);
+                    return Int.range(min, max - 1);
                 } else if (min < bbi && bbi < max) {
-                    return Op.SECTe.the(Int.range(min, bbi-1), Int.range(bbi+1, max));
+                    return Op.SECTe.the(Int.range(min, bbi - 1), Int.range(bbi + 1, max));
                 }
             }
             return Null;
@@ -303,7 +317,7 @@ public class Int implements Intlike {
                 IntRange bb = (IntRange) b;
                 if (connects(bb))
                     return Int.range(range().intersection(bb.range()));
-            } else if (b.op()==INT) {
+            } else if (b.op() == INT) {
                 if (intersects((Int) b))
                     return b;
             }
@@ -346,170 +360,320 @@ public class Int implements Intlike {
 //
 //    }
 
-    public static Term[] intersect(final Term... subs) {
+    /**
+     * TODO permute other arrangements
+     */
+    public static Term[] intersect(final Term... _subs) {
 
-        if (subs.length < 2)
-            return subs;
 
+        RoaringBitmap factoring = new RoaringBitmap();
 
-        int equalVolume = Integer.MAX_VALUE, equalStructure = Integer.MAX_VALUE;
-        for (int i = 0, subsLength = subs.length; i < subsLength; i++) {
-            Term x = subs[i];
+        int equalVolume = -1, equalStructure = -1;
+        int pureInts = 0;
+        for (int i = 0, subsLength = _subs.length; i < subsLength; i++) {
+            Term x = _subs[i];
             if (!x.hasAny(Op.INT)) {
-                return subs; //a term without integer
+                continue;
             }
-            int xVol = x.volume();
-            if (i == 0) equalVolume = xVol;
-            else if (xVol!=equalVolume) return subs; //a term with non-matching volume
+            if (x.op() == INT)
+                pureInts++;
 
-            int xStruct = x.structure();
-            if (i == 0) equalStructure = x.structure();
-            else if (xStruct!=equalStructure) return subs; //a term with non-matching volume
+            if (equalVolume != -1) {
+                if (x.volume() != equalVolume) {
+                    continue; //a term with non-matching volume
+                }
+            }
+
+            if (equalStructure != -1) {
+                if (x.structure() != equalStructure) {
+                    continue;
+                }
+            }
+
+            equalVolume = x.volume();
+            equalStructure = x.structure();
+            factoring.add(i);
         }
 
-        //paths * extracted sequence of numbers at given path for each subterm
-        Map<ByteList, Pair<ByteHashSet, List<Term>>> data = new HashMap();
+        int ff = factoring.getCardinality();
+        if (ff < 2)
+            return sorted(_subs);
 
 
-        //analyze subtermss
-        final int[] i = {0};
 
-        //if a subterm is not an integer, check for equality of atoms (structure already compared abovec)
-        final boolean[] valid = {true};
-        subs[0].pathsTo(x -> x.op() != INT ? x : null, d -> true, (p, t) -> {
-            if (p.size()>0 && !t.hasAny(INT)) {
-                //of course the root term will be unique
-                //and we expect differences but only in the INT
-                for (int others = 1; others < subs.length; others++) {
-                    if (!subs[others].subPath(p).equals(t)) {
-                        valid[0] = false;
-                        return false;
+        Term[] subs;
+        if (ff < _subs.length) {
+            subs = new Term[ff];
+            int j = 0;
+            for (int i = 0; i < _subs.length; i++) {
+                if (factoring.contains(i))
+                    subs[j++] = _subs[i];
+            }
+            assert (j == ff);
+        } else {
+            subs = _subs;
+        }
+
+       if (subs.length == 3) {
+            Term[] rr;
+            //HACK try permutations to combine some but not all
+            Term[] ab = intersect(subs[0], subs[1]);
+            if (ab.length==1) {
+                rr = intersect(ab[0], subs[2]);
+            } else {
+                Term[] bc = intersect(subs[1], subs[2]);
+                if (bc.length==1) {
+                    rr = intersect(bc[0], subs[0]);
+                } else {
+                    Term[] ac = intersect(subs[0], subs[2]);
+                    if (ac.length == 1) {
+                        rr = intersect(ac[0], subs[1]);
+                    } else {
+                        rr = null;
                     }
                 }
             }
-            return true;
-        });
-        if (!valid[0])
-            return subs;
+            if (rr!=null) {
+                return intersectResult(factoring, ff, new FasterList(rr), _subs);
+            }
+        }        
 
-        //TODO merge this with the previous loop, simplifying everything
+        FasterList<Term> yAux = new FasterList(0);
 
-        for (Term f : subs) {
-//        for (int i = 0; i < subCount; i++) {
-//            /
-//             Term f = subs.term(i);
+        if (pureInts == ff) {
+            //avoid the path stuff, just merge the int terms
+            SimpleIntSet s = new SimpleIntSet(ff);
+            for (Term x : subs) {
+                ((Intlike)x).forEachInt(s::add);
+            }
+            int ns = s.size();
+            assert(ns > 1);
+            if (ns ==2) {
+                //simple case
+                Iterator<Integer> si = s.iterator();
+                int a = si.next();
+                int b = si.next();
+                if (Math.abs(a-b)>1) {
+                    yAux.add(Int.the(a));
+                    yAux.add(Int.the(b));
+                } else {
+                    if (a > b) {
+                        int c = b;
+                        b = a;
+                        a = c;
+                    }
+                    yAux.add(Int.range(a,b));
+                }
+            } else {
+                features(s.iterator(), -1).forEachRemaining(yAux::add);
+            }
+        } else {
 
+            //paths * extracted sequence of numbers at given path for each subterm
+            Map<ByteList, Object /*SimpleIntSet*/> data = new LinkedHashMap<>(subs.length);
 
+            //if a subterm is not an integer, check for equality of atoms (structure already compared abovec)
+            final boolean[] valid = {true};
+            subs[0].pathsTo(x -> x, d -> true, (p, x) -> {
+                //            if (p.isEmpty())
+                //                return true; //continue past root, of course the root term will be unique
 
-            //first subterm: infer location of all inductables
-            int ii = i[0]++;
+                ImmutableByteList path = null;
+                SimpleIntSet c = null;
+                int xVol = x.volume();
+                int xStruct = x.structure();
+                for (int others = 1; others < subs.length; others++) {
+                    Term y = subs[others].subPath(p);
 
-            f.pathsTo(x -> x.op() == INT ? x : null, d -> d.hasAny(Op.INT), (p, t) -> {
+                    if (x.equals(y)) continue;
 
-                Pair<ByteHashSet, List<Term>> c = data.computeIfAbsent(
-                        p.toImmutable(),
-                        (pp) ->
-                                Tuples.pair(new ByteHashSet(1), $.newArrayList(1)));
-                c.getOne().add((byte) ii);
-                c.getTwo().add(t);
+                    if (!x.hasAny(INT)) {
+                        //and we expect differences but only in the INT
+                        if (!y.equals(x)) {
+                            valid[0] = false;
+                            return false;
+                        }
+                    } else if (x.op() == INT) {
+                        if (y.op() != INT) {
+                            valid[0] = false;
+                            return false;
+                        }
+                        if (path == null) path = p.toImmutable();
 
+                        //store the path to the integer(s)
+                        if (c == null)
+                            c = (SimpleIntSet) data.computeIfAbsent(path, (pp) -> new SimpleIntSet(2));
+                        ((Intlike) y).forEachInt(c::add);
+                    } else {
+                        //this is a term containing an INT but is not an INT; the structure must still match
+                        if (xVol != y.volume() || xStruct != y.structure()) {
+                            valid[0] = false;
+                            return false;
+                        }
+                    }
+                }
+                if (x.op() == INT) {
+                    if (c == null) {
+                        if (path == null) path = p.toImmutable();
+                        data.put(path, c = new SimpleIntSet(1));
+                    }
+                    ((Intlike) x).forEachInt(c::add);
+                }
 
                 return true;
             });
-
-        }
-
-        Set<Term> result = new TreeSet();//new TreeSet();
-        Set<Term> subsumed = new HashSet();
-
-        for (Map.Entry<ByteList, Pair<ByteHashSet, List<Term>>> e : data.entrySet()) {
-            //data.forEach((pp, nn) -> {
-            ByteList pp = e.getKey();
-            Pair<ByteHashSet, List<Term>> nn = e.getValue();
-
-            ByteHashSet involved = nn.getOne();
-            int numInvolved = involved.size(); //# of subterms involved
-
-            //at least 2 subterms must contribute a value for each path
-            if (numInvolved < 2)
-                continue;
-
-            //for each path where the other numerics are uniformly equal (only one unique value)
-            /*if (new HashSet(nn).size()==1)*/
+            if (!valid[0])
+                return _subs;
 
 
-            List<Intlike> ff = features(nn.getTwo());
-            int ffs = ff.size();
-            if (ffs == 0 || ffs >= numInvolved) {
-                //nothing would be gained; dont bother
-                continue;
-            }
+            Iterator<Map.Entry<ByteList, Object>> entries = data.entrySet().iterator();
+            while (entries.hasNext()) {
+                Map.Entry<ByteList, Object /*SimpleIntSet*/> e = entries.next();
 
-
-            for (Intlike f : ff) {
-                byte j = 0;
-                for (Term x : subs) {
-
-                    if (!involved.contains(j)) {
-                        result.add(x);
-                        //System.out.println("1: " + result);
-                    } else {
-
-
-                        //x is contained within range expression p
-                        Term xpp = x.subs() > 0 ? x.subPath(pp) : x;
-
-                        boolean connected;
-                        if (xpp.op()==INT) {
-                            connected = (f.range().isConnected(((Intlike) xpp).range()));
-                        } else {
-                            connected = false;
-                        }
-
-                        if (connected) {
-                            Term y = x instanceof Compound ?
-                                    x.transform(pp, f)
-                                    : f;
-                            //if (!y.equals(x)) {
-
-                            if (!x.equals(y)) {
-                                subsumed.add(x);
-                            }
-                            result.add(y);
-                            //System.out.println(x + " 3: " + result + "\t + " + y);
-                            //}
-                        } else {
-                            result.add(x);
-                        }
-                    }
-                    j++;
+                SimpleIntSet s = (SimpleIntSet) e.getValue();
+                if (s.size() < 2) {
+                    entries.remove();
+                    continue; //same integer value in each
                 }
 
 
+                //for each path where the other numerics are uniformly equal (only one unique value)
+                /*if (new HashSet(nn).size()==1)*/
+
+
+                Iterator<Integer> si = s.iterator();
+
+                if (e.getKey().isEmpty()) {
+                    //root level, get as many as possible
+                    features(si, -1).forEachRemaining(yAux::add);
+                    entries.remove();
+                } else {
+                    Iterator<Intlike> iii = features(si, 1);
+                    if (iii == null || !iii.hasNext())
+                        return _subs; //discontiguous or otherwise ununifiable
+
+                    e.setValue(iii.next());
+                }
             }
 
-            int results = result.size();
-            if ((results == 1) /*|| (results > resultLimit * subCount)*/) {
-                break; //reduced to one or exploded, go no further
+            Term y;
+            if (!data.isEmpty()) {
+                y = subs[0];
+                for (Map.Entry<ByteList, Object /*Intlike*/> e : data.entrySet()) {
+                    Object v = e.getValue();
+                    y = y.transform(e.getKey(), (Term) v);
+                }
+            } else {
+                y = null;
+            }
+            if (subs.length == _subs.length && yAux.isEmpty()) {
+                if (y == null)
+                    return _subs; //??
+                return new Term[]{y};
+            } else {
+                yAux.add(y);
             }
         }
 
-        result.removeAll(subsumed);
 
-        if (result.isEmpty()) {
-            return subs;
-        } else {
+        return intersectResult(factoring, ff, yAux, _subs);
 
-            Term[] rr = result.toArray(new Term[result.size()]);
-            if (Arrays.equals(rr, subs))
-                return rr;
-            else
-                return intersect(rr); //changed, recompress
 
-        }
+//            int ffs = ff.size();
+//            if (ffs == 0 || ffs >= numInvolved) {
+//                //nothing would be gained; dont bother
+//                continue;
+//            }
+
+//
+//            for (Intlike f : ff) {
+//                byte j = 0;
+//                for (Term x : subs) {
+//
+//                    if (!involved.contains(j)) {
+//                        result.add(x);
+//                        //System.out.println("1: " + result);
+//                    } else {
+//
+//
+//                        //x is contained within range expression p
+//                        Term xpp = x.subs() > 0 ? x.subPath(pp) : x;
+//
+//                        boolean connected;
+//                        if (xpp.op() == INT) {
+//                            connected = (f.range().isConnected(((Intlike) xpp).range()));
+//                        } else {
+//                            connected = false;
+//                        }
+//
+//                        if (connected) {
+//                            Term y = x instanceof Compound ?
+//                                    x.transform(pp, f)
+//                                    : f;
+//                            //if (!y.equals(x)) {
+//
+//                            if (!x.equals(y)) {
+//                                subsumed.add(x);
+//                            }
+//                            result.add(y);
+//                            //System.out.println(x + " 3: " + result + "\t + " + y);
+//                            //}
+//                        } else {
+//                            result.add(x);
+//                        }
+//                    }
+//                    j++;
+//                }
+//
+//
+//            }
+//
+//            int results = result.size();
+//            if ((results == 1) /*|| (results > resultLimit * subCount)*/) {
+//                break; //reduced to one or exploded, go no further
+//            }
+//        }
+
+//        result.removeAll(subsumed);
+//
+//        if (result.isEmpty()) {
+//            return subs;
+//        } else {
+//
+//            Term[] rr = result.toArray(new Term[result.size()]);
+//            if (Arrays.equals(rr, subs))
+//                return rr;
+//            else
+//                return intersect(rr); //changed, recompress
+//
+//        }
     }
 
-    private static List<Intlike> features(List<Term> nnnt) {
+    private static Term[] intersectResult(RoaringBitmap factoring, int ff, FasterList<Term> yAux, Term[] _subs) {
+        int yAuxSize = yAux.size();
+        int nonff = _subs.length - ff;
+        Term[] r;
+        if (nonff == 0) {
+            r = yAux.toArrayRecycled(Term[]::new);
+        } else {
+            r = new Term[nonff + yAuxSize];
+            int j = 0;
+            if (ff != _subs.length) {
+                for (int k = 0; k < _subs.length; k++) {
+                    if (!factoring.contains(k)) {
+                        r[j++] = _subs[k];
+                    }
+                }
+            }
+            for (int k = 0; k < yAuxSize; k++) {
+                r[j++] = yAux.get(k);
+            }
+        }
+        return sorted(r);
+    }
+
+
+    private static Iterator<Intlike> features(Iterator<Integer> nnnt, int limitCount) {
 
         RangeSet<Integer> intIntervals = ranges(nnnt);
 
@@ -522,29 +686,29 @@ public class Int implements Intlike {
 
 
         Set<Range<Integer>> srr = intIntervals.asRanges();
-
-        List<Intlike> ll = $.newArrayList(srr.size());
-
-        for (Range<Integer> rr : srr) {
-            int l = rr.lowerEndpoint();
-            int u = rr.upperEndpoint();
-            if (rr.lowerBoundType() == BoundType.OPEN)
-                l++;
-            if (rr.upperBoundType() == BoundType.OPEN)
-                u--;
-            ll.add(Int.range(l, u));
+        int n = srr.size();
+        if (limitCount > 0 && n > limitCount)
+            return Collections.emptyIterator();
+        else {
+            return Iterators.transform(srr.iterator(), (rr) -> {
+                int l = rr.lowerEndpoint();
+                int u = rr.upperEndpoint();
+                if (rr.lowerBoundType() == BoundType.OPEN)
+                    l++;
+                if (rr.upperBoundType() == BoundType.OPEN)
+                    u--;
+                return Int.range(l, u);
+            });
         }
 
-        return ll;
     }
 
 
-    public static RangeSet<Integer> ranges(List<Term> term) {
+    public static RangeSet<Integer> ranges(Iterator<Integer> ints) {
         TreeRangeSet<Integer> r = TreeRangeSet.create();
-        for (Term x : term) {
-            if (x.op()==INT) {
-                r.add(((Intlike) x).range());
-            }
+        while (ints.hasNext()) {
+            int ii = ints.next();
+            r.add(Range.singleton(ii).canonical(DiscreteDomain.integers()));
         }
         return r;
     }

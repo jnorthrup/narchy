@@ -92,7 +92,7 @@ public class Leaf<T> extends AbstractNode<T, T> {
     public Node<T, ?> add(/*@NotNull*/ final T t, Nodelike<T> parent, /*@NotNull*/ Spatialization<T> model, boolean[] added) {
 
         final HyperRegion tb = model.bounds(t);
-        boolean ctm = size > 0 && contains(t, tb, model);
+        boolean ctm = contains(t, tb, model);
 
         if (parent != null && !ctm) {
             Node<T, ?> next;
@@ -140,16 +140,18 @@ public class Leaf<T> extends AbstractNode<T, T> {
     @Override
     public boolean contains(T t, HyperRegion b, Spatialization<T> model) {
 
-        if (!bounds.contains(b))
-            return false;
-
         final int s = size;
-        T[] data = this.data;
-        for (int i = 0; i < s; i++) {
-            T d = data[i];
-            if (t == d || t.equals(d)) {
-                model.merge(d, t);
-                return true;
+        if (s > 0) {
+            if (!bounds.contains(b))
+                return false;
+
+            T[] data = this.data;
+            for (int i = 0; i < s; i++) {
+                T d = data[i];
+                if (t == d || t.equals(d)) {
+                    model.merge(d, t);
+                    return true;
+                }
             }
         }
         return false;

@@ -117,7 +117,11 @@ public class TruthletTask extends SignalTask {
     public @Nullable Truth truth(long when) {
         float[] tl = truthlet.truth(when);
         float f = tl[0];
-        return f == f ? new PreciseTruth(f, tl[1] /* evi */, false) : null;
+        if (f!=f)
+            return null;
+        float e = tl[1];
+        assert(e > 0);
+        return new PreciseTruth(f, e /* evi */, false);
     }
 
 

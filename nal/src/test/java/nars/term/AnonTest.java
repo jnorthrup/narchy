@@ -1,8 +1,10 @@
 package nars.term;
 
+import com.google.common.collect.Iterators;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import nars.Narsese;
+import nars.The;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.anon.AnonVector;
@@ -18,8 +20,7 @@ import java.util.Random;
 
 import static nars.$.$;
 import static nars.Op.PROD;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AnonTest {
 
@@ -66,6 +67,22 @@ public class AnonTest {
         assertEqual(new TermVector2(x[0], x[1]), new AnonVector(x[0], x[1]));
         assertEqual(new ArrayTermVector(x), new AnonVector(x));
     }
+    @Test public void testAnomVectorNegations() {
+
+        Term[] x = {Anom.the(2), Anom.the(0), Anom.the(1).neg()};
+
+        AnonVector av = new AnonVector(x);
+        assertEquals(new ArrayTermVector(x).toString(), av.toString());
+        assertEqual(new ArrayTermVector(x), av);
+
+        assertTrue(av.contains(x[2]));
+        assertFalse(av.contains(x[2].neg()));
+        assertTrue(av.containsRecursively(x[2]));
+        assertTrue(av.containsRecursively(x[2].neg()), ()->av + " containsRecursively " + x[2].neg());
+
+
+        //assertTrue(The.subterms(x) instanceof AnonVector );
+    }
 
     @Test public void testMixedAnonVector() {
 
@@ -99,6 +116,7 @@ public class AnonTest {
         assertEquals(v.toString(),a.toString());
         assertEquals(v.hashCode(), a.hashCode());
         assertEquals(v.hashCodeSubterms(), a.hashCodeSubterms());
+        assertTrue(Iterators.elementsEqual(v.iterator(), a.iterator()));
         assertEquals(new CachedCompound(PROD, v), new CachedCompound(PROD, a));
     }
 

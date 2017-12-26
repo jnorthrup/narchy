@@ -8,6 +8,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.atom.Int;
 import nars.term.sub.Subterms;
 import nars.term.sub.TermVector;
 import nars.term.transform.CompoundTransform;
@@ -102,6 +103,8 @@ public class Anon {
 //                throw new RuntimeException("unnormalized variable for Anon: " + x);
             return x; //ignore normalized variables since they are AnonID
         } else if (x instanceof Atomic) {
+            if (x instanceof Int.IntRange)
+                return x; //HACK
             return Anom.the[fwd.getIfAbsentPutWithKey(x, nextUniqueAtom)];
         } else {
             return putTransformed(x);

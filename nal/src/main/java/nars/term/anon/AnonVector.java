@@ -1,5 +1,6 @@
 package nars.term.anon;
 
+import nars.Op;
 import nars.term.Term;
 import nars.term.sub.Subterms;
 import nars.term.sub.TermVector;
@@ -7,6 +8,9 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.function.Predicate;
+
+import static nars.Op.NEG;
 
 /**
  * a vector which consists purely of AnonID terms
@@ -20,7 +24,18 @@ public class AnonVector extends TermVector {
         super(s); //TODO optimize this for certain Anom invariants (ie. no variables etc)
         short[] t = subterms = new short[s.length];
         for (int i = 0, sLength = s.length; i < sLength; i++) {
-            t[i] = ((AnonID) s[i]).anonID();
+            Term ss = s[i];
+            boolean neg;
+            if (ss.op()==NEG) {
+                ss = ss.unneg();
+                neg = true;
+            } else {
+                neg = false;
+            }
+            short tt = ((AnonID) ss).anonID();
+            if (neg)
+                tt = (short) -tt;
+            t[i] = tt;
         }
 
         normalized = true;
@@ -28,8 +43,13 @@ public class AnonVector extends TermVector {
 
     @Override
     public final Term sub(int i) {
-        return AnonID.idToTerm(subterms[i]);
+        short tt = subterms[i];
+        if (tt >= 0) //shouldnt actually ever be zero
+            return AnonID.idToTerm(tt);
+        else
+            return AnonID.idToTerm((short) -tt).neg();
     }
+
 
     @Override
     public int subs() {
@@ -47,29 +67,38 @@ public class AnonVector extends TermVector {
 //        }
 //    }
 
-    public int indexOf(AnonID t) {
-        return ArrayUtils.indexOf(subterms, t.anonID());
+    public int indexOf(AnonID t, boolean neg) {
+        short id = t.anonID();
+        if (neg)
+            id = (short)(-id);
+        return ArrayUtils.indexOf(subterms, id);
     }
 
     @Override
     public int indexOf(Term t) {
+        boolean neg = false;
+        if (t.op()==NEG) {
+            if (!hasAny(NEG))
+                return -1;
+            t = t.unneg();
+            neg = true;
+        }
         if (t instanceof AnonID)
-            return indexOf((AnonID) t);
+            return indexOf((AnonID) t, neg);
         else
             return -1; //super.indexOf(t);
     }
 
     @Override
     public boolean contains(Term t) {
-        if (t instanceof AnonID)
-            return indexOf((AnonID) t) != -1;
-        else
-            return false; //super.contains(t);
+        return indexOf(t)!=-1;
     }
 
     @Override
     public boolean containsRecursively(Term t) {
-        return contains(t); //since it will be flat
+        if (contains(t))
+            return true;
+        return (t.op() == NEG) || contains(t.neg()); //TODO write absolute matcher in one pass
     }
 
     @Override

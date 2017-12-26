@@ -21,6 +21,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static nars.Op.NEG;
 import static nars.Op.Null;
 import static nars.Op.PROD;
 
@@ -93,19 +94,27 @@ public enum The {
     public static final class Subterms {
 
         public static final Function<Term[], nars.term.sub.Subterms> RawSubtermBuilder = (t) -> {
+            if (t.length == 0)
+                return nars.term.sub.Subterms.Empty;
 
             boolean purelyAnon = true;
             for (Term x : t) {
                 if (x instanceof EllipsisMatch)
                     throw new RuntimeException("ellipsis match should not be a subterm of ANYTHING");
-                if (purelyAnon && !(x instanceof AnonID))
-                    purelyAnon = false;
+                if (purelyAnon) {
+                    if (!(x instanceof AnonID)) {
+//                        if (t.length == 1 && x.op()==NEG && x.unneg() instanceof AnonID) {
+//                            //allow anon here, but not t.length > 1 there is still some problem probably with commutives
+//                        } else {
+                            purelyAnon = false;
+//                        }
+                    }
+                }
             }
 
             if (!purelyAnon) {
                 switch (t.length) {
                     case 0:
-                        return nars.term.sub.Subterms.Empty;
                     case 1:
                         //return new TermVector1(t[0]);
                         return new UnitSubterm(t[0]);

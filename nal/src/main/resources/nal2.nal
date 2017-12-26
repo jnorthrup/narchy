@@ -32,9 +32,10 @@
     (A --> C), (B --> C), neq(A,B),is(A,"["),is(B,"[") |- (differ(A,B) --> C), (Belief:Difference)
 
 //Set Goals
-    (A --> C), (B --> C), task("!"), neq(A,B),isAny(A,"{","+"),isAny(B,"{","+") |- (intersect(A,B) --> C), (Goal:Strong)
-    (A --> C), (B --> C), task("!"), neq(A,B),isAny(A,"{","+"),isAny(B,"{","+") |- (union(A,B) --> C), (Goal:Weak)
-
+    (A --> C), (B --> C), task("!"), neq(A,B),is(A,"{"),is(B,"{") |- (intersect(A,B) --> C), (Goal:Strong)
+        (A --> C), (B --> C), task("!"), neq(A,B),is(A,"+"),is(B,"+") |- (intersect(A,B) --> C), (Goal:Strong)
+    (A --> C), (B --> C), task("!"), neq(A,B),is(A,"{"),is(B,"{") |- (union(A,B) --> C), (Goal:Weak)
+        (A --> C), (B --> C), task("!"), neq(A,B),is(A,"+"),is(B,"+") |- (union(A,B) --> C), (Goal:Weak)
 
 //Set Decomposition
 

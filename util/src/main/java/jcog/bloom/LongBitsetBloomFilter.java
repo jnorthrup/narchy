@@ -76,7 +76,7 @@ public class LongBitsetBloomFilter {
     }
 
     public void clear() {
-        bitSet.clear();
+        bitSet.clearAll();
     }
 
     public static int optimalNumOfHashFunctions(long n, long m) {

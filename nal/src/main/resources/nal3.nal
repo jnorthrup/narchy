@@ -56,8 +56,8 @@
         //(Y --> M), (X --> M), is(Y,"+"), is(X,"+") |- (differ(Y,X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
         //2D:
-        ((X,Y) --> C), ((X,Y) --> C), is(X,"+"),isAny(Y,"+") |- ((dropAnySet(X),Y) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-        ((X,Y) --> C), ((X,Y) --> C), is(X,"+"),isAny(Y,"+") |- ((X,dropAnySet(Y)) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+        ((X,Y) --> C), ((X,Y) --> C), is(X,"+") |- ((dropAnySet(X),Y) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+        ((X,Y) --> C), ((X,Y) --> C), is(Y,"+") |- ((X,dropAnySet(Y)) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
     ((B ~ G) --> S), (B ~ G) |- (B --> S), (Belief:StructuralDeduction, Goal:StructuralDeduction)
     (S --> (B - G)), (B - G) |- (S --> B), (Belief:StructuralDeduction, Goal:StructuralDeduction)

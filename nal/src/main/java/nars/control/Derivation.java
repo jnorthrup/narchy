@@ -346,8 +346,10 @@ public class Derivation extends ProtoDerivation {
                 taskTruth = null;
                 break;
             default:
-                taskTruth = task.truth();
+                taskTruth = task.truth(task.myNearestTimeTo(time), dur);
+                break;
         }
+
         this.taskPolarity = (this.taskTruth = taskTruth) != null ? polarity(taskTruth) : 0;
 
         if (belief != null) {

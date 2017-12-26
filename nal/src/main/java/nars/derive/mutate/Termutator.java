@@ -22,7 +22,7 @@ public interface Termutator {
     abstract class AbstractTermutator extends ProxyTerm implements Termutator {
 
         AbstractTermutator(Term... keyComponents) {
-            super(keyComponents.length == 1 ? keyComponents[0] : $.p(keyComponents));
+            super(keyComponents.length == 1 ? keyComponents[0] : $.pFast(keyComponents));
         }
 
     }

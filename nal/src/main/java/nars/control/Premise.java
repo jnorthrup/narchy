@@ -39,7 +39,6 @@ public class Premise {
     public final Term termLink;
 
 
-
     public Premise(PriReference<Task> tasklink, Term termlink) {
         this.taskLink = tasklink;
         this.termLink = termlink;
@@ -86,7 +85,6 @@ public class Premise {
         //n.conceptualize(task.term(), (c)->{});
 
 
-
         int dur = d.dur;
         long now = d.time;
 
@@ -96,13 +94,14 @@ public class Premise {
 
         Term taskTerm = task.term();
 
-        boolean beliefConceptCanAnswerTaskConcept = false, unifiedBelief = false;
+        final boolean[] beliefConceptCanAnswerTaskConcept = {false};
+        boolean unifiedBelief = false;
 
         Op to = taskTerm.op();
         Op bo = beliefTerm.op();
         if (to.var || bo.var || to == bo) {
             if (taskTerm.equalsRoot(beliefTerm)) {
-                beliefConceptCanAnswerTaskConcept = true;
+                beliefConceptCanAnswerTaskConcept[0] = true;
             } else {
                 int var = Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit;
                 if (taskTerm.hasAny(var) || beliefTerm.hasAny(var)) {
@@ -110,19 +109,20 @@ public class Premise {
                     Term _beliefTerm = beliefTerm;
                     final Term[] unifiedBeliefTerm = new Term[]{null};
                     UnifySubst u = new UnifySubst(null, n, (y) -> {
-                        if (y.op().conceptualizable
-                                && !y.equals(_beliefTerm)
-                                && !y.hasAny(Op.BOOL)
-                                ) {
-                            unifiedBeliefTerm[0] = y;
-                            return false; //stop
+                        if (y.op().conceptualizable && !y.hasAny(Op.BOOL)) {
+
+                            beliefConceptCanAnswerTaskConcept[0] = true;
+
+                            if (!y.equals(_beliefTerm)) {
+                                unifiedBeliefTerm[0] = y;
+                                return false; //stop
+                            }
                         }
                         return true; //keep going
                     }, matchTTL);
                     u.varSymmetric = false;
                     u.varCommonalize = false;
                     if (u.unify(taskTerm, beliefTerm, true)) {
-                        beliefConceptCanAnswerTaskConcept = true;
                         if (unifiedBeliefTerm[0] != null) {
                             beliefTerm = unifiedBeliefTerm[0];
                             unifiedBelief = true;
@@ -142,7 +142,7 @@ public class Premise {
             if (!beliefTerm.hasVarQuery()) { //doesnt make sense to look for a belief in a term with query var, it will have none
 
                 if (task.isQuestOrQuestion()) {
-                    if (beliefConceptCanAnswerTaskConcept) {
+                    if (beliefConceptCanAnswerTaskConcept[0]) {
                         final BeliefTable answerTable =
                                 (task.isGoal() || task.isQuest()) ?
                                         beliefConcept.goals() :
@@ -179,26 +179,26 @@ public class Premise {
                         focusStart = focusEnd = ETERNAL;
                     } else {
                         focusStart =
-                                focus - dur/2;
-                                //focus - dur;
-                                //focus;
+                                focus - dur / 2;
+                        //focus - dur;
+                        //focus;
                         focusEnd =
-                                focus + dur/2;
-                                //focus + dur;
-                                //focus;
+                                focus + dur / 2;
+                        //focus + dur;
+                        //focus;
                     }
 
                     belief = beliefConcept.beliefs().match(focusStart, focusEnd, beliefTerm, n,
-                        beliefConcept.term().equals(task.term().conceptual()) ? (x)->{
-                            return !x.equals(task);
-                        } : null);
+                            beliefConcept.term().equals(task.term().conceptual()) ? (x) -> {
+                                return !x.equals(task);
+                            } : null);
                 }
             }
 
 
             if (unifiedBelief) {
                 Concept originalBeliefConcept = n.concept(this.termLink);
-                if (originalBeliefConcept!=null)
+                if (originalBeliefConcept != null)
                     linkVariable(originalBeliefConcept, beliefConcept);
             }
 
@@ -240,8 +240,8 @@ public class Premise {
         Term lessConstantTerm = lessConstant.term();
         float pri = taskLink.priElseZero() * Util.unitize(lessConstantTerm.volume() / ((float) moreConstantTerm.volume()));
 
-        moreConstant.termlinks().putAsync(new PLink<>(lessConstantTerm, pri/2));
-        lessConstant.termlinks().putAsync(new PLink<>(moreConstantTerm, pri/2));
+        moreConstant.termlinks().putAsync(new PLink<>(lessConstantTerm, pri / 2));
+        lessConstant.termlinks().putAsync(new PLink<>(moreConstantTerm, pri / 2));
         //moreConstant.termlinks().putAsync(new PLink<>(taskConcept.term(), pri));
         //taskConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
 

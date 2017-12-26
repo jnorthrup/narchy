@@ -18,7 +18,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
     private final Term[] yy;
 
     public Choose1(Ellipsis xEllipsis, Term x, SortedSet<Term> yFree) {
-        super(x, xEllipsis, $.p(yFree));
+        super(x, xEllipsis, $.pFast(yFree));
 
         int ysize = yFree.size();  assert(ysize >= 2): yFree + " must offer choice";
 

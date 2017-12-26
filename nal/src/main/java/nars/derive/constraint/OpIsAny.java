@@ -1,7 +1,10 @@
 package nars.derive.constraint;
 
 import nars.$;
+import nars.control.Derivation;
 import nars.term.Term;
+import nars.term.anon.Anom;
+import nars.term.anon.Anon;
 import nars.term.subst.Unify;
 
 
@@ -16,7 +19,7 @@ public final class OpIsAny extends MatchConstraint {
 
     @Override
     public boolean invalid(Term y, Unify f) {
-        return !y.op().in(structure);
+        return y.op().in(structure);
     }
 
     @Override

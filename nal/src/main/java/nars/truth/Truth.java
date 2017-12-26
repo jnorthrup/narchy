@@ -25,6 +25,7 @@ import jcog.Util;
 import nars.$;
 import nars.NAR;
 import nars.Op;
+import nars.Param;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -189,10 +190,12 @@ public interface Truth extends Truthed {
     }
 
     static float freq(float f, float epsilon) {
+        assert(f==f);
         return unitize(round(f, epsilon));
     }
 
     static float conf(float c, float epsilon) {
+        assert(c==c && c >= Param.TRUTH_EPSILON);
         return clamp(
                 //ceil(c, epsilon), //optimistic
                 round(c, epsilon), //semi-optimistic: adds evidence when rounding up, loses evidence when rounding down

@@ -1,6 +1,7 @@
 package nars.derive.rule;
 
 import com.google.common.collect.Sets;
+import jcog.TODO;
 import jcog.list.FasterList;
 import nars.$;
 import nars.NAR;
@@ -19,6 +20,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Terms;
+import nars.term.anon.Anon;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.pred.AndCondition;
@@ -374,7 +376,11 @@ public class PremiseRule /*extends GenericCompound*/ {
 
                      int struct = 0;
                      for (int k = 1; k < args.length; k++) {
-                         struct |= Op.the($.unquote(args[k])).bit;
+
+                         Op o = Op.the($.unquote(args[k]));
+                         if (o.atomic)
+                             throw new TODO();
+                         struct |= o.bit;
                      }
                      assert(struct!=0);
                      termIsAny(pres, taskPattern, beliefPattern, constraints, X, struct);
@@ -654,7 +660,7 @@ public class PremiseRule /*extends GenericCompound*/ {
     }
 
     private static void termIs(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, SortedSet<MatchConstraint> constraints, Term x, Op v) {
-        constraints.add(new OpIs(x, v));
+        constraints.add(OpIs.the(x, v));
         includesOp(pres, taskPattern, beliefPattern, x, v);
     }
     private static void termIsAny(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, SortedSet<MatchConstraint> constraints, Term x, int struct) {
@@ -663,10 +669,12 @@ public class PremiseRule /*extends GenericCompound*/ {
     }
 
     private static void includesOp(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, Op o) {
-        includesOp(pres, taskPattern, beliefPattern, x, o.bit, true);
+        if (!o.atomic) // any atomic terms these will be Anon 'd and thus undetectable
+            includesOp(pres, taskPattern, beliefPattern, x, o.bit, true);
     }
 
     private static void includesOp(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, int struct, boolean includeExclude) {
+        //TODO test for presence of any atomic terms these will be Anon'd and thus undetectable
         boolean inTask = taskPattern.equals(x) || taskPattern.containsRecursively(x);
         boolean inBelief = beliefPattern.equals(x) || beliefPattern.containsRecursively(x);
         if (inTask || inBelief)
@@ -675,6 +683,7 @@ public class PremiseRule /*extends GenericCompound*/ {
 
 
     private static void termIsNot(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term x, int struct) {
+        //TODO test for presence of any atomic terms these will be Anon'd and thus undetectable
         constraints.add(new OpIsNot(x, struct));
         includesOp(pres, taskPattern, beliefPattern, x, struct, false);
     }
@@ -689,7 +698,7 @@ public class PremiseRule /*extends GenericCompound*/ {
 //        constraints.add(new StructureHasNone(t, structure));
 //    }
 
-    private static void neq(@NotNull SortedSet<MatchConstraint> constraints, @NotNull Term x, @NotNull Term y) {
+    private static void neq(SortedSet<MatchConstraint> constraints, Term x, Term y) {
         constraints.add(new NotEqualConstraint(x, y));
         constraints.add(new NotEqualConstraint(y, x));
     }

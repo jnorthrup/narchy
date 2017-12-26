@@ -13,7 +13,7 @@ public class TaskBeliefInequal extends AbstractPred<ProtoDerivation> {
 
     @Override
     public boolean test(ProtoDerivation d) {
-        return !d.taskTerm.equals(d.beliefTerm);
+        return !d.taskTerm.equalsRoot(d.beliefTerm);
     }
 
     @Override

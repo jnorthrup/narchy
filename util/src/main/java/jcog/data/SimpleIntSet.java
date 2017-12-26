@@ -138,7 +138,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
     @Override
     public void clear() {
         size = 0;
-        status.clear();
+        status.clearAll();
     }
 
     @Override
@@ -188,6 +188,19 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
     }
 
 
+//    public IntIterator intIterator() {
+//                //find the first starting inded
+//        int START = 0;
+//        while (START < keys.length && !status.get(START))
+//            START++;
+//        if (START == keys.length)
+//            return IntIterator.emptyIterator();
+//
+//        final int startPos = START;
+//
+//        return new IntegerIterator(startPos);
+//    }
+
     @Override
     public Iterator<Integer> iterator() {
         //find the first starting inded
@@ -199,31 +212,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
 
         final int startPos = START;
 
-        return new Iterator<Integer>() {
-            int pos = startPos;
-            int prevPos = -1;
-
-            @Override
-            public boolean hasNext() {
-                return pos < keys.length;
-            }
-
-            @Override
-            public Integer next() {
-                //final int make so that object remains good after we call next again
-                final int oldPos = prevPos = pos++;
-                //find next
-                while (pos < keys.length && !status.get(pos))
-                    pos++;
-                //and return new object
-                return keys[oldPos];
-            }
-
-            @Override
-            public void remove() {
-                throw new UnsupportedOperationException();
-            }
-        };
+        return new IntegerIterator(startPos);
     }
 
     @Override
@@ -286,4 +275,42 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
                     1073741833, //2^30 , twin with 1073741831
                     2147482951, //first twin under 2^31, twin with 2147482949
             };
+
+
+    private class IntegerIterator implements Iterator<Integer> {
+        private final int startPos;
+        int pos;
+        int prevPos;
+
+        public IntegerIterator(int startPos) {
+            this.startPos = startPos;
+            pos = startPos;
+            prevPos = -1;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return pos < keys.length;
+        }
+
+        @Override
+        public Integer next() {
+            //final int make so that object remains good after we call next again
+            final int oldPos = prevPos = pos++;
+            //find next
+            int pos = this.pos;
+            MetalBitSet s = SimpleIntSet.this.status;
+            int[] k = SimpleIntSet.this.keys;
+            while (pos < k.length && !s.get(pos))
+                pos++;
+            this.pos = pos;
+            //and return new object
+            return k[oldPos];
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+    }
 }

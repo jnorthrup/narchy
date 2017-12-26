@@ -1705,7 +1705,7 @@ public enum Op {
         return stringToOperator.get(s);
     }
 
-    /*@NotNull*/
+
     private static Term intersect(Term[] t, /*@NotNull*/ Op intersection, /*@NotNull*/ Op setUnion, /*@NotNull*/ Op setIntersection) {
 
         int trues = 0;

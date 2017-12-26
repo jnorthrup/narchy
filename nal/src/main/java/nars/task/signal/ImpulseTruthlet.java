@@ -19,12 +19,14 @@ public class ImpulseTruthlet extends ProxyTruthlet {
 
     @Override
     public void truth(long when, float[] freqEvi) {
-        if (ref.containsTime(when)) {
+        long s = start();
+        long e = end();
+        if (when >= s && when <= e) {
+            //internal
             super.truth(when, freqEvi);
         } else {
+            //external
             freqEvi[0] = freqInactive;
-            long s = start();
-            long e = end();
             long dist = Math.min(Math.abs(s - when), Math.abs(e - when));
             freqEvi[1] = (float) Param.evi(eviInactive, dist, Math.max(1, (e - s) / 2));
         }

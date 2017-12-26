@@ -872,6 +872,16 @@ public enum $ {
     public static Term pFast(Subterms x) {
         return new CachedCompound(Op.PROD,x);
     }
+    public static Term pFast(Term... x) {
+        return new CachedCompound(Op.PROD, $.vFast(x));
+    }
+    public static Term pFast(Collection<? extends Term> x) {
+        return new CachedCompound(Op.PROD, $.vFast(x.toArray(new Term[x.size()])));
+    }
+
+    public static Subterms vFast(Term[] t) {
+        return The.Subterms.RawSubtermBuilder.apply(t);
+    }
 
 
     //TODO add this to a '$.printree' command

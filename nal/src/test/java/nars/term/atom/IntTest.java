@@ -1,5 +1,6 @@
 package nars.term.atom;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Iterators;
 import nars.*;
 import nars.term.Term;
@@ -105,7 +106,7 @@ public class IntTest {
     }
 
     @Test public void testRecursiveUnroll() {
-        assertEquals("",
+        assertEquals("TODO",
                 unroll(
                     //$("(0..1,c,0,(2,b,1..2,(0..1,a,0)))")
                     $.p(Int.range(0,1), $.the("c"), Int.the(0),
@@ -139,12 +140,53 @@ public class IntTest {
         assertEquals(Null, $("(((happy-(0,0))-(0,0))-->tetris)"));
     }
 
+    @Test public void testIntAndNonInts() throws Narsese.NarseseException {
+        assertEquals("[1..2]", Arrays.toString(
+                Int.intersect($("1"),$("2"))
+        ));
+        assertEquals("[1, 3]", Arrays.toString(
+                Int.intersect($("1"),$("3"))
+        ));
+        assertEquals("[x, 1..2]", Arrays.toString(
+                Int.intersect($("1"),$("2"),$("x"))
+        ));
+        assertEquals("[x, 8, 5..6, 1..2]", Arrays.toString(
+                Int.intersect($("1"),$("2"),$("x"),$("5"),$("6"),$("8"))
+        ));
+
+        assertEquals("[(y-->x), (1..2-->x)]", Arrays.toString(
+                Int.intersect($("(1-->x)"),$("(2-->x)"),$("(y-->x)"))
+        ));
+    }
+
+    @Test public void testIntInttersectProd() {
+        assertEquals("[(1,1..2)]", Arrays.toString(
+                Int.intersect($.p(1, 1), $.p(1, 2))
+        ));
+    }
+    @Test public void testIntInttersectProdSplit1() {
+        assertEquals("[(1,1..2), (3,3)]", Arrays.toString(
+                Int.intersect($.p(1, 1), $.p(1, 2), $.p(3, 3))
+        ));
+        assertEquals("[(1,1..2), (3,3), x]", Arrays.toString(
+                Int.intersect($.p(1, 1), $.p(1, 2), $.p(3, 3), $.the("x"))
+        ));
+    }
+    @Test public void testIntInttersectProdSplit2() {
+        assertEquals("[(1,1..2), (3..4,3)]", Arrays.toString(
+                Int.intersect($.p(1,1), $.p(1,2), $.p(3,3), $.p(4,3))
+        ));
+    }
+
     @Test public void testNonRangeableIntersection() throws Narsese.NarseseException {
-        String rangeable = Arrays.toString(Int.intersect(
-                $("(isRow,(6,true),true)"), $("(isRow,(7,true),true)"))).toString();
+        Term[] r = Int.intersect(
+                $("(isRow,(6,true),true)"), $("(isRow,(7,true),true)"));
+        String rangeable = Arrays.toString(r).toString();
+        assertEquals("[(isRow,(6..7,true),true)]", rangeable);
+        assertEquals("(isRow,(6,true),true),(isRow,(7,true),true)", Joiner.on(',').join(Int.unroll(r[0])));
+
         String nonrangeable = Arrays.toString(Int.intersect(
                 $("(isRow,(6,true),true)"), $("(isRow,(7,false),true)"))).toString();
-        assertEquals("[(isRow,(6..7,true),true)]", rangeable);
         assertEquals("[(isRow,(6,true),true), (isRow,(7,false),true)]", nonrangeable);
 
     }

@@ -1,5 +1,6 @@
 package nars.derive.match;
 
+import nars.$;
 import nars.Op;
 import nars.The;
 import nars.index.term.TermContext;
@@ -33,7 +34,7 @@ public class EllipsisMatch extends CachedCompound {
 
 
     protected EllipsisMatch(Term[] t) {
-        super(Op.PROD, The.subterms(t));
+        super(Op.PROD, $.vFast(t));
     }
 
     @Override

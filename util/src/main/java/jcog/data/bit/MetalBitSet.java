@@ -14,8 +14,13 @@ abstract public class MetalBitSet {
     public abstract boolean get(int i);
 
     public abstract void set(int i);
+    public abstract void clear(int i);
 
-    public abstract void clear();
+    public abstract void clearAll();
+
+    public abstract void setAll();
+
+    public abstract int getCardinality();
 
     public static class LongArrayBitSet extends MetalBitSet {
         final long[] data;
@@ -34,17 +39,34 @@ abstract public class MetalBitSet {
             this.data = data;
         }
 
-        public void clear() {
+        public void clearAll() {
             Arrays.fill(data, 0);
+        }
+
+        @Override
+        public void setAll() {
+            Arrays.fill(data, 0xffffffffffffffffL);
+        }
+
+        @Override
+        public int getCardinality() {
+            int bc = 0;
+            for (long x : data) {
+                bc += Long.bitCount(x);
+            }
+            return bc;
         }
 
         /**
          * Sets the bit at specified index.
          *
-         * @param index
+         * @param i
          */
-        public void set(int index) {
-            data[(int) (index >>> 6)] |= (1L << index);
+        @Override public void set(int i) {
+            data[(int) (i >>> 6)] |= (1L << i);
+        }
+        @Override public void clear(int i) {
+            data[(int) (i >>> 6)] &= ~(1L << i);
         }
 
 
@@ -77,11 +99,11 @@ abstract public class MetalBitSet {
         /**
          * Returns true if the bit is set in the specified index.
          *
-         * @param index
+         * @param i
          * @return
          */
-        public boolean get(int index) {
-            return (data[(int) (index >>> 6)] & (1L << index)) != 0;
+        @Override public boolean get(int i) {
+            return (data[(int) (i >>> 6)] & (1L << i)) != 0;
         }
 
         /**
@@ -143,6 +165,11 @@ abstract public class MetalBitSet {
         private int x;
 
         @Override
+        public void setAll() {
+            x = 0xffffffff;
+        }
+
+        @Override
         public boolean get(int i) {
             return (x & (1 << i)) != 0;
         }
@@ -151,12 +178,20 @@ abstract public class MetalBitSet {
         public void set(int i) {
             x |= (1 << i);
         }
+        @Override
+        public void clear(int i) {
+            x &= ~(1 << i);
+        }
 
         @Override
-        public void clear() {
+        public void clearAll() {
             x = 0;
         }
 
+        @Override
+        public int getCardinality() {
+            return Integer.bitCount(x);
+        }
     }
 
     public static MetalBitSet bits(int size) {

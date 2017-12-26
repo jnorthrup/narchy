@@ -21,7 +21,10 @@ public interface AnonID extends Term {
     short VARQUERY_MASK = 3 << 8;
     short VARPATTERN_MASK = 4 << 8;
 
+
     static short termToId(Op o, byte id) {
+        assert(id > 0);
+
         short mask;
         switch (o) {
             case ATOM:
@@ -46,11 +49,24 @@ public interface AnonID extends Term {
     }
 
 
-    static Term idToTerm(short i) {
+    static Term idToTermWithNegationTest(short /* short */ i) {
+        boolean neg;
+        if (i < 0) {
+            neg = true;
+            i = (short) -i;
+        } else {
+            neg = false;
+        }
+        Term x = idToTerm(i);
+        return x.negIf(neg);
+    }
+
+    static Term idToTerm(short /* short */ i) {
         byte num = (byte) (i & 0xff);
         int m = ((i & 0xff00));
+        Term y;
         if (m == ATOM_MASK) {
-            return Anom.the[num];
+            y = Anom.the[num];
         } else {
             Op o;
             switch (m) {
@@ -69,8 +85,11 @@ public interface AnonID extends Term {
                 default:
                     throw new UnsupportedOperationException();
             }
-            return NormalizedVariable.the(o, num);
+            y = NormalizedVariable.the(o, num);
         }
+//        if (neg)
+//            y = y.neg();
+        return y;
     }
 
 

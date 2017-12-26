@@ -908,8 +908,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
             }
 
             u.termutes.add(new CommutivePermutations(
-                    $.pFast(The.subterms(xs)),
-                    $.pFast(The.subterms(ys))));
+                    $.pFast($.vFast(xs)),
+                    $.pFast($.vFast(ys))));
             return true;
         }
 //        } else /* yss!=xss */ {

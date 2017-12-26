@@ -30,7 +30,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
     private final ShuffledSubterms yy;
 
     public Choose2(/*@NotNull*/ Ellipsis xEllipsis, /*@NotNull*/ Unify f, /*@NotNull*/ SortedSet<Term> x, /*@NotNull*/ SortedSet<Term> yFree) {
-        super($.p(x), xEllipsis, $.p(yFree));
+        super($.pFast(x), xEllipsis, $.pFast(yFree));
         this.f = f;
         this.xEllipsis = xEllipsis;
         this.x = x.toArray(new Term[x.size()]);
