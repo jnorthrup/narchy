@@ -9,7 +9,6 @@ import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import nars.NAR;
 import nars.Task;
-import nars.control.Causable;
 import nars.task.ITask;
 import org.eclipse.collections.api.set.primitive.LongSet;
 import org.eclipse.collections.impl.factory.primitive.LongSets;

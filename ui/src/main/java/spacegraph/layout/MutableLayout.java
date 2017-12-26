@@ -2,12 +2,10 @@ package spacegraph.layout;
 
 import jcog.list.FastCoWList;
 import org.jetbrains.annotations.Nullable;
-import org.w3c.dom.ls.LSException;
 import spacegraph.Surface;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 
@@ -28,8 +26,13 @@ public class MutableLayout extends Layout {
 
     @Override
     public synchronized void start(@Nullable Surface parent) {
-        super.start(parent);
-        children.forEach(c -> c.start(this));
+        synchronized (children) {
+            super.start(parent);
+            children.forEach(c -> {
+                if (c.parent != this)
+                    c.start(this);
+            });
+        }
     }
 
     @Override
@@ -64,8 +67,10 @@ public class MutableLayout extends Layout {
 
     @Override
     public synchronized void stop() {
-        children.clear();
-        super.stop();
+        synchronized (children) {
+            super.stop();
+            children.clear();
+        }
     }
 
     @Override
@@ -76,7 +81,7 @@ public class MutableLayout extends Layout {
 
     final static Surface[] EMPTY_SURFACE_ARRAY = new Surface[0];
 
-    static final IntFunction<Surface[]> NEW_SURFACE_ARRAY = (i)->{
+    static final IntFunction<Surface[]> NEW_SURFACE_ARRAY = (i) -> {
         return i == 0 ? EMPTY_SURFACE_ARRAY : new Surface[i];
     };
 
@@ -92,7 +97,7 @@ public class MutableLayout extends Layout {
                 if (!super.add(surface)) {
                     return false;
                 }
-                if (surface != null) {
+                if (parent != null) {
                     surface.start(MutableLayout.this);
                     layout();
                 }
@@ -114,7 +119,7 @@ public class MutableLayout extends Layout {
                     if (old != null) {
                         old.stop();
                     }
-                    if (neww != null && parent!=null) {
+                    if (neww != null && parent != null) {
                         neww.start(MutableLayout.this);
                     }
                 }

@@ -62,11 +62,6 @@ public class AspectAlign extends Layout {
         if (the!=null) the.start(this);
     }
 
-    @Override
-    public synchronized void stop() {
-        if (the!=null) the.stop();
-        super.stop();
-    }
 
     public AspectAlign scale(float sx, float sy) {
         this.scaleX = sx;

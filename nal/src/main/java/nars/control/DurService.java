@@ -24,7 +24,9 @@ abstract public class DurService extends NARService implements Runnable {
 
     protected final NAR nar;
     private long now;
-    final AtomicBoolean busy = new AtomicBoolean(false);
+
+    private final AtomicBoolean busy = new AtomicBoolean(false);
+
     private boolean enabled;
 
 

@@ -97,7 +97,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
         //pixels.resolution(0.1f);
 
 
-        //actionsReflect();
+        actionsReflect();
         //actionsTriState();
         actionsToggle();
 

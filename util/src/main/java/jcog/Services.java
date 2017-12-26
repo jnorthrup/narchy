@@ -14,7 +14,6 @@
 package jcog;
 
 import com.google.common.annotations.GwtIncompatible;
-import com.google.errorprone.annotations.CanIgnoreReturnValue;
 import jcog.event.ListTopic;
 import jcog.event.Topic;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
@@ -290,7 +289,6 @@ public class Services<X, C>  {
      *
      * @return this
      */
-    @CanIgnoreReturnValue
     public Services<X,C> stop() {
         for (Service<C> service : services.values()) {
             service.stop(this, exe, null);

@@ -9,7 +9,7 @@ import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.bag.BagClustering;
-import nars.control.Causable;
+import nars.exe.Causable;
 import nars.control.Cause;
 import nars.control.CauseChannel;
 import nars.task.ITask;
@@ -195,7 +195,7 @@ public class ConjClustering extends Causable {
 
             do {
                 if (!gg.hasNext())
-                    break main;
+                    break;
 
                 Task t =
                         gg.next().id;

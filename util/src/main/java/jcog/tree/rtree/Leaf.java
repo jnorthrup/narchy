@@ -100,6 +100,17 @@ public class Leaf<T> extends AbstractNode<T, T> {
             if (size < model.max) {
                 grow(tb);
 
+
+                //TEMPORARY
+                for (Object x : data) {
+                    if (x == t) {
+                        String s = "uplicate: " + x + " " + t;
+                        System.out.println(s);
+                        throw new RuntimeException(s);
+                    }
+                }
+                //TEMPORARY
+
                 data[size++] = t;
 
                 next = this;
@@ -148,7 +159,7 @@ public class Leaf<T> extends AbstractNode<T, T> {
             T[] data = this.data;
             for (int i = 0; i < s; i++) {
                 T d = data[i];
-                if (t == d || t.equals(d)) {
+                if (t.equals(d)) {
                     model.merge(d, t);
                     return true;
                 }
@@ -168,7 +179,7 @@ public class Leaf<T> extends AbstractNode<T, T> {
         int i;
         for (i = 0; i < size; i++) {
             T d = data[i];
-            if (t == d || t.equals(d))
+            if (t.equals(d))
                 break; //found
         }
         if (i == size)
@@ -183,7 +194,7 @@ public class Leaf<T> extends AbstractNode<T, T> {
             Arrays.fill(data, i, size, null);
         }
 
-        this.size -= 1;
+        this.size--;
         removed[0] = true;
 
         bounds = this.size > 0 ? HyperRegion.mbr(model.bounds, data, this.size) : null;
@@ -222,7 +233,7 @@ public class Leaf<T> extends AbstractNode<T, T> {
             if (r == null) return true;
 
             if (rect.intersects(r)) {
-                boolean fullyContained = rect.contains(r); //if it contains this node, then we dont need to test intersection for each child
+                boolean fullyContained = s > 1 && rect.contains(r); //if it contains this node, then we dont need to test intersection for each child. but only do the test if s > 1
                 T[] data = this.data;
                 for (int i = 0; i < s; i++) {
                     T d = data[i];
@@ -240,7 +251,7 @@ public class Leaf<T> extends AbstractNode<T, T> {
         if (s > 0) {
             HyperRegion r = this.bounds;
             if (r!=null && rect.intersects(r)) { //not sure why but it seems this has to be intersects and not contains
-                boolean fullyContained = rect.contains(r); //if it contains this node, then we dont need to test intersection for each child
+                boolean fullyContained = s > 1 && rect.contains(r); //if it contains this node, then we dont need to test intersection for each child. but only do the test if s > 1
                 T[] data = this.data;
                 for (int i = 0; i < s; i++) {
                     T d = data[i];
@@ -260,7 +271,9 @@ public class Leaf<T> extends AbstractNode<T, T> {
 
     @Override
     public void forEach(Consumer<? super T> consumer) {
-        for (int i = 0; i < size; i++) {
+        T[] data = this.data;
+        short s = this.size;
+        for (int i = 0; i < s; i++) {
             T d = data[i];
             if (d != null)
                 consumer.accept(d);

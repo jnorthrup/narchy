@@ -21,7 +21,7 @@ public class ServicesTest {
 
         s.printServices(System.out);
 
-        System.out.println(sb);
+        //System.out.println(sb);
     }
 
     private static class DummyService extends Services.AbstractService {

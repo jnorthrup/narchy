@@ -2,7 +2,7 @@ package nars.util.signal;
 
 import nars.NAR;
 import nars.concept.SensorConcept;
-import nars.control.Causable;
+import nars.exe.Causable;
 
 /**
  * Created by me on 9/21/16.

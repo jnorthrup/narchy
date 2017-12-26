@@ -170,6 +170,12 @@ abstract public class Layout extends Surface {
         return false;
     }
 
+    @Override
+    public synchronized void stop() {
+        forEach(Surface::stop);
+        super.stop();
+    }
+
     abstract public void forEach(Consumer<Surface> o);
 
     /**

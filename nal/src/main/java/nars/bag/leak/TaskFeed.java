@@ -2,7 +2,7 @@ package nars.bag.leak;
 
 import nars.NAR;
 import nars.Task;
-import nars.control.Causable;
+import nars.exe.Causable;
 import nars.control.CauseChannel;
 import nars.task.ITask;
 

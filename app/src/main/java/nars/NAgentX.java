@@ -247,8 +247,8 @@ abstract public class NAgentX extends NAgent {
 //        ), 800, 600);
 
 
-        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (t->t.isInput()), 32, 128);
-        ConjClustering conjClusterBnonInput = new ConjClustering(n, BELIEF, (t->!t.isInput()), 4, 8);
+        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 32, 128);
+        ConjClustering conjClusterBnonInput = new ConjClustering(n, BELIEF, (t->!t.isInput()), 4, 16);
 
         //ConjClustering conjClusterG = new ConjClustering(n, 3, GOAL, true, false, 16, 64);
 
@@ -353,6 +353,8 @@ abstract public class NAgentX extends NAgent {
 
         {
 
+            //a.nar.services.printServices(System.out);
+
             chart(a);
 
 //            window(new ConceptView(a.happy,n), 800, 600);
@@ -361,6 +363,8 @@ abstract public class NAgentX extends NAgent {
             window(new TabPane(Map.of(
                 "nar", ()->Vis.reflect(n),
                 "exe", ()-> ExecCharts.exePanel(n),
+                "can", ()-> ExecCharts.causePanel(n),
+                "svc", ()-> Vis.reflect(n.services),
                 "emote", ()-> new Vis.EmotionPlot(64, a),
                 "concepts", ()-> bagHistogram((Iterable) ()->n.conceptsActive().iterator(), 8)
             )), 800, 800);
@@ -449,75 +453,6 @@ abstract public class NAgentX extends NAgent {
     }
 
 
-    private static Surface metaGoalChart(NAgent a) {
-
-        return new TreeChart<Cause>() {
-            final DurService on;
-
-            final FasterList<ItemVis<Cause>> cache = new FasterList();
-
-            final Function<Cause, TreeChart.ItemVis<Cause>> builder = ((i) -> {
-                short id = i.id;
-                ItemVis<Cause> item;
-                if (cache.capacity() - 1 < id)
-                    cache.ensureCapacity(id + 16);
-                else {
-                    item = cache.get(id);
-                    if (item != null)
-                        return item;
-                }
-
-
-                String str = i.toString();
-                if (str.startsWith("class nars."))
-                    str = str.substring("class nars.".length()); //skip default toString
-
-                if (str.startsWith("class "))
-                    str = str.substring(5); //skip default toString
-
-                item = new CauseVis(i, str);
-                cache.set(id, item);
-                return item;
-            });
-
-            {
-
-                on = a.onFrame(() -> {
-                    update(a.nar.causes, (c, i) -> {
-                        float v = c.value();
-                        float r, g, b;
-                        if (v < 0) {
-                            r = 0.75f * Math.max(0.1f, Math.min(1f, -v));
-                            g = 0;
-                        } else {
-                            g = 0.75f * Math.max(0.1f, Math.min(1f, +v));
-                            r = 0;
-                        }
-
-                        float t = Util.sum(((FloatFunction<Traffic>) (p -> Math.abs(p.current + p.prev))), c.goal) / 2f;
-
-                        b = Math.max(r, g) / 2f * Util.unitize(t);
-
-                        i.update(v, r, g, b);
-//                        i.updateMomentum(
-//                                //0.01f + Util.sqr(Util.tanhFast(v)+1),
-//                                //Math.signum(v) *(1+Math.abs(v))*(t),
-//                                //Math.signum(v) * t,
-//                                v,
-//                                0.25f,
-//                                r, g, b);
-
-                    }, builder);
-                });
-            }
-
-            @Override
-            public void stop() {
-                super.stop();
-                on.off();
-            }
-        };
-    }
 
 
     //    public static class NARSView extends Grid {
@@ -843,17 +778,6 @@ abstract public class NAgentX extends NAgent {
             add(m.id(i) + "_in", () -> m.trafficInput(i), 0f, 1f);
             add(m.id(i), () -> m.trafficActive(i), 0f, 1f);
             a.onFrame(this::update);
-        }
-    }
-
-    private static class CauseVis extends TreeChart.ItemVis<Cause> {
-        public CauseVis(Cause i, String str) {
-            super(i, StringUtils.abbreviate(str, 26));
-        }
-
-        @Override
-        public float requestedArea() {
-            return 0.01f + super.requestedArea();
         }
     }
 

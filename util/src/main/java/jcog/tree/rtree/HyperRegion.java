@@ -21,6 +21,8 @@ package jcog.tree.rtree;
          */
 
 
+import jcog.Util;
+
 import java.util.function.Function;
 
 /**
@@ -45,11 +47,7 @@ public interface HyperRegion<X> {
         HyperRegion bounds = builder.apply(rect[0]);
         for (int k = 1; k < size; k++) {
             X rr = rect[k];
-            if (rr == null)
-                continue;
             HyperRegion r = builder.apply(rr);
-            if (r == null)
-                break;
             bounds = bounds.mbr(r);
         }
         return bounds;
@@ -62,8 +60,6 @@ public interface HyperRegion<X> {
         HyperRegion<X> bounds = rect[0];
         for (int k = 1; k < rect.length; k++) {
             HyperRegion<X> r = rect[k];
-            if (r == null)
-                continue;
             bounds = bounds.mbr(r);
         }
         return bounds;
@@ -194,17 +190,15 @@ public interface HyperRegion<X> {
     }
 
     static <T> HyperRegion[] toArray(T[] data, int size, Function<T, HyperRegion> builder) {
-        HyperRegion[] h = new HyperRegion[size];
-        for (int i = 0; i < size; i++) {
-            h[i] = builder.apply(data[i]);
-        }
-        return h;
+        return Util.map(builder::apply, new HyperRegion[size], data);
     }
 
     /**
      * gets the distance along a certain dimension from this region's to another's extrema
      */
     default double distance(HyperRegion X, int dim, boolean maxOrMin, boolean XmaxOrMin) {
+        if(this == X)
+            return 0;
         return Math.abs(
                 coord(maxOrMin, dim) - X.coord(XmaxOrMin, dim)
         );

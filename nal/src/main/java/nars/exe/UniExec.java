@@ -2,7 +2,6 @@ package nars.exe;
 
 import jcog.Services;
 import nars.NAR;
-import nars.control.Causable;
 
 import java.util.List;
 import java.util.Objects;

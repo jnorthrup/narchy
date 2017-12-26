@@ -3,7 +3,6 @@ package nars.exe;
 import com.google.common.base.Joiner;
 import jcog.Services;
 import jcog.Util;
-import jcog.decide.Roulette;
 import jcog.learn.Autoencoder;
 import jcog.learn.deep.RBM;
 import jcog.list.FastCoWList;
@@ -12,7 +11,6 @@ import jcog.math.RecycledSummaryStatistics;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.util.Flip;
 import nars.NAR;
-import nars.control.Causable;
 import nars.control.Cause;
 import nars.control.MetaGoal;
 import nars.control.Traffic;
@@ -20,7 +18,6 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.LongSupplier;
 import java.util.stream.IntStream;
 
 import static jcog.Texts.n2;

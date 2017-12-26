@@ -20,7 +20,7 @@ public class SplitTest {
 
         for (Spatialization.DefaultSplits s : Spatialization.DefaultSplits.values()) {
             for (int min : new int[]{2, 3, 4}) {
-                for (int max : new int[]{8}) {
+                for (int max : new int[]{min+1, 8}) {
 
 
                     final RTree<RectDouble2D> rTree = RTree2DTest.createRect2DTree(s, min, max);

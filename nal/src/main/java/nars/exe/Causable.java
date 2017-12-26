@@ -1,8 +1,9 @@
-package nars.control;
+package nars.exe;
 
 import jcog.exe.Can;
 import nars.NAR;
 import nars.Param;
+import nars.control.NARService;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ abstract public class Causable extends NARService {
     public final Can can;
 
     @Nullable
-    public final AtomicBoolean busy;
+    final AtomicBoolean busy;
 
     @Deprecated protected Causable(NAR nar) {
         this(nar, null);
@@ -36,7 +37,7 @@ abstract public class Causable extends NARService {
     protected Causable(NAR nar, Term id) {
         super(null, id);
         busy = singleton() ? new AtomicBoolean(false) : null;
-        can = new MyCan(term().toString());
+        can = new Can(term().toString());
         if (nar!=null)
             nar.on(this);
     }
@@ -134,17 +135,17 @@ abstract public class Causable extends NARService {
 //        }
 //    }
 
-    private static final class MyCan extends Can {
-
-        public MyCan(String id) {
-            super(id);
-        }
-
-//        @Override
-//        public void commit() {
-//            int ii = iterations();
-//            if (ii > 0)
-//                nar.exe.add(new InvokeCause(Causable.this, ii));
+//    private static final class MyCan extends Can {
+//
+//        public MyCan(String id) {
+//            super(id);
 //        }
-    }
+//
+////        @Override
+////        public void commit() {
+////            int ii = iterations();
+////            if (ii > 0)
+////                nar.exe.add(new InvokeCause(Causable.this, ii));
+////        }
+//    }
 }

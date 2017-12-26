@@ -58,9 +58,9 @@ public class ReflectionSurface<X> extends Grid {
         if (x instanceof Surface) {
             if (((Surface)x).parent==null) {
                 //l.add(col(new Label(k), (Surface)y));
-                if (yLabel!=null)
-                    target.add(new LabeledPane(yLabel, (Surface)x));
-                else
+                if (yLabel!=null) {
+                    target.add(new LabeledPane(yLabel, (Surface) x));
+                } else
                     target.add((Surface) x);
             }
             return;

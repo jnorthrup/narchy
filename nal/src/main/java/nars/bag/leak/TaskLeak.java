@@ -7,7 +7,7 @@ import jcog.pri.PLink;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Task;
-import nars.control.Causable;
+import nars.exe.Causable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

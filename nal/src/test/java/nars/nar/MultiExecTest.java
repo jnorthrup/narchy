@@ -6,7 +6,7 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.control.Causable;
+import nars.exe.Causable;
 import nars.control.MetaGoal;
 import nars.control.Traffic;
 import nars.exe.Exec;

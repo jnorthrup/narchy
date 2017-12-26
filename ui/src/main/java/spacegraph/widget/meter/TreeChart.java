@@ -55,14 +55,18 @@ public class TreeChart<X> extends Surface {
         }
     }
 
-    public void update(Collection<? extends X> children, BiConsumer<X, ItemVis<X>> update) {
-        update(children, update, cached(i -> new ItemVis<>(i, i.toString())));
+//    public void update(Collection<? extends X> children, BiConsumer<X, ItemVis<X>> update) {
+//        update(children, update, cached(i -> new ItemVis<>(i, i.toString())));
+//    }
+
+    public static <X> Function<X, ItemVis<X>> cached() {
+        return cached(i -> new ItemVis<>(i, i.toString()));
     }
 
     public static <X> Function<X, ItemVis<X>> cached(Function<X, ItemVis<X>> vis) {
         return new Function<>() {
             final Map<X, ItemVis<X>> cache
-                    = new CustomConcurrentHashMap(STRONG, EQUALS, SOFT, EQUALS, 256);
+                    = new CustomConcurrentHashMap(STRONG, EQUALS, SOFT, IDENTITY, 256);
 //            final Cache<X, ItemVis<X>> cache
 //                    Caffeine.newBuilder().maximumSize(1024).build(); //TODO just use LRUHashMap or something
 

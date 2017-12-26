@@ -135,6 +135,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
                         return null; //merged
                     }
 
+
                     //                if (reportNextSizeDelta(parent)) {
                     //                    child[i] = m;
                     //                    grow(m); //subtree was changed
@@ -166,9 +167,8 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
             final int bestLeaf = chooseLeaf(t, tRect, parent, model);
 
             Node nextBest = child[bestLeaf].add(t, this, model, added);
-            if (nextBest == null) {
-                return null; //merged
-            }
+            assert(nextBest!=null);
+            //if (nextBest == null) {                return null; /*merged*/             }
 
             child[bestLeaf] = nextBest;
 
@@ -210,7 +210,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
     @Override
     public Node<T, ?> remove(final T x, HyperRegion xBounds, Spatialization<T> model, boolean[] removed) {
 
-        assert (removed[0] == false);
+        assert (!removed[0]);
 
         for (int i = 0; i < size; i++) {
             Node<T, ?> cBefore = data[i];
@@ -306,9 +306,10 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
             //assert(bestNode != -1);
             return bestNode;
         } else {
-            final Node<T, ?> n = model.newLeaf();
-            cc[size++] = n;
-            return size - 1;
+//            final Node<T, ?> n = model.newLeaf();
+//            cc[size++] = n;
+//            return size - 1;
+            throw new RuntimeException("shouldnt happen");
         }
     }
 
@@ -370,7 +371,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
             Node[] data = this.data;
             for (int i = 0; i < s; i++) {
                 Node d = data[i];
-                if (d != null && !d.containing(rect, t, model))
+                if (!d.containing(rect, t, model))
                     return false;
             }
         }
@@ -385,7 +386,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
             Node[] data = this.data;
             for (int i = 0; i < s; i++) {
                 Node d = data[i];
-                if (d != null && !d.intersecting(rect, t, model))
+                if (!d.intersecting(rect, t, model))
                     return false;
             }
         }
