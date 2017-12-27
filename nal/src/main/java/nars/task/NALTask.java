@@ -47,12 +47,13 @@ public class NALTask extends Pri implements Task {
 
 
     public NALTask(Term term, byte punc, @Nullable Truthed truth, long creation, long start, long end, long[] stamp) throws InvalidTaskException {
-        super(0 /* 0 pri by default */);
+        super(0 );
 
-        if ((punc == BELIEF) || (punc == GOAL)) {
-            if (truth == null)
-                throw new InvalidTaskException(term, "null truth");
-        }
+        if (truth == null && ((punc == BELIEF) || (punc == GOAL)))
+            throw new InvalidTaskException(term, "null truth");
+
+        if ((start == ETERNAL && end != ETERNAL) || (start != ETERNAL && start > end))
+            throw new RuntimeException("start=" + start + ", end=" + end + " is invalid task occurrence time");
 
         if (Param.DEBUG)
             Task.validTaskTerm(term, punc, false);
@@ -64,8 +65,6 @@ public class NALTask extends Pri implements Task {
         this.punc = punc;
 
 
-        assert (start == ETERNAL && end == ETERNAL) || (start != ETERNAL && start <= end) :
-                "start=" + start + ", end=" + end + " is invalid task occurrence time";
 
 //        //ensure that a temporal task is at least as long as the contained dt.
 //        //bugs and rounding off-by-N errors may produce inexact results, this corrects it.
@@ -82,13 +81,13 @@ public class NALTask extends Pri implements Task {
 
         this.start = start;
         this.end = end;
+        this.creation = creation;
 
         //EVIDENCE STAMP
         assert (punc == COMMAND || (stamp.length > 0)) : "non-command tasks must have non-empty stamp";
         this.stamp = stamp;
 
         this.hash = Task.hash(term, this.truth, punc, start, end, stamp);
-        this.creation = creation;
 
         this.meta = new CompactArrayMap();
         //READY

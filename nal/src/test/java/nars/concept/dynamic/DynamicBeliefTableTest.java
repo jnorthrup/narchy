@@ -225,11 +225,12 @@ public class DynamicBeliefTableTest {
                         n.conceptualize($("(&&,x,y,z)")
                         ), n.time()).toString()
         );
-        assertEquals(
-                1, n.belief(
-                        $("(&&,x,y,z)")
-                        , n.time()).stamp().length
-        );
+        Task bXYZ = n.belief(
+                $("(&&,x,y,z)")
+                , n.time());
+        assertEquals(1, bXYZ.stamp().length);
+        assertEquals(3, bXYZ.stamp()[0]); //should be stamp #3
+
         assertEquals(
                 "%0.0;.81%", n.beliefTruth(
                         n.conceptualize($("(&&,y,z)")

@@ -167,8 +167,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
             final int bestLeaf = chooseLeaf(t, tRect, parent, model);
 
             Node nextBest = child[bestLeaf].add(t, this, model, added);
-            assert(nextBest!=null);
-            //if (nextBest == null) {                return null; /*merged*/             }
+            if (nextBest == null) {                return null; /*merged*/             }
 
             child[bestLeaf] = nextBest;
 

@@ -1,7 +1,6 @@
 package nars.concept.dynamic;
 
 import jcog.TODO;
-import jcog.Util;
 import jcog.list.FasterList;
 import nars.*;
 import nars.concept.Concept;
@@ -132,7 +131,7 @@ abstract public class DynamicTruthModel {
 
 
 //        //if (template instanceof Compound) {
-        DynTruth result = commit(d);
+        DynTruth result = commit(d, n);
         if (result == null)
             return null;
 
@@ -161,7 +160,7 @@ abstract public class DynamicTruthModel {
     /**
      * override for postprocessing
      */
-    protected DynTruth commit(DynTruth d) {
+    protected DynTruth commit(DynTruth d, NAR n) {
         return d;
     }
 
@@ -188,8 +187,8 @@ abstract public class DynamicTruthModel {
         }
 
         @Override
-        protected DynTruth commit(DynTruth d) {
-            super.commit(d);
+        protected DynTruth commit(DynTruth d, NAR n) {
+            super.commit(d, n);
             d.freq = 1f - d.freq;
             return d;
         }
@@ -220,7 +219,7 @@ abstract public class DynamicTruthModel {
         }
 
         @Override
-        protected DynTruth commit(DynTruth d) {
+        protected DynTruth commit(DynTruth d, NAR nar) {
             List<Truth> l = d.truths;
 
             int n = l.size();
@@ -231,6 +230,9 @@ abstract public class DynamicTruthModel {
             //sort by lowest expectation
             jcog.data.array.Arrays.sort(order, (i) -> l.get(i) != null ? (1f - f(l.get(i).expectation())) : Float.NEGATIVE_INFINITY);
 
+            float confMin = nar.confMin.floatValue();
+            float freqRes = nar.freqResolution.floatValue();
+
             float f = 1f, c = 1f;
             int considered = 0;
             for (int i = 0; i < n; i++) {
@@ -238,9 +240,12 @@ abstract public class DynamicTruthModel {
                 if (x == null)
                     return null; //unknown
                 c *= x.conf();
+                if (c < confMin)
+                    return null;
                 f *= f(x.freq());
                 considered++;
-                if (Util.equals(f, 0, Param.TRUTH_EPSILON)) {
+                if (f < freqRes) {
+                    f = 0;
                     //short-circuit
                     if (d.e != null && i < n - 1) {
                         //delete the tasks (evidence) from the dyntruth which are not involved

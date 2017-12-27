@@ -1,24 +1,24 @@
 package jcog.tree.rtree;
 
-        /*
-         * #%L
-         * Conversant RTree
-         * ~~
-         * Conversantmedia.com © 2016, Conversant, Inc. Conversant® is a trademark of Conversant, Inc.
-         * ~~
-         * Licensed under the Apache License, Version 2.0 (the "License");
-         * you may not use this file except in compliance with the License.
-         * You may obtain a copy of the License at
-         *
-         *      http://www.apache.org/licenses/LICENSE-2.0
-         *
-         * Unless required by applicable law or agreed to in writing, software
-         * distributed under the License is distributed on an "AS IS" BASIS,
-         * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-         * See the License for the specific language governing permissions and
-         * limitations under the License.
-         * #L%
-         */
+/*
+ * #%L
+ * Conversant RTree
+ * ~~
+ * Conversantmedia.com © 2016, Conversant, Inc. Conversant® is a trademark of Conversant, Inc.
+ * ~~
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 
 import jcog.Util;
 import jcog.list.ArrayIterator;
@@ -97,20 +97,19 @@ public class Leaf<T> extends AbstractNode<T, T> {
         if (parent != null && !ctm) {
             Node<T, ?> next;
 
-            if (size < model.max) {
-                grow(tb);
-
-
-                //TEMPORARY
-                for (Object x : data) {
-                    if (x == t) {
-                        String s = "uplicate: " + x + " " + t;
-                        System.out.println(s);
-                        throw new RuntimeException(s);
-                    }
+            //TEMPORARY - why can this happen
+            for (int i = 0, s = size; i < s; i++) {
+                T x = data[i];
+                if (x.equals(t)) {
+                    model.merge(x, t);
+                    return null;
                 }
-                //TEMPORARY
+            }
+            //TEMPORARY
 
+            if (size < model.max) {
+
+                grow(tb);
                 data[size++] = t;
 
                 next = this;
@@ -126,8 +125,6 @@ public class Leaf<T> extends AbstractNode<T, T> {
             return (parent == null && ctm) ? null : this;
         }
     }
-
-
 
 
     @Override
@@ -250,7 +247,7 @@ public class Leaf<T> extends AbstractNode<T, T> {
         short s = this.size;
         if (s > 0) {
             HyperRegion r = this.bounds;
-            if (r!=null && rect.intersects(r)) { //not sure why but it seems this has to be intersects and not contains
+            if (r != null && rect.intersects(r)) { //not sure why but it seems this has to be intersects and not contains
                 boolean fullyContained = s > 1 && rect.contains(r); //if it contains this node, then we dont need to test intersection for each child. but only do the test if s > 1
                 T[] data = this.data;
                 for (int i = 0; i < s; i++) {
