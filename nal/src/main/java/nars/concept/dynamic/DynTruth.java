@@ -17,6 +17,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 import static nars.Op.*;
@@ -37,6 +38,9 @@ public final class DynTruth {
 
     Term term = null;
     private float maxComponentEvi = 0;
+
+    /** scratch for intermediate buffering */
+    public List<Truth> truths = null;
 
     public DynTruth(FasterList<Task> e) {
         //this.t = t;
@@ -102,17 +106,23 @@ public final class DynTruth {
         Term c = this.term;
         long start, end;
         if (!c.op().temporal) {
-            //dilute the evidence in proportion to temporal sparseness for non-temporal results
-            TimeFusion se = TimeFusion.the(e);
-            if (se!=null) {
-                evi *= se.factor;
-                if (evi < eviMin)
-                    return null;
-                start = se.unionStart;
-                end = se.unionEnd;
-            } else {
-                start = end = ETERNAL;
-            }
+             if (e.size() > 1) {
+                 //dilute the evidence in proportion to temporal sparseness for non-temporal results
+                 TimeFusion se = TimeFusion.the(e);
+                 if (se != null) {
+                     evi *= se.factor;
+                     if (evi < eviMin)
+                         return null;
+                     start = se.unionStart;
+                     end = se.unionEnd;
+                 } else {
+                     start = end = ETERNAL;
+                 }
+             } else {
+                 Task only = e.get(0);
+                 start = only.start();
+                 end = only.start();
+             }
         } else {
             long min = Long.MAX_VALUE;
             for (int i = 0, thisSize = e.size(); i < thisSize; i++) {
@@ -169,6 +179,6 @@ public final class DynTruth {
 
     void add(Task task, Truth sampled) {
         e.add(task);
-        maxComponentEvi = Math.max(maxComponentEvi, sampled.evi());
+        maxComponentEvi = sampled!=null ? Math.max(maxComponentEvi, sampled.evi()) : maxComponentEvi;
     }
 }

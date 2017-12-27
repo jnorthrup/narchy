@@ -17,8 +17,11 @@
  */
 package alice.tuprolog;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 
 /**
@@ -48,6 +51,7 @@ public class PrologPrimitive {
 	 */
     //private final Object[] primitive_args;
     public final String key;
+    private final MethodHandle mh;
 
 
     public PrologPrimitive(int type, String key, Library lib, Method m, int arity) throws NoSuchMethodException {
@@ -58,6 +62,15 @@ public class PrologPrimitive {
         this.key = key;
         source = lib;
         method = m;
+        try {
+            m.setAccessible(true);
+            if (Modifier.isStatic(m.getModifiers()))
+                mh = MethodHandles.lookup().unreflect(m);
+            else
+                mh = MethodHandles.lookup().unreflect(m).bindTo(source);
+        } catch (Throwable e) {
+            throw new RuntimeException(e);
+        }
         this.arity = arity;
     }
 
@@ -70,12 +83,17 @@ public class PrologPrimitive {
      * @throws IllegalAccessException
      * @throws Exception if invocation directive failure
      */
-    public void evalAsDirective(Struct g) throws IllegalAccessException, InvocationTargetException {
+    public void evalAsDirective(Struct g) throws Throwable {
         Object[] primitive_args = newArgs();
         for (int i=0; i<primitive_args.length; i++) {
             primitive_args[i] = g.subResolve(i);
         }
-        method.invoke(source,primitive_args);
+        //method.invoke(source,primitive_args);
+        try {
+            mh.invokeWithArguments(primitive_args);
+        } catch (Throwable throwable) {
+            throw throwable.getCause();
+        }
     }
 
 
@@ -90,10 +108,11 @@ public class PrologPrimitive {
         }
         try {
         	//System.out.println("PRIMITIVE INFO evalAsPredicate sto invocando metodo "+method.getName());
-            return (Boolean) method.invoke(source, primitive_args);
+            return (boolean)mh.invokeWithArguments(primitive_args);
+            //return (Boolean) method.invoke(source, primitive_args);
         } catch (InvocationTargetException e) {
             // throw new Exception(e.getCause());
-            throw /*new JavaException*/
+            throw //new JavaException
                     (e.getCause());
         }
     }
@@ -104,15 +123,17 @@ public class PrologPrimitive {
      * @throws Throwable
      */
     public Term evalAsFunctor(Struct g) throws Throwable {
-        try {
+//        try {
         Object[] primitive_args = newArgs();
             for (int i=0; i<primitive_args.length; i++) {
                 primitive_args[i] = g.subResolve(i);
             }
-            return ((Term)method.invoke(source,primitive_args));
-        } catch (Exception ex) {
-            throw ex.getCause();
-        }
+            return (Term)mh.invokeWithArguments(primitive_args);
+            //return ((Term)method.invoke(source,primitive_args));
+//        } catch (Exception ex) {
+//            //throw ex.getCause();
+//            throw ex;
+//        }
     }
 
 

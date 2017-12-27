@@ -161,6 +161,9 @@ public class JavaLibraryExceptionsTestCase {
 		Prolog engine = new Prolog();
 		String goal = "Source = 'public class Counter {  }', java_catch(java_class(Source, 'Counter', [], c), [('java.lang.ClassNotFoundException'(Cause, Message, StackTrace), true)], true).";
 		Solution info = engine.solve(goal);
+
+		new File("Counter.java").delete();
+		new File("Counter.class").delete();
 		assertTrue(info.isSuccess());
 		Term cause = info.getTerm("Cause");
 		assertFalse(cause instanceof Var);
@@ -168,8 +171,7 @@ public class JavaLibraryExceptionsTestCase {
 		assertFalse(message instanceof Var);
 		Term stackTrace = info.getTerm("StackTrace");
 		assertTrue(stackTrace.isList());
-		new File("Counter.java").delete();
-		new File("Counter.class").delete();
+
 	}
 
 	// verifico che java_call(ObjId, MethodInfo, ObjIdResult) lancia una

@@ -30,10 +30,10 @@ public class DynamicBeliefTableTest {
         long now = n.time();
         Concept axANDay = n.conceptualize($("(a:x && a:y)"));
         assertEquals($.t(1f, 0.81f), n.beliefTruth(axANDay, now));
-        assertEquals($.t(0f, 0.81f), n.beliefTruth(n.conceptualize($("(b:x && a:y)")), now));
-        assertEquals($.t(0f, 0.81f), n.beliefTruth(n.conceptualize($("(a:x && (--,a:y))")), now));
+        assertEquals($.t(0f, 0.90f), n.beliefTruth(n.conceptualize($("(b:x && a:y)")), now));
+        assertEquals($.t(0f, 0.90f), n.beliefTruth(n.conceptualize($("(a:x && (--,a:y))")), now));
         assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("((--,b:x) && a:y)")), now));
-        assertEquals($.t(0f, 0.81f), n.beliefTruth(n.conceptualize($("((--,b:x) && (--,a:y))")), now));
+        assertEquals($.t(0f, 0.90f), n.beliefTruth(n.conceptualize($("((--,b:x) && (--,a:y))")), now));
     }
 
     @Test
@@ -51,15 +51,15 @@ public class DynamicBeliefTableTest {
         for (long now : new long[]{0, n.time() /* 2 */, ETERNAL}) {
             assertTrue(n.conceptualize($("((x|y)-->a)")).beliefs() instanceof DynamicBeliefTable);
             assertEquals($.t(1f, 0.81f), n.beliefTruth("((x|y)-->a)", now));
-            assertEquals($.t(0f, 0.81f), n.beliefTruth(n.conceptualize($("((x|z)-->a)")), now));
-            assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("((x&z)-->a)")), now));
-            assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("(b --> (x|y))")), now));
-            assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("(b --> (x|z))")), now));
-            assertEquals($.t(0f, 0.81f), n.beliefTruth(n.conceptualize($("(b --> (x&z))")), now));
+            assertEquals($.t(0f, 0.90f), n.beliefTruth(n.conceptualize($("((x|z)-->a)")), now));
+            assertEquals($.t(1f, 0.90f), n.beliefTruth(n.conceptualize($("((x&z)-->a)")), now));
+            assertEquals($.t(1f, 0.90f), n.beliefTruth(n.conceptualize($("(b --> (x|y))")), now));
+            assertEquals($.t(1f, 0.90f), n.beliefTruth(n.conceptualize($("(b --> (x|z))")), now));
+            assertEquals($.t(0f, 0.90f), n.beliefTruth(n.conceptualize($("(b --> (x&z))")), now));
 
             Concept xIntNegY = n.conceptualize($("((x|--y)-->a)"));
             assertTrue(xIntNegY instanceof DynamicConcept);
-            assertEquals($.t(0f, 0.81f), n.beliefTruth(xIntNegY, now), now + " " + xIntNegY);
+            assertEquals($.t(0f, 0.90f), n.beliefTruth(xIntNegY, now), now + " " + xIntNegY);
             assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("((x|--z)-->a)")), now));
         }
     }
@@ -76,8 +76,8 @@ public class DynamicBeliefTableTest {
         Concept x23 = n.conceptualize($.inh(Int.range(2, 3), $.the("x")));
         Concept x123 = n.conceptualize($.inh(Int.range(1, 3), $.the("x")));
         assertEquals("%.50;.81%", n.beliefTruth(x12, ETERNAL).toString());
-        assertEquals("%0.0;.81%", n.beliefTruth(x23, ETERNAL).toString());
-        assertEquals("%0.0;.73%", n.beliefTruth(x123, ETERNAL).toString());
+        assertEquals("%0.0;.90%", n.beliefTruth(x23, ETERNAL).toString());
+        assertEquals("%0.0;.90%", n.beliefTruth(x123, ETERNAL).toString());
     }
 
     @Test
@@ -96,8 +96,8 @@ public class DynamicBeliefTableTest {
         Concept x23 = n.conceptualize($.inh($.p(Int.the(1), Int.range(2, 3)), $.the("x")));
         Concept x123 = n.conceptualize($.inh($.p(Int.the(1), Int.range(1, 3)), $.the("x")));
         assertEquals("%.50;.81%", n.beliefTruth(x12, ETERNAL).toString());
-        assertEquals("%0.0;.81%", n.beliefTruth(x23, ETERNAL).toString());
-        assertEquals("%0.0;.73%", n.beliefTruth(x123, ETERNAL).toString());
+        assertEquals("%0.0;.90%", n.beliefTruth(x23, ETERNAL).toString());
+        assertEquals("%0.0;.90%", n.beliefTruth(x123, ETERNAL).toString());
     }
 
 
@@ -127,7 +127,7 @@ public class DynamicBeliefTableTest {
         Concept ccn = n.conceptualize($("(&&, a:x, (--, a:y), a:z)"));
         assertTrue(ccn instanceof TaskConcept);
         Truth nown = n.beliefTruth(ccn, n.time());
-        assertTrue($.t(0f, 0.73f).equals(nown, 0.1f));
+        assertTrue($.t(0f, 0.90f).equals(nown, 0.1f));
 
         n.clear();
 
@@ -150,9 +150,9 @@ public class DynamicBeliefTableTest {
 
 //        DynamicBeliefTable xtable = (DynamicBeliefTable) (cc.beliefs());
 
-        for (long w : new long[] { ETERNAL, 0, 1 }) { //since it's eternal, it will be equal to any time calculated
+        for (long w : new long[]{ETERNAL, 0, 1}) { //since it's eternal, it will be equal to any time calculated
             assertEquals($.t(1, 0.81f), n.truth($("(x && y)"), BELIEF, w));
-            assertEquals($.t(0, 0.81f), n.truth($("(x && --y)"), BELIEF, w));
+            assertEquals($.t(0, 0.90f), n.truth($("(x && --y)"), BELIEF, w));
             assertEquals($.t(1, 0.81f), n.truth($("(x && --z)"), BELIEF, w));
         }
     }
@@ -192,9 +192,10 @@ public class DynamicBeliefTableTest {
                         $.$("fwd")
                 ).normalize();
 
-        assertTrue(c instanceof Compound, ()->c.toString());
-        assertTrue(Task.validTaskTerm(c), ()->c + " should be a valid task term");
+        assertTrue(c instanceof Compound, () -> c.toString());
+        assertTrue(Task.validTaskTerm(c), () -> c + " should be a valid task term");
     }
+
     @Test
     public void testDynamicConceptValid2() throws Narsese.NarseseException {
         Term c =
@@ -205,8 +206,77 @@ public class DynamicBeliefTableTest {
                         $.varDep(1)
                 ).normalize();
 
-        assertTrue(c instanceof Compound, ()->c.toString());
-        assertTrue(Task.validTaskTerm(c), ()->c + " should be a valid task term");
+        assertTrue(c instanceof Compound, () -> c.toString());
+        assertTrue(Task.validTaskTerm(c), () -> c + " should be a valid task term");
     }
 
+    @Test
+    public void testDynamicConjunctionShortCircuit() throws Narsese.NarseseException {
+        //only needs to consider the evidence which effectively short-circuits the result
+        //ie. once Intersection hits zero frequency it can not go any higher.
+
+        NAR n = NARS.tmp();
+        n.believe("x", 1f, 0.50f);
+        n.believe("y", 1f, 0.50f);
+        n.believe("z", 0f, 0.81f);
+        n.run(1);
+        assertEquals(
+                "%0.0;.81%", n.beliefTruth(
+                        n.conceptualize($("(&&,x,y,z)")
+                        ), n.time()).toString()
+        );
+        assertEquals(
+                1, n.belief(
+                        $("(&&,x,y,z)")
+                        , n.time()).stamp().length
+        );
+        assertEquals(
+                "%0.0;.81%", n.beliefTruth(
+                        n.conceptualize($("(&&,y,z)")
+                        ), n.time()).toString()
+        );
+        assertEquals(
+                "%1.0;.25%", n.beliefTruth(
+                        n.conceptualize($("(&&,x,y)")
+                        ), n.time()).toString()
+        );
+    }
+
+    @Test
+    public void testDynamicConjunctionShortCircuitEvenWithMissing() throws Narsese.NarseseException {
+
+        NAR n = NARS.tmp();
+        n.believe("x", 1f, 0.50f);
+        //n.believe("y", 1f, 0.50f); //Y unknown
+        n.believe("z", 0f, 0.81f);
+        n.run(1);
+        assertEquals(
+                "%0.0;.81%", n.beliefTruth(
+                        n.conceptualize($("(&&,x,y,z)")
+                        ), n.time()).toString()
+        );
+        assertEquals(
+                1, n.belief(
+                        $("(&&,x,y,z)")
+                        , n.time()).stamp().length
+        );
+    }
+
+    @Test
+    public void testDynamicUnionShortCircuit() throws Narsese.NarseseException {
+        NAR n = NARS.tmp();
+        n.believe("a:x", 0f, 0.50f);
+        n.believe("a:y", 0f, 0.50f);
+        n.believe("a:z", 1f, 0.81f);
+        n.run(1);
+        Term xyz = $("((&,x,y,z)-->a)");
+        assertEquals(
+                "%1.0;.81%", n.beliefTruth(
+                        n.conceptualize(xyz
+                        ), n.time()).toString()
+        );
+        assertEquals(
+                1, n.belief(xyz, n.time()).stamp().length
+        );
+    }
 }

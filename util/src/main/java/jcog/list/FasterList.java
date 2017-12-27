@@ -538,4 +538,18 @@ public class FasterList<X> extends FastList<X> {
         return x;
     }
 
+    public void removeNulls() {
+        switch (size) {
+            case 0: return;
+            case 1: if (get(0)==null) { size = 0; return; } break;
+
+            //TODO fast case 2
+        }
+
+        ListIterator<X> l = listIterator();
+        while (l.hasNext()) {
+            if (l.next()==null)
+                l.remove();
+        }
+    }
 }

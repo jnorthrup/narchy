@@ -443,8 +443,8 @@ public class KIFInput implements Runnable {
 //(query (exists (?MEMBER) (member ?MEMBER Org1-1)))
 //(answer yes)
         e.clear();
-        e.believe("Organization:{org1}");
-        e.input("member(#1, org1)?");
+//        e.believe("Organization:{org1}");
+//        e.input("member(#1, org1)?"); //conflicts with prolog 'member' functor
         e.run(1500);
 
         //(($_#AGENT,#OBJECT)-->needs)==>($_#AGENT,#OBJECT)-->wants)).

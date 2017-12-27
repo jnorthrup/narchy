@@ -3,10 +3,7 @@ package nars.concept.dynamic;
 import jcog.TODO;
 import jcog.Util;
 import jcog.list.FasterList;
-import nars.NAR;
-import nars.Op;
-import nars.Param;
-import nars.Task;
+import nars.*;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.concept.TaskConcept;
@@ -18,6 +15,7 @@ import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static nars.Op.*;
 import static nars.time.Tense.*;
@@ -32,7 +30,7 @@ abstract public class DynamicTruthModel {
     public DynTruth eval(final Term superterm, boolean beliefOrGoal, long start, long end, boolean stamp, NAR n) {
 
         final int DT = superterm.dt();
-        assert(DT!=XTERNAL);
+        assert (DT != XTERNAL);
 
         Term[] inputs = components(superterm);
         assert (inputs.length > 0) : this + " yielded no dynamic components for superterm " + superterm;
@@ -54,21 +52,20 @@ abstract public class DynamicTruthModel {
             long subStart, subEnd;
 
 
-                if (start == ETERNAL || superterm.op() != CONJ || DT==DTERNAL) {
-                    subStart = start;
-                    subEnd = end;
-                } else {
-                    int dt = superterm.subTimeSafe(it, odt);
-                    if (dt==DTERNAL) {
-                        superterm.subTimeSafe(it, odt);
-                        throw new RuntimeException(it + " not found in superterm: " + superterm + " -> " + Arrays.toString(inputs));
-                    }
-                    //assert (dt != DTERNAL): it + " not found in superterm: " + superterm;
-                    subStart = start + dt;
-                    subEnd = end + dt;
-                    odt += dt;
+            if (start == ETERNAL || superterm.op() != CONJ || DT == DTERNAL) {
+                subStart = start;
+                subEnd = end;
+            } else {
+                int dt = superterm.subTimeSafe(it, odt);
+                if (dt == DTERNAL) {
+                    superterm.subTimeSafe(it, odt);
+                    throw new RuntimeException(it + " not found in superterm: " + superterm + " -> " + Arrays.toString(inputs));
                 }
-
+                //assert (dt != DTERNAL): it + " not found in superterm: " + superterm;
+                subStart = start + dt;
+                subEnd = end + dt;
+                odt += dt;
+            }
 
 
             boolean negated = it.op() == Op.NEG;
@@ -77,44 +74,46 @@ abstract public class DynamicTruthModel {
 
             Concept subConcept =
                     n.concept(it);
-                    //n.conceptualize(it); //force creation of concept, which if dynamic, could provide data for use here
+            //n.conceptualize(it); //force creation of concept, which if dynamic, could provide data for use here
 
+            @Nullable Task bt;
+            @Nullable Truth nt;
+            @Nullable Term ot;
             if (!(subConcept instanceof TaskConcept)) {
                 if (Param.DEBUG) {
                     if (!(subConcept == null || !(subConcept instanceof NodeConcept)))
                         throw new RuntimeException(it + " does not reference a TaskConcept: " + subConcept);
                 }
-                return null;
-            }
 
-
-            Task bt;
-            Term ot;
-            Truth nt;
-            BeliefTable table = (BeliefTable) ((TaskConcept) subConcept).table(beliefOrGoal ? BELIEF : GOAL);
-            if (evi) {
-                //task
-
-                bt = table.match(subStart, subEnd, it, n);
-                if (bt == null)
-                    return null;
-                nt = bt.truth(subStart, subEnd, dur, 0f); //project to target time if task isnt at it
-                if (nt == null)
-                    return null;
-
-                ot = bt.term().negIf(negated);
-//                if (ot.hasXternal())
-//                    throw new RuntimeException("xternal");
-            } else {
-                //truth only
+                nt = null;
                 bt = null;
-                nt = table.truth(subStart, subEnd, n);
-                if (nt == null)
-                    return null;
-                ot = null;
+                ot = it;
+            } else {
+
+
+                BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);
+                if (evi) {
+                    //task
+
+                    bt = table.match(subStart, subEnd, it, n);
+                    if (bt == null)
+                        return null;
+                    nt = bt.truth(subStart, subEnd, dur, 0f); //project to target time if task isnt at it
+
+
+                    ot = bt.term().negIf(negated);
+                    //                if (ot.hasXternal())
+                    //                    throw new RuntimeException("xternal");
+                } else {
+                    //truth only
+                    bt = null;
+                    nt = table.truth(subStart, subEnd, n);
+
+                    ot = null;
+                }
             }
 
-            nt = nt.negIf(negated);
+            nt = nt != null ? nt.negIf(negated) : null;
 
             if (!add(i, d, nt, confMin))
                 return null;
@@ -131,12 +130,18 @@ abstract public class DynamicTruthModel {
             }
         }
 
+
+//        //if (template instanceof Compound) {
+        DynTruth result = commit(d);
+        if (result == null)
+            return null;
+
         if (evi) {
-            assert(!d.e.isEmpty());
+            assert (!d.e.isEmpty());
             if (outputs != null) {
                 Term reconstructed = superterm.op().the(DT, outputs);
                 if (reconstructed instanceof Bool) {
-                    if (reconstructed == True ) {
+                    if (reconstructed == True) {
                         throw new TODO("absolute true result"); //dont interfere with callee's calculation
                     } else {
                         return null;
@@ -147,8 +152,9 @@ abstract public class DynamicTruthModel {
                 d.term = superterm;
         }
 
-//        //if (template instanceof Compound) {
-        return commit(d);
+        if (d.e != null)
+            d.e.removeNulls();
+        return result;
     }
 
 
@@ -171,7 +177,7 @@ abstract public class DynamicTruthModel {
      */
     public static class Union extends DynamicTruthModel.Intersection {
 
-        public Union( Term... comp) {
+        public Union(Term... comp) {
             super(comp);
             assert (comp.length > 1);
         }
@@ -183,6 +189,7 @@ abstract public class DynamicTruthModel {
 
         @Override
         protected DynTruth commit(DynTruth d) {
+            super.commit(d);
             d.freq = 1f - d.freq;
             return d;
         }
@@ -190,31 +197,67 @@ abstract public class DynamicTruthModel {
 
     public static class Intersection extends DynamicTruthModel {
 
-        /** for use with conjunctions whose subterms may change as its DT changes */
+        /**
+         * for use with conjunctions whose subterms may change as its DT changes
+         */
         public final static Intersection conj = new Intersection(null);
-        
+
         private final Term[] comp;
 
-        public Intersection( Term[] comp) {
+        public Intersection(Term[] comp) {
             this.comp = comp;
         }
 
         @Override
         protected final boolean add(int subterm, DynTruth d, Truth truth, float confMin) {
 
-            float f0 = d.freq;
-            d.freq *= f(truth.freq());
+            if (subterm == 0)
+                if (d.truths == null)
+                    d.truths = $.newArrayList();
 
-            //HACK for subterms beyond 2, if the frequency has not changed, do not decrease confidence
-            if (subterm < 2 || !Util.equals(f0, d.freq, Param.TRUTH_EPSILON)) {
-                d.conf *= truth.conf();
-                if (d.conf < confMin)
-                    return false;
-            }
-
-
+            d.truths.add(truth);
             return true;
+        }
 
+        @Override
+        protected DynTruth commit(DynTruth d) {
+            List<Truth> l = d.truths;
+
+            int n = l.size();
+            int[] order = new int[n];
+            for (int i = 0; i < n; i++)
+                order[i] = i;
+
+            //sort by lowest expectation
+            jcog.data.array.Arrays.sort(order, (i) -> l.get(i) != null ? (1f - f(l.get(i).expectation())) : Float.NEGATIVE_INFINITY);
+
+            float f = 1f, c = 1f;
+            int considered = 0;
+            for (int i = 0; i < n; i++) {
+                Truth x = l.get(order[i]);
+                if (x == null)
+                    return null; //unknown
+                c *= x.conf();
+                f *= f(x.freq());
+                considered++;
+                if (Util.equals(f, 0, Param.TRUTH_EPSILON)) {
+                    //short-circuit
+                    if (d.e != null && i < n - 1) {
+                        //delete the tasks (evidence) from the dyntruth which are not involved
+                        for (int j = i + 1; j < n; j++) {
+                            d.e.set(order[j], null);
+                        }
+                    }
+                    break;
+                }
+            }
+            d.truths = null; //done
+            if (considered == 0)
+                return null;
+
+            d.freq = f;
+            d.conf = c;
+            return d;
         }
 
         protected float f(float freq) {
@@ -222,10 +265,9 @@ abstract public class DynamicTruthModel {
         }
 
 
-        
         @Override
         public Term[] components(Term superterm) {
-            return comp!=null ? comp : superterm.subterms().arrayShared();
+            return comp != null ? comp : superterm.subterms().arrayShared();
         }
 
     }
@@ -234,7 +276,6 @@ abstract public class DynamicTruthModel {
         private final Term[] components;
 
         public Difference(Term[] xy) {
-            super();
 
 //            assert (!(xy[0] instanceof Bool) && !(xy[1] instanceof Bool));
 //            assert (!(xy[0] instanceof Variable) && !(xy[1] instanceof Variable)) :
@@ -247,7 +288,7 @@ abstract public class DynamicTruthModel {
             this(new Term[]{x, y});
         }
 
-        
+
         @Override
         public Term[] components(Term superterm) {
             return components;
@@ -255,6 +296,9 @@ abstract public class DynamicTruthModel {
 
         @Override
         protected boolean add(int subterm, DynTruth d, Truth t, float confMin) {
+            if (t == null)
+                return false;
+
             float c = t.conf();
             if (subterm == 0) {
                 if (c < confMin)
@@ -278,21 +322,21 @@ abstract public class DynamicTruthModel {
 
     public static class Identity extends DynamicTruthModel {
 
-        
+
         private final Term[] components;
 
         public Identity(Compound proxy, Compound base) {
             this.components = new Term[]{base};
         }
 
-        
+
         @Override
         public Term[] components(Term superterm) {
             return components;
         }
 
         @Override
-        protected boolean add(int subterm,  DynTruth d,  Truth t, float confMin) {
+        protected boolean add(int subterm, DynTruth d, Truth t, float confMin) {
             float c = t.conf();
             if (c >= confMin) {
                 d.conf = c;
