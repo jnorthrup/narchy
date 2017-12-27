@@ -16,17 +16,18 @@
  */
 package nars.op.kif;
 
-import nars.$;
-import nars.NAR;
-import nars.Narsese;
-import nars.Op;
+import jcog.Util;
+import nars.*;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.atom.Bool;
+import nars.term.atom.Int;
 import nars.term.var.Variable;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.set.MutableSet;
-import org.eclipse.collections.api.tuple.Twin;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
-import org.eclipse.collections.impl.tuple.Tuples;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -34,15 +35,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static nars.Op.VAR_INDEP;
+import static nars.Op.*;
 import static nars.op.rdfowl.NQuadsRDF.equi;
 
 /**
  * http://sigmakee.cvs.sourceforge.net/viewvc/sigmakee/sigma/suo-kif.pdf
  * http://sigma-01.cim3.net:8080/sigma/Browse.jsp?kb=SUMO&lang=EnglishLanguage&flang=SUO-KIF&term=subclass
- *
- * @author me
- */
+ * https://raw.githubusercontent.com/ontologyportal/sumo/master/Merge.kif
+ * https://raw.githubusercontent.com/ontologyportal/sumo/master/Mid-level-ontology.kif
+ **/
 public class KIFInput implements Runnable {
 
     private final KIF kif;
@@ -78,6 +79,13 @@ public class KIFInput implements Runnable {
     }
 
 
+    final Map<Term, FnDef> fn = new HashMap();
+
+    static class FnDef {
+        final org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap<Term> domain = new org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap();
+        Term range;
+    }
+
     @Override
     public void run() {
         Set<Term> beliefs = new TreeSet();
@@ -88,22 +96,51 @@ public class KIFInput implements Runnable {
                 break;
             }
 
-            Term y = formulaToTerm(x);
-
-            if (y != null)
-                beliefs.add(y);
+            try {
+                Term y = formulaToTerm(x);
+                if (y != null) {
+                    beliefs.add(y);
+                }
+            } catch (Exception e) {
+                logger.error("{} {}", x, e);
+            }
 
             //  => Implies
             //  <=> Equivalance
-                /*Unknown operators: {=>=466, rangeSubclass=5, inverse=1, relatedInternalConcept=7, documentation=128, range=29, exhaustiveAttribute=1, trichotomizingOn=4, subrelation=22, not=2, partition=12, contraryAttribute=1, subAttribute=2, disjoint=5, domain=102, disjointDecomposition=2, domainSubclass=9, <=>=70}*/
+            /*Unknown operators: {=>=466, rangeSubclass=5, inverse=1, relatedInternalConcept=7, documentation=128, range=29, exhaustiveAttribute=1, trichotomizingOn=4, subrelation=22, not=2, partition=12, contraryAttribute=1, subAttribute=2, disjoint=5, domain=102, disjointDecomposition=2, domainSubclass=9, <=>=70}*/
         }
 
+        fn.forEach((f, s) -> {
+            int ds = s.domain.isEmpty() ? 0 : s.domain.keySet().max();
+            Variable output = $.varIndep("R");
+            Term vars = $.p(
+                    ArrayUtils.add(
+                         Util.map(0, ds, i -> $.varIndep(1 + i), Term[]::new),
+                            output)
+            );
+            Term[] typeConds = Util.map(0, ds, i ->
+                    $.inh($.varIndep(1 + i),
+                            s.domain.getIfAbsent(1 + i, () -> True)), Term[]::new);
+            if (s.range!=null) {
+                typeConds = ArrayUtils.add(typeConds, $.inh(output, s.range));
+            }
+            Term types = CONJ.the(
+                    typeConds
+            );
+            Term fxy = $.impl($.inh(vars, f), types);
+            if (fxy instanceof Bool) {
+                logger.error("bad function {} {} {}", f, s.domain, s.range);
+            } else {
+                beliefs.add(fxy);
+            }
+
+        });
 
         //nar.input( beliefs.stream().map(x -> task(x)) );
 
 //        long[] stamp = { new Random().nextLong() };
         for (Term x : beliefs) {
-            //output.println(x + ".");
+            output.println(x + ".");
 
 //            try {
 //                nar.input("$0.01$ " + x + ".");
@@ -128,6 +165,8 @@ public class KIFInput implements Runnable {
                 return $.quote(sx);
             }
     }
+
+    static final Logger logger = LoggerFactory.getLogger(KIFInput.class);
 
     public Term formulaToTerm(Formula x) {
         String root = x.car(); //root operate
@@ -164,15 +203,12 @@ public class KIFInput implements Runnable {
         switch (root) {
             case "subrelation":
             case "subclass":
+            case "subAttribute":
                 if (includeSubclass) {
                     if (args.size() != 2) {
                         System.err.println("subclass expects 2 arguments");
                     } else {
-                        try {
-                            y = $.$("(" + args.get(0) + " --> " + args.get(1) + ")");
-                        } catch (Narsese.NarseseException e) {
-                            e.printStackTrace();
-                        }
+                        y = INH.the(args.get(0), args.get(1));
                     }
                 }
                 break;
@@ -181,56 +217,44 @@ public class KIFInput implements Runnable {
                     if (args.size() != 2) {
                         System.err.println("instance expects 2 arguments");
                     } else {
-                        try {
-                            y = Narsese.term("(" + args.get(0) + " --> [" + args.get(1) + "])", false);
-                        } catch (Narsese.NarseseException e) {
-                            e.printStackTrace();
-                        }
+                        y = $.inst(args.get(0), args.get(1));
                     }
                 }
                 break;
             case "relatedInternalConcept":
-                    /*(documentation relatedInternalConcept EnglishLanguage "Means that the two arguments are related concepts within the SUMO, i.e. there is a significant similarity of meaning between them. To indicate a meaning relation between a SUMO concept and a concept from another source, use the Predicate relatedExternalConcept.")            */
+                /*(documentation relatedInternalConcept EnglishLanguage "Means that the two arguments are related concepts within the SUMO, i.e. there is a significant similarity of meaning between them. To indicate a meaning relation between a SUMO concept and a concept from another source, use the Predicate relatedExternalConcept.")            */
                 if (includeRelatedInternalConcept) {
                     if (args.size() != 2) {
-                        System.err.println("relatedInternalConcept expects 2 arguments");
+                        throw new UnsupportedOperationException("relatedInternalConcept expects 2 arguments");
                     } else {
-                        try {
-                            y = $.$("(" + args.get(0) + " <-> " + args.get(1) + ").");
-                        } catch (Narsese.NarseseException e) {
-                            e.printStackTrace();
-                        }
+                        y = $.sim(args.get(0), args.get(1));
                     }
                 }
                 break;
 
             case "equal":
                 y = $.func("equal", args.get(0), args.get(1));
+                //y = $.sim(args.get(0), args.get(1));
                 break;
             case "disjointRelation":
             case "disjoint":
                 if (includeDisjoint) {
-                    try {
-                        y = $.$("(||," + args.get(0) + "," + args.get(1) + ").");
-                    } catch (Narsese.NarseseException e) {
-                        e.printStackTrace();
-                    }
+
+                    //y = $.$("(||," + args.get(0) + "," + args.get(1) + ").");
+                    y = CONJ.the(
+                            IMPL.the(
+                                    $.sim($.varIndep(1), args.get(0)),
+                                    $.sim($.varIndep(1), args.get(1)).neg()),
+                            IMPL.the(
+                                    $.sim($.varIndep(1), args.get(1)),
+                                    $.sim($.varIndep(1), args.get(0)).neg())
+                    );
                 }
                 break;
-//                case "disjointRelation":
-//                    if (includeDisjoint) {
-//                        nar.input("(||," + args.get(0) + "," + args.get(1) + ").");
-//                    }
-//                    break;
-//                case "subrelation":
-//                    //for now, use similarity+inheritance but more clear expression is possible
-//                    if (includeSubrelation) {
-//                        //emit("(" + a.get(0) + " <-> " + a.get(1) + ").");
-//                        nar.input("(" + args.get(0) + " --> " + args.get(1) + ").");
-//                    }
-//                    break;
-//            case "forall":
-//                y = args.get(1)
+
+            case "forall":
+                y = $.impl(args.get(0), args.get(1));
+                break;
             case "exists":
                 y = args.get(1); //skip over the first parameter, since depvar is inherently existential
                 break;
@@ -241,36 +265,46 @@ public class KIFInput implements Runnable {
                 y = impl(args.get(0), args.get(1), false);
                 break;
 
+            case "termFormat":
+                String language = args.get(0).toString();
+                language = language.replace("Language", "");
+
+                Term term = args.get(1);
+                Term string = args.get(2);
+                y = $.inh($.p($.the(language), string), term);
+                break;
+
             case "domain":
                 //TODO use the same format as Range, converting quantity > 1 to repeats in an argument list
                 if (args.size() >= 3) {
                     Term subj = (args.get(0));
-                    Term quantity = (args.get(1));
+                    Term arg = (args.get(1));
                     Term type = (args.get(2));
-                    try {
-                        y = $.func("domain", subj, $.p(type, quantity));
-                    } catch (Exception ignored) {
-
-                    }
-
+                    FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
+                    Term existing = d.domain.put(((Int) arg).id, type);
+                    assert (existing == null || existing.equals(type));
+                } else {
+                    throw new UnsupportedOperationException("unrecognized domain spec");
                 }
-                break;
+                return null;
+
             case "range":
                 if (args.size() == 2) {
                     Term subj = args.get(0);
                     Term range = args.get(1);
-                    Variable rr = nextVar(VAR_INDEP);
-                    y = $.impl($.inh($.p( rr ), subj), $.inh(rr, range));
+                    FnDef d = fn.computeIfAbsent(subj, (s) -> new FnDef());
+                    d.range = range;
                 } else {
-                    System.err.println("unexpected range format");
+                    throw new UnsupportedOperationException("unrecognized range spec");
                 }
-                break;
+                return null;
             case "contraryAttribute":
+                //like n-ary disjoint
                 if (args.size() >= 2) {
                     Term a = args.get(0);
                     Term b = args.get(1);
                     Variable v0 = nextVar(VAR_INDEP);
-                    y = equi($.prop(v0, a), $.prop(v0, b).neg());
+                    y = equi($.inh(v0, a), $.inh(v0, b.neg()));
                 }
                 break;
             case "documentation":
@@ -299,32 +333,30 @@ public class KIFInput implements Runnable {
                 return null;
 
             Term z = formulaToTerm(x.car());
-            if (args.isEmpty())
-                return z;
-            try {
 
-                if (z != null) {
-                    switch (z.toString()) {
-                        case "and":
-                            y = $.conj(args.toArray(new Term[args.size()]));
-                            break;
-                        case "or":
-                            y = $.disj(args.toArray(new Term[args.size()]));
-                            break;
-                        case "not":
-                            y = args.get(0).neg();
-                            break;
-                        default:
-                            y = $.inh($.p(args), z); //HACK
-                            break;
-                    }
-
+            if (z != null) {
+                switch (z.toString()) {
+                    case "and":
+                        y = $.conj(args.toArray(new Term[args.size()]));
+                        break;
+                    case "or":
+                        y = $.disj(args.toArray(new Term[args.size()]));
+                        break;
+                    case "not":
+                        y = args.get(0).neg();
+                        break;
+                    default:
+                        y = $.inh($.p(args), z); //HACK
+                        break;
                 }
-            } catch (Exception e) {
-                return null;
+
             }
 
+
         }
+
+        if (y instanceof Bool)
+            throw new UnsupportedOperationException("Bool singularity: args=" + args);
 
         return y;
     }
@@ -339,21 +371,21 @@ public class KIFInput implements Runnable {
         return Integer.toString(Math.abs(serial.incrementAndGet()), 36);
     }
 
-    public final Set<Twin<Term>> impl = new HashSet();
+    //public final Set<Twin<Term>> impl = new HashSet();
 
-    public Compound impl(Term conditionTerm, Term actionTerm, boolean implOrEquiv) {
+    public Term impl(Term conditionTerm, Term actionTerm, boolean implOrEquiv) {
         MutableSet<Term> conditionVars = new UnifiedSet();
-        ((Compound)conditionTerm).recurseTermsToSet(Op.VariableBits, conditionVars, true);
+        ((Compound) conditionTerm).recurseTermsToSet(Op.VariableBits, conditionVars, true);
         MutableSet<Term> actionVars = new UnifiedSet();
-        ((Compound)actionTerm).recurseTermsToSet(Op.VariableBits, actionVars, true);
+        ((Compound) actionTerm).recurseTermsToSet(Op.VariableBits, actionVars, true);
 
         MutableSet<Term> common = conditionVars.intersect(actionVars);
-        Map<Term,Term> remap = new HashMap();
+        Map<Term, Term> remap = new HashMap();
         common.forEach(t -> {
-            remap.put( t, $.v(
-                    //Op.VAR_INDEP,
+            remap.put(t, $.v(
+                    Op.VAR_INDEP,
                     //Op.VAR_QUERY,
-                    Op.VAR_PATTERN,
+                    //Op.VAR_PATTERN,
                     "" +
                             "_" + t.toString().substring(1)));
         });
@@ -367,15 +399,15 @@ public class KIFInput implements Runnable {
             return null;
 
         try {
-            impl.add(Tuples.twin(conditionTerm, actionTerm));
-            if (!implOrEquiv) {
-                impl.add(Tuples.twin(actionTerm, conditionTerm)); //reverse
-            }
+//            impl.add(Tuples.twin(conditionTerm, actionTerm));
+//            if (!implOrEquiv) {
+//                impl.add(Tuples.twin(actionTerm, conditionTerm)); //reverse
+//            }
 
             return
                     implOrEquiv ?
                             $.impl(conditionTerm, actionTerm) :
-                            (Compound) equi(conditionTerm, actionTerm)
+                            equi(conditionTerm, actionTerm)
                     ;
         } catch (Exception ignore) {
             ignore.printStackTrace();
@@ -384,24 +416,23 @@ public class KIFInput implements Runnable {
     }
 
 
-//    public static void main(String[] args) throws Exception {
-//        Param.DEBUG = true;
-//
-//
-//
-//
-//
-//
-//        Default e = new Default();
-//
-//        NAR d = new Terminal();
-//        KIFInput k = new KIFInput(d, "/home/me/sumo/Merge.kif");
-//        k.run();
-//
-//        //(($_#AGENT,#OBJECT)-->needs)==>($_#AGENT,#OBJECT)-->wants)).
-//        //String rules = "((%AGENT,%OBJECT)-->needs), %X |- ((%AGENT,%OBJECT)-->wants), (Belief:Identity)\n";
-//
-//
+    public static void main(String[] args) throws Exception {
+        Param.DEBUG = true;
+
+        NAR e = NARS.tmp();
+        e.log();
+
+        KIFInput k = new KIFInput(e,
+                "/home/me/sumo/Merge.kif"
+                //"/home/me/sumo/emotion.kif"
+                //"/home/me/sumo/Weather.kif"
+        );
+        k.run();
+
+        //(($_#AGENT,#OBJECT)-->needs)==>($_#AGENT,#OBJECT)-->wants)).
+        //String rules = "((%AGENT,%OBJECT)-->needs), %X |- ((%AGENT,%OBJECT)-->wants), (Belief:Identity)\n";
+
+
 //        TrieDeriver miniDeriver =
 //                //new TrieDeriver(PremiseRuleSet.rules(false, "nal6.nal"));
 //                TrieDeriver.get(new PremiseRuleSet(
@@ -414,15 +445,13 @@ public class KIFInput implements Runnable {
 //                            }
 //                        }).filter(Objects::nonNull).toArray(PremiseRule[]::new)
 //                ) );
-//
-//
+
+
 //        miniDeriver.print(System.out);
-//
-//        //d.clear();
-//        e.log();
-//
-//        PreferSimpleAndPolarized budgeting = new PreferSimpleAndPolarized();
-//
+
+        //d.clear();
+
+
 //        e.onTask(t -> {
 //           if (t.isInput()) {
 //               //d.forEachTask(b -> {
@@ -448,9 +477,9 @@ public class KIFInput implements Runnable {
 //        e.input("starts(A,B).");
 //        e.input("[GovernmentFn]:A.");
 //        e.input("[WealthFn]:B.");
-//        e.run(500);
-////        d.conceptsActive().forEach(System.out::println);
-//        //d.concept("[Phrase]").print();
-//
-//    }
+        e.run(2500);
+//        d.conceptsActive().forEach(System.out::println);
+        //d.concept("[Phrase]").print();
+
+    }
 }

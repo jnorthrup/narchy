@@ -14,6 +14,7 @@ import nars.term.sub.TermVector;
 import nars.term.sub.TermVector1;
 import nars.term.sub.TermVector2;
 import org.apache.commons.lang3.ArrayUtils;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Random;
@@ -43,10 +44,13 @@ public class AnonTest {
         assertAnon("(((_0-->(_1,_2,#1))==>(_3,_4)),?2)",
                 "(((a-->(b,c,#2))==>(e,f)),?1)");
 
+    }
+
+    @Test @Disabled
+    public void testIntRange() throws Narsese.NarseseException {
         assertEquals("(4..6-->x)", $("((|,4,5,6)-->x)").toString());
         assertAnon("(_0-->_1)", "((|,4,5,6)-->x)");
     }
-
 
     @Test public void testCompounds2() throws Narsese.NarseseException {
         //TODO check that this is correct (includes a impl in conj reduction):

@@ -31,7 +31,7 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
     protected static final GameAnimatorControl a;
 
     private static final Loop u;
-    boolean ready = true;
+    private volatile boolean ready = true;
 
     static {
 //        GLCapabilitiesImmutable cfg = newDefaultConfig();
@@ -48,7 +48,6 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
                 return true;
             }
         };
-        //window.getScreen().getDisplay().getEDTUtil().invoke(false, updater);
     }
 
     public static final GLU glu = new GLU();

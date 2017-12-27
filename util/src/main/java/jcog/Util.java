@@ -1943,7 +1943,7 @@ public enum Util {
     }
 
     public static <X> X[] map(int from, int to, IntFunction<X> build, IntFunction<X[]> arrayizer) {
-        assert (to > from);
+        assert (to >= from);
         X[] x = arrayizer.apply(to - from);
         for (int i = from, j = 0; i < to; ) {
             x[j++] = build.apply(i++);
@@ -1960,7 +1960,7 @@ public enum Util {
      */
     @Paper
     public static float[] marginMax(int num, IntToFloatFunction build, float lower, float upper) {
-        float[] minmax = new float[]{Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY};
+        float[] minmax = {Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY};
         float[] w = Util.map(num, i -> {
             float v = build.valueOf(i);
             if (v < minmax[0]) minmax[0] = v;

@@ -10,9 +10,9 @@
     (P --> M), (S --> M), task("."), notSet(S), notSet(P), neq(S,P) |- ((P ~ S) --> M), (Belief:Difference)
     (P --> M), (S --> M), task("."), notSet(S), notSet(P), neq(S,P) |- ((S ~ P) --> M), (Belief:DifferenceReverse)
 
-        (P --> M), (S --> M), is(P,"+"), is(S,"+") |- (differ(P,S) --> M), (Belief:Difference)
-        ((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((intersect(A,X),intersect(B,Y)) --> M), (Belief:Intersection)
-        ((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((union(A,X),union(B,Y)) --> M), (Belief:Union)
+        //(P --> M), (S --> M), is(P,"+"), is(S,"+") |- (differ(P,S) --> M), (Belief:Difference)
+        //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((intersect(A,X),intersect(B,Y)) --> M), (Belief:Intersection)
+        //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((union(A,X),union(B,Y)) --> M), (Belief:Union)
 
     (M --> P), (M --> S), task("."), notSet(S), notSet(P), neq(S,P) |- (M --> (P & S)), (Belief:Intersection)
     (M --> P), (M --> S), task("."), notSet(S), notSet(P), neq(S,P) |- (M --> (P | S)), (Belief:Union)
@@ -52,12 +52,12 @@
     (S --> M), X, is(S,"|"), subOf(X,S) |- (without(S,X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
         //1D:
-        (X --> C), (X --> C), is(X,"+") |- (dropAnySet(X) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-        //(Y --> M), (X --> M), is(Y,"+"), is(X,"+") |- (differ(Y,X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+        //(X --> C), (X --> C), is(X,"+") |- (dropAnySet(X) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+            //(Y --> M), (X --> M), is(Y,"+"), is(X,"+") |- (differ(Y,X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
         //2D:
-        ((X,Y) --> C), ((X,Y) --> C), is(X,"+") |- ((dropAnySet(X),Y) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-        ((X,Y) --> C), ((X,Y) --> C), is(Y,"+") |- ((X,dropAnySet(Y)) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+        //((X,Y) --> C), ((X,Y) --> C), is(X,"+") |- ((dropAnySet(X),Y) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+        //((X,Y) --> C), ((X,Y) --> C), is(Y,"+") |- ((X,dropAnySet(Y)) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
     ((B ~ G) --> S), (B ~ G) |- (B --> S), (Belief:StructuralDeduction, Goal:StructuralDeduction)
     (S --> (B - G)), (B - G) |- (S --> B), (Belief:StructuralDeduction, Goal:StructuralDeduction)

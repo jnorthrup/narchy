@@ -26,6 +26,7 @@ import java.util.stream.StreamSupport;
 
 import static nars.$.*;
 import static nars.Op.BELIEF;
+import static nars.Op.CONJ;
 
 /**
  * Created by me on 6/4/15.
@@ -463,8 +464,8 @@ public abstract class NQuadsRDF {
         return null;
     }
 
-    public static Term equi(@Nullable Term subj, @Nullable Term pred) {
-        return $.conj(new Term[]{impl(subj, pred), impl(pred, subj)});
+    public static Term equi(Term subj, Term pred) {
+        return disj(impl(subj, pred), impl(pred, subj));
     }
 
 
