@@ -149,7 +149,7 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
         boolean temporal = template.op().temporal;
         if (temporal) {
             int d = template.dt();
-            if (d == XTERNAL || d == DTERNAL) {
+            if (d == XTERNAL) {
                 int e = matchDT(start, end, templateSubs > 2, nar);
                 assert (e != XTERNAL);
                 Term next = template.dt(e);

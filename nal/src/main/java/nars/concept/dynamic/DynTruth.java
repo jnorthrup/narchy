@@ -91,15 +91,15 @@ public final class DynTruth {
 
         //TODO compute max valid overlap to terminate the zip early
         ObjectFloatPair<long[]> ss = Stamp.zip(e, Param.STAMP_CAPACITY);
-        float overlap = ss.getTwo();
-        if (overlap > 0) {
-            evi *= 1f-overlap;
-//            if (evi > maxComponentEvi) {
-//                evi = Util.lerp(overlap, evi, maxComponentEvi); //reduce to the maximum component evidence in proportion to the overlap
-//            }
-        }
-        if (evi < eviMin)
-            return null;
+//        float overlap = ss.getTwo();
+//        if (overlap > 0) {
+//            evi *= 1f-overlap;
+////            if (evi > maxComponentEvi) {
+////                evi = Util.lerp(overlap, evi, maxComponentEvi); //reduce to the maximum component evidence in proportion to the overlap
+////            }
+//        }
+//        if (evi < eviMin)
+//            return null;
         long[] stamp = ss.getOne();
 
 

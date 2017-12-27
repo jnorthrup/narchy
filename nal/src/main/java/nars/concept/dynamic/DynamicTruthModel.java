@@ -11,6 +11,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.truth.Truth;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -28,8 +29,14 @@ abstract public class DynamicTruthModel {
     @Nullable
     public DynTruth eval(final Term superterm, boolean beliefOrGoal, long start, long end, boolean stamp, NAR n) {
 
-        final int DT = superterm.dt();
+
+        final int _DT = superterm.dt();
+        int DT = _DT;
         assert (DT != XTERNAL);
+
+        if (DT == DTERNAL && start!=ETERNAL) {
+            DT = 0;
+        }
 
         Term[] inputs = components(superterm);
         assert (inputs.length > 0) : this + " yielded no dynamic components for superterm " + superterm;
@@ -51,7 +58,7 @@ abstract public class DynamicTruthModel {
             long subStart, subEnd;
 
 
-            if (start == ETERNAL || superterm.op() != CONJ || DT == DTERNAL) {
+            if (start == ETERNAL || superterm.op() != CONJ || _DT == DTERNAL) {
                 subStart = start;
                 subEnd = end;
             } else {
@@ -72,8 +79,8 @@ abstract public class DynamicTruthModel {
                 it = it.unneg();
 
             Concept subConcept =
-                    n.concept(it);
-            //n.conceptualize(it); //force creation of concept, which if dynamic, could provide data for use here
+                    //n.concept(it);
+                    n.conceptualize(it); //force creation of concept, which if dynamic, could provide data for use here
 
             @Nullable Task bt;
             @Nullable Truth nt;
@@ -86,7 +93,7 @@ abstract public class DynamicTruthModel {
 
                 nt = null;
                 bt = null;
-                ot = it;
+                ot = null;
             } else {
 
 
@@ -100,7 +107,7 @@ abstract public class DynamicTruthModel {
                     nt = bt.truth(subStart, subEnd, dur, 0f); //project to target time if task isnt at it
 
 
-                    ot = bt.term().negIf(negated);
+                    ot = bt.term();
                     //                if (ot.hasXternal())
                     //                    throw new RuntimeException("xternal");
                 } else {
@@ -120,7 +127,7 @@ abstract public class DynamicTruthModel {
             if (evi) {
                 d.add(bt, nt);
 
-                if (!inputs[i].equals(ot)) {
+                if (ot==null || !inputs[i].equals(ot)) {
                     //template has changed
                     if (outputs == null)
                         outputs = inputs.clone();
@@ -131,20 +138,32 @@ abstract public class DynamicTruthModel {
 
 
 //        //if (template instanceof Compound) {
-        DynTruth result = commit(d, n);
+        if (evi && outputs==null)
+            outputs = inputs.clone();
+
+        DynTruth result = commit(d, outputs, n);
         if (result == null)
             return null;
 
         if (evi) {
             assert (!d.e.isEmpty());
-            if (outputs != null) {
-                Term reconstructed = superterm.op().the(DT, outputs);
+            if (!Arrays.equals(outputs, inputs)) {
+                Term[] components = ArrayUtils.removeAllOccurences(outputs, null);
+                if (components.length == 0)
+                    return null;
+                Term reconstructed = construct(superterm, components);
+                if (reconstructed == null)
+                    return null;
                 if (reconstructed instanceof Bool) {
-                    if (reconstructed == True) {
-                        throw new TODO("absolute true result"); //dont interfere with callee's calculation
-                    } else {
+//                    if (reconstructed == True) {
+//                        throw new TODO("absolute true result"); //dont interfere with callee's calculation
+//                    } else {
                         return null;
-                    }
+//                    }
+                }
+                if (reconstructed.op()==NEG) {
+                    reconstructed = reconstructed.unneg();
+                    d.freq = 1-d.freq;
                 }
                 d.term = reconstructed;
             } else
@@ -156,11 +175,14 @@ abstract public class DynamicTruthModel {
         return result;
     }
 
+    /** used to reconstruct a dynamic term from some or all components */
+    protected abstract Term construct(Term superterm, Term[] components);
+
 
     /**
      * override for postprocessing
      */
-    protected DynTruth commit(DynTruth d, NAR n) {
+    @Nullable protected DynTruth commit(DynTruth d, Term[] elements, NAR n) {
         return d;
     }
 
@@ -187,8 +209,8 @@ abstract public class DynamicTruthModel {
         }
 
         @Override
-        protected DynTruth commit(DynTruth d, NAR n) {
-            super.commit(d, n);
+        protected DynTruth commit(DynTruth d, Term[] elements, NAR n) {
+            super.commit(d, elements, n);
             d.freq = 1f - d.freq;
             return d;
         }
@@ -208,6 +230,21 @@ abstract public class DynamicTruthModel {
         }
 
         @Override
+        protected Term construct(Term superterm, Term[] components) {
+
+            if (components.length == 1) {
+                return components[0];
+            }
+
+            if (superterm.op()==CONJ) {
+                return CONJ.the(superterm.dt(), components);
+            } else {
+
+                throw new TODO();
+            }
+        }
+
+        @Override
         protected final boolean add(int subterm, DynTruth d, Truth truth, float confMin) {
 
             if (subterm == 0)
@@ -219,7 +256,7 @@ abstract public class DynamicTruthModel {
         }
 
         @Override
-        protected DynTruth commit(DynTruth d, NAR nar) {
+        @Nullable protected DynTruth commit(DynTruth d, Term[] elements, NAR nar) {
             List<Truth> l = d.truths;
 
             int n = l.size();
@@ -250,7 +287,9 @@ abstract public class DynamicTruthModel {
                     if (d.e != null && i < n - 1) {
                         //delete the tasks (evidence) from the dyntruth which are not involved
                         for (int j = i + 1; j < n; j++) {
-                            d.e.set(order[j], null);
+                            int oj = order[j];
+                            d.e.set(oj, null);
+                            elements[oj] = null;
                         }
                     }
                     break;
@@ -293,6 +332,24 @@ abstract public class DynamicTruthModel {
             this(new Term[]{x, y});
         }
 
+        @Override
+        protected Term construct(Term superterm, Term[] components) {
+            if (superterm.op()==INH) {
+                Term subj = superterm.sub(0);
+                if (subj.op()==DIFFe || subj.op()==DIFFi)
+                  return INH.the(subj.op().the(DTERNAL, components[0].sub(0), components[1].sub(0)), superterm.sub(1));
+
+                Term pred = superterm.sub(1);
+                if (pred.op()==DIFFe || pred.op()==DIFFi)
+                    return INH.the(superterm.sub(0), subj.op().the(DTERNAL, components[0].sub(1), components[1].sub(1)));
+
+            } else if (superterm.op() == DIFFe) {
+                //raw difference
+                return Op.DIFFe.the(DTERNAL, components[0], components[1]);
+            }
+
+            return null; //wtf
+        }
 
         @Override
         public Term[] components(Term superterm) {
@@ -334,6 +391,11 @@ abstract public class DynamicTruthModel {
             this.components = new Term[]{base};
         }
 
+
+        @Override
+        protected Term construct(Term superterm, Term[] components) {
+            throw new TODO();
+        }
 
         @Override
         public Term[] components(Term superterm) {

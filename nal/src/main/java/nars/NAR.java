@@ -1323,7 +1323,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     @Nullable
     public Task answer(Term c, byte punc, long start, long end) {
         assert (punc == BELIEF || punc == GOAL);
-        Concept concept = concept(c);
+        Concept concept = conceptualize(c);
         if (!(concept instanceof TaskConcept))
             return null;
 

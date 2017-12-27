@@ -225,11 +225,25 @@ public class DynamicBeliefTableTest {
                         n.conceptualize($("(&&,x,y,z)")
                         ), n.time()).toString()
         );
-        Task bXYZ = n.belief(
-                $("(&&,x,y,z)")
-                , n.time());
-        assertEquals(1, bXYZ.stamp().length);
-        assertEquals(3, bXYZ.stamp()[0]); //should be stamp #3
+        {
+            //reduced
+            Task bXYZ = n.belief($("(&&,x,y,z)"), n.time());
+            assertEquals("z", bXYZ.term().toString()); //only z term mattered
+            assertEquals(1, bXYZ.stamp().length);
+            assertEquals(3, bXYZ.stamp()[0]); //should be stamp #3
+        }
+        {
+            //normal
+            Task bXY = n.belief($("(x && y)"), n.time());
+            assertEquals("(x&&y)", bXY.term().toString());
+            assertEquals(2, bXY.stamp().length);
+        }
+        {
+            //normal eternal
+            Task bXY = n.belief($("(x && y)"), ETERNAL);
+            assertEquals("(x&&y)", bXY.term().toString());
+            assertEquals(2, bXY.stamp().length);
+        }
 
         assertEquals(
                 "%0.0;.81%", n.beliefTruth(
@@ -272,9 +286,7 @@ public class DynamicBeliefTableTest {
         n.run(1);
         Term xyz = $("((&,x,y,z)-->a)");
         assertEquals(
-                "%1.0;.81%", n.beliefTruth(
-                        n.conceptualize(xyz
-                        ), n.time()).toString()
+                "%1.0;.81%", n.beliefTruth(xyz, n.time()).toString()
         );
         assertEquals(
                 1, n.belief(xyz, n.time()).stamp().length
