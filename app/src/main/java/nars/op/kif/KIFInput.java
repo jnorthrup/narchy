@@ -18,6 +18,7 @@ package nars.op.kif;
 
 import jcog.Util;
 import nars.*;
+import nars.op.prolog.PrologCore;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -102,7 +103,7 @@ public class KIFInput implements Runnable {
                     beliefs.add(y);
                 }
             } catch (Exception e) {
-                logger.error("{} {}", x, e);
+                logger.error("{} {}", x, e.getMessage());
             }
 
             //  => Implies
@@ -141,7 +142,11 @@ public class KIFInput implements Runnable {
 //        long[] stamp = { new Random().nextLong() };
         for (Term x : beliefs) {
             output.println(x + ".");
-
+            try {
+                nar.believe(x);
+            } catch (Exception e) {
+                logger.error("{} {}", e.getMessage(), x);
+            }
 //            try {
 //                nar.input("$0.01$ " + x + ".");
 //            } catch (Exception e) {
@@ -420,7 +425,8 @@ public class KIFInput implements Runnable {
         Param.DEBUG = true;
 
         NAR e = NARS.tmp();
-        e.log();
+
+        new PrologCore(e);
 
         KIFInput k = new KIFInput(e,
                 "/home/me/sumo/Merge.kif"
@@ -428,6 +434,18 @@ public class KIFInput implements Runnable {
                 //"/home/me/sumo/Weather.kif"
         );
         k.run();
+
+        e.log();
+
+//https://github.com/ontologyportal/sumo/blob/master/tests/TQG1.kif.tq
+//(time 240)
+//(instance Org1-1 Organization)
+//(query (exists (?MEMBER) (member ?MEMBER Org1-1)))
+//(answer yes)
+        e.clear();
+        e.believe("Organization:{org1}");
+        e.input("member(#1, org1)?");
+        e.run(1500);
 
         //(($_#AGENT,#OBJECT)-->needs)==>($_#AGENT,#OBJECT)-->wants)).
         //String rules = "((%AGENT,%OBJECT)-->needs), %X |- ((%AGENT,%OBJECT)-->wants), (Belief:Identity)\n";

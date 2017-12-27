@@ -709,7 +709,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 
 
     @Override
-    public void clear() {
+    public final void clear() {
         //TODO do onRemoved outside synch
 
         synchronized (items) {
@@ -719,6 +719,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                 onRemove(x);
             });
             items.clear();
+            pressure.set(0);
         }
     }
 

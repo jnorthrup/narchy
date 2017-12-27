@@ -120,7 +120,7 @@ public class EngineRunner implements java.io.Serializable, Runnable{
         return mediator.isSpy();
     }
 
-    void spy(String action, Engine env) {
+    void spy(State action, Engine env) {
         mediator.spy(action,env);
     }
     
@@ -284,10 +284,12 @@ public class EngineRunner implements java.io.Serializable, Runnable{
     
     
     private void freeze() {
-        if(env==null) return;
-        try {
-            if (stackEnv.getLast()==env) return;
-        } catch(NoSuchElementException e) {}
+        if(env==null)
+            return;
+
+        if (!stackEnv.isEmpty() && stackEnv.getLast()==env)
+            return;
+
         stackEnv.addLast(env);
     }
     

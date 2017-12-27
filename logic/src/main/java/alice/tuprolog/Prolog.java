@@ -392,7 +392,7 @@ public class Prolog  {
 	 * @return the result of the demonstration
 	 * @see Solution
 	 **/
-	public Solution solve(@NotNull Term g) {
+	public Solution solve(Term g) {
 
 		Solution sinfo = engine.solve(g);
 
@@ -590,9 +590,9 @@ public class Prolog  {
 	 * Notifies a spy information event
 	 * @param s TODO
 	 */
-	protected void spy(String s, Engine e) {
+	protected void spy(State s, Engine e) {
 		//System.out.println("spy: "+i+"  "+s+"  "+g);
-		if (spy) {
+		if (spy && spyListeners.size() > 0) {
 			ExecutionContext ctx = e.currentContext;
 			if (ctx!=null) {
 				int i = 0;

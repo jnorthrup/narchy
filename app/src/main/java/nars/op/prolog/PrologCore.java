@@ -1,6 +1,7 @@
 package nars.op.prolog;
 
 import alice.tuprolog.*;
+import com.google.common.collect.Iterators;
 import jcog.Util;
 import jcog.math.Range;
 import nars.$;
@@ -100,7 +101,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
     public PrologCore(NAR n, String theory) {
         super(theory, new MutableClauseIndex()); //, new NARClauseIndex(n));
 
-        setSpy(true);
+        setSpy(false);
 
         this.nar = n;
 
@@ -142,25 +143,30 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
 
         boolean _truth = truth;
-        beliefs.compute(c.term(), (pp, prev) -> {
+        Term ct = c.term();
 
-            if (prev != null) {
-                if (prev.sub(prev.subs()-1).equals(ONE) ^ truth) {
-                    //retract previous only do this if opposite the truth of this
-                    solve(retraction(prev));
-                }
-                else {
-                    //unchanged
-                    return prev;
-                }
+        if (!ct.hasAny(ATOM) || !ct.hasAny(INT))
+            return; //ignore if it contains no atoms (all variables)
 
-            }
+        beliefs.compute(ct, (pp, prev) -> {
+
+//            if (prev != null) {
+//                if (prev.sub(prev.subs()-1).equals(ONE) ^ truth) {
+//                    //retract previous only do this if opposite the truth of this
+//                    solve(retraction(prev));
+//                }
+//                else {
+//                    //unchanged
+//                    return prev;
+//                }
+//
+//            }
 
             Struct next;
             if (c.op()==IMPL) {
                 next = (Struct) pterm(t.term());
                 if (!_truth) {
-                    next = new Struct(":=", new Struct("not", next.subResolve(0)), next.subResolve(1));
+                    next = new Struct(":-", new Struct("not", next.subResolve(0)), next.subResolve(1));
                 }
             } else {
                 next = (Struct) pterm(t.term());
@@ -370,15 +376,30 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
             alice.tuprolog.Term[] st = psubterms(((Compound) term));
             switch (op) {
                 case IMPL:
-                    return new Struct(":=", st[1], st[0] /* reversed */);
+                    return new Struct(":-", st[1], st[0] /* reversed */);
                 case CONJ:
-                    return new Struct(st);
+                    return new Struct(",", st);
                 case NEG:
-                    return new Struct("\\="/*"not"*/, st);
-                default:
-                    return new Struct(op.str, st);
+                    return new Struct(/*"\\="*/"not", st);
+                case PROD:
+                    return new Struct( st); //list
+                case INH:
+                    Term pred = term.sub(1);
+                    if (pred.op() == ATOM) {
+                        Term subj = term.sub(0);
+                        if (subj.op() == PROD) {
+                            alice.tuprolog.Term args = st[0];
+                            return new Struct(pred.toString(),
+                                    args instanceof Struct ?
+                                            Iterators.toArray(((Struct) st[0]).listIterator(), alice.tuprolog.Term.class) :
+                                            new alice.tuprolog.Term[]{args});
+                        }
+                    }
+                    break;
+
             }
 
+            return new Struct(op.str, st);
         } else if (term instanceof NormalizedVariable) {
             switch (term.op()) {
                 case VAR_QUERY:

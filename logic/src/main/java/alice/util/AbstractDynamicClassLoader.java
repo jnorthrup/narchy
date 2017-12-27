@@ -3,6 +3,7 @@ package alice.util;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Hashtable;
 
 /**
@@ -17,7 +18,7 @@ import java.util.Hashtable;
 public abstract class AbstractDynamicClassLoader extends ClassLoader
 {
 	protected final ArrayList<URL> listURLs;
-	protected final Hashtable<String, Class<?>> classCache = new Hashtable<>();
+	protected final HashMap<String, Class<?>> classCache = new HashMap<>();
 	
 	public AbstractDynamicClassLoader()
 	{
@@ -82,14 +83,8 @@ public abstract class AbstractDynamicClassLoader extends ClassLoader
 		return result;
 	}
 
-	public Class<?>[] getLoadedClasses()
-	{
-		Class<?>[] result = new Class<?>[classCache.size()];
-		int i = 0;
-		for (Class<?> aClass : classCache.values()) {
-			result[i] = aClass;
-		}
-		return result;
+	public Class<?>[] getLoadedClasses() {
+		return classCache.values().toArray(new Class[classCache.size()]);
 	}
 	
 	public void clearCache()
@@ -105,7 +100,7 @@ public abstract class AbstractDynamicClassLoader extends ClassLoader
 
 	public void setClassCacheEntry(Class<?> cls)
 	{
-		if(classCache.contains(cls))
+		if(classCache.containsValue(cls))
 			classCache.remove(cls.getName());
 		classCache.put(cls.getName(), cls);
 	}

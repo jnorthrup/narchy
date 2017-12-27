@@ -273,10 +273,10 @@ public class EngineManager implements java.io.Serializable {
         }
     }
 
-    void spy(String action, Engine env) {
-        EngineRunner runner = runner();
-        runner.spy(action, env);
-    }
+//    void spy(String action, Engine env) {
+//        EngineRunner runner = runner();
+//        runner.spy(action, env);
+//    }
 
     /**
      * @return L'EngineRunner associato al thread di id specificato.

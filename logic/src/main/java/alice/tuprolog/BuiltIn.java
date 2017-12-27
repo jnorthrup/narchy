@@ -472,11 +472,11 @@ public final class BuiltIn extends Library {
 		 if (/* !arg0 instanceof Struct || */!arg1.isList())
 			 throw PrologError.type_error(engineManager, 2, "list", arg1);
 		 Deque<ClauseInfo> l = null;
-		 try {
+		 //try {
 			 l = theoryManager.find(arg0);
-		 } catch (RuntimeException e) {
-
-		 }
+//		 } catch (RuntimeException e) {
+//
+//		 }
 		 for (ClauseInfo b : l) {
              if (Prolog.match(arg0, b.head)) {
 				 b.clause.resolveTerm();

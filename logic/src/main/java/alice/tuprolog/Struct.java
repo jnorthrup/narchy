@@ -599,6 +599,11 @@ public class Struct extends Term {
         return subs[0].term();
     }
 
+    /** use with caution */
+    public Term[] subArrayShared() {
+        return subs;
+    }
+
     /**
      * Gets the tail of this structure, which is supposed to be a list.
      * <p>

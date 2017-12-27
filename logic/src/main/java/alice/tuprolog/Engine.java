@@ -79,7 +79,7 @@ public class Engine {
 			nextState.run(this);
 
 			if (manager.isSpy()) {
-				manager.spy(nextState.toString(), this);
+				manager.spy(nextState, this);
 			}
 			
 

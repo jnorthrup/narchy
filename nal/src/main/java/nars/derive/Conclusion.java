@@ -53,7 +53,7 @@ public final class Conclusion extends AbstractPred<Derivation> {
         int volMax = d.termVolMax;
         if (c1 == null || !c1.op().conceptualizable || c1.volume() > volMax || c1.hasAny(/*BOOL,*/VAR_PATTERN) )
             return false;
-        if (!c1.hasAny(Op.ATOM))
+        if (!c1.hasAny(Op.constantAtoms))
             return false; //entirely variablized
 
         d.concEviFactor = 1f;
