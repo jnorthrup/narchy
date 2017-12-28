@@ -34,6 +34,7 @@ import nars.term.anon.Anom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
+import nars.term.sub.Neg;
 import nars.term.sub.Subterms;
 import nars.term.sub.TermMetadata;
 import nars.term.sub.TermVector;
@@ -834,7 +835,7 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     default Term neg() {
-        return NEG.the(DTERNAL, this); //the DTERNAL gets it directly to it
+        return Neg.the(this); //the DTERNAL gets it directly to it
     }
 
     default Term negIf(boolean negate) {

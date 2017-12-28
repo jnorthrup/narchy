@@ -70,16 +70,23 @@ public interface TaskRegion extends HyperRegion, Tasked {
      * if ends after the given time
      */
     default boolean isAfter(long when) {
+        return isAfter(when, 0);
+    }
+
+    default boolean isAfter(long when, int minCycles) {
         long e = end();
-        return e == ETERNAL || e > when;
+        return e == ETERNAL || e - minCycles > when;
     }
 
     /**
      * if starts before the given time
      */
     default boolean isBefore(long when) {
-        long s = start();
-        return s == ETERNAL || s < when;
+        return isBefore(when, 0);
+    }
+    default boolean isBefore(long when, int minCycles) {
+        long e = end();
+        return e == ETERNAL || e + minCycles < when;
     }
 
     default boolean isDuringAny(long... when) {

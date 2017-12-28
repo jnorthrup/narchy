@@ -38,7 +38,7 @@ import static nars.time.Tense.*;
 public class DeriveTime extends TimeGraph {
 
     //    private final static Logger logger = LoggerFactory.getLogger(DeriveTime.class);
-    static final int TEMPORAL_ITERATIONS = 16;
+    static final int TEMPORAL_ITERATIONS = 32;
 
     private final Task task, belief;
 
@@ -63,14 +63,18 @@ public class DeriveTime extends TimeGraph {
         if (transformedTask != null) {
             Event y = know(transformedTask, task.start());
             //link(know(task.term(), task.start()), 0, y);
-            Event yNeg = know(transformedTask.neg(), task.start());
+            if (autoNegTask)
+                know(transformedTask.neg(), task.start());
             //link(know(task.term().neg(), task.start()), 0, yNeg);
         }
         if (transformedBelief != null) {
-            Event y = know(transformedBelief, belief.start());
-            //link(know(belief.term(), belief.start()), 0, y);
-            Event yNeg = know(transformedBelief.neg(), belief.start());
-            //link(know(belief.term().neg(), belief.start()), 0, yNeg);
+            if (belief!=null) {
+                Event y = know(transformedBelief, belief.start());
+                //link(know(belief.term(), belief.start()), 0, y);
+                if (autoNegTask)
+                    know(transformedBelief.neg(), belief.start());
+                //link(know(belief.term().neg(), belief.start()), 0, yNeg);
+            }
         }
     }
 
@@ -98,7 +102,7 @@ public class DeriveTime extends TimeGraph {
      */
     public DeriveTime get() {
         Term td = ifDynamic(d.task);
-        Term bd = d.belief != null ? ifDynamic(d.belief) : null;
+        Term bd = d.belief != null ? ifDynamic(d.belief) : null /*ifDynamic(d.beliefTerm)*/;
         boolean tChange = td != null;
         boolean bChange = bd != null;
         if (tChange || bChange) {
@@ -442,7 +446,7 @@ public class DeriveTime extends TimeGraph {
                     }
                 }
             } else {
-                if (!taskEvent && !beliefEvent) {
+//                if (taskEvent && beliefEvent) {
                     //two events: fuse time
                     assert (!belief.isEternal());
                     TimeFusion joint = new TimeFusion(task.start(), task.end(), belief.start(), belief.end());
@@ -454,10 +458,10 @@ public class DeriveTime extends TimeGraph {
                     if (s == ETERNAL)
                         throw new RuntimeException("why eternal");
                     d.concEviFactor *= joint.factor;
-                } else {
-                    //either task or belief were temporal, so should have been solved
-                    return null;
-                }
+//                } else {
+//                    //either task or belief were temporal, so should have been solved
+//                    return null;
+//                }
             }
         }
 

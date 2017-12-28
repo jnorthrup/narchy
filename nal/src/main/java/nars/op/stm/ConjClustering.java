@@ -177,7 +177,7 @@ public class ConjClustering extends Causable {
         Map<LongObjectPair<Term>, Task> vv = new HashMap<>();
         FasterList<Task> actualTasks = new FasterList();
 
-        main: while (gen.size() < taskLimitPerCentroid) {
+        main: while (gg.hasNext() && gen.size() < taskLimitPerCentroid) {
 
             vv.clear();
             actualTasks.clear();

@@ -1,8 +1,6 @@
 package nars;
 
-import jcog.Util;
 import jcog.exe.Loop;
-import jcog.list.FasterList;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatPolarNormalized;
 import jcog.pri.mix.control.MixContRL;
@@ -15,6 +13,7 @@ import nars.gui.graph.run.SimpleConceptGraph1;
 import nars.index.term.map.CaffeineIndex;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
+import nars.op.stm.RelationClustering;
 import nars.op.video.*;
 import nars.term.Term;
 import nars.term.Termed;
@@ -30,8 +29,6 @@ import net.beadsproject.beads.core.UGen;
 import net.beadsproject.beads.data.Buffer;
 import net.beadsproject.beads.ugens.*;
 import org.HdrHistogram.DoubleHistogram;
-import org.apache.commons.lang.StringUtils;
-import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
@@ -46,7 +43,6 @@ import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.ConsoleTerminal;
 import spacegraph.widget.meta.WindowToggleButton;
 import spacegraph.widget.meter.Plot2D;
-import spacegraph.widget.meter.TreeChart;
 import spacegraph.widget.tab.TabPane;
 
 import java.awt.*;
@@ -250,6 +246,9 @@ abstract public class NAgentX extends NAgent {
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 32, 128);
         ConjClustering conjClusterBnonInput = new ConjClustering(n, BELIEF, (t->!t.isInput()), 4, 16);
 
+        RelationClustering relCluster = new RelationClustering(n,
+                (t)->t.isBelief() && !t.isEternal() ? t.conf() : Float.NaN,
+                8, 32);
         //ConjClustering conjClusterG = new ConjClustering(n, 3, GOAL, true, false, 16, 64);
 
 //        n.runLater(() -> {

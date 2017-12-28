@@ -118,7 +118,7 @@ public class ThermostatTest {
             @Nullable
             protected synchronized Object invoked(Object obj, Method wrapped, Object[] args, Object result) {
 
-                //n.time.synch(n);
+                n.time.synch(n);
                 //n.runLater(nn -> nn.run(DUR)); //queue some thinking cycles
 
                 Object y = super.invoked(obj, wrapped, args, result);
@@ -205,7 +205,7 @@ public class ThermostatTest {
 
 //        n.log();
             //n.run(100);
-//        n.logWhen(System.out, false, true, true);
+        n.logWhen(System.out, false, true, true);
 
 //        new Implier(n, new float[] { 1f },
 //                $.$("a_Thermostat(down,())"),
@@ -235,16 +235,16 @@ public class ThermostatTest {
 
                 Term cold = $.$safe("a_Thermostat(is,(),0)");
                 //Term cold = $.$safe("(a_Thermostat(is,(),0) &| --a_Thermostat(is,(),3))");
-                //Term hot = $.$safe("a_Thermostat(is,(),3)");
+                Term hot = $.$safe("a_Thermostat(is,(),3)");
                 Truth goalTruth = $.t(1f, 0.9f);
 
                 final int[] maxTries = {8};
                 DurService xPos = n.wantWhile(cold, goalTruth, new TaskConceptLogger(n, (w) ->
                         (--maxTries[0] >= 0) && (t.is() != t.should())
                 ));
-//                DurService xNeg = n.wantWhile(hot, goalTruth.neg(), (w) ->
-//                        t.is() != t.should()
-//                );
+                DurService xNeg = n.wantWhile(hot, goalTruth.neg(), new TaskConceptLogger(n, (w) ->
+                        t.is() != t.should()
+                ));
 
                 n.run(1);
 
@@ -255,7 +255,7 @@ public class ThermostatTest {
                 }
 
                 xPos.off();
-                //xNeg.off();
+                xNeg.off();
 
                 t.report();
 
@@ -309,6 +309,7 @@ public class ThermostatTest {
         @Override
         public boolean test(Task task) {
             boolean result = pred.test(task);
+            System.out.print(nar.time() + "\t");
             task.concept(nar, false).printSummary(System.out, nar);
             return result;
         }

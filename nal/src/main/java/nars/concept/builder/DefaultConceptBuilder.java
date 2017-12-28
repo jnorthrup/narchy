@@ -34,7 +34,6 @@ import java.util.function.Predicate;
 
 import static nars.Op.*;
 
-//import org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe;
 
 /**
  * Created by me on 2/24/16.

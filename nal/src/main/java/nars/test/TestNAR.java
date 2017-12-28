@@ -463,9 +463,9 @@ public class TestNAR {
     }
 
     @NotNull
-    public TestNAR mustBelieve(long withinCycles, @NotNull String term, float freqMin, float freqMax, float confMin, float confMax, long tense) {
+    public TestNAR mustBelieve(long withinCycles, @NotNull String term, float freqMin, float freqMax, float confMin, float confMax, long when) {
         long now = time();
-        return mustOutput(now, now + withinCycles, term, BELIEF, freqMin, freqMax, confMin, confMax, tense);
+        return mustOutput(now, now + withinCycles, term, BELIEF, freqMin, freqMax, confMin, confMax, when);
     }
 
     @NotNull

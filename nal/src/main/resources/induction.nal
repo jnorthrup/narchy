@@ -14,7 +14,7 @@
 //    B, A, task("."), time(dtEvents)                       notImpl(A) |- (A ==>+- B), (Belief:Induction)
 //    B, A, task("."), time(dtEventsOrEternals), neqAndCom(A,B),       notImpl(A) |- varIntro((A ==>+- B)), (Belief:Induction)
 
-    B, A, belief(positive), task("."), notImpl(A) |- (A ==>+- B), (Belief:Induction)
+   B, A, belief(positive), task("."), notImpl(A) |- (A ==>+- B), (Belief:Induction)
     B, A, belief(positive), task("."), neqAndCom(A,B), notImpl(A) |- varIntro((A ==>+- B)), (Belief:Induction)
         B, A, belief(negative), task("."), notImpl(A) |- (--A ==>+- B), (Belief:InductionN)
         B, A, belief(negative), task("."), neqAndCom(A,B),   notImpl(A) |- varIntro((--A ==>+- B)), (Belief:InductionN)

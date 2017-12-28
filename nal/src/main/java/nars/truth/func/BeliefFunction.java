@@ -139,6 +139,7 @@ public enum BeliefFunction implements TruthOperator {
     Abduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+
             return abduction(T, B, minConf);
         }
     },

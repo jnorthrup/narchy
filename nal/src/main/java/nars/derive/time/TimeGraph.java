@@ -51,8 +51,10 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
     private static final boolean allowSelfLoops = true;
     private static final boolean dternalAsZero = true;
+    private static final boolean autoUnneg = true;
+    protected static final boolean autoNegTask = true;
 
-    public static class TimeSpan {
+    static class TimeSpan {
         public final long dt;
         //public final float weight;
 
@@ -105,7 +107,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     /**
      * index by term
      */
-    public final Multimap<Term, Event> byTerm = MultimapBuilder
+    final Multimap<Term, Event> byTerm = MultimapBuilder
             .linkedHashKeys()
             .linkedHashSetValues() //maybe use TreeSet values and order them by best first
             .build();
@@ -135,7 +137,8 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         Term tt = t.term();
         //both positive and negative possibilities
         know(t, tt);
-        know(t, tt.neg());
+        if (autoNegTask)
+            know(t, tt.neg());
     }
 
     private void know(Task task, Term term) {
@@ -181,14 +184,15 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         boolean swap = false;
 //        if (dt == ETERNAL || dt == TIMELESS || dt == 0) {
         //lexical order
+
+        if (dt == 0 && x.id.unneg().equals(y.id/*.unneg()*/))
+            return; //throw new RuntimeException("instantaneous self loop");
+
         int vc = Integer.compare(x.id.volume(), y.id.volume());
         if (vc == 0) {
 
             if (x.hashCode() > y.hashCode()) { //TODO write real comparator
                 swap = true;
-            } else {
-                if (dt == 0 && x.id.unneg().equals(y.id.unneg()))
-                    return; //throw new RuntimeException("instantaneous self loop");
             }
         } else if (vc > 0) {
             swap = true;
@@ -223,9 +227,10 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             eventDT = edt;
 
         switch (eventTerm.op()) {
-//            case NEG:
-//                link(know(eventTerm.unneg()), 0, event); //lower priority?
-//                break;
+            case NEG:
+                if (autoUnneg)
+                    link(know(eventTerm.unneg()), 0, event); //lower priority?
+                break;
             case IMPL:
 
                 Term subj = eventTerm.sub(0);
@@ -320,16 +325,16 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
         Subterms xx = x.subterms();
         FasterList<Event> events = new FasterList<>(byTerm.get(x.root()));
-        for (int i = 0, eventsSize = events.size(); i < eventsSize; i++) {
-            Event r = events.get(i);
-            if (r instanceof Absolute) {
-                if (r.id.subterms().equals(xx)) {
-                    if (!each.test(r))
-                        return false; //done
-                }
-            }
-
-        }
+//        for (int i = 0, eventsSize = events.size(); i < eventsSize; i++) {
+//            Event r = events.get(i);
+//            if (r instanceof Absolute) {
+//                if (r.id.subterms().equals(xx)) {
+//                    if (!each.test(r))
+//                        return false; //done
+//                }
+//            }
+//
+//        }
 
 
         int subs = x.subs();
@@ -512,8 +517,8 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     static long dt(Term x, Event aa, Event bb) {
         long bWhen = bb.when();
         long aWhen = aa.when();
-        assert(aWhen!=XTERNAL);
-        assert(bWhen!=XTERNAL);
+        assert (aWhen != XTERNAL);
+        assert (bWhen != XTERNAL);
         if (aWhen == ETERNAL || bWhen == ETERNAL)
             return DTERNAL;
         else
@@ -522,7 +527,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     }
 
     private boolean solveDT(Term x, long start, long ddt, Predicate<Event> each) {
-        assert (ddt < Integer.MAX_VALUE): ddt + " dt calculated";
+        assert (ddt < Integer.MAX_VALUE) : ddt + " dt calculated";
         int dt = (int) ddt;
         Term y = dt(x, dt);
 

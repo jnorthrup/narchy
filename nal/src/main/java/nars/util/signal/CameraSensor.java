@@ -344,11 +344,7 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
 //                return TermVector.the(s);
 
 //            this.templates = new PixelNeighborsXYRandom(x, y, w, h, 1);
-        }
-
-        @Override
-        protected List<Termed> buildTemplates(Term term) {
-            List<Termed> l = super.buildTemplates(term);
+            List<Termed> l = templates();
             for (int i = x - 1; i <= x + 1; i++) {
                 for (int j = y - 1; j <= y + 1; j++) {
                     if (i == x && j == y) continue;
@@ -356,10 +352,10 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
                     l.add(pixelTerm.get(i, j));
                 }
             }
-            return l;
         }
 
-//        @Override
+
+        //        @Override
 //        protected LongSupplier update(Truth currentBelief, @NotNull NAR nar) {
 //            return ()->nextStamp;
 //        }

@@ -9,9 +9,11 @@ import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Bool;
 import nars.truth.Truth;
 import org.apache.commons.lang3.ArrayUtils;
+import org.intelligentjava.machinelearning.decisiontree.feature.P;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -232,6 +234,10 @@ abstract public class DynamicTruthModel {
         @Override
         protected Term construct(Term superterm, Term[] components) {
 
+            assert(components.length > 0);
+
+            components = Terms.sorted(components);
+
             if (components.length == 1) {
                 return components[0];
             }
@@ -240,7 +246,11 @@ abstract public class DynamicTruthModel {
                 return CONJ.the(superterm.dt(), components);
             } else {
 
-                throw new TODO();
+                if (components.length == 2) {
+                    return inhConstruct2(superterm, components, SECTe, SECTi);
+                } else {
+                    throw new TODO();
+                }
             }
         }
 
@@ -334,15 +344,9 @@ abstract public class DynamicTruthModel {
 
         @Override
         protected Term construct(Term superterm, Term[] components) {
+
             if (superterm.op()==INH) {
-                Term subj = superterm.sub(0);
-                if (subj.op()==DIFFe || subj.op()==DIFFi)
-                  return INH.the(subj.op().the(DTERNAL, components[0].sub(0), components[1].sub(0)), superterm.sub(1));
-
-                Term pred = superterm.sub(1);
-                if (pred.op()==DIFFe || pred.op()==DIFFi)
-                    return INH.the(superterm.sub(0), subj.op().the(DTERNAL, components[0].sub(1), components[1].sub(1)));
-
+                return inhConstruct2(superterm, components, DIFFe, DIFFi);
             } else if (superterm.op() == DIFFe) {
                 //raw difference
                 return Op.DIFFe.the(DTERNAL, components[0], components[1]);
@@ -380,6 +384,25 @@ abstract public class DynamicTruthModel {
 
             return true;
         }
+    }
+
+    /** TODO this will be easy to extend to N not only 2 */
+    @Nullable private static Term inhConstruct2(Term superterm, Term[] components, Op e, Op i) {
+        {
+            Term subj = superterm.sub(0);
+            Op so = subj.op();
+            if (so == e || so == i)
+                return INH.the(so.the(components[0].sub(0), components[1].sub(0)), superterm.sub(1));
+        }
+
+        {
+            Term pred = superterm.sub(1);
+            Op po = pred.op();
+            if (po == e || po == i)
+                return INH.the(superterm.sub(0), po.the(components[0].sub(1), components[1].sub(1)));
+        }
+
+        return null;
     }
 
     public static class Identity extends DynamicTruthModel {
