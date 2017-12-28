@@ -167,10 +167,10 @@ public class BeliefTableTest {
         n.dtDither.set(1f);
         n.time.dur(3);
         TestNAR t = new TestNAR(n);
-        t.log();
+        t.confTolerance(0.1f);
         t.inputAt(1, "x. :|:");
         t.inputAt(2, "y. :|:");
-        t.mustBelieve(5, "(x&|y)", 1f, 0.81f, 1, 2);
+        t.mustBelieve(5, "(x&|y)", 1f, 0.81f, 1);
         t.mustBelieve(5, "(x=|>y)", 1f, 0.45f, 1);
         t.test(true);
 

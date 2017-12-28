@@ -24,14 +24,14 @@ public class FamilyClausesList extends
     private final FamilyClausesIndex<Number> numCompClausesIndex;
     private final FamilyClausesIndex<String> constantCompClausesIndex;
     private final FamilyClausesIndex<String> structCompClausesIndex;
-    private final LinkedList<ClauseInfo> listCompClausesList;
+    private final Deque<ClauseInfo> listCompClausesList;
 
     //private LinkedList<ClauseInfo> clausesList;
 
-    public FamilyClausesList(Collection<ClauseInfo> copy) {
-        this();
-        copy.forEach(this::addLast);
-    }
+//    public FamilyClausesList(Collection<ClauseInfo> copy) {
+//        this();
+//        copy.forEach(this::addLast);
+//    }
 
     public FamilyClausesList() {
         super();
@@ -40,7 +40,7 @@ public class FamilyClausesList extends
         constantCompClausesIndex = new FamilyClausesIndex<>();
         structCompClausesIndex = new FamilyClausesIndex<>();
 
-        listCompClausesList = new LinkedList<>();
+        listCompClausesList = new ArrayDeque<>();
     }
 
     /**

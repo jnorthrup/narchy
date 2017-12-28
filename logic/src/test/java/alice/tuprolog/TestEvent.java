@@ -20,7 +20,7 @@ class MyListener extends PrologEventAdapter {
     @Override
     public void accept(QueryEvent ev){
         System.out.println("NEW QUERY RESULT AVAILABLE: \nquery\n "+
-                ev.getSolveInfo().getQuery().toString()+"\nresult\n"+
+                ev.getSolveInfo().getQuery() +"\nresult\n"+
                 ev.getSolveInfo());
     }
     

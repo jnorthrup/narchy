@@ -29,7 +29,7 @@ import static nars.time.Tense.XTERNAL;
 
 public class DynamicBeliefTable extends DefaultBeliefTable {
 
-    final DynamicTruthModel model;
+    private final DynamicTruthModel model;
     private final boolean beliefOrGoal;
     private final Term term;
 
@@ -73,7 +73,7 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
         DynTruth yy = truth(start, end, template, nar);
         if (yy != null) {
             Task[] tt = new Task[1];
-            yy.truth((bg) -> tt[0] = bg, beliefOrGoal, nar);
+            yy.truth((t) -> tt[0] = t, beliefOrGoal, nar);
             return tt[0];
         } else {
             return null;
@@ -82,8 +82,9 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
 
     @Override
     public Truth truth(long start, long end, NAR nar) {
-        DynTruth d = truth(start, end, term, nar);
-        return Truth.maxConf(d != null ? d.truth(nar) : null,
+        DynTruth d = truth(start, end, null, nar);
+        return Truth.maxConf(
+                d != null ? d.truth(nar) : null,
                 super.truth(start, end, nar) /* includes only non-dynamic beliefs */);
     }
 
@@ -136,8 +137,10 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
 
 
     @Nullable
-    protected DynTruth truth(long start, long end, Term template, NAR nar) {
-        template = template(start, end, template, nar);
+    protected DynTruth truth(long start, long end, @Nullable Term _template, NAR nar) {
+        Term template = template(start, end, (_template!=null ? _template : term), nar);
+//        if (_template == null && !template.equals(term))
+//            return null;
         return template != null ? model.eval(template, beliefOrGoal, start, end, true, nar) : null;
 
     }

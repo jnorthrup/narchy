@@ -18,13 +18,15 @@
 package alice.tuprolog.event;
 
 
+import java.util.function.Consumer;
+
 /**
  * 
  *
  * @author aricci
  *
  */
-public abstract class PrologEventAdapter implements TheoryListener, QueryListener, LibraryListener {
+public abstract class PrologEventAdapter implements TheoryListener, Consumer<QueryEvent>, LibraryListener {
 
     /* (non-Javadoc)
      * @see alice.tuprolog.PrologEventListener#theoryChanged(alice.tuprolog.TheoryEvent)

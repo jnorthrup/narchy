@@ -4,17 +4,14 @@ import alice.tuprolog.*;
 import com.google.common.collect.Iterators;
 import jcog.Util;
 import jcog.math.Range;
-import nars.$;
-import nars.NAR;
-import nars.Op;
-import nars.Task;
-import nars.concept.Concept;
+import nars.*;
+import nars.control.CauseChannel;
+import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.var.NormalizedVariable;
-import nars.truth.Truthed;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
@@ -82,11 +80,12 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
 
     @Range(min = 0, max = 1.0)
-    public final MutableFloat answerConf = new MutableFloat(confThreshold.floatValue()*0.9f);
+    public final MutableFloat answerConf = new MutableFloat(confThreshold.floatValue() * 0.9f);
 
     private final float existingAnswerThreshold = 0.5f;
 
     private final long timeoutMS = 50;
+    private final CauseChannel<ITask> in;
 
 
     /*final ObjectBooleanHashMap<Term> beliefs = new ObjectBooleanHashMap() {
@@ -101,8 +100,10 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
     public PrologCore(NAR n, String theory) {
         super(theory, new MutableClauseIndex()); //, new NARClauseIndex(n));
 
-        setSpy(false);
+        if (Param.DEBUG)
+            setSpy(true);
 
+        this.in = n.newCauseChannel(this);
         this.nar = n;
 
 
@@ -114,17 +115,17 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
         if (task.isBelief()) {
             //if task is the current highest one, otherwise ignore because we will already be using something more confident or relevant
-            Concept cc = task.concept(nar, false);
             if (task.isEternal()) { // && (task == cc.beliefs().matchEternal())) {
                 int dt = task.term().dt();
                 if (dt == 0 || dt == DTERNAL) { //only nontemporal or instant for now
                     float c = task.conf();
                     if (c >= confThreshold.floatValue()) {
                         float f = task.freq();
-                        if (f > trueFreqThreshold.floatValue())
-                            believe(cc, task, true);
-                        else if (f < falseFreqThreshold.floatValue())
-                            believe(cc, task, false);
+                        float t = trueFreqThreshold.floatValue();
+                        if (f > t)
+                            believe(task, true);
+                        else if (f < 1f - t)
+                            believe(task, false);
                     }
                 }
                 /* else: UNSURE */
@@ -139,13 +140,13 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
         //TODO if task is goal then wrap as goal belief
     }
 
-    protected void believe(Concept c, Task t, boolean truth) {
+    protected void believe(Task t, boolean truth) {
 
 
         boolean _truth = truth;
-        Term ct = c.term();
+        Term ct = t.term();
 
-        if (!ct.hasAny(ATOM) || !ct.hasAny(INT))
+        if (!ct.hasAny(Op.ConstantAtomics))
             return; //ignore if it contains no atoms (all variables)
 
         beliefs.compute(ct, (pp, prev) -> {
@@ -162,20 +163,17 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 //
 //            }
 
-            Struct next;
-            if (c.op()==IMPL) {
-                next = (Struct) pterm(t.term());
-                if (!_truth) {
-                    next = new Struct(":-", new Struct("not", next.subResolve(0)), next.subResolve(1));
-                }
-            } else {
-                next = (Struct) pterm(t.term());
-                if (!truth) {
-                    next = new Struct("not", next);
+            Struct next = (Struct) pterm(t.term());
+
+            if (!_truth) {
+                if (t.op() == IMPL) {
+                    next = new Struct(":-", negate(next.subResolve(0)), next.subResolve(1));
+                } else {
+                    next = negate(next);
                 }
             }
 
-            Solution s = solve( assertion(next) );
+            Solution s = solve(assertion(next));
             if (s.isSuccess())
                 logger.info("believe {}", next);
             else
@@ -233,37 +231,32 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
     private void answer(Task question, Solution answer) {
         try {
-            Term nterm = nterm(answer.goal.sub(0));
+            Term yt = nterm(answer.goal);
 
-            if (nterm instanceof Compound) {
-                Concept c = nar.concept(nterm);
-                Truthed currentBelief = c!=null ? nar.belief(c.term(), nar.time()) : null;
+            Task y = Task.tryTask(yt, BELIEF, $.t(1f, nar.confDefault(BELIEF)), (term, truth)->{
+                NALTask t = new NALTask(term, BELIEF, truth,
+                        nar.time(), ETERNAL, ETERNAL, nar.time.nextInputStamp());
+                t.pri(nar.priDefault(BELIEF));
+                t.log("Prolog Answer");
+                return t;
+            });
 
-                //only input if NARS doesnt have any belief or only has a weak belief for this fact
-                if (currentBelief == null || currentBelief.conf() < confThreshold.floatValue()*existingAnswerThreshold) {
+            logger.info("{}\t{}", question, y);
 
-                    logger.info("{}\t{}", answer.goal, nterm); //TODO input
+            if (y!=null)
+                in.input(y);
 
-                    boolean truth = answer.getVarValue("F").isEqual(ONE);
-
-                    Task t = new NALTask(nterm, BELIEF, $.t(truth ? 1f : 0f, answerConf.floatValue()), nar.time(), ETERNAL, ETERNAL, nar.time.nextInputStamp());
-                    //t.present(nar.time());
-                    t.log("Prolog Answer");
-
-                    nar.input(t);
-                }
-
-            } else {
-                logger.error("{}\t{} (not a compound)", answer.goal, nterm); //TODO input
-            }
         } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("answer {}", e);
+            logger.error("answer {} {} {}", question, answer, e);
         }
     }
 
     private static Term nterm(Struct s, int subterm) {
         return nterm(s.sub(subterm));
+    }
+
+    private static Term[] nterms(alice.tuprolog.Term[] t) {
+        return Util.map(PrologCore::nterm, new Term[t.length], t);
     }
 
     private static Term[] nterms(Struct s) {
@@ -298,19 +291,18 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
                         return theTwoArity(Op.DIFFe, s);
 
 
-
                     case "[":
-                        return Op.SETi.the((nterms(s)));
+                        return SETi.the((nterms(s)));
                     case "{":
-                        return Op.SETe.the((nterms(s)));
+                        return SETe.the((nterms(s)));
 
                     case "&":
-                        return Op.SECTe.the((nterms(s)));
+                        return SECTe.the((nterms(s)));
                     case "|":
-                        return Op.SECTi.the((nterms(s)));
+                        return SECTi.the((nterms(s)));
 
                     case "*":
-                        return Op.PROD.the((nterms(s)));
+                        return PROD.the((nterms(s)));
                     case "&&":
                         return CONJ.the((nterms(s)));
                     case "||":
@@ -320,13 +312,13 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
 
                     default:
-                        throw new RuntimeException(s + " not translated");
+                        return $.func(s.name(), nterms(((Struct) t).subArrayShared()));
                 }
             } else {
                 String n = s.name();
                 if (n.startsWith("'#")) {
                     //VarDep which exists as an Atom (not Var) in Prolog
-                    return $.varDep(n.substring(2, n.length()-1));
+                    return $.varDep(n.substring(2, n.length() - 1));
                 }
                 //Atom
                 return $.the(n);
@@ -348,12 +340,13 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
     public static Struct assertion(alice.tuprolog.Term p) {
         return new Struct("assertz", p);
     }
+
     public static Struct retraction(alice.tuprolog.Term p) {
         return new Struct("retract", p);
     }
 
     public static Struct negate(alice.tuprolog.Term p) {
-        return new Struct("not", p); //TODO issue retraction on the opposite? ex: retract(x), assertz(not(x))
+        return new Struct("--", p); //TODO issue retraction on the opposite? ex: retract(x), assertz(not(x))
     }
 
     public static alice.tuprolog.Term[] psubterms(final Compound subtermed) {
@@ -366,7 +359,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
     }
 
     public static Struct tterm(String punc, final alice.tuprolog.Term nalTerm, boolean isTrue) {
-        return new Struct(punc, nalTerm, isTrue ? ONE : ZERO );
+        return new Struct(punc, nalTerm, isTrue ? ONE : ZERO);
     }
 
     //NARS term -> Prolog term
@@ -382,7 +375,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
                 case NEG:
                     return new Struct(/*"\\="*/"not", st);
                 case PROD:
-                    return new Struct( st); //list
+                    return new Struct(st); //list
                 case INH:
                     Term pred = term.sub(1);
                     if (pred.op() == ATOM) {
@@ -408,7 +401,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
                 case VAR_INDEP: //??
                     return new Var("_" + (((NormalizedVariable) term).anonNum()));
 
-                    //return new Struct("'#" + ((Variable) term).id() + '\'');
+                //return new Struct("'#" + ((Variable) term).id() + '\'');
             }
         } else if (term instanceof Atomic) {
             return new Struct(term.toString());

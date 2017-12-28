@@ -46,7 +46,7 @@ public class MutableFloat extends Number implements FloatSupplier {
      */
     public MutableFloat(final float value) {
         super();
-        this.value = value;
+        set(value);
     }
 
     /**
@@ -97,8 +97,8 @@ public class MutableFloat extends Number implements FloatSupplier {
      * @param value  the value to set, not null
      * @throws NullPointerException if the object is null
      */
-    public void set(final Number value) {
-        this.value = value.floatValue();
+    public final void set(final Number value) {
+        set(value.floatValue());
     }
 
     //-----------------------------------------------------------------------

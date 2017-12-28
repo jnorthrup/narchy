@@ -750,7 +750,7 @@ public class ISOIOLibrary extends Library{
                 inputStreams.put(stream, element);
                 
                 if(value == -1){
-                    return unify(arg, Term.createTerm(-1 +""));
+                    return unify(arg, Term.term(-1 +""));
                 }
             Character c = (char) value;
             return unify(arg,new Struct(c.toString()));
@@ -932,11 +932,11 @@ public class ISOIOLibrary extends Library{
                 inputStreams.put(stream, element);
                 
                 if(value == -1){
-                    return unify(in_char, Term.createTerm(-1 +""));
+                    return unify(in_char, Term.term(-1 +""));
                 }
 
             Character c = (char) value;
-            return unify(in_char,Term.createTerm(c.toString()));
+            return unify(in_char,Term.term(c.toString()));
         }catch(IOException ioe){
                 ioe.printStackTrace();
                 throw PrologError.system_error(new Struct("An I/O error has occurred."));
@@ -1185,11 +1185,11 @@ public class ISOIOLibrary extends Library{
             //}
             
             inputStreams.put(stream, element); 
-            return unify(in_byte,Term.createTerm(b.toString()));
+            return unify(in_byte,Term.term(b.toString()));
         }
         catch(IOException ioe){
             element.put("end_of_stream", new Struct("past"));
-            return unify(in_byte, Term.createTerm("-1"));
+            return unify(in_byte, Term.term("-1"));
         }
     }
     
@@ -1240,11 +1240,11 @@ public class ISOIOLibrary extends Library{
             } 
                         
             inputStreams.put(stream, element); 
-            return unify(in_byte,Term.createTerm(b.toString()));
+            return unify(in_byte,Term.term(b.toString()));
         }
         catch(IOException e){
             element.put("end_of_stream", new Struct("past"));
-            return unify(in_byte, Term.createTerm("-1"));
+            return unify(in_byte, Term.term("-1"));
         }
     }
     
@@ -1402,14 +1402,14 @@ public class ISOIOLibrary extends Library{
                 element.put("end_of_stream",new Struct("past"));
                 element.put("position",new Int(p2));
                 inputStreams.put(stream, element);
-                return unify(in_term,Term.createTerm(st));
+                return unify(in_term,Term.term(st));
             }
                                     
             if(!variables_bool && !variable_names_bool && !singletons_bool){
                 return unify(in_term, engine.toTerm(st));
             }
             Var input_term = new Var();
-            unify(input_term,Term.createTerm(st));
+            unify(input_term,Term.term(st));
                     
             //opzione variables + variables_name
             List<Term> variables_list = new ArrayList<>();
@@ -1473,17 +1473,17 @@ public class ISOIOLibrary extends Library{
                 switch (option.name()) {
                     case "variables":
                         variables = new Struct();
-                        variables = (Struct) Term.createTerm(vars.toString());
+                        variables = (Struct) Term.term(vars.toString());
                         unify(option.sub(0), variables);
                         break;
                     case "variable_name":
                         variable_names = new Struct();
-                        variable_names = (Struct) Term.createTerm(associations_table.toString());
+                        variable_names = (Struct) Term.term(associations_table.toString());
                         unify(option.sub(0), variable_names);
                         break;
                     case "singletons":
                         singletons = new Struct();
-                        singletons = (Struct) Term.createTerm(singl.toString());
+                        singletons = (Struct) Term.term(singl.toString());
                         unify(option.sub(0), singletons);
                         break;
                 }

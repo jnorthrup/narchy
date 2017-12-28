@@ -1,7 +1,8 @@
 package alice.tuprolog;
 
+import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.LinkedList;
+
 
 /**
  * <code>FamilyClausesIndex</code> enables family clauses indexing
@@ -11,17 +12,17 @@ import java.util.LinkedList;
  * @since 2.2
  */
 class FamilyClausesIndex<K extends Comparable<? super K>>
-        extends RBTree<K, LinkedList<ClauseInfo>> {
+        extends RBTree<K, Deque<ClauseInfo>> {
 
     private final Deque<ClauseInfo> varsClauses;
 
     public FamilyClausesIndex(){
         super();
-        varsClauses = new LinkedList<>();
+        varsClauses = new ArrayDeque<>();
     }
 
-    private Node<K,LinkedList<ClauseInfo>> createNewNode(K key, ClauseInfo clause, boolean first){
-        LinkedList<ClauseInfo> list = new LinkedList<>(varsClauses);
+    private Node<K,Deque<ClauseInfo>> createNewNode(K key, ClauseInfo clause, boolean first){
+        Deque<ClauseInfo> list = new ArrayDeque<>(varsClauses);
 
         if(first){
             list.addFirst(clause);
@@ -50,26 +51,37 @@ class FamilyClausesIndex<K extends Comparable<? super K>>
 
         //Aggiorna tutti i nodi che ci sono
         if(root != null){
-            LinkedList<Node<K, LinkedList<ClauseInfo>>> buf = new LinkedList<>();
-            buf.add(root);
+            if (root.left==null && root.right == null) {
+                //just set the value
+                setValue(clause, first, root);
+            } else {
+                //rebalance
 
-            while(!buf.isEmpty()){
-                Node<K, LinkedList<ClauseInfo>> n = buf.remove();
-                
-                if(first){
-                    n.value.addFirst(clause);
-                } else {
-                    n.value.addLast(clause);
-                }
+                Deque<Node<K, Deque<ClauseInfo>>> buf = new ArrayDeque<>();
+                buf.add(root);
 
-                if(n.left != null){
-                    buf.addLast(n.left);
-                }
+                while (!buf.isEmpty()) {
+                    Node<K, Deque<ClauseInfo>> n = buf.removeFirst();
 
-                if(n.right != null){
-                    buf.addLast(n.right);
+                    setValue(clause, first, n);
+
+                    if (n.left != null) {
+                        buf.addLast(n.left);
+                    }
+
+                    if (n.right != null) {
+                        buf.addLast(n.right);
+                    }
                 }
             }
+        }
+    }
+
+    public void setValue(ClauseInfo clause, boolean first, Node<K, Deque<ClauseInfo>> n) {
+        if(first){
+            n.value.addFirst(clause);
+        } else {
+            n.value.addLast(clause);
         }
     }
 
@@ -84,19 +96,15 @@ class FamilyClausesIndex<K extends Comparable<? super K>>
      * @param first     If the clause must be binded as first or last element
      */
     public void insert(K key, ClauseInfo clause, boolean first){
-        Node<K, LinkedList<ClauseInfo>> insertedNode = null;
+        Node<K, Deque<ClauseInfo>> insertedNode = null;
         if (root == null) {
             insertedNode = root = createNewNode(key, clause, first);
         } else {
-            Node<K,LinkedList<ClauseInfo>> n = root;
+            Node<K,Deque<ClauseInfo>> n = root;
             while (true) {
                 int compResult = key.compareTo(n.key);
                 if (compResult == 0) {
-                    if(first){
-                        n.value.addFirst(clause);
-                    } else {
-                        n.value.addLast(clause);
-                    }
+                    setValue(clause, first, n);
                     return;
                 } else if (compResult < 0) {
                     if (n.left == null) {
@@ -106,7 +114,7 @@ class FamilyClausesIndex<K extends Comparable<? super K>>
                         n = n.left;
                     }
                 } else {
-                    assert compResult > 0;
+                    //assert compResult > 0;
                     if (n.right == null) {
                         insertedNode = n.right = createNewNode(key, clause,first);
                         break;
@@ -126,20 +134,26 @@ class FamilyClausesIndex<K extends Comparable<? super K>>
     public void removeShared(ClauseInfo clause){
         if(varsClauses.remove(clause)){
             if(root != null){
-                LinkedList<Node<K, LinkedList<ClauseInfo>>> buf = new LinkedList<>();
-                buf.add(root);
+                if (root.left == null && root.right == null) {
+                    root.value.remove(clause);  //just adjust value
+                } else {
+                    //rebalance
 
-                while(!buf.isEmpty()){
-                    Node<K, LinkedList<ClauseInfo>> n = buf.remove();
+                    Deque<Node<K, Deque<ClauseInfo>>> buf = new ArrayDeque<>();
+                    buf.add(root);
 
-                    n.value.remove(clause);
+                    while (!buf.isEmpty()) {
+                        Node<K, Deque<ClauseInfo>> n = buf.remove();
 
-                    if(n.left != null){
-                        buf.addLast(n.left);
-                    }
+                        n.value.remove(clause);
 
-                    if(n.right != null){
-                        buf.addLast(n.right);
+                        if (n.left != null) {
+                            buf.addLast(n.left);
+                        }
+
+                        if (n.right != null) {
+                            buf.addLast(n.right);
+                        }
                     }
                 }
             }
@@ -155,12 +169,7 @@ class FamilyClausesIndex<K extends Comparable<? super K>>
      * @return      The related clauses
      */
     public Deque<ClauseInfo> get(K key){
-        Deque<ClauseInfo> res = null;
-        if(root != null){
-            res = lookup(key);
-        }
-
+        Deque<ClauseInfo> res = lookup(key);
         return res != null ? res : varsClauses;
-
     }
 }

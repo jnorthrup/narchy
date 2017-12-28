@@ -100,10 +100,10 @@ public class DefaultConceptBuilder implements ConceptBuilder {
                 Op po = pred.op();
 
                 if (dmt == null && (po.atomic || po == PROD || po.isSet())) {
-                    if ((so == Op.SECTi) || (so == Op.SECTe) || (so == Op.DIFFi) || (subj instanceof Int.IntRange) || (so == PROD && subj.OR(Int.IntRange.class::isInstance))) {
+                    if ((so == Op.SECTi) || (so == Op.SECTe) || (so == Op.DIFFe) || (subj instanceof Int.IntRange) || (so == PROD && subj.OR(Int.IntRange.class::isInstance))) {
                         //(P --> M), (S --> M), notSet(S), notSet(P), neqCom(S,P) |- ((S | P) --> M), (Belief:Intersection)
                         //(P --> M), (S --> M), notSet(S), notSet(P), neqCom(S,P) |- ((S & P) --> M), (Belief:Union)
-                        //(P --> M), (S --> M), notSet(S), notSet(P), neqCom(S,P) |- ((P ~ S) --> M), (Belief:Difference)
+                        //(P --> M), (S --> M), notSet(S), notSet(P), neqCom(S,P) |- ((P ~ S) --> M), (Belief:Difference) //extensional
 
 
                         Subterms subjsubs = subj.subterms();
@@ -146,7 +146,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
                                     case SECTe:
                                         dmt = new DynamicTruthModel.Union(x);
                                         break;
-                                    case DIFFi:
+                                    case DIFFe:
                                         dmt = new DynamicTruthModel.Difference(x[0], x[1]);
                                         break;
                                 }
@@ -180,10 +180,10 @@ public class DefaultConceptBuilder implements ConceptBuilder {
                 }
 
                 if (dmt == null && (so.atomic || so == PROD || so.isSet())) {
-                    if ((po == Op.SECTi) || (po == Op.SECTe) || (po == DIFFe)) {
+                    if ((po == Op.SECTi) || (po == Op.SECTe) || (po == DIFFi)) {
                         //(M --> P), (M --> S), notSet(S), notSet(P), neqCom(S,P) |- (M --> (P & S)), (Belief:Intersection)
                         //(M --> P), (M --> S), notSet(S), notSet(P), neqCom(S,P) |- (M --> (P | S)), (Belief:Union)
-                        //(M --> P), (M --> S), notSet(S), notSet(P), neqCom(S,P) |- (M --> (P - S)), (Belief:Difference)
+                        //(M --> P), (M --> S), notSet(S), notSet(P), neqCom(S,P) |- (M --> (P - S)), (Belief:Difference) //intensional
                         Compound cpred = (Compound) pred;
                         {
                             int s = cpred.subs();
@@ -207,7 +207,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
                                     case SECTe:
                                         dmt = new DynamicTruthModel.Intersection(x);
                                         break;
-                                    case DIFFe:
+                                    case DIFFi:
                                         dmt = new DynamicTruthModel.Difference(x[0], x[1]);
                                         break;
                                 }

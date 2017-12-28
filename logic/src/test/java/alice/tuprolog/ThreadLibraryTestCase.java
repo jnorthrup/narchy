@@ -84,7 +84,7 @@ public class ThreadLibraryTestCase {
 		assertTrue(sinfo.isSuccess());
 		
 		Term X = sinfo.getVarValue("X");
-		assertEquals(Term.createTerm("genitore(bob,gdh)"), X);
+		assertEquals(Term.term("genitore(bob,gdh)"), X);
 	}
 
 	/**
@@ -102,10 +102,10 @@ public class ThreadLibraryTestCase {
 		assertTrue(sinfo.isSuccess());
 		
 		Term X = sinfo.getVarValue("X");
-		assertEquals(Term.createTerm("genitore(bob,a)"), X);
+		assertEquals(Term.term("genitore(bob,a)"), X);
 		
 		Term Y = sinfo.getVarValue("Y");
-		assertEquals(Term.createTerm("genitore(b,b)"), Y);
+		assertEquals(Term.term("genitore(b,b)"), Y);
 		
 		sinfo = engine.solve("thread_create(ID, genitore(bob,X)), thread_join(ID,X), thread_next_sol(ID).");	//il thread stato rimosso
 		assertFalse(sinfo.isSuccess());
@@ -132,10 +132,10 @@ public class ThreadLibraryTestCase {
 		assertTrue(sinfo.isSuccess());
 		
 		Term X = sinfo.getVarValue("X");
-		assertEquals(Term.createTerm("genitore(bob,f)"), X);
+		assertEquals(Term.term("genitore(bob,f)"), X);
 		
 		Term X1 = sinfo.getVarValue("X1");
-		assertEquals(Term.createTerm("genitore(bob,a)"), X1);
+		assertEquals(Term.term("genitore(bob,a)"), X1);
 		
 		sinfo = engine.solve("thread_create(ID, genitore(bob,X)), thread_read(ID,X), thread_next_sol(ID).");	//Il thread non stato rimosso
 		assertTrue(sinfo.isSuccess());
@@ -161,7 +161,7 @@ public class ThreadLibraryTestCase {
 		assertTrue(sinfo.isSuccess());
 		
 		Term X = sinfo.getVarValue("X");
-		assertEquals(Term.createTerm("b"), X);
+		assertEquals(Term.term("b"), X);
 	}
 
 	

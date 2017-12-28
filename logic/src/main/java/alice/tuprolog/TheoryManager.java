@@ -338,7 +338,7 @@ public class TheoryManager {
      */
     private Struct toClause(Struct t) {        //PRIMITIVE
         // TODO bad, slow way of cloning. requires approx twice the time necessary
-        t = (Struct) Term.createTerm(t.toString(), this.engine.ops);
+        t = (Struct) Term.term(t.toString(), this.engine.ops);
         if (!t.isClause())
             t = new Struct(":-", t, TRUE);
         primitiveManager.identify(t, PREDICATE);

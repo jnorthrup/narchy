@@ -215,7 +215,7 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener{
    */
   public static void main(String... args) throws Exception{
     Theory theory=new Theory(new FileInputStream(args[0]));
-    Term goal=Term.createTerm(args[1]);
+    Term goal=Term.term(args[1]);
     System.out.println("goal:"+goal);
     System.out.println("in given theory\n---------------\n"+theory);
     SpyFrame tf=new SpyFrame(theory, goal);

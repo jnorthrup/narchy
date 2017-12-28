@@ -160,6 +160,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
     private void actionsReflect() {
 
         Opjects oo = new Opjects(nar);
+        oo.executionThreshold.set(0.6f);
+
         oo.methodExclusions.add("toVector");
         state =
                 //oo.the("tetris", this.state);

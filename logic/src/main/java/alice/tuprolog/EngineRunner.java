@@ -4,12 +4,10 @@
  */
 package alice.tuprolog;
 
+import jcog.list.FasterList;
 import org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList;
 
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -22,7 +20,6 @@ import static alice.tuprolog.PrologPrimitive.PREDICATE;
  * Core engine
  */
 public class EngineRunner implements java.io.Serializable, Runnable{
-	private static final long serialVersionUID = 1L;
     private Prolog                              mediator;
     private TheoryManager theories;
     private PrimitiveManager primitives;
@@ -53,7 +50,7 @@ public class EngineRunner implements java.io.Serializable, Runnable{
     /* Last environment used */
     private Engine last_env;
     /* Stack environments of nidicate solving */
-    private final LinkedList<Engine> stackEnv = new LinkedList<>();
+    private final FasterList<Engine> stackEnv = new FasterList<>();
     protected Solution sinfo;
     private String sinfoSetOf;
     
@@ -124,9 +121,9 @@ public class EngineRunner implements java.io.Serializable, Runnable{
         mediator.spy(action,env);
     }
     
-    static void warn(String message) {
-        Prolog.warn(message);
-    }
+//    static void warn(String message) {
+//        Prolog.warn(message);
+//    }
     
     /*Castagna 06/2011*/
         void exception(String message) {
@@ -290,7 +287,7 @@ public class EngineRunner implements java.io.Serializable, Runnable{
         if (!stackEnv.isEmpty() && stackEnv.getLast()==env)
             return;
 
-        stackEnv.addLast(env);
+        stackEnv.add(env);
     }
     
     private void refreeze() {

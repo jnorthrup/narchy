@@ -596,7 +596,7 @@ public class OOLibrary extends Library {
         	}
         	else
         		stringURLs = "[]";
-            Term pathTerm = Term.createTerm(stringURLs);
+            Term pathTerm = Term.term(stringURLs);
             return unify(paths, pathTerm);
     	}catch(IllegalArgumentException e)
         {

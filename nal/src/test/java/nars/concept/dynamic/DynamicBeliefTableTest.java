@@ -30,10 +30,10 @@ public class DynamicBeliefTableTest {
         long now = n.time();
         Concept axANDay = n.conceptualize($("(a:x && a:y)"));
         assertEquals($.t(1f, 0.81f), n.beliefTruth(axANDay, now));
-        assertEquals($.t(0f, 0.90f), n.beliefTruth(n.conceptualize($("(b:x && a:y)")), now));
-        assertEquals($.t(0f, 0.90f), n.beliefTruth(n.conceptualize($("(a:x && (--,a:y))")), now));
-        assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("((--,b:x) && a:y)")), now));
-        assertEquals($.t(0f, 0.90f), n.beliefTruth(n.conceptualize($("((--,b:x) && (--,a:y))")), now));
+        assertEquals($.t(0f, 0.90f), n.beliefTruth(($("(b:x && a:y)")), now));
+        assertEquals($.t(0f, 0.90f), n.beliefTruth(($("(a:x && (--,a:y))")), now));
+        assertEquals($.t(1f, 0.81f), n.beliefTruth(($("((--,b:x) && a:y)")), now));
+        assertEquals($.t(0f, 0.90f), n.beliefTruth(($("((--,b:x) && (--,a:y))")), now));
     }
 
     @Test
@@ -125,6 +125,13 @@ public class DynamicBeliefTableTest {
 
         //test negation:
         Concept ccn = n.conceptualize($("(&&, a:x, (--, a:y), a:z)"));
+
+        {
+            Task t = n.belief(ccn.term());
+            assertEquals($("a:y"), t.term()); //the critical component
+            assertEquals(1f, t.freq());
+        }
+
         assertTrue(ccn instanceof TaskConcept);
         Truth nown = n.beliefTruth(ccn, n.time());
         assertTrue($.t(0f, 0.90f).equals(nown, 0.1f));
@@ -262,7 +269,7 @@ public class DynamicBeliefTableTest {
 
         NAR n = NARS.tmp();
         n.believe("x", 1f, 0.50f);
-        //n.believe("y", 1f, 0.50f); //Y unknown
+        //n.believe("y", ...); //Y unknown
         n.believe("z", 0f, 0.81f);
         n.run(1);
         assertEquals(

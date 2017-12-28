@@ -11,7 +11,6 @@ import nars.term.transform.Retemporalize;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * Final conclusion step of the derivation process that produces a derived task
@@ -53,8 +52,14 @@ public final class Conclusion extends AbstractPred<Derivation> {
         int volMax = d.termVolMax;
         if (c1 == null || !c1.op().conceptualizable || c1.volume() > volMax || c1.hasAny(/*BOOL,*/VAR_PATTERN) )
             return false;
-        if (!c1.hasAny(Op.constantAtoms))
+        if (!c1.hasAny(Op.ConstantAtomics))
             return false; //entirely variablized
+
+        if (c1.op()==NEG) {
+           c1 = c1.unneg();
+           if (d.concTruth!=null) //belief or goal
+                d.concTruth = d.concTruth.neg();
+        }
 
         d.concEviFactor = 1f;
         final long[] occ = d.concOcc;

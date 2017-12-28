@@ -641,7 +641,7 @@ private static class ThreadReader extends Thread {
 				if(this.isInterrupted())return;
 				Term msg = (Term) in.readObject();
 				if(this.isInterrupted())return;					
-				Struct s = (Struct) Term.createTerm(msg.term().toString());
+				Struct s = (Struct) Term.term(msg.term().toString());
 				if (assertA)
 					mainEngine.theories.assertA(s, true, "", false);
 				else

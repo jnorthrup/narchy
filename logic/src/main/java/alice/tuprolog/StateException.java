@@ -8,9 +8,9 @@ import java.util.List;
  */
 public class StateException extends State {
 
-    final Term catchTerm = Term.createTerm("catch(Goal, Catcher, Handler)");
+    final Term catchTerm = Term.term("catch(Goal, Catcher, Handler)");
     final Term javaCatchTerm = Term
-            .createTerm("java_catch(Goal, List, Finally)");
+            .term("java_catch(Goal, List, Finally)");
 
     public StateException(EngineRunner c) {
         this.c = c;

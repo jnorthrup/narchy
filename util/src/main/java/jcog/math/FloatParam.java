@@ -1,5 +1,6 @@
 package jcog.math;
 
+import jcog.Util;
 import org.apache.commons.lang3.mutable.MutableFloat;
 
 /**
@@ -29,4 +30,5 @@ public class FloatParam extends MutableFloat implements FloatSupplier {
     public final float asFloat() {
         return floatValue();
     }
+
 }

@@ -1,16 +1,14 @@
 package nars;
 
-import jcog.Services;
 import jcog.Util;
 import jcog.math.FloatParam;
+import jcog.math.FloatParamRounded;
 import jcog.math.MutableInteger;
-import jcog.pri.op.PriForget;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.control.Derivation;
 import nars.task.Tasked;
 import nars.task.TruthPolation;
-import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
@@ -18,7 +16,6 @@ import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.Op.*;
@@ -381,18 +378,25 @@ public abstract class Param {
 //    @NotNull public final FloatParam derivedEvidenceGain = new FloatParam(1f, 0f, 4f);
 
 
-
-    /** global truth frequency resolution by which reasoning is dithered */
-    public final FloatParam freqResolution = new FloatParam(TRUTH_EPSILON, TRUTH_EPSILON, 1f);
-
-    /** global truth confidence resolution by which reasoning is dithered */
-    public final FloatParam confResolution = new FloatParam(TRUTH_EPSILON, TRUTH_EPSILON, 1f);
-
     /**
      * truth confidence threshold necessary to form tasks
      */
-    @NotNull
     public final FloatParam confMin = new FloatParam(TRUTH_EPSILON, TRUTH_EPSILON, 1f);
+
+    /** global truth frequency resolution by which reasoning is dithered */
+    public final FloatParam freqResolution = new FloatParamRounded(TRUTH_EPSILON, TRUTH_EPSILON, 1f, TRUTH_EPSILON);
+
+    /** global truth confidence resolution by which reasoning is dithered */
+    public final FloatParam confResolution = new FloatParamRounded(TRUTH_EPSILON, TRUTH_EPSILON, 1f, TRUTH_EPSILON) {
+        @Override
+        public void set(float value) {
+            super.set(value);
+            value = get(); //update for rounding
+            if (confMin.floatValue() < value)
+                confMin.set(value);
+        }
+    };
+
 
 
     /**

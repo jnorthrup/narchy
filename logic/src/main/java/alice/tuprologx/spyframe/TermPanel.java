@@ -86,9 +86,9 @@ public class TermPanel extends JPanel implements ActionListener{
    */
   public void setTerm(String sterm){
     Term term;
-    try{term=Term.createTerm(sterm);}
+    try{term=Term.term(sterm);}
     catch(Exception ex){
-      term=Term.createTerm("'>illegal prolog term<'");
+      term=Term.term("'>illegal prolog term<'");
     }
     setTerm(term);
   }

@@ -49,7 +49,7 @@ public interface Retemporalize extends CompoundTransform {
 
             Term c1 = Retemporalize.super.transform(x, op, dt);
             if (op.temporal) {
-                if (c1 == null || c1.subs() != x.subs()) {
+                if (c1 == null || (op==CONJ && (c1.subs() != x.subs()))) {
                     //oops we need XTERNAL
                     return Retemporalize.super.transform(x, op, XTERNAL);
                 }
@@ -110,8 +110,14 @@ public interface Retemporalize extends CompoundTransform {
                     return true;
                 }, 0, false, false, false, 0);
                 List<Term> sl = s.list;
-                if (sl.size() > 1) {
-                    sl.replaceAll((zz) -> zz.transform(Retemporalize.this));
+                int sln = sl.size();
+                if (sln > 1) {
+                    for (int i = 0; i < sln; i++) {
+                        Term sli = sl.get(i).transform(Retemporalize.this);
+                        if (sli == null)
+                            return null; //fail
+                        sl.set(i, sli);
+                    }
                     return CONJ.the(XTERNAL, sl);//.transform(this);
                 }
             }

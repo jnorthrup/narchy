@@ -94,7 +94,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     private HashSet<X> set;
 	public List<X> list;
 
-	final static List EMPTY_LIST = List.of();
+	final static List EMPTY_LIST = Collections.emptyList();
 	
 	public ArrayHashSet() {
 		this.set  = new HashSet<X>();

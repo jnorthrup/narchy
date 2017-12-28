@@ -45,7 +45,7 @@ public class SocketLibTestCase {
 		System.out.println("[SocketLibTest] Server Socket: "+ serverSock);*/
 		
 		Struct msg = (Struct) result.getTerm("Msg");	
-		Assertions.assertEquals(Term.createTerm("'msg inviato dal server'"), msg);
+		Assertions.assertEquals(Term.term("'msg inviato dal server'"), msg);
 	
 	}
 	
@@ -76,7 +76,7 @@ public class SocketLibTestCase {
 		System.out.println("[SocketLibTest] Server Socket: "+ serverSock);*/
 		
 		Struct msg = (Struct) result.getTerm("Msg");	
-		Assertions.assertEquals(Term.createTerm("'msg inviato dal client'"), msg);
+		Assertions.assertEquals(Term.term("'msg inviato dal client'"), msg);
 	}
 }
 

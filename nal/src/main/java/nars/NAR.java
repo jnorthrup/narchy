@@ -719,67 +719,36 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         assert (concept.op().conceptualizable) : "asking for truth of unconceptualizable: " + concept; //filter NEG etc
 
         @Nullable Concept c = conceptualize(concept);
-        if (c instanceof TaskConcept) {
-            TaskConcept tc = (TaskConcept) c;
-            BeliefTable table;
-            switch (punc) {
-                case BELIEF:
-                    table = tc.beliefs();
-                    break;
-                case GOAL:
-                    table = tc.goals();
-                    break;
-                default:
-                    throw new UnsupportedOperationException();
-            }
-            return table.truth(start, end, this);
-        }
-
-        return null;
+        return c != null ? ((BeliefTable) c.table(punc)).truth(start, end, this) : null;
     }
 
     @Nullable
-    public Truth beliefTruth(String concept, long when) throws NarseseException {
+    public final Truth beliefTruth(String concept, long when) throws NarseseException {
         return truth(conceptualize(concept), BELIEF, when);
     }
 
     @Nullable
-    public Truth goalTruth(String concept, long when) throws NarseseException {
+    public final Truth goalTruth(String concept, long when) throws NarseseException {
         return truth(conceptualize(concept), GOAL, when);
     }
 
     @Nullable
-    public Truth beliefTruth(Termed concept, long when) {
+    public final Truth beliefTruth(Termed concept, long when) {
         return truth(concept, BELIEF, when);
     }
 
     @Nullable
-    public Truth beliefTruth(Termed concept, long start, long end) {
+    public final Truth beliefTruth(Termed concept, long start, long end) {
         return truth(concept, BELIEF, start, end);
     }
 
     @Nullable
-    public Truth goalTruth(Termed concept, long when) {
+    public final Truth goalTruth(Termed concept, long when) {
         return truth(concept, GOAL, when);
     }
 
-//    private void runAsyncFrameTasks() {
-//        try {
-//            int active = asyncPerFrame.getActiveCount();
-//            if (active > 0) {
-//
-//                asyncPerFrame.awaitTermination(0, TimeUnit.MINUTES);
-//                //asyncPerFrame.shutdown();
-//                asyncPerFrame = null;
-//
-//            }
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     @Nullable
-    public Truth goalTruth(Termed concept, long start, long end) {
+    public final Truth goalTruth(Termed concept, long start, long end) {
         return truth(concept, GOAL, start, end);
     }
 

@@ -37,7 +37,6 @@ public final class DynTruth {
     public float conf; //running product
 
     Term term = null;
-    private float maxComponentEvi = 0;
 
     /** scratch for intermediate buffering */
     public List<Truth> truths = null;
@@ -141,8 +140,8 @@ public final class DynTruth {
 
 
         float f;
-        if (c.op() == NEG) {
-            c = c.unneg();
+        if (builtTask!=null && c.op() == NEG) {
+            c = c.unneg(); //unneg if constructing a task, but dont if just returning the truth
             f = 1f - freq;
         } else {
             f = freq;
@@ -179,6 +178,5 @@ public final class DynTruth {
 
     void add(Task task, Truth sampled) {
         e.add(task);
-        maxComponentEvi = sampled!=null ? Math.max(maxComponentEvi, sampled.evi()) : maxComponentEvi;
     }
 }

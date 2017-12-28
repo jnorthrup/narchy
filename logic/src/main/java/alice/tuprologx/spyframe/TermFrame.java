@@ -88,9 +88,9 @@ public class TermFrame extends JFrame implements ActionListener{
    */
   public void setTerm(String sterm){
     Term term;
-    try{term=Term.createTerm(sterm);}
+    try{term=Term.term(sterm);}
     catch(Exception ex){
-      term=Term.createTerm("'>illegal prolog term<'");
+      term=Term.term("'>illegal prolog term<'");
     }
     setTerm(term);
   }
@@ -102,7 +102,7 @@ public class TermFrame extends JFrame implements ActionListener{
     if(args.length!=1)
       System.out.println("Pass exactly one prolog term!");
     else{
-      TermFrame tf=new TermFrame(Term.createTerm(args[0]));
+      TermFrame tf=new TermFrame(Term.term(args[0]));
       tf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
   }

@@ -263,7 +263,7 @@ public abstract class Term implements Serializable, SubTree {
      * @return the term represented by the string
      * @throws InvalidTermException if the string does not represent a valid term
      */
-    public static Term createTerm(String st) {
+    public static Term term(String st) {
         return Parser.parseSingleTerm(st);
     }
     
@@ -277,7 +277,7 @@ public abstract class Term implements Serializable, SubTree {
      * @return the term represented by the string
      * @throws InvalidTermException if the string does not represent a valid term
      */
-    public static Term createTerm(String st, OperatorManager op) {
+    public static Term term(String st, OperatorManager op) {
         return Parser.parseSingleTerm(st, op);
     }
 

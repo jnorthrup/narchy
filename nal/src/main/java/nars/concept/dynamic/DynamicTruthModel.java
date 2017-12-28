@@ -102,14 +102,15 @@ abstract public class DynamicTruthModel {
                     //task
 
                     bt = table.match(subStart, subEnd, it, n);
-                    if (bt == null)
-                        return null;
-                    nt = bt.truth(subStart, subEnd, dur, 0f); //project to target time if task isnt at it
+                    if (bt != null) {
+                        nt = bt.truth(subStart, subEnd, dur, 0f); //project to target time if task isnt at it
+                        ot = bt.term();
+                    } else {
+                        //missing truth, but yet still may be able to conclude a result
+                        nt = null;
+                        ot = null;
+                    }
 
-
-                    ot = bt.term();
-                    //                if (ot.hasXternal())
-                    //                    throw new RuntimeException("xternal");
                 } else {
                     //truth only
                     bt = null;
@@ -125,7 +126,10 @@ abstract public class DynamicTruthModel {
                 return null;
 
             if (evi) {
+
                 d.add(bt, nt);
+                if (negated && ot!=null)
+                    ot = ot.neg();
 
                 if (ot==null || !inputs[i].equals(ot)) {
                     //template has changed
@@ -148,8 +152,8 @@ abstract public class DynamicTruthModel {
         if (evi) {
             assert (!d.e.isEmpty());
             if (!Arrays.equals(outputs, inputs)) {
-                Term[] components = ArrayUtils.removeAllOccurences(outputs, null);
-                if (components.length == 0)
+                Term[] components = ArrayUtils.removeNulls(outputs, Term[]::new);
+                if (components == null)
                     return null;
                 Term reconstructed = construct(superterm, components);
                 if (reconstructed == null)
@@ -160,10 +164,6 @@ abstract public class DynamicTruthModel {
 //                    } else {
                         return null;
 //                    }
-                }
-                if (reconstructed.op()==NEG) {
-                    reconstructed = reconstructed.unneg();
-                    d.freq = 1-d.freq;
                 }
                 d.term = reconstructed;
             } else

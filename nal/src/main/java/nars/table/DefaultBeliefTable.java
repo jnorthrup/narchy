@@ -89,14 +89,14 @@ public class DefaultBeliefTable implements BeliefTable {
 
     @Override
     public int size() {
-        return eternal.size() /* eternal */ + temporal.size();
+        return eternal.size()  + temporal.size();
     }
 
     @Override
     @Deprecated
     public int capacity() {
         //throw new UnsupportedOperationException("doesnt make sense to call this");
-        return eternal.capacity() /* eternal */ + temporal.capacity();
+        return eternal.capacity() + temporal.capacity();
     }
 
     @Override

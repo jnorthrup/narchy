@@ -417,7 +417,7 @@ public class DeriveTime extends TimeGraph {
             s = e = ETERNAL;
         } else {
             boolean taskEvent = !task.term().op().temporal;
-            if (belief == null) {
+            if (belief == null || belief.isEternal()) {
                 if (!taskEvent) {
                     //transformed task term, should have been solved
                     return null;
@@ -427,9 +427,10 @@ public class DeriveTime extends TimeGraph {
                     e = task.end();
                 }
             } else {
-                boolean beliefEvent = !belief.isEternal() && !belief.term().op().temporal;
+                boolean beliefEvent = !belief.term().op().temporal;
                 if (!taskEvent && !beliefEvent) {
                     //two events: fuse time
+                    assert(!belief.isEternal());
                     TimeFusion joint = new TimeFusion(task.start(), task.end(), belief.start(), belief.end());
                     //                    if (joint.factor <= Pri.EPSILON) //allow for questions/quests, if this ever happens
                     //                        return null;

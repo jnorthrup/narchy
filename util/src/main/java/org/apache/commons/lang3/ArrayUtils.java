@@ -18,9 +18,11 @@ package org.apache.commons.lang3;
 
 
 import org.apache.commons.lang3.mutable.MutableInt;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Array;
 import java.util.*;
+import java.util.function.IntFunction;
 
 /**
  * <p>Operations on arrays, primitive arrays (like {@code int[]}) and
@@ -7650,6 +7652,26 @@ public enum ArrayUtils { ;
         return removeAll(array, Arrays.copyOf(indices, count));
     }
 
+    @Nullable
+    public static <T> T[] removeNulls(final T[] array, IntFunction<T[]> builder) {
+        int nulls = 0;
+        for (Object x : array)
+            if (x == null) nulls++;
+        if (nulls == 0) return array;
+        else {
+            int s = array.length - nulls;
+            if (s == 0)
+                return null;
+            T[] a = builder.apply(s);
+            int j = 0;
+            for (T x : array) {
+                if (x!=null)
+                    a[j++] = x;
+            }
+            return a;
+        }
+    }
+
     /**
      * Removes the occurrences of the specified element from the specified array.
      *
@@ -7669,7 +7691,8 @@ public enum ArrayUtils { ;
     public static <T> T[] removeAllOccurences(final T[] array, final T element) {
         int index = indexOf(array, element);
         if (index == INDEX_NOT_FOUND) {
-            return clone(array);
+            //return clone(array);
+            return array;
         }
 
         final int[] indices = new int[array.length - index];

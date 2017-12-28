@@ -588,7 +588,7 @@ public interface NAct {
                     d.freq()
                     : ((valueIfUnknownGoal==valueIfUnknownGoal) ? valueIfUnknownGoal : lastValue[0]);
 
-            float f = update.valueOf(o == o ? o : 0);
+            float f = o == o ? update.valueOf( o) : Float.NaN;
             if (f != f)
                 f = lastValue[0];
             else

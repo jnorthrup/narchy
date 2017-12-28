@@ -508,7 +508,7 @@ public enum Op {
 
 
     public static final String DISJstr = "||";
-    public static int constantAtoms = Op.ATOM.bit | Op.INT.bit;
+    public static int ConstantAtomics = Op.ATOM.bit | Op.INT.bit;
 
     public final boolean indepVarParent;
     public final boolean depVarParent;

@@ -27,7 +27,7 @@ public class IntroVars extends AbstractPred<Derivation> {
         if (!(y.op().conceptualizable) || (y.equals(x) /* keep only if it differs */)) {
             return false;
         } else {
-            if (!y.hasAny(Op.constantAtoms)) {
+            if (!y.hasAny(Op.ConstantAtomics)) {
                 return false; //entirely variablized
             } else {
                 p.derivedTerm.set(y);

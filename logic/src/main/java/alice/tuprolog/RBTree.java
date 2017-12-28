@@ -163,7 +163,7 @@ public class RBTree<K extends Comparable<? super K>, V> {
             } else if (compResult < 0) {
                 n = n.left;
             } else {
-                assert compResult > 0;
+                //assert compResult > 0;
                 n = n.right;
             }
         }
@@ -171,8 +171,12 @@ public class RBTree<K extends Comparable<? super K>, V> {
     }
 
     public V lookup(K key) {
-        Node<K, V> n = lookupNode(key);
-        return n == null ? null : n.value;
+        if (root == null)
+            return null;
+        else {
+            Node<K, V> n = lookupNode(key);
+            return n == null ? null : n.value;
+        }
     }
 
     private void rotateLeft(Node<K, V> n) {
