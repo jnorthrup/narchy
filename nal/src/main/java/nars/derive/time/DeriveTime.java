@@ -2,7 +2,6 @@ package nars.derive.time;
 
 import jcog.Util;
 import jcog.data.ArrayHashSet;
-import jcog.math.Interval;
 import nars.Op;
 import nars.Task;
 import nars.control.Derivation;
@@ -16,8 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import static nars.Op.CONJ;
-import static nars.Op.IMPL;
 import static nars.time.Tense.*;
 
 
@@ -40,7 +37,7 @@ import static nars.time.Tense.*;
  */
 public class DeriveTime extends TimeGraph {
 
-//    private final static Logger logger = LoggerFactory.getLogger(DeriveTime.class);
+    //    private final static Logger logger = LoggerFactory.getLogger(DeriveTime.class);
     static final int TEMPORAL_ITERATIONS = 16;
 
     private final Task task, belief;
@@ -48,7 +45,7 @@ public class DeriveTime extends TimeGraph {
     private final int dither;
     private final Derivation d;
 
-    final Map<Term,ArrayHashSet<Event>> cache;
+    final Map<Term, ArrayHashSet<Event>> cache;
 
     @Override
     public void clear() {
@@ -63,13 +60,13 @@ public class DeriveTime extends TimeGraph {
         this.belief = copy.belief;
         this.dither = copy.dither;
         //this.byTerm.putAll(copy.byTerm); //TODO wrap rather than copy
-        if (transformedTask!=null) {
+        if (transformedTask != null) {
             Event y = know(transformedTask, task.start());
             //link(know(task.term(), task.start()), 0, y);
             Event yNeg = know(transformedTask.neg(), task.start());
             //link(know(task.term().neg(), task.start()), 0, yNeg);
         }
-        if (transformedBelief!=null) {
+        if (transformedBelief != null) {
             Event y = know(transformedBelief, belief.start());
             //link(know(belief.term(), belief.start()), 0, y);
             Event yNeg = know(transformedBelief.neg(), belief.start());
@@ -96,14 +93,16 @@ public class DeriveTime extends TimeGraph {
 
     }
 
-    /** if current state of the derivation produced novel terms */
+    /**
+     * if current state of the derivation produced novel terms
+     */
     public DeriveTime get() {
         Term td = ifDynamic(d.task);
-        Term bd = d.belief!=null ? ifDynamic(d.belief) : null;
+        Term bd = d.belief != null ? ifDynamic(d.belief) : null;
         boolean tChange = td != null;
         boolean bChange = bd != null;
         if (tChange || bChange) {
-            return new DeriveTime(this, tChange ? td : null, bChange? bd : null);
+            return new DeriveTime(this, tChange ? td : null, bChange ? bd : null);
         } else {
             return this;
         }
@@ -146,7 +145,7 @@ public class DeriveTime extends TimeGraph {
     protected Term dt(Term x, int dt) {
         int ddt = dtDither(dt);
         Term y = super.dt(x, ddt);
-        if (y instanceof Bool && ddt!=dt) {
+        if (y instanceof Bool && ddt != dt) {
             //the dithered dt has destroyed it, so try the non-dithered (more precise) dt
             y = super.dt(x, dt);
         }
@@ -236,7 +235,7 @@ public class DeriveTime extends TimeGraph {
 //
 //        }
 
-        ArrayHashSet<Event> solutions = cache!=null ? solveCached(pattern) : solveAll(pattern);
+        ArrayHashSet<Event> solutions = cache != null ? solveCached(pattern) : solveAll(pattern);
 
         Event event = solutions.first();
         if (event == null) {
@@ -266,7 +265,6 @@ public class DeriveTime extends TimeGraph {
             } else {
 
                 event = solutions.get(d.random);
-
 
 
                 //choose event with least distance to task and belief occurrence so that projection has best propensity for non-failure
@@ -313,7 +311,7 @@ public class DeriveTime extends TimeGraph {
 
         if (es == ETERNAL) {
 
-            if (task.isEternal() && (belief==null || belief.isEternal())) {
+            if (task.isEternal() && (belief == null || belief.isEternal())) {
                 //its supposed to be eternal
             } else {
                 //throw new RuntimeException("temporalization fault");
@@ -396,7 +394,9 @@ public class DeriveTime extends TimeGraph {
         return !solutions.isEmpty() ? solutions : ArrayHashSet.EMPTY;
     }
 
-    /** eternal check: eternals can only be derived from completely eternal premises */
+    /**
+     * eternal check: eternals can only be derived from completely eternal premises
+     */
     private void eternalCheck(long l) {
         if (l == ETERNAL) {
             //if ((!d.task.isEternal()) && !(d.belief != null && !d.belief.isEternal()))
@@ -411,26 +411,40 @@ public class DeriveTime extends TimeGraph {
     private Term solveRaw(Term x) {
         long[] occ = d.concOcc;
         long s, e;
-        boolean te = task.isEternal();
-        if (te && (belief==null || belief.isEternal())) {
-            //entirely eternal
-            s = e = ETERNAL;
-        } else {
-            boolean taskEvent = !task.term().op().temporal;
+        boolean taskEvent = !task.term().op().temporal;
+        if (task.isEternal()) {
             if (belief == null || belief.isEternal()) {
+                //entirely eternal
+                s = e = ETERNAL;
+            } else {
+                if (taskEvent) {
+                    s = belief.start();
+                    e = belief.end();
+                } else {
+                    //transformed task term, should have been solved
+                    return null;
+                }
+            }
+        } else {
+
+            boolean beliefEvent = belief != null && !belief.term().op().temporal;
+            if (belief == null || (belief.isEternal())) {
                 if (!taskEvent) {
                     //transformed task term, should have been solved
                     return null;
                 } else {
                     //event: inherit task time
-                    s = task.start();
-                    e = task.end();
+                    if (beliefEvent) {
+                        s = task.start();
+                        e = task.end();
+                    } else {
+                        return null; //should have solution
+                    }
                 }
             } else {
-                boolean beliefEvent = !belief.term().op().temporal;
                 if (!taskEvent && !beliefEvent) {
                     //two events: fuse time
-                    assert(!belief.isEternal());
+                    assert (!belief.isEternal());
                     TimeFusion joint = new TimeFusion(task.start(), task.end(), belief.start(), belief.end());
                     //                    if (joint.factor <= Pri.EPSILON) //allow for questions/quests, if this ever happens
                     //                        return null;
@@ -446,7 +460,6 @@ public class DeriveTime extends TimeGraph {
                 }
             }
         }
-
 
 
 //        //couldnt solve the start time, so inherit from task or belief as appropriate
@@ -553,7 +566,6 @@ public class DeriveTime extends TimeGraph {
 //        }
 
     }
-
 
 
     @Override
