@@ -6,7 +6,6 @@ import jcog.event.Topic;
 import jcog.exe.Loop;
 import jcog.math.OneDHaar;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
-import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.layout.Grid;
 import spacegraph.render.Draw;
@@ -15,9 +14,6 @@ import spacegraph.widget.meter.Plot2D;
 import spacegraph.widget.slider.FloatSlider;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static spacegraph.layout.Grid.VERTICAL;
-import static spacegraph.layout.Grid.row;
 
 /**
  * Created by me on 10/28/15.

@@ -57,14 +57,14 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
     /**
      * assumes identity and hash have been tested already.
-     *
+     * <p>
      * if evidence is of length 1 (such as input or signal tasks,), the system
-     *      assumes that its ID is unique (or most likely unique)
-     *      and this becomes the only identity condition.
-     *      (start/stop and truth are not considered for equality)
-     *      this allows these values to mutate dynamically
-     *      while the system runs without causing hash or equality
-     *      inconsistency.  see hash()
+     * assumes that its ID is unique (or most likely unique)
+     * and this becomes the only identity condition.
+     * (start/stop and truth are not considered for equality)
+     * this allows these values to mutate dynamically
+     * while the system runs without causing hash or equality
+     * inconsistency.  see hash()
      */
     static boolean equal(Task a, Task b) {
 
@@ -103,7 +103,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return false;
     }
 
-    /** see equals() */
+    /**
+     * see equals()
+     */
     static int hash(Term term, Truth truth, byte punc, long start, long end, long[] stamp) {
         int h = Util.hashCombine(
                 term.hashCode(),
@@ -164,7 +166,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //    static boolean validConceptTerm(@Nullable Term t, boolean safe) {
 //        return validTaskTerm(t, (byte) 0, null, safe);
 //    }
-
 
 
     static boolean validTaskTerm(Term t) {
@@ -1033,14 +1034,15 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
 
         if (!cmd) {
-            n.conceptualize(y, c -> {
-                if (c instanceof TaskConcept) {
-                    ((TaskConcept) c).add(this, n);
-                } else {
-                    if (isBeliefOrGoal() || Param.DEBUG_EXTRA)
-                        throw new RuntimeException(c + " is not a TaskConcept yet a task expects to add itself to it");
-                }
-            });
+
+            @Nullable Concept c = n.conceptualize(y);
+            if (c instanceof TaskConcept) {
+                ((TaskConcept) c).add(this, n);
+            } else {
+                if (isBeliefOrGoal() || Param.DEBUG_EXTRA)
+                    throw new RuntimeException(y + " does not resolve a TaskConcept yet a task expects to add itself to it");
+            }
+
         } else {
             n.out(term());
         }

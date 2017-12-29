@@ -146,7 +146,7 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
 //                //new SimpleBroadphase();
                 new DbvtBroadphase();
 
-        dyn = new Dynamics<X>(dispatcher, broadphase, this);
+        dyn = new Dynamics<>(dispatcher, broadphase, this);
 
 //        cameraDistance = new AnimFloat(55f, dyn, 4f);
 //        azi = new AnimFloatAngle(-180, dyn, 30f);

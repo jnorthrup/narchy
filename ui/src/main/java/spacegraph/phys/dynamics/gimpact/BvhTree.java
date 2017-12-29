@@ -30,6 +30,9 @@ package spacegraph.phys.dynamics.gimpact;
 import spacegraph.math.v3;
 import spacegraph.phys.math.VectorUtil;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 /**
  *
  * @author jezek2
@@ -140,49 +143,69 @@ class BvhTree {
 	}
 
 	protected void _build_sub_tree(BvhDataArray primitive_boxes, int startIndex, int endIndex) {
-		int curIndex = num_nodes;
-		num_nodes++;
+		final Deque<_build_sub_treeFrame> stack = new ArrayDeque<>();
+		stack.push(new _build_sub_treeFrame(primitive_boxes, startIndex, endIndex));
+		while (!stack.isEmpty()) {
+			final _build_sub_treeFrame frame = stack.peek();
+			switch (frame.block) {
+				case 0: {
+					frame.curIndex = num_nodes;
+					num_nodes++;
+					assert ((frame.endIndex - frame.startIndex) > 0);
+					if ((frame.endIndex - frame.startIndex) == 1) {
+						// We have a leaf node
+						//setNodeBound(curIndex,primitive_boxes[startIndex].m_bound);
+						//m_node_array[curIndex].setDataIndex(primitive_boxes[startIndex].m_data);
+						node_array.set(frame.curIndex, frame.primitive_boxes, frame.startIndex);
 
-		assert ((endIndex - startIndex) > 0);
-
-		if ((endIndex - startIndex) == 1) {
-			// We have a leaf node
-			//setNodeBound(curIndex,primitive_boxes[startIndex].m_bound);
-			//m_node_array[curIndex].setDataIndex(primitive_boxes[startIndex].m_data);
-			node_array.set(curIndex, primitive_boxes, startIndex);
-
-			return;
+						stack.pop();
+						break;
+					}
+					frame.splitIndex = _calc_splitting_axis(frame.primitive_boxes, frame.startIndex, frame.endIndex);
+					frame.splitIndex = _sort_and_calc_splitting_index(frame.primitive_boxes, frame.startIndex, frame.endIndex, frame.splitIndex);
+					frame.node_bound = new BoxCollision.AABB();
+					frame.tmpAABB = new BoxCollision.AABB();
+					frame.node_bound.invalidate();
+					for (int i = frame.startIndex; i < frame.endIndex; i++) {
+						frame.primitive_boxes.getBound(i, frame.tmpAABB);
+						frame.node_bound.merge(frame.tmpAABB);
+					}
+					setNodeBound(frame.curIndex, frame.node_bound);
+					stack.push(new _build_sub_treeFrame(frame.primitive_boxes, frame.startIndex, frame.splitIndex));
+					frame.block = 1;
+					break;
+				}
+				case 1: {
+					stack.push(new _build_sub_treeFrame(frame.primitive_boxes, frame.splitIndex, frame.endIndex));
+					frame.block = 2;
+					break;
+				}
+				case 2: {
+					node_array.setEscapeIndex(frame.curIndex, num_nodes - frame.curIndex);
+					stack.pop();
+					break;
+				}
+			}
 		}
-		// calculate Best Splitting Axis and where to split it. Sort the incoming 'leafNodes' array within range 'startIndex/endIndex'.
-
-		// split axis
-		int splitIndex = _calc_splitting_axis(primitive_boxes, startIndex, endIndex);
-
-		splitIndex = _sort_and_calc_splitting_index(primitive_boxes, startIndex, endIndex, splitIndex);
-
-		//calc this node bounding box
-
-		BoxCollision.AABB node_bound = new BoxCollision.AABB();
-		BoxCollision.AABB tmpAABB = new BoxCollision.AABB();
-
-		node_bound.invalidate();
-
-		for (int i=startIndex; i<endIndex; i++) {
-			primitive_boxes.getBound(i, tmpAABB);
-			node_bound.merge(tmpAABB);
-		}
-
-		setNodeBound(curIndex, node_bound);
-
-		// builder left branch
-		_build_sub_tree(primitive_boxes, startIndex, splitIndex);
-
-		// builder right branch
-		_build_sub_tree(primitive_boxes, splitIndex, endIndex);
-
-		node_array.setEscapeIndex(curIndex, num_nodes - curIndex);
 	}
-	
+
+	private static class _build_sub_treeFrame {
+		private final BvhDataArray primitive_boxes;
+		private final int startIndex;
+		private final int endIndex;
+		private int curIndex;
+		private int splitIndex;
+		private BoxCollision.AABB node_bound;
+		private BoxCollision.AABB tmpAABB;
+		private int block;
+
+		private _build_sub_treeFrame(BvhDataArray primitive_boxes, int startIndex, int endIndex) {
+			this.primitive_boxes = primitive_boxes;
+			this.startIndex = startIndex;
+			this.endIndex = endIndex;
+		}
+	}
+
 	public void build_tree(BvhDataArray primitive_boxes) {
 		// initialize node count to 0
 		num_nodes = 0;

@@ -168,6 +168,7 @@ public class AspectAlign extends Layout {
             the.pos(tx, ty, tx+tw, ty+th);
     }
 
+    @Override
     public spacegraph.AspectAlign align(Align align) {
         this.align = align;
         return this;

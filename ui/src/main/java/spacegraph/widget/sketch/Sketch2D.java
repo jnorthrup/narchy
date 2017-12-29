@@ -23,7 +23,7 @@ abstract public class Sketch2D extends Widget {
 
         Sketch2DBitmap canvas = new Sketch2DBitmap(256, 256);
 
-        ButtonSet<CheckBox.ColorToggle> colorMenu = new ButtonSet<CheckBox.ColorToggle>(ButtonSet.Mode.One,
+        ButtonSet<CheckBox.ColorToggle> colorMenu = new ButtonSet<>(ButtonSet.Mode.One,
                 new CheckBox.ColorToggle(0f, 0, 0), //black
                 new CheckBox.ColorToggle(1f, 0, 0), //red
                 new CheckBox.ColorToggle(1f, 0.5f, 0),//orange

@@ -5,7 +5,6 @@ import spacegraph.Surface;
 import spacegraph.input.Finger;
 import spacegraph.math.v2;
 import spacegraph.render.Draw;
-import spacegraph.widget.windo.Widget;
 
 /**
  * Created by me on 6/26/16.

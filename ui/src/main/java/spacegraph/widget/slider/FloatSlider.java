@@ -104,7 +104,7 @@ public class FloatSlider extends Widget {
 //        @Override
 //        protected void paintIt(GL2 gl) {
             if (input != null)
-                value(input.asFloat());
+                super.value(input.asFloat());
 
             super.paint(gl, dtMS);
         }

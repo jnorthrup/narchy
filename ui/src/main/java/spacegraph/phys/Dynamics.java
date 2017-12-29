@@ -580,7 +580,8 @@ public class Dynamics<X> extends Collisions<X> {
         Transform predictedTrans = new Transform();
         SphereShape tmpSphere = new SphereShape(1);
 
-        for (Collidable colObj : collidable) {
+        for (int i = 0, collidableSize = collidable.size(); i < collidableSize; i++) {
+            Collidable colObj = collidable.get(i);
             Dynamic body = ifDynamic(colObj);
             if (body != null) {
                 body.setHitFraction(1f);
@@ -597,28 +598,28 @@ public class Dynamics<X> extends Collisions<X> {
 
                     if (motionThresh != 0f && motionThresh < squareMotion) {
 
-                            if (body.shape().isConvex()) {
-                                BulletStats.gNumClampedCcdMotions++;
+                        if (body.shape().isConvex()) {
+                            BulletStats.gNumClampedCcdMotions++;
 
-                                ClosestNotMeConvexResultCallback sweepResults = new ClosestNotMeConvexResultCallback(body, BW, predictedTrans, broadphase.getOverlappingPairCache(), intersecter);
-                                //ConvexShape convexShape = (ConvexShape)body.getCollisionShape();
+                            ClosestNotMeConvexResultCallback sweepResults = new ClosestNotMeConvexResultCallback(body, BW, predictedTrans, broadphase.getOverlappingPairCache(), intersecter);
+                            //ConvexShape convexShape = (ConvexShape)body.getCollisionShape();
 
 
-                                tmpSphere.setRadius(body.getCcdSweptSphereRadius()); //btConvexShape* convexShape = static_cast<btConvexShape*>(body->getCollisionShape());
+                            tmpSphere.setRadius(body.getCcdSweptSphereRadius()); //btConvexShape* convexShape = static_cast<btConvexShape*>(body->getCollisionShape());
 
-                                Broadphasing bph = body.broadphase;
-                                sweepResults.collisionFilterGroup = bph.collisionFilterGroup;
-                                sweepResults.collisionFilterMask = bph.collisionFilterMask;
+                            Broadphasing bph = body.broadphase;
+                            sweepResults.collisionFilterGroup = bph.collisionFilterGroup;
+                            sweepResults.collisionFilterMask = bph.collisionFilterMask;
 
-                                convexSweepTest(tmpSphere, BW, predictedTrans, sweepResults);
-                                // JAVA NOTE: added closestHitFraction test to prevent objects being stuck
-                                if (sweepResults.hasHit() && (sweepResults.closestHitFraction > 0.0001f)) {
-                                    body.setHitFraction(sweepResults.closestHitFraction);
-                                    body.predictIntegratedTransform(timeStep * body.getHitFraction(), predictedTrans);
-                                    body.setHitFraction(0f);
-                                    //System.out.printf("clamped integration to hit fraction = %f\n", sweepResults.closestHitFraction);
-                                }
+                            convexSweepTest(tmpSphere, BW, predictedTrans, sweepResults);
+                            // JAVA NOTE: added closestHitFraction test to prevent objects being stuck
+                            if (sweepResults.hasHit() && (sweepResults.closestHitFraction > 0.0001f)) {
+                                body.setHitFraction(sweepResults.closestHitFraction);
+                                body.predictIntegratedTransform(timeStep * body.getHitFraction(), predictedTrans);
+                                body.setHitFraction(0f);
+                                //System.out.printf("clamped integration to hit fraction = %f\n", sweepResults.closestHitFraction);
                             }
+                        }
 
                     }
 
@@ -985,7 +986,7 @@ public class Dynamics<X> extends Collisions<X> {
 
     private static class ClosestNotMeConvexResultCallback extends ClosestConvexResultCallback {
         private final Collidable me;
-        private float allowedPenetration;
+        private final static float allowedPenetration = 0;
         private final OverlappingPairCache pairCache;
         private final Intersecter intersecter;
 

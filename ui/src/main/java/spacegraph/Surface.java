@@ -87,11 +87,11 @@ abstract public class Surface {
     /**
      * null parent means it is the root surface
      */
-    public synchronized void start(@Nullable Surface parent) {
+    public /*synchronized*/ void start(@Nullable Surface parent) {
         this.parent = parent;
     }
 
-    public synchronized void stop() {
+    public /*synchronized*/ void stop() {
         parent = null;
     }
 

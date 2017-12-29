@@ -116,7 +116,8 @@ public class CompoundShape extends CollisionShape {
 
 	public Transform getChildTransform(int index, Transform out) {
 		//return array[index];
-		out.set(children.get(index).transform);
+		Transform t = children.get(index).transform;
+		out.set(t);
 		return out;
 	}
 

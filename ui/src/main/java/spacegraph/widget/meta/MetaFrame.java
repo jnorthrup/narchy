@@ -81,8 +81,4 @@ public class MetaFrame extends Widget {
         super.doLayout(dtMS);
     }
 
-    @Override
-    protected void paintIt(GL2 gl) {
-
-    }
 }

@@ -247,7 +247,7 @@ abstract public class NAgentX extends NAgent {
         ConjClustering conjClusterBnonInput = new ConjClustering(n, BELIEF, (t->!t.isInput()), 4, 16);
 
         RelationClustering relCluster = new RelationClustering(n,
-                (t)->t.isBelief() && !t.isEternal() ? t.conf() : Float.NaN,
+                (t)->t.isBelief() && !t.isEternal() && !t.term().isTemporal() ? t.conf() : Float.NaN,
                 8, 32);
         //ConjClustering conjClusterG = new ConjClustering(n, 3, GOAL, true, false, 16, 64);
 

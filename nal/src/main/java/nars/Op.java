@@ -377,8 +377,8 @@ public enum Op {
                         int[] bb = ni.toArray();
                         PeekableIntIterator cc = nc.getIntIterator();
                         while (cc.hasNext()) {
+                            int cci = cc.next();
                             for (int j = 0; j < bb.length; j++) {
-                                int cci = cc.next();
                                 Term NC = ci.sub(cci).unneg();
                                 Term NX = ci.sub(bb[j]).unneg();
                                 if (NC.contains(NX)) {
@@ -1384,10 +1384,10 @@ public enum Op {
     /**
      * ops across which reflexivity of terms is allowed
      */
-    final static int relationDelimeterWeak = Op.or(Op.PROD, Op.CONJ, Op.NEG);
+    final static int relationDelimeterWeak = Op.or(Op.PROD, Op.SETe, Op.CONJ, Op.NEG);
     public static final Predicate<Term> recursiveCommonalityDelimeterWeak =
             c -> !c.isAny(relationDelimeterWeak);
-    final static int relationDelimeterStrong = Op.or(Op.PROD, Op.NEG);
+    final static int relationDelimeterStrong = Op.or(Op.PROD, Op.SETe, Op.NEG);
     public static final Predicate<Term> recursiveCommonalityDelimeterStrong =
             c -> !c.isAny(relationDelimeterStrong);
 

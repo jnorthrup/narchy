@@ -99,6 +99,7 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
 	/**
 	 * See {@link net.beadsproject.beads.data.audiofile.AudioFileWriter#getSupportedFileTypesForWriting}
 	 */
+	@SuppressWarnings("SetReplaceableByEnumSet")
 	@Override
 	public HashSet<AudioFileType> getSupportedFileTypesForWriting() {
 		HashSet<AudioFileType> types = new HashSet<>();

@@ -354,10 +354,14 @@ public class MultiExec extends AbstractExec {
     }
 
     void executeInline(Object t) {
-        if (t instanceof Runnable) {
-            ((Runnable) t).run();
-        } else {
-            super.execute(t);
+        try {
+            if (t instanceof Runnable) {
+                ((Runnable) t).run();
+            } else {
+                super.execute(t);
+            }
+        } catch (Throwable e) {
+            logger.error("{} {}", t, e);
         }
     }
 

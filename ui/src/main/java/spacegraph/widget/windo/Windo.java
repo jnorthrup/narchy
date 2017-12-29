@@ -361,10 +361,6 @@ public class Windo extends Widget {
                         return false;
                     }
 
-                    @Override
-                    public boolean moveY() {
-                        return true;
-                    }
                 };
             }
             return super.fingering(mode);

@@ -1,9 +1,7 @@
 package spacegraph.widget.button;
 
-import com.jogamp.opengl.GL2;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.Finger;
-import spacegraph.widget.text.Label;
 import spacegraph.widget.windo.Widget;
 
 import java.util.function.Consumer;

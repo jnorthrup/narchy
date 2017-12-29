@@ -49,7 +49,7 @@ public interface Retemporalize extends CompoundTransform {
 
             Term c1 = Retemporalize.super.transform(x, op, dt);
             if (op.temporal) {
-                if (c1 == null || (op==CONJ && (c1.subs() != x.subs()))) {
+                if (c1 == null || c1 instanceof Bool || (op==CONJ && (c1.subs() != x.subs()))) {
                     //oops we need XTERNAL
                     return Retemporalize.super.transform(x, op, XTERNAL);
                 }
@@ -63,28 +63,29 @@ public interface Retemporalize extends CompoundTransform {
 
             switch (x.op()) {
                 case CONJ: {
-                    Subterms xs = x.subterms();
-                    int n = xs.subs();
+//                    Subterms xs = x.subterms();
+//                    int n = xs.subs();
 
-                    if (xs.OR(isCommutiveConjOrImpl))
+//                    if (xs.OR(isCommutiveConjOrImpl))
                         return XTERNAL;
 
-                    if (((n == 2) &&
-                            (xs.isTemporal() ||
-                                    (xs.sub(0).unneg().equals(xs.sub(1).unneg()))
-                                    //Op.equalsOrContainEachOther(xs.sub(0), xs.sub(1))
-                            )
-                    )) {
-                        return XTERNAL;
-                    }
-
-                    return DTERNAL; //simple, if possible
+//                    if (((n == 2) &&
+//                            (xs.isTemporal() ||
+//                                    (xs.sub(0).unneg().equals(xs.sub(1).unneg()))
+//                                    //Op.equalsOrContainEachOther(xs.sub(0), xs.sub(1))
+//                            )
+//                    )) {
+//                        return XTERNAL;
+//                    }
+//
+//                    return DTERNAL; //simple, if possible
                 }
                 case IMPL: {
-                    Subterms xs = x.subterms();
-                    //impl pred is always non-neg
-                    return xs.hasAny(CONJ) ||
-                            xs.sub(0).unneg().equals(xs.sub(1)) ? XTERNAL : DTERNAL;
+//                    Subterms xs = x.subterms();
+//                    //impl pred is always non-neg
+//                    return xs.hasAny(CONJ) ||
+//                            xs.sub(0).unneg().equals(xs.sub(1)) ? XTERNAL : DTERNAL;
+                    return XTERNAL;
                 }
                 default:
                     throw new UnsupportedOperationException();

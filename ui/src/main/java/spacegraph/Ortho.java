@@ -73,7 +73,7 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
 
 
     @Override
-    public synchronized Object the(String key) {
+    public Object the(String key) {
         synchronized (singletons) {
             Pair<Object, Runnable> x = singletons.get(key);
             return x == null ? null : x.getOne();

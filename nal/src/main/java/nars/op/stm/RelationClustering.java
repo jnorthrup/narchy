@@ -7,6 +7,7 @@ import nars.control.CauseChannel;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import nars.truth.Truth;
 import nars.truth.TruthFunctions;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -74,6 +75,9 @@ public class RelationClustering extends ChainClustering {
                     default:
                         throw new UnsupportedOperationException();
                 }
+
+                if (t instanceof Bool)
+                    return;
 
                 t = t.normalize();
 

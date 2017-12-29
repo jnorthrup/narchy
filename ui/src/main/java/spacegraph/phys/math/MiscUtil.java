@@ -29,7 +29,6 @@ import spacegraph.phys.util.FloatArrayList;
 import spacegraph.phys.util.IntArrayList;
 import spacegraph.phys.util.OArrayList;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 

@@ -146,8 +146,7 @@ public class MapDef {
             capslockDown = ((modifiers & FLAG_CAPSLOCK) != 0);
 
         } catch (NumberFormatException nfEx) {
-            throw new KeyMapException("" + nfEx.getMessage()
-                    + " is not numeric");
+            throw new KeyMapException(nfEx.getMessage() + " is not numeric");
         } catch (NoSuchElementException nseEx) {
             throw new KeyMapException("Not enough parameters in definition");
         }
@@ -309,7 +308,7 @@ public class MapDef {
 
         // create definition string with first character 1 if the
         // mapping is character-defined, 0 otherwise
-        String definition = "" + (characterDef ? 1 : 0);
+        String definition = String.valueOf(characterDef ? 1 : 0);
 
         // add character or keycode
         definition += "\t";

@@ -310,10 +310,6 @@ public class ZoomOrtho extends Ortho {
 
         final Widget bottomRightMenu = new Widget() {
 
-            @Override
-            protected void paintIt(GL2 gl) {
-
-            }
         };
 
         @Override

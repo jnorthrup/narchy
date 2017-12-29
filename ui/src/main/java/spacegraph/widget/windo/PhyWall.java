@@ -49,7 +49,7 @@ public class PhyWall extends Wall {
 
     public PhyWall() {
 
-        this.dyn = new Dynamics<String>(new DefaultIntersecter(
+        this.dyn = new Dynamics<>(new DefaultIntersecter(
                 new DefaultCollisionConfiguration()), new DbvtBroadphase(),
                 Iterables.concat(env, objects()));
 
