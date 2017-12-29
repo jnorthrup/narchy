@@ -1,6 +1,7 @@
 package nars.concept.dynamic;
 
 import jcog.TODO;
+import jcog.Util;
 import jcog.list.FasterList;
 import nars.*;
 import nars.concept.Concept;
@@ -13,7 +14,6 @@ import nars.term.Terms;
 import nars.term.atom.Bool;
 import nars.truth.Truth;
 import org.apache.commons.lang3.ArrayUtils;
-import org.intelligentjava.machinelearning.decisiontree.feature.P;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -247,9 +247,9 @@ abstract public class DynamicTruthModel {
             } else {
 
                 if (components.length == 2) {
-                    return inhConstruct2(superterm, components, SECTe, SECTi);
+                    return inhConstruct2(superterm, SECTe.bit | SECTi.bit, components);
                 } else {
-                    throw new TODO();
+                    return inhConstructN(superterm, SECTe.bit | SECTi.bit, components);
                 }
             }
         }
@@ -346,7 +346,7 @@ abstract public class DynamicTruthModel {
         protected Term construct(Term superterm, Term[] components) {
 
             if (superterm.op()==INH) {
-                return inhConstruct2(superterm, components, DIFFe, DIFFi);
+                return inhConstruct2(superterm, DIFFe.bit | DIFFi.bit, components);
             } else if (superterm.op() == DIFFe) {
                 //raw difference
                 return Op.DIFFe.the(DTERNAL, components[0], components[1]);
@@ -386,20 +386,41 @@ abstract public class DynamicTruthModel {
         }
     }
 
-    /** TODO this will be easy to extend to N not only 2 */
-    @Nullable private static Term inhConstruct2(Term superterm, Term[] components, Op e, Op i) {
+    private static Term inhConstruct2(Term superterm, int bits, Term[] components) {
         {
             Term subj = superterm.sub(0);
             Op so = subj.op();
-            if (so == e || so == i)
+            if (so.isAny(bits))
                 return INH.the(so.the(components[0].sub(0), components[1].sub(0)), superterm.sub(1));
         }
 
         {
             Term pred = superterm.sub(1);
             Op po = pred.op();
-            if (po == e || po == i)
+            if (po.isAny(bits))
                 return INH.the(superterm.sub(0), po.the(components[0].sub(1), components[1].sub(1)));
+        }
+
+        return null;
+    }
+    private static Term inhConstructN(Term superterm, int bits, Term[] components) {
+        {
+            Term subj = superterm.sub(0);
+            Op so = subj.op();
+            if (so.isAny(bits))
+                return INH.the(
+                        so.the(Util.map(x -> x.sub(0), new Term[components.length], components)),
+                        superterm.sub(1));
+        }
+
+        {
+            Term pred = superterm.sub(1);
+            Op po = pred.op();
+            if (po.isAny(bits))
+                return INH.the(
+                        superterm.sub(0),
+                        po.the(Util.map(x -> x.sub(1), new Term[components.length], components))
+                );
         }
 
         return null;

@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 
@@ -31,7 +32,7 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
     protected static final GameAnimatorControl a;
 
     private static final Loop u;
-    private volatile boolean ready = true;
+    private final AtomicBoolean ready = new AtomicBoolean(true);
 
     static {
 //        GLCapabilitiesImmutable cfg = newDefaultConfig();
@@ -56,8 +57,6 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
 
     public GLWindow window;
     protected GL2 gl;
-
-    boolean visible;
 
     protected JoglSpace() {
         super();
@@ -248,9 +247,8 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
      * @param dtMS*/
     abstract protected void render(int dtMS);
 
-    protected final void updateIfReady() {
-        if (ready) {
-            ready = false;
+    private void updateIfReady() {
+        if (ready.compareAndSet(true,false)) {
             update();
         }
     }
@@ -266,7 +264,7 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
         this.lastFrameStartMS = nowMS;
 
         render((int)dtMS);
-        ready = true;
+        ready.set(true);
 
         //long now = System.currentTimeMillis();
         //frameTimeMS.hit(now - start);

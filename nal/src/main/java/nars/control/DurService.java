@@ -103,7 +103,7 @@ abstract public class DurService extends NARService implements Runnable {
 
             long last = this.now;
             int dur = nar.dur();
-            long durCycles = Math.round(durations.floatValue() * nar.dur());
+            long durCycles = Math.round(durations.floatValue() * dur);
             long now = nar.time();
 
             try {
@@ -123,7 +123,7 @@ abstract public class DurService extends NARService implements Runnable {
                 logger.error("{} {}", this, e);
             } finally {
                 nar.at((this.now = nar.time()) + durCycles, this);
-                busy.set(false);
+                busy.lazySet(false);
             }
         }
     }

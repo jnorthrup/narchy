@@ -9,8 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.util.SortedMap;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -216,7 +214,7 @@ abstract public class Loop {
         lag = lagSum = 0;
     }
 
-    protected int nextPeriodMS() {
+    private int nextPeriodMS() {
         return this.periodMS.intValue();
     }
 

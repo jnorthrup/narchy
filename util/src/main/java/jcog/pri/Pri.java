@@ -2,7 +2,12 @@ package jcog.pri;
 
 
 import jcog.Util;
+import jcog.bag.impl.HijackBag;
 import org.jetbrains.annotations.Nullable;
+
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.VarHandle;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 /**
  * default mutable prioritized implementation
@@ -10,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class Pri implements Priority {
 
-    protected float pri;
+    protected volatile float pri;
 
     public Pri(Prioritized b) {
         this(b.pri());

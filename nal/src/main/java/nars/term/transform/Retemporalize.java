@@ -63,6 +63,9 @@ public interface Retemporalize extends CompoundTransform {
 
             switch (x.op()) {
                 case CONJ: {
+                    int dt = x.dt();
+                    if (dt ==DTERNAL || dt ==0 && !x.subterms().hasAny(CONJ))
+                        return DTERNAL;
 //                    Subterms xs = x.subterms();
 //                    int n = xs.subs();
 

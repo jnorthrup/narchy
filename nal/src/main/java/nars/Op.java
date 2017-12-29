@@ -1982,6 +1982,10 @@ public enum Op {
         return (d >= 0 ? (earlyOrLate ? 0 : 1) : (earlyOrLate ? 1 : 0));
     }
 
+    public boolean isAny(int bits) {
+        return ((bit & bits) != 0);
+    }
+
 
     /**
      * top-level Op categories
