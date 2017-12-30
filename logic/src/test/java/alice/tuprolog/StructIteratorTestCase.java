@@ -16,7 +16,7 @@ public class StructIteratorTestCase {
 	
 	@Test
 	public void testEmptyIterator() {
-		Struct list = new Struct();
+		Struct list = Struct.emptyList();
 		Iterator<? extends Term> i = list.listIterator();
 		assertFalse(i.hasNext());
 		try {
@@ -63,7 +63,7 @@ public class StructIteratorTestCase {
 	}
 	
 	@Test public void testRemoveOperationNotSupported() {
-		Struct list = new Struct(new Int(1), new Struct());
+		Struct list = new Struct(new Int(1), Struct.emptyList());
 		Iterator<? extends Term> i = list.listIterator();
 		assertNotNull(i.next());
 		try {

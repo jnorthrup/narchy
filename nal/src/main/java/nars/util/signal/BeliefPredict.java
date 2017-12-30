@@ -13,6 +13,7 @@ import nars.term.Termed;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.apache.commons.lang3.mutable.MutableFloat;
+import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.map;
 import static nars.Op.BELIEF;
@@ -38,7 +39,7 @@ public class BeliefPredict {
         assert(lookAhead >= 1);
         assert(lookAhead <= history);
 
-        var p = new LivePredictor(m, new LivePredictor.HistoryFramer(
+        LivePredictor p = new LivePredictor(m, new LivePredictor.HistoryFramer(
             map(c -> freqSupplier(c, -lookAhead, nar), FloatSupplier[]::new, inConcepts),
             history,
             map(c -> freqSupplier(c, 0, nar), FloatSupplier[]::new, outConcepts)
@@ -66,7 +67,7 @@ public class BeliefPredict {
 
     static FloatSupplier freqSupplier(Termed c, int dDur, NAR nar) {
         return () -> {
-            var t = nar.truth(c, BELIEF, nar.time() + dDur * nar.dur());
+            @Nullable Truth t = nar.truth(c, BELIEF, nar.time() + dDur * nar.dur());
             if (t == null)
                 return 0.5f; //HACK
             else

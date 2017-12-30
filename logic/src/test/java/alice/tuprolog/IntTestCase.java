@@ -21,7 +21,7 @@ public class IntTestCase {
 	}
 	
 	@Test public void testEqualsToStruct() {
-		Struct s = new Struct();
+		Struct s = Struct.emptyList();
 		Int zero = new Int(0);
 		assertFalse(zero.equals(s));
 	}

@@ -144,7 +144,7 @@ public class BasicLibrary extends Library {
 
     public boolean get_operators_list_1(Term argument) {
         Term arg = argument.term();
-        Struct list = new Struct();
+        Struct list = Struct.emptyList();
         java.util.Iterator<Operator> it = engine.operators().iterator();
         while (it.hasNext()) {
             Operator o = it.next();
@@ -1361,7 +1361,7 @@ public class BasicLibrary extends Library {
 
     public boolean $wt_unify_3(Term witness, Term wtList, Term tList) {
         Struct list = (Struct) wtList.term();
-        Struct result = new Struct();
+        Struct result = Struct.emptyList();
         for (java.util.Iterator<? extends Term> it = list.listIterator(); it.hasNext();) {
             Struct element = (Struct) it.next();
             Term w = element.sub(0);
@@ -1402,7 +1402,7 @@ public class BasicLibrary extends Library {
         //System.out.println("goal string "+goalString);
         
         //System.out.println("termini wtList "+list);
-        Struct result = new Struct();
+        Struct result = Struct.emptyList();
         for (java.util.Iterator<? extends Term> it = list.listIterator(); it.hasNext();) {
             Struct element = (Struct) it.next();
             //System.out.println("termine wtList "+element);
@@ -1437,7 +1437,7 @@ public class BasicLibrary extends Library {
    
   public boolean $s_next0_3(Term witness, Term wtList, Term sNext) {
         Struct list = (Struct) wtList.term();
-        Struct result = new Struct();
+        Struct result = Struct.emptyList();
         for (java.util.Iterator<? extends Term> it = list.listIterator(); it.hasNext();) {
             Struct element = (Struct) it.next();
             Term w = element.sub(0);

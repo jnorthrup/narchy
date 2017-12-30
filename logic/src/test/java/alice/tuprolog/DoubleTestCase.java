@@ -22,7 +22,7 @@ public class DoubleTestCase {
 	
 	@Test public void testEqualsToStruct() {
 		alice.tuprolog.Double zero = new alice.tuprolog.Double(0);
-		Struct s = new Struct();
+		Struct s = Struct.emptyList();
 		assertFalse(zero.equals(s));
 	}
 	

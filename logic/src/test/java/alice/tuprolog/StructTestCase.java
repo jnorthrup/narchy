@@ -61,7 +61,7 @@ public class StructTestCase {
 	}
 	
 	@Test public void testEmptyList() {
-		Struct list = new Struct();
+		Struct list = Struct.emptyList();
 		assertTrue(list.isList());
 		assertTrue(list.isEmptyList());
 		assertEquals(0, list.listSize());
@@ -90,7 +90,7 @@ public class StructTestCase {
 	
 	/** Use dotted structs to builder lists with content */
 	@Test public void testListAsDottedStruct() {
-		Struct notAnEmptyList = new Struct(".", new Struct("a"), new Struct(".", new Struct("b"), new Struct()));
+		Struct notAnEmptyList = new Struct(".", new Struct("a"), new Struct(".", new Struct("b"), Struct.emptyList()));
 		assertTrue(notAnEmptyList.isList());
 		assertFalse(notAnEmptyList.isEmptyList());
 		assertEquals(".", notAnEmptyList.name());
@@ -98,19 +98,19 @@ public class StructTestCase {
 	}
 	
 	@Test public void testListFromArgumentArray() {
-		assertEquals(new Struct(), new Struct(new Term[0]));
+		assertEquals(Struct.emptyList(), new Struct(new Term[0]));
 		
 		Term[] args = new Term[2];
 		args[0] = new Struct("a");
 		args[1] = new Struct("b");
 		Struct list = new Struct(args);
-		assertEquals(new Struct(), list.listTail().listTail());
+		assertEquals(Struct.emptyList(), list.listTail().listTail());
 	}
 	
 	@Test public void testListSize() {
 		Struct list = new Struct(new Struct("a"),
 				       new Struct(new Struct("b"),
-				           new Struct(new Struct("c"), new Struct())));
+				           new Struct(new Struct("c"), Struct.emptyList())));
 		assertTrue(list.isList());
 		assertFalse(list.isEmptyList());
 		assertEquals(3, list.listSize());
@@ -157,41 +157,41 @@ public class StructTestCase {
 	}
 	
 	@Test public void testToList() {
-		Struct emptyList = new Struct();
-		Struct emptyListToList = new Struct(new Struct("[]"), new Struct());
+		Struct emptyList = Struct.emptyList();
+		Struct emptyListToList = new Struct(new Struct("[]"), Struct.emptyList());
 		assertEquals(emptyListToList, emptyList.toList());
 	}
 	
 	@Test public void testToString() throws InvalidTermException {
-		Struct emptyList = new Struct();
+		Struct emptyList = Struct.emptyList();
 		assertEquals("[]", emptyList.toString());
 		Struct s = new Struct("f", new Var("X"));
 		assertEquals("f(X)", s.toString());
 		Struct list = new Struct(new Struct("a"),
 		          new Struct(new Struct("b"),
-		        	  new Struct(new Struct("c"), new Struct())));
+		        	  new Struct(new Struct("c"), Struct.emptyList())));
 		assertEquals("[a,b,c]", list.toString());
 	}
 	
 	@Test public void testAppend() {
-		Struct emptyList = new Struct();
+		Struct emptyList = Struct.emptyListMutable();
 		Struct list = new Struct(new Struct("a"),
 				          new Struct(new Struct("b"),
-				        	  new Struct(new Struct("c"), new Struct())));
+				        	  new Struct(new Struct("c"), Struct.emptyList())));
 		emptyList.append(new Struct("a"));
 		emptyList.append(new Struct("b"));
 		emptyList.append(new Struct("c"));
 		assertEquals(list, emptyList);
 		Struct tail = new Struct(new Struct("b"),
-                          new Struct(new Struct("c"), new Struct()));
+                          new Struct(new Struct("c"), Struct.emptyList()));
 		assertEquals(tail, emptyList.listTail());
-		
-		emptyList = new Struct();
-		emptyList.append(new Struct());
-		assertEquals(new Struct(new Struct(), new Struct()), emptyList);
-		
+
+		emptyList = Struct.emptyListMutable();
+		emptyList.append(Struct.emptyListMutable());
+		assertEquals(new Struct(Struct.emptyList(), Struct.emptyList()), emptyList);
+
 		Struct anotherList = new Struct(new Struct("d"),
-				                 new Struct(new Struct("e"), new Struct()));
+				                 new Struct(new Struct("e"), Struct.emptyListMutable()));
 		list.append(anotherList);
 		assertEquals(anotherList, list.listTail().listTail().listTail().listHead());
 	}
@@ -209,7 +209,7 @@ public class StructTestCase {
 	}
 	
 	@Test public void testIsAtomic() {
-		Struct emptyList = new Struct();
+		Struct emptyList = Struct.emptyList();
 		assertTrue(emptyList.isAtom());
 		Struct atom = new Struct("atom");
 		assertTrue(atom.isAtom());
@@ -224,7 +224,7 @@ public class StructTestCase {
 	}
 	
 	@Test public void testIsAtom() {
-		Struct emptyList = new Struct();
+		Struct emptyList = Struct.emptyList();
 		assertTrue(emptyList.isAtomic());
 		Struct atom = new Struct("atom");
 		assertTrue(atom.isAtomic());
@@ -239,7 +239,7 @@ public class StructTestCase {
 	}
 	
 	@Test public void testIsCompound() {
-		Struct emptyList = new Struct();
+		Struct emptyList = Struct.emptyList();
 		assertFalse(emptyList.isCompound());
 		Struct atom = new Struct("atom");
 		assertFalse(atom.isCompound());

@@ -1472,17 +1472,17 @@ public class ISOIOLibrary extends Library{
                 option = (Struct)obj;
                 switch (option.name()) {
                     case "variables":
-                        variables = new Struct();
+                        variables = Struct.emptyList();
                         variables = (Struct) Term.term(vars.toString());
                         unify(option.sub(0), variables);
                         break;
                     case "variable_name":
-                        variable_names = new Struct();
+                        variable_names = Struct.emptyList();
                         variable_names = (Struct) Term.term(associations_table.toString());
                         unify(option.sub(0), variable_names);
                         break;
                     case "singletons":
-                        singletons = new Struct();
+                        singletons = Struct.emptyList();
                         singletons = (Struct) Term.term(singl.toString());
                         unify(option.sub(0), singletons);
                         break;
@@ -1520,7 +1520,7 @@ public class ISOIOLibrary extends Library{
     
     public boolean read_2(Term stream_or_alias, Term in_term)throws PrologError{
         initLibrary();
-        Struct options = new Struct(".",new Struct());
+        Struct options = new Struct(".", Struct.emptyList());
         return read_term_3(stream_or_alias,in_term,options);
     }
     
@@ -1821,7 +1821,7 @@ public class ISOIOLibrary extends Library{
         initLibrary();
         Struct options = new Struct(".",new Struct("quoted",new Struct("false")),
                 new Struct(".",new Struct("ignore_ops",new Struct("false")),
-                new Struct(".",new Struct("numbervars",new Struct("true")),new Struct())));
+                new Struct(".",new Struct("numbervars",new Struct("true")), Struct.emptyList())));
         return write_term_3(stream_or_alias,out_term,options);
     }
     
@@ -1834,7 +1834,7 @@ public class ISOIOLibrary extends Library{
         Struct stream_or_alias = new Struct(outputStream.toString());
         Struct options = new Struct(".",new Struct("quoted",new Struct("false")),
                 new Struct(".",new Struct("ignore_ops",new Struct("false")),
-                new Struct(".",new Struct("numbervars",new Struct("true")),new Struct())));
+                new Struct(".",new Struct("numbervars",new Struct("true")), Struct.emptyList())));
         return write_term_3(stream_or_alias,out_term,options);
     }
     
@@ -1843,7 +1843,7 @@ public class ISOIOLibrary extends Library{
         Struct stream_or_alias = new Struct(outputStream.toString());
         Struct options = new Struct(".",new Struct("quoted",new Struct("true")),
                     new Struct(".",new Struct("ignore_ops",new Struct("false")),
-                    new Struct(".",new Struct("numbervars",new Struct("true")),new Struct())));
+                    new Struct(".",new Struct("numbervars",new Struct("true")), Struct.emptyList())));
         return write_term_3(stream_or_alias,out_term,options);
     }
     
@@ -1851,7 +1851,7 @@ public class ISOIOLibrary extends Library{
         initLibrary();
         Struct options = new Struct(".",new Struct("quoted",new Struct("true")),
                 new Struct(".",new Struct("ignore_ops",new Struct("false")),
-                new Struct(".",new Struct("numbervars",new Struct("true")),new Struct())));
+                new Struct(".",new Struct("numbervars",new Struct("true")), Struct.emptyList())));
         return write_term_3(stream_or_alias,out_term,options);
     }
     
@@ -1860,7 +1860,7 @@ public class ISOIOLibrary extends Library{
         Struct stream_or_alias = new Struct(outputStream.toString());
         Struct options = new Struct(".",new Struct("quoted",new Struct("true")),
                 new Struct(".",new Struct("ignore_ops",new Struct("true")),
-                new Struct(".",new Struct("numbervars",new Struct("false")),new Struct())));
+                new Struct(".",new Struct("numbervars",new Struct("false")), Struct.emptyList())));
         return write_term_3(stream_or_alias,out_term,options);
     }
     
@@ -1868,7 +1868,7 @@ public class ISOIOLibrary extends Library{
         initLibrary();
         Struct options = new Struct(".",new Struct("quoted",new Struct("true")),
                 new Struct(".",new Struct("ignore_ops",new Struct("true")),
-                new Struct(".",new Struct("numbervars",new Struct("false")),new Struct())));
+                new Struct(".",new Struct("numbervars",new Struct("false")), Struct.emptyList())));
         return write_term_3(stream_or_alias,out_term,options);
     }
     
@@ -1920,7 +1920,7 @@ public class ISOIOLibrary extends Library{
     
     //serve per inizializzare la hashmap delle propriet?
     private static boolean inizialize_properties(Hashtable<String, Term> map){
-        Struct s = new Struct();
+        Struct s = Struct.emptyList();
         map.put("file_name", s);
         map.put("mode", s);
         map.put("input", new Struct("false"));

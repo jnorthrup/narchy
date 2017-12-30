@@ -4,6 +4,8 @@ import nars.gui.Vis;
 import org.reflections.Reflections;
 import spacegraph.SpaceGraph;
 
+import java.util.Set;
+
 import static java.util.stream.Collectors.toList;
 
 public class Lab {
@@ -40,7 +42,7 @@ public class Lab {
     public static void main(String[] args) {
 
 
-        var envs = new Reflections("nars").getSubTypesOf(NAgentX.class);
+        Set<Class<? extends NAgentX>> envs = new Reflections("nars").getSubTypesOf(NAgentX.class);
         SpaceGraph.window(
                 Vis.reflect(envs.stream().map(Experiment::new).collect(toList())),
                 800, 800

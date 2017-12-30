@@ -482,7 +482,7 @@ public class Parser {
 		if (t1.isType(Tokenizer.LBRA)) {
 			Token t2 = tokenizer.readToken();
 			if (t2.isType(Tokenizer.RBRA))
-				return new Struct();
+				return Struct.emptyList();
 
 			tokenizer.unreadToken(t2);
 			Term term = expr0_list();
@@ -543,7 +543,7 @@ public class Parser {
 			return new Struct(head, expr(true));
 		if ("]".equals(t.seq)) {
 			tokenizer.unreadToken(t);
-			return new Struct(head, new Struct());
+			return new Struct(head, Struct.emptyList());
 		}
 		/*Castagna 06/2011*/
         //throw new InvalidTermException("The expression: " + head + " is not followed by either a ',' or '|'  or ']'.");

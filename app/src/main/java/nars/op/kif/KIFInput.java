@@ -173,14 +173,17 @@ public class KIFInput implements Runnable {
 
     static final Logger logger = LoggerFactory.getLogger(KIFInput.class);
 
-    public Term formulaToTerm(Formula x) {
+    public Term formulaToTerm(final Formula x) {
         String root = x.car(); //root operate
 
-        List<String> sargs = IntStream.range(1, x.listLength()).mapToObj(x::getArgument).collect(Collectors.toList());
+        int l = x.listLength();
+        if (l == 1)
+            return formulaToTerm(root);
+
+        List<String> sargs = IntStream.range(1, l).mapToObj(x::getArgument).collect(Collectors.toList());
         List<Term> args = sargs != null ? sargs.stream().map(this::formulaToTerm).collect(Collectors.toList()) : Collections.emptyList();
 
-        if (args.isEmpty())
-            return formulaToTerm(x.car());
+        assert(!args.isEmpty()); //should have been handled first
 
         /**
          *

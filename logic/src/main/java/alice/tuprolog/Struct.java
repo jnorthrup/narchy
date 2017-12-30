@@ -124,7 +124,7 @@ public class Struct extends Term {
     /**
      * Builds a structure representing an empty list
      */
-    public Struct() {
+    private Struct() {
         this("[]", 0);
         resolved = true;
     }
@@ -152,7 +152,7 @@ public class Struct extends Term {
             subs[0] = argList[index];
             subs[1] = new Struct(argList, index + 1);
         } else {
-            // builder an empty list
+            // builder an empty list TODO build from a static constructor and share instances like this
             name = "[]";
             subCount = 0;
             subs = null;
@@ -164,11 +164,10 @@ public class Struct extends Term {
      */
     Struct(String f, LinkedList<Term> al) {
         name = f;
-        subCount = al.size();
-        if (subCount > 0) {
-            subs = new Term[subCount];
-            for (int c = 0; c < subCount; c++)
-                subs[c] = al.removeFirst();
+        if (!al.isEmpty()) {
+            this.subs = al.toArray(new Term[subCount = al.size()]);
+        } else {
+            this.subs = null;
         }
         key = name + '/' + subCount;
         resolved = false;
@@ -194,24 +193,65 @@ public class Struct extends Term {
     }
 
 
+    final static Struct EmptyList = new Struct() {
+        @Override
+        public void append(Term t) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isList() {
+            return true;
+        }
+
+        @Override
+        public boolean isConstant() {
+            return true;
+        }
+
+        @Override
+        public boolean isEmptyList() {
+            return true;
+        }
+
+        @Override
+        public int listSize() {
+            return 0;
+        }
+
+        @Override
+        public boolean isAtomic() {
+            return true;
+        }
+    };
+
+    public static Struct emptyList() {
+        return EmptyList;
+    }
+
+    public static Struct emptyListMutable() {
+        return new Struct();
+    }
+
+
     /**
      * @return
      */
-    String key() {
+    final String key() {
         return key;
     }
 
     /**
      * arity: Gets the number of elements of this structure
      */
-    public int subs() {
+    public final int subs() {
         return subCount;
     }
 
     /**
      * Gets the functor name  of this structure
      */
-    public String name() {
+    public final String name() {
         return name;
     }
 
@@ -220,7 +260,7 @@ public class Struct extends Term {
      * <p>
      * No bound check is done
      */
-    public Term sub(int index) {
+    public final Term sub(int index) {
         return subs[index];
     }
 
@@ -407,7 +447,7 @@ public class Struct extends Term {
         if (t instanceof Struct) {
             Struct ts = (Struct) t;
             if (subCount == ts.subCount && name.equals(ts.name)) { //key.equals(ts.key)) {
-                if (this.subs!=ts.subs) {
+                if (this.subs != ts.subs) {
                     for (int c = 0; c < subCount; c++) {
                         if (!subs[c].equals(ts.subs[c])) {
                             return false;
@@ -498,7 +538,7 @@ public class Struct extends Term {
         for (int c = 0; c < arity; c++) {
             Term tc = thisArg[c];
             Term yc;
-            if (tc instanceof Var || (tc instanceof Struct && (!((Struct)tc).isConstant())))
+            if (tc instanceof Var || (tc instanceof Struct && (!((Struct) tc).isConstant())))
                 yc = tc.copy(vMap, substMap);
             else
                 yc = tc;
@@ -513,7 +553,7 @@ public class Struct extends Term {
      */
     @Override
     void resolveTerm(long count) {
-        if (!resolved && subCount>0)
+        if (!resolved && subCount > 0)
             resolveTerm(new LinkedList<>(), count);
     }
 
@@ -590,7 +630,9 @@ public class Struct extends Term {
         return subs[0].term();
     }
 
-    /** use with caution */
+    /**
+     * use with caution
+     */
     public Term[] subArrayShared() {
         return subs;
     }
@@ -649,7 +691,7 @@ public class Struct extends Term {
      * Gets a list Struct representation, with the functor as first element.
      */
     Struct toList() {
-        Struct t = new Struct();
+        Struct t = emptyList();
         Term[] arg = this.subs;
         for (int c = subCount - 1; c >= 0; c--) {
             t = new Struct(arg[c].term(), t);
@@ -691,7 +733,7 @@ public class Struct extends Term {
             key = name + '/' + subCount; /* Added by Paolo Contessi */
             subs = new Term[subCount];
             subs[0] = t;
-            subs[1] = new Struct();
+            subs[1] = emptyListMutable();
         } else if (subs[1].isList()) {
             ((Struct) subs[1]).append(t);
         } else {
@@ -700,16 +742,16 @@ public class Struct extends Term {
     }
 
 
-    /**
-     * Inserts (at the head) an element to this structure supposed to be a list
-     */
-    void insert(Term t) {
-        Struct co = new Struct();
-        co.subs[0] = subs[0];
-        co.subs[1] = subs[1];
-        subs[0] = t;
-        subs[1] = co;
-    }
+//    /**
+//     * Inserts (at the head) an element to this structure supposed to be a list
+//     */
+//    void insert(Term t) {
+//        Struct co = emptyList();
+//        co.subs[0] = subs[0];
+//        co.subs[1] = subs[1];
+//        subs[0] = t;
+//        subs[1] = co;
+//    }
 
     //
 
@@ -796,10 +838,10 @@ public class Struct extends Term {
         String s = (Parser.isAtom(name) ? name : '\'' + name + '\'');
         if (subCount > 0) {
             s = s + '(';
-                for (int c = 1; c < subCount; c++) {
-                    s = s + (!(subs[c - 1] instanceof Var) ? subs[c - 1].toString() : ((Var) subs[c - 1]).toStringFlattened()) + ',';
+            for (int c = 1; c < subCount; c++) {
+                s = s + (!(subs[c - 1] instanceof Var) ? subs[c - 1].toString() : ((Var) subs[c - 1]).toStringFlattened()) + ',';
             }
-                s = s + (!(subs[subCount - 1] instanceof Var) ? subs[subCount - 1].toString() : ((Var) subs[subCount - 1]).toStringFlattened()) + ')';
+            s = s + (!(subs[subCount - 1] instanceof Var) ? subs[subCount - 1].toString() : ((Var) subs[subCount - 1]).toStringFlattened()) + ')';
         }
         return s;
     }

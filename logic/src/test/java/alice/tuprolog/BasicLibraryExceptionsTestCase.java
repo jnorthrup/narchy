@@ -1252,7 +1252,7 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("reverse_guard", new Struct("a"),
-				new Struct())));
+                Struct.emptyList())));
 		Int argNo = (Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");
@@ -1269,7 +1269,7 @@ public class BasicLibraryExceptionsTestCase {
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
 		assertTrue(g.isEqual(new Struct("delete_guard", new Struct("a"),
-				new Struct("a"), new Struct())));
+				new Struct("a"), Struct.emptyList())));
 		Int argNo = (Int) info.getTerm("ArgNo");
         assertEquals(2, argNo.intValue());
 		Struct validType = (Struct) info.getTerm("ValidType");

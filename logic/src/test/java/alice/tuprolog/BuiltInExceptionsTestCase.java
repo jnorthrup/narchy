@@ -462,7 +462,7 @@ public class BuiltInExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("$find", new Var("X"), new Struct())));
+		assertTrue(g.isEqual(new Struct("$find", new Var("X"), Struct.emptyList())));
 		Int argNo = (Int) info.getTerm("ArgNo");
 		assertEquals(1, argNo.intValue());
 	}

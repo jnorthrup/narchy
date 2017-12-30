@@ -38,7 +38,7 @@ class Flags extends ConcurrentHashMap<String,Flag> {
 
 
     @Deprecated public Struct flags() {
-        Struct flist = new Struct();
+        Struct flist = Struct.emptyList();
         for (Map.Entry<String,Flag> fl : entrySet()) {
             flist = new Struct(new Struct("flag", new Struct(fl.getKey()), fl
                     .getValue().getValue()), flist);

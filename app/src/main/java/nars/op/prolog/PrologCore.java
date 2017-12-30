@@ -82,7 +82,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
     @Range(min = 0, max = 1.0)
     public final MutableFloat answerConf = new MutableFloat(confThreshold.floatValue() * 0.9f);
 
-    private final float existingAnswerThreshold = 0.5f;
+//    private final float existingAnswerThreshold = 0.5f;
 
     private final long timeoutMS = 50;
     private final CauseChannel<ITask> in;
@@ -149,7 +149,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
         if (!ct.hasAny(Op.ConstantAtomics))
             return; //ignore if it contains no atoms (all variables)
 
-        beliefs.compute(ct, (pp, prev) -> {
+        beliefs.computeIfAbsent(ct, (pp) -> {
 
 //            if (prev != null) {
 //                if (prev.sub(prev.subs()-1).equals(ONE) ^ truth) {
@@ -233,7 +233,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
         try {
             Term yt = nterm(answer.goal);
 
-            Task y = Task.tryTask(yt, BELIEF, $.t(1f, nar.confDefault(BELIEF)), (term, truth)->{
+            Task y = Task.tryTask(yt, BELIEF, $.t(1f, answerConf.floatValue()), (term, truth)->{
                 NALTask t = new NALTask(term, BELIEF, truth,
                         nar.time(), ETERNAL, ETERNAL, nar.time.nextInputStamp());
                 t.pri(nar.priDefault(BELIEF));
@@ -321,6 +321,8 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
                     return $.varDep(n.substring(2, n.length() - 1));
                 }
                 //Atom
+                if (n.charAt(0)=='_')
+                    n = n.substring(1);
                 return $.the(n);
             }
         } else if (t instanceof Var) {
@@ -404,7 +406,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
                 //return new Struct("'#" + ((Variable) term).id() + '\'');
             }
         } else if (term instanceof Atomic) {
-            return new Struct(term.toString());
+            return new Struct("_" + term.toString());
         }
 
         throw new UnsupportedOperationException();
