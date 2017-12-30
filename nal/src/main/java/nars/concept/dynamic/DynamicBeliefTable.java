@@ -82,7 +82,8 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
 
     @Override
     public Truth truth(long start, long end, NAR nar) {
-        DynTruth d = truth(start, end, null, nar);
+        //DynTruth d = truth(start, end, null, nar);
+        DynTruth d = model.eval(term, beliefOrGoal, start, end, false, nar);
         return Truth.maxConf(
                 d != null ? d.truth(nar) : null,
                 super.truth(start, end, nar) /* includes only non-dynamic beliefs */);

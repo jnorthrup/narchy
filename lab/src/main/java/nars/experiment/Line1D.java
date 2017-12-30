@@ -3,12 +3,14 @@ package nars.experiment;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import jcog.Util;
+import jcog.learn.ql.HaiQAgent;
 import jcog.math.FloatSupplier;
 import jcog.net.MeshOptimize;
 import jcog.optimize.Optimize;
 import nars.*;
 import nars.control.MetaGoal;
 import nars.gui.Vis;
+import nars.op.RLBooster;
 import nars.task.DerivedTask;
 import nars.test.agent.Line1DSimplest;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -280,7 +282,7 @@ public class Line1D {
 
             //Line1DTrainer trainer = new Line1DTrainer(a);
 
-            //new RLBooster(a, new HaiQAgent(), 5);
+            new RLBooster(agent, HaiQAgent::new, 3);
 
             //ImplicationBooster.implAccelerator(a);
 

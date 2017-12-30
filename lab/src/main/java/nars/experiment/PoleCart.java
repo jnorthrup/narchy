@@ -3,10 +3,12 @@ package nars.experiment;
 import com.google.common.collect.Lists;
 import jcog.Util;
 import jcog.learn.LivePredictor;
+import jcog.learn.ql.HaiQAgent;
 import jcog.math.FloatPolarNormalized;
 import nars.*;
 import nars.concept.SensorConcept;
 import nars.gui.Vis;
+import nars.op.RLBooster;
 import nars.term.Termed;
 import nars.util.signal.BeliefPredict;
 import spacegraph.SpaceGraph;
@@ -36,6 +38,7 @@ public class PoleCart extends NAgentX {
                 NAgent a = new PoleCart(n);
                 a.nar.freqResolution.set(0.05f);
                 a.nar.confResolution.set(0.02f);
+
                 //a.durations.setValue(1f);
                 //n.goalConfidence(0.75f);
                 return a;

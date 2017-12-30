@@ -155,7 +155,7 @@ public class Premise {
 //
 //                            }
 
-                        Task match = answerTable.answer(task.start(), task.end(), dur, task, beliefTerm, n);
+                        Task match = answerTable.answer(task.start(), task.end(), dur, task, beliefTerm, n, d::add);
                         if (match != null) {
                             assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 

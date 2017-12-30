@@ -29,7 +29,7 @@ public class CaffeineIndex extends MaplikeTermIndex implements CacheLoader<Term,
                 //v.complexity();
                 v.volume();
     };
-    private final AsyncLoadingCache<Term, Termed> conceptsAsync;
+    //private final AsyncLoadingCache<Term, Termed> conceptsAsync;
 
     /**
      * use the soft/weak option with CAUTION you may experience unexpected data loss and other weird symptoms
@@ -53,8 +53,9 @@ public class CaffeineIndex extends MaplikeTermIndex implements CacheLoader<Term,
 
         builder.executor(this);
 
-        this.conceptsAsync = builder.buildAsync(this);
-        this.concepts = conceptsAsync.synchronous();
+        //this.conceptsAsync = builder.buildAsync(this);
+        this.concepts = builder.build(this);
+        //this.concepts = conceptsAsync.synchronous();
     }
 
 
@@ -100,13 +101,13 @@ public class CaffeineIndex extends MaplikeTermIndex implements CacheLoader<Term,
             return concepts.getIfPresent(x);
     }
 
-    @Override
-    public CompletableFuture<Termed> getAsync(Term x, boolean createIfMissing) {
-        if (createIfMissing)
-            return conceptsAsync.get(x, (Function<? super Term, ? extends Termed>) conceptBuilder::apply);
-        else
-            return conceptsAsync.getIfPresent(x);
-    }
+//    @Override
+//    public CompletableFuture<Termed> getAsync(Term x, boolean createIfMissing) {
+//        if (createIfMissing)
+//            return conceptsAsync.get(x, (Function<? super Term, ? extends Termed>) conceptBuilder::apply);
+//        else
+//            return conceptsAsync.getIfPresent(x);
+//    }
 
     @Override
     public @NotNull String summary() {

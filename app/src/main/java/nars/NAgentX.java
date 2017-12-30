@@ -170,7 +170,7 @@ abstract public class NAgentX extends NAgent {
                 //.deriverAdd(6,6) //extra NAL6
                 .deriverAdd(7, 8)
                 .deriverAdd("motivation.nal")
-                //.deriverAdd("list.nal")
+                .deriverAdd("list.nal")
                 .index(
                         new CaffeineIndex(200 * 1024)
                         // new PriMapTermIndex()
@@ -187,19 +187,19 @@ abstract public class NAgentX extends NAgent {
 
         n.dtMergeOrChoose.set(true);
         n.dtDither.set(
-            1f
-            //0.5f
+            //1f
+            0.5f
         );
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(34);
+        n.termVolumeMax.set(28);
 
         n.beliefConfidence(0.9f);
         n.goalConfidence(0.9f);
 
 
-        float priFactor = 0.4f;
+        float priFactor = 0.25f;
         n.DEFAULT_BELIEF_PRIORITY = 1f * priFactor;
         n.DEFAULT_GOAL_PRIORITY = 1f * priFactor;
         n.DEFAULT_QUESTION_PRIORITY = 1f * priFactor;

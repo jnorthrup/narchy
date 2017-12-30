@@ -12,6 +12,7 @@ import nars.op.data.differ;
 import nars.op.data.intersect;
 import nars.op.data.union;
 import nars.task.DerivedTask;
+import nars.task.NALTask;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
@@ -33,6 +34,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import static nars.Op.*;
@@ -60,7 +62,7 @@ public class Derivation extends ProtoDerivation {
     /**
      * temporary buffer for derivations before input so they can be merged in case of duplicates
      */
-    public final Map<DerivedTask, DerivedTask> derivations = new LinkedHashMap<>();
+    public final Map<Task, Task> derivations = new LinkedHashMap<>();
 
     private ImmutableMap<Term, Termed> derivationFunctors;
 
@@ -560,7 +562,7 @@ public class Derivation extends ProtoDerivation {
     /**
      * called at the end of the cycle, input all generated derivations
      */
-    public int commit(Consumer<Collection<DerivedTask>> target) {
+    public int commit(Consumer<Collection<Task>> target) {
 
         activator.commit(nar);
 
@@ -580,6 +582,16 @@ public class Derivation extends ProtoDerivation {
         }
         return s;
     }
+
+    public Task add(Task t) {
+        return derivations.merge(t, t, DUPLICATE_DERIVATION_MERGE);
+    }
+
+    final static BiFunction<Task, Task, Task> DUPLICATE_DERIVATION_MERGE = (pp, tt) -> {
+        pp.priMax(tt.pri());
+        ((NALTask)pp).causeMerge(tt);
+        return pp;
+    };
 
     public static class uniSubAny extends SubstUnified {
 

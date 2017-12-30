@@ -1,6 +1,5 @@
 package nars.concept.dynamic;
 
-import jcog.Util;
 import jcog.list.FasterList;
 import nars.NAR;
 import nars.Op;
@@ -22,6 +21,7 @@ import java.util.function.Consumer;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.XTERNAL;
 import static nars.truth.TruthFunctions.c2wSafe;
 
 /**
@@ -38,7 +38,9 @@ public final class DynTruth {
 
     Term term = null;
 
-    /** scratch for intermediate buffering */
+    /**
+     * scratch for intermediate buffering
+     */
     public List<Truth> truths = null;
 
     public DynTruth(FasterList<Task> e) {
@@ -79,13 +81,78 @@ public final class DynTruth {
         return truth(null, false, nar);
     }
 
-    @Nullable Truth truth(@Nullable Consumer<NALTask> builtTask, boolean beliefOrGoal, NAR nar) {
-
+    @Nullable Truth truth(@Nullable Consumer<NALTask> withBuiltTask, boolean beliefOrGoal, NAR nar) {
 
 
         float evi = c2wSafe(conf);
         float eviMin = c2wSafe(nar.confMin.floatValue());
         if (evi < eviMin)
+            return null;
+
+
+        float f;
+        Term c;
+        long start, end;
+        if (withBuiltTask != null) {
+            c = this.term;
+            if (!c.op().temporal) {
+                if (e.size() > 1) {
+                    //dilute the evidence in proportion to temporal sparseness for non-temporal results
+                    TimeFusion se = TimeFusion.the(e);
+                    if (se != null) {
+                        evi *= se.factor;
+                        if (evi < eviMin)
+                            return null;
+                        start = se.unionStart;
+                        end = se.unionEnd;
+                    } else {
+                        start = end = ETERNAL;
+                    }
+                } else {
+                    Task only = e.get(0);
+                    start = only.start();
+                    end = only.start();
+                }
+            } else {
+                long min = Long.MAX_VALUE;
+                for (int i = 0, thisSize = e.size(); i < thisSize; i++) {
+                    long y = e.get(i).start(); //left-align
+                    if (y != ETERNAL) {
+                        if (y < min)
+                            min = y;
+                    }
+                }
+
+                if (min == Long.MAX_VALUE)
+                    min = ETERNAL; //all eternal
+
+                start = end = min;
+            }
+
+            if (c.op() == NEG) {
+                c = c.unneg(); //unneg if constructing a task, but dont if just returning the truth
+                f = 1f - freq;
+            } else {
+                f = freq;
+            }
+        } else {
+            start = end = XTERNAL; //not used
+            c = null; //not used
+            f = freq;
+        }
+
+
+        Truth tr = Truth.the(f, evi, nar);
+        if (tr == null)
+            return null;
+        if (withBuiltTask == null)
+            return tr;
+
+        float priority = budget();
+
+        // then if the term is valid, see if it is valid for a task
+        if (!Task.validTaskTerm(c,
+                beliefOrGoal ? BELIEF : GOAL, true))
             return null;
 
         //TODO compute max valid overlap to terminate the zip early
@@ -101,66 +168,6 @@ public final class DynTruth {
 //            return null;
         long[] stamp = ss.getOne();
 
-
-        Term c = this.term;
-        long start, end;
-        if (!c.op().temporal) {
-             if (e.size() > 1) {
-                 //dilute the evidence in proportion to temporal sparseness for non-temporal results
-                 TimeFusion se = TimeFusion.the(e);
-                 if (se != null) {
-                     evi *= se.factor;
-                     if (evi < eviMin)
-                         return null;
-                     start = se.unionStart;
-                     end = se.unionEnd;
-                 } else {
-                     start = end = ETERNAL;
-                 }
-             } else {
-                 Task only = e.get(0);
-                 start = only.start();
-                 end = only.start();
-             }
-        } else {
-            long min = Long.MAX_VALUE;
-            for (int i = 0, thisSize = e.size(); i < thisSize; i++) {
-                long y = e.get(i).start(); //left-align
-                if (y!=ETERNAL) {
-                    if (y < min)
-                        min = y;
-                }
-            }
-
-            if (min == Long.MAX_VALUE)
-                min = ETERNAL; //all eternal
-
-            start = end = min;
-        }
-
-
-        float f;
-        if (builtTask!=null && c.op() == NEG) {
-            c = c.unneg(); //unneg if constructing a task, but dont if just returning the truth
-            f = 1f - freq;
-        } else {
-            f = freq;
-        }
-
-
-        Truth tr = Truth.the(f, evi, nar);
-        if (tr == null)
-            return null;
-        if (builtTask==null)
-            return tr;
-
-        float priority = budget();
-
-        // then if the term is valid, see if it is valid for a task
-        if (!Task.validTaskTerm(c,
-                beliefOrGoal ? BELIEF : GOAL, true))
-            return null;
-
         NALTask dyn = new NALTask(c, beliefOrGoal ? Op.BELIEF : Op.GOAL,
                 tr, nar.time(), start, (start == ETERNAL || c.op().temporal) ? start : end, stamp);
         if (ss.getTwo() > 0) dyn.setCyclic(true);
@@ -170,7 +177,7 @@ public final class DynTruth {
         if (Param.DEBUG)
             dyn.log("Dynamic");
 
-        builtTask.accept(dyn);
+        withBuiltTask.accept(dyn);
 
         return tr;
     }

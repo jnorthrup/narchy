@@ -22,11 +22,7 @@ import static nars.Param.FILTER_SIMILAR_DERIVATIONS;
 
 public class Taskify extends AbstractPred<Derivation> {
 
-    final static BiFunction<DerivedTask, DerivedTask, DerivedTask> DUPLICATE_DERIVATION_MERGE = (pp, tt) -> {
-        pp.priMax(tt.pri());
-        pp.causeMerge(tt);
-        return pp;
-    };
+
     private final static Logger logger = LoggerFactory.getLogger(Taskify.class);
 
     /**
@@ -100,7 +96,7 @@ public class Taskify extends AbstractPred<Derivation> {
 
         t.cause = ArrayUtils.addAll(d.parentCause, channel.id);
 
-        if (d.derivations.merge(t, t, DUPLICATE_DERIVATION_MERGE) != t) {
+        if (d.add(t) != t) {
             spam(d, Param.TTL_DERIVE_TASK_REPEAT);
         } else {
             d.use(Param.TTL_DERIVE_TASK_SUCCESS);
@@ -108,6 +104,8 @@ public class Taskify extends AbstractPred<Derivation> {
 
         return true;
     }
+
+
 
 
     private static boolean spam(Derivation p, int cost) {

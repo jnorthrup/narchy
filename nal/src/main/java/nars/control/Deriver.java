@@ -10,6 +10,7 @@ import nars.derive.TrieDeriver;
 import nars.derive.rule.PremiseRuleSet;
 import nars.exe.Causable;
 import nars.index.term.PatternIndex;
+import nars.task.ITask;
 
 import java.io.PrintStream;
 import java.util.function.Consumer;

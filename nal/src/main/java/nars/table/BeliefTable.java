@@ -64,7 +64,7 @@ public interface BeliefTable extends TaskTable {
 
 
         @Override
-        public Task answer(long start, long end, int dur, Task question, Term template, NAR nar) {
+        public @Nullable Task answer(long start, long end, int dur, @Nullable Task question, Term template, NAR nar, Consumer<Task> withNovel) {
             return null;
         }
 
@@ -197,13 +197,13 @@ public interface BeliefTable extends TaskTable {
     }
 
     @Nullable default Task answer(long start, long end, @Nullable Term template, NAR nar) {
-        return answer(start, end, nar.dur(), null, template, nar);
+        return answer(start, end, nar.dur(), null, template, nar, nar::input);
     }
 
     /**
      * projects a match
      */
-    @Nullable default Task answer(long start, long end, int dur, @Nullable Task question, Term template, NAR nar) {
+    @Nullable default Task answer(long start, long end, int dur, @Nullable Task question, Term template, NAR nar, Consumer<Task> withNovel) {
 
 
         Task answer = match(start, end, template, nar);
@@ -247,7 +247,7 @@ public interface BeliefTable extends TaskTable {
         }
 
         if (novel && question != null && question.isQuestOrQuestion()) {
-            nar.input(answer);
+            withNovel.accept(answer);
         }
 
         return answer;
