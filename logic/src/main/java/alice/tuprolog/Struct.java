@@ -247,23 +247,6 @@ public class Struct extends Term {
 
     // checking type and properties of the Term
 
-    /**
-     * is this term a prolog numeric term?
-     */
-    @Override
-    public boolean isNumber() {
-        return false;
-    }
-
-    /**
-     * is this term a struct
-     */
-    @Override
-    public boolean isStruct() {
-        return true;
-    }
-
-
 
     // check type services
 
@@ -510,8 +493,16 @@ public class Struct extends Term {
         Term[] thatArg = t.subs;
         Term[] thisArg = this.subs;
         final int arity = this.subCount;
+        if (substMap == null)
+            substMap = new IdentityHashMap<>();
         for (int c = 0; c < arity; c++) {
-            thatArg[c] = thisArg[c].copy(vMap, substMap);
+            Term tc = thisArg[c];
+            Term yc;
+            if (tc instanceof Var || (tc instanceof Struct && (!((Struct)tc).isConstant())))
+                yc = tc.copy(vMap, substMap);
+            else
+                yc = tc;
+            thatArg[c] = yc;
         }
         return t;
     }

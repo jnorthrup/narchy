@@ -43,9 +43,9 @@ public interface NAct {
 
     default void actionToggle(@NotNull Term t, @NotNull Runnable on, @NotNull Runnable off) {
 
-        float thresh = 0.75f;
+        float thresh = 0.5f + Param.TRUTH_EPSILON;
         actionUnipolar(t, 0f, (f) -> {
-            if (f > thresh) {
+            if (f >= thresh) {
                 on.run();
                 return 1f;
             } else {

@@ -18,6 +18,7 @@
 package alice.tuprolog;
 
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -161,7 +162,13 @@ public class Var extends Term {
         }
         Term t = term();
         if (t instanceof Var) {
-            Object tt = substMap.get(t);
+            Object tt;
+            if (substMap == null) {
+                substMap = new IdentityHashMap<>();
+                tt = null;
+            } else {
+                tt = substMap.get(t);
+            }
             if (tt == null) {
                 substMap.put(t, v);
                 v.link = null;
@@ -247,16 +254,6 @@ public class Var extends Term {
     }
 
     //
-
-    @Override
-    public boolean isNumber() {
-        return false;
-    }
-
-    @Override
-    public boolean isStruct() {
-        return false;
-    }
 
     @Override
     public boolean isEmptyList() {

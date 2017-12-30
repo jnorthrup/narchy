@@ -78,18 +78,6 @@ public abstract class Number extends Term implements Comparable<Number> {
     }
     
     // checking type and properties of the Term
-    
-    /** is this term a prolog numeric term? */
-    @Override
-    final public boolean isNumber() {
-        return true;
-    }
-    
-    /** is this term a struct  */
-    @Override
-    final public boolean isStruct() {
-        return false;
-    }
 
     @Override
     final public boolean isEmptyList() {

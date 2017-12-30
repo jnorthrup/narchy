@@ -41,18 +41,6 @@ public abstract class Term implements Serializable, SubTree {
     public static final String YES = "yes.";
 
     // checking type and properties of the Term
-    
-    /**
-     * is this term a prolog numeric term?
-     * @deprecated Use <tt>instanceof Number</tt> instead.
-     */
-    public abstract boolean isNumber();
-    
-    /**
-     * is this term a struct?
-     * @deprecated Use <tt>instanceof Struct</tt> instead. 
-     */
-    public abstract boolean isStruct();
 
     /** is this term a null term?*/
     public abstract boolean isEmptyList();
@@ -104,7 +92,7 @@ public abstract class Term implements Serializable, SubTree {
     public abstract Term term();
     
 
-    public final static AtomicLong tick = new AtomicLong(0);
+    private final static AtomicLong tick = new AtomicLong(0);
     public static long now() {
         // //System.currentTimeMillis();
         return tick.getAndIncrement();
@@ -146,13 +134,15 @@ public abstract class Term implements Serializable, SubTree {
     public Term copyResult(Collection<Var> goalVars, List<Var> resultVars) {
         IdentityHashMap<Var,Var> originals = new IdentityHashMap<>(goalVars.size());
         for (Var key: goalVars) {
-            Var clone = new Var();
+            Var clone;
             if (!key.isAnonymous())
                 clone = new Var(key.getOriginalName());
+            else
+                clone = new Var();
             originals.put(key,clone);
             resultVars.add(clone);
         }
-        return copy(originals, new IdentityHashMap<>());
+        return copy(originals, null /*new IdentityHashMap<>()*/);
     }
     
     

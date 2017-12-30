@@ -518,8 +518,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
                 if (allowMerge) {
 
-                    //HACK set the right priority because the task deletion may interfere with Revision's pri calculation
-                    c.pri((aPri + bt.priElseZero())/2f);
+                    //HACK set the priority because the task deletion may interfere with Revision's pri calculation
+                    c.pri(
+                        //(aPri + bt.priElseZero())/2f
+                        (aPri * bt.priElseZero())
+                    );
 
 
                     treeRW.remove(bt);

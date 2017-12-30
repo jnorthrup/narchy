@@ -14,18 +14,6 @@ public abstract class AbstractSocket extends Term{
 	public abstract Object getSocket();
 	
 	public abstract InetAddress getAddress();
-	
-	@Override
-	public boolean isNumber() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean isStruct() {
-		// TODO Auto-generated method stub
-		return false;
-	}
 
 
 	@Override

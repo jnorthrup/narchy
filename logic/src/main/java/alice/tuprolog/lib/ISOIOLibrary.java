@@ -1086,7 +1086,7 @@ public class ISOIOLibrary extends Library{
 //        if(arg0 instanceof Var){
 //            throw PrologError.instantiation_error(engine.engine, 2);
 //        }
-        if (!arg0.isNumber()) {
+        if (!(arg0 instanceof alice.tuprolog.Number)) {
             throw PrologError.type_error(engine.engine, 2, "character", arg0);
         } 
         else {

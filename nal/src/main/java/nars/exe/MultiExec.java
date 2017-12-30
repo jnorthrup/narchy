@@ -133,7 +133,8 @@ public class MultiExec extends AbstractExec {
                     //cycleNanosRemain/2;
 
                 int WORK_SHARE =
-                        (int) Math.ceil(((float) qq) / Math.max(1, (threads - 1)));
+                        //(int) Math.ceil(((float) qq) / Math.max(1, (threads - 1)));
+                        qq;
                 do {
 
                     Object i = q.poll();
