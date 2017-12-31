@@ -837,5 +837,10 @@ public class NAL8Test extends NALTest {
 //        ;
 //    }
 
+    @Test public void testConjPrior() {
+        test.input("happy!")
+            .input("((((--,happy) &&+2 happy) &&+20 y) &&+2 ((--,y) &&+1 happy)). :|:")
+            .mustGoal(cycles, "(y &&+2 (--,y))!", 1f, 0.5f, (t) -> t >= 0);
+    }
 
 }

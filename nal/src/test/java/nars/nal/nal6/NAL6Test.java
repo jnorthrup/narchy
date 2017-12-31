@@ -14,11 +14,12 @@ public class NAL6Test extends NALTest {
     final int cycles = 2500;
 
     @Test
-    public void variable_unification1() {
+    public void variable_unification_revision() {
         test
+            .mustBelieve(cycles, "(($1 --> bird) ==> ($1 --> flyer))", 0.79f, 0.92f) //en("If something is a bird, then usually, it is a flyer.");
             .believe("(($x --> bird) ==> ($x --> flyer))") //en("If something is a bird, then it is a flyer.")
             .believe("(($y --> bird) ==> ($y --> flyer))", 0.00f, 0.70f) //en("If something is a bird, then it is not a flyer.")
-            .mustBelieve(cycles, "(($1 --> bird) ==> ($1 --> flyer))", 0.79f, 0.92f); //en("If something is a bird, then usually, it is a flyer.");
+        ;
     }
 
     @Test

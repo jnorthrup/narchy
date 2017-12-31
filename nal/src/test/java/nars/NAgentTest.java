@@ -19,7 +19,7 @@ public class NAgentTest {
 
         Param.DEBUG = true;
         //n.log();
-        n.logWhen(System.out, false, true, true);
+//        n.logWhen(System.out, false, true, true);
 
         int cycles = 500;
 
@@ -42,24 +42,25 @@ public class NAgentTest {
 
             @Override
             protected float act() {
+                float yy = y;
+
                 if (n.time() > cycles/2) {
                     if (curiosity.get() > 0) {
-                        System.err.println("curiosity off");
+//                        System.err.println("curiosity off");
                         curiosity.set(0);
                     }
+                    rewardSum[0] += yy;
                 }
 
-                float yy = y;
-                rewardSum[0] += yy;
                 return yy;
             }
         };
-        n.onTask(t->{
-            if (t.isGoal()) {
-                if (t.term().equals(action))
-                    System.out.println(t.start() + " " + t.proof());
-            }
-        });
+//        n.onTask(t->{
+//            if (t.isGoal()) {
+//                if (t.term().equals(action))
+//                    System.out.println(t.start() + ".." + t.end() + "\t" + t.proof());
+//            }
+//        });
         DurService.on(n, a);
         n.run(cycles);
 

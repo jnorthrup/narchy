@@ -2,9 +2,11 @@ package nars.nal.nal8;
 
 import nars.$;
 import nars.Narsese;
+import nars.nal.nal7.NAL7Test;
 import nars.test.TestNAR;
 import nars.time.Tense;
 import nars.util.NALTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +21,11 @@ public class NAL8EternalMixTest extends NALTest {
 
     final int cycles = 250;
 
-
+    @BeforeEach
+    public void setTolerance() {
+        test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
+        test.nar.time.dur(1);
+    }
     @Test
     public void subsent_1_even_simpler_simplerGoalEternal() {
 

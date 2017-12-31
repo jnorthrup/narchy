@@ -1,6 +1,7 @@
 package nars.control;
 
 import jcog.Util;
+import jcog.math.MutableInteger;
 import nars.$;
 import nars.NAR;
 import nars.Param;
@@ -32,6 +33,7 @@ public class Deriver extends Causable {
     private final Cause[] subCauses;
     private float minPremisesPerConcept = 1;
     private float maxPremisesPerConcept = 3;
+    final MutableInteger conceptsPerWork= new MutableInteger(1);
     protected long now;
 
     public static Function<NAR, Deriver> deriver(Function<NAR, PremiseRuleSet> rules) {
@@ -150,8 +152,10 @@ public class Deriver extends Causable {
 
 //        int premisesRemain[] = new int[]{work};
 
+        int conceptsPerWork = this.conceptsPerWork.intValue();
+
         //hard limit on # of concepts processed. since usually there will be >1 premises per concept, this will normally not be exhausted
-        int conceptsRemain[] = new int[]{work};
+        int conceptsRemain[] = new int[]{work * conceptsPerWork};
 
         now = nar.time();
 
@@ -186,7 +190,7 @@ public class Deriver extends Causable {
 
         int derived = d.commit(nar::input);
 
-        return work - conceptsRemain[0];
+        return Math.max(0, work - Math.round(conceptsRemain[0]/((float)conceptsPerWork)));
     }
 
 

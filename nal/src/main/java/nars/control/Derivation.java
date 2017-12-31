@@ -205,6 +205,7 @@ public class Derivation extends ProtoDerivation {
                 nar.get(Atomic.the("dropAnySet")),
                 nar.get(Atomic.the("without")),
                 nar.get(Atomic.the("conjWithout")),
+                nar.get(Atomic.the("conjPrior")),
                 nar.get(Atomic.the("conjDropIfEarliest")),
                 nar.get(Atomic.the("conjEvent")),
                 nar.get(Atomic.the("ifConjCommNoDepVars")),

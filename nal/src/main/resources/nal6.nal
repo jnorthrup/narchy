@@ -119,15 +119,15 @@
 //    M, (M ==> P), shift_occurrence_forward(M,"==>")  |- P, (Truth:Deduction, Desire:Induction, Order:ForAllSame)
 //    M, (P ==> M), shift_occurrence_backward(P,"==>") |- P, (Truth:Abduction, Desire:Deduction, Order:ForAllSame)
 
-    B, (A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B,"$"), (Belief:DeductionRecursivePB, Goal:DeciInduction)
+    B, (A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursivePB, Goal:DeciInduction)
         //B, (A ==> C),  notImpl(B), task(".") |- subIfUnifiesAny(C,A,B,"$",strict), (Belief:DeductionRecursivePB)
         //B, (B ==> C),  notImpl(B), task("!") |- C, (Goal:DeciInduction)
 
-    B, (--A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B,"$"), (Belief:DeductionRecursivePBN, Goal:DeciInductionN)
+    B, (--A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursivePBN, Goal:DeciInductionN)
         //B, (--A ==> C),  notImpl(B), task(".") |- subIfUnifiesAny(C,A,B,"$",strict), (Belief:DeductionRecursivePBN)
         //B, (--B ==> C),  notImpl(B), task("!") |- C, (Goal:DeciInductionN)
 
-    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B,"$"), (Belief:AbductionPB, Goal:DeciDeduction)
+    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionPB, Goal:DeciDeduction)
         //B, (C ==> B), notImpl(B), task("!") |- C (Goal:DeciDeduction)
 
 
@@ -275,14 +275,14 @@
     //see: https://en.wikipedia.org/wiki/Imperative_logic#Ross.27_Paradox
     //originally these were only valid if A occurrs during or after C. the opposite is not logical and would also produce redundant results
 
-    B, C, belief("&&"), task("!") |- conjWithout(C,B), (Goal:Strong)
-    B, C, belief("&&"), task("!") |- conjWithout(C,--B), (Goal:StrongN)
+    B, C, belief("&&"), task("!"), task(positive) |- conjPrior(C,B), (Goal:Strong)
+    B, C, belief("&&"), task("!"), task(negative) |- conjPrior(C,--B), (Goal:StrongN)
 
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),conjEvent(C,late),B), (Goal:Strong)
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),--conjEvent(C,late),B), (Goal:StrongN)
 
-    C, B, task("&&"), task("!") |- conjDropIfEarliest(C,B), (Goal:Strong)
-    C, B, task("&&"), task("!") |- conjDropIfEarliest(C,--B), (Goal:StrongPN)
+    C, B, task("&&"), task("!"), belief(positive) |- conjDropIfEarliest(C,B), (Goal:Strong)
+    C, B, task("&&"), task("!"), belief(negative) |- conjDropIfEarliest(C,--B), (Goal:StrongPN)
         //(&&,X,A..+), X, task("!") |- X, (Goal:Strong)
         //(&&,--X,A..+), X, task("!") |- X, (Goal:StrongPN)
 

@@ -4,10 +4,11 @@
 //      https://cogsci.indiana.edu/
 
  Z, (X<->Y), eqOrIn(X,Z), belief(positive)   |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:Analogy, Goal:Weak)
- Z, (X<->Y), eqOrIn(X,Z), belief(negative)   |- (--, subIfUnifiesAny(Z, X, Y, strict, force)), (Belief:AnalogyPN, Goal:WeakPN)
- Z, (--X<->Y), eqOrIn(X,Z), belief(positive) |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:AnalogyN, Goal:WeakN)
- Z, (--X<->Y), eqOrIn(X,Z), belief(negative) |- (--, subIfUnifiesAny(Z, X, Y, strict, force)), (Belief:AnalogyNN, Goal:WeakNN)
 
+ //suspect:
+// Z, (X<->Y), eqOrIn(X,Z), belief(negative)   |- (--, subIfUnifiesAny(Z, X, Y, strict, force)), (Belief:AnalogyPN, Goal:WeakPN)
+//Z, (--X<->Y), eqOrIn(X,Z), belief(positive) |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:AnalogyN, Goal:WeakN)
+ //Z, (--X<->Y), eqOrIn(X,Z), belief(negative) |- (--, subIfUnifiesAny(Z, X, Y, strict, force)), (Belief:AnalogyNN, Goal:WeakNN)
 
 //these old rules are replaced by the above rules:
         //If M is a special case of P and S and M are similar, then S is also a special case of P (strong)

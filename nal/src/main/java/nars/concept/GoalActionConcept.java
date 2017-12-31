@@ -168,8 +168,9 @@ public class GoalActionConcept extends ActionConcept {
         int dur = nar.dur();
 
         SignalTask curiosity = new SignalTask(term, GOAL, goal, now, now, now+dur, curiosityStamp);
-        curiosity.setCyclic(true);
-        curiosity.pri(nar.priDefault(GOAL));
+        //curiosity.setCyclic(true);
+        //curiosity.pri(nar.priDefault(GOAL));
+        curiosity.pri(0);
 
         return curiosity;
     }

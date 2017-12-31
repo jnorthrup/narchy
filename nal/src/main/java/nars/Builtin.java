@@ -27,6 +27,7 @@ import java.util.function.Function;
 import static nars.Op.*;
 import static nars.term.Functor.f0;
 import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -173,7 +174,7 @@ public class Builtin {
 
             Functor.f2("subterm", (Term x, Term index) -> {
                 try {
-                    if (index instanceof Int && index.op()==INT) {
+                    if (index instanceof Int && index.op() == INT) {
                         return x.sub($.intValue(index));
                     }
                 } catch (NumberFormatException ignored) {
@@ -411,6 +412,34 @@ public class Builtin {
                 return Op.without(conj, event);
             }
         }));
+        /** extracts only the events preceding the specified events */
+        nar.on(Functor.f2((Atom) $.the("conjPrior"), (Term conj, Term event) -> {
+            if (conj.op() != CONJ || conj.impossibleSubTerm(event))
+                return Null;
+
+            if (conj.dt() == DTERNAL)
+                return Op.without(conj, event);
+
+            FasterList<LongObjectPair<Term>> events = conj.eventList();
+            int found = -1;
+            long whenOccurs = Long.MIN_VALUE;
+            int es = events.size();
+
+            assert (es > 1);
+            for (int i = 0; i < es; i++) {
+                LongObjectPair<Term> ei = events.get(i);
+                if (ei.getTwo().equals(event)) {
+                    found = i;
+                    whenOccurs = Math.max(whenOccurs, ei.getOne());
+                }
+            }
+            if (found == -1)
+                return Null;
+            long ef = whenOccurs;
+            Term posNegE = event.unneg(); //exclude the positive and negative of the specified event
+            events.removeIf(e -> e.getOne() > ef || e.getTwo().unneg().equals(posNegE));
+            return Op.conj(events);
+        }));
         nar.on(Functor.f2((Atom) $.the("conjDropIfEarliest"), (Term conj, Term event) -> {
             if (conj.op() != CONJ || conj.impossibleSubTerm(event))
                 return Null;
@@ -523,7 +552,7 @@ public class Builtin {
         });
 
         nar.onOp1("js", (code, nn) -> {
-            if (code.op()==ATOM) {
+            if (code.op() == ATOM) {
                 String js = $.unquote(code);
                 Object result;
                 try {
@@ -531,7 +560,7 @@ public class Builtin {
                 } catch (ScriptException e) {
                     result = e;
                 }
-                nn.input(Operator.log(nar.time(), $.p(code, $.the(result)) ));
+                nn.input(Operator.log(nar.time(), $.p(code, $.the(result))));
             }
         });
     }
@@ -562,7 +591,9 @@ public class Builtin {
             java.lang.System.exit(0);
         }
 
-        /** NAR clear */
+        /**
+         * NAR clear
+         */
         public void clear() {
             nar.clear();
         }
@@ -574,6 +605,7 @@ public class Builtin {
         public void start() {
             nar.start();
         }
+
         public void startFPS(int fps) {
             nar.startFPS(fps);
         }
@@ -581,6 +613,7 @@ public class Builtin {
         public void save(Object target) {
             //TODO
         }
+
         public void load(Object source) {
             //TODO
         }
@@ -604,7 +637,6 @@ public class Builtin {
 //        nar.onOp("log", log);
 //        nar.onOp(Operator.LOG_FUNCTOR, log);
 //
-
 
 
 //        nar.on(Functor.f("top", (args) -> {
