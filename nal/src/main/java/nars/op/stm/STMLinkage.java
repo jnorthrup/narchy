@@ -28,9 +28,6 @@ public final class STMLinkage extends TaskService {
     private final boolean allowNonInput;
     private final Cause cause;
 
-    public STMLinkage(@NotNull NAR nar, int capacity) {
-        this(nar, capacity, false);
-    }
 
     public STMLinkage(@NotNull NAR nar, int capacity, boolean allowNonInput) {
         super(nar);
@@ -45,7 +42,7 @@ public final class STMLinkage extends TaskService {
         cause = nar.newCause(Cause::new);
     }
 
-    static boolean stmLinkable(Task newEvent, boolean allowNonInput) {
+    boolean stmLinkable(Task newEvent) {
         return (!newEvent.isEternal() && (allowNonInput || newEvent.isInput()));
     }
 
@@ -57,17 +54,13 @@ public final class STMLinkage extends TaskService {
     @Override
     public final void accept(NAR nar, Task t) {
 
-        if (!t.isBeliefOrGoal())
-            return;
-        if (!STMLinkage.stmLinkable(t, allowNonInput))
+        if (!t.isBeliefOrGoal() || !stmLinkable(t))
             return;
 
         float strength = this.strength.floatValue();
         float tPri = t.priElseZero();
-        if (tPri == 0)
-            return;
 
-        short cid = cause.id;
+//        short cid = cause.id;
         float p = strength * tPri;
         for (Task u : stm) {
             if (u == null) continue; //skip null's and dummy's
@@ -88,20 +81,21 @@ public final class STMLinkage extends TaskService {
             Concept ca = ta.concept(nar, true);
             if (ca != null) {
                 Concept cb = tb.concept(nar, true);
-                if (cb != null)
+                if (cb != null) {
                     if (!cb.equals(ca)) { //null or same concept?
 
                         //TODO handle overflow?
                         cb.termlinks().putAsync(new CauseLink.PriCauseLink(ca.term(), interStrength, cid));
                         ca.termlinks().putAsync(new CauseLink.PriCauseLink(cb.term(), interStrength, cid));
 
-                        //tasklinks, not sure:
-                        Tasklinks.linkTask(ta, interStrength, cb);
-                        Tasklinks.linkTask(tb, interStrength, ca);
+//                        //tasklinks, not sure:
+//                        Tasklinks.linkTask(ta, interStrength, cb);
+//                        Tasklinks.linkTask(tb, interStrength, ca);
                     } else {
                         //create a self-termlink
                         ca.termlinks().putAsync(new CauseLink.PriCauseLink(ca.term(), interStrength, cid));
                     }
+                }
             }
         }
     }

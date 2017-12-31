@@ -13,13 +13,13 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.var.NormalizedVariable;
 import org.apache.commons.lang3.mutable.MutableFloat;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
@@ -312,7 +312,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
 
                     default:
-                        return $.func(s.name(), nterms(((Struct) t).subArrayShared()));
+                        return $.func(unwrapAtom(s.name()), nterms(((Struct) t).subArrayShared()));
                 }
             } else {
                 String n = s.name();
@@ -321,9 +321,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
                     return $.varDep(n.substring(2, n.length() - 1));
                 }
                 //Atom
-                if (n.charAt(0)=='_')
-                    n = n.substring(1);
-                return $.the(n);
+                return $.the(unwrapAtom(n));
             }
         } else if (t instanceof Var) {
             return $.varDep(((Var) t).name());
@@ -332,6 +330,16 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
             throw new RuntimeException(t + " untranslated");
         }
+    }
+
+
+    private static String unwrapAtom(String n) {
+        if (n.charAt(0)=='_')
+            n = n.substring(1);
+        return n;
+    }
+    private static String wrapAtom(String n) {
+        return "_" + n;
     }
 
     private static Term theTwoArity(Op inherit, Struct s) {
@@ -384,7 +392,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
                         Term subj = term.sub(0);
                         if (subj.op() == PROD) {
                             alice.tuprolog.Term args = st[0];
-                            return new Struct(pred.toString(),
+                            return new Struct(wrapAtom(pred.toString()),
                                     args instanceof Struct ?
                                             Iterators.toArray(((Struct) st[0]).listIterator(), alice.tuprolog.Term.class) :
                                             new alice.tuprolog.Term[]{args});
@@ -406,7 +414,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
                 //return new Struct("'#" + ((Variable) term).id() + '\'');
             }
         } else if (term instanceof Atomic) {
-            return new Struct("_" + term.toString());
+            return new Struct(wrapAtom(term.toString()));
         }
 
         throw new UnsupportedOperationException();

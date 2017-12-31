@@ -177,7 +177,7 @@ public class StructTestCase {
 		Struct emptyList = Struct.emptyListMutable();
 		Struct list = new Struct(new Struct("a"),
 				          new Struct(new Struct("b"),
-				        	  new Struct(new Struct("c"), Struct.emptyList())));
+				        	  new Struct(new Struct("c"), Struct.emptyListMutable())));
 		emptyList.append(new Struct("a"));
 		emptyList.append(new Struct("b"));
 		emptyList.append(new Struct("c"));

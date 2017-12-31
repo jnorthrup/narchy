@@ -97,7 +97,7 @@ public enum MetaGoal {
      * the absolute value is considered relative to the the absolute values
      * of the other MetaGoal's
      */
-    public void want(float[] wants, float v) {
+    public void set(float[] wants, float v) {
         wants[ordinal()] = v;
     }
 

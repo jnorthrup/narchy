@@ -7,6 +7,8 @@ import nars.NAR;
 import nars.NAct;
 import nars.Task;
 import nars.task.ITask;
+import nars.task.NALTask;
+import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.util.signal.Signal;
@@ -26,10 +28,12 @@ import static nars.Op.GOAL;
 public class GoalActionConcept extends ActionConcept {
 
     public final Signal feedback;
-    public final Signal action;
+//    public final Signal action;
 
     private final FloatParam curiosity;
 
+//    /** shared curiosity stamp */
+    final long curiosityStamp;
 
     @NotNull
     private final MotorFunction motor;
@@ -47,7 +51,7 @@ public class GoalActionConcept extends ActionConcept {
 
         this.curiosity = curiosity;
 
-        this.action = new Signal(GOAL, n.freqResolution).pri(() -> n.priDefault(GOAL));
+//        this.action = new Signal(GOAL, n.freqResolution).pri(() -> n.priDefault(GOAL));
         //((SensorBeliefTable) goals).sensor = action;
 
         this.feedback = new Signal(BELIEF, resolution).pri(() -> n.priDefault(BELIEF));
@@ -57,6 +61,7 @@ public class GoalActionConcept extends ActionConcept {
         this.motor = motor;
         //this.goals = newBeliefTable(nar, false); //pre-create
 
+        curiosityStamp = n.time.nextStamp();
     }
 
 
@@ -109,7 +114,8 @@ public class GoalActionConcept extends ActionConcept {
 ////                            + now / (curiPeriod * (2 * Math.PI) * dur)) + 1f)/2f;
 //
             goal = $.t(f, curiConf);
-            fg = action.set(this, goal, stamper, now, dur, nar);
+            fg = curiosity(nar, goal, term, curiosityStamp);
+
 //            curious = true;
 //
 ////                Truth ct = $.t(f, cc);
@@ -126,6 +132,7 @@ public class GoalActionConcept extends ActionConcept {
 
             //action.set(term(), null, stamper, now, dur, nar);
 
+            fg = null;
             goal = this.goals().truth(pStart, pEnd, nar);
 
             //HACK EXPERIMENT combine belief and goal
@@ -141,18 +148,30 @@ public class GoalActionConcept extends ActionConcept {
 
             //}
 
-            fg = action.set(this, goal, stamper, now, dur, nar);
+//            fg = action.set(this, goal, stamper, now, dur, nar);
         }
 
 
 
         Truth motorFeedback = this.motor.motor(belief, goal);
 
-        Task fb = feedback.set(this, motorFeedback, stamper, now, dur, nar);
+        ITask fb = feedback.set(this, motorFeedback, stamper, now, dur, nar);
 
-        return Stream.of(fb, fg).filter(Objects::nonNull);
+        return Stream.of(fg, fb).filter(Objects::nonNull);
         //return Stream.of(fb, fg).filter(Objects::nonNull);
         //return Stream.of(fb).filter(Objects::nonNull);
+    }
+
+
+    static Task curiosity(NAR nar, Truth goal, Term term, long curiosityStamp) {
+        long now = nar.time();
+        int dur = nar.dur();
+
+        SignalTask curiosity = new SignalTask(term, GOAL, goal, now, now, now+dur, curiosityStamp);
+        curiosity.setCyclic(true);
+        curiosity.pri(nar.priDefault(GOAL));
+
+        return curiosity;
     }
 
 

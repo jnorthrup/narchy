@@ -28,12 +28,14 @@ public class GoalActionAsyncConcept extends ActionConcept {
 
 
     public final Signal feedBelief;
-    @Deprecated public final Signal feedGoal;
+//    @Deprecated public final Signal feedGoal;
 
 
     @NotNull
     private final BiConsumer<GoalActionAsyncConcept, Truth /* goal */> motor;
     final CauseChannel<ITask> in;
+
+    private final long curiosityStamp;
 
     public GoalActionAsyncConcept(@NotNull Term c, @NotNull NAct act, CauseChannel<ITask> cause, @NotNull BiConsumer<GoalActionAsyncConcept, Truth /* goal */> motor) {
         super(c,
@@ -48,6 +50,7 @@ public class GoalActionAsyncConcept extends ActionConcept {
         //((SensorBeliefTable) goals).sensor = action;
 
         this.in = cause;
+        curiosityStamp = n.time.nextStamp();
 
         //for dynamic change
         final FloatSupplier myResolution = () -> this.resolution.asFloat();
@@ -55,7 +58,7 @@ public class GoalActionAsyncConcept extends ActionConcept {
         this.feedBelief = new Signal(BELIEF, myResolution).pri(() -> n.priDefault(BELIEF));
         //((SensorBeliefTable) beliefs).sensor = feedback;
 
-        this.feedGoal = new Signal(GOAL, myResolution).pri(() -> n.priDefault(GOAL));
+//        this.feedGoal = new Signal(GOAL, myResolution).pri(() -> n.priDefault(GOAL));
 
         this.motor = motor;
         //this.goals = newBeliefTable(nar, false); //pre-create
@@ -107,18 +110,21 @@ public class GoalActionAsyncConcept extends ActionConcept {
 
         Task fg;
         Task fb;
-        long goalTime =
-                now;
-                //now-dur/2;
+//        long goalTime =
+//                now;
+//                //now-dur/2;
         long beliefTime =
                 now;
                 //now+dur/2;
 
-        if (g!=null)
-            //fg = feedGoal.task(term, g, goalTime-dur, goalTime, nar.time.nextStamp()); //allow the feedback goal (Ex: curiosity) to override, otherwise use the current goal
-            fg = feedGoal.set(this, g, stamper, goalTime, dur, nar);
+        if (g!=null) {
+//            //fg = feedGoal.task(term, g, goalTime-dur, goalTime, nar.time.nextStamp()); //allow the feedback goal (Ex: curiosity) to override, otherwise use the current goal
+//            fg = feedGoal.set(this, g, stamper, goalTime, dur, nar);
+            fg = GoalActionConcept.curiosity(nar, g, term, curiosityStamp);
+        }
         else
             fg = null;
+
         in.input(
             fg,
             fb = feedBelief.set(this, f, stamper, beliefTime, dur, nar)

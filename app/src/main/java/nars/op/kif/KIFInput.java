@@ -113,7 +113,7 @@ public class KIFInput implements Runnable {
 
         fn.forEach((f, s) -> {
             int ds = s.domain.isEmpty() ? 0 : s.domain.keySet().max();
-            Variable output = $.varIndep("R");
+            Variable output = s.range!=null ? $.varIndep("R") : $.varDep("R");
             Term vars = $.p(
                     ArrayUtils.add(
                          Util.map(0, ds, i -> $.varIndep(1 + i), Term[]::new),
@@ -128,7 +128,7 @@ public class KIFInput implements Runnable {
             Term types = CONJ.the(
                     typeConds
             );
-            Term fxy = $.impl($.inh(vars, f), types);
+            Term fxy = impl($.inh(vars, f), types, true);
             if (fxy instanceof Bool) {
                 logger.error("bad function {} {} {}", f, s.domain, s.range);
             } else {
@@ -174,6 +174,9 @@ public class KIFInput implements Runnable {
     static final Logger logger = LoggerFactory.getLogger(KIFInput.class);
 
     public Term formulaToTerm(final Formula x) {
+        if (x.theFormula.contains("@ROW"))
+            return null; //ignore @ROW stuff
+
         String root = x.car(); //root operate
 
         int l = x.listLength();
@@ -261,7 +264,7 @@ public class KIFInput implements Runnable {
                 break;
 
             case "forall":
-                y = $.impl(args.get(0), args.get(1));
+                y = impl(args.get(0), args.get(1), true);
                 break;
             case "exists":
                 y = args.get(1); //skip over the first parameter, since depvar is inherently existential
@@ -381,30 +384,40 @@ public class KIFInput implements Runnable {
 
     //public final Set<Twin<Term>> impl = new HashSet();
 
-    public Term impl(Term conditionTerm, Term actionTerm, boolean implOrEquiv) {
-        MutableSet<Term> conditionVars = new UnifiedSet();
-        ((Compound) conditionTerm).recurseTermsToSet(Op.VariableBits, conditionVars, true);
-        MutableSet<Term> actionVars = new UnifiedSet();
-        ((Compound) actionTerm).recurseTermsToSet(Op.VariableBits, actionVars, true);
+    public Term impl(Term a, Term b, boolean implOrEquiv) {
 
-        MutableSet<Term> common = conditionVars.intersect(actionVars);
-        Map<Term, Term> remap = new HashMap();
-        common.forEach(t -> {
-            remap.put(t, $.v(
-                    Op.VAR_INDEP,
-                    //Op.VAR_QUERY,
-                    //Op.VAR_PATTERN,
-                    "" +
-                            "_" + t.toString().substring(1)));
-        });
+        MutableSet<Term> aVars = new VarOnlySet();
+        if (a instanceof Compound)
+            ((Compound) a).recurseTermsToSet(Op.VariableBits, aVars, true);
+        else if (a.op().var)
+            aVars.add(a);
+        MutableSet<Term> bVars = new VarOnlySet();
+        if (b instanceof Compound)
+            ((Compound) b).recurseTermsToSet(Op.VariableBits, bVars, true);
+        else if (b.op().var)
+            bVars.add(b);
 
-        conditionTerm = conditionTerm.replace(remap);
-        if (conditionTerm == null)
-            return null;
+        MutableSet<Term> common = aVars.intersect(bVars);
+        if (!common.isEmpty()) {
+            Map<Term, Term> remap = new HashMap();
+            common.forEach(t -> {
+                Variable u = $.v(
+                        Op.VAR_INDEP,
+                        //Op.VAR_QUERY,
+                        //Op.VAR_PATTERN,
+                        t.toString().substring(1));
+                if (!t.equals(u))
+                    remap.put(t, u);
+            });
 
-        actionTerm = actionTerm.replace(remap);
-        if (actionTerm == null)
-            return null;
+            a = a.replace(remap);
+            if (a == null)
+                return null;
+
+            b = b.replace(remap);
+            if (b == null)
+                return null;
+        }
 
         try {
 //            impl.add(Tuples.twin(conditionTerm, actionTerm));
@@ -414,8 +427,8 @@ public class KIFInput implements Runnable {
 
             return
                     implOrEquiv ?
-                            $.impl(conditionTerm, actionTerm) :
-                            equi(conditionTerm, actionTerm)
+                            $.impl(a, b) :
+                            equi(a, b)
                     ;
         } catch (Exception ignore) {
             ignore.printStackTrace();
@@ -429,10 +442,11 @@ public class KIFInput implements Runnable {
 
         NAR e = NARS.tmp();
 
-        new PrologCore(e);
+        //new PrologCore(e);
 
         KIFInput k = new KIFInput(e,
-                "/home/me/sumo/Merge.kif"
+                "/home/me/sumo/FinancialOntology.kif"
+                //"/home/me/sumo/Merge.kif"
                 //"/home/me/sumo/emotion.kif"
                 //"/home/me/sumo/Weather.kif"
         );
@@ -502,5 +516,14 @@ public class KIFInput implements Runnable {
 //        d.conceptsActive().forEach(System.out::println);
         //d.concept("[Phrase]").print();
 
+    }
+
+    /** HACK because recurseTermsToSet isnt designed to check only Op */
+    private static class VarOnlySet extends UnifiedSet {
+        @Override public boolean add(Object key) { //HACK
+            if (!((Term)key).op().var)
+                return true;
+            return super.add(key);
+        }
     }
 }

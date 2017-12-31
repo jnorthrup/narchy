@@ -30,6 +30,7 @@ import nars.Param;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.TermContext;
 import nars.term.anon.Anon;
+import nars.term.atom.Bool;
 import nars.term.pred.AbstractPred;
 import nars.term.sub.Subterms;
 import nars.term.sub.TermVector;
@@ -671,14 +672,19 @@ public interface Compound extends Term, IPair, Subterms {
 
         //recursively compute contained subterm functors
         //compute this without necessarily constructing the superterm, which happens after this if it doesnt recurse
-        if (o == INH /*&& u.size() == 2*/ && xy[1] instanceof Functor && xy[0].op() == PROD) {
+        if (o == INH) {
+            Term pred, subj;
+            if ((pred=xy[1]) instanceof Functor && (subj=xy[0]).op() == PROD) {
 
 
-            u = ((Functor) xy[1]).apply(xy[0].subterms());
-            if (u instanceof AbstractPred) {
-                u = $.the(((AbstractPred) u).test(null));
-            } else if (u == null) {
-                u = this; //null means to keep the same
+                u = ((Functor)pred).apply(subj.subterms());
+                if (u instanceof AbstractPred) {
+                    u = $.the(((AbstractPred) u).test(null));
+                } else if (u == null) {
+                    u = this; //null means to keep the same
+                } else if (u instanceof Bool) {
+                    return u; //shortcut avoid final intern call
+                }
             }
         }
 

@@ -161,7 +161,7 @@ abstract public class NAgentX extends NAgent {
                 .exe(new MultiExec
                         //Intense
                         //CoolNQuiet
-                        (512, THREADS, 32))
+                        (512, THREADS, 64, false))
 
                 .time(clock)
                 .deriverAdd(1, 1)
@@ -246,9 +246,10 @@ abstract public class NAgentX extends NAgent {
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 32, 128);
         ConjClustering conjClusterBnonInput = new ConjClustering(n, BELIEF, (t->!t.isInput()), 4, 16);
 
-        RelationClustering relCluster = new RelationClustering(n,
-                (t)->t.isBelief() && !t.isEternal() && !t.term().isTemporal() ? t.conf() : Float.NaN,
-                8, 32);
+//        RelationClustering relCluster = new RelationClustering(n,
+//                (t)->t.isBelief() && !t.isEternal() && !t.term().isTemporal() ? t.conf() : Float.NaN,
+//                8, 32);
+        
         //ConjClustering conjClusterG = new ConjClustering(n, 3, GOAL, true, false, 16, 64);
 
 //        n.runLater(() -> {

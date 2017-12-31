@@ -977,9 +977,18 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
                 Task result;
                 if (y instanceof Bool && isQuestOrQuestion()) {
-                    //convert to implicit answer
+                    //convert to final implicit answer
                     byte p = isQuestion() ? BELIEF : GOAL;
-                    result = clone(this, x, $.t(y == True ? 1f : 0f, n.confDefault(p)), p);
+
+
+                    @Nullable NALTask finalResult = clone(this, x, $.t(y == True ? 1f : 0f, n.confDefault(p)), p);
+
+                    delete();
+
+                    input(n, finalResult.term(), finalResult);
+
+                    return null;
+
                 } else {
                     if (y.op() == Op.BOOL)
                         return null;
@@ -1035,19 +1044,23 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
         if (!cmd) {
 
-            @Nullable Concept c = n.conceptualize(y);
-            if (c instanceof TaskConcept) {
-                ((TaskConcept) c).add(this, n);
-            } else {
-                if (isBeliefOrGoal() || Param.DEBUG_EXTRA)
-                    throw new RuntimeException(y + " does not resolve a TaskConcept yet a task expects to add itself to it");
-            }
+            input(n, y, this);
 
         } else {
             n.out(term());
         }
 
         return null;
+    }
+
+    static void input(NAR n, Term y, Task t) {
+        @Nullable Concept c = n.conceptualize(y);
+        if (c instanceof TaskConcept) {
+            ((TaskConcept) c).add(t, n);
+        } else {
+            if (t.isBeliefOrGoal() || Param.DEBUG_EXTRA)
+                throw new RuntimeException(y + " does not resolve a TaskConcept yet a task expects to add itself to it");
+        }
     }
 
     /**

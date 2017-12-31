@@ -103,8 +103,8 @@ public class NARio extends NAgentX {
 //        nar.believe("nario:{narioLocal, narioGlobal}");
 
 
-        initBipolar();
-        //initToggle();
+        //initBipolar();
+        initToggle();
 
 
         SensorConcept dvx = senseNumberDifference($("vx"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
@@ -131,11 +131,11 @@ public class NARio extends NAgentX {
     }
 
     private void initToggle() {
-        actionToggle(p("left"), (n) -> mario.scene.key(Mario.KEY_LEFT, n));
-        actionToggle(p("right"), (n) -> mario.scene.key(Mario.KEY_RIGHT, n));
-        actionToggle(p("jmp"), (n) -> mario.scene.key(Mario.KEY_JUMP, n));
-        actionToggle(p("down"), (n) -> mario.scene.key(Mario.KEY_DOWN, n));
-        actionToggle(p("speed"), (b) -> mario.scene.key(Mario.KEY_SPEED, b));
+        actionToggle($.$safe("nario:left"), (n) -> mario.scene.key(Mario.KEY_LEFT, n));
+        actionToggle($.$safe("nario:right"), (n) -> mario.scene.key(Mario.KEY_RIGHT, n));
+        actionToggle($.$safe("nario:jump"), (n) -> mario.scene.key(Mario.KEY_JUMP, n));
+        actionToggle($.$safe("nario:down"), (n) -> mario.scene.key(Mario.KEY_DOWN, n));
+        actionToggle($.$safe("nario:speed"), (b) -> mario.scene.key(Mario.KEY_SPEED, b));
 //        actionTriState($("x"), i -> {
 //            boolean n, p;
 //            switch (i) {

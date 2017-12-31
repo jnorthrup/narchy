@@ -13,7 +13,6 @@ import nars.term.atom.Atom;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.apache.commons.lang3.mutable.MutableFloat;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -129,8 +128,8 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmax = new MutableInteger(48);
-    public final MutableInteger matchTTLmin = new MutableInteger(24);
+    public final MutableInteger matchTTLmax = new MutableInteger(256);
+    public final MutableInteger matchTTLmin = new MutableInteger(128);
 
     /**
      * how much percent of a premise's allocated TTL can be used in the belief matching phase.
@@ -187,12 +186,12 @@ public abstract class Param {
         float[] w = this.want;
 
         //follows the pos/neg guidelines described in the comment of each MetaGoal
-        Perceive.want(w, -0.005f);
-        Believe.want(w, 0.01f);
-        Desire.want(w, 0.1f);
-        Accurate.want(w, 0.1f);
-        Answer.want(w, 0.1f);
-        Action.want(w, 1f);
+        Perceive.set(w, -0.005f);
+        Believe.set(w, 0.01f);
+        Desire.set(w, 0.1f);
+        Accurate.set(w, 0.1f);
+        Answer.set(w, 0.1f);
+        Action.set(w, 1f);
     }
 
     /**

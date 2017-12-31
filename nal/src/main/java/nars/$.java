@@ -231,8 +231,7 @@ public enum $ {
     /**
      * function ((a,b)==>c) aka: c(a,b)
      */
-    @NotNull
-    public static Term func(@NotNull Atomic opTerm, @NotNull Term... arg) {
+    public static Term func(Atomic opTerm, Term... arg) {
         return INH.the($.p(arg), opTerm);
     }
 
@@ -243,23 +242,23 @@ public enum $ {
         return (T) IMPL.the(DTERNAL, a, b);
     }
 
-    @NotNull
-    public static <T extends Term> T impl(@NotNull Term a, int dt, @NotNull Term b) {
+
+    public static <T extends Term> T impl(Term a, int dt, Term b) {
         return (T) IMPL.the(dt, a, b);
     }
 
-    @NotNull
-    public static Term p(@NotNull Collection<Term> t) {
+
+    public static Term p(Collection<Term> t) {
         return $.p(t.toArray(new Term[t.size()]));
     }
 
-    @NotNull
-    public static Term p(@NotNull Term... t) {
+
+    public static Term p(Term... t) {
         return PROD.the(t);
     }
 
-    @NotNull
-    public static Term p(@NotNull Subterms t) {
+
+    public static Term p(Subterms t) {
         return p((Term[]) t.arrayClone());
     }
 
@@ -267,7 +266,7 @@ public enum $ {
      * creates from a sublist of a list
      */
     @NotNull
-    public static Term p(@NotNull List<Term> l, int from, int to) {
+    public static Term p(List<Term> l, int from, int to) {
         Term[] x = new Term[to - from];
 
         for (int j = 0, i = from; i < to; i++)

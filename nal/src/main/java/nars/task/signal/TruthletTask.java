@@ -23,11 +23,11 @@ public class TruthletTask extends SignalTask {
     public Truthlet truthlet;
 
     public TruthletTask(Term t, byte punct, Truthlet truth, NAR n) {
-        this(t, punct, truth, n.time.nextStamp());
+        this(t, punct, truth, n.time(), n.time.nextStamp());
     }
 
-    public TruthletTask(Term t, byte punct, Truthlet truth, long stamp) {
-        super(t, punct, truth, XTERNAL, XTERNAL, stamp);
+    public TruthletTask(Term t, byte punct, Truthlet truth, long creation, long stamp) {
+        super(t, punct, truth, creation, XTERNAL, XTERNAL, stamp);
         assert (punct == BELIEF || punct == GOAL);
         this.truthlet = truth;
     }

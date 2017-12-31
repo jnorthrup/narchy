@@ -53,7 +53,7 @@ public class Revision {
         float e = //TimeFusion.eviEternalize((w1 + w2), factor);
                 (w1+w2)*factor;
 
-        return w <= minEvi ?
+        return e <= minEvi ?
                 null :
                 new PreciseTruth(
                         (w1 * a.freq() + w2 * b.freq()) / w,
@@ -416,7 +416,7 @@ public class Revision {
             return null;
 
         Truth rawTruth = revise(an, bn, joint.factor, c2wSafe(confMin));
-        if (rawTruth == null || rawTruth.evi() < minEvi)
+        if (rawTruth == null)
             return null;
 
         //ObjectFloatPair<long[]> s = Stamp.zip(new FasterList(a, b), Param.STAMP_CAPACITY);
@@ -531,6 +531,8 @@ public class Revision {
                 now, start, end,
                 Stamp.zip(a.stamp(), b.stamp(), aProp) //get a stamp collecting all evidence from the table, since it all contributes to the result
         );
+        if (overlapDiscount > 0 || a.isCyclic() || b.isCyclic())
+            t.setCyclic(true);
 
         t.priSet(Util.lerp(aProp, b.priElseZero(), a.priElseZero()));
 

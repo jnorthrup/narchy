@@ -142,7 +142,7 @@ public class Hear extends Loop {
                         now, now+1 /* TODO use realtime to translate wordDelayMS to cycles */, 1f, 0f,
                         c2w(nar.confDefault(BELIEF)*confFactor)
                 ),
-                nar.time.nextStamp())
+                nar)
                 .pri(nar.priDefault(BELIEF) * priorityFactor)
         );
     }

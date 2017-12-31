@@ -74,8 +74,8 @@ public class Line1D {
             //n.freqResolution.set(0.5f);
             //n.confResolution.set(0.1f);
             n.termVolumeMax.set(16);
-            MetaGoal.Desire.want(n.want, 15f);
-            MetaGoal.Action.want(n.want, 15f);
+            MetaGoal.Desire.set(n.want, 15f);
+            MetaGoal.Action.set(n.want, 15f);
 
 
 //            ConjClustering conjClusterB = new ConjClustering(n, 4, BELIEF, true, 16, 64);

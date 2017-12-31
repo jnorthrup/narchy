@@ -149,7 +149,7 @@ public class Signal {
                     new SustainTruthlet(
                             new LinearTruthlet(start, fNext, end, fNext, t.evi()
                             ), 1)
-                ,stamp
+                ,start,stamp
         );
 
 

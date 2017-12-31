@@ -453,7 +453,7 @@ public class Struct extends Term {
                             return false;
                         }
                     }
-                    subs = ts.subs; //share the array
+                    //subs = ts.subs; //share the array
                 }
                 return true;
             } else {
