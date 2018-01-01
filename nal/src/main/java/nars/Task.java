@@ -363,6 +363,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
     @Nullable
     static NALTask clone(Task x, Term newContent, Truth newTruth, byte newPunc) {
+        return clone(x, newContent, newTruth,newPunc, x.creation(), x.start(), x.end());
+    }
+
+    @Nullable
+    static NALTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long creation, long start, long end) {
 
         //TODO:
         //Task.tryTask()
@@ -379,13 +384,12 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
         NALTask y = new NALTask(newContent, newPunc,
                 (newPunc == BELIEF || newPunc == GOAL) ? newTruth.negIf(negated) : null,
-                x.creation(),
-                x.start(), x.end(),
+                creation, start, end,
                 x.stamp());
 
         float xp = x.pri();
         if (xp == xp)
-            y.priSet(xp); //otherwise leave deleted
+            y.priSet(xp); //otherwise leave zero
 
         short[] xc = x.cause();
         if (xc.length > 0)

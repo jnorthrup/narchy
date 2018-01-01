@@ -58,12 +58,12 @@ public interface Stamp {
     /*@NotNull*/
     static long[] zip(long[] a, long[] b, float aToB, int maxLen, boolean newToOld) {
 
-        if (a.length == 0) {
-            if (b.length == 0)
+        if (a.length == 0 || a == Stamp.UNSTAMPED_OVERLAPPING) {
+            if (b.length == 0 || b == Stamp.UNSTAMPED_OVERLAPPING)
                 return Stamp.UNSTAMPED_OVERLAPPING;
             else
                 return b;
-        } else if (b.length == 0) {
+        } else if (b.length == 0 || b == Stamp.UNSTAMPED_OVERLAPPING) {
             return a;
         }
 
@@ -455,6 +455,8 @@ public interface Stamp {
         for (int i = 0, sSize = s.size(); i < sSize; i++) {
             Stamp si = s.get(i);
             long[] x = si.stamp();
+            if (x == UNSTAMPED_OVERLAPPING)
+                continue; //dont count this
             int xl = x.length;
             int r = xl;
             totalEvidence += r;

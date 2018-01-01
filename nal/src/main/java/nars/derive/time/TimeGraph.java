@@ -30,6 +30,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
+import static nars.Op.IMPL;
 import static nars.derive.time.TimeGraph.TimeSpan.TS_ZERO;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -324,7 +325,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         assert (x.dt() == XTERNAL);
 
         Subterms xx = x.subterms();
-        FasterList<Event> events = new FasterList<>(byTerm.get(x.root()));
+//        FasterList<Event> events = new FasterList<>(byTerm.get(x.root()));
 //        for (int i = 0, eventsSize = events.size(); i < eventsSize; i++) {
 //            Event r = events.get(i);
 //            if (r instanceof Absolute) {
@@ -559,19 +560,24 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
         //CONSTRUCT NEW TERM
         Term y;
-        if (x.op() != CONJ) {
-            y = x.dt(dt != XTERNAL ? dt - x.sub(0).dtRange() : dt); //IMPL
-        } else {
+        Op xo = x.op();
+        if (xo == IMPL) {
+            return x.dt(dt != XTERNAL ? dt - x.sub(0).dtRange() : dt);
+        } else if (xo == CONJ) {
             int early = Op.conjEarlyLate(x, true);
             if (early == 1)
                 dt = -dt;
-            y = Op.conjMerge(
-                    x.sub(early), 0,
-                    x.sub(1 - early), dt);
+            Term xEarly = x.sub(early);
+            Term xLate = x.sub(1 - early);
+            return Op.conjMerge(
+                    xEarly, 0,
+                    xLate, dt + xEarly.dtRange());
+        } else {
+            //?
         }
 
 
-        return y;
+        throw new UnsupportedOperationException();
     }
 
 
@@ -809,6 +815,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 } else if (spanDT != 0) {
                     t += (spanDT) * (r.getOne() ? +1 : -1);
                 }
+
             }
 
             return t;
@@ -871,6 +878,8 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                         dt = -dt; //reverse
                         startTime = endTime;
                     }
+
+                    //TODO may need to subtract from dt any inner events with dtRange
 
 
                     return new long[]{

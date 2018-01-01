@@ -1,6 +1,7 @@
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'application'
 
+
 dependencies {
     compile project(':nal')
     compile project(':ui')

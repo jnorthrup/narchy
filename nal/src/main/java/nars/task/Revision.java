@@ -422,9 +422,11 @@ public class Revision {
         //ObjectFloatPair<long[]> s = Stamp.zip(new FasterList(a, b), Param.STAMP_CAPACITY);
         float overlapDiscount = Stamp.overlapFraction(a.stamp(), b.stamp());
         if (overlapDiscount > 0) {
-            rawTruth = rawTruth.withEvi(rawTruth.evi() * (1f - overlapDiscount));
-            if (rawTruth == null || rawTruth.evi() < minEvi)
+            float e2 = rawTruth.evi() * (1f - overlapDiscount);
+            if (e2 < minEvi)
                 return null;
+            rawTruth = rawTruth.withEvi(e2);
+            assert(rawTruth!=null);
         }
 
 ////        float maxEviAB = Math.max(an.evi(), bn.evi());

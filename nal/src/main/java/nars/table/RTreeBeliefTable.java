@@ -6,6 +6,7 @@ import jcog.sort.Top;
 import jcog.sort.Top2;
 import jcog.sort.TopN;
 import jcog.tree.rtree.*;
+import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -17,6 +18,7 @@ import nars.task.signal.SignalTask;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeRange;
 import nars.term.Term;
+import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -27,6 +29,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static nars.Op.IMPL;
 import static nars.table.TemporalBeliefTable.temporalTaskPriority;
 import static nars.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.c2wSafe;
@@ -200,7 +203,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 }
 
                 //otherwise interpolate
-                Task c = Revision.merge(a, b, start, 0 /* TODO */, nar);
+                Task c = Revision.merge(a, b, start, c2wSafe(nar.confMin.floatValue()) /* TODO */, nar);
                 if (c != null) {
 
                     if (c == a) //c.equals(a))
@@ -450,7 +453,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
 
-    private static boolean mergeOrDelete(Space<TaskRegion> treeRW, Top2<Leaf<TaskRegion>> l, FloatFunction<Task> taskStrength, float inputStrength, FloatFunction<TaskRegion> weakestTasks, Consumer<Task> added, NAR nar) {
+    private boolean mergeOrDelete(Space<TaskRegion> treeRW, Top2<Leaf<TaskRegion>> l, FloatFunction<Task> taskStrength, float inputStrength, FloatFunction<TaskRegion> weakestTasks, Consumer<Task> added, NAR nar) {
         TaskRegion a, b;
 
         Leaf<TaskRegion> la = l.a;
@@ -485,8 +488,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         assert (a != null);
         Task at = a.task();
         float aPri = at.pri();
-        if (aPri==aPri)
-            at.delete();
+
         treeRW.remove(at);
 
 
@@ -503,7 +505,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             if (aPri!=aPri) //already deleted
                 return true;
 
-            Task c = Revision.merge(at, bt, nar.time(), 0, nar);
+            Task c = Revision.merge(at, bt, nar.time(), c2wSafe(nar.confMin.floatValue()), nar);
             if (c != null && !c.equals(a) && !c.equals(b)) {
 
                 boolean allowMerge;
@@ -517,12 +519,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 }
 
                 if (allowMerge) {
-
-                    //HACK set the priority because the task deletion may interfere with Revision's pri calculation
-                    c.pri(
-                        //(aPri + bt.priElseZero())/2f
-                        (aPri * bt.priElseZero())
-                    );
 
 
                     treeRW.remove(bt);
@@ -541,16 +537,25 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             }
         }
 
-//        if (aAlreadyDeleted)
-//            return true;
-
-//        //merge impossible, delete a
-//        if (b != null)
-//            ((NALTask) at).delete(b.task()); //forward
-//        else
-//            ((NALTask) at).delete();
+        onEvict(at, added);
 
         return true;
+    }
+
+    protected void onEvict(Task x, Consumer<Task> added) {
+//        if (x.op()==IMPL /*x.op().statement */ /*&& !x.term().isTemporal()*/) {
+//            //experimental eternalize
+//            Task eternalized = Task.clone(x, x.term(), new PreciseTruth(x.freq(), x.eviEternalized(), false),
+//                    x.punc(), x.creation(), ETERNAL, ETERNAL
+//            );
+//            if (eternalized!=null)
+//                added.accept(eternalized);
+//
+//            ((NALTask)x).delete(eternalized);
+//
+//        } else {
+            x.delete();
+//        }
     }
 
 
