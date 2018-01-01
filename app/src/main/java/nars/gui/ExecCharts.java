@@ -11,7 +11,6 @@ import nars.control.*;
 import nars.exe.Causable;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import spacegraph.Scale;
 import spacegraph.Surface;
 import spacegraph.layout.Grid;
 import spacegraph.layout.VSplit;
@@ -130,23 +129,6 @@ public class ExecCharts {
             }
         };
 
-    }
-
-    abstract static class DurSurface extends Scale {
-        final DurService on;
-
-        public DurSurface(Surface x, NAR nar) {
-            super(x, 1f);
-            on = DurService.on(nar, this::update);
-        }
-
-        abstract protected void update();
-
-        @Override
-        public void stop() {
-            super.stop();
-            on.off();
-        }
     }
 
     private static Surface metaGoalChart(NAgent a) {

@@ -40,13 +40,13 @@ public class Vis {
         return new ConsoleTerminal(new TextEdit(40, 8));
     }
 
-    public static Grid beliefCharts(int window, NAR nar, Object... x) {
+    public static Surface beliefCharts(int window, NAR nar, Object... x) {
         return beliefCharts(window, Lists.newArrayList(x), nar);
     }
 
-    public static Grid beliefCharts(int window, Iterable ii, NAR nar) {
-
-        return new BeliefChartsGrid(ii, nar, window);
+    public static Surface beliefCharts(int window, Iterable ii, NAR nar) {
+        BeliefChartsGrid g = new BeliefChartsGrid(ii, nar, window);
+        return DurSurface.get(g, nar);
     }
 
 
@@ -83,16 +83,15 @@ public class Vis {
 //        }
 //    }
 
-    public static Surface bagHistogram(Iterable<PriReference> bag, int bins) {
+    public static Surface bagHistogram(Iterable<PriReference<?>> bag, int bins) {
         //new SpaceGraph().add(new Facial(
 
         float[] d = new float[bins];
         return col(
-                Vis.pane("Concept Priority Distribution (0..1)",
                         new HistogramChart(
                                 () -> PriReference.histogram(bag, d),
                                 new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f))
-                )
+
 //                Vis.pane("Concept Volume",
 //                        new HistogramChart(
 //                                () -> Bag.priHistogram(bag, d),
@@ -315,7 +314,7 @@ public class Vis {
     public static class EmotionPlot extends Grid implements Consumer<NAR> {
 
         private final int plotHistory;
-        private DurService on;
+        @Deprecated private DurService on; //TODO use DurSurface
         Plot2D plot1, plot2, plot3, plot4;
 
         public EmotionPlot(int plotHistory, NAgent a) {
@@ -382,7 +381,7 @@ public class Vis {
     public static class BeliefChartsGrid extends Grid implements Consumer<NAR> {
 
         private final int window;
-        private final DurService on;
+//        private final DurService on;
         long[] btRange;
 
         public BeliefChartsGrid(Iterable<?> ii, NAR nar, int window) {
@@ -397,21 +396,14 @@ public class Vis {
 
             if (!s.isEmpty()) {
                 children(s);
-                on = DurService.on(nar, this);
+//                on = DurService.on(nar, this);
             } else {
-                on = null;
+//                on = null;
                 children(label("(empty)"));
             }
 
         }
 
-        @Override
-        public void stop() {
-            super.stop();
-            if (on != null) {
-                on.off();
-            }
-        }
 
         @Override
         public void accept(NAR nar) {

@@ -124,7 +124,7 @@ public class Focus extends Flip<Focus.Schedule> {
 
 
             weight = Util.map(n, (int i) ->
-                    supplied[i] > 0 ? active[i].value() / (supplied[i]/iterPerSecond[i]) : 0, weight);
+                    active[i].value() , weight);
 
             float[] minmax = Util.minmax(weight);
             float lowMargin = (minmax[1] - minmax[0])/n;

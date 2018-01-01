@@ -99,7 +99,7 @@ public abstract class Param {
 //            //Math::min;
 //            //Math::max;
 
-    public static final PriMerge premiseMerge = PriMerge.max;
+//    public static final PriMerge premiseMerge = PriMerge.max;
 
 
     /**
@@ -128,7 +128,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmax = new MutableInteger(256);
+    public final MutableInteger matchTTLmax = new MutableInteger(384);
     public final MutableInteger matchTTLmin = new MutableInteger(128);
 
     /**

@@ -116,7 +116,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
                     ConceptWidget cw = cc.meta(spaceID, (sid) -> new ConceptWidget(cc) {
                         @Override
                         protected void onClicked(PushButton b) {
-                            window(new ConceptSurface(id.term()), 500, 400);
+                            window(new ConceptSurface(id.term(), nar), 800, 700);
                         }
                     });
                     if (cw != null) {
