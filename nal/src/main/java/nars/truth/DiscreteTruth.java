@@ -23,6 +23,10 @@ public final class DiscreteTruth implements Truth {
     public final float freq, conf;
     public final int hash;
 
+    public DiscreteTruth(Truth t) {
+        this(t.freq(), t.conf(), Param.TRUTH_EPSILON);
+    }
+
     public DiscreteTruth(float f, float c) {
         this(f, c, Param.TRUTH_EPSILON);
     }
@@ -89,13 +93,9 @@ public final class DiscreteTruth implements Truth {
         return c2wSafe(conf);
     }
 
-    @NotNull
     @Override
     public String toString() {
-        //return DELIMITER + frequency.toString() + SEPARATOR + confidence.toString() + DELIMITER;
-
-        //1 + 6 + 1 + 6 + 1
-        return appendString(new StringBuilder(7)).toString();
+        return _toString();
     }
 
     @Override

@@ -2,9 +2,11 @@ package nars.exe;
 
 import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
+import jcog.Texts;
 import jcog.Util;
 import jcog.decide.Roulette;
 import jcog.exe.AffinityExecutor;
+import jcog.math.MutableInteger;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import nars.NAR;
@@ -23,6 +25,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.function.LongPredicate;
 import java.util.stream.Stream;
@@ -35,7 +38,7 @@ public class MultiExec extends AbstractExec {
     int idleSleepPeriodMS = 50;
 
     /** duty cycle proportion , fraction of the main NAR cycle */
-    float subCycle = 0.75f;
+    final float subCycle;
 
     static final Logger logger = LoggerFactory.getLogger(MultiExec.class);
 
@@ -48,6 +51,7 @@ public class MultiExec extends AbstractExec {
     LongSet activeThreadIds = new LongHashSet();
     LongPredicate isActiveThreadId = (x) -> false;
     public Focus focus;
+    private final AtomicLong lagTime = new AtomicLong(0);
 
 
     public MultiExec(int concepts, int threads, int qSize) {
@@ -62,6 +66,8 @@ public class MultiExec extends AbstractExec {
         this.q = new DisruptorBlockingQueue<>(qSize);
         this.threads = threads;
 
+
+        this.subCycle = (1f - 1f/(threads+1)) * 1f;
 
         if (affinity) {
             exe = new AffinityExecutor() {
@@ -103,14 +109,15 @@ public class MultiExec extends AbstractExec {
 
 
 
-            double cycleTime = subCycle * nar.loop.periodMS.intValue() / 1000f;
+            int cycleTimeMS = nar.loop.periodMS.intValue();
+            double cycleTime; //in seconds
 
-            if (!nar.loop.isRunning()) {
-                continue;
-            }
-
-            if (cycleTime != cycleTime)
+            if (cycleTimeMS <= 0)
                 cycleTime = 0.1f; //10hz alpha
+            else {
+                cycleTime = Math.max(0,
+                        subCycle * cycleTimeMS/1000f - lagTime.getAndSet(0)/(1.0E9*Math.max(1,(threads-1))));
+            }
 
             long cycleNanosRemain = Math.round(cycleTime * 1E9);
 
@@ -354,6 +361,16 @@ public class MultiExec extends AbstractExec {
         }
     }
 
+    @Override
+    public void cycle() {
+        super.cycle();
+
+//        long lagTime = this.lagTime.get();
+//        if (lagTime > 0) {
+//            System.err.println("lag: " + Texts.timeStr(lagTime));
+//        }
+    }
+
     void executeInline(Object t) {
         try {
             if (t instanceof Runnable) {
@@ -367,13 +384,23 @@ public class MultiExec extends AbstractExec {
     }
 
     protected void queue(Object t) {
+        long lagStart = Long.MAX_VALUE;
         while (!q.offer(t)) {
+            if (lagStart == Long.MAX_VALUE)
+                lagStart = System.nanoTime();
+
             if (!running) {
                 throw new RuntimeException("work queue exceeded capacity while not running");
             }
             Object next = q.poll();
             if (next != null)
-                super.execute(next);
+                executeInline(next);
+                //super.execute(next);
+        }
+
+        if (lagStart != Long.MAX_VALUE) {
+            long lagEnd = System.nanoTime();
+            lagTime.getAndAdd(lagEnd-lagStart);
         }
     }
 

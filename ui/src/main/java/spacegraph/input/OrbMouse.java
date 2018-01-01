@@ -40,7 +40,7 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
     public v3 hitPoint;
     protected final VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
     public ClosestRay pickRay;
-
+    public Finger finger = new Finger(null);
 
     public OrbMouse(JoglPhysics g) {
 
@@ -70,10 +70,10 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
                     //TODO compute new azi and ele that match the current viewing angle values by backcomputing the vector delta
 
                     space.camera(co.transform, co.shape().getBoundingRadius()*2.5f);
+                    return true;
 
                 }
-                return true;
-
+                break;
 
 //            case MouseEvent.BUTTON3: {
 //                shootBox(rayTo);
@@ -250,7 +250,7 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
             Object t = picked.data();
             if (t instanceof Spatial) {
                 pickedSpatial = ((Spatial) t);
-                if (pickedSpatial.onTouch(picked, cray, buttons, space) != null) {
+                if (pickedSpatial.onTouch(finger, picked, cray, buttons, space) != null) {
                     //absorbed surface
 
                     clearDrag();

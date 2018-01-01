@@ -14,13 +14,16 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.control.Activate;
 import nars.control.DurService;
+import nars.gui.ConceptSurface;
 import nars.gui.DynamicListSpace;
+import nars.gui.Vis;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.phys.shape.SphereShape;
 import spacegraph.render.Draw;
+import spacegraph.widget.button.PushButton;
 
 import java.util.List;
 import java.util.Map;
@@ -28,6 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 
 import static jcog.Util.sqr;
+import static spacegraph.SpaceGraph.window;
 
 public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget> {
 
@@ -109,7 +113,12 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
                 concepts.forEach((clink) -> {
                     //ConceptWidget cw = space.getOrAdd(clink.get().id, ConceptWidget::new);
                     Concept cc = clink.get().id;
-                    ConceptWidget cw = cc.meta(spaceID, (sid) -> new ConceptWidget(cc));
+                    ConceptWidget cw = cc.meta(spaceID, (sid) -> new ConceptWidget(cc) {
+                        @Override
+                        protected void onClicked(PushButton b) {
+                            window(new ConceptSurface(id.term()), 500, 400);
+                        }
+                    });
                     if (cw != null) {
 
                         cw.activate();

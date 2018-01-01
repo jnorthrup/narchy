@@ -57,6 +57,10 @@ public class Finger {
 
 
     public Surface on(float sx, float sy, float lx, float ly, short[] nextButtonDown) {
+        return on(this.root.surface, sx, sy, lx, ly, nextButtonDown);
+    }
+
+    public Surface on(Surface root, float sx, float sy, float lx, float ly, short[] nextButtonDown) {
         this.hit.set(lx, ly);
         this.hitGlobal.set(sx, sy);
 
@@ -83,9 +87,9 @@ public class Finger {
 
         //START DESCENT:
         Surface s;
-        if (fingering == null) {
+        if (root!=null && fingering == null) {
 
-            s = root.surface.onTouch(this, hit, nextButtonDown);
+            s = root.onTouch(this, hit, nextButtonDown);
             if (s instanceof Widget) {
                 if (!on((Widget) s))
                     s = null;
@@ -142,10 +146,6 @@ public class Finger {
     }
 
 
-    public void print() {
-        System.out.println(root.surface + " " + hit + " " + touching + " " + Arrays.toString(buttonDown));
-    }
-
     public boolean released(int button) {
         return prevButtonDown[button] && !buttonDown[button];
     }
@@ -162,7 +162,7 @@ public class Finger {
      * acquire an exclusive fingering state
      */
     public synchronized boolean tryFingering(Fingering f) {
-        if (fingering == null) {
+        if (root!=null && fingering == null) {
             fingering = f;
             f.start(this);
             root.surface.onTouch(this, null, ArrayUtils.EMPTY_SHORT_ARRAY); //release all fingering on surfaces

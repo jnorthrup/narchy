@@ -64,42 +64,24 @@ public class NALTask extends Pri implements Task {
 
         this.punc = punc;
 
-
-
-//        //ensure that a temporal task is at least as long as the contained dt.
-//        //bugs and rounding off-by-N errors may produce inexact results, this corrects it.
-//        if (start != ETERNAL && term.op() == CONJ) {
-//            int tdt = term.dtRange();
-//            if (tdt > 0) {
-//                if (tdt > (end - start)) {
-//                    end = start + tdt; //keeps start (left)-aligned, end is stretched if necessary
-//                }
-//            } else if (tdt < 0) {
-//                throw new RuntimeException("dt overflow");
-//            }
-//        }
-
         this.start = start;
         this.end = end;
         this.creation = creation;
 
-        //EVIDENCE STAMP
-        assert (punc == COMMAND || (stamp.length > 0)) : "non-command tasks must have non-empty stamp";
         this.stamp = stamp;
 
         this.hash = Task.hash(term, this.truth, punc, start, end, stamp);
 
         this.meta = new CompactArrayMap();
-        //READY
     }
 
     /** get an appropriate representation of the truth for use as an instance in a new NALTask */
     static Truth truthify(@Nullable Truth truth) {
-        float c = truth.conf();
-        if (c < Param.TRUTH_EPSILON)
-            throw new RuntimeException("no evidence");
+//        float c = truth.conf();
+//        if (c < Param.TRUTH_EPSILON)
+//            throw new RuntimeException("no evidence");
         if (truth instanceof PreciseTruth)
-            return new DiscreteTruth(truth.freq(), c);
+            return new DiscreteTruth(truth);
         else
             return truth; //already DiscreteTruth, or Truthlet
     }
@@ -187,7 +169,7 @@ public class NALTask extends Pri implements Task {
 
 
     @Override
-    public @NotNull long[] stamp() {
+    public long[] stamp() {
         return stamp;
     }
 

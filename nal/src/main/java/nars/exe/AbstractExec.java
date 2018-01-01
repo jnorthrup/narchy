@@ -1,6 +1,7 @@
 package nars.exe;
 
 import jcog.bag.Bag;
+import jcog.bag.impl.ConcurrentCurveBag;
 import jcog.bag.impl.CurveBag;
 import jcog.bag.impl.hijack.PriorityHijackBag;
 import nars.NAR;
@@ -66,10 +67,10 @@ abstract public class AbstractExec extends Exec {
                 concurrent() ?
 
 //                        new ConcurrentCurveBag<>(
-//                                Param.activateMerge, new HashMap<>(CAPACITY),
+//                                Param.activateMerge, new HashMap<>(CAPACITY*2),
 //                                nar.random(), CAPACITY)
 
-                        new PriorityHijackBag<Activate,Activate>(CAPACITY+7, 4) {
+                        new PriorityHijackBag<Activate,Activate>(Math.round(CAPACITY*1.5f), 4) {
 
                             @Override
                             public Activate key(Activate value) {

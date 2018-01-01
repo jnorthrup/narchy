@@ -39,6 +39,9 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 public interface Stamp {
 
 
+    long[] UNSTAMPED = new long[0];
+    long[] UNSTAMPED_OVERLAPPING = new long[] { Long.MAX_VALUE };
+
     /*@NotNull*/ static long[] zip(/*@NotNull*/ long[] a, /*@NotNull*/ long[] b, float aToB) {
         return zip(a, b, aToB,
                 Param.STAMP_CAPACITY,
@@ -53,7 +56,16 @@ public interface Stamp {
      * the later-created task should be in 'b'
      */
     /*@NotNull*/
-    static long[] zip(/*@NotNull*/ long[] a, /*@NotNull*/ long[] b, float aToB, int maxLen, boolean newToOld) {
+    static long[] zip(long[] a, long[] b, float aToB, int maxLen, boolean newToOld) {
+
+        if (a.length == 0) {
+            if (b.length == 0)
+                return Stamp.UNSTAMPED_OVERLAPPING;
+            else
+                return b;
+        } else if (b.length == 0) {
+            return a;
+        }
 
         int aLen = a.length, bLen = b.length;
 
@@ -447,6 +459,9 @@ public interface Stamp {
             int r = xl;
             totalEvidence += r;
             ptr[i] = (byte)r;
+        }
+        if (totalEvidence == 0) {
+            return pair(Stamp.UNSTAMPED_OVERLAPPING, 1f);
         }
 
         int limit = maxLen;

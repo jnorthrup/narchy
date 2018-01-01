@@ -112,7 +112,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                 punc
         );
 
-        if (stamp.length > 1) {
+        if (stamp.length == 1) {
+            h = Util.hashCombine(h, Long.hashCode(stamp[0]));
+        } else {
 
             if (truth != null)
                 h = Util.hashCombine(h, truth.hashCode());
@@ -126,8 +128,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
             h = Util.hashCombine(h, Arrays.hashCode(stamp));
 
-        } else if (stamp.length > 0) {
-            h = Util.hashCombine(h, Long.hashCode(stamp[0]));
         }
 
         return h;
@@ -769,7 +769,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      */
     @Override
     default boolean isInput() {
-        return stamp().length <= 1;
+        long[] s = stamp();
+        return s.length <= 1;
         //return evidence().length <= 1;
         //return (getParentTask() == null);
         //return (evidence().length <= 1) && ;

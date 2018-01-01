@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Reviewed by Paolo Contessi
  */
 
-public final class MutableClauseIndex extends ConcurrentHashMap<String,FamilyClausesList> implements ClauseIndex {
+public class MutableClauseIndex extends ConcurrentHashMap<String,FamilyClausesList> implements ClauseIndex {
 
 	@Override
 	public void add(String key, ClauseInfo d, boolean first) {
@@ -56,23 +56,10 @@ public final class MutableClauseIndex extends ConcurrentHashMap<String,FamilyCla
 	}
 
 	@Override
-	public FamilyClausesList get(String key) {
+	public FamilyClausesList clauses(String key) {
 		return super.get(key);
 	}
 
-	/**
-	 * Retrieves a list of the predicates which has the same name and arity
-	 * as the goal and which has a compatible first-arg for matching.
-	 *
-	 * @param headt The goal
-	 * @return  The list of matching-compatible predicates
-	 */
-	@Override
-	public Deque<ClauseInfo> getPredicates(Struct headt) {
-		FamilyClausesList family = get(headt.key());
-		//new ReadOnlyLinkedList<>();
-		return family == null ? null : family.get(headt);
-	}
 
 //	/**
 //	 * Retrieves the list of clauses of the requested family

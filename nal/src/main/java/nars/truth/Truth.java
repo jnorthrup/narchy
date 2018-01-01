@@ -123,6 +123,11 @@ public interface Truth extends Truthed {
     }
 
 
+    default String _toString() {
+        //return DELIMITER + frequency.toString() + SEPARATOR + confidence.toString() + DELIMITER;
+        //1 + 6 + 1 + 6 + 1
+        return appendString(new StringBuilder(7)).toString();
+    }
 
     static int compare(@NotNull Truth a, @NotNull Truth b) {
         if (a == b) return 0;
@@ -160,7 +165,10 @@ public interface Truth extends Truthed {
     }
 
     default boolean equals(@Nullable  Truthed x, float tolerance) {
-        return x!=null && Util.equals(freq(), x.freq(), tolerance) && Util.equals(conf(), x.conf(), tolerance);
+        return x!=null
+                && Util.equals(conf(), x.conf(), tolerance)
+                && Util.equals(freq(), x.freq(), tolerance)
+                ;
     }
 
     default boolean equals(Truthed x, NAR nar) {

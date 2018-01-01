@@ -78,7 +78,7 @@ public class Cuboid<X> extends SimpleSpatial<X> {
     }
 
     @Override
-    public Surface onTouch(Collidable body, ClosestRay r, short[] buttons, JoglPhysics space) {
+    public Surface onTouch(Finger finger, Collidable body, ClosestRay r, short[] buttons, JoglPhysics space) {
 
         if (body != null) {
 
@@ -109,7 +109,7 @@ public class Cuboid<X> extends SimpleSpatial<X> {
 //                //System.out.println("  : " + sd.transform().getRotation(new Quat4f()));
             }
 //
-            Surface s0 = super.onTouch(body, r, buttons, space);
+            Surface s0 = super.onTouch(finger, body, r, buttons, space);
             if (s0 != null)
                 return s0;
         }
@@ -128,15 +128,16 @@ public class Cuboid<X> extends SimpleSpatial<X> {
 
                     this.mousePick = r.hitPointWorld;
 
+                    mouseFront = finger;
                     //System.out.println(localPoint + " " + thick);
-                    if (mouseFront != null)
-                        return mouseFront.on(Float.NaN, Float.NaN, localPoint.x / shape.x() + 0.5f, localPoint.y / shape.y() + 0.5f, buttons);
+
+                    return mouseFront.on(front, Float.NaN, Float.NaN, localPoint.x / shape.x() + 0.5f, localPoint.y / shape.y() + 0.5f, buttons);
                     //return mouseFront.update(null, localPoint.x, localPoint.y, buttons);
                 }
             } else {
 
                 if (mouseFront != null && mouseFront.off()) {
-
+                    mouseFront = null;
                 }
             }
         }

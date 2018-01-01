@@ -527,11 +527,10 @@ public final class TruthFunctions {
     }
 
     public static float originality(int evidenceLength) {
-        if (evidenceLength == 1) {
+        if (evidenceLength <= 1) {
             return 1f;
         } else {
-            assert (evidenceLength > 0);
-            return 1.0f / (1f + (evidenceLength - 1f) / (Param.STAMP_CAPACITY - 1));
+            return 1f / (1f + (evidenceLength - 1) / (Param.STAMP_CAPACITY - 1f));
         }
     }
 

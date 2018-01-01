@@ -2,6 +2,7 @@ package spacegraph;
 
 import com.jogamp.opengl.GL2;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.input.Finger;
 import spacegraph.math.v3;
 import spacegraph.phys.Collidable;
 import spacegraph.phys.Dynamics;
@@ -98,7 +99,7 @@ public abstract class Spatial<X> implements Active {
     }
 
     /** returns true if the event has been absorbed, false if it should continue propagating */
-    public Surface onTouch(Collidable body, ClosestRay hitPoint, short[] buttons, JoglPhysics space) {
+    public Surface onTouch(Finger finger, Collidable body, ClosestRay hitPoint, short[] buttons, JoglPhysics space) {
         return null;
     }
 

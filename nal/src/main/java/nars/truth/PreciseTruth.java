@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2c;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * represents a freq,evi pair precisely but does not
@@ -54,13 +55,9 @@ public class PreciseTruth implements Truth {
         throw new UnsupportedOperationException();
     }
 
-     @NotNull
     @Override
     public String toString() {
-        //return DELIMITER + frequency.toString() + SEPARATOR + confidence.toString() + DELIMITER;
-
-        //1 + 6 + 1 + 6 + 1
-        return appendString(new StringBuilder(7)).toString();
+        return _toString();
     }
 
     @Override
@@ -72,11 +69,11 @@ public class PreciseTruth implements Truth {
     public final float evi() { return e;    }
 
     @Override
-    public float conf() {
-        return w2c(e);
+    public final float conf() {
+        return w2cSafe(e);
     }
 
-    public PreciseTruth eviMult(float v) {
-        return v == 1 ? this : new PreciseTruth(f, e * v, false);
-    }
+//    public PreciseTruth eviMult(float v) {
+//        return v == 1 ? this : new PreciseTruth(f, e * v, false);
+//    }
 }

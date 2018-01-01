@@ -57,7 +57,6 @@ public class TheoryManager {
     private final Prolog engine;
     private final PrimitiveManager primitiveManager;
     private final Deque<Term> startGoalStack;
-    Theory lastConsultedTheory;
 
 //	public TheoryManager(Prolog vm) {
 //		this(vm, new MutableClauseIndex());
@@ -68,7 +67,6 @@ public class TheoryManager {
         dynamicDBase = dynamics;
         staticDBase = new MutableClauseIndex();
 
-        lastConsultedTheory = new Theory();
         primitiveManager = engine.prims;
         startGoalStack = new ArrayDeque<>(32);
     }
@@ -112,7 +110,7 @@ public class TheoryManager {
     public int retract(final Struct cl, Predicate<ClauseInfo> each) {
         Struct clause = toClause(cl);
         Struct struct = ((Struct) clause.sub(0));
-        Deque<ClauseInfo> family = dynamicDBase.get(struct.key());
+        Deque<ClauseInfo> family = dynamicDBase.clauses(struct.key());
         //final ExecutionContext ctx = engine.getEngineManager().getCurrentContext();
 
 		/*creo un nuovo clause database x memorizzare la teoria all'atto della retract 
@@ -195,9 +193,9 @@ public class TheoryManager {
         if (headt instanceof Struct) {
             //String key = ((Struct) headt).getPredicateIndicator();
             Struct s = (Struct) headt;
-            Deque<ClauseInfo> list = dynamicDBase.getPredicates(s);
+            Deque<ClauseInfo> list = dynamicDBase.predicates(s);
             if (list == null) {
-                list = staticDBase.getPredicates(s);
+                list = staticDBase.predicates(s);
                 if (list != null)
                     return list;
             } else {
@@ -274,9 +272,7 @@ public class TheoryManager {
 			/**/
         }
 
-        if (libName == null)
-            //lastConsultedTheory.append(theory);
-            lastConsultedTheory = theory;
+
     }
 
     /**
@@ -402,15 +398,6 @@ public class TheoryManager {
                 buffer.append(d.toString(engine.ops)).append('\n');
             }
         return buffer.toString();
-    }
-
-    /**
-     * Gets last consulted theory
-     *
-     * @return last theory
-     */
-    public /*synchronized*/ Theory getLastConsultedTheory() {
-        return lastConsultedTheory;
     }
 
 

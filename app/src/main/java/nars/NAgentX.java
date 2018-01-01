@@ -168,7 +168,6 @@ abstract public class NAgentX extends NAgent {
                 .deriverAdd(2, 5)
                 .deriverAdd(6, 6)
                 //.deriverAdd(6,6) //extra NAL6
-                .deriverAdd(7, 8)
                 .deriverAdd("motivation.nal")
                 .deriverAdd("list.nal")
                 .index(

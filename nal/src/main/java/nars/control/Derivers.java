@@ -27,7 +27,7 @@ public class Derivers {
                     files.add("induction.nal");  //TODO nal6 only needs general induction, not the temporal parts
 
                     files.add("misc.nal"); //TODO split this up
-                    //fallthru
+                    break;
                 case 5:
                 case 4:
                 case 3:
@@ -37,7 +37,7 @@ public class Derivers {
                     files.add("nal2.nal");
                     files.add("nal2.guess.nal");
                     files.add("analogy.nal");
-                    //fallthru
+                    break;
                 case 1:
                     files.add("nal1.nal");
                     files.add("nal1.guess.nal");

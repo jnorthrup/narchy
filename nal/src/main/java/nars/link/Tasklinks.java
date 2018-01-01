@@ -10,6 +10,8 @@ import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.control.Activate;
+import nars.control.BatchActivation;
 import nars.table.TemporalBeliefTable;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
@@ -71,6 +73,11 @@ public class Tasklinks {
             if (priApplied > Float.MIN_NORMAL) {
                 float conceptActivation = priApplied * nar.amp(t.cause());
                 if (conceptActivation > 0) {
+
+//                    BatchActivation ba = BatchActivation.get();
+//                    new Activate(cc, conceptActivation).activate(nar, ba);
+//                    ba.commit(nar);
+
                     nar.activate(cc, conceptActivation);
                 }
             }

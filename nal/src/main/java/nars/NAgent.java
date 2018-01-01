@@ -21,6 +21,7 @@ import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.var.Variable;
 import nars.truth.DiscreteTruth;
+import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -70,7 +71,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     public final FloatParam curiosity;
 
 
-    public final AtomicBoolean enabled = new AtomicBoolean(true);
+    public final AtomicBoolean enabled = new AtomicBoolean(false);
 
     public final SensorConcept happy;
     private final CauseChannel<ITask> in;
@@ -145,7 +146,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     public NALTask alwaysWant(Termed x, float conf) {
         NALTask t = new NALTask(x.term(), GOAL, $.t(1f, conf), now,
                 ETERNAL, ETERNAL,
-                nar.time.nextInputStamp());
+                Stamp.UNSTAMPED);
 
         always.add(t);
         return t;
@@ -223,6 +224,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
         super.start(nar);
 
+        enabled.set(true);
+
         alwaysWant(happy, nar.confDefault(GOAL));
 
 
@@ -245,19 +248,13 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     @Override
     public void run() {
-        if (!enabled.get())
+        if (!enabled.get()) {
             return;
+        }
 
         this.dur = nar.dur();
 
         this.now = nar.time();
-
-        always(motivation.floatValue());
-
-        float r = reward = act();
-
-        this.now = nar.time();
-
         sensors.forEach((s, c) -> {
             //nar.exe.execute(() -> {
             c.input(s.update(now, dur, nar));
@@ -265,7 +262,9 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         });
 
         this.now = nar.time();
+        always(motivation.floatValue());
 
+        this.now = nar.time();
         actions.forEach((a, c) -> {
             //nar.exe.execute(() -> {
             Stream<ITask> s = a.update(now, dur, nar);
@@ -273,6 +272,10 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
                 c.input(s);
             //});
         });
+
+
+        this.now = nar.time();
+        float r = reward = act();
 
         Truth happynowT = nar.beliefTruth(happy, now);
         float happynow = happynowT != null ? (happynowT.freq() - 0.5f) * 2f : 0;
@@ -668,11 +671,11 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     @Override
     public DurService onFrame(Consumer/*<NAR>*/ each) {
-        return DurService.on(nar, each::accept);
+        return DurService.on(nar, ()->{ if (enabled.get()) each.accept(nar); });
     }
 
     public DurService onFrame(Runnable each) {
-        return DurService.on(nar, each);
+        return DurService.on(nar, ()->{ if (enabled.get()) each.run(); });
     }
 
 

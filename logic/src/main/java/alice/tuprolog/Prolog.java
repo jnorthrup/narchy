@@ -78,7 +78,6 @@ public class Prolog {
 
     /* path history for including documents */
     private ArrayList<String> absolutePathList;
-    private String lastPath;
     private boolean warning;
 
 
@@ -187,7 +186,7 @@ public class Prolog {
     public String getCurrentDirectory() {
         String directory = "";
         if (absolutePathList.isEmpty()) {
-            directory = this.lastPath != null ? this.lastPath : System.getProperty("user.dir");
+            directory = /*this.lastPath != null ? this.lastPath : */System.getProperty("user.dir");
         } else {
             directory = absolutePathList.get(absolutePathList.size() - 1);
         }
@@ -264,14 +263,7 @@ public class Prolog {
     }
 
 
-    /**
-     * Gets last consulted theory, with the original textual format
-     *
-     * @return theory
-     */
-    public Theory getLastConsultedTheory() {    //no syn
-        return theories.getLastConsultedTheory();
-    }
+
 
 
     /**

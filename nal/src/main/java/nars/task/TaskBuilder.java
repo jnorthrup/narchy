@@ -225,8 +225,6 @@ import static nars.time.Tense.ETERNAL;
         DiscreteTruth tFinal;
         if (truth!=null) {
             tFinal = new DiscreteTruth(truth.freq(), truth.conf());
-            if (tFinal == null)
-                throw new InvalidTaskException(this, "Insufficient evidence");
         } else {
             tFinal = null;
         }

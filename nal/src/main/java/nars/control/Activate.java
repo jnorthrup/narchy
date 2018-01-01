@@ -16,6 +16,7 @@ import nars.link.Tasklinks;
 import nars.link.TermLinks;
 import nars.term.Term;
 import nars.term.Termed;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -46,12 +47,7 @@ public class Activate extends PLink<Concept> implements Termed {
 
         assert (premisesMax > 0);
 
-        nar.emotion.conceptFires.increment();
-
-        List<Concept> conceptualizedTemplates = $.newArrayList();
-        float cost = TermLinks.linkTemplates(id, id.templates(), conceptualizedTemplates, priElseZero(), nar.momentum.floatValue(), nar, ba);
-        if (cost >= Pri.EPSILON)
-            priSub(cost);
+        List<Concept> conceptualizedTemplates = activate(nar, ba);
 
         final Bag<Term, PriReference<Term>> termlinks = id.termlinks();
 
@@ -145,6 +141,17 @@ public class Activate extends PLink<Concept> implements Termed {
         });
 
         return next;
+    }
+
+
+    public List<Concept> activate(NAR nar, BatchActivation ba) {
+        nar.emotion.conceptActivations.increment();
+
+        List<Concept> conceptualizedTemplates = $.newArrayList();
+        float cost = TermLinks.linkTemplates(id, id.templates(), conceptualizedTemplates, priElseZero(), nar.momentum.floatValue(), nar, ba);
+        if (cost >= Pri.EPSILON)
+            priSub(cost);
+        return conceptualizedTemplates;
     }
 
 

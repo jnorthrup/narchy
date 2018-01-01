@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL2;
 import nars.term.Termed;
 import spacegraph.SimpleSpatial;
 import spacegraph.Surface;
+import spacegraph.input.Finger;
 import spacegraph.math.Quat4f;
 import spacegraph.phys.Collidable;
 import spacegraph.phys.collision.ClosestRay;
@@ -14,7 +15,7 @@ import spacegraph.render.JoglPhysics;
 import spacegraph.render.JoglSpace;
 import spacegraph.space.Cuboid;
 import spacegraph.space.EDraw;
-import spacegraph.widget.text.Label;
+import spacegraph.widget.button.PushButton;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -28,7 +29,8 @@ abstract public class TermWidget<T extends Termed> extends Cuboid<T> {
 
         setFront(
             //col(
-                new Label(x.toString())
+                //new Label(x.toString())
+                new PushButton(x.toString()).click(this::onClicked)
                 //row(new FloatSlider( 0, 0, 4 ), new PushButton("x"))
                         //, new BeliefTableChart(nar, x))
                     //new CheckBox("?")
@@ -36,6 +38,9 @@ abstract public class TermWidget<T extends Termed> extends Cuboid<T> {
                 //new TermIcon(x)
         );
 
+    }
+
+    protected void onClicked(PushButton b) {
     }
 
     @Override
@@ -52,10 +57,10 @@ abstract public class TermWidget<T extends Termed> extends Cuboid<T> {
     }
 
     @Override
-    public Surface onTouch(Collidable body, ClosestRay hitPoint, short[] buttons, JoglPhysics space) {
-        Surface s = super.onTouch(body, hitPoint, buttons, space);
-        if (s != null) {
-        }
+    public Surface onTouch(Finger finger, Collidable body, ClosestRay hitPoint, short[] buttons, JoglPhysics space) {
+        Surface s = super.onTouch(finger, body, hitPoint, buttons, space);
+//        if (s != null) {
+//        }
 
         touched = true;
 

@@ -113,22 +113,22 @@ public class KIFInput implements Runnable {
 
         fn.forEach((f, s) -> {
             int ds = s.domain.isEmpty() ? 0 : s.domain.keySet().max();
-            Variable output = s.range!=null ? $.varIndep("R") : $.varDep("R");
-            Term vars = $.p(
-                    ArrayUtils.add(
-                         Util.map(0, ds, i -> $.varIndep(1 + i), Term[]::new),
-                            output)
-            );
+            Term[] vt =  Util.map(0, ds, i -> $.varIndep(1 + i), Term[]::new);
+            Term v = null;
+            if (s.range!=null) {
+                v = $.varIndep("R");
+                vt = ArrayUtils.add(vt, v);
+            }
             Term[] typeConds = Util.map(0, ds, i ->
                     $.inh($.varIndep(1 + i),
                             s.domain.getIfAbsent(1 + i, () -> True)), Term[]::new);
             if (s.range!=null) {
-                typeConds = ArrayUtils.add(typeConds, $.inh(output, s.range));
+                typeConds = ArrayUtils.add(typeConds, $.inh(v, s.range));
             }
             Term types = CONJ.the(
                     typeConds
             );
-            Term fxy = impl($.inh(vars, f), types, true);
+            Term fxy = impl($.inh($.p( vt ), f), types, true);
             if (fxy instanceof Bool) {
                 logger.error("bad function {} {} {}", f, s.domain, s.range);
             } else {
@@ -442,7 +442,7 @@ public class KIFInput implements Runnable {
 
         NAR e = NARS.tmp();
 
-        //new PrologCore(e);
+        new PrologCore(e);
 
         KIFInput k = new KIFInput(e,
                 "/home/me/sumo/FinancialOntology.kif"
@@ -460,7 +460,9 @@ public class KIFInput implements Runnable {
 //(query (exists (?MEMBER) (member ?MEMBER Org1-1)))
 //(answer yes)
         e.clear();
-//        e.believe("Organization:{org1}");
+        //e.believe("Organization:{org1}");
+        e.believe("accountHolder(xyz,1)");
+        e.input("(xyz<->?1)?");
 //        e.input("member(#1, org1)?"); //conflicts with prolog 'member' functor
         e.run(1500);
 

@@ -7,11 +7,24 @@ import java.util.Deque;
 
 public interface ClauseIndex extends  /*Map<String,FamilyClausesList>,*/ Iterable<ClauseInfo> {
 
-    FamilyClausesList get(String key);
+    FamilyClausesList clauses(String key);
     FamilyClausesList remove(String key);
+    void clear();
 
     void add(String key, ClauseInfo d, boolean first);
-    @Nullable Deque<ClauseInfo> getPredicates(Struct headt);
 
-    void clear();
+    	/**
+	 * Retrieves a list of the predicates which has the same name and arity
+	 * as the goal and which has a compatible first-arg for matching.
+	 *
+	 * @param headt The goal
+	 * @return  The list of matching-compatible predicates
+	 */
+	@Nullable
+	default Deque<ClauseInfo> predicates(Struct headt) {
+		FamilyClausesList family = clauses(headt.key());
+		return family == null ? null : family.get(headt);
+	}
+
+
 }

@@ -6,6 +6,7 @@ import jcog.Util;
 import jcog.math.Range;
 import nars.*;
 import nars.control.CauseChannel;
+import nars.index.term.TermIndex;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.term.Compound;
@@ -97,8 +98,27 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
         this(n, AxiomTheory);
     }
 
+    public static class MyClauseIndex extends MutableClauseIndex {
+
+        private final TermIndex index;
+
+        public MyClauseIndex(TermIndex t) {
+            this.index = t;
+        }
+
+        @Override
+        public FamilyClausesList clauses(String key) {
+            return super.clauses(key);
+        }
+
+        @Override
+        public void add(String key, ClauseInfo d, boolean first) {
+            super.add(key, d, first);
+        }
+    }
+
     public PrologCore(NAR n, String theory) {
-        super(theory, new MutableClauseIndex()); //, new NARClauseIndex(n));
+        super(theory, new MyClauseIndex(n.terms)); //, new NARClauseIndex(n));
 
         if (Param.DEBUG)
             setSpy(true);
