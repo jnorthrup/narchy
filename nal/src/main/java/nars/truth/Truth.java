@@ -172,7 +172,7 @@ public interface Truth extends Truthed {
     }
 
     default boolean equals(Truthed x, NAR nar) {
-        return Util.equals(freq(), x.freq(), nar.freqResolution.floatValue()) &&
+        return this == x || Util.equals(freq(), x.freq(), nar.freqResolution.floatValue()) &&
                 Util.equals(conf(), x.conf(), nar.confResolution.floatValue());
     }
 

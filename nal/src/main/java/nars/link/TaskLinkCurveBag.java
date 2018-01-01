@@ -1,4 +1,4 @@
-package nars.concept.builder;
+package nars.link;
 
 import jcog.bag.impl.CurveBag;
 import jcog.pri.PLinkUntilDeleted;

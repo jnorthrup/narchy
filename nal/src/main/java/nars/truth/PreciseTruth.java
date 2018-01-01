@@ -1,6 +1,7 @@
 package nars.truth;
 
 import jcog.Util;
+import nars.NAR;
 import nars.Param;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,6 +48,10 @@ public class PreciseTruth implements Truth {
     @Override
     public boolean equals(@Nullable Object that) {
         return this == that ||  (that!=null && equals((Truthed) that, Param.TRUTH_EPSILON ));
+        //throw new UnsupportedOperationException();
+    }
+    public boolean equals(@Nullable Object that, NAR nar) {
+        return this == that ||  (that!=null && equals((Truthed) that, nar));
         //throw new UnsupportedOperationException();
     }
 

@@ -28,7 +28,7 @@ public class Cuboid<X> extends SimpleSpatial<X> {
     static final float zOffset = 0.1f; //relative to scale
 
     @Nullable
-    public Finger mouseFront;
+    public Finger fingered;
     private v3 mousePick;
     //private float padding;
 
@@ -58,13 +58,13 @@ public class Cuboid<X> extends SimpleSpatial<X> {
 
     }
 
-    public void setFront(Surface front) {
+    public synchronized void setFront(Surface front) {
         this.front = front;
         if (front != null) {
             front.start(null);
-            mouseFront = null; //new Finger(this);
+            fingered = null; //new Finger(this);
         } else {
-            mouseFront = null;
+            fingered = null;
         }
     }
 
@@ -128,16 +128,16 @@ public class Cuboid<X> extends SimpleSpatial<X> {
 
                     this.mousePick = r.hitPointWorld;
 
-                    mouseFront = finger;
+                    fingered = finger;
                     //System.out.println(localPoint + " " + thick);
 
-                    return mouseFront.on(front, Float.NaN, Float.NaN, localPoint.x / shape.x() + 0.5f, localPoint.y / shape.y() + 0.5f, buttons);
+                    return fingered.on(front, Float.NaN, Float.NaN, localPoint.x / shape.x() + 0.5f, localPoint.y / shape.y() + 0.5f, buttons);
                     //return mouseFront.update(null, localPoint.x, localPoint.y, buttons);
                 }
             } else {
 
-                if (mouseFront != null && mouseFront.off()) {
-                    mouseFront = null;
+                if (fingered != null && fingered.off()) {
+                    fingered = null;
                 }
             }
         }

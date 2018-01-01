@@ -11,12 +11,11 @@ import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
-import nars.concept.builder.TaskLinkCurveBag;
+import nars.link.TaskLinkCurveBag;
 import nars.link.Tasklinks;
 import nars.link.TermLinks;
 import nars.term.Term;
 import nars.term.Termed;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -61,7 +60,7 @@ public class Activate extends PLink<Concept> implements Termed {
         //TODO add a termlink vs. tasklink balance parameter
         int TEMPLATES_LINKED_PER_TASKLINK =
                 //premisesMax;
-                Math.max(1, Math.round(id.templates().size()/((((float)(premisesMax) / termlinksPerTasklink)))));
+                Math.max(1, Math.round(id.templates().size() / ((((float) (premisesMax) / termlinksPerTasklink)))));
 
         //(int) Math.ceil((float) Math.sqrt(premisesMax));
 
@@ -99,8 +98,6 @@ public class Activate extends PLink<Concept> implements Termed {
             Task task = tasklink.get();
             if (task != null) { //HACK
 
-
-
                 //propagate this task via tasklinks inserted to random template concepts
                 //does not activate those concepts
                 //TODO also use BatchActivator
@@ -109,18 +106,11 @@ public class Activate extends PLink<Concept> implements Termed {
                 if (l != null)
                     linkTask(task, l);
 
-                Term tasklinkTerm = task.term();
-
                 termlinks.sample(termlinksSampled, (termlink) -> {
-                    final Term term = termlink.get();
 
-                    if (TermLinks.premise(tasklinkTerm, term)) {
-
-                        Premise p = new Premise(tasklink, term);
-
+                    Premise p = Premise.the(tasklink, termlink);
+                    if (p != null)
                         next.add(p);
-                    }
-
 
                     --remaining[0];
                 });

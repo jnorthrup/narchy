@@ -719,8 +719,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                 onRemove(x);
             });
             items.clear();
-            pressure.set(0);
         }
+        pressure.set(0);
     }
 
 
@@ -752,7 +752,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     @Override
     public void forEach(Consumer<? super Y> action) {
 
-        synchronized (items) {
+        /*synchronized (items)*/ {
             int s = size();
             if (s == 0)
                 return;

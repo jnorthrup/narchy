@@ -47,15 +47,15 @@ public class Can {
         double t = iterationTime.sumThenReset();
         if (t!=t) t = 0;
 
-        double r;
-        if (Math.abs(t) < 1E-9 /* nanosecond resolution */) {
-            r = 0;
-        } else {
-            r = s / t;
+
+        double rMean;
+        if (Math.abs(t) > 1.0E-9 /* nanosecond resolution */) {
+            double r = s / t;
             this.iterPerSecond.addValue(r);
         }
-        double rMean = this.iterPerSecond.getMean();
-        if (rMean!=rMean) rMean = 0;
+        rMean = this.iterPerSecond.getMean();
+        if (rMean!=rMean) rMean = Float.MIN_NORMAL;
+
 
         supplied[i] = (float) s;
         this.lastSupply = s;

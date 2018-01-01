@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 
 public class TopN<E> extends SortedArray<E> implements Consumer<E> {
 
-    private final FloatFunction<E> rank;
+    public final FloatFunction<E> rank;
 
     E min = null;
     float admitThresh = Float.POSITIVE_INFINITY;
@@ -44,7 +44,7 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
 //                    last() + "=last but min=" + min;
 
             if (elementRank >= admitThresh) {
-                reject(element);
+                rejectOnEntry(element);
                 return -1; //insufficient
             }
         }
@@ -56,6 +56,10 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
             update();
         }
         return r;
+    }
+
+    protected void rejectOnEntry(E e) {
+
     }
 
     @Override

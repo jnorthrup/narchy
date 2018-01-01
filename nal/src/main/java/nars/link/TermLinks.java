@@ -87,10 +87,6 @@ public enum TermLinks {
     }
 
 
-    /** whether to allow formation of the premise */
-    public static boolean premise(Term task, Term term) {
-        return true;
-    }
 
     /** determines ability to structural transform, so those terms which have no structural transforms should not link to themselves */
     static boolean selfTermLink(Term b) {

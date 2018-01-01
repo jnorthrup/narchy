@@ -732,11 +732,11 @@ public enum Util {
 //        return unitize(round(value, epsilon));
 //    }
 
-    public static int hashFloat(float f, int discretness) {
+    public static int floatToInt(float f, int discretness) {
         return (int) (f * discretness);
     }
 
-    public static float unhashFloat(int i, int discretness) {
+    public static float intToFloat(int i, int discretness) {
         return ((float) i) / discretness;
     }
 

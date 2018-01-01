@@ -1,5 +1,6 @@
 package nars.truth;
 
+import com.google.common.primitives.Floats;
 import jcog.Util;
 import nars.Param;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +21,7 @@ public final class DiscreteTruth implements Truth {
 
     public static DiscreteTruth Null = new DiscreteTruth(0xffffffff);
 
-    public final float freq, conf;
+//    public final float freq, conf;
     public final int hash;
 
     public DiscreteTruth(Truth t) {
@@ -33,13 +34,13 @@ public final class DiscreteTruth implements Truth {
 
     public DiscreteTruth(float f, float c, float epsilon) {
         this.hash = truthToInt(
-                this.freq = Truth.freq(f, epsilon),
-                this.conf = Truth.conf(c, epsilon)
+                Truth.freq(f, epsilon),
+                Truth.conf(c, epsilon)
         );
     }
     private DiscreteTruth(int hash) {
-        this.freq = Float.NaN;
-        this.conf = Float.NaN;
+//        this.freq = Float.NaN;
+//        this.conf = Float.NaN;
         this.hash = hash;
     }
 
@@ -59,38 +60,47 @@ public final class DiscreteTruth implements Truth {
      */
     public static int truthToInt(float freq, float conf) {
 
-        int freqHash = Util.hashFloat(freq, hashDiscreteness16) & 0x0000ffff;
-        int confHash = Util.hashFloat(conf, hashDiscreteness16) & 0x0000ffff;
+        int freqHash = Util.floatToInt(freq, hashDiscreteness16) & 0x0000ffff;
+        int confHash = Util.floatToInt(conf, hashDiscreteness16) & 0x0000ffff;
 
         return (freqHash << 16) | confHash;
     }
 
     @Override
-    public DiscreteTruth neg() {
-        return new DiscreteTruth(1f - freq(), conf());
+    public Truth neg() {
+        return new PreciseTruth(
+        //return new DiscreteTruth(
+                1f - freq(), conf());
     }
 
     @NotNull
     public static Truth intToTruth(int h) {
         return new DiscreteTruth(
-                Util.unhashFloat((h >> 16) /* & 0xffff*/, hashDiscreteness16),
-                Util.unhashFloat(h & 0xffff, hashDiscreteness16)
+                freq(h),
+                conf(h)
         );
+    }
+
+    static float freq(int h) {
+        return Util.intToFloat((h >> 16) /* & 0xffff*/, hashDiscreteness16);
+    }
+    static float conf(int h) {
+        return Util.intToFloat(h & 0xffff, hashDiscreteness16);
     }
 
     @Override
     public final float freq() {
-        return freq;
+        return freq(hash);
     }
 
     @Override
     public final float conf() {
-        return conf;
+        return conf(hash);
     }
 
     @Override
     public float evi() {
-        return c2wSafe(conf);
+        return c2wSafe(conf());
     }
 
     @Override

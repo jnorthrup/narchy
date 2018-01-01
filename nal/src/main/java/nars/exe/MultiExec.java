@@ -8,6 +8,7 @@ import jcog.decide.Roulette;
 import jcog.exe.AffinityExecutor;
 import jcog.math.MutableInteger;
 import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.pri.mix.PSink;
 import nars.$;
 import nars.NAR;
 import nars.Task;
@@ -27,6 +28,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.LongPredicate;
 import java.util.stream.Stream;
 
@@ -53,6 +55,12 @@ public class MultiExec extends AbstractExec {
     public Focus focus;
     private final AtomicLong lagTime = new AtomicLong(0);
 
+    private final static Function<NAR,Revaluator> Revaluator_Default = (nar)->
+        new Focus.AERevaluator(nar.random());
+        //new DefaultRevaluator();
+        //new RBMRevaluator(nar.random());
+
+
 
     public MultiExec(int concepts, int threads, int qSize) {
         this(concepts, threads, qSize, true);
@@ -67,7 +75,7 @@ public class MultiExec extends AbstractExec {
         this.threads = threads;
 
 
-        this.subCycle = (1f - 1f/(threads+1)) * 1f;
+        this.subCycle = (1f - 1f/(threads+1)) * 0.5f /* base double freq */;
 
         if (affinity) {
             exe = new AffinityExecutor() {
@@ -158,9 +166,9 @@ public class MultiExec extends AbstractExec {
 
             long runUntil = cycleStart + cycleNanosRemain;
             /** jiffy temporal granularity time constant */
-            float jiffy = (float) (nar.loop.jiffy.floatValue() * cycleTime);
 
-            Focus.Schedule s = focus.schedule.read();
+
+            Focus.Schedule s = focus.read();
 
             float[] cw = s.weight;
             if (cw.length == 0) {
@@ -170,21 +178,24 @@ public class MultiExec extends AbstractExec {
             float[] iterPerSecond = s.iterPerSecond;
             Causable[] can = s.active;
 
+            float jiffy = nar.loop.jiffy.floatValue();
+
             do {
                 try {
                     int x = Roulette.decideRoulette(cw, rng);
                     Causable cx = can[x];
                     AtomicBoolean cb = cx.busy;
 
+                    double t = jiffy * cycleTime;
                     int completed;
                     if (cb == null) {
-                        completed = run(cx, iterPerSecond[x], jiffy);
+                        completed = run(cx, iterPerSecond[x], t);
                     } else {
                         if (cb.compareAndSet(false, true)) {
                             float weightSaved = cw[x];
                             cw[x] = 0; //hide from being selected by other threads
                             try {
-                                completed = run(cx, iterPerSecond[x], jiffy);
+                                completed = run(cx, iterPerSecond[x], t);
                             } finally {
                                 cb.set(false);
                                 cw[x] = weightSaved;
@@ -206,8 +217,9 @@ public class MultiExec extends AbstractExec {
         }
     }
 
-    private int run(Causable cx, float iterPerSecond, float time) {
-        int iters = Math.max(1, Math.round(iterPerSecond * time));
+    private int run(Causable cx, float iterPerSecond, double time) {
+        int iters = (int) Math.min(Integer.MAX_VALUE,
+                Math.max(1, Math.round(iterPerSecond * time)));
         //System.out.println(cx + " x " + iters);
         return cx.run(nar, iters);
     }
@@ -217,7 +229,12 @@ public class MultiExec extends AbstractExec {
     @Override
     public void start(NAR nar) {
         synchronized (exe) {
-            this.focus = new Focus(nar);
+
+            Revaluator revaluator =
+                    Revaluator_Default.apply(nar);
+
+
+            this.focus = new Focus(nar, revaluator);
             super.start(nar);
             for (int i = 0; i < threads; i++)
                 exe.execute(this::runner);

@@ -129,16 +129,16 @@ public interface Bag<K, V> extends Table<K, V> {
     }
 
 
-    default List<V> copyToList(int n) {
-        if (n == 0)
-            return Collections.emptyList();
-
-        List<V> l = new FasterList(n);
-        sample(n, x -> {
-            l.add(x);
-        });
-        return l;
-    }
+//    default List<V> copyToList(int n) {
+//        if (n == 0)
+//            return Collections.emptyList();
+//
+//        List<V> l = new FasterList(n);
+//        sample(n, x -> {
+//            l.add(x);
+//        });
+//        return l;
+//    }
 
 
     /**
@@ -204,14 +204,15 @@ public interface Bag<K, V> extends Table<K, V> {
                 (kontinue.test(x) && ((--count[0]) > 0)) ?
                     Next : Stop));
     }
-    default Bag<K, V> sampleOrPop(boolean pop, int max, Predicate<? super V> each) {
-        final int[] count = {max};
-        return sample((BagCursor<? super V>)(x ->
-                (each.test(x) && ((--count[0]) > 0)) ?
-                        (pop ? Remove : Next)
-                        :
-                        (pop ? RemoveAndStop : Stop)));
-    }
+
+//    default Bag<K, V> sampleOrPop(boolean pop, int max, Predicate<? super V> each) {
+//        final int[] count = {max};
+//        return sample((BagCursor<? super V>)(x ->
+//                (each.test(x) && ((--count[0]) > 0)) ?
+//                        (pop ? Remove : Next)
+//                        :
+//                        (pop ? RemoveAndStop : Stop)));
+//    }
 
     @Nullable
     default V maxBy(FloatFunction<V> rank) {

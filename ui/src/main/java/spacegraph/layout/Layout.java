@@ -165,7 +165,7 @@ abstract public class Layout extends Surface {
     @Override
     public boolean onKey(v2 hitPoint, char charCode, boolean pressed) {
         if (!super.onKey(hitPoint, charCode, pressed)) {
-            forEach(c -> onKey(hitPoint, charCode, pressed));
+            forEach(c -> c.onKey(hitPoint, charCode, pressed));
         }
         return false;
     }

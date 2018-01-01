@@ -91,8 +91,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
 
         addCamera(
-            pixels = new CameraSensor<>(id, this, this)
-                            //.resolution(0.1f)
+                pixels = new CameraSensor<>(id, this, this)
+                //.resolution(0.1f)
         );
         //pixels.resolution(0.1f);
 
@@ -171,9 +171,9 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
 
     void actionsToggle() throws Narsese.NarseseException {
-        actionToggle($.p("left"), ()-> state.act(LEFT));
-        actionToggle($.p("right"), ()-> state.act(RIGHT));
-        actionToggle($.p("rotCW"), ()-> state.act(CW));
+        actionToggle($.p("left"), () -> state.act(LEFT));
+        actionToggle($.p("right"), () -> state.act(RIGHT));
+        actionToggle($.p("rotCW"), () -> state.act(CW));
         //actionToggle($.p("rotCCW"), ()-> state.take_action(CCW));
     }
 
@@ -193,7 +193,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             }
         });
 
-        actionToggle($.the("R"), ()-> state.act(CW));
+        actionToggle($.the("R"), () -> state.act(CW));
 
 //        actionTriState($("R"), (i) -> {
 //            switch (i) {
@@ -512,8 +512,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
         NAR nn = NAgentX.runRT((n) -> {
             Tetris a = null;
             try {
-//                n.freqResolution.set(0.10f);
-//                n.confResolution.set(0.02f);
+                n.freqResolution.set(0.02f);
+                n.confResolution.set(0.02f);
                 a = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
 //                a.nar.log();
 
@@ -775,10 +775,11 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
             NAR n = NARS.tmp();
             n.time.dur(4);
-            n.freqResolution.set(0.1f);
+            n.freqResolution.set(0.02f);
+            n.confResolution.set(0.02f);
             //new Abbreviation(n, "z", 3, 8, 0.1f, 32);
 
-            new Tetris(n, Tetris.tetris_width, Tetris.tetris_height, 1);
+            new Tetris(n, Tetris.tetris_width, Tetris.tetris_height, 2);
             n.run(200);
 
             //n.concepts().map(x -> x.toString()).sorted().forEach(c -> {

@@ -404,6 +404,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
     @Nullable
     static Task tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, ? extends Task> res) {
+        if ((punc==BELIEF || punc==GOAL) && tr.conf()<Param.TRUTH_EPSILON)
+            return null;
+
         ObjectBooleanPair<Term> x = tryContent(t, punc, true);
         if (x != null) {
             return res.apply(x.getOne(), tr != null ? tr.negIf(x.getTwo()) : null);

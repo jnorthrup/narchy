@@ -52,14 +52,14 @@ public class ActivateTest {
         BatchActivation ba = BatchActivation.get();
         for (int i = 0; i < 100; i++) {
             cf.premises(nar, ba, 9).forEach(p -> {
-                System.out.println("tasklink=" + p.taskLink + " termlink=" + p.termLink);
-                if (p.termLink instanceof Atom || !A.equals(p.termLink.sub(0)))
+                System.out.println("tasklink=" + p.task() + " termlink=" + p.term());
+                if (p.term() instanceof Atom || !A.equals(p.term().sub(0)))
                     return; //ignore
-                String tls = p.termLink.toString();
+                String tls = p.term().toString();
 
                 //premiseHits.addOccurrences(p.toString(), 1);
                 termlinkHits.addOccurrences(/*tasklink.get() + " " +*/ tls, 1);
-                taskHits.addOccurrences(/*tasklink.get() + " " +*/ p.taskLink.toString(), 1);
+                taskHits.addOccurrences(/*tasklink.get() + " " +*/ p.toString(), 1);
             });
             ba.commit(nar);
         }

@@ -15,6 +15,8 @@ import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.subst.UnifySubst;
+import org.eclipse.collections.api.tuple.Pair;
+import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,17 +33,22 @@ import static nars.time.Tense.ETERNAL;
  * It is meant to be disposable and should not be kept referenced longer than necessary
  * to avoid GC loops, so it may need to be weakly referenced.
  */
-public class Premise {
+public class Premise extends PLink<Pair<Task,Term>> {
 
-    static final Logger logger = LoggerFactory.getLogger(Premise.class);
+    @Nullable static Premise the(PriReference<Task> tasklink, PriReference<Term> termlink) {
+        float pri = tasklink.pri();
+        if (pri!=pri)
+            return null;
 
-    public final PriReference<Task> taskLink;
-    public final Term termLink;
+        Task t = tasklink.get();
+        if (t == null)
+            return null;
 
+        return new Premise(t, termlink.get(), pri * termlink.priElseZero());
+    }
 
-    public Premise(PriReference<Task> tasklink, Term termlink) {
-        this.taskLink = tasklink;
-        this.termLink = termlink;
+    Premise(Task task, Term termlink, float taskLinkPri) {
+        super(Tuples.pair(task, termlink), taskLinkPri);
     }
 
     /**
@@ -69,7 +76,7 @@ public class Premise {
 
         //nar.emotion.count("Premise_run");
 
-        final Task task = this.taskLink.get();
+        final Task task = this.task();
         if (task == null || task.isDeleted()) {
 //            Task fwd = task.meta("@");
 //            if (fwd!=null)
@@ -89,7 +96,7 @@ public class Premise {
         long now = d.time;
 
 
-        Term beliefTerm = termLink;
+        Term beliefTerm = term();
 
 
         Term taskTerm = task.term();
@@ -161,7 +168,7 @@ public class Premise {
 
                             @Nullable Task answered = task.onAnswered(match, n);
                             if (answered != null) {
-                                n.emotion.onAnswer(this.taskLink, answered);
+                                n.emotion.onAnswer(task, answered);
                             }
 
                             if (match.isBelief()) {
@@ -197,7 +204,7 @@ public class Premise {
 
 
             if (unifiedBelief) {
-                Concept originalBeliefConcept = n.concept(this.termLink);
+                Concept originalBeliefConcept = n.concept(this.term());
                 if (originalBeliefConcept != null)
                     linkVariable(originalBeliefConcept, beliefConcept);
             }
@@ -225,6 +232,13 @@ public class Premise {
         return d;
     }
 
+    public final Task task() {
+        return get().getOne();
+    }
+    public final Term term() {
+        return get().getTwo();
+    }
+
     /**
      * x has variables, y unifies with x and has less or no variables
      */
@@ -235,7 +249,7 @@ public class Premise {
          *  and inversely proportional to the increase in term complexity of the
          *  unified variable.  ie. $x -> (y)  would get a stronger link than  $x -> (y,z)
          */
-        PriReference<Task> taskLink = this.taskLink;
+        PriReference taskLink = this;
         Term moreConstantTerm = moreConstant.term();
         Term lessConstantTerm = lessConstant.term();
         float pri = taskLink.priElseZero() * Util.unitize(lessConstantTerm.volume() / ((float) moreConstantTerm.volume()));
@@ -253,8 +267,8 @@ public class Premise {
     @Override
     public String toString() {
         return "Premise(" +
-                taskLink +
-                " * " + termLink +
+                task() +
+                " * " + term() +
                 ')';
     }
 

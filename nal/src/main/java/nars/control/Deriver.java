@@ -2,6 +2,9 @@ package nars.control;
 
 import jcog.Util;
 import jcog.math.MutableInteger;
+import jcog.pri.Prioritized;
+import jcog.sort.TopN;
+import jcog.sort.TopNUnique;
 import nars.$;
 import nars.NAR;
 import nars.Param;
@@ -11,7 +14,6 @@ import nars.derive.TrieDeriver;
 import nars.derive.rule.PremiseRuleSet;
 import nars.exe.Causable;
 import nars.index.term.PatternIndex;
-import nars.task.ITask;
 
 import java.io.PrintStream;
 import java.util.function.Consumer;
@@ -31,9 +33,11 @@ public class Deriver extends Causable {
 
     private final Consumer<Predicate<Activate>> concepts;
     private final Cause[] subCauses;
-    private float minPremisesPerConcept = 1;
-    private float maxPremisesPerConcept = 3;
-    final MutableInteger conceptsPerWork= new MutableInteger(1);
+
+    int premisesPerConcept = 3;
+    private float minHypoPremisesPerConceptFire = 3;
+    private float maxHypoPremisesPerConceptFire = 6;
+
     protected long now;
 
     public static Function<NAR, Deriver> deriver(Function<NAR, PremiseRuleSet> rules) {
@@ -79,8 +83,75 @@ public class Deriver extends Causable {
     }
 
     @Override
-    protected int next(NAR n, int iterations) {
-        return Deriver.this.run(iterations);
+    protected int next(NAR n, final int iterations) {
+
+
+        NAR nar1 = Deriver.this.nar;
+
+        Derivation d = derivation.get().cycle(nar1, deriver);
+
+        int matchTTL = Param.TTL_PREMISE_MIN * 4;
+        int ttlMin = nar1.matchTTLmin.intValue();
+        int ttlMax = nar1.matchTTLmax.intValue();
+
+
+//        int premisesRemain[] = new int[]{work};
+
+
+        //hard limit on # of concepts processed. since usually there will be >1 premises per concept, this will normally not be exhausted
+        int conceptsRemain[] = new int[]{iterations};
+
+        now = nar1.time();
+
+
+        TopN<Premise> premises = new TopNUnique<Premise>(new Premise[conceptsRemain[0] * premisesPerConcept],
+                Prioritized::priElseZero
+                ) {
+            @Override protected void merge(Premise existing, Premise next) {
+                existing.priMax(next.pri());
+            }
+        };
+
+        concepts.accept(a -> {
+            for (Premise premise : a.premises(nar1, d.activator, premises(a))) {
+
+                premise.priMult(nar1.amp(premise.task().cause()));
+
+                if (!premises.add(premise)) {
+                    //System.out.println("lost: " + premise);
+                }
+            }
+            return (--conceptsRemain[0])>0;
+        });
+
+        premises.forEach(premise -> {
+
+            if (premise.match(d, Deriver.this::matchTime, matchTTL) != null) {
+
+                boolean derivable = deriver.proto(d);
+                if (derivable) {
+
+//                    float strength =
+//                            premise.task().priElseZero() * nar.amp(d._task); //absolute task * absolute concept
+
+                    //p.task.priElseZero()                                 //absolute
+                    //p.task.priElseZero() / nar.priDefault(p.task.punc()) //relative
+
+                    int deriveTTL = Util.lerp(premise.priElseZero(), ttlMin, ttlMax);
+
+                    deriver.derive(d, deriveTTL);
+                }
+
+                //System.err.println(derivable + " " + premise.taskLink.get() + "\t" + premise.termLink + "\t" + d.can + " ..+" + d.derivations.size());
+
+
+            }
+        });
+
+
+        int derived = d.commit(nar1::input);
+
+        return Math.max(0, (iterations - conceptsRemain[0]));
     }
 
     @Override
@@ -138,64 +209,9 @@ public class Deriver extends Causable {
 
     }
 
-    protected int run(int work) {
-
-
-        NAR nar = this.nar;
-
-        Derivation d = derivation.get().cycle(nar, deriver);
-
-        int matchTTL = Param.TTL_PREMISE_MIN * 4;
-        int ttlMin = nar.matchTTLmin.intValue();
-        int ttlMax = nar.matchTTLmax.intValue();
-
-
-//        int premisesRemain[] = new int[]{work};
-
-        int conceptsPerWork = this.conceptsPerWork.intValue();
-
-        //hard limit on # of concepts processed. since usually there will be >1 premises per concept, this will normally not be exhausted
-        int conceptsRemain[] = new int[]{work * conceptsPerWork};
-
-        now = nar.time();
-
-        concepts.accept(a -> {
-
-            for (Premise premise : a.premises(nar, d.activator, premises(a))) {
-
-                if (premise.match(d, this::matchTime, matchTTL) != null) {
-
-                    boolean derivable = deriver.proto(d);
-                    if (derivable) {
-
-                        float strength =
-                                premise.taskLink.priElseZero() * nar.amp(d._task); //absolute task * absolute concept
-
-                        //p.task.priElseZero()                                 //absolute
-                        //p.task.priElseZero() / nar.priDefault(p.task.punc()) //relative
-
-                        int deriveTTL = Util.lerp(strength, ttlMin, ttlMax);
-
-                        deriver.derive(d, deriveTTL);
-                    }
-
-                    //System.err.println(derivable + " " + premise.taskLink.get() + "\t" + premise.termLink + "\t" + d.can + " ..+" + d.derivations.size());
-
-
-                }
-            }
-
-            return (--conceptsRemain[0] > 0);
-        });
-
-        int derived = d.commit(nar::input);
-
-        return Math.max(0, work - Math.round(conceptsRemain[0]/((float)conceptsPerWork)));
-    }
-
 
     private int premises(Activate a) {
-        return Math.round(Util.lerp(a.priElseZero(), minPremisesPerConcept, maxPremisesPerConcept));
+        return Math.round(Util.lerp(a.priElseZero(), minHypoPremisesPerConceptFire, maxHypoPremisesPerConceptFire));
     }
 
 

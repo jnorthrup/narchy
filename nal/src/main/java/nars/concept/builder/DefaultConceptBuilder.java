@@ -16,6 +16,7 @@ import nars.concept.dynamic.DynamicConcept;
 import nars.concept.dynamic.DynamicTruthModel;
 import nars.concept.state.ConceptState;
 import nars.concept.state.DefaultConceptState;
+import nars.link.TaskLinkCurveBag;
 import nars.table.*;
 import nars.term.Compound;
 import nars.term.Term;

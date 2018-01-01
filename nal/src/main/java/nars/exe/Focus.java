@@ -28,8 +28,9 @@ import static nars.time.Tense.ETERNAL;
 /**
  * decides mental activity
  */
-public class Focus {
+public class Focus extends Flip<Focus.Schedule> {
 
+    public final Exec.Revaluator revaluator;
 
     private final FastCoWList<Causable> can;
 
@@ -123,7 +124,7 @@ public class Focus {
 
 
             weight = Util.map(n, (int i) ->
-                    active[i].value(), weight);
+                    supplied[i] > 0 ? active[i].value() / (supplied[i]/iterPerSecond[i]) : 0, weight);
 
             float[] minmax = Util.minmax(weight);
             float lowMargin = (minmax[1] - minmax[0])/n;
@@ -132,15 +133,6 @@ public class Focus {
                         normalize(weight[i], minmax[0]-lowMargin, minmax[1])/time[i];
         }
     }
-
-    public final Flip<Schedule> schedule = new Flip<Schedule>(Schedule::new);
-
-
-    private final NAR nar;
-
-    public final Exec.Revaluator revaluator;
-
-    final Random rng = new XoRoShiRo128PlusRandom(1); //separate from NAR but not necessarily
 
 
     /**
@@ -371,15 +363,12 @@ public class Focus {
     }
 
 
-    public Focus(NAR n) {
+    public Focus(NAR n, Exec.Revaluator r) {
+        super(Schedule::new);
+
         this.can = new FastCoWList<>(32, Causable[]::new);
-        this.nar = n;
 
-
-        this.revaluator =
-                new DefaultRevaluator();
-                //new AERevaluator(nar.random());
-        //new RBMRevaluator(nar.random());
+        this.revaluator = r;
 
         n.services.serviceAddOrRemove.on((xa) -> {
             Services.Service<NAR> x = xa.getOne();
@@ -406,12 +395,12 @@ public class Focus {
         try {
 
 
-            Schedule s = schedule.write();
+            Schedule s = write();
             s.update(can);
 
             //System.out.println(schedule.read());
 
-            schedule.commit();
+            commit();
 
             revaluator.update(nar);
 

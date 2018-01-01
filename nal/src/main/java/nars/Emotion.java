@@ -329,10 +329,10 @@ public class Emotion extends ConcurrentMonitorRegistry {
         taskActivations_x100.increment(Math.round(activation*100));
     }
 
-    public void onAnswer(PriReference<Task> questionLink, @Nullable Task answer) {
+    public void onAnswer(Task questionTask, @Nullable Task answer) {
         //transfer budget from question to answer
         //transfer more of the budget from an unoriginal question to an answer than an original question
-        Task questionTask = questionLink.get();
+        //Task questionTask = questionLink.get();
         if (questionTask == null)
             return;
 
@@ -343,7 +343,7 @@ public class Emotion extends ConcurrentMonitorRegistry {
         if (qPriBefore > Pri.EPSILON) {
             float costFraction = ansConf * (1 - qOrig);
             answer.take(questionTask, costFraction, false, false);
-            questionLink.priMult(1f - costFraction);
+//            questionLink.priMult(1f - costFraction);
         }
 
         //reward answer for answering the question

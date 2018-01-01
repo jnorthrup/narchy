@@ -57,9 +57,9 @@ subprojects {
 //        maven { url "http://oss.sonatype.org/content/repositories/snapshots" }
     }
 
-    sourceCompatibility = 1.9
-    targetCompatibility = 1.9
     tasks.withType(JavaCompile) {
+        sourceCompatibility = JavaVersion.VERSION_1_10
+        targetCompatibility = JavaVersion.VERSION_1_10
         options.encoding = 'UTF-8'
         options.incremental = true // one flag, and things will get MUCH faster
         options.fork = true
