@@ -81,7 +81,7 @@ public final class DynTruth {
         return truth(null, false, nar);
     }
 
-    @Nullable Truth truth(@Nullable Consumer<NALTask> withBuiltTask, boolean beliefOrGoal, NAR nar) {
+    @Nullable public Truth truth(@Nullable Consumer<NALTask> withBuiltTask, boolean beliefOrGoal, NAR nar) {
 
 
         float evi = c2wSafe(conf);

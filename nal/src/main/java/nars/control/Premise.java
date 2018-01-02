@@ -36,7 +36,7 @@ import static nars.time.Tense.ETERNAL;
  */
 public class Premise extends PLink<Pair<Task,Term>> {
 
-    @Nullable static Premise the(PriReference<Task> tasklink, PriReference<Term> termlink, FloatFloatToFloatFunction merge) {
+    @Nullable static Premise the(PriReference<Task> tasklink, PriReference<Term> termlink, FloatFloatToFloatFunction merge, float factor) {
         float pri = tasklink.pri();
         if (pri!=pri)
             return null;

@@ -106,8 +106,8 @@ abstract public class NAgentX extends NAgent {
 
     public static NAR runRT(Function<NAR, NAgent> init, float fps) {
         return runRT(init,
-                //fps * 2,
-                fps * 1,
+                fps * 2, //NYQUIST
+                //fps * 1,
                 fps);
     }
 
@@ -186,12 +186,12 @@ abstract public class NAgentX extends NAgent {
 
         //n.defaultWants();
 
-        n.conceptActivation.set(0.75f);
+        n.conceptActivation.set(0.5f);
 
         n.dtMergeOrChoose.set(true);
         n.dtDither.set(
-            //1f
-            0.5f
+            1f
+            //0.5f
         );
 
         n.confMin.set(0.01f);

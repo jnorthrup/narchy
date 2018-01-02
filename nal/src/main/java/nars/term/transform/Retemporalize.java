@@ -91,6 +91,11 @@ public interface Retemporalize extends CompoundTransform {
 //                    return DTERNAL; //simple, if possible
                 }
                 case IMPL: {
+                    int dt = x.dt();
+
+                    if ((dt == DTERNAL || dt == 0) || !x.subterms().hasAny(CONJ))
+                        return DTERNAL;
+
 //                    Subterms xs = x.subterms();
 //                    //impl pred is always non-neg
 //                    return xs.hasAny(CONJ) ||

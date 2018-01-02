@@ -21,6 +21,7 @@ import nars.term.Termed;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Predicate;
 
 
 /**
@@ -41,17 +42,17 @@ public class Activate extends PLink<Concept> implements Termed {
      * hypothesize premises, up to a max specified #
      */
     /*@NotNull*/
-    public Iterable<Premise> premises(NAR nar, BatchActivation ba, int premisesMax) {
+    public void premises(NAR nar, BatchActivation ba, Predicate<Premise> each) {
 
-        assert (premisesMax > 0);
 
-        List<Concept> conceptualizedTemplates = activate(nar, ba);
+
+        activateTemplates(nar, ba);
 
         final Bag<Term, PriReference<Term>> termlinks = id.termlinks();
 
         int ntermlinks = termlinks.size();
         if (ntermlinks == 0)
-            return List.of();
+            return;
         float linkForgetting = nar.forgetRate.floatValue();
         termlinks.commit(termlinks.forget(linkForgetting));
 
@@ -72,16 +73,15 @@ public class Activate extends PLink<Concept> implements Termed {
         tasklinks.commit(PriForget.forget(tasklinks, linkForgetting, Pri.EPSILON, (r) ->
                 new Tasklinks.TaskLinkForget(r, now, dur)));
         if (ntasklinks == 0)
-            return Collections.emptyList();
+            return;
 
 
-        //apply the nar valuation to further refine selection of the tasks collected in the oversample prestep
-        List<Premise> next = new FasterList(premisesMax);
-        final int[] remaining = {premisesMax};
+        int termlinksPerTasklink = Activate.termlinksPerTasklink;
+        int[] safetyLimit = { tasklinks.size() *  termlinksPerTasklink };
 
-        ((TaskLinkCurveBag) tasklinks).sample(tasklink -> {
+        tasklinks.sample((Predicate<PriReference<Task>>) tasklink -> {
 
-            int termlinksSampled = termlinksPerTasklink;
+
 //            int termlinksSampled = Math.min(Math.max(1,
 //                    (int) Math.ceil(
 //                            Util.normalize(tasklink.priElseZero(), tasklinks.priMin(), tasklinks.priMax())
@@ -93,20 +93,26 @@ public class Activate extends PLink<Concept> implements Termed {
 
 
 
-                termlinks.sample(termlinksSampled, (termlink) -> {
+                termlinks.sample(termlinksPerTasklink, (termlink) -> {
 
-                    Premise p = Premise.the(tasklink, termlink, Param.taskTermLinksToPremise);
-                    if (p != null)
-                        next.add(p);
+                    Premise p = Premise.the(tasklink, termlink,
+                            Param.taskTermLinksToPremise,
+                            nar.amp(task.cause()));
+                    if (p != null) {
+                        if (!each.test(p)) {
+                            safetyLimit[0] = 0;
+                            return false;
+                        }
+                    }
 
-                    --remaining[0];
+                    return  (--safetyLimit[0] > 0);
                 });
             } else {
-                --remaining[0]; //safety misfire decrement
+                --safetyLimit[0]; //safety misfire decrement
             }
 
-            return (remaining[0] > 0) ? Bag.BagSample.Next : Bag.BagSample.Stop;
-        }, (tl) -> {
+            return (safetyLimit[0] > 0);// ? Bag.BagSample.Next : Bag.BagSample.Stop;
+        }/*, (tl) -> {
             Task x = tl.get();
             if (x == null)
                 return 0; //deleted
@@ -115,20 +121,17 @@ public class Activate extends PLink<Concept> implements Termed {
                 return 0; //deleted
             else
                 return p * nar.amp(x.cause());
-        });
+        }*/);
 
-        return next;
     }
 
 
-    public List<Concept> activate(NAR nar, BatchActivation ba) {
+    public void activateTemplates(NAR nar, BatchActivation ba) {
         nar.emotion.conceptActivations.increment();
 
-        List<Concept> conceptualizedTemplates = $.newArrayList();
-        float cost = TermLinks.linkTemplates(id, id.templates(), conceptualizedTemplates, priElseZero(), nar.momentum.floatValue(), nar, ba);
+        float cost = TermLinks.linkTemplates(id, id.templates(), priElseZero(), nar.momentum.floatValue(), nar, ba);
         if (cost >= Pri.EPSILON)
             priSub(cost);
-        return conceptualizedTemplates;
     }
 
 

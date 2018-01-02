@@ -83,10 +83,16 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
     @Override
     public Truth truth(long start, long end, NAR nar) {
         //DynTruth d = truth(start, end, null, nar);
-        DynTruth d = model.eval(term, beliefOrGoal, start, end, false, nar);
-        return Truth.maxConf(
-                d != null ? d.truth(nar) : null,
-                super.truth(start, end, nar) /* includes only non-dynamic beliefs */);
+        DynTruth d = model.eval(term, beliefOrGoal, start, end, true, nar);
+        final Task[] dt = {null};
+        d.truth((t) -> {
+            dt[0] = t;
+        }, beliefOrGoal, nar);
+        boolean dd = dt[0] != null;
+        Truth st = super.truth(start, end, nar);
+        return dd ? Truth.maxConf(
+                dt[0].truth(dt[0].myNearestTimeTo(start, end), nar.dur()),
+                st) : st;
     }
 
 //    /** prepare a term, if necessary, for use as template  */
@@ -139,7 +145,7 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
 
     @Nullable
     protected DynTruth truth(long start, long end, @Nullable Term _template, NAR nar) {
-        Term template = template(start, end, (_template!=null ? _template : term), nar);
+        Term template = template(start, end, (_template != null ? _template : term), nar);
 //        if (_template == null && !template.equals(term))
 //            return null;
         return template != null ? model.eval(template, beliefOrGoal, start, end, true, nar) : null;
@@ -167,13 +173,13 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
 
                     if (templateSubs == 2) {
                         if (start != end && end - start < Integer.MAX_VALUE) {
-                            if (end!=start) {
+                            if (end != start) {
                                 artificialDT = (int) (end - start);
                             } else {
                                 artificialDT =
-                                    (template.sub(0).unneg().equals(template.sub(1).unneg())) ?
-                                        nar.dur() :
-                                        0; //ok for simultaneous
+                                        (template.sub(0).unneg().equals(template.sub(1).unneg())) ?
+                                                nar.dur() :
+                                                0; //ok for simultaneous
                             }
                         } else {
                             artificialDT = nar.dur();
@@ -188,22 +194,23 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
                     next = template.dt(artificialDT);
 
                     if (next.subs() < templateSubs || next.dt() == XTERNAL) {
-                        if (templateSubs==2) {
+                        if (templateSubs == 2) {
 
                             //possibly pulled an internal XTERNAL to the outside, so try artificializing this as well
-                            int limit = 2; int nextDT = XTERNAL;
+                            int limit = 2;
+                            int nextDT = XTERNAL;
                             do {
                                 next = next.dt(artificialDT);
                                 if (next instanceof Bool)
                                     return null;
-                            } while (limit-- > 0 && (nextDT=next.dt())==XTERNAL);
+                            } while (limit-- > 0 && (nextDT = next.dt()) == XTERNAL);
 
-                            if (nextDT==XTERNAL)
+                            if (nextDT == XTERNAL)
                                 return null; //give up
 
                         } else {
-                             //create a random sequence of the terms, separated by artificial DT's
-                            assert(template.op()==CONJ);
+                            //create a random sequence of the terms, separated by artificial DT's
+                            assert (template.op() == CONJ);
                             Term[] subs = template.subterms().arrayClone();
                             ArrayUtils.shuffle(subs, nar.random());
                             int dur = nar.dur();

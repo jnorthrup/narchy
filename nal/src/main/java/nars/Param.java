@@ -81,19 +81,19 @@ public abstract class Param {
     public static final PriMerge activateMerge = PriMerge.plus;
 
     public static final PriMerge termlinkMerge =
-            //PriMerge.max;
-            PriMerge.plus;
+            PriMerge.max;
+            //PriMerge.plus;
 
     public static final PriMerge tasklinkMerge =
-            //PriMerge.max;
-            PriMerge.plus; //not safe to plus without enough headroom
+            PriMerge.max;
+            //PriMerge.plus; //not safe to plus without enough headroom
 
 //    /**
 //     * budgets premises from their links, but isolated from affecting the derivation budgets, which are from the tasks (and not the links)
 //     */
     public static final FloatFloatToFloatFunction taskTermLinksToPremise =
-            Util::or;
-//            //Util::and;
+            //Util::or;
+          Util::and;
 //            //UtilityFunctions::aveGeo;
 //            //UtilityFunctions::aveAri;
 //            //Math::min;
@@ -129,7 +129,7 @@ public abstract class Param {
      * 'time to live', unification steps until unification is stopped
      */
     public final MutableInteger matchTTLmax = new MutableInteger(384);
-    public final MutableInteger matchTTLmin = new MutableInteger(128);
+    public final MutableInteger matchTTLmin = new MutableInteger(64);
 
     /**
      * how much percent of a premise's allocated TTL can be used in the belief matching phase.
@@ -258,8 +258,8 @@ public abstract class Param {
             discount *= 0.5f;
         }
 
-        return discount * d.premisePri;
-        //return Util.lerp(1f, decayRate, t.originality()) * d.premisePri; //more lenient derivation budgeting priority reduction in proportion to lack of originality
+        //return discount* d.premisePri;
+        return Util.lerp(1f-t.originality(),discount, 1) * d.premisePri; //more lenient derivation budgeting priority reduction in proportion to lack of originality
     }
 
 

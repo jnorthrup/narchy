@@ -105,22 +105,18 @@ public class Deriver extends Causable {
 
 
         TopN<Premise> premises = new TopNUnique<Premise>(new Premise[conceptsRemain[0] * premisesPerConcept],
-                Prioritized::priElseZero
-                ) {
+                Prioritized::priElseZero) {
             @Override protected void merge(Premise existing, Premise next) {
                 existing.priMax(next.pri());
             }
         };
 
         concepts.accept(a -> {
-            for (Premise premise : a.premises(nar1, d.activator, premises(a))) {
-
-                premise.priMult(nar1.amp(premise.task().cause()));
-
-                if (!premises.add(premise)) {
-                    //System.out.println("lost: " + premise);
-                }
-            }
+            final int[] premisesRemain = {premises(a)};
+            a.premises(nar1, d.activator, p -> {
+                premises.add(p);
+                return --premisesRemain[0] > 0;
+            });
             return (--conceptsRemain[0])>0;
         });
 
