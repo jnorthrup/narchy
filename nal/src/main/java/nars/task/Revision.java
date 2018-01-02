@@ -420,14 +420,12 @@ public class Revision {
             return null;
 
         //ObjectFloatPair<long[]> s = Stamp.zip(new FasterList(a, b), Param.STAMP_CAPACITY);
-        float overlapDiscount = Stamp.overlapFraction(a.stamp(), b.stamp());
-        if (overlapDiscount > 0) {
-            float e2 = rawTruth.evi() * (1f - overlapDiscount);
-            if (e2 < minEvi)
-                return null;
-            rawTruth = rawTruth.withEvi(e2);
-            assert(rawTruth!=null);
-        }
+        float overlap = Stamp.overlapFraction(a.stamp(), b.stamp());
+        float e2 = Param.overlapEvidence(rawTruth.evi(), overlap);
+        if (e2 < minEvi)
+            return null;
+        rawTruth = rawTruth.withEvi(e2);
+
 
 ////        float maxEviAB = Math.max(an.evi(), bn.evi());
 //        float evi = rawTruth.evi();
@@ -533,7 +531,7 @@ public class Revision {
                 now, start, end,
                 Stamp.zip(a.stamp(), b.stamp(), aProp) //get a stamp collecting all evidence from the table, since it all contributes to the result
         );
-        if (overlapDiscount > 0 || a.isCyclic() || b.isCyclic())
+        if (overlap > 0 || a.isCyclic() || b.isCyclic())
             t.setCyclic(true);
 
         t.priSet(Util.lerp(aProp, b.priElseZero(), a.priElseZero()));

@@ -261,10 +261,12 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
                 return t;
             });
 
-            logger.info("{}\t{}", question, y);
 
-            if (y!=null)
+
+            if (y!=null) {
+                logger.info("answer {}\t{}", question, y);
                 in.input(y);
+            }
 
         } catch (Exception e) {
             logger.error("answer {} {} {}", question, answer, e);

@@ -45,13 +45,19 @@ public interface Retemporalize extends CompoundTransform {
     Retemporalize retemporalizeRoot = new Retemporalize() {
 
         @Override
+        public Term transform(Compound x) {
+            return transform(x, x.op(), dt(x));
+        }
+
+        @Override
         public @Nullable Term transform(Compound x, Op op, int dt) {
 
             Term c1 = Retemporalize.super.transform(x, op, dt);
             if (op.temporal) {
-                if (c1 == null || c1 instanceof Bool || (op==CONJ && (c1.subs() != x.subs()))) {
+                if (dt != XTERNAL && c1 == null || c1 instanceof Bool || (op == CONJ && (c1.subs() != x.subs()))) {
                     //oops we need XTERNAL
-                    return Retemporalize.super.transform(x, op, XTERNAL);
+
+                    return transformTemporal(x, XTERNAL);
                 }
             }
             return c1;
@@ -64,13 +70,14 @@ public interface Retemporalize extends CompoundTransform {
             switch (x.op()) {
                 case CONJ: {
                     int dt = x.dt();
-                    if (dt ==DTERNAL || dt ==0 && !x.subterms().hasAny(CONJ))
+
+                    if ((dt == DTERNAL || dt == 0) || !x.subterms().hasAny(CONJ))
                         return DTERNAL;
 //                    Subterms xs = x.subterms();
 //                    int n = xs.subs();
 
 //                    if (xs.OR(isCommutiveConjOrImpl))
-                        return XTERNAL;
+                    return XTERNAL;
 
 //                    if (((n == 2) &&
 //                            (xs.isTemporal() ||
@@ -91,7 +98,8 @@ public interface Retemporalize extends CompoundTransform {
                     return XTERNAL;
                 }
                 default:
-                    throw new UnsupportedOperationException();
+                    //throw new UnsupportedOperationException();
+                    return DTERNAL; //non-temporal etc
             }
 
         }
@@ -99,41 +107,40 @@ public interface Retemporalize extends CompoundTransform {
 
     @Nullable
     @Override
-    default Term transform(final Compound x, Op op, int dt) {
-        int dtNext;
+    default Term transform(final Compound x, Op op, int _dt) {
         if (op.temporal) {
-            dtNext = dt(x);
-            Subterms xx = x.subterms();
-            if (dtNext == XTERNAL && op == CONJ && xx.hasAny(CONJ)) {
-                //recursive conj, decompose to events
-                ArrayHashSet<Term> s = new ArrayHashSet();
-                x.eventsWhile((when, zz) -> {
-                    if (!zz.equals(x)) {
-                        s.add(zz);
-                    }
-                    return true;
-                }, 0, false, false, false, 0);
-                List<Term> sl = s.list;
-                int sln = sl.size();
-                if (sln > 1) {
-                    for (int i = 0; i < sln; i++) {
-                        Term sli = sl.get(i).transform(Retemporalize.this);
-                        if (sli == null)
-                            return null; //fail
-                        sl.set(i, sli);
-                    }
-                    return CONJ.the(XTERNAL, sl);//.transform(this);
-                }
-            }
-            if (dt == dtNext && !xx.hasAny(Temporal))
-                return x; //no change
-
-
+            return transformTemporal(x, dt(x));
         } else {
-
-            assert (dt == DTERNAL);
-            dtNext = DTERNAL;
+            return CompoundTransform.super.transform(x, op, DTERNAL);
         }
+    }
+
+    default Term transformTemporal(Compound x, int dtNext) {
+        Subterms xx = x.subterms();
+        Op op = x.op();
+        if (dtNext == XTERNAL && op == CONJ && xx.hasAny(CONJ)) {
+            //recursive conj, decompose to events
+            ArrayHashSet<Term> s = new ArrayHashSet();
+            x.eventsWhile((when, zz) -> {
+                if (!zz.equals(x)) {
+                    s.add(zz);
+                }
+                return true;
+            }, 0, false, false, false, 0);
+            List<Term> sl = s.list;
+            int sln = sl.size();
+            if (sln > 1) {
+                for (int i = 0; i < sln; i++) {
+                    Term sli = sl.get(i).transform(Retemporalize.this);
+                    if (sli == null)
+                        return null; //fail
+                    sl.set(i, sli);
+                }
+                return CONJ.the(XTERNAL, sl);//.transform(this);
+            }
+        }
+        if (x.dt() == dtNext && !xx.hasAny(Temporal))
+            return x; //no change
 
         return CompoundTransform.super.transform(x, op, dtNext);
     }

@@ -74,16 +74,17 @@ public class SensorConcept extends WiredConcept implements FloatFunction<Term>, 
 
 
     @Override
-    public void add(Task t, NAR n) {
+    public boolean add(Task t, NAR n) {
 
         //feedback prefilter non-signal beliefs
         if (t.isBelief() && !(t instanceof SignalTask)) {
             PredictionFeedback.accept(t, beliefs, n);
             if (t.isDeleted())
-                return; //rejected
+                return false;
         }
 
         super.add(t, n);
+        return false;
     }
 
     @Nullable

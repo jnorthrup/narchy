@@ -70,7 +70,7 @@ abstract public class AbstractExec extends Exec {
 //                                Param.activateMerge, new HashMap<>(CAPACITY*2),
 //                                nar.random(), CAPACITY)
 
-                        new PriorityHijackBag<Activate,Activate>(Math.round(CAPACITY*1.5f), 4) {
+                        new PriorityHijackBag<>(Math.round(CAPACITY * 1.5f), 4) {
 
                             @Override
                             public Activate key(Activate value) {
@@ -81,13 +81,35 @@ abstract public class AbstractExec extends Exec {
                             protected Random random() {
                                 return nar.random();
                             }
+
+                            @Override
+                            public void onAdd(Activate value) {
+                                value.id.state(nar.terms.conceptBuilder.awake());
+                            }
+
+                            @Override
+                            public void onRemove(Activate value) {
+                                value.id.state(nar.terms.conceptBuilder.sleep());
+                            }
                         }
 
                         :
 
                         new CurveBag<>(
                                 Param.activateMerge, new HashMap<>(CAPACITY),
-                                nar.random(), CAPACITY);
+                                nar.random(), CAPACITY) {
+
+                            @Override
+                            public void onAdd(Activate value) {
+                                value.id.state(nar.terms.conceptBuilder.awake());
+                            }
+
+                            @Override
+                            public void onRemove(Activate value) {
+                                value.id.state(nar.terms.conceptBuilder.sleep());
+                            }
+                        }
+        ;
 
         super.start(nar);
     }

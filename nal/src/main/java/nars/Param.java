@@ -572,4 +572,10 @@ public abstract class Param {
     }
 
 
+    public static float overlapEvidence(float evi, float overlap) {
+        return
+                evi * Util.sqr(1f-Util.unitize(overlap));
+                //evi * (1f-overlap);
+                //overlap == 0 ? evi : 0; //prevents any overlap
+    }
 }

@@ -5,20 +5,20 @@ import jcog.pri.PLinkUntilDeleted;
 import jcog.pri.Pri;
 import jcog.pri.PriReference;
 import jcog.pri.op.PriForget;
+import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.control.Activate;
-import nars.control.BatchActivation;
-import nars.table.TemporalBeliefTable;
+import nars.term.Termed;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
-import static nars.truth.TruthFunctions.w2cSafe;
+import static nars.control.Activate.randomTemplateConcepts;
 
 public class Tasklinks {
 
@@ -52,16 +52,21 @@ public class Tasklinks {
 
         linkTask(t, priInput, cc.tasklinks(), overflow);
 
-        if (activate) {
-            float o = overflow.floatValue();
-            assert (o >= 0);
-            float priApplied = Math.max(0, priInput - o); //efective priority between 0 and pri
+        float o = overflow.floatValue();
+        assert (o >= 0);
 
+        float priApplied = Math.max(0, priInput - o); //efective priority between 0 and pri
+
+        float activation = priInput > Float.MIN_NORMAL ? priApplied / priInput : 0;
+
+        if (activation > Pri.EPSILON)
+            linkTaskTemplates(cc, t, priApplied, activation, nar);
+
+        if (activate) {
 
             //activation is the ratio between the effective priority and the input priority, a value between 0 and 1.0
             //it is a measure of the 'novelty' of a task as reduced by the priority of an equivalent existing tasklink
 
-            float activation = priInput > Float.MIN_NORMAL ? priApplied / priInput : 0;
             if (activation >= Param.ACTIVATION_THRESHOLD)
                 nar.eventTask.emit(t);
 
@@ -84,31 +89,92 @@ public class Tasklinks {
         }
     }
 
+    private static void linkTaskTemplates(Concept c, Task t, float priApplied, float activation, NAR nar) {
+
+        List<Termed> ts = c.templates();
+        int tss = ts.size();
+        if (tss > 0) {
+            List<Concept> cc = $.newArrayList(tss);
+            for (int i = 0, tsSize = ts.size(); i < tsSize; i++) {
+                Termed x = ts.get(i);
+                if (x.op().conceptualizable) {
+                    cc.add(nar.conceptualize(x));
+                }
+            }
+
+            int ccs = cc.size();
+            if (ccs > 0) {
+                float p = priApplied;
+                {
+                    List<Concept> l;
+                    if (ccs == 1) {
+                        l = cc;
+                    } else if (activation > (1f - 1f / ccs)) {
+                        //all of them but in a shuffle order
+                        Collections.shuffle(cc, nar.random());
+                        l = cc;
+                    } else {
+                        //sample from the set
+                        l = randomTemplateConcepts(
+                                cc, nar.random(), (int) Math.ceil(activation * ccs));
+                        ccs = l.size();
+                    }
+
+                    MutableFloat overflow = new MutableFloat();
+                    float pEach = p / ccs;
+                    if (pEach > Pri.EPSILON) {
+
+                        final float headRoom = 1f - pEach;
+                        for (int i = 0; i < ccs; i++) {
+                            float o = overflow.get();
+
+                            //spread overflow of saturated targets to siblings
+                            float change;
+                            if (o >= Pri.EPSILON) {
+                                change = Math.min(o, headRoom);
+                                overflow.subtract(change);
+                            } else {
+                                change = 0;
+                            }
+
+                            linkTask(t, pEach + change, l.get(i).tasklinks(), overflow);
+                        }
+                    }
+                }
+            }
+
+        }
+
+        //TODO also use BatchActivator
+
+
+    }
+
 //    public static void linkTask(Task t, Concept cc, NAR nar) {
 //        float p = t.pri();
 //        if (p == p)
 //            linkTask(t, p, cc, nar);
 //    }
 
-    public static void linkTask(Task task, Collection<Concept> targets) {
-        int numSubs = targets.size();
-        if (numSubs == 0)
-            return;
-
-        float tfa = task.priElseZero();
-        float tfaEach = tfa / numSubs;
-
-
-        for (Concept target : targets) {
-
-            linkTask(task, tfaEach, target);
-//                target.termlinks().putAsync(
-//                        new PLink(task.term(), tfaEach)
-//                );
-
-
-        }
-    }
+//    public static void linkTask(Task task, Collection<Concept> targets) {
+//        int numSubs = targets.size();
+//        if (numSubs == 0)
+//            return;
+//
+//        float tfa = task.priElseZero();
+//        float tfaEach = tfa / numSubs;
+//
+//
+//        for (Concept target : targets) {
+//
+//            linkTask(task, tfaEach, target);
+////                target.termlinks().putAsync(
+////                        new PLink(task.term(), tfaEach)
+////                );
+//
+//
+//        }
+//    }
 
     public static class TaskLinkForget extends PriForget<PriReference<Task>> {
         private final long now;

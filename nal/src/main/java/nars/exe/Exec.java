@@ -41,19 +41,28 @@ abstract public class Exec implements Executor {
     }
 
     public void execute(/*@NotNull*/ Stream<? extends ITask> input) {
-        execute(input.iterator());
+        input.forEach(this::execute);
     }
 
-
     public void execute(Object t) {
-        if (t instanceof ITask)
-            execute((ITask) t);
-        else if (t instanceof Consumer)
-            ((Consumer) t).accept(nar);
-        else if (t instanceof Runnable)
-            execute((Runnable) t);
-        else
-            throw new UnsupportedOperationException(t + " unexecutable");
+        executeInline(t);
+    }
+
+    protected void executeInline(Object t) {
+        try {
+            if (t instanceof ITask) {
+                ITask x = (ITask)t;
+                while ((x = x.run(nar))!=null);
+            } else if (t instanceof Consumer)
+                ((Consumer) t).accept(nar);
+            else if (t instanceof Runnable)
+                ((Runnable)t).run();
+            else
+                throw new UnsupportedOperationException(t + " unexecutable");
+        } catch (Throwable e) {
+            logger.error("{} {}", t, e);
+        }
+
     }
 
     @Override
@@ -65,25 +74,6 @@ abstract public class Exec implements Executor {
         }
     }
 
-    protected void execute(ITask x) {
-
-        try {
-
-            Iterable<? extends ITask> y = x.run(nar);
-            if (y != null)
-                execute(y.iterator());
-
-        } catch (Throwable e) {
-            if (Param.DEBUG) {
-                throw e;
-            } else {
-                logger.error("{} {}", x, e); //(Param.DEBUG) ? e : e.getMessage());
-                x.delete();
-            }
-        }
-
-
-    }
 
     abstract public void fire(Predicate<Activate> each);
 

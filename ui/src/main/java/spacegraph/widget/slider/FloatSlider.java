@@ -81,8 +81,8 @@ public class FloatSlider extends Widget {
         slider.value(v);
     }
 
-    public void valueRelative(float v) {
-        this.slider.p(v);
+    public void valueRelative(float p) {
+        this.slider.changed(p);
     }
 
     public FloatSlider on(ObjectFloatProcedure<BaseSlider> c) {

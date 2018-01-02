@@ -2,13 +2,10 @@ package nars.exe;
 
 import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
-import jcog.Texts;
 import jcog.Util;
 import jcog.decide.Roulette;
 import jcog.exe.AffinityExecutor;
-import jcog.math.MutableInteger;
 import jcog.math.random.XoRoShiRo128PlusRandom;
-import jcog.pri.mix.PSink;
 import nars.$;
 import nars.NAR;
 import nars.Task;
@@ -367,38 +364,27 @@ public class MultiExec extends AbstractExec {
 
     @Override
     public void execute(Object t) {
-        if ((t instanceof Task)) {
-            execute((ITask) t);
+
+        if (t instanceof Task || isWorker(Thread.currentThread())) {
+            executeInline(t);
         } else {
-            if (isWorker(Thread.currentThread())) {
-                executeInline(t);
-            } else {
-                queue(t);
-            }
+            queue(t);
         }
+
     }
 
-    @Override
-    public void cycle() {
-        super.cycle();
 
-//        long lagTime = this.lagTime.get();
-//        if (lagTime > 0) {
-//            System.err.println("lag: " + Texts.timeStr(lagTime));
-//        }
-    }
+//    @Override
+//    public void cycle() {
+//        super.cycle();
+//
+////        long lagTime = this.lagTime.get();
+////        if (lagTime > 0) {
+////            System.err.println("lag: " + Texts.timeStr(lagTime));
+////        }
+//    }
 
-    void executeInline(Object t) {
-        try {
-            if (t instanceof Runnable) {
-                ((Runnable) t).run();
-            } else {
-                super.execute(t);
-            }
-        } catch (Throwable e) {
-            logger.error("{} {}", t, e);
-        }
-    }
+
 
     protected void queue(Object t) {
         long lagStart = Long.MAX_VALUE;
@@ -412,7 +398,6 @@ public class MultiExec extends AbstractExec {
             Object next = q.poll();
             if (next != null)
                 executeInline(next);
-                //super.execute(next);
         }
 
         if (lagStart != Long.MAX_VALUE) {

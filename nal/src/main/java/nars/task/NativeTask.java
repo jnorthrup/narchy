@@ -53,7 +53,7 @@ public abstract class NativeTask implements ITask {
      */
     public static class RunTask extends NativeTask {
 
-        final Runnable run;
+        public final Runnable run;
 
         public RunTask(Runnable runnable) {
             run = runnable;
@@ -65,12 +65,13 @@ public abstract class NativeTask implements ITask {
         }
 
         @Override
-        public @Nullable Iterable<? extends ITask> run(NAR n) {
+        public ITask run(NAR n) {
             run.run();
             return null;
         }
 
     }
+
 
     public static class SchedTask extends NativeTask implements Comparable<SchedTask>, Consumer<NAR> {
 
@@ -98,7 +99,7 @@ public abstract class NativeTask implements ITask {
         }
 
         @Override
-        public final @Nullable Iterable<? extends ITask> run(NAR n) {
+        public final ITask run(NAR n) {
             if (then instanceof Consumer)
                 ((Consumer) then).accept(n);
             else if (then instanceof Runnable)
@@ -160,6 +161,7 @@ public abstract class NativeTask implements ITask {
 //        }
 //    }
 //
+
     /**
      * wraps a Runnable
      */
@@ -177,7 +179,7 @@ public abstract class NativeTask implements ITask {
         }
 
         @Override
-        public @Nullable Iterable<? extends ITask> run(NAR x) {
+        public ITask run(NAR x) {
             run.accept(x);
             return null;
         }

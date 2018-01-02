@@ -6,7 +6,7 @@ import jcog.bloom.hash.BytesHashProvider;
 import jcog.list.FasterList;
 import jcog.pri.PLink;
 import nars.concept.Concept;
-import nars.concept.TaskConcept;
+import nars.control.proto.TaskAdd;
 import nars.op.Operator;
 import nars.task.DerivedTask;
 import nars.task.ITask;
@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.BiFunction;
 
-import static java.util.Collections.singleton;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.w2c;
@@ -963,7 +962,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
 
     @Override
-    default @Nullable Iterable<? extends ITask> run(NAR n) {
+    default ITask run(NAR n) {
 
         n.emotion.onInput(this, n);
 
@@ -993,9 +992,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
                     delete();
 
-                    input(n, finalResult.term(), finalResult);
-
-                    return null;
+                    return input(n, finalResult);
 
                 } else {
                     if (y.op() == Op.BOOL)
@@ -1009,14 +1006,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                     result = yy != null ? clone(this, yy.getOne().negIf(yy.getTwo())) : null;
                 }
 
-                delete();
+                delete(); //delete intermediate
 
-                if (result == null) {
-                    return null; //result = Operator.log(n.time(), $.p(x, y));
-                } else {
-                    return result.run(n); //recurse
-                }
-
+                return result;
             }
 
             //invoke possible Operation
@@ -1034,11 +1026,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                         //TODO add a pre-test guard here to avoid executing a task which will be inconsequential anyway
                         Task yy = o.getOne().execute.apply(this, n);
                         if (yy != null && !this.equals(yy)) {
-                            return singleton(yy);
+                            return yy;
                         }
                     } catch (Throwable xtt) {
                         //n.logger.error("{} {}", this, t);
-                        return singleton(Operator.error(this, xtt, n.time()));
+                        return Operator.error(this, xtt, n.time());
                     }
                     if (cmd) {
                         n.eventTask.emit(this);
@@ -1052,23 +1044,18 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
         if (!cmd) {
 
-            input(n, y, this);
+            return input(n, this);
 
         } else {
+            //default: Echo
             n.out(term());
         }
 
         return null;
     }
 
-    static void input(NAR n, Term y, Task t) {
-        @Nullable Concept c = n.conceptualize(y);
-        if (c instanceof TaskConcept) {
-            ((TaskConcept) c).add(t, n);
-        } else {
-            if (t.isBeliefOrGoal() || Param.DEBUG_EXTRA)
-                throw new RuntimeException(y + " does not resolve a TaskConcept yet a task expects to add itself to it");
-        }
+    static ITask input(NAR n, Task t) {
+        return new TaskAdd(t);
     }
 
     /**

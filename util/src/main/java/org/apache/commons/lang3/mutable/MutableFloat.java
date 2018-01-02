@@ -30,7 +30,7 @@ public class MutableFloat extends Number implements FloatSupplier {
 
 
     /** The mutable value. */
-    private float value;
+    private volatile float value;
 
     /**
      * Constructs a new MutableFloat with the default value of zero.

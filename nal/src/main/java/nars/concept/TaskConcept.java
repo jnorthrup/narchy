@@ -128,8 +128,8 @@ public class TaskConcept extends NodeConcept implements Concept {
      * Directly process a new task, if belief tables agree to store it.
      * Called exactly once on each task.
      */
-    public void add(Task t, NAR n) {
-        table(t.punc()).add(t, this, n);
+    public boolean add(Task t, NAR n) {
+        return table(t.punc()).add(t, this, n);
     }
 
     public void value(Task t, float activation, NAR n) {

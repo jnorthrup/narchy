@@ -25,21 +25,13 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface ITask extends Priority {
 
-
-    /**
-     * note: the first null in the returned array will break the iteration because it means its the end of the list (all following it should also be null)
-     */
-    @Nullable Iterable<? extends ITask> run(NAR n);
-
-
+    ITask run(NAR n);
 
     byte punc();
 
     default boolean isInput() {
         return false;
     }
-
-    default boolean persist() { return false; }
 
     /**
      * fluent form of setPri which returns this class

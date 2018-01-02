@@ -118,14 +118,21 @@ public class ReflectionSurface<X> extends Grid {
                         //yLabel!=null ? yLabel : sx.toString(),
                         new Grid(
                                  //enable
-                                AllOrNothingSlider.AllOrNothingSlider(new FloatSlider(s.isOn() ? 1f : 0f, 0f, 1f)),
-                                new CheckBox("On").set(s.isOn()).on((ToggleButton tb, boolean on)->{
-                                    if (on) {
-                                        x.on(key);
-                                    } else {
+                                AllOrNothingSlider.AllOrNothingSlider(new FloatSlider(s.isOn() ? 1f : 0f, 0f, 1f).on((f, v)->{
+                                    if (v < 0.1f) {
                                         x.off(key);
+                                    } else {
+                                        x.on(key);
+                                        //TODO set aux power parameter
                                     }
-                                }),
+                                })),
+//                                new CheckBox("On").set(s.isOn()).on((ToggleButton tb, boolean on)->{
+//                                    if (on) {
+//                                        x.on(key);
+//                                    } else {
+//                                        x.off(key);
+//                                    }
+//                                }),
                                 new WindowToggleButton("..", ()->s)
                         )));
             }

@@ -3,6 +3,7 @@ package nars.concept.state;
 import jcog.Util;
 import jcog.math.MutableInteger;
 import nars.concept.Concept;
+import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import org.jetbrains.annotations.NotNull;
@@ -16,13 +17,12 @@ public final class DefaultConceptState extends ConceptState {
 
     public int beliefsMaxEte;
     public int goalsMaxEte;
-    public final int beliefsMinEte;
-    public final int goalsMinEte;
-    public final MutableInteger questionsMax;
+    private final int beliefsMinEte;
+    private final int goalsMinEte;
+    private final MutableInteger questionsMax;
 
-    @NotNull
     //public final MutableInteger termLinksCapacityMax, termLinksCapacityMin, taskLinksCapacityMax, taskLinksCapacityMin;
-    public final IntToIntFunction termlinksCapacity, tasklinksCapacity;
+    private final IntToIntFunction termlinksCapacity, tasklinksCapacity;
 
     public int beliefsMaxTemp;
     public int beliefsMinTemp;
@@ -97,12 +97,18 @@ public final class DefaultConceptState extends ConceptState {
             max = eternalOrTemporal ? goalsMaxEte : goalsMaxTemp;
             min = eternalOrTemporal ? goalsMinEte : goalsMinTemp;
         }
-        return Util.lerp(Util.unitize((-1 + concept.complexity()) / 32f), max, min);
+
+        int c = Util.lerp(Util.unitize((-1 + concept.complexity()) / 32f), max, min);
+
+        if (concept instanceof PermanentConcept)
+            c *= 2;//double for PermanentConcept's
+
+        return c;
         //return (int) Math.ceil(max * Math.min(1f, (1f / (compoundConcept.volume()/ beliefComplexityCapacity))));
     }
 
     @Override
-    public int linkCap(@NotNull Concept concept, boolean termOrTask) {
+    public int linkCap(Concept concept, boolean termOrTask) {
         if (termOrTask) {
 
             return termlinksCapacity.valueOf(concept.volume());

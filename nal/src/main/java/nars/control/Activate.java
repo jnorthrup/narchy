@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import static nars.link.Tasklinks.linkTask;
 
 /**
  * concept firing, activation, etc
@@ -57,11 +56,6 @@ public class Activate extends PLink<Concept> implements Termed {
         termlinks.commit(termlinks.forget(linkForgetting));
 
 
-        //TODO add a termlink vs. tasklink balance parameter
-        int TEMPLATES_LINKED_PER_TASKLINK =
-                //premisesMax;
-                Math.max(1, Math.round(id.templates().size() / ((((float) (premisesMax) / termlinksPerTasklink)))));
-
         //(int) Math.ceil((float) Math.sqrt(premisesMax));
 
 //        int tlSampled = Math.min(ntermlinks, TERMLINKS_SAMPLED);
@@ -80,7 +74,6 @@ public class Activate extends PLink<Concept> implements Termed {
         if (ntasklinks == 0)
             return Collections.emptyList();
 
-        Random rng = nar.random();
 
         //apply the nar valuation to further refine selection of the tasks collected in the oversample prestep
         List<Premise> next = new FasterList(premisesMax);
@@ -98,13 +91,7 @@ public class Activate extends PLink<Concept> implements Termed {
             Task task = tasklink.get();
             if (task != null) { //HACK
 
-                //propagate this task via tasklinks inserted to random template concepts
-                //does not activate those concepts
-                //TODO also use BatchActivator
-                Collection<Concept> l = randomTemplateConcepts(
-                        conceptualizedTemplates, rng, TEMPLATES_LINKED_PER_TASKLINK /* heuristic */, nar);
-                if (l != null)
-                    linkTask(task, l);
+
 
                 termlinks.sample(termlinksSampled, (termlink) -> {
 
@@ -145,7 +132,7 @@ public class Activate extends PLink<Concept> implements Termed {
     }
 
 
-    private static List<Concept> randomTemplateConcepts(List<Concept> tt, Random rng, int count, NAR nar) {
+    public static List<Concept> randomTemplateConcepts(List<Concept> tt, Random rng, int count) {
 
 //            {
 //                //this allows the tasklink, if activated to be inserted to termlinks of this concept
