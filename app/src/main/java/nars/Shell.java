@@ -11,15 +11,15 @@ import com.googlecode.lanterna.terminal.IOSafeTerminal;
 import com.googlecode.lanterna.terminal.TerminalResizeListener;
 import com.googlecode.lanterna.terminal.swing.*;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
+import gnu.getopt.Getopt;
+import gnu.getopt.LongOpt;
 import nars.audio.NARHear;
 import nars.gui.Vis;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Scale;
-import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.input.Finger;
 import spacegraph.layout.Grid;
-import spacegraph.layout.VSplit;
 import spacegraph.widget.console.ConsoleTerminal;
 import spacegraph.widget.slider.XYSlider;
 import spacegraph.widget.text.LabeledPane;
@@ -34,10 +34,66 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
-import static java.awt.SystemColor.window;
 import static spacegraph.SpaceGraph.window;
 
 public class Shell {
+
+
+    public static void main(String[] argv) {
+
+        StringBuffer telnetPort;
+        LongOpt[] longopts = new LongOpt[]{
+                new LongOpt("help", LongOpt.NO_ARGUMENT, null, 'h'),
+                new LongOpt("gui", LongOpt.NO_ARGUMENT, null, 'g'),
+                new LongOpt("telnet", LongOpt.REQUIRED_ARGUMENT, telnetPort = new StringBuffer(), 't')
+        };
+//        longopts[1] = new LongOpt("outputdir", LongOpt.REQUIRED_ARGUMENT, sb, 'o');
+//        longopts[2] = new LongOpt("maximum", LongOpt.OPTIONAL_ARGUMENT, null, 2);
+//        //
+        Getopt g = new Getopt(Shell.class.getName(), argv, "" /*"-:bc::d:hW;"*/, longopts);
+//        g.setOpterr(false); // We'll do our own error handling
+        //
+        int c;
+        while ((c = g.getopt()) != -1)
+            switch (c) {
+
+                //
+                case 'g':
+                    window(Vis.top(NARchy.ui()), 1024, 800);
+                    return;
+
+                case 't':
+                    System.out.println("Telnet server: TODO");
+                    return;
+//                //
+//                case ':':
+//                    System.out.println("Doh! You need an argument for option " +
+//                            (char) g.getOptopt());
+//                    break;
+//                //
+//                case '?':
+//                    System.out.println("The option '" + (char) g.getOptopt() +
+//                            "' is not valid");
+//                    break;
+//                //
+                default:
+                    System.err.println("getopt() returned " + c);
+                    break;
+            }
+
+        System.out.println("Usage:");
+        System.out.println(" --gui\t\tstart gui");
+        System.out.println(" --telnet <port>\t\tstart telnet server on given port");
+        System.out.println(" --js \"<javascript>\"\t\texecute NARjs code");
+        System.out.println(" --n \"<narsese>\"\t\texecute narsese command"); //daemonize?
+
+        //
+
+//        for (int i = g.getOptind(); i < argv.length; i++)
+//            System.out.println("Non option argv element: " + argv[i] + "\n");
+
+//        new Shell(NARchy.ui());
+    }
 
     public static final float TERMINAL_DISPLAY_FPS = 8f;
 
@@ -58,7 +114,7 @@ public class Shell {
 
 
             Surface menu = new Scale(new LabeledPane("Text Scale", new Grid(
-                new XYSlider()
+                    new XYSlider()
             )), 0.5f);
 
             this.console = new ConsoleTerminal(term) {
@@ -70,12 +126,12 @@ public class Shell {
 
                 float scale = 80f;
 
-                Consumer<Finger> pressable = Finger.clicked(0, ()->{
-                        if (menuShown.compareAndSet(false, true)) {
-                            add(menu);
-                        } else  if (menuShown.compareAndSet(true, false)) {
-                            remove(menu);
-                        }
+                Consumer<Finger> pressable = Finger.clicked(0, () -> {
+                    if (menuShown.compareAndSet(false, true)) {
+                        add(menu);
+                    } else if (menuShown.compareAndSet(true, false)) {
+                        remove(menu);
+                    }
                 });
 
                 @Override
@@ -166,10 +222,6 @@ public class Shell {
 
 
         new TextUI(nar, tt, TERMINAL_DISPLAY_FPS);
-    }
-
-    public static void main(String[] args) {
-        new Shell(NARchy.ui());
     }
 
 

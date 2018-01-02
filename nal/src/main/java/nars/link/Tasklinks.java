@@ -57,12 +57,14 @@ public class Tasklinks {
 
         float priApplied = Math.max(0, priInput - o); //efective priority between 0 and pri
 
-        float activation = priInput > Float.MIN_NORMAL ? priApplied / priInput : 0;
 
-        if (activation > Pri.EPSILON)
-            linkTaskTemplates(cc, t, priApplied, activation, nar);
+
+        if (priApplied > Pri.EPSILON)
+            linkTaskTemplates(cc, t, priApplied, nar);
 
         if (activate) {
+
+            float activation = priInput > Float.MIN_NORMAL ? priApplied / priInput : 0;
 
             //activation is the ratio between the effective priority and the input priority, a value between 0 and 1.0
             //it is a measure of the 'novelty' of a task as reduced by the priority of an equivalent existing tasklink
@@ -89,7 +91,7 @@ public class Tasklinks {
         }
     }
 
-    private static void linkTaskTemplates(Concept c, Task t, float priApplied, float activation, NAR nar) {
+    private static void linkTaskTemplates(Concept c, Task t, float priApplied, NAR nar) {
 
         List<Termed> ts = c.templates();
         int tss = ts.size();
@@ -109,16 +111,16 @@ public class Tasklinks {
                     List<Concept> l;
                     if (ccs == 1) {
                         l = cc;
-                    } else if (activation > (1f - 1f / ccs)) {
-                        //all of them but in a shuffle order
+                    } else { //if (activation > (1f - 1f / ccs)) {
+                        //all of them but in a random order
                         Collections.shuffle(cc, nar.random());
                         l = cc;
-                    } else {
+                    } /*else {
                         //sample from the set
                         l = randomTemplateConcepts(
                                 cc, nar.random(), (int) Math.ceil(activation * ccs));
                         ccs = l.size();
-                    }
+                    }*/
 
                     MutableFloat overflow = new MutableFloat();
                     float pEach = p / ccs;

@@ -21,7 +21,7 @@ import java.util.function.*;
  */
 public class FasterList<X> extends FastList<X> {
 
-    static final Object[] ZERO_SIZED_ARRAY = ArrayUtils.EMPTY_OBJECT_ARRAY;
+
     private static final int INITIAL_SIZE_IF_GROWING_FROM_EMPTY = 8;
 
 
@@ -83,7 +83,7 @@ public class FasterList<X> extends FastList<X> {
 
     public void clearHard() {
         this.size = 0;
-        this.items = (X[]) ZERO_SIZED_ARRAY;
+        this.items = (X[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
     }
 
     public X removeLast() {

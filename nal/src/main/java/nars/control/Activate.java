@@ -9,6 +9,7 @@ import jcog.pri.PriReference;
 import jcog.pri.op.PriForget;
 import nars.$;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.link.TaskLinkCurveBag;
@@ -17,7 +18,6 @@ import nars.link.TermLinks;
 import nars.term.Term;
 import nars.term.Termed;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -95,7 +95,7 @@ public class Activate extends PLink<Concept> implements Termed {
 
                 termlinks.sample(termlinksSampled, (termlink) -> {
 
-                    Premise p = Premise.the(tasklink, termlink);
+                    Premise p = Premise.the(tasklink, termlink, Param.taskTermLinksToPremise);
                     if (p != null)
                         next.add(p);
 

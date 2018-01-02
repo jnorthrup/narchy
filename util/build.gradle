@@ -3,7 +3,7 @@ dependencies {
     
     compile group: 'org.jetbrains', name: 'annotations', version: '15.0'
 
-    compile group: 'org.eclipse.collections', name: 'eclipse-collections', version: '9.1.0.M2'
+    compile group: 'org.eclipse.collections', name: 'eclipse-collections', version: '9.1.0'
 
     compile(group: 'com.conversantmedia', name: 'disruptor', version: '1.2.11') {
         exclude(module:'slf4j-api')
@@ -36,7 +36,7 @@ dependencies {
 //    compile group: 'org.junit.platform', name: 'junit-platform-runner', version: '1.0.2'
 
     compile group: 'com.github.ben-manes.caffeine', name: 'caffeine', version: '2.6.1'
-    compile(group: 'net.openhft', name: 'affinity', version: '3.1.2') {
+    compile(group: 'net.openhft', name: 'affinity', version: '3.1.6') {
         exclude(module: 'slf4j-api')
         exclude(module: 'annotations')
     }

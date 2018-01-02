@@ -81,18 +81,18 @@ public abstract class Param {
     public static final PriMerge activateMerge = PriMerge.plus;
 
     public static final PriMerge termlinkMerge =
-            PriMerge.max;
-            //PriMerge.plus;
+            //PriMerge.max;
+            PriMerge.plus;
 
     public static final PriMerge tasklinkMerge =
-            PriMerge.max;
-            //PriMerge.plus; //not safe to plus without enough headroom
+            //PriMerge.max;
+            PriMerge.plus; //not safe to plus without enough headroom
 
 //    /**
 //     * budgets premises from their links, but isolated from affecting the derivation budgets, which are from the tasks (and not the links)
 //     */
-//    public static final FloatFloatToFloatFunction termTaskLinkToPremise =
-//            Util::or;
+    public static final FloatFloatToFloatFunction taskTermLinksToPremise =
+            Util::or;
 //            //Util::and;
 //            //UtilityFunctions::aveGeo;
 //            //UtilityFunctions::aveAri;

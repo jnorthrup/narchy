@@ -4,6 +4,7 @@ package spacegraph.audio;
 import marytts.LocalMaryInterface;
 import marytts.MaryInterface;
 import marytts.exceptions.SynthesisException;
+import marytts.util.MaryRuntimeUtils;
 import marytts.util.data.BufferedDoubleDataSource;
 import marytts.util.data.audio.DDSAudioInputStream;
 import marytts.util.data.audio.MaryAudioUtils;
@@ -30,6 +31,12 @@ public class MaryTTSpeech {
 
         LocalMaryInterface m;
         try {
+            try {
+                MaryRuntimeUtils.ensureMaryStarted();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             m = new LocalMaryInterface(); //this thing has a bad version check BAD BAD BAD
             //logger.info("Speech System READY");
         } catch (Exception e) {
@@ -111,8 +118,6 @@ public class MaryTTSpeech {
      * synchronous
      */
     public static DDSoundProducer speech(String text) throws SynthesisException {
-
-
 
 
         AudioInputStream audio = marytts.generateAudio(text);

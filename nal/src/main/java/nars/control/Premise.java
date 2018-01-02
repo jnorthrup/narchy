@@ -7,6 +7,7 @@ package nars.control;
 import jcog.Util;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
+import jcog.util.FloatFloatToFloatFunction;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -35,7 +36,7 @@ import static nars.time.Tense.ETERNAL;
  */
 public class Premise extends PLink<Pair<Task,Term>> {
 
-    @Nullable static Premise the(PriReference<Task> tasklink, PriReference<Term> termlink) {
+    @Nullable static Premise the(PriReference<Task> tasklink, PriReference<Term> termlink, FloatFloatToFloatFunction merge) {
         float pri = tasklink.pri();
         if (pri!=pri)
             return null;
@@ -44,7 +45,7 @@ public class Premise extends PLink<Pair<Task,Term>> {
         if (t == null)
             return null;
 
-        return new Premise(t, termlink.get(), pri * termlink.priElseZero());
+        return new Premise(t, termlink.get(), merge.apply(pri, termlink.priElseZero()));
     }
 
     Premise(Task task, Term termlink, float taskLinkPri) {
