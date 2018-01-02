@@ -14,22 +14,24 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Signal sampled from system sound devices (via Java Media)
  */
 public class AudioSource implements WaveSource {
-    private final FloatParam frameRate;
+    public final FloatParam frameRate;
+    public final int device;
     private TargetDataLine line;
-    private final Mixer mixer;
-    private final DataLine.Info dataLineInfo;
-    private final AudioFormat audioFormat;
+    public final Mixer mixer;
+    public final DataLine.Info dataLineInfo;
+    public final AudioFormat audioFormat;
 
     private byte[] audioBytes;
     private short[] samples;
     private final int bytesPerSample;
     public final FloatParam gain = new FloatParam(1f, 0, 32f);
 
-    private short sampleMin, sampleMax;
+//    private short sampleMin, sampleMax;
 
 
 
     public AudioSource(int device, float frameRate) {
+        this.device = device;
         this.frameRate = new FloatParam(frameRate, 1f, 40f);
 
         // Pick a format...
@@ -38,18 +40,28 @@ public class AudioSource implements WaveSource {
         audioFormat = new AudioFormat(22050, 16, 1, true, false);
         bytesPerSample = 2;
 
-        // Get TargetDataLine with that format
-        Mixer.Info[] minfoSet = AudioSystem.getMixerInfo();
-        System.out.println("Devices:\n\t" + Joiner.on("\n\t").join(minfoSet));
 
-        mixer = AudioSystem.getMixer(minfoSet[device]);
-        System.out.println(mixer);
-        System.out.println(mixer.getMixerInfo());
-        System.out.println(Arrays.toString(mixer.getControls()));
 
         dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
         System.out.println(dataLineInfo);
 
+        Mixer.Info[] minfoSet = AudioSystem.getMixerInfo();
+        mixer = AudioSystem.getMixer(minfoSet[device]);
+    }
+
+    public void printDevices() {
+        // Get TargetDataLine with that format
+        Mixer.Info[] minfoSet = AudioSystem.getMixerInfo();
+        System.out.println("Devices:\n\t" + Joiner.on("\n\t").join(minfoSet));
+    }
+    public static void print() {
+        Mixer.Info[] minfoSet = AudioSystem.getMixerInfo();
+
+        for (Mixer.Info i : minfoSet)
+            System.out.println(i);
+//        System.out.println(mixer);
+//        System.out.println(mixer.getMixerInfo());
+//        System.out.println(Arrays.toString(mixer.getControls()));
     }
 
     @Override public int channelsPerSample() {
@@ -141,8 +153,8 @@ public class AudioSource implements WaveSource {
             buffer[j++] = s * gain;
         }
         Arrays.fill(buffer, end, buffer.length, 0);
-        this.sampleMin = min;
-        this.sampleMax = max;
+//        this.sampleMin = min;
+//        this.sampleMax = max;
 
         line.flush();
         busy.set(false);

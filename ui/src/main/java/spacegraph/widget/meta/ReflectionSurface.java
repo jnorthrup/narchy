@@ -7,9 +7,13 @@ import jcog.math.FloatParam;
 import org.apache.commons.lang.StringUtils;
 import spacegraph.Surface;
 import spacegraph.layout.Grid;
+import spacegraph.layout.VSplit;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
+import spacegraph.widget.button.ToggleButton;
+import spacegraph.widget.slider.AllOrNothingSlider;
 import spacegraph.widget.slider.FloatSlider;
+import spacegraph.widget.text.Label;
 import spacegraph.widget.text.LabeledPane;
 
 import java.lang.reflect.Field;
@@ -56,12 +60,9 @@ public class ReflectionSurface<X> extends Grid {
             yLabel = x.toString();
 
         if (x instanceof Surface) {
-            if (((Surface)x).parent==null) {
-                //l.add(col(new Label(k), (Surface)y));
-                if (yLabel!=null) {
-                    target.add(new LabeledPane(yLabel, (Surface) x));
-                } else
-                    target.add((Surface) x);
+            Surface sx = (Surface) x;
+            if (sx.parent==null) {
+                target.add(new LabeledPane(yLabel, sx));
             }
             return;
         }
@@ -105,11 +106,29 @@ public class ReflectionSurface<X> extends Grid {
         return !m.isEmpty() ? grid(m) : null;
     }
 
-    private void collectServices(Services x, List<Surface> l) {
-        x.stream().forEach((s) -> {
-            seen.add(s);
-            String label = StringUtils.abbreviate(s.toString(), 16);
-            l.add(new WindowToggleButton(label, () -> new ReflectionSurface(s)));
+    private void collectServices(Services<Object,Object> x, List<Surface> l) {
+
+        x.entrySet().forEach((ks) -> {
+            Object key = ks.getKey();
+            Services.Service<?> s = ks.getValue();
+            if (seen.add(s)) {
+                String label = StringUtils.abbreviate(s.toString(), 16);
+                l.add(new LabeledPane(
+                        label,
+                        //yLabel!=null ? yLabel : sx.toString(),
+                        new Grid(
+                                 //enable
+                                AllOrNothingSlider.AllOrNothingSlider(new FloatSlider(s.isOn() ? 1f : 0f, 0f, 1f)),
+                                new CheckBox("On").set(s.isOn()).on((ToggleButton tb, boolean on)->{
+                                    if (on) {
+                                        x.on(key);
+                                    } else {
+                                        x.off(key);
+                                    }
+                                }),
+                                new WindowToggleButton("..", ()->s)
+                        )));
+            }
         });
     }
 

@@ -12,6 +12,7 @@ import com.googlecode.lanterna.terminal.TerminalResizeListener;
 import com.googlecode.lanterna.terminal.swing.*;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import nars.audio.NARHear;
+import nars.gui.Vis;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Scale;
 import spacegraph.SpaceGraph;
@@ -32,6 +33,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+
+import static java.awt.SystemColor.window;
+import static spacegraph.SpaceGraph.window;
 
 public class Shell {
 
@@ -123,16 +127,17 @@ public class Shell {
 
         ConsoleWidget c = new ConsoleWidget(new TextUI(nar).session(TERMINAL_DISPLAY_FPS));
 
-        NARHear audio = new NARHear(nar);
-        audio.runFPS(0.2f);
-        audio.sensors.keySet().forEach(s -> s.sensor.pri(()->0.05f));
+        NARHear audio = new NARHear(nar, 0.2f);
+        //audio.sensors.keySet().forEach(s -> s.sensor.pri(()->0.05f));
 
 
-        SpaceGraph.window(
-                //c,
-                new VSplit(c, audio.newMonitorPane(), 0.1f),
-                1000, 800
-        );
+        window(Vis.top(nar), 1024, 1024);
+
+//        SpaceGraph.window(
+//                //c,
+//                new VSplit(c, audio.newMonitorPane(), 0.1f),
+//                1000, 800
+//        );
 
     }
 

@@ -356,14 +356,7 @@ abstract public class NAgentX extends NAgent {
 //            window(new ConceptView(a.happy,n), 800, 600);
 
 
-            window(new TabPane(Map.of(
-                "nar", ()->Vis.reflect(n),
-                "exe", ()-> ExecCharts.exePanel(n),
-                "can", ()-> ExecCharts.causePanel(n),
-                "svc", ()-> Vis.reflect(n.services),
-                "emote", ()-> new Vis.EmotionPlot(64, a),
-                "concepts", ()-> bagHistogram((Iterable) ()->n.conceptsActive().iterator(), 8)
-            )), 800, 800);
+            window(Vis.top(a.nar), 800, 800);
 //            window(
 //                    ExecCharts.exePanel(n, a), 800, 800);
 
@@ -531,6 +524,8 @@ abstract public class NAgentX extends NAgent {
         NAR nar = a.nar;
         a.nar.runLater(() -> {
             window(grid(
+
+                    new Vis.EmotionPlot(64, a),
 
                     //new WindowButton("log", () -> Vis.logConsole(nar, 80, 25, new FloatParam(0f))),
                     new PushButton("dump", () -> {

@@ -31,7 +31,7 @@ public class FloatSlider extends Widget {
 
         children(
             new Scale((slider = new XSlider(v, min, max)), 0.95f),
-            label.scale(0.8f).align(AspectAlign.Align.Center)
+            label.scale(0.85f).align(AspectAlign.Align.Center)
         );
         updateText();
 
@@ -80,6 +80,11 @@ public class FloatSlider extends Widget {
     public void value(float v) {
         slider.value(v);
     }
+
+    public void valueRelative(float v) {
+        this.slider.p(v);
+    }
+
     public FloatSlider on(ObjectFloatProcedure<BaseSlider> c) {
         slider.on(c);
         return this;

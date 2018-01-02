@@ -621,9 +621,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     /**
      * asynchronously adds the service
      */
-    public void on(NARService s) {
-        runLater(() -> services.add(s.term(), s));
+    public final void on(NARService s) {
+        runLater(() -> services.add(s.term(), s, true));
     }
+    public final void off(NARService s) {
+        runLater(() -> services.add(s.term(), s, false));
+    }
+
 
     /**
      * simplified wrapper for use cases where only the arguments of an operation task, and not the task itself matter

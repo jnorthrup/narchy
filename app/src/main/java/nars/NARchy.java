@@ -29,6 +29,7 @@ public class NARchy extends NARS {
 //                        return true;
 //                    }
 //                })
+                .deriverAdd(1, 6)
                 .time(new RealTime.CS().durFPS(10f))
                 //.memory("/tmp/nal")
                 .get();

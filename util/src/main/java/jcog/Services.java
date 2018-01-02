@@ -20,6 +20,8 @@ import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
@@ -251,12 +253,27 @@ public class Services<X, C>  {
     public Stream<Service<C>> stream() {
         return services.values().stream();
     }
+    public Set<Map.Entry<X, Service<C>>> entrySet() {
+        return services.entrySet();
+    }
 
     public void add(X key, Service<C> s) {
         add(key, s, true);
     }
 
 
+    public void on(X key) {
+        Service<C> s = services.get(key);
+        if (s.isOff()) {
+            s.start(this, exe);
+        }
+    }
+    public void off(X key) {
+        Service<C> s = services.get(key);
+        if (s.isOn()) {
+            s.stop(this, exe, null);
+        }
+    }
     public void add(X key, Service<C> s, boolean start) {
         Service<C> removed = services.put(key, s);
 

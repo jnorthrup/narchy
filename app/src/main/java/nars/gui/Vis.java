@@ -18,17 +18,18 @@ import spacegraph.widget.console.ConsoleTerminal;
 import spacegraph.widget.console.TextEdit;
 import spacegraph.widget.meta.ReflectionSurface;
 import spacegraph.widget.meter.Plot2D;
+import spacegraph.widget.tab.TabPane;
 import spacegraph.widget.text.Label;
 import spacegraph.widget.text.LabeledPane;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static spacegraph.layout.Grid.col;
-import static spacegraph.layout.Grid.row;
 
 /**
  * SpaceGraph-based visualization utilities for NAR analysis
@@ -88,9 +89,9 @@ public class Vis {
 
         float[] d = new float[bins];
         return col(
-                        new HistogramChart(
-                                () -> PriReference.histogram(bag, d),
-                                new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f))
+                new HistogramChart(
+                        () -> PriReference.histogram(bag, d),
+                        new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f))
 
 //                Vis.pane("Concept Volume",
 //                        new HistogramChart(
@@ -310,11 +311,23 @@ public class Vis {
         return new ReflectionSurface<>(c);
     }
 
+    public static Surface top(NAR n) {
+        return new TabPane(Map.of(
+                "shl", () -> new ConsoleTerminal(new nars.TextUI(n).session(10f)),
+                "nar", () -> Vis.reflect(n),
+                "exe", () -> ExecCharts.exePanel(n),
+                "can", () -> ExecCharts.causePanel(n),
+                "svc", () -> Vis.reflect(n.services),
+                "cpt", () -> bagHistogram((Iterable) () -> n.conceptsActive().iterator(), 8)
+        ));
+    }
+
 
     public static class EmotionPlot extends Grid implements Consumer<NAR> {
 
         private final int plotHistory;
-        @Deprecated private DurService on; //TODO use DurSurface
+        @Deprecated
+        private DurService on; //TODO use DurSurface
         Plot2D plot1, plot2, plot3, plot4;
 
         public EmotionPlot(int plotHistory, NAgent a) {
@@ -362,7 +375,7 @@ public class Vis {
 
         @Override
         public synchronized void stop() {
-            if (on!=null) {
+            if (on != null) {
                 on.off();
                 on = null;
             }
@@ -381,7 +394,7 @@ public class Vis {
     public static class BeliefChartsGrid extends Grid implements Consumer<NAR> {
 
         private final int window;
-//        private final DurService on;
+        //        private final DurService on;
         long[] btRange;
 
         public BeliefChartsGrid(Iterable<?> ii, NAR nar, int window) {
