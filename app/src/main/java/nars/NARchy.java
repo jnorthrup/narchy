@@ -26,7 +26,7 @@ public class NARchy extends NARS {
     public static NAR ui() {
 
         User u = User.the();
-        u.forEach(System.out::println);
+        //u.forEach(System.out::println);
 //        u.put("boot", new Date().toString());
 //        Util.pause(100);
 //        u.get("boot", (b)->{

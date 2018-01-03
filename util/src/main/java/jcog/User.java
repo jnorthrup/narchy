@@ -41,7 +41,7 @@ public class User {
             if (!dir.toFile().exists())
                 Files.createDirectory(dir);
 
-            d = FSDirectory.open(Paths.get(dir.toAbsolutePath() + "/me"));
+            d = FSDirectory.open(Paths.get(dir.toAbsolutePath().toString()));
 
 
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -63,8 +63,11 @@ public class User {
         try {
             IndexWriterConfig iwc = new IndexWriterConfig();
             iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+
             IndexWriter iw = new IndexWriter(d, iwc);
             with.accept(iw);
+            iw.commit();
+            iw.flush();
             iw.close(); //commits and closes
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -104,11 +107,12 @@ public class User {
     static final Logger logger = LoggerFactory.getLogger(User.class);
 
     public void put(String id, Object x) {
+        Document d = document(id, x);
         writer((iw) -> {
-            logger.info(id);
-            Document d = document(id, x);
+            //logger.info(id);
             try {
-                iw.addDocument(d);
+                iw.updateDocument(new Term("i", id), d::iterator);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -116,6 +120,7 @@ public class User {
     }
 
     public <X> void get(String id, Consumer<X> yy) {
+        final Document[] D = new Document[1];
         search((is) -> {
 
             try {
@@ -124,13 +129,16 @@ public class User {
 
                 TopDocs y = is.search(new TermQuery(new Term("i", id)), 1);
                 if (y.totalHits>0) {
-                    yy.accept(undocument(is.doc(y.scoreDocs[0].doc)));
+                    D[0] = is.doc(y.scoreDocs[0].doc);
                 }
 
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
+        if (D[0]!=null) { //outside of any critical section
+            yy.accept(undocument(D[0]));
+        }
     }
 
     private <X> X undocument(Document doc) {
@@ -155,6 +163,7 @@ public class User {
             d.add(new TextField("string", ((String) x), Field.Store.YES));
         } else if (x instanceof byte[]) {
             d.add(new StoredField("byte[]", new BytesRef((byte[]) x)));
+            //d.add(new StringField("byte[]", new BytesRef((byte[]) x), Field.Store.YES));
         } else {
             throw new UnsupportedOperationException();
         }

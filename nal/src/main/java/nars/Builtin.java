@@ -1,5 +1,6 @@
 package nars;
 
+import jcog.User;
 import jcog.list.FasterList;
 import nars.concept.Concept;
 import nars.op.DepIndepVarIntroduction;
@@ -18,6 +19,9 @@ import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import javax.script.ScriptException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
@@ -27,7 +31,6 @@ import java.util.function.Function;
 import static nars.Op.*;
 import static nars.term.Functor.f0;
 import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -563,6 +566,26 @@ public class Builtin {
                 nn.input(Operator.log(nar.time(), $.p(code, $.the(result))));
             }
         });
+
+        nar.onOp1("load", (id, nn) -> {
+            nar.runLater(() -> {
+                User.the().get(id.toString(), (byte[] x)->{
+                    try {
+                        nn.inputBinary(new ByteArrayInputStream(x));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            });
+        });
+        nar.onOp1("save", (id, nn) -> {
+            nar.runLater(() -> {
+                ByteArrayOutputStream memDump;
+                nn.outputBinary(memDump = new ByteArrayOutputStream(128 * 1024));
+                User.the().put(id.toString(), memDump.toByteArray());
+            });
+        });
+
     }
 
     public static class System {

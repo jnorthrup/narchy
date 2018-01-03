@@ -63,8 +63,8 @@ public class Shell {
                     ui.startFPS(INITIAL_FPS);
                     ui.runLater(() -> {
                         window(
-                                //Vis.top(ui)
-                                ((Grid)Vis.reflect(ui.services)).aspect(0.25f)
+                                Vis.top(ui)
+                                //((Grid)Vis.reflect(ui.services)).aspect(0.25f)
                                 , 1024, 800);
                     });
 

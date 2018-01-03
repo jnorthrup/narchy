@@ -1132,6 +1132,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         return this;
     }
 
+    public final NAR outputBinary(OutputStream o) {
+        return outputBinary(o, (x)->x);
+    }
+
     /**
      * byte codec output of matching concept tasks (blocking)
      * <p>
@@ -1140,7 +1144,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      */
     public NAR outputBinary(OutputStream o, Function<Task, Task> each) {
 
-        runLater(() -> {
+        //runLater(() -> {
             DataOutputStream oo = new DataOutputStream(o);
 
             MutableInteger total = new MutableInteger(0), wrote = new MutableInteger(0);
@@ -1168,7 +1172,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
             });
 
             logger.debug("{} output {}/{} tasks ({} bytes)", o, wrote, total, oo.size());
-        });
+        //});
 
         return this;
     }
@@ -1176,7 +1180,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     @NotNull
     public NAR outputText(@NotNull OutputStream o, @NotNull Function<Task, Task> each) {
 
-        runLater(() -> {
+        //runLater(() -> {
             //SnappyFramedOutputStream os = new SnappyFramedOutputStream(o);
 
             PrintStream ps = new PrintStream(o);
@@ -1194,7 +1198,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
                 sb.setLength(0);
                 ps.println(x.appendTo(sb, true));
             });
-        });
+        //});
 
         return this;
     }
