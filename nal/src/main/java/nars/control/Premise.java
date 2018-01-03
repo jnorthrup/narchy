@@ -253,10 +253,12 @@ public class Premise extends PLink<Pair<Task,Term>> {
         PriReference taskLink = this;
         Term moreConstantTerm = moreConstant.term();
         Term lessConstantTerm = lessConstant.term();
-        float pri = taskLink.priElseZero() * Util.unitize(lessConstantTerm.volume() / ((float) moreConstantTerm.volume()));
+        float pri = taskLink.priElseZero()
+                * (1f/lessConstantTerm.volume());
+                //* Util.unitize(lessConstantTerm.complexity() / ((float) moreConstantTerm.complexity()));
 
-        moreConstant.termlinks().putAsync(new PLink<>(lessConstantTerm, pri / 2));
-        lessConstant.termlinks().putAsync(new PLink<>(moreConstantTerm, pri / 2));
+        moreConstant.termlinks().putAsync(new PLink<>(lessConstantTerm, pri));
+        lessConstant.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
         //moreConstant.termlinks().putAsync(new PLink<>(taskConcept.term(), pri));
         //taskConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
 

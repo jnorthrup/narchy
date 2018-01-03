@@ -23,17 +23,18 @@ public class Sketch2DBitmap extends Sketch2D {
 
     final Tex bmp = new Tex();
     private final int[] pix;
-    private final int pw, ph;
-    private final Graphics2D gfx;
     private BufferedImage buf;
-    public float brushWidth, brushAlpha;
+    private final int pw, ph;
+
+    public float brushWidth = 0.2f, brushAlpha = 0.5f;
+
+    final MersenneTwister rng = new MersenneTwister();
 
     public Sketch2DBitmap(int w, int h) {
-        buf = new BufferedImage(w, h, TYPE_INT_ARGB);
         this.pw = w;
         this.ph = h;
+        this.buf = new BufferedImage(w, h, TYPE_INT_ARGB);
         this.pix = ((DataBufferInt) buf.getRaster().getDataBuffer()).getData();
-        this.gfx = ((Graphics2D) buf.getGraphics());
     }
 
     @Override
@@ -50,11 +51,9 @@ public class Sketch2DBitmap extends Sketch2D {
         bmp.update(buf);
     }
 
-    final MersenneTwister rng = new MersenneTwister();
 
 
-
-    FastBlur fb;
+//    FastBlur fb;
 
     @Override
     public Surface onTouch(Finger finger, v2 hitPoint, short[] buttons) {
@@ -62,8 +61,8 @@ public class Sketch2DBitmap extends Sketch2D {
 
         if (hitPoint != null && buttons != null && buttons.length > 0 && buttons[0] == 1) {
 
-            if (fb == null)
-                fb = new FastBlur(pw, ph);
+//            if (fb == null)
+//                fb = new FastBlur(pw, ph);
 
             int ax = Math.round(hitPoint.x * pw);
 

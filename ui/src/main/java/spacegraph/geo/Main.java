@@ -6,7 +6,8 @@ public class Main {
 
     public static void main(String[] args) {
 //        String filename = "p.osm.gz";
-        String filename = "tokyo.osm";
+        String filename = "sqh.osm.gz";
+//        String filename = "tokyo.osm";
 //        String filename = "map.osm";
 //        String filename = "coastline_islands.osm";
 //        String filename = "coastline_multiple_coasts.osm";

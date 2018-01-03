@@ -1,6 +1,7 @@
 package spacegraph.geo;
 
 import jcog.list.FasterList;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import spacegraph.geo.data.*;
@@ -64,7 +65,7 @@ public class OsmReader {
                     Element childElement = (Element) childNode;
                     String id = childElement.getAttribute("id");
 
-                    HashMap<String, String> osmTags = new HashMap<>();
+                    Map<String, String> osmTags = new UnifiedMap<>(1);
                     NodeList nodeChildren = childNode.getChildNodes();
                     int nnc = nodeChildren.getLength();
                     for (int j = 0; j < nnc; j++) {
@@ -85,7 +86,7 @@ public class OsmReader {
                     String id = childElement.getAttribute("id");
 
                     List<OsmNode> refOsmNodes = new FasterList<>();
-                    HashMap<String, String> osmTags = new HashMap<>();
+                    Map<String, String> osmTags = new UnifiedMap<>(1);
 
                     NodeList wayChildren = childNode.getChildNodes();
                     for (int j = 0; j < wayChildren.getLength(); j++) {
@@ -113,7 +114,7 @@ public class OsmReader {
                     String id = childElement.getAttribute("id");
 
                     NodeList relationChildren = childElement.getChildNodes();
-                    HashMap<String, String> osmTags = new HashMap<>(relationChildren.getLength());
+                    Map<String, String> osmTags = new UnifiedMap<>();
                     for (int j = 0; j < relationChildren.getLength(); j++) {
                         Node relationChild = relationChildren.item(j);
                         if ("tag".equals(relationChild.getNodeName())) {
