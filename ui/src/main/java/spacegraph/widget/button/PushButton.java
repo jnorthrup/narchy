@@ -39,6 +39,10 @@ public class PushButton extends AbstractButton {
         click(onClick);
     }
 
+    public PushButton click(@Nullable Runnable onClick) {
+        return click((cb)->onClick.run());
+    }
+
     public PushButton click(@Nullable Consumer<PushButton> onClick) {
         this.onClick = onClick;
         return this;

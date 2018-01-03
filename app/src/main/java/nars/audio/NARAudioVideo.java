@@ -5,7 +5,6 @@ import jcog.Services;
 import jcog.exe.Loop;
 import nars.$;
 import nars.NAR;
-import nars.NARS;
 import nars.control.NARService;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
@@ -28,7 +27,7 @@ import static spacegraph.layout.Grid.row;
 /**
  * Created by me on 11/29/16.
  */
-public class NARHear extends NARService {
+public class NARAudioVideo extends NARService {
 
 
     final List<Services.Service> devices = new CopyOnWriteArrayList<>();
@@ -153,12 +152,12 @@ public class NARHear extends NARService {
     }
 
 
-    public NARHear(NAR nar, float fps) {
+    public NARAudioVideo(NAR nar, float fps) {
         this(nar);
         runFPS(fps);
     }
 
-    public NARHear(NAR nar) {
+    public NARAudioVideo(NAR nar) {
         super(nar);
 
         AudioSource.print();

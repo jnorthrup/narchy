@@ -22,7 +22,7 @@ public class Main {
         try {
             OsmReader osmReader = new OsmReader(filename);
             Osm osm = osmReader.parse();
-            OsmReader.printOsm(osm);
+            //OsmReader.printOsm(osm);
             new OsmViewer(osm);
         }
         catch (Exception e) {

@@ -1,7 +1,9 @@
 package nars;
 
 import com.google.common.base.Joiner;
-import nars.audio.NARHear;
+import jcog.User;
+import jcog.Util;
+import nars.audio.NARAudioVideo;
 import nars.exe.MultiExec;
 import nars.op.AtomicExec;
 import nars.op.Operator;
@@ -14,12 +16,24 @@ import nars.time.RealTime;
 import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Date;
+
 import static nars.Op.BELIEF;
 
 public class NARchy extends NARS {
 
 
     public static NAR ui() {
+
+        User u = User.the();
+        u.forEach(System.out::println);
+//        u.put("boot", new Date().toString());
+//        Util.pause(100);
+//        u.get("boot", (b)->{
+//            System.out.println(b);
+//        });
+
+
         NAR nar = new DefaultNAR(8, true)
                 .exe(new MultiExec(512, 2, 64))
 //                .exe(new AbstractExec(64) {
@@ -37,7 +51,7 @@ public class NARchy extends NARS {
         ConjClustering conjClusterB = new ConjClustering(nar, BELIEF, (Task::isInput), 16, 64);
         //ConjClustering conjClusterG = new ConjClustering(nar, GOAL, true, false, 16, 64);
 
-        new NARHear(nar);
+        new NARAudioVideo(nar);
         
         Hear.readURL(nar);
 

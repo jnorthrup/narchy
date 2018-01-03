@@ -83,11 +83,17 @@ public class OsmViewer implements GLEventListener, KeyListener {
 
     void project(GeoCoordinate global, double[] target) {
 
-        //2D flat projection
-        target[0] = (global.latitude - center.latitude) * scaleLat;
-        target[1] = (global.longitude - center.longitude) * scaleLon;
-        target[2] = 0;
+//        //2D flat projection
+//        target[0] = (global.latitude - center.latitude) * scaleLat;
+//        target[1] = (global.longitude - center.longitude) * scaleLon;
+//        target[2] = 0;
 
+        //3D ECEF
+        double[] t = ECEF.latlon2ecef(global.latitude*25, global.longitude*25, global.altitude);
+        double s = 1E-7;
+        target[0] = t[0]*s;
+        target[1] = t[1]*s;
+        target[2] = t[2]*s;
 
     }
 
@@ -123,8 +129,14 @@ public class OsmViewer implements GLEventListener, KeyListener {
         float tick = ((float) (System.currentTimeMillis() % 64000) / 64000f); // 64000ms cycle
         float angle = 360f * tick;
         float rad = 2f * (float) Math.PI * tick;
-        gl.glRotatef(angle, 0, 0f, 1f);
-        gl.glTranslatef(0.5f * (float) Math.cos(rad), 0.5f * (float) Math.sin(rad), 0f);
+
+        //2d
+        //gl.glRotatef(angle, 0, 0f, 1f);
+        //gl.glTranslatef(0.5f * (float) Math.cos(rad), 0.5f * (float) Math.sin(rad), 0f);
+
+        //3d
+        gl.glTranslatef(0, 0, 1f);
+        gl.glRotatef(angle, 1, 0f, 0f);
 
         tessellCallBack tessCallback;
         if (this.tessCallback == null) {

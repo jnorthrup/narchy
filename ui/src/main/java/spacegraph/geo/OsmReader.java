@@ -27,7 +27,12 @@ public class OsmReader {
 
     Osm parse() throws SAXException, IOException, ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+        factory.setValidating(false);
+        factory.setIgnoringComments(true);
+
         DocumentBuilder documentBuilder = factory.newDocumentBuilder();
+
         Document document = documentBuilder.parse(filename);
 
         osm.clear();

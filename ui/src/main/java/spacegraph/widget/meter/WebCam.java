@@ -4,6 +4,7 @@ import boofcv.struct.image.InterleavedU8;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamListener;
+import jcog.User;
 import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Ons;
@@ -14,10 +15,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
+import spacegraph.layout.Grid;
+import spacegraph.layout.VSplit;
 import spacegraph.render.Tex;
+import spacegraph.widget.button.PushButton;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
 import java.util.function.Consumer;
 
 
@@ -32,8 +37,8 @@ public class WebCam {
     public final Topic<WebcamEvent> eventChange = new ListTopic();
 
 
-    @Range(min = 0, max = 1)
-    public final MutableFloat cpuThrottle = new MutableFloat(0.5f);
+//    @Range(min = 0, max = 1)
+//    public final MutableFloat cpuThrottle = new MutableFloat(0.5f);
 
 
     final static Logger logger = LoggerFactory.getLogger(WebCam.class);
@@ -247,7 +252,13 @@ public class WebCam {
             ts.update(iimage);
         });
 
-        return ts.view();
+        return new VSplit(new Grid(new PushButton("snap").click(()->{
+            byte[] bytes = ((DataBufferByte)iimage.getRaster().getDataBuffer()).getData();
+            User.the().put(
+                    "(" + webcam.toString()+"," + System.currentTimeMillis() + ")",
+                    bytes
+                    );
+        })),ts.view());
     }
 
 
