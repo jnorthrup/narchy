@@ -14,7 +14,7 @@ import nars.task.signal.Truthlet;
 import nars.task.signal.TruthletTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.URL;
@@ -164,7 +164,7 @@ public class Hear extends Loop {
 
                 String html = com.google.common.io.Resources.toString(new URL(url), Charset.defaultCharset());
 
-                html = StringEscapeUtils.unescapeHtml(html);
+                html = StringEscapeUtils.unescapeHtml4(html);
                 String strippedText = html.replaceAll("(?s)<[^>]*>(\\s*<[^>]*>)*", " ").toLowerCase();
 
                 //System.out.println(strippedText);

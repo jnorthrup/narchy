@@ -594,7 +594,7 @@ public class Derivation extends ProtoDerivation {
         return pp;
     };
 
-    public static class uniSubAny extends SubstUnified {
+    static class uniSubAny extends SubstUnified {
 
         final static Atom func = (Atom) $.the("subIfUnifiesAny");
 
@@ -614,7 +614,7 @@ public class Derivation extends ProtoDerivation {
         }
     }
 
-    public static class uniSub extends Subst {
+    static class uniSub extends Subst {
 
         final static Atom func = (Atom) $.the("substitute");
         private final Derivation parent;

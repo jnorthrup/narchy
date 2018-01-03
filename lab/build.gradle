@@ -13,14 +13,19 @@ dependencies {
     compile group: 'net.java.jinput', name: 'jinput', version: '2.0.7'
     compile group: 'org.jogamp.joal', name: 'joal-main', version: '2.3.2'
 
-//    compile group: 'org.boofcv', name: 'sfm', version: '0.26'
-//    compile group: 'org.boofcv', name: 'geo', version: '0.26'
-//    compile group: 'org.boofcv', name: 'ip', version: '0.26'
-//    compile group: 'org.boofcv', name: 'visualize', version: '0.26'
-//    compile group: 'org.boofcv', name: 'gui', version: '0.26'
+    //runtime(group: 'de.dfki.mary', name: 'marytts-runtime', version: '5.2')
+    compile(group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.2') {
+//        exclude(group: 'log4j')
+        exclude(group: 'org.codehaus.groovy')
+        exclude(group: 'org.swinglabs')
+        exclude(group: 'org.slf4j')
+        exclude(group: 'com.google.guava')
+    }
+
 
 }
 
 shadowJar {
     mainClassName = 'nars.Lab'
+
 }

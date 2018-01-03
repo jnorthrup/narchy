@@ -25,7 +25,7 @@ public class UniExec extends AbstractExec {
 
 
         List<Causable> can = n.services().map(x -> x instanceof Causable ? ((Causable) x) : null).filter(Objects::nonNull).collect(Collectors.toList());
-        n.services.serviceAddOrRemove.on((xb) -> {
+        n.services.change.on((xb) -> {
             Services.Service<NAR> s = xb.getOne();
             if (s instanceof Causable) {
                 if (xb.getTwo())

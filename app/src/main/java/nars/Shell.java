@@ -11,8 +11,7 @@ import com.googlecode.lanterna.terminal.IOSafeTerminal;
 import com.googlecode.lanterna.terminal.TerminalResizeListener;
 import com.googlecode.lanterna.terminal.swing.*;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
-import gnu.getopt.Getopt;
-import gnu.getopt.LongOpt;
+import jcog.Texts;
 import nars.audio.NARHear;
 import nars.gui.Vis;
 import org.jetbrains.annotations.Nullable;
@@ -27,72 +26,129 @@ import spacegraph.widget.windo.Widget;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static spacegraph.SpaceGraph.window;
 
 public class Shell {
 
 
+    public static final float INITIAL_FPS = 25f;
+
     public static void main(String[] argv) {
 
-        StringBuffer telnetPort;
-        LongOpt[] longopts = new LongOpt[]{
-                new LongOpt("help", LongOpt.NO_ARGUMENT, null, 'h'),
-                new LongOpt("gui", LongOpt.NO_ARGUMENT, null, 'g'),
-                new LongOpt("telnet", LongOpt.REQUIRED_ARGUMENT, telnetPort = new StringBuffer(), 't')
-        };
-//        longopts[1] = new LongOpt("outputdir", LongOpt.REQUIRED_ARGUMENT, sb, 'o');
-//        longopts[2] = new LongOpt("maximum", LongOpt.OPTIONAL_ARGUMENT, null, 2);
-//        //
-        Getopt g = new Getopt(Shell.class.getName(), argv, "" /*"-:bc::d:hW;"*/, longopts);
-//        g.setOpterr(false); // We'll do our own error handling
-        //
-        int c;
-        while ((c = g.getopt()) != -1)
-            switch (c) {
 
-                //
-                case 'g':
-                    window(Vis.top(NARchy.ui()), 1024, 800);
-                    return;
+        if (argv.length == 0) {
+            System.out.println("Usage:");
+            System.out.println("  gui\t\tstart gui");
+            System.out.println("  telnet <port>\t\tstart telnet server on given port");
+            System.out.println("  \"<narsese>\"\t\texecute narsese command"); //daemonize?
+            System.out.println("Reading narsese from stdin..\n"); //daemonize?
+            narseseStdin();
 
-                case 't':
-                    System.out.println("Telnet server: TODO");
-                    return;
-//                //
-//                case ':':
-//                    System.out.println("Doh! You need an argument for option " +
-//                            (char) g.getOptopt());
-//                    break;
-//                //
-//                case '?':
-//                    System.out.println("The option '" + (char) g.getOptopt() +
-//                            "' is not valid");
-//                    break;
-//                //
-                default:
-                    System.err.println("getopt() returned " + c);
+            //System.out.println("  js \"<javascript>\"\t\texecute NARjs code");
+        } else {
+            switch (argv[0]) {
+                case "gui":
+                    NAR ui = NARchy.ui();
+                    ui.startFPS(INITIAL_FPS);
+                    ui.runLater(() -> {
+                        window(
+                                //Vis.top(ui)
+                                ((Grid)Vis.reflect(ui.services)).aspect(0.25f)
+                                , 1024, 800);
+                    });
+
                     break;
+                case "telnet":
+                    int port = Texts.i(argv[1]);
+
+                    NAR n = NARchy.core();
+                    new Thread(() -> {
+                        try {
+                            new TextUI(n, port);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                    n.startFPS(INITIAL_FPS);
+
+                    break;
+
+                default:
+
+                    if (argv.length > 1) {
+                        narsese(() -> argv[1]);
+                    } else {
+                        //stdin
+                        narseseStdin();
+                    }
+
+                    break;
+//                case "js":
+//                    break;
             }
+        }
 
-        System.out.println("Usage:");
-        System.out.println(" --gui\t\tstart gui");
-        System.out.println(" --telnet <port>\t\tstart telnet server on given port");
-        System.out.println(" --js \"<javascript>\"\t\texecute NARjs code");
-        System.out.println(" --n \"<narsese>\"\t\texecute narsese command"); //daemonize?
 
-        //
+    }
 
-//        for (int i = g.getOptind(); i < argv.length; i++)
-//            System.out.println("Non option argv element: " + argv[i] + "\n");
+    static final Supplier<String> stdin = () -> {
+        try {
+            byte[] b = System.in.readAllBytes();
+            return new String(b);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    };
 
-//        new Shell(NARchy.ui());
+    /**
+     * TODO make stream/iterable
+     */
+    private static void narsese(Supplier<String> s) {
+        NAR n = NARchy.ui();
+        String in = s.get();
+        if (in != null) {
+            try {
+                n.input(in);
+            } catch (Narsese.NarseseException e) {
+                e.printStackTrace();
+            }
+        }
+        n.start();
+    }
+
+    /**
+     * TODO make stream/iterable
+     */
+    private static void narseseStdin() {
+
+        LineNumberReader lr = new LineNumberReader(new InputStreamReader(System.in));
+
+        NAR n = NARchy.ui();
+        n.start();
+        while (true) {
+            try {
+                String l = lr.readLine();
+                if (l == null)
+                    break; //EOF
+                n.input(l);
+            } catch (Narsese.NarseseException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                break;
+            }
+        }
     }
 
     public static final float TERMINAL_DISPLAY_FPS = 8f;

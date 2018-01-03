@@ -61,7 +61,9 @@ public class CaffeineIndex extends MaplikeTermIndex implements CacheLoader<Term,
 
     @Override
     public Stream<Termed> stream() {
-        return concepts.asMap().values().stream();
+        return concepts.asMap().values().stream()
+                //.distinct() //<- shouldnt be necessary
+                ;
     }
 
 

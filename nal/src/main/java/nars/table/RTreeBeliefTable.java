@@ -52,7 +52,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     static final int SCAN_DIVISIONS = 5;
 
-    public static final int MIN_TASKS_PER_LEAF = 2;
+    public static final int MIN_TASKS_PER_LEAF = 3;
     public static final int MAX_TASKS_PER_LEAF = 4;
     public static final Split<TaskRegion> SPLIT =
             Spatialization.DefaultSplits.AXIAL.get(); //Spatialization.DefaultSplits.LINEAR; //<- probably doesnt work here

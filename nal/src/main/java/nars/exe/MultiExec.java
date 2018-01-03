@@ -179,7 +179,7 @@ public class MultiExec extends AbstractExec {
 
             do {
                 try {
-                    int x = Roulette.decideRoulette(cw, rng);
+                    int x = cw.length > 1 ? Roulette.decideRoulette(cw, rng) : 0;
                     Causable cx = can[x];
                     AtomicBoolean cb = cx.busy;
 

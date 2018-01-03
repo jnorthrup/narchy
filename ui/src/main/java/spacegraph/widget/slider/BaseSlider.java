@@ -23,7 +23,7 @@ public class BaseSlider extends Surface {
     /** dead-zone at the edges to latch min/max values */
     private static final float margin = 0.02f;
 
-    private static final float EPSILON = 0.001f;
+    private static final float EPSILON = Float.MIN_NORMAL;
 
     @Nullable ObjectFloatProcedure<BaseSlider> change;
     private float p;
@@ -70,13 +70,13 @@ public class BaseSlider extends Surface {
     }
 
     public void _set(float p) {
-        float current = Util.unitize(this.p);
-        if (!Util.equals(current, p, EPSILON)) {
-            changed(p);
-        }
+        changed(p);
     }
 
     protected void changed(float p) {
+        if (Util.equals(this.p, p, Float.MIN_NORMAL))
+            return;
+
         this.p = p;
         if (change!=null)
             change.value(this, value());

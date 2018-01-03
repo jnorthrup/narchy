@@ -96,7 +96,7 @@ public class AIMATests {
         n.concept($.$("Criminal")).print();
 
 
-        n.run(1500);
+        n.run(2500);
 
 //        if (!questions.isEmpty()) {
 //            System.out.println("Questions Generated:");

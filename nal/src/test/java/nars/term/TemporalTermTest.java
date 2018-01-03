@@ -138,6 +138,11 @@ public class TemporalTermTest {
                 $(s).conceptual().toString());
     }
 
+    @Test public void testStableConceptualization6a() throws Narsese.NarseseException {
+        Term s = $.$("((tetris($1,#2) &&+290 tetris(isRow,(8,false),true))=|>(tetris(checkScore,#2)&|tetris($1,#2)))");
+        assertEquals("((tetris(isRow,(8,false),true)&&tetris($1,#2)) ==>+- (tetris(checkScore,#2)&&tetris($1,#2)))", s.conceptual().toString());
+    }
+
     @Test
     public void testStableConceptualization2() throws Narsese.NarseseException {
         Term c1 = testStableConceptualization("(((a)&&(b))&|do(that))");

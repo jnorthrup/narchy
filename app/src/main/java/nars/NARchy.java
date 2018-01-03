@@ -12,13 +12,11 @@ import nars.term.sub.Subterms;
 import nars.time.RealTime;
 import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.audio.MaryTTSpeech;
 
 import static nars.Op.BELIEF;
 
 public class NARchy extends NARS {
 
-    public static final float INITIAL_FPS = 25f;
 
     public static NAR ui() {
         NAR nar = new DefaultNAR(8, true)
@@ -42,9 +40,12 @@ public class NARchy extends NARS {
 
         installSpeech(nar);
 
-        nar.startFPS(INITIAL_FPS);
-
         return nar;
+    }
+
+    public static NAR core() {
+        /** TODO differentiate this from UI, for use in embeddeds/servers without GUI */
+        return ui();
     }
 
     public static class Speech {
@@ -71,7 +72,8 @@ public class NARchy extends NARS {
 //                            .map(x -> $.func("say", $.the(x.toString())))
 //                            .toArray(Term[]::new));
 
-                    MaryTTSpeech.speak(text);
+                    System.err.println(text);
+                    //MaryTTSpeech.speak(text);
 
                     Atomic qt = $.quote(text);
                     n.believe($.func("say", qt), Tense.Present);

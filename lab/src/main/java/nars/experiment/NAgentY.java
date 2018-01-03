@@ -99,7 +99,7 @@ abstract public class NAgentY extends NAgentX {
     }
 
     @Override
-    public @Nullable void actionToggle(@NotNull Term t, @NotNull Runnable on, @NotNull Runnable off) {
+    public @Nullable void actionToggle(@NotNull Term t, float latchValueUnused, @NotNull Runnable on, @NotNull Runnable off) {
 
         RLActionConcept m = new RLActionConcept(t, nar);
 

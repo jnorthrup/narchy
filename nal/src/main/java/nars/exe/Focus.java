@@ -8,7 +8,6 @@ import jcog.learn.deep.RBM;
 import jcog.list.FastCoWList;
 import jcog.list.FasterList;
 import jcog.math.RecycledSummaryStatistics;
-import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.util.Flip;
 import nars.NAR;
 import nars.control.Cause;
@@ -370,7 +369,7 @@ public class Focus extends Flip<Focus.Schedule> {
 
         this.revaluator = r;
 
-        n.services.serviceAddOrRemove.on((xa) -> {
+        n.services.change.on((xa) -> {
             Services.Service<NAR> x = xa.getOne();
             if (x instanceof Causable) {
                 Causable c = (Causable) x;

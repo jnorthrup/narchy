@@ -154,6 +154,9 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
 
     @Nullable
     private Term template(long start, long end, Term template, NAR nar) {
+        if (this.term!=null && template.op()!=this.term.op())
+            return null; //template doesnt match this (quick op test)
+
         int templateSubs = template.subs();
         assert (templateSubs > 1);
         boolean temporal = template.op().temporal;

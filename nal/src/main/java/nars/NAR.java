@@ -248,10 +248,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
         Util.decode(tasklinkCount, "tasklink count", 4, x::put);
         //x.put("tasklink usage", ((double) tasklinkCount.getTotalCount()) / tasklinksCap.getSum());
-        x.put("tasklink count", ((double) tasklinkCount.getTotalCount()));
+        x.put("tasklink total", ((double) tasklinkCount.getTotalCount()));
         Util.decode(termlinkCount, "termlink count", 4, x::put);
         //x.put("termlink usage", ((double) termlinkCount.getTotalCount()) / termlinksCap.getSum());
-        x.put("termlink count", ((double) termlinkCount.getTotalCount()));
+        x.put("termlink total", ((double) termlinkCount.getTotalCount()));
 
         //        DoubleSummaryStatistics pos = new DoubleSummaryStatistics();
         //        DoubleSummaryStatistics neg = new DoubleSummaryStatistics();
@@ -272,13 +272,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         //        x.put("taskLinksUsed", tasklinksUsed);
         //        x.put("taskLinksCapacity", tasklinksCap);
 
-        //Util.toMap(policy, "concept state", x::put);
+        Util.toMap(policy, "concept state", x::put);
 
-        //Util.toMap(rootOp, "concept op", x::put);
+        Util.toMap(rootOp, "concept op", x::put);
 
         Util.decode(volume, "concept volume", 4, x::put);
 
-        //Util.toMap( clazz, "concept class", x::put);
+        Util.toMap( clazz, "concept class", x::put);
 
         return x;
 
@@ -338,13 +338,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     /**
      * parses one and only task
      */
-    @NotNull
+    
     public <T extends Task> T inputTask(String taskText) throws Narsese.NarseseException {
         return (T) inputTask(Narsese.the().task(taskText, (this)));
     }
 
-    @NotNull
-    public List<Task> input(@NotNull String text) throws NarseseException, InvalidTaskException {
+    
+    public List<Task> input(String text) throws NarseseException, InvalidTaskException {
         List<Task> l = Narsese.the().tasks(text, this);
         input(l);
         return l;
@@ -354,14 +354,14 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      * gets a concept if it exists, or returns null if it does not
      */
     @Nullable
-    public final Concept conceptualize(@NotNull String conceptTerm) throws NarseseException {
+    public final Concept conceptualize(String conceptTerm) throws NarseseException {
         return conceptualize($.$(conceptTerm));
     }
 
     /**
      * ask question
      */
-    public Task question(@NotNull String termString) throws NarseseException {
+    public Task question( String termString) throws NarseseException {
         //TODO remove '?' if it is attached at end
         return question($.$(termString));
     }
@@ -369,20 +369,20 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     /**
      * ask question
      */
-    public Task question(@NotNull Term c) {
+    public Task question(Term c) {
         return que(c, QUESTION);
     }
 
-    public Task quest(@NotNull Term c) {
+    public Task quest(Term c) {
         return que(c, QUEST);
     }
 
     @Nullable
-    public Task goal(@NotNull String goalTermString, @NotNull Tense tense, float freq, float conf) throws NarseseException {
+    public Task goal(String goalTermString, Tense tense, float freq, float conf) throws NarseseException {
         return goal($(goalTermString), tense, freq, conf);
     }
 
-    public Task goal(@NotNull Term goal, @NotNull Tense tense, float freq) {
+    public Task goal(Term goal, Tense tense, float freq) {
         return goal(goal, tense, freq, confDefault(GOAL));
     }
 
@@ -390,44 +390,44 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      * desire goal
      */
     @Nullable
-    public Task goal(@NotNull Term goalTerm, @NotNull Tense tense, float freq, float conf) {
+    public Task goal( Term goalTerm,  Tense tense, float freq, float conf) {
         return goal(
                 priDefault(GOAL),
                 goalTerm, time(tense), freq, conf);
     }
 
-    @NotNull
-    public Task believe(@NotNull Term term, @NotNull Tense tense, float freq, float conf) {
+    
+    public Task believe( Term term,  Tense tense, float freq, float conf) {
         return believe(term, time(tense), freq, conf);
     }
 
-    @NotNull
-    public Task believe(@NotNull Term term, long when, float freq, float conf) {
+    
+    public Task believe( Term term, long when, float freq, float conf) {
         return believe(priDefault(BELIEF), term, when, freq, conf);
     }
 
-    @NotNull
-    public Task believe(@NotNull Term term, @NotNull Tense tense, float freq) {
+    
+    public Task believe( Term term,  Tense tense, float freq) {
         return believe(term, tense, freq, confDefault(BELIEF));
     }
 
-    @NotNull
-    public Task believe(@NotNull Term term, long when, float freq) {
+    
+    public Task believe( Term term, long when, float freq) {
         return believe(term, when, freq, confDefault(BELIEF));
     }
 
-    @NotNull
-    public Task believe(@NotNull Term term, float freq, float conf) {
+    
+    public Task believe( Term term, float freq, float conf) {
         return believe(term, Tense.Eternal, freq, conf);
     }
 
-    @NotNull
-    public Task goal(@NotNull Term term, float freq, float conf) {
+    
+    public Task goal( Term term, float freq, float conf) {
         return goal(term, Tense.Eternal, freq, conf);
     }
 
-    @NotNull
-    public NAR believe(@NotNull String term, @NotNull Tense tense, float freq, float conf) {
+    
+    public NAR believe( String term,  Tense tense, float freq, float conf) {
         try {
             believe(priDefault(BELIEF), $.$(term), time(tense), freq, conf);
         } catch (NarseseException e) {
@@ -436,18 +436,16 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         return this;
     }
 
-    public long time(@NotNull Tense tense) {
+    public long time(Tense tense) {
         return Tense.getRelativeOccurrence(tense, this);
     }
 
-    @NotNull
-    public NAR believe(@NotNull String termString, float freq, float conf) throws NarseseException {
+    public NAR believe(String termString, float freq, float conf) throws NarseseException {
         believe($.$(termString), freq, conf);
         return this;
     }
 
-    @NotNull
-    public Task goal(@NotNull String termString) {
+    public Task goal(String termString) {
         try {
             return goal($.$(termString), true);
         } catch (NarseseException e) {
@@ -455,8 +453,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         }
     }
 
-    @NotNull
-    public NAR believe(@NotNull String... tt) throws NarseseException {
+    public NAR believe(String... tt) throws NarseseException {
 
         for (String b : tt)
             believe(b, true);
@@ -464,64 +461,64 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         return this;
     }
 
-    @NotNull
-    public NAR believe(@NotNull String termString, boolean isTrue) throws NarseseException {
+    
+    public NAR believe( String termString, boolean isTrue) throws NarseseException {
         believe($.$(termString), isTrue);
         return this;
     }
 
-    @NotNull
-    public Task goal(@NotNull String termString, boolean isTrue) throws NarseseException {
+    
+    public Task goal( String termString, boolean isTrue) throws NarseseException {
         return goal($.$(termString), isTrue);
     }
 
-    @NotNull
-    public Task believe(@NotNull Term term) {
+    
+    public Task believe( Term term) {
         return believe(term, true);
     }
 
-    @NotNull
-    public Task believe(@NotNull Term term, boolean trueOrFalse) {
+    
+    public Task believe( Term term, boolean trueOrFalse) {
         return believe(term, trueOrFalse, confDefault(BELIEF));
     }
 
-    @NotNull
-    public Task goal(@NotNull Term term) {
+    
+    public Task goal( Term term) {
         return goal(term, true);
     }
 
-    @NotNull
-    public Task goal(@NotNull Term term, boolean trueOrFalse) {
+    
+    public Task goal( Term term, boolean trueOrFalse) {
         return goal(term, trueOrFalse, confDefault(BELIEF));
     }
 
-    @NotNull
-    public Task believe(@NotNull Term term, boolean trueOrFalse, float conf) {
+    
+    public Task believe( Term term, boolean trueOrFalse, float conf) {
         return believe(term, trueOrFalse ? 1.0f : 0f, conf);
     }
 
-    @NotNull
-    public Task goal(@NotNull Term term, boolean trueOrFalse, float conf) {
+    
+    public Task goal( Term term, boolean trueOrFalse, float conf) {
         return goal(term, trueOrFalse ? 1.0f : 0f, conf);
     }
 
     @Nullable
-    public Task believe(float pri, @NotNull Term term, long occurrenceTime, float freq, float conf) throws InvalidTaskException {
+    public Task believe(float pri,  Term term, long occurrenceTime, float freq, float conf) throws InvalidTaskException {
         return input(pri, term, BELIEF, occurrenceTime, freq, conf);
     }
 
     @Nullable
-    public Task goal(float pri, @NotNull Term goal, long when, float freq, float conf) throws InvalidTaskException {
+    public Task goal(float pri,  Term goal, long when, float freq, float conf) throws InvalidTaskException {
         return input(pri, goal, GOAL, when, when, freq, conf);
     }
 
     @Nullable
-    public Task goal(float pri, @NotNull Term goal, long start, long end, float freq, float conf) throws InvalidTaskException {
+    public Task goal(float pri,  Term goal, long start, long end, float freq, float conf) throws InvalidTaskException {
         return input(pri, goal, GOAL, start, end, freq, conf);
     }
 
     @Nullable
-    public Task input(float pri, @NotNull Term term, byte punc, long occurrenceTime, float freq, float conf) throws InvalidTaskException {
+    public Task input(float pri,  Term term, byte punc, long occurrenceTime, float freq, float conf) throws InvalidTaskException {
         return input(pri, term, punc, occurrenceTime, occurrenceTime, freq, conf);
     }
 
@@ -763,13 +760,14 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
         synchronized (exe) {
 
+            services.stop();
+
             loop.stop();
 
             time.synch(this);
 
-            services.stop();
-
             exe.stop();
+
         }
 
         return this;
@@ -1005,7 +1003,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     }
 
     public Stream<Concept> concepts() {
-        return terms.stream().filter(Concept.class::isInstance).map(Concept.class::cast);
+        return terms.stream()/*.filter(Concept.class::isInstance)*/.map(Concept.class::cast);
     }
 
     /**
@@ -1308,7 +1306,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         SortedMap<String, Object> stat = stats();
         stat.forEach((k, v) -> {
             try {
-                out.append(k.replace(" ", "/")).append('\t').append(v.toString()).append('\n');
+                out.append(k.replace(" ", "/")).append(" \t ").append(v.toString()).append('\n');
             } catch (IOException e) {
             }
         });

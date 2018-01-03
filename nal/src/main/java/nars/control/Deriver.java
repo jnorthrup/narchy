@@ -91,7 +91,7 @@ public class Deriver extends Causable {
         Derivation d = derivation.get().cycle(nar1, deriver);
 
         int matchTTL = Param.TTL_PREMISE_MIN * 4;
-        int ttlMin = nar1.matchTTLmin.intValue();
+//        int ttlMin = nar1.matchTTLmin.intValue();
         int ttlMax = nar1.matchTTLmax.intValue();
 
 
@@ -105,7 +105,7 @@ public class Deriver extends Causable {
 
 
         TopN<Premise> premises = new TopNUnique<Premise>(new Premise[conceptsRemain[0] * premisesPerConcept],
-                Prioritized::priElseZero) {
+                Prioritized::pri) {
             @Override protected void merge(Premise existing, Premise next) {
                 existing.priMax(next.pri());
             }
@@ -133,7 +133,9 @@ public class Deriver extends Causable {
                     //p.task.priElseZero()                                 //absolute
                     //p.task.priElseZero() / nar.priDefault(p.task.punc()) //relative
 
-                    int deriveTTL = Util.lerp(premise.priElseZero(), ttlMin, ttlMax);
+                    int deriveTTL =
+                            ttlMax;
+                            //Util.lerp(premise.priElseZero(), ttlMin, ttlMax);
 
                     deriver.derive(d, deriveTTL);
                 }

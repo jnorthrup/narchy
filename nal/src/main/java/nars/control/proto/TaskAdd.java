@@ -38,6 +38,5 @@ public class TaskAdd extends NativeTask {
         ((TaskConcept) c).add(task, n);
 
         return null;
-
     }
 }

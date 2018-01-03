@@ -128,8 +128,8 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmax = new MutableInteger(384);
-    public final MutableInteger matchTTLmin = new MutableInteger(64);
+    public final MutableInteger matchTTLmax = new MutableInteger(64);
+//    public final MutableInteger matchTTLmin = new MutableInteger(64);
 
     /**
      * how much percent of a premise's allocated TTL can be used in the belief matching phase.

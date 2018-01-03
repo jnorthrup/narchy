@@ -52,7 +52,12 @@ public class Grid extends MutableLayout {
         return a!=0 && a!=Float.POSITIVE_INFINITY;
     }
 
-//    @Override
+    public Grid aspect(float gridAspect) {
+        this.gridAspect = gridAspect;
+        layout();
+        return this;
+    }
+    //    @Override
 //    public void transform(GL2 gl, v2 globalScale) {
 //        super.transform(gl, globalScale);
 //
@@ -140,35 +145,36 @@ public class Grid extends MutableLayout {
 
         int n = children.length;
 
-        float py = ((ny-1) * dy) + hm;
+
 
         float X = x();
         float Y = y();
         float W = w();
         float H = h();
 
-        for (int y = 0; y < ny; y++) {
+        for (int y = ny-1; y >= 0; y--) {
 
             float px = hm;//margin / 2f;
+
+            final float py = (((ny-1)-y) * dy) + hm;
+            float y1 = py * H;
 
             for (int x = 0; x < nx; x++) {
                 //System.out.println("\t" + px + " " + py);
 
-                Surface c = children[i];
+                Surface c = children[i++];
 
                 float x1 = px * W;
-                float y1 = py * H;
                 c.pos(X+x1, Y+y1, X+x1+dxc*W, Y+y1+dyc*H);
                 c.layout();
 
                 px += dx;
 
-                i++;
                 if (i >= n) break;
             }
 
+
             if (i >= n) break;
-            py -= dy;
 
         }
     }

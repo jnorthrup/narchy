@@ -50,7 +50,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
     public DefaultConceptBuilder(ConceptState sleep, ConceptState awake) {
         this.sleep = sleep;
-        this.init = awake;
+        this.init = sleep;
         this.awake = awake;
     }
 

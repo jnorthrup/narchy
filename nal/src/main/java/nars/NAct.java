@@ -41,10 +41,10 @@ public interface NAct {
      */
     FloatParam curiosity();
 
-    default void actionToggle(@NotNull Term t, @NotNull Runnable on, @NotNull Runnable off) {
+    default void actionToggle(@NotNull Term t, float latchValue /* 0 or NaN */, @NotNull Runnable on, @NotNull Runnable off) {
 
         float thresh = 0.5f + Param.TRUTH_EPSILON;
-        actionUnipolar(t, 0f, (f) -> {
+        actionUnipolar(t, latchValue, (f) -> {
             if (f >= thresh) {
                 on.run();
                 return 1f;
@@ -296,7 +296,7 @@ public interface NAct {
     }
 
     default void actionToggle(@NotNull Term s, @NotNull BooleanProcedure onChange) {
-        actionToggle(s, () -> onChange.value(true), () -> onChange.value(false));
+        actionToggle(s, Float.NaN, () -> onChange.value(true), () -> onChange.value(false));
     }
 //
 //    @Nullable

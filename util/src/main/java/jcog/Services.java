@@ -90,7 +90,7 @@ public class Services<X, C>  {
 
     private final C id;
     private final Executor exe;
-    public final Topic<ObjectBooleanPair<Service<C>>> serviceAddOrRemove = new ListTopic<>();
+    public final Topic<ObjectBooleanPair<Service<C>>> change = new ListTopic<>();
 
 //    abstract public static class SubService<C,X> extends Services<C,X> implements Service<C> {
 //
@@ -139,12 +139,29 @@ public class Services<X, C>  {
         default boolean isOff() {
             return state() == Services.ServiceState.Off;
         }
+
+        default float pri() {
+            return isOn() ? 1f : 0f;
+        }
+        default void setPri(float ignored) { }
     }
 
     public static abstract class AbstractService<C> extends AtomicReference<ServiceState> implements Service<C> {
 
+        float pri = 1f;
+
         protected AbstractService() {
             super(ServiceState.Off);
+        }
+
+        @Override
+        public float pri() {
+            return pri;
+        }
+
+        @Override
+        public void setPri(float pri) {
+            this.pri = Util.unitize(pri);
         }
 
         @Override
@@ -169,7 +186,7 @@ public class Services<X, C>  {
                         assert (
                                 compareAndSet(ServiceState.OffToOn, ServiceState.On)
                         );
-                        x.serviceAddOrRemove.emit(pair(AbstractService.this, true));
+                        x.change.emit(pair(AbstractService.this, true));
                     } catch (Throwable e) {
                         e.printStackTrace();
                         delete();
@@ -188,7 +205,7 @@ public class Services<X, C>  {
             if (compareAndSet(ServiceState.On, ServiceState.OnToOff)) {
                 exe.execute(() -> {
                     try {
-                        x.serviceAddOrRemove.emit(pair(this, false));
+                        x.change.emit(pair(this, false));
                         stop(x.id);
                         assert (
                                 compareAndSet(ServiceState.OnToOff, ServiceState.Off)
@@ -218,9 +235,7 @@ public class Services<X, C>  {
     }
 
     public void printServices(PrintStream out) {
-        services.forEach((k, s) -> {
-            out.println(k + " " + s.state());
-        });
+        services.forEach((k, s) -> out.println(k + " " + s.state()));
     }
 
 
@@ -262,12 +277,18 @@ public class Services<X, C>  {
     }
 
 
-    public void on(X key) {
+    public final void on(X key) {
+        on(key, 1f);
+    }
+
+    public void on(X key, float v) {
         Service<C> s = services.get(key);
+        s.setPri(v);
         if (s.isOff()) {
             s.start(this, exe);
         }
     }
+
     public void off(X key) {
         Service<C> s = services.get(key);
         if (s.isOn()) {

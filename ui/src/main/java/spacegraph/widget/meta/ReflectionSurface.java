@@ -2,27 +2,24 @@ package spacegraph.widget.meta;
 
 import com.google.common.collect.Sets;
 import jcog.Services;
+import jcog.Util;
+import jcog.event.Ons;
 import jcog.list.FasterList;
 import jcog.math.FloatParam;
-import org.apache.commons.lang.StringUtils;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
 import spacegraph.layout.Grid;
-import spacegraph.layout.VSplit;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
-import spacegraph.widget.button.ToggleButton;
 import spacegraph.widget.slider.AllOrNothingSlider;
 import spacegraph.widget.slider.FloatSlider;
-import spacegraph.widget.text.Label;
 import spacegraph.widget.text.LabeledPane;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.Collection;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 /**
  * Created by me on 2/28/17.
@@ -30,6 +27,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ReflectionSurface<X> extends Grid {
 
     final Set<Object> seen = Sets.newSetFromMap(new IdentityHashMap());
+
+    Ons ons = null;
 
     /** root */
     private final X obj;
@@ -39,12 +38,21 @@ public class ReflectionSurface<X> extends Grid {
     public ReflectionSurface(X x) {
         super();
         this.obj = x;
+    }
+
+    @Override
+    public synchronized void start(@Nullable Surface parent) {
+
+        if (ons == null)
+            ons = new Ons();
 
         List<Surface> l = new FasterList();
 
-        collect(x, l, 0);
+        collect(obj, l, 0);
 
         children(l);
+
+        super.start(parent);
     }
 
     private void collect(Object y, List<Surface> l, int depth) {
@@ -108,24 +116,28 @@ public class ReflectionSurface<X> extends Grid {
 
     private void collectServices(Services<Object,Object> x, List<Surface> l) {
 
+        Map<Services.Service,FloatSlider> controls = new HashMap();
         x.entrySet().forEach((ks) -> {
             Object key = ks.getKey();
             Services.Service<?> s = ks.getValue();
+
             if (seen.add(s)) {
-                String label = StringUtils.abbreviate(s.toString(), 16);
+                String label = s.toString(); //StringUtils.abbreviate(s.toString(), 16);
+                FloatSlider fs = new FloatSlider(s.pri(), 0f, 1f).on((f, v) -> {
+                    if (v < 0.01f) {
+                        x.off(key);
+                    } else {
+                        x.on(key, v);
+                        //TODO set aux power parameter
+                    }
+                });
+                controls.put(s, fs);
                 l.add(new LabeledPane(
                         label,
                         //yLabel!=null ? yLabel : sx.toString(),
                         new Grid(
                                  //enable
-                                AllOrNothingSlider.AllOrNothingSlider(new FloatSlider(s.isOn() ? 1f : 0f, 0f, 1f).on((f, v)->{
-                                    if (v < 0.1f) {
-                                        x.off(key);
-                                    } else {
-                                        x.on(key);
-                                        //TODO set aux power parameter
-                                    }
-                                })),
+                                AllOrNothingSlider.AllOrNothingSlider(fs),
 //                                new CheckBox("On").set(s.isOn()).on((ToggleButton tb, boolean on)->{
 //                                    if (on) {
 //                                        x.on(key);
@@ -136,7 +148,24 @@ public class ReflectionSurface<X> extends Grid {
                                 new WindowToggleButton("..", ()->s)
                         )));
             }
+            ons.add(x.change.on((co)->{
+                FloatSlider c = controls.get(co.getOne());
+                if (c!=null) {
+                    c.valueRelative(
+                            co.getTwo() ? Util.round(co.getOne().pri(), 0.01f) : 0
+                    );
+                }
+            }));
         });
+    }
+
+    @Override
+    public synchronized void stop() {
+        if (ons != null) {
+            ons.off();
+            ons = null;
+        }
+        super.stop();
     }
 
     public void collectFields(Object x, List<Surface> l, int depth) {

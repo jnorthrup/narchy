@@ -161,6 +161,7 @@ public class ThermostatTest {
                 hotToHot = Thermostat.change(true, true);
         Predicate<Thermostat> isCold = x -> x.is() == Thermostat.cold;
         Predicate<Thermostat> isHot = x -> x.is() == Thermostat.hot;
+        n.logWhen(System.out, false, true, true);
 
         boolean stupid = true;
         training:
@@ -205,7 +206,6 @@ public class ThermostatTest {
 
 //        n.log();
             //n.run(100);
-        n.logWhen(System.out, false, true, true);
 
 //        new Implier(n, new float[] { 1f },
 //                $.$("a_Thermostat(down,())"),

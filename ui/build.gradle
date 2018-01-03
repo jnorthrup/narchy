@@ -32,13 +32,4 @@ dependencies {
 //    compile group: 'org.jfxvnc', name: 'jfxvnc-net', version: '1.2.0'
 
 
-    compile(group: 'de.dfki.mary', name: 'voice-cmu-slt-hsmm', version: '5.2') {
-//        exclude(group: 'log4j')
-        exclude(group: 'org.codehaus.groovy')
-        exclude(group: 'org.swinglabs')
-        exclude(group: 'org.slf4j')
-        exclude(group: 'com.google.guava')
-    }
-
-
 }

@@ -40,6 +40,7 @@ import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.list.primitive.ImmutableByteList;
 import org.eclipse.collections.api.tuple.Pair;
+import org.eclipse.collections.impl.bag.mutable.HashBag;
 import org.eclipse.collections.impl.factory.primitive.ByteLists;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
 import org.eclipse.collections.impl.list.mutable.primitive.DoubleArrayList;
@@ -2018,7 +2019,17 @@ public enum Util {
     }
 
     public static void toMap(Frequency f, String header, BiConsumer<String, Object> x) {
-        f.entrySetIterator().forEachRemaining((e) -> {
+        toMap(f.entrySetIterator(), header, x);
+    }
+
+    public static void toMap(HashBag<?> f, String header, BiConsumer<String, Object> x) {
+        f.forEachWithIndex((e,n)->{
+            x.accept(header + " " + e, n);
+        });
+    }
+
+    public static void toMap(Iterator<? extends Map.Entry<?,?>> f, String header, BiConsumer<String, Object> x) {
+        f.forEachRemaining((e) -> {
             x.accept(header + " " + e.getKey(), e.getValue());
         });
     }

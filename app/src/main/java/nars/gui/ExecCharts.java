@@ -9,7 +9,7 @@ import nars.NAR;
 import nars.NAgent;
 import nars.control.*;
 import nars.exe.Causable;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.Surface;
 import spacegraph.layout.Grid;

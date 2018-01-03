@@ -54,10 +54,12 @@ public interface Retemporalize extends CompoundTransform {
 
             Term c1 = Retemporalize.super.transform(x, op, dt);
             if (op.temporal) {
-                if (dt != XTERNAL && c1 == null || c1 instanceof Bool || (op == CONJ && (c1.subs() != x.subs()))) {
-                    //oops we need XTERNAL
-
-                    return transformTemporal(x, XTERNAL);
+                if (((dt != XTERNAL) && (c1 == null)) || (c1 instanceof Bool) ||
+                        (
+                                //quick tests, not exhaustive
+                                (c1.op() != op) || (c1.volume()!=x.volume()) || c1.subs() != x.subs())
+                        ) {
+                    return transformTemporal(x, XTERNAL); //oops; deformed - we need XTERNAL
                 }
             }
             return c1;

@@ -24,7 +24,6 @@ package gnu.getopt;
 
 import java.text.MessageFormat;
 import java.util.Locale;
-import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 /**************************************************************************/
@@ -372,7 +371,7 @@ import java.util.ResourceBundle;
  * @version 1.0.7
  * @see LongOpt
  */
-public class Getopt extends Object {
+public class Getopt  {
 
 /**************************************************************************/
 
@@ -479,12 +478,12 @@ public class Getopt extends Object {
      * This is an array of LongOpt objects which describ the valid long
      * options.
      */
-    protected LongOpt[] long_options;
+    protected final LongOpt[] long_options;
 
     /**
      * This flag determines whether or not we are parsing only long args
      */
-    protected boolean long_only;
+    protected final boolean long_only;
 
     /**
      * Stores the index into the long_options array of the long option found
@@ -494,7 +493,7 @@ public class Getopt extends Object {
     /**
      * The flag determines whether or not we operate in strict POSIX compliance
      */
-    protected boolean posixly_correct;
+    protected final boolean posixly_correct;
 
     /**
      * A flag which communicates whether or not checkLongOption() did all
@@ -526,13 +525,13 @@ public class Getopt extends Object {
     /**
      * Determines whether we permute arguments or not
      */
-    protected int ordering;
+    protected final int ordering;
 
     /**
      * Name to print as the program name in error messages.  This is necessary
      * since Java does not place the program name in argv[0]
      */
-    protected String progname;
+    protected final String progname;
 
     /**
      * The localized strings are kept in a separate file
@@ -595,7 +594,7 @@ public class Getopt extends Object {
      */
     public Getopt(String progname, String[] argv, String optstring,
                   LongOpt[] long_options, boolean long_only) {
-        if (optstring.length() == 0)
+        if (optstring.isEmpty())
             optstring = " ";
 
         // This function is essentially _getopt_initialize from GNU getopt
@@ -648,7 +647,7 @@ public class Getopt extends Object {
      */
     public void
     setOptstring(String optstring) {
-        if (optstring.length() == 0)
+        if (optstring.isEmpty())
             optstring = " ";
 
         this.optstring = optstring;
@@ -768,16 +767,15 @@ public class Getopt extends Object {
         int bottom = first_nonopt;
         int middle = last_nonopt;
         int top = optind;
-        String tem;
 
         while (top > middle && middle > bottom) {
+            String tem;
             if (top - middle > middle - bottom) {
                 // Bottom segment is the short one.
                 int len = middle - bottom;
-                int i;
 
                 // Swap it with the top part of the top segment.
-                for (i = 0; i < len; i++) {
+                for (int i = 0; i < len; i++) {
                     tem = argv[bottom + i];
                     argv[bottom + i] = argv[top - (middle - bottom) + i];
                     argv[top - (middle - bottom) + i] = tem;
@@ -787,10 +785,9 @@ public class Getopt extends Object {
             } else {
                 // Top segment is the short one.
                 int len = top - middle;
-                int i;
 
                 // Swap it with the bottom part of the bottom segment.
-                for (i = 0; i < len; i++) {
+                for (int i = 0; i < len; i++) {
                     tem = argv[bottom + i];
                     argv[bottom + i] = argv[middle + i];
                     argv[middle + i] = tem;
@@ -818,21 +815,18 @@ public class Getopt extends Object {
      */
     protected int
     checkLongOption() {
-        LongOpt pfound = null;
-        int nameend;
-        boolean ambig;
-        boolean exact;
 
         longopt_handled = true;
-        ambig = false;
-        exact = false;
+        boolean ambig = false;
+        boolean exact = false;
         longind = -1;
 
-        nameend = nextchar.indexOf("=");
+        int nameend = nextchar.indexOf('=');
         if (nameend == -1)
             nameend = nextchar.length();
 
         // Test all lnog options for either exact match or abbreviated matches
+        LongOpt pfound = null;
         for (int i = 0; i < long_options.length; i++) {
             if (long_options[i].getName().startsWith(nextchar.substring(0, nameend))) {
                 if (long_options[i].getName().equals(nextchar.substring(0, nameend))) {
@@ -873,10 +867,7 @@ public class Getopt extends Object {
 
             if (nameend != nextchar.length()) {
                 if (pfound.has_arg != LongOpt.NO_ARGUMENT) {
-                    if (nextchar.substring(nameend).length() > 1)
-                        optarg = nextchar.substring(nameend + 1);
-                    else
-                        optarg = "";
+                    optarg = nextchar.substring(nameend).length() > 1 ? nextchar.substring(nameend + 1) : "";
                 } else {
                     if (opterr) {
                         // -- option
@@ -888,8 +879,7 @@ public class Getopt extends Object {
                         }
                         // +option or -option
                         else {
-                            Object[] msgArgs = {progname, new
-                                    Character(argv[optind - 1].charAt(0)).toString(),
+                            Object[] msgArgs = {progname, Character.toString(argv[optind - 1].charAt(0)),
                                     pfound.name};
                             System.err.println(MessageFormat.format(
                                     _messages.getString("getopt.arguments2"),
@@ -917,10 +907,7 @@ public class Getopt extends Object {
 
                     nextchar = "";
                     optopt = pfound.val;
-                    if (optstring.charAt(0) == ':')
-                        return (':');
-                    else
-                        return ('?');
+                    return optstring.charAt(0) == ':' ? ':' : '?';
                 }
             } // else if (pfound)
 
@@ -961,10 +948,10 @@ public class Getopt extends Object {
     getopt() {
         optarg = null;
 
-        if (endparse == true)
+        if (endparse)
             return (-1);
 
-        if ((nextchar == null) || (nextchar.equals(""))) {
+        if ((nextchar == null) || (nextchar.isEmpty())) {
             // If we have just processed some options following some non-options,
             //  exchange them so that the options come first.
             if (last_nonopt > optind)
@@ -982,7 +969,7 @@ public class Getopt extends Object {
 
                 // Skip any additional non-options
                 // and extend the range of non-options previously skipped.
-                while ((optind < argv.length) && (argv[optind].equals("") ||
+                while ((optind < argv.length) && (argv[optind].isEmpty() ||
                         (argv[optind].charAt(0) != '-') || argv[optind].equals("-"))) {
                     optind++;
                 }
@@ -1020,7 +1007,7 @@ public class Getopt extends Object {
 
             // If we have come to a non-option and did not permute it,
             // either stop the scan or describe it to the caller and pass it by.
-            if (argv[optind].equals("") || (argv[optind].charAt(0) != '-') ||
+            if (argv[optind].isEmpty() || (argv[optind].charAt(0) != '-') ||
                     argv[optind].equals("-")) {
                 if (ordering == REQUIRE_ORDER)
                     return (-1);
@@ -1031,10 +1018,7 @@ public class Getopt extends Object {
 
             // We have found another option-ARGV-element.
             // Skip the initial punctuation.
-            if (argv[optind].startsWith("--"))
-                nextchar = argv[optind].substring(2);
-            else
-                nextchar = argv[optind].substring(1);
+            nextchar = argv[optind].substring(argv[optind].startsWith("--") ? 2 : 1);
         }
 
         // Decode the current option-ARGV-element.
@@ -1072,8 +1056,7 @@ public class Getopt extends Object {
                                 _messages.getString("getopt.unrecognized"),
                                 msgArgs));
                     } else {
-                        Object[] msgArgs = {progname, new
-                                Character(argv[optind].charAt(0)).toString(),
+                        Object[] msgArgs = {progname, Character.toString(argv[optind].charAt(0)),
                                 nextchar};
                         System.err.println(MessageFormat.format(
                                 _messages.getString("getopt.unrecognized2"),
@@ -1091,29 +1074,24 @@ public class Getopt extends Object {
 
         // Look at and handle the next short option-character */
         int c = nextchar.charAt(0); //**** Do we need to check for empty str?
-        if (nextchar.length() > 1)
-            nextchar = nextchar.substring(1);
-        else
-            nextchar = "";
+        nextchar = nextchar.length() > 1 ? nextchar.substring(1) : "";
 
         String temp = null;
         if (optstring.indexOf(c) != -1)
             temp = optstring.substring(optstring.indexOf(c));
 
-        if (nextchar.equals(""))
+        if (nextchar.isEmpty())
             ++optind;
 
         if ((temp == null) || (c == ':')) {
             if (opterr) {
                 if (posixly_correct) {
                     // 1003.2 specifies the format of this message
-                    Object[] msgArgs = {progname, new
-                            Character((char) c).toString()};
+                    Object[] msgArgs = {progname, Character.toString((char) c)};
                     System.err.println(MessageFormat.format(
                             _messages.getString("getopt.illegal"), msgArgs));
                 } else {
-                    Object[] msgArgs = {progname, new
-                            Character((char) c).toString()};
+                    Object[] msgArgs = {progname, Character.toString((char) c)};
                     System.err.println(MessageFormat.format(
                             _messages.getString("getopt.invalid"), msgArgs));
                 }
@@ -1126,24 +1104,20 @@ public class Getopt extends Object {
 
         // Convenience. Treat POSIX -W foo same as long option --foo
         if ((temp.charAt(0) == 'W') && (temp.length() > 1) && (temp.charAt(1) == ';')) {
-            if (!nextchar.equals("")) {
+            if (!nextchar.isEmpty()) {
                 optarg = nextchar;
             }
             // No further cars in this argv element and no more argv elements
             else if (optind == argv.length) {
                 if (opterr) {
                     // 1003.2 specifies the format of this message.
-                    Object[] msgArgs = {progname, new
-                            Character((char) c).toString()};
+                    Object[] msgArgs = {progname, Character.toString((char) c)};
                     System.err.println(MessageFormat.format(
                             _messages.getString("getopt.requires2"), msgArgs));
                 }
 
                 optopt = c;
-                if (optstring.charAt(0) == ':')
-                    return (':');
-                else
-                    return ('?');
+                return optstring.charAt(0) == ':' ? ':' : '?';
             } else {
                 // We already incremented `optind' once;
                 // increment it again when taking next ARGV-elt as argument.
@@ -1168,7 +1142,7 @@ public class Getopt extends Object {
             if ((temp.length() > 2) && (temp.charAt(2) == ':'))
             // This is an option that accepts and argument optionally
             {
-                if (!nextchar.equals("")) {
+                if (!nextchar.isEmpty()) {
                     optarg = nextchar;
                     ++optind;
                 } else {
@@ -1177,24 +1151,20 @@ public class Getopt extends Object {
 
                 nextchar = null;
             } else {
-                if (!nextchar.equals("")) {
+                if (!nextchar.isEmpty()) {
                     optarg = nextchar;
                     ++optind;
                 } else if (optind == argv.length) {
                     if (opterr) {
                         // 1003.2 specifies the format of this message
-                        Object[] msgArgs = {progname, new
-                                Character((char) c).toString()};
+                        Object[] msgArgs = {progname, Character.toString((char) c)};
                         System.err.println(MessageFormat.format(
                                 _messages.getString("getopt.requires2"), msgArgs));
                     }
 
                     optopt = c;
 
-                    if (optstring.charAt(0) == ':')
-                        return (':');
-                    else
-                        return ('?');
+                    return optstring.charAt(0) == ':' ? ':' : '?';
                 } else {
                     optarg = argv[optind];
                     ++optind;
@@ -1208,18 +1178,14 @@ public class Getopt extends Object {
                         if (optind == argv.length) {
                             if (opterr) {
                                 // 1003.2 specifies the format of this message
-                                Object[] msgArgs = {progname, new
-                                        Character((char) c).toString()};
+                                Object[] msgArgs = {progname, Character.toString((char) c)};
                                 System.err.println(MessageFormat.format(
                                         _messages.getString("getopt.requires2"), msgArgs));
                             }
 
                             optopt = c;
 
-                            if (optstring.charAt(0) == ':')
-                                return (':');
-                            else
-                                return ('?');
+                            return optstring.charAt(0) == ':' ? ':' : '?';
                         }
 
                         // Set new optarg and set to end
