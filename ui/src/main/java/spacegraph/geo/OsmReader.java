@@ -7,8 +7,11 @@ import spacegraph.geo.data.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
+import java.util.zip.GZIPInputStream;
 
 public class OsmReader {
 
@@ -30,10 +33,17 @@ public class OsmReader {
 
         factory.setValidating(false);
         factory.setIgnoringComments(true);
+        factory.setIgnoringElementContentWhitespace(true);
 
         DocumentBuilder documentBuilder = factory.newDocumentBuilder();
 
-        Document document = documentBuilder.parse(filename);
+
+        InputStream fis = new FileInputStream(filename);
+        if (filename.endsWith(".gz")) {
+            fis = new GZIPInputStream(fis);
+        }
+        Document document = documentBuilder.parse(fis);
+
 
         osm.clear();
         Node root = document.getDocumentElement();
@@ -112,9 +122,8 @@ public class OsmReader {
                     Element childElement = (Element) childNode;
                     String id = childElement.getAttribute("id");
 
-                    HashMap<String, String> osmTags = new HashMap<>();
-
                     NodeList relationChildren = childElement.getChildNodes();
+                    HashMap<String, String> osmTags = new HashMap<>(relationChildren.getLength());
                     for (int j = 0; j < relationChildren.getLength(); j++) {
                         Node relationChild = relationChildren.item(j);
                         if ("tag".equals(relationChild.getNodeName())) {
@@ -125,8 +134,7 @@ public class OsmReader {
                         }
                     }
 
-                    OsmRelation osmRelation = new OsmRelation(id, null, osmTags);
-                    osm.relations.add(osmRelation);
+                    osm.relations.add(new OsmRelation(id, null, osmTags));
                     relationElements.add(childElement);
                     break;
             }
@@ -162,21 +170,20 @@ public class OsmReader {
                         case "way":
                             member = OsmWay.getOsmWayById(osm.ways, ref);
                             if (member != null) {
-                                Map<String, String> memberTags = member.tags;
                                 if (highway != null) {
-                                    memberTags.put("highway", highway);
+                                    member.tag("highway", highway);
                                 }
                                 if (natural != null) {
-                                    memberTags.put("natural", natural);
+                                    member.tag("natural", natural);
                                 }
                                 if (building != null) {
-                                    memberTags.put("building", building);
+                                    member.tag("building", building);
                                 }
                                 if (building_part != null) {
-                                    memberTags.put("building:part", building_part);
+                                    member.tag("building:part", building_part);
                                 }
                                 if (landuse != null) {
-                                    memberTags.put("landuse", landuse);
+                                    member.tag("landuse", landuse);
                                 }
                             }
                             break;

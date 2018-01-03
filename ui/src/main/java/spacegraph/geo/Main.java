@@ -5,6 +5,7 @@ import spacegraph.geo.data.Osm;
 public class Main {
 
     public static void main(String[] args) {
+//        String filename = "p.osm.gz";
         String filename = "tokyo.osm";
 //        String filename = "map.osm";
 //        String filename = "coastline_islands.osm";
@@ -23,7 +24,7 @@ public class Main {
             OsmReader osmReader = new OsmReader(filename);
             Osm osm = osmReader.parse();
             //OsmReader.printOsm(osm);
-            new OsmViewer(osm);
+            new OsmViewer(osm).show(800, 800);
         }
         catch (Exception e) {
             System.out.print("Usage: myosm filename\n");

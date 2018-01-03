@@ -11,10 +11,12 @@ import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.GLUtessellator;
 import com.jogamp.opengl.glu.GLUtessellatorCallback;
 import com.jogamp.opengl.util.FPSAnimator;
+import spacegraph.SpaceGraph;
 import spacegraph.geo.data.GeoCoordinate;
 import spacegraph.geo.data.Osm;
 import spacegraph.geo.data.OsmNode;
 import spacegraph.geo.data.OsmWay;
+import spacegraph.render.JoglSpace;
 
 import java.util.Map;
 import java.util.function.Consumer;
@@ -26,13 +28,12 @@ import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 /**
  * Created by unkei on 2017/04/25.
  */
-public class OsmViewer implements GLEventListener, KeyListener {
+public class OsmViewer extends SpaceGraph {
 
     Osm osm;
-    double scale = 0.3; //global scale
-
-    double scaleLat = 1;
-    double scaleLon = 1;
+//    double scale = 0.3; //global scale
+//    double scaleLat = 1;
+//    double scaleLon = 1;
     GeoCoordinate center;
     final GeoCoordinate min;
     final GeoCoordinate max;
@@ -41,33 +42,31 @@ public class OsmViewer implements GLEventListener, KeyListener {
     private tessellCallBack tessCallback;
 
 
-    public OsmViewer() {
-        this(null);
-    }
 
     public OsmViewer(Osm osm) {
+        super();
         center = new GeoCoordinate(0, 0);
         min = new GeoCoordinate(0, 0);
         max = new GeoCoordinate(0, 0);
         setOsm(osm);
 
-        GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
-        GLWindow glWindow = GLWindow.create(caps);
-        glWindow.setTitle("First demo (Newt)");
-        glWindow.setSize(300, 300);
-        glWindow.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowDestroyed(WindowEvent windowEvent) {
-                super.windowDestroyed(windowEvent);
-                System.exit(0);
-            }
-        });
-        glWindow.addGLEventListener(this);
-        glWindow.addKeyListener(this);
-        FPSAnimator animator = new FPSAnimator(15);
-        animator.add(glWindow);
-        animator.start();
-        glWindow.setVisible(true);
+//        GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
+//        GLWindow glWindow = GLWindow.create(caps);
+//        glWindow.setTitle("First demo (Newt)");
+//        glWindow.setSize(300, 300);
+//        glWindow.addWindowListener(new WindowAdapter() {
+//            @Override
+//            public void windowDestroyed(WindowEvent windowEvent) {
+//                super.windowDestroyed(windowEvent);
+//                System.exit(0);
+//            }
+//        });
+//        //glWindow.addGLEventListener(this);
+//        //glWindow.addKeyListener(this);
+//        FPSAnimator animator = new FPSAnimator(15);
+//        animator.add(glWindow);
+//        animator.start();
+//        glWindow.setVisible(true);
     }
 
     public void setOsm(Osm osm) {
@@ -76,8 +75,8 @@ public class OsmViewer implements GLEventListener, KeyListener {
         double minLon = osm.bounds.minLon;
         double maxLat = osm.bounds.maxLat;
         double maxLon = osm.bounds.maxLon;
-        scaleLat = scale * 2f / (maxLat - minLat);
-        scaleLon = scale * 2f / (maxLon - minLon);
+//        scaleLat = scale * 2f / (maxLat - minLat);
+//        scaleLon = scale * 2f / (maxLon - minLon);
         center = new GeoCoordinate((maxLat + minLat) / 2, (maxLon + minLon) / 2);
     }
 
@@ -89,31 +88,28 @@ public class OsmViewer implements GLEventListener, KeyListener {
 //        target[2] = 0;
 
         //3D ECEF
-        double[] t = ECEF.latlon2ecef(global.latitude*25, global.longitude*25, global.altitude);
-        double s = 1E-7;
+        double[] t = ECEF.latlon2ecef(global.latitude*50, global.longitude*50, global.altitude);
+        double s = 100 * 1E-7;
         target[0] = t[0]*s;
         target[1] = t[1]*s;
         target[2] = t[2]*s;
 
     }
 
-    @Override
-    public void init(GLAutoDrawable glAutoDrawable) {
-        System.out.print("init\n");
-    }
-
-    @Override
-    public void dispose(GLAutoDrawable glAutoDrawable) {
-        System.out.print("dispose\n");
-    }
-
 
     static final GLU glu = new GLU();
     final GLUtessellator tobj = GLU.gluNewTess();
 
+
+
     @Override
-    public void display(GLAutoDrawable glAutoDrawable) {
-        GL2 gl = glAutoDrawable.getGL().getGL2();
+    protected void render(int dtMS) {
+//
+//    }
+//
+//    @Override
+//    public void display(GLAutoDrawable glAutoDrawable) {
+        GL2 gl = this.gl;
         gl.glClearColor(0f, 0f, 0f, 1f);
         gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -125,18 +121,18 @@ public class OsmViewer implements GLEventListener, KeyListener {
         gl.glLoadIdentity();
         // TODO: Enable anti-aliasing
 
-        // rotating animation
-        float tick = ((float) (System.currentTimeMillis() % 64000) / 64000f); // 64000ms cycle
-        float angle = 360f * tick;
-        float rad = 2f * (float) Math.PI * tick;
+//        // rotating animation
+//        float tick = ((float) (System.currentTimeMillis() % 16000) / 16000f); // 64000ms cycle
+//        float angle = 360f * tick;
+//        float rad = 2f * (float) Math.PI * tick;
 
         //2d
         //gl.glRotatef(angle, 0, 0f, 1f);
         //gl.glTranslatef(0.5f * (float) Math.cos(rad), 0.5f * (float) Math.sin(rad), 0f);
 
         //3d
-        gl.glTranslatef(0, 0, 1f);
-        gl.glRotatef(angle, 1, 0f, 0f);
+//        gl.glTranslatef(0, 0, 1f);
+//        gl.glRotatef(angle, 1, 0f, 0f);
 
         tessellCallBack tessCallback;
         if (this.tessCallback == null) {
@@ -314,40 +310,42 @@ public class OsmViewer implements GLEventListener, KeyListener {
 
 //        gl.glDisable(GL_DEPTH_TEST);
         gl.glDisable(GL_BLEND);
+
+        super.render(dtMS);
     }
 
-    @Override
-    public void reshape(GLAutoDrawable glAutoDrawable, int x, int y, int w, int h) {
-        System.out.printf("reshape(%d, %d, %d, %d)\n", x, y, w, h);
-
-        GL2 gl = glAutoDrawable.getGL().getGL2();
-        gl.glMatrixMode(GL_PROJECTION);
-        gl.glLoadIdentity();
-        gl.glViewport(x, y, w, h);
-//        gl.glOrtho((float)-w/300, (float)w/300, (float)-h/300, (float)h/300, -1f, 1f);
-//        gl.glOrtho(-1f, 1f, (float)-h/w, (float)h/w, -1f, 1f);
-        gl.glOrtho((float) -w / h, (float) w / h, -1f, 1f, -1f, 1f);
-
-    }
-
-    @Override
-    public void keyPressed(KeyEvent keyEvent) {
-        switch (keyEvent.getKeyCode()) {
-            case KeyEvent.VK_ESCAPE:
-                System.exit(0);
-                break;
-            case KeyEvent.VK_SPACE:
-                wireframe = !wireframe;
-                break;
-            default:
-                break;
-        }
-    }
-
-    @Override
-    public void keyReleased(KeyEvent keyEvent) {
-
-    }
+//    @Override
+//    public void reshape(GLAutoDrawable glAutoDrawable, int x, int y, int w, int h) {
+//        System.out.printf("reshape(%d, %d, %d, %d)\n", x, y, w, h);
+//
+//        GL2 gl = glAutoDrawable.getGL().getGL2();
+//        gl.glMatrixMode(GL_PROJECTION);
+//        gl.glLoadIdentity();
+//        gl.glViewport(x, y, w, h);
+////        gl.glOrtho((float)-w/300, (float)w/300, (float)-h/300, (float)h/300, -1f, 1f);
+////        gl.glOrtho(-1f, 1f, (float)-h/w, (float)h/w, -1f, 1f);
+//        gl.glOrtho((float) -w / h, (float) w / h, -1f, 1f, -1f, 1f);
+//
+//    }
+//
+//    @Override
+//    public void keyPressed(KeyEvent keyEvent) {
+//        switch (keyEvent.getKeyCode()) {
+//            case KeyEvent.VK_ESCAPE:
+//                System.exit(0);
+//                break;
+//            case KeyEvent.VK_SPACE:
+//                wireframe = !wireframe;
+//                break;
+//            default:
+//                break;
+//        }
+//    }
+//
+//    @Override
+//    public void keyReleased(KeyEvent keyEvent) {
+//
+//    }
 
     static class tessellCallBack implements GLUtessellatorCallback {
         private final GL2 gl;
