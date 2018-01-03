@@ -5,12 +5,13 @@ import spacegraph.geo.data.Osm;
 public class Main {
 
     public static void main(String[] args) {
-        String filename = "map.osm";
-//        String filename = "./osm/coastline_islands.osm";
-//        String filename = "./osm/coastline_multiple_coasts.osm";
-//        String filename = "./osm/tessellation.osm";
-//        String filename = "./osm/tessellation_broken.osm";
-//        String filename = "./osm/sakurada_moat.osm";
+        String filename = "tokyo.osm";
+//        String filename = "map.osm";
+//        String filename = "coastline_islands.osm";
+//        String filename = "coastline_multiple_coasts.osm";
+//        String filename = "tessellation.osm";
+//        String filename = "tessellation_broken.osm";
+//        String filename = "sakurada_moat.osm";
 
         if (args.length > 0) {
             filename = args[0];

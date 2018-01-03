@@ -456,8 +456,8 @@ public interface NAct {
             int ip = p ? 0 : 1;
             CC[ip] = action;
             g[ip] = gg != null ?
-                    //g.freq()
-                    gg.expectation()
+                    gg.freq()
+                    //gg.expectation()
                     :
                     //0f;
                     0.5f;
@@ -487,21 +487,21 @@ public interface NAct {
 
                         float df;
 
-                        //expectation
-                        float g0 = g[0]-0.5f;
-                        float g1 = g[1]-0.5f;
-                        df = 2f * ((g0) - (g1));
-                            // /Math.max(Math.abs(g0), Math.abs(g1));
+//                        //expectation
+//                        float g0 = g[0]-0.5f;
+//                        float g1 = g[1]-0.5f;
+//                        df = 2f * ((g0) - (g1));
+//                            // /Math.max(Math.abs(g0), Math.abs(g1));
 
                         //frequency
-                        //df = (g[0]) - (g[1]);
+                        df = (g[0]) - (g[1]);
                         //experimental: lessen by a factor of how equally confident each goal is
-//                        if (fair) {
-//                            //fully fair
-//                                df *= eMin / eMax;
-//                            //semi-fair
-//                                //df *= 0.5f + 0.5f * (eMin / eMax); //reduction by at most half
-//                        }
+                        if (fair) {
+                            //fully fair
+                                df *= eMin / eMax;
+                            //semi-fair
+                                //df *= 0.5f + 0.5f * (eMin / eMax); //reduction by at most half
+                        }
                         //df *= 1f - Math.abs(e[0] - e[1]) / eMax;
                         //df *= Util.sqr(eMin / eMax); //more cautious
                         //df *= Math.min(w2cSafe(e[0]), w2cSafe(e[1])) / w2cSafe(eMax);

@@ -17,6 +17,7 @@ import spacegraph.geo.data.OsmNode;
 import spacegraph.geo.data.OsmWay;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 import static com.jogamp.opengl.GL.*;
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_MODELVIEW;
@@ -28,8 +29,8 @@ import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 public class OsmViewer implements GLEventListener, KeyListener {
 
     Osm osm;
-    double scale = 0.1; //global scale
-    
+    double scale = 0.3; //global scale
+
     double scaleLat = 1;
     double scaleLon = 1;
     GeoCoordinate center;
@@ -38,7 +39,7 @@ public class OsmViewer implements GLEventListener, KeyListener {
 
     boolean wireframe;
     private tessellCallBack tessCallback;
-    private GLUtessellator tobj;
+
 
     public OsmViewer() {
         this(null);
@@ -101,10 +102,12 @@ public class OsmViewer implements GLEventListener, KeyListener {
     }
 
 
+    static final GLU glu = new GLU();
+    final GLUtessellator tobj = GLU.gluNewTess();
+
     @Override
     public void display(GLAutoDrawable glAutoDrawable) {
         GL2 gl = glAutoDrawable.getGL().getGL2();
-        GLU glu = new GLU();
         gl.glClearColor(0f, 0f, 0f, 1f);
         gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -117,17 +120,15 @@ public class OsmViewer implements GLEventListener, KeyListener {
         // TODO: Enable anti-aliasing
 
         // rotating animation
-        float tick = ((float) (System.currentTimeMillis() % 64000) / 64000); // 64000ms cycle
+        float tick = ((float) (System.currentTimeMillis() % 64000) / 64000f); // 64000ms cycle
         float angle = 360f * tick;
         float rad = 2f * (float) Math.PI * tick;
         gl.glRotatef(angle, 0, 0f, 1f);
         gl.glTranslatef(0.5f * (float) Math.cos(rad), 0.5f * (float) Math.sin(rad), 0f);
 
         tessellCallBack tessCallback;
-        GLUtessellator tobj = this.tobj;
         if (this.tessCallback == null) {
             tessCallback = this.tessCallback = new tessellCallBack(gl, glu);
-            tobj = this.tobj = GLU.gluNewTess();
             GLU.gluTessCallback(tobj, GLU.GLU_TESS_VERTEX, tessCallback);
             GLU.gluTessCallback(tobj, GLU.GLU_TESS_BEGIN, tessCallback);
             GLU.gluTessCallback(tobj, GLU.GLU_TESS_END, tessCallback);
@@ -222,46 +223,51 @@ public class OsmViewer implements GLEventListener, KeyListener {
                 lw = 1f;
                 ls = (short) 0xFFFF;
             }
+
+
+
             if (isPolygon) {
-                r *= 0.5f;
-                g *= 0.5f;
-                b *= 0.5f;
-                gl.glColor4f(r, g, b, a);
-                gl.glLineWidth(lw);
-                gl.glLineStipple(1, ls);
 
 
-                GLU.gluTessBeginPolygon(tobj, null);
-                GLU.gluTessBeginContour(tobj);
-                for (OsmNode node : way.getOsmNodes()) {
+                    gl.glColor4f(r * 0.5f, g * .5f, b * 0.5f, a);
+                    gl.glLineWidth(lw);
+                    gl.glLineStipple(1, ls);
+
+
+                    GLU.gluTessBeginPolygon(tobj, null);
+                    GLU.gluTessBeginContour(tobj);
+                    for (OsmNode node : way.getOsmNodes()) {
 
 //                    gl.glVertex2f((float) local.longitude, (float) local.latitude);
 
-                    double coord[] = new double[7];
-                    project(node.getGeoCoordinate(), coord);
-                    coord[3] = r;
-                    coord[4] = g;
-                    coord[5] = b;
-                    coord[6] = a;
+                        double coord[] = new double[7];
+                        project(node.getGeoCoordinate(), coord);
+                        coord[3] = r;
+                        coord[4] = g;
+                        coord[5] = b;
+                        coord[6] = a;
 
-                    GLU.gluTessVertex(tobj, coord, 0, coord);
-                }
-                GLU.gluTessEndContour(tobj);
-                GLU.gluTessEndPolygon(tobj);
+                        GLU.gluTessVertex(tobj, coord, 0, coord);
+                    }
+                    GLU.gluTessEndContour(tobj);
+                    GLU.gluTessEndPolygon(tobj);
 
 
             } else {
-                gl.glColor4f(r, g, b, a);
-                gl.glLineWidth(lw);
-                gl.glLineStipple(1, ls);
-                gl.glBegin(GL_LINE_STRIP);
 
-                for (OsmNode node : way.getOsmNodes()) {
-                    project(node.getGeoCoordinate(), c3);
-                    gl.glVertex3d(c3[0], c3[1], c3[2]);
-                }
-                gl.glEnd();
+                    gl.glColor4f(r, g, b, a);
+                    gl.glLineWidth(lw);
+                    gl.glLineStipple(1, ls);
+                    gl.glBegin(GL_LINE_STRIP);
+
+                    for (OsmNode node : way.getOsmNodes()) {
+                        project(node.getGeoCoordinate(), c3);
+                        gl.glVertex3d(c3[0], c3[1], c3[2]);
+                    }
+                    gl.glEnd();
+
             }
+
         }
 
         for (OsmNode node : osm.nodes) {
@@ -308,7 +314,7 @@ public class OsmViewer implements GLEventListener, KeyListener {
         gl.glViewport(x, y, w, h);
 //        gl.glOrtho((float)-w/300, (float)w/300, (float)-h/300, (float)h/300, -1f, 1f);
 //        gl.glOrtho(-1f, 1f, (float)-h/w, (float)h/w, -1f, 1f);
-        gl.glOrtho((float) -w / h, (float) w / h, -1f,  1f, -1f, 1f);
+        gl.glOrtho((float) -w / h, (float) w / h, -1f, 1f, -1f, 1f);
 
     }
 

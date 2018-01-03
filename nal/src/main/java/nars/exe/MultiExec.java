@@ -183,7 +183,10 @@ public class MultiExec extends AbstractExec {
                     Causable cx = can[x];
                     AtomicBoolean cb = cx.busy;
 
-                    double t = jiffy * cycleTime;
+                    double t = jiffy * cycleNanosRemain/1.0E9;
+                    if (t <= 0)
+                        continue;
+
                     int completed;
                     if (cb == null) {
                         completed = run(cx, iterPerSecond[x], t);
