@@ -109,4 +109,9 @@ public class FastCoWList<X> extends FasterList<X> {
         return target;
     }
 
+    public synchronized void set(X... newValues) {
+        clear();
+        Collections.addAll(this, newValues);
+    }
+
 }

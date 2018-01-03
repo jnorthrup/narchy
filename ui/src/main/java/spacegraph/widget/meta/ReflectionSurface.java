@@ -13,13 +13,13 @@ import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.slider.AllOrNothingSlider;
 import spacegraph.widget.slider.FloatSlider;
+import spacegraph.widget.text.Label;
 import spacegraph.widget.text.LabeledPane;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 
 /**
  * Created by me on 2/28/17.
@@ -30,7 +30,9 @@ public class ReflectionSurface<X> extends Grid {
 
     Ons ons = null;
 
-    /** root */
+    /**
+     * root
+     */
     private final X obj;
 
     final static int MAX_DEPTH = 1;
@@ -69,12 +71,11 @@ public class ReflectionSurface<X> extends Grid {
 
         if (x instanceof Surface) {
             Surface sx = (Surface) x;
-            if (sx.parent==null) {
+            if (sx.parent == null) {
                 target.add(new LabeledPane(yLabel, sx));
             }
             return;
         }
-
 
 
         if (x instanceof FloatParam) {
@@ -94,10 +95,10 @@ public class ReflectionSurface<X> extends Grid {
                 collectServices((Services) x, target);
             }
 
-            collectFields(x, target, depth+1);
+            collectFields(x, target, depth + 1);
 
             if (x instanceof Collection) {
-                Surface cx = collectElements((Collection) x, depth+1);
+                Surface cx = collectElements((Collection) x, depth + 1);
                 if (cx != null) {
                     target.add(new LabeledPane(yLabel, cx));
                 }
@@ -114,9 +115,9 @@ public class ReflectionSurface<X> extends Grid {
         return !m.isEmpty() ? grid(m) : null;
     }
 
-    private void collectServices(Services<Object,Object> x, List<Surface> l) {
+    private void collectServices(Services<Object, Object> x, List<Surface> l) {
 
-        Map<Services.Service,FloatSlider> controls = new HashMap();
+        Map<Services.Service, FloatSlider> controls = new HashMap();
         x.entrySet().forEach((ks) -> {
             Object key = ks.getKey();
             Services.Service<?> s = ks.getValue();
@@ -132,12 +133,16 @@ public class ReflectionSurface<X> extends Grid {
                     }
                 });
                 controls.put(s, fs);
-                l.add(new LabeledPane(
-                        label,
-                        //yLabel!=null ? yLabel : sx.toString(),
-                        new Grid(
-                                 //enable
-                                AllOrNothingSlider.AllOrNothingSlider(fs),
+
+                l.add(
+                        new Cover(
+                                () -> IconBuilder.simpleBuilder.apply(s),
+                                () -> new LabeledPane(
+                                                label,
+                                                //yLabel!=null ? yLabel : sx.toString(),
+                                                new Grid(
+                                                        //enable
+                                                        AllOrNothingSlider.AllOrNothingSlider(fs),
 //                                new CheckBox("On").set(s.isOn()).on((ToggleButton tb, boolean on)->{
 //                                    if (on) {
 //                                        x.on(key);
@@ -145,13 +150,15 @@ public class ReflectionSurface<X> extends Grid {
 //                                        x.off(key);
 //                                    }
 //                                }),
-                                new WindowToggleButton("..", ()->s)
-                        )));
+                                                        new WindowToggleButton("..", () -> s)
+                                                )))
+                );
             }
-            ons.add(x.change.on((co)->{
+
+            ons.add(x.change.on((co) -> {
                 Services.Service<Object> z = co.getOne();
                 FloatSlider c = controls.get(z);
-                if (c!=null) {
+                if (c != null) {
                     c.valueRelative(
                             co.getTwo() ? Util.round(z.pri(), 0.01f) : 0
                     );
@@ -188,7 +195,7 @@ public class ReflectionSurface<X> extends Grid {
 
 
                 Object y = f.get(x);
-                if (y!=null && y != x) //avoid self loop
+                if (y != null && y != x) //avoid self loop
                     collect(y, l, depth, f.getName());
 
             } catch (Throwable t) {
