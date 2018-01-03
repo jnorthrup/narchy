@@ -41,7 +41,8 @@ public class OsmWay extends OsmElement {
     }
 
     public boolean isFollowedBy(OsmWay way) {
-        if (this.children != null && !this.children.isEmpty() && way != null && way.children != null && !way.children.isEmpty()) {
+        if (this.children != null && way != null && way.children != null &&
+                !this.children.isEmpty() && !way.children.isEmpty()) {
             OsmNode node = (OsmNode)way.children.get(0);
             if (node != null && node.id != null) {
                 return node.id.equals(this.children.get(this.children.size() - 1).id);

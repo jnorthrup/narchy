@@ -4,7 +4,7 @@ import jcog.math.FloatParam;
 import nars.*;
 import nars.experiment.tetris.TetrisState;
 import nars.op.java.Opjects;
-import nars.util.signal.Bitmap2D;
+import jcog.signal.Bitmap2D;
 import nars.util.signal.CameraSensor;
 
 import static nars.experiment.tetris.TetrisState.*;

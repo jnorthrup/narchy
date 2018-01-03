@@ -1,12 +1,12 @@
 package nars.op.video;
 
 import jcog.Util;
-import nars.util.signal.Bitmap2D;
+import jcog.signal.Bitmap2D;
 
 import java.awt.image.BufferedImage;
 import java.util.function.Supplier;
 
-import static nars.util.signal.Bitmap2D.*;
+import static jcog.signal.Bitmap2D.*;
 
 /**
  * exposes a buffered image as a camera video source

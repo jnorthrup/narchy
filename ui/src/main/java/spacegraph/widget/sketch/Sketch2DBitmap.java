@@ -1,6 +1,9 @@
 package spacegraph.widget.sketch;
 
+import com.googlecode.lanterna.TextColor;
 import com.jogamp.opengl.GL2;
+import jcog.signal.Bitmap2D;
+import net.propero.rdp.Bitmap;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
@@ -23,6 +26,7 @@ public class Sketch2DBitmap extends Sketch2D {
     private final int pw, ph;
     private final Graphics2D gfx;
     private BufferedImage buf;
+    public float brushWidth, brushAlpha;
 
     public Sketch2DBitmap(int w, int h) {
         buf = new BufferedImage(w, h, TYPE_INT_ARGB);
@@ -47,8 +51,8 @@ public class Sketch2DBitmap extends Sketch2D {
     }
 
     final MersenneTwister rng = new MersenneTwister();
-    int density = 25;
-    int radius = 3;
+
+
 
     FastBlur fb;
 
@@ -65,16 +69,19 @@ public class Sketch2DBitmap extends Sketch2D {
 
             int ay = Math.round((1f - hitPoint.y) * ph);
 
-            int R = Math.round(paintR * 255f);
-            int G = Math.round(paintG * 255f);
-            int B = Math.round(paintB * 255f);
-            int RGB = R << 16 | G << 8 | B;
-            for (int i = 0; i < density; i++) {
-                int px = (int) (ax + rng.nextGaussian() * radius);
+//            int R = Math.round(paintR * 255f);
+//            int G = Math.round(paintG * 255f);
+//            int B = Math.round(paintB * 255f);
+//            int RGB = R << 16 | G << 8 | B;
+            float w = this.brushWidth*this.brushWidth;
+            float a = brushAlpha * brushAlpha * 10;
+            for (int i = 0; i < a; i++) {
+                int px = (int) (ax + rng.nextGaussian() * w);
                 if (px >= 0 && px < pw) {
-                    int py = (int) (ay + rng.nextGaussian() * radius);
+                    int py = (int) (ay + rng.nextGaussian() * w);
                     if (py >= 0 && py < ph) {
-                        pix[py * pw + px] = RGB;
+                        //pix[py * pw + px] = RGB;
+                        mix(pix, py * pw + px);
                     }
                 }
             }
@@ -90,6 +97,19 @@ public class Sketch2DBitmap extends Sketch2D {
         }
 
         return super.onTouch(finger, hitPoint, buttons);
+    }
+
+    private void mix(int[] pix, int i) {
+        int e = pix[i];
+        float r = Bitmap2D.decodeRed(e) * 0.5f + paintR * 0.5f;
+        float g = Bitmap2D.decodeGreen(e) * 0.5f + paintG * 0.5f;
+        float b = Bitmap2D.decodeBlue(e) * 0.5f + paintB * 0.5f;
+        int f = Bitmap2D.encodeRGB(r, g, b);
+        pix[i] = f;
+//            int R = Math.round(paintR * 255f);
+//            int G = Math.round(paintG * 255f);
+//            int B = Math.round(paintB * 255f);
+//            int RGB = R << 16 | G << 8 | B;
     }
 
     @Override

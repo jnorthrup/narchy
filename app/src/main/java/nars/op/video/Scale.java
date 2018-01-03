@@ -1,7 +1,7 @@
 package nars.op.video;
 
 
-import nars.util.signal.Bitmap2D;
+import jcog.signal.Bitmap2D;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

@@ -34,18 +34,17 @@ public class OsmViewer extends SpaceGraph {
 //    double scale = 0.3; //global scale
 //    double scaleLat = 1;
 //    double scaleLon = 1;
-    GeoCoordinate center;
+//    GeoCoordinate center;
     final GeoCoordinate min;
     final GeoCoordinate max;
 
     boolean wireframe;
     private tessellCallBack tessCallback;
 
-
+    final GLUtessellator tobj = GLU.gluNewTess();
 
     public OsmViewer(Osm osm) {
         super();
-        center = new GeoCoordinate(0, 0);
         min = new GeoCoordinate(0, 0);
         max = new GeoCoordinate(0, 0);
         setOsm(osm);
@@ -77,7 +76,7 @@ public class OsmViewer extends SpaceGraph {
         double maxLon = osm.bounds.maxLon;
 //        scaleLat = scale * 2f / (maxLat - minLat);
 //        scaleLon = scale * 2f / (maxLon - minLon);
-        center = new GeoCoordinate((maxLat + minLat) / 2, (maxLon + minLon) / 2);
+//        center = new GeoCoordinate((maxLat + minLat) / 2, (maxLon + minLon) / 2);
     }
 
     void project(GeoCoordinate global, double[] target) {
@@ -97,11 +96,6 @@ public class OsmViewer extends SpaceGraph {
     }
 
 
-    static final GLU glu = new GLU();
-    final GLUtessellator tobj = GLU.gluNewTess();
-
-
-
     @Override
     protected void render(int dtMS) {
 //
@@ -110,15 +104,15 @@ public class OsmViewer extends SpaceGraph {
 //    @Override
 //    public void display(GLAutoDrawable glAutoDrawable) {
         GL2 gl = this.gl;
-        gl.glClearColor(0f, 0f, 0f, 1f);
-        gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//        gl.glClearColor(0f, 0f, 0f, 1f);
+//        gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 //        gl.glEnable(GL_DEPTH_TEST);
-        gl.glEnable(GL_BLEND);
-        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//        gl.glEnable(GL_BLEND);
+//        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        gl.glMatrixMode(GL_MODELVIEW);
-        gl.glLoadIdentity();
+//        gl.glMatrixMode(GL_MODELVIEW);
+//        gl.glLoadIdentity();
         // TODO: Enable anti-aliasing
 
 //        // rotating animation
@@ -150,13 +144,18 @@ public class OsmViewer extends SpaceGraph {
         for (OsmWay way : osm.ways) {
 
             Map<String, String> tags = way.tags;
+            String building, building_part, landuse, natural, route, highway;
+            if (!tags.isEmpty()) {
 
-            String building = tags.get("building");
-            String building_part = tags.get("building:part");
-            String landuse = tags.get("landuse");
-            String natural = tags.get("natural");
-            String route = tags.get("route");
-            String highway = tags.get("highway");
+                building = tags.get("building");
+                building_part = tags.get("building:part");
+                landuse = tags.get("landuse");
+                natural = tags.get("natural");
+                route = tags.get("route");
+                highway = tags.get("highway");
+            } else {
+                building = building_part = landuse = natural = route = highway = null;
+            }
 
             boolean isPolygon = false;
             boolean isClosed = way.isClosed();
@@ -309,7 +308,7 @@ public class OsmViewer extends SpaceGraph {
         }
 
 //        gl.glDisable(GL_DEPTH_TEST);
-        gl.glDisable(GL_BLEND);
+//        gl.glDisable(GL_BLEND);
 
         super.render(dtMS);
     }

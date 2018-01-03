@@ -1,6 +1,7 @@
 package spacegraph.geo.data;
 
 import org.eclipse.collections.impl.UnmodifiableMap;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,6 +22,7 @@ public class OsmElement {
 
     public OsmElement(String id, List<? extends OsmElement> children, Map<String, String> tags) {
         this.id = id;
+
         this.children = children;
         if (tags.isEmpty())
             tags = Collections.emptyMap();
@@ -45,7 +47,7 @@ public class OsmElement {
 
     public void tag(String k, String v) {
         if (tags.isEmpty()) {
-            tags = new HashMap();
+            tags = new UnifiedMap(1);
         }
         tags.put(k, v);
     }

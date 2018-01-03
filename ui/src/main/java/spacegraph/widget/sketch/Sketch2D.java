@@ -1,10 +1,12 @@
 package spacegraph.widget.sketch;
 
+import jcog.Util;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.layout.VSplit;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.slider.FloatSlider;
+import spacegraph.widget.slider.XYSlider;
 import spacegraph.widget.tab.ButtonSet;
 import spacegraph.widget.windo.Widget;
 
@@ -41,8 +43,10 @@ abstract public class Sketch2D extends Widget {
         });
 
         Surface toolMenu = grid(
-            new FloatSlider("Width", 1, 0.1f, 3f),
-            new FloatSlider("Alpha", 0.75f, 0f, 1f)
+                new XYSlider().change((_width,_alpha)->{
+                  canvas.brushWidth = Util.lerp(_width, 0.1f, 3f);
+                  canvas.brushAlpha = Util.lerp(_alpha, 0.1f, 3f);
+                }).set(0.5f, 0.75f)
         );
 
         VSplit<ButtonSet, Sketch2DBitmap> sketch = new VSplit(

@@ -10,7 +10,7 @@ import nars.NAR;
 import nars.NAgent;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.util.signal.Bitmap2D;
+import jcog.signal.Bitmap2D;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;

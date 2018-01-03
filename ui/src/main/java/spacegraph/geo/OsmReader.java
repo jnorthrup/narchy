@@ -1,5 +1,6 @@
 package spacegraph.geo;
 
+import jcog.list.FasterList;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 import spacegraph.geo.data.*;
@@ -48,7 +49,7 @@ public class OsmReader {
         osm.clear();
         Node root = document.getDocumentElement();
 
-        Collection<Element> relationElements = new ArrayList<>();
+        Collection<Element> relationElements = new FasterList<>();
 
         NodeList childNodes = root.getChildNodes();
         for (int i=0; i<childNodes.getLength(); i++) {
@@ -56,27 +57,17 @@ public class OsmReader {
 
             switch (childNode.getNodeName()) {
                 case "bounds": {
-
-                    Element childElement = (Element) childNode;
-                    double minLat = Double.parseDouble(childElement.getAttribute("minlat"));
-                    double minLon = Double.parseDouble(childElement.getAttribute("minlon"));
-                    double maxLat = Double.parseDouble(childElement.getAttribute("maxlat"));
-                    double maxLon = Double.parseDouble(childElement.getAttribute("maxlon"));
-
-                    OsmBounds bounds = new OsmBounds(minLat, minLon, maxLat, maxLon);
-                    osm.bounds = bounds;
-
+                    osm.bounds = new OsmBounds((Element) childNode);
                     break;
                 }
                 case "node": {
                     Element childElement = (Element) childNode;
                     String id = childElement.getAttribute("id");
-                    double latitude = Double.parseDouble(childElement.getAttribute("lat"));
-                    double longitude = Double.parseDouble(childElement.getAttribute("lon"));
 
                     HashMap<String, String> osmTags = new HashMap<>();
                     NodeList nodeChildren = childNode.getChildNodes();
-                    for (int j = 0; j < nodeChildren.getLength(); j++) {
+                    int nnc = nodeChildren.getLength();
+                    for (int j = 0; j < nnc; j++) {
                         Node nodeChild = nodeChildren.item(j);
                         if ("tag".equals(nodeChild.getNodeName())) {
                             Element nodeChildElement = (Element) nodeChild;
@@ -85,8 +76,7 @@ public class OsmReader {
                             osmTags.put(k, v);
                         }
                     }
-                    OsmNode osmNode = new OsmNode(id, new GeoCoordinate(latitude, longitude), osmTags);
-                    osm.nodes.add(osmNode);
+                    osm.nodes.add(new OsmNode(id, new GeoCoordinate(childElement), osmTags));
 
                     break;
                 }
@@ -94,7 +84,7 @@ public class OsmReader {
                     Element childElement = (Element) childNode;
                     String id = childElement.getAttribute("id");
 
-                    List<OsmNode> refOsmNodes = new ArrayList<>();
+                    List<OsmNode> refOsmNodes = new FasterList<>();
                     HashMap<String, String> osmTags = new HashMap<>();
 
                     NodeList wayChildren = childNode.getChildNodes();
@@ -145,7 +135,7 @@ public class OsmReader {
             String id = relationElement.getAttribute("id");
 
             OsmRelation osmRelation = OsmRelation.getOsmRelationById(osm.relations, id);
-            List<OsmElement> osmMembers = new ArrayList<>();
+            List<OsmElement> osmMembers = new FasterList<>();
 
             Map<String, String> tags = osmRelation.tags;
             String highway = tags.get("highway");
@@ -212,8 +202,10 @@ public class OsmReader {
             if (!"multipolygon".equals(type))
                 continue;
 
-            for (int i = 0; i< osmRelation.children().size(); i++) {
-                OsmElement e1 = osmRelation.children().get(i);
+            List<? extends OsmElement> oc = osmRelation.children();
+            int s = oc.size();
+            for (int i = 0; i< s; i++) {
+                OsmElement e1 = oc.get(i);
 
                 if (e1 == null || e1.getClass() != OsmWay.class)
                     continue;
@@ -222,18 +214,20 @@ public class OsmReader {
                 if (w1.isClosed())
                     continue;
 
-                for (int j = i; j<osmRelation.children().size(); j++) {
-                    OsmElement e2 = osmRelation.children().get(j);
+                repeat: {
+                    ListIterator<? extends OsmElement> ii = oc.listIterator(i);
+                    while (ii.hasNext()) {
+                        OsmElement e2 = ii.next();
+                        if (e2 == null || e2.getClass() != OsmWay.class)
+                            continue;
 
-                    if (e2 == null || e2.getClass() != OsmWay.class)
-                        continue;
+                        OsmWay w2 = (OsmWay)e2;
 
-                    OsmWay w2 = (OsmWay)e2;
-
-                    if (w1.isFollowedBy(w2)) {
-                        w1.addOsmWay(w2);
-                        osmRelation.children().remove(e2);
-                        j = i; // loop again
+                        if (w1.isFollowedBy(w2)) {
+                            w1.addOsmWay(w2);
+                            ii.remove();
+                            break repeat; // loop again
+                        }
                     }
                 }
             }

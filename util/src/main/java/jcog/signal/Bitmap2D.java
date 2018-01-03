@@ -1,7 +1,13 @@
-package nars.util.signal;
+package jcog.signal;
 
 
 public interface Bitmap2D {
+
+    static int encodeRGB(float r, float g, float b) {
+        return  (Math.round(r*255) << 16) |
+                (Math.round(g*255) << 8) |
+                (Math.round(b*255));
+    }
 
     public static class ArrayBitmap2D implements Bitmap2D {
 

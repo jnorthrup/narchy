@@ -7,7 +7,7 @@ import nars.NAgent;
 import nars.concept.ActionConcept;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.util.signal.Bitmap2D;
+import jcog.signal.Bitmap2D;
 
 import java.awt.image.BufferedImage;
 import java.util.List;

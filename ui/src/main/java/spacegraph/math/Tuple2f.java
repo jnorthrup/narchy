@@ -31,6 +31,7 @@
 
 package spacegraph.math;
 
+import jcog.TODO;
 import jcog.Util;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.phys.BulletGlobals;
@@ -160,6 +161,13 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
         this.x = t1.x;
         this.y = t1.y;
     }
+
+//    TODO
+//    public final boolean setIfUnique(Tuple2f t1) {
+//        if (Util.equals())
+//        this.x = t1.x;
+//        this.y = t1.y;
+//    }
 
 
     /**

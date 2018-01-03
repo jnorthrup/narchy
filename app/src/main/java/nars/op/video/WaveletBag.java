@@ -6,7 +6,7 @@ import boofcv.factory.transform.wavelet.FactoryWaveletTransform;
 import boofcv.factory.transform.wavelet.GFactoryWavelet;
 import boofcv.struct.image.GrayF32;
 import boofcv.struct.wavelet.WlCoef_F32;
-import nars.util.signal.Bitmap2D;
+import jcog.signal.Bitmap2D;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;

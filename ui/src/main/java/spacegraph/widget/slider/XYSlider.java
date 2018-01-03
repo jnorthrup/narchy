@@ -1,6 +1,8 @@
 package spacegraph.widget.slider;
 
 import com.jogamp.opengl.GL2;
+import jcog.Util;
+import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
 import spacegraph.Surface;
 import spacegraph.input.Finger;
 import spacegraph.math.v2;
@@ -13,20 +15,37 @@ public class XYSlider extends Surface {
 
     final v2 knob = new v2(0.5f, 0.5f);
 
-    private final float knobWidth = 0.2f;
-    private final float crosshairWidth = knobWidth/10f;
+
+
+
+    FloatFloatProcedure change = null;
 
     public XYSlider() {
         super();
     }
 
+    public XYSlider change(FloatFloatProcedure change) {
+        this.change = change;
+        return this;
+    }
+
     @Override
     protected boolean onTouching(Finger finger, v2 hitPoint, short[] buttons) {
         if (leftButton(buttons)) {
-            knob.set(hitPoint);
+            if (!Util.equals(knob.x, hitPoint.x, Float.MIN_NORMAL) || !Util.equals(knob.y, hitPoint.y, Float.MIN_NORMAL)) {
+                knob.set(hitPoint);
+                updated();
+            }
             return true;
         }
         return super.onTouching(finger, hitPoint, buttons);
+    }
+
+    protected void updated() {
+        FloatFloatProcedure c = change;
+        if (c!=null) {
+            c.value(knob.x, knob.y);
+        }
     }
 
 
@@ -35,10 +54,6 @@ public class XYSlider extends Surface {
         gl.glColor4f(0f, 0f, 0f, 0.8f); //background
         Draw.rect(gl, bounds);
 
-        Draw.bounds(gl, this, this::paintUnit);
-    }
-
-    protected void paintUnit(GL2 gl) {
         //float margin = 0.1f;
         //float mh = margin / 2.0f;
 
@@ -46,16 +61,20 @@ public class XYSlider extends Surface {
         float py = knob.y;
 
         gl.glColor4f(0.75f, 0.75f, 0.75f, 0.75f);
-        float H = this.crosshairWidth;
-        float h1 = py - H / 2f;
-        Draw.rect(gl, 0, h1-H/2, 1, H); //horiz
-        float W = this.crosshairWidth;
-        float w1 = px - W / 2f;
-        Draw.rect(gl, w1-W/2, 0, W, 1); //vert
+        float W = Math.min(w(),h()) * 0.1f;
+        float h1 = py*h() - W / 2f;
+        Draw.rect(gl, x(), y()+(h1)-W/2, w(), W); //horiz
 
-        //gl.glColor4f(0.2f, 0.8f, 0f, 0.75f);
-        float knobSize = this.knobWidth;
-        Draw.rect(gl, w1-knobSize/2f, h1-knobSize/2f, knobSize, knobSize, 0); //knob
+        float w1 = px*w() - W / 2f;
+        Draw.rect(gl, x()+(w1)- W /2, y(), W, h()); //vert
+
+//        //gl.glColor4f(0.2f, 0.8f, 0f, 0.75f);
+//        float knobSize = this.knobWidth;
+//        Draw.rect(gl, w1-knobSize/2f, h1-knobSize/2f, knobSize, knobSize, 0); //knob
     }
 
+    public XYSlider set(float x, float y) {
+        knob.set(x, y);
+        return this;
+    }
 }

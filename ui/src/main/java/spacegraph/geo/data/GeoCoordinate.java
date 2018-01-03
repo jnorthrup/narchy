@@ -1,5 +1,9 @@
 package spacegraph.geo.data;
 
+import org.w3c.dom.Element;
+
+import static java.lang.Double.*;
+
 /**
  * Created by unkei on 2017/04/25.
  */
@@ -20,5 +24,16 @@ public class GeoCoordinate {
 
     public GeoCoordinate(double latitude, double longitude) {
         this(latitude, longitude, 0);
+    }
+
+    public GeoCoordinate(Element element) {
+        this(parseDouble(element.getAttribute("lat")),
+            parseDouble(element.getAttribute("lon")),
+            parseDoubleOr(element.getAttribute("alt"), 0)
+        );
+    }
+
+    private static double parseDoubleOr(String alt, double otherwise) {
+        return alt == null || alt.isEmpty() ? otherwise : parseDouble(alt);
     }
 }

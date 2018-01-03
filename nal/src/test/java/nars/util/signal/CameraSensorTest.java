@@ -1,5 +1,6 @@
 package nars.util.signal;
 
+import jcog.signal.Bitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NARS;

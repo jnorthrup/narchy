@@ -21,7 +21,7 @@ import nars.task.NALTask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
-import nars.util.signal.Bitmap2D;
+import jcog.signal.Bitmap2D;
 
 import javax.swing.*;
 import java.awt.*;

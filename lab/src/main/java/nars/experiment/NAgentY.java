@@ -12,7 +12,7 @@ import nars.concept.SensorConcept;
 import nars.control.AgentService;
 import nars.task.ITask;
 import nars.term.Term;
-import nars.util.signal.Bitmap2D;
+import jcog.signal.Bitmap2D;
 import nars.util.signal.CameraSensor;
 import nars.util.signal.Signal;
 import org.jetbrains.annotations.NotNull;
