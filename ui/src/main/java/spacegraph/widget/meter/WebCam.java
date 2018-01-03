@@ -5,6 +5,8 @@ import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamEvent;
 import com.github.sarxos.webcam.WebcamListener;
 import jcog.event.ListTopic;
+import jcog.event.On;
+import jcog.event.Ons;
 import jcog.event.Topic;
 import jcog.math.Range;
 import org.apache.commons.lang3.mutable.MutableFloat;
@@ -39,15 +41,20 @@ public class WebCam {
     //public byte[] image;
 
 
-    public WebCam(int w, int h) {
+    public WebCam() {
+        this(Webcam.getDefault());
+    }
+
+    public WebCam(Webcam wc) {
+
 
 
         logger.info("Webcam Devices: {} ", com.github.sarxos.webcam.Webcam.getWebcams());
 
 
         // Open a webcam at a resolution close to 640x480
-        webcam = Webcam.getDefault();
-        webcam.setViewSize(new Dimension(w, h));
+        webcam = wc;
+
 
 
         if (!webcam.open(true))
@@ -140,33 +147,43 @@ public class WebCam {
         }
     }
 
+
+    Ons webcamListeners = new Ons();
     public void on(WebcamListener wl) {
-        webcam.addWebcamListener(wl);
-    }
-
-    public void on(Consumer<BufferedImage> wl) {
-        on(new WebcamListener() {
-            @Override
-            public void webcamOpen(WebcamEvent we) {
-
+        webcamListeners.add(new On(null) {
+            {
+                webcam.addWebcamListener(wl);
             }
-
-            @Override
-            public void webcamClosed(WebcamEvent we) {
-
-            }
-
-            @Override
-            public void webcamDisposed(WebcamEvent we) {
-
-            }
-
-            @Override
-            public void webcamImageObtained(WebcamEvent we) {
-                wl.accept(we.getImage());
+            @Override public void off() {
+                webcam.removeWebcamListener(wl);
             }
         });
+
     }
+
+//    public void on(Consumer<BufferedImage> wl) {
+//        on(new WebcamListener() {
+//            @Override
+//            public void webcamOpen(WebcamEvent we) {
+//
+//            }
+//
+//            @Override
+//            public void webcamClosed(WebcamEvent we) {
+//
+//            }
+//
+//            @Override
+//            public void webcamDisposed(WebcamEvent we) {
+//
+//            }
+//
+//            @Override
+//            public void webcamImageObtained(WebcamEvent we) {
+//                wl.accept(we.getImage());
+//            }
+//        });
+//    }
 
 //    public Thread loop(float fps) {
 //        //try {
@@ -236,7 +253,7 @@ public class WebCam {
 
     public static void main(String[] args) {
 
-        final WebCam w = new WebCam(320, 240);
+        final WebCam w = new WebCam();
         SpaceGraph.window(
                 //new Cuboid(new WebcamSurface(320, 200),4,4), 1200, 1200);
                 w.surface(), 1200, 1200);
@@ -267,6 +284,10 @@ public class WebCam {
      */
     protected static BufferedImage process(BufferedImage img) {
         return img;
+    }
+
+    public void stop() {
+
     }
 
 //    /**

@@ -53,7 +53,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     private static final boolean allowSelfLoops = true;
     private static final boolean dternalAsZero = true;
     private static final boolean autoUnneg = true;
-    protected static final boolean autoNegTask = true;
+    protected static final boolean autoNegTask = false;
 
     static class TimeSpan {
         public final long dt;

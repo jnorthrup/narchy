@@ -308,7 +308,7 @@ public class FZero extends NAgentX {
 ////            }
 //            return a;
 //        });
-        actionUnipolar($.the("fwd"), (a) -> {
+        actionUnipolar($.inh("fwd", id), (a) -> {
             if (a > 0.5f)
                 fz.vehicleMetrics[0][6] = /*+=*/ (a - 0.5f) * 2f * (fwdSpeed); //gas
             else
@@ -318,10 +318,10 @@ public class FZero extends NAgentX {
 //        //eternal bias to stop
 //        nar.goal(f[0].term, Tense.Eternal, 0f, 0.01f);
 //        nar.goal(f[1].term, Tense.Eternal, 0f, 0.01f);
-        actionBipolar($.the("x"), true, (a) -> {
+        actionBipolar($.inh("x", id), true, (a) -> {
             float deadZone =
                     //0;
-                    1 / 6f;
+                    1 / 12f;
             float aa = a;
             if (Math.abs(a) > deadZone) {
                 if (a > 0) a -= deadZone;

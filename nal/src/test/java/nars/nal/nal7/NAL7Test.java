@@ -403,9 +403,9 @@ public class NAL7Test extends NALTest {
 
         test
 
-                .input("(hold($x, key) ==>+3 enter($x, room)).")
+                .input("(hold($x, key) ==>+1 enter($x, room)).")
                 .input("hold(John, key). :|:")
-                .mustBelieve(cycles, "enter(John,room)", 1.00f, 0.81f, 3);
+                .mustBelieve(cycles, "enter(John,room)", 1.00f, 0.81f, 1);
     }
 
     @Test

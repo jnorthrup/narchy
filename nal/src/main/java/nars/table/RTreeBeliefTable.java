@@ -120,7 +120,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 end = r.end();
             }
 
-            FloatFunction<Task> ts = taskStrength(start, end);
+            FloatFunction<Task> ts = taskStrength(start, end, dur);
             FloatFunction<TaskRegion> strongestTask =
                     new CachedFloatFunction<>(t -> +ts.floatValueOf((Task) t));
 
@@ -168,10 +168,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (start == ETERNAL) start = end = nar.time();
         assert (end >= start);
 
+        int dur = nar.dur();
         FloatFunction<Task> ts =
                 (template != null && template.isTemporal()) ?
-                        taskStrength(template, start, end) :
-                        taskStrength(start, end);
+                        taskStrength(template, start, end, dur) :
+                        taskStrength(start, end, dur);
 
         FloatFunction<TaskRegion> strongestTask =
                 new CachedFloatFunction<>(t -> +ts.floatValueOf((Task) t));
@@ -211,7 +212,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                     if (c == b) //c.equals(b))
                         return b;
 
-                    int dur = nar.dur();
                     if (c.evi(start, end, dur) > a.evi(start, end, dur))
                         return c;
                 }
@@ -626,9 +626,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         };
     }
 
-    FloatFunction<Task> taskStrength(long start, long end) {
-        int tableDur = 1 + (int) (tableDur()); //TODO HACK should be 'long' the belief table could span a long time
-        return (Task x) -> temporalTaskPriority(x, start, end, tableDur);
+    FloatFunction<Task> taskStrength(long start, long end, int dur) {
+        return (Task x) -> temporalTaskPriority(x, start, end, dur);
     }
 
     public double tableDur() {
@@ -640,23 +639,23 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     FloatFunction<Task> taskStrengthWithFutureBoost(long now, float presentAndFutureBoost, long when, int perceptDur) {
-        int tableDur = 1 + (int) (tableDur());
+        //int tableDur = 1 + (int) (tableDur());
         return (Task x) -> {
             if (x.isDeleted())
                 return Float.NEGATIVE_INFINITY;
 
             //boost for present and future
-            return (!x.isBefore(now - perceptDur) ? presentAndFutureBoost : 1f) * temporalTaskPriority(x, when, when, tableDur);
+            return (!x.isBefore(now - perceptDur) ? presentAndFutureBoost : 1f) * temporalTaskPriority(x, when, when, perceptDur);
         };
     }
 
-    FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end) {
+    FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end, int dur) {
         if (template == null || !template.isTemporal() || template.equals(template.root())) { //TODO this result can be cached for the entire table once knowing what term it stores
-            return taskStrength(start, end);
+            return taskStrength(start, end, dur);
         } else {
-            int tableDur = 1 + (int) (tableDur());
+            //int tableDur = 1 + (int) (tableDur());
             return (Task x) ->
-                    temporalTaskPriority(x, start, end, tableDur) / (1f + Revision.dtDiff(template, x.term()));
+                    temporalTaskPriority(x, start, end, dur) / (1f + Revision.dtDiff(template, x.term()));
         }
     }
 

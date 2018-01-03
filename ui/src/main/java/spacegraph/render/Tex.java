@@ -8,12 +8,17 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.Surface;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.jogamp.opengl.GL.GL_BGRA;
 import static com.jogamp.opengl.GL.GL_RGB;
+import static com.jogamp.opengl.GL.GL_UNSIGNED_BYTE;
 import static com.jogamp.opengl.GL2GL3.GL_UNSIGNED_INT_8_8_8_8_REV;
 
 public class Tex {
@@ -28,7 +33,7 @@ public class Tex {
     final AtomicBoolean textureUpdated = new AtomicBoolean(false);
     public GLProfile profile;
     private TextureData nextData;
-    public int[] array;
+
 
     private Object src;
 
@@ -66,18 +71,40 @@ public class Tex {
             return;
 
         if (nextData == null || this.src != iimage) {
-            update(((DataBufferInt) (iimage.getRaster().getDataBuffer())).getData(), iimage.getWidth(), iimage.getHeight());
+            DataBuffer b = iimage.getRaster().getDataBuffer();
+            int W = iimage.getWidth();
+            int H = iimage.getHeight();
+            if (b instanceof DataBufferInt)
+                update(((DataBufferInt) b).getData(), W, H);
+            else if (b instanceof DataBufferByte) {
+                update(((DataBufferByte) b).getData(), W, H);
+            }
         }
 
         textureUpdated.set(true);
     }
 
+    protected void update(byte[] iimage, int width, int height) {
+
+        this.src = iimage;
+
+        ByteBuffer buffer = ByteBuffer.wrap(iimage);
+        nextData = new TextureData(profile, GL_RGB,
+                width, height,
+                0 /* border */,
+                GL_RGB,
+                GL_UNSIGNED_BYTE,
+                mipmap,
+                false,
+                false,
+                buffer, null
+        );
+    }
     protected void update(int[] iimage, int width, int height) {
 
         this.src = iimage;
-        this.array = iimage;
-        //buffer = IntBuffer.allocate(pixels);
-        IntBuffer buffer = IntBuffer.wrap(array);
+
+        IntBuffer buffer = IntBuffer.wrap(iimage);
         nextData = new TextureData(profile, GL_RGB,
                 width, height,
                 0 /* border */,

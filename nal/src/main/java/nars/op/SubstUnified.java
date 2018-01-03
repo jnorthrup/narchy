@@ -128,6 +128,7 @@ abstract public class SubstUnified extends Functor {
                 int subTTL = Math.round(Param.BELIEF_MATCH_TTL_FRACTION * parent.ttl);
                 if (subTTL > 0) {
                     SubUnify su = new SubUnify(parent, op, subTTL);
+                    su.strict = strict;
                     output = su.tryMatch(input, x, y);
                     parent.use(subTTL - su.ttl);
                 } else {

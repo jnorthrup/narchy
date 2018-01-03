@@ -22,16 +22,13 @@ public class BatchActivation {
     }
 
 
-
     public void commit(NAR nar) {
         if (!a.isEmpty()) {
-            try {
-                a.forEachKeyValue(nar::activate);
-            } catch (Throwable t) {
-                t.printStackTrace();
-            } finally {
-                a.clear();
-            }
+
+            a.forEachKeyValue(nar::activate);
+
+            a.clear();
+
         }
     }
 
@@ -39,10 +36,6 @@ public class BatchActivation {
         a.addToValue(c, pri);
     }
 
-
-    public void clear() {
-        a.clear();
-    }
 
 //        public static class BatchActivateCommit extends NativeTask {
 //

@@ -1,6 +1,7 @@
 package nars;
 
 import com.google.common.base.Joiner;
+import nars.audio.NARHear;
 import nars.exe.MultiExec;
 import nars.op.AtomicExec;
 import nars.op.Operator;
@@ -36,6 +37,8 @@ public class NARchy extends NARS {
         ConjClustering conjClusterB = new ConjClustering(nar, BELIEF, (Task::isInput), 16, 64);
         //ConjClustering conjClusterG = new ConjClustering(nar, GOAL, true, false, 16, 64);
 
+        new NARHear(nar);
+        
         Hear.readURL(nar);
 
         installSpeech(nar);
@@ -109,15 +112,15 @@ public class NARchy extends NARS {
 
         new Speech(nar);
 
-            try {
-                //nar.believe($.$("(hear:$1 ==>+1 say:$1)"), Tense.Eternal);
-                //nar.believe($.$("(say:$1 ==>+1 hear:$1)"), Tense.Eternal);
-                nar.goal($.$("say(#1)"), Tense.Eternal, 1f);
-                nar.goal($.$("(hear:#1 &&+1 say:#1)"), Tense.Eternal, 1f);
-                nar.goal($.$("((hear(#1) &&+1 hear(#2)) &&+1 say(#1,#2))"), Tense.Eternal, 1f);
-            } catch (Narsese.NarseseException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                //nar.believe($.$("(hear:$1 ==>+1 say:$1)"), Tense.Eternal);
+//                //nar.believe($.$("(say:$1 ==>+1 hear:$1)"), Tense.Eternal);
+//                nar.goal($.$("say(#1)"), Tense.Eternal, 1f);
+//                nar.goal($.$("(hear:#1 &&+1 say:#1)"), Tense.Eternal, 1f);
+//                nar.goal($.$("((hear(#1) &&+1 hear(#2)) &&+1 say(#1,#2))"), Tense.Eternal, 1f);
+//            } catch (Narsese.NarseseException e) {
+//                e.printStackTrace();
+//            }
 
     }
 }

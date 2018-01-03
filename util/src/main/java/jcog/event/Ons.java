@@ -8,18 +8,18 @@ import java.util.Collections;
  * essentially holds a list of registrations but forms an activity context
  * from the dynamics of its event reactivity
  */
-public class Ons extends FasterList<On> {
+public class Ons extends jcog.list.FastCoWList<On> {
 
-    Ons(int length) {
-        super(length);
+    Ons(int capacity) {
+        super(capacity, On[]::new);
     }
 
     Ons() {
         this(1);
     }
 
-    public Ons(On<?>... r) {
-        super(r.length);
+    public Ons(On... r) {
+        this(r.length);
         Collections.addAll(this, r);
     }
 

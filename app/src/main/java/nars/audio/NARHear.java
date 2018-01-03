@@ -1,5 +1,6 @@
 package nars.audio;
 
+import com.github.sarxos.webcam.Webcam;
 import jcog.Services;
 import jcog.exe.Loop;
 import nars.$;
@@ -10,6 +11,8 @@ import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;
+import spacegraph.layout.Grid;
+import spacegraph.widget.meter.WebCam;
 import spacegraph.widget.text.Label;
 
 import javax.sound.sampled.AudioSystem;
@@ -18,6 +21,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 
+import static spacegraph.SpaceGraph.window;
 import static spacegraph.layout.Grid.grid;
 import static spacegraph.layout.Grid.row;
 
@@ -27,7 +31,7 @@ import static spacegraph.layout.Grid.row;
 public class NARHear extends NARService {
 
 
-    final List<AudioSourceService> devices = new CopyOnWriteArrayList<>();
+    final List<Services.Service> devices = new CopyOnWriteArrayList<>();
 
     static class AudioSourceService extends NARService {
         public final AudioSource audio;
@@ -41,7 +45,7 @@ public class NARHear extends NARService {
             nar.off(this); //default off
         }
 
-        public Surface newMonitorPane() {
+        public Surface surface() {
             return capturing != null ? capturing.newMonitorPane() : new Label("not enabled try again"); //HACK
         }
 
@@ -60,38 +64,78 @@ public class NARHear extends NARService {
             }
         }
     }
+    static class VideoSourceService extends NARService {
 
-    public static void main(String[] args) {
+        private WebCam c;
+        public final Webcam cam;
+        Surface surface;
+        private SpaceGraph surfaceWindow = null;
 
-        //init();
+        VideoSourceService(NAR nar, Webcam cam) {
+            super(null, $.p($.the("video"), $.the(cam.getName())));
+            this.cam = cam;
+            surface = new Grid(); //blank
+            nar.off(this); //default off
+        }
 
-        NAR n = NARS.tmp();
-        n.log();
-        NARHear a = new NARHear(n);
-        a.runFPS(1f);
-        Loop loop = n.startFPS(10);
+        public Surface surface() {
+            return surface;
+        }
 
-        SpaceGraph.window(
-                grid(
-                        row(
-                                a.devices.get(7).newMonitorPane()
-                        )
-//                    new MatrixView(ae.xx, (v, gl) -> { Draw.colorBipolar(gl, v); return 0; }),
-//                    new MatrixView(ae.y, (v, gl) -> { Draw.colorBipolar(gl, v); return 0; })
-                        //new MatrixView(ae.W.length, ae.W[0].length, MatrixView.arrayRenderer(ae.W)),
-                        //Vis.conceptLinePlot(nar, freqInputs, 64)
-                ),
-                1200, 1200);
+        @Override
+        protected void start(NAR x) {
+            synchronized (cam) {
+                cam.open(true);
+                c = new WebCam(cam);
+                surface = c.surface();
+                surfaceWindow = window(surface, 800, 600);
+            }
+        }
 
-//        this.loop = nar.exe.loop(fps, () -> {
-//            if (enabled.get()) {
-//                this.now = nar.time();
-//                senseAndMotor();
-//                predict();
-//            }
-//        });
+        @Override
+        protected void stopping(NAR nar) {
+            synchronized (cam) {
+                if (surfaceWindow!=null)
+                    surfaceWindow.window.destroy();
 
+                surface = new Grid();
+                c.stop();
+                cam.close();
+            }
+        }
     }
+
+//    public static void main(String[] args) {
+//
+//        //init();
+//
+//        NAR n = NARS.tmp();
+//        n.log();
+//        NARHear a = new NARHear(n);
+//        a.runFPS(1f);
+//        Loop loop = n.startFPS(10);
+//
+//        SpaceGraph.window(
+//                grid(
+//                        row(
+//                                a.devices.get(7).surface()
+//                        )
+////                    new MatrixView(ae.xx, (v, gl) -> { Draw.colorBipolar(gl, v); return 0; }),
+////                    new MatrixView(ae.y, (v, gl) -> { Draw.colorBipolar(gl, v); return 0; })
+//                        //new MatrixView(ae.W.length, ae.W[0].length, MatrixView.arrayRenderer(ae.W)),
+//                        //Vis.conceptLinePlot(nar, freqInputs, 64)
+//                ),
+//                1200, 1200);
+//
+////        this.loop = nar.exe.loop(fps, () -> {
+////            if (enabled.get()) {
+////                this.now = nar.time();
+////                senseAndMotor();
+////                predict();
+////            }
+////        });
+//
+//    }
 
     private Loop runFPS(float fps) {
         return new Loop(fps) {
@@ -125,40 +169,16 @@ public class NARHear extends NARService {
         for (int device = 0; device < minfoSet.length; device++) {
 
             AudioSource audio = new AudioSource(device, 20);
-            AudioSourceService as = new AudioSourceService(nar, audio,
+            devices.add(new AudioSourceService(nar, audio,
                     () -> new WaveCapture(audio,
                             //new SineSource(128),
                             20)
-            );
-            devices.add(as);
-
-
-
-            //        List<SensorConcept> freqInputs = null; //absolute value unipolar
-            //        try {
-            //            freqInputs = senseNumber(0, capture.freqSamplesPerFrame,
-            //                    i -> $.func("au", $.the(i)).toString(),
-            //
-            //            //        i -> () -> (Util.clamp(au.history[i], -1f, 1f)+1f)/2f); //raw bipolar
-            //                    i -> () -> (Util.sqr(Util.clamp(capture.data[i], 0f, 1f))));
-            //        } catch (Narsese.NarseseException e) {
-            //            e.printStackTrace();
-            //        }
-
-
-            //        Autoencoder ae = new Autoencoder(au.data.length, 8, new XorShift128PlusRandom(1));
-            //        //DurService.on(nar, ())
-            //        onFrame(()-> {
-            //            ae.put(au.data, 0.15f, 0.01f, 0.1f, true, true, true);
-            //        });
-
-
-            //Vis.conceptsWindow2D(nar, 64, 4).show(800, 800);
-
-            //            b.setScene(new Scene(au.newMonitorPane(), 500, 400));
-            //            b.show();
-            //        });
+            ));
         }
+
+        Webcam.getWebcams().forEach(w -> {
+            devices.add(new VideoSourceService(nar, w));
+        });
     }
 
 

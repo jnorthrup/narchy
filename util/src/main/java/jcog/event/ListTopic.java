@@ -8,7 +8,11 @@ import java.util.function.Consumer;
 public class ListTopic<V> extends jcog.list.FastCoWList<Consumer<V>> implements Topic<V> {
 
     public ListTopic() {
-        super(8, Consumer[]::new);
+        this(8);
+    }
+
+    public ListTopic(int capacity) {
+        super(capacity, Consumer[]::new);
     }
 
     @Override

@@ -114,30 +114,30 @@ public class PoleCart extends NAgentX {
          */
         //TODO extract 'senseAngle()' for NSense interface
 
-        this.x = senseNumber("(x)",
+        this.x = senseNumber($.inh("x", id),
                 new FloatPolarNormalized(() -> (float) pos)).resolution(0.04f);
-        this.xVel = senseNumber("(xVel)",
+        this.xVel = senseNumber($.inh("dx", id),
                 //() -> Util.sigmoid((float) posDot)
                 new FloatPolarNormalized(() -> (float) posDot)
         ).resolution(0.04f);
 
         //angle
 
-        this.angX = senseNumber($.p("angX"),
+        this.angX = senseNumber($.inh($.p("ang", "x"), id),
                 () -> (float)(0.5f + 0.5f * (Math.sin(angle))))
                 .resolution(0.04f);
-        this.angY = senseNumber($.p("angY"),
+        this.angY = senseNumber($.inh($.p("ang", "y"), id),
                 () -> (float)(0.5f + 0.5f * (Math.cos(angle))))
                 .resolution(0.04f);
 
         //angular velocity
-        this.angVel = senseNumber("(angVel)",
+        this.angVel = senseNumber($.inh($.p("angVel"), id),
                 //() -> Util.sigmoid(angleDot / 4f)
                 new FloatPolarNormalized(()->(float)angleDot)
         ).resolution(0.1f);
 
         {
-            actionBipolar($.the("move"), (a) -> {
+            actionBipolar($.inh("move", id), (a) -> {
                 if (!manualOverride)
                     action = a;
                 return a;

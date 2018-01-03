@@ -79,111 +79,111 @@ public class DeductiveMeshTest {
         return $.sim( $.p($.the(x1), $.the(y1)), $.p($.the(x2), $.the(y2)) );
     }
 
-    public @NotNull Term c(int x, int y) {
-        return $.p($.the(x), $.the(y));
-    }
-
-
-    @NotNull
-    static Atomic a(int i) {
-        return $.the((byte)('a' + i));
-    }
-
-
-    public static void main(String[] args) {
-
-        Param.DEBUG = false;
-
-
-
-        NAR n = new NARS().get();
-        //n.nal(5);
-        n.logPriMin(System.out, 0.1f);
-
-
-//        n.onCycle(x -> {
-//            if (n.time() == 1000) {
-//                System.out.println(Arrays.toString(n.core.active.priHistogram(new double[10])));
-//            }
-//        });
-
-        test(n, new int[] { 3, 3 }, 2500);
-
-
-
-    }
-
-    static void test(@NotNull NAR n, @NotNull int[] dims, int cycles) {
-
-
-        TestNAR testnar = new TestNAR(n);
-        DeductiveMeshTest test = new DeductiveMeshTest(testnar, dims, cycles);
-
-        System.out.print(DeductiveMeshTest.class.getSimpleName() + " test: "
-                + test.q + "?\t");
-
-        final long start = System.currentTimeMillis();
-
-//        new AnswerReaction(n) {
+//    public @NotNull Term c(int x, int y) {
+//        return $.p($.the(x), $.the(y));
+//    }
 //
-//            @Override
-//            public void onSolution(Task belief) {
-//                if (belief.getTerm().equals(test.q)) {
-//                    System.out.println(belief + " " + timestamp(start) + " " +
-//                            n.concepts().size() + " concepts");
-//                    System.out.println(belief.getExplanation());
-//                    System.out.println();
-//                }
-//            }
-//        };
-
-
-        testnar.test(false);
-
-
-        //n.stdout();
-        //n.frame(5000);
-
-
-
-        //n.stdout();
-        //n.frame(55); //to print the ending
-
-        //while (true) {
-
-//        Report report = new Report(test, test.error);
+//
+//    @NotNull
+//    static Atomic a(int i) {
+//        return $.the((byte)('a' + i));
+//    }
+//
+//
+//    public static void main(String[] args) {
+//
+//        Param.DEBUG = false;
 //
 //
 //
-//        test.requires.forEach(report::add);
+//        NAR n = new NARS().get();
+//        //n.nal(5);
+//        n.logPriMin(System.out, 0.1f);
 //
 //
-//        Report r = report;
+////        n.onCycle(x -> {
+////            if (n.time() == 1000) {
+////                System.out.println(Arrays.toString(n.core.active.priHistogram(new double[10])));
+////            }
+////        });
 //
-//        System.out.println(
-//                (r.isSuccess() ? "OK" : "ERR") +
-//                "\t@" + time + " (" + ts + "ms) " +
-//                nc + 'C');
-
-
-        //TextOutput.out(n).setOutputPriorityMin(0.85f);
-
-//        while (true) {
+//        test(n, new int[] { 3, 3 }, 2500);
 //
-//            n.run(500);
-//            //sleep(20);
 //
-//            if (n.time() % printEvery == 0) {
-//                System.out.println(n.time() + " " + timestamp(start) + " " +
-//                        n.memory().size());
-//            }
-//        }
-
-
-    }
-
-    @NotNull
-    private static String timestamp(long start) {
-        return (System.currentTimeMillis() - start) + " ms";
-    }
+//
+//    }
+//
+//    static void test(@NotNull NAR n, @NotNull int[] dims, int cycles) {
+//
+//
+//        TestNAR testnar = new TestNAR(n);
+//        DeductiveMeshTest test = new DeductiveMeshTest(testnar, dims, cycles);
+//
+//        System.out.print(DeductiveMeshTest.class.getSimpleName() + " test: "
+//                + test.q + "?\t");
+//
+//        final long start = System.currentTimeMillis();
+//
+////        new AnswerReaction(n) {
+////
+////            @Override
+////            public void onSolution(Task belief) {
+////                if (belief.getTerm().equals(test.q)) {
+////                    System.out.println(belief + " " + timestamp(start) + " " +
+////                            n.concepts().size() + " concepts");
+////                    System.out.println(belief.getExplanation());
+////                    System.out.println();
+////                }
+////            }
+////        };
+//
+//
+//        testnar.test(false);
+//
+//
+//        //n.stdout();
+//        //n.frame(5000);
+//
+//
+//
+//        //n.stdout();
+//        //n.frame(55); //to print the ending
+//
+//        //while (true) {
+//
+////        Report report = new Report(test, test.error);
+////
+////
+////
+////        test.requires.forEach(report::add);
+////
+////
+////        Report r = report;
+////
+////        System.out.println(
+////                (r.isSuccess() ? "OK" : "ERR") +
+////                "\t@" + time + " (" + ts + "ms) " +
+////                nc + 'C');
+//
+//
+//        //TextOutput.out(n).setOutputPriorityMin(0.85f);
+//
+////        while (true) {
+////
+////            n.run(500);
+////            //sleep(20);
+////
+////            if (n.time() % printEvery == 0) {
+////                System.out.println(n.time() + " " + timestamp(start) + " " +
+////                        n.memory().size());
+////            }
+////        }
+//
+//
+//    }
+//
+//    @NotNull
+//    private static String timestamp(long start) {
+//        return (System.currentTimeMillis() - start) + " ms";
+//    }
 }

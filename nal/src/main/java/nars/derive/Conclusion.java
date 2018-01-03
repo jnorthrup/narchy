@@ -28,7 +28,6 @@ public final class Conclusion extends AbstractPred<Derivation> {
     public final Term pattern;
 
 
-
     //    public final Set<Variable> uniqueVars;
     public final PremiseRule rule;
 
@@ -46,18 +45,18 @@ public final class Conclusion extends AbstractPred<Derivation> {
         NAR nar = d.nar;
 
         nar.emotion.derivationEval.increment();
-        
+
         Term c1 = pattern.eval(d);
 
         int volMax = d.termVolMax;
-        if (c1 == null || !c1.op().conceptualizable || c1.volume() > volMax || c1.hasAny(/*BOOL,*/VAR_PATTERN) )
+        if (c1 == null || !c1.op().conceptualizable || c1.volume() > volMax || c1.hasAny(/*BOOL,*/VAR_PATTERN))
             return false;
         if (!c1.hasAny(Op.ConstantAtomics))
             return false; //entirely variablized
 
-        if (c1.op()==NEG) {
-           c1 = c1.unneg();
-           if (d.concTruth!=null) //belief or goal
+        if (c1.op() == NEG) {
+            c1 = c1.unneg();
+            if (d.concTruth != null) //belief or goal
                 d.concTruth = d.concTruth.neg();
         }
 
@@ -65,51 +64,21 @@ public final class Conclusion extends AbstractPred<Derivation> {
         final long[] occ = d.concOcc;
         occ[0] = occ[1] = ETERNAL;
 
-
         Term c2;
         if (d.temporal) {
 
-//            try {
+            boolean s = d.single;
+            DeriveTime dt = s ? d.dtSingle : d.dtDouble;
+            if (dt == null) {
+                dt = new DeriveTime(d, s);
+                if (s)
+                    d.dtSingle = dt;
+                else
+                    d.dtDouble = dt;
+            }
 
-//                TemporalizeDerived dt = d.temporalize;
-//                if (dt == null) {
-//                    d.temporalize = dt = new TemporalizeDerived(d); //cache in derivation
-//                }
-//
-
-
-                boolean s = d.single;
-                DeriveTime dt = s ? d.dtSingle : d.dtDouble;
-                if (dt == null) {
-                    dt = new DeriveTime(d, s);
-                    if (s)
-                        d.dtSingle = dt;
-                    else
-                        d.dtDouble = dt;
-                }
-
-                c2 = dt.get().solve(c1);
-
-                {
-                    //final sanity tests hack
-
-
-
-                    if (occ[0] > occ[1]) {
-                        //HACK swap the reversed occ
-                        long x = occ[0];
-                        occ[0] = occ[1];
-                        occ[1] = x;
-                    }
-                }
-
-
-//            } catch (InvalidTermException t) {
-//                if (Param.DEBUG) {
-//                    logger.error("temporalize error: {} {} {}", d, c1, t.getMessage());
-//                }
-//                return false;
-//            }
+            DeriveTime timeSolver = dt.get();
+            c2 = timeSolver.solve(c1);
 
             //invalid or impossible temporalization; could not determine temporal attributes. seems this can happen normally
             if (c2 == null || c2.volume() > volMax || !c2.op().conceptualizable/*|| (Math.abs(occReturn[0]) > 2047483628)*/ /* long cast here due to integer wraparound */) {
@@ -125,14 +94,6 @@ public final class Conclusion extends AbstractPred<Derivation> {
             }
 
 
-            if (occ[1] == ETERNAL) occ[1] = occ[0]; //HACK probbly isnt needed
-
-        } else {
-            c2 = c1;
-        }
-
-
-        if (d.temporal) {
             if (d.concPunc == BELIEF || d.concPunc == GOAL) {
                 //only should eliminate XTERNAL from beliefs and goals.  ok if it's in questions/quests since it's the only way to express indefinite temporal repetition
                 //c2 = c2.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
@@ -140,19 +101,25 @@ public final class Conclusion extends AbstractPred<Derivation> {
                 //  return false;
                 if (c2.hasXternal()) {
                     return false;
-                } else {
-
                 }
             }
+
+            if (occ[0] > occ[1]) {
+                //HACK swap the reversed occ
+                long x = occ[0];
+                occ[0] = occ[1];
+                occ[1] = x;
+            }
+
         } else {
-            c2 = c2.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
+            c2 = c1.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
         }
 
-        c2 = c2.normalize();
-        if (c2 == null)
-            return false;
 
-        return d.derivedTerm.set(c2)!=null;
+        c2 = c2.normalize();
+
+        return (c2 != null) && (d.derivedTerm.set(c2) != null);
+
     }
 
 

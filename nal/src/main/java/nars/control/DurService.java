@@ -23,11 +23,12 @@ abstract public class DurService extends NARService implements Runnable {
     public final MutableFloat durations;
 
     protected final NAR nar;
+
+    /** when the last cycle ended */
     private long now;
 
-    private final AtomicBoolean busy = new AtomicBoolean(false);
+    private final AtomicBoolean busy = new AtomicBoolean(true);
 
-    private boolean enabled;
 
 
     protected DurService(NAR n, float durs) {
@@ -83,15 +84,16 @@ abstract public class DurService extends NARService implements Runnable {
 
     @Override
     protected synchronized void start(NAR nar) {
+
         super.start(nar);
-        enabled = true;
+        busy.set(false);
         nar.run(this); //initial
     }
 
     @Override
-    public synchronized void off() {
-        enabled = false;
-        super.off();
+    protected synchronized void stopping(NAR nar) {
+        busy.set(true);
+        super.stopping(nar);
     }
 
     @Override
@@ -99,12 +101,13 @@ abstract public class DurService extends NARService implements Runnable {
         //long lastNow = this.now;
         //long now = nar.time();
         //if (now - lastNow >= durations.floatValue() * nar.dur()) {
-        if (enabled && busy.compareAndSet(false, true)) {
+        if (busy.compareAndSet(false, true)) {
 
             long last = this.now;
+            long now = nar.time();
+
             int dur = nar.dur();
             long durCycles = Math.round(durations.floatValue() * dur);
-            long now = nar.time();
 
             try {
 
@@ -122,8 +125,11 @@ abstract public class DurService extends NARService implements Runnable {
             } catch (Exception e) {
                 logger.error("{} {}", this, e);
             } finally {
-                nar.at((this.now = nar.time()) + durCycles, this);
-                busy.lazySet(false);
+                now = (this.now = nar.time());
+                if (!isOff()) {
+                    nar.at((now) + durCycles, this);
+                    busy.set(false);
+                }
             }
         }
     }

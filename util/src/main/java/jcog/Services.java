@@ -148,7 +148,7 @@ public class Services<X, C>  {
 
     public static abstract class AbstractService<C> extends AtomicReference<ServiceState> implements Service<C> {
 
-        float pri = 1f;
+        float pri = 0f;
 
         protected AbstractService() {
             super(ServiceState.Off);
@@ -179,7 +179,7 @@ public class Services<X, C>  {
 
         @Override
         public final void start(Services<?,C> x, Executor exe) {
-            if (compareAndSet(ServiceState.Off, ServiceState.OffToOn)) {
+            if (pri() > 0 && compareAndSet(ServiceState.Off, ServiceState.OffToOn)) {
                 exe.execute(() -> {
                     try {
                         start(x.id);
@@ -305,8 +305,10 @@ public class Services<X, C>  {
             //if start, then start after the previous stopped
             removed.stop(this, exe, start ? ()-> s.start(this, exe) : null);
         } else {
-            if (start)
+            if (start) {
+                s.setPri(1f);
                 s.start(this, exe);
+            }
         }
 
 

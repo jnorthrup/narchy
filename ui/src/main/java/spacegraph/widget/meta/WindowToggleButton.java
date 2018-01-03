@@ -12,9 +12,10 @@ import spacegraph.widget.button.ToggleButton;
 
 import java.util.function.Supplier;
 
-/** toggle button, which when actived, creates a window, and when inactivated destroys it
- *  TODO window width, height parameters
- * */
+/**
+ * toggle button, which when actived, creates a window, and when inactivated destroys it
+ * TODO window width, height parameters
+ */
 public class WindowToggleButton extends CheckBox implements WindowListener, ObjectBooleanProcedure<ToggleButton> {
 
     private final Supplier spacer;
@@ -24,7 +25,7 @@ public class WindowToggleButton extends CheckBox implements WindowListener, Obje
     SpaceGraph space;
 
     public WindowToggleButton(String text, Object o) {
-        this(text, ()->o);
+        this(text, () -> o);
     }
 
     public WindowToggleButton(String text, Supplier spacer) {
@@ -32,38 +33,46 @@ public class WindowToggleButton extends CheckBox implements WindowListener, Obje
         this.spacer = spacer;
         on(this);
     }
+
     public WindowToggleButton(String text, Supplier spacer, int w, int h) {
         this(text, spacer);
-        this.width = w; this.height = h;
+        this.width = w;
+        this.height = h;
     }
 
     @Override
     public void value(ToggleButton t, boolean enabled) {
-        SpaceGraph space = this.space;
-        synchronized (spacer) {
-            if (enabled) {
+        if (enabled) {
+            SpaceGraph space;
+            synchronized (spacer) {
+                space = this.space;
                 if (space == null) {
                     space = this.space = SpaceGraph.window(spacer.get(), width, height);
-
-                    int sx = Finger.pointer.getX();
-                    int sy = Finger.pointer.getY();
-                    int nx = sx - width/2;
-                    int ny = sy - height/2;
-                    space.window.setPosition(nx, ny);
-
-                    //space.show(this.toString(), width,height, nx, ny);
-                    //space.window.setTitle(label.value());
                     space.addWindowListener(this);
-
                 }
-            } else {
-                if (space!=null) {
+            }
+            int sx = Finger.pointer.getX();
+            int sy = Finger.pointer.getY();
+            int nx = sx - width / 2;
+            int ny = sy - height / 2;
+            space.window.setPosition(nx, ny);
+
+            //space.show(this.toString(), width,height, nx, ny);
+            //space.window.setTitle(label.value());
+
+
+        } else {
+
+            synchronized (spacer) {
+                if (space != null) {
                     GLWindow win = this.space.window;
                     this.space = null;
-                    if (win != null && win.getWindowHandle() != 0)
+                    if (win.getWindowHandle() != 0)
                         win.destroy();
                 }
             }
+
+
         }
     }
 

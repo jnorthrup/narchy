@@ -15,7 +15,7 @@ abstract public class On<V> {
 
     public final Topic<V> topic;
 
-    On(Topic<V> t) {
+    protected On(Topic<V> t) {
         this.topic = t;
     }
 

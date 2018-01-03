@@ -429,20 +429,19 @@ public interface NAct {
                 //$.p(ZeroProduct, s);
                 //$.p(s,$.the("\"-\""));
 
-        final float f[] = new float[2];
+        final float g[] = new float[2];
         final float e[] = new float[2];
 
         GoalActionAsyncConcept[] CC = new GoalActionAsyncConcept[2]; //hack
 
-        @NotNull BiConsumer<GoalActionAsyncConcept, Truth> u = (action, g) -> {
+        @NotNull BiConsumer<GoalActionAsyncConcept, Truth> u = (action, gg) -> {
 
-            float f0, c0;
 
             NAR n = nar();
 
 
 
-            float freqEps = n.freqResolution.floatValue();
+//            float freqEps = n.freqResolution.floatValue();
             float confMin = n.confMin.floatValue();
             float eviMin = c2wSafe(confMin);
             float feedbackConf =
@@ -456,10 +455,13 @@ public interface NAct {
             boolean p = action.term().equals(pt);
             int ip = p ? 0 : 1;
             CC[ip] = action;
-            f[ip] = g != null ? g.freq() :
-                    0f;
-                    //0.5f;
-            e[ip] = g != null ? g.evi() : 0f;
+            g[ip] = gg != null ?
+                    //g.freq()
+                    gg.expectation()
+                    :
+                    //0f;
+                    0.5f;
+            e[ip] = gg != null ? gg.evi() : 0f;
 
 
             float x; //-1..+1
@@ -485,16 +487,21 @@ public interface NAct {
 
                         float df;
 
-                        df = (f[0]) - (f[1]);
-                        //df = (f[0]-0.5f) - (f[1]-0.5f);
+                        //expectation
+                        float g0 = g[0]-0.5f;
+                        float g1 = g[1]-0.5f;
+                        df = 2f * ((g0) - (g1));
+                            // /Math.max(Math.abs(g0), Math.abs(g1));
 
+                        //frequency
+                        //df = (g[0]) - (g[1]);
                         //experimental: lessen by a factor of how equally confident each goal is
-                        if (fair) {
-                            //fully fair
-                                df *= eMin / eMax;
-                            //semi-fair
-                                //df *= 0.5f + 0.5f * (eMin / eMax); //reduction by at most half
-                        }
+//                        if (fair) {
+//                            //fully fair
+//                                df *= eMin / eMax;
+//                            //semi-fair
+//                                //df *= 0.5f + 0.5f * (eMin / eMax); //reduction by at most half
+//                        }
                         //df *= 1f - Math.abs(e[0] - e[1]) / eMax;
                         //df *= Util.sqr(eMin / eMax); //more cautious
                         //df *= Math.min(w2cSafe(e[0]), w2cSafe(e[1])) / w2cSafe(eMax);
@@ -513,12 +520,12 @@ public interface NAct {
 
                 if (y == y) {
                     //y: (-1..+1)
-                    //float yp = y >= 0 ? y : 0;
-                    //float yn = y >= 0 ? 0 : -y;
+                  float yp = y >= 0 ? y : 0;
+                  float yn = y >= 0 ? 0 : -y;
 //                    float yp = y >= 0 ? 0.5f + y/2f : 0.5f - y/2f;
 //                    float yn = y >= 0 ? 0.5f - y/2f : 0.5f + y/2f;
-                    float yp = y > 0 ? 0.5f + y/2f : 0;
-                    float yn = y < 0 ? 0.5f - y/2f : 0;
+//                    float yp = y > 0 ? 0.5f + y/2f : 0;
+//                    float yn = y < 0 ? 0.5f - y/2f : 0;
 
                     //float yf = (y / 2f)+0.5f; //0..+1
 

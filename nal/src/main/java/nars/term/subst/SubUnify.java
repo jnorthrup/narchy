@@ -15,6 +15,8 @@ public class SubUnify extends Unify {
     private final Unify parent;
     private @Nullable Term transformed;
 
+    public boolean strict = true;
+
     @Nullable
     private Term result;
 
@@ -31,16 +33,16 @@ public class SubUnify extends Unify {
     public void tryMatch() {
 
         if (transformed != null) {
-            Term result = transformed.transform(this);//transform(transformed);
-            if (result != null && !result.equals(transformed)) {
+            Term result = transformed.transform(this);
+            if (result != null && (!strict || !result.equals(transformed))) {
 
-                int before = parent.now();
-                if (xy.forEachVersioned(parent::putXY)) {
+//                int before = parent.now();
+//                if (xy.forEachVersioned(parent::putXY)) {
                     this.result = result;
                     stop();
-                } else {
-                    parent.revert(before); //continue trying
-                }
+//                } else {
+//                    parent.revert(before); //continue trying
+//                }
 
             }
         }

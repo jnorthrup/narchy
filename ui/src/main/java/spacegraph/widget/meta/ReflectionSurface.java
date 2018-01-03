@@ -149,10 +149,11 @@ public class ReflectionSurface<X> extends Grid {
                         )));
             }
             ons.add(x.change.on((co)->{
-                FloatSlider c = controls.get(co.getOne());
+                Services.Service<Object> z = co.getOne();
+                FloatSlider c = controls.get(z);
                 if (c!=null) {
                     c.valueRelative(
-                            co.getTwo() ? Util.round(co.getOne().pri(), 0.01f) : 0
+                            co.getTwo() ? Util.round(z.pri(), 0.01f) : 0
                     );
                 }
             }));
