@@ -372,9 +372,9 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
     }
 
-    public boolean concurrent() {
-        return nar.exe.concurrent();
-    }
+//    public boolean concurrent() {
+//        return nar.exe.concurrent();
+//    }
 
 //    private class MyDefaultHijackBag extends DefaultHijackBag {
 //        public MyDefaultHijackBag(PriMerge merge) {

@@ -41,14 +41,18 @@ public enum Roulette { ;
         return decideRoulette(weightCount, weight, Util.sumIfPositive(weightCount, weight), rng);
     }
 
-    public static void decideRoulette(int choices, IntToFloatFunction choiceWeight, Random rng, IntFunction<RouletteControl> each) {
+    public static void decideRouletteWhile(int choices, IntToFloatFunction choiceWeight, Random rng, IntFunction<RouletteControl> each) {
         float weightSum = NaN;
         while (true) {
             if (weightSum != weightSum) {
                 weightSum = Util.sumIfPositive(choices, choiceWeight);
             }
-            if (weightSum < Float.MIN_NORMAL * choices)
-                return; //no more choices
+            if (weightSum < Float.MIN_NORMAL * choices) {
+                //flat
+                float perChoice = 1f/choices;
+                choiceWeight = (i) -> perChoice;
+                weightSum = 1f;
+            }
             switch (each.apply(decideRoulette(choices, choiceWeight, weightSum, rng))) {
                 case STOP:
                     return;
@@ -118,7 +122,7 @@ public enum Roulette { ;
                 return w;
             }
         };
-        decideRoulette(choices, cc, random, (int y) -> {
+        decideRouletteWhile(choices, cc, random, (int y) -> {
             selected.set(y);
 //            int remain = choices - selected.cardinality();
             boolean kontinue = tgt.test(y) && (hardLimit[0]-- > 0);

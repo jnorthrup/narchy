@@ -3,6 +3,8 @@ package nars.exe;
 import com.google.common.base.Joiner;
 import jcog.Services;
 import jcog.Util;
+import jcog.data.bit.MetalBitSet;
+import jcog.decide.Roulette;
 import jcog.learn.Autoencoder;
 import jcog.learn.deep.RBM;
 import jcog.list.FastCoWList;
@@ -14,9 +16,12 @@ import nars.control.Cause;
 import nars.control.MetaGoal;
 import nars.control.Traffic;
 import org.apache.commons.lang3.ArrayUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BooleanSupplier;
 import java.util.stream.IntStream;
 
 import static jcog.Texts.n2;
@@ -29,9 +34,76 @@ import static nars.time.Tense.ETERNAL;
  */
 public class Focus extends Flip<Focus.Schedule> {
 
+    final static Logger logger = LoggerFactory.getLogger(Focus.class);
+
     public final Exec.Revaluator revaluator;
 
     private final FastCoWList<Causable> can;
+
+    public void runDeadline(double subTime, BooleanSupplier kontinue, Random rng, NAR nar) {
+
+        if (subTime <= 0)
+            return;
+
+        Focus.Schedule s = read();
+
+        float[] cw = s.weight;
+        int n = cw.length;
+        if (n == 0)
+            return;
+
+
+        float[] iterPerSecond = s.iterPerSecond;
+
+        final int[] safety = {n};
+
+        Roulette.decideRouletteWhile(n, c -> cw[c], rng, (x) -> {
+
+            Causable[] can = s.can;
+            if (!s.active.get(x)) {
+                return s.active.isAllOff() ? Roulette.RouletteControl.STOP : Roulette.RouletteControl.CONTINUE;
+            }
+
+            Causable cx = can[x];
+            AtomicBoolean cb = cx.busy;
+            if (cb != null) {
+                if (!cb.compareAndSet(false, true)) {
+                    return --safety[0] > 0 ? Roulette.RouletteControl.CONTINUE : Roulette.RouletteControl.STOP;
+                } else {
+                    safety[0] = n; //reset
+                    s.active.clear(x);
+                }
+            }
+
+            int iters = (int) Math.min(Integer.MAX_VALUE,
+                    Math.max(1, Math.round(iterPerSecond[x] * subTime))
+            );
+
+            //System.out.println(cx + " x " + iters);
+
+            int completed = -1;
+            try {
+                completed = cx.run(nar, iters);
+            } catch (Throwable tt) {
+                logger.error("{}", tt);
+            } finally {
+                if (cb!=null) {
+                    cb.set(false); //release
+                    if (completed >= 0)
+                        s.active.set(x);
+                }
+            }
+
+            if (completed < 0) {
+                s.active.clear(x);
+            }
+
+            return (kontinue.getAsBoolean()) ? Roulette.RouletteControl.CONTINUE : Roulette.RouletteControl.STOP;
+        });
+
+
+    }
+
 
     public static class Schedule {
         public float[] time = ArrayUtils.EMPTY_FLOAT_ARRAY;
@@ -40,18 +112,20 @@ public class Focus extends Flip<Focus.Schedule> {
         public float[] weight = ArrayUtils.EMPTY_FLOAT_ARRAY;
         public float[] iterPerSecond = ArrayUtils.EMPTY_FLOAT_ARRAY;
 
+        MetalBitSet active = MetalBitSet.bits(1);
+
         /**
          * probability of selecting each can (roulette weight), updated each cycle
          */
 
-        public Causable[] active = new Causable[0];
+        public Causable[] can = new Causable[0];
 
 
         @Override
         public String toString() {
 
-            return Joiner.on("\n").join(IntStream.range(0, active.length).mapToObj(
-                    x -> n4(weight[x]) + "=" + active[x] +
+            return Joiner.on("\n").join(IntStream.range(0, can.length).mapToObj(
+                    x -> n4(weight[x]) + "=" + can[x] +
                             "@" + n2(time[x] * 1E3) + "uS x " + n2(supplied[x])
             ).iterator());
         }
@@ -73,19 +147,23 @@ public class Focus extends Flip<Focus.Schedule> {
 ////            }
 //        }
 
-        public void update(FastCoWList<Causable> can) {
-            final Causable[] active = this.active = can.copy;
-            if (active == null)
+        public void update(FastCoWList<Causable> cans) {
+            final Causable[] can = this.can = cans.copy;
+            if (can == null)
                 return;
-            int n = active.length;
+            int n = can.length;
             if (time.length != n) {
                 //realloc
                 time = new float[n];
                 supplied = new float[n];
                 iterPerSecond = new float[n];
+                this.active = MetalBitSet.bits(n);
             }
+
+            active.setAll();
+
             for (int i = 0; i < n; i++) {
-                can.get(i).can.commit(i, time, supplied, iterPerSecond);
+                cans.get(i).can.commit(i, time, supplied, iterPerSecond);
             }
 
 //                float margin = 1f / n;
@@ -123,13 +201,13 @@ public class Focus extends Flip<Focus.Schedule> {
 
 
             weight = Util.map(n, (int i) ->
-                    active[i].value() , weight);
+                    can[i].value(), weight);
 
             float[] minmax = Util.minmax(weight);
-            float lowMargin = (minmax[1] - minmax[0])/n;
+            float lowMargin = (minmax[1] - minmax[0]) / n;
             for (int i = 0; i < n; i++)
                 weight[i] =
-                        normalize(weight[i], minmax[0]-lowMargin, minmax[1])/time[i];
+                        normalize(weight[i], minmax[0] - lowMargin, minmax[1]) / time[i];
         }
     }
 
@@ -237,7 +315,7 @@ public class Focus extends Flip<Focus.Schedule> {
                 return;
 
             if (ae == null || ae.inputs() != numCauses) {
-                int numHidden = Math.max(2,Math.round(hiddenMultipler * numCauses));
+                int numHidden = Math.max(2, Math.round(hiddenMultipler * numCauses));
 
                 ae = new Autoencoder(numCauses, numHidden, rng);
                 tmp = new float[numHidden];
@@ -280,7 +358,9 @@ public class Focus extends Flip<Focus.Schedule> {
 
         long lastUpdate = ETERNAL;
 
-        /** intermediate calculation buffer */
+        /**
+         * intermediate calculation buffer
+         */
         float[] val = ArrayUtils.EMPTY_FLOAT_ARRAY;
 
         @Override
@@ -299,7 +379,7 @@ public class Focus extends Flip<Focus.Schedule> {
 
             int cc = causes.size();
 
-            if (val.length!=cc) {
+            if (val.length != cc) {
                 val = new float[cc];
             }
 
@@ -354,7 +434,9 @@ public class Focus extends Flip<Focus.Schedule> {
                 causes.get(i).setValue(val[i]);
         }
 
-        /** subclasses can implement their own filters and post-processing of the value vector */
+        /**
+         * subclasses can implement their own filters and post-processing of the value vector
+         */
         protected void update(float[] val) {
 
         }
@@ -382,7 +464,6 @@ public class Focus extends Flip<Focus.Schedule> {
 
         n.onCycle(this::update);
     }
-
 
 
     final AtomicBoolean busy = new AtomicBoolean(false);

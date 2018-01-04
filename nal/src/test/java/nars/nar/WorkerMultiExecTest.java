@@ -11,7 +11,7 @@ import nars.control.MetaGoal;
 import nars.control.Traffic;
 import nars.exe.Exec;
 import nars.exe.Focus;
-import nars.exe.MultiExec;
+import nars.exe.WorkerMultiExec;
 import nars.exe.UniExec;
 import nars.task.DerivedTask;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteIntHashMap;
@@ -22,13 +22,13 @@ import java.util.function.ToDoubleFunction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class MultiExecTest {
+public class WorkerMultiExecTest {
 
     @Test
     public void test1() {
 
         int threads = 4;
-        MultiExec exe = new MultiExec(0, threads, 3 /* TODO this shouldnt need to be > 1 */);
+        WorkerMultiExec exe = new WorkerMultiExec(0, threads, 3 /* TODO this shouldnt need to be > 1 */);
         NAR n = new NARS().exe(exe).get();
 
 

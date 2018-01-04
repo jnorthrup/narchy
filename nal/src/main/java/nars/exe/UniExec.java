@@ -42,4 +42,8 @@ public class UniExec extends AbstractExec {
         });
     }
 
+    @Override
+    public boolean concurrent() {
+        return false;
+    }
 }

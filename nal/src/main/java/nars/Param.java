@@ -258,8 +258,9 @@ public abstract class Param {
             discount *= 0.5f;
         }
 
-        //return discount* d.premisePri;
-        return Util.lerp(1f-t.originality(),discount, 1) * d.premisePri; //more lenient derivation budgeting priority reduction in proportion to lack of originality
+        return discount* d.premisePri;
+
+        //return Util.lerp(1f-t.originality(),discount, 1) * d.premisePri; //more lenient derivation budgeting priority reduction in proportion to lack of originality
     }
 
 

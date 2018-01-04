@@ -22,6 +22,8 @@ abstract public class MetalBitSet {
 
     public abstract int getCardinality();
 
+    public abstract boolean isAllOff();
+
     public static class LongArrayBitSet extends MetalBitSet {
         final long[] data;
 
@@ -55,6 +57,11 @@ abstract public class MetalBitSet {
                 bc += Long.bitCount(x);
             }
             return bc;
+        }
+
+        @Override
+        public boolean isAllOff() {
+            throw new TODO("trivial");
         }
 
         /**
@@ -191,6 +198,11 @@ abstract public class MetalBitSet {
         @Override
         public int getCardinality() {
             return Integer.bitCount(x);
+        }
+
+        @Override
+        public boolean isAllOff() {
+            return x == 0;
         }
     }
 

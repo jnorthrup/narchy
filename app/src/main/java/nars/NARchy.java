@@ -2,9 +2,11 @@ package nars;
 
 import com.google.common.base.Joiner;
 import jcog.User;
-import jcog.Util;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.audio.NARAudioVideo;
-import nars.exe.MultiExec;
+import nars.exe.Focus;
+import nars.exe.PoolMultiExec;
+import nars.exe.WorkerMultiExec;
 import nars.op.AtomicExec;
 import nars.op.Operator;
 import nars.op.java.Opjects;
@@ -15,8 +17,6 @@ import nars.term.sub.Subterms;
 import nars.time.RealTime;
 import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Date;
 
 import static nars.Op.BELIEF;
 
@@ -35,7 +35,9 @@ public class NARchy extends NARS {
 
 
         NAR nar = new DefaultNAR(8, true)
-                .exe(new MultiExec(512, 2, 64))
+                //.exe(new WorkerMultiExec(512, 2, 64))
+                .exe(new PoolMultiExec(new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1))
+                        , 64))
 //                .exe(new AbstractExec(64) {
 //                    @Override
 //                    public boolean concurrent() {

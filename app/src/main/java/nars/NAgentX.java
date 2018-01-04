@@ -5,7 +5,7 @@ import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatPolarNormalized;
 import jcog.pri.mix.control.MixContRL;
 import nars.control.*;
-import nars.exe.MultiExec;
+import nars.exe.WorkerMultiExec;
 import nars.gui.Vis;
 import nars.gui.graph.EdgeDirected;
 import nars.gui.graph.run.SimpleConceptGraph1;
@@ -156,7 +156,7 @@ abstract public class NAgentX extends NAgent {
 //                        return true;
 //                    }
 //                })
-                .exe(new MultiExec
+                .exe(new WorkerMultiExec
                         //Intense
                         //CoolNQuiet
                         (512, THREADS, 64, false))

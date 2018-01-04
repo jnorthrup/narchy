@@ -77,11 +77,6 @@ abstract public class Exec implements Executor {
 
     abstract public void fire(Predicate<Activate> each);
 
-    /**
-     * an estimate or exact number of parallel processes this runs
-     */
-    abstract public int concurrency();
-
 
     abstract public Stream<Activate> active();
 
@@ -112,9 +107,7 @@ abstract public class Exec implements Executor {
      * in subclasses, if this is true but concurrency()==1, it will use
      * concurrent data structures to be safe.
      */
-    public boolean concurrent() {
-        return concurrency() > 1;
-    }
+    public abstract boolean concurrent();
 
 
     public void execute(Consumer<NAR> r) {

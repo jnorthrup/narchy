@@ -776,6 +776,7 @@ public class NAL8Test extends NALTest {
         testImplSubjPred(dt, "(a &&+1 a)/b");
     }
 
+    //TODO make reverse of this to test predicate
     void testImplSubjPred(int dt, String sj) {
 
         int start = 1;

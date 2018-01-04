@@ -129,10 +129,6 @@ abstract public class AbstractExec extends Exec {
         }
     }
 
-    @Override
-    public int concurrency() {
-        return 1;
-    }
 
     @Override
     public Stream<Activate> active() {
