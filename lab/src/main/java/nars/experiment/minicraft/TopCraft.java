@@ -109,8 +109,8 @@ public class TopCraft extends NAgentX {
         senseSwitch("tile:left", ()->craft.player.tile(-1,0).id, 0, tileMax);
 
         InputHandler input = craft.input;
-        actionToggle($.the("fire" ), input.attack::pressed/*, 16*/ );
-        actionTriState($.p("move", "X"), (i)->{
+        actionPushButton($.func("fire",id), input.attack::pressed/*, 16*/ );
+        actionTriState($.func("x", id), (i)->{
            boolean l = false, r = false;
            switch (i) {
                case -1: l = true;  break;
@@ -119,7 +119,7 @@ public class TopCraft extends NAgentX {
            input.left.pressed(l);
            input.right.pressed(r);
         });
-        actionTriState($.p("move","y"), (i)->{
+        actionTriState($.func("y",id), (i)->{
             boolean u = false, d = false;
             switch (i) {
                 case -1:  u = true;  break;
@@ -128,7 +128,7 @@ public class TopCraft extends NAgentX {
             input.up.pressed(u);
             input.down.pressed(d);
         });
-        actionToggle($.the("menu"), input.menu::pressed);
+        actionPushButton($.func("menu", id), input.menu::pressed);
 
 //        Param.DEBUG = true;
 //        nar.onTask(t ->{

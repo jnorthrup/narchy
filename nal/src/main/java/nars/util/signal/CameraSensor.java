@@ -14,6 +14,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
+import jcog.util.Int2Function;
 import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +38,6 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
 
     public final List<PixelConcept> pixels;
     public final CauseChannel<ITask> in;
-    public final Term root;
     private final Int2Function<Term> pixelTerm;
 
     float resolution = 0.01f;//Param.TRUTH_EPSILON;
@@ -60,10 +60,14 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
     public CameraSensor(@Nullable Term root, P src, NAgent a) {
         this(root, src, a.nar);
     }
-    public CameraSensor(@Nullable Term root, P src, NAR n) {
+
+    public CameraSensor(Term root, P src, NAR n) {
+        this(RadixProduct(root, src.width(), src.height(), RADIX), src, n);
+    }
+
+    public CameraSensor(@Nullable Int2Function<Term> pixelTerm, P src, NAR n) {
         super(src, src.width(), src.height(), n);
 
-        this.root = root;
         this.w = src.width();
         this.h = src.height();
         numPixels = w * h;
@@ -71,7 +75,7 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
         this.in = n.newCauseChannel(this);
 
 
-        pixelTerm = RadixProduct(root, w, h, RADIX);
+        this.pixelTerm = pixelTerm;
         pixels = encode(
                 //RadixRecurse(root, w, h, RADIX)
                 //InhRecurse(root, w, h, RADIX)
@@ -170,7 +174,7 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
     }
 
 
-    public List<PixelConcept> encode( NAR nar) {
+    public List<PixelConcept> encode(NAR nar) {
         List<PixelConcept> l = $.newArrayList();
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
@@ -233,7 +237,7 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
             pixelsRemainPerUpdate = totalPixels;
             this.lastUpdate = now;
         } else {
-            if (pixelsRemainPerUpdate<=0)
+            if (pixelsRemainPerUpdate <= 0)
                 return -1; //done for this cycle
         }
 
@@ -273,8 +277,8 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
             //wrap around
             int extra = end - totalPixels;
             s = Stream.concat(
-                update(start, totalPixels, nar), //last 'half'
-                update(0, extra, nar) //first half after wrap around
+                    update(start, totalPixels, nar), //last 'half'
+                    update(0, extra, nar) //first half after wrap around
             );
         } else {
             s = update(start, end, nar);
@@ -288,7 +292,9 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
         return pixelsToProcess;
     }
 
-    /** how many pixels to process for the given work amount */
+    /**
+     * how many pixels to process for the given work amount
+     */
     protected int workToPixels(int work) {
         return work;
     }
@@ -306,11 +312,7 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
     }
 
 
-    interface Int2Function<T> {
-        T get(int x, int y);
-    }
-
-//    private long nextStamp;
+    //    private long nextStamp;
 //    private void frameStamp() {
 //        nextStamp = nar.time.nextStamp();
 //    }
@@ -318,7 +320,7 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
 
     float pixelPriCurrent = 0;
 
-    final FloatSupplier pixelPri = ()->pixelPriCurrent;
+    final FloatSupplier pixelPri = () -> pixelPriCurrent;
 
     public class PixelConcept extends SensorConcept {
 

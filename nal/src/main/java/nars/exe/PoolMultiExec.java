@@ -3,16 +3,21 @@ package nars.exe;
 import jcog.math.MutableInteger;
 import nars.NAR;
 
-/** uses a common forkjoin pool for execution */
+import java.util.concurrent.Semaphore;
+
+/**
+ * uses a common forkjoin pool for execution
+ */
 public class PoolMultiExec extends AbstractExec {
 
     private final Revaluator revaluator;
 
     public final MutableInteger threads = new MutableInteger();
     private Focus focus;
+    Semaphore ready;
 
     public PoolMultiExec(Revaluator revaluator, int capacity) {
-        this(revaluator, Runtime.getRuntime().availableProcessors()-1, capacity);
+        this(revaluator, Runtime.getRuntime().availableProcessors() - 1, capacity);
     }
 
     protected PoolMultiExec(Revaluator r, int threads, int capacity) {
@@ -24,6 +29,7 @@ public class PoolMultiExec extends AbstractExec {
     @Override
     public synchronized void start(NAR nar) {
         this.focus = new Focus(nar, revaluator);
+        this.ready = new Semaphore(threads.intValue());
         super.start(nar);
     }
 
@@ -38,19 +44,31 @@ public class PoolMultiExec extends AbstractExec {
         return true;
     }
 
+
     @Override
     public void cycle() {
         super.cycle();
 
-        long runUntil = System.currentTimeMillis() + nar.loop.periodMS.intValue();
         int t = threads.intValue();
-        for (int i = 0; i < t; i++) {
-            execute(()->{
-                focus.runDeadline(
-                    0.001,
-                        () -> (System.currentTimeMillis() <= runUntil),
-                        nar.random(), nar);
-            });
+
+        int loopTime = nar.loop.periodMS.intValue();
+        int dutyTime = Math.round(nar.loop.throttle.floatValue() * loopTime);
+        if (dutyTime > 0) {
+            long runUntil = System.currentTimeMillis() + dutyTime;
+            double jiffy = nar.loop.jiffy.floatValue();
+            while (ready.tryAcquire()) {
+                execute(() -> {
+                    try {
+                        focus.runDeadline(
+                                jiffy * dutyTime/1000.0,
+                                () -> (System.currentTimeMillis() <= runUntil),
+                                nar.random(), nar);
+                    } finally {
+                        ready.release();
+                    }
+                });
+            }
+
         }
     }
 }

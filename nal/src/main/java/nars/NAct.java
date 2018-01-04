@@ -294,9 +294,15 @@ public interface NAct {
     default void actionToggle(@NotNull Term s, @NotNull Runnable r) {
         actionToggle(s, (b) -> { if (b) { r.run(); } } );
     }
+    default void actionPushButton(@NotNull Term s, @NotNull Runnable r) {
+        actionPushButton(s, (b) -> { if (b) { r.run(); } } );
+    }
 
     default void actionToggle(@NotNull Term s, @NotNull BooleanProcedure onChange) {
         actionToggle(s, Float.NaN, () -> onChange.value(true), () -> onChange.value(false));
+    }
+    default void actionPushButton(@NotNull Term s, @NotNull BooleanProcedure onChange) {
+        actionToggle(s, 0, () -> onChange.value(true), () -> onChange.value(false));
     }
 //
 //    @Nullable

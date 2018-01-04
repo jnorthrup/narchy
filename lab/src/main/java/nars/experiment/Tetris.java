@@ -1,10 +1,12 @@
 package nars.experiment;
 
 import jcog.math.FloatParam;
+import jcog.signal.Bitmap2D;
+import jcog.util.Int2Function;
 import nars.*;
 import nars.experiment.tetris.TetrisState;
 import nars.op.java.Opjects;
-import jcog.signal.Bitmap2D;
+import nars.term.Term;
 import nars.util.signal.CameraSensor;
 
 import static nars.experiment.tetris.TetrisState.*;
@@ -91,14 +93,17 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
 
         addCamera(
-                pixels = new CameraSensor<>(id, this, this)
+                pixels = new CameraSensor<>((x, y)->
+                    //$.func("cam", id, $.the(x), $.the(y))
+                    $.inh($.p(x,y), id)
+                , this, nar)
                 //.resolution(0.1f)
         );
         //pixels.resolution(0.1f);
 
 
-        //actionsReflect();
-        actionsTriState();
+        actionsReflect();
+        //actionsTriState();
         actionsToggle();
 
         state.reset();
@@ -171,9 +176,13 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
 
     void actionsToggle() throws Narsese.NarseseException {
-        actionToggle($.inh("left", id), () -> state.act(LEFT));
-        actionToggle($.inh("right", id), () -> state.act(RIGHT));
-        actionToggle($.inh("rotCW", id), () -> state.act(CW));
+        final Term LEFT = $.func("left", id);
+        final Term RIGHT = $.func("right", id);
+        final Term ROT = $.func("rotCW", id);
+
+        actionPushButton(LEFT, () -> state.act(TetrisState.LEFT));
+        actionPushButton(RIGHT, () -> state.act(TetrisState.RIGHT));
+        actionPushButton(ROT, () -> state.act(CW));
         //actionToggle($.p("rotCCW"), ()-> state.take_action(CCW));
     }
 

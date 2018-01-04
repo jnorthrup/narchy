@@ -3,8 +3,11 @@ package nars;
 import jcog.exe.Loop;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatPolarNormalized;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.pri.mix.control.MixContRL;
 import nars.control.*;
+import nars.exe.Focus;
+import nars.exe.PoolMultiExec;
 import nars.exe.WorkerMultiExec;
 import nars.gui.Vis;
 import nars.gui.graph.EdgeDirected;
@@ -73,8 +76,8 @@ abstract public class NAgentX extends NAgent {
     @Override
     public Set<Termed> concepts() {
         Set<Termed> s = super.concepts();
-        for (CameraSensor c : cam)
-            s.add(c.root);
+//        for (CameraSensor c : cam)
+//            s.add(c.root);
         return s;
     }
 
@@ -156,10 +159,13 @@ abstract public class NAgentX extends NAgent {
 //                        return true;
 //                    }
 //                })
-                .exe(new WorkerMultiExec
-                        //Intense
-                        //CoolNQuiet
-                        (512, THREADS, 64, false))
+//                .exe(new WorkerMultiExec
+//                        //Intense
+//                        //CoolNQuiet
+//                        (512, THREADS, 64, false))
+                .exe(new PoolMultiExec(
+                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)), 256)
+                )
 
                 .time(clock)
                 .deriverAdd(1, 1)

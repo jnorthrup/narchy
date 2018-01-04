@@ -552,7 +552,7 @@ public class NAL8EternalMixTest extends NALTest {
         test
                 .input("(R)! :|:")
                 .input("((--,a:b) ==>+0 (R)).")
-                .mustGoal(cycles, "a:b", 0.0f, 0.45f, 0);
+                .mustGoal(cycles, "a:b", 0.0f, 0.81f, 0);
 
     }
 

@@ -92,8 +92,8 @@ public abstract class Param {
 //     * budgets premises from their links, but isolated from affecting the derivation budgets, which are from the tasks (and not the links)
 //     */
     public static final FloatFloatToFloatFunction taskTermLinksToPremise =
-            //Util::or;
-          Util::and;
+        Util::or;
+          //Util::and;
 //            //UtilityFunctions::aveGeo;
 //            //UtilityFunctions::aveAri;
 //            //Math::min;
@@ -128,7 +128,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmax = new MutableInteger(64);
+    public final MutableInteger matchTTLmax = new MutableInteger(96);
 //    public final MutableInteger matchTTLmin = new MutableInteger(64);
 
     /**

@@ -152,7 +152,7 @@ public class Grid extends MutableLayout {
         float W = w();
         float H = h();
 
-        for (int y = ny-1; y >= 0; y--) {
+        for (int y = 0; y < ny; y++) {
 
             float px = hm;//margin / 2f;
 
