@@ -1,11 +1,8 @@
 package nars.concept.dynamic;
 
-import jcog.TODO;
 import jcog.Util;
-import nars.NAR;
-import nars.Op;
-import nars.Param;
-import nars.Task;
+import jcog.list.FasterList;
+import nars.*;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.concept.TaskConcept;
@@ -13,6 +10,8 @@ import nars.table.BeliefTable;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.truth.Truth;
+import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
+import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -165,12 +164,35 @@ abstract public class DynamicTruthModel {
                 long[] range = TaskRegion.range(components);
                 if (range[0] != range[1]) {
                     //construct using events
-                    if (n == 2) {
-                        Task a = components.get(0).task();
-                        Task b = components.get(1).task();
-                        return Op.conjMerge(a.term(), a.start(), b.term(), b.start());
+
+                    FasterList<LongObjectPair<Term>> events = new FasterList(n);
+                    List<Term> eternals = new FasterList(0);
+                    for (int i = 0; i < n; i++) {
+                        Task t = components.get(i).task();
+                        if (t.isEternal()) {
+                            eternals.add(t.term());
+                        } else {
+                            t.term().eventsWhile((te, o) -> {
+                                events.add(PrimitiveTuples.pair(te, o));
+                                return true;
+                            }, t.start());
+                        }
+                    }
+                    if (events.isEmpty()) {
+                        if (eternals.isEmpty())
+                            return null;
+                        else
+                            return CONJ.the(DTERNAL, eternals);
                     } else {
-                        throw new TODO();
+                        Term x = Op.conj(events);
+                        if (x != null) {
+                            if (eternals.isEmpty())
+                                return x;
+                            else {
+                                return CONJ.the(DTERNAL, CONJ.the(DTERNAL, eternals), x);
+                            }
+                        }
+                        return null;
                     }
                 }
             }
@@ -234,7 +256,7 @@ abstract public class DynamicTruthModel {
             if (considered == 0)
                 return null;
 
-            if (considered!=n) {
+            if (considered != n) {
                 if (f >= freqRes)
                     return null; //missing components without having reached blackhole asymptote f=0
                 else {
