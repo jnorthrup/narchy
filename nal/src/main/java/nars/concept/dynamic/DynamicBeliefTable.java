@@ -69,11 +69,11 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
     }
 
     @Nullable
-    protected Task generate(Term template, long start, long end, NAR nar) {
+    protected Task generate(final Term template, long start, long end, NAR nar) {
         DynTruth yy = truth(start, end, template, nar);
         if (yy != null) {
             Task[] tt = new Task[1];
-            yy.truth((t) -> tt[0] = t, beliefOrGoal, nar);
+            yy.truth(term, model, (t) -> tt[0] = t, beliefOrGoal, nar);
             return tt[0];
         } else {
             return null;
@@ -83,16 +83,14 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
     @Override
     public Truth truth(long start, long end, NAR nar) {
         //DynTruth d = truth(start, end, null, nar);
-        DynTruth d = model.eval(term, beliefOrGoal, start, end, true, nar);
-        final Task[] dt = {null};
-        d.truth((t) -> {
-            dt[0] = t;
-        }, beliefOrGoal, nar);
-        boolean dd = dt[0] != null;
+        DynTruth d = model.eval(term, beliefOrGoal, start, end, nar);
+        if (d == null)
+            return null;
+
+        Truth tr = d.truth(term, model, null, beliefOrGoal, nar);
+
         Truth st = super.truth(start, end, nar);
-        return dd ? Truth.maxConf(
-                dt[0].truth(dt[0].myNearestTimeTo(start, end), nar.dur()),
-                st) : st;
+        return tr!=null ? Truth.maxConf(tr, st) : st;
     }
 
 //    /** prepare a term, if necessary, for use as template  */
@@ -148,7 +146,7 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
         Term template = template(start, end, (_template != null ? _template : term), nar);
 //        if (_template == null && !template.equals(term))
 //            return null;
-        return template != null ? model.eval(template, beliefOrGoal, start, end, true, nar) : null;
+        return template != null ? model.eval(template, beliefOrGoal, start, end, nar) : null;
 
     }
 

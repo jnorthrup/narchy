@@ -15,7 +15,7 @@ public class StepTruthlet extends ProxyTruthlet {
 
     @Override
     public void truth(long when, float[] freqEvi) {
-        if (ref.containsTime(when)) {
+        if (ref.during(when)) {
             super.truth(when, freqEvi);
         } else {
 

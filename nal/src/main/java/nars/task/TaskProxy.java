@@ -8,17 +8,14 @@ import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
+import java.util.function.Supplier;
 
-/** limited functionality for a wrapping shadow task */
-public class NALTaskProxyForOtherContent implements Task {
+public class TaskProxy implements Task {
 
-    public final Term term;
     public final Task task;
 
-    public NALTaskProxyForOtherContent(Term term, Task task) {
-        this.term = term;
+    public TaskProxy(Task task) {
         this.task = task;
-
     }
 
     @Override
@@ -38,7 +35,7 @@ public class NALTaskProxyForOtherContent implements Task {
 
     @Override
     public Term term() {
-        return term;
+        return task.term();
     }
 
     @Override
@@ -125,4 +122,76 @@ public class NALTaskProxyForOtherContent implements Task {
     public byte punc() {
         return task.punc();
     }
+
+    public static class WithTerm extends TaskProxy {
+
+        public final Term term;
+
+        public WithTerm(Term term, Task task) {
+            super(task);
+            this.term = term;
+        }
+
+        @Override
+        public Term term() {
+            return term;
+        }
+
+    }
+
+    public static class WithTruthAndTime extends TaskProxy {
+
+        public final long start, end;
+
+        private final boolean negated;
+
+        Supplier<Truth> truth;
+        Truth truthComputed = null;
+
+        public WithTruthAndTime(Task task, long start, long end, boolean negated, Supplier<Truth> truth) {
+            super(task);
+            this.start = start;
+            this.end = end;
+            this.negated = negated;
+
+            this.truth = truth;
+        }
+
+        @Override
+        public Term term() {
+            return super.term().negIf(negated);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int hashCode() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public @Nullable Truth truth(long when, long dur, float minConf) {
+            if (when < start) return null;
+            if (when > end) return null;
+            return truth();
+        }
+
+        @Override
+        public @Nullable Truth truth() {
+            if (truth != null) {
+
+                this.truthComputed = truth.get();
+                if (truthComputed!=null && negated)
+                    truthComputed = truthComputed.neg();
+
+                this.truth = null;
+            }
+            return truthComputed;
+        }
+
+    }
+
 }

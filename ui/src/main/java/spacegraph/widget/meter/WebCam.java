@@ -252,13 +252,13 @@ public class WebCam {
             ts.update(iimage);
         });
 
-        return new VSplit(new Grid(new PushButton("snap").click(()->{
+        return new VSplit(ts.view(), new Grid(new PushButton("snap").click(()->{
             byte[] bytes = ((DataBufferByte)iimage.getRaster().getDataBuffer()).getData();
             User.the().put(
-                    "(" + webcam.toString()+"," + System.currentTimeMillis() + ")",
+                    "(\"" + webcam.getName() +"\"," + System.currentTimeMillis() + ")",
                     bytes
                     );
-        })),ts.view());
+        })),0.1f);
     }
 
 

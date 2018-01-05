@@ -36,6 +36,7 @@ public class PoolMultiExec extends AbstractExec {
     @Override
     public synchronized void stop() {
         super.stop();
+        ready = null;
         focus = null;
     }
 
@@ -49,18 +50,16 @@ public class PoolMultiExec extends AbstractExec {
     public void cycle() {
         super.cycle();
 
-        int t = threads.intValue();
-
-        int loopTime = nar.loop.periodMS.intValue();
-        int dutyTime = Math.round(nar.loop.throttle.floatValue() * loopTime);
-        if (dutyTime > 0) {
-            long runUntil = System.currentTimeMillis() + dutyTime;
-            double jiffy = nar.loop.jiffy.floatValue();
+        int loopMS = nar.loop.periodMS.intValue();
+        int dutyMS = Math.round(nar.loop.throttle.floatValue() * loopMS);
+        if (dutyMS > 0) {
+            long runUntil = System.currentTimeMillis() + dutyMS;
+            double t = nar.loop.jiffy.doubleValue() * dutyMS/1000.0;
             while (ready.tryAcquire()) {
                 execute(() -> {
                     try {
                         focus.runDeadline(
-                                jiffy * dutyTime/1000.0,
+                                t,
                                 () -> (System.currentTimeMillis() <= runUntil),
                                 nar.random(), nar);
                     } finally {

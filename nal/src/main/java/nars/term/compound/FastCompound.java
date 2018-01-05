@@ -9,8 +9,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.sub.Subterms;
-import net.openhft.chronicle.bytes.Bytes;
-import net.openhft.chronicle.bytes.UncheckedBytes;
 import org.eclipse.collections.api.block.function.primitive.ByteFunction0;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
@@ -188,9 +186,9 @@ abstract public class FastCompound implements Compound {
 //        System.out.println(shadow.toHexString());
 //        System.out.println(shadow.to8bitString());
 
-        System.out.println("shadow: (" + shadow.length + " bytes)\t");
-        System.out.println(new UncheckedBytes(Bytes.wrapForRead(shadow)).toHexString());
-        System.out.println("atoms:\t");
+//        System.out.println("shadow: (" + shadow.length + " bytes)\t");
+//        System.out.println(new UncheckedBytes(Bytes.wrapForRead(shadow)).toHexString());
+//        System.out.println("atoms:\t");
 //        for (Object b : atoms()) {
 //            //System.out.println("\t" + (b instanceof byte[] ? (IO.termFromBytes((byte[])b) + + " (" + b.length + " bytes)") : b) );
 //

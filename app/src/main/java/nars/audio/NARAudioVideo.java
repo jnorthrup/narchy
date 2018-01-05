@@ -32,12 +32,13 @@ public class NARAudioVideo extends NARService {
 
     final List<Services.Service> devices = new CopyOnWriteArrayList<>();
 
-    static class AudioSourceService extends NARService {
+    static class Audio extends NARService {
         public final AudioSource audio;
         public final Supplier<WaveCapture> capture;
         private WaveCapture capturing;
+        private SpaceGraph surfaceWindow = null;
 
-        AudioSourceService(NAR nar, AudioSource audio, Supplier<WaveCapture> capture) {
+        Audio(NAR nar, AudioSource audio, Supplier<WaveCapture> capture) {
             super(null, $.p($.the("audio"), $.the(audio.device)));
             this.audio = audio;
             this.capture = capture;
@@ -52,25 +53,28 @@ public class NARAudioVideo extends NARService {
         protected void start(NAR x) {
             synchronized (audio) {
                 capturing = capture.get();
+                surfaceWindow = window(surface(), 800, 600);
             }
         }
 
         @Override
         protected void stopping(NAR nar) {
             synchronized (audio) {
+                surfaceWindow.off();
                 capturing.stop();
                 capturing = null;
             }
         }
     }
-    static class VideoSourceService extends NARService {
+
+    static class Video extends NARService {
 
         private WebCam c;
         public final Webcam cam;
         Surface surface;
         private SpaceGraph surfaceWindow = null;
 
-        VideoSourceService(NAR nar, Webcam cam) {
+        Video(NAR nar, Webcam cam) {
             super(null, $.p($.the("video"), $.the(cam.getName())));
             this.cam = cam;
             surface = new Grid(); //blank
@@ -95,7 +99,7 @@ public class NARAudioVideo extends NARService {
         protected void stopping(NAR nar) {
             synchronized (cam) {
                 if (surfaceWindow!=null)
-                    surfaceWindow.window.destroy();
+                    surfaceWindow.off();
 
                 surface = new Grid();
                 c.stop();
@@ -168,7 +172,7 @@ public class NARAudioVideo extends NARService {
         for (int device = 0; device < minfoSet.length; device++) {
 
             AudioSource audio = new AudioSource(device, 20);
-            devices.add(new AudioSourceService(nar, audio,
+            devices.add(new Audio(nar, audio,
                     () -> new WaveCapture(audio,
                             //new SineSource(128),
                             20)
@@ -176,7 +180,7 @@ public class NARAudioVideo extends NARService {
         }
 
         Webcam.getWebcams().forEach(w -> {
-            devices.add(new VideoSourceService(nar, w));
+            devices.add(new Video(nar, w));
         });
     }
 

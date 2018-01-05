@@ -8,6 +8,7 @@ import nars.Param;
 import nars.Task;
 import nars.control.Cause;
 import nars.control.Derivation;
+import nars.task.signal.LinearTruthlet;
 import nars.term.Term;
 import nars.term.sub.Subterms;
 import nars.truth.PreciseTruth;
@@ -41,22 +42,15 @@ public class Revision {
     @Nullable
     public static Truth revise(/*@NotNull*/ Truthed a, /*@NotNull*/ Truthed b, float factor, float minEvi) {
 
-        float w1 = a.evi();
-//        if (w1 < Prioritized.EPSILON)
-//            return null;
-
-        float w2 = b.evi();
-//        if (w2 < Prioritized.EPSILON)
-//            return null;
-
-        float w = w1 + w2;
-        float e = //TimeFusion.eviEternalize((w1 + w2), factor);
-                (w1+w2)*factor;
+        float ae = a.evi();
+        float be = b.evi();
+        float w = ae + be;
+        float e = w * factor;
 
         return e <= minEvi ?
                 null :
                 new PreciseTruth(
-                        (w1 * a.freq() + w2 * b.freq()) / w,
+                        (ae * a.freq() + be * b.freq()) / w,
                         e,
                         false
                 );
@@ -149,12 +143,12 @@ public class Revision {
                 } else {
                     switch (ao) {
                         case CONJ:
-                             if (!a.subterms().hasAny(Op.CONJ) && !b.subterms().hasAny(Op.CONJ)) {
+                            if (!a.subterms().hasAny(Op.CONJ) && !b.subterms().hasAny(Op.CONJ)) {
                                 return dtMergeDirect(a, b, aProp, curDepth, rng, mergeOrChoose);
-                             } else {
-                                 //event-based merge
-                                 return dtMergeConjMerge(a, bOffset, b, aProp, curDepth, rng);
-                             }
+                            } else {
+                                //event-based merge
+                                return dtMergeConjMerge(a, bOffset, b, aProp, curDepth, rng);
+                            }
                         case IMPL:
                             return dtMergeDirect(a, b, aProp, curDepth, rng, mergeOrChoose);
                         default:
@@ -444,9 +438,6 @@ public class Revision {
 //        }
 //
 
-        Truth cTruth = rawTruth.dither(nar);
-        if (cTruth == null)
-            return null;
 
 
         //TODO maybe delay dithering until after the negation has been determined below
@@ -463,6 +454,9 @@ public class Revision {
 
         float aProp = a.isQuestOrQuestion() ? 0.5f : an.evi() / (an.evi() + bn.evi());
 
+        Truth cTruth = rawTruth.dither(nar);
+        if (cTruth == null)
+            return null;
         Term cc = null;
 
         Term at = a.term();
@@ -519,6 +513,7 @@ public class Revision {
         } else {
             cc = at;
         }
+
 
 
         if (equalOrWeaker(a, cTruth, start, end, cc, nar))

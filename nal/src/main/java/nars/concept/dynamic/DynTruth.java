@@ -1,17 +1,17 @@
 package nars.concept.dynamic;
 
+import jcog.TODO;
+import jcog.Util;
 import jcog.list.FasterList;
-import nars.NAR;
-import nars.Op;
-import nars.Param;
-import nars.Task;
+import jcog.pri.Prioritized;
+import nars.*;
 import nars.control.Cause;
 import nars.task.NALTask;
 import nars.task.TimeFusion;
+import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.truth.Truthed;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.jetbrains.annotations.Nullable;
@@ -27,35 +27,15 @@ import static nars.truth.TruthFunctions.c2wSafe;
 /**
  * Created by me on 12/4/16.
  */
-public final class DynTruth {
+public final class DynTruth extends FasterList<TaskRegion> implements Prioritized, TaskRegion {
 
-    @Nullable
-    public final FasterList<Task> e;
-    public Truthed truth;
-
-    public float freq;
-    public float conf; //running product
-
-    Term term = null;
-
-    /**
-     * scratch for intermediate buffering
-     */
-    public List<Truth> truths = null;
-
-    public DynTruth(FasterList<Task> e) {
-        //this.t = t;
-        this.e = e;
-        this.truth = null;
+    public DynTruth() {
+        super();
     }
 
-    public void setTruth(Truthed truth) {
-        this.truth = truth;
-    }
+    public float pri() {
 
-    public float budget() {
-
-        int s = e.size();
+        int s = size();
         assert (s > 0);
 
         if (s > 1) {
@@ -65,24 +45,75 @@ public final class DynTruth {
             //            }
             //            return b;
             //return e.maxValue(Task::priElseZero); //use the maximum of their truths
-            return e.meanValue(Task::priElseZero); //average value
+
+            //TODO sum weighted by evidence
+            return meanValue(this::pri); //average value
         } else {
-            return e.get(0).priElseZero();
+            return pri(get(0));
         }
     }
 
+    private float pri(TaskRegion x) {
+        if (x instanceof Prioritized)
+            return ((Prioritized) x).priElseZero();
+
+        //TODO ??
+
+        return 0;
+    }
+
+    @Override
+    public long start() {
+        throw new TODO();
+    }
+
+    @Override
+    public long end() {
+        throw new TODO();
+    }
+
+    @Override @Nullable
+    public short[] cause() {
+        return Cause.zip(Param.causeCapacity.intValue(),
+                Util.map(0, size(), x -> get(x).cause(), short[][]::new));
+    }
+
+    @Override
+    public float coordF(boolean maxOrMin, int dimension) {
+        throw new TODO();
+    }
+
+
+    List<Stamp> evidence() {
+        List<Stamp> s = $.newArrayList();
+        for (TaskRegion x : this) {
+            Stamp ss = stamp(x);
+            if (ss != null)
+                s.add(ss);
+        }
+        return s;
+    }
+
+
+
+
+    @Deprecated public static Stamp stamp(TaskRegion x) {
+        if (x instanceof Task)
+            return ((Task) x);
+//        } else if (x instanceof DynTruth) {
+//            return ((DynTruth)x).stamp();
+//        }
+        return null;
+    }
+
     @Nullable
-    public short[] cause(NAR nar) {
-        return e != null ? Cause.zip(nar.causeCapacity.intValue(), e.array(Task[]::new) /* HACK */) : ArrayUtils.EMPTY_SHORT_ARRAY;
-    }
+    public Truth truth(Term superterm, DynamicTruthModel m, @Nullable Consumer<NALTask> withBuiltTask, boolean beliefOrGoal, NAR nar) {
 
+        Truth t = m.truth(this, nar);
+        if (t == null)
+            return null;
 
-    @Nullable Truth truth(NAR nar) {
-        return truth(null, false, nar);
-    }
-
-    @Nullable public Truth truth(@Nullable Consumer<NALTask> withBuiltTask, boolean beliefOrGoal, NAR nar) {
-
+        float conf = t.conf();
 
         float evi = c2wSafe(conf);
         float eviMin = c2wSafe(nar.confMin.floatValue());
@@ -90,15 +121,15 @@ public final class DynTruth {
             return null;
 
 
+        float freq = t.freq();
+
         float f;
-        Term c;
         long start, end;
         if (withBuiltTask != null) {
-            c = this.term;
-            if (!c.op().temporal) {
-                if (e.size() > 1) {
+            if (!superterm.op().temporal) {
+                if (size() > 1) {
                     //dilute the evidence in proportion to temporal sparseness for non-temporal results
-                    TimeFusion se = TimeFusion.the(e);
+                    TimeFusion se = TimeFusion.the(this);
                     if (se != null) {
                         evi *= se.factor;
                         if (evi < eviMin)
@@ -109,14 +140,14 @@ public final class DynTruth {
                         start = end = ETERNAL;
                     }
                 } else {
-                    Task only = e.get(0);
+                    TaskRegion only = get(0);
                     start = only.start();
-                    end = only.start();
+                    end = only.end();
                 }
             } else {
                 long min = Long.MAX_VALUE;
-                for (int i = 0, thisSize = e.size(); i < thisSize; i++) {
-                    long y = e.get(i).start(); //left-align
+                for (int i = 0, thisSize = size(); i < thisSize; i++) {
+                    long y = get(i).start();
                     if (y != ETERNAL) {
                         if (y < min)
                             min = y;
@@ -129,18 +160,23 @@ public final class DynTruth {
                 start = end = min;
             }
 
-            if (c.op() == NEG) {
-                c = c.unneg(); //unneg if constructing a task, but dont if just returning the truth
+            if (superterm.op() == NEG) {
+                superterm = superterm.unneg(); //unneg if constructing a task, but dont if just returning the truth
                 f = 1f - freq;
             } else {
                 f = freq;
             }
         } else {
             start = end = XTERNAL; //not used
-            c = null; //not used
             f = freq;
         }
 
+
+        //TODO compute max valid overlap to terminate the zip early
+        ObjectFloatPair<long[]> ss = Stamp.zip(evidence(), Param.STAMP_CAPACITY);
+        evi = Param.overlapEvidence(evi, ss.getTwo());
+        if (evi < eviMin)
+            return null;
 
         Truth tr = Truth.the(f, evi, nar);
         if (tr == null)
@@ -148,25 +184,30 @@ public final class DynTruth {
         if (withBuiltTask == null)
             return tr;
 
-        float priority = budget();
+        float priority = pri();
+
+        Term c = m.construct(superterm, this);
+        if (c == null)
+            return null;
+
+        if (c.op()==NEG) {
+            c = c.unneg();
+            tr = tr.neg();
+        }
 
         // then if the term is valid, see if it is valid for a task
         if (!Task.validTaskTerm(c,
                 beliefOrGoal ? BELIEF : GOAL, true))
             return null;
 
-        //TODO compute max valid overlap to terminate the zip early
-        ObjectFloatPair<long[]> ss = Stamp.zip(e, Param.STAMP_CAPACITY);
-        evi = Param.overlapEvidence(evi, ss.getTwo());
-        if (evi < eviMin)
-            return null;
 
         long[] stamp = ss.getOne();
 
         NALTask dyn = new NALTask(c, beliefOrGoal ? Op.BELIEF : Op.GOAL,
                 tr, nar.time(), start, (start == ETERNAL || c.op().temporal) ? start : end, stamp);
-        if (ss.getTwo() > 0) dyn.setCyclic(true);
-        dyn.cause = cause(nar);
+        //if (ss.getTwo() > 0) dyn.setCyclic(true);
+
+        dyn.cause = cause();
         dyn.priSet(priority);
 
         if (Param.DEBUG)
@@ -178,7 +219,9 @@ public final class DynTruth {
     }
 
 
-    void add(Task task, Truth sampled) {
-        e.add(task);
+
+    @Override
+    public @Nullable Task task() {
+        throw new TODO();
     }
 }

@@ -134,7 +134,7 @@ public class DynamicBeliefTableTest {
 
         assertTrue(ccn instanceof TaskConcept);
         Truth nown = n.beliefTruth(ccn, n.time());
-        assertTrue($.t(0f, 0.90f).equals(nown, 0.1f));
+        assertEquals("%0.0;.90%", nown.toString());
 
         n.clear();
 
@@ -178,7 +178,7 @@ public class DynamicBeliefTableTest {
 
         DynTruth xt = xtable.truth(0, 0, template, n);
         assertNotNull(xt);
-        assertTrue($.t(1f, 0.81f).equals(xt.truth(n), 0.1f), xt.truth(n).toString());
+        //assertTrue($.t(1f, 0.81f).equals(xt.truth(n), 0.1f), xt.truth(n).toString());
 
         assertEquals(0.81f, xtable.generate($("((x) &&+4 (y))"), 0, 0, n).conf(), 0.05f); //best match to the input
         assertEquals(0.74f, xtable.generate($("((x) &&+6 (y))"), 0, 0, n).conf(), 0.05f);

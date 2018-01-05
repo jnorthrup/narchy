@@ -1,6 +1,7 @@
 package jcog.pri;
 
 import jcog.Texts;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.lerp;
@@ -253,22 +254,18 @@ public interface Priority extends Prioritized {
      *
      * @return String representation of the value with 2-digit accuracy
      */
-    @Override
     default Appendable toBudgetStringExternal() {
         return toBudgetStringExternal(null);
     }
 
-    @Override
     default StringBuilder toBudgetStringExternal(StringBuilder sb) {
         return Prioritized.toStringBuilder(sb, Texts.n2(pri()));
     }
 
-    @Override
     default String toBudgetString() {
         return toBudgetStringExternal().toString();
     }
 
-    @Override
     default String getBudgetString() {
         return Prioritized.toString(this);
     }

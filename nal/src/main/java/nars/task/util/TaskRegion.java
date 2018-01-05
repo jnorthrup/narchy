@@ -5,6 +5,8 @@ import jcog.math.Interval;
 import jcog.tree.rtree.HyperRegion;
 import nars.Task;
 import nars.task.Tasked;
+import nars.truth.TruthFunctions;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.List;
 
@@ -27,7 +29,6 @@ public interface TaskRegion extends HyperRegion, Tasked {
     float CONF_COST = 1f;
 
 
-
     @Override
     boolean equals(Object obj);
 
@@ -43,6 +44,11 @@ public interface TaskRegion extends HyperRegion, Tasked {
         return s == ETERNAL ? ETERNAL : (s + end()) / 2L;
     }
 
+
+    default float expectation() {
+        return TruthFunctions.expectation(freqMean(), confMin());
+    }
+
     default long theNearestTimeWithin(long a, long b) {
         if (a == b || a == ETERNAL)
             return a;
@@ -56,6 +62,10 @@ public interface TaskRegion extends HyperRegion, Tasked {
             return a;
         else
             return b;
+    }
+
+    default short[] cause() {
+        return ArrayUtils.EMPTY_SHORT_ARRAY;
     }
 
     /**
@@ -84,6 +94,7 @@ public interface TaskRegion extends HyperRegion, Tasked {
     default boolean isBefore(long when) {
         return isBefore(when, 0);
     }
+
     default boolean isBefore(long when, int minCycles) {
         long e = end();
         return e == ETERNAL || e + minCycles < when;
@@ -130,7 +141,7 @@ public interface TaskRegion extends HyperRegion, Tasked {
         if (s <= x && e >= x)
             return x;
         else {
-            long m = (s+e)/2L;
+            long m = (s + e) / 2L;
             if (Math.abs(m - x) <= Math.abs(m - x))
                 return s; //closer to start
             else
@@ -190,6 +201,7 @@ public interface TaskRegion extends HyperRegion, Tasked {
         else
             return Math.min(d, Math.abs(e - when));
     }
+
     default long minDistanceTo(long a, long b) {
 
         if (a == b)
@@ -199,8 +211,8 @@ public interface TaskRegion extends HyperRegion, Tasked {
         if (s == ETERNAL)
             return 0;
 
-        assert (a != ETERNAL && b!= ETERNAL);
-        assert( b >= a);
+        assert (a != ETERNAL && b != ETERNAL);
+        assert (b >= a);
         long e = end();
         if (s <= a && e >= b)
             return 0;
@@ -325,18 +337,18 @@ public interface TaskRegion extends HyperRegion, Tasked {
 
     default float timeCost() {
 
-        return ( (float) range(0)) * TIME_COST;
+        return ((float) range(0)) * TIME_COST;
 
 //        float r = (float) range(0);
 //        return r == 0 ? 0 : (float) (Math.log(1 + r) * TIME_COST);
     }
 
     default float freqCost() {
-        return ( (float) range(1)) * FREQ_COST;
+        return ((float) range(1)) * FREQ_COST;
     }
 
     default float confCost() {
-        return ( (float) range(2)) * CONF_COST;
+        return ((float) range(2)) * CONF_COST;
     }
 
     @Override
@@ -469,13 +481,37 @@ public interface TaskRegion extends HyperRegion, Tasked {
     float coordF(boolean maxOrMin, int dimension);
 
     default boolean isDuring(long start, long end) {
-        return Interval.intersect(start, end, start(), end())!=null;
+        return Interval.intersect(start, end, start(), end()) != null;
     }
 
     default boolean intersects(long start, long end) {
-        return start <= end() && end >= start();
+        long s = start();
+        return (s == ETERNAL) || (start <= end() && end >= s);
     }
+
     default boolean contains(long start, long end) {
-        return start <= start() && end >= end();
+        long s = start();
+        return (s == ETERNAL) || (start <= s && end >= end());
     }
+
+    default float freqMin() {
+        return coordF(false, 1);
+    }
+
+    default float freqMean() {
+        return (freqMin() + freqMax()) * 0.5f;
+    }
+
+    default float freqMax() {
+        return coordF(true, 1);
+    }
+
+    default float confMin() {
+        return coordF(false, 2);
+    }
+
+    default float confMax() {
+        return coordF(true, 2);
+    }
+
 }

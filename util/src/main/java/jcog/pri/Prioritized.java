@@ -155,13 +155,7 @@ public interface Prioritized extends Deleteable {
         return p!=p; //fast NaN check
     }
 
-    @NotNull Appendable toBudgetStringExternal();
 
-    @NotNull StringBuilder toBudgetStringExternal(StringBuilder sb);
-
-    @NotNull String toBudgetString();
-
-    @NotNull String getBudgetString();
 
 
 

@@ -2,7 +2,7 @@ package nars.term.anon;
 
 import jcog.list.FasterList;
 import nars.Task;
-import nars.task.NALTaskProxyForOtherContent;
+import nars.task.TaskProxy;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
@@ -139,7 +139,7 @@ public class Anon {
         }
 
         //return Task.clone(t, y);
-        return new NALTaskProxyForOtherContent(y, t);
+        return new TaskProxy.WithTerm(y, t);
     }
 
 

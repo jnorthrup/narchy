@@ -12,7 +12,7 @@ public class FlatTruthlet extends RangeTruthlet {
 
     @Override
     public void truth(long when, float[] freqEvi) {
-        if (containsTime(when)) {
+        if (during(when)) {
             freqEvi[0] = freq;
             freqEvi[1] = evi;
         } else {

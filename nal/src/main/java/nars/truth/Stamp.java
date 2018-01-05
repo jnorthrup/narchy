@@ -382,10 +382,10 @@ public interface Stamp {
         if (common == 0)
             return 0f;
 
-        int denom = (aSize + bSize - common); //denominator excludes one copy of common but includes one too
+        int denom = Math.min(aSize, bSize);
         assert(denom!=0);
 
-        return ((float) common) / denom;
+        return Util.unitize( ((float) common) / denom ); //max: +1
     }
 
     long creation();

@@ -24,32 +24,32 @@ abstract public class Truthlet implements Truth {
 
     abstract public void setTime(long newStart, long newEnd);
 
-    @Override
-    public float freq() {
+    @Deprecated @Override public final float freq() {
         return freq(mid()); //HACK
     }
-
-    @Override
-    public float evi() {
+    @Deprecated @Override public final float evi() {
         return evi(mid()); //HACK
     }
+    @Deprecated @Override public final float conf() {
+        return conf(mid()); //HACK
+    }
 
-    public float freq(long when) {
+    @Deprecated public float freq(long when) {
         return truth(when)[0];
     }
-    public float evi(long when) {
+    @Deprecated public float evi(long when) {
         return truth(when)[1];
     }
 
-    @Override
-    public float conf() {
-        return conf(mid()); //HACK
-    }
-    public float conf(long when) {
+    public final float conf(long when) {
         return w2cSafe(truth(when)[1]);
     }
 
-    public final boolean containsTime(long when) {
+    public boolean intersects(long start, long end) {
+        return start <= end() && end >= start();
+    }
+
+    public final boolean during(long when) {
         if (when == ETERNAL)
             return true;
         long s = start();
@@ -67,7 +67,7 @@ abstract public class Truthlet implements Truth {
     abstract public void truth(long when, float[] freqEvi);
 
     /** sets a FreqEvi vector as unknown */
-    public static void unknown(float[] freqEvi) {
+    protected static void unknown(float[] freqEvi) {
         freqEvi[0] = Float.NaN;
         freqEvi[1] = 0;
     }
@@ -92,7 +92,4 @@ abstract public class Truthlet implements Truth {
         return new LinearTruthlet(start, startFreq, end, endFreq, evi);
     }
 
-    public boolean intersects(long start, long end) {
-        return start <= end() && end >= start();
-    }
 }

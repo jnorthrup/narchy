@@ -48,7 +48,7 @@ dependencies {
     }
     compile group: 'net.byteseek', name: 'byteseek', version: '2.0.3'
 
-    compile group: 'net.openhft', name: 'chronicle-bytes', version: '1.10.2'
+//    compile group: 'net.openhft', name: 'chronicle-bytes', version: '1.10.4'
 
     testCompile(group: 'org.openjdk.jmh', name: 'jmh-core', version: '1.19') {
         exclude(module: 'commons-math3')

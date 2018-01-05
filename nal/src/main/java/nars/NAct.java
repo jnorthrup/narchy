@@ -2,6 +2,7 @@ package nars;
 
 import jcog.Util;
 import jcog.math.FloatParam;
+import jcog.util.FloatConsumer;
 import nars.concept.ActionConcept;
 import nars.concept.GoalActionAsyncConcept;
 import nars.concept.GoalActionConcept;
@@ -10,7 +11,6 @@ import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
-import net.openhft.chronicle.core.util.FloatConsumer;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.jetbrains.annotations.NotNull;

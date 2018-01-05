@@ -63,6 +63,13 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
         //frameTimeMS = new PeriodMeter(toString(), 8);
     }
 
+    public synchronized void off() {
+        if (window!=null) {
+            window.destroy();
+            window = null;
+        }
+    }
+
     static GLWindow window(JoglSpace j) {
         return window(config(), j);
     }

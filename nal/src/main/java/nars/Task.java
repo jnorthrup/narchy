@@ -8,9 +8,7 @@ import jcog.pri.PLink;
 import nars.concept.Concept;
 import nars.control.proto.TaskAdd;
 import nars.op.Operator;
-import nars.task.DerivedTask;
-import nars.task.ITask;
-import nars.task.NALTask;
+import nars.task.*;
 import nars.task.signal.SignalTask;
 import nars.task.util.AnswerBag;
 import nars.task.util.InvalidTaskException;
@@ -100,6 +98,29 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             return true;
         }
         return false;
+    }
+
+    @Override
+    default float freqMin() {
+        return freq();
+    }
+
+    @Override
+    default float freqMean() {
+        return freq();
+    }
+
+    @Override
+    default float freqMax() {
+        return freq();
+    }
+    @Override
+    default float confMin() {
+        return conf();
+    }
+    @Override
+    default float confMax() {
+        return conf();
     }
 
     /**
@@ -962,6 +983,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
 
     @Override
+    default float expectation() {
+        return Truthed.super.expectation();
+    }
+
+    @Override
     default ITask run(NAR n) {
 
         n.emotion.onInput(this, n);
@@ -1075,4 +1101,13 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      */
     short[] cause();
 
+    /** creates lazily computing proxy task which facades the task to the target time range */
+    static Task project(@Nullable Task t, long subStart, long subEnd, NAR n, boolean negated) {
+        if (!negated && t.contains(subStart, subEnd))
+            return t;
+
+        int dur = n.dur();
+        return new TaskProxy.WithTruthAndTime(t, subStart, subEnd, negated,
+                ()-> t.truth(subStart, subEnd, dur, 0f));
+    }
 }
