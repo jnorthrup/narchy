@@ -317,7 +317,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     @Override
     public boolean add(Task x, TaskConcept c, NAR n) {
 
-        assert (capacity > 0);
+        if (capacity() == 0)
+            return false;
 
         float incoming = x.priElseZero();
 

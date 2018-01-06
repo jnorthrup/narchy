@@ -236,10 +236,10 @@ public interface Truth extends Truthed {
 
     @Nullable static PreciseTruth the(float freq, float evi, NAR nar) {
         float confMin = nar.confMin.floatValue();
-        float c = w2cDithered(evi, nar.confResolution.floatValue());
+        float c = w2cSafe(evi); //w2cDithered(evi, nar.confResolution.floatValue());
         if (c < confMin)
             return null;
-        return new PreciseTruth(freq(freq, nar.freqResolution.floatValue()), c);
+        return new PreciseTruth(freq /*freq(freq, nar.freqResolution.floatValue())*/, c);
     }
 
     static float w2cDithered(float evi, float confRes) {

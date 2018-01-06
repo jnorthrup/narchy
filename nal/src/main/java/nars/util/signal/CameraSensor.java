@@ -305,10 +305,9 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
 
         this.lastPixel = end;
 
-        return IntStream.range(start, end).mapToObj(i -> {
-            PixelConcept p = pixels.get(i);
-            return p.update(now, dur, nar);
-        }).filter(Objects::nonNull);
+        return IntStream.range(start, end)
+                    .mapToObj(i -> pixels.get(i).update(now, dur, nar))
+                    .filter(Objects::nonNull);
     }
 
 

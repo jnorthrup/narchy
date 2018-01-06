@@ -20,6 +20,7 @@ import java.util.List;
 import static nars.Op.*;
 import static nars.time.Tense.*;
 import static nars.truth.TruthFunctions.c2wSafe;
+import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
  * Created by me on 12/4/16.
@@ -169,13 +170,12 @@ abstract public class DynamicTruthModel {
                     List<Term> eternals = new FasterList(0);
                     for (int i = 0; i < n; i++) {
                         Task t = components.get(i).task();
-                        if (t.isEternal()) {
-                            eternals.add(t.term());
+                        Term tt = t.term();
+                        long s = t.start();
+                        if (s == ETERNAL) {
+                            eternals.add(tt);
                         } else {
-                            t.term().eventsWhile((te, o) -> {
-                                events.add(PrimitiveTuples.pair(te, o));
-                                return true;
-                            }, t.start());
+                            events.add(pair(s, tt));
                         }
                     }
                     if (events.isEmpty()) {

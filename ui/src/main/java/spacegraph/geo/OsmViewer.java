@@ -87,7 +87,7 @@ public class OsmViewer extends SpaceGraph {
 //        target[2] = 0;
 
         //3D ECEF
-        double[] t = ECEF.latlon2ecef(global.latitude*50, global.longitude*50, global.altitude);
+        double[] t = ECEF.latlon2ecef(global.latitude*20, global.longitude*20, global.altitude);
         double s = 100 * 1E-7;
         target[0] = t[0]*s;
         target[1] = t[1]*s;
