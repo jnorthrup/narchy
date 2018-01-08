@@ -420,6 +420,10 @@ public class Revision {
             return null;
         rawTruth = rawTruth.withEvi(e2);
 
+        Truth cTruth = rawTruth.dither(nar);
+        if (cTruth == null)
+            return null;
+        Term cc = null;
 
 ////        float maxEviAB = Math.max(an.evi(), bn.evi());
 //        float evi = rawTruth.evi();
@@ -454,10 +458,6 @@ public class Revision {
 
         float aProp = a.isQuestOrQuestion() ? 0.5f : an.evi() / (an.evi() + bn.evi());
 
-        Truth cTruth = rawTruth.dither(nar);
-        if (cTruth == null)
-            return null;
-        Term cc = null;
 
         Term at = a.term();
         Term bt = b.term();
@@ -526,8 +526,8 @@ public class Revision {
                 now, start, end,
                 Stamp.zip(a.stamp(), b.stamp(), aProp) //get a stamp collecting all evidence from the table, since it all contributes to the result
         );
-        if (overlap > 0 || a.isCyclic() || b.isCyclic())
-            t.setCyclic(true);
+//        if (overlap > 0 || a.isCyclic() || b.isCyclic())
+//            t.setCyclic(true);
 
         t.priSet(Util.lerp(aProp, b.priElseZero(), a.priElseZero()));
 

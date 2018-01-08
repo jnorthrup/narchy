@@ -136,7 +136,7 @@ public class TaskConcept extends NodeConcept implements Concept {
 
         byte punc = t.punc();
         if (punc == BELIEF || punc == GOAL) {
-            float str = (1f + t.conf()) * activation; //at minimum 1, even for ~0 conf
+            float str = (t.conf()) * activation;
             MetaGoal.learn(
                     punc == BELIEF ? MetaGoal.Believe : MetaGoal.Desire,
                     t.cause(), str, n);

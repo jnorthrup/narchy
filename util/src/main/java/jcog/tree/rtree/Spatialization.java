@@ -81,6 +81,10 @@ public class Spatialization<T> {
         }
     }
 
+    public double epsilon() {
+        return RTree.EPSILON;
+    }
+
 
     /**
      * Different methods for splitting nodes in an RTree.

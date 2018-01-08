@@ -289,7 +289,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
                     leastEnlargement = nodeEnlargement;
                     leastPerimeter = childMbr.perimeter();
                     bestNode = i;
-                } else if (Util.equals(nodeEnlargement, leastEnlargement, RTree.EPSILON)) {
+                } else if (Util.equals(nodeEnlargement, leastEnlargement, model.epsilon())) {
                     double perimeter = childMbr.perimeter();
                     if (perimeter < leastPerimeter) {
                         leastEnlargement = nodeEnlargement;

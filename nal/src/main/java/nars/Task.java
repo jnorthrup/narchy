@@ -843,8 +843,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
 
     @Nullable
-    default Truth truth(long targetStart, long targetEnd, long dur, NAR nar) {
-        Truth t = truth(targetStart, targetEnd, dur, nar.confMin.floatValue());
+    default Truth truth(long when, long dur, NAR nar) {
+        Truth t = truth(when, dur, nar.confMin.floatValue());
         if (t == null)
             return t;
         return t.dither(nar);

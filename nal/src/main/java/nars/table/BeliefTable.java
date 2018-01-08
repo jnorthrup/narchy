@@ -1,5 +1,6 @@
 package nars.table;
 
+import jcog.Util;
 import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.Task;
@@ -219,7 +220,7 @@ public interface BeliefTable extends TaskTable {
         if (/*!answer.isEternal() && */!relevantTime) {
 
             long t = answer.theNearestTimeWithin(start, end);
-            Truth aProj = answer.truth(t, t, dur, nar);
+            Truth aProj = answer.truth(t, dur, nar);
             if (aProj != null) {
 
                 final Task aa = answer;
@@ -232,7 +233,7 @@ public interface BeliefTable extends TaskTable {
                 if (a == null)
                     return null;
 
-                float confFrac = aProj.evi() / answer.evi();
+                float confFrac = Util.unitize(aProj.evi() / answer.evi());
                 a.priSet(answer.priElseZero() * confFrac);
                 if (question != null)
                     ((NALTask)a).cause = Cause.zip(nar.causeCapacity.intValue(), question, answer);

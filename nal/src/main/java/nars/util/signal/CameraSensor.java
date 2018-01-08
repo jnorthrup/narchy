@@ -19,6 +19,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunctio
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -320,6 +321,17 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
     float pixelPriCurrent = 0;
 
     final FloatSupplier pixelPri = () -> pixelPriCurrent;
+
+    /** crude ASCII text representation of the current pixel state */
+    public void print(PrintStream out) {
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                float b = matrix[i][j].asFloat();
+                out.print(b >= 0.5f ? '*' : ' ');
+            }
+            out.println();
+        }
+    }
 
     public class PixelConcept extends SensorConcept {
 

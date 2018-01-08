@@ -311,31 +311,22 @@ public class Leaf<T> extends AbstractNode<T, T> {
         final double l2CostInc = Math.max(l2c - (l2Region.cost() + tCost), 0.0);
 
         Node<T, T> target;
-        if (Util.equals(l1CostInc, l2CostInc, RTree.EPSILON)) {
-            if (Util.equals(l1c, l2c, RTree.EPSILON)) {
+        double eps = model.epsilon();
+        if (Util.equals(l1CostInc, l2CostInc, eps)) {
+            if (Util.equals(l1c, l2c, eps)) {
                 final double l1MbrMargin = l1Mbr.perimeter();
                 final double l2MbrMargin = l2Mbr.perimeter();
-                if (Util.equals(l1MbrMargin, l2MbrMargin, RTree.EPSILON)) {
+                if (Util.equals(l1MbrMargin, l2MbrMargin, eps)) {
                     // break tie by preferring the smaller smaller
                     target = ((l1Node.size() <= l2Node.size()) ? l1Node : l2Node);
-                } else if (l1MbrMargin <= l2MbrMargin) {
-                    target = l1Node;
                 } else {
-                    target = l2Node;
+                    target = (l1MbrMargin <= l2MbrMargin) ? l1Node : l2Node;
                 }
             } else {
-                if (l1c <= l2c) {
-                    target = l1Node;
-                } else {
-                    target = l2Node;
-                }
+                target = (l1c <= l2c) ? l1Node : l2Node;
             }
         } else {
-            if (l1CostInc <= l2CostInc) {
-                target = l1Node;
-            } else {
-                target = l2Node;
-            }
+            target = (l1CostInc <= l2CostInc) ? l1Node : l2Node;
         }
 
         boolean[] added = new boolean[1];

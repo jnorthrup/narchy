@@ -3,7 +3,9 @@ package nars.exe;
 import jcog.math.MutableInteger;
 import nars.NAR;
 
+import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Semaphore;
+import java.util.function.BooleanSupplier;
 
 /**
  * uses a common forkjoin pool for execution
@@ -48,26 +50,32 @@ public class PoolMultiExec extends AbstractExec {
 
     @Override
     public void cycle() {
+        if (ForkJoinPool.commonPool().hasQueuedSubmissions())
+            return;
+
         super.cycle();
 
-        int loopMS = nar.loop.periodMS.intValue();
-        int dutyMS = Math.round(nar.loop.throttle.floatValue() * loopMS);
-        if (dutyMS > 0) {
-            long runUntil = System.currentTimeMillis() + dutyMS;
-            double t = nar.loop.jiffy.doubleValue() * dutyMS/1000.0;
-            while (ready.tryAcquire()) {
-                execute(() -> {
-                    try {
-                        focus.runDeadline(
-                                t,
-                                () -> (System.currentTimeMillis() <= runUntil),
-                                nar.random(), nar);
-                    } finally {
-                        ready.release();
-                    }
-                });
-            }
+        if (ready.availablePermits() > 0) {
+            int loopMS = nar.loop.periodMS.intValue();
+            int dutyMS = Math.round(nar.loop.throttle.floatValue() * loopMS);
+            if (dutyMS > 0) {
+                long runUntil = System.currentTimeMillis() + dutyMS;
+                BooleanSupplier endCondition = () -> (System.currentTimeMillis() <= runUntil);
+                double t = nar.loop.jiffy.doubleValue() * dutyMS / 1000.0;
+                while (ready.tryAcquire()) {
+                    execute(() -> {
+                        try {
+                            focus.runDeadline(
+                                    t,
+                                    endCondition,
+                                    nar.random(), nar);
+                        } finally {
+                            ready.release();
+                        }
+                    });
+                }
 
+            }
         }
     }
 }

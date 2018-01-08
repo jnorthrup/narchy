@@ -220,7 +220,7 @@ public class Autoencoder {
 	}
 
 	// Decode
-    private float[] decode(float[] y, boolean sigmoid) {
+	public float[] decode(float[] y, boolean sigmoid) {
 		float[][] w = W;
 
 		float[] vbias = this.vbias;

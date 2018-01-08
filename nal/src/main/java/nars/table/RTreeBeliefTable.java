@@ -50,10 +50,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     public static final float PRESENT_AND_FUTURE_BOOST = 2f;
 
-    static final int SCAN_DIVISIONS = 5;
+    static final int SCAN_DIVISIONS = 4;
 
-    public static final int MIN_TASKS_PER_LEAF = 3;
-    public static final int MAX_TASKS_PER_LEAF = 4;
+    public static final int MIN_TASKS_PER_LEAF = 2;
+    public static final int MAX_TASKS_PER_LEAF = 3;
     public static final Split<TaskRegion> SPLIT =
             Spatialization.DefaultSplits.AXIAL.get(); //Spatialization.DefaultSplits.LINEAR; //<- probably doesnt work here
 
@@ -727,12 +727,18 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     private static final class RTreeBeliefModel extends Spatialization<TaskRegion> {
 
+        final static double EPSILON = 0.0001f;
 
         public static final Spatialization<TaskRegion> the = new RTreeBeliefModel();
 
 
         private RTreeBeliefModel() {
             super((t -> t), RTreeBeliefTable.SPLIT, RTreeBeliefTable.MIN_TASKS_PER_LEAF, RTreeBeliefTable.MAX_TASKS_PER_LEAF);
+        }
+
+        @Override
+        public double epsilon() {
+            return EPSILON;
         }
 
         @Override
