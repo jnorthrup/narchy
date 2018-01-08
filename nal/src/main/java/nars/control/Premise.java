@@ -246,24 +246,24 @@ public class Premise extends PLink<Pair<Task,Term>> {
     private void linkVariable(Concept lessConstant, Concept moreConstant) {
 
 
-        /** creates a tasklink/termlink proportional to the tasklink's priority
-         *  and inversely proportional to the increase in term complexity of the
-         *  unified variable.  ie. $x -> (y)  would get a stronger link than  $x -> (y,z)
-         */
-        PriReference taskLink = this;
-        Term moreConstantTerm = moreConstant.term();
-        Term lessConstantTerm = lessConstant.term();
-        float pri = taskLink.priElseZero()
-                * (1f/lessConstantTerm.volume());
-                //* Util.unitize(lessConstantTerm.complexity() / ((float) moreConstantTerm.complexity()));
-
-        moreConstant.termlinks().putAsync(new PLink<>(lessConstantTerm, pri));
-        lessConstant.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
-        //moreConstant.termlinks().putAsync(new PLink<>(taskConcept.term(), pri));
-        //taskConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
-
-
-        //Tasklinks.linkTask(this.task.get(), pri, moreConstant);
+//        /** creates a tasklink/termlink proportional to the tasklink's priority
+//         *  and inversely proportional to the increase in term complexity of the
+//         *  unified variable.  ie. $x -> (y)  would get a stronger link than  $x -> (y,z)
+//         */
+//        PriReference taskLink = this;
+//        Term moreConstantTerm = moreConstant.term();
+//        Term lessConstantTerm = lessConstant.term();
+//        float pri = taskLink.priElseZero()
+//                * (1f/lessConstantTerm.volume());
+//                //* Util.unitize(lessConstantTerm.complexity() / ((float) moreConstantTerm.complexity()));
+//
+//        moreConstant.termlinks().putAsync(new PLink<>(lessConstantTerm, pri));
+//        lessConstant.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
+//        //moreConstant.termlinks().putAsync(new PLink<>(taskConcept.term(), pri));
+//        //taskConcept.termlinks().putAsync(new PLink<>(moreConstantTerm, pri));
+//
+//
+//        //Tasklinks.linkTask(this.task.get(), pri, moreConstant);
 
     }
 

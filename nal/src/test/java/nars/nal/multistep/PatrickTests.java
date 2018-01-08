@@ -118,7 +118,7 @@ public class PatrickTests extends NALTest {
         TestNAR tt = test;
         //Param.TRACE = true;
 
-        int cycles = 6000;
+        int cycles = 8000;
 
         tt.confTolerance(0.5f);
 //        MetaGoal.Desire.want(nar.want, 0.5f);

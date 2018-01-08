@@ -19,6 +19,7 @@ import nars.term.sub.Neg;
 import nars.term.sub.Subterms;
 import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.primitive.ObjectByteMap;
@@ -1950,30 +1951,45 @@ public enum Op {
 
     public static Term without(Term container, Term content) {
 
+        if (container.impossibleSubTerm(content))
+            return Null;
+
         Op co = container.op();
-        if (co.commutative) {
+//        if (co.commutative) {
 
             Subterms cs = container.subterms();
+            int i = cs.indexOf(content);
+            if (i == -1)
+                return Null;
 
-            int z = cs.subs();
-            if (z > 1 && cs.contains(content)) {
-                SortedSet<Term> s = cs.toSortedSet();
-                if (s.remove(content)) {
-                    int zs = s.size();
-                    switch (zs) {
-                        case 0:
-                            return Null;
-                        case 1:
-                            return s.first();
-                        default:
-                            return co.the(container.dt(), s);
-                    }
-                }
+            switch (cs.subs()) {
+                case 1:
+                    return Null; //removed itself
+                case 2:
+                    return cs.sub(1-i); //shortcut: return the other
+                default:
+                    return container.op().the(container.dt(), ArrayUtils.remove(cs.arrayShared(), i));
             }
-        } else {
-            throw new TODO(); //this one is easy
-        }
-        return Null; //wasnt contained
+
+//            int z = cs.subs();
+//            if (z > 1 && cs.contains(content)) {
+//                SortedSet<Term> s = cs.toSortedSet();
+//                if (s.remove(content)) {
+//                    int zs = s.size();
+//                    switch (zs) {
+//                        case 0:
+//                            return Null;
+//                        case 1:
+//                            return s.first();
+//                        default:
+//                            return co.the(container.dt(), s);
+//                    }
+//                }
+//            }
+//        } else {
+//            throw new TODO(); //this one is easy
+//        }
+//        return Null; //wasnt contained
     }
 
     public static int conjEarlyLate(Term x, boolean earlyOrLate) {

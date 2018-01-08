@@ -357,12 +357,14 @@ public class PremiseRule /*extends GenericCompound*/ {
 
                  case "subOf": //non-recursive
                     //X subOf Y : X is subterm of Y
+                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
                     constraints.add(new SubOfConstraint(X, Y, false, false, false));
                     constraints.add(new SubOfConstraint(Y, X, true, false, false));
                     break;
 
                  case "in": //recursive
                     //X in Y : X is recursive subterm of Y
+                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
                     constraints.add(new SubOfConstraint(X, Y, false, false, true));
                     constraints.add(new SubOfConstraint(Y, X, true, false, true));
                     break;

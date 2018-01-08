@@ -29,6 +29,10 @@ public enum TermLinks {
     ;
 
 
+    /**
+     * see:
+     * https://github.com/opennars/opennars/blob/master/nars_core/nars/language/Terms.java#L367
+     */
     public static List<Termed> templates(Term term) {
 
         if (term.subs() > 0) {
@@ -43,19 +47,32 @@ public enum TermLinks {
                 }
             }
 
-            TermLinks.templates(term, tc, 0, layers(term));
+            TermLinks.templates(term, tc, 0,
+                    //2
+                    //term.isAny(IMPL.bit | CONJ.bit | INH.bit) ? 4 : 2
+                    layers(term)
+            );
+
+//            //"if ((tEquivalence || (tImplication && (i == 0))) && ((t1 instanceof Conjunction) || (t1 instanceof Negation))) {"
+//            if (/*term.hasAll(IMPL.bit | CONJ.bit) && */term.op() == IMPL || term.op()==CONJ) {
+//                for (int subjOrPred  = 0; subjOrPred < 2; subjOrPred++) {
+//                    Term ic = term.sub(subjOrPred);
+//                    //if (ic.op() == CONJ) {
+//                        TermLinks.templates(ic, tc, 0, 2);
+//                    //}
+//                }
+//            }
+
 
             int tcs = tc.size();
             if (tcs > 0)
-                return ((FasterList)tc.list).compact(); //store as list for compactness and fast iteration
-            else
-                return emptyList();
+                return ((FasterList) tc.list).compact(); //store as list for compactness and fast iteration
 
-        } else {
 
-            //return List.of(term);
-            return emptyList(); //atomic self term-link disabled
         }
+
+
+        return emptyList();
     }
 
     /**
@@ -87,10 +104,13 @@ public enum TermLinks {
     }
 
 
-
-    /** determines ability to structural transform, so those terms which have no structural transforms should not link to themselves */
+    /**
+     * determines ability to structural transform, so those terms which have no structural transforms should not link to themselves
+     */
     static boolean selfTermLink(Term b) {
-        return true;
+        return false;
+        //return b.isAny(Op.CONJ.bit | Op.SETe.bit | Op.SETi.bit  /* .. */);
+        //return true;
     }
 
     /**
@@ -113,20 +133,23 @@ public enum TermLinks {
             case SECTe:
                 return 2;
 
-            case CONJ:
-                return 3;
 
             case SIM:
-                return 2;
+                return 3;
 
             case INH:
                 return 4;
 
             case IMPL:
-//                if (host.hasAny(Op.CONJ))
+                //if (x.hasAny(Op.CONJ))
                 return 4;
-//                else
-//                    return 3;
+                //else
+                  //  return 3;
+
+            case CONJ:
+                //if (x.hasAny(Op.INH))
+                    return 3;
+                //else return 2;
 
             default:
                 throw new UnsupportedOperationException("unhandled operator type: " + x.op());
@@ -225,7 +248,7 @@ public enum TermLinks {
                     boolean changed = false;
                     for (int i = 0; i < xx.length; i++) {
                         Term y = xx[i];
-                        if (y instanceof Int && y.op()==INT) {
+                        if (y instanceof Int && y.op() == INT) {
                             int shift =
                                     rng.nextInt(3) - 1;
                             //nar.random().nextInt(5) - 2;
@@ -268,7 +291,7 @@ public enum TermLinks {
     /**
      * send some activation, returns the cost
      */
-    public static float linkTemplates(Concept src, List<Termed> templates,float totalBudget, float momentum, NAR nar, BatchActivation ba) {
+    public static float linkTemplates(Concept src, List<Termed> templates, float totalBudget, float momentum, NAR nar, BatchActivation ba) {
 
         int n = templates.size();
         if (n == 0)

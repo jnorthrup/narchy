@@ -11,14 +11,14 @@ import static nars.time.Tense.ETERNAL;
 public class NAL6Test extends NALTest {
 
 
-    final int cycles = 2500;
+    final int cycles = 1500;
 
     @Test
     public void variable_unification_revision() {
         test
-            .mustBelieve(cycles, "(($1 --> bird) ==> ($1 --> flyer))", 0.79f, 0.92f) //en("If something is a bird, then usually, it is a flyer.");
-            .believe("(($x --> bird) ==> ($x --> flyer))") //en("If something is a bird, then it is a flyer.")
-            .believe("(($y --> bird) ==> ($y --> flyer))", 0.00f, 0.70f) //en("If something is a bird, then it is not a flyer.")
+                .mustBelieve(cycles, "(($1 --> bird) ==> ($1 --> flyer))", 0.79f, 0.92f) //en("If something is a bird, then usually, it is a flyer.");
+                .believe("(($x --> bird) ==> ($x --> flyer))") //en("If something is a bird, then it is a flyer.")
+                .believe("(($y --> bird) ==> ($y --> flyer))", 0.00f, 0.70f) //en("If something is a bird, then it is not a flyer.")
         ;
     }
 
@@ -138,18 +138,19 @@ public class NAL6Test extends NALTest {
     public void variable_elimination_impl_fwd_pos_pos() {
 
         test
-        .believe("<<$x --> bird> ==> <$x --> animal>>") //en("If something is a bird, then it is an animal.");
-        .believe("<robin --> bird>") //en("A robin is a bird.");
-        .mustBelieve(cycles, "<robin --> animal>", 1.00f, 0.81f); //en("A robin is an animal.");
+                .believe("<<$x --> bird> ==> <$x --> animal>>") //en("If something is a bird, then it is an animal.");
+                .believe("<robin --> bird>") //en("A robin is a bird.");
+                .mustBelieve(cycles, "<robin --> animal>", 1.00f, 0.81f); //en("A robin is an animal.");
 
     }
+
     @Test
     public void variable_elimination_impl_fwd_pos_neg() {
 
         test
-        .believe("(($x --> bird) ==> --($x --> --animal))") //en("If something is a bird, then it is an animal.");
-        .believe("(robin --> bird)") //en("A robin is a bird.");
-        .mustBelieve(cycles, "(robin --> --animal)", 0.00f, 0.81f); //en("A robin is an animal.");
+                .believe("(($x --> bird) ==> --($x --> --animal))") //en("If something is a bird, then it is an animal.");
+                .believe("(robin --> bird)") //en("A robin is a bird.");
+                .mustBelieve(cycles, "(robin --> --animal)", 0.00f, 0.81f); //en("A robin is an animal.");
 
     }
 
@@ -157,9 +158,9 @@ public class NAL6Test extends NALTest {
     public void variable_elimination_impl_fwd_neg_pos() {
 
         test
-        .believe("(--($x --> --bird) ==> ($x --> animal))") //en("If something is a bird, then it is an animal.");
-        .believe("--(robin --> --bird)") //en("A robin is a bird.");
-        .mustBelieve(cycles, "(robin --> animal)", 1.00f, 0.81f); //en("A robin is an animal.");
+                .believe("(--($x --> --bird) ==> ($x --> animal))") //en("If something is a bird, then it is an animal.");
+                .believe("--(robin --> --bird)") //en("A robin is a bird.");
+                .mustBelieve(cycles, "(robin --> animal)", 1.00f, 0.81f); //en("A robin is an animal.");
 
     }
 
@@ -223,28 +224,29 @@ public class NAL6Test extends NALTest {
 
     @Test
     public void variable_elimination6_easier() {
-    //        $.21 (((Tweety-->chirping)&&(Tweety-->eatsWorms))==>(Tweety-->bird)). %1.0;.81%
+        //        $.21 (((Tweety-->chirping)&&(Tweety-->eatsWorms))==>(Tweety-->bird)). %1.0;.81%
         //  ((%1,((%3&&%1073742338..+)==>%4),task(".")),(subIfUnifiesAny(((&&,%1073742338..+) ==>+- %4),%3,%1,"$"),((DeductionPB-->Belief))))
         TestNAR tester = test;
 
         tester.believe("((&&, flyer:$x, chirping:$x, eatsWorms:$x) ==> bird:$x)"); //en("If something can fly, chirp, and eats worms, then it is a bird.");
         tester.believe("flyer:Tweety"); //en("Tweety can fly.");
-        tester.mustBelieve(cycles*2,
+        tester.mustBelieve(cycles * 2,
                 "((chirping:Tweety && eatsWorms:Tweety) ==> bird:Tweety)",
                 1.0f, 0.73f); //en("If Tweety can chirp and eats worms, then it is a bird.");
 
     }
+
     @Test
     public void variable_elimination6() {
 
         ////  ((%1,((%3&&%1073742338..+)==>%4),task(".")),(subIfUnifiesAny(((&&,%1073742338..+) ==>+- %4),%3,%1,"$"),((DeductionPB-->Belief))))
 
         test
-        .believe("((&&, flyer:$x, [chirping]:$x, food($x, worms)) ==> bird:$x)")
-        .believe("flyer:Tweety")
-        .mustBelieve(cycles * 2, "(([chirping]:Tweety && food(Tweety,worms)) ==> bird:Tweety)",
-                1.0f,
-                0.73f); //en("If something can fly, chirp, and eats worms, then it is a bird.");
+                .believe("((&&, flyer:$x, [chirping]:$x, food($x, worms)) ==> bird:$x)")
+                .believe("flyer:Tweety")
+                .mustBelieve(cycles * 2, "(([chirping]:Tweety && food(Tweety,worms)) ==> bird:Tweety)",
+                        1.0f,
+                        0.73f); //en("If something can fly, chirp, and eats worms, then it is a bird.");
         //0.81f); //en("If Tweety can chirp and eats worms, then it is a bird.");
 
     }
@@ -419,8 +421,8 @@ public class NAL6Test extends NALTest {
     public void multiple_variables_introduction2() {
 
         TestNAR tester = test;
-        tester.believe("(<#x --> key> && open(#x,{lock1}))"); //en("Lock-1 can be opened by some key.");
-        tester.believe("<{lock1} --> lock>"); //en("Lock-1 is a lock.");
+        tester.believe("((#x --> key) && open(#x,{lock1}))"); //en("Lock-1 can be opened by some key.");
+        tester.believe("lock:{lock1}"); //en("Lock-1 is a lock.");
 
         tester.mustBelieve(cycles, "(&&, <#1 --> key>, <#2 --> lock>, open(#1,#2))", 1.00f, 0.81f); //en("There is a key that can open some lock.");
         //tester.mustBelieve(cycles, "(&&, <#1 --> lock>, <#1 --> (/, open, #2, _)>, <#2 --> key>)", 1.00f, 0.81f); //en("There is a key that can open some lock.");
@@ -528,7 +530,8 @@ public class NAL6Test extends NALTest {
 
 
     @Test
-    @Disabled public void abduction_with_variable_elimination() {
+    @Disabled
+    public void abduction_with_variable_elimination() {
 
         test
                 .believe("(open($1,lock1) ==> ($1 --> key))", 1.00f, 0.90f) //en("whatever opens lock1 is a key");
@@ -540,7 +543,8 @@ public class NAL6Test extends NALTest {
 
     @Test
     /** TODO verify */
-    @Disabled public void abduction_with_variable_elimination_negated() {
+    @Disabled
+    public void abduction_with_variable_elimination_negated() {
 
         test
 
@@ -558,7 +562,7 @@ public class NAL6Test extends NALTest {
         TestNAR tester = test;
         tester.believe("(pair($a,$b) ==> ($a --> $b))", 1.00f, 0.90f);
         tester.believe("pair(x,y)", 1.00f, 0.90f);
-        tester.mustBelieve(cycles*4, "(x --> y)", 1.00f, 0.81f); //en("there is a lock which is opened by key1");
+        tester.mustBelieve(cycles * 4, "(x --> y)", 1.00f, 0.81f); //en("there is a lock which is opened by key1");
     }
 
     @Test
@@ -577,7 +581,7 @@ public class NAL6Test extends NALTest {
         TestNAR tester = test;
         tester.believe("(sentence($a,is,$b) ==> ($a --> $b))", 1.00f, 0.90f);
         tester.believe("sentence(bmw,is,car)", 1.00f, 0.90f);
-        tester.mustBelieve(cycles*2, "car:bmw", 1.00f, 0.81f); //en("there is a lock which is opened by key1");
+        tester.mustBelieve(cycles * 2, "car:bmw", 1.00f, 0.81f); //en("there is a lock which is opened by key1");
 
     }
 
@@ -670,6 +674,16 @@ public class NAL6Test extends NALTest {
     }
 
     @Test
+    public void testDecomposeImplSubj1bNeg() {
+        test.confTolerance(0.03f)
+                .believe("( (&&, --y, --z, --w) ==> x )")
+                .mustBelieve(cycles, "( --y ==> x )", 1f, 0.73f)
+                .mustBelieve(cycles, "( --z ==> x )", 1f, 0.73f)
+                .mustBelieve(cycles, "( --w ==> x )", 1f, 0.73f)
+        ;
+    }
+
+    @Test
     public void testDecomposeImplPred1b() {
         test.confTolerance(0.03f)
                 .believe("( x ==> (&&, y, z, w) )")
@@ -687,6 +701,41 @@ public class NAL6Test extends NALTest {
                 .mustBelieve(cycles, "( (a,#b) ==> (x,#b) )", 1f, 0.73f)
                 .mustBelieve(cycles, "( (a,#b) ==> y )", 1f, 0.73f)
                 .mustBelieve(cycles, "( (a,#b) ==> z )", 1f, 0.73f)
+        ;
+    }
+
+    @Test
+    public void testDecomposeImplsubjNeg() {
+        test
+                .believe("( (&&, --y, --z ) ==> x )")
+                .mustBelieve(cycles, "( --y ==> x )", 1f, 0.81f)
+                .mustBelieve(cycles, "( --z ==> x )", 1f, 0.81f)
+        ;
+    }
+
+   @Test
+    public void testDecomposeImplPredNeg() {
+        test
+                .believe("( x ==> (&&, --y, --z ) )")
+                .mustBelieve(cycles, "( x ==> --y )", 1f, 0.81f)
+                .mustBelieve(cycles, "( x ==> --z )", 1f, 0.81f)
+        ;
+    }
+    @Test
+    public void testDecomposeConjNeg2() {
+        test
+                .believe("(&&, --y, --z)")
+                .mustBelieve(cycles, "y", 0f, 0.81f)
+                .mustBelieve(cycles, "z", 0f, 0.81f)
+        ;
+    }
+    @Test
+    public void testDecomposeConjNeg3() {
+        test
+                .believe("(&&, --y, --z, --w)")
+                .mustBelieve(cycles*2, "y", 0f, 0.73f)
+                .mustBelieve(cycles*2, "z", 0f, 0.73f)
+                .mustBelieve(cycles*2, "w", 0f, 0.73f)
         ;
     }
 
@@ -752,7 +801,7 @@ public class NAL6Test extends NALTest {
                 .believe("( num($1) ==> num(($1)) )", 1.0f, 0.9f)
                 .ask("num(((x)))")
                 .mustBelieve(cycles * 2, "num((x))", 1.0f, 1.0f, 0.8f, 1.0f)
-                .mustBelieve(cycles * 2 , "num(((x)))", 1.0f, 1.0f, 0.1f /*0.66f*/, 1.0f);
+                .mustBelieve(cycles * 2, "num(((x)))", 1.0f, 1.0f, 0.1f /*0.66f*/, 1.0f);
 //        test.nar.at(100, ()->{
 //            nar.concepts().forEach(System.out::println);
 //        });

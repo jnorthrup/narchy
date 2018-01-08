@@ -15,6 +15,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Int;
 import nars.term.sub.Subterms;
 import nars.term.var.Variable;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
@@ -243,10 +244,7 @@ public class Builtin {
         }));
 
         nar.on(Functor.f2((Atom) $.the("without"), (Term container, Term content) -> {
-            Term t = Op.without(container, content);
-            if (t == null)
-                return Null; //wasnt contained
-            return t;
+            return Op.without(container, content);
         }));
 
         /**
@@ -396,6 +394,12 @@ public class Builtin {
         nar.on(Functor.f2((Atom) $.the("conjWithout"), (Term conj, Term event) -> {
             if (conj.op() != CONJ || conj.impossibleSubTerm(event))
                 return Null;
+
+            Term x = Op.without(conj, event);
+            if (x!=Null)
+                return x;
+
+            //maybe a recursive event
             if (conj.dt() != DTERNAL) {
                 FasterList<LongObjectPair<Term>> events = conj.eventList();
                 int found = -1;
@@ -470,7 +474,7 @@ public class Builtin {
 
         nar.on(f0("self", nar::self));
 
-        nar.on(Functor.f1("the", (Function<Term, Term>) (what -> {
+        nar.on(Functor.f1("the", what -> {
 
 
             if (what instanceof Atom) {
@@ -490,7 +494,7 @@ public class Builtin {
                 x = what;
 
             return $.quote($.p($.quote(x.getClass().toString()), $.quote(x.toString())));
-        })));
+        }));
 
 
 //            /** slice(<compound>,<selector>)

@@ -92,20 +92,20 @@
 //Same as for inheritance again
 
 
-    (S ==> M), (C ==> M), is(C,"&&") |- (conjWithout(C,S) ==>+- M), (Belief:DecomposeNegativePositivePositive)
+    (S ==> M), (C ==> M), is(C,"&&"),in(S,C) |- (conjWithout(C,S) ==>+- M), (Belief:DecomposeNegativePositivePositive)
         //(S ==> M), ((&&,(--,%S),A..+) ==> M) |- ((&&,A..+) ==>+- M), (Belief:DecomposeNegativePositivePositiveN)
         //(S ==> M), ((||,S,A..+) ==> M) |- ((||,A..+) ==>+- M), (Belief:DecomposePositiveNegativeNegative)
 
-    (M ==> S), (M ==> C), is(C,"&&") |- (M ==>+- conjWithout(C,S)), (Belief:DecomposePositiveNegativeNegative)
+    (M ==> S), (M ==> C), is(C,"&&"),in(S,C) |- (M ==>+- conjWithout(C,S)), (Belief:DecomposePositiveNegativeNegative)
         //(M ==> S), (M ==> (&&,(--,%S),A..+)) |- (M ==>+- (&&,A..+)), (Belief:DecomposePositiveNegativeNegativeN)
         //(M ==> S), (M ==> (||,S,A..+)) |- (M ==>+- (||,A..+)), (Belief:DecomposeNegativePositivePositive)
 
-    (M ==> C), (M ==> C), is(C,"&&") |- (M ==>+- dropAnyEvent(C)), (Belief:StructuralDeduction)
+    (M ==> C), C, is(C,"&&") |- (M ==>+- dropAnyEvent(C)), (Belief:StructuralDeduction)
           //(M ==> C), D, belief("&&") |- (M ==>+- subIfUnifiesAny(dropAnyEvent(C), same, D)), (Belief:StructuralDeduction)
         //(--M ==> C), C, belief("&&") |- (--M ==>+- dropAnyEvent(C)), (Belief:StructuralDeduction)
           //(--M ==> C), D, belief("&&") |- (--M ==>+- subIfUnifiesAny(dropAnyEvent(C), same, D, strict)), (Belief:StructuralDeduction)
         //(M ==> (&&,(--,%S),A..+)), M |- (M ==>+- (&&,A..+)), (Belief:StructuralDeduction)
-    (C ==> M), (C ==> M), is(C,"&&") |- (dropAnyEvent(C) ==>+- M), (Belief:StructuralDeduction)
+    (C ==> M), C, is(C,"&&") |- (dropAnyEvent(C) ==>+- M), (Belief:StructuralDeduction)
           //(C ==> M), D, belief("&&") |- (subIfUnifiesAny(dropAnyEvent(C), same, D) ==>+- M), (Belief:StructuralDeduction)
         //(C ==> --M), C, belief("&&") |- (dropAnyEvent(C) ==>+- --M), (Belief:StructuralDeduction)
           //(C ==> --M), D, belief("&&") |- (subIfUnifiesAny(dropAnyEvent(C), same, D, strict) ==>+- --M), (Belief:StructuralDeduction)
@@ -161,15 +161,15 @@
 
     (X ==> C), M,  is(X,"&&"), in(M,X) |- (conjWithout(X,M) ==>+- C), (Belief:Deduction)
         //((&&,M,A..+) ==> C), M,                  |- ((&&,A..+) ==>+- C), (Belief:Deduction)
-    (X ==> C), (B==>M), is(X,"&&"), in(M,X), neq(B,M) |- ((conjWithout(X,M) &&+- B) ==>+- C), (Belief:Deduction)
+    (X ==> C), (B==>M), is(X,"&&"), in(M,X) |- ((conjWithout(X,M) &&+- B) ==>+- C), (Belief:Deduction)
         //((&&,M,A..+) ==> C), (B ==> M), neq(B,M) |- ((&&,B,A..+) ==>+- C), (Belief:Deduction)
 
     (X ==> C), (Y==>C), is(X,"&&"), is(Y,"&&"), neq(X,Y)   |- differ(Y,X), (Belief:AbductionPB)
-        (X ==> C), (Y==>C), is(X,"&&"), in(Y,X), neq(X,Y)   |- conjWithout(X,Y), (Belief:AbductionPB)
-        (X ==> C), (Y==>C), is(Y,"&&"), in(X,Y), neq(X,Y)   |- conjWithout(Y,X), (Belief:AbductionPB)
+        (X ==> C), (Y==>C), is(X,"&&"), in(Y,X)   |- conjWithout(X,Y), (Belief:AbductionPB)
+        (X ==> C), (Y==>C), is(Y,"&&"), in(X,Y)   |- conjWithout(Y,X), (Belief:AbductionPB)
         //((&&,M,A..+) ==> C), ((&&,A..+) ==> C)   |- M, (Belief:AbductionPB)
 
-    (X ==> C), (B==>M), is(X,"&&"), in(B,X), neq(B,M) |- ((conjWithout(X,B) &&+- M) ==>+- C), (Belief:AbductionPB)
+    (X ==> C), (B==>M), is(X,"&&"), in(B,X) |- ((conjWithout(X,B) &&+- M) ==>+- C), (Belief:AbductionPB)
         //((&&,B,A..+) ==> C), (B ==> M), neq(B,M) |- ((&&,M,A..+) ==>+- C), (Belief:AbductionPB)
 
     (X ==> C), M, is(X,"&&") |- ((X &&+- M) ==>+- C), (Belief:Induction)
@@ -288,9 +288,10 @@
 
     //structural decompose any component of a conjunction.
     //for belief: any conj
-    C, C, task("&&") |- dropAnyEvent(C), (Belief:StructuralDeduction)
+    C, X, task("&&"), subOf(X,C)   |- conjWithout(C, X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, task("&&"), subOf(--X,C) |- conjWithout(C, --X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
     //for goal: if eternal and paral (goal seq must be decomposed sequentially use &&| and add separate rule
-    C, C, task("&&") |- dropAnyEvent(C), (Goal:StructuralDeduction)
+    //C, X, task("&&") |- dropAnyEvent(C), (Goal:StructuralDeduction)
 
 
     //(&&,A_1..n), A_i |- A_i, (Truth:StructuralDeduction, Desire:Strong)
