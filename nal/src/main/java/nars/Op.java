@@ -1949,7 +1949,12 @@ public enum Op {
         return false;
     }
 
+
     public static Term without(Term container, Term content) {
+        return without(container, content, true);
+    }
+
+    public static Term without(Term container, Term content, boolean rooted) {
 
         if (container.impossibleSubTerm(content))
             return Null;
@@ -1958,7 +1963,7 @@ public enum Op {
 //        if (co.commutative) {
 
             Subterms cs = container.subterms();
-            int i = cs.indexOf(content);
+            int i = rooted ? cs.indexOfRooted(content) : cs.indexOf(content);
             if (i == -1)
                 return Null;
 

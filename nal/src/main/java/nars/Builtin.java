@@ -406,7 +406,7 @@ public class Builtin {
                 int es = events.size();
                 assert (es > 1);
                 for (int i = 0; i < es; i++) {
-                    if (events.get(i).getTwo().equals(event)) {
+                    if (events.get(i).getTwo().equalsRoot(event)) {
                         found = i;
                         break;
                     }
@@ -416,7 +416,7 @@ public class Builtin {
                 events.remove(found);
                 return Op.conj(events);
             } else {
-                return Op.without(conj, event);
+                return Null;
             }
         }));
         /** extracts only the events preceding the specified events */
@@ -435,7 +435,7 @@ public class Builtin {
             assert (es > 1);
             for (int i = 0; i < es; i++) {
                 LongObjectPair<Term> ei = events.get(i);
-                if (ei.getTwo().equals(event)) {
+                if (ei.getTwo().equalsRoot(event)) {
                     found = i;
                     whenOccurs = Math.max(whenOccurs, ei.getOne());
                 }
@@ -457,7 +457,7 @@ public class Builtin {
                 Term firstTerm = first.getTwo();
 //
 //                boolean neg;
-                if (!firstTerm.equals(event)) {
+                if (!firstTerm.equalsRoot(event)) {
                     return Null;
                 }
 

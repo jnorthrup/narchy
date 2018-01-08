@@ -463,6 +463,16 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
         return -1;
     }
+    default int indexOfRooted(/*@NotNull*/ Term t) {
+        if (!impossibleSubTerm(t)) {
+            int s = subs();
+            for (int i = 0; i < s; i++) {
+                if (t.equalsRoot(sub(i)))
+                    return i;
+            }
+        }
+        return -1;
+    }
 //    default int indexOfAtemporally(Term t) {
 //        t = t.unneg(); //unneg before testing impossible
 //        if (!impossibleSubTerm(t)) {
