@@ -33,14 +33,17 @@ public class OsmReader {
     Osm parse() throws SAXException, IOException, ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
+        factory.setNamespaceAware(false);
         factory.setValidating(false);
         factory.setIgnoringComments(true);
-        factory.setIgnoringElementContentWhitespace(true);
+//        factory.setIgnoringElementContentWhitespace(true);
+//        factory.setXIncludeAware(false);
+
 
         DocumentBuilder documentBuilder = factory.newDocumentBuilder();
 
-
         InputStream fis = new FileInputStream(filename);
+
         if (filename.endsWith(".gz")) {
             fis = new GZIPInputStream(fis);
         }
@@ -48,12 +51,20 @@ public class OsmReader {
 
 
         osm.clear();
-        Node root = document.getDocumentElement();
+
 
         Collection<Element> relationElements = new FasterList<>();
 
-        NodeList childNodes = root.getChildNodes();
-        for (int i=0; i<childNodes.getLength(); i++) {
+
+        NodeList childNodes = document.getDocumentElement().getChildNodes();
+        int cl = childNodes.getLength();
+        //System.out.println("stage A : " + cl + " child nodes");
+
+        Map<String, OsmNode> nodes = new HashMap(128 * 1024);
+        Map<String, OsmRelation> relations = new HashMap(64 * 1024);
+        Map<String, OsmWay> ways = new HashMap(64 * 1024);
+
+        for (int i = 0; i < cl; i++) {
             Node childNode = childNodes.item(i);
 
             switch (childNode.getNodeName()) {
@@ -65,19 +76,23 @@ public class OsmReader {
                     Element childElement = (Element) childNode;
                     String id = childElement.getAttribute("id");
 
-                    Map<String, String> osmTags = new UnifiedMap<>(1);
-                    NodeList nodeChildren = childNode.getChildNodes();
+                    Map<String, String> osmTags = null;
+                    NodeList nodeChildren = ((Element) childNode).getElementsByTagName("tag") /*childNode.getChildNodes()*/;
                     int nnc = nodeChildren.getLength();
                     for (int j = 0; j < nnc; j++) {
                         Node nodeChild = nodeChildren.item(j);
-                        if ("tag".equals(nodeChild.getNodeName())) {
-                            Element nodeChildElement = (Element) nodeChild;
-                            String k = nodeChildElement.getAttribute("k");
-                            String v = nodeChildElement.getAttribute("v");
-                            osmTags.put(k, v);
+                        /*if ("tag".equals(nodeChild.getNodeName()))*/
+                        {
+                            Element ne = (Element) nodeChild;
+                            if (osmTags == null)
+                                osmTags = new UnifiedMap(1);
+                            osmTags.put(ne.getAttribute("k"), ne.getAttribute("v"));
                         }
                     }
-                    osm.nodes.add(new OsmNode(id, new GeoCoordinate(childElement), osmTags));
+
+                    OsmNode oo = new OsmNode(id, new GeoCoordinate(childElement), osmTags);
+                    nodes.put(id, oo);
+                    osm.nodes.add(oo);
 
                     break;
                 }
@@ -86,26 +101,28 @@ public class OsmReader {
                     String id = childElement.getAttribute("id");
 
                     List<OsmNode> refOsmNodes = new FasterList<>();
-                    Map<String, String> osmTags = new UnifiedMap<>(1);
+                    Map<String, String> osmTags = null;
 
                     NodeList wayChildren = childNode.getChildNodes();
-                    for (int j = 0; j < wayChildren.getLength(); j++) {
+                    int l = wayChildren.getLength();
+                    for (int j = 0; j < l; j++) {
                         Node wayChild = wayChildren.item(j);
                         String node = wayChild.getNodeName();
                         if ("nd".equals(node)) {
                             Element wayChildElement = (Element) wayChild;
                             String refId = wayChildElement.getAttribute("ref");
-                            OsmNode refOsmNode = OsmNode.getOsmNodeById(osm.nodes, refId);
-                            refOsmNodes.add(refOsmNode);
+                            refOsmNodes.add(nodes.get(refId));
                         } else if ("tag".equals(node)) {
                             Element nodeChildElement = (Element) wayChild;
-                            String k = nodeChildElement.getAttribute("k");
-                            String v = nodeChildElement.getAttribute("v");
-                            osmTags.put(k, v);
+                            if (osmTags == null)
+                                osmTags = new UnifiedMap<>(1);
+                            osmTags.put(nodeChildElement.getAttribute("k"), nodeChildElement.getAttribute("v"));
                         }
                     }
 
-                    osm.ways.add(new OsmWay(id, refOsmNodes, osmTags));
+                    OsmWay ow = new OsmWay(id, refOsmNodes, osmTags);
+                    ways.put(id, ow);
+                    osm.ways.add(ow);
 
                     break;
                 }
@@ -113,53 +130,67 @@ public class OsmReader {
                     Element childElement = (Element) childNode;
                     String id = childElement.getAttribute("id");
 
-                    NodeList relationChildren = childElement.getChildNodes();
-                    Map<String, String> osmTags = new UnifiedMap<>();
-                    for (int j = 0; j < relationChildren.getLength(); j++) {
+                    NodeList relationChildren = childElement.getElementsByTagName("tag");
+                    Map<String, String> osmTags = null;
+                    int l = relationChildren.getLength();
+                    for (int j = 0; j < l; j++) {
                         Node relationChild = relationChildren.item(j);
-                        if ("tag".equals(relationChild.getNodeName())) {
-                            Element nodeChildElement = (Element) relationChild;
-                            String k = nodeChildElement.getAttribute("k");
-                            String v = nodeChildElement.getAttribute("v");
-                            osmTags.put(k, v);
+                        /*if ("tag".equals(relationChild.getNodeName()))*/
+                        {
+                            Element e = (Element) relationChild;
+                            if (osmTags == null)
+                                osmTags = new UnifiedMap<>(1);
+                            osmTags.put(e.getAttribute("k"), e.getAttribute("v"));
                         }
                     }
 
-                    osm.relations.add(new OsmRelation(id, null, osmTags));
+                    OsmRelation or = new OsmRelation(id, null, osmTags);
+                    relations.put(id, or);
+                    osm.relations.add(or);
                     relationElements.add(childElement);
                     break;
             }
         }
 
+        //System.out.println("2");
+
         // Relation 2nd pass
-        for (Element relationElement: relationElements) {
+        for (Element relationElement : relationElements) {
             String id = relationElement.getAttribute("id");
 
-            OsmRelation osmRelation = OsmRelation.getOsmRelationById(osm.relations, id);
-            List<OsmElement> osmMembers = new FasterList<>();
+            OsmRelation osmRelation = relations.get(id);
+//            List<OsmElement> osmMembers = new FasterList<>();
 
             Map<String, String> tags = osmRelation.tags;
-            String highway = tags.get("highway");
-            String natural = tags.get("natural");
-            String building = tags.get("building");
-            String building_part = tags.get("building:part");
-            String landuse = tags.get("landuse");
+            String highway, natural, building, building_part, landuse;
+            if (tags.isEmpty()) {
+                highway = natural = building = building_part = landuse = null;
+            } else {
+                highway = tags.get("highway");
+                natural = tags.get("natural");
+                building = tags.get("building");
+                building_part = tags.get("building:part");
+                landuse = tags.get("landuse");
+            }
 
-            NodeList relationChildren = relationElement.getChildNodes();
-            for (int j = 0; j < relationChildren.getLength(); j++) {
+            NodeList relationChildren = relationElement.getElementsByTagName("member"); //getChildNodes();
+            List<OsmElement> osmMembers = null;
+            int l = relationChildren.getLength();
+            for (int j = 0; j < l; j++) {
                 Node relationChild = relationChildren.item(j);
-                if ("member".equals(relationChild.getNodeName())) {
+                /*if ("member".equals(relationChild.getNodeName()))*/
+                {
                     Element relationChildElement = (Element) relationChild;
                     String type = relationChildElement.getAttribute("type");
                     String ref = relationChildElement.getAttribute("ref");
-                    String role = relationChildElement.getAttribute("role");
+//                    String role = relationChildElement.getAttribute("role");
                     OsmElement member = null;
                     switch (type) {
                         case "node":
-                            member = OsmNode.getOsmNodeById(osm.nodes, ref);
+                            member = nodes.get(ref);
                             break;
                         case "way":
-                            member = OsmWay.getOsmWayById(osm.ways, ref);
+                            member = ways.get(ref);
                             if (member != null) {
                                 if (highway != null) {
                                     member.tag("highway", highway);
@@ -179,23 +210,27 @@ public class OsmReader {
                             }
                             break;
                         case "relation":
-                            member = OsmRelation.getOsmRelationById(osm.relations, ref);
+                            member = relations.get(ref);
                             break;
                     }
                     if (member != null) {
+                        if (osmMembers == null)
+                            osmMembers = new FasterList();
                         osmMembers.add(member);
                     }
                 }
             }
 
-            osmRelation.addChildren(osmMembers);
+            if (osmMembers != null)
+                osmRelation.addChildren(osmMembers);
         }
 
+        //System.out.println("3");
         // Relation 3rd pass: merge multipolygon
-        for (Element relationElement: relationElements) {
+        for (Element relationElement : relationElements) {
             String id = relationElement.getAttribute("id");
 
-            OsmRelation osmRelation = OsmRelation.getOsmRelationById(osm.relations, id);
+            OsmRelation osmRelation = relations.get(id);
 
             Map<String, String> tags = osmRelation.tags;
             String type = tags.get("type");
@@ -205,24 +240,25 @@ public class OsmReader {
 
             List<? extends OsmElement> oc = osmRelation.children();
             int s = oc.size();
-            for (int i = 0; i< s; i++) {
+            for (int i = 0; i < s; i++) {
                 OsmElement e1 = oc.get(i);
 
                 if (e1 == null || e1.getClass() != OsmWay.class)
                     continue;
 
-                OsmWay w1 = (OsmWay)e1;
+                OsmWay w1 = (OsmWay) e1;
                 if (w1.isClosed())
                     continue;
 
-                repeat: {
+                repeat:
+                {
                     ListIterator<? extends OsmElement> ii = oc.listIterator(i);
                     while (ii.hasNext()) {
                         OsmElement e2 = ii.next();
                         if (e2 == null || e2.getClass() != OsmWay.class)
                             continue;
 
-                        OsmWay w2 = (OsmWay)e2;
+                        OsmWay w2 = (OsmWay) e2;
 
                         if (w1.isFollowedBy(w2)) {
                             w1.addOsmWay(w2);
@@ -251,29 +287,29 @@ public class OsmReader {
         }
     }
 
-    static void printOsmNodes(List<OsmNode> osmNodes) {
+    static void printOsmNodes(Iterable<OsmNode> osmNodes) {
         printOsmNodes(osmNodes, 0);
     }
 
     static void printOsmNodes(Iterable<OsmNode> osmNodes, int indent) {
-        for (OsmNode osmNode: osmNodes) {
+        for (OsmNode osmNode : osmNodes) {
             printOsmNode(osmNode, indent);
         }
     }
 
     static void printOsmNode(OsmNode osmNode, int indent) {
-        GeoCoordinate geoCoordinate = osmNode.getGeoCoordinate();
+        GeoCoordinate geoCoordinate = osmNode.geoCoordinate;
         printIndent(indent);
         System.out.printf("<node id=%s, lat=%f, lon=%f>\n", osmNode.id, geoCoordinate.latitude, geoCoordinate.longitude);
         printTags(osmNode.tags, indent + 1);
     }
 
-    static void printOsmWays(List<OsmWay> osmWays) {
+    static void printOsmWays(Iterable<OsmWay> osmWays) {
         printOsmWays(osmWays, 0);
     }
 
     static void printOsmWays(Iterable<OsmWay> osmWays, int indent) {
-        for (OsmWay osmWay: osmWays) {
+        for (OsmWay osmWay : osmWays) {
             printOsmWay(osmWay, indent);
         }
     }
@@ -285,12 +321,12 @@ public class OsmReader {
         printTags(osmWay.tags, indent + 1);
     }
 
-    static void printOsmRelations(List<OsmRelation> osmRelations) {
+    static void printOsmRelations(Iterable<OsmRelation> osmRelations) {
         printOsmRelations(osmRelations, 0);
     }
 
     static void printOsmRelations(Iterable<OsmRelation> osmRelations, int indent) {
-        for (OsmRelation osmRelation: osmRelations) {
+        for (OsmRelation osmRelation : osmRelations) {
             printOsmRelation(osmRelation, indent);
         }
     }
@@ -303,9 +339,9 @@ public class OsmReader {
     }
 
     static void printOsmElements(Iterable<? extends OsmElement> osmElements, int indent) {
-        for (OsmElement osmElement: osmElements) {
+        for (OsmElement osmElement : osmElements) {
             if (osmElement.getClass() == OsmNode.class) {
-                printOsmNode((OsmNode)osmElement, indent);
+                printOsmNode((OsmNode) osmElement, indent);
             } else if (osmElement.getClass() == OsmWay.class) {
                 printOsmWay((OsmWay) osmElement, indent);
             } else if (osmElement.getClass() == OsmRelation.class) {
@@ -315,7 +351,7 @@ public class OsmReader {
     }
 
     static void printIndent(int indent) {
-        for (int i=0; i<indent; i++) {
+        for (int i = 0; i < indent; i++) {
             System.out.print("  ");
         }
     }
@@ -325,13 +361,13 @@ public class OsmReader {
             return;
         }
 
-        for (int i=0; i<indent; i++) {
+        for (int i = 0; i < indent; i++) {
             System.out.print("  ");
         }
         System.out.print(node.getNodeName());
 
         NamedNodeMap nodeMap = node.getAttributes();
-        for (int i=0; i<nodeMap.getLength(); i++) {
+        for (int i = 0; i < nodeMap.getLength(); i++) {
             Node attr = nodeMap.item(i);
             System.out.print(", " + attr.getNodeName() + '=' + attr.getNodeValue());
         }
@@ -339,8 +375,8 @@ public class OsmReader {
 
         NodeList childNodes = node.getChildNodes();
         int l = childNodes.getLength();
-        for (int i = 0; i< l; i++) {
-            printNode(indent+1, childNodes.item(i));
+        for (int i = 0; i < l; i++) {
+            printNode(indent + 1, childNodes.item(i));
         }
     }
 }

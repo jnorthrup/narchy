@@ -1,14 +1,8 @@
 package spacegraph.geo.data;
 
-import com.jogamp.opengl.GL2;
-import org.eclipse.collections.api.map.ImmutableMap;
-import org.eclipse.collections.impl.factory.Maps;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 /**
  * Created by unkei on 2017/04/25.
@@ -67,7 +61,7 @@ public class OsmWay extends OsmElement {
         return false;
     }
 
-    public static OsmWay getOsmWayById(List<OsmWay> ways, String id) {
-        return (OsmWay) elemById(ways, id);
-    }
+//    public static OsmWay getOsmWayById(List<OsmWay> ways, String id) {
+//        return (OsmWay) elemById(ways, id);
+//    }
 }

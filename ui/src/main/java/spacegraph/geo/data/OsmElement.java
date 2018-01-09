@@ -1,10 +1,8 @@
 package spacegraph.geo.data;
 
-import org.eclipse.collections.impl.UnmodifiableMap;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +22,7 @@ public class OsmElement {
         this.id = id;
 
         this.children = children;
-        if (tags.isEmpty())
+        if (tags == null || tags.isEmpty())
             tags = Collections.emptyMap();
         this.tags = tags;
     }
@@ -33,17 +31,17 @@ public class OsmElement {
         return this.children;
     }
 
-    public static OsmElement elemById(List<? extends OsmElement> osmElemnts, String id) {
-        //if (id != null && !id.isEmpty()) {
-            for (int i = 0, osmElemntsSize = osmElemnts.size(); i < osmElemntsSize; i++) {
-                OsmElement osmElement = osmElemnts.get(i);
-                if (id.equals(osmElement.id)) {
-                    return osmElement;
-                }
-            }
-        //}
-        return null;
-    }
+//    public static OsmElement elemById(List<? extends OsmElement> osmElemnts, String id) {
+//        //if (id != null && !id.isEmpty()) {
+//            for (int i = 0, osmElemntsSize = osmElemnts.size(); i < osmElemntsSize; i++) {
+//                OsmElement osmElement = osmElemnts.get(i);
+//                if (id.equals(osmElement.id)) {
+//                    return osmElement;
+//                }
+//            }
+//        //}
+//        return null;
+//    }
 
     public void tag(String k, String v) {
         if (tags.isEmpty()) {

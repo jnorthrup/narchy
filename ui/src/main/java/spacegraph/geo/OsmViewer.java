@@ -1,29 +1,20 @@
 package spacegraph.geo;
 
 
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.KeyListener;
-import com.jogamp.newt.event.WindowAdapter;
-import com.jogamp.newt.event.WindowEvent;
-import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.GLUtessellator;
 import com.jogamp.opengl.glu.GLUtessellatorCallback;
-import com.jogamp.opengl.util.FPSAnimator;
 import spacegraph.SpaceGraph;
 import spacegraph.geo.data.GeoCoordinate;
 import spacegraph.geo.data.Osm;
 import spacegraph.geo.data.OsmNode;
 import spacegraph.geo.data.OsmWay;
-import spacegraph.render.JoglSpace;
 
+import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import static com.jogamp.opengl.GL.*;
-import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_MODELVIEW;
-import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 
 /**
  * Created by unkei on 2017/04/25.
@@ -79,7 +70,11 @@ public class OsmViewer extends SpaceGraph {
 //        center = new GeoCoordinate((maxLat + minLat) / 2, (maxLon + minLon) / 2);
     }
 
-    void project(GeoCoordinate global, double[] target) {
+    static void project(GeoCoordinate global, double[] target) {
+        project(global, target, 0);
+    }
+
+    static void project(GeoCoordinate global, double[] target, int offset) {
 
 //        //2D flat projection
 //        target[0] = (global.latitude - center.latitude) * scaleLat;
@@ -89,9 +84,9 @@ public class OsmViewer extends SpaceGraph {
         //3D ECEF
         double[] t = ECEF.latlon2ecef(global.latitude*20, global.longitude*20, global.altitude);
         double s = 100 * 1E-7;
-        target[0] = t[0]*s;
-        target[1] = t[1]*s;
-        target[2] = t[2]*s;
+        target[offset++] = t[0]*s;
+        target[offset++] = t[1]*s;
+        target[offset/*++*/] = t[2]*s;
 
     }
 
@@ -128,7 +123,7 @@ public class OsmViewer extends SpaceGraph {
 //        gl.glTranslatef(0, 0, 1f);
 //        gl.glRotatef(angle, 1, 0f, 0f);
 
-        tessellCallBack tessCallback;
+        tessellCallBack tessCallback = null;
         if (this.tessCallback == null) {
             tessCallback = this.tessCallback = new tessellCallBack(gl, glu);
             GLU.gluTessCallback(tobj, GLU.GLU_TESS_VERTEX, tessCallback);
@@ -232,7 +227,6 @@ public class OsmViewer extends SpaceGraph {
             }
 
 
-
             if (isPolygon) {
 
 
@@ -243,12 +237,21 @@ public class OsmViewer extends SpaceGraph {
 
                     GLU.gluTessBeginPolygon(tobj, null);
                     GLU.gluTessBeginContour(tobj);
+//                    if (way.coords == null) {
+//                        List<OsmNode> ways = way.getOsmNodes();
+//                        double[] coord = new double[ways.size() * 7];
+//                        for (OsmNode node : ways) {
+//                            project(node.geoCoordinate, coord);
+//                        }
+//
+//                    }
+
                     for (OsmNode node : way.getOsmNodes()) {
 
 //                    gl.glVertex2f((float) local.longitude, (float) local.latitude);
 
                         double coord[] = new double[7];
-                        project(node.getGeoCoordinate(), coord);
+                        project(node.geoCoordinate, coord);
                         coord[3] = r;
                         coord[4] = g;
                         coord[5] = b;
@@ -267,8 +270,9 @@ public class OsmViewer extends SpaceGraph {
                     gl.glLineStipple(1, ls);
                     gl.glBegin(GL_LINE_STRIP);
 
-                    for (OsmNode node : way.getOsmNodes()) {
-                        project(node.getGeoCoordinate(), c3);
+                    List<OsmNode> ways = way.getOsmNodes();
+                    for (OsmNode node : ways) {
+                        project(node.geoCoordinate, c3);
                         gl.glVertex3d(c3[0], c3[1], c3[2]);
                     }
                     gl.glEnd();
@@ -277,6 +281,7 @@ public class OsmViewer extends SpaceGraph {
 
         }
 
+        double[] coord = new double[3];
         for (OsmNode node : osm.nodes) {
             Map<String, String> tags = node.tags;
 
@@ -301,8 +306,7 @@ public class OsmViewer extends SpaceGraph {
                 gl.glBegin(GL_POINTS);
                 gl.glColor4f(1f, 0, 0, 0.7f);
             }
-            double[] coord = new double[3];
-            project(node.getGeoCoordinate(), coord);
+            project(node.geoCoordinate, coord);
             gl.glVertex3d(coord[0], coord[1], coord[2]);
             gl.glEnd();
         }

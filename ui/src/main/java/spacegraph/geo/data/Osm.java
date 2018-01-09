@@ -1,6 +1,7 @@
 package spacegraph.geo.data;
 
-import java.util.ArrayList;
+import jcog.list.FasterList;
+
 import java.util.List;
 
 /**
@@ -13,9 +14,9 @@ public class Osm {
     public final List<OsmRelation> relations;
 
     public Osm() {
-        nodes = new ArrayList<>();
-        ways = new ArrayList<>();
-        relations = new ArrayList<>();
+        nodes = new FasterList<>(128*1024);
+        ways = new FasterList<>(32*1024);
+        relations = new FasterList<>(32*1024);
     }
 
     public void clear() {

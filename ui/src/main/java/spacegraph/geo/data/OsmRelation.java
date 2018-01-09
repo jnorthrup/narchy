@@ -1,8 +1,5 @@
 package spacegraph.geo.data;
 
-import org.eclipse.collections.api.map.ImmutableMap;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +18,7 @@ public class OsmRelation extends OsmElement {
         this.children = children;
     }
 
-    public static OsmRelation getOsmRelationById(List<OsmRelation> relations, String id) {
-        return (OsmRelation) elemById(relations, id);
-    }
+//    public static OsmRelation getOsmRelationById(List<OsmRelation> relations, String id) {
+//        return (OsmRelation) elemById(relations, id);
+//    }
 }
