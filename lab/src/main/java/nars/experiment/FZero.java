@@ -8,10 +8,12 @@ import nars.*;
 import nars.concept.ScalarConcepts;
 import nars.concept.SensorConcept;
 import nars.gui.Vis;
+import nars.op.AutoConceptualizer;
 import nars.op.RLBooster;
 import nars.op.video.BufferedImageBitmap2D;
 import nars.op.video.Scale;
 import nars.op.video.ShapeSensor;
+import nars.term.Term;
 import nars.util.signal.BeliefPredict;
 import nars.util.signal.CameraSensor;
 import org.apache.commons.math3.util.MathUtils;
@@ -22,6 +24,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
+import static nars.Op.QUESTION;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -67,7 +70,16 @@ public class FZero extends NAgentX {
                 24, 16
         )/*.blur()*/).resolution(0.1f);
 
-        new ShapeSensor($.the("shape"), new BufferedImageBitmap2D(() -> fz.image), this);
+
+        new AutoConceptualizer(c.pixels, true, 5, nar) {
+            @Override
+            protected void onFeature(Term feature) {
+//                System.out.println(feature);
+                nar.que(feature, QUESTION, nar.time() /* + nar.dur()*/);
+            }
+        };
+
+        //new ShapeSensor($.the("shape"), new BufferedImageBitmap2D(() -> fz.image), this);
 
 //        CameraSensor<Scale> c = senseCameraReduced(id, new Scale(() -> fz.image,
 //                128, 64), 8, 8, 2, 2).resolution(0.1f);

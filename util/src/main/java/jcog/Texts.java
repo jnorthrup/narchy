@@ -375,11 +375,12 @@ public enum Texts {
      * fast parse an int under certain conditions, avoiding Integer.parse if possible
      */
     public static int i(String s) throws NumberFormatException {
-        if (s.length() == 1) {
+        int sl = s.length();
+        if (sl == 1) {
             char c = s.charAt(0);
             int i = i(c);
             if (i != -1) return i;
-        } else if (s.length() == 2) {
+        } else if (sl == 2) {
             int dig1 = i(s.charAt(1));
             if (dig1 != -1) {
                 int dig10 = i(s.charAt(0));
@@ -389,7 +390,25 @@ public enum Texts {
         }
         return Integer.parseInt(s);
     }
-
+    /**
+     * fast parse an int under certain conditions, avoiding Integer.parse if possible
+     */
+    public static long l(String s) throws NumberFormatException {
+        int sl = s.length();
+        if (sl == 1) {
+            char c = s.charAt(0);
+            int i = i(c);
+            if (i != -1) return i;
+        } else if (sl == 2) {
+            int dig1 = i(s.charAt(1));
+            if (dig1 != -1) {
+                int dig10 = i(s.charAt(0));
+                if (dig10 != -1)
+                    return dig10 * 10 + dig1;
+            }
+        }
+        return Long.parseLong(s);
+    }
 
     /**
      * fast parse a non-negative int under certain conditions, avoiding Integer.parse if possible

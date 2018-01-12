@@ -1,10 +1,11 @@
 package spacegraph.geo;
 
 
-import com.jogamp.opengl.*;
+import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.GLUtessellator;
 import com.jogamp.opengl.glu.GLUtessellatorCallback;
+import jcog.list.FasterList;
 import spacegraph.SpaceGraph;
 import spacegraph.geo.data.GeoCoordinate;
 import spacegraph.geo.data.Osm;
@@ -13,16 +14,18 @@ import spacegraph.geo.data.OsmWay;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
-import static com.jogamp.opengl.GL.*;
+import static com.jogamp.opengl.GL.GL_LINE_STRIP;
+import static com.jogamp.opengl.GL.GL_POINTS;
 
 /**
  * Created by unkei on 2017/04/25.
  */
-public class OsmViewer extends SpaceGraph {
+public class OsmViewer extends SpaceGraph implements GLUtessellatorCallback {
 
     Osm osm;
-//    double scale = 0.3; //global scale
+    //    double scale = 0.3; //global scale
 //    double scaleLat = 1;
 //    double scaleLon = 1;
 //    GeoCoordinate center;
@@ -30,33 +33,25 @@ public class OsmViewer extends SpaceGraph {
     final GeoCoordinate max;
 
     boolean wireframe;
-    private tessellCallBack tessCallback;
 
     final GLUtessellator tobj = GLU.gluNewTess();
+
+    Consumer<OsmViewer> render = null;
 
     public OsmViewer(Osm osm) {
         super();
         min = new GeoCoordinate(0, 0);
         max = new GeoCoordinate(0, 0);
+
+        GLU.gluTessCallback(tobj, GLU.GLU_TESS_VERTEX, this);
+        GLU.gluTessCallback(tobj, GLU.GLU_TESS_BEGIN, this);
+        GLU.gluTessCallback(tobj, GLU.GLU_TESS_END, this);
+        GLU.gluTessCallback(tobj, GLU.GLU_TESS_ERROR, this);
+        GLU.gluTessCallback(tobj, GLU.GLU_TESS_COMBINE, this);
+
+
         setOsm(osm);
 
-//        GLCapabilities caps = new GLCapabilities(GLProfile.get(GLProfile.GL2));
-//        GLWindow glWindow = GLWindow.create(caps);
-//        glWindow.setTitle("First demo (Newt)");
-//        glWindow.setSize(300, 300);
-//        glWindow.addWindowListener(new WindowAdapter() {
-//            @Override
-//            public void windowDestroyed(WindowEvent windowEvent) {
-//                super.windowDestroyed(windowEvent);
-//                System.exit(0);
-//            }
-//        });
-//        //glWindow.addGLEventListener(this);
-//        //glWindow.addKeyListener(this);
-//        FPSAnimator animator = new FPSAnimator(15);
-//        animator.add(glWindow);
-//        animator.start();
-//        glWindow.setVisible(true);
     }
 
     public void setOsm(Osm osm) {
@@ -82,60 +77,18 @@ public class OsmViewer extends SpaceGraph {
 //        target[2] = 0;
 
         //3D ECEF
-        double[] t = ECEF.latlon2ecef(global.latitude*20, global.longitude*20, global.altitude);
+        double[] t = ECEF.latlon2ecef(global.latitude * 20, global.longitude * 20, global.altitude);
         double s = 100 * 1E-7;
-        target[offset++] = t[0]*s;
-        target[offset++] = t[1]*s;
-        target[offset/*++*/] = t[2]*s;
+        target[offset++] = t[0] * s;
+        target[offset++] = t[1] * s;
+        target[offset/*++*/] = t[2] * s;
 
     }
 
 
-    @Override
-    protected void render(int dtMS) {
-//
-//    }
-//
-//    @Override
-//    public void display(GLAutoDrawable glAutoDrawable) {
-        GL2 gl = this.gl;
-//        gl.glClearColor(0f, 0f, 0f, 1f);
-//        gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    protected void compile() {
+        List<Consumer<OsmViewer>> draw = new FasterList();
 
-//        gl.glEnable(GL_DEPTH_TEST);
-//        gl.glEnable(GL_BLEND);
-//        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-//        gl.glMatrixMode(GL_MODELVIEW);
-//        gl.glLoadIdentity();
-        // TODO: Enable anti-aliasing
-
-//        // rotating animation
-//        float tick = ((float) (System.currentTimeMillis() % 16000) / 16000f); // 64000ms cycle
-//        float angle = 360f * tick;
-//        float rad = 2f * (float) Math.PI * tick;
-
-        //2d
-        //gl.glRotatef(angle, 0, 0f, 1f);
-        //gl.glTranslatef(0.5f * (float) Math.cos(rad), 0.5f * (float) Math.sin(rad), 0f);
-
-        //3d
-//        gl.glTranslatef(0, 0, 1f);
-//        gl.glRotatef(angle, 1, 0f, 0f);
-
-        tessellCallBack tessCallback = null;
-        if (this.tessCallback == null) {
-            tessCallback = this.tessCallback = new tessellCallBack(gl, glu);
-            GLU.gluTessCallback(tobj, GLU.GLU_TESS_VERTEX, tessCallback);
-            GLU.gluTessCallback(tobj, GLU.GLU_TESS_BEGIN, tessCallback);
-            GLU.gluTessCallback(tobj, GLU.GLU_TESS_END, tessCallback);
-            GLU.gluTessCallback(tobj, GLU.GLU_TESS_ERROR, tessCallback);
-            GLU.gluTessCallback(tobj, GLU.GLU_TESS_COMBINE, tessCallback);
-        }
-        double[] c3 = new double[3];
-
-
-        // render elements
         for (OsmWay way : osm.ways) {
 
             Map<String, String> tags = way.tags;
@@ -228,91 +181,123 @@ public class OsmViewer extends SpaceGraph {
 
 
             if (isPolygon) {
+                List<OsmNode> nn = way.getOsmNodes();
+                double coord[][] = new double[nn.size()][7];
+                for (int i = 0, nnSize = nn.size(); i < nnSize; i++) {
+                    OsmNode node = nn.get(i);
 
+                    double[] ci = coord[i];
+                    project(node.geoCoordinate, ci);
+                    ci[3] = r;
+                    ci[4] = g;
+                    ci[5] = b;
+                    ci[6] = a;
+                }
 
+                draw.add((v) -> {
+                    GL2 gl = v.gl;
                     gl.glColor4f(r * 0.5f, g * .5f, b * 0.5f, a);
                     gl.glLineWidth(lw);
                     gl.glLineStipple(1, ls);
 
-
                     GLU.gluTessBeginPolygon(tobj, null);
                     GLU.gluTessBeginContour(tobj);
-//                    if (way.coords == null) {
-//                        List<OsmNode> ways = way.getOsmNodes();
-//                        double[] coord = new double[ways.size() * 7];
-//                        for (OsmNode node : ways) {
-//                            project(node.geoCoordinate, coord);
-//                        }
-//
-//                    }
-
-                    for (OsmNode node : way.getOsmNodes()) {
-
-//                    gl.glVertex2f((float) local.longitude, (float) local.latitude);
-
-                        double coord[] = new double[7];
-                        project(node.geoCoordinate, coord);
-                        coord[3] = r;
-                        coord[4] = g;
-                        coord[5] = b;
-                        coord[6] = a;
-
-                        GLU.gluTessVertex(tobj, coord, 0, coord);
+                    for (int i = 0, nnSize = nn.size(); i < nnSize; i++) {
+                        double[] ci = coord[i];
+                        GLU.gluTessVertex(tobj, ci, 0, ci);
                     }
                     GLU.gluTessEndContour(tobj);
                     GLU.gluTessEndPolygon(tobj);
 
+                });
+
 
             } else {
 
+                List<OsmNode> ways = way.getOsmNodes();
+                int ws = ways.size();
+                double c3[] = new double[3 * ws];
+                for (int i = 0, waysSize = ws; i < waysSize; i++) {
+                    project(ways.get(i).geoCoordinate, c3, i * 3);
+                }
+
+                draw.add((v) -> {
+                    GL2 gl = v.gl;
                     gl.glColor4f(r, g, b, a);
                     gl.glLineWidth(lw);
                     gl.glLineStipple(1, ls);
                     gl.glBegin(GL_LINE_STRIP);
-
-                    List<OsmNode> ways = way.getOsmNodes();
-                    for (OsmNode node : ways) {
-                        project(node.geoCoordinate, c3);
-                        gl.glVertex3d(c3[0], c3[1], c3[2]);
+                    for (int i = 0; i < c3.length/3; i++) {
+                        gl.glVertex3dv(c3, i * 3);
                     }
                     gl.glEnd();
+                });
 
             }
 
         }
 
-        double[] coord = new double[3];
+
         for (OsmNode node : osm.nodes) {
             Map<String, String> tags = node.tags;
 
             if (tags.isEmpty()) continue;
-
             String highway = tags.get("highway");
             String natural = tags.get("natural");
+
+            float pointSize;
+            float r, g, b, a;
             if ("bus_stop".equals(highway)) {
-                gl.glPointSize(3f);
-                gl.glBegin(GL_POINTS);
-                gl.glColor4f(1f, 1f, 1f, 0.7f);
+
+                pointSize = 3;
+                r = g = b = 1f;
+                a = 0.7f;
             } else if ("traffic_signals".equals(highway)) {
-                gl.glPointSize(3f);
-                gl.glBegin(GL_POINTS);
-                gl.glColor4f(1f, 1f, 0f, 0.7f);
+                pointSize = 3;
+                r = g = 1f;
+                b = 0f;
+                a = 0.7f;
+
             } else if ("tree".equals(natural)) {
-                gl.glPointSize(3f);
-                gl.glBegin(GL_POINTS);
-                gl.glColor4f(0f, 1f, 0f, 0.7f);
+                pointSize = 3;
+                g = 1f;
+                r = b = 0f;
+                a = 0.7f;
+
             } else {
-                gl.glPointSize(3f);
-                gl.glBegin(GL_POINTS);
-                gl.glColor4f(1f, 0, 0, 0.7f);
+                pointSize = 3;
+                r = 1f;
+                g = b = 0f;
+                a = 0.7f;
             }
-            project(node.geoCoordinate, coord);
-            gl.glVertex3d(coord[0], coord[1], coord[2]);
-            gl.glEnd();
+
+            double[] c3 = new double[3];
+            project(node.geoCoordinate, c3);
+
+            draw.add((v) -> {
+                GL2 gl = v.gl;
+
+                gl.glPointSize(pointSize);
+                gl.glBegin(GL_POINTS);
+                gl.glColor4f(r, g, b, a);
+
+                gl.glVertex3d(c3[0], c3[1], c3[2]);
+                gl.glEnd();
+            });
+
         }
 
-//        gl.glDisable(GL_DEPTH_TEST);
-//        gl.glDisable(GL_BLEND);
+        render = (v) -> draw.forEach(d -> d.accept(v));
+    }
+
+    @Override
+    protected void render(int dtMS) {
+
+        if (render == null) {
+            compile();
+        }
+
+        render.accept(this);
 
         super.render(dtMS);
     }
@@ -350,98 +335,89 @@ public class OsmViewer extends SpaceGraph {
 //
 //    }
 
-    static class tessellCallBack implements GLUtessellatorCallback {
-        private final GL2 gl;
-        private final GLU glu;
 
-        tessellCallBack(GL2 gl, GLU glu) {
-            this.gl = gl;
-            this.glu = glu;
+    @Override
+    public void begin(int type) {
+        gl.glBegin(type);
+    }
+
+    @Override
+    public void end() {
+        gl.glEnd();
+    }
+
+    @Override
+    public void vertex(Object vertexData) {
+        if (vertexData instanceof double[]) {
+            double[] pointer = (double[]) vertexData;
+            if (pointer.length == 6)
+                gl.glColor3dv(pointer, 3);
+            gl.glVertex3dv(pointer, 0);
         }
 
-        @Override
-        public void begin(int type) {
-            gl.glBegin(type);
-        }
+    }
 
-        @Override
-        public void end() {
-            gl.glEnd();
-        }
+    @Override
+    public void vertexData(Object vertexData, Object polygonData) {
+    }
 
-        @Override
-        public void vertex(Object vertexData) {
-            if (vertexData instanceof double[]) {
-                double[] pointer = (double[]) vertexData;
-                if (pointer.length == 6)
-                    gl.glColor3dv(pointer, 3);
-                gl.glVertex3dv(pointer, 0);
-            }
+    /*
+     * combineCallback is used to create a new vertex when edges intersect.
+     * coordinate location is trivial to calculate, but weight[4] may be used to
+     * average color, normal, or texture coordinate data. In this program, color
+     * is weighted.
+     */
+    @Override
+    public void combine(double[] coords, Object[] data, //
+                        float[] weight, Object[] outData) {
+        double[] vertex = new double[6];
 
-        }
-
-        @Override
-        public void vertexData(Object vertexData, Object polygonData) {
-        }
-
-        /*
-         * combineCallback is used to create a new vertex when edges intersect.
-         * coordinate location is trivial to calculate, but weight[4] may be used to
-         * average color, normal, or texture coordinate data. In this program, color
-         * is weighted.
-         */
-        @Override
-        public void combine(double[] coords, Object[] data, //
-                            float[] weight, Object[] outData) {
-            double[] vertex = new double[6];
-
-            vertex[0] = coords[0];
-            vertex[1] = coords[1];
-            vertex[2] = coords[2];
-            for (int i = 3; i < 6/* 7OutOfBounds from C! */; i++) {
-                double v = 0;
-                for (int j = 0; j < data.length; j++) {
-                    double[] d = (double[]) data[j];
-                    if (d != null) {
-                        v += weight[j] * d[i];
-                    }
+        vertex[0] = coords[0];
+        vertex[1] = coords[1];
+        vertex[2] = coords[2];
+        for (int i = 3; i < 6/* 7OutOfBounds from C! */; i++) {
+            double v = 0;
+            for (int j = 0; j < data.length; j++) {
+                double[] d = (double[]) data[j];
+                if (d != null) {
+                    v += weight[j] * d[i];
                 }
-                vertex[i] = v;
             }
-            outData[0] = vertex;
+            vertex[i] = v;
         }
+        outData[0] = vertex;
+    }
 
-        @Override
-        public void combineData(double[] coords, Object[] data, //
-                                float[] weight, Object[] outData, Object polygonData) {
-        }
+    @Override
+    public void combineData(double[] coords, Object[] data, //
+                            float[] weight, Object[] outData, Object polygonData) {
+    }
 
-        @Override
-        public void error(int errnum) {
+    @Override
+    public void error(int errnum) {
 
-            String estring = glu.gluErrorString(errnum);
-            System.err.println("Tessellation Error: " + estring);
-            System.exit(0);
-        }
+        String estring = glu.gluErrorString(errnum);
+        System.err.println("Tessellation Error: " + estring);
+        System.exit(0);
+    }
 
-        @Override
-        public void beginData(int type, Object polygonData) {
-        }
+    @Override
+    public void beginData(int type, Object polygonData) {
+    }
 
-        @Override
-        public void endData(Object polygonData) {
-        }
+    @Override
+    public void endData(Object polygonData) {
+    }
 
-        @Override
-        public void edgeFlag(boolean boundaryEdge) {
-        }
+    @Override
+    public void edgeFlag(boolean boundaryEdge) {
+    }
 
-        @Override
-        public void edgeFlagData(boolean boundaryEdge, Object polygonData) {
-        }
+    @Override
+    public void edgeFlagData(boolean boundaryEdge, Object polygonData) {
+    }
 
-        @Override
-        public void errorData(int errnum, Object polygonData) {
-        }
+    @Override
+    public void errorData(int errnum, Object polygonData) {
     }
 }

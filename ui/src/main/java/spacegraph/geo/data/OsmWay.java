@@ -12,7 +12,7 @@ public class OsmWay extends OsmElement {
 
 
 
-    public OsmWay(String id, List<OsmNode> children, Map<String, String> tags) {
+    public OsmWay(long id, List<OsmNode> children, Map<String, String> tags) {
         super(id, children, tags);
     }
 
@@ -38,8 +38,8 @@ public class OsmWay extends OsmElement {
         if (this.children != null && way != null && way.children != null &&
                 !this.children.isEmpty() && !way.children.isEmpty()) {
             OsmNode node = (OsmNode)way.children.get(0);
-            if (node != null && node.id != null) {
-                return node.id.equals(this.children.get(this.children.size() - 1).id);
+            if (node != null) {
+                return node.id == this.children.get(this.children.size() - 1).id;
             }
         }
         return false;
@@ -53,9 +53,9 @@ public class OsmWay extends OsmElement {
             OsmElement first = c.get(0);
             OsmElement last = c.get(s - 1);
             if (first != null && last != null) {
-                String firstId = first.id;
-                String lastId = last.id;
-                return firstId != null && lastId != null && firstId.equals(lastId);
+                long firstId = first.id;
+                long lastId = last.id;
+                return firstId == lastId;
             }
         }
         return false;

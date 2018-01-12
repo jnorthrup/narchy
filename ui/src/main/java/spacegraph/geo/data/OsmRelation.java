@@ -10,7 +10,7 @@ public class OsmRelation extends OsmElement {
 
     public boolean isMultipolygon;
 
-    public OsmRelation(String id, List<? extends OsmElement> children, Map<String, String> tags) {
+    public OsmRelation(long id, List<? extends OsmElement> children, Map<String, String> tags) {
         super(id, children, tags);
     }
 

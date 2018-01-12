@@ -199,9 +199,8 @@ public class Builtin {
             nar.on(t);
         }
 
-        nar.on(Functor.f1("varIntro", (x) -> {
-            return DepIndepVarIntroduction.varIntro(x, nar.random());
-        }));
+        nar.on(Functor.f1("varIntro", (x) ->
+                DepIndepVarIntroduction.varIntro(x, nar.random())));
 
 //        nar.on(Functor.f("service", (TermContainer c) ->
 //                $.sete(
@@ -243,9 +242,8 @@ public class Builtin {
 
         }));
 
-        nar.on(Functor.f2((Atom) $.the("without"), (Term container, Term content) -> {
-            return Op.without(container, content);
-        }));
+        nar.on(Functor.f2((Atom) $.the("without"),
+                Op::without));
 
         /**
          * TODO rename this to 'dropAnyCommutive'
@@ -469,8 +467,8 @@ public class Builtin {
         }));
 
 
-        nar.on(Functor.f1Concept("belief", nar, (c, n) -> $.quote(n.belief(c.term(), n.time()))));
-        nar.on(Functor.f1Concept("goal", nar, (c, n) -> $.quote(n.goal(c.term(), n.time()))));
+        nar.on(Functor.f1Concept("belief", nar, (c, n) -> $.quote(n.belief(c, n.time()))));
+        nar.on(Functor.f1Concept("goal", nar, (c, n) -> $.quote(n.goal(c, n.time()))));
 
         nar.on(f0("self", nar::self));
 

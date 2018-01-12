@@ -6,9 +6,14 @@ import nars.NAR;
 import nars.NAgentX;
 import nars.concept.ScalarConcepts;
 import nars.gui.Vis;
+import nars.op.AutoConceptualizer;
 import nars.op.video.Scale;
+import nars.term.Term;
+import nars.time.Tense;
+import nars.util.signal.CameraSensor;
 
 import static java4k.gradius4k.Gradius4K.*;
+import static nars.Op.QUESTION;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.layout.Grid.col;
 
@@ -29,9 +34,11 @@ public class Gradius extends NAgentX {
 
         //senseCameraReduced($.p(id,$.the("ae")), (Supplier)()->g.image, 32,32,2,2).resolution(0.5f);
 
-        senseCamera($.p(id, $.the("global")), new Scale(() -> g.image, 24, 24)).resolution(0.05f);
+
+        CameraSensor c1 = senseCamera($.p(id, $.the("global")), new Scale(() -> g.image, 24, 24)).resolution(0.05f);
 
         senseCameraRetina($.p(id,$.the("local")), () -> g.image, 24, 16).resolution(0.1f);
+
 
         //BufferedImageBitmap2D cc = new Scale(() -> g.image, 48, 48).blur();
 //        senseCamera($.p(id, $.the("r")), new Scale(() -> g.image, 4, 4).mode(BufferedImageBitmap2D.ColorMode.R)).resolution(0.1f);

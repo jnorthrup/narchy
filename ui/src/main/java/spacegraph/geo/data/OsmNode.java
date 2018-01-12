@@ -8,7 +8,7 @@ import java.util.Map;
 public class OsmNode extends OsmElement {
     public final GeoCoordinate geoCoordinate;
 
-    public OsmNode(String id, GeoCoordinate geoCoordinate, Map<String, String> tags) {
+    public OsmNode(long id, GeoCoordinate geoCoordinate, Map<String, String> tags) {
         super(id, null, tags);
         this.geoCoordinate = geoCoordinate;
     }

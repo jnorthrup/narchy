@@ -22,9 +22,8 @@ public class Main {
         }
 
         try {
-            OsmReader osmReader = new OsmReader(filename);
-            Osm osm = osmReader.parse();
-            //OsmReader.printOsm(osm);
+
+            Osm osm = OsmReader.load(filename);
             new OsmViewer(osm).show(800, 800);
         }
         catch (Exception e) {

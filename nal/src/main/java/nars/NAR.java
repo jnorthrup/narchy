@@ -1266,11 +1266,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      * strongest matching belief for the target time
      */
     @Nullable
-    public Task belief(Term c, long start, long end) {
+    public Task belief(Termed c, long start, long end) {
         return answer(c, BELIEF, start, end);
     }
 
-    public final Task belief(Term c, long when) {
+    public final Task belief(Termed c, long when) {
         return belief(c, when, when);
     }
 
@@ -1282,11 +1282,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      * strongest matching goal for the target time
      */
     @Nullable
-    public final Task goal(Term c, long start, long end) {
+    public final Task goal(Termed c, long start, long end) {
         return answer(c, GOAL, start, end);
     }
 
-    public final Task goal(Term c, long when) {
+    public final Task goal(Termed c, long when) {
         return goal(c, when, when);
     }
 
@@ -1296,13 +1296,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     }
 
     @Nullable
-    public Task answer(Term c, byte punc, long start, long end) {
+    public Task answer(Termed c, byte punc, long start, long end) {
         assert (punc == BELIEF || punc == GOAL);
         Concept concept = conceptualize(c);
         if (!(concept instanceof TaskConcept))
             return null;
 
-        return ((BeliefTable) concept.table(punc)).answer(start, end, c, this);
+        return ((BeliefTable) concept.table(punc)).answer(start, end, c.term(), this);
     }
 
     public SortedMap<String, Object> stats(Appendable out) {
