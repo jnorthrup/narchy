@@ -89,6 +89,8 @@ public class Builtin {
              * */
             //Functor.f2("numIndicesOf", (x,y) -> {
             Functor.f2("indicesOf", (x, y) -> {
+                //TODO if not impossible subterm...
+
                 int s = x.subs();
                 if (s > 0) {
                     TreeSet<Term> indices = null; //lazy alloc
@@ -108,6 +110,8 @@ public class Builtin {
                 return Null;
             }),
             Functor.f2("keyValues", (x, y) -> {
+                //TODO if not impossible subterm...
+
                 //Functor.f2("indicesOf", (x,y) -> {
                 int s = x.subs();
                 if (s > 0) {
@@ -242,8 +246,8 @@ public class Builtin {
 
         }));
 
-        nar.on(Functor.f2((Atom) $.the("without"),
-                Op::without));
+        nar.on(Functor.f2((Atom) $.the("without"), (Term container, Term content) ->
+                Op.without(container, content, true, nar.random())));
 
         /**
          * TODO rename this to 'dropAnyCommutive'
@@ -393,27 +397,28 @@ public class Builtin {
             if (conj.op() != CONJ || conj.impossibleSubTerm(event))
                 return Null;
 
-            Term x = Op.without(conj, event);
+            Term x = Op.without(conj, event, true, nar.random());
             if (x!=Null)
                 return x;
 
-            //maybe a recursive event
-            if (conj.dt() != DTERNAL) {
-                FasterList<LongObjectPair<Term>> events = conj.eventList();
-                int found = -1;
-                int es = events.size();
-                assert (es > 1);
-                for (int i = 0; i < es; i++) {
-                    if (events.get(i).getTwo().equalsRoot(event)) {
-                        found = i;
-                        break;
-                    }
-                }
-                if (found == -1)
-                    return Null;
-                events.remove(found);
-                return Op.conj(events);
-            } else {
+//            //extract from inside recursive event
+//            if (conj.dt() != DTERNAL) {
+//                FasterList<LongObjectPair<Term>> events = conj.eventList();
+//                int found = -1;
+//                int es = events.size();
+//                assert (es > 1);
+//                for (int i = 0; i < es; i++) {
+//                    if (events.get(i).getTwo().equalsRoot(event)) {
+//                        found = i;
+//                        break;
+//                    }
+//                }
+//                if (found == -1)
+//                    return Null;
+//                events.remove(found);
+//                return Op.conj(events);
+//            } else
+            {
                 return Null;
             }
         }));
@@ -423,7 +428,7 @@ public class Builtin {
                 return Null;
 
             if (conj.dt() == DTERNAL)
-                return Op.without(conj, event);
+                return Op.without(conj, event, true, nar.random());
 
             FasterList<LongObjectPair<Term>> events = conj.eventList();
             int found = -1;
@@ -462,7 +467,7 @@ public class Builtin {
                 events.remove(0);
                 return Op.conj(events);//.negIf(neg);
             } else {
-                return Op.without(conj, event);
+                return Op.without(conj, event, true, nar.random());
             }
         }));
 

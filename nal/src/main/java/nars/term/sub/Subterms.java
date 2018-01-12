@@ -18,6 +18,7 @@ import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.factory.Sets;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
+import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
@@ -463,28 +464,41 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
         return -1;
     }
-    default int indexOfRooted(/*@NotNull*/ Term t) {
-        if (!impossibleSubTerm(t)) {
-            int s = subs();
-            for (int i = 0; i < s; i++) {
-                if (t.equalsRoot(sub(i)))
-                    return i;
-            }
+
+    default int indexOf(/*@NotNull*/ Term t, boolean conceptual, Random r) {
+        IntArrayList a = indicesOf(t, conceptual);
+        if (a!=null) {
+            int as = a.size();
+            if (as == 1)
+                return a.get(0);
+            else
+                return a.get(r.nextInt(as));
         }
         return -1;
     }
-//    default int indexOfAtemporally(Term t) {
-//        t = t.unneg(); //unneg before testing impossible
-//        if (!impossibleSubTerm(t)) {
-//            Term at = $.terms.atemporalize(t);
-//            int s = size();
-//            for (int i = 0; i < s; i++) {
-//                if (Terms.equalAtemporally(at, term(i)))
-//                    return i;
-//            }
-//        }
-//        return -1;
-//    }
+
+    @Nullable default IntArrayList indicesOf(/*@NotNull*/ Term t, boolean conceptual) {
+
+        if (conceptual)
+            t = t.unneg();
+
+        if (!impossibleSubTerm(t)) {
+
+
+            if (conceptual)
+                t = t.conceptual();
+
+            IntArrayList a = new IntArrayList(1);
+            int s = subs();
+            for (int i = 0; i < s; i++) {
+                if (t.equals(sub(i).conceptual()))
+                    a.add(i);
+            }
+            if (!a.isEmpty())
+                return a;
+        }
+        return null;
+    }
 
 
 //    /** writes subterm bytes, including any attached metadata preceding or following it */

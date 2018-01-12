@@ -352,13 +352,6 @@ public class TermReductionsTest extends NarseseTest {
          */
 
     @Test
-    public void testIntersectionRange() {
-        assertEquals("(8|4..5)", Op.SECTi.the(Int.the(4), Int.the(8), Int.range(4, 5)).toString());
-        assertEquals("(8&4..5)", Op.SECTe.the(Int.the(4), Int.the(8), Int.range(4, 5)).toString());
-        //TODO for Set's
-    }
-
-    @Test
     public void testDisjunctEqual() {
         @NotNull Term pp = p(this.p);
         assertEquals(pp, disj(pp, pp));

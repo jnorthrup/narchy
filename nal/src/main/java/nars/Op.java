@@ -1,7 +1,6 @@
 package nars;
 
 
-import jcog.TODO;
 import jcog.Util;
 import jcog.list.FasterList;
 import jcog.memoize.HijackMemoize;
@@ -1950,20 +1949,17 @@ public enum Op {
     }
 
 
-    public static Term without(Term container, Term content) {
-        return without(container, content, true);
-    }
-
-    public static Term without(Term container, Term content, boolean rooted) {
+    public static Term without(Term container, Term content, boolean rooted, Random rand) {
 
         if (container.impossibleSubTerm(content))
             return Null;
+
 
         Op co = container.op();
 //        if (co.commutative) {
 
             Subterms cs = container.subterms();
-            int i = rooted ? cs.indexOfRooted(content) : cs.indexOf(content);
+            int i = rooted ? cs.indexOf(content) : cs.indexOf(content);
             if (i == -1)
                 return Null;
 

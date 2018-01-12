@@ -146,7 +146,7 @@ public class ActivateTest {
     @Test
     public void testFunction() throws Narsese.NarseseException {
         testTemplates("f(x)",
-                "[f(x), (x), f, x]");
+                "[(x), f, x]");
     }
 
     @Test
@@ -164,38 +164,43 @@ public class ActivateTest {
     @Test
     public void testTemplatesWithQueryVar() throws Narsese.NarseseException {
         testTemplates("(x --> ?1)",
-                "[(x-->?1), x]");
+                "[x]");
     }
 
     @Test
     public void testTemplatesWithDepVar() throws Narsese.NarseseException {
         testTemplates("(x --> #1)",
-                "[(x-->#1), x, #1]");
+                "[x, #1]");
     }
 
     @Test
     public void testTemplateConj1() throws Narsese.NarseseException {
         testTemplates("(x && y)",
-                "[(x&&y), x, y]");
+                "[x, y]");
+    }
+    @Test
+    public void testTemplateConj1Neg() throws Narsese.NarseseException {
+        testTemplates("(x && --x)",
+                "[x]");
     }
 
     @Test
     public void testTemplateConj2() throws Narsese.NarseseException {
         testTemplates("(&&,<#x --> lock>,(<$y --> key> ==> open($y,#x)))",
-                "[(((#1-->lock)&&($2-->key)) ==>+- open($2,#1)), ((#1-->lock)&&($2-->key)), open($2,#1), (#1-->lock), ($2-->key), ($2,#1), lock, open, key, #1, $2]");
+                "[((#1-->lock)&&($2-->key)), open($2,#1), (#1-->lock), ($2-->key), ($2,#1), lock, open, key, #1, $2]");
 
     }
 
     @Test
     public void testTemplateDiffRaw() throws Narsese.NarseseException {
         testTemplates("(x-y)",
-                "[(x-y), x, y]");
+                "[x, y]");
     }
 
     @Test
     public void testTemplateDiffRaw2() throws Narsese.NarseseException {
         testTemplates("((a,b)-y)",
-                "[((a,b)-y), (a,b), y]");
+                "[(a,b), y]");
     }
 
     @Test
