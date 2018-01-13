@@ -1,8 +1,11 @@
 package jcog;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Topic;
+import net.bytebuddy.utility.JavaType;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StoredField;
@@ -13,6 +16,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.BytesRef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
@@ -32,7 +37,6 @@ import java.util.function.Predicate;
 public class User {
 
     private static User user = null;
-    private final DocCodec docCodec = new DefaultDocCodec();
     private final Executor exe = ForkJoinPool.commonPool();
 
     /**
@@ -46,14 +50,18 @@ public class User {
 
     public synchronized static User the() {
         if (user == null)
-            user = new User();
+            user = new User(Paths.get(System.getProperty("user.home")).resolve(".me"));
         return user;
     }
 
-    private User() {
+    /** temporary in-memory user */
+    public User() {
+        d = new RAMDirectory();
+    }
+
+    protected User(Path dir) {
         //System.getProperties().forEach((x, y) -> System.out.println(x + " " + y));
 
-        Path dir = Paths.get(System.getProperty("user.home")).resolve(".me");
         try {
             if (!dir.toFile().exists()) {
                 logger.warn("create {}", dir);
@@ -169,57 +177,135 @@ public class User {
     }
 
     private <X> X undocument(Document doc) {
-        return docCodec.unapply(doc);
+        String codec = doc.get("#");
+        return (X) codecs.get(codec).unapply(doc);
     }
 
     private Document document(String id, Object x) {
-        return docCodec.apply(id, x);
+        Document d = new Document();
+        String codec = codec(x);
+        d.add(new TextField("i", id, Field.Store.YES));
+        d.add(new TextField("#", codec, Field.Store.YES));
+        codecs.get(codec).apply(d, x);
+        return d;
     }
 
-    public interface DocCodec {
-        Document apply(String id, Object x);
+    String codec(Object input) {
 
-        <X> X unapply(Document doc);
-    }
-
-    public static class DefaultDocCodec implements DocCodec {
-
-        static final Logger logger = LoggerFactory.getLogger(DefaultDocCodec.class);
-
-        @Override
-        public <X> X unapply(Document doc) {
-            BytesRef bytes = doc.getBinaryValue("byte[]");
-            if (bytes != null) {
-                return (X) bytes.bytes;
-            }
-            String s = doc.get("string");
-            if (s != null) {
-                return (X) s;
-            }
-
-            logger.error("null {}", doc);
-            return null;
+        String c;
+        switch (input.getClass().getSimpleName()) {
+            case "byte[]":
+                c = "blob";
+                break;
+            case "String":
+                c = "string";
+                break;
+            default:
+                c = "msgpack";
+                break;
         }
+        return c;
+    }
 
-        @Override
-        public Document apply(String id, Object x) {
-            Document d = new Document();
+    public final Map<String,DocCodec> codecs = Map.of(
+            "string", new DocCodec<String>() {
 
-            d.add(new TextField("i", id, Field.Store.YES));
+                @Override
+                public void apply(Document d, String x) {
+                    d.add(new TextField("string", x, Field.Store.YES));
+                }
 
-            if (x instanceof String) {
-                d.add(new TextField("string", ((String) x), Field.Store.YES));
-            } else if (x instanceof byte[]) {
-                d.add(new StoredField("byte[]", new BytesRef((byte[]) x)));
-            } else {
-                logger.error("unsupported type {}", x.getClass());
-                return null;
-                //throw new UnsupportedOperationException();
+                @Override
+                public String unapply(Document doc) {
+                    return doc.get("string");
+                }
+            },
+            "blob", new DocCodec<byte[]>() {
+                @Override
+                public void apply(Document d, byte[] bytes) {
+                    d.add(new StoredField("blob", new BytesRef(bytes)));
+                }
+
+                @Override
+                public byte[] unapply(Document doc) {
+                    BytesRef bytes = doc.getBinaryValue("blob");
+                    return bytes.bytes;
+                }
+                /* byte[] */
+            },
+            "msgpack", new DocCodec<Object>() {
+                @Override
+                public void apply(Document d, Object o) {
+                    try {
+                        d.add(new StoredField("msgpack", new BytesRef(Util.toBytes(o))));
+                        d.add(new TextField("javatype",
+                                o.getClass().getName(),
+                                Field.Store.YES));
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                @Override
+                public Object unapply(Document doc) {
+                    BytesRef bytes = doc.getBinaryValue("msgpack");
+                    String javatype = doc.get("javatype");
+                    try {
+                        return Util.fromBytes(bytes.bytes, Class.forName(javatype));
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                /** msgpack */
+
             }
 
-            return d;
-        }
+    );
+
+    public interface DocCodec<X> {
+        void apply(Document d, X x);
+
+        X unapply(Document doc);
     }
+
+//    public static class DefaultDocCodec implements DocCodec {
+//
+//        static final Logger logger = LoggerFactory.getLogger(DefaultDocCodec.class);
+//
+//        @Override
+//        public <X> X unapply(Document doc) {
+//            BytesRef bytes = doc.getBinaryValue("byte[]");
+//            if (bytes != null) {
+//                return (X) bytes.bytes;
+//            }
+//            String s = doc.get("string");
+//            if (s != null) {
+//                return (X) s;
+//            }
+//
+//            logger.error("null {}", doc);
+//            return null;
+//        }
+//
+//        @Override
+//        public Document apply(String id, Object x) {
+//            Document d = new Document();
+//
+//            d.add(new TextField("i", id, Field.Store.YES));
+//
+//            if (x instanceof String) {
+//                d.add(new TextField("string", ((String) x), Field.Store.YES));
+//            } else if (x instanceof byte[]) {
+//                d.add(new StoredField("byte[]", new BytesRef((byte[]) x)));
+//            } else {
+//                logger.error("unsupported type {}", x.getClass());
+//                return null;
+//                //throw new UnsupportedOperationException();
+//            }
+//
+//            return d;
+//        }
+//    }
 
 
 }

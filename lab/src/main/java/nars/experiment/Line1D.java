@@ -11,6 +11,7 @@ import nars.*;
 import nars.control.MetaGoal;
 import nars.gui.Vis;
 import nars.op.RLBooster;
+import nars.op.stm.ConjClustering;
 import nars.op.stm.RelationClustering;
 import nars.task.DerivedTask;
 import nars.test.agent.Line1DSimplest;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Math.PI;
+import static nars.Op.BELIEF;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.layout.Grid.*;
 
@@ -72,14 +74,14 @@ public class Line1D {
 //            } catch (Narsese.NarseseException e) {
 //                e.printStackTrace();
 //            }
-            //n.freqResolution.set(0.5f);
-            //n.confResolution.set(0.1f);
-            n.termVolumeMax.set(24);
+            n.freqResolution.set(0.05f);
+            n.confResolution.set(0.02f);
+            n.termVolumeMax.set(32);
 //            MetaGoal.Desire.set(n.want, 2f);
 //            MetaGoal.Action.set(n.want, 2f);
 
 
-//            ConjClustering conjClusterB = new ConjClustering(n, 4, BELIEF, true, 16, 64);
+            ConjClustering conjClusterB = new ConjClustering(n,  BELIEF, t ->t.isInput(), 16, 64);
 
             n.onTask(x -> {
                 if (x instanceof DerivedTask) {
@@ -243,7 +245,7 @@ public class Line1D {
         float yResolution = 0.05f; //in 0..1.0
         float periods = 16;
 
-        final int runtime = Math.round(periods / tHz);
+//        final int runtime = Math.round(periods / tHz);
         public Line1DSimplest agent;
 
         @Override

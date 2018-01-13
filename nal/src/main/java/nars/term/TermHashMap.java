@@ -10,6 +10,7 @@ import org.eclipse.collections.impl.map.mutable.primitive.ShortObjectHashMap;
 
 import java.util.*;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
  * functionally equivalent to: Map<Term,X>
@@ -54,6 +55,21 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
         }
     }
 
+    public X computeIfAbsent(Term key,
+                              Function<? super Term, ? extends X> mappingFunction) {
+        if (key == null)
+            throw new NullPointerException();
+        X v;
+        if ((v = get(key)) == null) {
+            X newValue;
+            if ((newValue = mappingFunction.apply(key)) != null) {
+                put(key, newValue);
+                return newValue;
+            }
+        }
+
+        return v;
+    }
 
     @Override
     public X get(Object key) {

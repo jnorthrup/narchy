@@ -37,10 +37,10 @@ public class Line1DSimplest extends NAgent {
         super( n);
 
 
-        in = senseNumber($.the("i"),                //$.inh($.the("i"), id),                 //$.inh(Atomic.the("i"), id),
+        in = senseNumber($.$safe("y:i"),                //$.inh($.the("i"), id),                 //$.inh(Atomic.the("i"), id),
                 this.i
         );
-        senseNumber($.the("o"),                //$.inh($.the("i"), id),                 //$.inh(Atomic.the("i"), id),
+        senseNumber($.$safe("y:o"),                //$.inh($.the("i"), id),                 //$.inh(Atomic.the("i"), id),
                 this.o
         );
 
@@ -106,13 +106,13 @@ public class Line1DSimplest extends NAgent {
     }
 
     private void initDualToggle() {
-        actionToggle($.p("up"), (b) -> {
+        actionToggle($.$safe("y:up"), (b) -> {
             if(b) {
                 o.set(Util.unitize(o.floatValue() + speed.floatValue()));
                 System.out.println(o);
             }
         });
-        actionToggle($.p("down"), (b) -> {
+        actionToggle($.$safe("y:down"), (b) -> {
             if (b) {
                 o.set(Util.unitize(o.floatValue() - speed.floatValue()));
                 System.out.println(o);

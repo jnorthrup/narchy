@@ -43,7 +43,7 @@ public class AnonVector extends TermVector {
     @Override
     public final Term sub(int i) {
         short tt = subterms[i];
-        assert(tt!=0);
+        //assert(tt!=0);
         return (tt > 0) ? AnonID.idToTerm(tt) : AnonID.idToTerm((short) -tt).neg();
     }
 
@@ -75,6 +75,8 @@ public class AnonVector extends TermVector {
     public int indexOf(Term t) {
         boolean neg = false;
         if (t.op()==NEG) {
+            if (!anyNeg())
+                return -1;
             t = t.unneg();
             neg = true;
         }
@@ -107,6 +109,7 @@ public class AnonVector extends TermVector {
     public Iterator<Term> iterator() {
         return new AnonArrayIterator(subterms);
     }
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
@@ -125,8 +128,7 @@ public class AnonVector extends TermVector {
             if (ss.subs() != s)
                 return false;
             for (int i = 0; i < s; i++) {
-                Term y = ss.sub(i);
-                if (!(y instanceof AnonID) || !sub(i).equals(y))
+                if (!sub(i).equals(ss.sub(i)))
                     return false;
             }
             return true;
