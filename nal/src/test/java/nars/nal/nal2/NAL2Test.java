@@ -5,15 +5,19 @@ import nars.NAR;
 import nars.NARS;
 import nars.test.TestNAR;
 import nars.util.NALTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 //@RunWith(Parameterized.class)
 public class NAL2Test extends NALTest {
 
-    static final int cycles = 250;
+    static final int cycles = 50;
 
 
-    @Override protected NAR nar() { return NARS.tmp(3); }
+    @Override
+    protected NAR nar() {
+        return NARS.tmp(3);
+    }
 
     @Test
     public void revision() {
@@ -73,16 +77,17 @@ public class NAL2Test extends NALTest {
         tester.believe("<gull --> swimmer>");//Gull is a type of swimmer.");
         tester.believe("<gull <-> swan>");//Gull is similar to swan.");
         tester.mustBelieve(cycles, "<swan --> swimmer>", 1.0f, 0.81f);//I believe a swan is a type of swimmer.");
-
     }
-   @Test
+
+    @Disabled
+    @Test //TODO is this right
     public void analogyNeg() {
 
-       test
-            .believe("(bird --> swimmer)")
-            .believe("--(rock <-> swimmer)")
-            .mustBelieve(cycles, "<bird --> rock>", 0, 0.81f)
-       ;
+        test
+                .believe("(bird --> swimmer)")
+                .believe("--(rock <-> swimmer)")
+                .mustBelieve(cycles, "<bird --> rock>", 0, 0.81f)
+        ;
     }
 
     @Test
@@ -269,9 +274,9 @@ public class NAL2Test extends NALTest {
     public void testUnion() {
 
         test
-            .believe("a:{x}.")
-            .believe("a:{y}.")
-            .mustBelieve(cycles, "a:{x,y}", 1.0f, 0.81f);
+                .believe("a:{x}.")
+                .believe("a:{y}.")
+                .mustBelieve(cycles, "a:{x,y}", 1.0f, 0.81f);
 
     }
 

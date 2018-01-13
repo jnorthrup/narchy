@@ -137,7 +137,7 @@ public class Derivation extends ProtoDerivation {
      * original non-anonymized tasks
      */
     public TruthOperator truthFunction;
-
+    //public Map<Term, Term> xyDyn = new HashMap();
 
 
 //    private transient Term[][] currentMatch;
@@ -554,11 +554,11 @@ public class Derivation extends ProtoDerivation {
         super.clear();
     }
 
-    public int getAndSetTTL(int next) {
-        int before = this.ttl;
-        this.ttl = next;
-        return before;
-    }
+//    public int getAndSetTTL(int next) {
+//        int before = this.ttl;
+//        this.ttl = next;
+//        return before;
+//    }
 
     /**
      * called at the end of the cycle, input all generated derivations
@@ -605,10 +605,14 @@ public class Derivation extends ProtoDerivation {
         @Override
         public Term apply(Subterms xx) {
             Term y = super.apply(xx);
-//            if (y != null && y != Null) {
+
+//            if (y != null && !(y instanceof Bool)) {
 //                Term x = xx.sub(0);
-//                if (!x.equals(y))
-//                    parent.putXY(x, y); //store the transformation
+//                if (!x.equals(y)) {
+//                    //store the transformation
+//                    parent.xyDyn.put(x, y);
+//                    //parent.putXY(x, y);
+//                }
 //            }
             return y;
         }
@@ -627,11 +631,14 @@ public class Derivation extends ProtoDerivation {
         @Override
         public @Nullable Term apply(Subterms xx) {
             Term y = super.apply(xx);
-//            if (y != null && y != Null) {
-//                Term x = xx.sub(0);
+            if (y != null && !(y instanceof Bool)) {
+                Term a = xx.sub(1);
+                Term b = xx.sub(2);
+                parent.putXY(a, b);
+                //parent.putXY(b, a);
 //                if (!x.equals(y))
 //                    parent.putXY(x, y); //store the outer transformation
-//            }
+            }
             return y;
         }
     }

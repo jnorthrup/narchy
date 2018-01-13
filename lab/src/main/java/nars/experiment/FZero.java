@@ -91,7 +91,7 @@ public class FZero extends NAgentX {
 
 
         //initToggle();
-        initBipolar();
+        initBipolar(true);
 
 //        actionUnipolar(p("left"), (r) -> {
 //            //if (r > 0.5f)
@@ -305,7 +305,7 @@ public class FZero extends NAgentX {
 
     }
 
-    public void initBipolar() {
+    public void initBipolar(boolean fair) {
 //        actionBipolar($.the("fwd"), (a) -> {
 //            //if (f > 0) {
 //            //accelerator
@@ -330,7 +330,7 @@ public class FZero extends NAgentX {
 //        //eternal bias to stop
 //        nar.goal(f[0].term, Tense.Eternal, 0f, 0.01f);
 //        nar.goal(f[1].term, Tense.Eternal, 0f, 0.01f);
-        actionBipolar($.inh("x", id), true, (a) -> {
+        actionBipolar($.inh("x", id), fair, (a) -> {
             float deadZone =
                     //0;
                     1 / 12f;

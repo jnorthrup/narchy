@@ -271,8 +271,8 @@ public class NAL3Test extends NALTest {
     public void compound_decomposition_one_premise2() {
 
         TestNAR tester = test;
-        tester.believe("<(boy | girl) --> youth>", 0.9f, 0.9f); //.en("Boys and gials are youth.");
-        tester.mustBelieve(cycles, "<boy --> youth>", 0.90f, 0.73f); //.en("Boys are youth.");
+        tester.believe("<(boy | girl) --> youth>", 0.9f, 0.9f); //.en("Boys and girls are youth.");
+        tester.mustBelieve(cycles*2, "<boy --> youth>", 0.90f, 0.73f); //.en("Boys are youth.");
 
     }
 
@@ -293,7 +293,7 @@ public class NAL3Test extends NALTest {
 
         test
                 .believe("(a-->b)")
-                .believe("(a-->(&,b,c))", 0f, 0.9f)
+                .believe("(a-->(b&c))", 0f, 0.9f)
                 .mustBelieve(cycles, "(a-->c)", 0f, 0.81f, ETERNAL);
 
     }
@@ -304,7 +304,7 @@ public class NAL3Test extends NALTest {
 
         test
                 .believe("(a-->b)", 0.25f, 0.9f)
-                .believe("(a-->(|,b,c))", 0.25f, 0.9f)
+                .believe("(a-->(b|c))", 0.25f, 0.9f)
                 .mustBelieve(cycles, "(a-->c)", 0.19f, 0.15f, ETERNAL);
     }
 

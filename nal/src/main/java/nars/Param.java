@@ -128,7 +128,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmax = new MutableInteger(64);
+    public final MutableInteger matchTTLmax = new MutableInteger(128);
 //    public final MutableInteger matchTTLmin = new MutableInteger(64);
 
     /**

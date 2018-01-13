@@ -59,7 +59,7 @@ public class DeriveTime extends TimeGraph {
         this.task = copy.task;
         this.belief = copy.belief;
         this.dither = copy.dither;
-        //this.byTerm.putAll(copy.byTerm); //TODO wrap rather than copy
+        this.byTerm.putAll(copy.byTerm); //TODO wrap rather than copy
         if (transformedTask != null) {
             Event y = know(transformedTask, task.start());
             //link(know(task.term(), task.start()), 0, y);
@@ -77,6 +77,17 @@ public class DeriveTime extends TimeGraph {
             }
         }
     }
+
+//    DeriveTime(DeriveTime copy, Map<Term, Term> dyn) {
+//        this.cache = null;
+//        this.d = copy.d;
+//        this.task = copy.task;
+//        this.belief = copy.belief;
+//        this.dither = copy.dither;
+//        dyn.forEach((x,y)->{
+//           link(know(x), 0, know(y));
+//        });
+//    }
 
     public DeriveTime(Derivation d, boolean single) {
         this.d = d;
@@ -101,6 +112,10 @@ public class DeriveTime extends TimeGraph {
      * if current state of the derivation produced novel terms
      */
     public DeriveTime get() {
+//        if (!d.xyDyn.isEmpty()) {
+//            return new DeriveTime(this, d.xyDyn);
+//        }
+
         Term td = ifDynamic(d.task);
         Term bd = d.belief != null ? ifDynamic(d.belief) : null /*ifDynamic(d.beliefTerm)*/;
         boolean tChange = td != null;
@@ -108,7 +123,7 @@ public class DeriveTime extends TimeGraph {
         if (tChange || bChange) {
             return new DeriveTime(this, tChange ? td : null, bChange ? bd : null);
         } else {
-            return this;
+        return this;
         }
     }
 
@@ -447,17 +462,17 @@ public class DeriveTime extends TimeGraph {
                 }
             } else {
 //                if (taskEvent && beliefEvent) {
-                    //two events: fuse time
-                    assert (!belief.isEternal());
-                    TimeFusion joint = new TimeFusion(task.start(), task.end(), belief.start(), belief.end());
-                    //                    if (joint.factor <= Pri.EPSILON) //allow for questions/quests, if this ever happens
-                    //                        return null;
+                //two events: fuse time
+                assert (!belief.isEternal());
+                TimeFusion joint = new TimeFusion(task.start(), task.end(), belief.start(), belief.end());
+                //                    if (joint.factor <= Pri.EPSILON) //allow for questions/quests, if this ever happens
+                //                        return null;
 
-                    s = joint.unionStart;
-                    e = joint.unionEnd;
-                    if (s == ETERNAL)
-                        throw new RuntimeException("why eternal");
-                    d.concEviFactor *= joint.factor;
+                s = joint.unionStart;
+                e = joint.unionEnd;
+                if (s == ETERNAL)
+                    throw new RuntimeException("why eternal");
+                d.concEviFactor *= joint.factor;
 //                } else {
 //                    //either task or belief were temporal, so should have been solved
 //                    return null;

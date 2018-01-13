@@ -6,6 +6,7 @@ import nars.control.Derivation;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
+import nars.term.atom.Bool;
 import nars.term.sub.Subterms;
 import nars.term.subst.SubUnify;
 import org.jetbrains.annotations.Nullable;
@@ -137,9 +138,11 @@ abstract public class SubstUnified extends Functor {
             }
 
             if (output == null) {
-                if (force)
+                if (force) {
                     output = input.replace(x, y); //force: apply substitution even if un-unifiable
-                else
+                    if (output!=null && !(output instanceof Bool))
+                        parent.putXY(x, y);
+                } else
                     return Null;
             }
 

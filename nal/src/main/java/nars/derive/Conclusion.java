@@ -46,6 +46,7 @@ public final class Conclusion extends AbstractPred<Derivation> {
 
         nar.emotion.derivationEval.increment();
 
+//        d.xyDyn.clear();
         Term c1 = pattern.eval(d);
 
         int volMax = d.termVolMax;
@@ -77,8 +78,10 @@ public final class Conclusion extends AbstractPred<Derivation> {
                     d.dtDouble = dt;
             }
 
-            DeriveTime timeSolver = dt.get();
-            c2 = timeSolver.solve(c1);
+            DeriveTime dtt = dt.get();
+            //dtt.print();
+            c2 = dtt.solve(c1);
+
 
             //invalid or impossible temporalization; could not determine temporal attributes. seems this can happen normally
             if (c2 == null || c2.volume() > volMax || !c2.op().conceptualizable/*|| (Math.abs(occReturn[0]) > 2047483628)*/ /* long cast here due to integer wraparound */) {

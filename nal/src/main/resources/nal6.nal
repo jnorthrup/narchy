@@ -247,6 +247,9 @@
 
     (B --> K), (&&,(#X --> L),(($Y --> K) ==> A)) |- substitute(((#X --> L) &&+- A), $Y, B), (Belief:Deduction)
         (B --> K), (&&,(#X --> L),((--,($Y --> K)) ==> A)) |- substitute(((#X --> L) &&+- A), $Y, B), (Belief:DeductionN)
+      (K --> B), (&&,(#X --> L),((K --> $Y) ==> A)) |- substitute(((#X --> L) &&+- A), $Y, B), (Belief:Deduction)
+        (K --> B), (&&,(#X --> L),((--,(K --> $Y)) ==> A)) |- substitute(((#X --> L) &&+- A), $Y, B), (Belief:DeductionN)
+
     (B --> K), (($X --> L) ==> (&&,(#Y --> K),A..+)) |- substitute((($X --> L) ==>+- (&&,A..+)),#Y,B), (Belief:AnonymousAnalogy)
         (B --> K), (($X --> L) ==> (&&,--(#Y --> K),A..+)) |- substitute((($X --> L) ==>+- (&&,A..+)),#Y,B), (Belief:AnonymousAnalogyN)
 
@@ -296,8 +299,8 @@
 
     //structural decompose any component of a conjunction.
     //for belief: any conj
-    C, X, task("&&"), subOf(X,C)   |- conjWithout(C, X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    C, X, task("&&"), subOf(--X,C) |- conjWithout(C, --X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, task("&&")  |- conjWithout(C, X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+
     //for goal: if eternal and paral (goal seq must be decomposed sequentially use &&| and add separate rule
     //C, X, task("&&") |- dropAnyEvent(C), (Goal:StructuralDeduction)
 

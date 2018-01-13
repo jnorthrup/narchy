@@ -491,7 +491,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             IntArrayList a = new IntArrayList(1);
             int s = subs();
             for (int i = 0; i < s; i++) {
-                if (t.equals(sub(i).conceptual()))
+                if (t.equals(conceptual ? sub(i).conceptual() : sub(i)))
                     a.add(i);
             }
             if (!a.isEmpty())

@@ -17,6 +17,7 @@ import nars.term.sub.Subterms;
 import nars.term.var.Variable;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
+import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import javax.script.ScriptException;
@@ -394,30 +395,37 @@ public class Builtin {
 
         /** similar to without() but special handling for CONJ sub-events */
         nar.on(Functor.f2((Atom) $.the("conjWithout"), (Term conj, Term event) -> {
-            if (conj.op() != CONJ || conj.impossibleSubTerm(event))
+            if (conj.op() != CONJ)
                 return Null;
 
             Term x = Op.without(conj, event, true, nar.random());
             if (x!=Null)
                 return x;
 
-//            //extract from inside recursive event
-//            if (conj.dt() != DTERNAL) {
-//                FasterList<LongObjectPair<Term>> events = conj.eventList();
-//                int found = -1;
-//                int es = events.size();
-//                assert (es > 1);
-//                for (int i = 0; i < es; i++) {
-//                    if (events.get(i).getTwo().equalsRoot(event)) {
-//                        found = i;
-//                        break;
-//                    }
-//                }
-//                if (found == -1)
-//                    return Null;
-//                events.remove(found);
-//                return Op.conj(events);
-//            } else
+            //TODO randomize if multiple matches
+            //extract from inside recursive event
+            if (conj.dt() != DTERNAL && conj.subterms().hasAny(CONJ)) {
+                event = event.conceptual();
+
+                FasterList<LongObjectPair<Term>> events = conj.eventList();
+                IntArrayList found = new IntArrayList(1);
+                int es = events.size();
+                assert (es > 1);
+                for (int i = 0; i < es; i++) {
+                    if (event.equals(events.get(i).getTwo().conceptual())) {
+                        found.add(i);
+                    }
+                }
+                if (found.isEmpty())
+                    return Null;
+                int fs = found.size(), f;
+                if (fs == 1)
+                    f = 0;
+                else
+                    f = nar.random().nextInt(fs);
+                events.remove(f);
+                return Op.conj(events);
+            } else
             {
                 return Null;
             }
@@ -436,6 +444,7 @@ public class Builtin {
             int es = events.size();
 
             assert (es > 1);
+
             for (int i = 0; i < es; i++) {
                 LongObjectPair<Term> ei = events.get(i);
                 if (ei.getTwo().equalsRoot(event)) {

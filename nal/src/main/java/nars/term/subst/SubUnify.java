@@ -36,13 +36,13 @@ public class SubUnify extends Unify {
             Term result = transformed.transform(this);
             if (result != null && (!strict || !result.equals(transformed))) {
 
-//                int before = parent.now();
-//                if (xy.forEachVersioned(parent::putXY)) {
+                int before = parent.now();
+                if (xy.forEachVersioned(parent::putXY)) {
                     this.result = result;
                     stop();
-//                } else {
-//                    parent.revert(before); //continue trying
-//                }
+                } else {
+                    parent.revert(before); //continue trying
+                }
 
             }
         }

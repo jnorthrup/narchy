@@ -402,7 +402,6 @@ public class NAL7Test extends NALTest {
     public void inference_on_tense() {
 
         test
-
                 .input("(hold($x, key) ==>+1 enter($x, room)).")
                 .input("hold(John, key). :|:")
                 .mustBelieve(cycles, "enter(John,room)", 1.00f, 0.81f, 1);

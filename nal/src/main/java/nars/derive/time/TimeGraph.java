@@ -52,7 +52,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
     private static final boolean allowSelfLoops = true;
     private static final boolean dternalAsZero = true;
-    private static final boolean autoUnneg = true;
+    private static final boolean autoUnneg = false;
     protected static final boolean autoNegTask = true;
 
     static class TimeSpan {
@@ -162,8 +162,20 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         if (t instanceof Bool)
             return null;
 
+
+        if (when == TIMELESS) {
+            for (Event tx : byTerm.get(t)) {
+                if (tx instanceof Absolute)
+                    return tx; //already known absolute
+            }
+        } else {
+            byTerm.get(t).removeIf(ei -> ei instanceof Relative);
+
+        }
+
         Event e =
                 when == TIMELESS ? new Relative(t) : new Absolute(t, when);
+
         return add ? add(e).id : event(e);
     }
 

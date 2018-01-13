@@ -113,34 +113,34 @@ public class ActivateTest {
 
         //layer 1:
         testTemplates("open:door",
-                "[(door-->open), door, open]");
+                "[door, open]");
     }
 
     @Test
     public void testTemplates2() throws Narsese.NarseseException {
         //layer 2:
         testTemplates("open(John,door)",
-                "[open(John,door), (John,door), John, door, open]");
+                "[(John,door), John, door, open]");
     }
 
     @Test
     public void testTemplates3() throws Narsese.NarseseException {
         //layer 3:
         testTemplates("(open(John,door) ==> #x)",
-                "[(open(John,door)==>#1), open(John,door), (John,door), John, door, open, #1]");
+                "[open(John,door), (John,door), John, door, open, #1]");
     }
 
     @Test
     public void testTemplates4() throws Narsese.NarseseException {
         //dont descend past layer 3:
         testTemplates("(open(John,portal:interdimensional) ==> #x)",
-                "[(open(John,(interdimensional-->portal))==>#1), open(John,(interdimensional-->portal)), (John,(interdimensional-->portal)), (interdimensional-->portal), John, open, #1]");
+                "[open(John,(interdimensional-->portal)), (John,(interdimensional-->portal)), (interdimensional-->portal), John, open, #1]");
     }
 
     @Test
     public void testTemplates4b() throws Narsese.NarseseException {
         testTemplates("(open(John,portal(a(d),b,c)) ==> #x)",
-                "[(open(John,portal(a(d),b,c))==>#1), open(John,portal(a(d),b,c)), (John,portal(a(d),b,c)), portal(a(d),b,c), John, open, #1]");
+                "[open(John,portal(a(d),b,c)), (John,portal(a(d),b,c)), portal(a(d),b,c), John, open, #1]");
     }
 
     @Test
@@ -148,17 +148,22 @@ public class ActivateTest {
         testTemplates("f(x)",
                 "[(x), f, x]");
     }
+    @Test
+    public void testIntersection() throws Narsese.NarseseException {
+        testTemplates("((0|1)-->2)",
+                "[(0|1), 0, 1, 2]");
+    }
 
     @Test
     public void testTemplatesWithInt2() throws Narsese.NarseseException {
         testTemplates("num((0))",
-                "[num((0)), ((0)), (0), num, 0]");
+                "[((0)), (0), num, 0]");
     }
 
     @Test
     public void testTemplatesWithInt1() throws Narsese.NarseseException {
         testTemplates("(0)",
-                "[(0), 0]");
+                "[0]");
     }
 
     @Test
@@ -206,13 +211,13 @@ public class ActivateTest {
     @Test
     public void testTemplateProd() throws Narsese.NarseseException {
         testTemplates("(a,b)",
-                "[(a,b), a, b]");
+                "[a, b]");
     }
 
     @Test
     public void testTemplateProdWithCompound() throws Narsese.NarseseException {
         testTemplates("(a,(b,c))",
-                "[(a,(b,c)), (b,c), a]");
+                "[(b,c), a]");
     }
 
     @Test
@@ -224,13 +229,13 @@ public class ActivateTest {
     @Test
     public void testTemplateSimProdCompound() throws Narsese.NarseseException {
         testTemplates("((a,b)<->#1)",
-                "[((a,b)<->#1), (a,b), #1]");
+                "[(a,b), a, b, #1]");
     }
 
     @Test
     public void testTemplatesAreEternal() throws Narsese.NarseseException {
         testTemplates("((x ==>+1 y),(x ==>+2 y))",
-                "[((x==>y),(x==>y)), (x==>y)]");
+                "[(x==>y)]");
     }
 
     static void testTemplates(String term, String expect) throws Narsese.NarseseException {

@@ -1949,17 +1949,15 @@ public enum Op {
     }
 
 
-    public static Term without(Term container, Term content, boolean rooted, Random rand) {
-
-        if (container.impossibleSubTerm(content))
-            return Null;
+    public static Term without(Term container, Term content, boolean conceptual, Random rand) {
 
 
-        Op co = container.op();
+
+//        Op co = container.op();
 //        if (co.commutative) {
 
             Subterms cs = container.subterms();
-            int i = rooted ? cs.indexOf(content) : cs.indexOf(content);
+            int i = conceptual ? cs.indexOf(content, true, rand) : cs.indexOf(content);
             if (i == -1)
                 return Null;
 

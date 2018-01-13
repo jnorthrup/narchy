@@ -88,7 +88,7 @@ public class TrieDeriverTest {
 
         String ds = d.toString();
         assertTrue(ds.contains("?2&|"));
-        assertTrue(ds.contains("&&+- ?2"));
+        assertTrue(ds.contains("?2 &&+-"));
 
 
         //assertTrue("something at least got stored in the index", idx.size() > 16);
