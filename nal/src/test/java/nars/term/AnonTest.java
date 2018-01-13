@@ -27,9 +27,9 @@ public class AnonTest {
 
     @Test
     public void testAtoms() throws Narsese.NarseseException {
-        assertAnon("_0", "a");
+        assertAnon("_1", "a");
         assertAnon("#1", $.varDep(1)); //unchanged
-        assertAnon("_0", $.the(2)); //int remaps to internal int
+        assertAnon("_1", $.the(2)); //int remaps to internal int
 
         assertNotEquals(Anom.the(0), $.the(0));
         assertNotEquals(Anom.the(2), $.the(2));
@@ -37,11 +37,11 @@ public class AnonTest {
 
     @Test
     public void testCompounds() throws Narsese.NarseseException {
-        assertAnon("(_0-->_1)", "(a-->b)");
+        assertAnon("(_1-->_2)", "(a-->b)");
 
-        assertAnon("(_0-->#1)", "(a-->#1)");
+        assertAnon("(_1-->#1)", "(a-->#1)");
 
-        assertAnon("(((_0-->(_1,_2,#1))==>(_3,_4)),?2)",
+        assertAnon("(((_1-->(_2,_3,#1))==>(_4,_5)),?2)",
                 "(((a-->(b,c,#2))==>(e,f)),?1)");
 
     }
@@ -55,7 +55,7 @@ public class AnonTest {
     @Test public void testCompounds2() throws Narsese.NarseseException {
         //TODO check that this is correct (includes a impl in conj reduction):
         String xs = "(((($1-->tetris) ==>-1422 (happy-->$1)) &&+105 (--,(((isRow,(8,true),true)~(checkScore,()))-->tetris))) &&+7 ((--,(((isRow,(8,true),true)~(checkScore,()))-->tetris)) &&+74 ((act,0,true)-->#2)))";
-        String ys = "(((($2-->_4) &&+105 (--,(((_0,(_1,_2),_2)~(_3,()))-->_4))) &&+7 ((--,(((_0,(_1,_2),_2)~(_3,()))-->_4)) &&+81 ((_5,_6,_2)-->#1))) ==>-1832 (_7-->$2))";
+        String ys = "(((($2-->_5) &&+105 (--,(((_1,(_2,_3),_3)~(_4,()))-->_5))) &&+7 ((--,(((_1,(_2,_3),_3)~(_4,()))-->_5)) &&+81 ((_6,_7,_3)-->#1))) ==>-1832 (_8-->$2))";
         Term x = $(xs);
         Term y = x.anon();
         assertEquals(ys, y.toString());
@@ -65,7 +65,7 @@ public class AnonTest {
 
     @Test public void testAnomVector() {
 
-        Term[] x = {Anom.the(2), Anom.the(0), Anom.the(1)};
+        Term[] x = {Anom.the(3), Anom.the(1), Anom.the(2)};
 
         assertEqual(new TermVector1(x[0]), new AnonVector(x[0]));
         assertEqual(new TermVector2(x[0], x[1]), new AnonVector(x[0], x[1]));
@@ -74,16 +74,17 @@ public class AnonTest {
 
     @Test public void testAnomVectorNegations() {
 
-        Term[] x = {Anom.the(2), Anom.the(0), Anom.the(1).neg()};
+        Term[] x = {Anom.the(3), Anom.the(1), Anom.the(2).neg()};
 
         AnonVector av = new AnonVector(x);
         assertEquals(new ArrayTermVector(x).toString(), av.toString());
         assertEqual(new ArrayTermVector(x), av);
 
-        assertTrue(av.contains(x[2]));
-        assertFalse(av.contains(x[2].neg()));
-        assertTrue(av.containsRecursively(x[2]));
-        assertTrue(av.containsRecursively(x[2].neg()), ()->av + " containsRecursively " + x[2].neg());
+        Term twoNeg = x[2];
+        assertTrue(av.contains(twoNeg));
+        assertFalse(av.contains(twoNeg.neg()));
+        assertTrue(av.containsRecursively(twoNeg));
+        assertTrue(av.containsRecursively(twoNeg.neg()), ()->av + " containsRecursively " + twoNeg.neg());
 
 
         //assertTrue(The.subterms(x) instanceof AnonVector );

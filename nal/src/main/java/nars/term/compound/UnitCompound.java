@@ -108,6 +108,11 @@ public abstract class UnitCompound implements Compound {
     }
 
     @Override
+    public boolean isCommutative() {
+        return false;
+    }
+
+    @Override
     public int dt() {
         return DTERNAL;
     }

@@ -118,6 +118,7 @@ public class Premise extends PLink<Pair<Task,Term>> {
                     final Term[] unifiedBeliefTerm = new Term[]{null};
                     UnifySubst u = new UnifySubst(null, n, (y) -> {
                         if (y.op().conceptualizable && !y.hasAny(Op.BOOL)) {
+                            y = y.normalize();
 
                             beliefConceptCanAnswerTaskConcept[0] = true;
 
@@ -129,7 +130,7 @@ public class Premise extends PLink<Pair<Task,Term>> {
                         return true; //keep going
                     }, matchTTL);
                     u.varSymmetric = false;
-                    u.varCommonalize = false;
+                    u.varCommonalize = true;
                     if (u.unify(taskTerm, beliefTerm, true)) {
                         if (unifiedBeliefTerm[0] != null) {
                             beliefTerm = unifiedBeliefTerm[0];

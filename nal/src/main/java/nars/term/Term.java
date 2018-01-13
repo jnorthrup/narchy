@@ -847,7 +847,7 @@ public interface Term extends Termed, Comparable<Termed> {
 
 
     default Term anon() {
-        return Anom.the(0);
+        return Anom.the(1);
     }
 
 

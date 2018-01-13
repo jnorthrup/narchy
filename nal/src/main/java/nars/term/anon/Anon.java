@@ -105,7 +105,7 @@ public class Anon {
         } else if (x instanceof Atomic) {
             if (x instanceof Int.IntRange)
                 return x; //HACK
-            return Anom.the[fwd.getIfAbsentPutWithKey(x, nextUniqueAtom)];
+            return Anom.the[1+fwd.getIfAbsentPutWithKey(x, nextUniqueAtom)];
         } else {
             return putTransformed(x);
         }
@@ -117,7 +117,7 @@ public class Anon {
 
     public Term get(Term x) {
         if (x instanceof Anom) {
-            return rev.get(((Anom) x).id); //assume it is an int
+            return rev.get(((Anom) x).id-1); //assume it is an int
         } else if (x instanceof Atomic) {
             return x; //ignore variables, ints
         } else {

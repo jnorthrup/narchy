@@ -45,12 +45,12 @@ public class AIMATests {
     @Test
     public void testWeaponsDomain() throws Narsese.NarseseException {
 
-        n.freqResolution.set(0.1f);
+        n.freqResolution.set(0.05f);
         n.confResolution.set(0.02f);
         n.confMin.set(0.02f);
         n.priDefault(QUESTION, 0.75f);
-        n.priDefault(BELIEF, 0.5f);
-        n.termVolumeMax.set(28);
+        n.priDefault(BELIEF, 0.4f);
+        n.termVolumeMax.set(32);
         //n.conceptActivation.set(0.5f);
 
         //new QuerySpider(n);
@@ -58,7 +58,8 @@ public class AIMATests {
         //n.run(1);
 
         n.believe(
-            "((&&, American($x),Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))",
+            //"((&&, American($x),Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))",
+            "((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))",
             "Owns(Nono, M1)",
             "Missile(M1)",
             "((Missile($x) && Owns(Nono,$x)) ==> Sells(West,$x,Nono))",
@@ -89,7 +90,11 @@ public class AIMATests {
         n.run(2500);
 //        n.clear();
 //        n.log();
-        n.question($.$("Criminal(?x)"), ETERNAL, (q,a)->{
+        n.question($.$(
+                "Criminal(?x)"
+                //"Criminal:?x"
+
+        ), ETERNAL, (q,a)->{
             System.out.println(a);
         });
         n.run(1);

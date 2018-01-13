@@ -38,16 +38,13 @@ public class AnonVector extends TermVector {
             t[i] = tt;
         }
 
-        normalized = true;
     }
 
     @Override
     public final Term sub(int i) {
         short tt = subterms[i];
-        if (tt >= 0) //shouldnt actually ever be zero
-            return AnonID.idToTerm(tt);
-        else
-            return AnonID.idToTerm((short) -tt).neg();
+        assert(tt!=0);
+        return (tt > 0) ? AnonID.idToTerm(tt) : AnonID.idToTerm((short) -tt).neg();
     }
 
 
@@ -78,8 +75,6 @@ public class AnonVector extends TermVector {
     public int indexOf(Term t) {
         boolean neg = false;
         if (t.op()==NEG) {
-            if (!anyNeg())
-                return -1;
             t = t.unneg();
             neg = true;
         }
@@ -102,9 +97,10 @@ public class AnonVector extends TermVector {
     }
 
     private boolean anyNeg() {
-        for (short s : subterms)
-            if (s < 0) return true;
-        return false;
+        return (structure&NEG.bit) != 0;
+//        for (short s : subterms)
+//            if (s < 0) return true;
+//        return false;
     }
 
     @Override

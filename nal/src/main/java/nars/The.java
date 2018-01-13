@@ -103,11 +103,12 @@ public enum The {
                     throw new RuntimeException("ellipsis match should not be a subterm of ANYTHING");
                 if (purelyAnon) {
                     if (!(x instanceof AnonID)) {
-//                        if (t.length == 1 && x.op()==NEG && x.unneg() instanceof AnonID) {
-//                            //allow anon here, but not t.length > 1 there is still some problem probably with commutives
-//                        } else {
-                            purelyAnon = false;
-//                        }
+                        if (/*t.length == 1 && */x.op()==NEG && x.unneg() instanceof AnonID) {
+                            //allow anon here, but not t.length > 1 there is still some problem probably with commutives
+                            //purelyAnon = true
+                        } else {
+                          purelyAnon = false;
+                        }
                     }
                 }
             }

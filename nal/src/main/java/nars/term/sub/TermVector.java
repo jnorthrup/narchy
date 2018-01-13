@@ -16,8 +16,8 @@ public abstract class TermVector extends TermMetadata implements Subterms {
 
 
 
-    private static volatile int SERIAL = 0;
-    public final int serial = SERIAL++;
+//    private static volatile int SERIAL = 0;
+//    public final int serial = SERIAL++;
 
     /** copy constructor for fast instantiation */
     protected TermVector(int hash, int structure,

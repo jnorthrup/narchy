@@ -11,13 +11,14 @@ public class CachedUnitCompound extends UnitCompound {
 
     private final Op op;
 
+    private final Term sub;
+
     /** hash including this compound's op (cached) */
     transient private final int chash;
 
     /** structure including this compound's op (cached) */
     transient private final int cstruct;
 
-    private final Term sub;
 
     public CachedUnitCompound(/*@NotNull*/ Op op, /*@NotNull*/ Term sub) {
         assert(op!=NEG); //makes certain assumptions that it's not NEG op, use Neg.java for that
@@ -55,6 +56,5 @@ public class CachedUnitCompound extends UnitCompound {
     public final /*@NotNull*/ Op op() {
         return op;
     }
-
 
 }
