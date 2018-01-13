@@ -26,17 +26,18 @@ import static nars.Op.*;
  * Question task which accepts a callback to be invoked on answers
  * The question actively listens for unifiable task events, until deleted
  * TODO abstract the matcher into:
- *      --exact (.equals)
- *      --unify
- *      --custom Predicate<Term>
+ * --exact (.equals)
+ * --unify
+ * --custom Predicate<Term>
  * TODO separate the action into:
- *      --bag (with filtering)
- *      --custom BiConsumer<Q Task, A Task>
- *      --statistical truth aggregator for easy to understand summary
+ * --bag (with filtering)
+ * --custom BiConsumer<Q Task, A Task>
+ * --statistical truth aggregator for easy to understand summary
  */
 public class ActiveQuestionTask extends NALTask implements Consumer<Task> {
 
-    private @NotNull final BiConsumer<? super ActiveQuestionTask /* Q */, Task /* A */ > eachAnswer;
+    private @NotNull
+    final BiConsumer<? super ActiveQuestionTask /* Q */, Task /* A */> eachAnswer;
 
     final ArrayBag<Task, PriReference<Task>> answers;
     private On onTask;
@@ -44,9 +45,11 @@ public class ActiveQuestionTask extends NALTask implements Consumer<Task> {
     private transient int ttl;
     private transient Random random;
 
-    /** wrap an existing question task */
-    public ActiveQuestionTask(Task q, int history, NAR nar, BiConsumer<? super ActiveQuestionTask,Task> eachAnswer ) {
-        this(q.term(), q.punc(), q.mid() /*, q.end()*/, history, nar, eachAnswer );
+    /**
+     * wrap an existing question task
+     */
+    public ActiveQuestionTask(Task q, int history, NAR nar, BiConsumer<? super ActiveQuestionTask, Task> eachAnswer) {
+        this(q.term(), q.punc(), q.mid() /*, q.end()*/, history, nar, eachAnswer);
     }
 
     public ActiveQuestionTask(@NotNull Term term, byte punc, long occ, int history, NAR nar, @NotNull Consumer<Task> eachAnswer) {
@@ -54,7 +57,7 @@ public class ActiveQuestionTask extends NALTask implements Consumer<Task> {
     }
 
     public ActiveQuestionTask(@NotNull Term term, byte punc, long occ, int history, NAR nar, @NotNull BiConsumer<? super ActiveQuestionTask, Task> eachAnswer) {
-        super(term, punc, null, nar.time(), occ, occ, new long[] { nar.time.nextStamp() } );
+        super(term, punc, null, nar.time(), occ, occ, new long[]{nar.time.nextStamp()});
 
         budget(nar);
 
@@ -63,24 +66,24 @@ public class ActiveQuestionTask extends NALTask implements Consumer<Task> {
     }
 
     @Override
-    public ITask run(@NotNull NAR nar) {
-        super.run(nar);
+    public ITask run(NAR nar) {
+        ITask next = super.run(nar);
         this.random = nar.random();
         this.ttl = nar.matchTTLmax.intValue();
         this.onTask = nar.onTask(this);
-        return null;
+        return next;
     }
 
     @Override
     public void accept(Task t) {
-           byte tp = t.punc();
-            if (((punc == QUESTION && tp == BELIEF) || (punc == QUEST && tp == GOAL))) {
-                MySubUnify u = new MySubUnify(random, ttl);
-                u.unify(term(), t.term(), true);
-                if (u.match) {
-                    onAnswer(t);
-                }
+        byte tp = t.punc();
+        if (((punc == QUESTION && tp == BELIEF) || (punc == QUEST && tp == GOAL))) {
+            MySubUnify u = new MySubUnify(random, ttl);
+            u.unify(term(), t.term(), true);
+            if (u.match) {
+                onAnswer(t);
             }
+        }
     }
 
     private static class MySubUnify extends Unify {
@@ -103,7 +106,7 @@ public class ActiveQuestionTask extends NALTask implements Consumer<Task> {
 
     @Override
     public boolean delete() {
-        if (this.onTask!=null) {
+        if (this.onTask != null) {
             this.onTask.off();
             this.onTask = null;
         }
@@ -113,7 +116,7 @@ public class ActiveQuestionTask extends NALTask implements Consumer<Task> {
     ArrayBag<Task, PriReference<Task>> newBag(int history) {
         return new PLinkArrayBag<>(history, PriMerge.max, new HashMap<>(history)) {
             @Override
-            public void onAdd(@NotNull PriReference<Task> t) {
+            public void onAdd(PriReference<Task> t) {
                 eachAnswer.accept(ActiveQuestionTask.this, t.get());
             }
         };
@@ -121,7 +124,7 @@ public class ActiveQuestionTask extends NALTask implements Consumer<Task> {
 
 
     @Override
-    public @Nullable Task onAnswered(@NotNull Task answer, @NotNull NAR nar) {
+    public @Nullable Task onAnswered(Task answer, NAR nar) {
         Task x = super.onAnswered(answer, nar);
         onAnswer(answer);
         return x;

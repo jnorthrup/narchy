@@ -34,7 +34,6 @@ import static nars.time.Tense.*;
  * if that fails, a heuristic could decide the match. in the worst case,
  * the derivation will not be temporalizable and this method returns null.
  *
- * @param eviGain length-1 float array. the value will be set to 1f by default
  */
 public class DeriveTime extends TimeGraph {
 
@@ -94,7 +93,7 @@ public class DeriveTime extends TimeGraph {
         this.d = d;
         this.task = d.task;
         this.belief = d.belief; //!d.single ? d.belief : null;
-        this.dither = Math.max(1, Math.round(d.nar.dtDither.floatValue() * d.dur));
+        this.dither = d.nar.dtDitherCycles();
         this.cache = new HashMap();
 
         know(task);
@@ -108,6 +107,7 @@ public class DeriveTime extends TimeGraph {
         }*/
 
     }
+
 
     /**
      * if current state of the derivation produced novel terms
@@ -143,27 +143,11 @@ public class DeriveTime extends TimeGraph {
         }
     }
 
-    int dtDither(int dt) {
-        if (dt == DTERNAL)
-            return DTERNAL;
-        if (dt == XTERNAL)
-            return XTERNAL;
 
-        if (dither > 1) {
-
-            if (Math.abs(dt) < dither)
-                return 0; //present moment
-
-            return Util.round(dt, dither);
-
-        }
-
-        return dt;
-    }
 
     @Override
     protected Term dt(Term x, int dt) {
-        int ddt = dtDither(dt);
+        int ddt = d.nar.dtDither(dt);
         Term y = super.dt(x, ddt);
         if (y instanceof Bool && ddt != dt) {
             //the dithered dt has destroyed it, so try the non-dithered (more precise) dt

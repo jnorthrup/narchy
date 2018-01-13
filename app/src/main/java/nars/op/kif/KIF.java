@@ -17,6 +17,7 @@ package nars.op.kif;
 import java.io.*;
 import java.text.ParseException;
 import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * *****************************************************************
@@ -43,7 +44,6 @@ public class KIF {
     public static final int RELAXED_PARSE_MODE = 2;
 
     private int parseMode = NORMAL_PARSE_MODE;
-    private List<Formula> allFormulas;
 
     public KIF() {
     }
@@ -51,14 +51,10 @@ public class KIF {
     public KIF(String filename) throws Exception {
         readFile(filename);
 
-        allFormulas = new LinkedList();
-        for (List<Formula> l : formulas.values()) {
-            allFormulas.addAll(l);
-        }
     }
 
-    public List<Formula> getFormulas() {
-        return allFormulas;
+    public Stream<Formula> formulas() {
+        return formulas.values().stream().flatMap(Collection::stream).filter(Objects::nonNull);
     }
 
     /**
@@ -82,19 +78,19 @@ public class KIF {
     /**
      * The set of all terms in the knowledge base. This is a set of Strings.
      */
-    public TreeSet terms = new TreeSet();
+    public final TreeSet terms = new TreeSet();
 
     /**
      * A HashMap of ArrayLists of Formulas. @see KIF.createKey for key format.
      */
-    public HashMap<String, List<Formula>> formulas = new HashMap();
+    public final HashMap<String, List<Formula>> formulas = new HashMap();
 
     /**
      * A "raw" HashSet of unique Strings which are the formulas from the file
      * without any further processing, in the order which they appear in the
      * file.
      */
-    public LinkedHashSet formulaSet = new LinkedHashSet();
+    public final LinkedHashSet formulaSet = new LinkedHashSet();
 
     private String filename;
 
@@ -586,9 +582,9 @@ public class KIF {
         KIF kifp = new KIF();
         Formula f;
         String form;
-        ArrayList list;
+//        ArrayList list;
         int axiomCount = 0;
-        File toFile;
+//        File toFile;
         FileWriter fw;
         PrintWriter pw;
 

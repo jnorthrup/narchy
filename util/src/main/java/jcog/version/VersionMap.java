@@ -36,9 +36,9 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
      */
     public VersionMap(Versioning context, int mapCap, int eleCap) {
         this(context,
-                //new HashMap(mapCap)
+                new HashMap(mapCap)
                 //new LinkedHashMap<>(mapCap)
-                new UnifiedMap(mapCap)
+                //new UnifiedMap(mapCap)
                 , eleCap
         );
     }

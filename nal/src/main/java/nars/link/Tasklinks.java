@@ -18,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-import static nars.control.Activate.randomTemplateConcepts;
 
 public class Tasklinks {
 

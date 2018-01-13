@@ -115,7 +115,11 @@ public class Revision {
 
 
     /*@NotNull*/
-    static Term intermpolate(/*@NotNull*/ Term a, long bOffset, /*@NotNull*/ Term b, float aProp, float curDepth, /*@NotNull*/ Random rng, boolean mergeOrChoose) {
+    static Term intermpolate(/*@NotNull*/ Term a, long bOffset, /*@NotNull*/ Term b, float aProp, float curDepth, NAR nar) {
+
+        if (a.equals(b) && bOffset == 0) {
+            return a;
+        }
 
         Op ao = a.op();
         Op bo = b.op();
@@ -134,23 +138,22 @@ public class Revision {
 
             if (ao.temporal) {
 
-                if (a.equals(b) && bOffset == 0) {
-                    return a;
-                }
 
+                boolean mergeOrChoose = nar.dtMergeOrChoose.get();
                 if (!mergeOrChoose) {
+                    Random rng = nar.random();
                     return choose(a, b, aProp, rng);
                 } else {
                     switch (ao) {
                         case CONJ:
                             if (!a.subterms().hasAny(Op.CONJ) && !b.subterms().hasAny(Op.CONJ)) {
-                                return dtMergeDirect(a, b, aProp, curDepth, rng, mergeOrChoose);
+                                return dtMergeDirect(a, b, aProp, curDepth, nar);
                             } else {
                                 //event-based merge
-                                return dtMergeConjMerge(a, bOffset, b, aProp, curDepth, rng);
+                                return dtMergeConjMerge(a, bOffset, b, aProp, curDepth, nar.random());
                             }
                         case IMPL:
-                            return dtMergeDirect(a, b, aProp, curDepth, rng, mergeOrChoose);
+                            return dtMergeDirect(a, b, aProp, curDepth, nar);
                         default:
                             throw new RuntimeException();
                     }
@@ -168,7 +171,7 @@ public class Revision {
                     Term ai = aa.sub(i);
                     Term bi = bb.sub(i);
                     if (!ai.equals(bi)) {
-                        Term y = intermpolate(ai, 0, bi, aProp, curDepth / 2f, rng, mergeOrChoose);
+                        Term y = intermpolate(ai, 0, bi, aProp, curDepth / 2f, nar);
                         if (!ai.equals(y)) {
                             change = true;
                             ai = y;
@@ -178,14 +181,14 @@ public class Revision {
                 }
 
                 return !change ? a : ao.the(
-                        choose(a, b, aProp, rng).dt()  /** this effectively chooses between && and &| in a size >2 case */,
+                        choose(a, b, aProp, nar.random()).dt()  /** this effectively chooses between && and &| in a size >2 case */,
                         ab
                 );
             }
 
         }
 
-        return choose(a, b, aProp, rng);
+        return choose(a, b, aProp, nar.random());
 
     }
 
@@ -221,7 +224,7 @@ public class Revision {
 
 
     /*@NotNull*/
-    private static Term dtMergeDirect(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp, float depth, /*@NotNull*/ Random rng, boolean mergeOrChoose) {
+    private static Term dtMergeDirect(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp, float depth, NAR nar) {
 
         int adt = a.dt();
 
@@ -233,55 +236,46 @@ public class Revision {
 
         depth /= 2f;
 
-        //        if (forwardSubterms(a, adt)) {
-        Term a0 = a.sub(0);
-        Term a1 = a.sub(1);
-//        } else {
-//            a0 = a.sub(1);
-//            a1 = a.sub(0);
-//            adt = -bdt;
-//        }
-        //        if (forwardSubterms(b, bdt)) {
-        Term b0 = b.sub(0);
-        Term b1 = b.sub(1);
-//        } else {
-//            b0 = b.sub(1);
-//            b1 = b.sub(0);
-//            bdt = -bdt;
-//        }
-
         int dt;
 
-
-        if (mergeOrChoose) {
-            if (adt == DTERNAL || adt == XTERNAL)
-                dt = bdt;
-            else if (bdt == DTERNAL || bdt == XTERNAL)
-                dt = adt;
-            else
-                dt = lerp(aProp, bdt, adt);
+        if (adt == bdt) {
+            dt = adt;
         } else {
-            dt = (choose(a, b, aProp, rng) == a) ? adt : bdt;
+            boolean mergeOrChoose = nar.dtMergeOrChoose.get();
+            if (mergeOrChoose) {
+                if (adt == DTERNAL || adt == XTERNAL) {
+                    dt = bdt;
+                } else if (bdt == DTERNAL || bdt == XTERNAL) {
+                    dt = adt;
+                } else {
+                    dt = lerp(aProp, bdt, adt);
+                }
+            } else {
+                dt = (choose(a, b, aProp, nar.random()) == a) ? adt : bdt;
+            }
         }
 
+        dt = nar.dtDither(dt);
+
+        Term a0 = a.sub(0);
+        Term a1 = a.sub(1);
+
+        Term b0 = b.sub(0);
+        Term b1 = b.sub(1);
 
         if (a0.equals(b0) && a1.equals(b1)) {
             return a.dt(dt);
         } else {
-            Term na = intermpolate(a0, 0, b0, aProp, depth, rng, mergeOrChoose);
-            Term nb = intermpolate(a1, 0, b1, aProp, depth, rng, mergeOrChoose);
-            return a.op().the(dt,
-                    na,
-                    nb);
+            Term na = intermpolate(a0, 0, b0, aProp, depth, nar);
+            if (na==Null) return Null;
+            Term nb = intermpolate(a1, 0, b1, aProp, depth, nar);
+            if (nb==Null) return Null;
+            return a.op().the(dt, na, nb);
         }
 
     }
 
-//    private static boolean forwardSubterms(/*@NotNull*/ Term a, int adt) {
-//        return a.op()!=CONJ || (adt >= 0) || (adt == DTERNAL);
-//    }
-
-    public static Term choose(Term a, Term b, float aBalance, /*@NotNull*/ Random rng) {
+    static Term choose(Term a, Term b, float aBalance, /*@NotNull*/ Random rng) {
         return (rng.nextFloat() < aBalance) ? a : b;
     }
 
@@ -296,20 +290,20 @@ public class Revision {
     }
 
 
-    /*@NotNull*/
-    public static Task chooseByConf(/*@NotNull*/ Task t, @Nullable Task b, /*@NotNull*/ Derivation p) {
-
-        if ((b == null) || !b.isBeliefOrGoal())
-            return t;
-
-        //int dur = p.nar.dur();
-        float tw = t.conf();
-        float bw = b.conf();
-
-        //randomize choice by confidence
-        return p.random.nextFloat() < tw / (tw + bw) ? t : b;
-
-    }
+//    /*@NotNull*/
+//    public static Task chooseByConf(/*@NotNull*/ Task t, @Nullable Task b, /*@NotNull*/ Derivation p) {
+//
+//        if ((b == null) || !b.isBeliefOrGoal())
+//            return t;
+//
+//        //int dur = p.nar.dur();
+//        float tw = t.conf();
+//        float bw = b.conf();
+//
+//        //randomize choice by confidence
+//        return p.random.nextFloat() < tw / (tw + bw) ? t : b;
+//
+//    }
 
     public static Term intermpolate(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp, NAR nar) {
         return intermpolate(a, 0, b, aProp, nar);
@@ -319,7 +313,7 @@ public class Revision {
      * a is left aligned, dt is any temporal shift between where the terms exist in the callee's context
      */
     public static Term intermpolate(/*@NotNull*/ Term a, long dt, /*@NotNull*/ Term b, float aProp, NAR nar) {
-        return intermpolate(a, dt, b, aProp, 1, nar.random(), nar.dtMergeOrChoose.get());
+        return intermpolate(a, dt, b, aProp, 1, nar);
     }
 
 
@@ -443,7 +437,6 @@ public class Revision {
 //
 
 
-
         //TODO maybe delay dithering until after the negation has been determined below
 
 //            float conf = w2c(expected.evi() * factor);
@@ -513,7 +506,6 @@ public class Revision {
         } else {
             cc = at;
         }
-
 
 
         if (equalOrWeaker(a, cTruth, start, end, cc, nar))

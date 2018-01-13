@@ -994,15 +994,15 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
         //invoke possible functor and apply aliases
 
-        Term x = term(), y;
+        Term x = term();
 
         boolean cmd = isCommand();
 
         if (this instanceof SignalTask) {
             //HACK - fast track insertion, expect no evaluation surprises, etc.
-            y = x;
+
         } else {
-            y = x.eval(n.terms.intern());
+            Term y = x.eval(n.terms.intern());
 
             if (!x.equals(y)) {
 
@@ -1018,7 +1018,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
                     delete();
 
-                    return input(n, finalResult);
+                    return new TaskAdd(finalResult);
 
                 } else {
                     if (y.op() == Op.BOOL)
@@ -1070,7 +1070,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
         if (!cmd) {
 
-            return input(n, this);
+            return new TaskAdd(this);
 
         } else {
             //default: Echo
@@ -1078,10 +1078,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         }
 
         return null;
-    }
-
-    static ITask input(NAR n, Task t) {
-        return new TaskAdd(t);
     }
 
     /**

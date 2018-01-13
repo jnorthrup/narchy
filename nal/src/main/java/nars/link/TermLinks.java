@@ -83,10 +83,10 @@ public enum TermLinks {
         Term x = _x;
 
         Op o = x.op();
-        switch (o) {
-            case VAR_QUERY:
-                return; //NO
-        }
+//        switch (o) {
+//            case VAR_QUERY:
+//                return; //NO
+//        }
 
         if ((depth > 0 || selfTermLink(x)) && !(tc.add(x)))
             return; //already added
@@ -293,17 +293,18 @@ public enum TermLinks {
     /**
      * send some activation, returns the cost
      */
-    public static float linkTemplates(Concept src, List<Termed> templates, float totalBudget, float momentum, NAR nar, BatchActivation ba) {
+    public static float linkTemplates(Concept src, float totalBudget, float momentum, NAR nar, BatchActivation ba) {
 
+        List<Termed> templates = src.templates();
         int n = templates.size();
         if (n == 0)
             return 0;
 
-        float freed = 1f - momentum;
-        int toFire = (int) Math.ceil(n * freed);
-        float budgeted = totalBudget * freed;
+//        float freed = 1f - momentum;
+//        int toFire = (int) Math.ceil(n * freed);
+        float budgeted = totalBudget * (1f - momentum);
 
-        float budgetedToEach = budgeted / toFire;
+        float budgetedToEach = budgeted / n;
         if (budgetedToEach < Pri.EPSILON)
             return 0;
 
@@ -313,7 +314,7 @@ public enum TermLinks {
         Term srcTerm = src.term();
         Bag<Term, PriReference<Term>> srcTermLinks = src.termlinks();
         float balance = nar.termlinkBalance.floatValue();
-        for (int i = 0; i < toFire; i++) {
+        for (int i = 0; i < n; i++) {
 
             Termed t = templates.get(nextTarget++);
             if (nextTarget == n) nextTarget = 0; //wrap around

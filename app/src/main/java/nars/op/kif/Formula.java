@@ -30,6 +30,8 @@ import java.util.regex.Pattern;
 public class Formula implements Comparable {
 
     private static final boolean DEBUG = false;
+    private static final Pattern EMPTY = Pattern.compile("\\(\\s*\\)");
+
 
     /**
      * The source file in which the formula appears.
@@ -592,7 +594,7 @@ public class Formula implements Comparable {
      * Test whether the String is an empty formula.
      */
     public static boolean empty(String s) {
-        return (listP(s) && s.matches("\\(\\s*\\)"));
+        return (listP(s) && EMPTY.matcher(s).matches());
     }
 
     /**
@@ -968,7 +970,7 @@ public class Formula implements Comparable {
                     varend++;
                 }
                 String varname = s.substring(varstart + 1, varend);
-                s = s.replaceAll("\\?" + varname, "?VAR" + (new Integer(varCount++)));
+                s = s.replaceAll("\\?" + varname, "?VAR" + (Integer.valueOf(varCount++)));
                 i = varstart;
             }
         }
@@ -982,7 +984,7 @@ public class Formula implements Comparable {
                     varend++;
                 }
                 String varname = s.substring(varstart + 1, varend);
-                s = s.replaceAll("\\@" + varname, "@ROWVAR" + (new Integer(varCount++)));
+                s = s.replaceAll("\\@" + varname, "@ROWVAR" + (Integer.valueOf(varCount++)));
                 i = varstart;
             }
         }
@@ -1316,7 +1318,7 @@ public class Formula implements Comparable {
                             if (!rowReplace.toString().isEmpty()) {
                                 rowReplace = rowReplace.append(' ');
                             }
-                            rowReplace = rowReplace.append('?').append(row).append((new Integer(j)));
+                            rowReplace = rowReplace.append('?').append(row).append((Integer.valueOf(j)));
                             if (hasVariableArityRelation) {
                                 rowResult = rowResult.append(result.toString().replaceAll("\\@" + row, rowReplace.toString())).append('\n');
                             }

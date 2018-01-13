@@ -50,126 +50,94 @@ public class Activate extends PLink<Concept> implements Termed {
         activateTemplates(nar, ba);
 
         final Bag<Term, PriReference<Term>> termlinks = id.termlinks();
-
         int ntermlinks = termlinks.size();
         if (ntermlinks == 0)
             return;
+
+        final Bag tasklinks = id.tasklinks();
+        int ntasklinks = tasklinks.size();
+        if (ntasklinks == 0)
+            return;
+
+
         float linkForgetting = nar.forgetRate.floatValue();
         termlinks.commit(termlinks.forget(linkForgetting));
 
 
-        //(int) Math.ceil((float) Math.sqrt(premisesMax));
-
-//        int tlSampled = Math.min(ntermlinks, TERMLINKS_SAMPLED);
-//        FasterList<PriReference<Term>> terml = new FasterList(tlSampled);
-//        termlinks.sample(tlSampled, ((Consumer<PriReference>) terml::add));
-//        int termlSize = terml.size();
-//        if (termlSize <= 0) return null;
-
-
-        final Bag tasklinks = id.tasklinks();
-//        long now = nar.time();
-//        int dur = nar.dur();
-        int ntasklinks = tasklinks.size();
-        if (ntasklinks == 0)
-            return;
-//        Consumer tasklinkForget = PriForget.forget(tasklinks, linkForgetting, Pri.EPSILON, (r) ->
-//                new Tasklinks.TaskLinkForget(r, now, dur));
-        //tasklinks.commit(tasklinkForget);
         tasklinks.commit(tasklinks.forget(linkForgetting));
 
 
 
         int termlinksPerTasklink = Activate.termlinksPerTasklink;
-        int[] safetyLimit = { tasklinks.size() *  termlinksPerTasklink };
+        int[] ttl = { tasklinks.size() *  termlinksPerTasklink };
 
         tasklinks.sample((Predicate<PriReference<Task>>) tasklink -> {
 
 
-//            int termlinksSampled = Math.min(Math.max(1,
-//                    (int) Math.ceil(
-//                            Util.normalize(tasklink.priElseZero(), tasklinks.priMin(), tasklinks.priMax())
-//                                    * termlinksPerTasklink)),
-//                    remaining[0]);
-
             Task task = tasklink.get();
-            if (task != null) { //HACK
-
-
+            if (task != null) {
 
                 termlinks.sample(termlinksPerTasklink, (termlink) -> {
 
-                    Premise p = Premise.the(tasklink, termlink,
-                            Param.taskTermLinksToPremise,
-                            nar.amp(task.cause()));
+                    Premise p = Premise.the(tasklink, termlink, Param.taskTermLinksToPremise);
                     if (p != null) {
                         if (!each.test(p)) {
-                            safetyLimit[0] = 0;
-                            return false;
+                            ttl[0] = 0;
                         }
                     }
 
-                    return  (--safetyLimit[0] > 0);
+                    return  (--ttl[0] > 0);
                 });
             } else {
-                --safetyLimit[0]; //safety misfire decrement
+                --ttl[0]; //safety misfire decrement
             }
 
-            return (safetyLimit[0] > 0);// ? Bag.BagSample.Next : Bag.BagSample.Stop;
-        }/*, (tl) -> {
-            Task x = tl.get();
-            if (x == null)
-                return 0; //deleted
-            float p = tl.pri();
-            if (p != p)
-                return 0; //deleted
-            else
-                return p * nar.amp(x.cause());
-        }*/);
+            return (ttl[0] > 0);// ? Bag.BagSample.Next : Bag.BagSample.Stop;
+        });
 
     }
 
 
-    public void activateTemplates(NAR nar, BatchActivation ba) {
+    void activateTemplates(NAR nar, BatchActivation ba) {
         nar.emotion.conceptActivations.increment();
 
-        float cost = TermLinks.linkTemplates(id, id.templates(), priElseZero(), nar.momentum.floatValue(), nar, ba);
+        float cost = TermLinks.linkTemplates(id, priElseZero(), nar.momentum.floatValue(), nar, ba);
         if (cost >= Pri.EPSILON)
             priSub(cost);
     }
 
 
-    public static List<Concept> randomTemplateConcepts(List<Concept> tt, Random rng, int count) {
-
-//            {
-//                //this allows the tasklink, if activated to be inserted to termlinks of this concept
-//                //this is messy, it propagates the tasklink further than if the 'callback' were to local templates
-//                List<Concept> tlConcepts = terml.stream().map(t ->
-//                        //TODO exclude self link to same concept, ie. task.concept().term
-//                        nar.concept(t.get())
-//                ).filter(Objects::nonNull).collect(toList());
-//            }
-        //Util.selectRoulette(templateConcepts.length, )
-
-
-        int tts = tt.size();
-        if (tts == 0) {
-            return Collections.emptyList();
-        } else if (tts < count) {
-            return tt; //all of them
-        } else {
-
-            List<Concept> uu = $.newArrayList(count);
-            Roulette.selectRouletteUnique(tts, (w) -> {
-                return tt.get(w).volume(); //biased toward larger template components so the activation trickles down to atoms with less probabilty
-                //return 1f; //flat
-            }, (z) -> {
-                uu.add(tt.get(z));
-                return (uu.size() < count);
-            }, rng);
-            return uu;
-        }
-    }
+//    public static List<Concept> randomTemplateConcepts(List<Concept> tt, Random rng, int count) {
+//
+////            {
+////                //this allows the tasklink, if activated to be inserted to termlinks of this concept
+////                //this is messy, it propagates the tasklink further than if the 'callback' were to local templates
+////                List<Concept> tlConcepts = terml.stream().map(t ->
+////                        //TODO exclude self link to same concept, ie. task.concept().term
+////                        nar.concept(t.get())
+////                ).filter(Objects::nonNull).collect(toList());
+////            }
+//        //Util.selectRoulette(templateConcepts.length, )
+//
+//
+//        int tts = tt.size();
+//        if (tts == 0) {
+//            return Collections.emptyList();
+//        } else if (tts < count) {
+//            return tt; //all of them
+//        } else {
+//
+//            List<Concept> uu = $.newArrayList(count);
+//            Roulette.selectRouletteUnique(tts, (w) -> {
+//                return tt.get(w).volume(); //biased toward larger template components so the activation trickles down to atoms with less probabilty
+//                //return 1f; //flat
+//            }, (z) -> {
+//                uu.add(tt.get(z));
+//                return (uu.size() < count);
+//            }, rng);
+//            return uu;
+//        }
+//    }
 
 
     //    public void activateTaskExperiment1(NAR nar, float pri, Term thisTerm, BaseConcept cc) {

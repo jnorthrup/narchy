@@ -27,6 +27,7 @@ import java.util.stream.StreamSupport;
 import static nars.$.*;
 import static nars.Op.BELIEF;
 import static nars.Op.CONJ;
+import static nars.Op.IMPL;
 
 /**
  * Created by me on 6/4/15.
@@ -464,8 +465,22 @@ public abstract class NQuadsRDF {
         return null;
     }
 
-    public static Term equi(Term subj, Term pred) {
-        return disj(impl(subj, pred), impl(pred, subj));
+    public static Term equi(Term x, Term y) {
+        // (NOT (x AND y)) AND (NOT ((NOT x) AND (NOT y))) http://www.wolframalpha.com/input/?i=x+xor+y
+        //return disj(impl(subj, pred), impl(pred, subj));
+        return CONJ.the(
+                IMPL.the(x,y),
+                IMPL.the(y,x)
+        );
+    }
+
+    public static Term disjoint(Term x, Term y) {
+        // (NOT (x AND y)) AND (NOT ((NOT x) AND (NOT y))) http://www.wolframalpha.com/input/?i=x+xor+y
+        //return disj(impl(subj, pred), impl(pred, subj));
+        return CONJ.the(
+                CONJ.the(x,y).neg(),
+                CONJ.the(x.neg(), y.neg()).neg()
+        );
     }
 
 

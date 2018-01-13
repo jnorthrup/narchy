@@ -1115,7 +1115,7 @@ public class WordNet {
             SUMOterm = SUMOterm.replaceAll("[+=@]", "");
         }
         ArrayList result = new ArrayList();
-        result.add((Integer.valueOf(POS)) + synset);
+        result.add((POS) + synset);
         result.add(SUMOterm);
         result.add((Integer.valueOf(bestTotal)).toString());
         return result;
@@ -2538,7 +2538,7 @@ public class WordNet {
             //String result = WordNet.wn.removeStopWords(sent);
             //WordNet wn = new WordNet();
             //System.out.println("Result: " + wn.removePunctuation(sent));
-            WordNet.wn.computeSentenceTerms();
+            computeSentenceTerms();
         } catch (Exception e) {
             System.out.println("Error in WordNet.main():" + e.getMessage());
         }

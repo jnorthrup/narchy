@@ -18,6 +18,7 @@ package nars.op.kif;
 
 import jcog.Util;
 import nars.*;
+import nars.control.MetaGoal;
 import nars.op.prolog.PrologCore;
 import nars.term.Compound;
 import nars.term.Term;
@@ -26,6 +27,7 @@ import nars.term.atom.Int;
 import nars.term.var.Variable;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.set.MutableSet;
+import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +39,9 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static nars.Op.*;
+import static nars.op.rdfowl.NQuadsRDF.disjoint;
 import static nars.op.rdfowl.NQuadsRDF.equi;
+import static nars.time.Tense.ETERNAL;
 
 /**
  * http://sigmakee.cvs.sourceforge.net/viewvc/sigmakee/sigma/suo-kif.pdf
@@ -50,7 +54,7 @@ public class KIFInput implements Runnable {
     private final KIF kif;
 
 
-    private final Iterator<Formula> formulaIterator;
+
     private final NAR nar;
 
     private final PrintStream output;
@@ -62,16 +66,8 @@ public class KIFInput implements Runnable {
     private final boolean includeDoc = false;
 
     public KIFInput(NAR nar, String kifPath) throws Exception {
-
         this.nar = nar;
-
-        kif = new KIF(kifPath);
-        formulaIterator = kif.getFormulas().iterator();
-
-//        this.output = new PrintStream(new FileOutputStream(
-//                //"/tmp/kif.nal"
-//            "/home/me/s/logic/src/main/java/spimedb/logic/sumo_merged.kif.nal"
-//        ));
+        this.kif = new KIF(kifPath);
         this.output = System.out;
     }
 
@@ -83,19 +79,14 @@ public class KIFInput implements Runnable {
     final Map<Term, FnDef> fn = new HashMap();
 
     static class FnDef {
-        final org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap<Term> domain = new org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap();
+        final IntObjectHashMap<Term> domain = new IntObjectHashMap();
         Term range;
     }
 
     @Override
     public void run() {
         Set<Term> beliefs = new TreeSet();
-        while (formulaIterator.hasNext()) {
-
-            Formula x = formulaIterator.next();
-            if (x == null) {
-                break;
-            }
+        kif.formulas().forEach(x->{
 
             try {
                 Term y = formulaToTerm(x);
@@ -109,7 +100,7 @@ public class KIFInput implements Runnable {
             //  => Implies
             //  <=> Equivalance
             /*Unknown operators: {=>=466, rangeSubclass=5, inverse=1, relatedInternalConcept=7, documentation=128, range=29, exhaustiveAttribute=1, trichotomizingOn=4, subrelation=22, not=2, partition=12, contraryAttribute=1, subAttribute=2, disjoint=5, domain=102, disjointDecomposition=2, domainSubclass=9, <=>=70}*/
-        }
+        });
 
         fn.forEach((f, s) -> {
             int ds = s.domain.isEmpty() ? 0 : s.domain.keySet().max();
@@ -228,7 +219,9 @@ public class KIFInput implements Runnable {
                     if (args.size() != 2) {
                         System.err.println("instance expects 2 arguments");
                     } else {
-                        y = $.inst(args.get(0), args.get(1));
+                        y = //$.inst
+                            $.inh
+                                (args.get(0), args.get(1));
                     }
                 }
                 break;
@@ -249,17 +242,10 @@ public class KIFInput implements Runnable {
                 break;
             case "disjointRelation":
             case "disjoint":
-                if (includeDisjoint) {
 
-                    //y = $.$("(||," + args.get(0) + "," + args.get(1) + ").");
-                    y = CONJ.the(
-                            IMPL.the(
-                                    $.sim($.varIndep(1), args.get(0)),
-                                    $.sim($.varIndep(1), args.get(1)).neg()),
-                            IMPL.the(
-                                    $.sim($.varIndep(1), args.get(1)),
-                                    $.sim($.varIndep(1), args.get(0)).neg())
-                    );
+                //TODO represent disjoint with a pair of implications, not this
+                if (includeDisjoint) {
+                    y = disjoint(args.get(0), args.get(1));
                 }
                 break;
 
@@ -315,7 +301,7 @@ public class KIFInput implements Runnable {
                     Term a = args.get(0);
                     Term b = args.get(1);
                     Variable v0 = nextVar(VAR_INDEP);
-                    y = equi($.inh(v0, a), $.inh(v0, b.neg()));
+                    y = disjoint($.inh(v0, a), $.inh(v0, b.neg()));
                 }
                 break;
             case "documentation":
@@ -441,30 +427,39 @@ public class KIFInput implements Runnable {
         Param.DEBUG = true;
 
         NAR e = NARS.tmp();
+        MetaGoal.Perceive.set(e.want, -0.1f);
 
-        new PrologCore(e);
+        //new PrologCore(e);
 
         KIFInput k = new KIFInput(e,
-                "/home/me/sumo/FinancialOntology.kif"
+                //"/home/me/sumo/Biography.kif"
+                //"/home/me/sumo/Military.kif"
+                //"/home/me/sumo/ComputerInput.kif"
+                //"/home/me/sumo/FinancialOntology.kif"
                 //"/home/me/sumo/Merge.kif"
-                //"/home/me/sumo/emotion.kif"
+                "/home/me/sumo/emotion.kif"
                 //"/home/me/sumo/Weather.kif"
         );
         k.run();
 
-        e.log();
 
 //https://github.com/ontologyportal/sumo/blob/master/tests/TQG1.kif.tq
 //(time 240)
 //(instance Org1-1 Organization)
 //(query (exists (?MEMBER) (member ?MEMBER Org1-1)))
 //(answer yes)
-        e.clear();
+        //e.clear();
+        e.log();
         //e.believe("Organization:{org1}");
-        e.believe("accountHolder(xyz,1)");
-        e.input("(xyz<->?1)?");
+        //e.believe("accountHolder(xyz,1)");
+        e.ask($.$safe("(EmotionalState<->?1)"), ETERNAL, QUESTION, (t)->{
+           System.out.println(t);
+        });
+        //e.believe("attribute(xyz,Philosopher)");
+        //e.input("(xyz<->?1)?");
 //        e.input("member(#1, org1)?"); //conflicts with prolog 'member' functor
-        e.run(1500);
+        e.run(1000);
+        //e.conceptsActive().forEach(s -> System.out.println(s));
 
         //(($_#AGENT,#OBJECT)-->needs)==>($_#AGENT,#OBJECT)-->wants)).
         //String rules = "((%AGENT,%OBJECT)-->needs), %X |- ((%AGENT,%OBJECT)-->wants), (Belief:Identity)\n";

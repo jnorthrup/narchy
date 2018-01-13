@@ -1,20 +1,11 @@
 package nars.experiment;
 
-import com.google.common.collect.Iterables;
 import jcog.Util;
-import jcog.learn.LivePredictor;
-import jcog.learn.ql.HaiQAgent;
 import nars.*;
 import nars.concept.ScalarConcepts;
 import nars.concept.SensorConcept;
 import nars.gui.Vis;
-import nars.op.AutoConceptualizer;
-import nars.op.RLBooster;
-import nars.op.video.BufferedImageBitmap2D;
 import nars.op.video.Scale;
-import nars.op.video.ShapeSensor;
-import nars.term.Term;
-import nars.util.signal.BeliefPredict;
 import nars.util.signal.CameraSensor;
 import org.apache.commons.math3.util.MathUtils;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +15,6 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
-import static nars.Op.QUESTION;
 import static spacegraph.SpaceGraph.window;
 
 /**

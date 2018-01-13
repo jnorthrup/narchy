@@ -19,6 +19,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.Op.*;
 import static nars.control.MetaGoal.*;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * NAR Parameters
@@ -36,10 +38,14 @@ public abstract class Param {
      */
     public static final float MUTATE_INT_CONTAINING_TERMS_RATE = 0.25f;
 
-    /** allow leaking of internal Term[] arrays for read-only purposes */
+    /**
+     * allow leaking of internal Term[] arrays for read-only purposes
+     */
     public static final boolean TERM_ARRAY_SHARE = true;
 
-    /** min ratio of effective priority to input priority necessary for certain novel-only actions */
+    /**
+     * min ratio of effective priority to input priority necessary for certain novel-only actions
+     */
     public static final float ACTIVATION_THRESHOLD = 0.1f;
 
     public static boolean DEBUG_FILTER_DUPLICATE_MATCHES = Param.DEBUG_EXTRA;
@@ -47,7 +53,9 @@ public abstract class Param {
 
     public final FloatParam forgetRate = new FloatParam(0.9f, 0f, 2f);
 
-    /** hard limit to prevent infinite looping */
+    /**
+     * hard limit to prevent infinite looping
+     */
     public static final int MAX_TASK_FORWARD_HOPS = 8;
 
     /**
@@ -82,18 +90,18 @@ public abstract class Param {
 
     public static final PriMerge termlinkMerge =
             PriMerge.max;
-            //PriMerge.plus;
+    //PriMerge.plus;
 
     public static final PriMerge tasklinkMerge =
             PriMerge.max;
-            //PriMerge.plus; //not safe to plus without enough headroom
+    //PriMerge.plus; //not safe to plus without enough headroom
 
-//    /**
+    //    /**
 //     * budgets premises from their links, but isolated from affecting the derivation budgets, which are from the tasks (and not the links)
 //     */
     public static final FloatFloatToFloatFunction taskTermLinksToPremise =
-        Util::or;
-          //Util::and;
+            Util::or;
+    //Util::and;
 //            //UtilityFunctions::aveGeo;
 //            //UtilityFunctions::aveAri;
 //            //Math::min;
@@ -108,8 +116,8 @@ public abstract class Param {
     public static final FloatFloatToFloatFunction TaskBeliefDerivation =
             //Math::max;
             Util::or;
-            //Util::and;
-            //UtilityFunctions::aveAri;
+    //Util::and;
+    //UtilityFunctions::aveAri;
 
 
     public static final PriMerge taskMerge = PriMerge.max;
@@ -170,7 +178,7 @@ public abstract class Param {
      */
     public static final int TTL_DERIVE_TASK_FAIL = 2;
 
-//    /**
+    //    /**
 //     * number between 0 and 1 controlling the proportion of activation going
 //     * forward (compound to subterms) vs. reverse (subterms to parent compound).
 //     * when calculated, the total activation will sum to 1.0.
@@ -200,6 +208,33 @@ public abstract class Param {
      */
     public final MutableFloat dtDither = new MutableFloat(0.5f);
 
+    public int dtDitherCycles() {
+        return Math.max(1, Math.round(dtDither.floatValue() * dur()));
+    }
+
+    /**
+     * dt in cycles
+     */
+    public int dtDither(int dt) {
+
+        int dither = dtDitherCycles();
+        if (dither > 1) {
+            if (dt == DTERNAL)
+                return DTERNAL;
+            if (dt == XTERNAL)
+                return XTERNAL;
+
+            if (Math.abs(dt) < dither)
+                return 0; //collapse to simultaneity with present moment
+            else
+                return Util.round(dt, dither);
+        } else {
+            return dt; //unaffected
+        }
+    }
+
+    abstract int dur();
+
 
     /**
      * abs(term.dt()) safety limit for non-dternal/non-xternal temporal compounds
@@ -207,7 +242,7 @@ public abstract class Param {
     @Deprecated
     public static int DT_ABS_LIMIT =
             Integer.MAX_VALUE / 1024;
-            //Integer.MAX_VALUE / 16384;
+    //Integer.MAX_VALUE / 16384;
 
 
     public static float derivationPriority(Task t, Derivation d) {
@@ -216,7 +251,7 @@ public abstract class Param {
 
         int dCompl =
                 t.complexity();
-                //t.volume();
+        //t.volume();
 
         {
             //relative growth compared to parent complexity
@@ -258,7 +293,7 @@ public abstract class Param {
             discount *= 0.5f;
         }
 
-        return discount* d.premisePri;
+        return discount * d.premisePri;
 
         //return Util.lerp(1f-t.originality(),discount, 1) * d.premisePri; //more lenient derivation budgeting priority reduction in proportion to lack of originality
     }
@@ -335,8 +370,10 @@ public abstract class Param {
 
     public static final FloatParam causeCapacity = new FloatParam(32, 0, 128);
 
-    /** hard limit for cause capacity in case the runtime parameter otherwise disobeyed */
-    public static final int CAUSE_LIMIT = (int) (causeCapacity.max*2);
+    /**
+     * hard limit for cause capacity in case the runtime parameter otherwise disobeyed
+     */
+    public static final int CAUSE_LIMIT = (int) (causeCapacity.max * 2);
 
 
     public final static int UnificationStackMax = 64; //how many assignments can be stored in the 'versioning' maps
@@ -383,10 +420,14 @@ public abstract class Param {
      */
     public final FloatParam confMin = new FloatParam(TRUTH_EPSILON, TRUTH_EPSILON, 1f);
 
-    /** global truth frequency resolution by which reasoning is dithered */
+    /**
+     * global truth frequency resolution by which reasoning is dithered
+     */
     public final FloatParam freqResolution = new FloatParamRounded(TRUTH_EPSILON, TRUTH_EPSILON, 1f, TRUTH_EPSILON);
 
-    /** global truth confidence resolution by which reasoning is dithered */
+    /**
+     * global truth confidence resolution by which reasoning is dithered
+     */
     public final FloatParam confResolution = new FloatParamRounded(TRUTH_EPSILON, TRUTH_EPSILON, 1f, TRUTH_EPSILON) {
         @Override
         public void set(float value) {
@@ -398,14 +439,13 @@ public abstract class Param {
     };
 
 
-
     /**
      * controls the speed (0..+1.0) of budget propagating from compound
      * terms to their subterms
      * 0 momentum means an activation is fired completely and suddenly
      * 1 momentum means it retains all activation
      */
-    public final FloatParam momentum = new FloatParam(0f, 0, 1f);
+    public final FloatParam momentum = new FloatParam(0.5f, 0, 1f);
 
     /**
      * computes the projected evidence at a specific distance (dt) from a perceptual moment evidence
@@ -414,7 +454,7 @@ public abstract class Param {
      */
     public static double evi(float evi, long dt, long dur) {
 
-        return evi / (1.0 + ( ((double)dt) / dur) ); //inverse linear
+        return evi / (1.0 + (((double) dt) / dur)); //inverse linear
 
         //double ddt = dt;
         //return (float) (evi / (1.0 + ddt * ddt / dur)); //inverse square
@@ -448,9 +488,9 @@ public abstract class Param {
         TruthPolation t =
                 //new TruthPolation.TruthPolationBasic(start, end, dur);
                 TruthPolation.TruthPolationBasic.autoRange(start, end, dur, temporals);
-                //new TruthPolation.TruthPolationConf(start, end, dur);
         //new TruthPolation.TruthPolationConf(start, end, dur);
-                //new TruthPolation.TruthPolationGreedy(start, end, dur, ThreadLocalRandom.current());
+        //new TruthPolation.TruthPolationConf(start, end, dur);
+        //new TruthPolation.TruthPolationGreedy(start, end, dur, ThreadLocalRandom.current());
         //..SoftMax..
         //new TruthPolation.TruthPolationRoulette(start, end, dur, ThreadLocalRandom.current());
         //new TruthPolationWithVariance(when, dur);
@@ -575,9 +615,9 @@ public abstract class Param {
 
     public static float overlapEvidence(float evi, float overlap) {
         return
-            overlap == 0 ? evi : 0; //prevents any overlap
-            //evi * Util.sqr(1f-Util.unitize(overlap));
-            //evi * (1f-overlap);
+                overlap == 0 ? evi : 0; //prevents any overlap
+        //evi * Util.sqr(1f-Util.unitize(overlap));
+        //evi * (1f-overlap);
     }
 
 

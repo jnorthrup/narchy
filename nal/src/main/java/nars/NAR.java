@@ -8,6 +8,7 @@ import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Topic;
 import jcog.exe.Cycler;
+import jcog.list.ArrayIterator;
 import jcog.list.FasterList;
 import jcog.math.MutableInteger;
 import jcog.pri.Pri;
@@ -600,14 +601,20 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      * main task entry point
      */
     @Override
-    public final void input(@NotNull ITask... t) {
-        for (ITask x : t)
-            input(x);
-    }
+    public final void input(ITask... t) {
+        if (t == null)
+            return;
+        switch (t.length) {
+            case 0:
+                break;
+            case 1:
+                exe.execute(t[0]);
+                break;
+            default:
+                exe.execute((Iterator) new ArrayIterator<>(t));
+                break;
 
-    public final void input(ITask x) {
-        if (x == null) return;
-        exe.execute(x);
+        }
     }
 
     @Override

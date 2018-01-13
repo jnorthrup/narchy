@@ -37,13 +37,13 @@ public class KB {
     /**
      * The name of the knowledge base.
      */
-    public String name;
+    public final String name;
 
     /**
      * An ArrayList of Strings which are the full path file names of the files
      * which comprise the KB.
      */
-    public ArrayList constituents = new ArrayList();
+    public final ArrayList constituents = new ArrayList();
 
     /**
      * The natural language in which axiom paraphrases should be presented.
@@ -54,7 +54,7 @@ public class KB {
      * The location of preprocessed KIF files, suitable for loading into
      * Vampire.
      */
-    public String kbDir;
+    public final String kbDir;
 
     /**
      * A HashMap of HashSets, which contain all the parent classes of a given
@@ -83,7 +83,7 @@ public class KB {
     /**
      * A List of the names of cached transitive relations.
      */
-    public List cachedTransitiveRelationNames = Arrays.asList("subclass",
+    public final List cachedTransitiveRelationNames = Arrays.asList("subclass",
             "subrelation",
             "subAttribute",
             "subOrganization",
@@ -95,7 +95,7 @@ public class KB {
     /**
      * A List of the names of cached reflexive relations.
      */
-    public List cachedReflexiveRelationNames = Arrays.asList("subclass",
+    public final List cachedReflexiveRelationNames = Arrays.asList("subclass",
             "subrelation",
             "subAttribute",
             "subOrganization",
@@ -105,12 +105,12 @@ public class KB {
     /**
      * A List of the names of cached relations.
      */
-    public List cachedRelationNames = Arrays.asList("instance", "disjoint");
+    public final List cachedRelationNames = Arrays.asList("instance", "disjoint");
 
     /**
      * An ArrayList of RelationCache objects.
      */
-    public ArrayList relationCaches = new ArrayList();
+    public final ArrayList relationCaches = new ArrayList();
 
     /**
      * The instance of the CELT process.
@@ -119,7 +119,7 @@ public class KB {
     /**
      * A Set of Strings, which are all the terms in the KB.
      */
-    public TreeSet terms = new TreeSet();
+    public final TreeSet terms = new TreeSet();
 
     /**
      * The String constant that is the suffix for files of user assertions.
@@ -136,7 +136,7 @@ public class KB {
      * representation of a Formula. Each value is the Formula object
      * corresponding to the key.
      */
-    public HashMap formulaMap = new HashMap();
+    public final HashMap formulaMap = new HashMap();
 
     /**
      * A HashMap of ArrayLists of Formulas, containing all the formulas in the
@@ -1384,7 +1384,7 @@ public class KB {
      */
     public ArrayList ask(String kind, int argnum, String term) {
 
-        return (ArrayList) formulas.get(kind.compareTo("arg") == 0 ? kind + '-' + Integer.valueOf(argnum) + '-' + term : kind + '-' + term);
+        return (ArrayList) formulas.get(kind.compareTo("arg") == 0 ? kind + '-' + argnum + '-' + term : kind + '-' + term);
     }
 
     /**
@@ -3060,7 +3060,7 @@ public class KB {
     /**
      * A utility array for profiling subtasks in KB.preProcess().
      */
-    protected static long[] ppTimers = {0L, // type pred (sortal) computation
+    protected static final long[] ppTimers = {0L, // type pred (sortal) computation
         0L, // pred var instantion
         0L, // row var expansion
         0L, // Formula.getRowVarExpansionRange()

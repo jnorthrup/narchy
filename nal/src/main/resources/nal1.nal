@@ -57,8 +57,10 @@
 
     (S --> P), (P --> S) |- (S <-> P), (Belief:Intersection, Goal:Strong)
 
-    (X <-> Y), X, task("?") |- Y,   (Punctuation:Question)
-    (X <-> Y), X, task("@") |- Y,   (Punctuation:Quest)
+    (X <-> Y), X, task("?") |- (Y-->X),   (Punctuation:Question)
+    (X <-> Y), Y, task("?") |- (X-->Y),   (Punctuation:Question)
+    //(X <-> Y), X, task("?") |- Y,   (Punctuation:Question)
+    //(X <-> Y), X, task("@") |- Y,   (Punctuation:Quest)
 
     (A --> C), (B --> C), belief(positive), neqRCom(A,B), task("?") |- (A <-> B), (Punctuation:Question)
     (A --> C), (B --> C), belief(negative), neqRCom(A,B), task("?") |- (A <-> --B), (Punctuation:Question)
