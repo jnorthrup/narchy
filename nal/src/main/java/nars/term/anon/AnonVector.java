@@ -67,7 +67,7 @@ public class AnonVector extends TermVector {
 //        }
 //    }
 
-    public int indexOf(AnonID t, boolean neg) {
+    int indexOf(AnonID t, boolean neg) {
         short id = t.anonID();
         if (neg)
             id = (short)(-id);
@@ -78,7 +78,7 @@ public class AnonVector extends TermVector {
     public int indexOf(Term t) {
         boolean neg = false;
         if (t.op()==NEG) {
-            if (!hasAny(NEG))
+            if (!anyNeg())
                 return -1;
             t = t.unneg();
             neg = true;
@@ -98,7 +98,13 @@ public class AnonVector extends TermVector {
     public boolean containsRecursively(Term t) {
         if (contains(t))
             return true;
-        return (t.op() == NEG) || contains(t.neg()); //TODO write absolute matcher in one pass
+        return (t.op() == NEG) || (anyNeg() && contains(t.neg())); //TODO write absolute matcher in one pass
+    }
+
+    private boolean anyNeg() {
+        for (short s : subterms)
+            if (s < 0) return true;
+        return false;
     }
 
     @Override

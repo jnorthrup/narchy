@@ -71,6 +71,7 @@ public class AnonTest {
         assertEqual(new TermVector2(x[0], x[1]), new AnonVector(x[0], x[1]));
         assertEqual(new ArrayTermVector(x), new AnonVector(x));
     }
+
     @Test public void testAnomVectorNegations() {
 
         Term[] x = {Anom.the(2), Anom.the(0), Anom.the(1).neg()};
