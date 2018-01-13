@@ -18,6 +18,7 @@ public class PredictionFeedback {
     //final BeliefTable table;
 
 
+    static final boolean delete = false;
     static final float strength = 1;
 
     /*public PredictionFeedback(BeliefTable table) {
@@ -138,7 +139,8 @@ public class PredictionFeedback {
             MetaGoal.learn(MetaGoal.Accurate, y.cause(), value, nar);
         }
 
-        ((NALTask) y).delete(x); //forward to the actual sensor reading
+        if (delete)
+            ((NALTask) y).delete(x); //forward to the actual sensor reading
         return true;
     }
 

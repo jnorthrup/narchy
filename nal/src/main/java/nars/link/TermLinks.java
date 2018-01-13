@@ -83,10 +83,10 @@ public enum TermLinks {
         Term x = _x;
 
         Op o = x.op();
-//        switch (o) {
-//            case VAR_QUERY:
-//                return; //NO
-//        }
+        switch (o) {
+            case VAR_QUERY:
+                return; //NO
+        }
 
         if ((depth > 0 || selfTermLink(x)) && !(tc.add(x)))
             return; //already added

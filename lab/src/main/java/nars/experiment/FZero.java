@@ -71,13 +71,13 @@ public class FZero extends NAgentX {
         )/*.blur()*/).resolution(0.1f);
 
 
-        new AutoConceptualizer(c.pixels, true, 10, nar) {
-            @Override
-            protected void onFeature(Term feature) {
-//                System.out.println(feature);
-                nar.que(feature, QUESTION, nar.time() /* + nar.dur()*/);
-            }
-        };
+//        new AutoConceptualizer(c.pixels, true, 10, nar) {
+//            @Override
+//            protected void onFeature(Term feature) {
+////                System.out.println(feature);
+//                nar.que(feature, QUESTION, nar.time() /* + nar.dur()*/);
+//            }
+//        };
 
         //new ShapeSensor($.the("shape"), new BufferedImageBitmap2D(() -> fz.image), this);
 

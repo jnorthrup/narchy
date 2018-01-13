@@ -465,8 +465,8 @@ public interface NAct {
                     gg.freq()
                     //gg.expectation()
                     :
-                    //0f;
-                    0.5f;
+                    0f;
+                    //0.5f;
             e[ip] = gg != null ? gg.evi() : 0f;
 
 
@@ -500,7 +500,7 @@ public interface NAct {
 //                            // /Math.max(Math.abs(g0), Math.abs(g1));
 
                         //frequency
-                        df = (g[0]) - (g[1]);
+                        df = 2 * ((g[0]) - (g[1]));
                         //experimental: lessen by a factor of how equally confident each goal is
                         if (fair) {
                             //fully fair
