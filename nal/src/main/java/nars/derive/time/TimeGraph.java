@@ -69,10 +69,10 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         public static TimeSpan the(long dt) {
             assert (dt != TIMELESS);
             //if (Param.DEBUG_EXTRA) {
-                if (dt == XTERNAL) //TEMPORARY
-                    throw new RuntimeException("probably meant to use XTERNAL");
-                if (dt == DTERNAL) //TEMPORARY
-                    throw new RuntimeException("probably meant to use ETERNAL");
+            if (dt == XTERNAL) //TEMPORARY
+                throw new RuntimeException("probably meant to use XTERNAL");
+            if (dt == DTERNAL) //TEMPORARY
+                throw new RuntimeException("probably meant to use ETERNAL");
             //}
 
             if (dt == 0) {
@@ -105,6 +105,10 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             return (dt == ETERNAL ? "~" : (dt >= 0 ? ("+" + dt) : ("-" + (-dt))));
             //+ (weight != 1 ? "x" + n2(weight) : "");
         }
+    }
+
+    protected Random random() {
+        return ThreadLocalRandom.current();
     }
 
     /**
@@ -140,7 +144,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         Term tt = t.term();
         //both positive and negative possibilities
         know(t, tt);
-        if (autoNegEvents && tt.op()!=CONJ)
+        if (autoNegEvents && tt.op() != CONJ)
             know(t, tt.neg());
     }
 
@@ -166,10 +170,9 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
 
         if (when == TIMELESS) {
-            for (Event tx : byTerm.get(t)) {
-                if (tx instanceof Absolute)
-                    return tx; //already known absolute
-            }
+            Event a = absolute(t);
+            if (a != null)
+                return a;
         } else {
             byTerm.get(t).removeIf(ei -> ei instanceof Relative);
 
@@ -179,6 +182,32 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 when == TIMELESS ? new Relative(t) : new Absolute(t, when);
 
         return add ? add(e).id : event(e);
+    }
+
+    //    protected Event absolute(Term t) {
+//        for (Event tx : byTerm.get(t)) {
+//            if (tx instanceof Absolute)
+//                return tx; //already known absolute
+//        }
+//        return null;
+//    }
+    protected Event absolute(Term t) {
+        //TODO test for multiple options
+        List<Event> aa = new FasterList(1);
+        for (Event tx : byTerm.get(t)) {
+            if (tx instanceof Absolute) {
+                aa.add(tx);
+            }
+        }
+        int as;
+        switch (as = aa.size()) {
+            case 0:
+                return null;
+            case 1:
+                return aa.get(0);
+            default:
+                return aa.get(random().nextInt(as));
+        }
     }
 
     public Event event(Event e) {
@@ -244,9 +273,9 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         switch (eventTerm.op()) {
             case INH:
                 @Nullable DynamicTruthModel dmt = DefaultConceptBuilder.unroll(eventTerm); //TODO optimize
-                if (dmt!=null) {
+                if (dmt != null) {
                     Term[] c = dmt.components(eventTerm);
-                    if (c!=null && c.length > 1) {
+                    if (c != null && c.length > 1) {
                         for (Term cc : c)
                             link(know(cc), 0, event);
                     }
@@ -605,7 +634,6 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
         throw new UnsupportedOperationException();
     }
-
 
 
 //    final static LongSet EMPTY_LONG_SET = LongSets.immutable.empty();

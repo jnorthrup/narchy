@@ -3,6 +3,7 @@ package nars.derive.time;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.ArrayHashSet;
+import jcog.list.FasterList;
 import nars.Op;
 import nars.Task;
 import nars.control.Derivation;
@@ -10,11 +11,9 @@ import nars.task.TimeFusion;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
+import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import static nars.Op.CONJ;
 import static nars.time.Tense.*;
@@ -227,13 +226,10 @@ public class DeriveTime extends TimeGraph {
 //        return c;
 //    }
 
-    protected Event absolute(Term t) {
-        //TODO test for multiple options
-        for (Event tx : byTerm.get(t)) {
-            if (tx instanceof Absolute)
-                return tx; //already known absolute
-        }
-        return null;
+
+    @Override
+    protected Random random() {
+        return d.random;
     }
 
     /** temporary override patches */
@@ -261,6 +257,7 @@ public class DeriveTime extends TimeGraph {
                             return Op.conjMerge(ae.id, 0, be.id, 0);
                         } else if (aew == ETERNAL) {
                             //both eternal, so dternal
+                            d.concOcc[0] = d.concOcc[1] = ETERNAL;
                             return pattern.dt(DTERNAL);
                         } else {
                             //both events
