@@ -301,7 +301,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         public Consumer<NAR> update(Instance instance, Task cause, Object obj, Method method, Object[] args, Object nextValue) {
             return (nar) -> {
                 long now = nar.time();
-                int dur = nar.dur();
+                //int dur = nar.dur();
 
                 float f = invocationBeliefFreq;
                 Term nextTerm = instance.opTerm(method, args, nextValue);
@@ -506,9 +506,9 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         return Util.map(this::term, Term[]::new, args);
     }
 
-    private Term[] terms(Subterms args) {
-        return terms(args.arrayShared());
-    }
+//    private Term[] terms(Subterms args) {
+//        return terms(args.arrayShared());
+//    }
 
 
     /**

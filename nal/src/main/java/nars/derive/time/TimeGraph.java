@@ -53,7 +53,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     private static final boolean allowSelfLoops = true;
     private static final boolean dternalAsZero = true;
     private static final boolean autoUnneg = false;
-    protected static final boolean autoNegTask = true;
+    protected static final boolean autoNegEvents = true;
 
     static class TimeSpan {
         public final long dt;
@@ -138,7 +138,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         Term tt = t.term();
         //both positive and negative possibilities
         know(t, tt);
-        if (autoNegTask)
+        if (autoNegEvents && tt.op()!=CONJ)
             know(t, tt.neg());
     }
 
@@ -534,8 +534,9 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         assert (bWhen != XTERNAL);
         if (aWhen == ETERNAL || bWhen == ETERNAL)
             return DTERNAL;
-        else
+        else {
             return bWhen - aWhen;
+        }
         //return bb.start() - (x.op() == CONJ ? aa.start() : aa.end());
     }
 

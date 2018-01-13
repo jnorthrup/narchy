@@ -142,7 +142,13 @@ public enum GoalFunction implements TruthOperator {
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             return difference(T, B, minConf);
         }
-    },;
+    },
+    DifferenceReverse() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return difference(B, T, minConf);
+        }
+    },
 
 //    StructuralIntersection() {
 //        @Override
@@ -150,6 +156,7 @@ public enum GoalFunction implements TruthOperator {
 //            return B != null ? TruthFunctions.intersection(B, defaultTruth(m), minConf) : null;
 //        }
 //    },
+    ;
 
 
     static final Map<Term, TruthOperator> atomToTruthModifier = $.newHashMap(GoalFunction.values().length);

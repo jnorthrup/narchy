@@ -93,7 +93,7 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
     }
 
     protected ShortObjectHashMap<X> newIDMap() {
-        return new ShortObjectHashMap(4);
+        return new ShortObjectHashMap(8);
     }
 
     protected Map<Term, X> newOtherMap() {

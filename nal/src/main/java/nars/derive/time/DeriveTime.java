@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import static nars.Op.CONJ;
 import static nars.time.Tense.*;
 
 
@@ -63,7 +64,7 @@ public class DeriveTime extends TimeGraph {
         if (transformedTask != null) {
             Event y = know(transformedTask, task.start());
             //link(know(task.term(), task.start()), 0, y);
-            if (autoNegTask)
+            if (autoNegEvents && transformedTask.op()!=CONJ)
                 know(transformedTask.neg(), task.start());
             //link(know(task.term().neg(), task.start()), 0, yNeg);
         }
@@ -71,7 +72,7 @@ public class DeriveTime extends TimeGraph {
             if (belief!=null) {
                 Event y = know(transformedBelief, belief.start());
                 //link(know(belief.term(), belief.start()), 0, y);
-                if (autoNegTask)
+                if (autoNegEvents && transformedBelief.op()!=CONJ)
                     know(transformedBelief.neg(), belief.start());
                 //link(know(belief.term().neg(), belief.start()), 0, yNeg);
             }

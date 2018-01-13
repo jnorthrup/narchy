@@ -128,6 +128,7 @@ public class NAL7Test extends NALTest {
                 .mustBelieve(cycles, "a", 1.00f, 0.81f, 1)
                 .mustBelieve(cycles, "b", 1.00f, 0.81f, 6)
                 .mustNotOutput(cycles, "b", BELIEF, -4)
+                .mustNotOutput(cycles, "((a&|b) &&+5 (b&|#1))", BELIEF, t->true) //wtf
         ;
     }
 

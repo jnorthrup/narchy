@@ -48,9 +48,10 @@
 
 //NAL3 single premise decompose
 
-    (M --> S), S, is(S,"&") |- (M --> dropAnySet(S)), (Belief:StructuralDeduction, Goal:StructuralReduction)
-    (S --> M), S, is(S,"|") |- (dropAnySet(S) --> M), (Belief:StructuralDeduction, Goal:StructuralReduction)
-                                                                                    //Reduction for goal ^
+    (M --> S), S, is(S,"&") |- (M --> dropAnySet(S)), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+    (S --> M), S, is(S,"|") |- (dropAnySet(S) --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+
+
 
         //1D:
         //(X --> C), (X --> C), is(X,"+") |- (dropAnySet(X) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
@@ -60,12 +61,13 @@
         //((X,Y) --> C), ((X,Y) --> C), is(X,"+") |- ((dropAnySet(X),Y) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
         //((X,Y) --> C), ((X,Y) --> C), is(Y,"+") |- ((X,dropAnySet(Y)) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
+
     ((B ~ G) --> S), (B ~ G) |- (B --> S), (Belief:StructuralDeduction)
-        ((B ~ G) --> S), (B --> S) |- (--,(G --> S)), (Goal:Intersection)
-        ((B ~ G) --> S), (G --> S) |- (B --> S), (Goal:IntersectionPN)
+        ((B ~ G) --> S), (B --> S) |- (G --> S), (Goal:DifferenceReverse)
+        ((B ~ G) --> S), (G --> S) |- (--,(B --> S)), (Goal:DifferenceReverse)
     (S --> (B - G)), (B - G) |- (S --> B), (Belief:StructuralDeduction)
-        (S --> (B - G)), (S --> B) |- (--,(S --> G)), (Goal:Intersection)
-        (S --> (B - G)), (S --> G) |- (S --> B), (Goal:IntersectionPN)
+        (S --> (B - G)), (S --> B) |- (S --> G), (Goal:DifferenceReverse)
+        (S --> (B - G)), (S --> G) |- (--,(S --> B)), (Goal:DifferenceReverse)
 
 
 //experiment

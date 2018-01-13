@@ -84,21 +84,21 @@ public class ThermostatTest {
     @Disabled
     public void test1() {
         //Param.DEBUG = true;
-        final int DUR = 10;
+        final int DUR = 5;
 
         final int subTrainings = 1;
-        final int thinkDurs = 1;
+        final int thinkDurs = 2;
 
         NAR n = NARS.tmp();
 
         n.time.dur(DUR);
         n.termVolumeMax.set(30);
-        n.freqResolution.set(0.05f);
+        n.freqResolution.set(0.04f);
         n.confResolution.set(0.02f);
 
         float exeThresh = 0.55f;
 
-        new ConjClustering(n, BELIEF, (t) -> true, 4, 16);
+        new ConjClustering(n, BELIEF, (t) -> t.isInput(), 2, 7);
 
         //n.priDefault(BELIEF, 0.3f);
 

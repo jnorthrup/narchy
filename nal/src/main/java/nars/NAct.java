@@ -499,8 +499,14 @@ public interface NAct {
 //                        df = 2f * ((g0) - (g1));
 //                            // /Math.max(Math.abs(g0), Math.abs(g1));
 
-                        //frequency
-                        df = 2 * ((g[0]) - (g[1]));
+                        //frequency -======================
+
+                        //df = 2 * ((g[0]) - (g[1])); //subtract
+
+                        df = (
+                                g[0] >= g[1] ?  (g[0] * (1f-g[1])) : -(g[1] * (1f-g[0]))
+                        ); //difference, like the truth func
+
                         //experimental: lessen by a factor of how equally confident each goal is
                         if (fair) {
                             //fully fair

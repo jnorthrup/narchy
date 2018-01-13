@@ -292,7 +292,8 @@
 
     //structural decompose any component of a conjunction.
     //for belief: any conj
-    C, X, task("&&"), in(X,C)  |- conjWithout(C, X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    //C, X, task("&&"), in(X,C)  |- conjWithout(C, X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, task("&&"), in(X,C)  |- dropAnyEvent(C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
     //for goal: if eternal and paral (goal seq must be decomposed sequentially use &&| and add separate rule
     //C, X, task("&&") |- dropAnyEvent(C), (Goal:StructuralDeduction)
