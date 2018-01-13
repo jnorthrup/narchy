@@ -588,10 +588,10 @@ public class DeriveTime extends TimeGraph {
     }
 
 
-    @Override
-    protected Random random() {
-        return d.random;
-    }
+//    @Override
+//    protected Random random() {
+//        return d.random;
+//    }
 
 //    void know(Termed x) {
 //

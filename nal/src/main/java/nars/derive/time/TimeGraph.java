@@ -66,12 +66,12 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
         public static TimeSpan the(long dt) {
             assert (dt != TIMELESS);
-            if (Param.DEBUG_EXTRA) {
+            //if (Param.DEBUG_EXTRA) {
                 if (dt == XTERNAL) //TEMPORARY
                     throw new RuntimeException("probably meant to use XTERNAL");
                 if (dt == DTERNAL) //TEMPORARY
                     throw new RuntimeException("probably meant to use ETERNAL");
-            }
+            //}
 
             if (dt == 0) {
                 return TS_ZERO;
@@ -438,30 +438,30 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
             }
 
-        } else {
-            assert (x.op() == CONJ);
-            List<LongObjectPair<Term>> when = $.newArrayList();
-            for (int ix = 0; ix < subs; ix++) {
-                //assert(!z.hasXternal());
-                solveOccurrence(event(xx.sub(ix), TIMELESS), (ze) -> {
-                    if (ze.when() == TIMELESS)
-                        return true; //keep trying
-                    when.add(pair(ze.when(), ze.id));
-                    return false; //just one, for now //TODO see if there are any others
-                });
-            }
-            if (when.size() == subs) {
-                when.sort(Comparator.comparingLong(LongObjectPair::getOne));
-                long base = when.get(0).getOne();
-                Term zz = when.get(0).getTwo();
-                for (int i = 1; i < subs; i++) {
-                    LongObjectPair<Term> wgi = when.get(i);
-                    zz = Op.conjMerge(zz, 0, wgi.getTwo(), wgi.getOne() - base);
-                    if (zz instanceof Bool)
-                        return true; //failure
-                }
-                return each.test(event(zz, base));
-            }
+//        } else {
+//            assert (x.op() == CONJ);
+//            List<LongObjectPair<Term>> when = $.newArrayList();
+//            for (int ix = 0; ix < subs; ix++) {
+//                //assert(!z.hasXternal());
+//                solveOccurrence(event(xx.sub(ix), TIMELESS), (ze) -> {
+//                    if (ze.when() == TIMELESS)
+//                        return true; //keep trying
+//                    when.add(pair(ze.when(), ze.id));
+//                    return false; //just one, for now //TODO see if there are any others
+//                });
+//            }
+//            if (when.size() == subs) {
+//                when.sort(Comparator.comparingLong(LongObjectPair::getOne));
+//                long base = when.get(0).getOne();
+//                Term zz = when.get(0).getTwo();
+//                for (int i = 1; i < subs; i++) {
+//                    LongObjectPair<Term> wgi = when.get(i);
+//                    zz = Op.conjMerge(zz, 0, wgi.getTwo(), wgi.getOne() - base);
+//                    if (zz instanceof Bool)
+//                        return true; //failure
+//                }
+//                return each.test(event(zz, base));
+//            }
         }
 
 
@@ -594,9 +594,6 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     }
 
 
-    protected Random random() {
-        return ThreadLocalRandom.current();
-    }
 
 //    final static LongSet EMPTY_LONG_SET = LongSets.immutable.empty();
 
@@ -766,7 +763,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
                     long pathEndTime = n.id.when();
                     BooleanObjectPair<Edge<Event, TimeSpan>> pathStart = path.get(0);
-                    Term pathStartTerm = pathStart.getTwo().from(pathStart.getOne()).id.id;
+//                    Term pathStartTerm = pathStart.getTwo().from(pathStart.getOne()).id.id;
 
                     long startTime = pathEndTime == ETERNAL ?
                             ETERNAL :
@@ -1033,7 +1030,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
      */
     public static class Relative extends Event {
 
-        public Relative(Term id) {
+        Relative(Term id) {
             super(id, TIMELESS);
         }
 

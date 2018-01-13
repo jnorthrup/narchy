@@ -190,12 +190,12 @@ class TimeGraphTest {
     }
 
     static TimeGraph newTimeGraph(long seed) {
-        XoRoShiRo128PlusRandom rng = new XoRoShiRo128PlusRandom(seed);
+//        XoRoShiRo128PlusRandom rng = new XoRoShiRo128PlusRandom(seed);
         return new TimeGraph() {
-            @Override
-            protected Random random() {
-                return rng;
-            }
+//            @Override
+//            protected Random random() {
+//                return rng;
+//            }
         };
     }
 
