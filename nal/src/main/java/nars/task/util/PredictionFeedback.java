@@ -18,7 +18,7 @@ public class PredictionFeedback {
     //final BeliefTable table;
 
 
-    static final boolean delete = false;
+    static final boolean delete = true;
     static final float strength = 1;
 
     /*public PredictionFeedback(BeliefTable table) {
