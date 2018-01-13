@@ -286,20 +286,20 @@
     //see: https://en.wikipedia.org/wiki/Imperative_logic#Ross.27_Paradox
     //originally these were only valid if A occurrs during or after C. the opposite is not logical and would also produce redundant results
 
-    B, C, belief("&&"), task("!"), task(positive) |- conjPrior(C,B), (Goal:Weak)
-    B, C, belief("&&"), task("!"), task(negative) |- conjPrior(C,--B), (Goal:WeakN)
+    X, C, belief("&&"), task("!"), task(positive), in(X,C) |- conjPrior(C,X), (Goal:Weak)
+    X, C, belief("&&"), task("!"), task(negative), in(X,C) |- conjPrior(C,--X), (Goal:WeakN)
 
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),conjEvent(C,late),B), (Goal:Strong)
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),--conjEvent(C,late),B), (Goal:StrongN)
 
-    C, B, task("&&"), task("!"), belief(positive) |- conjDropIfEarliest(C,B), (Goal:Strong)
-    C, B, task("&&"), task("!"), belief(negative) |- conjDropIfEarliest(C,--B), (Goal:StrongPN)
+    C, X, task("&&"), task("!"), belief(positive), in(X,C) |- conjDropIfEarliest(C,X), (Goal:Strong)
+    C, X, task("&&"), task("!"), belief(negative), in(X,C) |- conjDropIfEarliest(C,--X), (Goal:StrongPN)
         //(&&,X,A..+), X, task("!") |- X, (Goal:Strong)
         //(&&,--X,A..+), X, task("!") |- X, (Goal:StrongPN)
 
     //structural decompose any component of a conjunction.
     //for belief: any conj
-    C, X, task("&&")  |- conjWithout(C, X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    C, X, task("&&"), in(X,C)  |- conjWithout(C, X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
     //for goal: if eternal and paral (goal seq must be decomposed sequentially use &&| and add separate rule
     //C, X, task("&&") |- dropAnyEvent(C), (Goal:StructuralDeduction)

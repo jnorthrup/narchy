@@ -23,6 +23,15 @@ public enum OsmReader { ;
 
 
     public static Osm load(String filename) throws SAXException, IOException, ParserConfigurationException {
+        InputStream fis = new FileInputStream(filename);
+
+        if (filename.endsWith(".gz")) {
+            fis = new GZIPInputStream(fis);
+        }
+        return load(fis);
+    }
+
+    public static Osm load(InputStream fis) throws SAXException, IOException, ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
         factory.setNamespaceAware(false);
@@ -34,11 +43,6 @@ public enum OsmReader { ;
 
         DocumentBuilder documentBuilder = factory.newDocumentBuilder();
 
-        InputStream fis = new FileInputStream(filename);
-
-        if (filename.endsWith(".gz")) {
-            fis = new GZIPInputStream(fis);
-        }
         Document document = documentBuilder.parse(fis);
 
 

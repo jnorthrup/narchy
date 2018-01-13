@@ -178,11 +178,11 @@ public class Tasklinks {
 //        }
 //    }
 
-    public static class TaskLinkForget extends PriForget<PriReference<Task>> {
+    public static class ForgetNonPresentTasklinks extends PriForget<PriReference<Task>> {
         private final long now;
         private final int dur;
 
-        public TaskLinkForget(float r, long now, int dur) {
+        public ForgetNonPresentTasklinks(float r, long now, int dur) {
             super(r);
             this.now = now;
             this.dur = dur;

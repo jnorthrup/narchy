@@ -73,7 +73,7 @@ public class Line1D {
 //            }
             //n.freqResolution.set(0.5f);
             //n.confResolution.set(0.1f);
-            n.termVolumeMax.set(16);
+            n.termVolumeMax.set(21);
             MetaGoal.Desire.set(n.want, 2f);
             MetaGoal.Action.set(n.want, 2f);
 

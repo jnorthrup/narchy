@@ -71,7 +71,7 @@ public class FZero extends NAgentX {
         )/*.blur()*/).resolution(0.1f);
 
 
-        new AutoConceptualizer(c.pixels, true, 5, nar) {
+        new AutoConceptualizer(c.pixels, true, 10, nar) {
             @Override
             protected void onFeature(Term feature) {
 //                System.out.println(feature);

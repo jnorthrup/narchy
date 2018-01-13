@@ -83,7 +83,7 @@ public class ThermostatTest {
     @Test
     @Disabled
     public void test1() {
-        Param.DEBUG = true;
+        //Param.DEBUG = true;
         final int DUR = 10;
 
         final int subTrainings = 1;

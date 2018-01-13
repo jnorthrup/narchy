@@ -2,33 +2,19 @@ package spacegraph.geo;
 
 import spacegraph.geo.data.Osm;
 
+import java.net.URL;
+
 public class Main {
 
-    public static void main(String[] args) {
-//        String filename = "p.osm.gz";
-//        String filename = "sqh.osm.gz";
-        String filename = "tokyo.osm";
-//        String filename = "map.osm";
-//        String filename = "coastline_islands.osm";
-//        String filename = "coastline_multiple_coasts.osm";
-//        String filename = "tessellation.osm";
-//        String filename = "tessellation_broken.osm";
-//        String filename = "sakurada_moat.osm";
+    public static void main(String[] args) throws Exception {
 
-        if (args.length > 0) {
-            filename = args[0];
-        } else {
-            filename = "/home/me/myosm/osm/" + filename; //HACK
-        }
 
-        try {
+        //https://wiki.openstreetmap.org/wiki/API_v0.6
+        //http://api.openstreetmap.org/api/0.6/changeset/#id/comment
+                                   // /api/0.6/map?bbox=min_lon,min_lat,max_lon,max_lat (W,S,E,N)
 
-            Osm osm = OsmReader.load(filename);
+            Osm osm = OsmReader.load(new URL("http://api.openstreetmap.org/api/0.6/map?bbox=-80.65,28.58,-80.60,28.63").openStream());
             new OsmViewer(osm).show(800, 800);
-        }
-        catch (Exception e) {
-            System.out.print("Usage: myosm filename\n");
-            System.out.print(e);
-        }
+
     }
 }

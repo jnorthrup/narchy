@@ -297,7 +297,7 @@ public class Builtin {
                 return Null;
             }
 
-            if (!oo.in(SETi.bit | SETe.bit))
+            if (!oo.in(SETi.bit | SETe.bit | SECTi.bit | SECTe.bit))
                 return Null;//returning the original value may cause feedback loop in callees expcting a change in value
 
             int size = t.subs();
@@ -399,7 +399,7 @@ public class Builtin {
                 return Null;
 
             Term x = Op.without(conj, event, true, nar.random());
-            if (x!=Null)
+            if (x != Null)
                 return x;
 
             //TODO randomize if multiple matches
@@ -425,8 +425,7 @@ public class Builtin {
                     f = nar.random().nextInt(fs);
                 events.remove(f);
                 return Op.conj(events);
-            } else
-            {
+            } else {
                 return Null;
             }
         }));
@@ -460,16 +459,24 @@ public class Builtin {
             return Op.conj(events);
         }));
         nar.on(Functor.f2((Atom) $.the("conjDropIfEarliest"), (Term conj, Term event) -> {
-            if (conj.op() != CONJ || conj.impossibleSubTerm(event))
+
+            if (conj.op() != CONJ)
                 return Null;
-            if (conj.dt() != DTERNAL) {
+
+            int dt = conj.dt();
+            if (dt != DTERNAL && dt != 0) {
+                event = event.root();
+
+                if (conj.impossibleSubTerm(event))
+                    return Null;
+
                 FasterList<LongObjectPair<Term>> events = conj.eventList();
-                assert (events.get(0).getOne() == 0);
+                //assert (events.get(0).getOne() == 0);
                 LongObjectPair<Term> first = events.get(0);
                 Term firstTerm = first.getTwo();
 //
 //                boolean neg;
-                if (!firstTerm.equalsRoot(event)) {
+                if (!event.equalsRoot(firstTerm)) {
                     return Null;
                 }
 
@@ -585,7 +592,7 @@ public class Builtin {
 
         nar.onOp1("load", (id, nn) -> {
             nar.runLater(() -> {
-                User.the().get(id.toString(), (byte[] x)->{
+                User.the().get(id.toString(), (byte[] x) -> {
                     try {
                         nn.inputBinary(new ByteArrayInputStream(x));
                     } catch (IOException e) {

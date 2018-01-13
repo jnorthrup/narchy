@@ -21,6 +21,7 @@ import nars.term.Termed;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 
@@ -67,13 +68,16 @@ public class Activate extends PLink<Concept> implements Termed {
 
 
         final Bag tasklinks = id.tasklinks();
-        long now = nar.time();
-        int dur = nar.dur();
+//        long now = nar.time();
+//        int dur = nar.dur();
         int ntasklinks = tasklinks.size();
-        tasklinks.commit(PriForget.forget(tasklinks, linkForgetting, Pri.EPSILON, (r) ->
-                new Tasklinks.TaskLinkForget(r, now, dur)));
         if (ntasklinks == 0)
             return;
+//        Consumer tasklinkForget = PriForget.forget(tasklinks, linkForgetting, Pri.EPSILON, (r) ->
+//                new Tasklinks.TaskLinkForget(r, now, dur));
+        //tasklinks.commit(tasklinkForget);
+        tasklinks.commit(tasklinks.forget(linkForgetting));
+
 
 
         int termlinksPerTasklink = Activate.termlinksPerTasklink;

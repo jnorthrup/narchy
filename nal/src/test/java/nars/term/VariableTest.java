@@ -129,6 +129,7 @@ public class VariableTest {
         Term NB = B.normalize();
         System.out.println(A + "\t" + B);
         System.out.println(NA + "\t" + NB);
+
         assertEquals(NA, NB);
     }
 

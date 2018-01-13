@@ -135,10 +135,13 @@ public enum TermLinks {
 
 
             case SIM:
-                return 3;
+                if (x.sub(0).isAny(Op.SetBits) || x.sub(1).isAny(Op.SetBits))
+                    return 3; //HACK NAL2 structural transform
+                else
+                    return 2;
 
             case INH:
-                return 4;
+                return 3;
 
             case IMPL:
                 //if (x.hasAny(Op.CONJ))
