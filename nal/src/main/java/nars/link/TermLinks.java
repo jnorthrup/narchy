@@ -83,10 +83,10 @@ public enum TermLinks {
         Term x = _x;
 
         Op o = x.op();
-        switch (o) {
-            case VAR_QUERY:
-                return; //NO
-        }
+//        switch (o) {
+//            case VAR_QUERY:
+//                return; //NO
+//        }
 
         if ((depth > 0 || selfTermLink(x)) && !(tc.add(x)))
             return; //already added
@@ -119,12 +119,11 @@ public enum TermLinks {
     static int layers(Term x) {
         switch (x.op()) {
 
+            case PROD:
+                return 0;
 
             case SETe:
             case SETi:
-                return 2;
-
-            case PROD:
                 return 2;
 
             case DIFFe:
@@ -136,7 +135,7 @@ public enum TermLinks {
 
             case SIM:
                 if (x.sub(0).isAny(Op.SetBits) || x.sub(1).isAny(Op.SetBits))
-                    return 3; //HACK NAL2 structural transform
+                    return 3; //HACK NAL2 structural transform linking to NAL1 statement
                 else
                     return 2;
 

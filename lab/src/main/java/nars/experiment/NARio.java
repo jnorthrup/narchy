@@ -18,6 +18,7 @@ import javax.swing.*;
 
 import static jcog.Util.unitize;
 import static nars.$.$;
+import static nars.$.$safe;
 import static nars.$.p;
 
 public class NARio extends NAgentX {
@@ -107,9 +108,9 @@ public class NARio extends NAgentX {
         initToggle();
 
 
-        SensorConcept dvx = senseNumberDifference($("vx"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
+        SensorConcept dvx = senseNumberDifference($safe("nario:vx"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
                 mario.x : 0).resolution(0.04f);
-        SensorConcept dvy = senseNumberDifference($("vy"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
+        SensorConcept dvy = senseNumberDifference($safe("nario:vy"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
                 mario.y : 0).resolution(0.04f);
 
 //        window(Vis.beliefCharts(64, concat(dvx,dvy), nar), 300, 300);
@@ -131,11 +132,11 @@ public class NARio extends NAgentX {
     }
 
     private void initToggle() {
-        actionToggle($.$safe("nario:left"), (n) -> mario.scene.key(Mario.KEY_LEFT, n));
-        actionToggle($.$safe("nario:right"), (n) -> mario.scene.key(Mario.KEY_RIGHT, n));
-        actionToggle($.$safe("nario:jump"), (n) -> mario.scene.key(Mario.KEY_JUMP, n));
-        actionToggle($.$safe("nario:down"), (n) -> mario.scene.key(Mario.KEY_DOWN, n));
-        actionToggle($.$safe("nario:speed"), (b) -> mario.scene.key(Mario.KEY_SPEED, b));
+        actionToggle($safe("nario:left"), (n) -> mario.scene.key(Mario.KEY_LEFT, n));
+        actionToggle($safe("nario:right"), (n) -> mario.scene.key(Mario.KEY_RIGHT, n));
+        actionToggle($safe("nario:jump"), (n) -> mario.scene.key(Mario.KEY_JUMP, n));
+        actionToggle($safe("nario:down"), (n) -> mario.scene.key(Mario.KEY_DOWN, n));
+        actionToggle($safe("nario:speed"), (b) -> mario.scene.key(Mario.KEY_SPEED, b));
 //        actionTriState($("x"), i -> {
 //            boolean n, p;
 //            switch (i) {
@@ -279,7 +280,7 @@ public class NARio extends NAgentX {
             NARio x;
             try {
                 x = new NARio(n);
-                n.freqResolution.set(0.05f);
+                n.freqResolution.set(0.02f);
                 n.confResolution.set(0.02f);
 
                 //new Implier(x, 1);

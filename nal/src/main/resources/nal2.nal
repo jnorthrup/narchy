@@ -3,14 +3,14 @@
     ([S] <-> [P]), [S] |- ([S] --> [P]), (Belief:Identity)
 
 //Set Definition Unwrap
-    ({S} <-> {P}), S |- (S <-> P), (Belief:Identity)
-    ([S] <-> [P]), S |- (S <-> P), (Belief:Identity)
+    ({S} <-> {P}), {S} |- (S <-> P), (Belief:Identity)
+    ([S] <-> [P]), [S] |- (S <-> P), (Belief:Identity)
 
 //Nothing is more specific than a instance, so its similar
-    (S --> {P}),  S  |- (S <-> {P}), (Belief:Identity)
+    (S --> {P}),  {P}  |- (S <-> {P}), (Belief:Identity)
 
 //nothing is more general than a property, so its similar
-    ([S] --> P),  P  |- ([S] <-> P), (Belief:Identity)
+    ([S] --> P),  [S]  |- ([S] <-> P), (Belief:Identity)
 
 
 //Set Composition
@@ -27,7 +27,7 @@
     (A --> C), (B --> C), neq(A,B),is(A,"{"),is(B,"{") |- (union(A,B) --> C), (Belief:Intersection)
     (A --> C), (B --> C), neq(A,B),is(A,"{"),is(B,"{") |- (differ(A,B) --> C), (Belief:Difference)
 
-    (A --> C), (B --> C), neq(A,B),is(A,"["),is(B,"[") |- (union(A,B) --> C), (Belief:Union, Goal:Union)
+    (A --> C), (B --> C), neq(A,B),is(A,"["),is(B,"[") |- (union(A,B) --> C), (Belief:Union)
     (A --> C), (B --> C), neq(A,B),is(A,"["),is(B,"[") |- (intersect(A,B) --> C), (Belief:Intersection)
     (A --> C), (B --> C), neq(A,B),is(A,"["),is(B,"[") |- (differ(A,B) --> C), (Belief:Difference)
 

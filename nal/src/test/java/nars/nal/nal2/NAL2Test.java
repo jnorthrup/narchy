@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 //@RunWith(Parameterized.class)
 public class NAL2Test extends NALTest {
 
-    static final int cycles = 50;
+    static final int cycles = 250;
 
 
     @Override
