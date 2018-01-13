@@ -26,6 +26,7 @@ import nars.term.atom.Int;
 import nars.term.sub.Subterms;
 import nars.term.var.Variable;
 import org.eclipse.collections.api.list.MutableList;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,8 +44,8 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
     public DefaultConceptBuilder() {
         this(
-                new DefaultConceptState("sleep", 16, 16, 2),
-                new DefaultConceptState("awake", 64, 64, 8)
+                new DefaultConceptState("sleep", 8, 8, 2),
+                new DefaultConceptState("awake", 24, 24, 4)
         );
     }
 
@@ -86,6 +87,24 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
 
     private TaskConcept taskConcept(final Term t) {
+        DynamicTruthModel dmt = unroll(t);
+
+        if (dmt != null) {
+
+            return new DynamicConcept(t,
+                    new DynamicBeliefTable(t, newTemporalBeliefTable(t), dmt, true),
+                    goalable(t) ?
+                        new DynamicBeliefTable(t, newTemporalBeliefTable(t), dmt, false) :
+                        BeliefTable.Empty,
+                    this);
+
+        } else {
+            return new TaskConcept(t, this);
+        }
+    }
+
+    @Nullable
+    public static DynamicTruthModel unroll(Term t) {
         DynamicTruthModel dmt = null;
 
         final Subterms ts = t.subterms();
@@ -250,19 +269,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
             case NEG:
                 throw new RuntimeException("negation terms can not be conceptualized as something separate from that which they negate");
         }
-
-        if (dmt != null) {
-
-            return new DynamicConcept(t,
-                    new DynamicBeliefTable(t, newTemporalBeliefTable(t), dmt, true),
-                    goalable(t) ?
-                        new DynamicBeliefTable(t, newTemporalBeliefTable(t), dmt, false) :
-                        BeliefTable.Empty,
-                    this);
-
-        } else {
-            return new TaskConcept(t, this);
-        }
+        return dmt;
     }
 
     @Override

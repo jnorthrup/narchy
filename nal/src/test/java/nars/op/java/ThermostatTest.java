@@ -92,9 +92,9 @@ public class ThermostatTest {
         NAR n = NARS.tmp();
 
         n.time.dur(DUR);
-        n.termVolumeMax.set(30);
-        n.freqResolution.set(0.04f);
-        n.confResolution.set(0.02f);
+        n.termVolumeMax.set(16);
+        n.freqResolution.set(0.1f);
+        n.confResolution.set(0.05f);
 
         float exeThresh = 0.55f;
 
@@ -294,6 +294,7 @@ public class ThermostatTest {
 //            n.run(period);
 //        }
 
+        n.tasks().forEach(t -> System.out.println(t));
 
     }
 

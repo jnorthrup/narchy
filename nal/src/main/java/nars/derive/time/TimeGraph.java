@@ -14,6 +14,8 @@ import nars.$;
 import nars.Op;
 import nars.Param;
 import nars.Task;
+import nars.concept.builder.DefaultConceptBuilder;
+import nars.concept.dynamic.DynamicTruthModel;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.sub.Subterms;
@@ -240,6 +242,17 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             eventDT = edt;
 
         switch (eventTerm.op()) {
+            case INH:
+                @Nullable DynamicTruthModel dmt = DefaultConceptBuilder.unroll(eventTerm); //TODO optimize
+                if (dmt!=null) {
+                    Term[] c = dmt.components(eventTerm);
+                    if (c!=null && c.length > 1) {
+                        for (Term cc : c)
+                            link(know(cc), 0, event);
+                    }
+                }
+                break;
+
             case NEG:
                 if (autoUnneg)
                     link(know(eventTerm.unneg()), 0, event); //lower priority?

@@ -1,5 +1,6 @@
 package nars.derive.time;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.data.ArrayHashSet;
 import nars.Op;
@@ -226,7 +227,75 @@ public class DeriveTime extends TimeGraph {
 //        return c;
 //    }
 
+    protected Event absolute(Term t) {
+        //TODO test for multiple options
+        for (Event tx : byTerm.get(t)) {
+            if (tx instanceof Absolute)
+                return tx; //already known absolute
+        }
+        return null;
+    }
+
+    /** temporary override patches */
+    protected Term override(Term pattern) {
+        //case ConjEventA: a conjunction pattern consisting of 2 precisely known events separated by an XTERNAL
+        if (pattern.op()==CONJ) {
+            if (pattern.dt()==XTERNAL) {
+                Term a = pattern.sub(0);
+                Event ae = absolute(a);
+                if (ae!=null) {
+                    Term b = pattern.sub(1);
+                    Event be = absolute(b);
+                    if (be!=null) {
+                        long aew = ae.when();
+                        long bew = be.when();
+                        if (aew==ETERNAL ^ bew == ETERNAL) {
+                            //mix of eternal and temporal, so simultaneous at the temporal
+                            long occ;
+                            if (aew == ETERNAL) {
+                                occ = bew;
+                            } else {
+                                occ = aew;
+                            }
+                            d.concOcc[0] = d.concOcc[1] = occ;
+                            return Op.conjMerge(ae.id, 0, be.id, 0);
+                        } else if (aew == ETERNAL) {
+                            //both eternal, so dternal
+                            return pattern.dt(DTERNAL);
+                        } else {
+                            //both events
+                            long occ, dt;
+                            Term t;
+                            if (aew < bew) {
+                                dt = bew - aew;
+                                occ = aew;
+                                t = Op.conjMerge(ae.id, 0, be.id, (int)dt);
+                            } else {
+                                dt = aew - bew;
+                                occ = bew;
+                                t = Op.conjMerge(be.id, 0, ae.id, (int)dt);
+                            }
+                            if (Math.abs(dt) < Integer.MAX_VALUE-1) {
+                                d.concOcc[0] = d.concOcc[1] = occ;
+                                return t;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
     public Term solve(Term pattern) {
+
+        Term overrideSolution = override(pattern);
+        if (overrideSolution!=null)
+            return overrideSolution;
+        else {
+            d.concOcc[0] = d.concOcc[1] = ETERNAL; //reset just in case
+        }
 
 //        if (taskStart == ETERNAL && task.isGoal() && belief!=null && !belief.isEternal()) {
 //            //apply this as a temporal goal task at the present time, since present time does occur within the eternal task

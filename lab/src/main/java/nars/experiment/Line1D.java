@@ -11,6 +11,7 @@ import nars.*;
 import nars.control.MetaGoal;
 import nars.gui.Vis;
 import nars.op.RLBooster;
+import nars.op.stm.RelationClustering;
 import nars.task.DerivedTask;
 import nars.test.agent.Line1DSimplest;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -73,9 +74,9 @@ public class Line1D {
 //            }
             //n.freqResolution.set(0.5f);
             //n.confResolution.set(0.1f);
-            n.termVolumeMax.set(21);
-            MetaGoal.Desire.set(n.want, 2f);
-            MetaGoal.Action.set(n.want, 2f);
+            n.termVolumeMax.set(24);
+//            MetaGoal.Desire.set(n.want, 2f);
+//            MetaGoal.Action.set(n.want, 2f);
 
 
 //            ConjClustering conjClusterB = new ConjClustering(n, 4, BELIEF, true, 16, 64);
@@ -184,8 +185,9 @@ public class Line1D {
             };
             exp.floatValueOf(n);
 
+            //new RelationClustering(n, (t)->1f, 4, 16);
 
-            n.time.dur(10);
+            n.time.dur(5);
             exp.agent.curiosity.set(0.1f);
             exp.agent.runDur(1);
 
@@ -282,7 +284,7 @@ public class Line1D {
 
             //Line1DTrainer trainer = new Line1DTrainer(a);
 
-            new RLBooster(agent, HaiQAgent::new, 3);
+            //new RLBooster(agent, HaiQAgent::new, 3);
 
             //ImplicationBooster.implAccelerator(a);
 
