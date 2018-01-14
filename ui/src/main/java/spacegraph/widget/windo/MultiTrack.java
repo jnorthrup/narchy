@@ -1,6 +1,7 @@
 package spacegraph.widget.windo;
 
 import com.google.common.collect.Iterables;
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.list.FasterList;
@@ -16,7 +17,7 @@ import java.util.List;
 import static com.jogamp.opengl.GL.*;
 import static spacegraph.widget.windo.Windo.DragEdit.*;
 
-public class MultiTrack extends Stacking {
+public class MultiTrack extends Widget {
 
     static class TracksState {
         public double start, end;
@@ -98,42 +99,7 @@ public class MultiTrack extends Stacking {
         }
     }
 
-    @Override
-    protected void paintBelow(GL2 gl) {
 
-        super.paintBelow(gl);
-//
-//        //gl.glColorMask(false,false,false,false);                           // Set Color Mask to TRUE, TRUE, TRUE, TRUE
-//
-//        gl.glEnable(GL_STENCIL_TEST);                      // Enable Stencil Buffer For "marking" The Floor
-//        gl.glClear(GL_STENCIL_BUFFER_BIT);
-//        gl.glStencilFunc(GL_ALWAYS, 1, 1);                     // Always Passes, 1 Bit Plane, 1 As Mask
-//        gl.glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);              // We Set The Stencil Buffer To 1 Where We Draw Any Polygon
-//        // Keep If Test Fails, Keep If Test Passes But Buffer Test Fails
-//        // Replace If Test Passes
-//        //gl.glDisable(GL_DEPTH_TEST);                       // Disable Depth Testing
-//
-//        // We Only Want To Mark It In The Stencil Buffer
-//
-        Draw.rect(gl, bounds);
-//
-//
-//        //gl.glEnable(GL_DEPTH_TEST);                        // Enable Depth Testing
-//        gl.glColorMask(true,true,true,true);                           // Set Color Mask to TRUE, TRUE, TRUE, TRUE
-//        gl.glStencilFunc(GL_EQUAL, 1, 1);                      // We Draw Only Where The Stencil Is 1
-//        gl.glStencilMask(0x00);
-//
-//        // (I.E. Where The Floor Was Drawn)
-//        gl.glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);                 // Don't Change The Stencil Buffer
-    }
-
-//    @Override
-//    protected void paintAbove(GL2 gl) {
-//        gl.glDisable(GL_STENCIL_TEST);
-//
-//
-//        super.paintAbove(gl);
-//    }
 
     @Override
     public void doLayout(int dtMS) {
@@ -189,6 +155,7 @@ public class MultiTrack extends Stacking {
         };
         t.add(new DummyTrack(1, 4, 4));
         t.add(new DummyTrack(2, 5, 5));
+        t.add(new DummyTrack(1, 3, 15));
 
         t.layout();
         SpaceGraph.window(t, 1200, 800);

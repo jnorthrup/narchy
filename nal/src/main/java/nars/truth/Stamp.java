@@ -40,14 +40,14 @@ public interface Stamp {
 
 
     long[] UNSTAMPED = new long[0];
-    long[] UNSTAMPED_OVERLAPPING = new long[] { Long.MAX_VALUE };
+    long[] UNSTAMPED_OVERLAPPING = new long[]{Long.MAX_VALUE};
 
-    /*@NotNull*/ static long[] zip(/*@NotNull*/ long[] a, /*@NotNull*/ long[] b, float aToB) {
+    /*@NotNull*/
+    static long[] zip(/*@NotNull*/ long[] a, /*@NotNull*/ long[] b, float aToB) {
         return zip(a, b, aToB,
                 Param.STAMP_CAPACITY,
                 true);
     }
-
 
 
     /***
@@ -69,19 +69,12 @@ public interface Stamp {
 
         int aLen = a.length, bLen = b.length;
 
-        {
-            if (isCyclic(a)) aLen--; //cyclic flag is not propagated through double derivation
-            if (isCyclic(b)) bLen--; //cyclic flag is not propagated through double derivation
-        }
-        {
-            //if (isCyclic(a) && isCyclic(b)) bLen--; //only inherit one cyclic
-        }
 
         int baseLength = Math.min(aLen + bLen, maxLen);
 
         //how many items to exclude from each due to weighting
         int aMin = 0, bMin = 0;
-        if (aLen+bLen > maxLen) {
+        if (aLen + bLen > maxLen) {
             if (!newToOld)
                 throw new UnsupportedOperationException("reverse weighted not yet unimplemented");
 
@@ -92,11 +85,11 @@ public interface Stamp {
                 int usedA = Math.max(1, (int) Math.floor(aToB * (aLen + bLen)));
                 if (usedA < aLen) {
                     if (bLen + usedA < maxLen)
-                        usedA+= maxLen - usedA - bLen; //pad to fill
+                        usedA += maxLen - usedA - bLen; //pad to fill
                     aMin = Math.max(0, aLen - usedA);
                 }
             } else /* aToB > 0.5f */ {
-                int usedB = Math.max(1, (int) Math.floor((1f-aToB) * (aLen + bLen)));
+                int usedB = Math.max(1, (int) Math.floor((1f - aToB) * (aLen + bLen)));
                 if (usedB < bLen) {
                     if (aLen + usedB < maxLen)
                         usedB += maxLen - usedB - aLen;  //pad to fill
@@ -109,8 +102,8 @@ public interface Stamp {
         long[] c = new long[baseLength];
         if (newToOld) {
             //"forward" starts with newes, oldest are trimmed
-            int ib = bLen-1, ia = aLen-1;
-            for (int i = baseLength-1; i >= 0; ) {
+            int ib = bLen - 1, ia = aLen - 1;
+            for (int i = baseLength - 1; i >= 0; ) {
                 boolean ha = (ia >= aMin), hb = (ib >= bMin);
 
 //                c[i--] = ((ha && hb) ?
@@ -136,8 +129,8 @@ public interface Stamp {
 
                 boolean ha = ia < (aLen - aMin), hb = ib < (bLen - bMin);
                 c[i++] = ((ha && hb) ?
-                            ((i & 1) > 0) : ha) ?
-                            a[ia++] : b[ib++];
+                        ((i & 1) > 0) : ha) ?
+                        a[ia++] : b[ib++];
             }
         }
 
@@ -182,8 +175,8 @@ public interface Stamp {
             sb.append(oc);
 
             long end = end();
-            if (end!=oc) {
-                sb.append((char)0x22c8 /* bowtie, horizontal hourglass */).append(end);
+            if (end != oc) {
+                sb.append((char) 0x22c8 /* bowtie, horizontal hourglass */).append(end);
             }
 
 
@@ -216,7 +209,7 @@ public interface Stamp {
         /*if (!(start() == ETERNAL)) {
             appendTime(buffer);
         } else {*/
-            buffer.append(creation());
+        buffer.append(creation());
         //}
         buffer.append(Op.STAMP_STARTER).append(' ');
 
@@ -291,7 +284,8 @@ public interface Stamp {
         return dedupAndTrimmed;
     }
 
-    @Deprecated static boolean overlapping(/*@NotNull*/ Stamp a, /*@NotNull*/ Stamp b) {
+    @Deprecated
+    static boolean overlapping(/*@NotNull*/ Stamp a, /*@NotNull*/ Stamp b) {
         return ((a == b) || overlapping(a.stamp(), b.stamp()));
     }
 
@@ -302,21 +296,22 @@ public interface Stamp {
      * @param a evidence stamp in sorted order
      * @param b evidence stamp in sorted order
      */
-    @Deprecated static boolean overlapping(/*@NotNull*/ long[] a, /*@NotNull*/ long[] b) {
+    @Deprecated
+    static boolean overlapping(/*@NotNull*/ long[] a, /*@NotNull*/ long[] b) {
 
         if (Param.DEBUG) {
 //            if (a == null || b == null)
 //                throw new RuntimeException("null evidence");
-            if (a.length == 0 || b.length == 0) {
-                throw new RuntimeException("missing evidence");
-            }
+
+        }
+        if (a.length == 0 || b.length == 0) {
+            return false;
         }
 
         /** TODO there may be additional ways to exit early from this loop */
 
         for (long x : a) {
-            if (x == Long.MAX_VALUE)
-                continue; //ignore the cyclic flag
+
             for (long y : b) {
                 if (x == y) {
                     return true; //commonality detected
@@ -330,15 +325,15 @@ public interface Stamp {
 
     /**
      * the fraction of components in common divided by the total amount of unique components.
-     *
+     * <p>
      * how much two stamps overlap can be used to estimate
      * the potential for information gain vs. redundancy.
-     *
-     *      == 0 if nothing in common, completely independent
-     *      >0 if there is at least one common component;
-     *          1.0 if they are equal, or if one is entirely contained within the other
-     *          < 1.0 if they have some component in common
-     *
+     * <p>
+     * == 0 if nothing in common, completely independent
+     * >0 if there is at least one common component;
+     * 1.0 if they are equal, or if one is entirely contained within the other
+     * < 1.0 if they have some component in common
+     * <p>
      * assumes the arrays are sorted and contain no duplicates
      */
     static float overlapFraction(long[] a, long[] b) {
@@ -357,45 +352,42 @@ public interface Stamp {
             b = ab;
         }
 
-        //TODO fast impl for simple cases where a.length=1
-
-        if (isCyclic(a))
-            al--;
-
         return overlapFraction(LongSets.immutable.of(a), al, b);
     }
 
 
-    /** ignores any cyclic element */
+    /**
+     * ignores any cyclic element
+     */
     static float overlapFraction(/*@NotNull*/ LongSet aa, int aSize, /*@NotNull*/ long[] b) {
         int common = 0;
         int bSize = b.length;
-        for (long x: b) {
-            if (x != Long.MAX_VALUE) {
-                if (aa.contains(x)) {
-                    common++;
-                }
-            } else {
-                bSize--;
+        for (long x : b) {
+            if (aa.contains(x)) {
+                common++;
             }
+
         }
         if (common == 0)
             return 0f;
 
         int denom = Math.min(aSize, bSize);
-        assert(denom!=0);
+        assert (denom != 0);
 
-        return Util.unitize( ((float) common) / denom ); //max: +1
+        return Util.unitize(((float) common) / denom); //max: +1
     }
 
     long creation();
+
     long start();
+
     long end();
 
 
-
-    /** originality monotonically decreases with evidence length increase.
-     * it must always be < 1 (never equal to one) due to its use in the or(conf, originality) ranking */
+    /**
+     * originality monotonically decreases with evidence length increase.
+     * it must always be < 1 (never equal to one) due to its use in the or(conf, originality) ranking
+     */
     default float originality() {
         return TruthFunctions.originality(stamp().length);
     }
@@ -436,11 +428,12 @@ public interface Stamp {
 //    }
 
 
-
-    /** returns pair: (stamp, % overlapping) */
+    /**
+     * returns pair: (stamp, % overlapping)
+     */
     static ObjectFloatPair<long[]> zip(List<? extends Stamp> s, int maxLen) {
         int S = s.size();
-        assert(S > 0);
+        assert (S > 0);
         if (S == 1) {
             return pair(s.get(0).stamp(), 0f);
         }
@@ -460,7 +453,7 @@ public interface Stamp {
             int xl = x.length;
             int r = xl;
             totalEvidence += r;
-            ptr[i] = (byte)r;
+            ptr[i] = (byte) r;
         }
         if (totalEvidence == 0) {
             return pair(Stamp.UNSTAMPED_OVERLAPPING, 1f);
@@ -468,7 +461,8 @@ public interface Stamp {
 
         int limit = maxLen;
         boolean halted = false;
-        main: while (done<S && l.size() < limit) {
+        main:
+        while (done < S && l.size() < limit) {
             done = 0;
             for (int i = 0; i < S; i++) {
                 long[] x = s.get(i).stamp();
@@ -505,7 +499,7 @@ public interface Stamp {
 
 
         int ls = l.size();
-        assert(ls <= limit);
+        assert (ls <= limit);
 
         long[] e = new long[ls];
         MutableLongIterator ll = l.longIterator();
@@ -528,13 +522,6 @@ public interface Stamp {
         return pair(e, Util.unitize(overlap));
     }
 
-
-    /** cyclic tasks are indicated with a final value of Long.MAX_VALUE */
-    @Deprecated static boolean isCyclic(/*@NotNull*/ long[] e) {
-        return false;
-//        int length = e.length;
-//        return (length > 1 && e[length -1] == Long.MAX_VALUE);
-    }
 
 //    static long[] uncyclic(/*@NotNull*/ long[] assumedCyclic) {
 //

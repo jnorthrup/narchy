@@ -59,7 +59,7 @@ public class TemporalInductionTest {
     }
 
     static void testInduction(String a, String b, int dt) {
-        int cycles = dt * 16;
+        int cycles = dt * 24;
         TestNAR t = new TestNAR(NARS.tmp())
                 //.log()
                 .confTolerance(0.75f)

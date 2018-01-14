@@ -92,7 +92,7 @@ public interface NSense {
         return p(a, b);//"(" + term + " , " + e + ")";
     }
 
-    default void senseSwitch(Compound term, @NotNull IntSupplier value, int min, int max) {
+    default void senseSwitch(Term term, @NotNull IntSupplier value, int min, int max) {
         senseSwitch(term, value, Util.intSequence(min, max));
     }
 

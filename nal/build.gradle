@@ -5,10 +5,10 @@ buildscript {
         maven { url 'http://jitpack.io' }
         //maven { url 'https://stamp-project.github.io/stamp-maven-repository' }
     }
-//    dependencies{
+    dependencies{
 //        classpath "com.github.hurricup:gradle-grammar-kit-plugin:2017.1"
-//        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.4'
-//    }
+        classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.4'
+    }
 }
 
 //apply plugin: 'org.jetbrains.grammarkit'
@@ -60,7 +60,7 @@ dependencies {
 }
 
 //apply plugin: 'com.uber.infer.java'
-//apply plugin: "info.solidsoft.pitest"
+apply plugin: "info.solidsoft.pitest"
 //apply plugin: 'com.github.johnrengelman.shadow'
 
 //tasks.withType(JavaCompile) {
@@ -83,35 +83,35 @@ dependencies {
 //    ]
 //}
 
-//pitest {
-//
-//    targetTests = [
-//            'nars.nal.nal1.NAL1Test',
-//            //'nars.nal.nal1.NAL1MultistepTest',
-//            //'nars.nal.nal2.*',
-//            //'nars.derive.TemporalizeTest',
-//            //'nars.task.*'
-//    ]
-//    targetClasses = [
-//            'nars.term.*',
-//            'nars.nal.*',
-//            //'nars.table.*',
-//            //'nars.concept.*',
-//            //'nars.control.*',
-//            'nars.derive.time.*'
-//    ]
-//
-////    jvmArgs = ["-ea"]
-//
-//    pitestVersion = "1.2.4" //not needed when a default PIT version should be used
-//
-//    timeoutFactor = 3
-//    enableDefaultIncrementalAnalysis = true
-//    threads = 4
-//
-//    outputFormats = ['HTML']
-//    timestampedReports = false
-//}
+pitest {
+
+    targetTests = [
+            'nars.nal.nal1.NAL1Test',
+            //'nars.nal.nal1.NAL1MultistepTest',
+            //'nars.nal.nal2.*',
+            //'nars.derive.TemporalizeTest',
+            //'nars.task.*'
+    ]
+    targetClasses = [
+            'nars.term.*',
+            'nars.nal.*',
+            //'nars.table.*',
+            //'nars.concept.*',
+            //'nars.control.*',
+            'nars.derive.time.*'
+    ]
+
+//    jvmArgs = ["-ea"]
+
+    pitestVersion = "1.2.4" //not needed when a default PIT version should be used
+
+    timeoutFactor = 3
+    enableDefaultIncrementalAnalysis = true
+    threads = 4
+
+    outputFormats = ['HTML']
+    timestampedReports = false
+}
 //
 //description = ''
 

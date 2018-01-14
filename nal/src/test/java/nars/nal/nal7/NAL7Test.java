@@ -1105,14 +1105,13 @@ public class NAL7Test extends NALTest {
                 .inputAt(0, "(x --> a). :|:")
                 .inputAt(3, "(y --> a). :|:")
                 .mustNotOutput(cycles, "((x&y)-->a)", BELIEF,
-                        t -> (t >= 0) && (t <= 3))
+                        t -> !((t >= 0) && (t <= 3)))
         ;
     }
 
     @Test
     public void testPrediction1() throws Narsese.NarseseException {
 
-        Param.DEBUG = true;
 
         int eventDT = 16;
         int cycles = 10;

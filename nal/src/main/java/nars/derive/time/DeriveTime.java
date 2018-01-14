@@ -16,6 +16,7 @@ import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import java.util.*;
 
 import static nars.Op.CONJ;
+import static nars.Op.IMPL;
 import static nars.time.Tense.*;
 
 
@@ -33,7 +34,6 @@ import static nars.time.Tense.*;
  * and other reductions. an attempt can be made to back-solve the result.
  * if that fails, a heuristic could decide the match. in the worst case,
  * the derivation will not be temporalizable and this method returns null.
- *
  */
 public class DeriveTime extends TimeGraph {
 
@@ -53,85 +53,70 @@ public class DeriveTime extends TimeGraph {
         cache.clear();
     }
 
-    DeriveTime(DeriveTime copy, Term transformedTask, Term transformedBelief) {
+    /** for dynamic */
+    DeriveTime(DeriveTime copy) {
         this.cache = null;
         this.d = copy.d;
         this.task = copy.task;
         this.belief = copy.belief;
         this.dither = copy.dither;
-        this.byTerm.putAll(copy.byTerm); //TODO wrap rather than copy
-        if (transformedTask != null) {
-            Event y = know(transformedTask, task.start());
-            //link(know(task.term(), task.start()), 0, y);
-            if (autoNegEvents && transformedTask.op()!=CONJ)
-                know(transformedTask.neg(), task.start());
-            //link(know(task.term().neg(), task.start()), 0, yNeg);
-        }
-        if (transformedBelief != null) {
-            if (belief!=null) {
-                Event y = know(transformedBelief, belief.start());
-                //link(know(belief.term(), belief.start()), 0, y);
-                if (autoNegEvents && transformedBelief.op()!=CONJ)
-                    know(transformedBelief.neg(), belief.start());
-                //link(know(belief.term().neg(), belief.start()), 0, yNeg);
+
+        //TODO optimized clone of the copy's graph
+        //this.byTerm.putAll(copy.byTerm);
+        //this.nodes...
+
+        //for now, just do manual reconstruct
+        copy.byTerm.values().forEach(this::add); //add to byTerm AND graph
+        copy.byTerm.keySet().forEach(x -> {
+            Term y = x.eval(d);
+            if (y != null && !y.equals(x) && y.op().conceptualizable) {
+                link(know(x), 0, know(y));
             }
-        }
+        });
+
     }
 
-//    DeriveTime(DeriveTime copy, Map<Term, Term> dyn) {
-//        this.cache = null;
-//        this.d = copy.d;
-//        this.task = copy.task;
-//        this.belief = copy.belief;
-//        this.dither = copy.dither;
-//        dyn.forEach((x,y)->{
-//           link(know(x), 0, know(y));
-//        });
+//    private void knowTransformed(Term tt, Task t) {
+//        Iterable<Event> ee = know(t, tt);
+//        if (autoNegEvents && tt.op() != CONJ) {
+//            for (Event y : ee)
+//                link(know(tt.neg()), 0, y);
+//        }
 //    }
+
 
     public DeriveTime(Derivation d, boolean single) {
         this.d = d;
-        this.task = d.task;
-        this.belief = d.belief; //!d.single ? d.belief : null;
         this.dither = d.nar.dtDitherCycles();
         this.cache = new HashMap();
 
-        know(task);
+        know(this.task = d.task);
 
-        if (!single && d._belief != null && !d._belief.equals(d._task)) {
+        if (!single /*&& d._belief != null */ && !d._belief.equals(d._task)) {
+            know(this.belief = d.belief);
+        } else {
+            this.belief = null;
+        }
 
-            know(belief);
-
-        } /*else if (!task.term().equals(d.beliefTerm)) {
-            know(d, d.beliefTerm, TIMELESS);
-        }*/
 
     }
 
 
     /**
-     * if current state of the derivation produced novel terms
+     * if current state of the derivation produced novel terms as a result of substitutions, etc
      */
     public DeriveTime get() {
-//        if (!d.xyDyn.isEmpty()) {
-//            return new DeriveTime(this, d.xyDyn);
-//        }
-
-        Term td = ifDynamic(d.task);
-        Term bd = d.belief != null ? ifDynamic(d.belief) : null /*ifDynamic(d.beliefTerm)*/;
-        boolean tChange = td != null;
-        boolean bChange = bd != null;
-        if (tChange || bChange) {
-            return new DeriveTime(this, tChange ? td : null, bChange ? bd : null);
+        if (ifDynamic(task)!=null || (belief!=null && ifDynamic(belief)!=null)) {
+            return new DeriveTime(this);
         } else {
-        return this;
+            return this;
         }
     }
 
-    Term ifDynamic(Termed x) {
-        Term xterm = x.term();
-        Term y = xterm.eval(d);
-        if (y != null && !(y instanceof Bool) && !y.equals(xterm)) {
+    Term ifDynamic(Termed xt) {
+        Term x = xt.term();
+        Term y = x.eval(d);
+        if (y != null && !(y instanceof Bool) && !y.equals(x)) {
             Collection<Event> existing = byTerm.get(y);
             for (Event ee : existing)
                 if (ee instanceof Absolute)
@@ -142,7 +127,6 @@ public class DeriveTime extends TimeGraph {
             return null;
         }
     }
-
 
 
     @Override
@@ -216,20 +200,22 @@ public class DeriveTime extends TimeGraph {
         return d.random;
     }
 
-    /** temporary override patches */
+    /**
+     * temporary override patches
+     */
     protected Term override(Term pattern) {
         //case ConjEventA: a conjunction pattern consisting of 2 precisely known events separated by an XTERNAL
-        if (pattern.op()==CONJ) {
-            if (pattern.dt()==XTERNAL) {
+        if (pattern.op() == CONJ) {
+            if (pattern.dt() == XTERNAL) {
                 Term a = pattern.sub(0);
                 Event ae = absolute(a);
-                if (ae!=null) {
+                if (ae != null) {
                     Term b = pattern.sub(1);
                     Event be = absolute(b);
-                    if (be!=null) {
+                    if (be != null) {
                         long aew = ae.when();
                         long bew = be.when();
-                        if (aew==ETERNAL ^ bew == ETERNAL) {
+                        if (aew == ETERNAL ^ bew == ETERNAL) {
                             //mix of eternal and temporal, so simultaneous at the temporal
                             long occ;
                             if (aew == ETERNAL) {
@@ -252,13 +238,13 @@ public class DeriveTime extends TimeGraph {
                             if (aew < bew) {
                                 dt = bew - aew;
                                 occ = aew;
-                                t = Op.conjMerge(ae.id, 0, be.id, (int)dt);
+                                t = Op.conjMerge(ae.id, 0, be.id, (int) dt);
                             } else {
                                 dt = aew - bew;
                                 occ = bew;
-                                t = Op.conjMerge(be.id, 0, ae.id, (int)dt);
+                                t = Op.conjMerge(be.id, 0, ae.id, (int) dt);
                             }
-                            if (Math.abs(dt) < Integer.MAX_VALUE-1) {
+                            if (Math.abs(dt) < Integer.MAX_VALUE - 1) {
                                 d.concOcc[0] = d.concOcc[1] = occ;
                                 return t;
                             }
@@ -271,162 +257,68 @@ public class DeriveTime extends TimeGraph {
         return null;
     }
 
+    public void know(Task t) {
+        Term tt = t.term();
+        //both positive and negative possibilities
+        Iterable<Event> ee = know(t, tt);
+        if (autoNegEvents && tt.op() != CONJ) {
+            for (Event e : ee)
+                link(know(tt.neg()), 0, e);
+        }
+    }
+
+    private Iterable<Event> know(Task task, Term term) {
+        long start = task.start();
+        long end = task.end();
+        if (end != start && end - start >= d.dur) {
+            //add each endpoint separately
+            return List.of(
+                    event(term, start, true),
+                    event(term, end, true));
+        } else {
+            return Collections.singleton(event(term, start, true));
+        }
+    }
+
     public Term solve(Term pattern) {
+        assert (pattern.op().conceptualizable);
 
         Term overrideSolution = override(pattern);
-        if (overrideSolution!=null)
+        if (overrideSolution != null) {
             return overrideSolution;
-        else {
-            d.concOcc[0] = d.concOcc[1] = ETERNAL; //reset just in case
         }
 
-//        if (taskStart == ETERNAL && task.isGoal() && belief!=null && !belief.isEternal()) {
-//            //apply this as a temporal goal task at the present time, since present time does occur within the eternal task
-//            taskStart = taskEnd = d.time;
-//        }
+        d.concOcc[0] = d.concOcc[1] = ETERNAL; //reset just in case
 
         long[] occ = d.concOcc;
 
-//        Term tt = polarizedTaskTerm(task);
-//        Term bb = d.beliefTerm;
-
-
-//        if (d.single) {
-//            //single
-//
-////            if (!tt.isTemporal()) {
-////                //simple case: inherit task directly
-////                occ[0] = task.start();
-////                occ[1] = task.end();
-////                return pattern;
-////            }
-//
-//
-//        } else {
-//            //double
-//
-//        }
-
         ArrayHashSet<Event> solutions = cache != null ? solveCached(pattern) : solveAll(pattern);
+        int ss = solutions.size();
 
-        Event event = solutions.first();
-        if (event == null) {
-            return solveRaw(pattern);
-        } else if (solutions.size() > 1) {
-//            Map<Term, LongHashSet> uniques = new HashMap();
-//            alternates.forEach(x -> {
-//                long w = x.when();
-//                if (w!=TIMELESS && w!=ETERNAL)
-//                    uniques.computeIfAbsent(x.id, xx -> new LongHashSet()).add(w);
-//            });
-//            if (!uniques.isEmpty()) {
-//                //all alternates of the same term but at different points; so stretch a solution containing all of them
-//
-//                ArrayHashSet<Map.Entry<Term, LongHashSet>> uu = new ArrayHashSet<>(uniques.entrySet());
-//                Map.Entry<Term, LongHashSet> h = uu.get(d.random);
-//
-//                Term st = h.getKey();
-//                LongHashSet s = h.getValue();
-//                occ[0] = s.min();
-//                occ[1] = s.max() + st.dtRange();
-//                return st;
-//            } else {
-
-            if (d.single ? d.task.isEternal() : d.eternal) {
-                event = solutions.get(d.random); //doesnt really matter which solution is chosen, in terms of probability of projection success
-            } else {
-
+        Event event;
+        switch (ss) {
+            case 0:
+                return solveRaw(pattern);
+            case 1:
                 event = solutions.get(d.random);
-
-
-                //choose event with least distance to task and belief occurrence so that projection has best propensity for non-failure
-
-                //solutions.shuffle(d.random); //shuffle so that equal items are selected fairly
-
-//                /* weight the influence of the distance to each
-//                   according to its weakness (how likely it is to null during projection). */
-//                float taskWeight =
-//                        //task.isBeliefOrGoal() ? (0.5f + 0.5f * (1f - task.conf())) : 0f;
-//                        0.5f;
-//                float beliefWeight =
-//                        //belief!=null ? (0.5f + 0.5f * (1f - belief.conf())) : 0;
-//                        0.5f;
-//
-//                final float base = 1f/solutions.size();
-//                event = solutions.roulette((e) -> {
-//                    long when = e.when();
-//                    if (when == TIMELESS)
-//                        return base/2f;
-//                    if (when == ETERNAL)
-//                        return base; //prefer eternal only if a temporal solution does not exist
-//
-//                    long distance = 1;
-//                    distance += task.minDistanceTo(when) * taskWeight;
-//
-//                    if (!d.single && belief!=null)
-//                        distance += belief.minDistanceTo(when) * beliefWeight;
-//
-//                    return 1f/distance;
-//                }, d.nar.random());
-            }
-//            }
+                break;
+            default:
+                event = solutions.first();
+                break;
         }
+
+        Term st = event.id;
 
         long es = event.when();
-        Term st = event.id;
         if (es == TIMELESS) {
             return solveRaw(st);
-        }
-
-        occ[0] = es;
-        occ[1] = es;
-
-        if (es == ETERNAL) {
-
-            if (task.isEternal() && (belief == null || belief.isEternal())) {
-                //its supposed to be eternal
-            } else {
-                //throw new RuntimeException("temporalization fault");
+        } else {
+            if (!eternalCheck(es))
                 return null;
-            }
-
-//            if (task.isEternal() && (belief==null || belief.isEternal())) {
-//                //its supposed to be eternal
-//            } else {
-//
-//                if (task.isEternal() && (belief != null && !belief.isEternal())) {
-//                    es = belief.start();
-//                } else if (!task.isEternal() && (belief != null && belief.isEternal())) {
-//                    es = task.start();
-//                } else {
-//                    throw new RuntimeException("temporalization fault");
-//                }
-//                occ[0] = es;
-//                occ[1] = es;
-//            }
+            occ[0] = occ[1] = es;
+            return st;
         }
-//        if (occ[0] != ETERNAL) {
-//            if (st.op()!=CONJ && occ[1]==occ[0]) {
-//                //HACK lengthen non-conjunction to match the non-eternal timing of an eternal + temporal premise
-//                //TODO this should be handled by TimeGraph entirely
-//                Task matchRange = null;
-//                if (belief!=null && !belief.isEternal() && task.isEternal())
-//                    matchRange = belief;
-//                else if (!task.isEternal() && (belief==null || belief.isEternal()))
-//                    matchRange = task;
-//                //else: //TODO use intersection of task and belief
-//                if (matchRange!=null) {
-//                    long l = matchRange.range();
-//                    occ[1] = occ[0] + l;
-//                }
-//
-//            }
-//        }
 
-        eternalCheck(occ[0]);
-
-        Op eop = st.op();
-        return !eop.conceptualizable ? null : st;
 
     }
 
@@ -443,9 +335,12 @@ public class DeriveTime extends TimeGraph {
 
         solve(pattern, false /* take everything */, (solution) -> {
             assert (solution != null);
+            assert (solution.id.op().conceptualizable);
+
             //TODO test equivalence with task and belief terms and occurrences, and continue iterating up to a max # of tries if it produced a useless equivalent result
 
             Event first = solutions.first();
+
             if (first == null) {
                 solutions.add(solution);
             } else {
@@ -469,12 +364,16 @@ public class DeriveTime extends TimeGraph {
     /**
      * eternal check: eternals can only be derived from completely eternal premises
      */
-    private void eternalCheck(long l) {
+    private boolean eternalCheck(long l) {
         if (l == ETERNAL) {
             //if ((!d.task.isEternal()) && !(d.belief != null && !d.belief.isEternal()))
-            if (!d.task.isEternal() || (!d.single && !d.belief.isEternal()))
-                throw new RuntimeException("ETERNAL leak");
+            if (!d.task.isEternal() || (d.belief != null && !d.belief.isEternal())) {
+
+                //throw new RuntimeException("ETERNAL leak");
+                return false;
+            }
         }
+        return true;
     }
 
     /**
@@ -499,32 +398,33 @@ public class DeriveTime extends TimeGraph {
             }
         } else {
 
-            boolean beliefEvent = belief != null && !belief.term().op().temporal;
             if (belief == null || (belief.isEternal())) {
                 if (!taskEvent) {
                     //transformed task term, should have been solved
                     return null;
                 } else {
                     //event: inherit task time
+                    boolean beliefEvent = belief == null || (
+                            !belief.term().op().temporal
+                    );
                     if (beliefEvent) {
                         s = task.start();
                         e = task.end();
                     } else {
-                        return null; //should have solution
+                        return null; //should have calculated solution normally
                     }
                 }
             } else {
 //                if (taskEvent && beliefEvent) {
                 //two events: fuse time
-                assert (!belief.isEternal());
+                //assert (!belief.isEternal());
                 TimeFusion joint = new TimeFusion(task.start(), task.end(), belief.start(), belief.end());
                 //                    if (joint.factor <= Pri.EPSILON) //allow for questions/quests, if this ever happens
                 //                        return null;
 
                 s = joint.unionStart;
+                assert (s != ETERNAL);
                 e = joint.unionEnd;
-                if (s == ETERNAL)
-                    throw new RuntimeException("why eternal");
                 d.concEviFactor *= joint.factor;
 //                } else {
 //                    //either task or belief were temporal, so should have been solved
@@ -567,7 +467,8 @@ public class DeriveTime extends TimeGraph {
 //            e = belief.end();
 //        }
 
-        eternalCheck(s);
+        if (!eternalCheck(s))
+            return null;
 
         occ[0] = s;
         occ[1] = e;
@@ -600,7 +501,8 @@ public class DeriveTime extends TimeGraph {
         }
 
         return null; //save both as alternates
-
+    }
+}
 //        //prefer a term which is not a repeat of the task or belief term
 //        boolean aMatch = a.id.equals(d.taskTerm) || a.id.equals(d.beliefTerm);
 //        boolean bMatch = b.id.equals(d.taskTerm) || b.id.equals(d.beliefTerm);
@@ -637,7 +539,7 @@ public class DeriveTime extends TimeGraph {
 //                score++;
 //        }
 
-    }
+//    }
 
 
 //    @Override
@@ -655,5 +557,62 @@ public class DeriveTime extends TimeGraph {
 //
 //    }
 
-
-}
+//
+//}
+//
+////            Map<Term, LongHashSet> uniques = new HashMap();
+////            alternates.forEach(x -> {
+////                long w = x.when();
+////                if (w!=TIMELESS && w!=ETERNAL)
+////                    uniques.computeIfAbsent(x.id, xx -> new LongHashSet()).add(w);
+////            });
+////            if (!uniques.isEmpty()) {
+////                //all alternates of the same term but at different points; so stretch a solution containing all of them
+////
+////                ArrayHashSet<Map.Entry<Term, LongHashSet>> uu = new ArrayHashSet<>(uniques.entrySet());
+////                Map.Entry<Term, LongHashSet> h = uu.get(d.random);
+////
+////                Term st = h.getKey();
+////                LongHashSet s = h.getValue();
+////                occ[0] = s.min();
+////                occ[1] = s.max() + st.dtRange();
+////                return st;
+////            } else {
+//
+//            if (d.single ? d.task.isEternal() : d.eternal) {
+//                    event = solutions.get(d.random); //doesnt really matter which solution is chosen, in terms of probability of projection success
+//                    } else {
+//
+//
+//                    //choose event with least distance to task and belief occurrence so that projection has best propensity for non-failure
+//
+//                    //solutions.shuffle(d.random); //shuffle so that equal items are selected fairly
+//
+////                /* weight the influence of the distance to each
+////                   according to its weakness (how likely it is to null during projection). */
+////                float taskWeight =
+////                        //task.isBeliefOrGoal() ? (0.5f + 0.5f * (1f - task.conf())) : 0f;
+////                        0.5f;
+////                float beliefWeight =
+////                        //belief!=null ? (0.5f + 0.5f * (1f - belief.conf())) : 0;
+////                        0.5f;
+////
+////                final float base = 1f/solutions.size();
+////                event = solutions.roulette((e) -> {
+////                    long when = e.when();
+////                    if (when == TIMELESS)
+////                        return base/2f;
+////                    if (when == ETERNAL)
+////                        return base; //prefer eternal only if a temporal solution does not exist
+////
+////                    long distance = 1;
+////                    distance += task.minDistanceTo(when) * taskWeight;
+////
+////                    if (!d.single && belief!=null)
+////                        distance += belief.minDistanceTo(when) * beliefWeight;
+////
+////                    return 1f/distance;
+////                }, d.nar.random());
+//                    }
+////            }
+//                    }

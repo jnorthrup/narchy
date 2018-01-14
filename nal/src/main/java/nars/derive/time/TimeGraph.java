@@ -33,6 +33,7 @@ import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
 import static nars.Op.IMPL;
+import static nars.Op.NEG;
 import static nars.derive.time.TimeGraph.TimeSpan.TS_ZERO;
 import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -52,10 +53,9 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  */
 public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
-    private static final boolean allowSelfLoops = true;
-    private static final boolean dternalAsZero = true;
-    private static final boolean autoUnneg = false;
-    protected static final boolean autoNegEvents = true;
+    private static final boolean dternalAsZero = false;
+    static final boolean autoNegEvents = true;
+    private static final boolean autoUnneg = true;
 
     static class TimeSpan {
         public final long dt;
@@ -140,25 +140,6 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 //        return t.term().negIf(tt != null && tt.isNegative());
 //    }
 
-    public void know(Task t) {
-        Term tt = t.term();
-        //both positive and negative possibilities
-        know(t, tt);
-        if (autoNegEvents && tt.op() != CONJ)
-            know(t, tt.neg());
-    }
-
-    private void know(Task task, Term term) {
-        long start = task.start();
-        long end = task.end();
-        if (end != start) {
-            //add each endpoint separately
-            event(term, start, true);
-            event(term, end, true);
-        } else {
-            event(term, start, true);
-        }
-    }
 
     public Event event(Term t, long start) {
         return event(t, start, false);
@@ -169,17 +150,12 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             return null;
 
 
-        if (when == TIMELESS) {
-            Event a = absolute(t);
-            if (a != null)
-                return a;
+        Event e;
+        if (when != TIMELESS) {
+            e = new Absolute(t, when);
         } else {
-            byTerm.get(t).removeIf(ei -> ei instanceof Relative);
-
+            e = new Relative(t);
         }
-
-        Event e =
-                when == TIMELESS ? new Relative(t) : new Absolute(t, when);
 
         return add ? add(e).id : event(e);
     }
@@ -222,7 +198,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
     public void link(Event x, long dt, Event y) {
 
-        if (!allowSelfLoops && (x == y || ((x.id.equals(y.id)) && (x.when() == y.when()))))
+        if ((x == y || ((x.id.equals(y.id)) && (x.when() == y.when()))))
             return; //loop
 
         boolean swap = false;
@@ -271,16 +247,17 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             eventDT = edt;
 
         switch (eventTerm.op()) {
-            case INH:
-                @Nullable DynamicTruthModel dmt = DefaultConceptBuilder.unroll(eventTerm); //TODO optimize
-                if (dmt != null) {
-                    Term[] c = dmt.components(eventTerm);
-                    if (c != null && c.length > 1) {
-                        for (Term cc : c)
-                            link(know(cc), 0, event);
-                    }
-                }
-                break;
+//            case INH:
+//                @Nullable DynamicTruthModel dmt = DefaultConceptBuilder.unroll(eventTerm); //TODO optimize
+//                if (dmt != null) {
+//                    Term[] c = dmt.components(eventTerm);
+//                    if (c != null && c.length > 1) {
+//                        for (Term cc : c) {
+//                            link(know(cc), 0, event);
+//                        }
+//                    }
+//                }
+//                break;
 
             case NEG:
                 if (autoUnneg)
@@ -296,7 +273,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
                     int st = subj.dtRange();
 
-                    //link(se, (eventDT + st), pe);
+                    link(se, (eventDT + st), pe);
 
                     //if (subj.hasAny(CONJ)) {
                     subj.eventsWhile((w, y) -> {
@@ -354,7 +331,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 switch (eventDT) {
                     case XTERNAL:
                     case DTERNAL:
-                        eventTerm.subterms().forEach(this::know); //TODO can these be absolute if the event is?
+                        //  eventTerm.subterms().forEach(this::know); //TODO can these be absolute if the event is?
                         break;
                     default:
 
@@ -402,34 +379,28 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
 
             List<Event> sources = new FasterList<>();
+            int[] phase =  new int[]{ 0 };
             Consumer<Event> collect = z -> {
                 if (z instanceof Absolute) {
-                    if (z.id.equals(a)) {
-                        if (exact[0] == null) exact[0] = new UnifiedSet(2);
-                        exact[0].add(z);
-                    }
-                    if (!aEqB && z.id.equals(b)) {
-                        if (exact[1] == null) exact[1] = new UnifiedSet(2);
-                        exact[1].add(z);
-                    }
-//                    return true;
+                    int p = phase[0];
+                    if (exact[p] == null) exact[p] = new UnifiedSet(2);
+                    exact[p].add(z);
                 }
-                //return false;
-//                return true; //include non-absolutes
 
                 sources.add(z);
             };
 
             byTerm.get(a).forEach(collect);
-//            if (exact[0]==null && a.op()==NEG)
-//                byTerm.get(a.unneg()).forEach(collect);
+            if (exact[0] == null)
+                byTerm.get(a.neg()).forEach(collect); //if nothing, look for negations
 
             if (aEqB) {
                 exact[1] = exact[0];
             } else {
+                phase[0] = 1;
                 byTerm.get(b).forEach(collect);
-//                if (exact[1] == null && b.op()==NEG)
-//                    byTerm.get(b.unneg()).forEach(collect);
+                if (exact[1] == null)
+                    byTerm.get(b.neg()).forEach(collect);  //if nothing, look for negations
             }
 
             if (exact[0] != null && exact[1] != null) {
@@ -540,7 +511,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 //            }
 //        }
 
-        return true; //each.test(event(x, TIMELESS)); //last resort
+        return each.test(event(x, TIMELESS)); //last resort
     }
 
     private boolean solveDT(Term x, Predicate<Event> each, Event aa, Event bb) {
@@ -658,14 +629,9 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         };
 
         //test for existing exact solutions to the exact term
-        boolean kontinue = solveExact(x, each) && solveAll(x, each) &&
-                each.test(event(x, TIMELESS)); //as a last resort: does this help?
+        boolean kontinue = solveExact(x, each) && solveAll(x, each);
+        //each.test(event(x, TIMELESS)); //as a last resort: does this help?
 
-        //if (cache)
-//        seen.forEach(s -> {
-//            if (s instanceof Absolute)
-//                know((Absolute)s);
-//        });
 
     }
 
@@ -695,54 +661,54 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 return true;
             }, null);
 
-            if (!xternalsToSolve.isEmpty()) {
+            int xs = xternalsToSolve.size();
 
-                //solve the XTERNAL from simplest to most complex. the canonical sort order of compounds will naturally descend this way
-                if (!Util.andReverse(xternalsToSolve.toArray(new Term[xternalsToSolve.size()]), u ->
-                        solveDT(u, v -> {
 
-                            Term y;
-                            if (!u.equals(v.id)) {
-                                y = x.replace(u, v.id);
-                                if (y == null || y instanceof Bool)
-                                    return true; //continue
-                            } else {
-                                y = x;
-                            }
+            //solve the XTERNAL from simplest to most complex. the canonical sort order of compounds will naturally descend this way
+            if (xs > 0 && !Util.andReverse(xternalsToSolve.toArray(new Term[xs]), u -> solveDT(u, v -> {
 
-                            boolean ye = y.equals(x);
-                            if (!ye) {
+                        Term y;
+                        if (!u.equals(v.id)) {
+                            y = x.replace(u, v.id);
+                            if (y == null || y instanceof Bool)
+                                return true; //continue
+                        } else {
+                            y = x;
+                        }
 
-                                if (!solveExact(y, each))
-                                    return false;
+                        boolean ye = y.equals(x);
+                        if (!ye) {
 
-                                boolean yx = y.hasXternal();
-                                if (u.equals(x) && !yx) {
-                                    if (v.when() != TIMELESS) {
-                                        return each.test(v); //shortcut to finish
-                                    } else {
-                                        return solveOccurrence(v, each); //only need to solve occurrence
-                                    }
-                                }
+                            if (!solveExact(y, each))
+                                return false;
 
-                                return yx ?
-                                        solveAll(y, each) : //recurse to solve remaning xternal's
-                                        solveOccurrence(event(y, TIMELESS), each); //just need to solve occurrence now
-                            } else {
-                                //term didnt change...
+                            boolean yx = y.hasXternal();
+                            if (u.equals(x) && !yx) {
                                 if (v.when() != TIMELESS) {
-                                    if (!each.test(v)) //but atleast it somehow solved an occurrence time
-                                        return false;
+                                    return each.test(v); //shortcut to finish
+                                } else {
+                                    return solveOccurrence(v, each); //only need to solve occurrence
                                 }
                             }
 
+                            return yx ?
+                                    solveAll(y, each) : //recurse to solve remaning xternal's
+                                    solveOccurrence(event(y, TIMELESS), each); //just need to solve occurrence now
+                        } else {
+                            //term didnt change...
+                            if (v.when() != TIMELESS) {
+                                if (!each.test(v)) //but atleast it somehow solved an occurrence time
+                                    return false;
+                            }
+                        }
 
-                            return true; //keep trying
-                        })
-                ))
-                    return false;
-            }
+
+                        return true; //keep trying
+                    })
+            ))
+                return false;
         }
+
 
         return solveOccurrence(event(x, TIMELESS), each);
     }
@@ -803,7 +769,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 if (n.id instanceof Absolute) {
 
                     long pathEndTime = n.id.when();
-                    BooleanObjectPair<Edge<Event, TimeSpan>> pathStart = path.get(0);
+                    //BooleanObjectPair<Edge<Event, TimeSpan>> pathStart = path.get(0);
 //                    Term pathStartTerm = pathStart.getTwo().from(pathStart.getOne()).id.id;
 
                     long startTime = pathEndTime == ETERNAL ?
@@ -1037,6 +1003,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 return id + "@" + s;
             }
         }
+
 
     }
 

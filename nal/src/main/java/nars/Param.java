@@ -47,6 +47,7 @@ public abstract class Param {
      * min ratio of effective priority to input priority necessary for certain novel-only actions
      */
     public static final float ACTIVATION_THRESHOLD = 0.1f;
+    public static final boolean ETERNALIZE_EVICTED_TEMPORAL_TASKS = true;
 
     public static boolean DEBUG_FILTER_DUPLICATE_MATCHES = Param.DEBUG_EXTRA;
 
@@ -56,7 +57,7 @@ public abstract class Param {
     /**
      * hard limit to prevent infinite looping
      */
-    public static final int MAX_TASK_FORWARD_HOPS = 8;
+    public static final int MAX_TASK_FORWARD_HOPS = 4;
 
     /**
      * controls interpolation policy:
@@ -128,10 +129,12 @@ public abstract class Param {
      */
     public final static int SIGNAL_LATCH_TIME_MAX =
             //0;
+            8;
             //Integer.MAX_VALUE;
             //8;
-            32;
+            //32;
 
+    public final static float HAPPINESS_RELAXATION_RATE = 0.001f;
 
     /**
      * 'time to live', unification steps until unification is stopped

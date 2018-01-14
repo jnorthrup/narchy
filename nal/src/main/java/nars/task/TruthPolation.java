@@ -46,11 +46,11 @@ public interface TruthPolation extends Consumer<Tasked> {
          * uses the temporals that will be accepted later to determine the duration on a setup pass
          */
         public static TruthPolationBasic autoRange(long start, long end, int dur, Iterable<? extends Tasked> temporals) {
-            if (start!=ETERNAL) {
+            if (start != ETERNAL) {
                 int minDur = dur;
                 for (Tasked t : temporals) {
                     long dd = t.task().minDistanceTo(start, end);
-                    assert(dd < Integer.MAX_VALUE);
+                    assert (dd < Integer.MAX_VALUE);
                     if (dd == 0) {
                         minDur = 0; //minimum possible
                         break;
@@ -75,10 +75,10 @@ public interface TruthPolation extends Consumer<Tasked> {
             Truth tt = task.truth(start, end, dur, 0);
             if (tt != null) {
                 float tw = tt.evi();
-                if (tw > 0) {
-                    eviSum += tw;
-                    wFreqSum += tw * tt.freq();
-                }
+                //if (tw > 0) {
+                eviSum += tw;
+                wFreqSum += tw * (tt.freq() - 0.5);
+                //}
             }
 
         }
@@ -86,17 +86,15 @@ public interface TruthPolation extends Consumer<Tasked> {
 
         @Override
         public PreciseTruth truth() {
-            if (eviSum > 0) {
-                float f = wFreqSum / eviSum;
-                float c = w2cSafe(eviSum);
-                if (c < Param.TRUTH_EPSILON)
-                    return null; //high-pass conf filter
 
-                return new PreciseTruth(f, c);
-
-            } else {
+            float c = w2cSafe(eviSum);
+            if (c < Param.TRUTH_EPSILON)
                 return null;
+            else {
+                float f = (wFreqSum / eviSum) + 0.5f;
+                return new PreciseTruth(f, c);
             }
+
 
         }
     }

@@ -112,7 +112,7 @@ public class DefaultBeliefTable implements BeliefTable {
     public Task match(long start, long end, Term template, NAR nar, Predicate<Task> filter) {
 
         Task ete = eternal.strongest();
-        if (filter!=null && ete!=null && !filter.test(ete))
+        if (ete!=null && filter!=null && !filter.test(ete))
             ete = null;
 
         Task tmp = temporal.match(start, end, template, nar, filter);
@@ -120,6 +120,11 @@ public class DefaultBeliefTable implements BeliefTable {
         if (tmp == null) {
             return ete;
         } else {
+//            if (ete!=null && tmp.conf() < nar.confMin.floatValue())
+//                return ete; //below conf for whatever reason
+//
+//            return tmp;
+
             if (ete == null) {
                 return tmp;
             } else {

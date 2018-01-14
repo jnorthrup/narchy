@@ -62,7 +62,9 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
         }
     };
 
-    /** prevents repeated invocations while one is already in progress */
+    /**
+     * prevents repeated invocations while one is already in progress
+     */
     final Set<Term> dispatched = Sets.newConcurrentHashSet();
 
     private DurService onCycle;
@@ -86,93 +88,84 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
         return x;
     }
 
-    final AtomicBoolean busy = new AtomicBoolean(false);
 
     protected void update(NAR n) {
 
         long now = n.time();
-        if (now!=lastUpdated) {
-            busy.set(false); //force reset if new clock time occurrs.  the runLater may have been lost
-        }
-
-        if (!busy.compareAndSet(false, true))
-            return; //in-progress
+//        if (now!=lastUpdated) {
+//            busy.set(false); //force reset if new clock time occurrs.  the runLater may have been lost
+//        }
+//
+//        if (!busy.compareAndSet(false, true))
+//            return; //in-progress
 
         lastUpdated = now;
 
-        try {
-            //probe all active concepts.
-            //  remove any below desire threshold
-            //  execute any above desire-belief threshold
-            //  if no active remain, disable update service
 
-            assert (!active.isEmpty());
+        //probe all active concepts.
+        //  remove any below desire threshold
+        //  execute any above desire-belief threshold
+        //  if no active remain, disable update service
 
-            int dur = n.dur();
-            long start = now - dur / 2;
-            long end = now + dur / 2;
-            List<Task> evoke = $.newArrayList(0);
+        int dur = n.dur();
+        long start = now;
+        long end = now + dur;
+        List<Task> evoke = $.newArrayList(0);
 
-            float exeThresh = this.exeThresh.floatValue();
-            assert(exeThresh >= 0.5f);
-            float goalDeltaThresh = exeThresh - 0.5f;
+        float exeThresh = this.exeThresh.floatValue();
+        assert (exeThresh >= 0.5f);
+        float goalDeltaThresh = exeThresh - 0.5f;
 
-            active.forEach(x -> {
-                Term xx = x.get();
+        active.forEach(x -> {
+            Term xx = x.get();
 
-                if (dispatched.contains(xx))
-                    return; //skip, already in progress
+            if (dispatched.contains(xx))
+                return; //skip, already in progress
 
-                Concept c = n.concept(xx);
-                Truth goalTruth = c.goals().truth(start, end, n);
+            Concept c = n.concept(xx);
+            Truth goalTruth = c.goals().truth(start, end, n);
 
-                float g;
-                if (goalTruth == null || (g = goalTruth.expectation()) < exeThresh) {
-                    x.delete(); //delete the link
-                    return;
-                }
-                Truth belief = c.beliefs().truth(start, end, n);
-                float b = belief == null ? 0 /* assume false with no evidence */ :
-                        belief.expectation();
-
-                float delta = g - b;
-                if (delta >= goalDeltaThresh) {
-                    n.logger.info("{} EVOKE (b={},g={}) {}", n.time(),
-                            n4(b), n4(g), xx);
-                    evoke.add(new TruthletTask(xx, GOAL, Truthlet
-                            .impulse(now, now+dur, 1f, 0f, c2w(n.confDefault(GOAL))), n));
-                    dispatched.add(xx);
-                    //MetaGoal.learn(MetaGoal.Action, goal.cause(), g, n);
-                }
-            });
-            active.commit();
-            if (active.isEmpty()) {
-                if (onCycle!=null) {
-                    onCycle.off();
-                    onCycle = null;
-                }
+            float g;
+            if (goalTruth == null || (g = goalTruth.expectation()) < exeThresh) {
+                x.delete(); //delete the link
+                return;
             }
-            if (!evoke.isEmpty()) {
-                //n.run(() -> {
-                try {
-                    for (int i = 0, toInvokeSize = evoke.size(); i < toInvokeSize; i++) {
-                        Task tt = evoke.get(i);
-                        if (!tt.isDeleted()) {
-                            exe.accept(tt, n);
-                        }
-                        boolean d = dispatched.remove(tt.term().conceptual());
-                        assert (d);
-                    }
-                } finally {
-                    busy.set(false);
-                }
-                //});
-            } else {
-                busy.set(false);
-            }
-        } finally {
+            Truth belief = c.beliefs().truth(start, end, n);
+            float b = belief == null ? 0 /* assume false with no evidence */ :
+                    belief.expectation();
 
+            float delta = g - b;
+            if (delta >= goalDeltaThresh) {
+                n.logger.info("{} EVOKE (b={},g={}) {}", n.time(),
+                        n4(b), n4(g), xx);
+                evoke.add(new TruthletTask(xx, GOAL, Truthlet
+                        .impulse(now, now + dur, 1f, 0f, c2w(n.confDefault(GOAL))), n));
+                dispatched.add(xx);
+                //MetaGoal.learn(MetaGoal.Action, goal.cause(), g, n);
+            }
+        });
+        active.commit();
+        if (active.isEmpty()) {
+            if (onCycle != null) {
+                onCycle.off();
+                onCycle = null;
+            }
         }
+        if (!evoke.isEmpty()) {
+            //n.run(() -> {
+
+            for (int i = 0, toInvokeSize = evoke.size(); i < toInvokeSize; i++) {
+                Task tt = evoke.get(i);
+                if (!tt.isDeleted()) {
+                    exe.accept(tt, n);
+                }
+                boolean d = dispatched.remove(tt.term().conceptual());
+                assert (d);
+            }
+
+            //});
+        }
+
     }
 
     @Override
@@ -181,7 +174,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
         //TODO handle CMD's
 
         Task y = exePrefilter(x);
-        if ( y != x )
+        if (y != x)
             return y; //transformed
         if (y == null)
             return x; //pass-through to reasoner

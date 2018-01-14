@@ -85,7 +85,7 @@ public class TopCraft extends NAgentX {
         pixels = senseCameraRetina("cam", ()->craft.image, 32,32);
         //pixels = addFreqCamera("see", ()->craft.image, 64,64, (v) -> $.t( v, alpha));
 
-        senseCameraReduced($.the("camr"), (Supplier)()->craft.image, 10,12,4,3);
+        //senseCameraReduced($.the("camr"), (Supplier)()->craft.image, 10,12,4,3);
                 //.resolution(0.5f);
 
         int nx = 8;
@@ -97,9 +97,9 @@ public class TopCraft extends NAgentX {
         window(camAE.newChart(), 500, 500);
 
 
-        senseSwitch("dir", ()->craft.player.dir, 0, 4);
-        sense($.the("stamina"), ()->(craft.player.stamina)/((float)craft.player.maxStamina));
-        sense($.the("health"), ()->(craft.player.health)/((float)craft.player.maxHealth));
+        senseSwitch($.func("dir",id), ()->craft.player.dir, 0, 4);
+        sense($.func("stamina", id), ()->(craft.player.stamina)/((float)craft.player.maxStamina));
+        sense($.func("health", id), ()->(craft.player.health)/((float)craft.player.maxHealth));
 
         int tileMax = 13;
         senseSwitch("tile:here", ()->craft.player.tile().id, 0, tileMax);
@@ -128,7 +128,7 @@ public class TopCraft extends NAgentX {
             input.up.pressed(u);
             input.down.pressed(d);
         });
-        actionPushButton($.func("menu", id), input.menu::pressed);
+        actionToggle($.func("menu", id), input.menu::pressed);
 
 //        Param.DEBUG = true;
 //        nar.onTask(t ->{

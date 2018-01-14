@@ -246,12 +246,6 @@ public interface Truth extends Truthed {
         return confSafe(w2cSafe(evi), confRes);
     }
 
-    @Override
-    default float eviEternalized() {
-//        float c = eternalizedConf();
-//        return c2w(c);
-        return conf(); //c2w(w2c(conf)) = conf
-    }
 
     default float freqTimesConf() {
         return freq() * conf();

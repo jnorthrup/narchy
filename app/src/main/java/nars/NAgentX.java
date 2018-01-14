@@ -73,13 +73,13 @@ abstract public class NAgentX extends NAgent {
 
     public final Set<CameraSensor> cam = new LinkedHashSet<>();
 
-    @Override
-    public Set<Termed> concepts() {
-        Set<Termed> s = super.concepts();
-//        for (CameraSensor c : cam)
-//            s.add(c.root);
-        return s;
-    }
+//    @Override
+//    public Set<Termed> concepts() {
+//        Set<Termed> s = super.concepts();
+////        for (CameraSensor c : cam)
+////            s.add(c.root);
+//        return s;
+//    }
 
     public NAgentX(String id, NAR nar) {
         super(id, nar);

@@ -6,7 +6,6 @@ import jcog.sort.Top;
 import jcog.sort.Top2;
 import jcog.sort.TopN;
 import jcog.tree.rtree.*;
-import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
@@ -29,10 +28,10 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static nars.Op.IMPL;
 import static nars.table.TemporalBeliefTable.temporalTaskPriority;
 import static nars.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.c2wSafe;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
@@ -46,14 +45,14 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     /**
      * max allowed truths to be truthpolated in one test
      */
-    static final int TRUTHPOLATION_LIMIT = 3;
+    static final int TRUTHPOLATION_LIMIT = 6;
 
     public static final float PRESENT_AND_FUTURE_BOOST = 2f;
 
     static final int SCAN_DIVISIONS = 4;
 
     public static final int MIN_TASKS_PER_LEAF = 2;
-    public static final int MAX_TASKS_PER_LEAF = 3;
+    public static final int MAX_TASKS_PER_LEAF = 4;
     public static final Split<TaskRegion> SPLIT =
             Spatialization.DefaultSplits.AXIAL.get(); //Spatialization.DefaultSplits.LINEAR; //<- probably doesnt work here
 
@@ -138,6 +137,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
             if (!tt.isEmpty()) {
                 return Param.truth(ete, start, end, dur, tt);
+//                PreciseTruth pt = Param.truth(null, start, end, dur, tt);
+//                if (pt!=null && (ete == null || (pt.evi() >= ete.evi())))
+//                    return pt;
             }
         }
 
@@ -470,7 +472,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         } else {
             a = la.get(0);
             Leaf<TaskRegion> lb = l.b;
-            if (lb !=null) {
+            if (lb != null) {
                 int sb = lb.size();
                 if (sb > 1) {
                     Top<TaskRegion> w = new Top<>(weakestTasks);
@@ -503,7 +505,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 at.meta("@", bt);
             }
 
-            if (aPri!=aPri) //already deleted
+            if (aPri != aPri) //already deleted
                 return true;
 
             Task c = Revision.merge(at, bt, nar.time(), c2wSafe(nar.confMin.floatValue()), nar);
@@ -538,25 +540,38 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             }
         }
 
-        onEvict(at, added);
+        //TODO do this outside of the locked section
+        if (Param.ETERNALIZE_EVICTED_TEMPORAL_TASKS)
+            eternalize(at, added, nar);
 
         return true;
     }
 
-    protected void onEvict(Task x, Consumer<Task> added) {
-//        if (x.op()==IMPL /*x.op().statement */ /*&& !x.term().isTemporal()*/) {
+    protected void eternalize(Task x, Consumer<Task> added, NAR nar) {
+        if (!(x instanceof SignalTask)) {
+//        if (x.op().temporal) { //==IMPL /*x.op().statement */ /*&& !x.term().isTemporal()*/) {
 //            //experimental eternalize
-//            Task eternalized = Task.clone(x, x.term(), new PreciseTruth(x.freq(), x.eviEternalized(), false),
-//                    x.punc(), x.creation(), ETERNAL, ETERNAL
-//            );
-//            if (eternalized!=null)
-//                added.accept(eternalized);
+            float xc = x.conf();
+            float c = w2cSafe(x.eviEternalized((1+1f/(1+ xc)) * size() /* eternalize inversely proportional to the size of this table, emulating the future evidence that can be considered */));
+            if (c >= nar.confMin.floatValue()) {
+                Task eternalized = Task.clone(x, x.term(), new PreciseTruth(x.freq(), c),
+                        x.punc(), x.creation(), ETERNAL, ETERNAL
+                );
+                if (eternalized != null) {
+                    eternalized.priMult(c/xc);
+                    if (Param.DEBUG)
+                        eternalized.log("Eternalized Temporal");
+
+                    nar.runLater(() -> nar.input(eternalized));
+                    //added.accept(eternalized);
+                    ((NALTask) x).delete(eternalized);
+                    return;
+                }
+            }
 //
-//            ((NALTask)x).delete(eternalized);
-//
-//        } else {
-            x.delete();
-//        }
+        }
+
+        x.delete();
     }
 
 

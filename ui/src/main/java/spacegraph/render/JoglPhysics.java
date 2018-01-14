@@ -86,14 +86,6 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
 
 
 
-
-    /**
-     * activate/deactivate the simulation; by default it is enabled
-     */
-    public void setSimulating(boolean simulating) {
-        this.simulating = simulating;
-    }
-
     //protected final BulletStack stack = BulletStack.get();
 
 
@@ -210,9 +202,12 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
         gl.glEnable(GL_DEPTH_TEST);
         gl.glDepthFunc(GL_LEQUAL);
 
+        gl.glClearDepth(1.0f);  // Depth Buffer Setup
+        gl.glClearStencil(0);  // Clear The Stencil Buffer To 0
+
 //        gl.glEnable(GL2.GL_TEXTURE_2D); // Enable Texture Mapping
 
-        gl.glClearColor(0.0f, 0.0f, 0.0f, 0f); // Black Background
+        gl.glClearColor(0.0f, 0.0f, 0.0f, 0f);
         gl.glClearDepth(1f); // Depth Buffer Setup
 
         // Quick And Dirty Lighting (Assumes Light0 Is Set Up)

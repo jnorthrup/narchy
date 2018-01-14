@@ -120,16 +120,9 @@ public enum MetaGoal {
         if (effects == 0) return 0;
 
         float value = 0;
-        for (short c : effect) {
-            Cause cause = values.getSafe(c);
-            if (cause == null) {
-                logger.error("cause id={} missing", c);
-                continue;
-            }
-
-
-            value += cause.value();
-        }
+        Object[] vv = values.array();
+        for (short c : effect)
+            value += ((Cause)vv[c]).value();
 
 
         return value / effects;

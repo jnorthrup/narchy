@@ -324,22 +324,22 @@ public class RevisionTest {
         Compound a = $.$("(a &&+3 (b &&+3 c))");
         Compound b = $.$("(a &&+3 (b &&+1 c))");
         assertEquals(
-                //"[((a &&+3 b) &&+1 c), ((a &&+3 b) &&+3 c)]",
-                "[((a &&+3 b) &&+3 c), ((a &&+4 c) &&+2 c)]",
-                permutations(a, b).toString());
+                "[((a &&+3 b) &&+1 c), ((a &&+3 b) &&+3 c)]",
+                permuteChooses(a, b).toString());
     }
 
     @Test public void testIntermpolation0b() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+3 (b &&+3 c))");
         Compound b = $.$("(a &&+1 (b &&+1 c))");
-        assertEquals("[((a &&+1 b) &&+1 c), ((a &&+1 b) &&+3 c), ((a &&+3 b) &&+1 c), ((a &&+3 b) &&+3 c)]", permutations(a, b).toString());
+        assertEquals("[((a &&+1 b) &&+1 c), ((a &&+1 b) &&+3 c), ((a &&+3 b) &&+1 c), ((a &&+3 b) &&+3 c)]",
+                permuteChooses(a, b).toString());
     }
 
     @Test public void testIntermpolation0invalid() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+3 (b &&+3 c))");
         Compound b = $.$("(a &&+1 b)");
         try {
-            Set<Term> p = permutations(a, b);
+            Set<Term> p = permuteChooses(a, b);
             fail("");
         } catch (Error  e) {
             assertTrue(true);
@@ -350,21 +350,21 @@ public class RevisionTest {
     @Test public void testIntermpolation2() throws Narsese.NarseseException {
         Compound f = $.$("(a &&+1 b)");
         Compound g = $.$("(a &&-1 b)");
-        assertEquals("[(b &&+1 a), (a &&+1 b)]", permutations(f, g).toString());
+        assertEquals("[(b &&+1 a), (a &&+1 b)]", permuteChooses(f, g).toString());
 
         Compound h = $.$("(a &&+1 b)");
         Compound i = $.$("(a &| b)");
-        assertEquals("[(a&|b), (a &&+1 b)]", permutations(h, i).toString());
+        assertEquals("[(a&|b), (a &&+1 b)]", permuteChooses(h, i).toString());
     }
 
     @Test public void testIntermpolationInner() throws Narsese.NarseseException {
         Compound f = $.$("(x --> (a &&+1 b))");
         Compound g = $.$("(x --> (a &| b))");
         assertEquals("[(x-->(a&|b)), (x-->(a &&+1 b))]",
-                permutations(f, g).toString());
+                permuteChooses(f, g).toString());
     }
 
-    static Set<Term> permutations(Term a, Term b) {
+    static Set<Term> permuteChooses(Term a, Term b) {
 
         NAR s = NARS.shell();
         s.dtMergeOrChoose.set(false);

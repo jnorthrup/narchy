@@ -17,9 +17,9 @@ public class SpaceGraphFlat extends SpaceGraph {
 
     }
 
-    @Override
-    public void init(GL2 gl) {
-        super.init(gl);
-        gl.glDisable(GL.GL_DEPTH_TEST);
-    }
+//    @Override
+//    public void init(GL2 gl) {
+//        super.init(gl);
+//        gl.glDisable(GL.GL_DEPTH_TEST);
+//    }
 }

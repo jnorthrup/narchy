@@ -27,7 +27,7 @@ public class NARio extends NAgentX {
 
 //    private final SensorConcept vx;
 
-    public NARio(NAR nar) throws Narsese.NarseseException {
+    public NARio(NAR nar) {
         super("nario", nar);
         //super(nar, HaiQAgent::new);
 
@@ -278,7 +278,6 @@ public class NARio extends NAgentX {
 
 
             NARio x;
-            try {
                 x = new NARio(n);
                 n.freqResolution.set(0.02f);
                 n.confResolution.set(0.02f);
@@ -299,10 +298,6 @@ public class NARio extends NAgentX {
 //                    }
                 });
                 return x;
-            } catch (Narsese.NarseseException e) {
-                e.printStackTrace();
-                return null;
-            }
 
 
             //n.termVolumeMax.setValue(60);

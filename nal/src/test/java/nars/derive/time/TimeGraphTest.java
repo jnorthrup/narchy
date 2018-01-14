@@ -68,6 +68,7 @@ class TimeGraphTest {
 
     @Test
     public void testSimpleConjWithOneKnownAbsoluteSubEvent2() {
+        A.print();
         assertSolved("(one &&+- two)", A,
                 "(one &&+1 two)@1", "(one &&+19 two)@1", "(one &&+1 two)@19");
     }

@@ -63,8 +63,7 @@ public class CauseChannel<X extends Priority> extends Cause implements Consumer<
         if (x.length == 1) {
             input(x[0]);
         } else {
-            for (X p : x)
-                input(p);
+            input((Iterator) new ArrayIterator(x));
         }
     }
 

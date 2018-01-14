@@ -3,6 +3,9 @@ package nars.truth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.truth.TruthFunctions.w2c;
+import static nars.truth.TruthFunctions.w2cSafe;
+
 /** indicates an implementation has, or is associated with a specific TruthValue */
 public interface Truthed  {
 
@@ -102,10 +105,17 @@ public interface Truthed  {
         return truth().evi(); //throws NPE if not a belief/goal
     }
 
-    default float eviEternalized() {
-        return truth().eviEternalized(); //throws NPE if not a belief/goal
-    }
 
+    default float eviEternalized() {
+//        float c = eternalizedConf();
+//        return c2w(c);
+        return conf(); //c2w(w2c(conf)) = conf
+    }
+    default float eviEternalized(float horizon) {
+//        float c = eternalizedConf();
+//        return c2w(c);
+        return w2cSafe(conf(), horizon);
+    }
 
 
     //void setValue(T v); //move to MutableMetaTruth interface

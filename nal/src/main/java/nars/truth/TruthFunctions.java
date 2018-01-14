@@ -523,7 +523,10 @@ public final class TruthFunctions {
     }
 
     public static float w2cSafe(float w) {
-        return w / (w + Param.HORIZON);
+        return w2cSafe(w, Param.HORIZON);
+    }
+    public static float w2cSafe(float w, float horizon) {
+        return w / (w + horizon);
     }
 
     public static float originality(int evidenceLength) {

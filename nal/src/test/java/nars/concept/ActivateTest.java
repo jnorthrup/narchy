@@ -163,7 +163,7 @@ public class ActivateTest {
     @Test
     public void testTemplatesWithInt1() throws Narsese.NarseseException {
         testTemplates("(0)",
-                "[0]");
+                "[]");
     }
 
     @Test
@@ -211,13 +211,13 @@ public class ActivateTest {
     @Test
     public void testTemplateProd() throws Narsese.NarseseException {
         testTemplates("(a,b)",
-                "[a, b]");
+                "[]");
     }
 
     @Test
     public void testTemplateProdWithCompound() throws Narsese.NarseseException {
         testTemplates("(a,(b,c))",
-                "[(b,c), a]");
+                "[]");
     }
 
     @Test

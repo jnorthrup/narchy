@@ -92,6 +92,9 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     public final FloatParam motivation = new FloatParam(1f, 0f, 1f);
     protected List<Task> always = $.newArrayList();
 
+    /** concepts (which are present at start time) */
+    private List<Termed> concepts;
+
     protected NAgent(@NotNull NAR nar) {
         this("", nar);
     }
@@ -110,13 +113,13 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
         Term happyTerm = id == null ?
                 $.the("happy") : //generally happy
-                //$.p(id, $.the("happy")), //happy in this environment
-                $.inh($.the("happy"), id);
+                $.inh(id, $.the("happy")); //happy in this environment
+
         FloatNormalized happyValue = new FloatPolarNormalized(
                 //new FloatHighPass(
                 () -> reward
                 //)
-        ).relax(0.01f);
+        ).relax(Param.HAPPINESS_RELAXATION_RATE);
 
         this.happy = new ActionInfluencingSensorConcept(happyTerm, happyValue);
 
@@ -226,6 +229,12 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
         enabled.set(true);
 
+        List<Termed> cc = new FasterList();
+        cc.add(happy);
+        cc.addAll(actions.keySet());
+        cc.addAll(sensors.keySet());
+        this.concepts = cc;
+
         alwaysWant(happy, nar.confDefault(GOAL));
 
 
@@ -252,34 +261,29 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             return;
         }
 
-        this.dur = nar.dur();
 
+        this.dur = nar.dur();
         this.now = nar.time();
+
+        reward = act();
+
         sensors.forEach((s, c) -> {
-            //nar.exe.execute(() -> {
             c.input(s.update(now, dur, nar));
-            //});
         });
 
-        this.now = nar.time();
         always(motivation.floatValue());
 
-        this.now = nar.time();
+
         actions.forEach((a, c) -> {
-            //nar.exe.execute(() -> {
             Stream<ITask> s = a.update(now, dur, nar);
             if (s != null)
                 c.input(s);
-            //});
         });
 
 
-        this.now = nar.time();
-        float r = reward = act();
-
         Truth happynowT = nar.beliefTruth(happy, now);
         float happynow = happynowT != null ? (happynowT.freq() - 0.5f) * 2f : 0;
-        nar.emotion.happy(dexterity(now, now) * happynow /* /nar.confDefault(GOAL) */);
+        nar.emotion.happy(motivation.floatValue() * dexterity(now, now) * happynow /* /nar.confDefault(GOAL) */);
 
         if (trace)
             logger.info(summary());
@@ -287,50 +291,42 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     /** creates an activator specific to this agent context */
     public Consumer<Predicate<Activate>> fire() {
-        return new Consumer<>() {
+        return p -> {
+            Activate a;
 
-            final Termed[] concepts;
+            final int numConcepts = concepts.size();
+            int remainMissing = numConcepts;
+            if (remainMissing == 0) return;
 
-            {
-                Set<Termed> cp = concepts();
-                this.concepts = cp.toArray(new Termed[cp.size()]);
-            }
-
-            @Override
-            public void accept(Predicate<Activate> p) {
-                Activate a;
-                int maxMissing = concepts.length;
-                do {
-                    int c = nar.random().nextInt(concepts.length);
-                    Termed t = concepts[c];
-                    Concept cc = nar.concept(t);
-                    if (cc!=null)
-                        a = new Activate(cc, pri(cc));
+            float pri = motivation.floatValue();
+            Random rng = nar.random();
+            do {
+                Concept cc = nar.conceptualize(concepts.get(rng.nextInt(numConcepts)));
+                if (cc!=null)
+                    a = new Activate(cc, pri);
+                else {
+                    a = null;
+                    if (remainMissing-- <= 0) //safety exit
+                        break;
                     else {
-                        if (maxMissing-- <= 0) //safety exit
-                            break;
-                        else {
-                            a = null;
-                            continue;
-                        }
+                        continue;
                     }
-                } while (a!=null && p.test(a));
-            }
-
-            private float pri(Concept cc) {
-                return 1f; //TODO
-            }
+                }
+            } while (a==null || p.test(a));
         };
     }
 
     /** concepts involved in this agent */
-    public Set<Termed> concepts() {
-        Set<Termed> cc = new HashSet();
-        cc.add(happy);
+    public List<Termed> concepts() {
+        return concepts;
+    }
 
-        cc.addAll(actions.keySet());
-        cc.addAll(sensors.keySet());
-        return cc;
+
+    /** default rate = 1 dur/ 1 frame */
+    public void runSynch(int frames) {
+        DurService d = DurService.on(nar, this);
+        nar.run(frames * nar.dur() + 1);
+        d.off();
     }
 
 
@@ -689,6 +685,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
                     (x) -> $.t(Util.unitize(x),
                     NAgent.this.nar().confDefault(Op.BELIEF)));
             templatesPlusActions = null;
+
+
             addSensor(this);
         }
 
