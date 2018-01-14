@@ -35,6 +35,13 @@ public enum GoalFunction implements TruthOperator {
     },
 
 
+    Deduction() {
+        @Override
+        public Truth apply(Truth T, Truth B, NAR m, float minConf) {
+            return BeliefFunction.Deduction.apply(T, B, m, minConf);
+        }
+    },
+
     /** deduction used for bipolar implication results */
     //@AllowOverlap
     DeciDeduction() {
@@ -55,8 +62,14 @@ public enum GoalFunction implements TruthOperator {
 
     },
 
+    Induction() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return BeliefFunction.Induction.apply(T, B, m, minConf);
+        }
+    },
+
     /** deduction used for bipolar implication results */
-    //@AllowOverlap
     DeciInduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {

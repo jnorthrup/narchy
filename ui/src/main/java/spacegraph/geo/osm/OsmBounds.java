@@ -1,4 +1,4 @@
-package spacegraph.geo.data;
+package spacegraph.geo.osm;
 
 import org.w3c.dom.Element;
 

@@ -7,10 +7,10 @@ import com.jogamp.opengl.glu.GLUtessellator;
 import com.jogamp.opengl.glu.GLUtessellatorCallback;
 import jcog.list.FasterList;
 import spacegraph.SpaceGraph;
-import spacegraph.geo.data.GeoCoordinate;
-import spacegraph.geo.data.Osm;
-import spacegraph.geo.data.OsmNode;
-import spacegraph.geo.data.OsmWay;
+import spacegraph.geo.osm.GeoCoordinate;
+import spacegraph.geo.osm.Osm;
+import spacegraph.geo.osm.OsmNode;
+import spacegraph.geo.osm.OsmWay;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +22,7 @@ import static com.jogamp.opengl.GL.GL_POINTS;
 /**
  * Created by unkei on 2017/04/25.
  */
-public class OsmViewer extends SpaceGraph implements GLUtessellatorCallback {
+public class OsmSpace extends SpaceGraph implements GLUtessellatorCallback {
 
     Osm osm;
     //    double scale = 0.3; //global scale
@@ -36,9 +36,9 @@ public class OsmViewer extends SpaceGraph implements GLUtessellatorCallback {
 
     final GLUtessellator tobj = GLU.gluNewTess();
 
-    Consumer<OsmViewer> render = null;
+    Consumer<OsmSpace> render = null;
 
-    public OsmViewer(Osm osm) {
+    public OsmSpace(Osm osm) {
         super();
         min = new GeoCoordinate(0, 0);
         max = new GeoCoordinate(0, 0);
@@ -87,7 +87,7 @@ public class OsmViewer extends SpaceGraph implements GLUtessellatorCallback {
 
 
     protected void compile() {
-        List<Consumer<OsmViewer>> draw = new FasterList();
+        List<Consumer<OsmSpace>> draw = new FasterList();
 
         for (OsmWay way : osm.ways) {
 

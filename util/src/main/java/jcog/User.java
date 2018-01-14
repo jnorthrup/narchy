@@ -6,10 +6,7 @@ import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Topic;
 import net.bytebuddy.utility.JavaType;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StoredField;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.*;
 import org.apache.lucene.index.*;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.TermQuery;
@@ -25,11 +22,15 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * general user-scope global utilities and facilities
@@ -37,7 +38,7 @@ import java.util.function.Predicate;
 public class User {
 
     private static User user = null;
-    private final Executor exe = ForkJoinPool.commonPool();
+    private final ExecutorService exe = ForkJoinPool.commonPool();
 
     /**
      * general purpose user notification broadcast
@@ -47,6 +48,8 @@ public class User {
     static final Logger logger = LoggerFactory.getLogger(User.class);
 
     private final Directory d;
+    private DirectoryReader ir;
+    private IndexWriter iw;
 
     public synchronized static User the() {
         if (user == null)
@@ -54,9 +57,14 @@ public class User {
         return user;
     }
 
-    /** temporary in-memory user */
+    /**
+     * temporary in-memory user
+     */
     public User() {
+
         d = new RAMDirectory();
+
+        init();
     }
 
     protected User(Path dir) {
@@ -66,9 +74,12 @@ public class User {
             if (!dir.toFile().exists()) {
                 logger.warn("create {}", dir);
                 Files.createDirectory(dir);
+            } else {
+                logger.warn("load {}", dir);
             }
 
             d = FSDirectory.open(Paths.get(dir.toAbsolutePath().toString()));
+
 
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 try {
@@ -82,6 +93,42 @@ public class User {
             throw new Error(e);
         }
 
+        init();
+    }
+
+    private void init() {
+
+
+        IndexWriterConfig iwc = new IndexWriterConfig();
+        iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+        iwc.setCommitOnClose(true);
+        //iwc.setReaderPooling(true);
+
+        try {
+            iw = new IndexWriter(d, iwc);
+            ir = DirectoryReader.open(iw);
+        } catch (IOException e) {
+            throw new Error(e);
+        }
+
+
+//        read((ir) -> {
+//            int m = ir.maxDoc();
+//            for (int i = 0; i < m; i++) {
+//                try {
+//                    List<IndexableField> ff = ir.document(i).getFields();
+//                    ff.forEach(g -> {
+//                        if (g.name().equals("i")) {
+//                            System.out.println(g);
+//                        } else {
+//                            System.out.println(g.name() + " " + g.fieldType());
+//                        }
+//                    });
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
     }
 
     public void notice(Object x) {
@@ -114,11 +161,16 @@ public class User {
             logger.debug("put {} {}", id, x);
             write((iw) -> {
                 try {
+                    //iw.deleteDocuments(id(id));
+                    //iw.addDocument(d);
                     iw.updateDocument(id(id), d);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
             });
+        } else {
+            throw new RuntimeException("null document for " + x);
         }
     }
 
@@ -126,11 +178,13 @@ public class User {
     public <X> void get(String id, Consumer<X> yy) {
         logger.debug("get {}", id);
         final Document[] D = new Document[1];
-        search((is) -> {
+        search((iis) -> {
             try {
-                TopDocs y = is.search(new TermQuery(id(id)), 1);
+                TopDocs y = iis.search(
+                        new TermQuery(id(id)), 1);
                 if (y.totalHits > 0)
-                    D[0] = is.doc(y.scoreDocs[0].doc);
+                    D[0] = iis.doc(y.scoreDocs[0].doc);
+
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -140,6 +194,29 @@ public class User {
         }
     }
 
+    public <X> void get(String id, Supplier<X> ifAbsent, Consumer<X> with) {
+        logger.debug("get {}", id);
+        final Document[] D = new Document[1];
+        search((is) -> {
+
+            try {
+                TopDocs y = is.search(new TermQuery(id(id)), 1);
+                if (y.totalHits > 0)
+                    D[0] = is.doc(y.scoreDocs[0].doc);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        if (D[0] != null) { //outside of any critical section
+            with.accept(undocument(D[0]));
+        } else {
+            X a = ifAbsent.get();
+            if (a != null) {
+                put(id, a);
+                with.accept(a);
+            }
+        }
+    }
 
     private static Term id(String id) {
         return new Term("i", id);
@@ -147,45 +224,63 @@ public class User {
 
 
     private void write(Consumer<IndexWriter> with) {
-        try {
-            IndexWriterConfig iwc = new IndexWriterConfig();
-            iwc.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+//        try {
 
-            IndexWriter iw = new IndexWriter(d, iwc);
+
+        try {
             with.accept(iw);
-            iw.close(); //commits and closes
+            iw.commit();
+
+            //iw.forceMergeDeletes(true);
+
         } catch (IOException e) {
-            logger.error("write", e);
+            e.printStackTrace();
         }
+
+        //iw.close(); //commits and closes
+//        } catch (IOException e) {
+//            logger.error("write", e);
+//        }
     }
 
     private void read(Consumer<IndexReader> with) {
-        try {
-            DirectoryReader ir = DirectoryReader.open(d);
-            with.accept(ir);
-            ir.close(); //commits and closes
-        } catch (IOException e) {
-            logger.error("read", e);
-        }
+//        try {
+
+
+        with.accept(ir);
+
+//        } catch (IOException e) {
+//            logger.error("read", e);
+//        }
     }
 
     private void search(Consumer<IndexSearcher> with) {
         read(ir -> {
-            IndexSearcher s = new IndexSearcher(ir);
-            with.accept(s);
+
+
+            try {
+                DirectoryReader r = DirectoryReader.open(iw);
+                IndexSearcher s = new IndexSearcher(r);
+                with.accept(s);
+                r.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         });
     }
 
-    private <X> X undocument(Document doc) {
-        String codec = doc.get("#");
+    <X> X undocument(Document doc) {
+        String codec = doc.get("c");
         return (X) codecs.get(codec).unapply(doc);
     }
 
-    private Document document(String id, Object x) {
-        Document d = new Document();
+    Document document(String id, Object x) {
         String codec = codec(x);
-        d.add(new TextField("i", id, Field.Store.YES));
-        d.add(new TextField("#", codec, Field.Store.YES));
+
+        Document d = new Document();
+        d.add(new StringField("i", id, Field.Store.YES));
+        d.add(new StringField("c", codec, Field.Store.YES));
         codecs.get(codec).apply(d, x);
         return d;
     }
@@ -207,12 +302,19 @@ public class User {
         return c;
     }
 
-    public final Map<String,DocCodec> codecs = Map.of(
+
+    public interface DocCodec<X> {
+        void apply(Document d, X x);
+
+        X unapply(Document doc);
+    }
+
+    public final Map<String, DocCodec> codecs = Map.of(
             "string", new DocCodec<String>() {
 
                 @Override
                 public void apply(Document d, String x) {
-                    d.add(new TextField("string", x, Field.Store.YES));
+                    d.add(new StringField("string", x, Field.Store.YES));
                 }
 
                 @Override
@@ -238,7 +340,7 @@ public class User {
                 public void apply(Document d, Object o) {
                     try {
                         d.add(new StoredField("msgpack", new BytesRef(Util.toBytes(o))));
-                        d.add(new TextField("javatype",
+                        d.add(new StringField("javatype",
                                 o.getClass().getName(),
                                 Field.Store.YES));
                     } catch (JsonProcessingException e) {
@@ -261,51 +363,6 @@ public class User {
             }
 
     );
-
-    public interface DocCodec<X> {
-        void apply(Document d, X x);
-
-        X unapply(Document doc);
-    }
-
-//    public static class DefaultDocCodec implements DocCodec {
-//
-//        static final Logger logger = LoggerFactory.getLogger(DefaultDocCodec.class);
-//
-//        @Override
-//        public <X> X unapply(Document doc) {
-//            BytesRef bytes = doc.getBinaryValue("byte[]");
-//            if (bytes != null) {
-//                return (X) bytes.bytes;
-//            }
-//            String s = doc.get("string");
-//            if (s != null) {
-//                return (X) s;
-//            }
-//
-//            logger.error("null {}", doc);
-//            return null;
-//        }
-//
-//        @Override
-//        public Document apply(String id, Object x) {
-//            Document d = new Document();
-//
-//            d.add(new TextField("i", id, Field.Store.YES));
-//
-//            if (x instanceof String) {
-//                d.add(new TextField("string", ((String) x), Field.Store.YES));
-//            } else if (x instanceof byte[]) {
-//                d.add(new StoredField("byte[]", new BytesRef((byte[]) x)));
-//            } else {
-//                logger.error("unsupported type {}", x.getClass());
-//                return null;
-//                //throw new UnsupportedOperationException();
-//            }
-//
-//            return d;
-//        }
-//    }
 
 
 }

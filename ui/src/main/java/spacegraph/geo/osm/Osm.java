@@ -1,12 +1,10 @@
-package spacegraph.geo;
+package spacegraph.geo.osm;
 
-import jcog.Texts;
 import jcog.list.FasterList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
-import spacegraph.geo.data.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -14,24 +12,50 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.net.URL;
+import java.util.Collection;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import static jcog.Texts.l;
 
-public enum OsmReader { ;
+/**
+ * Created by unkei on 2017/04/25.
+ */
+public class Osm {
+    public OsmBounds bounds;
 
+    public final LongObjectHashMap<OsmNode> nodes;
+    public final LongObjectHashMap<OsmRelation> relations;
+    public final LongObjectHashMap<OsmWay> ways;
 
-    public static Osm load(String filename) throws SAXException, IOException, ParserConfigurationException {
+    public Osm() {
+        nodes = new LongObjectHashMap(128 * 1024);
+        ways = new LongObjectHashMap(64 * 1024);
+        relations = new LongObjectHashMap(64 * 1024);
+    }
+
+    public void load(String filename) throws SAXException, IOException, ParserConfigurationException {
         InputStream fis = new FileInputStream(filename);
 
         if (filename.endsWith(".gz")) {
             fis = new GZIPInputStream(fis);
         }
-        return load(fis);
+
+        load(fis);
     }
 
-    public static Osm load(InputStream fis) throws SAXException, IOException, ParserConfigurationException {
+    public static URL url(String apiURL, double lonMin, double latMin, double lonMax, double latMax) throws IOException {
+        return new URL(apiURL + "/api/0.6/map?bbox=" + lonMin + "," + latMin + "," + lonMax + "," + latMax );
+    }
+
+    public void load(String apiURL, double lonMin, double latMin, double lonMax, double latMax) throws SAXException, IOException, ParserConfigurationException {
+        load(url(apiURL, lonMin, latMin, lonMax, latMax).openStream());
+    }
+
+    public void load(InputStream fis) throws SAXException, IOException, ParserConfigurationException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
         factory.setNamespaceAware(false);
@@ -46,9 +70,7 @@ public enum OsmReader { ;
         Document document = documentBuilder.parse(fis);
 
 
-        Osm osm = new Osm();
-        osm.clear();
-
+        Osm osm = this;
 
         Collection<Element> relationElements = new FasterList<>();
 
@@ -259,7 +281,119 @@ public enum OsmReader { ;
             }
         }
 
-        return osm;
+    }
+
+    public void clear() {
+        nodes.clear();
+        ways.clear();
+        relations.clear();
+    }
+
+    public void print() {
+        printOsmNodes(nodes);
+        printOsmWays(ways);
+        printOsmRelations(relations);
+    }
+
+    static void printTags(Map<String, String> tags, int indent) {
+        for (Map.Entry<String, String> stringStringEntry : tags.entrySet()) {
+            String v = stringStringEntry.getValue();
+            printIndent(indent);
+            System.out.printf("%s=%s\n", stringStringEntry.getKey(), v);
+        }
+    }
+
+    static void printOsmNodes(Iterable<OsmNode> osmNodes) {
+        printOsmNodes(osmNodes, 0);
+    }
+
+    static void printOsmNodes(Iterable<OsmNode> osmNodes, int indent) {
+        for (OsmNode osmNode : osmNodes) {
+            printOsmNode(osmNode, indent);
+        }
+    }
+
+    static void printOsmNode(OsmNode osmNode, int indent) {
+        GeoCoordinate geoCoordinate = osmNode.geoCoordinate;
+        printIndent(indent);
+        System.out.printf("<node id=%s, lat=%f, lon=%f>\n", osmNode.id, geoCoordinate.latitude, geoCoordinate.longitude);
+        printTags(osmNode.tags, indent + 1);
+    }
+
+    static void printOsmWays(Iterable<OsmWay> osmWays) {
+        printOsmWays(osmWays, 0);
+    }
+
+    static void printOsmWays(Iterable<OsmWay> osmWays, int indent) {
+        for (OsmWay osmWay : osmWays) {
+            printOsmWay(osmWay, indent);
+        }
+    }
+
+    static void printOsmWay(OsmWay osmWay, int indent) {
+        printIndent(indent);
+        System.out.printf("<way id=%s>\n", osmWay.id);
+        printOsmNodes(osmWay.getOsmNodes(), indent + 1);
+        printTags(osmWay.tags, indent + 1);
+    }
+
+    static void printOsmRelations(Iterable<OsmRelation> osmRelations) {
+        printOsmRelations(osmRelations, 0);
+    }
+
+    static void printOsmRelations(Iterable<OsmRelation> osmRelations, int indent) {
+        for (OsmRelation osmRelation : osmRelations) {
+            printOsmRelation(osmRelation, indent);
+        }
+    }
+
+    static void printOsmRelation(OsmRelation osmRelation, int indent) {
+        printIndent(indent);
+        System.out.printf("<relation id=%s>\n", osmRelation.id);
+        printOsmElements(osmRelation.children(), indent + 1);
+        printTags(osmRelation.tags, indent + 1);
+    }
+
+    static void printOsmElements(Iterable<? extends OsmElement> osmElements, int indent) {
+        for (OsmElement osmElement : osmElements) {
+            if (osmElement.getClass() == OsmNode.class) {
+                printOsmNode((OsmNode) osmElement, indent);
+            } else if (osmElement.getClass() == OsmWay.class) {
+                printOsmWay((OsmWay) osmElement, indent);
+            } else if (osmElement.getClass() == OsmRelation.class) {
+                printOsmRelation((OsmRelation) osmElement, indent);
+            }
+        }
+    }
+
+    static void printIndent(int indent) {
+        for (int i = 0; i < indent; i++) {
+            System.out.print("  ");
+        }
+    }
+
+    void printNode(int indent, Node node) {
+        if (node.getNodeType() != Node.ELEMENT_NODE) {
+            return;
+        }
+
+        for (int i = 0; i < indent; i++) {
+            System.out.print("  ");
+        }
+        System.out.print(node.getNodeName());
+
+        NamedNodeMap nodeMap = node.getAttributes();
+        for (int i = 0; i < nodeMap.getLength(); i++) {
+            Node attr = nodeMap.item(i);
+            System.out.print(", " + attr.getNodeName() + '=' + attr.getNodeValue());
+        }
+        System.out.println();
+
+        NodeList childNodes = node.getChildNodes();
+        int l = childNodes.getLength();
+        for (int i = 0; i < l; i++) {
+            printNode(indent + 1, childNodes.item(i));
+        }
     }
 
 }

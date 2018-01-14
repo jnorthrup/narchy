@@ -238,7 +238,9 @@ public class DeriveTime extends TimeGraph {
                                 occ = aew;
                             }
                             d.concOcc[0] = d.concOcc[1] = occ;
-                            return Op.conjMerge(ae.id, 0, be.id, 0);
+                            //return Op.conjMerge(ae.id, 0, be.id, 0);
+                            return CONJ.the(ae.id, be.id);
+
                         } else if (aew == ETERNAL) {
                             //both eternal, so dternal
                             d.concOcc[0] = d.concOcc[1] = ETERNAL;

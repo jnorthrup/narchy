@@ -21,15 +21,15 @@ public class NAL8SetTest extends NALTest {
     public void testIntersectGoal1Pos() {
         test
             .input("((a|b)-->g)!")
-            .input("(a-->g). %0.75;0.90%") //shouldnt matter
+            //.input("(a-->g). %0.75;0.90%")
             .mustGoal(cycles,"(a-->g)", 1f, 0.81f)
             .mustGoal(cycles,"(b-->g)", 1f, 0.81f);
     }
     @Test
     public void testIntersectGoal1Neg() {
         test
-                .input("--((a|b)-->g)!")
-                //.input("(a-->g).") //shouldnt matter
+                .input("(--,((a|b)-->g))!")
+                //.input("(a-->g).")
                 .mustGoal(cycles,"(a-->g)", 0f, 0.81f)
                 .mustGoal(cycles,"(b-->g)", 0f, 0.81f);
     }

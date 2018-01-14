@@ -554,8 +554,8 @@ public class NAL7Test extends NALTest {
                 .inputAt(1, "--a. :|:")
                 .inputAt(2, "--b. :|:")
                 .mustBelieve(cycles, "(--a &&+1 --b)", 1.00f, 0.81f, 1)
-                //.mustBelieve(cycles, "(--a ==>+1 b)", 0.00f, 0.45f, 1);
-                .mustBelieve(cycles, "(--b ==>-1 a)", 0.00f, 0.45f, 1);
+                .mustBelieve(cycles, "(--a ==>+1 b)", 0.00f, 0.45f, 1)
+                .mustBelieve(cycles, "(--b ==>-1 a)", 0.00f, 0.45f, 2);
     }
 
     @Test
@@ -704,8 +704,6 @@ public class NAL7Test extends NALTest {
     public void variable_introduction_on_events_with_negation() {
 
         test
-
-                //
                 .input("(--,a:x). :|: %0.9;0.8% ")
                 .inputAt(10, "b:x. :|: %0.8;0.9% ")
 
@@ -1161,20 +1159,20 @@ public class NAL7Test extends NALTest {
                 .mustBelieve(cycles, "(open(door) =|> enter(room))",
                         1.00f, 0.81f,
                         0)
-                .mustBelieve(cycles, "(hold(key) =|> enter(room))",
+                .mustBelieve(cycles*5, "(hold(key) =|> enter(room))",
                         1.00f, 0.73f,
                         0)
         ;
     }
 
     @ParameterizedTest
-    @ValueSource(strings = {"", ":|:"}) //both: ETERNAL and NOW
+    @ValueSource(strings = {"", " :|:"}) //both: ETERNAL and NOW
     public void multiConditionSyllogismPost(String implSuffix) {
         //    Y, ((&&,X,A..+) ==> B), time(dtBeliefExact), notImpl(A..+) |- subIfUnifiesAny(((&&,A..+) ==>+- B),X,Y), (Belief:Deduction)
 
         test
                 .input("hold(key). :|:")
-                .input("(goto(door) =|> (hold(#x) &| open(door))). " + implSuffix)
+                .input("(goto(door) =|> (hold(#x) &| open(door)))." + implSuffix)
                 .mustBelieve(cycles * 2, "(goto(door) =|> open(door))",
                         1f, 1.00f, 0.73f, 0.81f,
                         0)

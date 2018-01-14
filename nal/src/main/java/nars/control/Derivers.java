@@ -23,6 +23,7 @@ public class Derivers {
                 case 6:
                     files.add("nal6.nal");
                     files.add("nal6.guess.nal");
+                    files.add("nal6.layer2.nal");
 
                     files.add("induction.nal");  //TODO nal6 only needs general induction, not the temporal parts
 

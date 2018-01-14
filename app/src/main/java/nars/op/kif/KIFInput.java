@@ -300,7 +300,7 @@ public class KIFInput implements Runnable {
                 if (args.size() >= 2) {
                     Term a = args.get(0);
                     Term b = args.get(1);
-                    Variable v0 = nextVar(VAR_INDEP);
+                    Variable v0 = nextVar(VAR_DEP);
                     y = disjoint($.inh(v0, a), $.inh(v0, b.neg()));
                 }
                 break;
@@ -429,15 +429,15 @@ public class KIFInput implements Runnable {
         NAR e = NARS.tmp();
         MetaGoal.Perceive.set(e.want, -0.1f);
 
-        //new PrologCore(e);
+        new PrologCore(e);
 
         KIFInput k = new KIFInput(e,
                 //"/home/me/sumo/Biography.kif"
                 //"/home/me/sumo/Military.kif"
                 //"/home/me/sumo/ComputerInput.kif"
                 //"/home/me/sumo/FinancialOntology.kif"
-                //"/home/me/sumo/Merge.kif"
-                "/home/me/sumo/emotion.kif"
+                "/home/me/sumo/Merge.kif"
+                //"/home/me/sumo/emotion.kif"
                 //"/home/me/sumo/Weather.kif"
         );
         k.run();
@@ -450,15 +450,23 @@ public class KIFInput implements Runnable {
 //(answer yes)
         //e.clear();
         e.log();
-        //e.believe("Organization:{org1}");
-        //e.believe("accountHolder(xyz,1)");
-        e.ask($.$safe("(EmotionalState<->?1)"), ETERNAL, QUESTION, (t)->{
+        e.believe("Organization:org1");
+//        e.question("member(?1, org1)?", ETERNAL, (q,a)->{
+//            System.out.println(a);
+//        });
+        e.ask($.$safe("(org1<->?1)"), ETERNAL, QUESTION, (t)->{
            System.out.println(t);
         });
+        //e.believe("accountHolder(xyz,1)");
+//        e.ask($.$safe("(EmotionalState<->?1)"), ETERNAL, QUESTION, (t)->{
+//           System.out.println(t);
+//        });
         //e.believe("attribute(xyz,Philosopher)");
         //e.input("(xyz<->?1)?");
-//        e.input("member(#1, org1)?"); //conflicts with prolog 'member' functor
+
         e.run(1000);
+//        Thread.sleep(1000);
+//        e.run(1000);
         //e.conceptsActive().forEach(s -> System.out.println(s));
 
         //(($_#AGENT,#OBJECT)-->needs)==>($_#AGENT,#OBJECT)-->wants)).

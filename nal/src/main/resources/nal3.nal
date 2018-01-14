@@ -48,8 +48,8 @@
 
 //NAL3 single premise decompose
 
-    (M --> S), S, is(S,"&") |- (M --> dropAnySet(S)), (Belief:StructuralDeduction,Goal:StructuralDeduction)
-    (S --> M), S, is(S,"|") |- (dropAnySet(S) --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+    (M --> S), S, is(S,"&") |- (M --> dropAnySet(S)), (Belief:StructuralDeduction, Goal:StructuralReduction)
+    (S --> M), S, is(S,"|") |- (dropAnySet(S) --> M), (Belief:StructuralDeduction, Goal:StructuralReduction)
 
 
 

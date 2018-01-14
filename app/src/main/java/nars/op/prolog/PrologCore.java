@@ -187,7 +187,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
             if (!_truth) {
                 if (t.op() == IMPL) {
-                    next = new Struct(":-", negate(next.subResolve(0)), next.subResolve(1));
+                    next = new Struct(":-", negate(next.subResolve(1)), next.subResolve(0));
                 } else {
                     next = negate(next);
                 }

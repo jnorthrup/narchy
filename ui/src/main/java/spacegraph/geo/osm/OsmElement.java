@@ -1,4 +1,4 @@
-package spacegraph.geo.data;
+package spacegraph.geo.osm;
 
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 

@@ -14,6 +14,8 @@
  */
 package nars.op.kif;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.io.*;
 import java.text.ParseException;
 import java.util.*;
@@ -469,14 +471,15 @@ public class KIF {
      */
     private static int countChar(String str, char c) {
 
-        int len = 0;
-        char[] cArray = str.toCharArray();
-        for (char aCArray : cArray) {
-            if (aCArray == c) {
-                len++;
-            }
-        }
-        return len;
+        return StringUtils.countMatches(str, c);
+//        int len = 0;
+//        char[] cArray = str.toCharArray();
+//        for (char aCArray : cArray) {
+//            if (aCArray == c) {
+//                len++;
+//            }
+//        }
+//        return len;
     }
 
     /**
