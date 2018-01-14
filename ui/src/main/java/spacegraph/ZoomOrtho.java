@@ -396,7 +396,7 @@ public class ZoomOrtho extends Ortho {
         }
 
         @Override
-        public boolean editable() {
+        public boolean fingerable() {
             return false; //prevent drag the HUD itself
         }
 

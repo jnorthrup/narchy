@@ -74,7 +74,7 @@ public class Windo extends Widget {
     @Override
     public Surface onTouch(Finger finger, v2 hitPoint, short[] buttons) {
 
-        if (!editable())
+        if (!fingerable())
             return super.onTouch(finger, hitPoint, buttons); //pass-through
 
         if (finger != null) {
@@ -150,7 +150,7 @@ public class Windo extends Widget {
                     if (bDrag) {
                         if (dragMode == null && potentialDragMode != null) {
 
-                            if (editable(potentialDragMode)) {
+                            if (fingerable(potentialDragMode)) {
                                 //finger.lock(0, )..
                                 before = bounds; //TODO store these in a shared Finger-context "posOnHit" field, not in this instance
 
@@ -187,7 +187,7 @@ public class Windo extends Widget {
 
         switch (mode) {
             case MOVE:
-                return new FingerMove(this);
+                return fingeringMove();
 
             default:
                 return new FingerResize(this, mode);
@@ -195,11 +195,15 @@ public class Windo extends Widget {
 
     }
 
-    public boolean editable() {
+    protected Fingering fingeringMove() {
+        return new FingerMove(this);
+    }
+
+    public boolean fingerable() {
         return true;
     }
 
-    public boolean editable(DragEdit d) {
+    public boolean fingerable(DragEdit d) {
         return true;
     }
 
@@ -355,13 +359,7 @@ public class Windo extends Widget {
         @Override
         protected Fingering fingering(DragEdit mode) {
             if (mode == MOVE) {
-                return new FingerMove(this) {
-                    @Override
-                    public boolean moveX() {
-                        return false;
-                    }
-
-                };
+                return new FingerMove(this, false, true);
             }
             return super.fingering(mode);
         }
@@ -444,7 +442,7 @@ public class Windo extends Widget {
             Windo w = d.addWindo(Widget.widgetDemo());
             w.pos(80, 80, 550, 450);
 
-            Port p = w.addPort("X");
+//            Port p = w.addPort("X");
         }
 
         d.addWindo(grid(new PushButton("x"), new PushButton("y"))).pos(10, 10, 50, 50);

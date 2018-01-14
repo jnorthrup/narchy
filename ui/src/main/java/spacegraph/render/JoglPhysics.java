@@ -221,7 +221,7 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
         //gl.glEnable(GL2.GL_LIGHTING); // Enable Lighting
 
 
-        gl.glDisable(GL2.GL_SCISSOR_TEST);
+        //gl.glDisable(GL2.GL_SCISSOR_TEST);
 
         gl.glEnable(GL2.GL_BLEND);
 //        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

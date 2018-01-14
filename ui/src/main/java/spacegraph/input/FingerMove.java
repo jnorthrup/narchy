@@ -2,13 +2,21 @@ package spacegraph.input;
 
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.Surface;
+import spacegraph.math.v2;
 
 public class FingerMove extends FingerDragging {
     private final Surface moving;
     private RectFloat2D before;
+    boolean x, y;
 
     public FingerMove(Surface moving) {
+        this(moving, true, true);
+    }
+
+    public FingerMove(Surface moving, boolean xAxis, boolean yAxis) {
         super(0 /* LEFT BUTTON */);
+        this.x = xAxis;
+        this.y = yAxis;
         this.moving = moving;
     }
 
@@ -19,8 +27,10 @@ public class FingerMove extends FingerDragging {
     @Override public boolean drag(Finger finger) {
         float pmx = before.min.x;
         float pmy = before.min.y;
-        float tx = pmx + (moveX() ? (finger.hit.x - finger.hitOnDown[0].x) : 0);
-        float ty = pmy + (moveY() ? (finger.hit.y - finger.hitOnDown[0].y) : 0);
+        v2 fh = finger.hit;
+        v2 fhd = finger.hitOnDown[0];
+        float tx = pmx + (x ? (fh.x - fhd.x) : 0);
+        float ty = pmy + (y ? (fh.y - fhd.y) : 0);
         moved(tx, ty, moving.w() + tx, moving.h() + ty);
         return true;
     }
@@ -29,9 +39,5 @@ public class FingerMove extends FingerDragging {
         moving.pos(x1, y1, x2, y2);
     }
 
-    /** allow movement in x-axis dirctions */
-    public boolean moveX() { return true; }
 
-    /** allow movement in y-axis dirctions */
-    public boolean moveY() { return true; }
 }
