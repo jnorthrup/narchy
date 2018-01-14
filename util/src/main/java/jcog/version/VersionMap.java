@@ -141,7 +141,7 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
 //        return v;
     }
 
-    protected Versioned<Y> newEntry(X ignored) {
+    protected Versioned<Y> newEntry(X x) {
         return new Versioned<>(context, elementStackSizeDefault);
         //return cache(k) ? new Versioned(context) :
         //return new RemovingVersionedEntry(k);

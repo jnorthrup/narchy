@@ -2,24 +2,35 @@ package nars.experiment;
 
 import com.google.common.collect.Lists;
 import jcog.Util;
+import jcog.learn.Autoencoder;
 import jcog.learn.LivePredictor;
 import jcog.learn.ql.HaiQAgent;
 import jcog.math.FloatPolarNormalized;
 import nars.*;
 import nars.concept.SensorConcept;
+import nars.control.DurService;
 import nars.gui.Vis;
+import nars.op.AutoConceptualizer;
 import nars.op.RLBooster;
+import nars.term.Term;
 import nars.term.Termed;
+import nars.time.Tense;
 import nars.util.signal.BeliefPredict;
 import spacegraph.SpaceGraph;
+import spacegraph.render.Draw;
+import spacegraph.widget.meter.BitmapMatrixView;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static jcog.Texts.n2;
+import static nars.Op.IMPL;
+import static nars.Op.QUEST;
+import static nars.Op.QUESTION;
 
 /**
  * adapted from: https://github.com/B00075594/CI_Lab2_CartAndPole/blob/master/src/pole.java
@@ -38,6 +49,7 @@ public class PoleCart extends NAgentX {
                 NAgent a = new PoleCart(n);
                 a.nar.freqResolution.set(0.05f);
                 a.nar.confResolution.set(0.02f);
+
 
                 //a.durations.setValue(1f);
                 //n.goalConfidence(0.75f);
@@ -124,16 +136,16 @@ public class PoleCart extends NAgentX {
         //angle
 
         this.angX = senseNumber($.inh($.p("ang", "x"), id),
-                () -> (float)(0.5f + 0.5f * (Math.sin(angle))))
+                () -> (float) (0.5f + 0.5f * (Math.sin(angle))))
                 .resolution(0.04f);
         this.angY = senseNumber($.inh($.p("ang", "y"), id),
-                () -> (float)(0.5f + 0.5f * (Math.cos(angle))))
+                () -> (float) (0.5f + 0.5f * (Math.cos(angle))))
                 .resolution(0.04f);
 
         //angular velocity
         this.angVel = senseNumber($.inh($.p("angVel"), id),
                 //() -> Util.sigmoid(angleDot / 4f)
-                new FloatPolarNormalized(()->(float)angleDot)
+                new FloatPolarNormalized(() -> (float) angleDot)
         ).resolution(0.1f);
 
         {
@@ -159,7 +171,6 @@ public class PoleCart extends NAgentX {
 //        });
 
 
-
 //        new BeliefPredict(
 //                new Termed[] { xVel, angVel, x},
 //                8,
@@ -170,11 +181,28 @@ public class PoleCart extends NAgentX {
 //                nar
 //        );
 
+
+        List<SensorConcept> sensors = List.of(this.x, xVel,
+                angX,
+                angY,
+                angVel);
+
+
+//        AutoConceptualizer ae = new AutoConceptualizer(sensors, true, 8, nar) {
+//            @Override
+//            protected void onFeature(Term feature) {
+//                System.out.println(feature);
+//                //nar.que(feature, QUEST, nar.time()  + nar.dur());
+//                nar.believe(IMPL.the(0, feature, $.varDep(1)), Tense.Present, 1f, 0.9f);
+//            }
+//        };
+//        BitmapMatrixView bmp = new BitmapMatrixView(ae.ae.W.length, ae.ae.W[0].length, BitmapMatrixView.arrayRenderer(ae.ae.W));
+//        DurService.on(nar, bmp::update);
+//        SpaceGraph.window(bmp,400,400);
+
+
         SpaceGraph.window(Vis.beliefCharts(100,
-                java.util.List.of(x, xVel,
-                        angX,
-                        angY,
-                        angVel),
+                sensors,
                 nar), 600, 600);
         this.panel = new JPanel(new BorderLayout()) {
             public Stroke stroke = new BasicStroke(4);

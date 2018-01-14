@@ -5,6 +5,7 @@ import jcog.math.FloatSupplier;
 import jcog.math.tensor.ArrayTensor;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.Surface;
+import spacegraph.render.Draw;
 import spacegraph.render.Tex;
 
 import java.awt.image.BufferedImage;
@@ -32,13 +33,12 @@ public class BitmapMatrixView extends Surface {
     }
 
 //
-//    public static ViewFunction2D arrayRenderer(float[][] ww) {
-//        return (x, y) -> {
-//            float v = ww[x][y];
-//            Draw.colorBipolar(gl, v);
-//            return 0;
-//        };
-//    }
+    public static ViewFunction2D arrayRenderer(float[][] ww) {
+        return (x, y) -> {
+            float v = ww[x][y];
+            return Draw.colorBipolar(v);
+        };
+    }
 
 //    public static ViewFunction2D arrayRenderer(float[] w) {
 //        return (x, y) -> {

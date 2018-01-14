@@ -77,17 +77,19 @@ public class Line1D {
             n.freqResolution.set(0.05f);
             n.confResolution.set(0.02f);
             n.termVolumeMax.set(32);
-//            MetaGoal.Desire.set(n.want, 2f);
-//            MetaGoal.Action.set(n.want, 2f);
+
+            MetaGoal.Perceive.set(n.want, -0.01f);
+            MetaGoal.Desire.set(n.want, 0.25f);
+            MetaGoal.Action.set(n.want, 2f);
 
 
             ConjClustering conjClusterB = new ConjClustering(n,  BELIEF, t ->t.isInput(), 16, 64);
 
-            n.onTask(x -> {
-                if (x instanceof DerivedTask) {
-                    System.err.println(x.proof());
-                }
-            });
+//            n.onTask(x -> {
+//                if (x instanceof DerivedTask) {
+//                    System.err.println(x.proof());
+//                }
+//            });
 //            n.onCycle(()->{
 //                System.out.println(n.time()+":");
 //                n.exe.active().forEach(System.out::println);
@@ -95,32 +97,32 @@ public class Line1D {
 //            });
 //            n.log();
 
-            n.runLater(() -> {
-                try {
-                    n.input(""
-                            //"(y,())! %0.5;0.02%",
-                            //"((),y)! %0.5;0.02%"
-//                            "$0.99 ((&&, i, --o) &&+1 ((),y))!",
-//                            "$0.99 ((&&, --i, o) &&+1 (y,()))!"
-//                            "$0.99 ((&|, i, --o) =|> happy).",
-//                            "$0.99 ((&|, --i, o) =|> happy)."
-                    );
-
-                    //            n.input(
-                    //                "(i =|> (y,()))."
-                    //            );
-                    //            n.input("(happy =|> --(i-o)).",
-                    //                    "(happy =|> --(o-i)).",
-                    //                    "(i-o)?",
-                    //                    "(o-i)?"
-                    //            );
-                    //            n.input("$.99 ((i-o) &| (y,()))!",
-                    //                    "$.99 ((o-i) &| ((),y))!"
-                    //            );
-                } catch (Narsese.NarseseException e) {
-                    e.printStackTrace();
-                }
-            });
+//            n.runLater(() -> {
+//                try {
+//                    n.input(""
+//                            //"(y,())! %0.5;0.02%",
+//                            //"((),y)! %0.5;0.02%"
+////                            "$0.99 ((&&, i, --o) &&+1 ((),y))!",
+////                            "$0.99 ((&&, --i, o) &&+1 (y,()))!"
+////                            "$0.99 ((&|, i, --o) =|> happy).",
+////                            "$0.99 ((&|, --i, o) =|> happy)."
+//                    );
+//
+//                    //            n.input(
+//                    //                "(i =|> (y,()))."
+//                    //            );
+//                    //            n.input("(happy =|> --(i-o)).",
+//                    //                    "(happy =|> --(o-i)).",
+//                    //                    "(i-o)?",
+//                    //                    "(o-i)?"
+//                    //            );
+//                    //            n.input("$.99 ((i-o) &| (y,()))!",
+//                    //                    "$.99 ((o-i) &| ((),y))!"
+//                    //            );
+//                } catch (Narsese.NarseseException e) {
+//                    e.printStackTrace();
+//                }
+//            });
 
 
             //n.beliefConfidence(0.9f);
@@ -189,7 +191,7 @@ public class Line1D {
 
             //new RelationClustering(n, (t)->1f, 4, 16);
 
-            n.time.dur(5);
+            n.time.dur(16);
             exp.agent.curiosity.set(0.1f);
             exp.agent.runDur(1);
 
@@ -243,7 +245,7 @@ public class Line1D {
 
         float tHz = 0.05f; //in time units
         float yResolution = 0.05f; //in 0..1.0
-        float periods = 16;
+//        float periods = 16;
 
 //        final int runtime = Math.round(periods / tHz);
         public Line1DSimplest agent;

@@ -57,8 +57,8 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     public X computeIfAbsent(Term key,
                               Function<? super Term, ? extends X> mappingFunction) {
-        if (key == null)
-            throw new NullPointerException();
+//        if (key == null)
+//            throw new NullPointerException();
         X v;
         if ((v = get(key)) == null) {
             X newValue;

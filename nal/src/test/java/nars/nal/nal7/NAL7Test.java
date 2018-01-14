@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 0.6f;
-    public int cycles = 100;
+    public int cycles = 150;
 
     @BeforeEach
     public void setTolerance() {
@@ -1526,13 +1526,28 @@ public class NAL7Test extends NALTest {
     public void testDecomposeImplPred() {
 
         test
-                .believe("( (a,#1) =|> ( ( (x,#1) &| y) &| z ) )", Tense.Present, 1f, 0.9f)
+                .believe("( (a,#1) =|> ( ( (x,#1) &| y) &| z ) )", Tense.Present, 1f, 0.9f);
+
+        //test.nar.run(1);
+        //test.nar.concept($.$safe("( (a,#1) =|> ( ( (x,#1) &| y) &| z ) )")).print();
+
+        test
                 .mustBelieve(cycles, "( (a,#1) =|> (x,#1) )", 1f, 0.73f, 0)
                 .mustBelieve(cycles, "( (a,#1) =|> y )", 1f, 0.73f, 0)
                 .mustBelieve(cycles, "( (a,#1) =|> z )", 1f, 0.73f, 0)
         ;
     }
 
+    @Test
+    public void testDecomposeImplPredSimpler() {
+
+        test
+                .believe("( a =|> ( ( x &| y) &| z ) )", Tense.Present, 1f, 0.9f)
+                .mustBelieve(cycles, "( a =|> x )", 1f, 0.73f, 0)
+                .mustBelieve(cycles, "( a =|> y )", 1f, 0.73f, 0)
+                .mustBelieve(cycles, "( a =|> z )", 1f, 0.73f, 0)
+        ;
+    }
     @Disabled
     @Test
     public void testImplInductionAndConjReduction() {

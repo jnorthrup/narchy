@@ -316,11 +316,11 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
                 break;
             case CONJ:
-                Subterms tt = eventTerm.subterms();
+                //Subterms tt = eventTerm.subterms();
                 long et = event.when();
 
 
-                int s = tt.subs();
+                //int s = tt.subs();
 //                if (et == TIMELESS) {
 //                    //chain the sibling subevents
 //                    if (s == 2) {

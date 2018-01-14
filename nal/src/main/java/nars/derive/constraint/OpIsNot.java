@@ -20,6 +20,7 @@ public final class OpIsNot extends MatchConstraint {
 
     @Override
     public boolean invalid(Term y, Unify f) {
+
         return y.op().in(op);
     }
 

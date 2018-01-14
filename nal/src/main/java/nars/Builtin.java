@@ -398,13 +398,9 @@ public class Builtin {
             if (conj.op() != CONJ)
                 return Null;
 
-            Term x = Op.without(conj, event, true, nar.random());
-            if (x != Null)
-                return x;
 
-            //TODO randomize if multiple matches
             //extract from inside recursive event
-            if (conj.dt() != DTERNAL && conj.subterms().hasAny(CONJ)) {
+            if (conj.dt() != DTERNAL) {
                 event = event.conceptual();
 
                 FasterList<LongObjectPair<Term>> events = conj.eventList();
@@ -426,7 +422,11 @@ public class Builtin {
                 events.remove(f);
                 return Op.conj(events);
             } else {
-                return Null;
+                Term x = Op.without(conj, event, true, nar.random());
+                if (x != Null)
+                    return x;
+                else
+                    return Null;
             }
         }));
         /** extracts only the events preceding the specified events */

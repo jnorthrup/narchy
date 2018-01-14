@@ -418,7 +418,7 @@ public abstract class Unify extends Versioning implements Subst {
 //        }
 
         @Override
-        protected Versioned newEntry(Term key) {
+        protected Versioned newEntry(Term x) {
             return new ConstrainedVersionedTerm();
         }
 

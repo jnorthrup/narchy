@@ -374,19 +374,19 @@ public class PremiseRule /*extends GenericCompound*/ {
                     constraints.add(new SubOfConstraint(Y, X, true, true, true));
                     break;
 
-                 case "isAny":
-
-                     int struct = 0;
-                     for (int k = 1; k < args.length; k++) {
-
-                         Op o = Op.the($.unquote(args[k]));
-                         if (o.atomic)
-                             throw new TODO();
-                         struct |= o.bit;
-                     }
-                     assert(struct!=0);
-                     termIsAny(pres, taskPattern, beliefPattern, constraints, X, struct);
-                     break;
+//                 case "isAny":
+//
+//                     int struct = 0;
+//                     for (int k = 1; k < args.length; k++) {
+//
+//                         Op o = Op.the($.unquote(args[k]));
+//                         if (o.atomic)
+//                             throw new TODO();
+//                         struct |= o.bit;
+//                     }
+//                     assert(struct!=0);
+//                     termIsAny(pres, taskPattern, beliefPattern, constraints, X, struct);
+//                     break;
 
                  case "is":
                     //TODO make var arg version of this
@@ -665,10 +665,10 @@ public class PremiseRule /*extends GenericCompound*/ {
         constraints.add(OpIs.the(x, v));
         includesOp(pres, taskPattern, beliefPattern, x, v);
     }
-    private static void termIsAny(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, SortedSet<MatchConstraint> constraints, Term x, int struct) {
-        constraints.add(new OpIsAny(x, struct));
-        includesOp(pres, taskPattern, beliefPattern, x, struct, true);
-    }
+//    private static void termIsAny(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, SortedSet<MatchConstraint> constraints, Term x, int struct) {
+//        constraints.add(new OpIsAny(x, struct));
+//        includesOp(pres, taskPattern, beliefPattern, x, struct, true);
+//    }
 
     private static void includesOp(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, Op o) {
         if (!o.atomic) // any atomic terms these will be Anon 'd and thus undetectable

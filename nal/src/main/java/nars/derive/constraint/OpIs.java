@@ -8,6 +8,7 @@ import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.subst.Unify;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 
 public class OpIs extends MatchConstraint {
