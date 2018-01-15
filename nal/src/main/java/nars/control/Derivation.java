@@ -160,7 +160,10 @@ public class Derivation extends ProtoDerivation {
 
         derivedTerm = new Versioned(this, 3);
 
-        anon = new CachedAnon(16);
+        anon =
+                //new CachedAnon(16);
+                new Anon(8);
+
         //anon = new Anon();
 //            @Override
 //            public Term get(Term x) {
@@ -271,7 +274,7 @@ public class Derivation extends ProtoDerivation {
         return this;
     }
 
-    public void init(NAR nar) {
+    void init(NAR nar) {
         this.clear();
         this.nar = nar;
         this.random = nar.random();
@@ -307,12 +310,13 @@ public class Derivation extends ProtoDerivation {
         this.derivationFunctors = Maps.immutable.ofMap(m);
     }
 
-    public Derivation reset() {
+    @Override public Derivation reset() {
         super.reset();
 
         anon.clear();
 
         this.task = this.belief = null;
+        this._task = this._belief = null;
 
         this.beliefTruth = this.taskTruth = null;
 
@@ -324,7 +328,7 @@ public class Derivation extends ProtoDerivation {
         this.evidenceDouble = evidenceSingle = null;
         this.dtSingle = this.dtDouble = null;
         this.concOcc[0] = this.concOcc[1] = ETERNAL;
-        this._task = this._belief = null;
+
         this.derivedTerm.clear();
 
 
@@ -386,28 +390,25 @@ public class Derivation extends ProtoDerivation {
         if (task == null)
             throw new NullPointerException(_task + " could not be anonymized: " +
                     _task.term().anon() + " , " + anon.put(this._task = _task));
-
+        final Term taskTerm = this.taskTerm = task.term();
+        final Term beliefTerm;
         if (_belief != null) {
             if ((this.belief = anon.put(this._belief = _belief)) == null)
                 throw new NullPointerException(_belief + " could not be anonymized");
+            beliefTerm = this.beliefTerm = this.belief.term();
         } else {
             this.belief = null;
+            beliefTerm = this.beliefTerm = anon.put(_beliefTerm);
         }
-        final Term taskTerm = this.taskTerm = task.term();
-        final Term beliefTerm = this.beliefTerm = anon.put(_beliefTerm);
+
 
 
         this._taskStruct = taskTerm.structure();
         this._taskOp = taskTerm.op().id;
-
         this._beliefStruct = beliefTerm.structure();
-
-        Op bOp = beliefTerm.op();
-        this._beliefOp = bOp.id;
+        this._beliefOp = beliefTerm.op().id;
 
         setTruth();
-
-
     }
 
     /** called after protoderivation has returned some possible Try's */

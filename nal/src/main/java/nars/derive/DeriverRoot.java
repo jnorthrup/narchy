@@ -18,24 +18,6 @@ public final class DeriverRoot {
         this.can = can;
     }
 
-    Memoize<ProtoDerivation.PremiseKey,int[]> whatCached =
-            new HijackMemoize<>(ProtoDerivation.PremiseKey::solve,
-                    64 * 1024, 5, false);
-
-    /** 1. CAN (proto) stage */
-    public boolean proto(Derivation x) {
-        x.can.clear();
-        int[] trys = x.will = whatCached.apply(new ProtoDerivation.PremiseKey(x));
-        return trys.length > 0 ? true : false;
-    }
-
-    /** 2. TRY stage */
-    public void derive(Derivation x, int ttl) {
-        if (x.derive()) {
-            x.setTTL(ttl);
-            can.test(x);
-        }
-    }
 
     public void printRecursive() {
 

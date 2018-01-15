@@ -1,10 +1,14 @@
 package nars.control;
 
 import jcog.Util;
-import jcog.math.MutableInteger;
+import jcog.memoize.HijackMemoize;
+import jcog.memoize.Memoize;
+import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
+import jcog.pri.op.PriMerge;
 import jcog.sort.TopN;
 import jcog.sort.TopNUnique;
+import jcog.util.FloatFloatToFloatFunction;
 import nars.$;
 import nars.NAR;
 import nars.Param;
@@ -14,11 +18,14 @@ import nars.derive.TrieDeriver;
 import nars.derive.rule.PremiseRuleSet;
 import nars.exe.Causable;
 import nars.index.term.PatternIndex;
+import nars.term.Term;
+import org.eclipse.collections.api.block.function.primitive.LongObjectToLongFunction;
 
 import java.io.PrintStream;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.ToLongFunction;
 import java.util.stream.Stream;
 
 import static nars.time.Tense.ETERNAL;
@@ -34,11 +41,25 @@ public class Deriver extends Causable {
     private final Consumer<Predicate<Activate>> concepts;
     private final Cause[] subCauses;
 
-    int premisesPerConcept = 3;
-    private float minHypoPremisesPerConceptFire = 3;
-    private float maxHypoPremisesPerConceptFire = 6;
 
-    protected long now;
+    /**
+     * how many premises to generate per concept in pre-derivation
+     */
+    int HypotheticalPremisePerConcept = 4;
+
+    /**
+     * how many premises to keep per concept; should be <= Hypothetical count
+     */
+    int premisesPerConcept = 2;
+
+
+    /**
+     * TODO move this to a 'CachingDeriver' subclass
+     */
+    public final Memoize<ProtoDerivation.PremiseKey, int[]> whats =
+            new HijackMemoize<>(ProtoDerivation.PremiseKey::solve,
+                    64 * 1024, 3, false);
+
 
     public static Function<NAR, Deriver> deriver(Function<NAR, PremiseRuleSet> rules) {
         return (nar) ->
@@ -86,13 +107,11 @@ public class Deriver extends Causable {
     protected int next(NAR n, final int iterations) {
 
 
-        NAR nar1 = Deriver.this.nar;
-
-        Derivation d = derivation.get().cycle(nar1, deriver);
+        Derivation d = derivation.get().cycle(n, deriver);
 
         int matchTTL = Param.TTL_PREMISE_MIN * 4;
 //        int ttlMin = nar1.matchTTLmin.intValue();
-        int ttlMax = nar1.matchTTLmax.intValue();
+        int ttlMax = n.matchTTLmax.intValue();
 
 
 //        int premisesRemain[] = new int[]{work};
@@ -101,30 +120,24 @@ public class Deriver extends Causable {
         //hard limit on # of concepts processed. since usually there will be >1 premises per concept, this will normally not be exhausted
         int conceptsRemain[] = new int[]{iterations};
 
-        now = nar1.time();
 
-
-        TopN<Premise> premises = new TopNUnique<Premise>(new Premise[conceptsRemain[0] * premisesPerConcept],
-                Prioritized::pri) {
-            @Override protected void merge(Premise existing, Premise next) {
-                existing.priMax(next.pri());
-            }
-        };
+        TopNUniquePremises premises = new TopNUniquePremises(iterations * Deriver.this.premisesPerConcept);
 
         concepts.accept(a -> {
-            final int[] premisesRemain = {premises(a)};
-            a.premises(nar1, d.activator, p -> {
-                premises.add(p);
-                return --premisesRemain[0] > 0;
-            });
-            return (--conceptsRemain[0])>0;
+            final int[] premisesRemain = {HypotheticalPremisePerConcept};
+            premises.setTTL(HypotheticalPremisePerConcept);
+            a.premises(n, d.activator, premises::tryAdd);
+            return (--conceptsRemain[0]) > 0;
         });
+
+
+        LongObjectToLongFunction<Task> m = (now, t) -> matchTime(t, now);
 
         premises.forEach(premise -> {
 
-            if (premise.match(d, Deriver.this::matchTime, matchTTL) != null) {
+            if (premise.match(d, m, matchTTL) != null) {
 
-                boolean derivable = deriver.proto(d);
+                boolean derivable = proto(d);
                 if (derivable) {
 
 //                    float strength =
@@ -135,9 +148,9 @@ public class Deriver extends Causable {
 
                     int deriveTTL =
                             ttlMax;
-                            //Util.lerp(premise.priElseZero(), ttlMin, ttlMax);
+                    //Util.lerp(premise.priElseZero(), ttlMin, ttlMax);
 
-                    deriver.derive(d, deriveTTL);
+                    derive(d, deriveTTL);
                 }
 
                 //System.err.println(derivable + " " + premise.taskLink.get() + "\t" + premise.termLink + "\t" + d.can + " ..+" + d.derivations.size());
@@ -147,9 +160,28 @@ public class Deriver extends Causable {
         });
 
 
-        int derived = d.commit(nar1::input);
+        int derived = d.commit(n::input);
 
         return Math.max(0, (iterations - conceptsRemain[0]));
+    }
+
+    /**
+     * 1. CAN (proto) stage
+     */
+    public boolean proto(Derivation x) {
+        x.can.clear();
+        int[] trys = x.will = whats.apply(new ProtoDerivation.PremiseKey(x));
+        return trys.length > 0;
+    }
+
+    /**
+     * 2. TRY stage
+     */
+    public void derive(Derivation x, int ttl) {
+        if (x.derive()) {
+            x.setTTL(ttl);
+            deriver.can.test(x);
+        }
     }
 
     @Override
@@ -162,7 +194,7 @@ public class Deriver extends Causable {
         return Util.sum(Cause::value, subCauses);
     }
 
-    protected long matchTime(Task task) {
+    protected long matchTime(Task task, long now) {
         assert (now != ETERNAL);
 
         if (task.isEternal()) {
@@ -208,9 +240,9 @@ public class Deriver extends Causable {
     }
 
 
-    private int premises(Activate a) {
-        return Math.round(Util.lerp(a.priElseZero(), minHypoPremisesPerConceptFire, maxHypoPremisesPerConceptFire));
-    }
+//    private int premises(Activate a) {
+//        return Math.round(Util.lerp(a.priElseZero(), minHypoPremisesPerConceptFire, maxHypoPremisesPerConceptFire));
+//    }
 
 
 //    public static final Function<NAR, PrediTerm<Derivation>> NullDeriver = (n) -> new AbstractPred<Derivation>(Op.Null) {
@@ -239,6 +271,51 @@ public class Deriver extends Causable {
     private static final ThreadLocal<Derivation> derivation =
             ThreadLocal.withInitial(Derivation::new);
 
+    static final FloatFloatToFloatFunction merge = Param.taskTermLinksToPremise;
+
+    protected class TopNUniquePremises extends TopNUnique<Premise> {
+        private int premisesRemain;
+
+
+
+        public TopNUniquePremises(int capacity) {
+            super(new Premise[capacity], Prioritized::pri);
+        }
+
+        @Override
+        protected void merge(Premise existing, Premise next) {
+            existing.priMax(next.pri());
+        }
+
+        /**
+         * call before generating a concept's premises
+         */
+        public void setTTL(int hypotheticalPremisePerConcept) {
+            this.premisesRemain = hypotheticalPremisePerConcept;
+        }
+
+        /**
+         * returns whether to continue
+         */
+        public boolean tryAdd(PriReference<Task> tasklink, PriReference<Term> termlink) {
+            float pri = tasklink.pri();
+            if (pri == pri) {
+
+                Task t = tasklink.get();
+                if (t != null) {
+
+                    float p = merge.apply(pri, termlink.priElseZero()) * nar.amp(t);
+                    if (p > minAdmission()) {
+                        add( new Premise(t, termlink.get(), p) );
+                    } else {
+                        //System.out.println("rejected early");
+                    }
+                }
+
+            }
+            return --premisesRemain > 0;
+        }
+    }
 }
 
 

@@ -12,7 +12,6 @@ import nars.term.atom.Int;
 import nars.term.sub.Subterms;
 import nars.term.sub.TermVector;
 import nars.term.transform.CompoundTransform;
-import nars.term.var.NormalizedVariable;
 import org.eclipse.collections.api.block.function.primitive.ByteFunction;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
@@ -39,7 +38,7 @@ public class Anon {
     }
 
     final ByteFunction<Term> nextUniqueAtom = (Term next) -> {
-        int s = rev.size();
+        int s = rev.size()+1;
         assert (s < MAX_ANOM);
         //assert (!(next instanceof Bool));
         rev.add(next);
@@ -97,7 +96,7 @@ public class Anon {
     }
 
     public Term put(Term x) {
-        if (x instanceof NormalizedVariable) {
+        if (x instanceof AnonID) {
             //assert (!(x instanceof UnnormalizedVariable));
 //            if (x instanceof UnnormalizedVariable)
 //                throw new RuntimeException("unnormalized variable for Anon: " + x);
@@ -105,14 +104,10 @@ public class Anon {
         } else if (x instanceof Atomic) {
             if (x instanceof Int.IntRange)
                 return x; //HACK
-            return Anom.the[1+fwd.getIfAbsentPutWithKey(x, nextUniqueAtom)];
+            return Anom.the[fwd.getIfAbsentPutWithKey(x, nextUniqueAtom)];
         } else {
-            return putTransformed(x);
+            return x.transform(PUT);
         }
-    }
-
-    protected Term putTransformed(Term x) {
-        return x.transform(PUT);
     }
 
     public Term get(Term x) {
@@ -138,7 +133,6 @@ public class Anon {
                 ((TermVector) yy).setNormalized();
         }
 
-        //return Task.clone(t, y);
         return new TaskProxy.WithTerm(y, t);
     }
 

@@ -4,8 +4,9 @@
  */
 package nars.control;
 
+import jcog.TODO;
 import jcog.Util;
-import jcog.pri.PLink;
+import jcog.pri.Pri;
 import jcog.pri.PriReference;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.NAR;
@@ -16,13 +17,8 @@ import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.subst.UnifySubst;
-import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.impl.tuple.Tuples;
+import org.eclipse.collections.api.block.function.primitive.LongObjectToLongFunction;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.function.ToLongFunction;
 
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
@@ -34,22 +30,19 @@ import static nars.time.Tense.ETERNAL;
  * It is meant to be disposable and should not be kept referenced longer than necessary
  * to avoid GC loops, so it may need to be weakly referenced.
  */
-public class Premise extends PLink<Pair<Task,Term>> {
+public class Premise extends Pri {
 
-    @Nullable static Premise the(PriReference<Task> tasklink, PriReference<Term> termlink, FloatFloatToFloatFunction merge) {
-        float pri = tasklink.pri();
-        if (pri!=pri)
-            return null;
+    public final Task task;
+    public final Term term;
+    private final int hash;
 
-        Task t = tasklink.get();
-        if (t == null)
-            return null;
 
-        return new Premise(t, termlink.get(), merge.apply(pri, termlink.priElseZero()));
-    }
 
-    Premise(Task task, Term termlink, float taskLinkPri) {
-        super(Tuples.pair(task, termlink), taskLinkPri);
+    Premise(Task task, Term term, float taskLinkPri) {
+        super(taskLinkPri);
+        this.task = task;
+        this.term = term;
+        this.hash = Util.hashCombine(task.hashCode(), term.hashCode());
     }
 
     /**
@@ -70,14 +63,14 @@ public class Premise extends PLink<Pair<Task,Term>> {
      * @param matchTime - temporal focus control: determines when a matching belief or answer should be projected to
      */
     @Nullable
-    public Derivation match(Derivation d, ToLongFunction<Task> matchTime, int matchTTL) {
+    public Derivation match(Derivation d, LongObjectToLongFunction<Task> matchTime, int matchTTL) {
 
         NAR n = d.nar;
         n.emotion.conceptFirePremises.increment();
 
         //nar.emotion.count("Premise_run");
 
-        final Task task = this.task();
+
         if (task == null || task.isDeleted()) {
 //            Task fwd = task.meta("@");
 //            if (fwd!=null)
@@ -94,10 +87,8 @@ public class Premise extends PLink<Pair<Task,Term>> {
 
 
         int dur = d.dur;
-        long now = d.time;
 
-
-        Term beliefTerm = term();
+        Term beliefTerm = term;
 
 
         Term taskTerm = task.term();
@@ -182,7 +173,7 @@ public class Premise extends PLink<Pair<Task,Term>> {
                 }
 
                 if (belief == null) {
-                    long focus = matchTime.applyAsLong(task);
+                    long focus = matchTime.longValueOf(d.time, task);
                     long focusStart, focusEnd;
                     if (focus == ETERNAL) {
                         focusStart = focusEnd = ETERNAL;
@@ -206,7 +197,7 @@ public class Premise extends PLink<Pair<Task,Term>> {
 
 
             if (unifiedBelief) {
-                Concept originalBeliefConcept = n.concept(this.term());
+                Concept originalBeliefConcept = n.concept(term);
                 if (originalBeliefConcept != null)
                     linkVariable(originalBeliefConcept, beliefConcept);
             }
@@ -234,11 +225,15 @@ public class Premise extends PLink<Pair<Task,Term>> {
         return d;
     }
 
-    public final Task task() {
-        return get().getOne();
+
+    @Override
+    public boolean equals(Object obj) {
+        return hash == obj.hashCode() && ((Premise)obj).task.equals(task) && ((Premise)obj).term.equals(term);
     }
-    public final Term term() {
-        return get().getTwo();
+
+    @Override
+    public int hashCode() {
+        return hash;
     }
 
     /**
@@ -271,8 +266,8 @@ public class Premise extends PLink<Pair<Task,Term>> {
     @Override
     public String toString() {
         return "Premise(" +
-                task() +
-                " * " + term() +
+                task +
+                " * " + term +
                 ')';
     }
 

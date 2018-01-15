@@ -113,7 +113,9 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
     }
 
     protected Map<Term, X> newOtherMap() {
-        return new UnifiedMap();
+
+        //return new UnifiedMap();
+        return new HashMap(8);
     }
 
     @Override

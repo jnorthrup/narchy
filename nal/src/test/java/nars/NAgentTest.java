@@ -16,8 +16,8 @@ public class NAgentTest {
         Param.DEBUG = true;
 
         NAR n = NARS.tmp();
-        n.termVolumeMax.set(12);
-        n.freqResolution.set(0.05f);
+        n.termVolumeMax.set(14);
+        n.freqResolution.set(0.02f);
         n.confResolution.set(0.02f);
         n.time.dur(1);
         //n.logWhen(System.out, false, true, true);
@@ -39,7 +39,7 @@ public class NAgentTest {
 //        });
         a.runSynch(600);
 
-        assertTrue(a.avgReward() > 0.25f);
+        assertTrue(a.avgReward() > 0.1f);
         assertTrue(a.dex.getMean() > 0.02f);
     }
 
@@ -49,7 +49,7 @@ public class NAgentTest {
         MiniTest a = new ToggleSame(nar(), $.the("t"), $.$safe("t:y"), false);
         a.runSynch(600);
 
-        assertTrue(a.avgReward() > 0.25f);
+        assertTrue(a.avgReward() > 0.1f);
         assertTrue(a.dex.getMean() > 0.02f);
     }
 

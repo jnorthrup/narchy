@@ -48,6 +48,9 @@ public abstract class Param {
      */
     public static final float ACTIVATION_THRESHOLD = 0.1f;
     public static final boolean ETERNALIZE_EVICTED_TEMPORAL_TASKS = true;
+    //    private float minHypoPremisesPerConceptFire = 3;
+    //    private float maxHypoPremisesPerConceptFire = 6;
+
 
     public static boolean DEBUG_FILTER_DUPLICATE_MATCHES = Param.DEBUG_EXTRA;
 

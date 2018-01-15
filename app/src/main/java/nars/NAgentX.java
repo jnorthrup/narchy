@@ -13,6 +13,7 @@ import nars.gui.Vis;
 import nars.gui.graph.EdgeDirected;
 import nars.gui.graph.run.SimpleConceptGraph1;
 import nars.index.term.map.CaffeineIndex;
+import nars.op.Implier;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.op.video.*;
@@ -254,7 +255,7 @@ abstract public class NAgentX extends NAgent {
 //                (t)->t.isBelief() && !t.isEternal() && !t.term().isTemporal() ? t.conf() : Float.NaN,
 //                8, 32);
 
-        //ConjClustering conjClusterG = new ConjClustering(n, 3, GOAL, true, false, 16, 64);
+        ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t->true),16, 64);
 
 //        n.runLater(() -> {
 ////            AudioContext ac = new AudioContext();
@@ -266,7 +267,7 @@ abstract public class NAgentX extends NAgent {
 //        });
 
 
-        Inperience inp = new Inperience(n, 32);
+        Inperience inp = new Inperience(n, 4);
 //
 
 //        Abbreviation abb = new Abbreviation(n, "z", 3, 6, 10f, 32);

@@ -71,7 +71,7 @@ public abstract class ProtoDerivation extends Unify {
 
         public PremiseKey(Derivation d) {
 
-            DynBytes k = new DynBytes(96);
+            DynBytes k = new DynBytes(192);
 
             d.taskTerm.root().append((ByteArrayDataOutput)k);
             d.beliefTerm.root().append((ByteArrayDataOutput)k);
@@ -96,15 +96,15 @@ public abstract class ProtoDerivation extends Unify {
         /** TODO this can safely return short[] results */
         public int[] solve() {
 
+            Derivation derivation  = this.derivation;
+            this.derivation = null; //dont retain references to the rules or the derivation if cached
+
             derivation.ttl = Integer.MAX_VALUE;
             derivation.deriver.what.test(derivation);
 
             int[] result = derivation.can.toArray();
             if (result.length == 0)
                 return ArrayUtils.EMPTY_INT_ARRAY; //use the common zero array reference
-
-            //dont retain references to the rules or the derivation if cached
-            this.derivation = null;
 
             return result;
         }

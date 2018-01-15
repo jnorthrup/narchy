@@ -21,6 +21,8 @@ import nars.term.Termed;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -43,7 +45,7 @@ public class Activate extends PLink<Concept> implements Termed {
      * hypothesize premises, up to a max specified #
      */
     /*@NotNull*/
-    public void premises(NAR nar, BatchActivation ba, Predicate<Premise> each) {
+    public void premises(NAR nar, BatchActivation ba, BiPredicate<PriReference<Task>, PriReference<Term>> each) {
 
 
 
@@ -78,15 +80,12 @@ public class Activate extends PLink<Concept> implements Termed {
             if (task != null) {
 
                 termlinks.sample(termlinksPerTasklink, (termlink) -> {
-
-                    Premise p = Premise.the(tasklink, termlink, Param.taskTermLinksToPremise);
-                    if (p != null) {
-                        if (!each.test(p)) {
-                            ttl[0] = 0;
-                        }
+                    if (!each.test(tasklink, termlink)) {
+                        ttl[0] = 0;
+                        return false;
+                    } else {
+                        return (--ttl[0] > 0);
                     }
-
-                    return  (--ttl[0] > 0);
                 });
             } else {
                 --ttl[0]; //safety misfire decrement

@@ -1,10 +1,7 @@
 package nars.concept;
 
 import jcog.pri.PLink;
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
+import nars.*;
 import nars.control.Activate;
 import nars.control.BatchActivation;
 import nars.term.Term;
@@ -52,15 +49,17 @@ public class ActivateTest {
         BatchActivation ba = BatchActivation.get();
         for (int i = 0; i < 100; i++) {
             final int[] remain = {9};
-            cf.premises(nar, ba, p -> {
-                System.out.println("tasklink=" + p.task() + " termlink=" + p.term());
-                if (p.term() instanceof Atom || !A.equals(p.term().sub(0)))
+            cf.premises(nar, ba, (task, term) -> {
+                Task ptask = task.get();
+                Term pterm = term.get();
+                System.out.println("tasklink=" + ptask + " termlink=" + pterm);
+                if (pterm instanceof Atom || !A.equals(pterm.sub(0)))
                     return true; //ignore
-                String tls = p.term().toString();
+                String tls = pterm.toString();
 
                 //premiseHits.addOccurrences(p.toString(), 1);
                 termlinkHits.addOccurrences(/*tasklink.get() + " " +*/ tls, 1);
-                taskHits.addOccurrences(/*tasklink.get() + " " +*/ p.toString(), 1);
+                taskHits.addOccurrences(/*tasklink.get() + " " +*/ (ptask + " " + pterm), 1);
                 return --remain[0] > 0;
             });
             ba.commit(nar);

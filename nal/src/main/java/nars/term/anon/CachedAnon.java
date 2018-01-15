@@ -8,9 +8,7 @@ public class CachedAnon extends Anon {
 
     protected final LinkedMRUMemoize.LinkedMRUMemoizeRecurseable<Term, Term> cache;
 
-    public CachedAnon() {
-        this(16);
-    }
+
 
     public CachedAnon(int capacity) {
         cache = new LinkedMRUMemoize.LinkedMRUMemoizeRecurseable<>(super::get, capacity);

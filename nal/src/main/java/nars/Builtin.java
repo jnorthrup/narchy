@@ -852,3 +852,75 @@ public class Builtin {
 //
 
 }
+
+//    Builtin	Operations
+//    http://jena.apache.org/documentation/inference/index.html#rules
+//    http://jena.apache.org/documentation/javadoc/jena/org/apache/jena/reasoner/rulesys/Builtin.html
+//    isLiteral(?x) notLiteral(?x)
+//        isFunctor(?x) notFunctor(?x)
+//        isBNode(?x) notBNode(?x)
+//
+//        Test whether the single argument is or is not a literal, a functor-valued literal or a blank-node, respectively.
+//        bound(?x...) unbound(?x..)
+//        Test if all of the arguments are bound (not bound) variables
+//        equal(?x,?y) notEqual(?x,?y)
+//        Test if x=y (or x != y). The equality test is semantic equality so that, for example, the xsd:int 1 and the xsd:decimal 1 would test equal.
+//        lessThan(?x, ?y), greaterThan(?x, ?y)
+//        le(?x, ?y), ge(?x, ?y)
+//
+//        Test if x is <, >, <= or >= y. Only passes if both x and y are numbers or time instants (can be integer or floating point or XSDDateTime).
+//        sum(?a, ?b, ?c)
+//        addOne(?a, ?c)
+//        difference(?a, ?b, ?c)
+//        min(?a, ?b, ?c)
+//        max(?a, ?b, ?c)
+//        product(?a, ?b, ?c)
+//        quotient(?a, ?b, ?c)
+//
+//        Sets c to be (a+b), (a+1) (a-b), min(a,b), max(a,b), (ab), (a/b). Note that these do not run backwards, if in sum a and c are bound and b is unbound then the test will fail rather than bind b to (c-a). This could be fixed.
+//        strConcat(?a1, .. ?an, ?t)
+//        uriConcat(?a1, .. ?an, ?t)
+//
+//        Concatenates the lexical form of all the arguments except the last, then binds the last argument to a plain literal (strConcat) or a URI node (uriConcat) with that lexical form. In both cases if an argument node is a URI node the URI will be used as the lexical form.
+//        regex(?t, ?p)
+//        regex(?t, ?p, ?m1, .. ?mn)
+//
+//        Matches the lexical form of a literal (?t) against a regular expression pattern given by another literal (?p). If the match succeeds, and if there are any additional arguments then it will bind the first n capture groups to the arguments ?m1 to ?mn. The regular expression pattern syntax is that provided by java.util.regex. Note that the capture groups are numbered from 1 and the first capture group will be bound to ?m1, we ignore the implicit capture group 0 which corresponds to the entire matched string. So for example
+//        regexp('foo bar', '(.) (.)', ?m1, ?m2)
+//        will bind m1 to "foo" and m2 to "bar".
+//        now(?x)
+//        Binds ?x to an xsd:dateTime value corresponding to the current time.
+//        makeTemp(?x)
+//        Binds ?x to a newly created blank node.
+//        makeInstance(?x, ?p, ?v)
+//        makeInstance(?x, ?p, ?t, ?v)
+//        Binds ?v to be a blank node which is asserted as the value of the ?p property on resource ?x and optionally has type ?t. Multiple calls with the same arguments will return the same blank node each time - thus allowing this call to be used in backward rules.
+//        makeSkolem(?x, ?v1, ... ?vn)
+//        Binds ?x to be a blank node. The blank node is generated based on the values of the remain ?vi arguments, so the same combination of arguments will generate the same bNode.
+//        noValue(?x, ?p)
+//        noValue(?x ?p ?v)
+//        True if there is no known triple (x, p, ) or (x, p, v) in the model or the explicit forward deductions so far.
+//        remove(n, ...)
+//        drop(n, ...)
+//        Remove the statement (triple) which caused the n'th body term of this (forward-only) rule to match. Remove will propagate the change to other consequent rules including the firing rule (which must thus be guarded by some other clauses). Drop will silently remove the triple(s) from the graph but not fire any rules as a consequence. These are clearly non-monotonic operations and, in particular, the behaviour of a rule set in which different rules both drop and create the same triple(s) is undefined.
+//        isDType(?l, ?t) notDType(?l, ?t)
+//        Tests if literal ?l is (or is not) an instance of the datatype defined by resource ?t.
+//        print(?x, ...)
+//        Print (to standard out) a representation of each argument. This is useful for debugging rather than serious IO work.
+//        listContains(?l, ?x)
+//        listNotContains(?l, ?x)
+//        Passes if ?l is a list which contains (does not contain) the element ?x, both arguments must be ground, can not be used as a generator.
+//        listEntry(?list, ?index, ?val)
+//        Binds ?val to the ?index'th entry in the RDF list ?list. If there is no such entry the variable will be unbound and the call will fail. Only usable in rule bodies.
+//        listLength(?l, ?len)
+//        Binds ?len to the length of the list ?l.
+//        listEqual(?la, ?lb)
+//        listNotEqual(?la, ?lb)
+//        listEqual tests if the two arguments are both lists and contain the same elements. The equality test is semantic equality on literals (sameValueAs) but will not take into account owl:sameAs aliases. listNotEqual is the negation of this (passes if listEqual fails).
+//        listMapAsObject(?s, ?p ?l)
+//        listMapAsSubject(?l, ?p, ?o)
+//        These can only be used as actions in the head of a rule. They deduce a set of triples derived from the list argument ?l : listMapAsObject asserts triples (?s ?p ?x) for each ?x in the list ?l, listMapAsSubject asserts triples (?x ?p ?o).
+//        table(?p) tableAll()
+//        Declare that all goals involving property ?p (or all goals) should be tabled by the backward engine.
+//        hide(p)
+//        Declares that statements involving the predicate p should be hidden. Queries to the model will not report such statements. This is useful to enable non-monotonic forward rules to define flag predicates which are only used for inference control and do not "pollute" the inference results.
