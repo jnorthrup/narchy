@@ -11,6 +11,7 @@ import nars.concept.PermanentConcept;
 import nars.concept.builder.ConceptBuilder;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.pred.AbstractPred;
 import nars.term.sub.Subterms;
 import nars.term.var.Variable;
@@ -21,7 +22,9 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static nars.Op.INH;
 import static nars.Op.Null;
+import static nars.Op.PROD;
 import static nars.term.Terms.atomOrNull;
 import static nars.term.atom.Atomic.the;
 
@@ -184,6 +187,29 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
      */
     public static LambdaFunctor f3(@NotNull Atom termAtom, @NotNull TriFunction<Term, Term, Term, Term> ff) {
         return f(termAtom, 3, (tt) -> ff.apply(tt.sub(0), tt.sub(1), tt.sub(2)));
+    }
+
+    /** assumes the predicate of the inheritance is alreaady resolved to a Functor instance */
+    public static Term eval(Term u) {
+
+        //recursively compute contained subterm functors
+        //compute this without necessarily constructing the superterm, which happens after this if it doesnt recurse
+        if (u.op() == INH && u.hasAll(Op.funcBits)) {
+            Term pred, subj;
+            Subterms uu = u.subterms();
+            if ((pred=uu.sub(1)) instanceof Functor && (subj=uu.sub(0)).op() == PROD) {
+
+                Term v = ((Functor)pred).apply(subj.subterms());
+                if (v instanceof AbstractPred) {
+                    return $.the(((AbstractPred) v).test(null));
+                } else if (v == null) {
+                    return u; //null means to keep the same
+                } else  {
+                    return v;
+                }
+            }
+        }
+        return u;
     }
 
     /**

@@ -68,14 +68,12 @@ public class Versioned<X> extends
 //            return this;
 //        } else return null;
 
-        return context.add(this) && add(nextValue) ? this : null;
-
-//        if (context.add(this)) {
-//            addWithoutResizeCheck(nextValue);
-//            return this;
-//        } else {
-//            return null;
-//        }
+        if (context.add(this)) {
+            addWithoutResizeCheck(nextValue);
+            return this;
+        } else {
+            return null;
+        }
     }
 
 

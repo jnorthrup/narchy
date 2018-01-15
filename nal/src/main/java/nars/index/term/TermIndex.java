@@ -165,51 +165,51 @@ public abstract class TermIndex implements TermContext {
 
     }
 
-    /** accesses the interning termcontext which recursively replaces subterms with what this index resolves them to */
-    public final TermContext intern() {
-        return intern;
-    }
-
-    private final TermContext intern = new InterningContext();
-
-
-    private class InterningContext implements CompoundTransform {
-
-        @Override
-        public Termed apply(Term x) {
-            return applyTermIfPossible(x);
-        }
-
-
-        @Override
-        public Term applyTermIfPossible(Term x) {
-            //only resolve atomics
-            if (!(x instanceof PermanentConcept)) {
-                Op op = x.op();
-                if (op.atomic && op.conceptualizable) {
-                    return TermIndex.this.applyTermIfPossible(x);
-                }
-            }
-
-            return x;
-        }
-
-
-        @Override
-        public @Nullable Term applyTermOrNull(Term x) {
-            throw new UnsupportedOperationException();
-        }
-        
-        @Override
-        public @Nullable Term transform(Compound x, Op op, int dt) {
-            //return TermIndex.this.applyTermIfPossible(x);
-            throw new UnsupportedOperationException();
-        }
-
-
-        @Override
-        public Term intern(Term x) {
-            return applyTermIfPossible(x);
-        }
-    }
+//    /** accesses the interning termcontext which recursively replaces subterms with what this index resolves them to */
+//    public final TermContext intern() {
+//        return intern;
+//    }
+//
+//    private final TermContext intern = new InterningContext();
+//
+//
+//    private class InterningContext implements CompoundTransform {
+//
+//        @Override
+//        public Termed apply(Term x) {
+//            return applyTermIfPossible(x);
+//        }
+//
+//
+//        @Override
+//        public Term applyTermIfPossible(Term x) {
+//            //only resolve atomics
+//            if (!(x instanceof PermanentConcept)) {
+//                Op op = x.op();
+//                if (op.atomic && op.conceptualizable) {
+//                    return TermIndex.this.applyTermIfPossible(x);
+//                }
+//            }
+//
+//            return x;
+//        }
+//
+//
+//        @Override
+//        public @Nullable Term applyTermOrNull(Term x) {
+//            throw new UnsupportedOperationException();
+//        }
+//
+//        @Override
+//        public @Nullable Term transform(Compound x, Op op, int dt) {
+//            //return TermIndex.this.applyTermIfPossible(x);
+//            throw new UnsupportedOperationException();
+//        }
+//
+//
+//        @Override
+//        public Term intern(Term x) {
+//            return applyTermIfPossible(x);
+//        }
+//    }
 }

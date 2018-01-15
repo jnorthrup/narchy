@@ -3,6 +3,7 @@ package nars.control;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.data.byt.DynBytes;
 import nars.Op;
+import nars.derive.DeriverRoot;
 import nars.term.Term;
 import nars.term.subst.Unify;
 import nars.truth.Truth;
@@ -12,6 +13,7 @@ import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
 import java.util.Random;
+import java.util.function.Consumer;
 
 /** contains only information which depends on the premise itself (Task, Belief, BeliefTerm) */
 public abstract class ProtoDerivation extends Unify {
@@ -22,7 +24,7 @@ public abstract class ProtoDerivation extends Unify {
     public byte taskPunc;
 
     /* -1 = freq<0.5, 0 = null, +1 = freq>=0.5 */
-    public byte taskPolarity, beliefPolarity;
+    public int taskPolarity, beliefPolarity;
 
 
 
@@ -46,8 +48,8 @@ public abstract class ProtoDerivation extends Unify {
     }
 
 
-    static byte polarity(Truth t) {
-        return (byte) (t.isPositive() ? +1 : -1);
+    static int polarity(Truth t) {
+        return (t.isPositive() ? +1 : -1);
     }
 
     public ProtoDerivation reset() {
@@ -63,10 +65,9 @@ public abstract class ProtoDerivation extends Unify {
     }
 
     public final static class PremiseKey {
+
         byte[] key;
         private final int hash;
-
-        transient public Derivation derivation;
 
 
         public PremiseKey(Derivation d) {
@@ -82,7 +83,6 @@ public abstract class ProtoDerivation extends Unify {
             this.key = k.array();
             this.hash = k.hashCode();
 
-            this.derivation = d;
         }
 
         @Override
@@ -96,17 +96,21 @@ public abstract class ProtoDerivation extends Unify {
         /** TODO this can safely return short[] results */
         public int[] solve() {
 
-            Derivation derivation  = this.derivation;
-            this.derivation = null; //dont retain references to the rules or the derivation if cached
+            Derivation derivation  = Deriver.derivation.get();
 
             derivation.ttl = Integer.MAX_VALUE;
+
+            assert(derivation.can.isEmpty()); //only place this is used
+
             derivation.deriver.what.test(derivation);
 
             int[] result = derivation.can.toArray();
-            if (result.length == 0)
-                return ArrayUtils.EMPTY_INT_ARRAY; //use the common zero array reference
 
-            return result;
+            derivation.can.clear();
+
+            //use the common zero array reference
+            return result.length == 0 ? ArrayUtils.EMPTY_INT_ARRAY : result;
+
         }
 
 

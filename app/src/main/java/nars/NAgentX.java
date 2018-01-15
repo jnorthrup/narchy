@@ -165,7 +165,7 @@ abstract public class NAgentX extends NAgent {
 //                        //CoolNQuiet
 //                        (512, THREADS, 64, false))
                 .exe(new PoolMultiExec(
-                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)), 256)
+                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)), 256, 256)
                 )
 
                 .time(clock)

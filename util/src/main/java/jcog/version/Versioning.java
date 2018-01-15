@@ -79,11 +79,11 @@ public class Versioning<X>
         setTTL(0);
     }
 
-    public final int getAndStop() {
-        int t = ttl;
-        stop();
-        return t;
-    }
+//    public final int getAndStop() {
+//        int t = ttl;
+//        stop();
+//        return t;
+//    }
 
 
 

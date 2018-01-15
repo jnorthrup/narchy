@@ -3,6 +3,7 @@ package nars.op;
 import nars.Op;
 import nars.Param;
 import nars.control.Derivation;
+import nars.control.Deriver;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
@@ -64,17 +65,14 @@ import static nars.Op.*;
  */
 abstract public class SubstUnified extends Functor {
 
-    //private final OneMatchFindSubst subMatcher;
-    protected final Derivation parent; //parent matcher context
 
-    protected SubstUnified(Atom id, Derivation parent) {
+
+    protected SubstUnified(Atom id) {
         super(id);
-        this.parent = parent;
     }
 
     @Override
     public Term apply(/*@NotNull*/ Subterms a) {
-
 
         Term[] aa = a.arrayShared();
 
@@ -117,6 +115,8 @@ abstract public class SubstUnified extends Functor {
             //input equals X so it effectiely replaces input with 'y'
             output = y;
         } else {
+
+            Derivation parent = Deriver.derivation.get();
 
             boolean hasAnyOp =
                     (op == null && x.hasAny(Op.VariableBits))

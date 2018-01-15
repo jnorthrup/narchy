@@ -1004,7 +1004,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             //HACK - fast track insertion, expect no evaluation surprises, etc.
 
         } else {
-            Term y = x.eval(n.terms.intern());
+            Term y = x.eval(n.terms);
 
             if (!x.equals(y)) {
 

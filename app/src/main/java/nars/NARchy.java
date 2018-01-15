@@ -37,7 +37,7 @@ public class NARchy extends NARS {
         NAR nar = new DefaultNAR(8, true)
                 //.exe(new WorkerMultiExec(512, 2, 64))
                 .exe(new PoolMultiExec(new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1))
-                        , 64))
+                        , 64, 512))
 //                .exe(new AbstractExec(64) {
 //                    @Override
 //                    public boolean concurrent() {

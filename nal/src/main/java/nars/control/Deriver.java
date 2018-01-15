@@ -124,7 +124,6 @@ public class Deriver extends Causable {
         TopNUniquePremises premises = new TopNUniquePremises(iterations * Deriver.this.premisesPerConcept);
 
         concepts.accept(a -> {
-            final int[] premisesRemain = {HypotheticalPremisePerConcept};
             premises.setTTL(HypotheticalPremisePerConcept);
             a.premises(n, d.activator, premises::tryAdd);
             return (--conceptsRemain[0]) > 0;
@@ -168,8 +167,7 @@ public class Deriver extends Causable {
     /**
      * 1. CAN (proto) stage
      */
-    public boolean proto(Derivation x) {
-        x.can.clear();
+    private boolean proto(Derivation x) {
         int[] trys = x.will = whats.apply(new ProtoDerivation.PremiseKey(x));
         return trys.length > 0;
     }
@@ -177,7 +175,7 @@ public class Deriver extends Causable {
     /**
      * 2. TRY stage
      */
-    public void derive(Derivation x, int ttl) {
+    private void derive(Derivation x, int ttl) {
         if (x.derive()) {
             x.setTTL(ttl);
             deriver.can.test(x);
@@ -268,7 +266,7 @@ public class Deriver extends Causable {
 
     //    public final IterableThreadLocal<Derivation> derivation =
 //            new IterableThreadLocal<>(() -> new Derivation(this));
-    private static final ThreadLocal<Derivation> derivation =
+    public static final ThreadLocal<Derivation> derivation =
             ThreadLocal.withInitial(Derivation::new);
 
     static final FloatFloatToFloatFunction merge = Param.taskTermLinksToPremise;

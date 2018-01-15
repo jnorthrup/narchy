@@ -618,7 +618,7 @@ public interface Compound extends Term, IPair, Subterms {
         //any contained evaluables
         Op o = op();
         int necessaryBits = o == INH ? Op.funcInnerBits : Op.funcBits;
-        boolean changed = false, recurseChange = false;
+        boolean changed = false, recurseIfChanged = false;
         int ellipsisAdds = 0, ellipsisRemoves = 0;
 
         for (int i = 0, evalSubsLength = xy.length; i < evalSubsLength; i++) {
@@ -626,37 +626,29 @@ public interface Compound extends Term, IPair, Subterms {
             Term yi = xi.evalSafe(context, remain);
             if (yi == null) {
                 return Null;
-            } else if (xi != yi && (!xi.equals(yi) || yi.getClass() != xi.getClass())) {
-                if (!changed) {
-                    xy = arrayClone(); //begin clone copy
-                    changed = true;
+            } else {
+                if (yi instanceof EllipsisMatch) {
+                    int ys = yi.subs();
+                    ellipsisAdds += ys;
+                    ellipsisRemoves++;
                 }
-                xy[i] = yi;
-                recurseChange |= yi.hasAll(necessaryBits);
-            }
-            if (yi instanceof EllipsisMatch) {
-                ellipsisAdds += yi.subs();
-                ellipsisRemoves++;
+
+                if (xi != yi && (!xi.equals(yi) || yi.getClass() != xi.getClass())) {
+                    if (!changed) {
+                        xy = arrayClone(); //begin clone copy
+                        changed = true;
+                    }
+                    xy[i] = yi;
+                    if (!recurseIfChanged)
+                        recurseIfChanged |= yi.hasAll(necessaryBits);
+                }
             }
         }
 
         if (ellipsisAdds > 0) {
             //flatten ellipsis
-            Term[] z = new Term[xy.length + ellipsisAdds - ellipsisRemoves];
-            int k = 0;
-            for (int i = 0; i < xy.length; i++) {
-                Term x = xy[i];
-                if (x instanceof EllipsisMatch) {
-                    Term[] xx = ((EllipsisMatch) x).arrayShared();
-                    for (Term xxx : xx)
-                        z[k++] = xxx;
-                } else {
-                    z[k++] = x;
-                }
-            }
-            assert (k == z.length);
+            xy = EllipsisMatch.flatten(xy, ellipsisAdds, ellipsisRemoves);
             changed = true;
-            xy = z;
         }
 
         Term u;
@@ -664,31 +656,14 @@ public interface Compound extends Term, IPair, Subterms {
 
             u = o.the(dt(), xy);
 
-            if (recurseChange)
+            if (recurseIfChanged)
                 return u.evalSafe(context, remain);
-        } else
+        } else {
             u = this;
-
-
-        //recursively compute contained subterm functors
-        //compute this without necessarily constructing the superterm, which happens after this if it doesnt recurse
-        if (o == INH) {
-            Term pred, subj;
-            if ((pred=xy[1]) instanceof Functor && (subj=xy[0]).op() == PROD) {
-
-
-                u = ((Functor)pred).apply(subj.subterms());
-                if (u instanceof AbstractPred) {
-                    u = $.the(((AbstractPred) u).test(null));
-                } else if (u == null) {
-                    u = this; //null means to keep the same
-                } else if (u instanceof Bool) {
-                    return u; //shortcut avoid final intern call
-                }
-            }
         }
 
-        return context.intern(u);
+
+        return context.intern(Functor.eval(u));
 
         //it has been changed, so eval recursively until stable
         //return context.intern(subsModified ? op.the(dt(), xy).evalSafe(context, remain) : this);

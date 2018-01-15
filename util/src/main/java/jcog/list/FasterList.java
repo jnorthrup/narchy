@@ -404,7 +404,7 @@ public class FasterList<X> extends FastList<X> {
         if (this.items.length == this.size) {
             this.ensureCapacityForAdd();
         }
-        this.items[this.size++] = newItem;
+        addWithoutResizeCheck(newItem);
         return true;
     }
 
@@ -497,11 +497,11 @@ public class FasterList<X> extends FastList<X> {
         this.items[this.size++] = x;
     }
 
-    @Override
-    @Deprecated /* try to use toArrayRecycled where possible */
-    public <E> E[] toArray(E[] array) {
-        return super.toArray(array);
-    }
+//    @Override
+//    @Deprecated /* try to use toArrayRecycled where possible */
+//    public <E> E[] toArray(E[] array) {
+//        return super.toArray(array);
+//    }
 
     public X[] toArrayRecycled(IntFunction<X[]> ii) {
         X[] a = items;

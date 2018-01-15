@@ -640,7 +640,7 @@ public interface Term extends Termed, Comparable<Termed> {
 
     /*@NotNull*/
     default Term evalSafe(TermContext context, int remain) {
-        return context.applyTermIfPossible(this);
+        return remain <= 0 ? Null : context.applyTermIfPossible(this);
     }
 
 

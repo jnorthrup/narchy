@@ -10,6 +10,7 @@ import nars.term.sub.Subterms;
 import nars.term.subst.Unify;
 import nars.term.transform.CompoundTransform;
 import nars.term.transform.Retemporalize;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -35,6 +36,23 @@ public class EllipsisMatch extends CachedCompound {
 
     protected EllipsisMatch(Term[] t) {
         super(Op.PROD, $.vFast(t));
+    }
+
+    @NotNull public static Term[] flatten(Term[] xy, int expectedEllipsisAdds, int expectedEllipsisRemoves) {
+        Term[] z = new Term[xy.length + expectedEllipsisAdds - expectedEllipsisRemoves];
+        int k = 0;
+        for (int i = 0; i < xy.length; i++) {
+            Term x = xy[i];
+            if (x instanceof EllipsisMatch) {
+                Term[] xx = ((EllipsisMatch) x).arrayShared();
+                for (Term xxx : xx)
+                    z[k++] = xxx;
+            } else {
+                z[k++] = x;
+            }
+        }
+        assert (k == z.length);
+        return z;
     }
 
     @Override

@@ -159,14 +159,27 @@ public class Derivation extends ProtoDerivation {
 
 
         derivedTerm = new Versioned(this, 3) {
+            //TEMPORARY TO FIND A BUG
+
             @Nullable
             @Override
-            public Object get() {
-                Object o = super.get();
-                if (o == null)
-                    throw new NullPointerException(); //shouldnt happen
-                return o;
+            public Versioned set(Object nextValue) {
+                Versioned v = super.set(nextValue);
+                if (get()==null) {
+                    super.set(nextValue);
+                    throw new NullPointerException();
+                }
+                return v;
             }
+
+//            @Nullable
+//            @Override
+//            public Object get() {
+//                Object o = super.get();
+//                if (o == null)
+//                    throw new NullPointerException(); //shouldnt happen
+//                return o;
+//            }
         };
 
         anon =
@@ -302,8 +315,8 @@ public class Derivation extends ProtoDerivation {
         });
 
         Termed[] derivationFunctors = new Termed[]{
-                new uniSubAny(this),
-                new uniSub(this),
+                new uniSubAny(),
+                new uniSub(),
                 polarizeFunc
         };
         Map<Term, Termed> m = new HashMap<>(derivationFunctors.length + 2);
@@ -356,21 +369,21 @@ public class Derivation extends ProtoDerivation {
     protected void setTruth() {
 
         Truth taskTruth;
-        switch (this.taskPunc = task.punc()) {
+        switch (this.taskPunc = _task.punc()) {
             case QUESTION:
             case QUEST:
                 taskTruth = null;
                 break;
             default:
-                taskTruth = task.truth(task.myNearestTimeTo(time), dur);
+                taskTruth = _task.truth(_task.myNearestTimeTo(time), dur);
                 break;
         }
 
         this.taskPolarity = (this.taskTruth = taskTruth) != null ? polarity(taskTruth) : 0;
 
         if (belief != null) {
-            long ts = task.start();
-            long te = task.end();
+            long ts = _task.start();
+            long te = _task.end();
 
             if ((this.beliefTruth = belief.truth(belief.theNearestTimeWithin(ts, te), dur))!=null) {
                 this.beliefPolarity = polarity(this.beliefTruth);
@@ -604,38 +617,33 @@ public class Derivation extends ProtoDerivation {
         return pp;
     };
 
-    static class uniSubAny extends SubstUnified {
+    final static Atom uniSubAnyFunc = (Atom) $.the("subIfUnifiesAny");
+    private static class uniSubAny extends SubstUnified {
 
-        final static Atom func = (Atom) $.the("subIfUnifiesAny");
-
-        public uniSubAny(Derivation parent) {
-            super(func, parent);
+        public uniSubAny() {
+            super(uniSubAnyFunc);
         }
 
         @Override
         public Term apply(Subterms xx) {
             Term y = super.apply(xx);
-
-//            if (y != null && !(y instanceof Bool)) {
-//                Term x = xx.sub(0);
-//                if (!x.equals(y)) {
-//                    //store the transformation
-//                    parent.xyDyn.put(x, y);
-//                    //parent.putXY(x, y);
-//                }
-//            }
+            if (y != null && !(y instanceof Bool)) {
+                Term a = xx.sub(1);
+                Term b = xx.sub(2);
+                Deriver.derivation.get().putXY(a, b);
+                //parent.putXY(b, a);
+//                if (!x.equals(y))
+//                    parent.putXY(x, y); //store the outer transformation
+            }
             return y;
         }
     }
 
-    static class uniSub extends Subst {
+    final static Atom uniSubFunc = (Atom) $.the("substitute");
+    private static class uniSub extends Subst {
 
-        final static Atom func = (Atom) $.the("substitute");
-        private final Derivation parent;
-
-        public uniSub(Derivation parent) {
-            super(func);
-            this.parent = parent;
+        public uniSub() {
+            super(uniSubFunc);
         }
 
         @Override
@@ -644,7 +652,7 @@ public class Derivation extends ProtoDerivation {
             if (y != null && !(y instanceof Bool)) {
                 Term a = xx.sub(1);
                 Term b = xx.sub(2);
-                parent.putXY(a, b);
+                Deriver.derivation.get().putXY(a, b);
                 //parent.putXY(b, a);
 //                if (!x.equals(y))
 //                    parent.putXY(x, y); //store the outer transformation

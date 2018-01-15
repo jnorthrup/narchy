@@ -163,10 +163,7 @@ public interface Atomic extends Term {
         return new Atom(id);
     }
 
-    @Override
-    default Term evalSafe(TermContext context, int remain) {
-        return remain <= 0 ? null : context.applyTermIfPossible(this);
-    }
+
 
     @Override
     String toString();

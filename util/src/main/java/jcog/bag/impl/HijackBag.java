@@ -9,6 +9,7 @@ import jcog.bag.util.Treadmill2;
 import jcog.data.array.Arrays;
 import jcog.decide.Roulette;
 import jcog.math.AtomicFloat;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.pri.Pri;
 import jcog.pri.Prioritized;
 import org.apache.commons.lang3.ArrayUtils;
@@ -46,13 +47,14 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     private static final AtomicReferenceFieldUpdater<HijackBag, AtomicReferenceArray> mapUpdater =
             AtomicReferenceFieldUpdater.newUpdater(HijackBag.class, AtomicReferenceArray.class, "map");
 
+    final Random rng = new XoRoShiRo128PlusRandom(System.nanoTime());
 
     /**
      * id unique to this bag instance, for use in treadmill
      */
     private final int id;
 
-    volatile int size, capacity;
+    volatile private int size, capacity;
 
     /**
      * TODO make non-public
@@ -60,7 +62,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     public volatile AtomicReferenceArray<V> map;
 
     private static final SpinMutex mutex = new Treadmill2();
-    private static final AtomicInteger serial = new AtomicInteger(0);
+    private static volatile int serial = 0;
 
 
 
@@ -89,7 +91,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
 
     protected HijackBag(int initialCapacity, int reprobes) {
-        this.id = serial.incrementAndGet();
+        this.id = serial++;
         this.reprobes = reprobes;
         this.map = EMPTY_ARRAY;
 
@@ -104,7 +106,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     }
 
     protected Random random() {
-        return ThreadLocalRandom.current();
+        return rng;
     }
 
 

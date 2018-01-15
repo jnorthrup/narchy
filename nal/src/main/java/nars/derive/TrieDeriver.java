@@ -75,7 +75,7 @@ public final class TrieDeriver {
 
         Comparator sort = PrediTerm.sort(preconditionCount::get);
 
-        List<List<Term>> paths = $.newArrayList();
+
         post.forEach((k, v) -> {
 
             FasterList<PrediTerm<Derivation>> path = new FasterList(k);

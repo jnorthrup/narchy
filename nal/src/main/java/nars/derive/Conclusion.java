@@ -90,9 +90,8 @@ public final class Conclusion extends AbstractPred<Derivation> {
                 //c2 = c2.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
                 //if (c2 == null)
                 //  return false;
-                if (c2.hasXternal()) {
+                if (c2.hasXternal())
                     return false;
-                }
             }
 
             if (occ[0] > occ[1]) {
