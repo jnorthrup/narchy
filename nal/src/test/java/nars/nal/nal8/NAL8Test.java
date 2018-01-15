@@ -498,7 +498,7 @@ public class NAL8Test extends NALTest {
         test
                 .input("R!")
                 .input("(G <-> R).")
-                .mustGoal(cycles, "G", 1.0f, 0.4f);
+                .mustGoal(cycles, "G", 1.0f, 0.81f);
     }
 
     @Test
@@ -514,7 +514,7 @@ public class NAL8Test extends NALTest {
         test
                 .input("--R!")
                 .input("(G <-> --R).")
-                .mustGoal(cycles, "G", 1.0f, 0.4f);
+                .mustGoal(cycles, "G", 1.0f, 0.81f);
     }
 
     @Test
@@ -843,7 +843,7 @@ public class NAL8Test extends NALTest {
                 //.log()
                 .inputAt(1, "(x ==>-1 y). :|:") //should not affect the fact that the goal is relative to the 'y!' task, except it is slightly weaker
                 .inputAt(2, "y! :|:")
-                .mustGoal(cycles, "x", 1f, 0.45f, 3);
+                .mustGoal(cycles, "x", 1f, 0.81f, 3);
     }
 
     @Test

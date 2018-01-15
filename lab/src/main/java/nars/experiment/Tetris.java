@@ -175,7 +175,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
     }
 
 
-    void actionsToggle() throws Narsese.NarseseException {
+    void actionsToggle() {
         final Term LEFT = $.func("left", id);
         final Term RIGHT = $.func("right", id);
         final Term ROT = $.func("rotCW", id);
@@ -189,7 +189,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
     void actionsTriState() {
 
 
-        actionTriState($.inh("X", id), (i) -> {
+        actionTriState($.func("X", id), (i) -> {
             switch (i) {
                 case -1:
                     state.act(LEFT);
@@ -202,7 +202,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
             }
         });
 
-        actionToggle($.inh("R", id), () -> state.act(CW));
+        actionToggle($.func("R", id), () -> state.act(CW));
 
 //        actionTriState($("R"), (i) -> {
 //            switch (i) {

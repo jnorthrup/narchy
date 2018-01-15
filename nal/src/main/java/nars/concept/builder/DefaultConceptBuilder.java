@@ -12,7 +12,6 @@ import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.concept.TaskConcept;
 import nars.concept.dynamic.DynamicBeliefTable;
-import nars.concept.dynamic.DynamicConcept;
 import nars.concept.dynamic.DynamicTruthModel;
 import nars.concept.state.ConceptState;
 import nars.concept.state.DefaultConceptState;
@@ -44,8 +43,8 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
     public DefaultConceptBuilder() {
         this(
-                new DefaultConceptState("sleep", 8, 8, 2),
-                new DefaultConceptState("awake", 24, 24, 4)
+                new DefaultConceptState("sleep", 12, 12, 4),
+                new DefaultConceptState("awake", 64, 64, 8)
         );
     }
 
@@ -91,7 +90,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 
         if (dmt != null) {
 
-            return new DynamicConcept(t,
+            return new TaskConcept(t,
                     new DynamicBeliefTable(t, newTemporalBeliefTable(t), dmt, true),
                     goalable(t) ?
                         new DynamicBeliefTable(t, newTemporalBeliefTable(t), dmt, false) :

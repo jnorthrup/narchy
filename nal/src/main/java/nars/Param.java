@@ -82,7 +82,6 @@ public abstract class Param {
      */
     public static boolean DEBUG;
     public static boolean DEBUG_EXTRA;
-    public static boolean TRACE;
 
 
     //Budget Merging: the sequence listed here is important
@@ -90,8 +89,8 @@ public abstract class Param {
     public static final PriMerge activateMerge = PriMerge.plus;
 
     public static final PriMerge termlinkMerge =
-            PriMerge.max;
-    //PriMerge.plus;
+            //PriMerge.max;
+            PriMerge.plus;
 
     public static final PriMerge tasklinkMerge =
             PriMerge.max;

@@ -447,6 +447,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      */
     @Nullable
     static ObjectBooleanPair<Term> tryContent(/*@NotNull*/Term t, byte punc, boolean safe) {
+        if (t == null)
+            return null; //wtf
 
         boolean negated;
         if (t.op() == NEG) {

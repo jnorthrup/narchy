@@ -2,6 +2,7 @@ package nars.term.sub;
 
 import com.google.common.base.Joiner;
 import jcog.TODO;
+import jcog.data.bit.MetalBitSet;
 import jcog.list.FasterList;
 import nars.$;
 import nars.Op;
@@ -13,6 +14,7 @@ import nars.term.Termlike;
 import nars.term.Terms;
 import nars.term.subst.Unify;
 import nars.term.var.Variable;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.set.MutableSet;
@@ -465,39 +467,33 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return -1;
     }
 
-    default int indexOf(/*@NotNull*/ Term t, boolean conceptual, Random r) {
-        IntArrayList a = indicesOf(t, conceptual);
-        if (a!=null) {
-            int as = a.size();
-            if (as == 1)
-                return a.get(0);
-            else
-                return a.get(r.nextInt(as));
-        }
-        return -1;
+    /**
+     * of all the matches to the predicate, chooses one at random and returns its index
+     */
+    default int indexOf(Predicate<Term> t, Random r) {
+        IntArrayList a = indicesOf(t);
+        if (a == null)
+            return -1;
+
+        int as = a.size();
+        if (as == 1)
+            return a.get(0);
+        else
+            return a.get(r.nextInt(as));
     }
 
-    @Nullable default IntArrayList indicesOf(/*@NotNull*/ Term t, boolean conceptual) {
-
-        if (conceptual)
-            t = t.unneg();
-
-        if (!impossibleSubTerm(t)) {
-
-
-            if (conceptual)
-                t = t.conceptual();
-
-            IntArrayList a = new IntArrayList(1);
-            int s = subs();
-            for (int i = 0; i < s; i++) {
-                if (t.equals(conceptual ? sub(i).conceptual() : sub(i)))
-                    a.add(i);
-            }
-            if (!a.isEmpty())
-                return a;
+    @Nullable
+    default IntArrayList indicesOf(Predicate<Term> t) {
+        IntArrayList a = new IntArrayList(1);
+        int s = subs();
+        for (int i = 0; i < s; i++) {
+            if (t.test(sub(i)))
+                a.add(i);
         }
-        return null;
+        if (!a.isEmpty())
+            return a;
+        else
+            return null;
     }
 
 
@@ -846,11 +842,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
         Collection<Term> yys = y.toSet();
         ////xs.removeIf(s -> !subst.matchType(s) && ys.remove(s));
 
-        Map<Term,byte[]> constCommon = new LinkedHashMap<>(0);
+        Map<Term, byte[]> constCommon = new LinkedHashMap<>(0);
 
         forEach(x -> {
             if (u.constant(x) && yys.contains(x)) { //attempt to eliminate a common constant term
-                constCommon.compute(x, (k, vv)-> {
+                constCommon.compute(x, (k, vv) -> {
                     if (vv == null) {
                         vv = new byte[]{1, 0};
                     } else {
@@ -867,7 +863,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
             y.forEach(yy -> {
                 byte[] vv = constCommon.get(yy);
-                if (vv!=null)
+                if (vv != null)
                     vv[1]++;
             });
             constCommon.values().forEach(vv -> {
@@ -889,10 +885,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
         //what remains are all variably-permutable terms and there must be an equal # of each
         int xss = xs.length;
         //assert (ys.length == xss);
-        if (xss == 0 || xs.length!=ys.length) {
+        if (xss == 0 || xs.length != ys.length) {
             throw new RuntimeException("commutive unification mismatch");
         }
-
 
 
         //subst.termutes.add(new CommutivePermutations(TermVector.the(xs), TermVector.the(ys)));
@@ -939,16 +934,32 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        }
     }
 
-    default Term[] termsExcept(RoaringBitmap indices) {
-        int numRemoved = indices.getCardinality();
+
+    default Term[] termsExcept(RoaringBitmap toRemove) {
+        int numRemoved = toRemove.getCardinality();
         int size = subs();
         int newSize = size - numRemoved;
         Term[] t = new Term[newSize];
         int j = 0;
         for (int i = 0; i < size; i++) {
-            if (!indices.contains(i))
+            if (!toRemove.contains(i))
                 t[j++] = sub(i);
         }
+        if (t.length == 0) t = Compound.EmptyArray;
+        return t;
+    }
+
+    default Term[] termsExcept(MetalBitSet toRemove) {
+        int numRemoved = toRemove.getCardinality();
+        int size = subs();
+        int newSize = size - numRemoved;
+        Term[] t = new Term[newSize];
+        int j = 0;
+        for (int i = 0; i < size; i++) {
+            if (!toRemove.get(i))
+                t[j++] = sub(i);
+        }
+        if (t.length == 0) t = Compound.EmptyArray;
         return t;
     }
 
@@ -960,8 +971,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
         });
         return fxs.toArrayRecycled(Term[]::new);
     }
-    /** extracts a certain subset of the terms according to a paired count map */
-    default Term[] termsExcept(Map<Term,byte[]> except, boolean loOrHi) {
+
+    /**
+     * extracts a certain subset of the terms according to a paired count map
+     */
+    default Term[] termsExcept(Map<Term, byte[]> except, boolean loOrHi) {
         FasterList<Term> fxs = new FasterList<>(subs());
         forEach(t -> {
             byte[] u = except.get(t);
@@ -1052,6 +1066,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default Subterms sorted() {
         return isSorted() ? this : The.subterms(Terms.sorted(arrayClone()));
     }
+
+    default Term[] termsExcept(int i) {
+        return ArrayUtils.remove(arrayShared(), i);
+    }
+
 
 
     //    /**

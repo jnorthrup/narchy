@@ -83,8 +83,7 @@ public class SensorConcept extends WiredConcept implements FloatFunction<Term>, 
                 return false;
         }
 
-        super.add(t, n);
-        return false;
+        return super.add(t, n);
     }
 
     @Nullable

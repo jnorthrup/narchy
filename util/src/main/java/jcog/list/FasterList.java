@@ -73,8 +73,6 @@ public class FasterList<X> extends FastList<X> {
     }
 
 
-
-
     @Override
     public int size() {
         //assert (size >= 0);
@@ -175,12 +173,31 @@ public class FasterList<X> extends FastList<X> {
                 System.arraycopy(items, 0, x, 0, s);
             return x;
         }
-        return (Y[])i;
+        return (Y[]) i;
     }
 
 
     public float meanValue(FloatFunction<? super X> function) {
-        return (float) (sumOfFloat(function)/size());
+        return (float) (sumOfFloat(function) / size());
+    }
+
+    public int maxIndex(Comparator<? super X> comparator) {
+        Object[] array = items;
+        int size = this.size;
+        if (size == 0) {
+            return -1;
+        }
+
+        X max = (X) array[0];
+        int maxIndex = 0;
+        for (int i = 1; i < size; i++) {
+            X item = (X) array[i];
+            if (comparator.compare(item, max) > 0) {
+                max = item;
+                maxIndex = i;
+            }
+        }
+        return maxIndex;
     }
 
     public float maxValue(FloatFunction<? super X> function) {
@@ -202,6 +219,7 @@ public class FasterList<X> extends FastList<X> {
         }
         return min;
     }
+
     public X maxBy(float mustExceed, FloatFunction<? super X> function) {
 
         if (ArrayIterate.isEmpty(items)) {
@@ -297,7 +315,9 @@ public class FasterList<X> extends FastList<X> {
         return false;
     }
 
-    /** try to use toArrayRecycled where possible */
+    /**
+     * try to use toArrayRecycled where possible
+     */
     public X[] toArray(IntFunction<X[]> arrayBuilder) {
         return fillArray(arrayBuilder.apply(size));
     }
@@ -389,7 +409,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     private void ensureCapacityForAdd() {
-        this.items = (X[])(
+        this.items = (X[]) (
                 (this.items.length == 0) ?
                         new Object[INITIAL_SIZE_IF_GROWING_FROM_EMPTY]
                         :
@@ -540,15 +560,21 @@ public class FasterList<X> extends FastList<X> {
 
     public void removeNulls() {
         switch (size) {
-            case 0: return;
-            case 1: if (get(0)==null) { size = 0; return; } break;
+            case 0:
+                return;
+            case 1:
+                if (get(0) == null) {
+                    size = 0;
+                    return;
+                }
+                break;
 
             //TODO fast case 2
         }
 
         ListIterator<X> l = listIterator();
         while (l.hasNext()) {
-            if (l.next()==null)
+            if (l.next() == null)
                 l.remove();
         }
     }

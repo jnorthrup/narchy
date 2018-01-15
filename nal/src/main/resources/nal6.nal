@@ -96,7 +96,8 @@
         //(S ==> M), ((&&,(--,%S),A..+) ==> M) |- ((&&,A..+) ==>+- M), (Belief:DecomposeNegativePositivePositiveN)
         //(S ==> M), ((||,S,A..+) ==> M) |- ((||,A..+) ==>+- M), (Belief:DecomposePositiveNegativeNegative)
 
-    (M ==> S), (M ==> C), is(C,"&&"),in(S,C) |- (M ==>+- conjWithout(C,S)), (Belief:DecomposePositiveNegativeNegative)
+    (M ==> S), (M ==> C), task(positive), is(C,"&&"),in(S,C) |- (M ==>+- conjWithout(C,S)), (Belief:DecomposePositiveNegativeNegative)
+    (M ==> S), (M ==> C), task(negative), is(C,"&&"),in(S,C) |- (M ==>+- conjWithout(C,--S)), (Belief:DecomposePositiveNegativeNegativeN)
         //(M ==> S), (M ==> (&&,(--,%S),A..+)) |- (M ==>+- (&&,A..+)), (Belief:DecomposePositiveNegativeNegativeN)
         //(M ==> S), (M ==> (||,S,A..+)) |- (M ==>+- (||,A..+)), (Belief:DecomposeNegativePositivePositive)
 
@@ -162,9 +163,12 @@
 //   original:   ((&&,A_1..n) =\> C), M, not_implication_or_equivalence(M) |- ((&&,M,A_1..n) =\> C), (Truth:Induction)
 //   original:   ((&&,M,A_1..n) ==> C), ((&&,A,A_1..n) ==> C) |- (A ==> M), (Truth:Induction, Order:ForAllSame)
 
-    (X ==> C), M,  is(X,"&&"), in(M,X) |- (conjWithout(X,M) ==>+- C), (Belief:Deduction)
+    (X ==> C), M,  belief(positive), is(X,"&&"), in(M,X) |- (conjWithout(X,M) ==>+- C), (Belief:Deduction)
+    (X ==> C), M,  belief(negative), is(X,"&&"), in(M,X) |- (conjWithout(X,--M) ==>+- C), (Belief:DeductionPN)
+
         //((&&,M,A..+) ==> C), M,                  |- ((&&,A..+) ==>+- C), (Belief:Deduction)
-    (X ==> C), (B==>M), is(X,"&&"), in(M,X) |- ((conjWithout(X,M) &&+- B) ==>+- C), (Belief:Deduction)
+    (X ==> C), (B==>M), belief(positive), is(X,"&&"), in(M,X) |- ((conjWithout(X,M) &&+- B) ==>+- C), (Belief:Deduction)
+    (X ==> C), (B==>M), belief(negative), is(X,"&&"), in(M,X) |- ((conjWithout(X,--M) &&+- B) ==>+- C), (Belief:DeductionPN)
         //((&&,M,A..+) ==> C), (B ==> M), neq(B,M) |- ((&&,B,A..+) ==>+- C), (Belief:Deduction)
 
     (X ==> C), (Y==>C), is(X,"&&"), is(Y,"&&"), neq(X,Y)   |- differ(Y,X), (Belief:AbductionPB)
@@ -281,8 +285,8 @@
     //see: https://en.wikipedia.org/wiki/Imperative_logic#Ross.27_Paradox
     //originally these were only valid if A occurrs during or after C. the opposite is not logical and would also produce redundant results
 
-    X, C, belief("&&"), task("!"), task(positive), in(X,C) |- conjPrior(C,X), (Goal:Weak)
-    X, C, belief("&&"), task("!"), task(negative), in(X,C) |- conjPrior(C,--X), (Goal:WeakN)
+    X, C, belief("&&"), task("!"), task(positive), in(X,C) |- conjDropIfLatest(C,X), (Goal:Weak)
+    X, C, belief("&&"), task("!"), task(negative), in(X,C) |- conjDropIfLatest(C,--X), (Goal:WeakN)
 
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),conjEvent(C,late),B), (Goal:Strong)
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),--conjEvent(C,late),B), (Goal:StrongN)

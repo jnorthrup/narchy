@@ -173,7 +173,7 @@ abstract public class NAgentX extends NAgent {
                 .deriverAdd(6, 6)
                 //.deriverAdd(6,6) //extra NAL6
                 .deriverAdd("motivation.nal")
-                .deriverAdd("list.nal")
+                //.deriverAdd("list.nal")
                 .index(
                         new CaffeineIndex(
                                 //200 * 1024
@@ -562,7 +562,7 @@ abstract public class NAgentX extends NAgent {
                         SimpleConceptGraph1 sg;
                         SpaceGraph s = new SpaceGraph<>(
                                 sg = new SimpleConceptGraph1(nar,
-                                        64, 8)
+                                        128, 16)
                         );
                         EdgeDirected fd = new EdgeDirected();
                         s.dyn.addBroadConstraint(fd);

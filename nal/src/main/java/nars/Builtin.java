@@ -15,7 +15,6 @@ import nars.term.atom.Atom;
 import nars.term.atom.Int;
 import nars.term.sub.Subterms;
 import nars.term.var.Variable;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -28,7 +27,6 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeSet;
-import java.util.function.Function;
 
 import static nars.Op.*;
 import static nars.term.Functor.f0;
@@ -248,7 +246,7 @@ public class Builtin {
         }));
 
         nar.on(Functor.f2((Atom) $.the("without"), (Term container, Term content) ->
-                Op.without(container, content, true, nar.random())));
+                Op.without(container, (x)->x.equalsRoot(content), nar.random())));
 
         /**
          * TODO rename this to 'dropAnyCommutive'
@@ -394,97 +392,49 @@ public class Builtin {
         }));
 
         /** similar to without() but special handling for CONJ sub-events */
-        nar.on(Functor.f2((Atom) $.the("conjWithout"), (Term conj, Term event) -> {
-            if (conj.op() != CONJ)
+        nar.on(Functor.f2((Atom) $.the("conjWithout"), (Term conj, Term _event) -> {
+            if (conj.op() != CONJ || conj.impossibleSubTerm(_event))
                 return Null;
 
 
+            Term event = _event.root();
+
             //extract from inside recursive event
             if (conj.dt() != DTERNAL) {
-                event = event.conceptual();
+
 
                 FasterList<LongObjectPair<Term>> events = conj.eventList();
                 IntArrayList found = new IntArrayList(1);
                 int es = events.size();
                 assert (es > 1);
                 for (int i = 0; i < es; i++) {
-                    if (event.equals(events.get(i).getTwo().conceptual())) {
+                    if (event.equalsRoot(events.get(i).getTwo())) {
                         found.add(i);
                     }
                 }
                 if (found.isEmpty())
                     return Null;
+
                 int fs = found.size(), f;
-                if (fs == 1)
-                    f = 0;
-                else
-                    f = nar.random().nextInt(fs);
+                switch (fs) {
+                    case 0: return Null;
+                    case 1: f = 0; break;
+                    default: f = nar.random().nextInt(fs); break;
+                }
                 events.remove(f);
                 return Op.conj(events);
             } else {
-                Term x = Op.without(conj, event, true, nar.random());
-                if (x != Null)
-                    return x;
-                else
-                    return Null;
+                return Op.without(conj, (x) -> event.equalsRoot(x), nar.random());
             }
         }));
         /** extracts only the events preceding the specified events */
-        nar.on(Functor.f2((Atom) $.the("conjPrior"), (Term conj, Term event) -> {
-            if (conj.op() != CONJ || conj.impossibleSubTerm(event))
-                return Null;
+        nar.on(Functor.f2((Atom) $.the("conjDropIfLatest"), (Term conj, Term event) -> {
+            return conjDrop(nar, conj, event, false);
 
-            if (conj.dt() == DTERNAL)
-                return Op.without(conj, event, true, nar.random());
-
-            FasterList<LongObjectPair<Term>> events = conj.eventList();
-            int found = -1;
-            long whenOccurs = Long.MIN_VALUE;
-            int es = events.size();
-
-            assert (es > 1);
-
-            for (int i = 0; i < es; i++) {
-                LongObjectPair<Term> ei = events.get(i);
-                if (ei.getTwo().equalsRoot(event)) {
-                    found = i;
-                    whenOccurs = Math.max(whenOccurs, ei.getOne());
-                }
-            }
-            if (found == -1)
-                return Null;
-            long ef = whenOccurs;
-            Term posNegE = event.unneg(); //exclude the positive and negative of the specified event
-            events.removeIf(e -> e.getOne() > ef || e.getTwo().unneg().equals(posNegE));
-            return Op.conj(events);
         }));
         nar.on(Functor.f2((Atom) $.the("conjDropIfEarliest"), (Term conj, Term event) -> {
 
-            if (conj.op() != CONJ)
-                return Null;
-
-            int dt = conj.dt();
-            if (dt != DTERNAL && dt != 0) {
-                event = event.root();
-
-                if (conj.impossibleSubTerm(event))
-                    return Null;
-
-                FasterList<LongObjectPair<Term>> events = conj.eventList();
-                //assert (events.get(0).getOne() == 0);
-                LongObjectPair<Term> first = events.get(0);
-                Term firstTerm = first.getTwo();
-//
-//                boolean neg;
-                if (!event.equalsRoot(firstTerm)) {
-                    return Null;
-                }
-
-                events.remove(0);
-                return Op.conj(events);//.negIf(neg);
-            } else {
-                return Op.without(conj, event, true, nar.random());
-            }
+            return conjDrop(nar, conj, event, true);
         }));
 
 

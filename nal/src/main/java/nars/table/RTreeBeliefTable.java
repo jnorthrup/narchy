@@ -51,7 +51,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     static final int SCAN_DIVISIONS = 4;
 
-    public static final int MIN_TASKS_PER_LEAF = 2;
+    public static final int MIN_TASKS_PER_LEAF = 3;
     public static final int MAX_TASKS_PER_LEAF = 4;
     public static final Split<TaskRegion> SPLIT =
             Spatialization.DefaultSplits.AXIAL.get(); //Spatialization.DefaultSplits.LINEAR; //<- probably doesnt work here
@@ -552,7 +552,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //        if (x.op().temporal) { //==IMPL /*x.op().statement */ /*&& !x.term().isTemporal()*/) {
 //            //experimental eternalize
             float xc = x.conf();
-            float c = w2cSafe(x.eviEternalized((1+1f/(1+ xc)) * size() /* eternalize inversely proportional to the size of this table, emulating the future evidence that can be considered */));
+            float c = w2cSafe(x.eviEternalized((1/xc) * size() /* eternalize inversely proportional to the size of this table, emulating the future evidence that can be considered */));
             if (c >= nar.confMin.floatValue()) {
                 Task eternalized = Task.clone(x, x.term(), new PreciseTruth(x.freq(), c),
                         x.punc(), x.creation(), ETERNAL, ETERNAL

@@ -58,7 +58,8 @@ public class DynamicBeliefTableTest {
             assertEquals($.t(0f, 0.90f), n.beliefTruth(n.conceptualize($("(b --> (x&z))")), now));
 
             Concept xIntNegY = n.conceptualize($("((x|--y)-->a)"));
-            assertTrue(xIntNegY instanceof DynamicConcept);
+            assertTrue(xIntNegY.beliefs() instanceof DynamicBeliefTable);
+            assertTrue(xIntNegY.goals() instanceof DynamicBeliefTable);
             assertEquals($.t(0f, 0.90f), n.beliefTruth(xIntNegY, now), now + " " + xIntNegY);
             assertEquals($.t(1f, 0.81f), n.beliefTruth(n.conceptualize($("((x|--z)-->a)")), now));
         }
@@ -298,5 +299,21 @@ public class DynamicBeliefTableTest {
         assertEquals(
                 1, n.belief(xyz, n.time()).stamp().length
         );
+    }
+
+    @Test public void testDynamicConjConceptWithNegations() throws Narsese.NarseseException {
+
+        NAR n = NARS.tmp();
+        for (String s : new String[] {
+                "((y-->t) &&+1 (t-->happy))",
+                "(--(y-->t) &&+1 (t-->happy))",
+                "((y-->t) &&+1 --(t-->happy))",
+                "(--(y-->t) &&+1 --(t-->happy))",
+        }) {
+            Concept c = n.conceptualize($.$(s));
+            assertTrue(c.beliefs() instanceof DynamicBeliefTable);
+            assertTrue(c.goals() instanceof DynamicBeliefTable);
+        }
+
     }
 }

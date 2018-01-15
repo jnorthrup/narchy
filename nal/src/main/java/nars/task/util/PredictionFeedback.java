@@ -43,24 +43,24 @@ public class PredictionFeedback {
 
         long start = y.start();
         long end = y.end();
+        int dur = nar.dur();
 
         final SignalTask[] strongestSignal = new SignalTask[1];
-        float[] strongest = new float[] { Float.NaN };
+        float[] strongest = new float[] { y.evi(start, end, dur) };
         ((DefaultBeliefTable) table).temporal.whileEach(start, end, (nextSignal) -> {
-            if (nextSignal instanceof SignalTask) {
-                SignalTask currentSignal = strongestSignal[0];
-                float s = strength(y, nextSignal);
-                if (currentSignal==null || s > strongest[0]) {
+            //TODO or if the cause is purely this Cause id (to include pure revisions of signal tasks)
+            if (nextSignal instanceof SignalTask && !nextSignal.isDeleted()) {
+                float nextStrength = strength(nextSignal, start, end, dur);
+                if (nextStrength > strongest[0]) {
                     strongestSignal[0] = ((SignalTask) nextSignal);
-                    strongest[0] = s;
+                    strongest[0] = nextStrength;
                 }
             }
             return true;
-            //TODO early exit with a Predicate form of this query method
         });
         SignalTask signal = strongestSignal[0];
         if (signal == null)
-            return; //just beliefs against beliefs
+            return;
 
 //        long when = y.nearestTimeTo(nar.time());
 //        int dur = nar.dur();
@@ -72,9 +72,9 @@ public class PredictionFeedback {
     }
 
     /** true if next is stronger than current */
-    private static float strength(Task x, Task y) {
+    private static float strength(Task x, long start, long end, int dur) {
         return
-                y.evi() * (1 + Interval.intersectLength(x.start(), x.end(), y.start(), y.end()))
+                (x.evi(start,dur)+x.evi(end,dur)) //sampled at start & end
         ;
     }
 
@@ -83,8 +83,6 @@ public class PredictionFeedback {
      * time which contradict this sensor reading, and reward those which it supports
      */
     static void feedbackNewSignal(SignalTask signal, BeliefTable table, NAR nar) {
-
-        int dur = nar.dur();
 
         long start = signal.start();
         long end = signal.end();
@@ -95,8 +93,9 @@ public class PredictionFeedback {
             if (y instanceof SignalTask)
                 return true; //ignore previous signaltask
 
-            if (absorb(signal, y, start, end, nar))
+            if (absorb(signal, y, start, end, nar)) {
                 trash.add(y);
+            }
 
             return true; //continue
         });
@@ -104,17 +103,7 @@ public class PredictionFeedback {
         trash.forEach(table::removeTask);
     }
 
-    /**
-     * measures frequency similarity of two tasks. -1 = dissimilar .. +1 = similar
-     * also considers the relative task time range
-     */
-    public static float coherence(Task actual, Task predict) {
-        float xFreq = actual.freq();
-        float yFreq = predict.freq();
-        float overtime = Math.max(0, predict.range() - actual.range()); //penalize predictions spanning longer than the actual signal because we aren't checking in that time range for accuracy, it could be wrong before and after the signal
-        return 2f * ((1f - Math.abs(xFreq - yFreq) / (1f + overtime))-0.5f);
-        //TruthFunctions.freqSimilarity(xFreq, y.freq());
-    }
+
 
 
     /**
@@ -134,8 +123,9 @@ public class PredictionFeedback {
             return false;
 
         float overlap = Stamp.overlapFraction(x.stamp(), y.stamp());
-        float value = coherence(x,y) * yEvi/(yEvi + xEvi) * (1f-overlap) * strength;
-        if (value > 0) {
+        float coherence = 2f * ((1f - Math.abs(x.freq() - y.freq())) - 0.5f);
+        float value = coherence * yEvi/(yEvi + xEvi) * (1f-overlap) * strength;
+        if (Math.abs(value) > Float.MIN_NORMAL) {
             MetaGoal.learn(MetaGoal.Accurate, y.cause(), value, nar);
         }
 

@@ -77,7 +77,7 @@ public interface TruthPolation extends Consumer<Tasked> {
                 float tw = tt.evi();
                 //if (tw > 0) {
                 eviSum += tw;
-                wFreqSum += tw * (tt.freq() - 0.5);
+                wFreqSum += tw * tt.freq();
                 //}
             }
 
@@ -91,7 +91,7 @@ public interface TruthPolation extends Consumer<Tasked> {
             if (c < Param.TRUTH_EPSILON)
                 return null;
             else {
-                float f = (wFreqSum / eviSum) + 0.5f;
+                float f = (wFreqSum / eviSum);
                 return new PreciseTruth(f, c);
             }
 

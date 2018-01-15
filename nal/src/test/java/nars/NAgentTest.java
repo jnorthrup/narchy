@@ -2,6 +2,7 @@ package nars;
 
 import nars.control.DurService;
 import nars.control.MetaGoal;
+import nars.task.DerivedTask;
 import nars.term.Term;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
@@ -15,9 +16,9 @@ public class NAgentTest {
         Param.DEBUG = true;
 
         NAR n = NARS.tmp();
-        n.termVolumeMax.set(16);
-        n.freqResolution.set(0.1f);
-        n.confResolution.set(0.1f);
+        n.termVolumeMax.set(12);
+        n.freqResolution.set(0.05f);
+        n.confResolution.set(0.02f);
         n.time.dur(1);
         //n.logWhen(System.out, false, true, true);
 
@@ -31,17 +32,25 @@ public class NAgentTest {
     public void testToggleSamePos() {
 
         MiniTest a = new ToggleSame(nar(), $.the("t"), $.$safe("t:y"), true);
-        a.runSynch(250);
+//        a.nar.onTask(t -> {
+//            if (t.isGoal() && t instanceof DerivedTask) {
+//                System.out.println(t.proof());
+//            }
+//        });
+        a.runSynch(600);
 
-        assertTrue(a.avgReward() > 0f);
+        assertTrue(a.avgReward() > 0.25f);
+        assertTrue(a.dex.getMean() > 0.02f);
     }
+
     @Test
     public void testToggleSameNeg() {
 
         MiniTest a = new ToggleSame(nar(), $.the("t"), $.$safe("t:y"), false);
-        a.runSynch(400);
+        a.runSynch(600);
 
-        assertTrue(a.avgReward() > 0f);
+        assertTrue(a.avgReward() > 0.25f);
+        assertTrue(a.dex.getMean() > 0.02f);
     }
 
 
@@ -77,7 +86,7 @@ public class NAgentTest {
         abstract float reward();
 
         public float avgReward() {
-            return rewardSum / nar.dur();
+            return rewardSum / (((float)nar.time())/nar.dur());
         }
     }
 

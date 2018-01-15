@@ -2,6 +2,7 @@ package nars;
 
 
 import jcog.Util;
+import jcog.data.bit.MetalBitSet;
 import jcog.list.FasterList;
 import jcog.memoize.HijackMemoize;
 import jcog.memoize.Memoize;
@@ -373,8 +374,8 @@ public enum Op {
                         }
                     }
                     if (nc != null && ni != null) {
-                        RoaringBitmap toRemove = new RoaringBitmap();
                         int[] bb = ni.toArray();
+                        MetalBitSet toRemove = MetalBitSet.bits(bb.length);
                         PeekableIntIterator cc = nc.getIntIterator();
                         while (cc.hasNext()) {
                             int cci = cc.next();
@@ -382,7 +383,7 @@ public enum Op {
                                 Term NC = ci.sub(cci).unneg();
                                 Term NX = ci.sub(bb[j]).unneg();
                                 if (NC.contains(NX)) {
-                                    toRemove.add(cci);
+                                    toRemove.set(cci);
                                 }
                             }
                         }
@@ -656,6 +657,33 @@ public enum Op {
         }
     }
 
+    public static Term conjDrop(NAR nar, Term conj, Term _event, boolean earlyOrLate) {
+        if (conj.op() != CONJ || conj.impossibleSubTerm(_event))
+            return Null;
+
+        Term event = _event.root();
+
+        int dt = conj.dt();
+        if (dt != DTERNAL && dt != 0) {
+
+
+            FasterList<LongObjectPair<Term>> events = conj.eventList();
+            Comparator<LongObjectPair<Term>> c = Comparator.comparingLong(LongObjectPair::getOne);
+            int eMax = events.maxIndex(earlyOrLate ? c.reversed() : c);
+
+            LongObjectPair<Term> ev = events.get(eMax);
+            if (ev.getTwo().equalsRoot(event)) {
+                events.remove(eMax);
+                return Op.conj(events);
+            } else {
+                return Null;
+            }
+
+        } else {
+            return Op.without(conj, (t) -> t.equalsRoot(event), nar.random());
+        }
+    }
+
 //    public interface TermInstancer {
 //
 //
@@ -925,7 +953,7 @@ public enum Op {
 
         if (a.eventCount() == 1 && b.eventCount() == 1) {
             long bo = bStart - aStart;
-            assert(bo < Integer.MAX_VALUE);
+            assert (bo < Integer.MAX_VALUE);
             return conjSeqFinal((int) bo, a, b);
         }
 
@@ -1034,35 +1062,35 @@ public enum Op {
     public static Term conj(FasterList<LongObjectPair<Term>> events) {
 
         int ee = events.size();
-        if (ee > 1) {
-            //events.sort(LongObjectPair::compareTo);
-            events.sortThis(LongObjectPair::compareTo);
-
-            ListIterator<LongObjectPair<Term>> ii = events.listIterator();
-            long prevtime = ETERNAL;
-            while (ii.hasNext()) {
-                LongObjectPair<Term> x = ii.next();
-                long now = x.getOne();
-                if (prevtime != ETERNAL && prevtime == now) {
-                    ii.remove();
-                    ee--;
-                    LongObjectPair<Term> y = ii.previous();
-                    Term xyt = CONJ.the(0, x.getTwo(), y.getTwo());
-                    if (xyt == Null) return Null;
-                    if (xyt == False) return False;
-                    LongObjectPair<Term> xy = pair(now, xyt);
-                    ii.set(xy);
-                    ii.next();
-                }
-                prevtime = now;
-            }
-        }
         switch (ee) {
             case 0:
                 return True;
             case 1:
                 return events.get(0).getTwo();
             default:
+                if (ee > 1) {
+                    //events.sort(LongObjectPair::compareTo);
+                    events.sortThis(LongObjectPair::compareTo);
+
+                    ListIterator<LongObjectPair<Term>> ii = events.listIterator();
+                    long prevtime = ETERNAL;
+                    while (ii.hasNext()) {
+                        LongObjectPair<Term> x = ii.next();
+                        long now = x.getOne();
+                        if (prevtime != ETERNAL && prevtime == now) {
+                            ii.remove();
+                            ee--;
+                            LongObjectPair<Term> y = ii.previous();
+                            Term xyt = CONJ.the(0, x.getTwo(), y.getTwo());
+                            if (xyt == Null) return Null;
+                            if (xyt == False) return False;
+                            LongObjectPair<Term> xy = pair(now, xyt);
+                            ii.set(xy);
+                            ii.next();
+                        }
+                        prevtime = now;
+                    }
+                }
                 return conjSeq(events, 0, events.size());
         }
     }
@@ -1949,46 +1977,25 @@ public enum Op {
     }
 
 
-    public static Term without(Term container, Term content, boolean conceptual, Random rand) {
+    public static Term without(Term container, Predicate<Term> filter, Random rand) {
 
 
+        Subterms cs = container.subterms();
 
-//        Op co = container.op();
-//        if (co.commutative) {
+        int i = cs.indexOf(filter, rand);
+        if (i == -1)
+            return Null;
 
-            Subterms cs = container.subterms();
-            int i = conceptual ? cs.indexOf(content, true, rand) : cs.indexOf(content);
-            if (i == -1)
-                return Null;
 
-            switch (cs.subs()) {
-                case 1:
-                    return Null; //removed itself
-                case 2:
-                    return cs.sub(1-i); //shortcut: return the other
-                default:
-                    return container.op().the(container.dt(), ArrayUtils.remove(cs.arrayShared(), i));
-            }
+        switch (cs.subs()) {
+            case 1:
+                return Null; //removed itself
+            case 2:
+                return cs.sub(1 - i); //shortcut: return the other
+            default:
+                return container.op().the(container.dt(), cs.termsExcept(i));
+        }
 
-//            int z = cs.subs();
-//            if (z > 1 && cs.contains(content)) {
-//                SortedSet<Term> s = cs.toSortedSet();
-//                if (s.remove(content)) {
-//                    int zs = s.size();
-//                    switch (zs) {
-//                        case 0:
-//                            return Null;
-//                        case 1:
-//                            return s.first();
-//                        default:
-//                            return co.the(container.dt(), s);
-//                    }
-//                }
-//            }
-//        } else {
-//            throw new TODO(); //this one is easy
-//        }
-//        return Null; //wasnt contained
     }
 
     public static int conjEarlyLate(Term x, boolean earlyOrLate) {
