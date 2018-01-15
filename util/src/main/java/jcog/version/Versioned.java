@@ -51,7 +51,7 @@ public class Versioned<X> extends
      * gets the latest value
      */
     @Nullable
-    public final X get() {
+    public X get() {
         int s = this.size;
         return s > 0 ? this.items[s - 1] : null;
     }

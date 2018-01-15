@@ -620,18 +620,11 @@ public class NAL6Test extends NALTest {
     public void implVariableSubst() {
 
         TestNAR tester = test;
-        tester.believe("(x,y).");
-        tester.believe("((x,$y)==>($y,x)).");
-        tester.mustBelieve(cycles, "(y,x)", 1.00f, 0.81f); //en("there is a lock which is opened by key1");
+        tester.believe("x:y.");
+        tester.believe("(x:$y==>$y:x).");
+        tester.mustBelieve(cycles, "y:x", 1.00f, 0.81f); //en("there is a lock which is opened by key1");
     }
-//    @Test
-//    public void equivVariableSubst() {
-//
-//        TestNAR tester = test;
-//        tester.believe("(x,y).");
-//        tester.believe("((x,$y)<=>($y,x)).");
-//        tester.mustBelieve(cycles, "(y,x)", 1.00f, 0.81f); //en("there is a lock which is opened by key1");
-//    }
+
 
     //    @Test public void recursionSmall2() throws nars.Narsese.NarseseException {
 //

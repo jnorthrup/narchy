@@ -132,11 +132,21 @@ public class NARio extends NAgentX {
     }
 
     private void initToggle() {
-        actionToggle($safe("nario:left"), (n) -> mario.scene.key(Mario.KEY_LEFT, n));
-        actionToggle($safe("nario:right"), (n) -> mario.scene.key(Mario.KEY_RIGHT, n));
-        actionToggle($safe("nario:jump"), (n) -> mario.scene.key(Mario.KEY_JUMP, n));
-        actionToggle($safe("nario:down"), (n) -> mario.scene.key(Mario.KEY_DOWN, n));
-        actionToggle($safe("nario:speed"), (b) -> mario.scene.key(Mario.KEY_SPEED, b));
+        actionPushButton($safe("nario:left"),
+                (n) -> {
+                    mario.scene.key(Mario.KEY_LEFT, n);
+                    if (n)
+                        mario.scene.key(Mario.KEY_RIGHT, false);
+                });
+        actionPushButton($safe("nario:right"),
+                (n) -> {
+                    mario.scene.key(Mario.KEY_RIGHT, n);
+                    if (n)
+                        mario.scene.key(Mario.KEY_LEFT, false);
+                });
+        actionPushButton($safe("nario:jump"), (n) -> mario.scene.key(Mario.KEY_JUMP, n));
+        actionPushButton($safe("nario:down"), (n) -> mario.scene.key(Mario.KEY_DOWN, n));
+        actionPushButton($safe("nario:speed"), (b) -> mario.scene.key(Mario.KEY_SPEED, b));
 //        actionTriState($("x"), i -> {
 //            boolean n, p;
 //            switch (i) {
@@ -286,17 +296,17 @@ public class NARio extends NAgentX {
                 //x.durations.setValue(2f);
                 x.trace = true;
 
-                n.onTask(t -> {
-                    if (t.isEternal() && !t.isInput() && !t.isQuestOrQuestion()) {
-                        System.err.println(t.proof());
-                    }
-//                    if (t.isGoal() && !t.isInput()) {
+//                n.onTask(t -> {
+//                    if (t.isEternal() && !t.isInput() && !t.isQuestOrQuestion()) {
 //                        System.err.println(t.proof());
 //                    }
-//                    if (t.isGoal() && t.term().equals(x.happy.term())) {
-//                        System.err.println(t.proof());
-//                    }
-                });
+////                    if (t.isGoal() && !t.isInput()) {
+////                        System.err.println(t.proof());
+////                    }
+////                    if (t.isGoal() && t.term().equals(x.happy.term())) {
+////                        System.err.println(t.proof());
+////                    }
+//                });
                 return x;
 
 

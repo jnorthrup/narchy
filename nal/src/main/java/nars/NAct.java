@@ -25,6 +25,7 @@ import java.util.function.IntPredicate;
 import static jcog.Util.unitize;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
+import static nars.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.c2wSafe;
 
 /**
@@ -41,16 +42,29 @@ public interface NAct {
      */
     FloatParam curiosity();
 
-    default void actionToggle(@NotNull Term t, float latchValue /* 0 or NaN */, @NotNull Runnable on, @NotNull Runnable off) {
+    default void actionToggle(@NotNull Term t, float thresh, float defaultValue /* 0 or NaN */, float momentumOn, @NotNull Runnable on, @NotNull Runnable off) {
 
-        float thresh = 0.5f + Param.TRUTH_EPSILON;
-        actionUnipolar(t, latchValue, (f) -> {
-            if (f >= thresh) {
+
+        final float[] last = {0};
+        actionUnipolar(t, (f) -> {
+
+            boolean unknown = (f!=f) || (f < thresh && (f > (1f-thresh)));
+            if (unknown) {
+                f = defaultValue==defaultValue ? defaultValue : last[0];
+            }
+
+            if (last[0] > 0.5f)
+                f = Util.lerp(momentumOn, f, last[0]);
+
+            boolean positive = f > 0.5f;
+
+
+            if (positive) {
                 on.run();
-                return 1f;
+                return last[0] = 1f;
             } else {
                 off.run();
-                return 0f;
+                return last[0] = 0f;
             }
         });
     }
@@ -299,10 +313,19 @@ public interface NAct {
     }
 
     default void actionToggle(@NotNull Term s, @NotNull BooleanProcedure onChange) {
-        actionToggle(s, Float.NaN, () -> onChange.value(true), () -> onChange.value(false));
+        float thresh =
+                //0.5f + Param.TRUTH_EPSILON;
+                //0.75f;
+                0.55f;
+        actionToggle(s, thresh, Float.NaN, 0f, () -> onChange.value(true), () -> onChange.value(false));
     }
     default void actionPushButton(@NotNull Term s, @NotNull BooleanProcedure onChange) {
-        actionToggle(s, 0, () -> onChange.value(true), () -> onChange.value(false));
+        float thresh =
+                0.5f + Param.TRUTH_EPSILON;
+                //0.55f;
+                //0.75f;
+                //0.6f;
+        actionToggle(s, thresh, 0, 0f, () -> onChange.value(true), () -> onChange.value(false));
     }
 //
 //    @Nullable
@@ -437,6 +460,7 @@ public interface NAct {
 
         final float g[] = new float[2];
         final float e[] = new float[2];
+        final long[] lastUpdate = {ETERNAL};
 
         GoalActionAsyncConcept[] CC = new GoalActionAsyncConcept[2]; //hack
 
@@ -444,6 +468,11 @@ public interface NAct {
 
 
             NAR n = nar();
+            long now = n.time();
+            if (now!= lastUpdate[0]) {
+                lastUpdate[0] = now;
+                CC[0] = CC[1] = null; //reset
+            }
 
 
 
@@ -465,15 +494,15 @@ public interface NAct {
                     gg.freq()
                     //gg.expectation()
                     :
-                    0f;
-                    //0.5f;
+                    //0f;
+                    0.5f;
             e[ip] = gg != null ? gg.evi() : 0f;
 
 
             float x; //-1..+1
 
             boolean curious;
-            if (!p) {
+            if (CC[0]!=null && CC[1]!=null /* both ready */) {
 
                 Random rng = n.random();
                 float cur = curiosity().floatValue();
@@ -501,11 +530,12 @@ public interface NAct {
 
                         //frequency -======================
 
-                        //df = 2 * ((g[0]) - (g[1])); //subtract
+                        //A. subtraction
+                        df = 2 * ((g[0]) - (g[1])); //subtract
 
-                        df = (
-                                g[0] >= g[1] ?  (g[0] * (1f-g[1])) : -(g[1] * (1f-g[0]))
-                        ); //difference, like the truth func
+                        //B. difference, like the truth func
+                        //df =  g[0] >= g[1] ?  (g[0] * (1f-g[1])) : -(g[1] * (1f-g[0]));
+
 
                         //experimental: lessen by a factor of how equally confident each goal is
                         if (fair) {
@@ -532,10 +562,15 @@ public interface NAct {
 
                 if (y == y) {
                     //y: (-1..+1)
-                  float yp = y >= 0 ? y : 0;
-                  float yn = y >= 0 ? 0 : -y;
-//                    float yp = y >= 0 ? 0.5f + y/2f : 0.5f - y/2f;
-//                    float yn = y >= 0 ? 0.5f - y/2f : 0.5f + y/2f;
+//                    float yp, yn;
+//                    if (Math.abs(y) >= n.freqResolution.floatValue()) {
+//                        yp = y >= 0 ? 0.5f + y/2f : 0.5f;
+//                        yn = y >= 0 ? 0.5f : 0.5f + -y/2f;
+//                    } else {
+//                        yp = yn = 0;
+//                    }
+                    float yp = y >= 0 ? 0.5f + y/2f : 0.5f - y/2f;
+                    float yn = y >= 0 ? 0.5f - y/2f : 0.5f + y/2f;
 //                    float yp = y > 0 ? 0.5f + y/2f : 0;
 //                    float yn = y < 0 ? 0.5f - y/2f : 0;
 
@@ -588,42 +623,30 @@ public interface NAct {
         return CC;
     }
 
-
-
-    default GoalActionConcept actionUnipolar(@NotNull Term s, @NotNull FloatToFloatFunction update) {
-        return actionUnipolar(s, Float.NaN /* latch */, update);
-    }
-
     /**
      * update function receives a value in 0..1.0 corresponding directly to the present goal frequency
      */
-    default GoalActionConcept actionUnipolar(@NotNull Term s, float valueIfUnknownGoal, @NotNull FloatToFloatFunction update) {
+    default GoalActionConcept actionUnipolar(@NotNull Term s, @NotNull FloatToFloatFunction update) {
 
-        final float[] lastValue = {0.5f};
 
-        return action(s, (b, d) -> {
-            float o = (d != null) ?
+
+        return action(s, (b, g) -> {
+            float gFreq = (g != null) ?
                     //d.expectation()
-                    d.freq()
-                    : ((valueIfUnknownGoal==valueIfUnknownGoal) ? valueIfUnknownGoal : lastValue[0]);
+                    g.freq() : Float.NaN;
 
-            float f = o == o ? update.valueOf( o) : Float.NaN;
-            if (f != f)
-                f = lastValue[0];
-            else
-                lastValue[0] = f;
+            //feedback belief
+            float bFreq;
 
-            //return $.t(f, nar().confDefault(BELIEF));
-
-            if (f == f) {
+            bFreq = (gFreq == gFreq) ? update.valueOf(gFreq) : Float.NaN;
+            if (bFreq == bFreq) {
                 float confFeedback =
                         nar().confDefault(BELIEF);
                         //d!=null ? d.conf() : ..
                         //nar().confMin.floatValue() * 2;
 
-                return $.t(f, confFeedback);
-            }
-            else
+                return $.t(bFreq, confFeedback);
+            } else
                 return null;
 
         });

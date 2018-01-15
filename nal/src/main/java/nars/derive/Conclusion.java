@@ -49,11 +49,8 @@ public final class Conclusion extends AbstractPred<Derivation> {
 //        d.xyDyn.clear();
         Term c1 = pattern.eval(d);
 
-        int volMax = d.termVolMax;
-        if (c1 == null || !c1.op().conceptualizable || c1.volume() > volMax || c1.hasAny(/*BOOL,*/VAR_PATTERN))
+        if (!valid(c1, d))
             return false;
-        if (!c1.hasAny(Op.ConstantAtomics))
-            return false; //entirely variablized
 
         if (c1.op() == NEG) {
             c1 = c1.unneg();
@@ -84,17 +81,8 @@ public final class Conclusion extends AbstractPred<Derivation> {
 
 
             //invalid or impossible temporalization; could not determine temporal attributes. seems this can happen normally
-            if (c2 == null || c2.volume() > volMax || !c2.op().conceptualizable/*|| (Math.abs(occReturn[0]) > 2047483628)*/ /* long cast here due to integer wraparound */) {
-//                            throw new InvalidTermException(c1.op(), c1.dt(), "temporalization failure"
-//                                    //+ (Param.DEBUG ? rule : ""), c1.toArray()
-//                            );
-
-                //FOR DEBUGGING
-//                if (t1==null)
-//                    new Temporalize(d.random).solve(d, c1, new long[]{ETERNAL, ETERNAL});
-
+            if (c1!=c2 && !valid(c2, d))
                 return false;
-            }
 
 
             if (d.concPunc == BELIEF || d.concPunc == GOAL) {
@@ -114,15 +102,46 @@ public final class Conclusion extends AbstractPred<Derivation> {
                 occ[1] = x;
             }
 
+            if (d.concPunc == GOAL && d.taskPunc == GOAL && !d.single && Op.values()[d._beliefOp].temporal) {
+                long derivedGoalStart = occ[0];
+
+                if (derivedGoalStart != ETERNAL) {
+
+                    long taskStart = d.task.start();
+
+                    if (taskStart == ETERNAL) {
+                        taskStart = d.time;
+                    }
+
+                    if (derivedGoalStart < taskStart) {
+                        //derived goal occurrs before task goal, so shift to task start
+                        long gdur = occ[1] - occ[0];
+                        occ[0] = taskStart;
+                        occ[1] = taskStart + gdur;
+                    }
+                }
+            }
+
         } else {
-            c2 = c1.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
+            if (d.concPunc == BELIEF || d.concPunc == GOAL) {
+                c2 = c1.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
+                if (c1!=c2 && !valid(c2, d))
+                    return false;
+            } else {
+                c2 = c1;
+            }
         }
 
 
-        c2 = c2.normalize();
+        Term c3 = c2.normalize();
+        return (c2==c3 || valid(c3,d)) && d.derivedTerm.set(c3) != null;
+    }
 
-        return (c2 != null) && (d.derivedTerm.set(c2) != null);
-
+    protected boolean valid(Term x, Derivation d) {
+        return (x != null) &&
+                x.op().conceptualizable &&
+                (x.volume() <= d.termVolMax) &&
+                !x.hasAny(/*BOOL,*/VAR_PATTERN) && x.hasAny(ConstantAtomics);
     }
 
 

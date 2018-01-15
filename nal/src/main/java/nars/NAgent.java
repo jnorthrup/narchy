@@ -23,6 +23,7 @@ import nars.term.var.Variable;
 import nars.truth.DiscreteTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
+import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -51,6 +52,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     public final Map<SensorConcept, CauseChannel<ITask>> sensors = new LinkedHashMap();
 
     public final Map<ActionConcept, CauseChannel<ITask>> actions = new LinkedHashMap();
+    Runnable[] actionUpdates = null, sensorUpdates = null;
 
 //    /**
 //     * the general reward signal for this agent
@@ -229,11 +231,44 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
         enabled.set(true);
 
+
+
+        Set<ActionConcept> actionSet = actions.keySet();
+        actionUpdates = new Runnable[actionSet.size()];
+        {
+            int j = 0;
+            for (Map.Entry<ActionConcept, CauseChannel<ITask>> ac : actions.entrySet()) {
+                ActionConcept a = ac.getKey();
+                CauseChannel c = ac.getValue();
+                actionUpdates[j++] = () -> {
+                    Stream<ITask> s = a.update(now, dur, NAgent.this.nar);
+                    if (s != null)
+                        c.input(s);
+                };
+            }
+        }
+
+        Set<SensorConcept> sensorSet = sensors.keySet();
+        sensorUpdates = new Runnable[sensorSet.size()];
+        {
+            int j = 0;
+            for (Map.Entry<SensorConcept, CauseChannel<ITask>> sc : sensors.entrySet()) {
+                SensorConcept s = sc.getKey();
+                CauseChannel c = sc.getValue();
+                sensorUpdates[j++] = ()-> {
+                    c.input(s.update(now, dur, NAgent.this.nar));
+                };
+            }
+        }
+
+
+
         List<Termed> cc = new FasterList();
         cc.add(happy);
-        cc.addAll(actions.keySet());
-        cc.addAll(sensors.keySet());
+        cc.addAll(actionSet);
+        cc.addAll(sensorSet);
         this.concepts = cc;
+
 
         alwaysWant(happy, nar.confDefault(GOAL));
 
@@ -267,18 +302,15 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
         reward = act();
 
-        sensors.forEach((s, c) -> {
-            c.input(s.update(now, dur, nar));
-        });
+        for (Runnable r : sensorUpdates)
+            r.run();
 
         always(motivation.floatValue());
 
-
-        actions.forEach((a, c) -> {
-            Stream<ITask> s = a.update(now, dur, nar);
-            if (s != null)
-                c.input(s);
-        });
+        //evaluate actions in shuffled order for fairness, in case of mutex's among them
+        ArrayUtils.shuffle(actionUpdates, nar.random);
+        for (Runnable r : actionUpdates)
+            r.run();
 
 
         Truth happynowT = nar.beliefTruth(happy, now);

@@ -49,7 +49,11 @@ public interface TruthPolation extends Consumer<Tasked> {
             if (start != ETERNAL) {
                 long minDur = dur;
                 for (Tasked t : temporals) {
-                    long dd = t.task().minDistanceTo(start, end);
+                    Task tt = t.task();
+                    if (tt.isEternal())
+                        continue; //skip eternals, dont allow their minDistanceTo=0 result to diminish nearby non-eternals
+
+                    long dd = tt.minDistanceTo(start, end);
 
                     if (dd == 0) {
                         minDur = 0; //minimum possible

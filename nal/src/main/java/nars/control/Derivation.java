@@ -158,7 +158,16 @@ public class Derivation extends ProtoDerivation {
                 , null, Param.UnificationStackMax, 0);
 
 
-        derivedTerm = new Versioned(this, 3);
+        derivedTerm = new Versioned(this, 3) {
+            @Nullable
+            @Override
+            public Object get() {
+                Object o = super.get();
+                if (o == null)
+                    throw new NullPointerException(); //shouldnt happen
+                return o;
+            }
+        };
 
         anon =
                 //new CachedAnon(16);

@@ -71,11 +71,11 @@ public class GoalActionAsyncConcept extends ActionConcept {
     public Stream<ITask> update(long now, int dur, NAR nar) {
 
         long pStart =
-                now;
-                //now - dur/2;
+                //now;
+                now - dur/2;
         long pEnd =
-                now;
-                //now + dur/2;
+                //now;
+                now + dur/2;
 
         Truth goal = this.goals().truth(pStart, pEnd, nar);
 
@@ -106,10 +106,9 @@ public class GoalActionAsyncConcept extends ActionConcept {
 
         long now = nar.time();
         int dur = nar.dur();
-        LongSupplier stamper = nar.time::nextStamp;
+
 
         Task fg;
-        Task fb;
 //        long goalTime =
 //                now;
 //                //now-dur/2;
@@ -125,9 +124,11 @@ public class GoalActionAsyncConcept extends ActionConcept {
         else
             fg = null;
 
+        LongSupplier stamper = nar.time::nextStamp;
+
         in.input(
             fg,
-            fb = feedBelief.set(this, f, stamper, beliefTime, dur, nar)
+            feedBelief.set(this, f, stamper, beliefTime, dur, nar)
         );
 
         PredictionFeedback.accept(feedBelief.get() /* in case stretched */, beliefs, nar);

@@ -10,6 +10,7 @@ import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
+import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import nars.util.signal.Signal;
 import org.jetbrains.annotations.NotNull;
@@ -77,17 +78,12 @@ public class GoalActionConcept extends ActionConcept {
                 //now;
                 now + dur/2;
 
-        LongSupplier stamper = nar.time::nextStamp;
 
-
-        //float curiPeriod = 2; //TODO vary this
         float cur = curiosity.floatValue();
 
 
         Truth goal;
-        ITask fg;
-
-        Truth belief = this.beliefs().truth(pStart, pEnd, nar);
+        ITask curiosityGoal;
 
         if (nar.random().nextFloat() < cur) {
 //            // curiosity override
@@ -107,14 +103,12 @@ public class GoalActionConcept extends ActionConcept {
 ////                    curiConf - (goal != null ? goal.conf() : 0);
 ////            if (cc > 0) {
 //
-            float f =
-                    Util.round(nar.random().nextFloat(), resolution.asFloat());
 ////                    ((float)Math.sin(
 ////                        hashCode() /* for phase shift */
 ////                            + now / (curiPeriod * (2 * Math.PI) * dur)) + 1f)/2f;
 //
-            goal = $.t(f, curiConf);
-            fg = curiosity(nar, goal, term, curiosityStamp);
+            goal = new PreciseTruth(nar.random().nextFloat(), curiConf);
+            curiosityGoal = curiosity(nar, goal, term, curiosityStamp);
 
 //            curious = true;
 //
@@ -132,7 +126,7 @@ public class GoalActionConcept extends ActionConcept {
 
             //action.set(term(), null, stamper, now, dur, nar);
 
-            fg = null;
+            curiosityGoal = null;
             goal = this.goals().truth(pStart, pEnd, nar);
 
             //HACK EXPERIMENT combine belief and goal
@@ -153,11 +147,13 @@ public class GoalActionConcept extends ActionConcept {
 
 
 
-        Truth motorFeedback = this.motor.motor(belief, goal);
+        Truth belief = this.beliefs().truth(pStart, pEnd, nar);
 
-        ITask fb = feedback.set(this, motorFeedback, stamper, now, dur, nar);
+        Truth feedback = this.motor.motor(belief, goal);
 
-        return Stream.of(fg, fb).filter(Objects::nonNull);
+        ITask feedbackBelief = this.feedback.set(this, feedback, nar.time::nextStamp, now, dur, nar);
+
+        return Stream.of(feedbackBelief, curiosityGoal).filter(Objects::nonNull);
         //return Stream.of(fb, fg).filter(Objects::nonNull);
         //return Stream.of(fb).filter(Objects::nonNull);
     }
