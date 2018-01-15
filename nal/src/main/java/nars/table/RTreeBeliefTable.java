@@ -45,7 +45,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     /**
      * max allowed truths to be truthpolated in one test
      */
-    static final int TRUTHPOLATION_LIMIT = 6;
+    static final int TRUTHPOLATION_LIMIT = 3;
 
     public static final float PRESENT_AND_FUTURE_BOOST = 2f;
 

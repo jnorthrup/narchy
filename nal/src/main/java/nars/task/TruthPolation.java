@@ -47,10 +47,10 @@ public interface TruthPolation extends Consumer<Tasked> {
          */
         public static TruthPolationBasic autoRange(long start, long end, int dur, Iterable<? extends Tasked> temporals) {
             if (start != ETERNAL) {
-                int minDur = dur;
+                long minDur = dur;
                 for (Tasked t : temporals) {
                     long dd = t.task().minDistanceTo(start, end);
-                    assert (dd < Integer.MAX_VALUE);
+
                     if (dd == 0) {
                         minDur = 0; //minimum possible
                         break;
@@ -58,7 +58,8 @@ public interface TruthPolation extends Consumer<Tasked> {
                         minDur = Math.min(minDur, (int) dd);
                     }
                 }
-                dur = Math.max(1, minDur);
+                assert (minDur < Integer.MAX_VALUE);
+                dur = (int) Math.max(1, minDur);
             }
             return new TruthPolationBasic(start, end, dur);
         }

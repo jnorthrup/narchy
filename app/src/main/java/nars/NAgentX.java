@@ -196,19 +196,19 @@ abstract public class NAgentX extends NAgent {
 
         n.dtMergeOrChoose.set(true);
         n.dtDither.set(
-            1f
-            //0.5f
+            //1f
+            0.5f //nyquist
         );
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(28);
+        n.termVolumeMax.set(32);
 
         n.beliefConfidence(0.9f);
         n.goalConfidence(0.9f);
 
 
-        float priFactor = 0.25f;
+        float priFactor = 0.5f;
         n.DEFAULT_BELIEF_PRIORITY = 1f * priFactor;
         n.DEFAULT_GOAL_PRIORITY = 1f * priFactor;
         n.DEFAULT_QUESTION_PRIORITY = 1f * priFactor;
