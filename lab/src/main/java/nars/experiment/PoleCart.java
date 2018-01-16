@@ -9,6 +9,7 @@ import jcog.math.FloatPolarNormalized;
 import nars.*;
 import nars.concept.SensorConcept;
 import nars.control.DurService;
+import nars.gui.ConceptSurface;
 import nars.gui.Vis;
 import nars.op.AutoConceptualizer;
 import nars.op.RLBooster;
@@ -31,6 +32,7 @@ import static jcog.Texts.n2;
 import static nars.Op.IMPL;
 import static nars.Op.QUEST;
 import static nars.Op.QUESTION;
+import static spacegraph.SpaceGraph.window;
 
 /**
  * adapted from: https://github.com/B00075594/CI_Lab2_CartAndPole/blob/master/src/pole.java
@@ -44,12 +46,16 @@ public class PoleCart extends NAgentX {
     private final SensorConcept dAngVel;
 
     public static void main(String[] arg) {
+
         runRT((n) -> {
 
             try {
                 NAgent a = new PoleCart(n);
                 a.nar.freqResolution.set(0.05f);
                 a.nar.confResolution.set(0.02f);
+
+
+                window(new ConceptSurface(a.happy, n), 500, 500);
 
 
                 //a.durations.setValue(1f);
@@ -60,7 +66,7 @@ public class PoleCart extends NAgentX {
                 e.printStackTrace();
                 return null;
             }
-        }, 40);
+        }, 30);
     }
 
     private final JPanel panel;
@@ -206,7 +212,7 @@ public class PoleCart extends NAgentX {
 //        SpaceGraph.window(bmp,400,400);
 
 
-        SpaceGraph.window(Vis.beliefCharts(100,
+        window(Vis.beliefCharts(100,
                 sensors,
                 nar), 600, 600);
         this.panel = new JPanel(new BorderLayout()) {

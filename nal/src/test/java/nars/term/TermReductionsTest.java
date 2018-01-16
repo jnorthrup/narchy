@@ -5,7 +5,6 @@ import nars.*;
 import nars.io.NarseseTest;
 import nars.task.util.InvalidTaskException;
 import nars.term.atom.Atomic;
-import nars.term.atom.Int;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.NotNull;
@@ -705,9 +704,9 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     public void testImplicationTrue() throws Narsese.NarseseException {
+        assertEquals(Null, $("(--x==>x)"));
         assertEquals(True, $("(x==>x)"));
         assertEquals(True, $("((x)==>(x))"));
-        assertEquals(Null, $("(--x==>x)"));
         assertEquals(Null, $("(--(x)==>(x))"));
     }
 

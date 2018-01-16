@@ -5,7 +5,6 @@ import jcog.Texts;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
-import nars.index.term.TermContext;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.transform.Retemporalize;

@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.math.FloatParam;
 import jcog.math.FloatParamRounded;
 import jcog.math.MutableInteger;
+import jcog.pri.Pri;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.control.Derivation;
@@ -17,10 +18,12 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static jcog.Util.unitize;
 import static nars.Op.*;
 import static nars.control.MetaGoal.*;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * NAR Parameters
@@ -100,8 +103,8 @@ public abstract class Param {
     public static final PriMerge activateMerge = PriMerge.plus;
 
     public static final PriMerge termlinkMerge =
-            //PriMerge.max;
-            PriMerge.plus;
+            PriMerge.max;
+            //PriMerge.plus;
 
     public static final PriMerge tasklinkMerge =
             PriMerge.max;
@@ -118,7 +121,6 @@ public abstract class Param {
 //            //Math::min;
 //            //Math::max;
 
-//    public static final PriMerge premiseMerge = PriMerge.max;
 
 
     /**
@@ -149,8 +151,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmax = new MutableInteger(96);
-//    public final MutableInteger matchTTLmin = new MutableInteger(64);
+    public final MutableInteger matchTTLmean = new MutableInteger(32);
 
     /**
      * how much percent of a premise's allocated TTL can be used in the belief matching phase.
@@ -262,8 +263,6 @@ public abstract class Param {
 
         float discount = 1f;
 
-        int dCompl =
-                t.complexity();
         //t.volume();
 
         {
@@ -279,34 +278,41 @@ public abstract class Param {
             //float p = 1f / (1f + ((float)t.complexity())/termVolumeMax.floatValue());
         }
 
+        Truth derivedTruth = t.truth();
         {
-            //absolute size relative to limit minus paretn complexity (headroom)
-            float complexityHeadroom = Math.max(1, d.termVolMax - d.parentComplexity);
-            float headroomConsumed = (dCompl / (dCompl + complexityHeadroom));
-            discount *= 1f - headroomConsumed;
+
+            float dCompl = t.voluplexity();
+            //float increase = (dCompl-d.parentComplexityMax);
+            //if (increase > Pri.EPSILON) {
+            int penalty = 1;
+            float change = penalty + Math.abs(dCompl-d.parentComplexityMax); //absolute change: penalize drastic complexification or simplification, relative to parent task(s) complexity
+
+                //relative increase in complexity
+                //calculate the increases proportion to the "headroom" remaining for term expansion
+                //ie. as the complexity progressively grows toward the limit, the discount accelerates
+                float complexityHeadroom = Math.max(1, d.termVolMax - d.parentComplexityMax);
+                float headroomConsumed = Util.unitize(change /* increase */ / complexityHeadroom );
+                float headroomRemain = 1f - headroomConsumed;
+
+                //note: applies more severe discount for questions/quest since the truth deduction can not apply
+                discount *= (derivedTruth != null) ? headroomRemain : Util.sqr(headroomRemain);
+
         }
 
 
-        Truth tr = t.truth();
-        if (/* belief or goal */ tr != null) {
+        if (/* belief or goal */ derivedTruth != null) {
 
-            //prefer confidence, relative to the premise which formed it
+            //loss of relative confidence: prefer confidence, relative to the premise which formed it
             float parentEvi = d.single ? d.premiseEviSingle : d.premiseEviDouble;
             if (parentEvi > 0) {
-                float derivedEvi = tr.evi();
-                //float relConf = unitize(derivedEvi / parentEvi);
-                float relConf = derivedEvi / (derivedEvi + parentEvi);
-
-                discount *= relConf;
+                discount *= unitize(derivedTruth.evi() / parentEvi );
             }
 
-            //prefer polarized
+            //optional: prefer polarized
             //c *= (1f + p * (0.5f - Math.abs(t.freq()-0.5f)));
-        } else {
-            discount *= 0.5f;
         }
 
-        return discount * d.premisePri;
+        return discount * d.pri;
 
         //return Util.lerp(1f-t.originality(),discount, 1) * d.premisePri; //more lenient derivation budgeting priority reduction in proportion to lack of originality
     }

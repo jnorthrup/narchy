@@ -20,10 +20,8 @@ import nars.term.sub.Neg;
 import nars.term.sub.Subterms;
 import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.map.ImmutableMap;
-import org.eclipse.collections.api.map.primitive.ObjectByteMap;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.IntIntPair;
@@ -643,7 +641,7 @@ public enum Op {
     public static Term dt(Compound base, int nextDT) {
 
         if (nextDT == XTERNAL) {
-            return new GenericCompoundDT(base, XTERNAL);
+            return new CompoundRefDT(base, XTERNAL);
         } else {
             Subterms subs = base.subterms();
             int ns = subs.subs();
@@ -651,7 +649,7 @@ public enum Op {
 //                    return base; //re-use base only if the terms are inequal
 
             /*@NotNull*/
-            if (!concurrent(nextDT) && ns > 2)
+            if (ns > 2 && !concurrent(nextDT))
                 return Null; //tried to temporalize what can only be commutive
 
 
@@ -1403,10 +1401,9 @@ public enum Op {
      */
     static Term compound(Op op, int dt, Term... subterms) {
         Term c = The.compound(op, subterms);
-        if (dt != DTERNAL && (c instanceof Compound))
-            return new GenericCompoundDT((Compound) c, dt);
-        else
-            return c;
+        return ((dt != DTERNAL) && (c instanceof Compound)) ?
+                new CompoundRefDT((Compound) c, dt) :
+                c;
     }
 
 
@@ -1594,13 +1591,13 @@ public enum Op {
 
                 if (dt != XTERNAL && subject.dt() != XTERNAL && predicate.dt() != XTERNAL) {
 
-                    MutableSet<LongObjectPair<Term>> se = new UnifiedSet();
+                    MutableSet<LongObjectPair<Term>> se = new UnifiedSet(1);
                     subject.eventsWhile((w, t) -> {
                         se.add(PrimitiveTuples.pair(w, t));
                         return true;
                     }, 0, true, true, false, 0);
 
-                    MutableSet<LongObjectPair<Term>> pe = new UnifiedSet();
+                    MutableSet<LongObjectPair<Term>> pe = new UnifiedSet(1);
 
                     int pre = subject.dtRange();
                     int edt = pre + (dt != DTERNAL ? dt : 0);
@@ -1955,7 +1952,7 @@ public enum Op {
     }
 
     protected boolean internable(int dt, Term[] u) {
-        if (dt!=DTERNAL)
+        if (dt != DTERNAL)
             return false;
 
         boolean cache = true;
@@ -1977,7 +1974,7 @@ public enum Op {
                     , 4, false);
 
     public final Term _the(int dt, Term[] u, boolean intern) {
-        if (intern && internable(dt,u)) {
+        if (intern && internable(dt, u)) {
             return preCompoundCached.apply(new IntArrayPair<>(ordinal(), u));
         } else {
             //TODO cache temporals
@@ -2172,21 +2169,29 @@ public enum Op {
             return uu;
         }
 
-        if (s.isEmpty())
-            return True; //? does this happen
+        int os = s.size();
+        if (os == 0) {
+            return True;  //? does this happen
+        } else {
+            Set<Term> outer = os > 1 ? new HashSet(os) : null /* unnecessary for the one element case */;
 
-        final SortedSet<Term> cs = junctionGroupNonDTSubterms(s);
-        if (!cs.isEmpty()) {
+            for (ObjectBytePair<Term> xn : s.keyValuesView()) {
+                Term oi = xn.getOne().negIf(xn.getTwo() < 0);
+                if (os == 1)
+                    return oi; //was the only element
+                else
+                    outer.add(oi);
+            }
 
 
             //annihilate common terms inside and outside of disjunction
             //      ex:
             //          -X &&  ( X ||  Y)
             //          -X && -(-X && -Y)  |-   -X && Y
-            Iterator<Term> csi = cs.iterator();
+            Iterator<Term> oo = outer.iterator();
             List<Term> csa = null;
-            while (csi.hasNext()) {
-                Term x = csi.next();
+            while (oo.hasNext()) {
+                Term x = oo.next();
 
                 if (x.op() == NEG) {
                     Term x0 = x.sub(0);
@@ -2194,9 +2199,9 @@ public enum Op {
                         Term disj = x.unneg();
                         SortedSet<Term> disjSubs = disj.subterms().toSortedSet();
                         //factor out occurrences of the disj's contents outside the disjunction, so remove from inside it
-                        if (disjSubs.removeAll(cs)) {
+                        if (disjSubs.removeAll(outer)) {
                             //reconstruct disj if changed
-                            csi.remove();
+                            oo.remove();
 
                             if (!disjSubs.isEmpty()) {
                                 if (csa == null)
@@ -2210,12 +2215,11 @@ public enum Op {
                 }
             }
             if (csa != null)
-                cs.addAll(csa);
+                outer.addAll(csa);
 
-            if (cs.size() == 1)
-                return cs.first();
-
-            Term[] scs = sorted(cs);
+            Term[] scs = sorted(outer);
+            if (scs.length == 1)
+                return scs[0];
 
 //                boolean dtChange = false;
 
@@ -2231,11 +2235,14 @@ public enum Op {
 //                }
 
 
-            return (Arrays.equals(scs, u)) ? compound(CONJ, dt, scs) : CONJ.the(dt, scs);
+            return compound(CONJ, dt, scs);
+//            return (Arrays.equals(scs, u)) ?
+//                    compound(CONJ, dt, scs) :  //DONE
+//                    CONJ.the(dt, scs);  //retry?
         }
-
-        return Null;
     }
+
+
 
 
 //        /**
@@ -2275,47 +2282,29 @@ public enum Op {
 //            return y;
 //        }
 
-    /**
-     * this is necessary to keep term structure consistent for intermpolation.
-     * by grouping all non-sequence subterms into its own subterm, future
-     * flattening and intermpolation is prevented from destroying temporal
-     * measurements.
-     */
-    static SortedSet<Term> junctionGroupNonDTSubterms(ObjectByteMap<Term> s) {
 
-        TreeSet<Term> outer = new TreeSet<>();
+static class IntArrayPair<X> {
+    public final int one;
+    public final X[] two;
+    private final int hash;
 
-        for (ObjectBytePair<Term> xn : s.keyValuesView()) {
-            outer.add(xn.getOne().negIf(xn.getTwo() < 0));
-        }
-        return outer;
-
-
+    IntArrayPair(int one, X... two) {
+        this.one = one;
+        this.two = two;
+        this.hash = Util.hashCombine(one, Arrays.hashCode(two));
     }
 
-
-    static class IntArrayPair<X> {
-        public final int one;
-        public final X[] two;
-        private final int hash;
-
-        IntArrayPair(int one, X... two) {
-            this.one = one;
-            this.two = two;
-            this.hash = Util.hashCombine(one, Arrays.hashCode(two));
-        }
-
-        @Override
-        public int hashCode() {
-            return hash;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            IntArrayPair p = (IntArrayPair) obj;
-            return hash == p.hash && Arrays.equals(two, p.two);
-        }
+    @Override
+    public int hashCode() {
+        return hash;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        IntArrayPair p = (IntArrayPair) obj;
+        return hash == p.hash && Arrays.equals(two, p.two);
+    }
+}
 
 
 }

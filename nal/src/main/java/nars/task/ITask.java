@@ -2,7 +2,6 @@ package nars.task;
 
 import jcog.pri.Priority;
 import nars.NAR;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * generic abstract task used for commands and other processes

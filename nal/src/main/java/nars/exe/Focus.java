@@ -2,7 +2,6 @@ package nars.exe;
 
 import com.google.common.base.Joiner;
 import jcog.Services;
-import jcog.Texts;
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.decide.Roulette;

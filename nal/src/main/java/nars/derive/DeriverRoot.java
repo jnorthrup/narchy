@@ -1,9 +1,6 @@
 package nars.derive;
 
-import jcog.memoize.HijackMemoize;
-import jcog.memoize.Memoize;
 import nars.control.Derivation;
-import nars.control.ProtoDerivation;
 import nars.term.pred.PrediTerm;
 
 /** what -> can */

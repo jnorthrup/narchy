@@ -3,7 +3,7 @@ package nars.term.sub;
 import nars.term.Term;
 
 /** minimal light-weight wrapper of a single term as a Subterms impl */
-public class UnitSubterm extends AbstractUnitSubterm  {
+public final class UnitSubterm extends AbstractUnitSubterm  {
 
     private final Term the;
 

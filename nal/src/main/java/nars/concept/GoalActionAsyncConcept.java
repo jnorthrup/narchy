@@ -18,7 +18,6 @@ import java.util.function.LongSupplier;
 import java.util.stream.Stream;
 
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 
 
 /**

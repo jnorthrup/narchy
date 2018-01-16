@@ -1,33 +1,17 @@
 package nars.op.stm;
 
-import jcog.TODO;
 import jcog.Util;
-import jcog.pri.MultiLink;
-import jcog.pri.PLink;
 import jcog.pri.VLink;
-import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.bag.BagClustering;
-import nars.concept.Concept;
-import nars.control.CauseChannel;
 import nars.control.DurService;
-import nars.task.ITask;
-import nars.task.NALTask;
-import nars.term.Term;
-import nars.truth.Truth;
-import nars.truth.TruthFunctions;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.eclipse.collections.impl.block.factory.Comparators;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static nars.Op.BELIEF;
 
 /**
  * Task Dimension Mapping:

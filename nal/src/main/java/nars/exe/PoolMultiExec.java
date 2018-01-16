@@ -8,7 +8,6 @@ import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.task.ITask;
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.api.set.primitive.LongSet;
 import org.eclipse.collections.impl.factory.primitive.LongSets;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
@@ -46,12 +45,12 @@ public class PoolMultiExec extends AbstractExec {
     private Consumer exe;
 
 
-    public PoolMultiExec(Revaluator revaluator, int capacity, int qSize) {
-        this(revaluator, Runtime.getRuntime().availableProcessors() - 1, capacity, qSize);
+    public PoolMultiExec(Revaluator revaluator, int conceptCapacity, int qSize) {
+        this(revaluator, Runtime.getRuntime().availableProcessors() - 1, conceptCapacity, qSize);
     }
 
-    protected PoolMultiExec(Revaluator r, int threads, int capacity, int qSize) {
-        super(capacity);
+    public PoolMultiExec(Revaluator r, int threads, int conceptCapacity, int qSize) {
+        super(conceptCapacity);
         this.revaluator = r;
         this.threads.set(threads);
         this.qSize = qSize;
@@ -80,19 +79,10 @@ public class PoolMultiExec extends AbstractExec {
 
     }
 
-    @Override
-    protected synchronized void clear() {
-        super.clear();
-        activeThreads.forEach(Thread::interrupt);
-        activeThreads.clear();
-        activeThreadIds = new LongHashSet();
-        isActiveThreadId = (x) -> false;
-    }
 
+    private final Consumer immediate = this::executeInline;
 
-    final Consumer immediate = this::executeInline;
-
-    final Consumer deferred = x -> {
+    private final Consumer deferred = x -> {
         if (x instanceof Task)
             executeInline(x);
         else
@@ -102,7 +92,7 @@ public class PoolMultiExec extends AbstractExec {
     /**
      * the input procedure according to the current thread
      */
-    protected Consumer add() {
+    private Consumer add() {
         return isWorker(Thread.currentThread()) ? immediate : deferred;
     }
 
@@ -116,12 +106,7 @@ public class PoolMultiExec extends AbstractExec {
         input.forEachRemaining(add());
     }
 
-
-
-
-
-
-    protected boolean isWorker(Thread t) {
+    private boolean isWorker(Thread t) {
         return isActiveThreadId.test(t.getId());
     }
 
@@ -129,7 +114,7 @@ public class PoolMultiExec extends AbstractExec {
     /**
      * to be called in initWorkers() impl for each thread constructed
      */
-    protected synchronized void register(Thread t) {
+    private void register(Thread t) {
         activeThreads.add(t);
         activeThreadIds = LongSets.mutable.ofAll(activeThreadIds).with(t.getId()).toImmutable();
         long max = activeThreadIds.max();
@@ -143,93 +128,105 @@ public class PoolMultiExec extends AbstractExec {
     }
 
     @Override
-    public synchronized void start(NAR nar) {
+    protected void clear() {
+        synchronized (this) {
+            super.clear();
+            activeThreads.forEach(Thread::interrupt);
+            activeThreads.clear();
+            activeThreadIds = new LongHashSet();
+            isActiveThreadId = (x) -> false;
+        }
+    }
+    @Override
+    public void start(NAR nar) {
+        synchronized (this) {
+            this.focus = new Focus(nar, revaluator);
 
-        this.focus = new Focus(nar, revaluator);
+            super.start(nar);
 
-        super.start(nar);
+            this.pool = new BusyPool(threads.intValue(),
+                    Util.blockingQueue(qSize)
+                    //new ArrayBlockingQueue(qSize)
+            ) {
 
-        this.pool = new BusyPool(threads.intValue(),
-                Util.blockingQueue(qSize)
-                //new ArrayBlockingQueue(qSize)
-        ) {
+                @Override
+                protected BusyPool.Worker newWorker(Queue<Runnable> q) {
+                    return new Worker(q) {
 
-            @Override
-            protected BusyPool.Worker newWorker(Queue<Runnable> q) {
-                return new Worker(q) {
+                        final Random rng = new XoRoShiRo128PlusRandom(System.nanoTime());
 
-                    final Random rng = new XoRoShiRo128PlusRandom(System.nanoTime());
+                        protected double next() {
 
-                    protected double next() {
+                            int loopMS = nar.loop.periodMS.intValue();
+                            if (loopMS < 0) {
+                                loopMS = IDLE_PERIOD_MS;
+                            }
+                            long dutyMS =
+                                    Math.round(nar.loop.throttle.floatValue() * loopMS);
 
-                        int loopMS = nar.loop.periodMS.intValue();
-                        if (loopMS < 0) {
-                            loopMS = IDLE_PERIOD_MS;
+                            //if (rng.nextInt(100) == 0)
+                            //    System.out.println(this + " " + Texts.timeStr(timeSinceLastBusyNS) + " since busy, " + Texts.timeStr(dutyMS*1E6) + " loop time" );
+
+                            if (dutyMS > 0) {
+
+                                double t = nar.loop.jiffy.doubleValue() *
+                                        dutyMS / 1000.0;
+                                //Math.min(dutyMS / 1000.0, timeSinceLastBusyNS / 1.0E9);
+
+                                //runUntil = System.currentTimeMillis() + dutyMS;
+
+                                return t;
+                            } else {
+                                return 0; //empty batch
+                            }
+
                         }
-                        long dutyMS =
-                                Math.round(nar.loop.throttle.floatValue() * loopMS);
 
-                        //if (rng.nextInt(100) == 0)
-                        //    System.out.println(this + " " + Texts.timeStr(timeSinceLastBusyNS) + " since busy, " + Texts.timeStr(dutyMS*1E6) + " loop time" );
+                        protected boolean kontinue() {
+                            //drain();
+                            pollWhileNotEmpty();
 
-                        if (dutyMS > 0) {
+                            return true;
+                            //q.size() < qSize/2;
 
-                            double t = nar.loop.jiffy.doubleValue() *
-                                    dutyMS / 1000.0;
-                            //Math.min(dutyMS / 1000.0, timeSinceLastBusyNS / 1.0E9);
-
-                            //runUntil = System.currentTimeMillis() + dutyMS;
-
-                            return t;
-                        } else {
-                            return 0; //empty batch
+                            //&& System.currentTimeMillis() <= runUntil;
                         }
 
-                    }
+                        @Override
+                        protected void run(Object next) {
+                            executeInline(next);
+                        }
 
-                    protected boolean kontinue() {
-                        //drain();
-                        pollWhileNotEmpty();
+                        @Override
+                        public void run() {
 
-                        return true;
-                        //q.size() < qSize/2;
+                            focus.runDeadline(
+                                    this::next,
+                                    this::kontinue,
+                                    rng, nar);
 
-                        //&& System.currentTimeMillis() <= runUntil;
-                    }
-
-                    @Override
-                    protected void run(Object next) {
-                        executeInline(next);
-                    }
-
-                    @Override
-                    public void run() {
-
-                        focus.runDeadline(
-                                this::next,
-                                this::kontinue,
-                                rng, nar);
-
-                    }
-                };
-            }
-        };
-        pool.workers.forEach(this::register);
-        this.exe = pool::queue;
+                        }
+                    };
+                }
+            };
+            pool.workers.forEach(this::register);
+            this.exe = pool::queue;
+        }
     }
 
     @Override
-    public synchronized void stop() {
-        exe = this::executeInline;
-        super.stop();
-        pool.shutdownNow();
-        pool = null;
-        focus = null;
-
+    public void stop() {
+        synchronized (this) {
+            exe = this::executeInline;
+            super.stop();
+            pool.shutdownNow();
+            pool = null;
+            focus = null;
+        }
     }
 
     @Override
-    public boolean concurrent() {
+    public final boolean concurrent() {
         return true;
     }
 

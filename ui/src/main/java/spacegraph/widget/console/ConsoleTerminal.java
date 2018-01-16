@@ -283,8 +283,10 @@ public class ConsoleTerminal extends BitmapConsoleSurface/*ConsoleSurface*/ {
                     redraw(bufferLine, column, row);
                 }
 
-                if (needUpdate.get())
-                    return; //update in next frame
+//                if (needUpdate.get()) {
+//                    actuallyDirty = true; //TODO
+//                    return; //update in next frame
+//                }
 
             });
         } else {
@@ -296,8 +298,8 @@ public class ConsoleTerminal extends BitmapConsoleSurface/*ConsoleSurface*/ {
             if (!dirty.isEmpty()) {
                 for (TerminalPosition e: dirty) {
                     redraw(e.getColumn(), e.getRow());
-                    if (needUpdate.get())
-                        return false; //update in next frame
+//                    if (needUpdate.get())
+//                        return false; //update in next frame
                 }
             }
 

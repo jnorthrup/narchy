@@ -7,9 +7,6 @@ import nars.NARS;
 import nars.util.signal.CameraSensor;
 import org.junit.jupiter.api.Test;
 
-import static nars.Op.BELIEF;
-import static org.junit.jupiter.api.Assertions.*;
-
 public class AutoConceptualizerTest {
 
     @Test

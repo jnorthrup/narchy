@@ -4,11 +4,8 @@
  */
 package nars.control;
 
-import jcog.TODO;
 import jcog.Util;
 import jcog.pri.Pri;
-import jcog.pri.PriReference;
-import jcog.util.FloatFloatToFloatFunction;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -17,8 +14,9 @@ import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.subst.UnifySubst;
-import org.eclipse.collections.api.block.function.primitive.LongObjectToLongFunction;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.ToLongFunction;
 
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
@@ -63,7 +61,7 @@ public class Premise extends Pri {
      * @param matchTime - temporal focus control: determines when a matching belief or answer should be projected to
      */
     @Nullable
-    public Derivation match(Derivation d, LongObjectToLongFunction<Task> matchTime, int matchTTL) {
+    public Derivation match(Derivation d, ToLongFunction<Task> matchTime, int matchTTL) {
 
         NAR n = d.nar;
         n.emotion.conceptFirePremises.increment();
@@ -173,7 +171,7 @@ public class Premise extends Pri {
                 }
 
                 if (belief == null) {
-                    long focus = matchTime.longValueOf(d.time, task);
+                    long focus = matchTime.applyAsLong(task);
                     long focusStart, focusEnd;
                     if (focus == ETERNAL) {
                         focusStart = focusEnd = ETERNAL;

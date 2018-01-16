@@ -1,9 +1,6 @@
 package nars.derive.time;
 
-import jcog.TODO;
-import jcog.Util;
 import jcog.data.ArrayHashSet;
-import jcog.list.FasterList;
 import nars.Op;
 import nars.Task;
 import nars.control.Derivation;
@@ -11,12 +8,10 @@ import nars.task.TimeFusion;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
-import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 
 import java.util.*;
 
 import static nars.Op.CONJ;
-import static nars.Op.IMPL;
 import static nars.time.Tense.*;
 
 

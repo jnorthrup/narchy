@@ -32,9 +32,11 @@ abstract public class AbstractExec extends Exec {
     }
 
     @Override
-    protected synchronized void clear() {
-        if (active != null)
-            active.clear();
+    protected void clear() {
+        synchronized (this) {
+            if (active != null)
+                active.clear();
+        }
     }
 
     @Override
@@ -62,61 +64,63 @@ abstract public class AbstractExec extends Exec {
     }
 
     @Override
-    public synchronized void start(NAR nar) {
+    public void start(NAR nar) {
 
-        assert(active==null && onCycle == null);
+        synchronized (this) {
+            assert (active == null && onCycle == null);
 
-        active =
-                concurrent() ?
+            active =
+                    concurrent() ?
 
-//                        new ConcurrentCurveBag<>(
-//                                Param.activateMerge, new HashMap<>(CAPACITY*2),
-//                                nar.random(), CAPACITY)
+                            //                        new ConcurrentCurveBag<>(
+                            //                                Param.activateMerge, new HashMap<>(CAPACITY*2),
+                            //                                nar.random(), CAPACITY)
 
-                        new PriorityHijackBag<>(Math.round(CAPACITY * 1.5f), 4) {
+                            new PriorityHijackBag<>(Math.round(CAPACITY * 1.5f), 4) {
 
-                            @Override
-                            public Activate key(Activate value) {
-                                return value;
+                                @Override
+                                public Activate key(Activate value) {
+                                    return value;
+                                }
+
+                                @Override
+                                protected Random random() {
+                                    return nar.random();
+                                }
+
+                                @Override
+                                public void onAdd(Activate value) {
+                                    value.id.state(nar.terms.conceptBuilder.awake());
+                                }
+
+                                @Override
+                                public void onRemove(Activate value) {
+                                    value.id.state(nar.terms.conceptBuilder.sleep());
+                                }
                             }
 
-                            @Override
-                            protected Random random() {
-                                return nar.random();
+                            :
+
+                            new CurveBag<>(
+                                    Param.activateMerge, new HashMap<>(CAPACITY),
+                                    nar.random(), CAPACITY) {
+
+                                @Override
+                                public void onAdd(Activate value) {
+                                    value.id.state(nar.terms.conceptBuilder.awake());
+                                }
+
+                                @Override
+                                public void onRemove(Activate value) {
+                                    value.id.state(nar.terms.conceptBuilder.sleep());
+                                }
                             }
+            ;
 
-                            @Override
-                            public void onAdd(Activate value) {
-                                value.id.state(nar.terms.conceptBuilder.awake());
-                            }
+            super.start(nar);
 
-                            @Override
-                            public void onRemove(Activate value) {
-                                value.id.state(nar.terms.conceptBuilder.sleep());
-                            }
-                        }
-
-                        :
-
-                        new CurveBag<>(
-                                Param.activateMerge, new HashMap<>(CAPACITY),
-                                nar.random(), CAPACITY) {
-
-                            @Override
-                            public void onAdd(Activate value) {
-                                value.id.state(nar.terms.conceptBuilder.awake());
-                            }
-
-                            @Override
-                            public void onRemove(Activate value) {
-                                value.id.state(nar.terms.conceptBuilder.sleep());
-                            }
-                        }
-        ;
-
-        super.start(nar);
-
-        onCycle = nar.onCycle(this::update);
+            onCycle = nar.onCycle(this::update);
+        }
     }
 
     private void update() {
@@ -124,13 +128,17 @@ abstract public class AbstractExec extends Exec {
     }
 
     @Override
-    public synchronized void stop() {
-        onCycle.off();
-        onCycle = null;
-
-        assert(active!=null);
-        active.clear();
-        active = null;
+    public void stop() {
+        synchronized (this) {
+            if (onCycle!=null) {
+                onCycle.off();
+                onCycle = null;
+            }
+            if (active!=null) {
+                active.clear();
+                active = null;
+            }
+        }
     }
 
 

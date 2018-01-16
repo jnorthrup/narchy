@@ -79,7 +79,7 @@ public class GUI {
                     in(t);
                     clear();
                 }
-            }).view());
+            }).surface());
         }
 
         protected void in(String s) {

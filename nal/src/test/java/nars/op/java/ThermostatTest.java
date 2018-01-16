@@ -1,7 +1,10 @@
 package nars.op.java;
 
 import jcog.Util;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.NARS;
+import nars.Task;
 import nars.control.DurService;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;

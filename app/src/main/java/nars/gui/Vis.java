@@ -38,7 +38,7 @@ public class Vis {
 
 
     public static ConsoleTerminal inputEditor() {
-        return new TextEdit(40, 8).view();
+        return new TextEdit(40, 8).surface();
     }
 
     public static Surface beliefCharts(int window, NAR nar, Object... x) {
@@ -138,7 +138,7 @@ public class Vis {
             Plot2D p = new Plot2D(plotHistory, Plot2D.Line /*BarWave*/) {
 
                 @Override
-                protected void paint(GL2 gl, int dtMS) {
+                protected void paintIt(GL2 gl) {
                     Concept concept = a.nar.concept(t);
 
                     bb[0] = a.nar.beliefTruth(concept, a.nar.time());
@@ -150,7 +150,7 @@ public class Vis {
                     backgroundColor[2] = b >= 0 ? b / 4f : 0;
                     backgroundColor[3] = 0.9f;
 
-                    super.paint(gl, dtMS);
+                    super.paintIt(gl);
                 }
             };
             p.setTitle(t.toString());
@@ -323,12 +323,12 @@ public class Vis {
     }
 
 
-    public static class EmotionPlot extends Grid implements Consumer<NAR> {
+    public static class EmotionPlot extends Grid {
 
         private final int plotHistory;
         @Deprecated
         private DurService on; //TODO use DurSurface
-        Plot2D plot1, plot2, plot3, plot4;
+        Plot2D plot1, plot2, plot3;
 
         public EmotionPlot(int plotHistory, NAgent a) {
             this(plotHistory, a, a.nar);
@@ -343,21 +343,23 @@ public class Vis {
             plot1 = new Plot2D(plotHistory, Plot2D.Line);
             plot2 = new Plot2D(plotHistory, Plot2D.Line);
             plot3 = new Plot2D(plotHistory, Plot2D.Line);
-            plot4 = new Plot2D(plotHistory, Plot2D.Line);
-            children(plot1, plot2, plot3, plot4);
+
+            TextEdit console = new TextEdit(20, 3);
+            console.textBox.setCaretWarp(true);
+            children(plot1, plot2, plot3, console.surface());
 
             //plot1.add("Conf", nar.emotion.confident::getSum);
             plot2.add("Busy", nar.emotion.busyVol::getSum);
 
             plot1.add("Dex+0", () -> a.dexterity(a.now), 0f, 1f);
-//            plot1.add("Dex+1", () -> a.dexterity(a.now + 1 * a.nar.dur()), 0f, 1f);
-//            plot1.add("Dex+2", () -> a.dexterity(a.now + 2 * a.nar.dur()), 0f, 1f);
+            plot1.add("Dex+2", () -> a.dexterity(a.now + 2 * a.nar.dur()), 0f, 1f);
+            plot1.add("Dex+4", () -> a.dexterity(a.now + 4 * a.nar.dur()), 0f, 1f);
 
-            plot4.add("Hpy", () -> {
+            plot3.add("Hpy", () -> {
                 return a.happy.beliefs().freq(a.now, a.nar);
             }, 0, 1f);
-            plot4.add("WantHpy", () -> {
-                return a.happy.goals().exp(a.now, a.nar);
+            plot3.add("WantHpy", () -> {
+                return a.happy.goals().freq(a.now, a.nar);
             }, 0, 1f);
 //            plot4.add("Sad", () -> {
 //                return a.sad.beliefs().freq(a.now, a.nar);
@@ -370,7 +372,11 @@ public class Vis {
 //            plot4.add("Sad", nar.emotion.sad::getSum);
 //                plot4.add("Errr", ()->nar.emotion.errr.getSum());
 
-            on = a.onFrame(this);
+            on = a.onFrame((aa)->{
+                plot1.update();
+                plot2.update();
+                plot3.update();
+            });
         }
 
         @Override
@@ -382,13 +388,6 @@ public class Vis {
             super.stop();
         }
 
-        @Override
-        public void accept(NAR a) {
-            plot1.update();
-            plot2.update();
-            plot3.update();
-            plot4.update();
-        }
     }
 
     public static class BeliefChartsGrid extends Grid implements Consumer<NAR> {

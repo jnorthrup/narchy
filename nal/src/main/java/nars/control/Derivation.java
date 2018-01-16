@@ -2,7 +2,10 @@ package nars.control;
 
 import jcog.pri.Pri;
 import jcog.version.Versioned;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.Param;
+import nars.Task;
 import nars.derive.DeriverRoot;
 import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
@@ -11,7 +14,6 @@ import nars.op.SubstUnified;
 import nars.op.data.differ;
 import nars.op.data.intersect;
 import nars.op.data.union;
-import nars.task.DerivedTask;
 import nars.task.NALTask;
 import nars.term.Functor;
 import nars.term.Term;
@@ -28,7 +30,6 @@ import nars.truth.Truth;
 import nars.truth.func.TruthOperator;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.impl.factory.Maps;
-import org.eclipse.collections.impl.map.mutable.primitive.ObjectFloatHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -114,12 +115,20 @@ public class Derivation extends ProtoDerivation {
      */
     public float overlapDouble, overlapSingle;
 
-    public float premisePri;
+    /** the base priority determined by the task and/or belief (tasks) of the premise.
+     * note: this is not the same as the premise priority, which is determined by the links
+     * and has already affected the selection of those links to create derived premises.
+     * instead, the derived tasks are budgeted according to the priorities of the
+     * parent task(s) NOT the links.  this allows the different budget 'currencies' to remain
+     * separate.
+     */
+    public float pri;
+
     public short[] parentCause;
 
     public DeriverRoot deriver;
     public boolean single;
-    public int parentComplexity;
+    public float parentComplexityMax;
 
 
     public float premiseEviSingle;
@@ -440,10 +449,10 @@ public class Derivation extends ProtoDerivation {
 //        if (ttv > 0 && bt.vars() > 0) {
 //            bt = bt.normalize(ttv); //shift variables up to be unique compared to taskTerm's
 //        }
-        this.parentComplexity =
+        this.parentComplexityMax =
                 //Util.sum(
                 Math.max(
-                        taskTerm.complexity(), beliefTerm.complexity()
+                        taskTerm.voluplexity(), beliefTerm.voluplexity()
                 );
 
 
@@ -493,7 +502,7 @@ public class Derivation extends ProtoDerivation {
                 _task.cause();
 
         float taskPri = _task.priElseZero();
-        this.premisePri =
+        this.pri =
                 //p.priElseZero(); //use the premise pri directly
                 _belief == null ? taskPri : Param.TaskBeliefDerivation.apply(taskPri, _belief.priElseZero());
 
@@ -506,7 +515,7 @@ public class Derivation extends ProtoDerivation {
 
         this.premiseEviSingle = taskTruth != null ? taskTruth.evi() : 0;
         this.premiseEviDouble = beliefTruth != null ?
-                Math.min(premiseEviSingle, beliefTruth.evi()) : //to be fair to the lesser confidence
+                Math.max(premiseEviSingle, beliefTruth.evi()) :
                 premiseEviSingle;
 
 

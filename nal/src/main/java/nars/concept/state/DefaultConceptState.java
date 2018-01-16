@@ -6,7 +6,6 @@ import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
-import org.jetbrains.annotations.NotNull;
 
 import static jcog.Util.clamp;
 

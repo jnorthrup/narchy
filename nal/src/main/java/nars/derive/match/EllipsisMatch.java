@@ -2,7 +2,6 @@ package nars.derive.match;
 
 import nars.$;
 import nars.Op;
-import nars.The;
 import nars.index.term.TermContext;
 import nars.term.Term;
 import nars.term.compound.CachedCompound;

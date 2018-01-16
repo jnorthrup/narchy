@@ -3,7 +3,6 @@ package nars.task;
 import nars.*;
 import nars.concept.Concept;
 import nars.truth.DiscreteTruth;
-import nars.truth.Stamp;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 

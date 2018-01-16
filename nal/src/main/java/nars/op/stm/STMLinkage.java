@@ -9,7 +9,6 @@ import nars.concept.Concept;
 import nars.control.Cause;
 import nars.control.TaskService;
 import nars.link.CauseLink;
-import nars.link.Tasklinks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.BlockingQueue;

@@ -168,7 +168,7 @@ public class ActivateTest {
     @Test
     public void testTemplatesWithQueryVar() throws Narsese.NarseseException {
         testTemplates("(x --> ?1)",
-                "[x]");
+                "[x, ?1]");
     }
 
     @Test
@@ -228,13 +228,13 @@ public class ActivateTest {
     @Test
     public void testTemplateSimProdCompound() throws Narsese.NarseseException {
         testTemplates("((a,b)<->#1)",
-                "[(a,b), a, b, #1]");
+                "[(a,b), #1]");
     }
 
     @Test
     public void testTemplatesAreEternal() throws Narsese.NarseseException {
-        testTemplates("((x ==>+1 y),(x ==>+2 y))",
-                "[(x==>y)]");
+        testTemplates("a:(x ==>+1 y)",
+                "[(x==>y), a, x, y]");
     }
 
     static void testTemplates(String term, String expect) throws Narsese.NarseseException {

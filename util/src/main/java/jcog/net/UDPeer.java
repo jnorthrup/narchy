@@ -213,13 +213,7 @@ public class UDPeer extends UDP {
     }
 
 
-    @Override
-    public void stop() {
-        super.stop();
-        if (discover!=null) {
-            discover.stop();
-        }
-    }
+
 
     protected void onAddRemove(UDProfile p, boolean addedOrRemoved) {
 
@@ -262,7 +256,7 @@ public class UDPeer extends UDP {
 
     @Override
     protected void onStop() {
-        super.onStop();
+
         them.clear();
         if (discover!=null)
             discover.stop();

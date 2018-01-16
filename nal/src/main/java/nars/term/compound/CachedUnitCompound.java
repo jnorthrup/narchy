@@ -47,7 +47,7 @@ public class CachedUnitCompound extends UnitCompound {
 
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return chash;
     }
 

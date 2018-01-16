@@ -5,11 +5,8 @@ import com.netflix.servo.monitor.Counter;
 import com.netflix.servo.monitor.StepCounter;
 import jcog.meter.event.BufferedFloatGuage;
 import jcog.pri.Pri;
-import jcog.pri.PriReference;
 import nars.control.MetaGoal;
-import nars.term.Compound;
 import nars.util.ConcurrentMonitorRegistry;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

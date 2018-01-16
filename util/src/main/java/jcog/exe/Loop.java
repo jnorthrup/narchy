@@ -3,9 +3,7 @@ package jcog.exe;
 import jcog.Texts;
 import jcog.Util;
 import jcog.math.MutableInteger;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.util.SortedMap;
@@ -19,15 +17,16 @@ abstract public class Loop {
 
     protected static final Logger logger = getLogger(Loop.class);
 
-    private Thread thread = null;
+    private volatile Thread thread = null;
 
-    protected final int windowLength = 8;
 
-    private float lag, lagSum;
+//    private float lag, lagSum;
 
-    /**
-     * in seconds
-     */
+    protected final int windowLength = 4;
+
+//    /**
+//     * in seconds
+//     */
     public final DescriptiveStatistics dutyTime = new DescriptiveStatistics(windowLength); //in millisecond
     public final DescriptiveStatistics cycleTime = new DescriptiveStatistics(windowLength); //in millisecond
 
@@ -52,8 +51,8 @@ abstract public class Loop {
 
     @Override
     public String toString() {
-        return super.toString() + " ideal=" + periodMS + "ms, " +
-                Texts.n4(dutyTime.getMean()) + "+-" + Texts.n4(dutyTime.getStandardDeviation()) + "ms avg";
+        return super.toString() + " ideal=" + periodMS + "ms";
+                //Texts.n4(dutyTime.getMean()) + "+-" + Texts.n4(dutyTime.getStandardDeviation()) + "ms avg";
     }
 
     /**
@@ -133,7 +132,7 @@ abstract public class Loop {
         return t;
     }
 
-    public void stop() {
+    public final void stop() {
         setPeriodMS(-1);
     }
 
@@ -158,64 +157,48 @@ abstract public class Loop {
 
         onStart();
 
-        logger.info("start {} @ {}ms period", this, nextPeriodMS());
+        logger.info("start {} each {}ms", this, this.periodMS.intValue());
 
         int periodMS;
-        long beforeTime = System.nanoTime();
-        while ((periodMS = nextPeriodMS()) >= 0) {
+        while ((periodMS = this.periodMS.intValue()) >= 0) {
 
+            long beforeTimeNS = System.nanoTime();
 
             try {
-
-                if (!next())
-                    break;
-
+                if (!next()) {
+                    stop(); //will exit after statistics at the end of this loop
+                }
             } catch (Throwable e) {
-                logger.error(" {}", e);
-                /*nar.eventError.emit(e);
-                if (Param.DEBUG) {
-                    stop();
-                    break;
-                }*/
+                thrown(e);
             }
 
+            long dutyTimeNS = System.nanoTime() - beforeTimeNS;
+            double dutyTimeS = (dutyTimeNS) / 1.0E9;
 
-            long afterTime = System.nanoTime();
-
-
-            long frameTime = afterTime - beforeTime;
-
-            long frameTimeMS = frameTime / 1000000;
-            lagSum += (this.lag = Math.max(0, (frameTimeMS /*nano to ms */ - periodMS) / ((float) periodMS)));
-
-            //System.out.println(getClass() + " " + frameTime + " " + periodMS + " " + lag);
-
-            double frameTimeS = (frameTime) / 1.0E9;
-            this.dutyTime.addValue(frameTimeS);
-
-            int sleepTime = (int) (periodMS - frameTimeMS);
-            if (sleepTime > 0)
+            double cycleTimeS;
+            long sleepTime = Math.round(periodMS - (dutyTimeNS / 1E6 /* to MS */));
+            if (sleepTime > 0) {
                 Util.sleep(sleepTime); //((long) this.dutyTime.getMean()) ));
+                cycleTimeS = (System.nanoTime() - beforeTimeNS) / 1.0E9;
+            } else {
+                cycleTimeS = dutyTimeS; //100% duty cycle
+            }
 
-//            } else {
-//                //Thread.yield();
-//                //Thread.onSpinWait();
-//            }
-
-            long prevBeforeTime = beforeTime;
-            beforeTime = System.nanoTime();
-            this.cycleTime.addValue((beforeTime - prevBeforeTime) / 1.0E9);
+            this.dutyTime.addValue(dutyTimeS);
+            this.cycleTime.addValue(cycleTimeS);
         }
 
         stop();
 
+        logger.info("stop {} each {}ms", this);
+
         onStop();
 
-        lag = lagSum = 0;
+//        lag = lagSum = 0;
     }
 
-    private int nextPeriodMS() {
-        return this.periodMS.intValue();
+    protected void thrown(Throwable e) {
+        logger.error(" {}", e);
     }
 
     abstract public boolean next();
@@ -234,22 +217,24 @@ abstract public class Loop {
     }
 
 
-    /**
-     * lag in proportion to the current FPS, >= 0
-     */
-    public float lag() {
-        return lag;
-    }
-
-    public float lagSumThenClear() {
-        float l = lagSum;
-        this.lagSum = 0;
-        return l;
-    }
+//    /**
+//     * lag in proportion to the current FPS, >= 0
+//     */
+//    public float lag() {
+//        return lag;
+//    }
+//
+//    public float lagSumThenClear() {
+//        float l = lagSum;
+//        this.lagSum = 0;
+//        return l;
+//    }
 
     public void stats(String prefix, SortedMap<String, Object> x) {
+        x.put(prefix + " cycle time mean", cycleTime.getMean()); //in seconds
+        x.put(prefix + " cycle time vary", cycleTime.getVariance()); //in seconds
         x.put(prefix + " duty time mean", dutyTime.getMean()); //in seconds
-        x.put(prefix + " duty time variance", dutyTime.getVariance()); //in seconds
-        x.put(prefix + " lag", lag);
+        x.put(prefix + " duty time vary", dutyTime.getVariance()); //in seconds
+        //x.put(prefix + " lag", lag);
     }
 }

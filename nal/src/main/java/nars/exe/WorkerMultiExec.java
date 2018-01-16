@@ -30,6 +30,7 @@ import java.util.stream.Stream;
 
 /**
  * multithreaded executor, via a set of deducated worker threads running in special process loops
+ * TODO extract the Affinity threadpool stuff to PoolMultiExec and remove this class
  */
 @Deprecated  public class WorkerMultiExec extends AbstractExec {
 
@@ -257,10 +258,6 @@ import java.util.stream.Stream;
         return true;
     }
 
-    @Override
-    public float load() {
-        return ((float) q.size()) / q.capacity();
-    }
 
     @Override
     public void execute(Runnable r) {

@@ -7,8 +7,6 @@ import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.control.Cause;
-import nars.control.Derivation;
-import nars.task.signal.LinearTruthlet;
 import nars.term.Term;
 import nars.term.sub.Subterms;
 import nars.truth.PreciseTruth;

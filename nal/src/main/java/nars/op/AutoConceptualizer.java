@@ -2,7 +2,6 @@ package nars.op;
 
 import jcog.learn.Autoencoder;
 import nars.NAR;
-import nars.Param;
 import nars.concept.Concept;
 import nars.control.DurService;
 import nars.table.BeliefTable;

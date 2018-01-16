@@ -56,10 +56,9 @@ public class WaveCapture extends Loop {
     }
 
     @Override
-    public void stop() {
+    protected void onStop() {
         start(0);
     }
-
 
     public Surface newMonitorPane() {
 

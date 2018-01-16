@@ -1,7 +1,6 @@
 package nars.task.util;
 
 import jcog.list.FasterList;
-import jcog.math.Interval;
 import nars.NAR;
 import nars.Task;
 import nars.control.MetaGoal;

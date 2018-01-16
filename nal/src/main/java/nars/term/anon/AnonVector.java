@@ -1,6 +1,5 @@
 package nars.term.anon;
 
-import nars.Op;
 import nars.term.Term;
 import nars.term.sub.Subterms;
 import nars.term.sub.TermVector;

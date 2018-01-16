@@ -3,7 +3,6 @@ package nars.truth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.truth.TruthFunctions.w2c;
 import static nars.truth.TruthFunctions.w2cSafe;
 
 /** indicates an implementation has, or is associated with a specific TruthValue */

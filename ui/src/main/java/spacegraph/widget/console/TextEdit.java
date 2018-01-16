@@ -60,7 +60,7 @@ public class TextEdit extends DefaultVirtualTerminal {
     }
 
     @Deprecated
-    public ConsoleTerminal view() {
+    public ConsoleTerminal surface() {
         return new ConsoleGUI(this) {
 
             @Override

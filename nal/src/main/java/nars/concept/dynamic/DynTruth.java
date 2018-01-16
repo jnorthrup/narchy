@@ -12,7 +12,6 @@ import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.jetbrains.annotations.Nullable;
 
@@ -196,8 +195,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         }
 
         // then if the term is valid, see if it is valid for a task
-        if (!Task.validTaskTerm(c,
-                beliefOrGoal ? BELIEF : GOAL, true))
+        if (!Task.validTaskTerm(c, beliefOrGoal ? BELIEF : GOAL, true))
             return null;
 
 
@@ -205,7 +203,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
         NALTask dyn = new NALTask(c, beliefOrGoal ? Op.BELIEF : Op.GOAL,
                 tr, nar.time(), start, (start == ETERNAL || c.op().temporal) ? start : end, stamp);
-        //if (ss.getTwo() > 0) dyn.setCyclic(true);
+        if (ss.getTwo() > 0) dyn.setCyclic(true);
 
         dyn.cause = cause();
         dyn.priSet(priority);

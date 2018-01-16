@@ -23,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Arkancide extends NAgentX {
 
     static boolean numeric = true;
-    static boolean cam = false;
+    static boolean cam = true;
 
     public final FloatParam ballSpeed = new FloatParam(0.75f, 0.04f, 6f);
     //public final FloatParam paddleSpeed = new FloatParam(2f, 0.1f, 3f);
@@ -43,7 +43,7 @@ public class Arkancide extends NAgentX {
     private float prevScore;
 
     public static void main(String[] args) {
-        Param.DEBUG = false;
+        Param.DEBUG = true;
 
         //runRT(Arkancide::new);
         //nRT(Arkancide::new, 25, 5);
@@ -71,7 +71,7 @@ public class Arkancide extends NAgentX {
 
             return a;
 
-        }, 20);
+        }, 30);
 
 
 //        nar.forEachActiveConcept(c -> {
@@ -110,19 +110,19 @@ public class Arkancide extends NAgentX {
 //        };
 
 
-        paddleSpeed = 40 * noid.BALL_VELOCITY;
+        paddleSpeed = 120 * noid.BALL_VELOCITY;
 
-        initBipolar();
-        //initToggle();
+        //initBipolar();
+        initToggle();
 
-        float resX = 0.1f; //Math.max(0.01f, 0.5f / visW); //dont need more resolution than 1/pixel_width
-        float resY = 0.1f; //Math.max(0.01f, 0.5f / visH); //dont need more resolution than 1/pixel_width
+        float resX = 0.02f; //Math.max(0.01f, 0.5f / visW); //dont need more resolution than 1/pixel_width
+        float resY = 0.02f; //Math.max(0.01f, 0.5f / visH); //dont need more resolution than 1/pixel_width
 
         if (cam) {
 
             BufferedImageBitmap2D sw = new Scale(new SwingBitmap2D(noid), visW, visH).blur();
-            CameraSensor cc = senseCamera("noid", sw, visW, visH)
-                    .resolution(0.1f);
+            CameraSensor cc = senseCamera(id.toString(), sw, visW, visH)
+                    .resolution(0.25f);
 //            CameraSensor ccAe = senseCameraReduced($.the("noidAE"), sw, 16)
 //                    .resolution(0.25f);
 

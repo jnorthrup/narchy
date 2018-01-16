@@ -7,6 +7,7 @@ import nars.control.Activate;
 import nars.exe.AbstractExec;
 import nars.task.NALTask;
 import nars.term.Term;
+import nars.term.Termed;
 import spacegraph.layout.Grid;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.meter.Plot2D;
@@ -18,6 +19,10 @@ import java.util.Map;
 import static nars.Op.*;
 
 public class ConceptSurface extends TabPane {
+
+    public ConceptSurface(Termed id, NAR n) {
+        this(id.term(), n);
+    }
 
     public ConceptSurface(Term id, NAR n) {
         super(Map.of(

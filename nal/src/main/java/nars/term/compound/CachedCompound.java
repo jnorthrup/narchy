@@ -6,7 +6,6 @@ import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.sub.Subterms;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.NEG;
@@ -21,7 +20,7 @@ public class CachedCompound implements Compound {
     /**
      * subterm vector
      */
-    private final Subterms subterms;
+    public final Subterms subterms;
 
 
     /**

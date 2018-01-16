@@ -11,7 +11,6 @@ import nars.concept.PermanentConcept;
 import nars.concept.builder.ConceptBuilder;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
 import nars.term.pred.AbstractPred;
 import nars.term.sub.Subterms;
 import nars.term.var.Variable;
@@ -22,9 +21,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static nars.Op.INH;
-import static nars.Op.Null;
-import static nars.Op.PROD;
+import static nars.Op.*;
 import static nars.term.Terms.atomOrNull;
 import static nars.term.atom.Atomic.the;
 

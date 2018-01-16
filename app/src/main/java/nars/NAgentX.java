@@ -41,6 +41,7 @@ import spacegraph.Ortho;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.layout.Grid;
+import spacegraph.layout.VSplit;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.ConsoleTerminal;
 import spacegraph.widget.meta.WindowToggleButton;
@@ -92,13 +93,20 @@ abstract public class NAgentX extends NAgent {
         alwaysWant(joy, nar.confDefault(GOAL)/2f);
 
         if (Param.DEBUG) {
-            nar.onTask(x -> {
-                if (x.isBeliefOrGoal() && x.isEternal()) {
-                    //if (x.isInput())
-                    if (!always.contains(x))
-                        System.err.println(x.proof());
-                }
-            });
+//            nar.onTask(x -> {
+//                if (x.isBeliefOrGoal() && x.isEternal()) {
+//                    //if (x.isInput())
+//                    if (!always.contains(x))
+//                        System.err.println(x.proof());
+//                }
+//            });
+
+                nar.onTask(t -> {
+                    if (t.isGoal() && t.isNegative() && t.term().equals(happy.term())) {
+                        System.err.println("MASOCHISM DETECTED:\n" + t.proof());
+                    }
+                });
+
         }
     }
 
@@ -178,8 +186,8 @@ abstract public class NAgentX extends NAgent {
                 .index(
                         new CaffeineIndex(
                                 //200 * 1024
-                                100 * 1024
-                                //50 * 1024
+                                //100 * 1024
+                                50 * 1024
                                 //20 * 1024
                         )
                         // new PriMapTermIndex()
@@ -192,7 +200,7 @@ abstract public class NAgentX extends NAgent {
 
         //n.defaultWants();
 
-        n.conceptActivation.set(0.5f);
+        n.conceptActivation.set(0.1f);
 
         n.dtMergeOrChoose.set(true);
         n.dtDither.set(
@@ -202,13 +210,13 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(26);
+        n.termVolumeMax.set(32);
 
         n.beliefConfidence(0.9f);
         n.goalConfidence(0.9f);
 
 
-        float priFactor = 0.5f;
+        float priFactor = 0.25f;
         n.DEFAULT_BELIEF_PRIORITY = 1f * priFactor;
         n.DEFAULT_GOAL_PRIORITY = 1f * priFactor;
         n.DEFAULT_QUESTION_PRIORITY = 1f * priFactor;
@@ -249,13 +257,13 @@ abstract public class NAgentX extends NAgent {
 
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 32, 128);
-        ConjClustering conjClusterBnonInput = new ConjClustering(n, BELIEF, (t->!t.isInput()), 4, 16);
+        //ConjClustering conjClusterBnonInput = new ConjClustering(n, BELIEF, (t->!t.isInput()), 4, 16);
 
 //        RelationClustering relCluster = new RelationClustering(n,
 //                (t)->t.isBelief() && !t.isEternal() && !t.term().isTemporal() ? t.conf() : Float.NaN,
 //                8, 32);
 
-        ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t->true),8, 32);
+        //ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t->true),8, 32);
 
 //        n.runLater(() -> {
 ////            AudioContext ac = new AudioContext();
@@ -532,9 +540,10 @@ abstract public class NAgentX extends NAgent {
     public static void chart(NAgent a) {
         NAR nar = a.nar;
         a.nar.runLater(() -> {
-            window(grid(
-
-                    new Vis.EmotionPlot(64, a),
+            window(
+                    new VSplit(
+                            new Vis.EmotionPlot(64, a),
+                    grid(
 
                     //new WindowButton("log", () -> Vis.logConsole(nar, 80, 25, new FloatParam(0f))),
                     new PushButton("dump", () -> {
@@ -652,7 +661,7 @@ abstract public class NAgentX extends NAgent {
 //                                    Vis.conceptsWindow3D(nar, 128, 4))
 //
 //                    )
-            ), 900, 600);
+                    ), 0.1f), 900, 600);
         });
     }
 

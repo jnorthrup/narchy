@@ -1,6 +1,5 @@
 package nars.truth;
 
-import com.google.common.primitives.Floats;
 import jcog.Util;
 import nars.Param;
 import org.jetbrains.annotations.NotNull;

@@ -256,7 +256,7 @@ public class NARS {
 
             nar.conceptActivation.set( 2f/Math.sqrt(((AbstractExec)nar.exe).active.capacity()) );
 
-            nar.termVolumeMax.set(38);
+            nar.termVolumeMax.set(40);
             //nar.confMin.setValue(0.05f);
 
             nar.DEFAULT_BELIEF_PRIORITY = 0.5f;

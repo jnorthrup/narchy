@@ -54,6 +54,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.*;
 import java.util.stream.Stream;
@@ -780,25 +781,33 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         return this;
     }
 
+    private final AtomicBoolean busy = new AtomicBoolean(false);
+
     /**
      * steps 1 frame forward. cyclesPerFrame determines how many cycles this frame consists of
      */
     @Override
     public final void run() {
+        if (!busy.compareAndSet(false, true))
+            return; //already in cycle
 
-        time.cycle(this);
+        try {
+            time.cycle(this);
 
-        if (exe.concurrent()) {
-            try {
-                eventCycle.emitAsyncAndWait(this, exe);
-            } catch (InterruptedException e) {
-                logger.error("eventCycle {}", Param.DEBUG ? e : e.getMessage());
+            if (exe.concurrent()) {
+                try {
+                    eventCycle.emitAsyncAndWait(this, exe );
+                } catch (InterruptedException e) {
+                    logger.error("eventCycle {}", Param.DEBUG ? e : e.getMessage());
+                }
+            } else {
+                eventCycle.emit(this);
             }
-        } else {
-            eventCycle.emit(this);
-        }
 
-        emotion.cycle();
+            emotion.cycle();
+        } finally {
+            busy.set(false);
+        }
     }
 
 

@@ -6,13 +6,9 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.exe.Causable;
 import nars.control.MetaGoal;
 import nars.control.Traffic;
-import nars.exe.Exec;
-import nars.exe.Focus;
-import nars.exe.WorkerMultiExec;
-import nars.exe.UniExec;
+import nars.exe.*;
 import nars.task.DerivedTask;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteIntHashMap;
 import org.junit.jupiter.api.Test;
@@ -28,7 +24,7 @@ public class WorkerMultiExecTest {
     public void test1() {
 
         int threads = 4;
-        WorkerMultiExec exe = new WorkerMultiExec(0, threads, 3 /* TODO this shouldnt need to be > 1 */);
+        Exec exe = new PoolMultiExec(new Focus.DefaultRevaluator(), threads, 16,3 /* TODO this shouldnt need to be > 1 */);
         NAR n = new NARS().exe(exe).get();
 
 

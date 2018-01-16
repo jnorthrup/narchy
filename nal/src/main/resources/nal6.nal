@@ -286,19 +286,19 @@
 
 
     //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
-    X, C, belief("&&"), task(positive), in(X,C) |- conjDropIfLatest(C,X), (Goal:Strong)
+    X, C, belief("&&"), task(positive), in(X,C) |- conjDropIfLatest(C,X), (Goal:Induction)
     //X is the desired non-outcome.  C is a sequence ending in it.   this forms a goal of the sequence minus the trailing
-    X, C, belief("&&"), task(negative), in(X,C) |- conjDropIfLatest(C,--X), (Goal:StrongN)
+    X, C, belief("&&"), task(negative), in(X,C) |- conjDropIfLatest(C,--X), (Goal:Induction)
     //X is the undesired outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
-    X, C, belief("&&"), task(negative), in(X,C) |- (--,conjDropIfLatest(C,X)), (Goal:WeakN)
+    X, C, belief("&&"), task(negative), in(X,C) |- (--,conjDropIfLatest(C,X)), (Goal:Induction)
     //X is the desired non-outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
-    X, C, belief("&&"), task(positive), in(X,C) |- (--,conjDropIfLatest(C,--X)), (Goal:Weak)
+    X, C, belief("&&"), task(positive), in(X,C) |- (--,conjDropIfLatest(C,--X)), (Goal:Induction)
 
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),conjEvent(C,late),B), (Goal:Strong)
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),--conjEvent(C,late),B), (Goal:StrongN)
 
-    C, X, task("&&"), belief(positive), in(X,C) |- conjDropIfEarliest(C,X), (Goal:Strong)
-    C, X, task("&&"), belief(negative), in(X,C) |- conjDropIfEarliest(C,--X), (Goal:StrongPN)
+    C, X, task("&&"), belief(positive), in(X,C) |- conjDropIfEarliest(C,X), (Goal:Induction)
+    C, X, task("&&"), belief(negative), in(X,C) |- conjDropIfEarliest(C,--X), (Goal:InductionPN)
         //(&&,X,A..+), X, task("!") |- X, (Goal:Strong)
         //(&&,--X,A..+), X, task("!") |- X, (Goal:StrongPN)
 

@@ -5,7 +5,6 @@ import jcog.TODO;
 import jcog.data.UnenforcedConcatSet;
 import nars.term.anon.AnonID;
 import org.eclipse.collections.api.tuple.primitive.ShortObjectPair;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ShortObjectHashMap;
 
 import java.util.*;

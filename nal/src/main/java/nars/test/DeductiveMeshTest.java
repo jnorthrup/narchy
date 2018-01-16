@@ -2,11 +2,8 @@ package nars.test;
 
 import nars.$;
 import nars.NAR;
-import nars.NARS;
-import nars.Param;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.Atomic;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

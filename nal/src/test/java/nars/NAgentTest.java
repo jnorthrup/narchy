@@ -1,14 +1,11 @@
 package nars;
 
-import nars.control.DurService;
-import nars.control.MetaGoal;
-import nars.task.DerivedTask;
 import nars.term.Term;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NAgentTest {
 

@@ -6,7 +6,6 @@ import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.audio.NARAudioVideo;
 import nars.exe.Focus;
 import nars.exe.PoolMultiExec;
-import nars.exe.WorkerMultiExec;
 import nars.op.AtomicExec;
 import nars.op.Operator;
 import nars.op.java.Opjects;

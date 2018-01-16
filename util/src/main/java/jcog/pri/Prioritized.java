@@ -21,9 +21,9 @@ public interface Prioritized extends Deleteable {
     /**
      * default minimum difference necessary to indicate a significant modification in budget float number components
      */
-    float EPSILON =             0.0001f;
+    float EPSILON =             0.0002f;
 
-    public static float sum(Prioritized... src) {
+    static float sum(Prioritized... src) {
         return Util.sum(Prioritized::priElseZero, src);
     }
 
@@ -60,23 +60,6 @@ public interface Prioritized extends Deleteable {
     Prioritized Zero = new PriRO(0);
 
 
-//    /**
-//     * decending order (highest first)
-//     */
-//    Comparator<Prioritized> IdentityComparator = (Prioritized a, Prioritized b) -> {
-//        if (a == b) return 0;
-//
-//        float ap = a.priElseNeg1();
-//        float bp = b.priElseNeg1();
-//
-//        int q = Float.compare(bp, ap);
-//        if (q == 0) {
-//            //if still not equal, then use system identiy
-//            return Integer.compare(System.identityHashCode(a), System.identityHashCode(b));
-//        }
-//        return q;
-//    };
-
     static String toString(Prioritized b) {
         return toStringBuilder(null, Texts.n4(b.pri())).toString();
     }
@@ -90,11 +73,7 @@ public interface Prioritized extends Deleteable {
             sb.ensureCapacity(c);
         }
 
-        sb.append('$')
-                .append(priorityString);
-        //.append(Op.BUDGET_VALUE_MARK);
-
-        return sb;
+        return sb.append('$').append(priorityString);
     }
 
     @NotNull

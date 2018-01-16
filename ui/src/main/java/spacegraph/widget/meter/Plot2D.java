@@ -7,6 +7,7 @@ import jcog.list.FasterList;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import spacegraph.Surface;
 import spacegraph.render.Draw;
+import spacegraph.widget.windo.Widget;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -15,7 +16,7 @@ import java.util.function.Function;
 
 import static jcog.Texts.n2;
 
-public class Plot2D extends Surface {
+public class Plot2D extends Widget {
     private final List<Series> series;
     private String title;
     private On on;
@@ -178,7 +179,7 @@ public class Plot2D extends Surface {
     }
 
     @Override
-    protected void paint(GL2 gl, int dtMS) {
+    protected void paintIt(GL2 gl) {
         Draw.bounds(gl, x(), y(), w(),h(), this::paintUnit);
     }
 

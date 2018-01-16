@@ -17,17 +17,22 @@ import static nars.Op.CONJ;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
-public class GenericCompoundDT implements CompoundDT {
+/**
+ * flyweight Compound implementation for non-DTERNAL dt values.
+ * wraps a referenced base Compound and caches only the adjusted hash value,
+ * referring to the base for all other details.
+ * TODO a CachedCompound version of this
+ */
+public class CompoundRefDT implements CompoundDT {
 
     /**
      * numeric (term or "dt" temporal relation)
      */
     public final int dt;
     private final int hashDT;
+    private final Compound ref;
 
-    private Compound ref;
-
-    public GenericCompoundDT(Compound base, int dt) {
+    public CompoundRefDT(Compound base, int dt) {
 
         Op op = base.op();
 
@@ -40,7 +45,7 @@ public class GenericCompoundDT implements CompoundDT {
 
         if (Param.DEBUG_EXTRA) {
 
-            assert (getClass() != GenericCompoundDT.class /* a subclass */ || dt != DTERNAL);
+            assert (getClass() != CompoundRefDT.class /* a subclass */ || dt != DTERNAL);
 
 
             @NotNull Subterms subterms = s;
@@ -182,11 +187,11 @@ public class GenericCompoundDT implements CompoundDT {
     @Override
     public boolean equals(Object that) {
         if (this == that) return true;
-        if (!(that instanceof Compound))
+        if (!(that instanceof Compound) || (hashDT != that.hashCode()))
             return false;
 
-        if (that instanceof GenericCompoundDT) {
-            GenericCompoundDT cthat = (GenericCompoundDT) that;
+        if (that instanceof CompoundRefDT) {
+            CompoundRefDT cthat = (CompoundRefDT) that;
             Compound thatRef = cthat.ref;
             Compound myRef = this.ref;
 
@@ -195,21 +200,20 @@ public class GenericCompoundDT implements CompoundDT {
                 if (!myRef.equals(thatRef))
                     return false;
 
-                if (myRef instanceof CachedCompound && thatRef instanceof CachedCompound) {
-                    //prefer the earlier instance for sharing
-                    if ((((CachedCompound) myRef).serial) < (((CachedCompound) thatRef).serial)) {
-                        cthat.ref = myRef;
-                    } else {
-                        this.ref = thatRef;
-                    }
-                }
+//                if (myRef instanceof CachedCompound && thatRef instanceof CachedCompound) {
+//                    //prefer the earlier instance for sharing
+//                    if ((((CachedCompound) myRef).serial) < (((CachedCompound) thatRef).serial)) {
+//                        cthat.ref = myRef;
+//                    } else {
+//                        this.ref = thatRef;
+//                    }
+//                }
             }
 
             return (dt == cthat.dt);
 
         } else {
-
-            return (hashDT == that.hashCode()) && Compound.equals(this, (Term) that);
+            return Compound.equals(this, (Term) that);
         }
 
     }

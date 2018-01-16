@@ -2,8 +2,8 @@ package nars.bag.leak;
 
 import nars.NAR;
 import nars.Task;
-import nars.exe.Causable;
 import nars.control.CauseChannel;
+import nars.exe.Causable;
 import nars.task.ITask;
 
 import java.util.List;

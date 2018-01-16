@@ -1,7 +1,6 @@
 package nars.derive.time;
 
 import com.google.common.collect.Sets;
-import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import nars.Narsese;
 import org.junit.jupiter.api.AfterEach;
@@ -9,7 +8,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 import java.util.TreeSet;
 import java.util.function.Predicate;
 import java.util.function.Supplier;

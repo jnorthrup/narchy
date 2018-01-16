@@ -1,7 +1,6 @@
 package nars.derive.rule;
 
 import com.google.common.collect.Sets;
-import jcog.TODO;
 import jcog.list.FasterList;
 import nars.$;
 import nars.NAR;
@@ -20,7 +19,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Terms;
-import nars.term.anon.Anon;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.pred.AndCondition;

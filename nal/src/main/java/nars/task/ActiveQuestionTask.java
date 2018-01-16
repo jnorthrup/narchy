@@ -16,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -69,7 +68,7 @@ public class ActiveQuestionTask extends NALTask implements Consumer<Task> {
     public ITask run(NAR nar) {
         ITask next = super.run(nar);
         this.random = nar.random();
-        this.ttl = nar.matchTTLmax.intValue();
+        this.ttl = nar.matchTTLmean.intValue();
         this.onTask = nar.onTask(this);
         return next;
     }

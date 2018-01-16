@@ -2,7 +2,10 @@ package nars.concept.dynamic;
 
 import jcog.Util;
 import jcog.list.FasterList;
-import nars.*;
+import nars.NAR;
+import nars.Op;
+import nars.Param;
+import nars.Task;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.concept.TaskConcept;
@@ -11,7 +14,6 @@ import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
-import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;

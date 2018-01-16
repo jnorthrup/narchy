@@ -10,19 +10,13 @@ import jcog.data.graph.hgraph.Node;
 import jcog.data.graph.hgraph.NodeGraph;
 import jcog.data.graph.hgraph.Search;
 import jcog.list.FasterList;
-import nars.$;
 import nars.Op;
-import nars.Param;
-import nars.Task;
-import nars.concept.builder.DefaultConceptBuilder;
-import nars.concept.dynamic.DynamicTruthModel;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.sub.Subterms;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
-import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,10 +27,8 @@ import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
 import static nars.Op.IMPL;
-import static nars.Op.NEG;
 import static nars.derive.time.TimeGraph.TimeSpan.TS_ZERO;
 import static nars.time.Tense.*;
-import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
  * represents a multigraph of events and their relationships

@@ -12,12 +12,10 @@ import nars.term.atom.Bool;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.function.Supplier;
 
-import static nars.$.$;
 import static org.junit.jupiter.api.Assertions.*;
 
 

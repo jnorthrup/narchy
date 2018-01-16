@@ -12,8 +12,6 @@ import nars.term.sub.Subterms;
 import nars.term.var.NormalizedVariable;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
-
 import static nars.Op.VAR_QUERY;
 
 /**

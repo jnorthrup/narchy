@@ -3,7 +3,6 @@ package nars.control;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.data.byt.DynBytes;
 import nars.Op;
-import nars.derive.DeriverRoot;
 import nars.term.Term;
 import nars.term.subst.Unify;
 import nars.truth.Truth;
@@ -13,7 +12,6 @@ import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
 import java.util.Random;
-import java.util.function.Consumer;
 
 /** contains only information which depends on the premise itself (Task, Belief, BeliefTerm) */
 public abstract class ProtoDerivation extends Unify {

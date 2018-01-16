@@ -2,7 +2,6 @@ package nars;
 
 import jcog.memoize.CaffeineMemoize;
 import jcog.memoize.SoftMemoize;
-import nars.derive.PatternCompound;
 import nars.derive.match.Ellipsis;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.NewCompound;
@@ -14,16 +13,13 @@ import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
 import nars.term.sub.ArrayTermVector;
 import nars.term.sub.UnitSubterm;
-import nars.term.var.UnnormalizedVariable;
 
 import java.util.Collection;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static nars.Op.NEG;
-import static nars.Op.Null;
-import static nars.Op.PROD;
+import static nars.Op.*;
 
 /**
  * The the
@@ -66,18 +62,12 @@ public enum The {
 //        boolean cache = cacheable(u);
 //
 //        if (!cache) {
-            return _compound(o, u);
+        return Compound.the.apply(o, u);
 //        } else {
 //            //System.out.println(o + " " + Arrays.toString(u));
 //            return compoundCached.apply(new IntArrayPair(o.id, u));
 //        }
     }
-
-
-    public static Term _compound(Op o, Term... subterms) {
-        return Compound.the.apply(o, subterms);
-    }
-
 
     public static final class Subterms {
 

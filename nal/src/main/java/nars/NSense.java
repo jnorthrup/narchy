@@ -9,7 +9,6 @@ import nars.concept.SensorConcept;
 import nars.control.CauseChannel;
 import nars.control.DurService;
 import nars.task.ITask;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.truth.Truth;

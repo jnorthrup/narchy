@@ -11,7 +11,7 @@ import static nars.time.Tense.ETERNAL;
 public class NAL6Test extends NALTest {
 
 
-    final int cycles = 1500;
+    final int cycles = 2500;
 
     @Test
     public void variable_unification_revision() {

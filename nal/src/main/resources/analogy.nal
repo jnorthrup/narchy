@@ -3,10 +3,10 @@
 //      https://en.wikipedia.org/wiki/Fluid_Concepts_and_Creative_Analogies
 //      https://cogsci.indiana.edu/
 
- Z, (X<->Y), eqOrIn(X,Z)    |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:Analogy, Goal:Strong)
- Z, (--X<->Y), eqOrIn(X,Z)  |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:AnalogyN, Goal:StrongN)
- X, (X<->Y)                 |- (--,Y), (Goal:WeakPN)
- X, (--X<->Y)               |- (--,Y), (Goal:WeakNN)
+ Z, (X<->Y), eqOrIn(X,Z)    |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:Analogy, Goal:Induction)
+ Z, (--X<->Y), eqOrIn(X,Z)  |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:AnalogyN, Goal:InductionN)
+ //X, (X<->Y)                 |- (--,Y), (Goal:WeakPN)
+ //X, (--X<->Y)               |- (--,Y), (Goal:WeakNN)
 
  //suspect:
 // Z, (X<->Y), eqOrIn(X,Z), belief(negative)   |- (--, subIfUnifiesAny(Z, X, Y, strict, force)), (Belief:AnalogyPN, Goal:WeakPN)

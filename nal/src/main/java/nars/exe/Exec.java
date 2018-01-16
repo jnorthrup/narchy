@@ -1,6 +1,5 @@
 package nars.exe;
 
-import jcog.Util;
 import jcog.event.On;
 import jcog.list.FasterList;
 import nars.NAR;
@@ -60,7 +59,7 @@ abstract public class Exec implements Executor {
             else
                 throw new UnsupportedOperationException(t + " unexecutable");
         } catch (Throwable e) {
-            logger.error("{} {}", t, e);
+            logger.error("{} {}", t, Param.DEBUG ? e : e.getMessage());
         }
 
     }
@@ -118,14 +117,6 @@ abstract public class Exec implements Executor {
         out.println(this);
     }
 
-
-    public float load() {
-        if (nar.loop.isRunning()) {
-            return Util.unitize(nar.loop.lag());
-        } else {
-            return 0;
-        }
-    }
 
 
     abstract public void activate(Concept c, float activationApplied);

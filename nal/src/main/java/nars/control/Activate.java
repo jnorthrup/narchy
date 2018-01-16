@@ -1,29 +1,17 @@
 package nars.control;
 
 import jcog.bag.Bag;
-import jcog.decide.Roulette;
-import jcog.list.FasterList;
 import jcog.pri.PLink;
 import jcog.pri.Pri;
 import jcog.pri.PriReference;
-import jcog.pri.op.PriForget;
-import nars.$;
 import nars.NAR;
-import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
-import nars.link.TaskLinkCurveBag;
-import nars.link.Tasklinks;
 import nars.link.TermLinks;
 import nars.term.Term;
 import nars.term.Termed;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 

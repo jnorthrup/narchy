@@ -1,15 +1,12 @@
 package nars.index.term;
 
 import nars.NAR;
-import nars.Op;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.concept.builder.ConceptBuilder;
 import nars.concept.builder.DefaultConceptBuilder;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.transform.CompoundTransform;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

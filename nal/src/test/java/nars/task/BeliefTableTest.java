@@ -1,6 +1,5 @@
 package nars.task;
 
-import com.google.common.collect.Lists;
 import nars.*;
 import nars.concept.TaskConcept;
 import nars.concept.dynamic.DynamicBeliefTable;

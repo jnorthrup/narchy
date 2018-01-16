@@ -2,13 +2,8 @@ package nars.derive.constraint;
 
 import nars.$;
 import nars.Op;
-import nars.control.Derivation;
 import nars.term.Term;
-import nars.term.anon.Anom;
-import nars.term.anon.Anon;
 import nars.term.subst.Unify;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 
 public class OpIs extends MatchConstraint {

@@ -53,12 +53,12 @@ public abstract class UnitCompound implements Compound {
     @Override
     public final boolean equals(@Nullable Object that) {
         if (this == that) return true;
-        if (!(that instanceof Term) || hashCode() != that.hashCode())
-            return false;
-        return ((Term)that).subs()==1 && opX()== ((Term)that).opX() && sub().equals(((Term)that).sub(0)); //elides dt() comparison
+        if (that instanceof Term) {
+            Term x = (Term) that;
+            return x.subs() == 1 && hashCode() == that.hashCode() && opX() == x.opX() && sub().equals(x.sub(0));
+        }
+        return false;
     }
-
-
 
     @Override
     public void recurseTerms(/*@NotNull*/ Consumer<Term> v) {
@@ -68,7 +68,7 @@ public abstract class UnitCompound implements Compound {
 
     @Override
     public boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
-        if (inSubtermsOf.test(this)) {
+        if (!impossibleSubTerm(t) && inSubtermsOf.test(this)) {
             Term sub = sub();
             if (sub.equals(t) || sub.containsRecursively(t, root, inSubtermsOf))
                 return true;
@@ -79,22 +79,14 @@ public abstract class UnitCompound implements Compound {
 
     @Override
     public Term dt(int nextDT) {
-        switch (nextDT) {
-            case DTERNAL:
-//            case XTERNAL:
-//            case 0:
-                return this;
-        }
-        throw new UnsupportedOperationException();
+        if (nextDT!=DTERNAL) throw new UnsupportedOperationException();
+        return this;
     }
 
 
     @Override
     public Subterms subterms() {
-
         return new UnitSubterm(sub());
-        //return new TermVector1(sub, this);
-
     }
 
     @Override

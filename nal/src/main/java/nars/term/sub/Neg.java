@@ -6,7 +6,7 @@ import nars.term.compound.UnitCompound;
 
 import static nars.Op.NEG;
 
-public class Neg extends UnitCompound {
+public final class Neg extends UnitCompound {
 
     private final Term sub;
 

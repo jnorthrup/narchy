@@ -8,15 +8,12 @@ import nars.control.Derivation;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
 import nars.task.NALTask;
-import nars.task.TimeFusion;
 import nars.term.Term;
 import nars.term.pred.AbstractPred;
 import nars.truth.Truth;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.function.BiFunction;
 
 import static nars.Param.FILTER_SIMILAR_DERIVATIONS;
 

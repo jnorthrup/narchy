@@ -1,6 +1,5 @@
 package nars;
 
-import jcog.constraint.continuous.DoubleVar;
 import jcog.exe.Loop;
 import jcog.math.FloatParam;
 import org.jetbrains.annotations.NotNull;
@@ -27,14 +26,6 @@ public class NARLoop extends Loop {
         nar = n;
     }
 
-    /**
-     * @param n
-     * @param initialPeriod
-     */
-    public NARLoop(@NotNull NAR n, int initialPeriod) {
-        this(n);
-        setPeriodMS(initialPeriod);
-    }
 
     @Override
     public final boolean next() {

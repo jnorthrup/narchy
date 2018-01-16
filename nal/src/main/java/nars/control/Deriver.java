@@ -3,6 +3,7 @@ package nars.control;
 import jcog.Util;
 import jcog.memoize.HijackMemoize;
 import jcog.memoize.Memoize;
+import jcog.pri.Pri;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import jcog.sort.TopNUnique;
@@ -17,7 +18,6 @@ import nars.derive.rule.PremiseRuleSet;
 import nars.exe.Causable;
 import nars.index.term.PatternIndex;
 import nars.term.Term;
-import org.eclipse.collections.api.block.function.primitive.LongObjectToLongFunction;
 
 import java.io.PrintStream;
 import java.util.function.Consumer;
@@ -42,14 +42,14 @@ public class Deriver extends Causable {
     /**
      * how many premises to generate per concept in pre-derivation
      */
-    int HypotheticalPremisePerConcept = 4;
+    int HypotheticalPremisePerConcept = 5;
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
      */
-    int premisesPerConcept = 2;
+    int premisesPerConcept = 3;
 
-    int burstMax = 16;
+    int burstMax = 8;
 
     /**
      * TODO move this to a 'CachingDeriver' subclass
@@ -57,6 +57,8 @@ public class Deriver extends Causable {
     public final Memoize<ProtoDerivation.PremiseKey, int[]> whats =
             new HijackMemoize<>(ProtoDerivation.PremiseKey::solve,
                     32 * 1024, 3, false);
+    private long now;
+    private int conceptsPerIteration = 1;
 
 
     public static Function<NAR, Deriver> deriver(Function<NAR, PremiseRuleSet> rules) {
@@ -101,29 +103,32 @@ public class Deriver extends Causable {
         nar.on(this);
     }
 
+
     @Override
-    protected int next(NAR n, final int toFire) {
+    protected int next(NAR n, final int iterations) {
 
         Derivation d = derivation.get().cycle(n, deriver);
 
         int matchTTL = Param.TTL_PREMISE_MIN * 4;
 //        int ttlMin = nar1.matchTTLmin.intValue();
-        int ttlMax = n.matchTTLmax.intValue();
+        int deriveTTL = n.matchTTLmean.intValue();
 
 
-//        int premisesRemain[] = new int[]{work};
         TopNUniquePremises premises = new TopNUniquePremises();
 
-        int ammo = toFire;
+        int ammo = iterations * conceptsPerIteration;
         final int[] fired = {0};
         while (ammo > 0) {
 
-            //hard limit on # of concepts processed. since usually there will be >1 premises per concept, this will normally not be exhausted
-            int burst[] = new int[]{ Math.min(burstMax, ammo) };
-            ammo -= burst[0];
+            int burstSize = Math.min(burstMax, ammo);
+            ammo -= burstSize;
 
-            premises.clear(burst[0] * premisesPerConcept, Premise[]::new);
+            int burst[] = new int[]{burstSize};
 
+            int premiseLimit = burstSize * premisesPerConcept;
+            premises.clear(premiseLimit, Premise[]::new);
+
+            //fire a burst of concepts to generate hypothetica premises.  collect a fraction of these (ex: 50%), ranked by priority
             concepts.accept(a -> {
                 fired[0]++;
                 premises.setTTL(HypotheticalPremisePerConcept);
@@ -131,38 +136,37 @@ public class Deriver extends Causable {
                 return (--burst[0]) > 0;
             });
 
+            int ps = premises.size();
 
-            LongObjectToLongFunction<Task> m = (now, t) -> matchTime(t, now);
+            int totalTTL = deriveTTL * ps;
+            Premise[] pp = premises.list;
+            float totalPremiesPri = Math.max(Pri.EPSILON, Util.sum(ps, (p)->pp[p].pri()));
 
-            premises.forEach(premise -> {
+            this.now = nar.time();
 
-                if (premise.match(d, m, matchTTL) != null) {
+            //derive the premises
+            for (Premise premise : pp) {
+
+                if (premise == null) break; //end
+
+                if (premise.match(d, this::matchTime, matchTTL) != null) {
 
                     boolean derivable = proto(d);
                     if (derivable) {
+                        //specific ttl as fraction of the total TTL allocated to the burst, proportional to its priority contribution
+                        int ttl = Math.round(Util.lerp(
+                                premise.priElseZero()/totalPremiesPri, Param.TTL_PREMISE_MIN, totalTTL));
 
-                        //                    float strength =
-                        //                            premise.task().priElseZero() * nar.amp(d._task); //absolute task * absolute concept
-
-                        //p.task.priElseZero()                                 //absolute
-                        //p.task.priElseZero() / nar.priDefault(p.task.punc()) //relative
-
-                        int deriveTTL =
-                                ttlMax;
-                        //Util.lerp(premise.priElseZero(), ttlMin, ttlMax);
-
-                        derive(d, deriveTTL);
+                        derive(d, ttl);
                     }
 
                     //System.err.println(derivable + " " + premise.taskLink.get() + "\t" + premise.termLink + "\t" + d.can + " ..+" + d.derivations.size());
-
-
                 }
-            });
+            }
 
-
-            int derived = d.commit(n::input);
         }
+
+        int derived = d.commit(n::input);
 
         return fired[0];
     }
@@ -195,7 +199,7 @@ public class Deriver extends Causable {
         return Util.sum(Cause::value, subCauses);
     }
 
-    protected long matchTime(Task task, long now) {
+    protected long matchTime(Task task) {
         assert (now != ETERNAL);
 
         if (task.isEternal()) {
