@@ -48,7 +48,7 @@ abstract public class Exec implements Executor {
         executeInline(t);
     }
 
-    protected void executeInline(Object t) {
+    protected final void executeInline(Object t) {
         try {
             if (t instanceof ITask) {
                 ITask x = (ITask) t;

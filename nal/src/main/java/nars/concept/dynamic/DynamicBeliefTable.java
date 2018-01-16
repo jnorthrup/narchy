@@ -44,23 +44,25 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
     @Override
     public boolean add(Task input, TaskConcept concept, NAR nar) {
 
-        if (!input.isInput()) {
+        if (Param.FILTER_DYNAMIC_MATCHES) {
+            if (!input.isInput()) {
 
-            long start, end;
-            Task matched = match(start = input.start(), end = input.end(), input.term(), nar);
+                long start, end;
+                Task matched = match(start = input.start(), end = input.end(), input.term(), nar);
 
-            //must be _during_ the same time and same term, same stamp, then compare Truth
-            if (matched != null) {
+                //must be _during_ the same time and same term, same stamp, then compare Truth
+                if (matched != null) {
 
-                if ((matched.start() <= input.start() && matched.end() >= input.end()) &&
-                        matched.term().equals(input.term()) &&
-                        Arrays.equals(matched.stamp(), input.stamp())) {
+                    if ((matched.start() <= input.start() && matched.end() >= input.end()) &&
+                            matched.term().equals(input.term()) &&
+                            Arrays.equals(matched.stamp(), input.stamp())) {
 
-                    if (PredictionFeedback.absorb(matched, input, start, end, nar)) {
-                        Tasklinks.linkTask(matched, matched.priElseZero(), concept, nar);
-                        return false;
+                        if (PredictionFeedback.absorb(matched, input, start, end, nar)) {
+                            Tasklinks.linkTask(matched, matched.priElseZero(), concept, nar);
+                            return false;
+                        }
+
                     }
-
                 }
             }
         }

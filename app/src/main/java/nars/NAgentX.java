@@ -165,7 +165,7 @@ abstract public class NAgentX extends NAgent {
 //                        //CoolNQuiet
 //                        (512, THREADS, 64, false))
                 .exe(new PoolMultiExec(
-                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)), 256, 512)
+                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)), 512, 128)
                 )
 
                 .time(clock)
@@ -177,8 +177,8 @@ abstract public class NAgentX extends NAgent {
                 //.deriverAdd("list.nal")
                 .index(
                         new CaffeineIndex(
-                                200 * 1024
-                                //100 * 1024
+                                //200 * 1024
+                                100 * 1024
                                 //50 * 1024
                                 //20 * 1024
                         )

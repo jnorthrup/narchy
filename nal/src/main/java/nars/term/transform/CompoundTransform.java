@@ -12,6 +12,8 @@ import nars.term.sub.Subterms;
 import nars.term.var.NormalizedVariable;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+
 import static nars.Op.VAR_QUERY;
 
 /**
@@ -33,7 +35,19 @@ public interface CompoundTransform extends TermContext {
         if (yy == null) {
             return null;
         } else if (yy != xx || op != x.op()) {
-            return the(op, dt, yy);
+
+
+            Term z = the(op, dt, yy);
+
+//            if (op==x.op() && Arrays.equals(xx.arrayShared(),z.subterms().arrayShared())) {
+//                System.err.println("duplicated unnecessarily? ");
+//            }
+
+//            //seems to happen very infrequently so probably not worth the test
+            if (x!=z && x.equals(z))
+                return x; //unchanged
+
+            return z;
         } else {
             return x.dt(dt);
         }
@@ -81,7 +95,14 @@ public interface CompoundTransform extends TermContext {
 
             } else {
 
-                if (xi != yi && (yi.getClass() != xi.getClass() || !xi.equals(yi))) {
+                if (xi != yi /*&& (yi.getClass() != xi.getClass() || !xi.equals(yi))*/) {
+
+//                    if (xi.equals(yi)) {
+//                        System.err.println("duplicated unnecessarily? ");
+//                        xi.printRecursive();
+//                        yi.printRecursive();
+//                        System.out.println();
+//                    }
 
                     if (Term.invalidBoolSubterm(yi, boolFilter)) {
                         return null;
@@ -106,6 +127,7 @@ public interface CompoundTransform extends TermContext {
 
     default Term the(Op op, int dt, Subterms t) {
         return op.the(dt, t.arrayShared());
+        //return op._the(dt, t.arrayShared(), false); //disable interning of intermediate results
     }
 
     /**

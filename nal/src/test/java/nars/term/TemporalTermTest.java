@@ -21,9 +21,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TemporalTermTest {
 
-    Retemporalize retemporalizeAllToXTERNAL = new Retemporalize.RetemporalizeAll(XTERNAL);
 
-    @NotNull
     final NAR n = NARS.shell();
 
     @Test

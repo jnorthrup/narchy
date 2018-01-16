@@ -40,6 +40,11 @@ public class PreciseTruth implements Truth {
         this.e = e;
     }
 
+    public PreciseTruth(@Nullable Truth truth) {
+        this(truth.freq(), truth.evi(), false);
+        assert(!(truth instanceof PreciseTruth)): "pointless";
+    }
+
     @Override
     public Truth neg() {
         return new PreciseTruth(1f - f, e, false);

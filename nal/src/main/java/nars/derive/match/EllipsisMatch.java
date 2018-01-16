@@ -72,10 +72,6 @@ public class EllipsisMatch extends CachedCompound {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public Term unneg() {
-        throw new UnsupportedOperationException();
-    }
 
     @Override
     public /*@NotNull*/ Term conceptual() {

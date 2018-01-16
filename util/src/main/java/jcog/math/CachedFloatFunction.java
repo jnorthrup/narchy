@@ -1,14 +1,27 @@
 package jcog.math;
 
-import jcog.data.map.SaneObjectFloatHashMap;
+import org.eclipse.collections.api.block.HashingStrategy;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.impl.map.mutable.primitive.ObjectFloatHashMapWithHashingStrategy;
 
-public class CachedFloatFunction<X> extends SaneObjectFloatHashMap<X> implements FloatFunction<X> {
+public class CachedFloatFunction<X> extends ObjectFloatHashMapWithHashingStrategy<X> implements FloatFunction<X> {
+
+    private static final HashingStrategy IDENTITY_STRATEGY = new HashingStrategy() {
+        @Override
+        public int computeHashCode(Object object) {
+            return object.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object object1, Object object2) {
+            return object1 == object2;
+        }
+    };
 
     private final FloatFunction<X> f;
 
-    public CachedFloatFunction(FloatFunction<X> f) {
-        super(16);
+    public CachedFloatFunction(int size, FloatFunction<X> f) {
+        super(IDENTITY_STRATEGY, size);
         this.f = f;
     }
 

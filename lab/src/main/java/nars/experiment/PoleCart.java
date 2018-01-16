@@ -41,6 +41,7 @@ public class PoleCart extends NAgentX {
 
     private final SensorConcept xVel, x;
     private final AtomicBoolean drawFinished = new AtomicBoolean(true);
+    private final SensorConcept dAngVel;
 
     public static void main(String[] arg) {
         runRT((n) -> {
@@ -135,18 +136,22 @@ public class PoleCart extends NAgentX {
 
         //angle
 
-        this.angX = senseNumber($.inh($.p("ang", "x"), id),
+        this.angX = senseNumber($.inh("angX", id),
                 () -> (float) (0.5f + 0.5f * (Math.sin(angle))))
                 .resolution(0.04f);
-        this.angY = senseNumber($.inh($.p("ang", "y"), id),
+        this.angY = senseNumber($.inh("angY", id),
                 () -> (float) (0.5f + 0.5f * (Math.cos(angle))))
                 .resolution(0.04f);
 
         //angular velocity
-        this.angVel = senseNumber($.inh($.p("angVel"), id),
+        this.angVel = senseNumber($.inh("angVel", id),
                 //() -> Util.sigmoid(angleDot / 4f)
                 new FloatPolarNormalized(() -> (float) angleDot)
-        ).resolution(0.1f);
+        ).resolution(0.04f);
+
+        this.dAngVel = senseNumberDifference($.inh("dAngVel", id),
+                ()->(float) angleDot
+        ).resolution(0.04f);
 
         {
             actionBipolar($.inh("move", id), (a) -> {
@@ -185,7 +190,7 @@ public class PoleCart extends NAgentX {
         List<SensorConcept> sensors = List.of(this.x, xVel,
                 angX,
                 angY,
-                angVel);
+                angVel, dAngVel);
 
 
 //        AutoConceptualizer ae = new AutoConceptualizer(sensors, true, 8, nar) {

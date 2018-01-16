@@ -47,7 +47,15 @@ public abstract class Param {
      * min ratio of effective priority to input priority necessary for certain novel-only actions
      */
     public static final float ACTIVATION_THRESHOLD = 0.1f;
+
     public static final boolean ETERNALIZE_EVICTED_TEMPORAL_TASKS = true;
+
+    /** if <1, scale applied to an eternal truth component's evidence when being truthpolated with temporals */
+    public static final float TRUTHPOLATION_ETERNAL_COMPONENT_FACTOR =
+            //1;
+            0.5f;
+
+    public static final boolean FILTER_DYNAMIC_MATCHES = true;
     //    private float minHypoPremisesPerConceptFire = 3;
     //    private float maxHypoPremisesPerConceptFire = 6;
 
@@ -141,7 +149,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmax = new MutableInteger(72);
+    public final MutableInteger matchTTLmax = new MutableInteger(96);
 //    public final MutableInteger matchTTLmin = new MutableInteger(64);
 
     /**
@@ -490,7 +498,7 @@ public abstract class Param {
 
         assert (dur > 0);
 
-        TruthPolation t =
+        TruthPolation.TruthPolationBasic t =
                 //new TruthPolation.TruthPolationBasic(start, end, dur);
                 TruthPolation.TruthPolationBasic.autoRange(start, end, dur, temporals);
         //new TruthPolation.TruthPolationConf(start, end, dur);
@@ -503,11 +511,22 @@ public abstract class Param {
         // Contribution of each task's truth
         // use forEach instance of the iterator(), since HijackBag forEach should be cheaper
         temporals.forEach(t);
+
+        float tempEvi = t.eviSum;
+        boolean someEvi = tempEvi > 0;
         if (topEternal != null) {
-            t.accept(topEternal);
+
+            if (someEvi) {
+                //if non-input eternal is combined with temporals, apply a factor to the eternal
+                float topEternalEvi = topEternal.evi();
+                t.accept(topEternal.freq(), !topEternal.isInput() ? topEternalEvi : Math.min(topEternalEvi, tempEvi*Param.TRUTHPOLATION_ETERNAL_COMPONENT_FACTOR));
+            } else {
+                //the only one; as-is
+                return new PreciseTruth(topEternal.truth());
+            }
         }
 
-        return t.truth();
+        return !someEvi ? null : t.truth();
     }
 
 

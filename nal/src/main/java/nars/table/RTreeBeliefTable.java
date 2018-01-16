@@ -45,11 +45,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     /**
      * max allowed truths to be truthpolated in one test
      */
-    static final int TRUTHPOLATION_LIMIT = 5;
+    static final int TRUTHPOLATION_LIMIT = 4;
 
-    public static final float PRESENT_AND_FUTURE_BOOST = 2f;
+    public static final float PRESENT_AND_FUTURE_BOOST = 1.5f;
 
-    static final int SCAN_DIVISIONS = 5;
+    static final int SCAN_DIVISIONS = 4;
 
     public static final int MIN_TASKS_PER_LEAF = 3;
     public static final int MAX_TASKS_PER_LEAF = 4;
@@ -121,7 +121,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
             FloatFunction<Task> ts = taskStrength(start, end, dur);
             FloatFunction<TaskRegion> strongestTask =
-                    new CachedFloatFunction<>(t -> +ts.floatValueOf((Task) t));
+                    new CachedFloatFunction<>(s, t -> +ts.floatValueOf((Task) t));
 
 
             int maxTruths = TRUTHPOLATION_LIMIT;
@@ -136,6 +136,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             scan(tt, start - dur, end + dur);
 
             if (!tt.isEmpty()) {
+                if (ete!=null) {
+
+                }
                 return Param.truth(ete, start, end, dur, tt);
 //                PreciseTruth pt = Param.truth(null, start, end, dur, tt);
 //                if (pt!=null && (ete == null || (pt.evi() >= ete.evi())))
@@ -177,7 +180,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                         taskStrength(start, end, dur);
 
         FloatFunction<TaskRegion> strongestTask =
-                new CachedFloatFunction<>(t -> +ts.floatValueOf((Task) t));
+                new CachedFloatFunction<>(s, t -> +ts.floatValueOf((Task) t));
 
         int maxTries = (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY));
         ScanFilter tt = new ScanFilter(new TaskRegion[2], strongestTask, maxTries, filter);
@@ -358,8 +361,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     boolean ensureCapacity(Space<TaskRegion> treeRW, @Nullable Task inputRegion, Consumer<Task> added, NAR nar) {
         int cap = this.capacity;
-        int size = treeRW.size();
-        if (size <= cap)
+        int s = treeRW.size();
+        if (s <= cap)
             return true;
 
         //int dur = 1 + (int) (tableDur());
@@ -368,6 +371,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         int perceptDur = nar.dur();
         FloatFunction<Task> taskStrength =
                 new CachedFloatFunction<>(
+                        s,
                         //taskStrength(now-dur/2, now+dur/2, dur);
                         taskStrengthWithFutureBoost(now, PRESENT_AND_FUTURE_BOOST, now, perceptDur)
                 );

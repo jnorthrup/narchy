@@ -35,7 +35,7 @@ public interface TruthPolation extends Consumer<Tasked> {
      * additionally, the variance is weighted by the contributor's confidences
      */
     class TruthPolationBasic implements TruthPolation {
-        float eviSum, wFreqSum;
+        public float eviSum, wFreqSum;
         final long start, end;
         final int dur;
 
@@ -78,16 +78,17 @@ public interface TruthPolation extends Consumer<Tasked> {
         public void accept(Tasked t) {
             Task task = t.task();
             Truth tt = task.truth(start, end, dur, 0);
+
             if (tt != null) {
-                float tw = tt.evi();
-                //if (tw > 0) {
-                eviSum += tw;
-                wFreqSum += tw * tt.freq();
-                //}
+                accept(tt.freq(), tt.evi());
             }
 
         }
 
+        public void accept(float f, float e) {
+            eviSum += e;
+            wFreqSum += e * f;
+        }
 
         @Override
         public PreciseTruth truth() {

@@ -66,12 +66,16 @@ public class FloatNormalized implements FloatSupplier {
 
         updateRange(raw);
 
+        return normalize(raw, min, max);
+    }
+
+    public float normalize(float x, float min, float max) {
         float r = max - min;
         assert(r >= 0);
         if (r <= epsilon)
-            return raw;
+            return x;
         else
-            return (raw - min) / r;
+            return (x - min) / r;
     }
 
     /**

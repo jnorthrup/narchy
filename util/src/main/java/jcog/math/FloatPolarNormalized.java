@@ -24,19 +24,14 @@ public class FloatPolarNormalized extends FloatNormalized {
     @Override
     public float normalize(float raw) {
         if (raw==raw) {
-            float araw = Math.abs(raw);
-            updateRange(araw);
+            updateRange(Math.abs(raw));
             min = 0;
-            return Util.unitize((raw / (max))/2f+0.5f);
+            return normalize(raw, -max, max);
         } else {
             return Float.NaN;
         }
     }
 
-    /** to full unit range */
-    public float normalizePolar(float raw) {
-        return (normalize(raw)-0.5f)*2f;
-    }
 
     public FloatPolarNormalized radius(float radius) {
         this.min = 0;

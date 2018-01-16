@@ -60,6 +60,7 @@ public class Focus extends Flip<Focus.Schedule> {
                     idle(kontinue); //empty batch
                 } else {
                     float[] iterPerSecond = s.supplyPerSecond;
+                    float[] weight= s.weight;
 
                     final int[] safety = {n};
                     Causable[] can = s.can;
@@ -87,6 +88,7 @@ public class Focus extends Flip<Focus.Schedule> {
                         }
 
                         int iters = (int) Math.min(Integer.MAX_VALUE,
+                                //Math.max(1, Math.round(weight[x] * iterPerSecond[x] * nextSubTime)) //weight already influences selection frequency; using it again here curves the result but probably not entirely, just partially
                                 Math.max(1, Math.round(iterPerSecond[x] * nextSubTime))
                         );
 

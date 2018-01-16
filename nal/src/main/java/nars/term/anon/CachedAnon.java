@@ -29,12 +29,13 @@ public class CachedAnon extends Anon {
         }
     }
 
-//    @Override
-//    protected Term putTransformed(Term x) {
-//        Term y = super.putTransformed(x);
-//        if (y instanceof Compound) {
-//            cache.putIfAbsent(y, x);
-//        }
-//        return y;
-//    }
+
+    @Override
+    public Term put(Term x) {
+        Term y = super.put(x);
+        if (y instanceof Compound) {
+            cache.putIfAbsent(y, x);
+        }
+        return y;
+    }
 }

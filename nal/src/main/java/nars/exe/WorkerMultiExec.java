@@ -31,7 +31,7 @@ import java.util.stream.Stream;
 /**
  * multithreaded executor, via a set of deducated worker threads running in special process loops
  */
-public class WorkerMultiExec extends AbstractExec {
+@Deprecated  public class WorkerMultiExec extends AbstractExec {
 
     /**
      * period to sleep while NAR is not looping, but not stopped

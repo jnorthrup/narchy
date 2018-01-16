@@ -75,7 +75,7 @@ public interface ArraySet<X> extends Set<X> {
 
 	default X max(FloatFunction<X> rank) {
 		assert(!isEmpty());
-		return new Top<>(new CachedFloatFunction<>(rank)).of(listIterator()).the;
+		return new Top<>(new CachedFloatFunction<>(size(), rank)).of(listIterator()).the;
 	}
 
 	default X roulette(FloatFunction<X> rank, Random rng) {

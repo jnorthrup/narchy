@@ -131,7 +131,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default Term anon() {
-        return new Anon(volume()).put(this);
+        return new Anon(2).put(this);
     }
 
     @Override
@@ -174,7 +174,7 @@ public interface Compound extends Term, IPair, Subterms {
     /**
      * unification matching entry point (default implementation)
      *
-     * @param y compound to match against (the instance executing this method is considered 'x')
+     * @param ty compound to match against (the instance executing this method is considered 'x')
      * @param u the substitution context holding the match state
      * @return whether match was successful or not, possibly having modified subst regardless
      */
@@ -605,7 +605,7 @@ public interface Compound extends Term, IPair, Subterms {
         /*if (hasAll(opBits))*/
 
 
-        if (remain-- <= 0)
+        if (remain <= 0)
             return Null;
 
 //        Termed ff = context.applyIfPossible(this);
@@ -617,13 +617,14 @@ public interface Compound extends Term, IPair, Subterms {
         Term[] xy = arrayShared();
         //any contained evaluables
         Op o = op();
-        int necessaryBits = o == INH ? Op.funcInnerBits : Op.funcBits;
-        boolean changed = false, recurseIfChanged = false;
+        int possiblyFunctional = o == INH ? Op.funcInnerBits : Op.funcBits;
+        boolean changed = false;
+        //boolean recurseIfChanged = false;
         int ellipsisAdds = 0, ellipsisRemoves = 0;
 
         for (int i = 0, evalSubsLength = xy.length; i < evalSubsLength; i++) {
             Term xi = xy[i];
-            Term yi = xi.evalSafe(context, remain);
+            Term yi = xi.evalSafe(context, remain-1);
             if (yi == null) {
                 return Null;
             } else {
@@ -639,8 +640,8 @@ public interface Compound extends Term, IPair, Subterms {
                         changed = true;
                     }
                     xy[i] = yi;
-                    if (!recurseIfChanged)
-                        recurseIfChanged |= yi.hasAll(necessaryBits);
+//                    if (!recurseIfChanged)
+//                        recurseIfChanged |= yi.hasAll(possiblyFunctional);
                 }
             }
         }
@@ -656,14 +657,14 @@ public interface Compound extends Term, IPair, Subterms {
 
             u = o._the(dt(), xy, false);
 
-            if (recurseIfChanged)
-                return u.evalSafe(context, remain);
+//            if (recurseIfChanged)
+//                return u.evalSafe(context, remain);
         } else {
             u = this;
         }
 
 
-        return /*context.intern*/(Functor.eval(u));
+        return Functor.eval(u);
 
         //it has been changed, so eval recursively until stable
         //return context.intern(subsModified ? op.the(dt(), xy).evalSafe(context, remain) : this);

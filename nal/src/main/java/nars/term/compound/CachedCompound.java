@@ -53,8 +53,8 @@ public class CachedCompound implements Compound {
         this._volume = subterms.volume();
     }
 
-    @Override
-    public Term unneg() {
+    /** since Neg compounds are disallowed for this impl */
+    @Override public final Term unneg() {
         return this;
     }
 
@@ -83,12 +83,6 @@ public class CachedCompound implements Compound {
         return _structure;
     }
 
-    //    @Override
-//    public boolean isDynamic() {
-//        return dynamic;
-//    }
-
-    @NotNull
     @Override
     public final Subterms subterms() {
         return subterms;
@@ -96,7 +90,7 @@ public class CachedCompound implements Compound {
 
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return hash;
     }
 

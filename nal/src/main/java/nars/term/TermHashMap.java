@@ -33,6 +33,8 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     public void clear() {
         if (id != null) id.clear();
+        //id = null;
+
         if (other != null) other.clear();
     }
 

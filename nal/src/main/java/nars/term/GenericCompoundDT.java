@@ -11,11 +11,13 @@ import nars.term.transform.CompoundTransform;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.Predicate;
+
 import static nars.Op.CONJ;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
-public class GenericCompoundDT /*extends ProxyTerm<Compound>*/ implements CompoundDT {
+public class GenericCompoundDT implements CompoundDT {
 
     /**
      * numeric (term or "dt" temporal relation)
@@ -112,7 +114,22 @@ public class GenericCompoundDT /*extends ProxyTerm<Compound>*/ implements Compou
     }
 
     @Override
-    public /*@NotNull*/ Op op() {
+    public boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
+        return ref.containsRecursively(t, root, inSubtermsOf);
+    }
+
+    @Override
+    public boolean containsRecursively(Term t) {
+        return ref.containsRecursively(t);
+    }
+
+    @Override
+    public boolean containsRoot(Term x) {
+        return ref.containsRoot(x);
+    }
+
+    @Override
+    public final Op op() {
         return ref.op();
     }
 
@@ -123,7 +140,7 @@ public class GenericCompoundDT /*extends ProxyTerm<Compound>*/ implements Compou
     }
 
     @Override
-    public int structure() {
+    public final int structure() {
         return ref.structure();
     }
 
@@ -246,22 +263,22 @@ public class GenericCompoundDT /*extends ProxyTerm<Compound>*/ implements Compou
 //    }
 
     @Override
-    public Subterms subterms() {
+    public final Subterms subterms() {
         return ref.subterms();
     }
 
     @Override
-    public int subs() {
+    public final int subs() {
         return ref.subs();
     }
 
     @Override
-    public int volume() {
+    public final int volume() {
         return ref.volume();
     }
 
     @Override
-    public int complexity() {
+    public final int complexity() {
         return ref.complexity();
     }
 

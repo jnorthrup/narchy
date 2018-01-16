@@ -124,6 +124,10 @@ public interface Retemporalize extends CompoundTransform {
 
     default Term transformTemporal(Compound x, int dtNext) {
         Subterms xx = x.subterms();
+
+        if (x.dt() == dtNext && !xx.hasAny(Temporal))
+            return x; //no change
+
         Op op = x.op();
         if (dtNext == XTERNAL && op == CONJ && xx.hasAny(CONJ)) {
             //recursive conj, decompose to events
@@ -143,11 +147,14 @@ public interface Retemporalize extends CompoundTransform {
                         return null; //fail
                     sl.set(i, sli);
                 }
-                return CONJ.the(XTERNAL, sl);//.transform(this);
+                Term y = CONJ.the(XTERNAL, sl);
+                if (x!=y && x.equals(y))
+                    return x;
+                else
+                    return y;
             }
         }
-        if (x.dt() == dtNext && !xx.hasAny(Temporal))
-            return x; //no change
+
 
         return CompoundTransform.super.transform(x, op, dtNext);
     }

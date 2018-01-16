@@ -215,7 +215,7 @@ public class PremiseRule /*extends GenericCompound*/ {
     }
 
     private static final CompoundTransform UppercaseAtomsToPatternVariables = new CompoundTransform() {
-        @Override @NotNull public Termed apply(Term nonCompound) {
+        @Override public Termed apply(Term nonCompound) {
             if (nonCompound instanceof Atom) {
                 if (!PostCondition.reservedMetaInfoCategories.contains(nonCompound)) { //do not alter keywords
                     String name = nonCompound.toString();

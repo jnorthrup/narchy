@@ -28,6 +28,7 @@ import nars.truth.Truth;
 import nars.truth.func.TruthOperator;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.impl.factory.Maps;
+import org.eclipse.collections.impl.map.mutable.primitive.ObjectFloatHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
@@ -183,8 +184,8 @@ public class Derivation extends ProtoDerivation {
         };
 
         anon =
-                //new CachedAnon(16);
-                new Anon(8);
+                new CachedAnon(16);
+                //new Anon(16);
 
         //anon = new Anon();
 //            @Override
@@ -610,6 +611,7 @@ public class Derivation extends ProtoDerivation {
     public Task add(Task t) {
         return derivations.merge(t, t, DUPLICATE_DERIVATION_MERGE);
     }
+
 
     final static BiFunction<Task, Task, Task> DUPLICATE_DERIVATION_MERGE = (pp, tt) -> {
         pp.priMax(tt.pri());
