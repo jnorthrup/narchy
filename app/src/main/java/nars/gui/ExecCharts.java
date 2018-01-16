@@ -121,7 +121,7 @@ public class ExecCharts {
 
                 x.update(s, (x, y)-> {
                     float v = x.value();
-                    y.updateMomentum((float) (x.can.lastIterationTime*1E9),
+                    y.updateMomentum((float) (x.can.write().time.get()/1E6),
                             0.1f, v < 0 ? -v : 0, 0,v > 0 ? +v : 0);
 
                 }, updater);

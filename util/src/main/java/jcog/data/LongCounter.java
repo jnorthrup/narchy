@@ -14,17 +14,17 @@ import static java.util.concurrent.atomic.AtomicLongFieldUpdater.newUpdater;
  *
  * This counter does not provide padding to prevent false sharing.
  */
-public final class MwCounter  {
+public final class LongCounter {
 
-    private static final AtomicLongFieldUpdater<MwCounter> COUNTER = newUpdater(MwCounter.class, "value");
+    private static final AtomicLongFieldUpdater<LongCounter> COUNTER = newUpdater(LongCounter.class, "value");
 
     private volatile long value;
 
-    public MwCounter() {
+    public LongCounter() {
         this(0);
     }
 
-    public MwCounter(long initialValue) {
+    public LongCounter(long initialValue) {
         this.value = initialValue;
     }
 
@@ -42,7 +42,7 @@ public final class MwCounter  {
     }
 
 
-    public long inc(long amount) {
+    public long add(long amount) {
         return COUNTER.addAndGet(this, amount);
     }
 

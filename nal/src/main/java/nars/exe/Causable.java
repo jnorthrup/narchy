@@ -57,23 +57,24 @@ abstract public class Causable extends NARService {
 
     public final int run(NAR n, int iterations) {
 
+        assert(busy==null || !busy.get()): "callee should have ensured this wasnt called while busy";
+
         Throwable error = null;
         int completed = 0;
-        long start = System.nanoTime();
+        long start = System.nanoTime(), end;
 
         try {
             completed = next(n, iterations);
         } catch (Throwable t) {
             error = t;
         } finally {
+            end = System.nanoTime();
             if (busy != null)
                 busy.set(false); //busy is set True in Focus.java
         }
 
-        long end = System.nanoTime();
-
         if (completed >= 0)
-            can.done(completed, (end - start) / 1.0E9);
+            can.add((end - start), completed);
 
         if (error != null) {
             if (Param.DEBUG)
@@ -84,13 +85,6 @@ abstract public class Causable extends NARService {
 
         return completed;
     }
-
-//
-//    protected void learn(long waitNS, float workAllowed, float workDone, long runtimeNS) {
-//        //double cycleTime = runtimeNS + waitNS;
-//        //double dutyCycle = runtimeNS / cycleTime; //estimate
-//        workEstimator.learn(workDone, runtimeNS);
-//    }
 
 
     /**
@@ -104,46 +98,8 @@ abstract public class Causable extends NARService {
     protected abstract int next(NAR n, int iterations);
 
     /**
-     * returns a system estimated value of invoking this. between 0..1.0
+     * returns a system estimated instantaneous-sampled value of invoking this. between 0..1.0
      */
     public abstract float value();
 
-
-//    public final static class InvokeCause extends NativeTask {
-//
-//        public final Causable cause;
-//        public final int iterations;
-//
-//        private InvokeCause(Causable cause, int iterations) {
-//            assert (iterations > 0);
-//            this.cause = cause;
-//            this.iterations = iterations;
-//        }
-//        //TODO deadline? etc
-//
-//        @Override
-//        public String toString() {
-//            return cause + ":" + iterations + "x";
-//        }
-//
-//        @Override
-//        public @Nullable Iterable<? extends ITask> run(NAR n) {
-//            cause.run(n, iterations);
-//            return null;
-//        }
-//    }
-
-//    private static final class MyCan extends Can {
-//
-//        public MyCan(String id) {
-//            super(id);
-//        }
-//
-////        @Override
-////        public void commit() {
-////            int ii = iterations();
-////            if (ii > 0)
-////                nar.exe.add(new InvokeCause(Causable.this, ii));
-////        }
-//    }
 }

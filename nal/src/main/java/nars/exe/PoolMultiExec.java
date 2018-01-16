@@ -155,7 +155,7 @@ public class PoolMultiExec extends AbstractExec {
 
                         final Random rng = new XoRoShiRo128PlusRandom(System.nanoTime());
 
-                        protected double next() {
+                        protected long next() {
 
                             int loopMS = nar.loop.periodMS.intValue();
                             if (loopMS < 0) {
@@ -168,14 +168,7 @@ public class PoolMultiExec extends AbstractExec {
                             //    System.out.println(this + " " + Texts.timeStr(timeSinceLastBusyNS) + " since busy, " + Texts.timeStr(dutyMS*1E6) + " loop time" );
 
                             if (dutyMS > 0) {
-
-                                double t = nar.loop.jiffy.doubleValue() *
-                                        dutyMS / 1000.0;
-                                //Math.min(dutyMS / 1000.0, timeSinceLastBusyNS / 1.0E9);
-
-                                //runUntil = System.currentTimeMillis() + dutyMS;
-
-                                return t;
+                                return Math.round(nar.loop.jiffy.doubleValue() * dutyMS * 1E6);
                             } else {
                                 return 0; //empty batch
                             }
@@ -200,7 +193,7 @@ public class PoolMultiExec extends AbstractExec {
                         @Override
                         public void run() {
 
-                            focus.runDeadline(
+                            focus.run(
                                     this::next,
                                     this::kontinue,
                                     rng, nar);

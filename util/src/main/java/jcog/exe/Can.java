@@ -1,66 +1,65 @@
 package jcog.exe;
 
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import jcog.data.LongCounter;
+import jcog.util.Flip;
+import org.eclipse.collections.api.block.procedure.primitive.LongLongProcedure;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.DoubleAdder;
 
 /**
- * potentially executable procedure of some value N >=1 iterations per invocation
+ * potentially executable procedure of some value N >=1 iterations per invocation.
+ * represents a functional skill or ability the system is able to perform, particularly
+ * once it has learned how, why, and when to invoke it.
  */
-public class Can {
+public class Can extends Flip<Can.WorkPerformance> {
 
-    private final static AtomicInteger ids = new AtomicInteger();
+    private final static AtomicInteger serial = new AtomicInteger();
 
 
-    /**
-     * in seconds
-     */
-    final DoubleAdder iterationTime = new DoubleAdder();
+    public static class WorkPerformance {
+        /** time spent, in nanoseconds */
+        public final LongCounter time = new LongCounter();
 
-    final DoubleAdder supply = new DoubleAdder();
+        /** iterations completed (in the time recorded) */
+        public final LongCounter done = new LongCounter();
 
-    final static int WINDOW = 8;
+        public void add(long timeInc, long done) {
+            time.add(timeInc);
+            this.done.add(done);
+        }
 
-    public final DescriptiveStatistics supplyPerSecond = new DescriptiveStatistics(WINDOW);
-    public double lastIterationTime;
+        public void commit(LongLongProcedure take) {
+            long t = time.getThenZero();
+            long s = done.getThenZero();
+            take.value(t, s);
+        }
 
-    private final String id;
+    }
 
+
+    public final String id;
 
     public Can() {
-        this(String.valueOf(ids.incrementAndGet()));
+        this(String.valueOf(serial.incrementAndGet()));
     }
 
     public Can(String id) {
+        super(WorkPerformance::new);
         this.id = id;
     }
 
 
-    public final void commit(int i, float[] supplyPerSecond) {
-        double s = supply.sumThenReset();
-        double t = Math.max(1E-9, iterationTime.sumThenReset()); //nanosecond resolution min granularity
-        if (s != s) s = 0;
-        if (t != t) t = 0;
-
-        double r = s / t;
-        this.supplyPerSecond.addValue(r);
-
-        double rMean = this.supplyPerSecond.getMean();
-        if (rMean != rMean) rMean = Float.MIN_NORMAL;
-
-
-        this.lastIterationTime = (float) t;
-        supplyPerSecond[i] = (float) rMean;
+    /** receives pair of long's: time (ns) and iterations completed in that time */
+    public final void commit(LongLongProcedure take) {
+        commit().commit(take);
     }
 
 
     /**
      * totalTime in sec
      */
-    public void done(int supplied, double totalTimeSec) {
-        supply.add(supplied);
-        iterationTime.add(totalTimeSec);
+    public void add(long totalTimeNS, int done) {
+        write().add(totalTimeNS, done);
     }
 
     @Override

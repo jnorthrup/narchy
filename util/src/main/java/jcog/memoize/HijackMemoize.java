@@ -4,7 +4,7 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.bag.impl.HijackBag;
 import jcog.bag.impl.hijack.PriorityHijackBag;
-import jcog.data.MwCounter;
+import jcog.data.LongCounter;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.pri.PLink;
 import jcog.pri.Prioritized;
@@ -161,11 +161,11 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
 
     final Function<X, Y> func;
 
-    final MwCounter
-            hit = new MwCounter(),  //existing item retrieved
-            miss = new MwCounter(),  //a new item inserted that has not existed
-            reject = new MwCounter(), //item prevented from insertion by existing items
-            evict = new MwCounter(); //removal of existing item on insertion of new item
+    final LongCounter
+            hit = new LongCounter(),  //existing item retrieved
+            miss = new LongCounter(),  //a new item inserted that has not existed
+            reject = new LongCounter(), //item prevented from insertion by existing items
+            evict = new LongCounter(); //removal of existing item on insertion of new item
 
 
     //hit + miss + reject = total insertions

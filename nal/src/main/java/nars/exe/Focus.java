@@ -16,14 +16,14 @@ import nars.control.Cause;
 import nars.control.MetaGoal;
 import nars.control.Traffic;
 import org.apache.commons.lang3.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+import org.eclipse.collections.api.block.procedure.primitive.LongLongProcedure;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
 import java.util.function.IntPredicate;
+import java.util.function.LongSupplier;
 import java.util.stream.IntStream;
 
 import static jcog.Texts.n2;
@@ -36,18 +36,27 @@ import static nars.time.Tense.ETERNAL;
  */
 public class Focus extends Flip<Focus.Schedule> {
 
-    final static Logger logger = LoggerFactory.getLogger(Focus.class);
+    //final static Logger logger = LoggerFactory.getLogger(Focus.class);
 
     public final Exec.Revaluator revaluator;
 
     private final FastCoWList<Causable> can;
 
-    public void runDeadline(DoubleSupplier startBatch, BooleanSupplier kontinue, Random rng, NAR nar) {
+    /**
+     *
+     * @param startBatch - supplies the max amount of nanoseconds an execution can be calculated to
+     *                   expect to run for, determining the temporal granularity of the scheduling
+     *
+     * @param kontinue
+     * @param rng
+     * @param nar
+     */
+    public void run(LongSupplier startBatch, BooleanSupplier kontinue, Random rng, NAR nar) {
 
-        double subTime;
-        while ((subTime = startBatch.getAsDouble()) >= 0) {
+        long maxExeTimeNS = 0;
+        while ((maxExeTimeNS = startBatch.getAsLong()) >= 0) {
 
-            if (subTime < 1E-9) {
+            if (maxExeTimeNS <= 0) {
                 idle(kontinue); //empty batch
             } else {
 
@@ -58,15 +67,15 @@ public class Focus extends Flip<Focus.Schedule> {
                 if (n == 0) {
                     idle(kontinue); //empty batch
                 } else {
-                    float[] iterPerSecond = s.supplyPerSecond;
-                    float[] weight= s.weight;
+//                    float[] iterPerSecond = s.time;
+//                    float[] weight= s.weight;
 
                     final int[] safety = {n};
                     Causable[] can = s.can;
 
                     MetalBitSet active = s.active;
 
-                    double nextSubTime = subTime;
+                    long rt = maxExeTimeNS;
 
                     int iterAtStart = intValue();
                     Roulette.decideRouletteWhile(n, c -> sw[c], rng, (IntPredicate) x -> {
@@ -86,16 +95,27 @@ public class Focus extends Flip<Focus.Schedule> {
                             }
                         }
 
-                        int iters = (int) Math.min(Integer.MAX_VALUE,
-                                //Math.max(1, Math.round(weight[x] * iterPerSecond[x] * nextSubTime)) //weight already influences selection frequency; using it again here curves the result but probably not entirely, just partially
-                                Math.max(1, Math.round(iterPerSecond[x] * nextSubTime))
-                        );
+
+                        int itersNext = 1;
+                        double itersPrev = s.doneMean[x];
+
+                        final double ITER_EPSILON = 0.001;
+                        if (itersPrev == itersPrev && itersPrev > ITER_EPSILON) {
+
+                            double timeNS = s.timeMean[x];
+                            if (timeNS == timeNS && timeNS > 0) {
+                                itersNext = (int) Math.max(1,
+                                     Math.round(itersPrev * rt/timeNS )
+                                );
+                            }
+
+                        }
 
                         //System.out.println(cx + " x " + iters + " @ " + n4(iterPerSecond[x]) + "iter/sec in " + Texts.timeStr(subTime*1E9));
 
                         int completed = -1;
                         try {
-                            completed = cx.run(nar, iters);
+                            completed = cx.run(nar, itersNext);
                         } finally {
                             if (cb != null) {
                                 cb.set(false); //release
@@ -127,20 +147,38 @@ public class Focus extends Flip<Focus.Schedule> {
 
 
     public static class Schedule {
-        //public float[] time = ArrayUtils.EMPTY_FLOAT_ARRAY;
-        //public float[] supplied = ArrayUtils.EMPTY_FLOAT_ARRAY;
+
+        /** value samples */
         public float[] value= ArrayUtils.EMPTY_FLOAT_ARRAY;
+
+        /** essentially the normalized value. directly determines the frequency
+         *  of an entry being sampled by the scheduler, but does not determine
+         *  its rqeuested iteration allocated if selected - instead,
+         *  iter, time, and jiffy does.
+         * */
         public float[] weight = ArrayUtils.EMPTY_FLOAT_ARRAY;
-        public float[] supplyPerSecond = ArrayUtils.EMPTY_FLOAT_ARRAY;
+
+        /** short history of time (in nanoseconds) spent */
+        public DescriptiveStatistics[] time = null;
+
+        /** short history of iter spent in the corresponding times */
+        public DescriptiveStatistics[] done = null;
+
+        /** cache for iter.getMean() and time.getMean() */
+        public double[] doneMean = null;
+        public double[] timeMean = null;
+
+        final static int WINDOW = 4;
 
         final MetalBitSet active = new MetalBitSet.VolatileIntBitSet();
 
-        /**
-         * probability of selecting each can (roulette weight), updated each cycle
-         */
-
         public Causable[] can = new Causable[0];
 
+        private final long[] committed = new long[2];
+        private final LongLongProcedure commiter = (timeNS, iter) -> {
+            committed[0] = timeNS;
+            committed[1] = iter;
+        };
 
         @Override
         public String toString() {
@@ -151,22 +189,6 @@ public class Focus extends Flip<Focus.Schedule> {
             ).iterator());
         }
 
-//        private float weight(Causable c, float time) {
-//            //final float MAX = canWeights.length * 2;
-//            //double supply = c.can.supply();
-//            //float iterationTimeMean = c.can.iterationTimeMean();
-//            //float den = (float) supply * iterationTimeMean;
-//
-//
-//            float v = c.value() / time;
-//            return v;
-//
-////            final float TEMPERATURE = 1;
-////            float x = (float) Math.exp(v * TEMPERATURE);
-////            assert (Float.isFinite(x));
-////            return x;
-////            }
-//        }
 
         public void update(FastCoWList<Causable> cans) {
             final Causable[] can = this.can = cans.copy;
@@ -174,10 +196,20 @@ public class Focus extends Flip<Focus.Schedule> {
                 return;
             int n = can.length;
             if (value.length != n) {
-                //realloc
+
                 value = new float[n];
-                supplyPerSecond = new float[n];
+
                 weight = new float[n];
+
+                time = new DescriptiveStatistics[n];
+                timeMean = new double[n];
+                done = new DescriptiveStatistics[n];
+                doneMean = new double[n];
+
+                for (int i = 0; i < n; i++) {
+                    time[i] = new DescriptiveStatistics(WINDOW);
+                    done[i] = new DescriptiveStatistics(WINDOW);
+                }
 
                 assert (n < 32) : "TODO make atomic n>32 bitset";
                 this.active //= MetalBitSet.bits(n);
@@ -186,51 +218,32 @@ public class Focus extends Flip<Focus.Schedule> {
 
             active.setAll();
 
+
             for (int i = 0; i < n; i++) {
                 Causable c = cans.get(i);
-                c.can.commit(i, supplyPerSecond);
+
+                c.can.commit(commiter);
+
+                long timeNS = committed[0];
+                if (timeNS > 0) {
+                    DescriptiveStatistics t = this.time[i];
+                    t.addValue(timeNS);
+                    this.timeMean[i] = t.getMean();
+                    DescriptiveStatistics d = this.done[i];
+                    d.addValue(committed[1]);
+                    this.doneMean[i] = d.getMean();
+                }
+
                 value[i] = c.value();
-                weight[i] = value[i]; // * supplyPerSecond[i];
+                weight[i] = value[i]; //pre-normalized value
             }
 
-//                float margin = 1f / n;
-
-//                if (timeNormalized.length!=n)
-//                    timeNormalized = new float[n];
-
-//            float timeMax = 0;
-//            for (float i : time) {
-//                if (i > Float.MIN_NORMAL) {
-//                    if (i > timeMax)
-//                        timeMax = i;
-//                }
-//            }
-//
-//            if (timeMax < Float.MIN_NORMAL)
-//                timeMax = 1f; //artificial
-
-//            for (int i = 0; i < n; i++) {
-//                float ii = time[i];
-//                if (ii < Float.MIN_NORMAL) {
-//                    time[i] = timeMax;
-//                }
-//            }
-
-//                if (iters < 2) {
-//                    Arrays.fill(timeNormalized, 1f); //all the same
-//                } else {
-//                    float mean = iterSum/iters;
-//                    for (int i = 0; i < n; i++) {
-//                        timeNormalized[i] = normalize( normalize(time[i],
-//                                0, timeMax), 0 - margin, +1f + margin);
-//                    }
-//                }
-
-
+            //weight[] = normalize(value[]) , with margin so the minimum value is non-zero some marginal amoutn (Margin-Max)
             float[] minmax = Util.minmax(weight);
             float lowMargin = (minmax[1] - minmax[0]) / n;
             for (int i = 0; i < n; i++)
                 weight[i] = normalize(weight[i], minmax[0] - lowMargin, minmax[1]);
+
         }
     }
 
