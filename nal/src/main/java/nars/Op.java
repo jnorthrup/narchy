@@ -6,6 +6,7 @@ import jcog.data.bit.MetalBitSet;
 import jcog.list.FasterList;
 import jcog.memoize.HijackMemoize;
 import jcog.memoize.Memoize;
+import nars.derive.PatternCompound;
 import nars.derive.match.EllipsisMatch;
 import nars.derive.match.Ellipsislike;
 import nars.op.mental.AliasConcept;
@@ -60,9 +61,24 @@ public enum Op {
 
     NEG("--", 1, Args.One) {
         @Override
+        public Term the(int dt, Term[] u, boolean intern) {
+            return __the(dt, u);
+        }
+
+        @Override
+        public Term the(int dt, Term... u) {
+            return __the(dt, u);
+        }
+
+        @Override
         public Term __the(int dt, Term[] u) {
             assert (u.length == 1); //assert (dt == DTERNAL || dt == XTERNAL);
             return Neg.the(u[0]);
+        }
+
+        @Override
+        protected boolean internable(int dt, Term[] u) {
+            return false;
         }
     },
 
@@ -1926,12 +1942,31 @@ public enum Op {
         if (sub == null)
             return Null;
         int s = sub.size();
-        return _the(dt, commute(dt, s) ? sorted(sub) : sub.toArray(new Term[s]));
+        return the(dt, sub.toArray(new Term[s]));
     }
 
     /*@NotNull*/
     public Term the(int dt, Term... u) {
-        return _the(dt, commute(dt, u.length) ? sorted(u) : u);
+        return _the(dt, commute(dt, u.length) ? sorted(u) : u, true);
+    }
+
+    public Term the(int dt, Term[] u, boolean intern) {
+        return _the(dt, commute(dt, u.length) ? sorted(u) : u, intern);
+    }
+
+    protected boolean internable(int dt, Term[] u) {
+        if (dt!=DTERNAL)
+            return false;
+
+        boolean cache = true;
+        for (Term x : u) {
+            if (x instanceof PatternCompound || x instanceof UnnormalizedVariable) {
+                //HACK caching these interferes with unification.  instead fix unification then allow caching of these
+                cache = false;
+                break;
+            }
+        }
+        return cache;
     }
 
     final static Memoize<IntArrayPair<Term>, Term> preCompoundCached =
@@ -1941,8 +1976,8 @@ public enum Op {
                     }, 128 * 1024
                     , 4, false);
 
-    protected final Term _the(int dt, Term[] u) {
-        if (dt == DTERNAL && The.cacheable(u)) {
+    public final Term _the(int dt, Term[] u, boolean intern) {
+        if (intern && internable(dt,u)) {
             return preCompoundCached.apply(new IntArrayPair<>(ordinal(), u));
         } else {
             //TODO cache temporals
@@ -2196,9 +2231,7 @@ public enum Op {
 //                }
 
 
-            return (/*dtChange || */!Arrays.equals(scs, u)) ?
-                    CONJ.the(dt, scs) : //changed, recurse
-                    compound(CONJ, dt, scs);
+            return (Arrays.equals(scs, u)) ? compound(CONJ, dt, scs) : CONJ.the(dt, scs);
         }
 
         return Null;

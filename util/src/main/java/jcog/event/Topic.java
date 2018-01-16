@@ -131,6 +131,8 @@ public interface Topic<V> {
 
     void emitAsync(V inputted, Executor e);
 
+    void emitAsyncAndWait(V inputted, Executor e) throws InterruptedException;
+
 //    String name();
 
 

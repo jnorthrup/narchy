@@ -34,15 +34,15 @@ public interface Subst extends CompoundTransform {
     void clear();
 
     @Override
-    default @Nullable Termed apply(Term x) {
-        if (x instanceof Bool)//assert (!(x instanceof Bool));
-            return x;
+    default @Nullable Termed apply(Term nonCompound) {
+        if (nonCompound instanceof Bool)//assert (!(x instanceof Bool));
+            return nonCompound;
 
-        Term y = xy(x);
+        Term y = xy(nonCompound);
         if (y != null) {
             return y; //an assigned substitution, whether a variable or other type of term
         } else {
-            return x;
+            return nonCompound;
         }
     }
 

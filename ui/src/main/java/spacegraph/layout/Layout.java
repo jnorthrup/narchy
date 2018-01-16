@@ -98,57 +98,61 @@ abstract public class Layout extends Surface {
 
         //2. test children reaction
 
+        if (childrenCount() > 0) {
 
-        // Draw forward, propagate touch events backwards
-        if (hitPoint == null) {
-            forEach(c -> c.onTouch(finger, null, null));
-            return null;
-        } else {
+            // Draw forward, propagate touch events backwards
+            if (hitPoint == null) {
+                forEach(c -> c.onTouch(finger, null, null));
+                return null;
+            } else {
 
-            //HACK
-            final Surface[] found = {null};
-            float fx = finger.hit.x;
-            float fy = finger.hit.y;
-            forEach(c -> {
+                //HACK
+                final Surface[] found = {null};
+                float fx = finger.hit.x;
+                float fy = finger.hit.y;
+                forEach(c -> {
 
-                if (found[0] != null) //TODO use whileEach() with a predicate for fast terminate
-                    return;
+                    if (found[0] != null) //TODO use whileEach() with a predicate for fast terminate
+                        return;
 
-                //TODO factor in the scale if different from 1
+                    //TODO factor in the scale if different from 1
 
-//                if (/*csx != csx || */csx <= 0 || /*csy != csy ||*/ csy <= 0)
-//                    return;
+                    //                if (/*csx != csx || */csx <= 0 || /*csy != csy ||*/ csy <= 0)
+                    //                    return;
 
-                //project to child's space
+                    //project to child's space
 
-                //subHit.sub(tx, ty);
+                    //subHit.sub(tx, ty);
 
-//                float hx = relativeHit.x, hy = relativeHit.y;
+                    //                float hx = relativeHit.x, hy = relativeHit.y;
 
-                if (!clipTouchBounds || (
-                        fx >= c.bounds.min.x && fx <= c.bounds.max.x && fy >= c.bounds.min.y && fy <= c.bounds.max.y)) {
+                    if (!clipTouchBounds || (
+                            fx >= c.bounds.min.x && fx <= c.bounds.max.x && fy >= c.bounds.min.y && fy <= c.bounds.max.y)) {
 
-                    v2 relativeHit = new v2(finger.hit);
-                    relativeHit.sub(c.x(), c.y());
-                    float csx = c.w();
-                    float csy = c.h();
-                    relativeHit.scale(1f / csx, 1f / csy);
+                        v2 relativeHit = new v2(finger.hit);
+                        relativeHit.sub(c.x(), c.y());
+                        float csx = c.w();
+                        float csy = c.h();
+                        relativeHit.scale(1f / csx, 1f / csy);
 
-                    Surface s = c.onTouch(finger, relativeHit, buttons);
-                    if (s != null) {
-                        if (found[0] == null || found[0].bounds.cost() > s.bounds.cost())
-                            found[0] = s; //FIFO
+                        Surface s = c.onTouch(finger, relativeHit, buttons);
+                        if (s != null) {
+                            if (found[0] == null || found[0].bounds.cost() > s.bounds.cost())
+                                found[0] = s; //FIFO
+                        }
                     }
-                }
 
-            });
+                });
 
-            if ((found[0]) != null)
-                return found[0];
+                if ((found[0]) != null)
+                    return found[0];
+            }
         }
 
         return tangible() ? this : null;
     }
+
+    abstract public int childrenCount();
 
     public boolean tangible() {
         return false;

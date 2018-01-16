@@ -21,6 +21,11 @@ public class Scale extends Layout {
         return this;
     }
 
+    @Override
+    public int childrenCount() {
+        return 1;
+    }
+
     public float scale() {
         return scale;
     }

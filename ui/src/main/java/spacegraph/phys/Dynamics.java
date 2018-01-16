@@ -169,7 +169,7 @@ public class Dynamics<X> extends Collisions<X> {
 
     }
 
-    synchronized int update(float timeStep, int maxSubSteps, float fixedTimeStep) {
+    private int update(float timeStep, int maxSubSteps, float fixedTimeStep) {
         curDT = timeStep;
 
         BulletGlobals.the.set(this);
@@ -470,7 +470,7 @@ public class Dynamics<X> extends Collisions<X> {
         }
     }
 
-    protected synchronized void internalSingleStepSimulation(float timeStep) {
+    private void internalSingleStepSimulation(float timeStep) {
 
             // apply gravity, predict motion
             predictUnconstraintMotion(timeStep);

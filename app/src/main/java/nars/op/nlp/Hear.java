@@ -37,7 +37,6 @@ public class Hear extends Loop {
     private final List<Term> tokens;
     public final On onReset;
     private final Term context;
-    private final int wordDelayMS;
     int token;
 
     float priorityFactor = 1f;
@@ -95,9 +94,18 @@ public class Hear extends Loop {
         onReset = nar.eventClear.onWeak(this::onReset);
         tokens = msg;
         context = null; //TODO //who.isEmpty() ? null : $.the(who);
-        this.wordDelayMS = wordDelayMS;
+
         //contextAnonymous = new Term[]{$.the("hear"), $.varDep(1), Op.Imdex};
-        setPeriodMS(wordDelayMS);
+        if (wordDelayMS > 0) {
+            setPeriodMS(wordDelayMS);
+        } else {
+            //input all immediately
+            Term prev = null;
+            for (Term x : msg) {
+                hear(prev, x);
+                prev = x;
+            }
+        }
     }
 
     protected void onReset(NAR n) {
@@ -178,5 +186,24 @@ public class Hear extends Loop {
                 return null;
             }
         });
+    }
+
+    public static void hear(NAR nar, String t, String source) {
+        try {
+            try {
+                nar.input(t);
+            } catch (Narsese.NarseseException e) {
+
+                try {
+                    Hear.hear(nar, t, source, 0);
+                } catch (Exception e1) {
+                    nar.input(Operator.log(nar.time(), e1));
+                }
+
+            }
+        } catch (Throwable tt) {
+            nar.input(Operator.log(nar.time(), $.p(t, tt.toString())));
+        }
+
     }
 }

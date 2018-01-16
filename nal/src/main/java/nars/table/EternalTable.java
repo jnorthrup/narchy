@@ -331,9 +331,11 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
 
     @Override
-    public synchronized void clear() {
-        forEachTask(Task::delete);
-        super.clear();
+    public void clear() {
+        synchronized (this) {
+            forEachTask(Task::delete);
+            super.clear();
+        }
     }
 
     @Override

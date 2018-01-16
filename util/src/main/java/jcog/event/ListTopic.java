@@ -1,5 +1,6 @@
 package jcog.event;
 
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
@@ -30,6 +31,30 @@ public class ListTopic<V> extends jcog.list.FastCoWList<Consumer<V>> implements 
         if (cc!=null) {
             for (Consumer c : cc)
                 executorService.execute(() -> c.accept(x));
+        }
+    }
+    @Override
+    public void emitAsyncAndWait(V x, Executor executorService) throws InterruptedException {
+        final Consumer[] cc = this.copy;
+        if (cc!=null) {
+            int n = cc.length;
+            switch (n) {
+                case 0:
+                    return;
+//                case 1:
+//                    cc[0].accept(x);
+//                    break;
+                default:
+                    CountDownLatch l = new CountDownLatch(n);
+                    for (Consumer c : cc) {
+                        executorService.execute(() -> {
+                            c.accept(x);
+                            l.countDown();
+                        });
+                    }
+                    l.await();
+                    break;
+            }
         }
     }
 

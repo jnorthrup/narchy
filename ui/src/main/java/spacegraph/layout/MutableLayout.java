@@ -25,7 +25,12 @@ public class MutableLayout extends Layout {
     }
 
     @Override
-    public synchronized void start(@Nullable Surface parent) {
+    public int childrenCount() {
+        return children.size();
+    }
+
+    @Override
+    public void start(@Nullable Surface parent) {
         synchronized (children) {
             super.start(parent);
             children.forEach(c -> {

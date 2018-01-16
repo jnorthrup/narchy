@@ -62,8 +62,8 @@ public class Anon {
         }
 
         @Override
-        public final @Nullable Termed apply(Term t) {
-            return applyTermOrNull(t);
+        public final @Nullable Termed apply(Term nonCompound) {
+            return applyTermOrNull(nonCompound);
         }
     };
 
@@ -85,8 +85,8 @@ public class Anon {
         }
 
         @Override
-        public final @Nullable Termed apply(Term t) {
-            return applyTermOrNull(t);
+        public final @Nullable Termed apply(Term nonCompound) {
+            return applyTermOrNull(nonCompound);
         }
     };
 

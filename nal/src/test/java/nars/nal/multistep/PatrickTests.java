@@ -151,8 +151,8 @@ public class PatrickTests extends NALTest {
 
         tt.mustGoal(cycles, "lighter(I, toothbrush)", 1f,
                 0.3f,
-                (t) -> t == -30);
-        tt.mustNotOutput(cycles,  "lighter(I, toothbrush)", GOAL, (t)->t!=-30);
+                (t) -> t == 0);
+        tt.mustNotOutput(cycles,  "lighter(I, toothbrush)", GOAL, (t)->t!=0);
 
 
 

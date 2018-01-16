@@ -169,7 +169,47 @@ abstract public class MetalBitSet {
 
 
     public static class IntBitSet extends MetalBitSet {
+
         private int x;
+
+        @Override
+        public void setAll() {
+            x = 0xffffffff;
+        }
+
+        @Override
+        public boolean get(int i) {
+            return (x & (1 << i)) != 0;
+        }
+
+        @Override
+        public void set(int i) {
+            x |= (1 << i);
+        }
+        @Override
+        public void clear(int i) {
+            x &= ~(1 << i);
+        }
+
+        @Override
+        public void clearAll() {
+            x = 0;
+        }
+
+        @Override
+        public int getCardinality() {
+            return Integer.bitCount(x);
+        }
+
+        @Override
+        public boolean isAllOff() {
+            return x == 0;
+        }
+    }
+
+    public static class VolatileIntBitSet extends MetalBitSet {
+
+        private volatile int x;
 
         @Override
         public void setAll() {

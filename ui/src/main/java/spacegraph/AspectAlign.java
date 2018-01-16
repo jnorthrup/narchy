@@ -63,6 +63,11 @@ public class AspectAlign extends Layout {
     }
 
 
+    @Override
+    public int childrenCount() {
+        return 1;
+    }
+
     public AspectAlign scale(float sx, float sy) {
         this.scaleX = sx;
         this.scaleY = sy;

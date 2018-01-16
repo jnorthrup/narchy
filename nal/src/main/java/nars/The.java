@@ -73,18 +73,6 @@ public enum The {
 //        }
     }
 
-    public static boolean cacheable(Term[] u) {
-        boolean cache = true;
-
-        for (Term x : u) {
-            if (x instanceof PatternCompound || x instanceof UnnormalizedVariable) {
-                //HACK caching these interferes with unification.  instead fix unification then allow caching of these
-                cache = false;
-                break;
-            }
-        }
-        return cache;
-    }
 
     public static Term _compound(Op o, Term... subterms) {
         return Compound.the.apply(o, subterms);

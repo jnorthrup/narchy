@@ -1,20 +1,15 @@
 package nars.exe;
 
-import com.google.common.util.concurrent.MoreExecutors;
-import jcog.Texts;
 import jcog.Util;
 import jcog.exe.BusyPool;
 import jcog.math.MutableInteger;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.NAR;
 import nars.Task;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import java.util.Queue;
 import java.util.Random;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 /**
@@ -83,8 +78,11 @@ public class PoolMultiExec extends AbstractExec {
                     //long runUntil = System.currentTimeMillis();
                     long lastCycle = Long.MIN_VALUE;
 
-                    protected boolean endCondition() {
-                        return nar.time() == lastCycle && q.isEmpty();
+                    protected boolean kontinue() {
+                        return nar.time() == lastCycle &&
+                                q.isEmpty();
+                                //q.size() < qSize/2;
+
                         //&& System.currentTimeMillis() <= runUntil;
                     }
 
@@ -93,25 +91,36 @@ public class PoolMultiExec extends AbstractExec {
                         executeInline(next);
                     }
 
+                    //final DescriptiveStatistics idleTime = new DescriptiveStatistics(8);
+
                     @Override
-                    protected void idle(long timeSinceLastBusyNS) {
+                    protected void idle() {
+
+                        //idleTime.addValue(_timeSinceLastBusyNS);
+                        //long timeSinceLastBusyNS = (long)idleTime.getMax();
 
                         int loopMS = nar.loop.periodMS.intValue();
                         if (loopMS < 0) {
                             loopMS = IDLE_PERIOD_MS;
                         }
-                        long dutyMS = Math.round(nar.loop.throttle.floatValue() * loopMS);
-                        //System.out.println(this + " " + Texts.timeStr(timeSinceLastBusyNS) + " since busy, " + Texts.timeStr(dutyMS*1E6) + " loop time" );
+                        long dutyMS =
+                                Math.round(nar.loop.throttle.floatValue() * loopMS);
+
+                        //if (rng.nextInt(100) == 0)
+                        //    System.out.println(this + " " + Texts.timeStr(timeSinceLastBusyNS) + " since busy, " + Texts.timeStr(dutyMS*1E6) + " loop time" );
+
                         if (dutyMS > 0) {
 
-                            double t = nar.loop.jiffy.doubleValue() * dutyMS / 1000.0;
+                            double t = nar.loop.jiffy.doubleValue() *
+                                    dutyMS / 1000.0;
+                                    //Math.min(dutyMS / 1000.0, timeSinceLastBusyNS / 1.0E9);
 
                             //runUntil = System.currentTimeMillis() + dutyMS;
 
                             lastCycle = nar.time();
                             focus.runDeadline(
                                     t,
-                                    this::endCondition,
+                                    this::kontinue,
                                     rng, nar);
 
                         }

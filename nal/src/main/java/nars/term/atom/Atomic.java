@@ -45,10 +45,6 @@ public interface Atomic extends Term {
         return false;
     }
 
-    @Override
-    default boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
-        return false;
-    }
 
 //    @Override
 //    default boolean isDynamic() {

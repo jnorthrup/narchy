@@ -23,9 +23,9 @@ public class Flip<X> extends AtomicBoolean {
         return this;
     }
 
-    public void writeCommit(X next) {
-        write(next).commit();
-    }
+//    public void writeCommit(X next) {
+//        write(next).commit();
+//    }
 
     public X commit() {
         return getAndSet(!get()) ? a : b;

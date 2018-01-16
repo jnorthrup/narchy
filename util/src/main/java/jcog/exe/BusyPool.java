@@ -17,7 +17,7 @@ public class BusyPool extends AbstractExecutorService {
     protected List<Thread> workers = new FasterList<>();
 
 
-    public BusyPool(int threads, BlockingQueue qq){
+    public BusyPool(int threads, BlockingQueue qq) {
 
         this.q = qq;
 
@@ -41,7 +41,7 @@ public class BusyPool extends AbstractExecutorService {
     public void shutdown() {
         boolean waiting = true;
         retry:
-        while(waiting){
+        while (waiting) {
             //自旋的方式
             waiting = false;
             for (Thread worker : workers) {
@@ -51,7 +51,7 @@ public class BusyPool extends AbstractExecutorService {
                 }
             }
         }
-        workers.stream().filter(thread -> thread.getState()==Thread.State.WAITING).forEach(Thread::interrupt);
+        workers.stream().filter(thread -> thread.getState() == Thread.State.WAITING).forEach(Thread::interrupt);
     }
 
     @Override
@@ -95,44 +95,54 @@ public class BusyPool extends AbstractExecutorService {
         }
 
         protected void run(Object next) {
-            ((Runnable)next).run();
+            ((Runnable) next).run();
         }
 
         @Override
         public void run() {
 
-            long lastBusyNS = System.nanoTime();
+//            long lastBusyNS = System.nanoTime();
 
             while (true) {
                 Object next = null;
-                while ((next=q.poll())!=null) {
+//                int done = 0;
+                while ((next = q.poll()) != null) {
                     try {
                         run(next);
                     } catch (Throwable t) {
                         t.printStackTrace();
                     }
+//                    done++;
                 }
-                if (next!=null)
-                    lastBusyNS = System.nanoTime();
 
-                idle(System.nanoTime() - lastBusyNS);
+//                if (done > 0)
+//                    lastBusyNS = System.nanoTime();
+
+                try {
+                    idle();
+                } catch (Throwable t) {
+                    t.printStackTrace();
+                }
+
             }
         }
 
 
-        /** called by worker thread */
-        protected void idle(long timeSinceLastBusyNS) {
+        /**
+         * called by worker thread
+         */
+        protected void idle() {
             Thread.yield();
         }
 
     }
 
 
-    public void printInfo(){
+    public void printInfo() {
         Iterator<Thread> iterator = workers.iterator();
         while (iterator.hasNext()) {
             Thread thread = iterator.next();
-            System.out.println(thread.toString()+thread.getState().name());
+            System.out.println(thread.toString() + thread.getState().name());
         }
         System.out.println(q.size());
     }

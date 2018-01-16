@@ -38,7 +38,7 @@ public class Vis {
 
 
     public static ConsoleTerminal inputEditor() {
-        return new ConsoleTerminal(new TextEdit(40, 8));
+        return new TextEdit(40, 8).view();
     }
 
     public static Surface beliefCharts(int window, NAR nar, Object... x) {

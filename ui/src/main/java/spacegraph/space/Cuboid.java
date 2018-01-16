@@ -58,13 +58,15 @@ public class Cuboid<X> extends SimpleSpatial<X> {
 
     }
 
-    public synchronized void setFront(Surface front) {
-        this.front = front;
-        if (front != null) {
-            front.start(null);
-            fingered = null; //new Finger(this);
-        } else {
-            fingered = null;
+    public void setFront(Surface front) {
+        synchronized (this) {
+            this.front = front;
+            if (front != null) {
+                front.start(null);
+                fingered = null; //new Finger(this);
+            } else {
+                fingered = null;
+            }
         }
     }
 

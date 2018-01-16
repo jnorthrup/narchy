@@ -98,6 +98,14 @@ public class AnonVector extends TermVector {
         return (t.op() == NEG) || (anyNeg() && contains(t.neg())); //TODO write absolute matcher in one pass
     }
 
+    @Override
+    public boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
+        return !impossibleSubTerm(t) && ( anyNeg() ?
+                super.containsRecursively(t, root, inSubtermsOf) //negation's must be handled as compounds TODO write a faster impl of this
+                :
+                containsRecursively(t) );
+    }
+
     private boolean anyNeg() {
         return (structure&NEG.bit) != 0;
 //        for (short s : subterms)

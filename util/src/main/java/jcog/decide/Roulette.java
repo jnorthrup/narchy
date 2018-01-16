@@ -41,6 +41,10 @@ public enum Roulette { ;
         return decideRoulette(weightCount, weight, Util.sumIfPositive(weightCount, weight), rng);
     }
 
+    public static void decideRouletteWhile(int choices, IntToFloatFunction choiceWeight, Random rng, IntPredicate each) {
+        decideRouletteWhile(choices, choiceWeight, rng, (IntFunction)((i)->each.test(i) ? RouletteControl.CONTINUE : RouletteControl.STOP));
+    }
+
     public static void decideRouletteWhile(int choices, IntToFloatFunction choiceWeight, Random rng, IntFunction<RouletteControl> each) {
         float weightSum = NaN;
         while (true) {

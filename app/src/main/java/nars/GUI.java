@@ -1,13 +1,11 @@
 package nars;
 
-import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-import com.googlecode.lanterna.terminal.Terminal;
 import nars.gui.Vis;
+import nars.op.nlp.Hear;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spacegraph.Surface;
-
-import java.io.IOException;
+import spacegraph.widget.console.TextEdit;
+import spacegraph.widget.windo.Widget;
 
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.layout.Grid.grid;
@@ -34,43 +32,60 @@ public class GUI {
 //        }
 
 
+        nar.startFPS(10f); //10hz alpha
 
 
-        nar.runLater(()-> {
-            window(
-                    Vis.reflect(nar), 700, 600
-            );
+        window(
+                Vis.reflect(nar), 700, 600
+        );
 
-            window(OmniBox.get(nar), 600, 200);
+        window(new OmniBox(nar), 600, 200);
 
-            try {
+        try {
 
-                //1. try to open a Spacegraph openGL window
-                logger.info("Starting Spacegraph UI");
+            //1. try to open a Spacegraph openGL window
+            logger.info("Starting Spacegraph UI");
 
-                //            window(new ConsoleTerminal(new TextUI(nar).session(8f)) {
-                //                {
-                //                    Util.pause(50); term.addInput(KeyStroke.fromString("<pageup>")); //HACK trigger redraw
-                //                }
-                //            }, 800, 600);
+            //            window(new ConsoleTerminal(new TextUI(nar).session(8f)) {
+            //                {
+            //                    Util.pause(50); term.addInput(KeyStroke.fromString("<pageup>")); //HACK trigger redraw
+            //                }
+            //            }, 800, 600);
 
 
-            } catch (Throwable t) {
-                //2. if that fails:
-                logger.info("Fallback to Terminal UI");
-                new Shell(nar);
-            }
+        } catch (Throwable t) {
+            //2. if that fails:
+            logger.info("Fallback to Terminal UI");
+            new Shell(nar);
+        }
 
-        });
 
     }
 
-    static class OmniBox {
+    /** super repl */
+    public static class OmniBox extends Widget {
 
-        static Surface get(NAR n) {
-            return grid(Vis.inputEditor()
-                    /*Vis.audioCapture()*/);
+        final TextEdit edit;
+        private final NAR nar;
+
+        public OmniBox(NAR n) {
+            super();
+
+            this.nar = n;
+            add((edit =new TextEdit(40, 8) {
+                @Override
+                protected void onKeyCtrlEnter() {
+                    String t = text();
+                    in(t);
+                    clear();
+                }
+            }).view());
         }
+
+        protected void in(String s) {
+            Hear.hear(nar, s, "omnibox");
+        }
+
     }
 
 }

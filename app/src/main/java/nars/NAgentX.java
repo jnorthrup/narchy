@@ -165,7 +165,7 @@ abstract public class NAgentX extends NAgent {
 //                        //CoolNQuiet
 //                        (512, THREADS, 64, false))
                 .exe(new PoolMultiExec(
-                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)), 256, 256)
+                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)), 256, 128)
                 )
 
                 .time(clock)
@@ -177,8 +177,8 @@ abstract public class NAgentX extends NAgent {
                 //.deriverAdd("list.nal")
                 .index(
                         new CaffeineIndex(
-                                //200 * 1024
-                                100 * 1024
+                                200 * 1024
+                                //100 * 1024
                                 //50 * 1024
                                 //20 * 1024
                         )
@@ -196,13 +196,13 @@ abstract public class NAgentX extends NAgent {
 
         n.dtMergeOrChoose.set(true);
         n.dtDither.set(
-            //1f
-            0.5f //nyquist
+            1f
+            //0.5f //nyquist
         );
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(32);
+        n.termVolumeMax.set(26);
 
         n.beliefConfidence(0.9f);
         n.goalConfidence(0.9f);
@@ -255,7 +255,7 @@ abstract public class NAgentX extends NAgent {
 //                (t)->t.isBelief() && !t.isEternal() && !t.term().isTemporal() ? t.conf() : Float.NaN,
 //                8, 32);
 
-        ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t->true),16, 64);
+        ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t->true),8, 32);
 
 //        n.runLater(() -> {
 ////            AudioContext ac = new AudioContext();
@@ -267,7 +267,7 @@ abstract public class NAgentX extends NAgent {
 //        });
 
 
-        Inperience inp = new Inperience(n, 4);
+        Inperience inp = new Inperience(n, 6);
 //
 
 //        Abbreviation abb = new Abbreviation(n, "z", 3, 6, 10f, 32);

@@ -106,7 +106,6 @@ public class Deriver extends Causable {
     @Override
     protected int next(NAR n, final int iterations) {
 
-
         Derivation d = derivation.get().cycle(n, deriver);
 
         int matchTTL = Param.TTL_PREMISE_MIN * 4;

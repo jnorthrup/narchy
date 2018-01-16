@@ -57,7 +57,7 @@ public class OperatorTest {
         n.input("the(sys)");
 
         String s = b.toString();
-        assertTrue(s.contains("→(("), ()->s);
+        assertTrue(s.contains("→("), ()->s);
     }
 
     @Test

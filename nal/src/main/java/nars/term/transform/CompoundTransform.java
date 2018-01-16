@@ -112,8 +112,8 @@ public interface CompoundTransform extends TermContext {
      * transforms non-compound subterms
      */
     @Override
-    default @Nullable Termed apply(Term t) {
-        return t;
+    default @Nullable Termed apply(Term nonCompound) {
+        return nonCompound;
     }
 
 
@@ -125,11 +125,11 @@ public interface CompoundTransform extends TermContext {
      */
     CompoundTransform queryToDepVar = new CompoundTransform() {
         @Override
-        public Term apply(Term subterm) {
-            if (subterm.op() == VAR_QUERY) {
-                return $.varDep((((NormalizedVariable) subterm).anonNum()));
+        public Term apply(Term nonCompound) {
+            if (nonCompound.op() == VAR_QUERY) {
+                return $.varDep((((NormalizedVariable) nonCompound).anonNum()));
             }
-            return subterm;
+            return nonCompound;
         }
     };
 

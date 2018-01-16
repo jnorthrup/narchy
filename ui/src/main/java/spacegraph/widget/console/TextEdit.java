@@ -8,7 +8,11 @@ import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
-import spacegraph.SpaceGraph;
+import org.apache.lucene.util.ThreadInterruptedException;
+import org.jetbrains.annotations.Nullable;
+import spacegraph.Surface;
+import spacegraph.input.Finger;
+import spacegraph.math.v2;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -22,14 +26,84 @@ public class TextEdit extends DefaultVirtualTerminal implements Runnable {
 
     public MultiWindowTextGUI gui;
 
-    public TextBox textBox;
+    public final TextBox textBox;
+    private Thread thr;
 
     public TextEdit(int c, int r) {
+        this(c, r, "");
+    }
+
+    public TextEdit(int c, int r, String initialContent) {
         super(new TerminalSize(c, r));
 
-//
-//        //term.clearScreen();
-        new Thread(this).start();
+        textBox = new TextBox(initialContent, r>1 ? TextBox.Style.MULTI_LINE : TextBox.Style.SINGLE_LINE) {
+
+            {
+                setBacklogSize(8); //???
+            }
+
+            @Override
+            public synchronized Result handleKeyStroke(KeyStroke keyStroke) {
+                onKey(keyStroke);
+
+                return super.handleKeyStroke(keyStroke);
+            }
+        };
+    }
+
+    public void start() {
+        synchronized (this) {
+            assert (thr == null);
+            thr = new Thread(this);
+            thr.start();
+        }
+    }
+
+    public void stop() {
+        synchronized (this) {
+            assert (thr != null);
+            thr.interrupt();
+            thr = null;
+        }
+    }
+
+    public String text() {
+        return textBox.getText();
+    }
+
+    public TextEdit text(String s) {
+        textBox.setText(s);
+        return this;
+    }
+
+    public void clear() {
+        text("");
+    }
+
+    @Deprecated
+    public ConsoleTerminal view() {
+        return new ConsoleTerminal(this) {
+            @Override
+            public synchronized void start(@Nullable Surface parent) {
+                super.start(parent);
+                TextEdit.this.start();
+            }
+
+            @Override
+            public synchronized void stop() {
+                TextEdit.this.stop();
+                super.stop();
+            }
+
+            @Override
+            public Surface onTouch(Finger finger, v2 hitPoint, short[] buttons) {
+                /** middle mouse button paste */
+                Finger.clicked(2, ()->{
+                    paste();
+                });
+                return super.onTouch(finger, hitPoint, buttons);
+            }
+        };
     }
 
     @Override
@@ -38,11 +112,6 @@ public class TextEdit extends DefaultVirtualTerminal implements Runnable {
         gui.removeWindow(gui.getActiveWindow());
     }
 
-    public static void main(String[] args) {
-        SpaceGraph.window(new ConsoleTerminal(
-                new TextEdit(40, 20)
-        ), 1000, 600);
-    }
 
     public void commit() {
         try {
@@ -55,17 +124,16 @@ public class TextEdit extends DefaultVirtualTerminal implements Runnable {
     @Override
     public void run() {
 
+        TerminalScreen screen = null;
         try {
-            TerminalScreen screen = new TerminalScreen(this);
+
+            screen = new TerminalScreen(this);
             screen.startScreen();
 
-            gui = new MultiWindowTextGUI(
-                    new SameTextGUIThread.Factory(),
-                    screen);
+            gui = new MultiWindowTextGUI(new SameTextGUIThread.Factory(), screen);
+            gui.setBlockingIO(false);
 
             setCursorVisible(true);
-
-            gui.setBlockingIO(false);
 
 
 
@@ -88,6 +156,8 @@ public class TextEdit extends DefaultVirtualTerminal implements Runnable {
 
             TerminalSize size = getTerminalSize();
 
+            //TODO try to avoid wrapping it in Window
+
             final BasicWindow window = new BasicWindow();
             window.setPosition(new TerminalPosition(0, 0));
             window.setSize(new TerminalSize(size.getColumns() - 2, size.getRows() - 2));
@@ -96,72 +166,85 @@ public class TextEdit extends DefaultVirtualTerminal implements Runnable {
             window.setEnableDirectionBasedMovements(true);
 
 
-
             //Panel panel = new Panel();
             //panel.setPreferredSize(new TerminalSize(32, 8));
             //panel.set
 
 
-            textBox = new TextBox("", TextBox.Style.MULTI_LINE) {
-                final Toolkit toolkit = Toolkit.getDefaultToolkit();
-                final Clipboard clipboard = toolkit.getSystemClipboard();
 
-                {
-                    setBacklogSize(16);
-                }
-
-                @Override
-                public synchronized Result handleKeyStroke(KeyStroke keyStroke) {
-                    if (keyStroke.getKeyType()== KeyType.Enter && keyStroke.isCtrlDown()) {
-                        //ctrl-enter
-                        onControlEnter();
-                    }
-                    if (keyStroke.getKeyType()== KeyType.Insert&& keyStroke.isShiftDown()) {
-                        //shift-insert, paste
-                        try {
-                            String result = (String) clipboard.getData(DataFlavor.stringFlavor);
-
-
-                            for (char c : result.toCharArray()) //HACK
-                                addInput(KeyStroke.fromString(String.valueOf(c)));
-
-                        } catch (UnsupportedFlavorException | IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    return super.handleKeyStroke(keyStroke);
-                }
-            };
-            textBox.setPreferredSize(new TerminalSize(window.getSize().getColumns()-2, window.getSize().getRows()-2));
+            textBox.setPreferredSize(new TerminalSize(window.getSize().getColumns() - 2, window.getSize().getRows() - 2));
 
             textBox.takeFocus();
 
             window.setComponent(textBox);
-//            panel.addComponent(new Button("Button", ()->{}));
-//            panel.addComponent(new Button("XYZ", ()->{}));
-
-
-            //window.setComponent(panel);
-
 
             gui.addWindow(window);
             gui.setActiveWindow(window);
 
             gui.setEOFWhenNoWindows(true);
 
-//            flush();
-
             gui.waitForWindowToClose(window);
 
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (ThreadInterruptedException e) {
+            if (screen != null) {
+                try {
+                    screen.stopScreen();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
         }
 
     }
 
-    private void onControlEnter() {
 
+    static Clipboard _clipboard = null;
+    private synchronized Clipboard clipboard() {
+        if (_clipboard == null) {
+            _clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        }
+        return _clipboard;
+    }
+
+    private void onKey(KeyStroke keyStroke) {
+        KeyType kt = keyStroke.getKeyType();
+
+        if (kt == KeyType.Enter) {
+            if (keyStroke.isCtrlDown()) {
+                //ctrl-enter
+                onKeyCtrlEnter();
+            } else {
+                onKeyEnter();
+            }
+        }
+
+        if (kt == KeyType.Insert && keyStroke.isShiftDown()) {
+            paste();
+        }
+    }
+
+    /** paste clipboard contents in at cursor location */
+    public synchronized void paste() {
+        //shift-insert, paste
+        try {
+            String result = (String) clipboard().getData(DataFlavor.stringFlavor);
+
+
+            for (char c : result.toCharArray()) //HACK
+                addInput(KeyStroke.fromString(String.valueOf(c)));
+
+        } catch (UnsupportedFlavorException | IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void onKeyCtrlEnter() {
+
+
+    }
+    protected void onKeyEnter() {
 
     }
 }

@@ -31,14 +31,14 @@ public class FZero extends NAgentX {
 
         //Param.DEBUG = true;
 
-        float fps = 35f;
+        float fps = 30f;
 
         NAgentX.runRT((n) -> {
 
             FZero a = null;
             n.freqResolution.set(0.02f);
             n.confResolution.set(0.02f);
-            n.confMin.set(0.04f);
+            n.confMin.set(0.02f);
             a = new FZero(n);
 
             a.trace = true;

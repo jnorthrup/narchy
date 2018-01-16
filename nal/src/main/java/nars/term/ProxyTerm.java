@@ -73,11 +73,6 @@ public class ProxyTerm<T extends Term> implements Term, CompoundDT {
         return ref.structure();
     }
 
-    @Override
-    public boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
-        return ref.containsRecursively(t, inSubtermsOf);
-    }
-
 
     @Override public boolean equals(Object o) {
         if (this == o) return true;

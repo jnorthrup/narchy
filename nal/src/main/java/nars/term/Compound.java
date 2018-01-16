@@ -633,7 +633,7 @@ public interface Compound extends Term, IPair, Subterms {
                     ellipsisRemoves++;
                 }
 
-                if (xi != yi && (!xi.equals(yi) || yi.getClass() != xi.getClass())) {
+                if (xi != yi) {
                     if (!changed) {
                         xy = arrayClone(); //begin clone copy
                         changed = true;
@@ -654,7 +654,7 @@ public interface Compound extends Term, IPair, Subterms {
         Term u;
         if (changed) {
 
-            u = o.the(dt(), xy);
+            u = o._the(dt(), xy, false);
 
             if (recurseIfChanged)
                 return u.evalSafe(context, remain);
@@ -663,7 +663,7 @@ public interface Compound extends Term, IPair, Subterms {
         }
 
 
-        return context.intern(Functor.eval(u));
+        return /*context.intern*/(Functor.eval(u));
 
         //it has been changed, so eval recursively until stable
         //return context.intern(subsModified ? op.the(dt(), xy).evalSafe(context, remain) : this);

@@ -16,7 +16,7 @@ public class FastCoWList<X> extends FasterList<X> {
     private final IntFunction<X[]> arrayBuilder;
 
     @Nullable
-    public X[] copy;
+    public volatile X[] copy;
 
     public FastCoWList(int capacity, IntFunction<X[]> arrayBuilder) {
         super(capacity);
@@ -24,7 +24,7 @@ public class FastCoWList<X> extends FasterList<X> {
         this.arrayBuilder = arrayBuilder;
     }
 
-    protected final void commit() {
+    private final void commit() {
         this.copy = (size == 0) ? null :
                                   toArrayRecycled(arrayBuilder);
     }
@@ -38,27 +38,30 @@ public class FastCoWList<X> extends FasterList<X> {
 
     @Override
     public int size() {
-        X[] copy = this.copy;
-        if (copy!=null) return copy.length;
-        else return 0;
+        X[] x = this.copy;
+        return x != null ? x.length : 0;
     }
 
     @Override
-    public synchronized void clear() {
-        int s = size();
-        if (s > 0) {
-            super.clear();
-            commit();
+    public void clear() {
+        synchronized (this) {
+            int s = size();
+            if (s > 0) {
+                super.clear();
+                commit();
+            }
         }
     }
 
     @Override
-    public synchronized boolean add(X o) {
-        if(super.add(o)) {
-            commit();
-            return true;
+    public boolean add(X o) {
+        synchronized (this) {
+            if (super.add(o)) {
+                commit();
+                return true;
+            }
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -72,12 +75,14 @@ public class FastCoWList<X> extends FasterList<X> {
 
 
     @Override
-    public synchronized boolean remove(Object o) {
-        if(super.remove(o)) {
-            commit();
-            return true;
+    public boolean remove(Object o) {
+        synchronized (this) {
+            if (super.remove(o)) {
+                commit();
+                return true;
+            }
+            return false;
         }
-        return false;
     }
     @Override
     public boolean addAll(Collection<? extends X> source) {
@@ -109,9 +114,11 @@ public class FastCoWList<X> extends FasterList<X> {
         return target;
     }
 
-    public synchronized void set(X... newValues) {
-        clear();
-        Collections.addAll(this, newValues);
+    public void set(X... newValues) {
+        synchronized (this) {
+            clear();
+            Collections.addAll(this, newValues);
+        }
     }
 
 }

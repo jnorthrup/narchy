@@ -1,9 +1,9 @@
 package nars.exe;
 
 import jcog.bag.Bag;
-import jcog.bag.impl.ConcurrentCurveBag;
 import jcog.bag.impl.CurveBag;
 import jcog.bag.impl.hijack.PriorityHijackBag;
+import jcog.event.On;
 import nars.NAR;
 import nars.Param;
 import nars.concept.Concept;
@@ -23,6 +23,7 @@ abstract public class AbstractExec extends Exec {
     private final int CAPACITY;
 
     public Bag<Activate, Activate> active;
+    private On onCycle;
     //protected Baggie<Concept> active;
 
     protected AbstractExec(int capacity) {
@@ -62,6 +63,8 @@ abstract public class AbstractExec extends Exec {
 
     @Override
     public synchronized void start(NAR nar) {
+
+        assert(active==null && onCycle == null);
 
         active =
                 concurrent() ?
@@ -112,21 +115,22 @@ abstract public class AbstractExec extends Exec {
         ;
 
         super.start(nar);
+
+        onCycle = nar.onCycle(this::update);
     }
 
-
-    @Override
-    public void cycle() {
-
+    private void update() {
         active.commit(active.forget(nar.forgetRate.floatValue()));
-
     }
 
     @Override
     public synchronized void stop() {
-        if (active != null) {
-            active.clear();
-        }
+        onCycle.off();
+        onCycle = null;
+
+        assert(active!=null);
+        active.clear();
+        active = null;
     }
 
 

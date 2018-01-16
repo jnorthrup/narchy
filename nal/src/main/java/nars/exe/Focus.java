@@ -2,6 +2,7 @@ package nars.exe;
 
 import com.google.common.base.Joiner;
 import jcog.Services;
+import jcog.Texts;
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.decide.Roulette;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
+import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
 
 import static jcog.Texts.n2;
@@ -42,8 +44,8 @@ public class Focus extends Flip<Focus.Schedule> {
 
     public void runDeadline(double subTime, BooleanSupplier kontinue, Random rng, NAR nar) {
 
-        if (subTime <= 0)
-            return;
+//        if (subTime <= 0)
+//            return;
 
         Focus.Schedule s = read();
 
@@ -53,25 +55,27 @@ public class Focus extends Flip<Focus.Schedule> {
             return;
 
 
-        float[] iterPerSecond = s.iterPerSecond;
+        float[] iterPerSecond = s.supplyPerSecond;
 
         final int[] safety = {n};
+        Causable[] can = s.can;
 
-        Roulette.decideRouletteWhile(n, c -> cw[c], rng, (x) -> {
+        MetalBitSet active = s.active;
 
-            Causable[] can = s.can;
-            if (!s.active.get(x)) {
-                return s.active.isAllOff() ? Roulette.RouletteControl.STOP : Roulette.RouletteControl.CONTINUE;
+        Roulette.decideRouletteWhile(n, c -> cw[c], rng, (IntPredicate) x -> {
+
+            if (!active.get(x)) {
+                return !active.isAllOff();
             }
 
             Causable cx = can[x];
             AtomicBoolean cb = cx.busy;
             if (cb != null) {
                 if (!cb.compareAndSet(false, true)) {
-                    return --safety[0] > 0 ? Roulette.RouletteControl.CONTINUE : Roulette.RouletteControl.STOP;
+                    return --safety[0] < 0;
                 } else {
-                    safety[0] = n; //reset
-                    s.active.clear(x);
+                    active.clear(x); //acquire
+                    safety[0] = n; //reset safety count
                 }
             }
 
@@ -79,26 +83,27 @@ public class Focus extends Flip<Focus.Schedule> {
                     Math.max(1, Math.round(iterPerSecond[x] * subTime))
             );
 
-            //System.out.println(cx + " x " + iters);
+            //System.out.println(cx + " x " + iters + " @ " + n4(iterPerSecond[x]) + "iter/sec in " + Texts.timeStr(subTime*1E9));
 
             int completed = -1;
             try {
                 completed = cx.run(nar, iters);
-            } catch (Throwable tt) {
-                logger.error("{}", tt);
             } finally {
-                if (cb!=null) {
+                if (cb != null) {
                     cb.set(false); //release
-                    if (completed >= 0)
-                        s.active.set(x);
+                    if (completed >= 0) {
+                        active.set(x);
+                    } else {
+                        //leave inactive
+                    }
+                } else {
+                    if (completed < 0) {
+                        active.clear(x); //set inactive
+                    }
                 }
             }
 
-            if (completed < 0) {
-                s.active.clear(x);
-            }
-
-            return (kontinue.getAsBoolean()) ? Roulette.RouletteControl.CONTINUE : Roulette.RouletteControl.STOP;
+            return kontinue.getAsBoolean();
         });
 
 
@@ -106,13 +111,13 @@ public class Focus extends Flip<Focus.Schedule> {
 
 
     public static class Schedule {
-        public float[] time = ArrayUtils.EMPTY_FLOAT_ARRAY;
-        //        public float[] timeNormalized = ArrayUtils.EMPTY_FLOAT_ARRAY;
-        public float[] supplied = ArrayUtils.EMPTY_FLOAT_ARRAY;
+        //public float[] time = ArrayUtils.EMPTY_FLOAT_ARRAY;
+        //public float[] supplied = ArrayUtils.EMPTY_FLOAT_ARRAY;
+        public float[] value= ArrayUtils.EMPTY_FLOAT_ARRAY;
         public float[] weight = ArrayUtils.EMPTY_FLOAT_ARRAY;
-        public float[] iterPerSecond = ArrayUtils.EMPTY_FLOAT_ARRAY;
+        public float[] supplyPerSecond = ArrayUtils.EMPTY_FLOAT_ARRAY;
 
-        MetalBitSet active = MetalBitSet.bits(1);
+        final MetalBitSet active = new MetalBitSet.VolatileIntBitSet();
 
         /**
          * probability of selecting each can (roulette weight), updated each cycle
@@ -126,7 +131,7 @@ public class Focus extends Flip<Focus.Schedule> {
 
             return Joiner.on("\n").join(IntStream.range(0, can.length).mapToObj(
                     x -> n4(weight[x]) + "=" + can[x] +
-                            "@" + n2(time[x] * 1E3) + "uS x " + n2(supplied[x])
+                            "@" + n2(value[x] * 1E3)
             ).iterator());
         }
 
@@ -152,18 +157,24 @@ public class Focus extends Flip<Focus.Schedule> {
             if (can == null)
                 return;
             int n = can.length;
-            if (time.length != n) {
+            if (value.length != n) {
                 //realloc
-                time = new float[n];
-                supplied = new float[n];
-                iterPerSecond = new float[n];
-                this.active = MetalBitSet.bits(n);
+                value = new float[n];
+                supplyPerSecond = new float[n];
+                weight = new float[n];
+
+                assert (n < 32) : "TODO make atomic n>32 bitset";
+                this.active //= MetalBitSet.bits(n);
+                        .clearAll();
             }
 
             active.setAll();
 
             for (int i = 0; i < n; i++) {
-                cans.get(i).can.commit(i, time, supplied, iterPerSecond);
+                Causable c = cans.get(i);
+                c.can.commit(i, supplyPerSecond);
+                value[i] = c.value();
+                weight[i] = value[i]; // * supplyPerSecond[i];
             }
 
 //                float margin = 1f / n;
@@ -171,23 +182,23 @@ public class Focus extends Flip<Focus.Schedule> {
 //                if (timeNormalized.length!=n)
 //                    timeNormalized = new float[n];
 
-            float timeMax = 0;
-            for (float i : time) {
-                if (i > Float.MIN_NORMAL) {
-                    if (i > timeMax)
-                        timeMax = i;
-                }
-            }
+//            float timeMax = 0;
+//            for (float i : time) {
+//                if (i > Float.MIN_NORMAL) {
+//                    if (i > timeMax)
+//                        timeMax = i;
+//                }
+//            }
+//
+//            if (timeMax < Float.MIN_NORMAL)
+//                timeMax = 1f; //artificial
 
-            if (timeMax < Float.MIN_NORMAL)
-                timeMax = 1f; //artificial
-
-            for (int i = 0; i < n; i++) {
-                float ii = time[i];
-                if (ii < Float.MIN_NORMAL) {
-                    time[i] = timeMax;
-                }
-            }
+//            for (int i = 0; i < n; i++) {
+//                float ii = time[i];
+//                if (ii < Float.MIN_NORMAL) {
+//                    time[i] = timeMax;
+//                }
+//            }
 
 //                if (iters < 2) {
 //                    Arrays.fill(timeNormalized, 1f); //all the same
@@ -200,14 +211,10 @@ public class Focus extends Flip<Focus.Schedule> {
 //                }
 
 
-            weight = Util.map(n, (int i) ->
-                    can[i].value(), weight);
-
             float[] minmax = Util.minmax(weight);
             float lowMargin = (minmax[1] - minmax[0]) / n;
             for (int i = 0; i < n; i++)
-                weight[i] =
-                        normalize(weight[i], minmax[0] - lowMargin, minmax[1]) / time[i];
+                weight[i] = normalize(weight[i], minmax[0] - lowMargin, minmax[1]);
         }
     }
 

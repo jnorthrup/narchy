@@ -68,8 +68,8 @@ public class Emotion extends ConcurrentMonitorRegistry {
     /**
      * task priority overflow rate
      */
-    @NotNull
-    public final BufferedFloatGuage stress;
+//    public final BufferedFloatGuage stress;
+//    public final BufferedFloatGuage confident;
 
     /**
      * happiness rate
@@ -81,15 +81,14 @@ public class Emotion extends ConcurrentMonitorRegistry {
     float _happy;
 
 
-    @NotNull
-    public final BufferedFloatGuage confident;
+
+
 
 
     /**
      * count of errors
      */
-    @NotNull
-    public final BufferedFloatGuage errrVol;
+//    public final BufferedFloatGuage errrVol;
 
 
 //    final Map<String,AtomicInteger> counts = new ConcurrentHashMap<>();
@@ -115,13 +114,12 @@ public class Emotion extends ConcurrentMonitorRegistry {
 //        this.learnPri = new BufferedFloatGuage("learnP");
 //        this.learnVol = new BufferedFloatGuage("learnV");
 
-        this.confident = new BufferedFloatGuage("confidence");
-
-        this.stress = new BufferedFloatGuage("stress");
+        //this.confident = new BufferedFloatGuage("confidence");
+        //this.stress = new BufferedFloatGuage("stress");
 
         //this.alert = new BufferedFloatGuage("alert");
 
-        this.errrVol = new BufferedFloatGuage("error");
+        //this.errrVol = new BufferedFloatGuage("error");
 
         if (getClass() == Emotion.class) //HACK
             registerFields(this);
@@ -132,22 +130,12 @@ public class Emotion extends ConcurrentMonitorRegistry {
     /**
      * new frame started
      */
-    public synchronized void cycle() {
-
+    public void cycle() {
 
         _happy = happy.getSum();
         happy.clear();
 
         busyVol.clear();
-
-//        learnPri.clear();
-//        learnVol.clear();
-
-        stress.clear();
-
-        errrVol.clear();
-
-        confident.clear();
 
     }
 
@@ -166,9 +154,9 @@ public class Emotion extends ConcurrentMonitorRegistry {
 //    }
 
 
-    public float erring() {
-        return errrVol.getSum() / busyVol.getSum();
-    }
+//    public float erring() {
+//        return errrVol.getSum() / busyVol.getSum();
+//    }
 
 
 //    /** joy = first derivative of happiness, delta happiness / delta business */
@@ -236,11 +224,11 @@ public class Emotion extends ConcurrentMonitorRegistry {
     }
 
 
-    public final void stress(@NotNull MutableFloat pri) {
-        float v = pri.floatValue();
-        if (v > 0)
-            stress.accept(v);
-    }
+//    public final void stress(@NotNull MutableFloat pri) {
+//        float v = pri.floatValue();
+//        if (v > 0)
+//            stress.accept(v);
+//    }
 
 //    @Deprecated
 //    public void learn(float pri, int vol) {
@@ -250,17 +238,17 @@ public class Emotion extends ConcurrentMonitorRegistry {
 //
 //    }
 
-    public void confident(float deltaConf, @NotNull Compound term) {
-        confident.accept(deltaConf);
-    }
+//    public void confident(float deltaConf, @NotNull Compound term) {
+//        confident.accept(deltaConf);
+//    }
 
 //    @Deprecated public void alert(float percentFocusChange) {
 //        alert.accept( percentFocusChange );
 //    }
 
-    public void eror(int vol) {
-        errrVol.accept(vol);
-    }
+//    public void eror(int vol) {
+//        errrVol.accept(vol);
+//    }
 
 //    public double happysad() {
 //
@@ -274,8 +262,8 @@ public class Emotion extends ConcurrentMonitorRegistry {
                 .append(" hapy=").append(n4(happy()))
                 .append(" busy=").append(n4(busyVol.getSum()))
 //                .append(" lern=").append(n4(learningVol()))
-                .append(" errr=").append(n4(erring()))
-                .append(" strs=").append(n4(stress.getSum()))
+//                .append(" errr=").append(n4(erring()))
+//                .append(" strs=").append(n4(stress.getSum()))
                 //.append(" cpu=").append(resourceMeter.CYCLE_CPU_TIME)
                 //.append(" mem=").append(resourceMeter.CYCLE_RAM_USED)
                 //.append(" alrt=").append(n4(alert.getSum()))

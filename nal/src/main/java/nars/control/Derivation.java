@@ -243,8 +243,8 @@ public class Derivation extends ProtoDerivation {
      * only returns derivation-specific functors.  other functors must be evaluated at task execution time
      */
     @Override
-    public final Termed apply(Term x) {
-        return applyTermIfPossible(x);
+    public final Termed apply(Term nonCompound) {
+        return applyTermIfPossible(nonCompound);
     }
 
     @Override

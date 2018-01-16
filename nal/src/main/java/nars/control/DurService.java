@@ -91,9 +91,10 @@ abstract public class DurService extends NARService implements Runnable {
     }
 
     @Override
-    protected synchronized void stopping(NAR nar) {
-        busy.set(true);
-        super.stopping(nar);
+    protected void stopping(NAR nar) {
+        if (busy.compareAndSet(false,true)) {
+            super.stopping(nar);
+        }
     }
 
     @Override

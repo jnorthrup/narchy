@@ -124,7 +124,7 @@ abstract public class Loop {
         return false;
     }
 
-    protected synchronized Thread newThread() {
+    private Thread newThread() {
         if (this.thread!=null)
             throw new RuntimeException("thread already started: " + thread);
 
@@ -154,7 +154,7 @@ abstract public class Loop {
     /**
      * dont call this directly
      */
-    private synchronized final void run() {
+    private final void run() {
 
         onStart();
 

@@ -51,12 +51,12 @@ abstract public class Exec implements Executor {
     protected void executeInline(Object t) {
         try {
             if (t instanceof ITask) {
-                ITask x = (ITask)t;
-                while ((x = x.run(nar))!=null);
+                ITask x = (ITask) t;
+                while ((x = x.run(nar)) != null) ;
             } else if (t instanceof Consumer)
                 ((Consumer) t).accept(nar);
             else if (t instanceof Runnable)
-                ((Runnable)t).run();
+                ((Runnable) t).run();
             else
                 throw new UnsupportedOperationException(t + " unexecutable");
         } catch (Throwable e) {
@@ -80,23 +80,19 @@ abstract public class Exec implements Executor {
 
     abstract public Stream<Activate> active();
 
-    public synchronized void start(NAR nar) {
-        if (this.nar != null) {
-            this.onClear.off();
-            this.onClear = null;
+    public void start(NAR nar) {
+        synchronized (this) {
+            this.nar = nar;
+            onClear = nar.eventClear.on((n) -> clear());
         }
-
-        this.nar = nar;
-
-        onClear = nar.eventClear.on((n) -> clear());
     }
 
-    public abstract void cycle();
 
-    public synchronized void stop() {
-        if (onClear != null) {
+    public void stop() {
+        synchronized (this) {
             onClear.off();
             onClear = null;
+            this.nar = null;
         }
     }
 

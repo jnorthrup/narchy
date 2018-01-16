@@ -1,32 +1,29 @@
 package jcog.exe;
 
-import com.google.common.math.Stats;
-import com.google.common.math.StatsAccumulator;
-import jcog.Util;
-import jcog.constraint.continuous.DoubleVar;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.apache.commons.math3.stat.descriptive.StatisticalSummary;
-import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.DoubleAccumulator;
 import java.util.concurrent.atomic.DoubleAdder;
 
-/** potentially executable procedure of some value N >=1 iterations per invocation */
+/**
+ * potentially executable procedure of some value N >=1 iterations per invocation
+ */
 public class Can {
 
     private final static AtomicInteger ids = new AtomicInteger();
 
 
-
-
+    /**
+     * in seconds
+     */
     final DoubleAdder iterationTime = new DoubleAdder();
+
     final DoubleAdder supply = new DoubleAdder();
 
-    final static int WINDOW = 4;
+    final static int WINDOW = 8;
 
-    public final DescriptiveStatistics iterPerSecond = new DescriptiveStatistics(WINDOW);
-    public double lastSupply, lastIterationTime;
+    public final DescriptiveStatistics supplyPerSecond = new DescriptiveStatistics(WINDOW);
+    public double lastIterationTime;
 
     private final String id;
 
@@ -40,30 +37,22 @@ public class Can {
     }
 
 
-    public final void commit(int i, float[] time, float[] supplied, float[] iterPerSecond) {
+    public final void commit(int i, float[] supplyPerSecond) {
         double s = supply.sumThenReset();
+        double t = Math.max(1E-9, iterationTime.sumThenReset()); //nanosecond resolution min granularity
         if (s != s) s = 0;
+        if (t != t) t = 0;
 
-        double t = iterationTime.sumThenReset();
-        if (t!=t) t = 0;
+        double r = s / t;
+        this.supplyPerSecond.addValue(r);
 
-
-        double rMean;
-        if (Math.abs(t) > 1.0E-9 /* nanosecond resolution */) {
-            double r = s / t;
-            this.iterPerSecond.addValue(r);
-        }
-        rMean = this.iterPerSecond.getMean();
-        if (rMean!=rMean) rMean = Float.MIN_NORMAL;
+        double rMean = this.supplyPerSecond.getMean();
+        if (rMean != rMean) rMean = Float.MIN_NORMAL;
 
 
-        supplied[i] = (float) s;
-        this.lastSupply = s;
-        time[i] = (float) t;
-        this.lastIterationTime = t;
-        iterPerSecond[i] = (float)rMean;
+        this.lastIterationTime = (float) t;
+        supplyPerSecond[i] = (float) rMean;
     }
-
 
 
     /**
@@ -71,9 +60,7 @@ public class Can {
      */
     public void done(int supplied, double totalTimeSec) {
         supply.add(supplied);
-        if (supplied > 0) {
-            iterationTime.add(totalTimeSec);
-        }
+        iterationTime.add(totalTimeSec);
     }
 
     @Override

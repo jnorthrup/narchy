@@ -25,7 +25,7 @@ public class Finger {
     /**
      * exclusive state which may be requested by a surface
      */
-    Fingering fingering = null;
+    private Fingering fingering = null;
 
     /**
      * global pointer screen coordinate, set by window the (main) cursor was last active in
@@ -98,8 +98,10 @@ public class Finger {
             }
         } else {
             s = null;
-            if (!fingering.update(this)) {
-                fingering = null;
+            synchronized (this) {
+                if (!fingering.update(this)) {
+                    fingering = null;
+                }
             }
         }
 
@@ -161,12 +163,16 @@ public class Finger {
     /**
      * acquire an exclusive fingering state
      */
-    public synchronized boolean tryFingering(Fingering f) {
-        if (root!=null && fingering == null) {
-            fingering = f;
-            f.start(this);
-            root.surface.onTouch(this, null, ArrayUtils.EMPTY_SHORT_ARRAY); //release all fingering on surfaces
-            return true;
+    public boolean tryFingering(Fingering f) {
+        if (root != null) {
+            synchronized (this) {
+                if (fingering == null) {
+                    fingering = f;
+                    f.start(this);
+                    root.surface.onTouch(this, null, ArrayUtils.EMPTY_SHORT_ARRAY); //release all fingering on surfaces
+                    return true;
+                }
+            }
         }
         return false;
     }

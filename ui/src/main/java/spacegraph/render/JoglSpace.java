@@ -15,6 +15,11 @@ import jcog.list.FastCoWList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
+import java.awt.desktop.AppForegroundListener;
+import java.awt.desktop.AppHiddenEvent;
+import java.awt.desktop.AppHiddenListener;
+import java.awt.desktop.SystemEventListener;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -49,6 +54,20 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
                 return true;
             }
         };
+
+        //TODO other desktop handlers
+        Desktop.getDesktop().addAppEventListener(new AppHiddenListener() {
+            @Override
+            public void appHidden(AppHiddenEvent e) {
+                System.err.println("i see you hide the app");
+            }
+
+            @Override
+            public void appUnhidden(AppHiddenEvent e) {
+                System.err.println("i see you unhide the app");
+            }
+        });
+
     }
 
     public static final GLU glu = new GLU();
@@ -63,10 +82,12 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
         //frameTimeMS = new PeriodMeter(toString(), 8);
     }
 
-    public synchronized void off() {
-        if (window!=null) {
-            window.destroy();
-            window = null;
+    public void off() {
+        synchronized (this) {
+            if (window != null) {
+                window.destroy();
+                window = null;
+            }
         }
     }
 
@@ -128,7 +149,10 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
 
     @Override
     public final void init(GLAutoDrawable drawable) {
-        this.window = ((GLWindow) drawable);
+        synchronized (this) {
+            assert(window == null);
+            this.window = ((GLWindow) drawable);
+        }
 
         this.gl = drawable.getGL().getGL2();
 

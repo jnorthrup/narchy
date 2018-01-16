@@ -30,7 +30,8 @@ abstract public class Causable extends NARService {
     @Nullable
     final AtomicBoolean busy;
 
-    @Deprecated protected Causable(NAR nar) {
+    @Deprecated
+    protected Causable(NAR nar) {
         this(nar, null);
     }
 
@@ -38,7 +39,7 @@ abstract public class Causable extends NARService {
         super(null, id);
         busy = singleton() ? new AtomicBoolean(false) : null;
         can = new Can(term().toString());
-        if (nar!=null)
+        if (nar != null)
             nar.on(this);
     }
 
@@ -58,29 +59,27 @@ abstract public class Causable extends NARService {
 
         Throwable error = null;
         int completed = 0;
-        try {
-            long start = System.nanoTime();
-            try {
-                completed = next(n, iterations);
-            } catch (Throwable t) {
-                error = t;
-            }
-            long end = System.nanoTime();
+        long start = System.nanoTime();
 
-            if (completed >= 0)
-                can.done(completed, (end - start) / 1.0E9);
-        } catch (Exception e) {
-            if (Param.DEBUG)
-                throw new RuntimeException(e);
-            else
-                logger.error("{} {}", this, e);
+        try {
+            completed = next(n, iterations);
+        } catch (Throwable t) {
+            error = t;
         } finally {
             if (busy != null)
                 busy.set(false); //busy is set True in Focus.java
         }
 
+        long end = System.nanoTime();
+
+        if (completed >= 0)
+            can.done(completed, (end - start) / 1.0E9);
+
         if (error != null) {
-            logger.error("{} {}", this, error);
+            if (Param.DEBUG)
+                throw new RuntimeException(error);
+            else
+                logger.error("{} {}", this, error);
         }
 
         return completed;
@@ -98,9 +97,9 @@ abstract public class Causable extends NARService {
      * returns iterations actually completed
      * returns 0 if no work was done, although the time taken will still be recorded
      * if returns -1, then it signals there is no work availble
-     *    and time will not be recorded. further a scheduler can assume
-     *    this will remain true for the remainder of the cycle, so it can be
-     *    removed from the eligible execution list for the current cycle.
+     * and time will not be recorded. further a scheduler can assume
+     * this will remain true for the remainder of the cycle, so it can be
+     * removed from the eligible execution list for the current cycle.
      */
     protected abstract int next(NAR n, int iterations);
 
@@ -108,7 +107,6 @@ abstract public class Causable extends NARService {
      * returns a system estimated value of invoking this. between 0..1.0
      */
     public abstract float value();
-
 
 
 //    public final static class InvokeCause extends NativeTask {

@@ -112,7 +112,6 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
 
             @Override
             public void onClose() {
-                //onDestroyed();
             }
 
             @Override
@@ -128,12 +127,10 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
 
     @Override
     public synchronized void stop() {
-        super.stop();
-
-        //onDestroyed();
-
         term.close();
         term.removeVirtualTerminalListener(listener);
+        listener = null;
+        super.stop();
     }
 
     @Override
@@ -219,6 +216,8 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
                     c = KeyType.ArrowDown;
                     break;
 
+                //TODO other control keys
+
                 default:
                     //System.err.println("character not handled: " + e);
                     return false;
@@ -261,12 +260,11 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
 //    private TerminalPosition lastDrawnCursorPosition;
 
     private BufferedImage backbuffer;
+
     Color cursorColor = Color.ORANGE;
 
 
-    private int fontWidth;
-
-    private int fontHeight;
+    private int fontWidth, fontHeight;
 
     private Font font;
     boolean antialias = true;
@@ -475,11 +473,7 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
         }
 
         if (drawCursor) {
-            if (cursorColor == null) {
-                g.setColor(foregroundColor);
-            } else {
-                g.setColor(cursorColor);
-            }
+            g.setColor(cursorColor == null ? foregroundColor : cursorColor);
 
 //        if (this.deviceConfiguration.getCursorStyle() == CursorStyle.UNDER_BAR) {
 //            g.fillRect(x, y + fontHeight - 3, characterWidth, 2);

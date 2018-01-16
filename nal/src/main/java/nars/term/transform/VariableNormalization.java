@@ -40,23 +40,23 @@ public class VariableNormalization extends VariableTransform {
      */
     public static final VariableTransform singleVariableNormalization = new VariableTransform() {
 
-        @Override public Term apply(Term t) {
-            return t instanceof Variable ? t.normalize((byte)1) : t;
+        @Override public Term apply(Term nonCompound) {
+            return nonCompound instanceof Variable ? nonCompound.normalize((byte)1) : nonCompound;
         }
     };
 
 
     @Override
-    public final Termed apply(Term v) {
-        if (v instanceof Variable) {
-            if (v.equals(Op.Imdex)) {
+    public final Termed apply(Term nonCompound) {
+        if (nonCompound instanceof Variable) {
+            if (nonCompound.equals(Op.Imdex)) {
                 //anonymized to a unique variable each occurrence
-                return newVariableIncreasingCount((Variable) v);
+                return newVariableIncreasingCount((Variable) nonCompound);
             } else {
-                return map.computeIfAbsent((Variable) v, this::newVariableIncreasingCount);
+                return map.computeIfAbsent((Variable) nonCompound, this::newVariableIncreasingCount);
             }
         } else {
-            return v;
+            return nonCompound;
         }
     }
 
