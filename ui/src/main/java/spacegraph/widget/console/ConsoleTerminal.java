@@ -20,6 +20,7 @@ import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
 import java.io.OutputStream;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -32,6 +33,7 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
     public final VirtualTerminal term;
     private final int[] cursorPos = new int[2];
     private VirtualTerminalListener listener;
+    private int cursorCol, cursorRow;
 
     public ConsoleTerminal(int cols, int rows) {
         this(new DefaultVirtualTerminal(new TerminalSize(cols, rows)));
@@ -370,8 +372,6 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
 //    }
 
     private boolean updateBackBuffer() {
-        final int fontWidth = this.getFontWidth();
-        final int fontHeight = this.getFontHeight();
         final TerminalPosition cursorPosition = term.getCursorBufferPosition();
         final TerminalSize viewportSize = term.getTerminalSize();
         int firstVisibleRowIndex = 0 / fontHeight;
@@ -381,40 +381,67 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
 
 //            final AtomicBoolean foundBlinkingCharacters = new AtomicBoolean(this.deviceConfiguration.isCursorBlinking());
 //        this.buildDirtyCellsLookupTable(firstVisibleRowIndex, lastVisibleRowIndex);
-        int previousLastVisibleRowIndex;
-        Graphics2D graphics;
-        int previousFirstVisibleRowIndex;
+
+
+
 
         int cols = viewportSize.getColumns();
-        int cursorCol = cursorPosition.getColumn();
-        int cursorRow = cursorPosition.getRow();
-        int characterWidth = fontWidth * 1; //(TerminalTextUtils.isCharCJK(textCharacter.getCharacter()) ? 2 : 1);
+        int lastCol = this.cursorCol;
+        cursorCol = cursorPosition.getColumn();
+        int lastRow = this.cursorRow;
+        cursorRow = cursorPosition.getRow();
+        //int characterWidth = fontWidth * 1; //(TerminalTextUtils.isCharCJK(textCharacter.getCharacter()) ? 2 : 1);
 
-        term.forEachLine(firstVisibleRowIndex, lastVisibleRowIndex, (row, bufferLine) -> {
+        boolean allDirty;
+        if (term instanceof DefaultVirtualTerminal) {
+            allDirty = ((DefaultVirtualTerminal)term).isWholeBufferDirtyThenReset();
+        } else {
+            allDirty = true;
+        }
 
-            if (needUpdate.get())
-                return; //restart
+        if (allDirty) {
+            term.forEachLine(firstVisibleRowIndex, lastVisibleRowIndex, (row, bufferLine) -> {
 
-            for (int column = 0; column < cols; ++column) {
-                TextCharacter textCharacter = bufferLine.getCharacterAt(column);
-                boolean atCursorLocation = column == cursorCol && row == cursorRow; //cursorPosition.equals(column, row);
+//                if (needUpdate.get())
+//                    return; //restart
 
-                Color foregroundColor = textCharacter.getForegroundColor().toColor();
-                Color backgroundColor = textCharacter.getBackgroundColor().toColor();
+                for (int column = 0; column < cols; ++column) {
+                    redraw(bufferLine, column, row);
+                }
 
-                drawCharacter(backbufferGraphics, textCharacter, column, row, foregroundColor, backgroundColor, fontWidth, fontHeight, characterWidth, atCursorLocation);
-
-//                if (TerminalTextUtils.isCharCJK(textCharacter.getCharacter())) {
-//                    ++column;
-//                }
+            });
+        } else {
+            if (lastCol!=this.cursorCol || lastRow!=this.cursorRow) {
+                redraw(lastCol, lastRow);
+                redraw(cursorCol, cursorRow);
+            }
+            TreeSet<TerminalPosition> dirty = ((DefaultVirtualTerminal) term).getAndResetDirtyCells();
+            if (!dirty.isEmpty()) {
+                dirty.forEach(e -> {
+                    redraw(e.getColumn(), e.getRow());
+                });
             }
 
-        });
+        }
+
         if (needUpdate.get())
             return false;
 
-        //this.lastDrawnCursorPosition = cursorPosition;
         return true;
+    }
+
+    private void redraw(int column, int row) {
+        redraw(term.getBufferCharacter(column, row), column, row);
+    }
+
+    private void redraw(VirtualTerminal.BufferLine bufferLine, int column, int row) {
+        redraw(bufferLine.getCharacterAt(column), column, row);
+    }
+
+    private void redraw(TextCharacter textCharacter, int column, int row) {
+        redraw(backbufferGraphics, textCharacter, column, row,
+                fontWidth,fontHeight,fontWidth
+        );
     }
 
 
@@ -442,9 +469,12 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
 
     }
 
-    private void drawCharacter(Graphics g, TextCharacter character, int columnIndex, int rowIndex, Color foregroundColor, Color backgroundColor, int fontWidth, int fontHeight, int characterWidth, boolean drawCursor) {
+    private void redraw(Graphics g, TextCharacter character, int columnIndex, int rowIndex, int fontWidth, int fontHeight, int characterWidth) {
         int x = columnIndex * fontWidth;
         int y = rowIndex * fontHeight;
+
+        Color foregroundColor = character.getForegroundColor().toColor();
+        Color backgroundColor = character.getBackgroundColor().toColor();
         g.setColor(backgroundColor);
         //g.setClip(x, y, characterWidth, fontHeight);
         g.fillRect(x, y, characterWidth, fontHeight);
@@ -458,20 +488,19 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
             g.drawChars(new char[]{c}, 0, 1, x, y + fontHeight + 1 - descent);
 
 
-        int lineStartY;
-        int lineEndX;
         if (character.isCrossedOut()) {
-            lineStartY = y + fontHeight / 2;
-            lineEndX = x + characterWidth;
+            int lineStartY = y + fontHeight / 2;
+            int lineEndX = x + characterWidth;
             g.drawLine(x, lineStartY, lineEndX, lineStartY);
         }
 
         if (character.isUnderlined()) {
-            lineStartY = y + fontHeight - descent + 1;
-            lineEndX = x + characterWidth;
+            int lineStartY = y + fontHeight - descent + 1;
+            int lineEndX = x + characterWidth;
             g.drawLine(x, lineStartY, lineEndX, lineStartY);
         }
 
+        boolean drawCursor = (columnIndex == cursorCol) && (rowIndex == cursorRow);
         if (drawCursor) {
             g.setColor(cursorColor == null ? foregroundColor : cursorColor);
 

@@ -2,10 +2,14 @@ package spacegraph.input;
 
 import com.jogamp.newt.event.KeyAdapter;
 import com.jogamp.newt.event.KeyEvent;
+import jcog.event.On;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
+import org.eclipse.collections.api.map.primitive.MutableIntObjectMap;
 import org.eclipse.collections.impl.map.mutable.primitive.IntBooleanHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
+import org.eclipse.collections.impl.map.mutable.primitive.SynchronizedIntObjectMap;
 import org.jetbrains.annotations.Nullable;
+import org.roaringbitmap.RoaringBitmap;
 import spacegraph.SpaceGraph;
 import spacegraph.render.JoglPhysics;
 
@@ -19,41 +23,45 @@ public abstract class SpaceKeys extends KeyAdapter implements Consumer<SpaceGrap
     public final JoglPhysics space;
 
     //TODO merge these into one Map
-    final IntBooleanHashMap keyState = new IntBooleanHashMap();
-    final IntObjectHashMap<FloatProcedure> keyPressed = new IntObjectHashMap();
-    final IntObjectHashMap<FloatProcedure> keyReleased = new IntObjectHashMap();
+    RoaringBitmap queue = new RoaringBitmap();
+
+    final IntObjectHashMap<FloatProcedure> _keyPressed = new IntObjectHashMap<>();
+    final MutableIntObjectMap<FloatProcedure> keyPressed = _keyPressed.asSynchronized();
+    final IntObjectHashMap<FloatProcedure> _keyReleased = new IntObjectHashMap();
+    final MutableIntObjectMap<FloatProcedure> keyReleased = _keyReleased.asSynchronized();
+    private final On on;
 
     protected SpaceKeys(SpaceGraph g) {
         this.space = g;
 
 
-        g.addFrameListener(this);
+        on = g.onUpdate.on(this);
     }
 
-    @Override public void accept(SpaceGraph j) {
+    @Override
+    public void accept(SpaceGraph j) {
         float dt = j.getLastFrameTime();
-        synchronized (keyState) {
-            keyState.forEachKeyValue((k, s) -> {
-                FloatProcedure f = ((s) ? keyPressed : keyReleased).get(k);
-                if (f != null) {
+
+        RoaringBitmap queue = this.queue;
+        if (!queue.isEmpty()) {
+            synchronized (on) {
+                this.queue = new RoaringBitmap();
+            }
+            queue.forEach((int k) -> {
+                boolean s = k >= 0; //shouldnt ever be zero actually
+                FloatProcedure f = ((s) ? keyPressed : keyReleased).get(Math.abs(k));
+                if (f != null)
                     f.value(dt);
-                }
             });
         }
     }
 
     protected void watch(int keyCode, @Nullable FloatProcedure ifPressed, @Nullable FloatProcedure ifReleased) {
-        synchronized (keyState) {
-            keyState.put(keyCode, false); //initialized
-            keyState.compact();
-            if (ifPressed != null) {
-                keyPressed.put(keyCode, ifPressed);
-                keyPressed.compact();
-            }
-            if (ifReleased != null) {
-                keyReleased.put(keyCode, ifReleased);
-                keyReleased.compact();
-            }
+        if (ifPressed != null) {
+            keyPressed.put(keyCode, ifPressed);
+        }
+        if (ifReleased != null) {
+            keyReleased.put(keyCode, ifReleased);
         }
     }
 
@@ -70,11 +78,9 @@ public abstract class SpaceKeys extends KeyAdapter implements Consumer<SpaceGrap
     }
 
     protected void setKey(int c, boolean state) {
-        //TODO use a compute-like lambda to avoid duplicating lookup
-        synchronized (keyState) {
-            if (keyState.containsKey(c)) {
-                keyState.put(c, state);
-                keyState.compact();
+        if ((state ? keyPressed : keyReleased).containsKey(c)) {
+            synchronized (on) {
+                queue.add(state ? c : -c);
             }
         }
     }

@@ -14,6 +14,7 @@ import spacegraph.math.v3;
 import spacegraph.phys.util.AnimVector2f;
 import spacegraph.phys.util.AnimVector3f;
 import spacegraph.phys.util.Animated;
+import spacegraph.render.JoglSpace;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;
@@ -78,6 +79,11 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
             Pair<Object, Runnable> x = singletons.get(key);
             return x == null ? null : x.getOne();
         }
+    }
+
+    @Override
+    public On onUpdate(Consumer<JoglSpace> c) {
+        return window.onUpdate.on(c);
     }
 
     @Override

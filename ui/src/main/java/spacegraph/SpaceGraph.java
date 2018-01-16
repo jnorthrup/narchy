@@ -4,6 +4,8 @@ import com.jogamp.nativewindow.util.Point;
 import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.GL2;
+import jcog.event.ListTopic;
+import jcog.event.Topic;
 import jcog.list.FasterList;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.input.FPSLook;
@@ -36,7 +38,7 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
 
 
     final List<Ortho> preAdd = new FasterList();
-    final List<Consumer<SpaceGraph>> frameListeners = new FasterList();
+    public final Topic<SpaceGraph> onUpdate = new ListTopic<>();
     public int windowX, windowY;
 
     @Override
@@ -44,7 +46,7 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
         super.windowDestroyed(windowEvent);
         orthos.clear();
         inputs.clear();
-        frameListeners.clear();
+        onUpdate.clear();
         preAdd.clear();
     }
 
@@ -72,13 +74,6 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
     }
 
 
-    public void addFrameListener(Consumer<SpaceGraph> f) {
-        frameListeners.add(f);
-    }
-
-    public void removeFrameListener(Consumer<SpaceGraph> f) {
-        frameListeners.remove(f);
-    }
 
 
     public Ortho ortho(Surface ortho) {
@@ -206,7 +201,7 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
 
         super.update();
 
-        frameListeners.forEach(f -> f.accept(this));
+        onUpdate.emit(this);
     }
 
 

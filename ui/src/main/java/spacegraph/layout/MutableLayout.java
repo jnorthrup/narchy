@@ -71,11 +71,11 @@ public class MutableLayout extends Layout {
     }
 
     @Override
-    public synchronized void stop() {
-        synchronized (children) {
+    public void stop() {
+        //synchronized (children) {
             super.stop();
             children.clear();
-        }
+        //}
     }
 
     @Override
