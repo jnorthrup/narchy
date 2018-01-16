@@ -229,7 +229,6 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
         super.start(nar);
 
-        enabled.set(true);
 
 
 
@@ -272,6 +271,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
         alwaysWant(happy, nar.confDefault(GOAL));
 
+        //finally:
+        enabled.set(true);
 
     }
 

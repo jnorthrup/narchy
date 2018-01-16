@@ -5,6 +5,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.IntFunction;
 
 public class TopN<E> extends SortedArray<E> implements Consumer<E> {
 
@@ -13,6 +14,9 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
     E min = null;
     float admitThresh = Float.POSITIVE_INFINITY;
 
+    protected TopN(FloatFunction<E> rank) {
+        this(null, rank);
+    }
     public TopN(E[] target, FloatFunction<E> rank) {
         this.list = target;
         this.rank = (x) -> -rank.floatValueOf(x); //descending
@@ -31,7 +35,19 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
     @Override
     public void clear() {
         this.admitThresh = Float.POSITIVE_INFINITY;
+        this.min = null;
         super.clear();
+    }
+
+    public void clear(int newCapacity, IntFunction<E[]> newArray) {
+        this.admitThresh = Float.POSITIVE_INFINITY;
+        this.min = null;
+        if (list == null || list.length != newCapacity) {
+            list = newArray.apply(newCapacity);
+            size = 0;
+        } else {
+            super.clear();
+        }
     }
 
     @Override

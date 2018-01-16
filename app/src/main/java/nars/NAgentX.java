@@ -165,13 +165,13 @@ abstract public class NAgentX extends NAgent {
 //                        //CoolNQuiet
 //                        (512, THREADS, 64, false))
                 .exe(new PoolMultiExec(
-                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)), 256, 128)
+                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)), 256, 512)
                 )
 
                 .time(clock)
                 .deriverAdd(1, 1)
                 .deriverAdd(2, 5)
-                .deriverAdd(6, 6)
+                .deriverAdd(6, 8)
                 //.deriverAdd(6,6) //extra NAL6
                 .deriverAdd("motivation.nal")
                 //.deriverAdd("list.nal")

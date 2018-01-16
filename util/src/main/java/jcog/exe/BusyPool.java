@@ -1,8 +1,11 @@
 package jcog.exe;
 
+import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import jcog.TODO;
 import jcog.Util;
 import jcog.list.FasterList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -11,15 +14,18 @@ import java.util.concurrent.*;
  * Created by I330347 on 8/25/2016.
  * https://github.com/JasonChen86899/ThreadPool/blob/master/src/main/java/HPThreadPool.java
  */
-public class BusyPool extends AbstractExecutorService {
+public abstract class BusyPool extends AbstractExecutorService {
 
     final private BlockingQueue q;
-    protected List<Thread> workers = new FasterList<>();
+    public List<Thread> workers = new FasterList<>();
+    final Worker anonymous;
 
 
     public BusyPool(int threads, BlockingQueue qq) {
 
         this.q = qq;
+
+        anonymous = newWorker(q); //shared by callees when overflow occurrs
 
         for (int i = 0; i < threads; i++) {
             Thread newthread = new Thread(newWorker(q));
@@ -31,11 +37,10 @@ public class BusyPool extends AbstractExecutorService {
             newthread.start();
         }
 
+
     }
 
-    protected Worker newWorker(Queue<Runnable> q) {
-        return new Worker(q);
-    }
+    abstract protected Worker newWorker(Queue<Runnable> q);
 
     @Override
     public void shutdown() {
@@ -82,13 +87,19 @@ public class BusyPool extends AbstractExecutorService {
         queue(command);
     }
 
+    static final Logger logger = LoggerFactory.getLogger(BusyPool.class);
+
     public void queue(Object x) {
-        q.offer(x);
+        while (!q.offer(x)) {
+            //logger.error("lag"); //TODO statistics
+            anonymous.poll();
+        }
     }
 
-    protected static class Worker implements Runnable {
+    abstract protected static class Worker implements Runnable {
 
         final Queue q;
+        final Queue localQ = new ArrayDeque();
 
         protected Worker(Queue q) {
             this.q = q;
@@ -98,42 +109,37 @@ public class BusyPool extends AbstractExecutorService {
             ((Runnable) next).run();
         }
 
-        @Override
-        public void run() {
 
-//            long lastBusyNS = System.nanoTime();
-
-            while (true) {
-                Object next = null;
-//                int done = 0;
-                while ((next = q.poll()) != null) {
-                    try {
-                        run(next);
-                    } catch (Throwable t) {
-                        t.printStackTrace();
-                    }
-//                    done++;
-                }
-
-//                if (done > 0)
-//                    lastBusyNS = System.nanoTime();
-
-                try {
-                    idle();
-                } catch (Throwable t) {
-                    t.printStackTrace();
-                }
-
+        private void runSafe(Object next) {
+            try {
+                run(next);
+            } catch (Throwable t) {
+                logger.error("{} {}", next, t);
             }
         }
 
-
-        /**
-         * called by worker thread
-         */
-        protected void idle() {
-            Thread.yield();
+        protected boolean poll() {
+            Object next;
+            if (null != (next = q.poll())) {
+                runSafe(next);
+                return true;
+            }
+            return false;
         }
+        protected void pollWhileNotEmpty() {
+            while (poll()) ;
+        }
+
+        protected void drain() {
+            int drained = ((DisruptorBlockingQueue) q).drainTo(localQ);
+            if (drained > 0) {
+                localQ.removeIf(x -> {
+                    runSafe(x);
+                    return true;
+                });
+            }
+        }
+
 
     }
 

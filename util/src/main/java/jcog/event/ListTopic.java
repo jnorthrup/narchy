@@ -48,8 +48,12 @@ public class ListTopic<V> extends jcog.list.FastCoWList<Consumer<V>> implements 
                     CountDownLatch l = new CountDownLatch(n);
                     for (Consumer c : cc) {
                         executorService.execute(() -> {
-                            c.accept(x);
-                            l.countDown();
+                            try {
+                                c.accept(x);
+                            } finally {
+                                l.countDown();
+                            }
+
                         });
                     }
                     l.await();

@@ -5,17 +5,21 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.IntFunction;
 
 /**
  * with set of entries to merge (filter) duplicates
  */
 public class TopNUnique<X> extends TopN<X> {
 
-    final Map<X, X> map;
+    final Map<X, X> map = new HashMap();
+
+    protected TopNUnique(FloatFunction<X> rank) {
+        super(rank);
+    }
 
     public TopNUnique(X[] target, FloatFunction<X> rank) {
         super(target, rank);
-        map = new HashMap(target.length);
     }
 
     @Override
@@ -44,8 +48,14 @@ public class TopNUnique<X> extends TopN<X> {
 
     @Override
     public void clear() {
-        super.clear();
         map.clear();
+        super.clear();
+    }
+
+    @Override
+    public void clear(int newCapacity, IntFunction<X[]> newArray) {
+        map.clear();
+        super.clear(newCapacity, newArray);
     }
 
     //forces a sort

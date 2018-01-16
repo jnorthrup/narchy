@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
 import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
 
@@ -42,71 +43,85 @@ public class Focus extends Flip<Focus.Schedule> {
 
     private final FastCoWList<Causable> can;
 
-    public void runDeadline(double subTime, BooleanSupplier kontinue, Random rng, NAR nar) {
+    public void runDeadline(DoubleSupplier startBatch, BooleanSupplier kontinue, Random rng, NAR nar) {
 
-//        if (subTime <= 0)
-//            return;
+        double subTime;
+        while ((subTime = startBatch.getAsDouble()) >= 0) {
 
-        Focus.Schedule s = read();
+            if (subTime < 1E-9) {
+                idle(kontinue); //empty batch
+            } else {
 
-        float[] cw = s.weight;
-        int n = cw.length;
-        if (n == 0)
-            return;
+                Focus.Schedule s = read();
+                float[] sw = s.weight;
+                int n = sw.length;
 
-
-        float[] iterPerSecond = s.supplyPerSecond;
-
-        final int[] safety = {n};
-        Causable[] can = s.can;
-
-        MetalBitSet active = s.active;
-
-        Roulette.decideRouletteWhile(n, c -> cw[c], rng, (IntPredicate) x -> {
-
-            if (!active.get(x)) {
-                return !active.isAllOff();
-            }
-
-            Causable cx = can[x];
-            AtomicBoolean cb = cx.busy;
-            if (cb != null) {
-                if (!cb.compareAndSet(false, true)) {
-                    return --safety[0] < 0;
+                if (n == 0) {
+                    idle(kontinue); //empty batch
                 } else {
-                    active.clear(x); //acquire
-                    safety[0] = n; //reset safety count
+                    float[] iterPerSecond = s.supplyPerSecond;
+
+                    final int[] safety = {n};
+                    Causable[] can = s.can;
+
+                    MetalBitSet active = s.active;
+
+                    double nextSubTime = subTime;
+
+                    int iterAtStart = intValue();
+                    Roulette.decideRouletteWhile(n, c -> sw[c], rng, (IntPredicate) x -> {
+
+                        if (!active.get(x)) {
+                            return !active.isAllOff();
+                        }
+
+                        Causable cx = can[x];
+                        AtomicBoolean cb = cx.busy;
+                        if (cb != null) {
+                            if (!cb.compareAndSet(false, true)) {
+                                return --safety[0] < 0;
+                            } else {
+                                active.clear(x); //acquire
+                                safety[0] = n; //reset safety count
+                            }
+                        }
+
+                        int iters = (int) Math.min(Integer.MAX_VALUE,
+                                Math.max(1, Math.round(iterPerSecond[x] * nextSubTime))
+                        );
+
+                        //System.out.println(cx + " x " + iters + " @ " + n4(iterPerSecond[x]) + "iter/sec in " + Texts.timeStr(subTime*1E9));
+
+                        int completed = -1;
+                        try {
+                            completed = cx.run(nar, iters);
+                        } finally {
+                            if (cb != null) {
+                                cb.set(false); //release
+                                if (completed >= 0) {
+                                    active.set(x);
+                                } else {
+                                    //leave inactive
+                                }
+                            } else {
+                                if (completed < 0) {
+                                    active.clear(x); //set inactive
+                                }
+                            }
+                        }
+
+                        return intValue()==iterAtStart && kontinue.getAsBoolean();
+                    });
                 }
             }
-
-            int iters = (int) Math.min(Integer.MAX_VALUE,
-                    Math.max(1, Math.round(iterPerSecond[x] * subTime))
-            );
-
-            //System.out.println(cx + " x " + iters + " @ " + n4(iterPerSecond[x]) + "iter/sec in " + Texts.timeStr(subTime*1E9));
-
-            int completed = -1;
-            try {
-                completed = cx.run(nar, iters);
-            } finally {
-                if (cb != null) {
-                    cb.set(false); //release
-                    if (completed >= 0) {
-                        active.set(x);
-                    } else {
-                        //leave inactive
-                    }
-                } else {
-                    if (completed < 0) {
-                        active.clear(x); //set inactive
-                    }
-                }
-            }
-
-            return kontinue.getAsBoolean();
-        });
+        }
 
 
+    }
+
+    private void idle(BooleanSupplier kontinue) {
+        int atStart = intValue();
+        do { } while (kontinue.getAsBoolean() && intValue()==atStart);
     }
 
 

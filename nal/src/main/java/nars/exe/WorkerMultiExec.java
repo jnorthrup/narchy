@@ -23,6 +23,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
+import java.util.function.DoubleSupplier;
 import java.util.function.Function;
 import java.util.function.LongPredicate;
 import java.util.stream.Stream;
@@ -104,13 +105,16 @@ public class WorkerMultiExec extends AbstractExec {
                 //nar.random();
                 new XoRoShiRo128PlusRandom(System.nanoTime());
 
-        while (running) {
+        final long[] runUntil = new long[1];
+        DoubleSupplier next = () -> {
+
+            if (!running)
+                return -1;
 
             if (!nar.loop.isRunning()) {
                 Util.sleep(idleSleepPeriodMS);
-                continue;
+                return 0;
             }
-
 
 
             int cycleTimeMS = nar.loop.periodMS.intValue();
@@ -151,14 +155,15 @@ public class WorkerMultiExec extends AbstractExec {
                 cycleNanosRemain = cycleNanosRemain - (postWork - cycleStart);
             }
 
-            long runUntil = cycleStart + cycleNanosRemain;
+            runUntil[0] = cycleStart + cycleNanosRemain;
+            return cycleNanosRemain / 1.0E9 * nar.loop.jiffy.floatValue();
+        };
 
-            focus.runDeadline(
-                    cycleNanosRemain / 1.0E9 * nar.loop.jiffy.floatValue(),
-                    () -> (System.nanoTime() <= runUntil),
-                    rng, nar);
+        focus.runDeadline(
+                next,
+                () -> (System.nanoTime() <= runUntil[0]),
+                rng, nar);
 
-        }
     }
 
 

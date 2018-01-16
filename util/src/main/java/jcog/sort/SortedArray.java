@@ -110,6 +110,7 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
     public void clear() {
         //this.list = (E[]) ArrayUtils.EMPTY_OBJECT_ARRAY;
         Arrays.fill(list, null);
+        //Arrays.fill(list, 0, size, null);
         this.size = 0;
     }
 
@@ -690,7 +691,7 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
      */
     private int findInsertionIndex(
             float elementRank, final int left, final int right,
-            @NotNull final int[] rightBorder, @NotNull FloatFunction<E> cmp) {
+            final int[] rightBorder, FloatFunction<E> cmp) {
 
         assert (right >= left); //"right must be bigger or equals as the left"
 
@@ -740,7 +741,8 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
 
         Object[] l = this.list;
         for (int index = left; index < right; ) {
-            if (0 <= Util.fastCompare(cmp.floatValueOf((E) l[index]), elementRank)) {
+            E anObject = (E) l[index];
+            if (0 <= Util.fastCompare(cmp.floatValueOf(anObject), elementRank)) {
                 return index;
             }
             index++;

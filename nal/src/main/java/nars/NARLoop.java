@@ -17,7 +17,7 @@ public class NARLoop extends Loop {
 
     /** scheduler temporal granularity (in sec) -
      * fraction of cycle that a task is scheduled to run proportionally to */
-    public final FloatParam jiffy = new FloatParam(0.25f, 0.001f, 1f);
+    public final FloatParam jiffy = new FloatParam(0.1f, 0.001f, 1f);
 
     /**
      * starts paused; thread is not automatically created
