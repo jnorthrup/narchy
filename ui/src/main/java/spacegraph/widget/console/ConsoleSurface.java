@@ -7,10 +7,12 @@ import spacegraph.render.Draw;
 import java.awt.*;
 
 
+/** vector font console */
 public abstract class ConsoleSurface extends AbstractConsoleSurface {
 
+    protected Color bg;
 
-    public static final float thickness = 3f;
+    public static final float fontThickness = 3f;
     public static final Color TRANSLUCENT = new Color(Color.TRANSLUCENT);
 
 
@@ -59,7 +61,7 @@ public abstract class ConsoleSurface extends AbstractConsoleSurface {
         //Draw.rect(gl, 0, 0, cols, rows);
 
 
-        gl.glLineWidth(thickness);
+        gl.glLineWidth(fontThickness);
 
         //gl.glColor4f(0.75f, 0.75f, 0.75f, fgAlpha);
         bg = TRANSLUCENT;
@@ -135,6 +137,35 @@ public abstract class ConsoleSurface extends AbstractConsoleSurface {
         gl.glPopMatrix();
 
     }
+
+    /** x,y aka col,row */
+    public abstract int[] getCursorPos();
+
+
+    public static char visible(char cc) {
+        //HACK: un-ANSIfy
+
+        //see: https://github.com/Hexworks/zircon/blob/master/src/main/kotlin/org/codetome/zircon/Symbols.kt
+
+        switch (cc) {
+            case ' ':
+                return 0;
+            case 9474:
+                cc = '|';
+                break;
+            case 9472:
+                cc = '-';
+                break;
+            case 9492:
+                //..
+            case 9496:
+                cc = '*';
+                break;
+        }
+        return cc;
+    }
+
+
 
     /**
      * return true to paint a character's background. if so, then it should set the GL color

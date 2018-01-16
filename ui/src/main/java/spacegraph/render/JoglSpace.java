@@ -1,6 +1,7 @@
 package spacegraph.render;
 
 import com.jogamp.nativewindow.WindowClosingProtocol;
+import com.jogamp.newt.NewtFactory;
 import com.jogamp.newt.event.*;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.*;
@@ -31,7 +32,7 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
 
 
     final static int RENDER_FPS_IDEAL = 30;
-    final static int UPDATE_FPS_IDEAL = 15;
+    final static int UPDATE_FPS_IDEAL = 20;
 
     //protected static final MyFPSAnimator a = new MyFPSAnimator(JoglSpace.FPS_IDEAL, FPS_MIN, FPS_IDEAL);
     protected static final GameAnimatorControl a;
@@ -47,6 +48,7 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
         a = new GameAnimatorControl(RENDER_FPS_IDEAL);
         u = new Loop(UPDATE_FPS_IDEAL) {
             @Override public boolean next() {
+
                 windows.forEach(JoglSpace::updateIfReady);
 //                windows.forEach(w->{
 //                    w.window.getScreen().getDisplay().getEDTUtil().invoke(true, w::update);
@@ -56,17 +58,18 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
         };
 
         //TODO other desktop handlers
-        Desktop.getDesktop().addAppEventListener(new AppHiddenListener() {
-            @Override
-            public void appHidden(AppHiddenEvent e) {
-                System.err.println("i see you hide the app");
-            }
+//        Desktop.getDesktop().addAppEventListener(new AppHiddenListener() {
+//            @Override
+//            public void appHidden(AppHiddenEvent e) {
+//                System.err.println("i see you hide the app");
+//            }
+//
+//            @Override
+//            public void appUnhidden(AppHiddenEvent e) {
+//                System.err.println("i see you unhide the app");
+//            }
+//        });
 
-            @Override
-            public void appUnhidden(AppHiddenEvent e) {
-                System.err.println("i see you unhide the app");
-            }
-        });
 
     }
 
@@ -279,7 +282,8 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
     abstract protected void render(int dtMS);
 
     private void updateIfReady() {
-        if (ready.compareAndSet(true,false)) {
+
+        if (window.isVisible() && ready.compareAndSet(true,false)) {
             update();
         }
     }

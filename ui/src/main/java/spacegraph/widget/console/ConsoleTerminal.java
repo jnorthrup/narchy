@@ -11,29 +11,19 @@ import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminalListener;
 import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.opengl.GL2;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
-import spacegraph.render.Tex;
 
-import java.awt.*;
-import java.awt.font.FontRenderContext;
-import java.awt.image.BufferedImage;
 import java.io.OutputStream;
 import java.util.TreeSet;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by me on 11/14/16.
  */
-public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
-
-    final Tex tex = new Tex();
+public class ConsoleTerminal extends BitmapConsoleSurface/*ConsoleSurface*/ {
 
     public final VirtualTerminal term;
-    private final int[] cursorPos = new int[2];
     private VirtualTerminalListener listener;
-    private int cursorCol, cursorRow;
 
     public ConsoleTerminal(int cols, int rows) {
         this(new DefaultVirtualTerminal(new TerminalSize(cols, rows)));
@@ -46,18 +36,6 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
         resize(term.getTerminalSize().getColumns(), term.getTerminalSize().getRows());
     }
 
-
-
-    private void render() {
-        if (needUpdate.compareAndSet(true, false)) {
-            updateBackBuffer();
-            tex.update(backbuffer);
-
-            //            if (updateBackBuffer()) {
-//                tex.update(backbuffer);
-//            }
-        }
-    }
 
     @Override
     public Appendable append(CharSequence c) {
@@ -135,33 +113,6 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
         super.stop();
     }
 
-    @Override
-    public void paintIt(GL2 gl) {
-        render();
-        tex.paint(gl, bounds);
-    }
-
-
-    @Override
-    public int[] getCursorPos() {
-        TerminalPosition p = term.getCursorPosition();
-        cursorPos[0] = p.getColumn();
-        cursorPos[1] = p.getRow();
-        return cursorPos;
-    }
-
-    public int cursorX() {
-        return term.getCursorPosition().getColumn();
-    }
-
-    public int cursorY() {
-        return term.getCursorPosition().getRow();
-    }
-
-    @Override
-    public TextCharacter charAt(int col, int row) {
-        return term.getCharacter(col, row);
-    }
 
     @Override
     public boolean onKey(KeyEvent e, boolean pressed) {
@@ -243,13 +194,7 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
         return true;
     }
 
-    @Override
-    public void resize(int cols, int rows) {
-        super.resize(cols, rows);
-
-        term.setTerminalSize(new TerminalSize(cols, rows));
-    }
-//
+    //
 //    private static final ImmutableCharSet TYPED_KEYS_TO_IGNORE = CharSets.immutable.of('\n', '\t', '\r', '\b', '\u001b', '\u007f');
 //
 //    private boolean cursorIsVisible;
@@ -258,63 +203,10 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
 
 //    private final boolean blinkOn;
 
-    private final AtomicBoolean needUpdate = new AtomicBoolean(true);
-//    private TerminalPosition lastDrawnCursorPosition;
-
-    private BufferedImage backbuffer;
-
-    Color cursorColor = Color.ORANGE;
+    //    private TerminalPosition lastDrawnCursorPosition;
 
 
-    private int fontWidth, fontHeight;
 
-    private Font font;
-    boolean antialias = true;
-    boolean quality = false;
-
-    private Graphics2D backbufferGraphics;
-
-    {
-
-
-//        this.cursorIsVisible = true;
-//        this.enableInput = false;
-//        this.lastDrawnCursorPosition = null;
-//        this.lastComponentHeight = 0;
-//        this.lastComponentWidth = 0;
-//        this.blinkOn = true;
-        this.backbuffer = null;
-
-        setFontSize(24);
-
-
-    }
-
-    public void setFontSize(int s) {
-        this.font = new Font("Monospaced", 0, s);
-        this.fontWidth = getFontWidth(font);
-        this.fontHeight = getFontHeight(font);
-    }
-
-    private FontRenderContext getFontRenderContext() {
-        return new FontRenderContext(null, antialias ? RenderingHints.VALUE_TEXT_ANTIALIAS_ON : RenderingHints.VALUE_TEXT_ANTIALIAS_OFF, RenderingHints.VALUE_FRACTIONALMETRICS_DEFAULT);
-    }
-
-    private int getFontWidth(Font font) {
-        return (int) font.getStringBounds("W", this.getFontRenderContext()).getWidth();
-    }
-
-    private int getFontHeight(Font font) {
-        return (int) font.getStringBounds("W", this.getFontRenderContext()).getHeight();
-    }
-
-    protected int getFontHeight() {
-        return fontHeight;
-    }
-
-    protected int getFontWidth() {
-        return fontWidth;
-    }
 
 
 //    synchronized void onCreated() {
@@ -326,15 +218,7 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
 //    }
 
 
-    private int getWidth() {
-        return fontWidth * cols;
-    }
-
-    private int getHeight() {
-        return fontHeight * rows;
-    }
-
-//    synchronized void paintComponent(Graphics componentGraphics) {
+    //    synchronized void paintComponent(Graphics componentGraphics) {
 //        int width = this.getWidth();
 //        int height = this.getHeight();
 ////        this.scrollController.updateModel(term.getBufferLineCount() * this.getFontHeight(), height);
@@ -371,18 +255,12 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
 //        this.notifyAll();
 //    }
 
-    private boolean updateBackBuffer() {
+    @Override
+    protected boolean updateBackBuffer() {
         final TerminalPosition cursorPosition = term.getCursorBufferPosition();
         final TerminalSize viewportSize = term.getTerminalSize();
         int firstVisibleRowIndex = 0 / fontHeight;
-        int lastVisibleRowIndex = (this.getHeight()) / fontHeight;
-        this.ensureGraphicBufferHasRightSize();
-
-
-//            final AtomicBoolean foundBlinkingCharacters = new AtomicBoolean(this.deviceConfiguration.isCursorBlinking());
-//        this.buildDirtyCellsLookupTable(firstVisibleRowIndex, lastVisibleRowIndex);
-
-
+        int lastVisibleRowIndex = (this.pixelHeight()) / fontHeight;
 
 
         int cols = viewportSize.getColumns();
@@ -390,7 +268,6 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
         cursorCol = cursorPosition.getColumn();
         int lastRow = this.cursorRow;
         cursorRow = cursorPosition.getRow();
-        //int characterWidth = fontWidth * 1; //(TerminalTextUtils.isCharCJK(textCharacter.getCharacter()) ? 2 : 1);
 
         boolean allDirty;
         if (term instanceof DefaultVirtualTerminal) {
@@ -402,12 +279,12 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
         if (allDirty) {
             term.forEachLine(firstVisibleRowIndex, lastVisibleRowIndex, (row, bufferLine) -> {
 
-//                if (needUpdate.get())
-//                    return; //restart
-
                 for (int column = 0; column < cols; ++column) {
                     redraw(bufferLine, column, row);
                 }
+
+                if (needUpdate.get())
+                    return; //update in next frame
 
             });
         } else {
@@ -417,100 +294,49 @@ public class ConsoleTerminal extends AbstractConsoleSurface /*ConsoleSurface*/ {
             }
             TreeSet<TerminalPosition> dirty = ((DefaultVirtualTerminal) term).getAndResetDirtyCells();
             if (!dirty.isEmpty()) {
-                dirty.forEach(e -> {
+                for (TerminalPosition e: dirty) {
                     redraw(e.getColumn(), e.getRow());
-                });
+                    if (needUpdate.get())
+                        return false; //update in next frame
+                }
             }
 
         }
 
-        if (needUpdate.get())
-            return false;
-
-        return true;
+        return !needUpdate.get();
     }
 
-    private void redraw(int column, int row) {
+//    public int cursorX() {
+//        return term.getCursorPosition().getColumn();
+//    }
+//
+//    public int cursorY() {
+//        return term.getCursorPosition().getRow();
+//    }
+//
+//    public int[] getCursorPos() {
+//        TerminalPosition p = term.getCursorPosition();
+//        int[] cursorPos = new int[2];
+//        cursorPos[0] = p.getColumn();
+//        cursorPos[1] = p.getRow();
+//        return cursorPos;
+//    }
+
+    @Override
+    public TextCharacter charAt(int col, int row) {
+        return term.getCharacter(col, row);
+    }
+
+    @Override
+    public void resize(int cols, int rows) {
+        super.resize(cols, rows);
+
+        term.setTerminalSize(new TerminalSize(cols, rows));
+    }
+
+
+    protected void redraw(int column, int row) {
         redraw(term.getBufferCharacter(column, row), column, row);
-    }
-
-    private void redraw(VirtualTerminal.BufferLine bufferLine, int column, int row) {
-        redraw(bufferLine.getCharacterAt(column), column, row);
-    }
-
-    private void redraw(TextCharacter textCharacter, int column, int row) {
-        redraw(backbufferGraphics, textCharacter, column, row,
-                fontWidth,fontHeight,fontWidth
-        );
-    }
-
-
-    private void ensureGraphicBufferHasRightSize() {
-
-        if (this.backbuffer != null && this.backbuffer.getWidth() == this.getWidth() && this.backbuffer.getHeight() == this.getHeight()) {
-            return;
-        }
-
-        BufferedImage newBackbuffer = new BufferedImage(getWidth(), getHeight(), 1);
-        Graphics2D backbufferGraphics = newBackbuffer.createGraphics();
-        backbufferGraphics.fillRect(0, 0, newBackbuffer.getWidth(), newBackbuffer.getHeight());
-        backbufferGraphics.drawImage(this.backbuffer, 0, 0, null);
-
-        backbufferGraphics.setFont(font);
-        if (antialias) { //if (this.isTextAntiAliased()) {
-            backbufferGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-        }
-        if (quality) {
-            backbufferGraphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        }
-
-        this.backbufferGraphics = backbufferGraphics;
-        this.backbuffer = newBackbuffer;
-
-    }
-
-    private void redraw(Graphics g, TextCharacter character, int columnIndex, int rowIndex, int fontWidth, int fontHeight, int characterWidth) {
-        int x = columnIndex * fontWidth;
-        int y = rowIndex * fontHeight;
-
-        Color foregroundColor = character.getForegroundColor().toColor();
-        Color backgroundColor = character.getBackgroundColor().toColor();
-        g.setColor(backgroundColor);
-        //g.setClip(x, y, characterWidth, fontHeight);
-        g.fillRect(x, y, characterWidth, fontHeight);
-        g.setColor(foregroundColor);
-
-        //FontMetrics fontMetrics = g.getFontMetrics();
-        //g.drawString(Character.toString(character.getCharacter()), x, y + fontHeight - fontMetrics.getDescent() + 1);
-        final int descent = 6;
-        char c = character.getCharacter();
-        if (c != ' ')
-            g.drawChars(new char[]{c}, 0, 1, x, y + fontHeight + 1 - descent);
-
-
-        if (character.isCrossedOut()) {
-            int lineStartY = y + fontHeight / 2;
-            int lineEndX = x + characterWidth;
-            g.drawLine(x, lineStartY, lineEndX, lineStartY);
-        }
-
-        if (character.isUnderlined()) {
-            int lineStartY = y + fontHeight - descent + 1;
-            int lineEndX = x + characterWidth;
-            g.drawLine(x, lineStartY, lineEndX, lineStartY);
-        }
-
-        boolean drawCursor = (columnIndex == cursorCol) && (rowIndex == cursorRow);
-        if (drawCursor) {
-            g.setColor(cursorColor == null ? foregroundColor : cursorColor);
-
-//        if (this.deviceConfiguration.getCursorStyle() == CursorStyle.UNDER_BAR) {
-//            g.fillRect(x, y + fontHeight - 3, characterWidth, 2);
-//        } else if (this.deviceConfiguration.getCursorStyle() == CursorStyle.VERTICAL_BAR) {
-            g.fillRect(x, y + 1, characterWidth, fontHeight - 2);
-//        }
-        }
-
     }
 
 
