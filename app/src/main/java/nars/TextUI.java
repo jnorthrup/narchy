@@ -31,8 +31,7 @@ import jcog.pri.op.PriMerge;
 import nars.control.Activate;
 import nars.control.DurService;
 import nars.control.NARService;
-import nars.op.Operator;
-import nars.op.nlp.Hear;
+import nars.language.NARHear;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 
@@ -327,7 +326,7 @@ public class TextUI {
 
                     if (!t.isEmpty()) {
 
-                        Hear.hear(nar, t, "console");
+                        NARHear.hear(nar, t, "console");
 
                     }
                     runOnGUIThreadIfExistsOtherwiseRunDirect(InputTextBox.this::takeFocus);

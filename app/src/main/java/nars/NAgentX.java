@@ -5,26 +5,23 @@ import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatPolarNormalized;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.pri.mix.control.MixContRL;
-import nars.control.*;
+import jcog.signal.Bitmap2D;
+import nars.control.Deriver;
 import nars.exe.Focus;
 import nars.exe.PoolMultiExec;
-import nars.exe.WorkerMultiExec;
 import nars.gui.Vis;
 import nars.gui.graph.EdgeDirected;
 import nars.gui.graph.run.SimpleConceptGraph1;
 import nars.index.term.map.CaffeineIndex;
-import nars.op.Implier;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
-import nars.op.video.*;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.time.RealTime;
 import nars.time.Tense;
 import nars.truth.Truth;
-import jcog.signal.Bitmap2D;
 import nars.util.signal.CameraSensor;
 import nars.util.signal.Sensor2D;
+import nars.video.*;
 import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.core.Bead;
 import net.beadsproject.beads.core.UGen;
@@ -62,7 +59,8 @@ import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static nars.gui.Vis.reflect;
 import static spacegraph.SpaceGraph.window;
-import static spacegraph.layout.Grid.*;
+import static spacegraph.layout.Grid.col;
+import static spacegraph.layout.Grid.grid;
 
 /**
  * Extensions to NAgent interface:
@@ -856,22 +854,7 @@ abstract public class NAgentX extends NAgent {
         }
     }
 
-    private static class VocalCommentary {
-        public VocalCommentary(Clock ac, NAgent a) {
 
-            NARchy.installSpeech(a.nar);
-            try {
-                a.nar.goal($("speak(ready)"), Tense.Present, 1f, 0.9f);
-//                a.nar.believe($("(" + a.sad + " =|> speak(sad))."));
-//                a.nar.goal($("(" + a.sad + " &| speak(sad))"));
-                a.nar.believe($("(" + a.happy + " =|> speak(happy))."));
-                a.nar.goal($("(" + a.happy + " &| speak(happy))"));
-            } catch (Narsese.NarseseException e) {
-                e.printStackTrace();
-            }
-
-        }
-    }
 
 
     //    private static class CorePanel extends Surface{

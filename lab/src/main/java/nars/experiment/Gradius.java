@@ -6,14 +6,10 @@ import nars.NAR;
 import nars.NAgentX;
 import nars.concept.ScalarConcepts;
 import nars.gui.Vis;
-import nars.op.AutoConceptualizer;
-import nars.op.video.Scale;
-import nars.term.Term;
-import nars.time.Tense;
+import nars.video.Scale;
 import nars.util.signal.CameraSensor;
 
 import static java4k.gradius4k.Gradius4K.*;
-import static nars.Op.QUESTION;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.layout.Grid.col;
 

@@ -12,7 +12,7 @@ import jcog.learn.ql.HaiQAgent;
 import nars.NAR;
 import nars.Narsese;
 import nars.experiment.NAgentY;
-import nars.op.video.PixelBag;
+import nars.video.PixelBag;
 import nars.util.signal.CameraSensor;
 
 import java.awt.*;

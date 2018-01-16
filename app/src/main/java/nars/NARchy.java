@@ -1,26 +1,23 @@
 package nars;
 
-import com.google.common.base.Joiner;
 import jcog.User;
 import jcog.math.random.XoRoShiRo128PlusRandom;
-import nars.audio.NARAudioVideo;
+import nars.audio.NARAudio;
 import nars.exe.Focus;
 import nars.exe.PoolMultiExec;
-import nars.op.AtomicExec;
-import nars.op.Operator;
-import nars.op.java.Opjects;
-import nars.op.nlp.Hear;
+import nars.language.NARHear;
+import nars.language.NARSpeak;
 import nars.op.stm.ConjClustering;
-import nars.term.atom.Atomic;
-import nars.term.sub.Subterms;
 import nars.time.RealTime;
-import nars.time.Tense;
-import org.jetbrains.annotations.Nullable;
+import nars.video.NARVideo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static nars.Op.BELIEF;
 
 public class NARchy extends NARS {
 
+    static final Logger logger = LoggerFactory.getLogger(NARchy.class);
 
     public static NAR ui() {
 
@@ -51,11 +48,28 @@ public class NARchy extends NARS {
         ConjClustering conjClusterB = new ConjClustering(nar, BELIEF, (Task::isInput), 16, 64);
         //ConjClustering conjClusterG = new ConjClustering(nar, GOAL, true, false, 16, 64);
 
-        new NARAudioVideo(nar);
-        
-        Hear.readURL(nar);
 
-        installSpeech(nar);
+
+        //auxiliary modules, load in background thread
+        nar.runLater(()->{
+
+            new NARAudio(nar);
+
+            new NARVideo(nar);
+
+            NARHear.readURL(nar);
+
+            new NARSpeak(nar);
+
+//            //new NoteFS("/tmp/nal", nar);
+
+
+//            InterNAR i = new InterNAR(nar, 8, 0);
+//            i.recv.preAmp(0.1f);
+//            i.runFPS(2);
+
+
+        });
 
         return nar;
     }
@@ -65,76 +79,4 @@ public class NARchy extends NARS {
         return ui();
     }
 
-    public static class Speech {
-        private final NAR nar;
-        private final AtomicExec sayer;
-        private final Opjects op;
-
-        public Speech() {
-            //for proxy
-            nar = null; sayer = null; op = null;
-        }
-
-        public Speech(NAR nar) {
-            this.nar = nar;
-
-            nar.onOp("say", sayer = new AtomicExec((t, n) -> {
-                @Nullable Subterms args = Operator.args(t);
-                if (args.AND(x -> !x.op().var)) {
-                    String text = Joiner.on(", ").join(args);
-                    if (text.isEmpty())
-                        return;
-
-//                    Term tokens = $.conj(Twokenize.twokenize(text).stream()
-//                            .map(x -> $.func("say", $.the(x.toString())))
-//                            .toArray(Term[]::new));
-
-                    System.err.println(text);
-                    //MaryTTSpeech.speak(text);
-
-                    Atomic qt = $.quote(text);
-                    n.believe($.func("say", qt), Tense.Present);
-                    Hear.hearText(n, $.unquote(qt), n.self().toString(), 200, this.nar.priDefault(BELIEF));
-                }
-            }, 0.51f));
-
-
-            this.op = new Opjects(nar);
-            op.the("speech", this);
-
-            chatty();
-        }
-
-
-        public void quiet() {
-            sayer.exeThresh.set(1f);
-        }
-
-        public void normal() {
-            sayer.exeThresh.set(0.75f);
-        }
-
-        public void chatty() {
-            sayer.exeThresh.set(0.51f);
-        }
-    }
-
-    public static void installSpeech(NAR nar) {
-
-
-        //MaryTTSpeech.speak(""); //forces load of TTS so it will be ready ASAP and not load on the first use
-
-        new Speech(nar);
-
-//            try {
-//                //nar.believe($.$("(hear:$1 ==>+1 say:$1)"), Tense.Eternal);
-//                //nar.believe($.$("(say:$1 ==>+1 hear:$1)"), Tense.Eternal);
-//                nar.goal($.$("say(#1)"), Tense.Eternal, 1f);
-//                nar.goal($.$("(hear:#1 &&+1 say:#1)"), Tense.Eternal, 1f);
-//                nar.goal($.$("((hear(#1) &&+1 hear(#2)) &&+1 say(#1,#2))"), Tense.Eternal, 1f);
-//            } catch (Narsese.NarseseException e) {
-//                e.printStackTrace();
-//            }
-
-    }
 }

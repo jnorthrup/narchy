@@ -54,6 +54,7 @@ public class AudioSource implements WaveSource {
         Mixer.Info[] minfoSet = AudioSystem.getMixerInfo();
         System.out.println("Devices:\n\t" + Joiner.on("\n\t").join(minfoSet));
     }
+
     public static void print() {
         Mixer.Info[] minfoSet = AudioSystem.getMixerInfo();
 

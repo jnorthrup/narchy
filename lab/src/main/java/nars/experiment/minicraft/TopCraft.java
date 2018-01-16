@@ -6,11 +6,9 @@ import nars.NAgentX;
 import nars.Narsese;
 import nars.experiment.minicraft.top.InputHandler;
 import nars.experiment.minicraft.top.TopDownMinicraft;
-import nars.op.video.AutoclassifiedBitmap;
-import nars.op.video.PixelBag;
+import nars.video.AutoclassifiedBitmap;
+import nars.video.PixelBag;
 import nars.util.signal.Sensor2D;
-
-import java.util.function.Supplier;
 
 import static spacegraph.SpaceGraph.window;
 

@@ -12,7 +12,7 @@ import com.googlecode.lanterna.terminal.TerminalResizeListener;
 import com.googlecode.lanterna.terminal.swing.*;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import jcog.Texts;
-import nars.audio.NARAudioVideo;
+import nars.audio.NARAudio;
 import nars.gui.Vis;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Scale;
@@ -239,7 +239,7 @@ public class Shell {
 
         ConsoleWidget c = new ConsoleWidget(new TextUI(nar).session(TERMINAL_DISPLAY_FPS));
 
-        NARAudioVideo audio = new NARAudioVideo(nar, 0.2f);
+        NARAudio audio = new NARAudio(nar);
         //audio.sensors.keySet().forEach(s -> s.sensor.pri(()->0.05f));
 
 

@@ -7,9 +7,12 @@ import nars.NAR;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class NARService extends Services.AbstractService<NAR> implements Termed {
 
+    static final Logger logger = LoggerFactory.getLogger(NARService.class);
 
     public final Term id;
     protected Ons ons;
@@ -30,6 +33,7 @@ public class NARService extends Services.AbstractService<NAR> implements Termed 
     @Override
     protected void start(NAR nar) {
         synchronized (this) {
+            logger.info("start {}", id);
             ons = new Ons(nar.eventClear.on(n -> clear())) {
                 @Override
                 public void off() {
@@ -48,6 +52,7 @@ public class NARService extends Services.AbstractService<NAR> implements Termed 
     @Override
     protected final void stop(NAR nar) {
         synchronized (this) {
+            logger.info("stop {}", id);
             stopping(nar);
             nar.services.remove(this.id);
         }

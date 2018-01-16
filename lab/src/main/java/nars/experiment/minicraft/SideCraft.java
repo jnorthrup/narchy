@@ -7,8 +7,8 @@ import nars.NAgentX;
 import nars.Narsese;
 import nars.experiment.minicraft.side.SideScrollMinicraft;
 import nars.experiment.minicraft.side.awtgraphics.AwtGraphicsHandler;
-import nars.op.video.AutoclassifiedBitmap;
-import nars.op.video.PixelBag;
+import nars.video.AutoclassifiedBitmap;
+import nars.video.PixelBag;
 import nars.util.signal.Sensor2D;
 
 import java.awt.image.BufferedImage;

@@ -18,6 +18,10 @@ public class FastCoWList<X> extends FasterList<X> {
     @Nullable
     public volatile X[] copy;
 
+    public FastCoWList(IntFunction<X[]> arrayBuilder) {
+        this(0, arrayBuilder);
+    }
+
     public FastCoWList(int capacity, IntFunction<X[]> arrayBuilder) {
         super(capacity);
         this.copy = null;
