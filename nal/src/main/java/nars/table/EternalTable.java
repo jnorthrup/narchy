@@ -267,10 +267,9 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                 );
 
 
-        Truth revisionTruth = conclusion;
         Task prevBelief = oldBelief;
-        Task x = Task.tryTask(t, y.punc(), conclusion, (term, truth) ->
-                new NALTask(t,
+        Task x = Task.tryTask(t, y.punc(), conclusion, (term, revisionTruth) ->
+                new NALTask(term,
                         y.punc(),
                         revisionTruth,
                         nar.time() /* creation time */,

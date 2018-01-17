@@ -112,15 +112,15 @@ public class Arkancide extends NAgentX {
 
         paddleSpeed = 120 * noid.BALL_VELOCITY;
 
-        //initBipolar();
-        initToggle();
+        initBipolar();
+        //initToggle();
 
-        float resX = 0.02f; //Math.max(0.01f, 0.5f / visW); //dont need more resolution than 1/pixel_width
-        float resY = 0.02f; //Math.max(0.01f, 0.5f / visH); //dont need more resolution than 1/pixel_width
+        float resX = 0.05f; //Math.max(0.01f, 0.5f / visW); //dont need more resolution than 1/pixel_width
+        float resY = 0.05f; //Math.max(0.01f, 0.5f / visH); //dont need more resolution than 1/pixel_width
 
         if (cam) {
 
-            BufferedImageBitmap2D sw = new Scale(new SwingBitmap2D(noid), visW, visH).blur();
+            BufferedImageBitmap2D sw = new Scale(new SwingBitmap2D(noid), visW, visH);//.blur();
             CameraSensor cc = senseCamera(id.toString(), sw, visW, visH)
                     .resolution(0.25f);
 //            CameraSensor ccAe = senseCameraReduced($.the("noidAE"), sw, 16)
@@ -243,11 +243,11 @@ public class Arkancide extends NAgentX {
     }
 
     private void initBipolar() {
-        actionBipolar($.inh("X", id), (dx) -> {
+        actionBipolar($.inh("X", id), true, (dx) -> {
             if (noid.paddle.move(dx * paddleSpeed))
                 return dx;
             else
-                return Float.NaN;
+                return 0;
         });
     }
 

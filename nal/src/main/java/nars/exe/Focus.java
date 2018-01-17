@@ -42,6 +42,9 @@ public class Focus extends Flip<Focus.Schedule> {
 
     private final FastCoWList<Causable> can;
 
+    /** how quickly the iteration demand can grow from previous (max) values */
+    static final double IterGrowthRateLimit = 1.5;
+
     /**
      *
      * @param startBatch - supplies the max amount of nanoseconds an execution can be calculated to
@@ -97,16 +100,20 @@ public class Focus extends Flip<Focus.Schedule> {
 
 
                         int itersNext = 1;
-                        double itersPrev = s.doneMean[x];
+                        double donePrevMean = s.doneMean[x];
 
                         final double ITER_EPSILON = 0.001;
-                        if (itersPrev == itersPrev && itersPrev > ITER_EPSILON) {
+                        if (donePrevMean == donePrevMean && donePrevMean > ITER_EPSILON) {
 
-                            double timeNS = s.timeMean[x];
-                            if (timeNS == timeNS && timeNS > 0) {
+                            double timePrev = s.timeMean[x];
+                            if (timePrev == timePrev && timePrev > 0) {
+                                long donePrevMax = s.doneMax[x];
+                                //TODO this growth limit value should decrease throughout the cycle as each execution accumulates the total work it is being compared to
+                                //this will require doneMax to be an atomic accmulator
                                 itersNext = (int) Math.max(1,
-                                     Math.round(itersPrev * rt/timeNS )
+                                        Math.round(Math.min(donePrevMean * rt/timePrev, donePrevMax * IterGrowthRateLimit ))
                                 );
+
                             }
 
                         }
@@ -166,6 +173,7 @@ public class Focus extends Flip<Focus.Schedule> {
 
         /** cache for iter.getMean() and time.getMean() */
         public double[] doneMean = null;
+        public long[] doneMax = null;
         public double[] timeMean = null;
 
         final static int WINDOW = 4;
@@ -205,6 +213,7 @@ public class Focus extends Flip<Focus.Schedule> {
                 timeMean = new double[n];
                 done = new DescriptiveStatistics[n];
                 doneMean = new double[n];
+                doneMax = new long[n];
 
                 for (int i = 0; i < n; i++) {
                     time[i] = new DescriptiveStatistics(WINDOW);
@@ -232,6 +241,7 @@ public class Focus extends Flip<Focus.Schedule> {
                     DescriptiveStatistics d = this.done[i];
                     d.addValue(committed[1]);
                     this.doneMean[i] = d.getMean();
+                    this.doneMax[i] = Math.round(d.getMax());
                 }
 
                 value[i] = c.value();
