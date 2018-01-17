@@ -5,6 +5,7 @@ import nars.subterm.Subterms;
 
 import static nars.time.Tense.DTERNAL;
 
+/** use with extreme caution when op is not PROD */
 public class CompoundLight implements Compound {
 
     final Subterms subs;
@@ -44,7 +45,17 @@ public class CompoundLight implements Compound {
     }
 
     @Override
+    public Term the() {
+        return op.the(DTERNAL, arrayShared());
+    }
+
+    @Override
     public final int dt() {
         return DTERNAL;
     }
+
+    //    @Override
+//    public Term dt(int nextDT) {
+//        //TODO totally light version of this, including any new Base that needs constructed
+//    }
 }

@@ -638,6 +638,7 @@ public enum Op {
 
     public final boolean beliefable, goalable;
 
+    /** TODO option for instantiating CompoundLight base's in the bottom part of this */
     public static Term dt(Compound base, int nextDT) {
 
         if (nextDT == XTERNAL) {
@@ -1485,7 +1486,10 @@ public enum Op {
                 }
 
 
-                //factor out any common subterms iff concurrent
+                if (predicate.op() == CONJ) {
+
+                }
+//                //factor out any common subterms iff concurrent
 //                if (dtConcurrent) {
 //
 //                    //factor common events from subj/pred in concurrent impl
@@ -1618,6 +1622,8 @@ public enum Op {
 
                     if (contradiction)
                         return Null;
+
+                    //TODO if pred has >1 events, pull all the events except the last into a conj for the subj then impl the final event
 
                     if (peChange[0]) {
                         //change occurred

@@ -24,20 +24,17 @@ package nars.term;
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.Util;
 import jcog.list.FasterList;
-import nars.$;
-import nars.IO;
-import nars.Op;
-import nars.Param;
+import nars.*;
 import nars.index.term.TermContext;
 import nars.op.mental.AliasConcept;
-import nars.term.anon.Anom;
-import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
-import nars.term.atom.Int;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
 import nars.subterm.TermMetadata;
 import nars.subterm.TermVector;
+import nars.term.anon.Anom;
+import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
+import nars.term.atom.Int;
 import nars.term.subst.MapSubst;
 import nars.term.subst.Subst;
 import nars.term.subst.Unify;
@@ -866,5 +863,13 @@ public interface Term extends Termed, Comparable<Termed> {
         s.vol += volume();
         s.hash = Util.hashCombine(s.hash, hashCode());
     }
+
+    default Term the() {
+        if (this instanceof The)
+            return this;
+        else
+            throw new RuntimeException(getClass() + " needs to impl the()");
+    }
+
 }
 

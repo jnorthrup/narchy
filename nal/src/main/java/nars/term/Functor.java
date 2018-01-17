@@ -9,10 +9,10 @@ import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.concept.PermanentConcept;
 import nars.concept.builder.ConceptBuilder;
+import nars.subterm.Subterms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.pred.AbstractPred;
-import nars.subterm.Subterms;
 import nars.term.var.Variable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +23,6 @@ import java.util.function.Supplier;
 
 import static nars.Op.*;
 import static nars.term.Terms.atomOrNull;
-import static nars.term.atom.Atomic.the;
 
 /**
  * a functor is a term transform which immediately returns
@@ -63,7 +62,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
     }
 
     static Atom fName(String termAtom) {
-        return atomOrNull(the(termAtom));
+        return atomOrNull(Atomic.the(termAtom));
     }
 
     /**

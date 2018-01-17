@@ -295,10 +295,17 @@ public interface Termlike {
 
     /**
      * total # of variables, excluding pattern variables
+     * preferably use hasVar... methods to test presence
      */
     default int vars() {
-        return hasAny(VAR_INDEP.bit | VAR_DEP.bit | VAR_QUERY.bit) ?
-                sum(Term::vars) : 0;
+        return hasVars() ? sum(Term::vars) : 0;
+    }
+
+    /**
+     * whether contains any variables, excluding pattern variables
+     */
+    default boolean hasVars() {
+        return hasAny(VAR_INDEP.bit | VAR_DEP.bit | VAR_QUERY.bit);
     }
 
     /**

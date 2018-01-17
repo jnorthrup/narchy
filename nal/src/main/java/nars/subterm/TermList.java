@@ -11,7 +11,6 @@ public class TermList extends FasterList<Term> implements Subterms {
 
 //    @Nullable
 //    transient TermMetadata meta = null;
-
     public TermList() {
         super(4);
     }
@@ -54,11 +53,13 @@ public class TermList extends FasterList<Term> implements Subterms {
     public boolean equals(Object obj) {
         if (this == obj) return true;
         //use hash if available
-        if (!(obj instanceof TermList /* an immutable instance will have hash precalculated for quick compare */)) {
+        if ((obj instanceof TermList)) {
+            return fastListEquals(((TermList)obj));
+        } else {
             if (hashCode()!=obj.hashCode())
                 return false;
+            return ((Subterms)obj).equalTerms(this);
         }
-        return ((Subterms)obj).equalTerms(this);
     }
 
     public TermList added(Term... x) {

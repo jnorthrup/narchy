@@ -15,6 +15,10 @@ import org.slf4j.LoggerFactory;
 //@ExtendWith(NALTestStats.class)
 public abstract class NALTest {
 
+    static {
+        Param.DEBUG = true;
+    }
+
     protected static final org.slf4j.Logger logger = LoggerFactory.getLogger(NALTest.class);
 
     public final NAR nar;

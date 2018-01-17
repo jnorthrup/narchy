@@ -407,6 +407,7 @@ public class TemporalTermTest {
         );
     }
 
+
     @Test
     public void testCommutiveTemporalityDepVar1() {
         testParse("(goto(#1) &&+5 at(SELF,#1))");

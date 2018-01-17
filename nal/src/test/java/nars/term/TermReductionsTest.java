@@ -172,6 +172,14 @@ public class TermReductionsTest extends NarseseTest {
         assertEquals("((a&&b)-->(a&&c))", $("((a&&b)-->(a&&c))").toString());
     }
 
+
+    @Test public void implSubjSimultaneousWithTemporalPred() {
+        Term x = $safe("((--,(tetris-->happy))=|>(tetris(isRow,(2,true),true) &&+5 (tetris-->happy)))");
+        assertEquals(
+                "((--,(tetris-->happy))&|tetris(isRow,(2,true),true)) ==>+5 (tetris-->happy))",
+                x.toString());
+    }
+
     @Test
     public void testPointlessImplicationSubtermRepeat() throws Narsese.NarseseException {
         assertEquals("((a &&+5 x) ==>+5 c)", $("((a &&+5 x)=|>(x &&+5 c))").toString());

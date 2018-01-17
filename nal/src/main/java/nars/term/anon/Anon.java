@@ -122,7 +122,7 @@ public class Anon {
 
     public Task put(Task t) {
         Term x = t.term();
-        assert (x.isNormalized());
+        assert(x.isNormalized()): t + " has non-normalized Term content";
         Term y = put(x);
         if (y == null || y instanceof Bool) {
             throw new RuntimeException("Anon fail for term: " + t);

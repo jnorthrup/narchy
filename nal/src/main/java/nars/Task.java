@@ -191,14 +191,14 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 //    }
 
 
-    static boolean validTaskTerm(Term t) {
+    static boolean validTaskTerm(@Nullable Term t) {
         return validTaskTerm(t, (byte) 0, true);
     }
 
     static boolean validTaskTerm(@Nullable Term t, byte punc, boolean safe) {
 
         if (t == null)
-            return fail(t, "null content", safe);
+            return fail(t, "null content", false /* FORCE */);
 
         if (punc != COMMAND) {
 
@@ -461,7 +461,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             negated = false;
         }
 
-        t = t.normalize();
+        t = t.normalize().the();
 
         if (Task.validTaskTerm(t, punc, safe)) {
             return pair(t, negated);

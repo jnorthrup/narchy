@@ -99,6 +99,9 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
 
     @Nullable
     default Termed apply(Term x) {
+
+        x = x.the();
+
         Termed y = build(x);
         if (y == null) {
             return null;

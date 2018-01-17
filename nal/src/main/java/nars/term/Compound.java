@@ -600,8 +600,8 @@ public interface Compound extends Term, IPair, Subterms {
         if (op() == NEG) {
 
             Term u = sub(0);
-            if (!u.isNormalized() && isNormalized())
-                ((TermVector) u.subterms()).setNormalized();
+//            if (!u.isNormalized() && isNormalized())
+//                ((TermVector) u.subterms()).setNormalized();
             return u;
 
         } else {

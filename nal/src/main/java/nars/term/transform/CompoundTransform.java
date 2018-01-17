@@ -3,12 +3,12 @@ package nars.term.transform;
 import nars.$;
 import nars.Op;
 import nars.derive.match.EllipsisMatch;
-import nars.index.term.ByteKeyProtoCompound;
 import nars.index.term.TermContext;
+import nars.subterm.Subterms;
+import nars.subterm.TermList;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.subterm.Subterms;
 import nars.term.var.NormalizedVariable;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,6 +37,7 @@ public interface CompoundTransform extends TermContext {
 
             Term z = the(op, dt, yy);
 
+
 //            if (op==x.op() && Arrays.equals(xx.arrayShared(),z.subterms().arrayShared())) {
 //                System.err.println("duplicated unnecessarily? ");
 //            }
@@ -60,7 +61,7 @@ public interface CompoundTransform extends TermContext {
 
         int s = x.subs();
 
-        ByteKeyProtoCompound y = null;
+        TermList y = null;
 
         for (int i = 0; i < s; i++) {
 
@@ -76,7 +77,7 @@ public interface CompoundTransform extends TermContext {
                 int xes = xe.subs();
 
                 if (y == null) {
-                    y = new ByteKeyProtoCompound( null,s - 1 + xes /*estimate */); //create anyway because this will signal if it was just empty
+                    y = new TermList(s - 1 + xes /*estimate */); //create anyway because this will signal if it was just empty
                     if (i > 0) x.forEach(y::add, 0, i); //add previously skipped subterms
                 }
 
@@ -107,7 +108,7 @@ public interface CompoundTransform extends TermContext {
                     }
 
                     if (y == null) {
-                        y = new ByteKeyProtoCompound(null, s);
+                        y = new TermList(s);
                         if (i > 0) x.forEach(y::add, 0, i); //add previously skipped subterms
                     }
                 }

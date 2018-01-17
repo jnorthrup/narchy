@@ -33,7 +33,7 @@ public class NARService extends Services.AbstractService<NAR> implements Termed 
     @Override
     protected void start(NAR nar) {
         synchronized (this) {
-            logger.info("start {}", id);
+            logger.debug("start {}", id);
             ons = new Ons(nar.eventClear.on(n -> clear())) {
                 @Override
                 public void off() {
@@ -52,7 +52,7 @@ public class NARService extends Services.AbstractService<NAR> implements Termed 
     @Override
     protected final void stop(NAR nar) {
         synchronized (this) {
-            logger.info("stop {}", id);
+            logger.debug("stop {}", id);
             stopping(nar);
             nar.services.remove(this.id);
         }

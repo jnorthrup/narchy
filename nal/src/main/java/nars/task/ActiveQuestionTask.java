@@ -56,7 +56,7 @@ public class ActiveQuestionTask extends NALTask implements Consumer<Task> {
     }
 
     public ActiveQuestionTask(@NotNull Term term, byte punc, long occ, int history, NAR nar, @NotNull BiConsumer<? super ActiveQuestionTask, Task> eachAnswer) {
-        super(term, punc, null, nar.time(), occ, occ, new long[]{nar.time.nextStamp()});
+        super(term.the(), punc, null, nar.time(), occ, occ, new long[]{nar.time.nextStamp()});
 
         budget(nar);
 

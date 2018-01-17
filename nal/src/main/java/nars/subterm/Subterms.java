@@ -170,7 +170,17 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default boolean isNormalized() {
-        return (vars() == 0 && varPattern() == 0); //assume un-normalized if any variable appears
+        //int totalVars = vars() + varPattern();
+        //if (totalVars == 0) {
+        if (!hasVars() && !hasAny(Op.VAR_PATTERN)) {
+            //assume normalized if no variable appears
+            return true;
+        } else {
+            //assume it's unnormalized if contains a variable
+            //throw new TODO("unsure if normalized");
+            //TODO a quick test if there is only one variable and it is the #1,$1, etc of its type
+            return false;
+        }
     }
 
     /**
