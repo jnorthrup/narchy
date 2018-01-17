@@ -44,6 +44,14 @@ public class AspectAlign extends Layout {
         this(the, h / w, a, 1f);
     }
 
+    public AspectAlign(Surface the, float aspect) {
+        this(the, aspect, Align.Center);
+    }
+
+    public AspectAlign(Surface the, float aspect, Align a) {
+        this(the, aspect, a, 1);
+    }
+
     public AspectAlign(Surface the, float aspect, Align a, float scale) {
         this(the, aspect, a, scale, scale);
     }
@@ -57,9 +65,14 @@ public class AspectAlign extends Layout {
     }
 
     @Override
-    public synchronized void start(@Nullable Surface parent) {
-        super.start(parent);
-        if (the!=null) the.start(this);
+    public void start(@Nullable Surface parent) {
+        synchronized (this) {
+            super.start(parent);
+            if (the != null) {
+                the.start(this);
+                layout();
+            }
+        }
     }
 
 

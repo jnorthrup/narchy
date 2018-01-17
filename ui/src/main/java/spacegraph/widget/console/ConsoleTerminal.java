@@ -17,9 +17,7 @@ import spacegraph.Surface;
 import java.io.OutputStream;
 import java.util.TreeSet;
 
-/**
- * Created by me on 11/14/16.
- */
+
 public class ConsoleTerminal extends BitmapConsoleSurface/*ConsoleSurface*/ {
 
     public final VirtualTerminal term;
@@ -33,7 +31,7 @@ public class ConsoleTerminal extends BitmapConsoleSurface/*ConsoleSurface*/ {
     public ConsoleTerminal(VirtualTerminal t) {
 
         this.term = t;
-        resize(term.getTerminalSize().getColumns(), term.getTerminalSize().getRows());
+        //resize(term.getTerminalSize().getColumns(), term.getTerminalSize().getRows());
     }
 
 
@@ -116,9 +114,6 @@ public class ConsoleTerminal extends BitmapConsoleSurface/*ConsoleSurface*/ {
 
     @Override
     public boolean onKey(KeyEvent e, boolean pressed) {
-
-        //return super.onKey(e, pressed);
-        VirtualTerminal eterm = this.term;
 
         int cc = e.getKeyCode();
         if (pressed && cc == 13) {
@@ -332,7 +327,6 @@ public class ConsoleTerminal extends BitmapConsoleSurface/*ConsoleSurface*/ {
     @Override
     public void resize(int cols, int rows) {
         super.resize(cols, rows);
-
         term.setTerminalSize(new TerminalSize(cols, rows));
     }
 

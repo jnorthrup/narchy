@@ -5,7 +5,6 @@ import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.Util;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.AspectAlign;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.input.Finger;
@@ -16,7 +15,6 @@ import spacegraph.math.v2;
 import spacegraph.render.Draw;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
-import spacegraph.widget.console.ConsoleTerminal;
 import spacegraph.widget.console.TextEdit;
 import spacegraph.widget.meta.MetaFrame;
 import spacegraph.widget.slider.BaseSlider;
@@ -219,27 +217,29 @@ abstract public class Widget extends Stacking {
                         new FloatSlider("knob slider", 0.75f, 0, 1).type(BaseSlider.Knob)
                 ),
                 new XYSlider(),
-                new DummyConsole().align(AspectAlign.Align.Center)
+                new DummyConsole().surface()
             );
     }
 
-    private static class DummyConsole extends ConsoleTerminal implements Runnable {
+    private static class DummyConsole extends TextEdit implements Runnable {
 
         public DummyConsole() {
-            super(new TextEdit(15, 15));
+            super(15,15);
             new Thread(this).start();
         }
 
         @Override
         public void run() {
 
+            int i = 0;
             while (true) {
 
-                append((Math.random()) + " ");
+                addLine((Math.random()) + "");
+                if (++i % 7 == 0) {
+                    text(""); //clear
+                }
 
-                term.flush();
-
-                Util.sleep(200);
+                Util.sleep(400);
             }
         }
     }

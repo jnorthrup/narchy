@@ -28,6 +28,8 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
     protected int cursorRow;
     protected int fontWidth;
     protected int fontHeight;
+    protected float charAspect;
+    int scale = 16;
 
     protected BitmapConsoleSurface() {
 
@@ -40,7 +42,7 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
 //        this.blinkOn = true;
         this.backbuffer = null;
 
-        setFontSize(28);
+        setBitmapFontSize(28);
 
 
     }
@@ -49,6 +51,8 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
         if (this.backbuffer != null && this.backbuffer.getWidth() == this.pixelWidth() && this.backbuffer.getHeight() == this.pixelHeight()) {
             return;
         }
+
+        //System.out.println(cols + " x " + pixelWidth() + " _ " + rows + " x " + pixelHeight());
 
         BufferedImage newBackbuffer = new BufferedImage(pixelWidth(), pixelHeight(), 1);
         Graphics2D backbufferGraphics = newBackbuffer.createGraphics();
@@ -73,6 +77,7 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
         if (needUpdate.compareAndSet(true, false)) {
             ensureBufferSize();
             updateBackBuffer();
+
             tex.update(backbuffer);
         }
     }
@@ -84,13 +89,34 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
     }
 
 
-    public void setFontSize(int s) {
+    public void setBitmapFontSize(int s) {
         this.font = new Font("Monospaced", 0, s);
 
         FontRenderContext ctx = this.getFontRenderContext();
         Rectangle2D b = font.getStringBounds("W", ctx);
         this.fontWidth = (int) Math.ceil((float)b.getWidth());
         this.fontHeight = (int) Math.ceil((float)b.getHeight());
+        this.charAspect = ((float)fontHeight) / fontWidth;
+        layout();
+    }
+
+
+    @Override
+    public void doLayout(int dtMS) {
+
+        float va = h()/w(); //visual aspect ratio
+        int r, c;
+        if (va <= charAspect) {
+            r = scale;
+            c = (int) Math.floor(r / va * charAspect);
+        } else {
+            c = Math.round(scale * charAspect);
+            r = Math.round(c * va / charAspect);
+        }
+        r = Math.max(3, r);
+        c = Math.max(3, c);
+        resize(c, r);
+        super.doLayout(dtMS);
     }
 
     private FontRenderContext getFontRenderContext() {

@@ -37,7 +37,7 @@ import static spacegraph.layout.Grid.col;
 public class Vis {
 
 
-    public static ConsoleTerminal inputEditor() {
+    public static Surface inputEditor() {
         return new TextEdit(40, 8).surface();
     }
 

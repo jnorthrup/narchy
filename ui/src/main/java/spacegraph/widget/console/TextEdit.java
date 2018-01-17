@@ -1,7 +1,8 @@
 package spacegraph.widget.console;
 
 import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.gui2.*;
+import com.googlecode.lanterna.gui2.BasicWindow;
+import com.googlecode.lanterna.gui2.TextBox;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
@@ -59,9 +60,9 @@ public class TextEdit extends DefaultVirtualTerminal {
         text("");
     }
 
-    @Deprecated
-    public ConsoleTerminal surface() {
-        return new ConsoleGUI(this) {
+
+    public Surface surface() {
+        ConsoleGUI g = new ConsoleGUI(this) {
 
             @Override
             protected void init(BasicWindow window) {
@@ -83,6 +84,7 @@ public class TextEdit extends DefaultVirtualTerminal {
 
 
         };
+        return g;
     }
 
 
@@ -127,12 +129,18 @@ public class TextEdit extends DefaultVirtualTerminal {
             //TODO this probably needs to be run on EDT thread to eliminate the delay involved in reading the clipboard
 
             String result = (String) clipboard().getData(_clipboardEnc);
+            addLine(result);
 
-            result.chars().forEach(c -> textBox.handleKeyStroke(new KeyStroke((char)c, false, false, false)));
 
         } catch (UnsupportedFlavorException | IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void addLine(String x) {
+        textBox.addLine(x);
+        //x.chars().forEach(c -> textBox.handleKeyStroke(new KeyStroke((char)c, false, false, false)));
+        //flush();
     }
 
     protected void onKeyCtrlEnter() {
