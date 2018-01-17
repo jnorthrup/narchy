@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by me on 2/28/17.
  */
-public class ReflectionSurface<X> extends Grid {
+public class AutoSurface<X> extends Grid {
 
     final Set<Object> seen = Sets.newSetFromMap(new IdentityHashMap());
 
@@ -37,7 +37,7 @@ public class ReflectionSurface<X> extends Grid {
 
     final static int MAX_DEPTH = 1;
 
-    public ReflectionSurface(X x) {
+    public AutoSurface(X x) {
         super();
         this.obj = x;
     }

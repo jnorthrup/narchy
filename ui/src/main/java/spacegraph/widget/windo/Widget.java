@@ -1,51 +1,59 @@
 package spacegraph.widget.windo;
 
-import com.jcraft.jsch.JSchException;
 import com.jogamp.opengl.GL2;
-import jcog.Texts;
-import jcog.Util;
+import jcog.list.FastCoWList;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.input.Finger;
-import spacegraph.layout.Layout;
 import spacegraph.layout.Stacking;
+import spacegraph.layout.Switching;
 import spacegraph.layout.VSplit;
-import spacegraph.math.v2;
 import spacegraph.render.Draw;
-import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
-import spacegraph.widget.console.TextEdit;
-import spacegraph.widget.meta.MetaFrame;
-import spacegraph.widget.slider.BaseSlider;
-import spacegraph.widget.slider.FloatSlider;
-import spacegraph.widget.slider.XYSlider;
 import spacegraph.widget.text.Label;
 
-import java.io.IOException;
+import java.util.List;
 
-import static spacegraph.layout.Grid.*;
+import static spacegraph.layout.Grid.grid;
 
 /**
  * Base class for GUI widgets, similarly designed to JComponent
  */
-abstract public class Widget extends Stacking {
+abstract public class Widget extends Switching {
 
+
+    static final int STATE_RAW = 0;
+    static final int STATE_META = 1;
+
+
+    /** proxy to the content */
+    final Stacking inner = new Stacking() {
+        @Override
+        public boolean tangible() {
+            return false;
+        }
+
+
+    };
+
+    /** if non-null, a finger which is currently hovering on this */
     @Nullable Finger touchedBy;
 
-    /** z-raise/depth: a state indicating push/pull (ex: buttons)
+    /**
+     * z-raise/depth: a state indicating push/pull (ex: buttons)
      * positive: how lowered the button is: 0= not touched, to 1=push through the screen
-     *     zero: neutral state, default for components
+     * zero: neutral state, default for components
      * negative: how raised
-     * */
+     */
     protected float dz = 0;
 
-     /** indicates current level of activity of this component, which can be raised by various
-      *  user and system actions and expressed in different visual metaphors.
-      *  positive: active, hot, important
-      *      zero: neutral
-      *  negative: disabled, hidden, irrelevant
-      */
+    /**
+     * indicates current level of activity of this component, which can be raised by various
+     * user and system actions and expressed in different visual metaphors.
+     * positive: active, hot, important
+     * zero: neutral
+     * negative: disabled, hidden, irrelevant
+     */
     float temperature = 0;
 
 
@@ -66,11 +74,40 @@ abstract public class Widget extends Stacking {
 //    }
 
     public Widget() {
-
+        super();
+        states(
+            ()->inner,
+            ()->{
+                return new VSplit(inner, grid(new Label(toString()), new PushButton("x")), 0.1f);
+            }
+        );
     }
 
     public Widget(Surface... child) {
+        this();
         children(child);
+    }
+
+    public FastCoWList<Surface> children() {
+        return inner.children;
+    }
+
+    public final Widget children(List<Surface> next) {
+        inner.children(next);
+        return this;
+    }
+
+    public final Widget children(Surface... next) {
+        inner.children(next);
+        return this;
+    }
+    public final Widget add(Surface x) {
+        inner.add(x);
+        return this;
+    }
+    public final Widget remove(Surface x) {
+        inner.remove(x);
+        return this;
     }
 
     @Override
@@ -78,17 +115,17 @@ abstract public class Widget extends Stacking {
         return true;
     }
 
-
     @Override
     public void prePaint(int dtMS) {
 
+        //hover glow
         if (dtMS > 0) {
             if (touchedBy != null) {
                 temperature = Math.min(1f, temperature + dtMS / 100f);
             }
 
             if (temperature != 0) {
-                float decayRate = (float)Math.exp(-dtMS / 1000f);
+                float decayRate = (float) Math.exp(-dtMS / 1000f);
                 temperature *= decayRate;
                 if (Math.abs(temperature) < 0.01f)
                     temperature = 0f;
@@ -129,7 +166,7 @@ abstract public class Widget extends Stacking {
             Draw.rect(gl, bounds);
         }
 
-                //rainbow backgrounds
+        //rainbow backgrounds
         //Draw.colorHash(gl, this.hashCode(), 0.8f, 0.2f, 0.25f);
         //Draw.rect(gl, 0, 0, 1, 1);
     }
@@ -137,9 +174,9 @@ abstract public class Widget extends Stacking {
     @Override
     protected void paintAbove(GL2 gl) {
         if (touchedBy != null) {
-            Draw.colorHash(gl, getClass().hashCode(), 0.5f + dz/2f);
+            Draw.colorHash(gl, getClass().hashCode(), 0.5f + dz / 2f);
             //gl.glColor3f(1f, 1f, 0f);
-            gl.glLineWidth(6 + dz*6);
+            gl.glLineWidth(6 + dz * 6);
             Draw.rectStroke(gl, x(), y(), w(), h());
         }
     }
@@ -163,84 +200,20 @@ abstract public class Widget extends Stacking {
 //    }
 
 
+
+
     public void touch(@Nullable Finger finger) {
         touchedBy = finger;
         if (finger == null) {
-            onTouch(finger, null, null);
-        }
-    }
-
-    @Override
-    protected boolean onTouching(Finger finger, v2 hitPoint, short[] buttons) {
-        if (finger != null && finger.clickReleased(2)) { //released right button
-            MetaFrame.toggle(this);
-            return true;
-        }
-        return super.onTouching(finger, hitPoint, buttons);
-    }
-
-    public static void main(String[] args) throws IOException, JSchException {
-
-        SpaceGraph s = SpaceGraph.window(
-
-                widgetDemo()
-                , 1200, 800);
-
-
-        //SpaceGraph dd = SpaceGraph.window(new Cuboid(widgetDemo(), 16, 8f).color(0.5f, 0.5f, 0.5f, 0.25f), 1000, 1000);
-
-//        new SpaceGraph2D(
-//                new Cuboid(widgetDemo(), 16, 8f, 0.2f).color(0.5f, 0.5f, 0.5f, 0.25f).move(0,0,0)
-//        ).show(800, 600);
-
-    }
-
-
-    public static Layout widgetDemo() {
-        return
-            grid(
-                row(new PushButton("row1"), new PushButton("row2"), new PushButton("clickMe()", (p) -> {
-                    p.setLabel(Texts.n2(Math.random()));
-                })),
-                new VSplit(
-                        new PushButton("vsplit"),
-                        row(
-                            col(new CheckBox("checkbox"), new CheckBox("checkbox")),
-                            grid(
-                                    new PushButton("a"), new PushButton("b"), new PushButton("c"), new PushButton("d")
-                            )
-                        ), 0.8f
-                ),
-                col(
-                        new Label("label"),
-                        new FloatSlider("solid slider", .25f  /* pause */, 0, 1),
-                        new FloatSlider("knob slider", 0.75f, 0, 1).type(BaseSlider.Knob)
-                ),
-                new XYSlider(),
-                new DummyConsole().surface()
-            );
-    }
-
-    private static class DummyConsole extends TextEdit implements Runnable {
-
-        public DummyConsole() {
-            super(15,15);
-            new Thread(this).start();
-        }
-
-        @Override
-        public void run() {
-
-            int i = 0;
-            while (true) {
-
-                addLine((Math.random()) + "");
-                if (++i % 7 == 0) {
-                    text(""); //clear
-                }
-
-                Util.sleep(400);
+            onTouch(null, null, null);
+        } else {
+            if (finger.clickReleased(2)) { //released right button
+                //MetaFrame.toggle(this);
+                state(switched == STATE_RAW ? STATE_META : STATE_RAW); //toggle
             }
         }
     }
+
+
+
 }

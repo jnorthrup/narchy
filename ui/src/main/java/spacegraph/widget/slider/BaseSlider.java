@@ -56,18 +56,18 @@ public class BaseSlider extends Surface {
     }
 
     @Override
-    protected boolean onTouching(Finger finger, v2 hitPoint, short[] buttons) {
-
+    public Surface onTouch(Finger finger, v2 hitPoint, short[] buttons) {
         if (hitPoint!=null && leftButton(buttons)) {
             //System.out.println(this + " touched " + hitPoint + " " + Arrays.toString(buttons));
 
             _set(p(hitPoint));
 
-            return true;
+            return this;
         }
 
-        return super.onTouching(finger, hitPoint, buttons);
+        return super.onTouch(finger, hitPoint, buttons);
     }
+
 
     public void _set(float p) {
         changed(p);

@@ -2,7 +2,6 @@ package spacegraph.widget.meta;
 
 import spacegraph.Surface;
 import spacegraph.input.Finger;
-import spacegraph.layout.Stacking;
 import spacegraph.math.v2;
 import spacegraph.widget.windo.Widget;
 
@@ -27,9 +26,9 @@ public class Cover extends Widget {
 
     public void toggle() {
         if ((uncovered = !uncovered)) {
-            children.set(full.get());
+            children(full.get());
         } else {
-            children.set(icon.get());
+            children(icon.get());
         }
     }
 

@@ -17,7 +17,7 @@ import spacegraph.render.JoglPhysics;
 import spacegraph.render.JoglSpace;
 import spacegraph.render.SpaceGraphFlat;
 import spacegraph.space.ListSpace;
-import spacegraph.widget.meta.ReflectionSurface;
+import spacegraph.widget.meta.AutoSurface;
 
 import java.util.Iterator;
 import java.util.List;
@@ -294,7 +294,7 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
         } else if (o instanceof Surface) {
             return window(((Surface) o), w, h);
         } else {
-            return window(new ReflectionSurface(o), w, h);
+            return window(new AutoSurface(o), w, h);
         }
     }
 

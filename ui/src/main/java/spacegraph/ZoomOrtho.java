@@ -1,6 +1,5 @@
 package spacegraph;
 
-import com.jogamp.nativewindow.util.InsetsImmutable;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
@@ -34,7 +33,7 @@ public class ZoomOrtho extends Ortho {
     @Deprecated
     private final int[] resizeTarget = new int[2];
     private final int[] windowStart = new int[2];
-    private InsetsImmutable windowInsets;
+//    private InsetsImmutable windowInsets;
 
     final HUD hud = new HUD();
     private int pmx, pmy;
@@ -42,10 +41,10 @@ public class ZoomOrtho extends Ortho {
     transient Surface initContent;
 
     public ZoomOrtho(Surface content) {
-        super();
+        super(content);
 
-        initContent = content;
-        this.surface = hud;
+//        initContent = content;
+//        this.surface = hud;
 
 
 //        this.surface = new Stacking(this.surface, overlay);
@@ -72,22 +71,17 @@ public class ZoomOrtho extends Ortho {
     @Override
     public synchronized void start(SpaceGraph s) {
 
-        setSurface(new Surface() { //dummy HACK
-            @Override
-            protected void paint(GL2 gl, int dtMS) {
-            }
-        });
 
         super.start(s);
 
         //call this after the window is ready in case the surface wants early access to the GL context
-        hud.children(initContent); initContent = null;
+        //hud.children(initContent); initContent = null;
     }
 
-    @Override
-    public void setSurface(Surface content) {
-        hud.children(content);
-    }
+//    @Override
+//    public void setSurface(Surface content) {
+//        hud.children(content);
+//    }
 
 //    @Override
 //    public void start(SpaceGraph s) {
@@ -175,7 +169,7 @@ public class ZoomOrtho extends Ortho {
 
                     windowStart[0] = window.windowX;
                     windowStart[1] = window.windowY;
-                    windowInsets = window.window.getInsets();
+                    //window.window.getInsets();
 
                     //TODO
                     //hud.dragMode = hud.potentialDragMode;
@@ -287,10 +281,6 @@ public class ZoomOrtho extends Ortho {
             clipTouchBounds = false;
         }
 
-        @Override
-        protected boolean onTouching(Finger finger, v2 hitPoint, short[] buttons) {
-            return false;
-        }
 
         @Override
         public synchronized void start(@Nullable Surface parent) {

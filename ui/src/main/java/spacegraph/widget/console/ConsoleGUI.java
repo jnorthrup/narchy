@@ -18,7 +18,7 @@ import java.util.List;
 /** SpaceGraph surface for displaying and interacting with a TextGUI system */
 public class ConsoleGUI extends ConsoleTerminal {
 
-    public MultiWindowTextGUI gui;
+    MultiWindowTextGUI gui;
     TerminalScreen screen = null;
     On updates = null;
     BasicWindow window = null;

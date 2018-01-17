@@ -22,6 +22,7 @@ import spacegraph.phys.collision.broad.DbvtBroadphase;
 import spacegraph.phys.math.Transform;
 import spacegraph.phys.shape.SimpleBoxShape;
 import spacegraph.space.Cuboid;
+import spacegraph.widget.WidgetTest;
 import spacegraph.widget.button.PushButton;
 
 import java.util.Collection;
@@ -228,7 +229,7 @@ public class PhyWall extends Wall {
         //d.children.add(new GridTex(16).pos(0,0,1000,1000));
 
         {
-            Windo w = d.addWindo(Widget.widgetDemo());
+            Windo w = d.addWindo(WidgetTest.widgetDemo());
             w.pos(80, 80, 550, 450);
 
 //            Windo.Port p = w.addPort("X");

@@ -1,6 +1,5 @@
 package spacegraph.widget.meta;
 
-import com.jogamp.opengl.GL2;
 import spacegraph.AspectAlign;
 import spacegraph.Surface;
 import spacegraph.SurfaceRoot;
@@ -47,7 +46,7 @@ public class MetaFrame extends Widget {
 
             MetaFrame mfer = new MetaFrame(base);
             r.the(MetaFrame.class, mfer, mfer::close);
-            base.children.add(mfer);
+            base.add(mfer);
 
             r.zoom(base.cx(), base.cy(), base.w(), base.h());
         }
@@ -59,20 +58,20 @@ public class MetaFrame extends Widget {
                 new PushButton("?"), //inspect
                 new PushButton("X")  //hide
         );
-        children.add(new AspectAlign(m, 1f,
+        add(new AspectAlign(m, 1f,
                 AspectAlign.Align.RightTop, 0.1f, 0.1f));
 
         Surface n = grid(
                 new Label(base.toString())
         );
-        children.add(new AspectAlign(n, 1f,
+        add(new AspectAlign(n, 1f,
                 AspectAlign.Align.LeftTopOut,
                 1f, 0.1f));
 
     }
 
     public void close() {
-        base.children.remove(this);
+        base.children().remove(this);
     }
 
     @Override

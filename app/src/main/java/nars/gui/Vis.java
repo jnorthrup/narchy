@@ -16,7 +16,7 @@ import spacegraph.layout.Stacking;
 import spacegraph.math.Color3f;
 import spacegraph.widget.console.ConsoleTerminal;
 import spacegraph.widget.console.TextEdit;
-import spacegraph.widget.meta.ReflectionSurface;
+import spacegraph.widget.meta.AutoSurface;
 import spacegraph.widget.meter.Plot2D;
 import spacegraph.widget.tab.TabPane;
 import spacegraph.widget.text.Label;
@@ -307,17 +307,13 @@ public class Vis {
 //        return term;
 //    }
 
-    public static <X> ReflectionSurface<X> reflect(X c) {
-        return new ReflectionSurface<>(c);
-    }
-
     public static Surface top(NAR n) {
         return new TabPane(Map.of(
                 "shl", () -> new ConsoleTerminal(new nars.TextUI(n).session(10f)),
-                "nar", () -> Vis.reflect(n),
+                "nar", () -> new AutoSurface<>(n),
                 "exe", () -> ExecCharts.exePanel(n),
                 "can", () -> ExecCharts.causePanel(n),
-                "svc", () -> Vis.reflect(n.services),
+                "svc", () -> new AutoSurface<>(n.services),
                 "cpt", () -> bagHistogram((Iterable) () -> n.conceptsActive().iterator(), 8)
         ));
     }

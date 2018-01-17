@@ -1,11 +1,11 @@
 package nars;
 
 import jcog.exe.Loop;
-import nars.gui.Vis;
 import nars.language.NARHear;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.widget.console.TextEdit;
+import spacegraph.widget.meta.AutoSurface;
 import spacegraph.widget.windo.Widget;
 
 import static spacegraph.SpaceGraph.window;
@@ -25,9 +25,7 @@ public class GUI {
         Loop loop = nar.startFPS(10f); //10hz alpha
         ((NARLoop)loop).throttle.set(0.1f);
 
-        window(
-                Vis.reflect(nar), 700, 600
-        );
+        window(new AutoSurface<>(nar), 700, 600);
 
         window(new OmniBox(nar), 600, 200);
 

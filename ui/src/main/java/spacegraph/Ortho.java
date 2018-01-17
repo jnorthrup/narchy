@@ -49,14 +49,15 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
     final Topic logs = new ListTopic();
 
     public Ortho() {
-        this.finger = new Finger(this);
-        this.scale = new AnimVector2f(1, 1, 6f);
-        this.cam = new AnimVector3f(8f);
+        this(new EmptySurface());
     }
 
     public Ortho(Surface content) {
-        this();
-        setSurface(content);
+        super();
+        this.finger = new Finger(this);
+        this.scale = new AnimVector2f(1, 1, 6f);
+        this.cam = new AnimVector3f(8f);
+        this.surface = content;
     }
 
     @Override
@@ -121,9 +122,6 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
         logs.emit(o);
     }
 
-    public void setSurface(Surface content) {
-        this.surface = content;
-    }
 
 
     public void start(SpaceGraph s) {

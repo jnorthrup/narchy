@@ -12,6 +12,7 @@ import spacegraph.input.FingerResize;
 import spacegraph.input.Fingering;
 import spacegraph.math.v2;
 import spacegraph.render.Draw;
+import spacegraph.widget.WidgetTest;
 import spacegraph.widget.button.PushButton;
 
 import java.util.Map;
@@ -222,7 +223,7 @@ public class Windo extends Widget {
 
     /** gets main content */
     public Surface get() {
-        return ((Scale)children.get(0)).the;
+        return ((Scale)inner.children.get(0)).the;
     }
 
     @Override
@@ -439,7 +440,7 @@ public class Windo extends Widget {
         //d.children.add(new GridTex(16).pos(0,0,1000,1000));
 
         {
-            Windo w = d.addWindo(Widget.widgetDemo());
+            Windo w = d.addWindo(WidgetTest.widgetDemo());
             w.pos(80, 80, 550, 450);
 
 //            Port p = w.addPort("X");

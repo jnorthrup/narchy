@@ -1,8 +1,8 @@
 package nars;
 
-import nars.gui.Vis;
 import org.reflections.Reflections;
 import spacegraph.SpaceGraph;
+import spacegraph.widget.meta.AutoSurface;
 
 import java.util.Set;
 
@@ -44,7 +44,7 @@ public class Lab {
 
         Set<Class<? extends NAgentX>> envs = new Reflections("nars").getSubTypesOf(NAgentX.class);
         SpaceGraph.window(
-                Vis.reflect(envs.stream().map(Experiment::new).collect(toList())),
+                new AutoSurface<>(envs.stream().map(Experiment::new).collect(toList())),
                 800, 800
         );
 

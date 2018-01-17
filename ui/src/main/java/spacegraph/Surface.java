@@ -18,11 +18,37 @@ abstract public class Surface {
 
     /** smallest recognizable dimension change */
     public static final float EPSILON = 0.0001f;
+
+
+
+    /**
+     * scale can remain the unit 1 vector, normally
+     */
+//    public v2 scale = new v2(1, 1); //v2.ONE;
+    public RectFloat2D bounds;
+    public Surface parent;
     private boolean visible = true;
+
+    public Surface() {
+        bounds = RectFloat2D.Unit;
+    }
+
+    public static boolean leftButton(short[] buttons) {
+        return buttons != null && buttons.length == 1 && buttons[0] == 1;
+    }
 
     public float x() {
         return bounds.min.x;
     }
+
+
+//    @Override
+//    public String toString() {
+//        return super.toString() + "{" +
+//                ", bounds=" + bounds +
+//                "scale=" + scale +
+//                '}';
+//    }
 
     public float y() {
         return bounds.min.y;
@@ -36,13 +62,7 @@ abstract public class Surface {
         return 0.5f * (bounds.min.y + bounds.max.y);
     }
 
-//    @Override
-//    public String toString() {
-//        return super.toString() + "{" +
-//                ", bounds=" + bounds +
-//                "scale=" + scale +
-//                '}';
-//    }
+    abstract protected void paint(GL2 gl, int dtMS);
 
     public Surface pos(RectFloat2D r) {
         RectFloat2D b = this.bounds;
@@ -50,6 +70,7 @@ abstract public class Surface {
             this.bounds = r;
         return this;
     }
+
     public Surface pos(float x1, float y1, float x2, float y2) {
         RectFloat2D b = this.bounds;
         if (b ==null || !b.equals(x1, y1, x2, y2, Surface.EPSILON)) {
@@ -58,31 +79,14 @@ abstract public class Surface {
         return this;
     }
 
-
     public AspectAlign align(AspectAlign.Align align) {
-        return new AspectAlign(this, 1f, align, 1f);
-    }
-
-
-    /**
-     * scale can remain the unit 1 vector, normally
-     */
-//    public v2 scale = new v2(1, 1); //v2.ONE;
-    public RectFloat2D bounds;
-    public Surface parent;
-
-
-    public Surface() {
-        bounds = RectFloat2D.Unit;
+        return new AspectAlign(this, 1.0f, align, 1.0f);
     }
 
     public SurfaceRoot root() {
         Surface parent = this.parent;
-        if (parent == null)
-            return null;
-        return parent.root();
+        return parent == null ? null : parent.root();
     }
-
 
     /**
      * null parent means it is the root surface
@@ -99,7 +103,6 @@ abstract public class Surface {
         //nothing by default
     }
 
-
     public float w() {
         return bounds.max.x - bounds.min.x;
     }
@@ -115,25 +118,8 @@ abstract public class Surface {
     public Surface onTouch(Finger finger, @Deprecated v2 hitPoint, @Deprecated short[] buttons) {
         //System.out.println(this + " " + hitPoint + " " + Arrays.toString(buttons));
 
-        //1. test local reaction
-        boolean b = onTouching(finger, hitPoint, buttons);
-        if (b)
-            return this;
-
         return null;
     }
-
-
-    /**
-     * may be overridden to trap events on this surface (returning true), otherwise they pass through to any children
-     */
-    @Deprecated
-    protected boolean onTouching(Finger finger, v2 hitPoint, short[] buttons) {
-        return false;
-    }
-
-
-    abstract protected void paint(GL2 gl, int dtMS);
 
     public Surface move(float dx, float dy) {
         pos(bounds.move(dx, dy));
@@ -153,13 +139,6 @@ abstract public class Surface {
         paint(gl, dtMS);
 
     }
-
-
-    public static boolean leftButton(short[] buttons) {
-        return buttons != null && buttons.length == 1 && buttons[0] == 1;
-    }
-
-
 
     public boolean onKey(KeyEvent e, boolean pressed) {
         return false;
@@ -188,4 +167,5 @@ abstract public class Surface {
     public float radius() {
         return Math.max(w(), h());
     }
+
 }

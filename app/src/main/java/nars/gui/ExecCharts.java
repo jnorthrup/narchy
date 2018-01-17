@@ -16,6 +16,7 @@ import spacegraph.layout.Grid;
 import spacegraph.layout.VSplit;
 import spacegraph.render.Draw;
 import spacegraph.widget.button.CheckBox;
+import spacegraph.widget.meta.AutoSurface;
 import spacegraph.widget.meter.BitmapMatrixView;
 import spacegraph.widget.meter.TreeChart;
 import spacegraph.widget.slider.BaseSlider;
@@ -60,7 +61,7 @@ public class ExecCharts {
             }
         };
 
-        return new VSplit(bmp, Vis.reflect(gain), 0.1f);
+        return new VSplit(bmp, new AutoSurface<>(gain), 0.1f);
     }
 
     public static Surface metaGoalControls(NAR n) {
@@ -93,7 +94,7 @@ public class ExecCharts {
     }
 
     public static Surface exePanel(NAR n) {
-        return new VSplit(Vis.reflect(n.loop),
+        return new VSplit(new AutoSurface<>(n.loop),
                 col(
                         //metaGoalChart(a),
                         row(

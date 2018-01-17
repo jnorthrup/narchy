@@ -55,6 +55,7 @@ public class TabPane extends VSplit {
         children(tabs, content);
     }
 
+
     public static void main(String[] args) {
         SpaceGraph.window(new TabPane(Map.of(
                 "a", ()->new Sketch2DBitmap(40,40),

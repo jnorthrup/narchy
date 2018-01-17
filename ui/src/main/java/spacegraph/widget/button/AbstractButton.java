@@ -11,7 +11,7 @@ import java.util.function.Consumer;
  */
 public abstract class AbstractButton extends Widget {
 
-    private boolean pressed;
+
 
     Consumer<Finger> pressable = Finger.clicked(0, ()->{
         dz = 0;

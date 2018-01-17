@@ -17,11 +17,12 @@ public class MutableLayout extends Layout {
 
     public MutableLayout(Surface... children) {
         super();
-        children(children);
+        if (children.length > 0)
+            children(children);
     }
 
-    public MutableLayout(List<Surface> children) {
-        children(children);
+    public MutableLayout(Collection<Surface> children) {
+        this(children.toArray(new Surface[children.size()]));
     }
 
     @Override

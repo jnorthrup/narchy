@@ -11,10 +11,10 @@ import spacegraph.Spatial;
 import spacegraph.layout.Flatten;
 import spacegraph.phys.util.Animated;
 import spacegraph.space.ListSpace;
+import spacegraph.widget.meta.AutoSurface;
 
 import java.util.List;
 
-import static nars.gui.Vis.reflect;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.layout.Grid.grid;
 
@@ -151,8 +151,8 @@ public abstract class DynamicListSpace<X,Y extends Spatial<X>> extends ListSpace
 
         if (this instanceof DynamicConceptSpace) {
             window(
-                    grid(reflect(fd)
-                            , reflect(((DynamicConceptSpace) this).vis)
+                    grid(new AutoSurface<>(fd)
+                            , new AutoSurface<>(((DynamicConceptSpace) this).vis)
                     ),
                     400, 400);
         }

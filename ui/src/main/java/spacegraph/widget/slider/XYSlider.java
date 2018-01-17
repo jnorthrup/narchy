@@ -30,16 +30,18 @@ public class XYSlider extends Surface {
     }
 
     @Override
-    protected boolean onTouching(Finger finger, v2 hitPoint, short[] buttons) {
+    public Surface onTouch(Finger finger, v2 hitPoint, short[] buttons) {
         if (leftButton(buttons)) {
             if (!Util.equals(knob.x, hitPoint.x, Float.MIN_NORMAL) || !Util.equals(knob.y, hitPoint.y, Float.MIN_NORMAL)) {
                 knob.set(hitPoint);
                 updated();
             }
-            return true;
+            return this;
         }
-        return super.onTouching(finger, hitPoint, buttons);
+        return super.onTouch(finger, hitPoint, buttons);
     }
+
+
 
     protected void updated() {
         FloatFloatProcedure c = change;

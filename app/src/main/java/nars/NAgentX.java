@@ -41,6 +41,7 @@ import spacegraph.layout.Grid;
 import spacegraph.layout.VSplit;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.ConsoleTerminal;
+import spacegraph.widget.meta.AutoSurface;
 import spacegraph.widget.meta.WindowToggleButton;
 import spacegraph.widget.meter.Plot2D;
 
@@ -57,7 +58,6 @@ import java.util.function.Supplier;
 import static nars.$.$;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
-import static nars.gui.Vis.reflect;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.layout.Grid.col;
 import static spacegraph.layout.Grid.grid;
@@ -578,7 +578,7 @@ abstract public class NAgentX extends NAgent {
 
                         s.add(new Ortho(
                                 //window(
-                                grid(reflect(fd), reflect(sg.vis))) {
+                                grid(new AutoSurface<>(fd), new AutoSurface<>(sg.vis))) {
                             @Override
                             protected void resized() {
 

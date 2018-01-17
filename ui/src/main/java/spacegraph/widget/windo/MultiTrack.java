@@ -1,9 +1,7 @@
 package spacegraph.widget.windo;
 
 import com.google.common.collect.Iterables;
-import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
-import jcog.Util;
 import jcog.list.FasterList;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
@@ -13,9 +11,6 @@ import spacegraph.layout.Stacking;
 import spacegraph.render.Draw;
 
 import java.util.List;
-
-import static com.jogamp.opengl.GL.*;
-import static spacegraph.widget.windo.Windo.DragEdit.*;
 
 public class MultiTrack extends Widget {
 
@@ -106,7 +101,7 @@ public class MultiTrack extends Widget {
 
         float y = 0;
         float w = w();
-        for (Surface t : children) {
+        for (Surface t : children()) {
             float th = h()/4; //HACK
             if (t instanceof Track) {
                 ((Track)t).update(state, 0, w, y, th);
@@ -153,9 +148,11 @@ public class MultiTrack extends Widget {
 //                super.prePaint(dtMS);
 //            }
         };
-        t.add(new DummyTrack(1, 4, 4));
-        t.add(new DummyTrack(2, 5, 5));
-        t.add(new DummyTrack(1, 3, 15));
+        t.children(
+            new DummyTrack(1, 4, 4),
+            new DummyTrack(2, 5, 5),
+            new DummyTrack(1, 3, 15)
+        );
 
         t.layout();
         SpaceGraph.window(t, 1200, 800);

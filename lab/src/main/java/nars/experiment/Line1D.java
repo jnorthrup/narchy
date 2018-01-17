@@ -3,22 +3,18 @@ package nars.experiment;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import jcog.Util;
-import jcog.learn.ql.HaiQAgent;
 import jcog.math.FloatSupplier;
 import jcog.net.MeshOptimize;
 import jcog.optimize.Optimize;
 import nars.*;
 import nars.control.MetaGoal;
 import nars.gui.Vis;
-import nars.op.RLBooster;
 import nars.op.stm.ConjClustering;
-import nars.op.stm.RelationClustering;
-import nars.task.DerivedTask;
 import nars.test.agent.Line1DSimplest;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 import spacegraph.layout.Grid;
-import spacegraph.widget.meta.ReflectionSurface;
+import spacegraph.widget.meta.AutoSurface;
 import spacegraph.widget.meter.Plot2D;
 
 import java.util.LinkedHashSet;
@@ -151,7 +147,7 @@ public class Line1D {
                                                 history),
                                         col(
                                                 new Vis.EmotionPlot(history, a),
-                                                new ReflectionSurface<>(a),
+                                                new AutoSurface<>(a),
                                                 Vis.beliefCharts(history,
                                                         Iterables.concat(a.sensors.keySet(), a.actions.keySet()), a.nar)
                                         )
