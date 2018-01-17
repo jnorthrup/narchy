@@ -1,7 +1,7 @@
 package nars.term;
 
 import nars.Op;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 
 import static nars.Op.CONJ;
 import static nars.Op.IMPL;

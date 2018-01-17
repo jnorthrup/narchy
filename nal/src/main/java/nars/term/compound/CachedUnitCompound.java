@@ -1,13 +1,14 @@
 package nars.term.compound;
 
 import nars.Op;
+import nars.The;
 import nars.term.Term;
 
 import static nars.Op.NEG;
 
 
 /** 1-element Compound impl */
-public class CachedUnitCompound extends UnitCompound {
+public class CachedUnitCompound extends UnitCompound implements The {
 
     private final Op op;
 

@@ -13,7 +13,7 @@ public class Scale extends Layout {
 
     public Scale(Surface the, float s) {
         this.the = the;
-        this.scale = s;
+        scale(s);
     }
 
     public Scale scale(float scale) {

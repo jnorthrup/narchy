@@ -13,16 +13,17 @@ import jcog.pri.Pri;
 import jcog.pri.Prioritized;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
 import nars.derive.LambdaPred;
+import nars.subterm.Subterms;
+import nars.subterm.TermList;
 import nars.task.TaskBuilder;
 import nars.term.Compound;
+import nars.term.CompoundLight;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
-import nars.term.compound.CachedCompound;
 import nars.term.obj.JsonTerm;
 import nars.term.pred.PrediTerm;
-import nars.term.sub.Subterms;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarPattern;
@@ -869,17 +870,17 @@ public enum $ {
     }
 
     public static Term pFast(Subterms x) {
-        return new CachedCompound(Op.PROD,x);
+        return new CompoundLight(Op.PROD,x);
     }
     public static Term pFast(Term... x) {
-        return new CachedCompound(Op.PROD, $.vFast(x));
+        return new CompoundLight(Op.PROD, $.vFast(x));
     }
     public static Term pFast(Collection<? extends Term> x) {
-        return new CachedCompound(Op.PROD, $.vFast(x.toArray(new Term[x.size()])));
+        return new CompoundLight(Op.PROD, $.vFast(x.toArray(new Term[x.size()])));
     }
 
     public static Subterms vFast(Term[] t) {
-        return The.Subterms.RawSubtermBuilder.apply(t);
+        return new TermList().added(t);
     }
 
 

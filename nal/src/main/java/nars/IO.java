@@ -17,7 +17,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import nars.term.var.UnnormalizedVariable;
 import nars.truth.DiscreteTruth;
 import nars.truth.Truth;
@@ -743,16 +743,6 @@ public class IO {
         }
 
 
-        @NotNull
-        static StringBuilder stringify(Compound c) {
-            StringBuilder sb = new StringBuilder(/* conservative estimate */ c.volume() * 2);
-            try {
-                c.append(sb);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            return sb;
-        }
     }
 
 //    public static void writeUTF8(String s, DataOutput o) throws IOException {

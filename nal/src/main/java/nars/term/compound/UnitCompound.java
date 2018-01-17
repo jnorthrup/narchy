@@ -1,12 +1,11 @@
 package nars.term.compound;
 
 import jcog.Util;
-import nars.IO;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.sub.Subterms;
-import nars.term.sub.UnitSubterm;
+import nars.subterm.Subterms;
+import nars.subterm.UnitSubterm;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -44,10 +43,9 @@ public abstract class UnitCompound implements Compound {
         return 1;
     }
 
-    /*@NotNull*/
     @Override
     public String toString() {
-        return IO.Printer.stringify(this).toString();
+        return Compound.toString(this);
     }
 
     @Override
@@ -70,8 +68,7 @@ public abstract class UnitCompound implements Compound {
     public boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
         if (!impossibleSubTerm(t) && inSubtermsOf.test(this)) {
             Term sub = sub();
-            if (sub.equals(t) || sub.containsRecursively(t, root, inSubtermsOf))
-                return true;
+            return sub.equals(t) || sub.containsRecursively(t, root, inSubtermsOf);
         }
         return false;
     }

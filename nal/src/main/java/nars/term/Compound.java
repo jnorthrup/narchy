@@ -28,9 +28,9 @@ import nars.Op;
 import nars.Param;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.TermContext;
+import nars.subterm.Subterms;
+import nars.subterm.TermVector;
 import nars.term.anon.Anon;
-import nars.term.sub.Subterms;
-import nars.term.sub.TermVector;
 import nars.term.subst.Unify;
 import nars.term.transform.CompoundTransform;
 import nars.term.transform.Retemporalize;
@@ -58,7 +58,7 @@ import static nars.time.Tense.XTERNAL;
 public interface Compound extends Term, IPair, Subterms {
 
 
-    static boolean equals(/*@NotNull*/ Term a, @Nullable Term bb) {
+    static boolean equals(/*@NotNull*/ Compound a, @Nullable Term bb) {
         assert (a != bb) : "instance check should have already been performed before calling this";
 
 
@@ -69,6 +69,20 @@ public interface Compound extends Term, IPair, Subterms {
                 &&
                 (a.dt() == bb.dt())
                 ;
+    }
+
+    static String toString(Compound c) {
+        return toStringBuilder(c).toString();
+    }
+
+    static StringBuilder toStringBuilder(Compound c) {
+        StringBuilder sb = new StringBuilder(/* conservative estimate */ c.volume() * 2);
+        try {
+            c.append(sb);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return sb;
     }
 
     /**
@@ -294,8 +308,8 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     @Override
-    default int intify(IntObjectToIntFunction<Term> reduce, int v) {
-        return subterms().intify(reduce, Term.super.intify(reduce, v));
+    default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
+        return subterms().intifyRecurse(reduce, Term.super.intifyRecurse(reduce, v));
     }
 
     @Override

@@ -1,7 +1,8 @@
-package nars.term.sub;
+package nars.subterm;
 
 import com.google.common.base.Joiner;
 import jcog.TODO;
+import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.list.FasterList;
 import nars.$;
@@ -37,6 +38,25 @@ import java.util.function.Predicate;
 public interface Subterms extends Termlike, Iterable<Term> {
 
     /*@NotNull*/ TermVector Empty = new ArrayTermVector(Term.EmptyArray);
+
+    static int hash(List<Term> term) {
+        int n = term.size();
+        int h = 1;
+        for (int i = 0; i < n; i++)
+            h = Util.hashCombine(h, term.get(i).hashCode());
+        return h;
+    }
+
+    static int hash(Subterms container) {
+//        int h = 1;
+//        int s = container.subs();
+//        for (int i = 0; i < s; i++) {
+//            h = Util.hashCombine(h, container.sub(i).hashCode());
+//        }
+//        return h;
+//
+        return container.intifyShallow((h, x) -> Util.hashCombine(h, x.hashCode()), 1);
+    }
 
 
     //TODO optionally allow atomic structure positions to differ
@@ -99,8 +119,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //    }
 
 
-    default /*@NotNull*/ TreeSet<Term> toSortedSet() {
-        int s = subs();
+    default /*@NotNull*/ SortedSet<Term> toSetSorted() {
         TreeSet u = new TreeSet();
         forEach(u::add);
         return u;
@@ -328,12 +347,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        return true;
 //    }
 
-    default boolean equalTerms(/*@NotNull*/ List<Term> c) {
+    default boolean equalTerms(/*@NotNull*/ Subterms c) {
         int s = subs();
-        if (s != c.size())
+        if (s != c.subs())
             return false;
         for (int i = 0; i < s; i++) {
-            if (!sub(i).equals(c.get(i)))
+            if (!sub(i).equals(c.sub(i)))
                 return false;
         }
         return true;
@@ -434,24 +453,24 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //    }
 
 
-    static String toString(/*@NotNull*/ Subterms t) {
-        return '(' + Joiner.on(',').join(t) + ')';
+    static String toString(/*@NotNull*/ Iterable<? extends Term> subterms) {
+        return '(' + Joiner.on(',').join(subterms) + ')';
     }
 
-    /**
-     * extract a sublist of terms as an array
-     */
-    /*@NotNull*/
-    default Term[] terms(int start, int end) {
-        //TODO for TermVector, create an Array copy directly
-        //TODO for TermVector, if (start == 0) && end == just return its array
-
-        Term[] t = new Term[end - start];
-        int j = 0;
-        for (int i = start; i < end; i++)
-            t[j++] = sub(i);
-        return t;
-    }
+//    /**
+//     * extract a sublist of terms as an array
+//     */
+//    /*@NotNull*/
+//    default Term[] terms(int start, int end) {
+//        //TODO for TermVector, create an Array copy directly
+//        //TODO for TermVector, if (start == 0) && end == just return its array
+//
+//        Term[] t = new Term[end - start];
+//        int j = 0;
+//        for (int i = start; i < end; i++)
+//            t[j++] = sub(i);
+//        return t;
+//    }
 
     /**
      * follows normal indexOf() semantics; -1 if not found
@@ -1059,7 +1078,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return AND(s -> whileTrue.test(s) && s.recurseTerms(parentsMust, whileTrue, parent));
     }
 
-    default Subterms reverse() {
+    default Subterms reversed() {
         return subs() > 1 ? new ReverseSubterms(this) : this;
     }
 
@@ -1071,6 +1090,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return ArrayUtils.remove(arrayShared(), i);
     }
 
+    default int hashWith(Op op) {
+        return Util.hashCombine(this.hashCodeSubterms(), op.id);
+    }
 
 
     //    /**

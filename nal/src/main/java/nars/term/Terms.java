@@ -6,7 +6,7 @@ import jcog.sort.SortedList;
 import nars.Op;
 import nars.term.atom.Atom;
 import nars.term.atom.Bool;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import org.eclipse.collections.api.RichIterable;
 import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
@@ -50,23 +50,13 @@ public enum Terms {
 
     public static int hashSubterms(Term[] term) {
         int h = 1;
-        for (int i = 0; i < term.length; i++) {
+        for (int i = 0; i < term.length; i++)
             h = Util.hashCombine(h, term[i].hashCode());
-        }
         return h;
     }
 
 
-    public static int hashSubterms(Subterms container) {
-        int h = 1;
-        int s = container.subs();
-        for (int i = 0; i < s; i++) {
-            h = Util.hashCombine(h, container.sub(i).hashCode());
-        }
-        return h;
-    }
-
-//    @Deprecated
+    //    @Deprecated
 //    public static boolean equalSubTermsInRespectToImageAndProduct(@Nullable Term a, @Nullable Term b) {
 //
 //        /*if (a == null || b == null) {

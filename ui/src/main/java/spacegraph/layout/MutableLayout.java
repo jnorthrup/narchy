@@ -35,9 +35,9 @@ public class MutableLayout extends Layout {
         synchronized (children) {
             super.start(parent);
             children.forEach(c -> {
-                if (c.parent != this)
-                    c.start(this);
+                c.start(this);
             });
+            layout();
         }
     }
 
@@ -104,7 +104,6 @@ public class MutableLayout extends Layout {
                     return false;
                 }
                 if (parent != null) {
-                    surface.start(MutableLayout.this);
                     layout();
                 }
             }
@@ -173,7 +172,6 @@ public class MutableLayout extends Layout {
         public void add(int index, Surface element) {
             synchronized (children) {
                 super.add(index, element);
-                element.start(MutableLayout.this);
             }
             layout();
         }

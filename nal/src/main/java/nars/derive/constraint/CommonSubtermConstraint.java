@@ -2,7 +2,7 @@ package nars.derive.constraint;
 
 import nars.Op;
 import nars.term.Term;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import org.jetbrains.annotations.NotNull;
 
 /**

@@ -9,7 +9,7 @@ import nars.op.AtomicExec;
 import nars.op.Operator;
 import nars.op.java.Opjects;
 import nars.term.atom.Atomic;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import nars.time.Tense;
 import net.beadsproject.beads.ugens.Clock;
 import org.jetbrains.annotations.Nullable;

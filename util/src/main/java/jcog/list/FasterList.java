@@ -94,11 +94,11 @@ public class FasterList<X> extends FastList<X> {
         return x;
     }
 
-    @Nullable
-    public X removeLastElseNull() {
-        int s = size;
-        return s == 0 ? null : removeLast();
-    }
+//    @Nullable
+//    public X removeLastElseNull() {
+//        int s = size;
+//        return s == 0 ? null : removeLast();
+//    }
 
     @Override
     public X get(int index) {

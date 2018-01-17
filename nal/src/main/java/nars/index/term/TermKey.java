@@ -9,7 +9,7 @@ import nars.Task;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.DataOutput;

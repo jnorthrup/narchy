@@ -1,4 +1,4 @@
-package nars.term.sub;
+package nars.subterm;
 
 import com.google.common.collect.Iterators;
 import nars.Op;

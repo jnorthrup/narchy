@@ -1,7 +1,7 @@
 package nars.index.util;
 
 import nars.Op;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.atomic.AtomicReferenceArray;

@@ -22,7 +22,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import nars.term.var.Variable;
 import org.eclipse.collections.api.list.MutableList;
 import org.jetbrains.annotations.Nullable;

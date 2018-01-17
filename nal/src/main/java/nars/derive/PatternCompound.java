@@ -8,9 +8,9 @@ import nars.derive.mutate.Choose1;
 import nars.derive.mutate.Choose2;
 import nars.derive.mutate.CommutivePermutations;
 import nars.term.Compound;
-import nars.term.CompoundRefDT;
+import nars.term.CompoundDTLight;
 import nars.term.Term;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import nars.term.subst.Unify;
 
 import java.util.SortedSet;
@@ -21,7 +21,7 @@ import static nars.time.Tense.XTERNAL;
 
 
 @Deprecated
-abstract public class PatternCompound extends CompoundRefDT {
+abstract public class PatternCompound extends CompoundDTLight {
 
 //    final int sizeCached;
 //    final int structureNecessary;
@@ -212,7 +212,7 @@ abstract public class PatternCompound extends CompoundRefDT {
 
             final Ellipsis ellipsis = this.ellipsis;
 
-            SortedSet<Term> yFree = y.toSortedSet();
+            SortedSet<Term> yFree = y.toSetSorted();
 
             Subterms ss = subterms();
             int s = ss.subs();

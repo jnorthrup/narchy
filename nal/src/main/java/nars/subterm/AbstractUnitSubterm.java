@@ -1,4 +1,4 @@
-package nars.term.sub;
+package nars.subterm;
 
 import jcog.Util;
 import nars.term.Term;
@@ -97,12 +97,12 @@ abstract public class AbstractUnitSubterm implements Subterms {
     }
 
     @Override
-    public int intify(IntObjectToIntFunction<Term> reduce, int v) {
-        return sub().intify(reduce, v);
+    public final int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
+        return sub().intifyRecurse(reduce, v);
     }
 
     @Override
-    public int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
+    public final int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
         return reduce.intValueOf(v, sub());
     }
 

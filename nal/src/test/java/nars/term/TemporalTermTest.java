@@ -399,9 +399,11 @@ public class TemporalTermTest {
     public void testCommutiveTemporalityDepVar0() throws Narsese.NarseseException {
         Term t0 = $("((SELF,#1)-->at)").term();
         Term t1 = $("goto(#1)").term();
+        Term[] a = Terms.sorted(t0, t1);
+        Term[] b = Terms.sorted(t1, t0);
         assertEquals(
-                The.subterms(Terms.sorted(t0, t1)),
-                The.subterms(Terms.sorted(t1, t0))
+                The.subterms(a),
+                The.subterms(b)
         );
     }
 

@@ -7,11 +7,11 @@ import nars.Narsese;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.anon.AnonVector;
-import nars.term.compound.CachedCompound;
-import nars.term.sub.ArrayTermVector;
-import nars.term.sub.TermVector;
-import nars.term.sub.TermVector1;
-import nars.term.sub.TermVector2;
+import nars.term.compound.CompoundCached;
+import nars.subterm.ArrayTermVector;
+import nars.subterm.TermVector;
+import nars.subterm.TermVector1;
+import nars.subterm.TermVector2;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -122,7 +122,7 @@ public class AnonTest {
         assertEquals(v.hashCode(), a.hashCode());
         assertEquals(v.hashCodeSubterms(), a.hashCodeSubterms());
         assertTrue(Iterators.elementsEqual(v.iterator(), a.iterator()));
-        assertEquals(new CachedCompound(PROD, v), new CachedCompound(PROD, a));
+        assertEquals(new CompoundCached(PROD, v), new CompoundCached(PROD, a));
     }
 
 }

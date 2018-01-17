@@ -19,11 +19,11 @@ package nars.term;
 import nars.*;
 import nars.concept.Concept;
 import nars.derive.match.EllipsisMatch;
+import nars.subterm.ArrayTermVector;
+import nars.subterm.TermVector;
+import nars.subterm.TermVector1;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.sub.ArrayTermVector;
-import nars.term.sub.TermVector;
-import nars.term.sub.TermVector1;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -43,6 +43,45 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TermTest {
 
     final NAR n = NARS.shell();
+
+    public static void assertReallyEquals(Term c, Term f) {
+        assertTrue(f!=c,
+                ()->"identical, nothing is being tested");
+
+        assertEquals(c.op(), f.op());
+        assertEquals(c.subs(), f.subs());
+        int s = f.subterms().subs();
+        assertEquals(c.subterms().subs(), s);
+
+        assertEquals(c.hashCode(), f.hashCode());
+
+        for (int i = 0; i < s; i++) {
+            Term ci = c.subterms().sub(i);
+            Term fi = f.subterms().sub(i);
+            assertEquals(ci, fi);
+            assertEquals(fi, ci);
+            assertEquals(fi.subterms(), ci.subterms());
+            assertEquals(ci.subterms(), fi.subterms());
+            assertEquals(fi.hashCode(), ci.hashCode());
+            assertEquals(-fi.compareTo(ci),
+                         ci.compareTo(fi) );
+        }
+
+        assertArrayEquals(c.subterms().arrayShared(), f.subterms().arrayShared());
+        assertEquals(c.subterms().hashCodeSubterms(), f.subterms().hashCodeSubterms());
+        assertEquals(c.subterms().hashCode(), f.subterms().hashCode());
+
+        assertEquals(c.structure(), f.structure());
+        assertEquals(c.complexity(), f.complexity());
+        assertEquals(c.volume(), f.volume());
+        assertEquals(c.toString(), f.toString());
+        assertEquals(c, c);
+        assertEquals(f, f);
+        assertEquals(c, f);
+        assertEquals(f, c);
+        assertEquals(0, f.compareTo(c));
+        assertEquals(0, c.compareTo(f));
+    }
 
 
     protected void assertEquivalentTerm(@NotNull String term1String, @NotNull String term2String) {

@@ -60,7 +60,7 @@ public class GUI {
             super();
 
             this.nar = n;
-            add((edit =new TextEdit(40, 4) {
+            children((edit =new TextEdit(40, 4) {
                 @Override
                 protected void onKeyCtrlEnter() {
                     String t = text();

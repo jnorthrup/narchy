@@ -4,15 +4,16 @@ import jcog.memoize.CaffeineMemoize;
 import jcog.memoize.SoftMemoize;
 import nars.derive.match.Ellipsis;
 import nars.derive.match.EllipsisMatch;
-import nars.index.term.NewCompound;
+import nars.index.term.ByteKeyProtoCompound;
+import nars.subterm.ArrayTermVector;
+import nars.subterm.Subterms;
+import nars.subterm.UnitSubterm;
 import nars.term.Term;
 import nars.term.anon.AnonID;
 import nars.term.anon.AnonVector;
 import nars.term.atom.Bool;
-import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
-import nars.term.sub.ArrayTermVector;
-import nars.term.sub.UnitSubterm;
+import nars.term.compound.CompoundCached;
 
 import java.util.Collection;
 import java.util.function.BiFunction;
@@ -24,28 +25,28 @@ import static nars.Op.*;
 /**
  * The the
  * immutable singleton instantiator/interner/etc
+ *
+ * when used as a marker interface, signifies the instance is Immutable
  */
-public enum The {
-    ;
-
+public interface The {
 
     /* @NotNull */
-    public static nars.term.sub.Subterms subterms(Collection<? extends Term> s) {
-        return subterms(s.toArray(new Term[s.size()]));
+    public static Subterms subterms(Collection<? extends Term> s) {
+        return The.subterms(s.toArray(new Term[s.size()]));
     }
 
 //    static nars.term.sub.Subterms _subterms(Collection<? extends Term> s) {
 //        return _subterms(s.toArray(new Term[s.size()]));
 //    }
 
-    public static nars.term.sub.Subterms subterms(Term... s) {
+    public static Subterms subterms(Term... s) {
         //return The.Subterms.the.apply(s);
         //return compound(PROD, s).subterms();
         return PROD.the(s).subterms();
     }
 
-    static nars.term.sub.Subterms _subterms(Term... s) {
-        return Subterms.RawSubtermBuilder.apply(s);
+    static Subterms _subterms(Term... s) {
+        return RawSubtermBuilder.apply(s);
     }
 
 //    final static Memoize<IntArrayPair<Term>, Term> compoundCached =
@@ -62,18 +63,18 @@ public enum The {
 //        boolean cache = cacheable(u);
 //
 //        if (!cache) {
-        return Compound.the.apply(o, u);
+        return rawCompoundBuilder.apply(o, u);
 //        } else {
 //            //System.out.println(o + " " + Arrays.toString(u));
 //            return compoundCached.apply(new IntArrayPair(o.id, u));
 //        }
     }
 
-    public static final class Subterms {
 
-        public static final Function<Term[], nars.term.sub.Subterms> RawSubtermBuilder = (t) -> {
+
+        Function<Term[], nars.subterm.Subterms> RawSubtermBuilder = (t) -> {
             if (t.length == 0)
-                return nars.term.sub.Subterms.Empty;
+                return nars.subterm.Subterms.Empty;
 
             boolean purelyAnon = true;
             for (Term x : t) {
@@ -151,11 +152,11 @@ public enum The {
 //            }
 //        }
 //
-    }
 
-    public static class Compound {
 
-        public static final BiFunction<Op, Term[], Term> rawCompoundBuilder = (o, subterms) -> {
+
+
+        BiFunction<Op, Term[], Term> rawCompoundBuilder = (o, subterms) -> {
             assert (!o.atomic) : o + " is atomic, with subterms: " + (subterms);
 
             boolean hasEllipsis = false;
@@ -180,30 +181,30 @@ public enum The {
                 //use full CachedCompound for PROD
                 return new CachedUnitCompound(o, subterms[0]);
             } else {
-                return new CachedCompound(o, _subterms(subterms));
+                return new CompoundCached(o, The._subterms(subterms));
             }
 
         };
 
-        public static final Supplier<BiFunction<Op, Term[], Term>> SoftCompoundBuilder = () ->
+        Supplier<BiFunction<Op, Term[], Term>> SoftCompoundBuilder = () ->
                 new BiFunction<>() {
 
-                    final SoftMemoize<NewCompound, Term> cache = new SoftMemoize<>((v) -> rawCompoundBuilder.apply(v.op, v.subs /* HACK */), 64 * 1024, true);
+                    final SoftMemoize<ByteKeyProtoCompound, Term> cache = new SoftMemoize<>((v) -> rawCompoundBuilder.apply(v.op, v.subs /* HACK */), 64 * 1024, true);
 
                     @Override
                     public Term apply(Op op, Term[] terms) {
-                        return cache.apply(new NewCompound(op, terms).commit());
+                        return cache.apply(new ByteKeyProtoCompound(op, terms).commit());
                     }
                 };
         //
-        public static final Supplier<BiFunction<Op, Term[], Term>> CaffeineCompoundBuilder = () -> new BiFunction<>() {
+        Supplier<BiFunction<Op, Term[], Term>> CaffeineCompoundBuilder = () -> new BiFunction<>() {
 
-            final CaffeineMemoize<NewCompound, Term> cache = CaffeineMemoize.build((v) -> rawCompoundBuilder.apply(v.op, v.subs /* HACK */),
+            final CaffeineMemoize<ByteKeyProtoCompound, Term> cache = CaffeineMemoize.build((v) -> rawCompoundBuilder.apply(v.op, v.subs /* HACK */),
                     256 * 1024, false);
 
             @Override
             public Term apply(Op op, Term[] terms) {
-                return cache.apply(new NewCompound(op, terms).commit());
+                return cache.apply(new ByteKeyProtoCompound(op, terms).commit());
             }
         };
         //
@@ -221,11 +222,10 @@ public enum The {
 //            }
 //        };
 //
-        public static BiFunction<Op, Term[], Term> the =
-                rawCompoundBuilder;
+
         //CaffeineCompoundBuilder.get();
         //HijackCompoundBuilder;
 
-    }
+
 
 }

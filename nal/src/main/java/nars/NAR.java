@@ -32,7 +32,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import nars.time.Tense;
 import nars.time.Time;
 import nars.truth.DiscreteTruth;

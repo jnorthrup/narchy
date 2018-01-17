@@ -18,8 +18,8 @@ import nars.term.atom.Atomic;
 import nars.util.signal.Signal;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
+import spacegraph.Surface;
 import spacegraph.widget.console.ConsoleSurface;
-import spacegraph.widget.console.ConsoleTerminal;
 
 import java.util.Iterator;
 import java.util.List;
@@ -41,7 +41,7 @@ public abstract class ConsoleAgent extends NAgentX {
 
     final static int WIDTH = 4;
     final static int HEIGHT = 1;
-    final ConsoleTerminal Rlabel = Vis.inputEditor();
+    final Surface Rlabel = Vis.inputEditor();
 
     final TestConsole R = new TestConsole(
             Atomic.the("it"),

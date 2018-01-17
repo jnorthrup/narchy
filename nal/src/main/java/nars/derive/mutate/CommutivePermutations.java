@@ -2,8 +2,8 @@ package nars.derive.mutate;
 
 import nars.$;
 import nars.term.Term;
-import nars.term.sub.ShuffledSubterms;
-import nars.term.sub.Subterms;
+import nars.subterm.ShuffledSubterms;
+import nars.subterm.Subterms;
 import nars.term.subst.Unify;
 import org.jetbrains.annotations.NotNull;
 

@@ -14,7 +14,7 @@ import nars.control.BatchActivation;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Int;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 

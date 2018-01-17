@@ -1,11 +1,10 @@
 package nars.term.compound;
 
-import jcog.Util;
-import nars.IO;
 import nars.Op;
+import nars.The;
+import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.sub.Subterms;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.NEG;
@@ -15,7 +14,7 @@ import static nars.time.Tense.DTERNAL;
 /**
  * on-heap, caches many commonly used methods for fast repeat access while it survives
  */
-public class CachedCompound implements Compound {
+public class CompoundCached implements Compound, The {
 
     /**
      * subterm vector
@@ -40,13 +39,13 @@ public class CachedCompound implements Compound {
     private transient Term concepted = null;
 
 
-    public CachedCompound(/*@NotNull*/ Op op, Subterms subterms) {
+    public CompoundCached(/*@NotNull*/ Op op, Subterms subterms) {
 
         assert(op!=NEG); //makes certain assumptions that it's not NEG op, use Neg.java for that
 
         this.op = op;
 
-        this.hash = Util.hashCombine((this.subterms = subterms).hashCode(), op.id);
+        this.hash = (this.subterms = subterms).hashWith(op);
 
         this._structure = subterms.structure() | op.bit;
         this._volume = subterms.volume();
@@ -113,7 +112,7 @@ public class CachedCompound implements Compound {
 
     @Override
     public String toString() {
-        return IO.Printer.stringify(this).toString();
+        return Compound.toString(this);
     }
 
     @Override
@@ -160,7 +159,7 @@ public class CachedCompound implements Compound {
     /**
      * data sharing: call if another instance is known to be equivalent to share some clues
      */
-    protected void equivalent(CachedCompound them) {
+    protected void equivalent(CompoundCached them) {
 
 
         if (them.rooted != null && this.rooted != this) this.rooted = them.rooted;

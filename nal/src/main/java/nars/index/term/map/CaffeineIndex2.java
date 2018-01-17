@@ -8,7 +8,7 @@ import nars.The;
 import nars.index.util.TermContainerToOpMap;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import nars.term.var.Variable;
 import org.jetbrains.annotations.NotNull;
 

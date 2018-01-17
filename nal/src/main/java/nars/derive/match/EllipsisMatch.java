@@ -4,8 +4,8 @@ import nars.$;
 import nars.Op;
 import nars.index.term.TermContext;
 import nars.term.Term;
-import nars.term.compound.CachedCompound;
-import nars.term.sub.Subterms;
+import nars.term.compound.CompoundCached;
+import nars.subterm.Subterms;
 import nars.term.subst.Unify;
 import nars.term.transform.CompoundTransform;
 import nars.term.transform.Retemporalize;
@@ -18,7 +18,7 @@ import java.util.SortedSet;
 /**
  * Holds results of an ellipsis match and
 */
-public class EllipsisMatch extends CachedCompound {
+public class EllipsisMatch extends CompoundCached {
 
     //    public static ArrayEllipsisMatch matchedSubterms(Compound Y, IntObjectPredicate<Term> filter) {
 //        Function<IntObjectPredicate,Term[]> arrayGen =

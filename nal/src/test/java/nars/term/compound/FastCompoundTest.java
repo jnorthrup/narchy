@@ -2,11 +2,10 @@ package nars.term.compound;
 
 import nars.Narsese;
 import nars.term.Compound;
-import nars.term.Term;
+import nars.term.TermTest;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
-import static org.junit.jupiter.api.Assertions.*;
 
 
 public class FastCompoundTest {
@@ -60,42 +59,7 @@ public class FastCompoundTest {
 
     static void assertEquivalent(Compound c) {
         FastCompound f = FastCompound.get(c);
-        assertTrue(f!=c,
-                ()->"identical, nothing is being tested");
-
-        assertEquals(c.op(), f.op());
-        assertEquals(c.subs(), f.subs());
-        int s = f.subterms().subs();
-        assertEquals(c.subterms().subs(), s);
-
-        assertEquals(c.hashCode(), f.hashCode());
-
-        for (int i = 0; i < s; i++) {
-            Term ci = c.subterms().sub(i);
-            Term fi = f.subterms().sub(i);
-            assertEquals(ci, fi);
-            assertEquals(fi, ci);
-            assertEquals(fi.subterms(), ci.subterms());
-            assertEquals(ci.subterms(), fi.subterms());
-            assertEquals(fi.hashCode(), ci.hashCode());
-            assertEquals(-fi.compareTo(ci),
-                         ci.compareTo(fi) );
-        }
-
-        assertArrayEquals(c.subterms().arrayShared(), f.subterms().arrayShared());
-        assertEquals(c.subterms().hashCodeSubterms(), f.subterms().hashCodeSubterms());
-        assertEquals(c.subterms().hashCode(), f.subterms().hashCode());
-
-        assertEquals(c.structure(), f.structure());
-        assertEquals(c.complexity(), f.complexity());
-        assertEquals(c.volume(), f.volume());
-        assertEquals(c.toString(), f.toString());
-        assertEquals(c, c);
-        assertEquals(f, f);
-        assertEquals(c, f);
-        assertEquals(f, c);
-        assertEquals(0, f.compareTo(c));
-        assertEquals(0, c.compareTo(f));
+        TermTest.assertReallyEquals(c, f);
 
 //        f.print();
     }

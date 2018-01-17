@@ -14,10 +14,10 @@ import nars.term.*;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
-import nars.term.compound.CachedCompound;
+import nars.term.compound.CompoundCached;
 import nars.term.compound.CachedUnitCompound;
-import nars.term.sub.Neg;
-import nars.term.sub.Subterms;
+import nars.subterm.Neg;
+import nars.subterm.Subterms;
 import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -533,7 +533,7 @@ public enum Op {
                 (b.op() == NEG && b.unneg().equals(a));
     }
 
-    public static final Compound ZeroProduct = new CachedCompound(Op.PROD, Subterms.Empty);
+    public static final Compound ZeroProduct = new CompoundCached(Op.PROD, Subterms.Empty);
 
     public static final int StatementBits = Op.or(Op.INH, Op.SIM, Op.IMPL);
 
@@ -641,7 +641,7 @@ public enum Op {
     public static Term dt(Compound base, int nextDT) {
 
         if (nextDT == XTERNAL) {
-            return new CompoundRefDT(base, XTERNAL);
+            return new CompoundDTLight(base, XTERNAL);
         } else {
             Subterms subs = base.subterms();
             int ns = subs.subs();
@@ -1241,7 +1241,7 @@ public enum Op {
         } else {
             //more than 2; group them as one term
             Subterms cs = conj.subterms();
-            TreeSet<Term> ss = cs.toSortedSet();
+            SortedSet<Term> ss = cs.toSetSorted();
             assert (ss.remove(implication)) : "must have removed something";
 
             Term[] css = sorted(ss);
@@ -1402,7 +1402,7 @@ public enum Op {
     static Term compound(Op op, int dt, Term... subterms) {
         Term c = The.compound(op, subterms);
         return ((dt != DTERNAL) && (c instanceof Compound)) ?
-                new CompoundRefDT((Compound) c, dt) :
+                new CompoundDTLight((Compound) c, dt) :
                 c;
     }
 
@@ -2197,7 +2197,7 @@ public enum Op {
                     Term x0 = x.sub(0);
                     if (x0.op() == CONJ && CONJ.commute(x0.dt(), x0.subs())) { //DISJUNCTION
                         Term disj = x.unneg();
-                        SortedSet<Term> disjSubs = disj.subterms().toSortedSet();
+                        SortedSet<Term> disjSubs = disj.subterms().toSetSorted();
                         //factor out occurrences of the disj's contents outside the disjunction, so remove from inside it
                         if (disjSubs.removeAll(outer)) {
                             //reconstruct disj if changed

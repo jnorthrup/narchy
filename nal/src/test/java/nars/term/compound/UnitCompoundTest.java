@@ -8,7 +8,7 @@ import nars.index.term.TermKey;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.sub.TermVector1;
+import nars.subterm.TermVector1;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -34,7 +34,7 @@ public class UnitCompoundTest {
     }
 
     static void assertEqual(Op o, Atomic x, Compound u) {
-        Compound g = new CachedCompound(o, new TermVector1(x));
+        Compound g = new CompoundCached(o, new TermVector1(x));
         assertEquals(g.hashCode(), u.hashCode());
         assertEquals(g.hashCodeSubterms(), u.hashCodeSubterms());
         assertEquals(u, g);

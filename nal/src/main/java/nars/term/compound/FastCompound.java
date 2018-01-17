@@ -8,7 +8,7 @@ import nars.The;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import org.eclipse.collections.api.block.function.primitive.ByteFunction0;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
@@ -27,7 +27,7 @@ import static nars.time.Tense.DTERNAL;
  * Annotates a GenericCompound with cached data to accelerate pattern matching
  * TODO not finished yet
  */
-abstract public class FastCompound implements Compound {
+abstract public class FastCompound implements Compound /* The */ {
 
     static public final Op[] ov = Op.values();
 
@@ -359,7 +359,7 @@ abstract public class FastCompound implements Compound {
     @NotNull
     @Override
     public String toString() {
-        return IO.Printer.stringify(this).toString();
+        return Compound.toString(this);
     }
 
 
@@ -375,7 +375,7 @@ abstract public class FastCompound implements Compound {
         } else {
             //TODO sub view
             //return opAtSub.the(DTERNAL, subs(subOffset));
-            return new CachedCompound(opAtSub,
+            return new CompoundCached(opAtSub,
                     The.subterms(new SubtermView(this, offset))
                     //new SubtermView(this, offset)
             );
@@ -525,7 +525,7 @@ abstract public class FastCompound implements Compound {
      */
     public static final BiFunction<Op, List<Term>, Term> FAST_COMPOUND_BUILDER = (op, terms) -> {
         //HACK creating an intermediate GenericCompound should not be necessary
-        CachedCompound g = new CachedCompound(op, The.subterms(terms));
+        CompoundCached g = new CompoundCached(op, The.subterms(terms));
         try {
 
             if (!g.isTemporal())

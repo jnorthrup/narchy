@@ -1,9 +1,9 @@
-package nars.term.sub;
+package nars.subterm;
 
-import jcog.TODO;
 import nars.term.Term;
 
-/** TODO */
+import java.util.List;
+
 public class ProxySubterms implements Subterms {
 
     protected final Subterms ref;
@@ -14,12 +14,18 @@ public class ProxySubterms implements Subterms {
 
     @Override
     public int hashCode() {
-        throw new TODO();
+        return Subterms.hash((List)this);
     }
 
     @Override
     public boolean equals(Object obj) {
-        throw new TODO();
+        if (this == obj) return true;
+        return ((Subterms)obj).equalTerms(this);
+    }
+
+    @Override
+    public String toString() {
+        return Subterms.toString(this);
     }
 
     @Override

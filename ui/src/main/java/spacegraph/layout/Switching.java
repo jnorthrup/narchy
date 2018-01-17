@@ -46,29 +46,32 @@ public class Switching extends Layout {
                 current.stop();
             }
 
-            (current = (states[switched = next].get())).start(this);
+            current = (states[switched = next].get());
             layout();
         }
     }
 
     @Override
     public void start(@Nullable Surface parent) {
-        super.start(parent);
-        if (current.parent == null)
+        synchronized (this) {
+            super.start(parent);
             current.start(this);
+            layout();
+        }
     }
 
     @Override
-    public synchronized void stop() {
-        current.stop();
-        current = new EmptySurface();
-        super.stop();
+    public void stop() {
+        synchronized (this) {
+            current.stop();
+            current = new EmptySurface();
+            super.stop();
+        }
     }
 
     @Override
     public void doLayout(int dtMS) {
         current.pos(bounds);
-        current.layout();
     }
 
     @Override

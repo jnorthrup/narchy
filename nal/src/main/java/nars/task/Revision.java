@@ -8,7 +8,7 @@ import nars.Param;
 import nars.Task;
 import nars.control.Cause;
 import nars.term.Term;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;

@@ -1,12 +1,11 @@
 package nars.term;
 
 import jcog.Util;
-import nars.IO;
 import nars.Op;
 import nars.Param;
+import nars.The;
 import nars.derive.PatternCompound;
-import nars.term.compound.CachedCompound;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import nars.term.transform.CompoundTransform;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -23,7 +22,7 @@ import static nars.time.Tense.XTERNAL;
  * referring to the base for all other details.
  * TODO a CachedCompound version of this
  */
-public class CompoundRefDT implements CompoundDT {
+public class CompoundDTLight implements CompoundDT, The {
 
     /**
      * numeric (term or "dt" temporal relation)
@@ -32,7 +31,7 @@ public class CompoundRefDT implements CompoundDT {
     private final int hashDT;
     private final Compound ref;
 
-    public CompoundRefDT(Compound base, int dt) {
+    public CompoundDTLight(Compound base, int dt) {
 
         Op op = base.op();
 
@@ -45,7 +44,7 @@ public class CompoundRefDT implements CompoundDT {
 
         if (Param.DEBUG_EXTRA) {
 
-            assert (getClass() != CompoundRefDT.class /* a subclass */ || dt != DTERNAL);
+            assert (getClass() != CompoundDTLight.class /* a subclass */ || dt != DTERNAL);
 
 
             @NotNull Subterms subterms = s;
@@ -152,7 +151,7 @@ public class CompoundRefDT implements CompoundDT {
     @NotNull
     @Override
     public String toString() {
-        return IO.Printer.stringify(this).toString();
+        return Compound.toString(this);
     }
 
 //    @Override
@@ -190,8 +189,8 @@ public class CompoundRefDT implements CompoundDT {
         if (!(that instanceof Compound) || (hashDT != that.hashCode()))
             return false;
 
-        if (that instanceof CompoundRefDT) {
-            CompoundRefDT cthat = (CompoundRefDT) that;
+        if (that instanceof CompoundDTLight) {
+            CompoundDTLight cthat = (CompoundDTLight) that;
             Compound thatRef = cthat.ref;
             Compound myRef = this.ref;
 

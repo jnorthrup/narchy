@@ -325,14 +325,14 @@ public interface Termlike {
      * counts subterms matching the predicate
      */
     default int subs(Predicate<Term> match) {
-        return intify((c, sub) -> match.test(sub) ? c + 1 : c, 0);
+        return intifyShallow((c, sub) -> match.test(sub) ? c + 1 : c, 0);
     }
 
     /** recursive, visits each component */
-    default int intify(IntObjectToIntFunction<Term> reduce, int v) {
+    default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
         int n = subs();
         for (int i = 0; i < n; i++)
-            v = sub(i).intify(reduce, v); //recurse
+            v = sub(i).intifyRecurse(reduce, v); //recurse
         return v;
     }
    /** recursive, visits only 1 layer deep, and not the current superterm if compound */

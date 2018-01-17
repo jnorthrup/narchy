@@ -1,12 +1,13 @@
-package nars.term.sub;
+package nars.subterm;
 
 import nars.Op;
+import nars.The;
 import nars.term.Term;
 import nars.term.compound.UnitCompound;
 
 import static nars.Op.NEG;
 
-public final class Neg extends UnitCompound {
+public final class Neg extends UnitCompound implements The {
 
     private final Term sub;
 

@@ -1,8 +1,7 @@
-package nars.term.sub;
+package nars.subterm;
 
 import jcog.math.ShuffledPermutations;
 import nars.term.Term;
-import nars.term.Terms;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -120,7 +119,7 @@ public final class ShuffledSubterms extends ShuffledPermutations implements Subt
 
     @Override
     public int hashCode() {
-        return Terms.hashSubterms(this);
+        return Subterms.hash(this);
     }
 
     @NotNull

@@ -23,7 +23,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.pred.AndCondition;
 import nars.term.pred.PrediTerm;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import nars.term.transform.CompoundTransform;
 import nars.truth.func.BeliefFunction;
 import nars.truth.func.GoalFunction;

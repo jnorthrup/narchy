@@ -23,7 +23,7 @@ import nars.task.signal.Truthlet;
 import nars.task.signal.TruthletTask;
 import nars.term.Term;
 import nars.term.atom.Atom;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.tuple.Pair;

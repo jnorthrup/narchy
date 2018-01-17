@@ -10,7 +10,7 @@ import nars.The;
 import nars.index.term.PatternIndex;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.tuple.Tuples;

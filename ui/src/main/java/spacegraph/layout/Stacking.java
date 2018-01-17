@@ -15,7 +15,6 @@ public class Stacking extends MutableLayout {
     @Override
     public void doLayout(int dtMS) {
         children.forEach((c) -> c.pos(bounds));
-        super.doLayout(dtMS);
     }
 
     public void add(Surface s) {

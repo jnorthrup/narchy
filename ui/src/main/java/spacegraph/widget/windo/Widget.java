@@ -4,17 +4,14 @@ import com.jogamp.opengl.GL2;
 import jcog.list.FastCoWList;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
+import spacegraph.SurfaceRoot;
 import spacegraph.input.Finger;
 import spacegraph.layout.Stacking;
 import spacegraph.layout.Switching;
-import spacegraph.layout.VSplit;
 import spacegraph.render.Draw;
-import spacegraph.widget.button.PushButton;
-import spacegraph.widget.text.Label;
+import spacegraph.widget.meta.MetaFrame;
 
 import java.util.List;
-
-import static spacegraph.layout.Grid.grid;
 
 /**
  * Base class for GUI widgets, similarly designed to JComponent
@@ -78,7 +75,8 @@ abstract public class Widget extends Switching {
         states(
             ()->inner,
             ()->{
-                return new VSplit(inner, grid(new Label(toString()), new PushButton("x")), 0.1f);
+                //return new VSplit(inner, grid(new Label(toString()), new PushButton("x")), 0.1f);
+                return new MetaFrame(inner);
             }
         );
     }
@@ -208,8 +206,17 @@ abstract public class Widget extends Switching {
             onTouch(null, null, null);
         } else {
             if (finger.clickReleased(2)) { //released right button
-                //MetaFrame.toggle(this);
+
                 state(switched == STATE_RAW ? STATE_META : STATE_RAW); //toggle
+
+                SurfaceRoot r = root();
+                if (r!=null) {
+                    if (switched == STATE_META)
+                        r.zoom(cx(), cy(), w(), h());
+                    else
+                        r.unzoom();
+                }
+
             }
         }
     }

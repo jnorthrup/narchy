@@ -4,7 +4,7 @@ import nars.$;
 import nars.Narsese;
 import nars.The;
 import nars.term.atom.Atomic;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -73,9 +73,11 @@ public class TermVectorTest {
     }
 
     @Test public void testSortedTermContainer() throws Narsese.NarseseException {
-        Subterms a = The.subterms($.$("a"), $.$("b"));
+        Term aa = $.$("a");
+        Term bb = $.$("b");
+        Subterms a = The.subterms(aa, bb);
         assertTrue(a.isSorted());
-        Subterms b = The.subterms($.$("b"), $.$("a"));
+        Subterms b = The.subterms(bb, aa);
         assertFalse(b.isSorted());
         Subterms s = The.subterms(Terms.sorted(b.arrayClone()));
         assertTrue(s.isSorted());

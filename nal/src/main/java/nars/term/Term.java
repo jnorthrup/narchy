@@ -34,10 +34,10 @@ import nars.term.anon.Anom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
-import nars.term.sub.Neg;
-import nars.term.sub.Subterms;
-import nars.term.sub.TermMetadata;
-import nars.term.sub.TermVector;
+import nars.subterm.Neg;
+import nars.subterm.Subterms;
+import nars.subterm.TermMetadata;
+import nars.subterm.TermVector;
 import nars.term.subst.MapSubst;
 import nars.term.subst.Subst;
 import nars.term.subst.Unify;
@@ -149,7 +149,7 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     @Override
-    default int intify(IntObjectToIntFunction<Term> reduce, int v) {
+    default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
         return reduce.intValueOf(v, this);
     }
 

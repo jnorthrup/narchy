@@ -29,7 +29,7 @@ import java.util.function.Predicate;
  * VolumeLimitedIncrementalProtoCompound extends AppendProtoCompound
  * etc...
  */
-public class NewCompound extends /*HashCached*/DynBytes implements ProtoCompound {
+public class ByteKeyProtoCompound extends /*HashCached*/DynBytes implements ProtoCompound {
 
     public final Op op;
 
@@ -41,18 +41,18 @@ public class NewCompound extends /*HashCached*/DynBytes implements ProtoCompound
     int hash;
 
 
-    public NewCompound(@Nullable Op op, List<Term> prepopulated) {
+    public ByteKeyProtoCompound(@Nullable Op op, List<Term> prepopulated) {
         super();
         this.op = op;
         this.size = prepopulated.size();
         this.subs = prepopulated instanceof FasterList ? ((FasterList<Term>) prepopulated).toArrayRecycled(Term[]::new) : prepopulated.toArray(new Term[size]);
     }
 
-    public NewCompound(Term[] prepopulated) {
+    public ByteKeyProtoCompound(Term[] prepopulated) {
         this(null, prepopulated);
     }
 
-    public NewCompound(@Nullable Op op, Term[] prepopulated) {
+    public ByteKeyProtoCompound(@Nullable Op op, Term[] prepopulated) {
         super();
         this.op = op;
         this.subs = prepopulated; //zero-copy direct usage
@@ -65,7 +65,7 @@ public class NewCompound extends /*HashCached*/DynBytes implements ProtoCompound
      * @param initial_capacity estimated size, but will grow if exceeded
      * @param op               if null, indicates construction of a subterms vector
      */
-    public NewCompound(@Nullable Op op, int initial_capacity) {
+    public ByteKeyProtoCompound(@Nullable Op op, int initial_capacity) {
         super();
         this.op = op;
         if (initial_capacity > 0)
@@ -132,7 +132,7 @@ public class NewCompound extends /*HashCached*/DynBytes implements ProtoCompound
      * hashes and prepares for use in hashmap
      */
     @Override
-    public NewCompound commit() {
+    public ByteKeyProtoCompound commit() {
 
 //        if (commute) {
 //            subs = Terms.sorted(subs);

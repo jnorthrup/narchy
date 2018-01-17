@@ -1,10 +1,12 @@
-package nars.term.sub;
+package nars.subterm;
 
 import jcog.list.ArrayIterator;
 import nars.Param;
 import nars.term.Term;
+import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -25,53 +27,36 @@ public class ArrayTermVector extends TermVector {
     }
 
     @Override
+    public final int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
+        for (Term t : terms)
+            v = reduce.intValueOf(v, t);
+        return v;
+    }
+
+    @Override public final int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
+        for (Term t : terms)
+            v = t.intifyRecurse(reduce, v); //recurse
+        return v;
+    }
+
+    @Override
     public final boolean equals(/*@NotNull*/ Object obj) {
         if (this == obj) return true;
 
+        if (!(obj instanceof Subterms))
+            return false;
+        Subterms that = (Subterms) obj;
+        if (hash!= that.hashCodeSubterms())
+            return false;
+
         if (obj instanceof ArrayTermVector) {
             //special case for ArrayTermVector fast compare and sharing
-            ArrayTermVector that = (ArrayTermVector) obj;
-            Term[] y = that.terms;
-            final Term[] x = this.terms;
-            if (x == y)
-                return true;
-
-            if (hash != that.hash)
+            ArrayTermVector v = (ArrayTermVector) obj;
+            if (!Arrays.equals(terms, v.terms))
                 return false;
 
-            int s = x.length;
-            if (s != y.length)
-                return false;
-
-            //boolean srcXorY = System.identityHashCode(x) < System.identityHashCode(y);
-            for (int i = 0; i < s; i++) {
-                Term xx = x[i];
-                Term yy = y[i];
-                if (xx == yy) {
-                    continue;
-                } else if (!xx.equals(yy)) {
-                    return false;
-                } else {
-//                    //share since subterm is equal
-//                    if (srcXorY)
-//                        y[i] = xx;
-//                    else
-//                        x[i] = yy;
-
-                }
-            }
-
-            equivalentTo(that);
-
-
-            return true;
-
-        } else if (obj instanceof Subterms) {
-
-            Subterms that = (Subterms) obj;
-            if (hash != that.hashCodeSubterms())
-                return false;
-
+            equivalentTo(v);
+        } else {
             final Term[] x = this.terms;
             int s = x.length;
             if (s != that.subs())
@@ -80,12 +65,13 @@ public class ArrayTermVector extends TermVector {
                 if (!x[i].equals(that.sub(i)))
                     return false;
 
-            if (that instanceof TermVector)
-                equivalentTo((TermVector) that);
-
-            return true;
+            if (obj instanceof TermVector)
+                equivalentTo((TermVector)obj);
         }
-        return false;
+
+
+
+        return true;
     }
 
 

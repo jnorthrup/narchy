@@ -13,7 +13,7 @@ import nars.index.term.TermContext;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.sub.TermMetadata;
+import nars.subterm.TermMetadata;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.list.primitive.ImmutableByteList;
 import org.jetbrains.annotations.Nullable;
@@ -124,8 +124,8 @@ public class Int implements Intlike {
         if (this == obj) return true;
         if (id >= Param.MAX_INTERNED_INTS && obj instanceof Int) { //dont need to check if this is an interned Int
             Int o = (Int) obj;
-            if ((id == o.id) && (o.op() == INT)) //HACK check for op because Anom extends Int
-                return true;
+            //HACK check for op because Anom extends Int
+            return (id == o.id) && (o.op() == INT);
         }
         return false;
     }

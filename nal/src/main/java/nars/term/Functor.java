@@ -12,7 +12,7 @@ import nars.concept.builder.ConceptBuilder;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.pred.AbstractPred;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import nars.term.var.Variable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

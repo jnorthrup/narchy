@@ -3,6 +3,7 @@ package nars.term.pred;
 import jcog.TODO;
 import jcog.Util;
 import jcog.list.FasterList;
+import nars.The;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +19,7 @@ import java.util.stream.Stream;
  *
  * @param X the type of state that is relevant to implementations
  */
-public interface PrediTerm<X> extends Term, Predicate<X> {
+public interface PrediTerm<X> extends Term, Predicate<X>, The {
 
 
     Comparator<PrediTerm> sortByCost = (a, b) -> {

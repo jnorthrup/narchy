@@ -1,13 +1,13 @@
 package nars.term;
 
 import jcog.data.byt.RawBytes;
-import nars.index.term.NewCompound;
+import nars.index.term.ByteKeyProtoCompound;
 
 public class SubtermsKey extends RawBytes {
     transient Term[] terms;
 
     public static SubtermsKey the(Term[] terms) {
-        return new SubtermsKey(new NewCompound(terms).update(), terms);
+        return new SubtermsKey(new ByteKeyProtoCompound(terms).update(), terms);
     }
 
     private SubtermsKey(byte[] key, Term[] subs) {

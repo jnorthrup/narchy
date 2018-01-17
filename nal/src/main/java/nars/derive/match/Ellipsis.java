@@ -3,7 +3,7 @@ package nars.derive.match;
 import nars.$;
 import nars.Op;
 import nars.term.Term;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.Variable;

@@ -6,9 +6,10 @@ import jcog.data.byt.DynBytes;
 import nars.IO;
 import nars.Op;
 import nars.Param;
+import nars.The;
+import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.sub.Subterms;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -23,7 +24,7 @@ import static nars.time.Tense.DTERNAL;
  * <p>
  * see IO.writeTerm()
  */
-public class SerialCompound extends DynBytes implements Compound {
+public class SerialCompound extends DynBytes implements Compound, The {
 
     final byte volume;
 

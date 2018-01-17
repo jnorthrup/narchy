@@ -8,12 +8,12 @@ import nars.op.Operator;
 import nars.op.Subst;
 import nars.op.data.*;
 import nars.op.java.Opjects;
+import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.atom.Int;
-import nars.term.sub.Subterms;
 import nars.term.var.Variable;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
@@ -23,10 +23,7 @@ import javax.script.ScriptException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Random;
-import java.util.TreeSet;
+import java.util.*;
 
 import static nars.Op.*;
 import static nars.term.Functor.f0;
@@ -323,7 +320,7 @@ public class Builtin {
                 return t;
 
 
-            TreeSet<Term> s = t.subterms().toSortedSet();
+            SortedSet<Term> s = t.subterms().toSetSorted();
             if (!s.removeIf(x -> x.unneg().op() == VAR_DEP))
                 return t;
 

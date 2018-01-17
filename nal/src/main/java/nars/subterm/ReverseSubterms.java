@@ -1,4 +1,4 @@
-package nars.term.sub;
+package nars.subterm;
 
 import nars.term.Term;
 

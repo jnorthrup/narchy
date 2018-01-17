@@ -5,7 +5,7 @@ import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.term.sub.Subterms;
+import nars.subterm.Subterms;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;

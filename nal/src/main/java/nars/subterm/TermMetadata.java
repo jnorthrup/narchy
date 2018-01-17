@@ -1,4 +1,4 @@
-package nars.term.sub;
+package nars.subterm;
 
 import jcog.Util;
 import nars.Op;

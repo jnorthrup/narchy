@@ -1,6 +1,7 @@
-package nars.term.sub;
+package nars.subterm;
 
 import com.google.common.base.Joiner;
+import nars.The;
 import nars.term.Term;
 
 import java.util.Iterator;
@@ -10,7 +11,7 @@ import java.util.Iterator;
  * a TermVector specifically for subterms.  while both
  * can be
  */
-public abstract class TermVector extends TermMetadata implements Subterms {
+public abstract class TermVector extends TermMetadata implements Subterms, The {
 
     protected transient boolean normalized;
 
@@ -44,7 +45,7 @@ public abstract class TermVector extends TermMetadata implements Subterms {
         boolean an, bn = that.normalized;
         if (!(an = this.normalized))
             this.normalized = true;
-        if (an && !bn)
+        else if (an && !bn)
             that.normalized = true;
 
 //        if (normalized ^ that.normalized) {
