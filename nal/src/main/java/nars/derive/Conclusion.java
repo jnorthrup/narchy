@@ -140,7 +140,7 @@ public final class Conclusion extends AbstractPred<Derivation> {
         return (x != null) &&
                 x.op().conceptualizable &&
                 (x.volume() <= d.termVolMax) &&
-                !x.hasAny(/*BOOL,*/VAR_PATTERN) && x.hasAny(ConstantAtomics);
+                !x.hasAny(VAR_PATTERN) && x.hasAny(ConstantAtomics);
     }
 
 

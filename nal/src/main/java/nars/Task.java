@@ -453,13 +453,40 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         if (t == null)
             return null; //wtf
 
-        boolean negated;
-        if (t.op() == NEG) {
-            t = t.unneg();
-            negated = true;
-        } else {
-            negated = false;
-        }
+        boolean negated = false;
+
+        Op o = t.op();
+        boolean reduced;
+        do {
+            reduced = true;
+
+
+            if (o == NEG) {
+                t = t.unneg();
+                o = t.op();
+                negated = !negated;
+            }
+
+            if (o == INH && t.hasAny(BOOL)) {
+                Term pred = t.sub(1);
+                if (pred.op() == BOOL) {
+                    if (pred == Null)
+                        return null;
+                    else {
+                        t = t.sub(0); //reduce to the subject
+                        o = t.op();
+
+                        if (pred == False)
+                            negated = !negated; //invert truth
+
+                        if (t.op()==NEG)
+                            reduced = false; //repeat to handle the possible contained reductions
+                    }
+
+                }
+            }
+
+        } while (!reduced);
 
         t = t.normalize().the();
 

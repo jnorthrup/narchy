@@ -322,36 +322,36 @@ public class Narsese {
             t = $.t(1, m.confDefault(punct));
         }
 
-        if (content.op() == NEG) {
-            content = content.unneg();
-            if (t != null)
-                t = t.neg();
-        }
+        return Task.tryTask(content, punct, t, (C, tr) -> {
+            //TODO construct directly and remove TaskBuilder
+            TaskBuilder ttt =
+                    new TaskBuilder(C, punct, tr)
+                            .time(
+                                    m.time(), //creation time
+                                    Tense.getRelativeOccurrence(
+                                            (Tense) x[4],
+                                            m
+                                    ));
+            //long st = ttt.start();
+            //        if (ttt.start() != ETERNAL && content.op() == CONJ) {
+            //            int dtRange = content.dtRange();
+            //            if (dtRange > 0) {
+            //                ttt.time(ttt.creation(), st, st + dtRange); //extend
+            //            }
+            //        }
 
-        TaskBuilder ttt =
-                new TaskBuilder(content, punct, t)
-                        .time(
-                                m.time(), //creation time
-                                Tense.getRelativeOccurrence(
-                                        (Tense) x[4],
-                                        m
-                                ));
-
-        long st = ttt.start();
-        //        if (ttt.start() != ETERNAL && content.op() == CONJ) {
-        //            int dtRange = content.dtRange();
-        //            if (dtRange > 0) {
-        //                ttt.time(ttt.creation(), st, st + dtRange); //extend
-        //            }
-        //        }
-
-        if (x[0] == null)  /* do not set, Memory will apply defaults */
-            ttt.priSet(m.priDefault(punct));
-        else
-            ttt.priSet((Float) x[0]);
+            if (x[0] == null)  /* do not set, Memory will apply defaults */
+                ttt.priSet(m.priDefault(punct));
+            else
+                ttt.priSet((Float) x[0]);
 
 
-        return ttt.apply(m).log(NARSESE_TASK_TAG);
+            return ttt.apply(m).log(NARSESE_TASK_TAG);
+        });
+
+
+
+
     }
 
     public static Term term(String s, boolean normalize) throws NarseseException {
