@@ -1,24 +1,26 @@
 package nars.derive.match;
 
 import nars.$;
-import nars.Op;
 import nars.index.term.TermContext;
-import nars.term.Term;
-import nars.term.compound.CompoundCached;
 import nars.subterm.Subterms;
+import nars.subterm.TermList;
+import nars.term.CompoundLight;
+import nars.term.Term;
 import nars.term.subst.Unify;
-import nars.term.transform.TermTransform;
 import nars.term.transform.Retemporalize;
+import nars.term.transform.TermTransform;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.SortedSet;
 
+import static nars.Op.PROD;
+
 /**
  * Holds results of an ellipsis match and
 */
-public class EllipsisMatch extends CompoundCached {
+public class EllipsisMatch extends CompoundLight {
 
     //    public static ArrayEllipsisMatch matchedSubterms(Compound Y, IntObjectPredicate<Term> filter) {
 //        Function<IntObjectPredicate,Term[]> arrayGen =
@@ -34,13 +36,18 @@ public class EllipsisMatch extends CompoundCached {
 
 
     protected EllipsisMatch(Term[] t) {
-        super(Op.PROD, $.vFast(t));
+        super(PROD, $.vFast(t));
+    }
+
+    public EllipsisMatch(Collection<Term> term) {
+        super(PROD, new TermList(term));
     }
 
     @NotNull public static Term[] flatten(Term[] xy, int expectedEllipsisAdds, int expectedEllipsisRemoves) {
-        Term[] z = new Term[xy.length + expectedEllipsisAdds - expectedEllipsisRemoves];
+        int n = xy.length;
+        Term[] z = new Term[n + expectedEllipsisAdds - expectedEllipsisRemoves];
         int k = 0;
-        for (int i = 0; i < xy.length; i++) {
+        for (int i = 0; i < n; i++) {
             Term x = xy[i];
             if (x instanceof EllipsisMatch) {
                 Term[] xx = ((EllipsisMatch) x).arrayShared();
@@ -96,7 +103,7 @@ public class EllipsisMatch extends CompoundCached {
         switch (num) {
             case 0: return empty;
             case 1: return term.first();
-            default: return new EllipsisMatch(term.toArray(new Term[num]));
+            default: return new EllipsisMatch(term);
         }
     }
 

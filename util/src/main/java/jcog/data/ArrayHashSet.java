@@ -114,12 +114,12 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 	
 	@Override
 	public ListIterator<X> listIterator() {
-		return list.listIterator();
+		return new ArrayHashSetIterator();
 	}
 
 	@Override
 	public ListIterator<X> listIterator(int index) {
-		return list.listIterator(index);
+		return new ArrayHashSetIterator(index);
 	}
 
 	@Override
@@ -128,8 +128,8 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 	}
 
 //	@Override
-//	public void set(int index, E element) {
-//		ArrayHashSet<E>.ArrayHashSetIterator listIterator = listIterator(index);
+//	public void set(int index, X element) {
+//		ArrayHashSet<X>.ArrayHashSetIterator listIterator = listIterator(index);
 //		listIterator.next();
 //		listIterator.set(element);
 //	}
@@ -151,7 +151,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
 	@Override
 	public Iterator<X> iterator() {
-		return list.listIterator();
+		return new ArrayHashSetIterator();
 	}
 
 	@Override
@@ -211,74 +211,79 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
 	// end of methods not required to be implemented, but more efficient
 
-//	private class ArrayHashSetIterator implements ListIterator<E> {
-//
-//		private ListIterator<E> arrayListIterator;
-//		private E lastElementProvided;
-//
-//		public ArrayHashSetIterator(ListIterator<E> arrayListIterator) {
-//			this.arrayListIterator = arrayListIterator;
-//		}
-//
-//		@Override
-//		public boolean hasNext() {
-//			return arrayListIterator.hasNext();
-//		}
-//
-//		@Override
-//		public E next() {
-//			return lastElementProvided = arrayListIterator.next();
-//		}
-//
-//		@Override
-//		public void add(E element) {
-//			if (set.add(element)) {
-//				arrayListIterator.add(element);
-//			}
-//		}
-//
-//		@Override
-//		public boolean hasPrevious() {
-//			return arrayListIterator.hasPrevious();
-//		}
-//
-//		@Override
-//		public int nextIndex() {
-//			return arrayListIterator.nextIndex();
-//		}
-//
-//		@Override
-//		public E previous() {
-//			return lastElementProvided = arrayListIterator.previous();
-//		}
-//
-//		@Override
-//		public int previousIndex() {
-//			return arrayListIterator.previousIndex();
-//		}
-//
-//		@Override
-//		public void remove() {
-//			arrayListIterator.remove();
-//			set.remove(lastElementProvided);
-//		}
-//
-//		@Override
-//		public void set(E element) {
-//			if (element.equals(lastElementProvided)) {
-//				// no need to do anything
-//			}
-//			else {
-//				if (set.contains(element)) {
-//					// cannot add because element would appear more than once
-//					throw new IllegalArgumentException("Cannot set already-present element in a different position in ArrayHashSet.");
-//				}
-//				else {
-//					arrayListIterator.set(element);
-//					set.remove(lastElementProvided);
-//					set.add(element);
-//				}
-//			}
-//		}
-//	}
+	private class ArrayHashSetIterator implements ListIterator<X> {
+
+		private ListIterator<X> arrayListIterator;
+		private X lastElementProvided;
+
+		public ArrayHashSetIterator() {
+			this(-1);
+		}
+
+		public ArrayHashSetIterator(int index) {
+			this.arrayListIterator = index == -1 ? list.listIterator() : list.listIterator(index);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return arrayListIterator.hasNext();
+		}
+
+		@Override
+		public X next() {
+			return lastElementProvided = arrayListIterator.next();
+		}
+
+		@Override
+		public void add(X element) {
+			if (set.add(element)) {
+				arrayListIterator.add(element);
+			}
+		}
+
+		@Override
+		public boolean hasPrevious() {
+			return arrayListIterator.hasPrevious();
+		}
+
+		@Override
+		public int nextIndex() {
+			return arrayListIterator.nextIndex();
+		}
+
+		@Override
+		public X previous() {
+			return lastElementProvided = arrayListIterator.previous();
+		}
+
+		@Override
+		public int previousIndex() {
+			return arrayListIterator.previousIndex();
+		}
+
+		@Override
+		public void remove() {
+			arrayListIterator.remove();
+			boolean removed = set.remove(lastElementProvided);
+			assert(removed);
+		}
+
+		@Override
+		public void set(X element) {
+			if (element.equals(lastElementProvided)) {
+				// no need to do anything
+			}
+			else {
+				if (set.contains(element)) {
+					// cannot add because element would appear more than once
+					throw new IllegalArgumentException("Cannot set already-present element in a different position in ArrayHashSet.");
+				}
+				else {
+					arrayListIterator.set(element);
+					set.remove(lastElementProvided);
+					set.add(element);
+				}
+			}
+		}
+	}
 }

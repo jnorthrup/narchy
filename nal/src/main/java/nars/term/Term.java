@@ -719,7 +719,6 @@ public interface Term extends Termed, Comparable<Termed> {
         Terms.printRecursive(out, this);
     }
 
-    @NotNull
     static Term nullIfNull(@Nullable Term maybeNull) {
         return (maybeNull == null) ? Null : maybeNull;
     }
@@ -733,7 +732,7 @@ public interface Term extends Termed, Comparable<Termed> {
      * opX function
      */
     private static int opX(Op o, byte subOp) {
-        return o.id << 8 | subOp;
+        return (o.id << 8) | subOp;
     }
 
     /**

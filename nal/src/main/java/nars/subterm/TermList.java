@@ -4,6 +4,7 @@ import jcog.list.FasterList;
 import nars.The;
 import nars.term.Term;
 
+import java.util.Collection;
 import java.util.List;
 
 /** mutable subterms, used in intermediate operations */
@@ -17,6 +18,20 @@ public class TermList extends FasterList<Term> implements Subterms {
 
     public TermList(int initialCapacity) {
         super(initialCapacity);
+    }
+
+    public TermList(Term[] direct) {
+        super(direct.length, direct);
+    }
+
+    public TermList(Collection<Term> copied) {
+        super(copied.size());
+        copied.forEach(this::addWithoutResizeCheck);
+    }
+
+    public TermList(Iterable<Term> copied) {
+        super(0);
+        copied.forEach(this::add);
     }
 
     @Override
@@ -65,12 +80,19 @@ public class TermList extends FasterList<Term> implements Subterms {
     public TermList added(Term... x) {
         ensureCapacity(size + x.length);
         for (Term xx : x)
-            add(xx);
+            addWithoutResizeCheck(xx);
         return this;
     }
 
     public TermList added(Iterable<? extends Term> x) {
         addAllIterable(x);
         return this;
+    }
+
+    public void addAll(Subterms x, int xStart, int xEnd) {
+        ensureCapacity(xEnd-xStart);
+        for (int i = xStart; i < xEnd; i++) {
+            addWithoutResizeCheck(x.sub(i));
+        }
     }
 }

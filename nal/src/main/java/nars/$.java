@@ -880,7 +880,7 @@ public enum $ {
     }
 
     public static Subterms vFast(Term[] t) {
-        return new TermList().added(t);
+        return new TermList(t);
     }
 
 

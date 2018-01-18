@@ -100,7 +100,9 @@ public interface TermTransform extends TermContext {
 
                 if (y == null) {
                     y = new TermList(s - 1 + xes /*estimate */); //create anyway because this will signal if it was just empty
-                    if (i > 0) x.forEach(y::add, 0, i); //add previously skipped subterms
+                    if (i > 0) {
+                        y.addAll(x, 0, i); //add previously skipped subterms
+                    }
                 }
 
                 if (xes > 0) {
@@ -131,7 +133,7 @@ public interface TermTransform extends TermContext {
 
                     if (y == null) {
                         y = new TermList(s);
-                        if (i > 0) x.forEach(y::add, 0, i); //add previously skipped subterms
+                        if (i > 0) y.addAll(x, 0, i); //add previously skipped subterms
                     }
                 }
 

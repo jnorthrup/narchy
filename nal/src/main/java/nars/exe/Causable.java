@@ -77,9 +77,13 @@ abstract public class Causable extends NARService {
             can.add((end - start), completed);
 
         if (error != null) {
-            if (Param.DEBUG)
-                throw new RuntimeException(error);
-            else
+            if (Param.DEBUG) {
+                if (error instanceof RuntimeException) {
+                    throw ((RuntimeException) error);
+                } else {
+                    throw new RuntimeException(error);
+                }
+            } else
                 logger.error("{} {}", this, error);
         }
 
