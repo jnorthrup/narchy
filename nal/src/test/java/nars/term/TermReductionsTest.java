@@ -31,33 +31,33 @@ public class TermReductionsTest extends NarseseTest {
 
 
     @Test
-    public void testIntersectExtReduction1() throws Narsese.NarseseException {
+    public void testIntersectExtReduction1() {
         // (&,R,(&,P,Q)) = (&,P,Q,R)
         assertEquals("(&,P,Q,R)", secte(r, secte(p, q)).toString());
         assertReduction("(&,P,Q,R)", "(&,R,(&,P,Q))");
     }
 
     @Test
-    public void testIntersectExtReduction2() throws Narsese.NarseseException {
+    public void testIntersectExtReduction2() {
         // (&,(&,P,Q),(&,R,S)) = (&,P,Q,R,S)
         assertEquals("(&,P,Q,R,S)", secte(secte(p, q), secte(r, s)).toString());
         assertReduction("(&,P,Q,R,S)", "(&,(&,P,Q),(&,R,S))");
     }
 
     @Test
-    public void testIntersectExtReduction3() throws Narsese.NarseseException {
+    public void testIntersectExtReduction3() {
         // (&,(&,P,Q),(&,R,S)) = (&,P,Q,R,S)
         assertReduction("(&,P,Q,R,S,T,U)", "(&,(&,P,Q),(&,R,S), (&,T,U))");
     }
 
     @Test
-    public void testIntersectExtReduction2_1() throws Narsese.NarseseException {
+    public void testIntersectExtReduction2_1() {
         // (&,R,(&,P,Q)) = (&,P,Q,R)
         assertReduction("(&,P,Q,R)", "(&,R,(&,P,Q))");
     }
 
     @Test
-    public void testIntersectExtReduction4() throws Narsese.NarseseException {
+    public void testIntersectExtReduction4() {
         //UNION if (term1.op(Op.SET_INT) && term2.op(Op.SET_INT)) {
         assertEquals("{P,Q,R,S}", secte(sete(p, q), sete(r, s)).toString());
         assertReduction("{P,Q,R,S}", "(&,{P,Q},{R,S})");
@@ -69,27 +69,27 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testIntersectIntReduction1() throws Narsese.NarseseException {
+    public void testIntersectIntReduction1() {
         // (|,R,(|,P,Q)) = (|,P,Q,R)
         assertEquals("(|,P,Q,R)", secti(r, secti(p, q)).toString());
         assertReduction("(|,P,Q,R)", "(|,R,(|,P,Q))");
     }
 
     @Test
-    public void testIntersectIntReduction2() throws Narsese.NarseseException {
+    public void testIntersectIntReduction2() {
         // (|,(|,P,Q),(|,R,S)) = (|,P,Q,R,S)
         assertEquals("(|,P,Q,R,S)", secti(secti(p, q), secti(r, s)).toString());
         assertReduction("(|,P,Q,R,S)", "(|,(|,P,Q),(|,R,S))");
     }
 
     @Test
-    public void testIntersectIntReduction3() throws Narsese.NarseseException {
+    public void testIntersectIntReduction3() {
         // (|,R,(|,P,Q)) = (|,P,Q,R)
         assertReduction("(|,P,Q,R)", "(|,R,(|,P,Q))");
     }
 
     @Test
-    public void testIntersectIntReduction4() throws Narsese.NarseseException {
+    public void testIntersectIntReduction4() {
         //UNION if (term1.op(Op.SET_INT) || term2.op(Op.SET_INT)) {
         assertEquals("[P,Q,R,S]", secti(seti(p, q), seti(r, s)).toString());
         assertReduction("[P,Q,R,S]", "(|,[P,Q],[R,S])");
@@ -114,7 +114,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testIntersectIntReduction_to_one() throws Narsese.NarseseException {
+    public void testIntersectIntReduction_to_one() {
         assertReduction("(robin-->bird)", "<robin-->(|,bird)>");
         assertReduction("(robin-->bird)", "<(|,robin)-->(|,bird)>");
     }
@@ -136,7 +136,7 @@ public class TermReductionsTest extends NarseseTest {
 
 
     @Test
-    public void testSimilarityNegatedSubtermsDoubleNeg() throws Narsese.NarseseException {
+    public void testSimilarityNegatedSubtermsDoubleNeg() {
         assertReduction("((--,(P))<->(--,(Q)))", "((--,(P))<->(--,(Q)))");
         /*
         <patham9> <-> is a relation in meaning not in truth
@@ -145,7 +145,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testSimilarityNegatedSubterms() throws Narsese.NarseseException {
+    public void testSimilarityNegatedSubterms() {
         assertReduction("((--,(Q))<->(P))", "((P)<->(--,(Q)))");
         assertReduction("((--,(P))<->(Q))", "((--,(P))<->(Q))");
     }
@@ -160,13 +160,13 @@ public class TermReductionsTest extends NarseseTest {
 //    }
 
     @Test
-    public void testImplicationNegatedPredicate() throws Narsese.NarseseException {
+    public void testImplicationNegatedPredicate() {
         assertReduction("(--,((P)==>(Q)))", "((P)==>(--,(Q)))");
         assertReduction("((--,(P))==>(Q))", "((--,(P))==>(Q))");
     }
 
     @Test
-    public void testConjInhReflexive() throws Narsese.NarseseException {
+    public void testConjInhReflexive() {
         assertReduction("((a &&+5 x)-->a)", "((a &&+5 x)-->a)");
         assertReduction("(x-->(a &&+5 x))", "(x-->(a &&+5 x))");
         assertReduction("((a&&b)-->(a&&c))", "((a&&b)-->(a&&c))");
@@ -182,7 +182,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testPointlessImplicationSubtermRepeat() throws Narsese.NarseseException {
+    public void testPointlessImplicationSubtermRepeat() {
         assertReduction("((a &&+5 x) ==>+5 c)", "((a &&+5 x)=|>(x &&+5 c))");
 
         assertReduction(True, "((a &&+5 x)=|>x)");
@@ -194,7 +194,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testPointlessImplicationSubtermRepeat2() throws Narsese.NarseseException {
+    public void testPointlessImplicationSubtermRepeat2() {
         //unaffected because of eternality
         //assertEquals("((a &&+5 x)=|>(&&,x,y,z))", $("((a &&+5 x)=|>(&&,x,y,z))").toString());
         assertReduction("((a &&+5 x)=|>(y&&z))", "((a &&+5 x)=|>(&&,x,y,z))");
@@ -213,7 +213,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testImplicationNegatedPredicateImplicated() throws Narsese.NarseseException {
+    public void testImplicationNegatedPredicateImplicated() {
 
         //subject disallows implication
         assertReduction(Null, "((--,(x==>y)) ==> z)");
@@ -257,7 +257,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testReducedAndInvalidImplications2() throws Narsese.NarseseException {
+    public void testReducedAndInvalidImplications2() {
         assertReduction("((P&&R)==>Q)", "(R==>(P==>Q))");
         assertReduction("((R &&+2 P) ==>+1 Q)", "(R ==>+2 (P ==>+1 Q))");
         assertReduction("(((S &&+1 R) &&+2 P) ==>+1 Q)", "((S &&+1 R) ==>+2 (P ==>+1 Q))");
@@ -323,7 +323,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testReducedAndInvalidImplications4() throws Narsese.NarseseException {
+    public void testReducedAndInvalidImplications4() {
         assertReduction("(R==>P)", "(R==>(R==>P))");
     }
 
@@ -383,7 +383,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testConjParallelWithSeq() throws Narsese.NarseseException {
+    public void testConjParallelWithSeq() {
         assertReduction("(a &&+5 b)", "((a &&+5 b)&|a)");
 
         assertReduction(False, "((--a &&+5 b)&|a)");
@@ -454,12 +454,12 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testEmbeddedConjNormalizationB() throws Narsese.NarseseException {
+    public void testEmbeddedConjNormalizationB() {
         assertReduction("(((--,noid(0,5)) &&+- noid(11,2)) &&+- (noid(11,2) &&+- noid(11,2)))", "((((--,noid(0,5)) &&+- noid(11,2)) &&+- noid(11,2)) &&+- noid(11,2))");
     }
 
     @Test
-    public void testEmbeddedConjNormalization2() throws Narsese.NarseseException {
+    public void testEmbeddedConjNormalization2() {
         assertReduction("((a &&+1 b) &&+3 (c &&+5 d))", "(a &&+1 (b &&+3 (c &&+5 d)))");
 
         assertReduction("(((t2-->hold) &&+1 (t1-->at)) &&+3 ((t1-->[opened]) &&+5 open(t1)))", "(hold:t2 &&+1 (at:t1 &&+3 ([opened]:t1 &&+5 open(t1))))");
@@ -601,14 +601,14 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testDisjunctionReduction() throws Narsese.NarseseException {
+    public void testDisjunctionReduction() {
 
         assertReduction("(||,(a-->x),(b-->x),(c-->x),(d-->x))", "(||,(||,x:a,x:b),(||,x:c,x:d))");
         assertReduction("(||,(b-->x),(c-->x),(d-->x))", "(||,x:b,(||,x:c,x:d))");
     }
 
     @Test
-    public void testConjunctionReduction() throws Narsese.NarseseException {
+    public void testConjunctionReduction() {
         assertReduction("(&&,a,b,c,d)", "(&&,(&&,a,b),(&&,c,d))");
         assertReduction("(&&,b,c,d)", "(&&,b,(&&,c,d))");
     }
@@ -623,33 +623,33 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testConjunctionParallelWithConjunctionParallel() throws Narsese.NarseseException {
+    public void testConjunctionParallelWithConjunctionParallel() {
         assertReduction("(&|,nario(13,27),nario(21,27),nario(24,27))", "((nario(21,27)&|nario(24,27))&|nario(13,27))");
     }
 
     @Test
-    public void testTemporalConjunctionReduction2() throws Narsese.NarseseException {
+    public void testTemporalConjunctionReduction2() {
         assertReduction("((a&|b) &&+1 c)", "(a &&+0 (b &&+1 c))");
     }
 
     @Test
-    public void testTemporalConjunctionReduction3() throws Narsese.NarseseException {
+    public void testTemporalConjunctionReduction3() {
         assertReduction("(a&|b)", "( (a &&+0 b) && (a &&+0 b) )");
     }
 
     @Test
-    public void testTemporalConjunctionReduction5() throws Narsese.NarseseException {
+    public void testTemporalConjunctionReduction5() {
         assertReduction("((a&|b)&&(a &&+1 b))", "( (a&|b) && (a &&+1 b) )");
     }
 
     @Test
-    public void testTemporalConjunctionReduction4() throws Narsese.NarseseException {
+    public void testTemporalConjunctionReduction4() {
         assertReduction("(a&|b)", "( a &&+0 (b && b) )");
     }
 
 
     @Test
-    public void testTemporalNTermConjunctionParallel() throws Narsese.NarseseException {
+    public void testTemporalNTermConjunctionParallel() {
         //+0 is the only case in which temporal && can have arity>2
         //TODO fix spacing:
         assertReduction("(&|,a,b,c)", "( a &&+0 (b &&+0 c) )");
@@ -657,7 +657,7 @@ public class TermReductionsTest extends NarseseTest {
 
     @Disabled
     @Test
-    public void testTemporalNTermEquivalenceParallel() throws Narsese.NarseseException {
+    public void testTemporalNTermEquivalenceParallel() {
         //+0 is the only case in which temporal && can have arity>2
         assertReduction("(<|>, a, b, c)", "( a <|> (b <|> c) )");
     }
@@ -669,7 +669,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testConjunctionMultipleAndEmbedded() throws Narsese.NarseseException {
+    public void testConjunctionMultipleAndEmbedded() {
 
         assertReduction("(&&,a,b,c,d)", "(&&,(&&,a,b),(&&,c,d))");
         assertReduction("(&&,a,b,c,d,e,f)", "(&&,(&&,a,b),(&&,c,d), (&&, e, f))");
@@ -692,7 +692,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testImplicationTrue() throws Narsese.NarseseException {
+    public void testImplicationTrue() {
         assertReduction(False, "(--x==>x)");
         assertReduction(True, "(x==>x)");
         assertReduction(True, "((x)==>(x))");
@@ -718,7 +718,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testDisjunctionMultipleAndEmbedded() throws Narsese.NarseseException {
+    public void testDisjunctionMultipleAndEmbedded() {
 
         assertReduction("(||,(a),(b),(c),(d))", "(||,(||,(a),(b)),(||,(c),(d)))");
         assertReduction("(||,(a),(b),(c),(d),(e),(f))", "(||,(||,(a),(b)),(||,(c),(d)), (||,(e),(f)))");
@@ -727,7 +727,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testImplicationConjCommonSubterms() throws Narsese.NarseseException {
+    public void testImplicationConjCommonSubterms() {
         assertReduction("((&&,a,b,c)==>d)", "((&&, a, b, c) ==> (&&, a, d))");
         assertReduction("((a&&d)==>(b&&c))", "((&&, a, d) ==> (&&, a, b, c))");
         assertInvalidTerms("((&&, a, b, c) ==> (&&, a, b))");
@@ -777,7 +777,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testCoNegatedJunction() throws Narsese.NarseseException {
+    public void testCoNegatedJunction() {
         //the conegation cancels out conflicting terms
 
         assertReduction(False, "(&&,x,a:b,(--,a:b))");
@@ -790,7 +790,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testCoNegatedDisjunction() throws Narsese.NarseseException {
+    public void testCoNegatedDisjunction() {
 
         assertReduction(True, "(||,x,a:b,(--,a:b))");
 
@@ -815,7 +815,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testConegatedConjunctionTerms0not() throws Narsese.NarseseException {
+    public void testConegatedConjunctionTerms0not() {
         //dont unwrap due to different 'dt'
         assertReduction("((--,((y)&|(z)))&&(x))", "((x)&&--((y) &&+0 (z)))");
 
@@ -823,7 +823,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testConegatedConjunctionTerms1not() throws Narsese.NarseseException {
+    public void testConegatedConjunctionTerms1not() {
         //dont unwrap due to different 'dt'
         assertReduction("((--,((y) &&+1 (z)))&&(x))", "((x)&&--((y) &&+1 (z)))");
 
@@ -831,13 +831,13 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testConegatedConjunctionTerms2() throws Narsese.NarseseException {
+    public void testConegatedConjunctionTerms2() {
         //(x && not(x&&y)) |- x && not(y)
         assertReduction("((--,(robin-->swimmer))&&#1)", "(#1 && --(#1&&(robin-->swimmer)))");
     }
 
     @Test
-    public void testDemorgan1() throws Narsese.NarseseException {
+    public void testDemorgan1() {
         //https://en.wikipedia.org/wiki/De_Morgan%27s_laws
 
 
@@ -847,7 +847,7 @@ public class TermReductionsTest extends NarseseTest {
 
     @Disabled
     @Test
-    public void testDemorgan2() throws Narsese.NarseseException {
+    public void testDemorgan2() {
 
         // \neg(P\or Q)\iff(\neg P)\and(\neg Q),
         assertReduction("(--,((p)||(q)))", "(--(p) && --(q))");
@@ -936,13 +936,13 @@ public class TermReductionsTest extends NarseseTest {
 //    }
 
     @Test
-    public void testImplCommonSubterms() throws Narsese.NarseseException {
+    public void testImplCommonSubterms() {
         //factor out the common sub-term
         assertReduction("(((--,isIn($1,xyz))&&(--,(($1,xyz)-->$2)))==>((y-->x)))", "(((--,isIn($1,xyz))&&(--,(($1,xyz)-->$2)))==>((--,(($1,xyz)-->$2))&&(x:y)))");
     }
 
     @Test
-    public void testConjNearIdentity() throws Narsese.NarseseException {
+    public void testConjNearIdentity() {
         assertReduction(True, "( (a&&b) ==> (a&|b) )");
 
         assertReduction("(&|,(a&&b),a,b)", "( (a&&b) &| (a&|b) )");
@@ -952,18 +952,7 @@ public class TermReductionsTest extends NarseseTest {
         assertReduction("((--,((X,x)&&#1))&|(--,((X,x)&|#1)))", "( (--,((X,x)&&#1)) &| (--,((X,x)&|#1)) )");
     }
 
-    @Test
-    public void testTrueDuh() throws Narsese.NarseseException {
-        assertEquals("x", $.impl(Op.True, $.$("x")).toString());
-    }
 
-    @Test
-    public void testTrueUnneg() {
-        assertEquals(True, True.unneg());
-        assertEquals(False, True.neg());
-        assertEquals(True, False.unneg());
-        assertEquals(True, False.neg());
-    }
 
     @Test
     public void testCommutizeRepeatingConjunctions() throws Narsese.NarseseException {
@@ -1001,7 +990,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testImplCommonSubterms2() throws Narsese.NarseseException {
+    public void testImplCommonSubterms2() {
         assertReduction(True, "((tetris(isRowClear,7,true)&&tetris(7,14))==>tetris(7,14))");
         assertReduction(True, "((tetris(isRowClear,7,true)==>tetris(7,14))&&tetris(7,14))");
         assertReduction(True, "((tetris(isRowClear,7,true)=|>tetris(7,14))&&tetris(7,14))");
@@ -1015,7 +1004,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testImplCommonSubterms3() throws Narsese.NarseseException {
+    public void testImplCommonSubterms3() {
 
         assertReduction(True, "((x(intValue,(),0)&&x(set,0))==>x(intValue,(),0))");
         assertReduction("x(set,0)", "((x(intValue,(),0)==>x(intValue,(),0)) && x(set,0))");
@@ -1161,20 +1150,20 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testReducibleImplFactored() throws Narsese.NarseseException {
+    public void testReducibleImplFactored() {
         assertReduction("((x&|y)=|>z)", "((y &| x) =|> (y &| z))");
         assertReduction("((x&|y)==>z)", "((y &| x) ==> (y &| z))");
     }
 
     @Test
-    public void testReducibleImplFactored2() throws Narsese.NarseseException {
+    public void testReducibleImplFactored2() {
         assertReduction("((x&&y)==>z)", "((y && x) ==> (y && z))");
         assertReduction("((&&,a,x,y)==>z)", "((&&, x, y, a) ==> (y && z))");
         assertReduction("((y &&+1 (x&|z)) ==>+1 y)", "((y &&+1 x)=|>(z &&+1 y))");
     }
 
     @Test
-    public void testReducibleImplFactoredPredShouldRemainIntact() throws Narsese.NarseseException {
+    public void testReducibleImplFactoredPredShouldRemainIntact() {
         //pred not be separated for && and &| and &&+-
         for (String cp : new String[]{"&&", "&|", " &&+- "}) {
             assertReduction("((x&&y) ==>+1 (y" + cp + "z))", "((y&&x) ==>+1 (y" + cp + "z))");
@@ -1184,16 +1173,17 @@ public class TermReductionsTest extends NarseseTest {
 
     }
 
-    static void assertReduction(String exp, String is) throws Narsese.NarseseException {
-        assertEquals(exp, $(is).toString(), () -> is + " should reduce to " + exp);
+    static void assertReduction(String exp, String is)  {
+        assertEquals(exp, $safe(is).toString(), () -> is + " reduces to " + exp);
     }
 
-    static void assertReduction(Term exp, String is) throws Narsese.NarseseException {
-        assertEquals(exp, $(is), () -> exp + " should reduce to " + is);
+    static void assertReduction(Term exp, String is)  {
+        assertEquals(exp, $safe(is), () -> exp + " reduces to " + is);
     }
+
 
     @Test
-    public void testReducibleImpl() throws Narsese.NarseseException {
+    public void testReducibleImpl() {
 
         assertReduction("(--,((--,x)==>y))", "(--x ==> (--y && --x))");
 
@@ -1203,7 +1193,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testReducibleImplConjCoNeg() throws Narsese.NarseseException {
+    public void testReducibleImplConjCoNeg() {
         for (String i : new String[]{"==>", "=|>"}) {
             for (String c : new String[]{"&&", "&|"}) {
                 assertReduction(False, "(x " + i + " (y " + c + " --x))");
@@ -1216,7 +1206,7 @@ public class TermReductionsTest extends NarseseTest {
 
 
     @Test
-    public void testReducibleImplParallelNeg() throws Narsese.NarseseException {
+    public void testReducibleImplParallelNeg() {
         assertReduction("(--,((--,x)=|>y))", "(--x =|> (--y &| --x))");
         assertReduction(True, "((--y &| --x) =|> --x)");
 
@@ -1230,12 +1220,12 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testImplInImplDTernal() throws Narsese.NarseseException {
+    public void testImplInImplDTernal() {
         assertReduction("(((--,(in))&&(happy))==>(out))", "((--,(in)) ==> ((happy)  ==> (out)))");
     }
 
     @Test
-    public void testImplInImplDTemporal() throws Narsese.NarseseException {
+    public void testImplInImplDTemporal() {
         assertReduction("(((--,(in)) &&+1 (happy)) ==>+2 (out))", "((--,(in)) ==>+1 ((happy) ==>+2 (out)))");
     }
 
@@ -1261,7 +1251,7 @@ public class TermReductionsTest extends NarseseTest {
 
 
     @Test
-    public void testConjDisjNeg() throws Narsese.NarseseException {
+    public void testConjDisjNeg() {
         assertReduction("((--,(out))&&(happy))", "((--,(out))&&(||,(happy),(out)))");
     }
 
@@ -1289,13 +1279,13 @@ public class TermReductionsTest extends NarseseTest {
 //    }
 
     @Test
-    public void testDontPromoteEternalToParallel() throws Narsese.NarseseException {
+    public void testDontPromoteEternalToParallel() {
         String s = "(a&|(b && c))";
         assertReduction("((b&&c)&|a)", s);
     }
 
     @Test
-    public void testPromoteEternalToParallelDont() throws Narsese.NarseseException {
+    public void testPromoteEternalToParallelDont() {
         String s = "(a&&(b&|c))";
         assertReduction("((b&|c)&&a)", s);
     }
@@ -1315,7 +1305,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testCoNegatedConjunctionParallelEternal() throws Narsese.NarseseException {
+    public void testCoNegatedConjunctionParallelEternal() {
         //mix of parallel and eternal
         assertReduction("(((--,(y&&z))&&x)&|(--,x))", "((--,x)&|((--,(z&&y))&&x))");
     }
@@ -1325,7 +1315,7 @@ public class TermReductionsTest extends NarseseTest {
      * TODO decide if it should not apply this reduction to eternal
      */
     @Test
-    public void testConjImplReduction0() throws Narsese.NarseseException {
+    public void testConjImplReduction0() {
         assertReduction("((inside(john,playground)&&inside(bob,office))==>inside(bob,kitchen))", "(inside(bob,office) && (inside(john,playground)==>inside(bob,kitchen)))");
     }
 
@@ -1386,7 +1376,7 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testConjImplReduction1() throws Narsese.NarseseException {
+    public void testConjImplReduction1() {
         assertReduction("((inside(john,playground)&|inside(bob,office))==>inside(bob,kitchen))", "(inside(bob,office)&|(inside(john,playground)==>inside(bob,kitchen)))");
     }
 
@@ -1404,13 +1394,13 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testConjImplReductionNeg2() throws Narsese.NarseseException {
+    public void testConjImplReductionNeg2() {
         //with some dt's
         assertReduction("((inside(bob,office) &&+1 (--,inside(john,playground))) ==>+1 inside(bob,kitchen))", "(inside(bob,office) &&+1 (--inside(john,playground) ==>+1 inside(bob,kitchen)))");
     }
 
     @Test
-    public void testConjImplReduction3() throws Narsese.NarseseException {
+    public void testConjImplReduction3() {
         //with some dt's
         assertReduction("((j &&+1 b) ==>-2 k)", "((j ==>-1 k) &&+1 b)");
 

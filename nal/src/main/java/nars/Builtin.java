@@ -243,7 +243,7 @@ public class Builtin {
         }));
 
         nar.on(Functor.f2((Atom) $.the("without"), (Term container, Term content) ->
-                Op.without(container, (x)->x.equalsRoot(content), nar.random())));
+                nullToNull(Op.without(container, (x)->(x.equalsRoot(content)), nar.random()))));
 
         /**
          * TODO rename this to 'dropAnyCommutive'
@@ -421,18 +421,16 @@ public class Builtin {
                 events.remove(f);
                 return Op.conj(events);
             } else {
-                return Op.without(conj, (x) -> event.equalsRoot(x), nar.random());
+                return nullToNull(Op.without(conj, (x) -> event.equalsRoot(x), nar.random()));
             }
         }));
         /** extracts only the events preceding the specified events */
-        nar.on(Functor.f2((Atom) $.the("conjDropIfLatest"), (Term conj, Term event) -> {
-            return conjDrop(nar, conj, event, false);
-
-        }));
-        nar.on(Functor.f2((Atom) $.the("conjDropIfEarliest"), (Term conj, Term event) -> {
-
-            return conjDrop(nar, conj, event, true);
-        }));
+        nar.on(Functor.f2((Atom) $.the("conjDropIfLatest"), (Term conj, Term event) ->
+                nullToNull(conjDrop(nar, conj, event, false))
+        ));
+        nar.on(Functor.f2((Atom) $.the("conjDropIfEarliest"), (Term conj, Term event) ->
+                nullToNull(conjDrop(nar, conj, event, true))
+        ));
 
 
         nar.on(Functor.f1Concept("belief", nar, (c, n) -> $.quote(n.belief(c, n.time()))));
@@ -509,6 +507,13 @@ public class Builtin {
             }
             return null;
         }));
+    }
+
+    private static Term nullToNull(Term t) {
+        if (t == null)
+            return Null;
+        else
+            return t;
     }
 
     public static void registerOperators(NAR nar) {

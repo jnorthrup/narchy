@@ -582,7 +582,6 @@ public enum Op {
     public static final int varBits = Op.or(VAR_PATTERN, VAR_DEP, VAR_QUERY, VAR_INDEP);
 
 
-    public final boolean allowsBool;
 
     /**
      * Image index ("imdex") symbol for products, and anonymous variable in products
@@ -610,12 +609,12 @@ public enum Op {
     public static final Bool Null = new BoolNull();
 
     /**
-     * absolutely false
+     * tautological absolute false
      */
     public static final Bool False = new BoolFalse();
 
     /**
-     * absolutely true
+     * tautological absolute true
      */
     public static final Bool True = new BoolTrue();
 
@@ -672,9 +671,10 @@ public enum Op {
         }
     }
 
-    public static Term conjDrop(NAR nar, Term conj, Term _event, boolean earlyOrLate) {
+    /** returns null if wasnt contained, Null if nothing remains after removal */
+    @Nullable public static Term conjDrop(NAR nar, Term conj, Term _event, boolean earlyOrLate) {
         if (conj.op() != CONJ || conj.impossibleSubTerm(_event))
-            return Null;
+            return null;
 
         Term event = _event.root();
 
@@ -688,10 +688,13 @@ public enum Op {
 
             LongObjectPair<Term> ev = events.get(eMax);
             if (ev.getTwo().equalsRoot(event)) {
+                if (events.size()==1)
+                    return Null; //emptied
+
                 events.remove(eMax);
                 return Op.conj(events);
             } else {
-                return Null;
+                return null;
             }
 
         } else {
@@ -918,18 +921,6 @@ public enum Op {
         this.atomic = var || ATOMICS.contains(str);
 
 
-        switch (str) {
-            case "==>":
-            case "&&":
-            case "*": //HACK necessary for ellipsematch content
-            case "|":
-            case "&":
-                allowsBool = true;
-                break;
-            default:
-                allowsBool = false;
-                break;
-        }
 
         conceptualizable = !(var ||
                 str.equals("+") /* INT */ || str.equals("B") /* Bool */);
@@ -1299,11 +1290,23 @@ public enum Op {
             case 2:
                 Term et0 = t[0], et1 = t[1];
 
-                if (et0.equals(et1)
-                        || et0.containsRecursively(et1, true, recursiveCommonalityDelimeterWeak)
-                        || et1.containsRecursively(et0, true, recursiveCommonalityDelimeterWeak))
+                //false tautology - the difference of something with itself will always be nothing, ie. freq=0, ie. False
+                if (et0.equals(et1))
+                    return False;
 
+                //true tautology - the difference of something with its negation will always be everything, ie. freq==1 : True
+                if (et1.neg().equals(et0))
+                    return True;
+
+                //null tautology - incomputable comparisons with truth
+                if (isTrueOrFalse(et0) || isTrueOrFalse(et1))
                     return Null;
+
+
+
+                if (et0.containsRecursively(et1, true, recursiveCommonalityDelimeterWeak)
+                        || et1.containsRecursively(et0, true, recursiveCommonalityDelimeterWeak))
+                    return Null; //TODO handle this better, there may be detectable or iteratively simplified reductions
 
                 if (op == DIFFe && et0 instanceof Int.IntRange && et1.op() == INT) {
                     Term simplified = ((Int.IntRange) et0).subtract(et1);
@@ -1453,29 +1456,30 @@ public enum Op {
                 return True;
         }
 
-        switch (op) {
+        if (op == INH || op == SIM) {
+            if (isTrueOrFalse(subject)) {
+                //nothing is or is the intension of true or false
+                return Null;
+            }
+            if (op == SIM && isTrueOrFalse(predicate)) {
+                // similarity with truth is prevented since it being a commutive operator,
+                //      then at best, no information can gained
+                // but inheritance is allowed and this can link term-level truth and task-level truth
+                return Null;
+            }
+        }
 
-            case SIM:
-            case INH:
-
-
-                if (isTrueOrFalse(subject) || isTrueOrFalse(predicate))
-                    return False; //$.the(subject.equals(predicate));
-
-                break;
-
-
-            case IMPL:
+        if (op == IMPL) {
 
                 //special case for implications: reduce to --predicate if the subject is False
 
                 //if (dtConcurrent) { //no temporal basis
                 if (subject == True)
-                    return predicate;
+                    return predicate; //true tautology
                 else if (subject == False)
-                    return predicate.neg();
+                    return predicate.neg(); //false tautology
                 else if (predicate instanceof Bool)
-                    return Null;
+                    return Null; //nothing is the "cause" of tautological trueness or falseness
 
                 if (subject.hasAny(InvalidImplicationSubj))
                     return Null; //throw new InvalidTermException(op, dt, "Invalid equivalence subject", subject, predicate);
@@ -1589,7 +1593,7 @@ public enum Op {
                     //}
                 }
 
-                //filter duplicate events
+                //filter duplicate events and detect contradictions
 
                 if (dt != XTERNAL && subject.dt() != XTERNAL && predicate.dt() != XTERNAL) {
 
@@ -1738,11 +1742,6 @@ public enum Op {
 //                }
 //            }
 
-
-                break;
-
-            default:
-                throw new UnsupportedOperationException();
         }
 
 
@@ -1946,9 +1945,9 @@ public enum Op {
         int aaa = args.size();
         if (aaa == 1)
             return args.first();
-
-        Term[] subterms = args.toArray(new Term[aaa]);
-        return The.compound(intersection, subterms);
+        else {
+            return The.compound(intersection, args.toArray(new Term[aaa]));
+        }
     }
 
     public static boolean goalable(Term c) {
@@ -2027,7 +2026,7 @@ public enum Op {
 
     public final Term the(int dt, /*@NotNull*/ Collection<Term> sub) {
         if (sub == null)
-            return Null;
+            throw new NullPointerException();
         int s = sub.size();
         return the(dt, sub.toArray(new Term[s]));
     }
@@ -2099,14 +2098,15 @@ public enum Op {
     }
 
 
-    public static Term without(Term container, Predicate<Term> filter, Random rand) {
+    /** returns null if not found, and Null if no subterms remain after removal */
+    @Nullable public static Term without(Term container, Predicate<Term> filter, Random rand) {
 
 
         Subterms cs = container.subterms();
 
         int i = cs.indexOf(filter, rand);
         if (i == -1)
-            return Null;
+            return null;
 
 
         switch (cs.subs()) {

@@ -50,7 +50,7 @@ public interface TermTransform extends TermContext {
 
         Subterms xx = x.subterms();
 
-        Subterms yy = transformSubterms(xx, !op.allowsBool);
+        Subterms yy = transformSubterms(xx);
 
         if (yy == null) {
             return null;
@@ -79,7 +79,7 @@ public interface TermTransform extends TermContext {
      * returns 'y' if changes
      * returns null if untransformable
      */
-    default Subterms transformSubterms(Subterms x, boolean boolFilter) {
+    default Subterms transformSubterms(Subterms x) {
 
         int s = x.subs();
 
@@ -108,7 +108,7 @@ public interface TermTransform extends TermContext {
                 if (xes > 0) {
                     for (int j = 0; j < xes; j++) {
                         @Nullable Term k = xe.sub(j).transform(this);
-                        if (Term.invalidBoolSubterm(k, boolFilter)) {
+                        if (k==null) {
                             return null;
                         } else {
                             y.add(k);
@@ -127,7 +127,7 @@ public interface TermTransform extends TermContext {
 //                        System.out.println();
 //                    }
 
-                    if (Term.invalidBoolSubterm(yi, boolFilter)) {
+                    if (yi == null) {
                         return null;
                     }
 

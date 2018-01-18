@@ -742,12 +742,6 @@ public interface Term extends Termed, Comparable<Termed> {
         return opX(o, (byte) subOp);
     }
 
-    /**
-     * if filterTrueFalse is false, only filters Null's
-     */
-    static boolean invalidBoolSubterm(Term u, boolean filterTrueFalse) {
-        return u == null || ((u instanceof Bool) && (filterTrueFalse || (u == Null)));
-    }
 
     default Term dt(int dt) {
 //        if (dt!=DTERNAL)
