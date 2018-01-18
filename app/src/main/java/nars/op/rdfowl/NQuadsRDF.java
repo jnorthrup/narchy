@@ -25,9 +25,7 @@ import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static nars.$.*;
-import static nars.Op.BELIEF;
-import static nars.Op.CONJ;
-import static nars.Op.IMPL;
+import static nars.Op.*;
 
 /**
  * Created by me on 6/4/15.

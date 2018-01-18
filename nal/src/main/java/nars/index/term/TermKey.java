@@ -6,10 +6,10 @@ import jcog.data.byt.HashCachedBytes;
 import nars.IO;
 import nars.Op;
 import nars.Task;
+import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.subterm.Subterms;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.DataOutput;

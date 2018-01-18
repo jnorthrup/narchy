@@ -1,9 +1,7 @@
 package jcog.bag;
 
 import jcog.Util;
-import jcog.list.FasterList;
 import jcog.list.table.Table;
-import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import jcog.pri.Priority;
 import jcog.pri.op.PriForget;
@@ -15,8 +13,6 @@ import org.jetbrains.annotations.Nullable;
 import java.io.PrintStream;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;

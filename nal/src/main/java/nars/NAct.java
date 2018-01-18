@@ -26,6 +26,7 @@ import static jcog.Util.unitize;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static nars.time.Tense.ETERNAL;
+import static nars.truth.TruthFunctions.c2w;
 import static nars.truth.TruthFunctions.c2wSafe;
 
 /**
@@ -484,8 +485,8 @@ public interface NAct {
                     //confMin * 4;
                     //w2c(c2w(n.confDefault(GOAL))/2f);
             float curiEvi =
-                    //c2w(confBase);
-                    eviMin*2;
+                    c2w(n.confDefault(BELIEF));
+                    //eviMin*2;
 
             boolean p = action.term().equals(pt);
             int ip = p ? 0 : 1;

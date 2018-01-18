@@ -9,8 +9,6 @@ import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Ons;
 import jcog.event.Topic;
-import jcog.math.Range;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.SpaceGraph;
@@ -23,7 +21,6 @@ import spacegraph.widget.button.PushButton;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
-import java.util.function.Consumer;
 
 
 public class WebCam {

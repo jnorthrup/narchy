@@ -7,7 +7,10 @@ import jcog.math.FloatParam;
 import nars.$;
 import nars.NAR;
 import nars.NAgent;
-import nars.control.*;
+import nars.control.Cause;
+import nars.control.DurService;
+import nars.control.MetaGoal;
+import nars.control.Traffic;
 import nars.exe.Causable;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -27,9 +30,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static spacegraph.layout.Grid.col;
-import static spacegraph.layout.Grid.grid;
-import static spacegraph.layout.Grid.row;
+import static spacegraph.layout.Grid.*;
 
 public class ExecCharts {
 

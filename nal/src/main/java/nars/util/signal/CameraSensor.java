@@ -14,6 +14,7 @@ import nars.task.ITask;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.truth.Truth;
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -26,6 +27,8 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static nars.Op.BELIEF;
+import static nars.truth.TruthFunctions.c2w;
+import static nars.truth.TruthFunctions.w2c;
 
 /**
  * manages reading a camera to a pixel grid of SensorConcepts
@@ -40,7 +43,7 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
     public final CauseChannel<ITask> in;
     private final Int2Function<Term> pixelTerm;
 
-    float resolution = 0.01f;//Param.TRUTH_EPSILON;
+
 
     final int numPixels;
 
@@ -56,6 +59,9 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
 
     //private long stamp;
 
+    /** to calculate avg number pixels processed per duration */
+    private final DescriptiveStatistics pixelsProcessed = new DescriptiveStatistics(8);
+
 
     public CameraSensor(@Nullable Term root, P src, NAgent a) {
         this(root, src, a.nar);
@@ -70,7 +76,7 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
 
         this.w = src.width();
         this.h = src.height();
-        numPixels = w * h;
+        pixelsRemainPerUpdate = numPixels = w * h;
 
         this.in = n.newCauseChannel(this);
 
@@ -203,7 +209,7 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
 //    }
 
     public CameraSensor resolution(float resolution) {
-        this.resolution = resolution;
+        pixels.forEach(p -> p.resolution.set(resolution));
         return this;
     }
 
@@ -233,6 +239,8 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
 
         long now = nar.time();
         if (now - this.lastUpdate >= nar.dur() * minUpdateDurs) {
+            int pixelsProcessedInLastDur = totalPixels - this.pixelsRemainPerUpdate;
+            pixelsProcessed.addValue(pixelsProcessedInLastDur);
             src.update(1);
             pixelsRemainPerUpdate = totalPixels;
             this.lastUpdate = now;
@@ -244,14 +252,21 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
 
         //stamp = nar.time.nextStamp();
 
-        this.conf = nar.confDefault(BELIEF);
+
 
         //adjust resolution based on value - but can cause more noise in doing so
         //resolution(Util.round(Math.min(0.01f, 0.5f * (1f - this.in.amp())), 0.01f));
 
         //frame-rate timeslicing
-
         int pixelsToProcess = Math.min(pixelsRemainPerUpdate, workToPixels(work));
+
+        //confidence proportional to the amount of the frame processed per duration, calculated in aggregate because
+        //each call will only proceed some of the image potentially but multiple times per duration
+        float meanPixelsProcessedPerDuration = (float) pixelsProcessed.getMean();
+        this.conf = w2c(Util.lerp( (meanPixelsProcessedPerDuration) / numPixels, c2w(nar.confMin.floatValue()), c2w(nar.confDefault(BELIEF))));
+
+        //System.out.println(meanPixelsProcessedPerDuration + "/" + numPixels + " -> " + conf + "%");
+
         if (pixelsToProcess == 0)
             return 0;
 
@@ -294,6 +309,7 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
 
     /**
      * how many pixels to process for the given work amount
+     * can be 1:1 or some other amount
      */
     protected int workToPixels(int work) {
         return work;
@@ -340,7 +356,6 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
         PixelConcept(Term cell, int x, int y, NAR nar) {
             super(cell, nar, null, brightnessTruth);
             setSignal(() -> Util.unitize(src.brightness(x, y)));
-            this.resolution = () -> CameraSensor.this.resolution;
             sensor.pri(pixelPri);
 
             this.x = x;

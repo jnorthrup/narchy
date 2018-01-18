@@ -1,7 +1,6 @@
 package jcog.learn.gng;
 
 import com.google.common.primitives.Doubles;
-import jcog.Util;
 import jcog.learn.Discretize1D;
 import jcog.learn.gng.impl.Centroid;
 import org.jetbrains.annotations.NotNull;

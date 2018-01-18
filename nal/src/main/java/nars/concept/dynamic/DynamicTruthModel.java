@@ -36,8 +36,13 @@ abstract public class DynamicTruthModel {
         final int _DT = superterm.dt();
 
         assert (_DT != XTERNAL);
+        assert(superterm.op()!=NEG);
 
         Term[] inputs = components(superterm);
+        for (Term t : inputs) {
+            if (!t.unneg().op().conceptualizable) //a component for which truth can not be determined anyway: variable, INT etc
+                return null;
+        }
         assert (inputs.length > 0) : this + " yielded no dynamic components for superterm " + superterm;
 
         DynTruth d = new DynTruth();

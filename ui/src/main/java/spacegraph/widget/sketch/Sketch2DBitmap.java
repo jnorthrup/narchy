@@ -1,9 +1,7 @@
 package spacegraph.widget.sketch;
 
-import com.googlecode.lanterna.TextColor;
 import com.jogamp.opengl.GL2;
 import jcog.signal.Bitmap2D;
-import net.propero.rdp.Bitmap;
 import org.apache.commons.math3.random.MersenneTwister;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
@@ -11,7 +9,6 @@ import spacegraph.input.Finger;
 import spacegraph.math.v2;
 import spacegraph.render.Tex;
 
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 

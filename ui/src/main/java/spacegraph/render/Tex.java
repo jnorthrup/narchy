@@ -11,14 +11,11 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferByte;
 import java.awt.image.DataBufferInt;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.jogamp.opengl.GL.GL_BGRA;
-import static com.jogamp.opengl.GL.GL_RGB;
-import static com.jogamp.opengl.GL.GL_UNSIGNED_BYTE;
+import static com.jogamp.opengl.GL.*;
 import static com.jogamp.opengl.GL2GL3.GL_UNSIGNED_INT_8_8_8_8_REV;
 
 public class Tex {

@@ -38,20 +38,27 @@ public interface TruthPolation extends Consumer<Tasked> {
         public float eviSum, wFreqSum;
         final long start, end;
         final int dur;
+        public long spanStart = Long.MAX_VALUE, spanEnd = Long.MIN_VALUE, rangeSum = 0;
 
 
         /**
          * computes an adjusted durability no larger than the minimum
          * distance to the target range provided by the input tasks.
          * uses the temporals that will be accepted later to determine the duration on a setup pass
+         *
+         //decrease the eternal evidence in proportion to the specificity of the temporal evidence
+         //in other words, eternal evidence is proportional to the range of time specified by the temporals
+         //for an approximation of the specified 'temporal density'
+         //we can use the total task duration divided by the total range they cover
+         //thus if the tasks are few and far between then eternal contributes more of its influence
+         //and if the tasks are dense and overlapping across a short range then eternal will be ignored more.
          */
-        public static TruthPolationBasic autoRange(long start, long end, int dur, Iterable<? extends Tasked> temporals) {
+        public TruthPolationBasic(long start, long end, int dur, Iterable<? extends Tasked> temporals, boolean computeDensity) {
             if (start != ETERNAL) {
                 long minDur = dur;
                 for (Tasked t : temporals) {
                     Task tt = t.task();
-                    if (tt.isEternal())
-                        continue; //skip eternals, dont allow their minDistanceTo=0 result to diminish nearby non-eternals
+                    assert(!tt.isEternal());
 
                     long dd = tt.minDistanceTo(start, end);
 
@@ -59,16 +66,19 @@ public interface TruthPolation extends Consumer<Tasked> {
                         minDur = 0; //minimum possible
                         break;
                     } else {
-                        minDur = Math.min(minDur, (int) dd);
+                        minDur = Math.min(minDur, dd);
+                    }
+                    if (computeDensity) {
+                        long ts = Util.clamp(tt.start(), start, end);
+                        long te = Util.clamp(tt.end(), start, end);
+                        spanStart = Math.min(ts, spanStart);
+                        spanEnd = Math.max(te, spanEnd);
+                        rangeSum += Math.max(1, te - ts);
                     }
                 }
                 assert (minDur < Integer.MAX_VALUE);
                 dur = (int) Math.max(1, minDur);
             }
-            return new TruthPolationBasic(start, end, dur);
-        }
-
-        public TruthPolationBasic(long start, long end, int dur) {
             this.start = start;
             this.end = end;
             this.dur = dur;

@@ -7,9 +7,7 @@ import nars.term.compound.CompoundCached;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import static nars.Op.PROD;
-import static nars.Op.SETe;
-import static nars.Op.SETi;
+import static nars.Op.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class TermListTest {

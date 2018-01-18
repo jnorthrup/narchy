@@ -10,8 +10,8 @@ import nars.task.NALTask;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.transform.TermTransform;
 import nars.term.transform.Retemporalize;
+import nars.term.transform.TermTransform;
 import nars.truth.Truth;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.impl.factory.Sets;
@@ -195,6 +195,8 @@ public class Inperience extends LeakBack {
         else {
             end = x.end();
         }
+
+        //TODO Task.tryContent
 
         NALTask y = new NALTask(r, BELIEF,
                 $.t(1, nar.confDefault(Op.BELIEF)),

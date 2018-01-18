@@ -4,7 +4,6 @@ import jcog.math.MultiStatistics;
 import jcog.meter.event.CSVOutput;
 import nars.NAR;
 import nars.NARS;
-import nars.Narsese;
 import nars.control.Activate;
 import nars.gui.graph.DynamicConceptSpace;
 import nars.task.ITask;

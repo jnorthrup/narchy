@@ -97,7 +97,7 @@ public class SensorConcept extends WiredConcept implements FloatFunction<Term>, 
 
 
     public SensorConcept resolution(float r) {
-        resolution = ()->r;
+        resolution.set(r);
         return this;
     }
 

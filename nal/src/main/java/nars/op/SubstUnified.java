@@ -4,11 +4,11 @@ import nars.Op;
 import nars.Param;
 import nars.control.Derivation;
 import nars.control.Deriver;
+import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Bool;
-import nars.subterm.Subterms;
 import nars.term.subst.SubUnify;
 import org.jetbrains.annotations.Nullable;
 

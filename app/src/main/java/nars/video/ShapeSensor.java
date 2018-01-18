@@ -12,6 +12,7 @@ import georegression.geometry.UtilPolygons2D_I32;
 import georegression.struct.point.Point2D_I32;
 import georegression.struct.shapes.Polygon2D_I32;
 import georegression.struct.shapes.Rectangle2D_I32;
+import jcog.signal.Bitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgent;
@@ -21,7 +22,6 @@ import nars.task.NALTask;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
-import jcog.signal.Bitmap2D;
 
 import javax.swing.*;
 import java.awt.*;

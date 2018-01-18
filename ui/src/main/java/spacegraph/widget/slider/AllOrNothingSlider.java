@@ -1,6 +1,5 @@
 package spacegraph.widget.slider;
 
-import spacegraph.Surface;
 import spacegraph.layout.Grid;
 import spacegraph.widget.button.PushButton;
 

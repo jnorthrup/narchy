@@ -1,17 +1,15 @@
 package jcog.version;
 
 import jcog.list.ArrayUnenforcedSet;
-import jcog.list.FasterList;
-import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.AbstractMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
-
-import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 
 public class VersionMap<X, Y> extends AbstractMap<X, Y> {

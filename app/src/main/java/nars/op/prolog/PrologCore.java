@@ -14,7 +14,6 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.var.NormalizedVariable;
 import org.apache.commons.lang3.mutable.MutableFloat;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

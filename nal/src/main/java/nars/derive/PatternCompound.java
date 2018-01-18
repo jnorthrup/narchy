@@ -7,10 +7,10 @@ import nars.derive.match.EllipsisMatch;
 import nars.derive.mutate.Choose1;
 import nars.derive.mutate.Choose2;
 import nars.derive.mutate.CommutivePermutations;
+import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.CompoundDTLight;
 import nars.term.Term;
-import nars.subterm.Subterms;
 import nars.term.subst.Unify;
 
 import java.util.SortedSet;

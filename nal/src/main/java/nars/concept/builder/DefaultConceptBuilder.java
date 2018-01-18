@@ -16,13 +16,13 @@ import nars.concept.dynamic.DynamicTruthModel;
 import nars.concept.state.ConceptState;
 import nars.concept.state.DefaultConceptState;
 import nars.link.TaskLinkCurveBag;
+import nars.subterm.Subterms;
 import nars.table.*;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
-import nars.subterm.Subterms;
 import nars.term.var.Variable;
 import org.eclipse.collections.api.list.MutableList;
 import org.jetbrains.annotations.Nullable;
@@ -306,8 +306,14 @@ public class DefaultConceptBuilder implements ConceptBuilder {
     }
 
 
-    final static Predicate<Term> validDynamicSubterm = x ->
-            x!=null && Task.validTaskTerm(x.unneg());
+    public final static Predicate<Term> validDynamicSubterm = x ->
+    {
+        if (x != null) {
+            x = x.unneg();
+            return (x.op().conceptualizable && x.hasAny(Op.ATOM) && Task.validTaskTerm(x.unneg()));
+        }
+        return false;
+    };
 
     private static boolean validDynamicSubterms(Subterms subterms) {
         return subterms.AND(validDynamicSubterm);

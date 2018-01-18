@@ -2,7 +2,7 @@ package spacegraph.geo.osm;
 
 import org.w3c.dom.Element;
 
-import static java.lang.Double.*;
+import static java.lang.Double.parseDouble;
 
 /**
  * Created by unkei on 2017/04/25.

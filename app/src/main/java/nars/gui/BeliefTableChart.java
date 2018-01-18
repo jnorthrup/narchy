@@ -4,8 +4,8 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import nars.NAR;
 import nars.Task;
-import nars.concept.TaskConcept;
 import nars.concept.Concept;
+import nars.concept.TaskConcept;
 import nars.control.DurService;
 import nars.term.Term;
 import nars.term.Termed;
@@ -18,7 +18,6 @@ import spacegraph.render.Draw;
 import spacegraph.widget.text.Label;
 import spacegraph.widget.windo.Widget;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
 
 import static java.lang.Math.PI;

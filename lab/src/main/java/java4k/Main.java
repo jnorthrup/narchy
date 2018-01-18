@@ -21,9 +21,9 @@
 
 package java4k;
 
-import java.awt.*;
 import javax.swing.*;
-import java.awt.image.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class Main extends JFrame {
 

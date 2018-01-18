@@ -1,25 +1,11 @@
 package nars.experiment;
 
-import com.google.common.collect.Lists;
 import jcog.Util;
-import jcog.learn.Autoencoder;
-import jcog.learn.LivePredictor;
-import jcog.learn.ql.HaiQAgent;
 import jcog.math.FloatPolarNormalized;
 import nars.*;
 import nars.concept.SensorConcept;
-import nars.control.DurService;
 import nars.gui.ConceptSurface;
 import nars.gui.Vis;
-import nars.op.AutoConceptualizer;
-import nars.op.RLBooster;
-import nars.term.Term;
-import nars.term.Termed;
-import nars.time.Tense;
-import nars.util.signal.BeliefPredict;
-import spacegraph.SpaceGraph;
-import spacegraph.render.Draw;
-import spacegraph.widget.meter.BitmapMatrixView;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,9 +15,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static jcog.Texts.n2;
-import static nars.Op.IMPL;
-import static nars.Op.QUEST;
-import static nars.Op.QUESTION;
 import static spacegraph.SpaceGraph.window;
 
 /**

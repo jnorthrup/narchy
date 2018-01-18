@@ -12,8 +12,8 @@ import jcog.learn.ql.HaiQAgent;
 import nars.NAR;
 import nars.Narsese;
 import nars.experiment.NAgentY;
-import nars.video.PixelBag;
 import nars.util.signal.CameraSensor;
+import nars.video.PixelBag;
 
 import java.awt.*;
 import java.awt.color.ColorSpace;

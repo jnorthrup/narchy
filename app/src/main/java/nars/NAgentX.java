@@ -13,7 +13,6 @@ import nars.gui.Vis;
 import nars.gui.graph.EdgeDirected;
 import nars.gui.graph.run.SimpleConceptGraph1;
 import nars.index.term.map.CaffeineIndex;
-import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
 import nars.time.RealTime;
@@ -273,7 +272,8 @@ abstract public class NAgentX extends NAgent {
 //        });
 
 
-        Inperience inp = new Inperience(n, 6);
+        ///needs tryContent before its safe
+        //Inperience inp = new Inperience(n, 6);
 //
 
 //        Abbreviation abb = new Abbreviation(n, "z", 3, 6, 10f, 32);

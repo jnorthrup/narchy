@@ -16,7 +16,6 @@ import nars.control.Activate;
 import nars.control.DurService;
 import nars.gui.ConceptSurface;
 import nars.gui.DynamicListSpace;
-import nars.gui.Vis;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;

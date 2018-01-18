@@ -1,6 +1,7 @@
 package nars.index.term;
 
 import nars.NAR;
+import nars.Op;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.concept.builder.ConceptBuilder;
@@ -109,8 +110,12 @@ public abstract class TermIndex implements TermContext {
             y = ct.term();
         } else {
             y = x.term().conceptual();
-            if (!y.op().conceptualizable)
+            Op yop = y.op();
+            if (!yop.conceptualizable || yop !=x.op()) {
+                //x.term().conceptual(); //HACK for debugging
+                //throw new RuntimeException("conceptualization fault: " + x + " -> " + y);
                 return null;
+            }
         }
 
         return (Concept)get(y, createIfMissing);

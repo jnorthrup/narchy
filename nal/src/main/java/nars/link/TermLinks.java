@@ -11,10 +11,10 @@ import nars.Op;
 import nars.Param;
 import nars.concept.Concept;
 import nars.control.BatchActivation;
+import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Int;
-import nars.subterm.Subterms;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 
@@ -165,7 +165,7 @@ public enum TermLinks {
         Term targetTerm = null;
         boolean reverseLinked = false;
         Concept c = null;
-        if (!target.equals(srcTerm)) {
+        if (target.op().conceptualizable && !target.equals(srcTerm)) {
             c = nar.conceptualize(target);
             if (c != null) {
                 c.termlinks().put(

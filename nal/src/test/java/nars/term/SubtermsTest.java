@@ -2,11 +2,11 @@ package nars.term;
 
 import nars.Narsese;
 import nars.Op;
-import nars.term.atom.Atomic;
 import nars.subterm.ArrayTermVector;
 import nars.subterm.Subterms;
 import nars.subterm.TermVector1;
 import nars.subterm.UnitSubterm;
+import nars.term.atom.Atomic;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

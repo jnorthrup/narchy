@@ -7,7 +7,8 @@ package alice.tuprolog;
 import jcog.list.FasterList;
 import org.eclipse.collections.impl.list.mutable.primitive.BooleanArrayList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Deque;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

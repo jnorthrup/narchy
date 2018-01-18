@@ -5,8 +5,8 @@ import nars.$;
 import nars.The;
 import nars.derive.match.Ellipsis;
 import nars.derive.match.EllipsisMatch;
-import nars.term.Term;
 import nars.subterm.ShuffledSubterms;
+import nars.term.Term;
 import nars.term.subst.Unify;
 import org.apache.commons.lang3.ArrayUtils;
 

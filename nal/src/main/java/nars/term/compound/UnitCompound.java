@@ -2,10 +2,10 @@ package nars.term.compound;
 
 import jcog.Util;
 import nars.Op;
-import nars.term.Compound;
-import nars.term.Term;
 import nars.subterm.Subterms;
 import nars.subterm.UnitSubterm;
+import nars.term.Compound;
+import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;

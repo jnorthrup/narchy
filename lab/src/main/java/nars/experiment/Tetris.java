@@ -2,7 +2,6 @@ package nars.experiment;
 
 import jcog.math.FloatParam;
 import jcog.signal.Bitmap2D;
-import jcog.util.Int2Function;
 import nars.*;
 import nars.experiment.tetris.TetrisState;
 import nars.op.java.Opjects;

@@ -2,9 +2,7 @@ package nars.concept.state;
 
 import jcog.Util;
 import jcog.math.MutableInteger;
-import nars.concept.Concept;
-import nars.concept.PermanentConcept;
-import nars.concept.TaskConcept;
+import nars.concept.*;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 
 import static jcog.Util.clamp;
@@ -99,8 +97,15 @@ public final class DefaultConceptState extends ConceptState {
 
         int c = Util.lerp(Util.unitize((-1 + concept.complexity()) / 32f), max, min);
 
-        if (concept instanceof PermanentConcept)
-            c *= 2;//double for PermanentConcept's
+        if (concept instanceof PermanentConcept) {
+            if (!eternalOrTemporal) {
+                c *= 2;//double temporal for PermanentConcept's
+            } else {
+                if (concept instanceof ActionConcept) {
+                    c = 0; //disable eternal TODO this might be too extreme
+                }
+            }
+        }
 
         return c;
         //return (int) Math.ceil(max * Math.min(1f, (1f / (compoundConcept.volume()/ beliefComplexityCapacity))));

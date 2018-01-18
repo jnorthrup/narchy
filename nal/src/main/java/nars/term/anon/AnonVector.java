@@ -1,8 +1,8 @@
 package nars.term.anon;
 
-import nars.term.Term;
 import nars.subterm.Subterms;
 import nars.subterm.TermVector;
+import nars.term.Term;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.Arrays;

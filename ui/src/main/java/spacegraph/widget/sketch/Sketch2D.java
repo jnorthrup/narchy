@@ -5,7 +5,6 @@ import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.layout.VSplit;
 import spacegraph.widget.button.CheckBox;
-import spacegraph.widget.slider.FloatSlider;
 import spacegraph.widget.slider.XYSlider;
 import spacegraph.widget.tab.ButtonSet;
 import spacegraph.widget.windo.Widget;

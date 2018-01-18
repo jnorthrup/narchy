@@ -17,7 +17,10 @@ package jcog;
 import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.io.CharStreams;
@@ -31,7 +34,6 @@ import org.HdrHistogram.AbstractHistogram;
 import org.HdrHistogram.DoubleHistogram;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.stat.Frequency;
-import org.apache.lucene.util.BytesRef;
 import org.eclipse.collections.api.block.function.primitive.DoubleToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
@@ -58,7 +60,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URL;
-import java.security.CodeSource;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -1501,6 +1502,12 @@ public enum Util {
     }
 
     public static int clamp(int i, int min, int max) {
+        if (i < min) i = min;
+        if (i > max) i = max;
+        return i;
+    }
+
+    public static long clamp(long i, long min, long max) {
         if (i < min) i = min;
         if (i > max) i = max;
         return i;

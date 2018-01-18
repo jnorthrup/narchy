@@ -6,12 +6,12 @@ import nars.Op;
 import nars.Task;
 import nars.concept.NodeConcept;
 import nars.concept.PermanentConcept;
+import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.subterm.Subterms;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.NotNull;
 

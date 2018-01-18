@@ -1,15 +1,12 @@
 package jcog.bag.impl.hijack;
 
 import jcog.Util;
-import jcog.memoize.HijackMemoize;
 import jcog.memoize.Memoize;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 

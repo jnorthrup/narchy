@@ -3,8 +3,8 @@ package nars.term;
 import nars.$;
 import nars.Narsese;
 import nars.The;
-import nars.term.atom.Atomic;
 import nars.subterm.Subterms;
+import nars.term.atom.Atomic;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

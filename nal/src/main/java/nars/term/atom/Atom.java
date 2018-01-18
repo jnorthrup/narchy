@@ -1,8 +1,8 @@
 package nars.term.atom;
 
 import nars.Op;
-import nars.term.Term;
 import nars.subterm.TermMetadata;
+import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 
 import static nars.Op.ATOM;

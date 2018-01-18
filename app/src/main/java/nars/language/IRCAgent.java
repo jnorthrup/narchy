@@ -5,6 +5,7 @@ import nars.NARchy;
 import nars.Param;
 import nars.Task;
 import nars.bag.leak.TaskLeak;
+import nars.language.util.IRC;
 import org.jetbrains.annotations.NotNull;
 import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.events.MessageEvent;
@@ -12,7 +13,6 @@ import org.pircbotx.hooks.events.PrivateMessageEvent;
 import org.pircbotx.hooks.types.GenericMessageEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import nars.language.util.IRC;
 
 import java.io.IOException;
 

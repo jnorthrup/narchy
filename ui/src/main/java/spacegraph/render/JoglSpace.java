@@ -1,7 +1,6 @@
 package spacegraph.render;
 
 import com.jogamp.nativewindow.WindowClosingProtocol;
-import com.jogamp.newt.NewtFactory;
 import com.jogamp.newt.event.*;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.*;
@@ -16,11 +15,6 @@ import jcog.list.FastCoWList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
-import java.awt.desktop.AppForegroundListener;
-import java.awt.desktop.AppHiddenEvent;
-import java.awt.desktop.AppHiddenListener;
-import java.awt.desktop.SystemEventListener;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicBoolean;

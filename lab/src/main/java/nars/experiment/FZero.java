@@ -1,12 +1,15 @@
 package nars.experiment;
 
 import jcog.Util;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.NAgentX;
+import nars.Task;
 import nars.concept.ScalarConcepts;
 import nars.concept.SensorConcept;
 import nars.gui.Vis;
-import nars.video.Scale;
 import nars.util.signal.CameraSensor;
+import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,19 +27,19 @@ public class FZero extends NAgentX {
 
     private final FZeroGame fz;
 
-    float fwdSpeed = 8;
-    float rotSpeed = 0.125f;
+    float fwdSpeed = 14;
+    float rotSpeed = 0.125f/3f;
 
     public static void main(String[] args) {
 
         //Param.DEBUG = true;
 
-        float fps = 30f;
+        float fps = 20f;
 
         NAgentX.runRT((n) -> {
 
             FZero a = null;
-            n.freqResolution.set(0.02f);
+            n.freqResolution.set(0.04f);
             n.confResolution.set(0.02f);
             n.confMin.set(0.02f);
             a = new FZero(n);
@@ -110,14 +113,14 @@ public class FZero extends NAgentX {
 //        });
 
 //        senseNumberDifference($.inh(the("joy"), id), happy).resolution.setValue(0.02f);
-        SensorConcept dAngVel = senseNumberDifference($.inh($.the("angVel"), id), () -> (float) fz.playerAngle).resolution(0.1f);
-        SensorConcept dAccel = senseNumberDifference($.inh($.the("accel"), id), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.1f);
+        SensorConcept dAngVel = senseNumberDifference($.inh($.the("angVel"), id), () -> (float) fz.playerAngle).resolution(0.02f);
+        SensorConcept dAccel = senseNumberDifference($.inh($.the("accel"), id), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.02f);
         @NotNull ScalarConcepts ang = senseNumber($.the("ang"), () ->
                         (float) (0.5f + 0.5f * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
                 11,
                 ScalarConcepts.Needle
                 //ScalarConcepts.Fluid
-        ).resolution(0.5f);
+        ).resolution(0.1f);
         /*window(
                 Vis.conceptBeliefPlots(this, ang , 16), 300, 300);*/
 
@@ -316,7 +319,7 @@ public class FZero extends NAgentX {
             else
                 fz.vehicleMetrics[0][6] *= (1f - (0.5f - a) * 2f); //brake
             return a;
-        });
+        }).resolution.set(0.1f);
 //        //eternal bias to stop
 //        nar.goal(f[0].term, Tense.Eternal, 0f, 0.01f);
 //        nar.goal(f[1].term, Tense.Eternal, 0f, 0.01f);

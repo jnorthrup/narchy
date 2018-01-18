@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.math.FloatParam;
 import jcog.math.FloatParamRounded;
 import jcog.math.MutableInteger;
-import jcog.pri.Pri;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.control.Derivation;
@@ -23,7 +22,6 @@ import static nars.Op.*;
 import static nars.control.MetaGoal.*;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
-import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * NAR Parameters
@@ -53,10 +51,7 @@ public abstract class Param {
 
     public static final boolean ETERNALIZE_EVICTED_TEMPORAL_TASKS = true;
 
-    /** if <1, scale applied to an eternal truth component's evidence when being truthpolated with temporals */
-    public static final float TRUTHPOLATION_ETERNAL_COMPONENT_FACTOR =
-            //1;
-            0.5f;
+
 
     public static final boolean FILTER_DYNAMIC_MATCHES = true;
     //    private float minHypoPremisesPerConceptFire = 3;
@@ -66,7 +61,7 @@ public abstract class Param {
     public static boolean DEBUG_FILTER_DUPLICATE_MATCHES = Param.DEBUG_EXTRA;
 
 
-    public final FloatParam forgetRate = new FloatParam(0.9f, 0f, 2f);
+    public final FloatParam forgetRate = new FloatParam(0.75f, 0f, 2f);
 
     /**
      * hard limit to prevent infinite looping
@@ -506,7 +501,7 @@ public abstract class Param {
 
         TruthPolation.TruthPolationBasic t =
                 //new TruthPolation.TruthPolationBasic(start, end, dur);
-                TruthPolation.TruthPolationBasic.autoRange(start, end, dur, temporals);
+                new TruthPolation.TruthPolationBasic(start, end, dur, temporals, topEternal!=null);
         //new TruthPolation.TruthPolationConf(start, end, dur);
         //new TruthPolation.TruthPolationConf(start, end, dur);
         //new TruthPolation.TruthPolationGreedy(start, end, dur, ThreadLocalRandom.current());
@@ -514,21 +509,27 @@ public abstract class Param {
         //new TruthPolation.TruthPolationRoulette(start, end, dur, ThreadLocalRandom.current());
         //new TruthPolationWithVariance(when, dur);
 
+
+
         // Contribution of each task's truth
         // use forEach instance of the iterator(), since HijackBag forEach should be cheaper
         temporals.forEach(t);
 
         float tempEvi = t.eviSum;
-        boolean someEvi = tempEvi > 0;
+        boolean someEvi = tempEvi > 0f;
         if (topEternal != null) {
-
-            if (someEvi) {
-                //if non-input eternal is combined with temporals, apply a factor to the eternal
-                float topEternalEvi = topEternal.evi();
-                t.accept(topEternal.freq(), !topEternal.isInput() ? topEternalEvi : Math.min(topEternalEvi, tempEvi*Param.TRUTHPOLATION_ETERNAL_COMPONENT_FACTOR));
+            if (!someEvi) {
+                return new PreciseTruth(topEternal.truth()); //eternal the only authority
             } else {
-                //the only one; as-is
-                return new PreciseTruth(topEternal.truth());
+
+                //long totalSpan = Math.max(1, t.spanEnd - t.spanStart);
+                long totalCovered = Math.max(1, t.rangeSum); //estimate
+                float temporalDensity = ((float)totalCovered)/Math.max(1, end-start);
+                float eviDecay = 1 / ((1 + tempEvi * temporalDensity));
+
+                float eteEvi = topEternal.evi();
+
+                t.accept(topEternal.freq(), eteEvi * eviDecay);
             }
         }
 

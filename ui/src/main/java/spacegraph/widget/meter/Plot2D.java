@@ -5,7 +5,6 @@ import com.jogamp.opengl.GL2;
 import jcog.event.On;
 import jcog.list.FasterList;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
-import spacegraph.Surface;
 import spacegraph.render.Draw;
 import spacegraph.widget.windo.Widget;
 

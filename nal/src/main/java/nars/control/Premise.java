@@ -134,7 +134,7 @@ public class Premise extends Pri {
         //QUESTION ANSWERING and TERMLINK -> TEMPORALIZED BELIEF TERM projection
         Task belief = null;
 
-        final Concept beliefConcept = n.concept(beliefTerm);
+        final Concept beliefConcept = beliefTerm.op().conceptualizable ? n.concept(beliefTerm) : null;
         if (beliefConcept != null) {
 
             if (!beliefTerm.hasVarQuery()) { //doesnt make sense to look for a belief in a term with query var, it will have none

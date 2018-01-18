@@ -3,12 +3,10 @@ package jcog.bag.impl.hijack;
 import jcog.memoize.HijackMemoize;
 import org.junit.jupiter.api.Test;
 
-import java.lang.invoke.MethodHandle;
-import java.lang.invoke.MethodHandles;
-import java.lang.reflect.Method;
 import java.util.function.Function;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class LambdaMemoizerTest {
 

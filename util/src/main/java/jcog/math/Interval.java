@@ -1,6 +1,5 @@
 package jcog.math;
 
-import org.apache.commons.math3.exception.MathRuntimeException;
 import org.jetbrains.annotations.Nullable;
 
 import static java.lang.Math.max;

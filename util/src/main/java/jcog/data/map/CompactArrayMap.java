@@ -1,7 +1,6 @@
 package jcog.data.map;
 
 import jcog.TODO;
-import jcog.list.FasterList;
 
 import java.util.Arrays;
 import java.util.function.Function;

@@ -11,7 +11,6 @@ import nars.subterm.UnitSubterm;
 import nars.term.Term;
 import nars.term.anon.AnonID;
 import nars.term.anon.AnonVector;
-import nars.term.atom.Bool;
 import nars.term.compound.CachedUnitCompound;
 import nars.term.compound.CompoundCached;
 
@@ -20,7 +19,8 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static nars.Op.*;
+import static nars.Op.NEG;
+import static nars.Op.PROD;
 
 /**
  * The the

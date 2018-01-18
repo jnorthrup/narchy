@@ -1,7 +1,6 @@
 package jcog.pri;
 
 import jcog.Texts;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.lerp;

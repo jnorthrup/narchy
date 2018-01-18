@@ -13,7 +13,6 @@ import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.slider.AllOrNothingSlider;
 import spacegraph.widget.slider.FloatSlider;
-import spacegraph.widget.text.Label;
 import spacegraph.widget.text.LabeledPane;
 
 import java.lang.reflect.Field;

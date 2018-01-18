@@ -1,8 +1,8 @@
 package nars.derive.constraint;
 
 import nars.Op;
-import nars.term.Term;
 import nars.subterm.Subterms;
+import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 
 /**

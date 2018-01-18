@@ -1,6 +1,5 @@
 package nars.gui.graph;
 
-import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.data.graph.hgraph.Node;
 import jcog.data.graph.hgraph.NodeGraph;

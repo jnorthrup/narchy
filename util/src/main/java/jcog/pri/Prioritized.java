@@ -3,12 +3,9 @@ package jcog.pri;
 
 import jcog.Texts;
 import jcog.Util;
-import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.fusesource.jansi.Ansi;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import static jcog.Util.sum;
 
 /**
  * something which has a priority floating point value

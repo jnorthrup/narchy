@@ -6,10 +6,10 @@ import nars.NAR;
 import nars.NAgentX;
 import nars.Narsese;
 import nars.experiment.pacman.PacmanGame;
+import nars.term.atom.Atomic;
 import nars.video.BufferedImageBitmap2D;
 import nars.video.Scale;
 import nars.video.SwingBitmap2D;
-import nars.term.atom.Atomic;
 
 
 public class Pacman extends NAgentX {

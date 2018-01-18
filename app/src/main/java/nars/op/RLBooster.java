@@ -9,19 +9,13 @@ import nars.concept.Concept;
 import nars.concept.SensorConcept;
 import nars.control.CauseChannel;
 import nars.task.ITask;
-import nars.task.NALTask;
-import nars.task.signal.Truthlet;
-import nars.task.signal.TruthletTask;
-import nars.time.Tense;
 import nars.truth.Truth;
 import nars.util.signal.Signal;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.LongConsumer;
 
 import static nars.Op.GOAL;
 

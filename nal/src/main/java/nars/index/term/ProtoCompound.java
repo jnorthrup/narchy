@@ -1,9 +1,9 @@
 package nars.index.term;
 
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termlike;
-import nars.subterm.Subterms;
 import org.jetbrains.annotations.Nullable;
 
 /**

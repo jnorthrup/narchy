@@ -2,12 +2,12 @@ package nars.video;
 
 import jcog.Util;
 import jcog.math.random.XorShift128PlusRandom;
+import jcog.signal.Bitmap2D;
 import nars.$;
 import nars.NAgent;
 import nars.concept.ActionConcept;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import jcog.signal.Bitmap2D;
 
 import java.awt.image.BufferedImage;
 import java.util.List;

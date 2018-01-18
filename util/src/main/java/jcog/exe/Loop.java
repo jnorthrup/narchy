@@ -1,6 +1,5 @@
 package jcog.exe;
 
-import jcog.Texts;
 import jcog.Util;
 import jcog.math.MutableInteger;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;

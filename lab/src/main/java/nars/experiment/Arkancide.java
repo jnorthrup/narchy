@@ -5,10 +5,10 @@ import jcog.Util;
 import jcog.math.FloatParam;
 import nars.*;
 import nars.concept.SensorConcept;
+import nars.util.signal.CameraSensor;
 import nars.video.BufferedImageBitmap2D;
 import nars.video.Scale;
 import nars.video.SwingBitmap2D;
-import nars.util.signal.CameraSensor;
 
 import javax.swing.*;
 import java.awt.*;

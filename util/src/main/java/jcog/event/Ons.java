@@ -1,7 +1,5 @@
 package jcog.event;
 
-import jcog.list.FasterList;
-
 import java.util.Collections;
 
 /**

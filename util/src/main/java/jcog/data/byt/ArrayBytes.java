@@ -1,8 +1,6 @@
 package jcog.data.byt;
 
-import com.google.common.primitives.Bytes;
 import jcog.Util;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.util.Arrays;

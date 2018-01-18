@@ -7,9 +7,7 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.CONJ;
-import static nars.Op.IMPL;
-import static nars.Op.Temporal;
+import static nars.Op.*;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
@@ -61,13 +59,15 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
                     corrupted = true;
                 } else {
                     if (op == CONJ) {
-                        corrupted = y.structure()!=x.structure();
+                        //verify event count remains the same
+
+                        corrupted = y.structure()!=x.structure() || x.eventCount()!=y.eventCount();
                     } else if (op == IMPL){
                         //compare subj and pred separately
                         for (int i = 0; i < 2; i++) {
                             Term a = x.sub(i);
                             Term b = y.sub(i);
-                            if (((a.opX() != b.opX()) || (a.volume() != b.volume()) || a.structure() != b.structure())) {
+                            if (!a.equals(b) && (((a.opX() != b.opX()) || (a.volume() != b.volume()) || a.structure() != b.structure() || x.eventCount()!=y.eventCount()))) {
                                 corrupted = true;
                                 break;
                             }

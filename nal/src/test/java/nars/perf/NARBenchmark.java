@@ -3,8 +3,8 @@ package nars.perf;
 
 import nars.NAR;
 import nars.NARS;
-import nars.term.Term;
 import nars.subterm.Subterms;
+import nars.term.Term;
 import nars.test.DeductiveMeshTest;
 import org.junit.jupiter.api.Disabled;
 import org.openjdk.jmh.annotations.*;

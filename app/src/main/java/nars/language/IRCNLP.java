@@ -3,6 +3,7 @@ package nars.language;
 
 import nars.*;
 import nars.bag.leak.TaskLeak;
+import nars.language.util.IRC;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +14,6 @@ import org.pircbotx.hooks.events.PrivateMessageEvent;
 import org.pircbotx.hooks.types.GenericMessageEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import nars.language.util.IRC;
 
 import java.io.IOException;
 

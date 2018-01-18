@@ -1,6 +1,5 @@
 package jcog.math;
 
-import jcog.Util;
 import jcog.pri.Pri;
 
 /** balances at zero, balanced normalization of positive and negative ranges (radius)

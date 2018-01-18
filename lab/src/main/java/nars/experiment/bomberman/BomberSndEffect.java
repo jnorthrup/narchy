@@ -1,7 +1,5 @@
 package nars.experiment.bomberman;
 
-import java.io.File;
-
 /**
  * File:         BomberBGM
  * Copyright:    Copyright (c) 2001

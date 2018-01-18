@@ -2,9 +2,9 @@ package nars.op.data;
 
 import nars.$;
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
-import nars.subterm.Subterms;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -10,14 +10,13 @@ import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
 import nars.experiment.mario.Scene;
 import nars.experiment.mario.sprites.Mario;
-import nars.video.PixelBag;
 import nars.util.signal.CameraSensor;
+import nars.video.PixelBag;
 
 import javax.swing.*;
 
 import static jcog.Util.unitize;
 import static nars.$.$safe;
-import static nars.$.p;
 
 public class NARio extends NAgentX {
 
@@ -56,7 +55,7 @@ public class NARio extends NAgentX {
 
         PixelBag cc = PixelBag.of(() -> mario.image, 36, 28);
         cc.addActions(id, this, false, false, true);
-        cc.actions.forEach(a -> a.resolution = () -> (0.25f));
+        cc.actions.forEach(a -> a.resolution.set(0.25f));
         //cc.setClarity(0.8f, 0.95f);
         CameraSensor<PixelBag> sc = addCamera(new CameraSensor<>(id, cc, this));
 

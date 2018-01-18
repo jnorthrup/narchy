@@ -19,7 +19,6 @@ package alice.tuprolog;
 
 import com.google.common.collect.Lists;
 
-import java.util.Deque;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 

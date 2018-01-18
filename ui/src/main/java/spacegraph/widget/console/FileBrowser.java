@@ -4,8 +4,6 @@ import com.googlecode.lanterna.gui2.BasicWindow;
 import com.googlecode.lanterna.gui2.dialogs.FileDialogBuilder;
 import spacegraph.SpaceGraph;
 
-import java.util.function.Consumer;
-
 public class FileBrowser extends ConsoleGUI {
 
     public FileBrowser(int cols, int rows) {

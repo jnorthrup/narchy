@@ -5,10 +5,10 @@ import nars.IO;
 import nars.Narsese;
 import nars.Op;
 import nars.index.term.TermKey;
+import nars.subterm.TermVector1;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.subterm.TermVector1;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;

@@ -8,10 +8,8 @@ import jcog.tree.rtree.RTree;
 import jcog.tree.rtree.rect.RectDoubleND;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 import spacegraph.geo.osm.Osm;
 
-import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
