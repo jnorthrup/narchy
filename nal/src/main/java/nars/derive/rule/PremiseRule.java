@@ -24,7 +24,7 @@ import nars.term.atom.Atomic;
 import nars.term.pred.AndCondition;
 import nars.term.pred.PrediTerm;
 import nars.subterm.Subterms;
-import nars.term.transform.CompoundTransform;
+import nars.term.transform.TermTransform;
 import nars.truth.func.BeliefFunction;
 import nars.truth.func.GoalFunction;
 import nars.truth.func.TruthOperator;
@@ -212,17 +212,17 @@ public class PremiseRule /*extends GenericCompound*/ {
         premisePattern[1] = index.get(premisePattern[1], true).term(); //belief pattern
     }
 
-    private static final CompoundTransform UppercaseAtomsToPatternVariables = new CompoundTransform() {
-        @Override public Termed apply(Term nonCompound) {
-            if (nonCompound instanceof Atom) {
-                if (!PostCondition.reservedMetaInfoCategories.contains(nonCompound)) { //do not alter keywords
-                    String name = nonCompound.toString();
+    private static final TermTransform UppercaseAtomsToPatternVariables = new TermTransform() {
+        @Override public Termed transform(Term atomic) {
+            if (atomic instanceof Atom) {
+                if (!PostCondition.reservedMetaInfoCategories.contains(atomic)) { //do not alter keywords
+                    String name = atomic.toString();
                     if (name.length() == 1 && Character.isUpperCase(name.charAt(0))) {
-                        return $.v(Op.VAR_PATTERN, nonCompound.toString());
+                        return $.v(Op.VAR_PATTERN, atomic.toString());
                     }
                 }
             }
-            return nonCompound;
+            return atomic;
         }
 
 

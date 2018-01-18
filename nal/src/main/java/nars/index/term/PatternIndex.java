@@ -5,14 +5,13 @@ import nars.The;
 import nars.derive.PatternCompound;
 import nars.derive.match.Ellipsis;
 import nars.index.term.map.MapTermIndex;
+import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Terms;
-import nars.subterm.Subterms;
 import nars.term.transform.VariableNormalization;
 import nars.term.var.Variable;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.HashMap;
 
@@ -142,26 +141,21 @@ public class PatternIndex extends MapTermIndex {
      * returns an normalized, optimized pattern term for the given compound
      */
     public /*@NotNull*/ Term pattern(Term x) {
-
-        Term y = x.transform(new PremiseRuleVariableNormalization());
-
-        assert (y != null);
-
-        return get(y, true).term();
-
+        return get(x.transform(new PremiseRuleVariableNormalization()), true).term();
     }
 
     public static final class PremiseRuleVariableNormalization extends VariableNormalization {
 
 
-        public PremiseRuleVariableNormalization() {
-            super(new UnifiedMap<>());
+        @Override
+        public Term transform(Compound t) {
+            return t.hasVars() || t.varPattern() > 0 ? /*TermTransform.super.*/transform(t, t.op(), t.dt()) : t;
         }
+
 
         /*@NotNull*/
         @Override
         protected Variable newVariable(/*@NotNull*/ Variable x) {
-
 
 
 //            if (x instanceof Ellipsis.EllipsisTransformPrototype) {

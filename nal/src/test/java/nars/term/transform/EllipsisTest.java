@@ -56,8 +56,10 @@ public class EllipsisTest {
             assertEquals(0, y.vars());
             assertEquals(0, y.varPattern());
 
-            Term r = getResult();
-            assertTrue(r.isNormalized());
+            Term r =
+                    //getResult();
+                    new PatternIndex().pattern( getResult() );
+            //assertTrue(r.isNormalized());
 
             Compound x = getPattern();
 
@@ -407,8 +409,8 @@ public class EllipsisTest {
         new EllipsisTest.CommutiveEllipsisTest2("%1..*", p("(Z,", ")")).test(0, 2, 0);
     }
 
-    static void testCombinations(Compound X, @NotNull Compound Y, int expect) {
-        X = (Compound) new PatternIndex().pattern(X);
+    static void testCombinations(Compound _X, @NotNull Compound Y, int expect) {
+        Compound X = (Compound) new PatternIndex().pattern(_X);
 
         for (int seed = 0; seed < 3 /*expect*5*/; seed++) {
 
@@ -425,7 +427,7 @@ public class EllipsisTest {
             f.unify(X, Y, true);
 
             results.forEach(System.out::println);
-            assertEquals(expect, results.size());
+            assertEquals(expect, results.size(), ()->"insufficient permutations for: " + X + " .. " + Y);
         }
 
     }

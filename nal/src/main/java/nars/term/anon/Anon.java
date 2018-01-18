@@ -11,7 +11,7 @@ import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.subterm.Subterms;
 import nars.subterm.TermVector;
-import nars.term.transform.CompoundTransform;
+import nars.term.transform.TermTransform;
 import org.eclipse.collections.api.block.function.primitive.ByteFunction;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
@@ -45,48 +45,19 @@ public class Anon {
         return (byte) s;
     };
 
-    final CompoundTransform PUT = new /*Direct*/CompoundTransform() {
-
-//        @Override
-//        protected @Nullable Term transformDirect(Op o, Term[] yy) {
-//            if (AnomVector.valid(yy)) {
-//                return new CachedCompound(o, new AnomVector(yy));
-//            } else {
-//                return super.transformDirect(o, yy);
-//            }
-//        }
+    final TermTransform PUT = new /*Direct*/TermTransform() {
 
         @Override
-        public @Nullable Term applyTermOrNull(Term t) {
-            return put(t); //may be called more directly
-        }
-
-        @Override
-        public final @Nullable Termed apply(Term nonCompound) {
-            return applyTermOrNull(nonCompound);
+        public final @Nullable Termed transform(Term nonCompound) {
+            return put(nonCompound);
         }
     };
 
-    final CompoundTransform GET = new /*Direct*/CompoundTransform() {
-
-//        @Override
-//        protected Term transformDirect(Op o, Compound x) {
-//            Subterms ss = x.subterms();
-//            if (ss instanceof AnomVector) {
-//                return ((AnomVector)ss).reverse(o,Anon.this);
-//            } else {
-//                return super.transformDirect(o, x);
-//            }
-//        }
+    final TermTransform GET = new /*Direct*/TermTransform() {
 
         @Override
-        public @Nullable Term applyTermOrNull(Term t) {
-            return get(t); //may be called more directly
-        }
-
-        @Override
-        public final @Nullable Termed apply(Term nonCompound) {
-            return applyTermOrNull(nonCompound);
+        public final @Nullable Termed transform(Term nonCompound) {
+            return get(nonCompound);
         }
     };
 

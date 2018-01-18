@@ -137,7 +137,7 @@ public class TemporalTermTest {
 
     @Test public void testStableConceptualization6a() throws Narsese.NarseseException {
         Term s = $.$("((tetris($1,#2) &&+290 tetris(isRow,(8,false),true))=|>(tetris(checkScore,#2)&|tetris($1,#2)))");
-        assertEquals("((tetris(isRow,(8,false),true)&&tetris($1,#2)) ==>+- (tetris(checkScore,#2)&&tetris($1,#2)))", s.conceptual().toString());
+        assertEquals("((tetris(isRow,(8,false),true)&&tetris($1,#2))==>(tetris(checkScore,#2)&&tetris($1,#2)))", s.conceptual().toString());
     }
 
     @Test
@@ -149,7 +149,7 @@ public class TemporalTermTest {
     @Test
     public void testStableConceptualization3() throws Narsese.NarseseException {
         Term c1 = testStableConceptualization("((--,(P==>((--,L)&&(--,Q))))&&L)");
-        assertEquals("((--,(P ==>+- ((--,L)&&(--,Q)))) &&+- L)", c1.toString());
+        assertEquals("((--,(P==>((--,L)&&(--,Q))))&&L)", c1.toString());
     }
 
     @Test
@@ -184,7 +184,7 @@ public class TemporalTermTest {
         Term c1 = c.conceptual();
         //assertNotEquals(c, c1);
         Term c2 = c1.conceptual();
-        assertEquals(c1, c2);
+        assertEquals(c1, c2, ()->"unstable: first " + c1 + " , then " + c2);
         return c1;
     }
 
@@ -631,7 +631,7 @@ public class TemporalTermTest {
 
     @Test
     public void testEmbeddedChangedRoot() throws Narsese.NarseseException {
-        assertEquals("(a ==>+- (b&&c))",
+        assertEquals("(a==>(b&&c))",
                 $("(a ==> (b &&+1 c))").root().toString());
     }
 
@@ -859,7 +859,7 @@ public class TemporalTermTest {
     }
 
     @Test
-    public void testImplRoot() throws Narsese.NarseseException {
+    public void testImplRootDistinct() throws Narsese.NarseseException {
 
         Term f = $("(x ==> y)");
         assertEquals("(x==>y)", f.root().toString());
@@ -867,9 +867,14 @@ public class TemporalTermTest {
         Term g = $("(y ==>+1 x)");
         assertEquals("(y==>x)", g.root().toString());
 
+    }
+    @Test
+    public void testImplRootRepeat() throws Narsese.NarseseException {
         Term h = $("(x ==>+1 x)");
         assertEquals("(x ==>+- x)", h.root().toString());
-
+    }
+    @Test
+    public void testImplRootNegate() throws Narsese.NarseseException {
         Term i = $("(--x ==>+1 x)");
         assertEquals("((--,x) ==>+- x)", i.root().toString());
 

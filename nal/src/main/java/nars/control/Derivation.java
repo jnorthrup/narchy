@@ -253,28 +253,23 @@ public class Derivation extends ProtoDerivation {
      * only returns derivation-specific functors.  other functors must be evaluated at task execution time
      */
     @Override
-    public final Termed apply(Term nonCompound) {
-        return applyTermIfPossible(nonCompound);
-    }
+    public final Term transform(Term atomic) {
 
-    @Override
-    public final Term applyTermIfPossible(Term x) {
+        if (atomic instanceof Bool)//assert (!(x instanceof Bool));
+            return atomic;
 
-        if (x instanceof Bool)//assert (!(x instanceof Bool));
-            return x;
-
-        if (x instanceof Atom) {
-            Termed f = derivationFunctors.get(x);
+        if (atomic instanceof Atom) {
+            Termed f = derivationFunctors.get(atomic);
             if (f != null)
                 return f.term();
         }
 
 
-        Term y = xy(x);
+        Term y = xy(atomic);
         if (y != null) {
             return y; //an assigned substitution, whether a variable or other type of term
         } else {
-            return x;
+            return atomic;
         }
 
 //        else if (x.hasAny(substitutionVector)) {

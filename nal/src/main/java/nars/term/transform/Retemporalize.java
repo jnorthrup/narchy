@@ -2,38 +2,33 @@ package nars.term.transform;
 
 import jcog.data.ArrayHashSet;
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import nars.subterm.Subterms;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.function.Predicate;
 
-import static nars.Op.*;
+import static nars.Op.CONJ;
+import static nars.Op.Temporal;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
 @FunctionalInterface
-public interface Retemporalize extends CompoundTransform {
+public interface Retemporalize extends TermTransform {
 
-
-    Predicate<Term> isCommutiveConjOrImpl = xx -> {
-        switch (xx.op()) {
-            case CONJ:
-                int xdt = xx.dt();
-                if (xdt == DTERNAL || xdt == 0)
-                    return true;
-                break;
-            case IMPL:
-                return true;
-        }
-        return xx.hasAny(IMPL);
-    };
-
-    @Override
     int dt(Compound x);
+
+    @Nullable
+    @Override
+    default Term transform(final Compound x) {
+        if (x.op().temporal || x.hasAny(Temporal)) {
+            return transformTemporal(x, dt(x));
+        } else {
+            return x;
+        }
+    }
 
     //Retemporalize retemporalizeAllToDTERNAL = new RetemporalizeAll(DTERNAL);
     //Retemporalize retemporalizeDTERNALToZero = new RetemporalizeFromTo(DTERNAL, 0);
@@ -44,83 +39,83 @@ public interface Retemporalize extends CompoundTransform {
 
     Retemporalize retemporalizeRoot = new Retemporalize() {
 
-        @Override
-        public Term transform(Compound x) {
-            return transform(x, x.op(), dt(x));
-        }
 
         @Override
         public @Nullable Term transform(Compound x, Op op, int dt) {
+            assert(dt == XTERNAL || dt == DTERNAL);
+            return xternalIfNecessary(x, Retemporalize.super.transform(x, op, dt), dt);
+        }
 
-            Term c1 = Retemporalize.super.transform(x, op, dt);
-            if (op.temporal) {
-                if (((dt != XTERNAL) && (c1 == null)) || (c1 instanceof Bool) ||
-                        (
-                                //quick tests, not exhaustive
-                                (c1.op() != op) || (c1.volume()!=x.volume()) || c1.subs() != x.subs())
-                        ) {
-                    return transformTemporal(x, XTERNAL); //oops; deformed - we need XTERNAL
+        @Override
+        public Term transformTemporal(Compound x, int dtNext) {
+            return xternalIfNecessary(x, Retemporalize.super.transformTemporal(x, dtNext), dtNext);
+        }
+
+        Term xternalIfNecessary(Compound x, Term y, int dtTried) {
+
+            if (x!=y) {
+                //quick tests, not exhaustive
+                //opX, for compounds, includes the subterms in the comparison
+                //if ((y.opX() != x.opX()) || (y.volume()!=x.volume()) || y.structure()!=x.structure()) {
+                if (y == null || y instanceof Bool || y.structure()!=x.structure()) {
+                    //oops; deformed - we need XTERNAL
+                    assert(x.dt()!=XTERNAL);
+                    return Retemporalize.super.transform(x, x.op(), dtTried==DTERNAL ? XTERNAL : DTERNAL);
                 }
             }
-            return c1;
+            return y;
         }
 
         @Override
         public int dt(Compound x) {
+            return DTERNAL;
+
             //any inside impl/conjunctions will disqualify the simple DTERNAL root form, but only in the next layer
 
-            switch (x.op()) {
-                case CONJ: {
-                    int dt = x.dt();
-
-                    if ((dt == DTERNAL || dt == 0) || !x.subterms().hasAny(CONJ))
-                        return DTERNAL;
-//                    Subterms xs = x.subterms();
-//                    int n = xs.subs();
-
-//                    if (xs.OR(isCommutiveConjOrImpl))
-                    return XTERNAL;
-
-//                    if (((n == 2) &&
-//                            (xs.isTemporal() ||
-//                                    (xs.sub(0).unneg().equals(xs.sub(1).unneg()))
-//                                    //Op.equalsOrContainEachOther(xs.sub(0), xs.sub(1))
-//                            )
-//                    )) {
-//                        return XTERNAL;
-//                    }
+//            switch (x.op()) {
+//                case CONJ: {
+//                    int dt = x.dt();
 //
-//                    return DTERNAL; //simple, if possible
-                }
-                case IMPL: {
-                    int dt = x.dt();
-
-                    if ((dt == DTERNAL || dt == 0) || !x.subterms().hasAny(CONJ))
-                        return DTERNAL;
-
-//                    Subterms xs = x.subterms();
-//                    //impl pred is always non-neg
-//                    return xs.hasAny(CONJ) ||
-//                            xs.sub(0).unneg().equals(xs.sub(1)) ? XTERNAL : DTERNAL;
-                    return XTERNAL;
-                }
-                default:
-                    //throw new UnsupportedOperationException();
-                    return DTERNAL; //non-temporal etc
-            }
+//                    if ((dt == DTERNAL || dt == 0) || !x.subterms().hasAny(CONJ))
+//                        return DTERNAL;
+////                    Subterms xs = x.subterms();
+////                    int n = xs.subs();
+//
+////                    if (xs.OR(isCommutiveConjOrImpl))
+//                    return XTERNAL;
+//
+////                    if (((n == 2) &&
+////                            (xs.isTemporal() ||
+////                                    (xs.sub(0).unneg().equals(xs.sub(1).unneg()))
+////                                    //Op.equalsOrContainEachOther(xs.sub(0), xs.sub(1))
+////                            )
+////                    )) {
+////                        return XTERNAL;
+////                    }
+////
+////                    return DTERNAL; //simple, if possible
+//                }
+//                case IMPL: {
+//                    int dt = x.dt();
+//
+//                    if ((dt == DTERNAL || dt == 0) || !x.subterms().hasAny(CONJ))
+//                        return DTERNAL;
+//
+////                    Subterms xs = x.subterms();
+////                    //impl pred is always non-neg
+////                    return xs.hasAny(CONJ) ||
+////                            xs.sub(0).unneg().equals(xs.sub(1)) ? XTERNAL : DTERNAL;
+//                    return XTERNAL;
+//                }
+//                default:
+//                    //throw new UnsupportedOperationException();
+//                    return DTERNAL; //non-temporal etc
+//            }
 
         }
     };
 
-    @Nullable
-    @Override
-    default Term transform(final Compound x, Op op, int _dt) {
-        if (op.temporal) {
-            return transformTemporal(x, dt(x));
-        } else {
-            return CompoundTransform.super.transform(x, op, DTERNAL);
-        }
-    }
+
 
     default Term transformTemporal(Compound x, int dtNext) {
         Subterms xx = x.subterms();
@@ -156,16 +151,7 @@ public interface Retemporalize extends CompoundTransform {
         }
 
 
-        return CompoundTransform.super.transform(x, op, dtNext);
-    }
-
-    @Override
-    default Term transform(Compound x) {
-        if (!x.hasAny(Temporal)) {
-            return x;
-        } else {
-            return CompoundTransform.super.transform(x);
-        }
+        return TermTransform.super.transform(x, op, dtNext);
     }
 
 
@@ -216,4 +202,19 @@ public interface Retemporalize extends CompoundTransform {
 //            return dt == from ? to.getAsInt() : dt;
 //        }
 //    }
+
+//    Predicate<Term> isCommutiveConjOrImpl = xx -> {
+//        switch (xx.op()) {
+//            case CONJ:
+//                int xdt = xx.dt();
+//                if (xdt == DTERNAL || xdt == 0)
+//                    return true;
+//                break;
+//            case IMPL:
+//                return true;
+//        }
+//        return xx.hasAny(IMPL);
+//    };
 }
+
+

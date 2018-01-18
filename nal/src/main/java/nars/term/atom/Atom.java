@@ -77,6 +77,7 @@ public class Atom extends AtomicConst {
     }
 
 
+
     @Override
     public void collectMetadata(TermMetadata.SubtermMetadataCollector s) {
        s.collectNonVar(ATOM, hash);

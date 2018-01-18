@@ -38,7 +38,7 @@ import nars.term.atom.Int;
 import nars.term.subst.MapSubst;
 import nars.term.subst.Subst;
 import nars.term.subst.Unify;
-import nars.term.transform.CompoundTransform;
+import nars.term.transform.TermTransform;
 import nars.term.transform.Retemporalize;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.Variable;
@@ -183,15 +183,14 @@ public interface Term extends Termed, Comparable<Termed> {
                         pathTo(new ByteArrayList(0), this.subterms(), subterm) : null;
     }
 
+    @Nullable default Term transform(TermTransform t) {
+        Termed y = t.transform(this);
+        return y == null ? null : y.term();
+    }
 
     @Nullable
     default Term transform(/*@NotNull*/ ByteList path, Term replacement) {
         return transform(path, 0, replacement);
-    }
-
-    @Nullable
-    default Term transform(CompoundTransform t) {
-        return t.applyTermOrNull(this);
     }
 
 

@@ -10,7 +10,7 @@ import nars.task.NALTask;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.transform.CompoundTransform;
+import nars.term.transform.TermTransform;
 import nars.term.transform.Retemporalize;
 import nars.truth.Truth;
 import org.eclipse.collections.api.set.ImmutableSet;
@@ -237,7 +237,7 @@ public class Inperience extends LeakBack {
 
         Term x = s.term().negIf(tr != null && tr.isNegative());
         Term xx = x instanceof Compound && x.hasAny(VAR_QUERY) ? x
-                .transform(CompoundTransform.queryToDepVar) : x;
+                .transform(TermTransform.queryToDepVar) : x;
         if (!xx.op().conceptualizable)
             return null;
 

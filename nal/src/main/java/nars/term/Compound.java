@@ -32,7 +32,7 @@ import nars.subterm.Subterms;
 import nars.subterm.TermVector;
 import nars.term.anon.Anon;
 import nars.term.subst.Unify;
-import nars.term.transform.CompoundTransform;
+import nars.term.transform.TermTransform;
 import nars.term.transform.Retemporalize;
 import nars.term.transform.VariableNormalization;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
@@ -64,10 +64,10 @@ public interface Compound extends Term, IPair, Subterms {
 
         return
                 (a.opX() == bb.opX())
-                &&
-                (a.subterms().equals(bb.subterms()))
-                &&
-                (a.dt() == bb.dt())
+                        &&
+                        (a.subterms().equals(bb.subterms()))
+                        &&
+                        (a.dt() == bb.dt())
                 ;
     }
 
@@ -139,7 +139,6 @@ public interface Compound extends Term, IPair, Subterms {
 //    }
 
 
-
     @Override
     default Term anon() {
         return new Anon(2).put(this);
@@ -186,7 +185,7 @@ public interface Compound extends Term, IPair, Subterms {
      * unification matching entry point (default implementation)
      *
      * @param ty compound to match against (the instance executing this method is considered 'x')
-     * @param u the substitution context holding the match state
+     * @param u  the substitution context holding the match state
      * @return whether match was successful or not, possibly having modified subst regardless
      */
     @Override
@@ -207,8 +206,6 @@ public interface Compound extends Term, IPair, Subterms {
             //do not do a fast termcontainer test unless it's linear; in commutive mode we want to allow permutations even if they are initially equal
             return xsubs.unifyLinear(ysubs, u);
         }
-
-
 
 
 //        if (op.temporal) {
@@ -635,7 +632,7 @@ public interface Compound extends Term, IPair, Subterms {
 
         for (int i = 0, evalSubsLength = xy.length; i < evalSubsLength; i++) {
             Term xi = xy[i];
-            Term yi = xi.evalSafe(context, remain-1);
+            Term yi = xi.evalSafe(context, remain - 1);
             if (yi == null) {
                 return Null;
             } else {
@@ -712,8 +709,9 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     @Nullable
-    default Term transform(CompoundTransform t) {
-        return t.transform(this);
+    default Term transform(TermTransform t) {
+        Termed y = t.transform(this);
+        return y == null ? null : y.term();
     }
 
     @Override

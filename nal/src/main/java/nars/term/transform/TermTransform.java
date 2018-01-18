@@ -17,14 +17,26 @@ import static nars.Op.VAR_QUERY;
 /**
  * I = input term type, T = transformable subterm type
  */
-public interface CompoundTransform extends TermContext {
-
-    default int dt(Compound c) {
-        return c.dt();
+public interface TermTransform extends TermContext {
+    /** general pathway. generally should not be overridden */
+    @Override
+    default @Nullable Termed apply(Term x) {
+        return x instanceof Compound ? transform((Compound) x) : transform(x);
     }
 
-    @Nullable
-    default Term transform(Compound x, Op op, int dt) {
+    /** transform pathway for atomics */
+    default @Nullable Termed transform(Term atomic) {
+        assert(!(atomic instanceof Compound));
+        return atomic;
+    }
+
+    /** transform pathway for compounds */
+    default Term transform(Compound x) {
+        return transform(x, x.op(), x.dt());
+    }
+
+    /** should not be called directly except by implementations of TermTransform  */
+    @Nullable default Term transform(Compound x, Op op, int dt) {
 
         Subterms xx = x.subterms();
 
@@ -124,54 +136,25 @@ public interface CompoundTransform extends TermContext {
     }
 
 
+    /** constructs a new term for a result */
     default Term the(Op op, int dt, Subterms t) {
         return op.the(dt, t.arrayShared());
         //return op._the(dt, t.arrayShared(), false); //disable interning of intermediate results
     }
 
-    /**
-     * transforms non-compound subterms
-     */
-    @Override
-    default @Nullable Termed apply(Term nonCompound) {
-        return nonCompound;
-    }
 
 
     /**
      * change all query variables to dep vars
      */
-    /**
-     * change all query variables to dep vars
-     */
-    CompoundTransform queryToDepVar = new CompoundTransform() {
+    TermTransform queryToDepVar = new TermTransform() {
         @Override
-        public Term apply(Term nonCompound) {
-            if (nonCompound.op() == VAR_QUERY) {
-                return $.varDep((((NormalizedVariable) nonCompound).anonNum()));
-            }
-            return nonCompound;
+        public Term transform(Term atomic) {
+            return (atomic.op() == VAR_QUERY) ?
+                    $.varDep((((NormalizedVariable) atomic).anonNum())) :
+                    atomic;
         }
     };
 
-    default Term transform(Compound x) {
-        return transform(x, x.op(), x.dt());
-    }
-
-
-//    CompoundTransform Identity = (parent, subterm) -> subterm;
-
-//    CompoundTransform<Compound,Term> None = new CompoundTransform<Compound,Term>() {
-//        @Override
-//        public boolean test(Term o) {
-//            return true;
-//        }
-//
-//        @Nullable
-//        @Override
-//        public Term apply(Compound parent, Term subterm) {
-//            return subterm;
-//        }
-//    };
 
 }

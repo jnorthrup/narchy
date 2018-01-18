@@ -6,7 +6,7 @@ import nars.Param;
 import nars.The;
 import nars.derive.PatternCompound;
 import nars.subterm.Subterms;
-import nars.term.transform.CompoundTransform;
+import nars.term.transform.TermTransform;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -178,7 +178,7 @@ public class CompoundDTLight implements CompoundDT, The {
 //        //return ref.root();
 //    }
 
-    public @Nullable Term transform(CompoundTransform t, Compound parent) {
+    public @Nullable Term transform(TermTransform t, Compound parent) {
         return transform(t);
     }
 

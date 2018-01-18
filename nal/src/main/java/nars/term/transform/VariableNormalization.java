@@ -40,23 +40,23 @@ public class VariableNormalization extends VariableTransform {
      */
     public static final VariableTransform singleVariableNormalization = new VariableTransform() {
 
-        @Override public Term apply(Term nonCompound) {
-            return nonCompound instanceof Variable ? nonCompound.normalize((byte)1) : nonCompound;
+        @Override public Term transform(Term atomic) {
+            return atomic instanceof Variable ? atomic.normalize((byte)1) : atomic;
         }
     };
 
 
     @Override
-    public final Termed apply(Term nonCompound) {
-        if (nonCompound instanceof Variable) {
-            if (nonCompound.equals(Op.Imdex)) {
+    public final Termed transform(Term atomic) {
+        if (atomic instanceof Variable) {
+            if (atomic.equals(Op.Imdex)) {
                 //anonymized to a unique variable each occurrence
-                return newVariableIncreasingCount((Variable) nonCompound);
+                return newVariableIncreasingCount((Variable) atomic);
             } else {
-                return map.computeIfAbsent((Variable) nonCompound, this::newVariableIncreasingCount);
+                return map.computeIfAbsent((Variable) atomic, this::newVariableIncreasingCount);
             }
         } else {
-            return nonCompound;
+            return atomic;
         }
     }
 
@@ -86,6 +86,10 @@ public class VariableNormalization extends VariableTransform {
 
     }
 
+
+    public VariableNormalization() {
+        this(new HashMap<>(4, 0.9f), 0);
+    }
 
     public VariableNormalization(int size /* estimate */, int offset) {
         this(new HashMap<>(size), offset);

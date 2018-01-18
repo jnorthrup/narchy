@@ -91,6 +91,8 @@ public interface Atomic extends Term, The {
         return 0;
     }
 
+
+
     @Override
     default Term replace(Map<Term, Term> m) {
         Term y = m.get(this); //atom substitutions

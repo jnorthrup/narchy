@@ -1977,7 +1977,7 @@ public enum Op {
                     (nc) -> {
                         return Op.values()[nc.one].__the(DTERNAL, nc.two);
                     }, 128 * 1024
-                    , 4, false);
+                    , 4, true);
 
     public final Term _the(int dt, Term[] u, boolean intern) {
         if (intern && internable(dt, u)) {

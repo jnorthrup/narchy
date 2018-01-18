@@ -7,7 +7,7 @@ import nars.term.Term;
 import nars.term.compound.CompoundCached;
 import nars.subterm.Subterms;
 import nars.term.subst.Unify;
-import nars.term.transform.CompoundTransform;
+import nars.term.transform.TermTransform;
 import nars.term.transform.Retemporalize;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -61,7 +61,7 @@ public class EllipsisMatch extends CompoundCached {
     }
 
     @Override
-    public @Nullable Term transform(CompoundTransform t) {
+    public @Nullable Term transform(TermTransform t) {
         //dont eval until it's unwrapped
         return this;
     }

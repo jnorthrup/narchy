@@ -1,6 +1,5 @@
 package nars.term.subst;
 
-import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
@@ -103,11 +102,12 @@ public class MapSubst implements Subst {
         }
 
         @Override
-        public final Term transform(Compound x, Op op, int dt) {
+        public @Nullable Term transform(Compound x) {
             if (x.equals(from))
                 return to;
-            else
-                return !x.impossibleSubTerm(from) ? Subst.super.transform(x, op, dt) : x;
+            if (x.impossibleSubTerm(from))
+                return x;
+            return Subst.super.transform(x);
         }
 
         @Override
