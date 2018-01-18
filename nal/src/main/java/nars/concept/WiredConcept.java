@@ -3,9 +3,9 @@ package nars.concept;
 import jcog.math.FloatParam;
 import nars.NAR;
 import nars.Param;
+import nars.concept.builder.ConceptBuilder;
 import nars.table.BeliefTable;
 import nars.term.Term;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * base class for concepts which are more or less programmatically "hard-wired" into
@@ -28,8 +28,14 @@ public class WiredConcept extends TaskConcept implements PermanentConcept {
 
     public FloatParam resolution = new FloatParam(Param.TRUTH_EPSILON, 0f, 1f);
 
-    protected WiredConcept(@NotNull Term term, BeliefTable beliefs, BeliefTable goals, @NotNull NAR n) {
-        super(term, beliefs, goals, n.terms.conceptBuilder);
+    protected WiredConcept(Term term, NAR n) {
+        this(term, null /* default by concept builder */, null /* default by concept builder */, n.terms.conceptBuilder);
+    }
+    protected WiredConcept(Term term, BeliefTable beliefs, BeliefTable goals, NAR n) {
+        this(term, beliefs, goals, n.terms.conceptBuilder);
+    }
+    protected WiredConcept(Term term, BeliefTable beliefs, BeliefTable goals, ConceptBuilder b) {
+        super(term, beliefs, goals, b);
     }
 
 

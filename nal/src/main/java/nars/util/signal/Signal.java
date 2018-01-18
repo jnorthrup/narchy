@@ -20,7 +20,7 @@ import java.util.function.LongSupplier;
 public class Signal {
 
 
-    FloatSupplier pri;
+    private FloatSupplier pri;
 
 
     /**

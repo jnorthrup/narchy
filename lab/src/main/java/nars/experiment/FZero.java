@@ -8,7 +8,7 @@ import nars.Task;
 import nars.concept.ScalarConcepts;
 import nars.concept.SensorConcept;
 import nars.gui.Vis;
-import nars.util.signal.CameraSensor;
+import nars.util.signal.Bitmap2DSensor;
 import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
 import org.jetbrains.annotations.NotNull;
@@ -58,7 +58,7 @@ public class FZero extends NAgentX {
 
         this.fz = new FZeroGame();
 
-        CameraSensor<Scale> c = senseCamera($.the("cam"), new Scale(() -> fz.image,
+        Bitmap2DSensor<Scale> c = senseCamera($.the("cam"), new Scale(() -> fz.image,
                 //32, 24
                 24, 16
         )/*.blur()*/).resolution(0.1f);

@@ -5,7 +5,7 @@ import jcog.Util;
 import jcog.math.FloatParam;
 import nars.*;
 import nars.concept.SensorConcept;
-import nars.util.signal.CameraSensor;
+import nars.util.signal.Bitmap2DSensor;
 import nars.video.BufferedImageBitmap2D;
 import nars.video.Scale;
 import nars.video.SwingBitmap2D;
@@ -121,7 +121,7 @@ public class Arkancide extends NAgentX {
         if (cam) {
 
             BufferedImageBitmap2D sw = new Scale(new SwingBitmap2D(noid), visW, visH);//.blur();
-            CameraSensor cc = senseCamera(id.toString(), sw, visW, visH)
+            Bitmap2DSensor cc = senseCamera(id.toString(), sw, visW, visH)
                     .resolution(0.25f);
 //            CameraSensor ccAe = senseCameraReduced($.the("noidAE"), sw, 16)
 //                    .resolution(0.25f);

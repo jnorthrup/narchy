@@ -236,7 +236,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     private void scan(ScanFilter update, long _start, long _end) {
 
 
-        read /*readOptimistic*/((Space<TaskRegion> tree) -> {
+        readOptimistic
+        //read
+                ((Space<TaskRegion> tree) -> {
 
             update.clear(); //in case of optimisticRead, if tried twice
 

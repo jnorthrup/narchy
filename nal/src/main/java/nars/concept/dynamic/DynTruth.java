@@ -177,7 +177,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         if (evi < eviMin)
             return null;
 
-        Truth tr = Truth.the(f, evi, nar);
+        Truth tr = Truth.theDiscrete(f, evi, nar);
         if (tr == null)
             return null;
         if (withBuiltTask == null)

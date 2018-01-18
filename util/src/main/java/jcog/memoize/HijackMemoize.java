@@ -28,7 +28,7 @@ import static jcog.Texts.n4;
  */
 public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Computation<X, Y>> implements Memoize<X, Y> {
 
-    float DEFAULT_VALUE;
+    protected float DEFAULT_VALUE;
     final boolean soft;
     private final Random rng = new XoRoShiRo128PlusRandom(1);
 
@@ -39,7 +39,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
         X x();
     }
 
-    public static class StrongPair<X, Y> extends PLink<Y> implements Computation<X, Y> {
+    final static class StrongPair<X, Y> extends PLink<Y> implements Computation<X, Y> {
 
         public final X x;
         private final int hash;
@@ -69,7 +69,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
     }
 
 
-    public static class SoftPair<X, Y> extends SoftReference<Y> implements Computation<X, Y> {
+    final static class SoftPair<X, Y> extends SoftReference<Y> implements Computation<X, Y> {
 
         public final X x;
         private final int hash;
@@ -209,8 +209,8 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
 
     /**
      * estimates the value of computing the input.
-     * easier items will introduce lower priority, allowing
-     * harder items to sustain longer
+     * easier/frequent items will introduce lower priority, allowing
+     * harder/infrequent items to sustain longer
      */
     public float value(X x) {
         return DEFAULT_VALUE;
@@ -292,9 +292,20 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
         Y y = getIfPresent(x);
         if (y == null) {
             y = func.apply(x);
-            ((put(computation(x, y)) != null) ? miss : reject).inc();
+            Computation<X, Y> input = computation(x, y);
+            Computation<X, Y> output = put(input);
+            boolean interned = output==input;
+            (interned ? miss : reject).inc();
+            if (interned) {
+                onIntern(x);
+            }
         }
         return y;
+    }
+
+    /** can be overridden in implementations to compact or otherwise react to the interning of an input key */
+    protected void onIntern(X x) {
+
     }
 
     /**

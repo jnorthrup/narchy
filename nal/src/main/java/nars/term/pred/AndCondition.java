@@ -24,7 +24,7 @@ public final class AndCondition<D> extends AbstractPred<D> {
         return true;
     }
     AndCondition(PrediTerm<D>[] p) {
-        super($.p((Term[]) p));
+        super($.pFast((Term[]) p));
         assert (p.length >= 2) : "unnecessary use of AndCondition";
         this.cond = p;
     }

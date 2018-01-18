@@ -2,20 +2,19 @@ package nars.concept.state;
 
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.term.atom.Atom;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * interface for a management model responsible for concept resource allocation:
  * --budget (time)
  * --memory (space)
  */
-public abstract class ConceptState extends Atom {
+public abstract class ConceptState  {
 
 
+    private final String id;
 
-    protected ConceptState(@NotNull String id) {
-        super(id);
+    protected ConceptState(String id) {
+        this.id = id;
     }
 
     public abstract int linkCap(Concept concept, boolean termOrTask);

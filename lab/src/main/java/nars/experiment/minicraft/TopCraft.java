@@ -6,11 +6,9 @@ import nars.NAgentX;
 import nars.Narsese;
 import nars.experiment.minicraft.top.InputHandler;
 import nars.experiment.minicraft.top.TopDownMinicraft;
-import nars.util.signal.Sensor2D;
+import nars.util.signal.Bitmap2DSensor;
 import nars.video.AutoclassifiedBitmap;
 import nars.video.PixelBag;
-
-import static spacegraph.SpaceGraph.window;
 
 //import org.jcodec.codecs.h264.H264Encoder;
 //import org.jcodec.codecs.h264.H264Utils;
@@ -33,7 +31,7 @@ import static spacegraph.SpaceGraph.window;
 public class TopCraft extends NAgentX {
 
     private final TopDownMinicraft craft;
-    private Sensor2D<PixelBag> pixels;
+    private Bitmap2DSensor<PixelBag> pixels;
     private AutoclassifiedBitmap camAE;
 
     public static void main(String[] args) {
@@ -86,13 +84,13 @@ public class TopCraft extends NAgentX {
         //senseCameraReduced($.the("camr"), (Supplier)()->craft.image, 10,12,4,3);
                 //.resolution(0.5f);
 
-        int nx = 8;
-        camAE = new AutoclassifiedBitmap("cae", pixels.src.pixels, nx, nx,   (subX, subY) -> {
-            //context metadata: camera zoom, to give a sense of scale
-            //return new float[]{subX / ((float) (nx - 1)), subY / ((float) (nx - 1)), pixels.src.Z};
-            return new float[]{ pixels.src.Z};
-        }, 24, this);
-        window(camAE.newChart(), 500, 500);
+//        int nx = 8;
+//        camAE = new AutoclassifiedBitmap("cae", pixels., nx, nx,   (subX, subY) -> {
+//            //context metadata: camera zoom, to give a sense of scale
+//            //return new float[]{subX / ((float) (nx - 1)), subY / ((float) (nx - 1)), pixels.src.Z};
+//            return new float[]{ pixels.bmp.src.Z};
+//        }, 24, this);
+//        window(camAE.newChart(), 500, 500);
 
 
         senseSwitch($.func("dir",id), ()->craft.player.dir, 0, 4);

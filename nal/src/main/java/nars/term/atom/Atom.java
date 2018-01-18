@@ -1,6 +1,7 @@
 package nars.term.atom;
 
 import nars.Op;
+import nars.The;
 import nars.subterm.TermMetadata;
 import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
@@ -11,7 +12,7 @@ import static nars.Op.ATOM;
  * default Atom implementation: wraps a String instance as closely as possible.
  * ideally this string is stored encoded in UTF8 byte[]'s
  */
-public class Atom extends AtomicConst {
+public class Atom extends AtomicConst implements The {
 
 
     public Atom(byte[] b) {

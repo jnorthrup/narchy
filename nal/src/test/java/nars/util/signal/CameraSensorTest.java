@@ -20,7 +20,7 @@ public class CameraSensorTest {
 
         NAR n = NARS.tmp();
         float[][] f = new float[w][h];
-        CameraSensor c = new CameraSensor($.the("x"), new Bitmap2D.ArrayBitmap2D(f), n) {
+        Bitmap2DSensor c = new Bitmap2DSensor($.the("x"), new Bitmap2D.ArrayBitmap2D(f), n) {
 
             @Override
             protected int next(NAR nar, int work) {
@@ -30,7 +30,7 @@ public class CameraSensorTest {
 
             @Override
             protected int workToPixels(int work) {
-                return w*h; //all
+                return bmp.area(); //all
             }
             //            @Override
 //            public float value() {
@@ -71,11 +71,11 @@ public class CameraSensorTest {
         //TODO test individual pixel motion
     }
 
-    static void assertEquals(CameraSensor c, float[][] f, NAR n) {
+    static void assertEquals(Bitmap2DSensor c, float[][] f, NAR n) {
         final float tolerance = 0.35f;
-        for (int i = 0; i < c.width; i++) {
-            for (int j = 0; j < c.height; j++) {
-                SensorConcept p = c.matrix[i][j];
+        for (int i = 0; i < c.bmp.width; i++) {
+            for (int j = 0; j < c.bmp.height; j++) {
+                SensorConcept p = c.get(i, j);
                 Truth t = n.beliefTruth(p, n.time());
                 if (t == null || Math.abs(f[i][j] - t.freq()) > tolerance) {
                     System.err.println("pixel " + p + " incorrect @ t=" + n.time());

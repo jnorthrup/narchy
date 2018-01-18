@@ -9,6 +9,7 @@ import jcog.math.Interval;
 import nars.$;
 import nars.Op;
 import nars.Param;
+import nars.The;
 import nars.index.term.TermContext;
 import nars.subterm.TermMetadata;
 import nars.term.Compound;
@@ -30,7 +31,7 @@ import static nars.term.Terms.sorted;
 /**
  * 32-bit signed integer
  */
-public class Int implements Intlike {
+public class Int implements Intlike, The {
 
 
     private final byte[] bytesCached;

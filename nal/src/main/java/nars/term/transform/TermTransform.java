@@ -152,8 +152,11 @@ public interface TermTransform extends TermContext {
      * constructs a new term for a result
      */
     default Term the(Op op, int dt, Subterms t) {
-        return op.the(dt, t.arrayShared());
-        //return op._the(dt, t.arrayShared(), false); //disable interning of intermediate results
+        return op.the(dt,
+        //return op.a(dt,
+                ((TermList)t).toArrayRecycled(Term[]::new)); //optimized impl for TermList (FasterList)
+                //t.arrayShared());
+
     }
 
 

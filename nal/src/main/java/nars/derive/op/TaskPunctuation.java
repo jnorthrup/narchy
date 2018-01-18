@@ -1,6 +1,8 @@
 package nars.derive.op;
 
+import nars.$;
 import nars.control.ProtoDerivation;
+import nars.term.Term;
 import nars.term.pred.AbstractPred;
 import nars.term.pred.PrediTerm;
 
@@ -14,10 +16,10 @@ final public class TaskPunctuation extends AbstractPred<ProtoDerivation> {
     public final byte punc;
 
     TaskPunctuation(byte p) {
-        this(p, "task:\"" + ((char) p) + '\"');
+        this(p, INH.a($.quote((char) p), $.the("task")));
     }
 
-    TaskPunctuation(byte p, String id) {
+    TaskPunctuation(byte p, Term id) {
         super(id);
         this.punc = p;
     }
@@ -36,7 +38,7 @@ final public class TaskPunctuation extends AbstractPred<ProtoDerivation> {
     public static final PrediTerm<ProtoDerivation> Belief = new TaskPunctuation(BELIEF);
     public static final PrediTerm<ProtoDerivation> Goal = new TaskPunctuation(GOAL);
 
-    public static final PrediTerm<ProtoDerivation> BeliefOrGoal = new AbstractPred<ProtoDerivation>("task:\".!\"") {
+    public static final PrediTerm<ProtoDerivation> BeliefOrGoal = new AbstractPred<ProtoDerivation>($.inh($.quote(".!"), $.the("task"))) {
         @Override
         public boolean test(ProtoDerivation o) {
             byte c = o.taskPunc;

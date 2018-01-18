@@ -3,7 +3,6 @@ package nars.term;
 import jcog.Util;
 import nars.Op;
 import nars.Param;
-import nars.The;
 import nars.derive.PatternCompound;
 import nars.subterm.Subterms;
 import nars.term.transform.TermTransform;
@@ -22,7 +21,7 @@ import static nars.time.Tense.XTERNAL;
  * referring to the base for all other details.
  * TODO a CachedCompound version of this
  */
-public class CompoundDTLight implements CompoundDT, The {
+public class CompoundDTLight implements CompoundDT {
 
     /**
      * numeric (term or "dt" temporal relation)
@@ -331,4 +330,10 @@ public class CompoundDTLight implements CompoundDT, The {
 ////        }
 ////        return ref.dt(nextDT);
 //    }
+
+
+    @Override
+    public Term the() {
+        return this;
+    }
 }

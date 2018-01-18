@@ -1,5 +1,6 @@
 package nars.derive.op;
 
+import nars.$;
 import nars.control.ProtoDerivation;
 import nars.term.pred.AbstractPred;
 import nars.term.pred.PrediTerm;
@@ -64,6 +65,6 @@ abstract public class TaskPolarity extends AbstractPred<ProtoDerivation> {
     }
 
     protected TaskPolarity(String x) {
-        super(x);
+        super($.the(x));
     }
 }

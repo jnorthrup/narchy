@@ -42,10 +42,8 @@ public class ScalarSignal extends Signal implements DoubleSupplier {
     public final static FloatToFloatFunction direct = n -> n;
 
 
-    public ScalarSignal(NAR n, Term t, FloatFunction<Term> value, @Nullable FloatToObjectFunction<Truth> truthFloatFunction, FloatSupplier resolution) {
+    public ScalarSignal(Term t, FloatFunction<Term> value, @Nullable FloatToObjectFunction<Truth> truthFloatFunction, FloatSupplier resolution) {
         super(BELIEF, resolution);
-
-        pri(() -> n.priDefault(BELIEF));
         this.term = t;
         this.value = value;
         this.truthFloatFunction = truthFloatFunction == null ? (v) -> null : truthFloatFunction;

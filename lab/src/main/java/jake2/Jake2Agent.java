@@ -12,7 +12,7 @@ import jcog.learn.ql.HaiQAgent;
 import nars.NAR;
 import nars.Narsese;
 import nars.experiment.NAgentY;
-import nars.util.signal.CameraSensor;
+import nars.util.signal.Bitmap2DSensor;
 import nars.video.PixelBag;
 
 import java.awt.*;
@@ -104,12 +104,12 @@ public class Jake2Agent extends NAgentY implements Runnable {
         super("q", nar, HaiQAgent::new);
 
 
-        CameraSensor<PixelBag> qcam =
+        Bitmap2DSensor<PixelBag> qcam =
                 senseCameraRetina("q", screenshotter, 32, 24);
-        qcam.src.setMinZoomOut(0.5f);
-        qcam.src.setMaxZoomOut(1f);
+        qcam.bmp.src.setMinZoomOut(0.5f);
+        qcam.bmp.src.setMaxZoomOut(1f);
         qcam.resolution(0.01f);
-        qcam.src.vflip = true;
+        qcam.bmp.src.vflip = true;
 
 //        new ShapeSensor(p(id, the("shape")), new Scale(screenshotter, 128, 96) {
 //            @Override

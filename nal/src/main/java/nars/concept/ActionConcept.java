@@ -3,7 +3,6 @@ package nars.concept;
 import nars.NAR;
 import nars.Task;
 import nars.control.MetaGoal;
-import nars.table.BeliefTable;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -16,12 +15,10 @@ import java.util.stream.Stream;
 public abstract class ActionConcept extends WiredConcept {
 
 
-    protected ActionConcept(@NotNull Term term, BeliefTable beliefs, BeliefTable goals, @NotNull NAR n) {
-        super(term, beliefs, goals, n);
-    }
+
 
     protected ActionConcept(@NotNull Term term, @NotNull NAR n) {
-        super(term, null, null, n);
+        super(term, n);
     }
 
     @Nullable
@@ -87,15 +84,15 @@ public abstract class ActionConcept extends WiredConcept {
          */
         @Nullable Truth motor(@Nullable Truth believed, @Nullable Truth desired);
 
-        /**
-         * all desire passes through to affect belief
-         */
-        MotorFunction Direct = (believed, desired) -> desired;
-
-        /**
-         * absorbs all desire and doesnt affect belief
-         */
-        @Nullable MotorFunction Null = (believed, desired) -> null;
+//        /**
+//         * all desire passes through to affect belief
+//         */
+//        MotorFunction Direct = (believed, desired) -> desired;
+//
+//        /**
+//         * absorbs all desire and doesnt affect belief
+//         */
+//        @Nullable MotorFunction Null = (believed, desired) -> null;
     }
 
 }

@@ -25,23 +25,15 @@ import static nars.Op.BELIEF;
  */
 public class GoalActionAsyncConcept extends ActionConcept {
 
-
     public final Signal feedBelief;
-//    @Deprecated public final Signal feedGoal;
 
-
-    @NotNull
     private final BiConsumer<GoalActionAsyncConcept, Truth /* goal */> motor;
     final CauseChannel<ITask> in;
 
     private final long curiosityStamp;
 
     public GoalActionAsyncConcept(@NotNull Term c, @NotNull NAct act, CauseChannel<ITask> cause, @NotNull BiConsumer<GoalActionAsyncConcept, Truth /* goal */> motor) {
-        super(c,
-                //new SensorBeliefTable(n.conceptBuilder.newTemporalBeliefTable(c)),
-                //new SensorBeliefTable(n.conceptBuilder.newTemporalBeliefTable(c)),
-                null, null,
-                act.nar());
+        super(c, act.nar());
 
         NAR n = act.nar();
 

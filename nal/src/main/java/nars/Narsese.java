@@ -9,6 +9,7 @@ import com.github.fge.grappa.stack.ValueStack;
 import com.github.fge.grappa.transform.ParserTransformer;
 import com.github.fge.grappa.transform.base.ParserClassNode;
 import nars.task.TaskBuilder;
+import nars.task.util.InvalidTaskException;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.time.Tense;
@@ -16,6 +17,7 @@ import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
@@ -293,7 +295,6 @@ public class Narsese {
     /**
      * returns null if the Task is invalid (ex: invalid term)
      */
-    @NotNull
     static Task decodeTask(NAR m, Object[] x) {
         if (x.length == 1 && x[0] instanceof Task) {
             return (Task) x[0];
@@ -322,7 +323,7 @@ public class Narsese {
             t = $.t(1, m.confDefault(punct));
         }
 
-        return Task.tryTask(content, punct, t, (C, tr) -> {
+        Task y = Task.tryTask(content, punct, t, (C, tr) -> {
             //TODO construct directly and remove TaskBuilder
             TaskBuilder ttt =
                     new TaskBuilder(C, punct, tr)
@@ -349,6 +350,11 @@ public class Narsese {
             return ttt.apply(m).log(NARSESE_TASK_TAG);
         });
 
+        if (y == null) {
+            throw new InvalidTaskException(content, "input: "  + Arrays.toString(x));
+        }
+
+        return y;
 
 
 

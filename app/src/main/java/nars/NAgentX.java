@@ -18,8 +18,8 @@ import nars.term.Term;
 import nars.time.RealTime;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.util.signal.CameraSensor;
-import nars.util.signal.Sensor2D;
+import nars.util.signal.Bitmap2DSensor;
+import nars.util.signal.Bitmap2DConcepts;
 import nars.video.*;
 import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.core.Bead;
@@ -70,7 +70,7 @@ import static spacegraph.layout.Grid.grid;
 abstract public class NAgentX extends NAgent {
 
 
-    public final Set<CameraSensor> cam = new LinkedHashSet<>();
+    public final Set<Bitmap2DSensor> cam = new LinkedHashSet<>();
 
 //    @Override
 //    public Set<Termed> concepts() {
@@ -182,8 +182,8 @@ abstract public class NAgentX extends NAgent {
                 //.deriverAdd("list.nal")
                 .index(
                         new CaffeineIndex(
-                                //200 * 1024
-                                100 * 1024
+                                200 * 1024
+                                //100 * 1024
                                 //50 * 1024
                                 //20 * 1024
                         )
@@ -614,7 +614,7 @@ abstract public class NAgentX extends NAgent {
 
                     a instanceof NAgentX ?
                             new WindowToggleButton("vision", () -> grid(((NAgentX) a).cam.stream().map(cs ->
-                                    new AspectAlign(new CameraSensorView(cs, a), AspectAlign.Align.Center, cs.height, cs.width))
+                                    new AspectAlign(new CameraSensorView(cs, a), AspectAlign.Align.Center, cs.height(), cs.width()))
                                     .toArray(Surface[]::new))
                             ) : grid()
 
@@ -699,11 +699,11 @@ abstract public class NAgentX extends NAgent {
     /**
      * pixelTruth defaults to linear monochrome brightness -> frequency
      */
-    protected CameraSensor senseCamera(String id, Container w, int pw, int ph) throws Narsese.NarseseException {
+    protected Bitmap2DSensor senseCamera(String id, Container w, int pw, int ph) throws Narsese.NarseseException {
         return senseCamera(id, new SwingBitmap2D(w), pw, ph);
     }
 
-    protected CameraSensor<Scale> senseCamera(String id, Supplier<BufferedImage> w, int pw, int ph) throws
+    protected Bitmap2DSensor<Scale> senseCamera(String id, Supplier<BufferedImage> w, int pw, int ph) throws
             Narsese.NarseseException {
         return senseCamera(id, new Scale(w, pw, ph));
     }
@@ -712,81 +712,81 @@ abstract public class NAgentX extends NAgent {
 //        return senseCamera(id, new Scale(new SwingBitmap2D(w), pw, ph));
 //    }
 
-    protected Sensor2D<PixelBag> senseCameraRetina(String id, Container w, int pw, int ph) throws
+    protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Container w, int pw, int ph) throws
             Narsese.NarseseException {
         return senseCameraRetina(id, new SwingBitmap2D(w), pw, ph);
     }
 
-    protected Sensor2D<PixelBag> senseCameraRetina(String id, Container w, int pw, int ph, FloatToObjectFunction<
+    protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Container w, int pw, int ph, FloatToObjectFunction<
             Truth> pixelTruth) throws Narsese.NarseseException {
         return senseCameraRetina(id, new SwingBitmap2D(w), pw, ph);
     }
 
-    protected CameraSensor<PixelBag> senseCameraRetina(String id, Supplier<BufferedImage> w, int pw, int ph) throws
+    protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Supplier<BufferedImage> w, int pw, int ph) throws
             Narsese.NarseseException {
         return senseCameraRetina($(id), w, pw, ph);
     }
 
-    protected CameraSensor<PixelBag> senseCameraRetina(Term id, Supplier<BufferedImage> w, int pw, int ph) {
+    protected Bitmap2DSensor<PixelBag> senseCameraRetina(Term id, Supplier<BufferedImage> w, int pw, int ph) {
         PixelBag pb = PixelBag.of(w, pw, ph);
         pb.addActions(id, this);
         return senseCamera(id, pb);
     }
 
-    protected Sensor2D<WaveletBag> senseCameraFreq(String id, Supplier<BufferedImage> w, int pw, int ph) throws
+    protected Bitmap2DSensor<WaveletBag> senseCameraFreq(String id, Supplier<BufferedImage> w, int pw, int ph) throws
             Narsese.NarseseException {
         WaveletBag pb = new WaveletBag(w, pw, ph);
         return senseCamera(id, pb);
     }
 
-    protected <C extends Bitmap2D> CameraSensor<C> senseCamera(@Nullable String id, C bc) throws
+    protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable String id, C bc) throws
             Narsese.NarseseException {
         return senseCamera(id != null ? $(id) : null, bc);
     }
 
-    protected <C extends Bitmap2D> CameraSensor<C> senseCamera(@Nullable Term id, C bc) {
-        return addCamera(new CameraSensor(id, bc, this));
+    protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable Term id, C bc) {
+        return addCamera(new Bitmap2DSensor(id, bc, this));
     }
 
-    protected <C extends Bitmap2D> CameraSensor<C> senseCameraReduced(@Nullable Term
+    protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCameraReduced(@Nullable Term
                                                                               id, Supplier<BufferedImage> bc, int sx, int sy, int ox, int oy) {
-        return addCamera(new CameraSensor(id, new AutoencodedBitmap(new BufferedImageBitmap2D(bc), sx, sy, ox, oy), this));
+        return addCamera(new Bitmap2DSensor(id, new AutoencodedBitmap(new BufferedImageBitmap2D(bc), sx, sy, ox, oy), this));
     }
 
-    protected <C extends Bitmap2D> CameraSensor<C> senseCameraReduced(@Nullable Term id, C bc, int sx, int sy,
-                                                                      int ox, int oy) {
-        return addCamera(new CameraSensor(id, new AutoencodedBitmap(bc, sx, sy, ox, oy), this));
+    protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCameraReduced(@Nullable Term id, C bc, int sx, int sy,
+                                                                        int ox, int oy) {
+        return addCamera(new Bitmap2DSensor(id, new AutoencodedBitmap(bc, sx, sy, ox, oy), this));
     }
 
-    protected <C extends Bitmap2D> CameraSensor<C> addCamera(CameraSensor<C> c) {
+    protected <C extends Bitmap2D> Bitmap2DSensor<C> addCamera(Bitmap2DSensor<C> c) {
         cam.add(c);
         return c;
     }
 
-    static Surface mixPlot(NAgent a, MixContRL m, int history) {
-        return Grid.grid(m.dim, i -> col(
-                new MixGainPlot(a, m, history, i),
-                new MixTrafficPlot(a, m, history, i)
-        ));
-    }
-
-    private static class MixGainPlot extends Plot2D {
-        public MixGainPlot(NAgent a, MixContRL m, int history, int i) {
-            super(history, BarWave);
-
-            add(m.id(i), () -> m.gain(i), -1f, +1f);
-            a.onFrame(this::update);
-        }
-    }
-
-    private static class MixTrafficPlot extends Plot2D {
-        public MixTrafficPlot(NAgent a, MixContRL m, int history, int i) {
-            super(history, Line);
-            add(m.id(i) + "_in", () -> m.trafficInput(i), 0f, 1f);
-            add(m.id(i), () -> m.trafficActive(i), 0f, 1f);
-            a.onFrame(this::update);
-        }
-    }
+//    static Surface mixPlot(NAgent a, MixContRL m, int history) {
+//        return Grid.grid(m.dim, i -> col(
+//                new MixGainPlot(a, m, history, i),
+//                new MixTrafficPlot(a, m, history, i)
+//        ));
+//    }
+//
+//    private static class MixGainPlot extends Plot2D {
+//        public MixGainPlot(NAgent a, MixContRL m, int history, int i) {
+//            super(history, BarWave);
+//
+//            add(m.id(i), () -> m.gain(i), -1f, +1f);
+//            a.onFrame(this::update);
+//        }
+//    }
+//
+//    private static class MixTrafficPlot extends Plot2D {
+//        public MixTrafficPlot(NAgent a, MixContRL m, int history, int i) {
+//            super(history, Line);
+//            add(m.id(i) + "_in", () -> m.trafficInput(i), 0f, 1f);
+//            add(m.id(i), () -> m.trafficActive(i), 0f, 1f);
+//            a.onFrame(this::update);
+//        }
+//    }
 
     private static class Metronome {
         public Metronome(Clock cc, NAR n) {

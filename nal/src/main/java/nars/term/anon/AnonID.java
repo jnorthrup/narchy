@@ -1,13 +1,14 @@
 package nars.term.anon;
 
 import nars.Op;
+import nars.The;
 import nars.term.Term;
 import nars.term.var.NormalizedVariable;
 
 /**
  * indicates the term has an anonymous, canonical identifier (16-bit short)
  */
-public interface AnonID extends Term {
+public interface AnonID extends Term, The {
 
     short anonID();
 

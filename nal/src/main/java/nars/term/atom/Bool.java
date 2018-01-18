@@ -1,6 +1,7 @@
 package nars.term.atom;
 
 import nars.Op;
+import nars.The;
 import nars.index.term.TermContext;
 import nars.term.Term;
 import nars.term.subst.Unify;
@@ -18,7 +19,7 @@ import static nars.Op.Null;
  *  these represent an intrinsic level of truth that exist within the context of
  *  an individual term.  not to be confused with Task-level Truth
  */
-abstract public class Bool extends AtomicConst {
+abstract public class Bool extends AtomicConst implements The {
 
     private final String id;
 

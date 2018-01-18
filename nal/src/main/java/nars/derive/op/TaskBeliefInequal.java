@@ -1,5 +1,6 @@
 package nars.derive.op;
 
+import nars.$;
 import nars.control.ProtoDerivation;
 import nars.term.pred.AbstractPred;
 
@@ -8,7 +9,7 @@ public class TaskBeliefInequal extends AbstractPred<ProtoDerivation> {
     public static TaskBeliefInequal the = new TaskBeliefInequal();
 
     private TaskBeliefInequal() {
-        super("TaskBeliefInequal");
+        super($.the("TaskBeliefInequal"));
     }
 
     @Override

@@ -4,7 +4,7 @@ import jcog.signal.Bitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.util.signal.CameraSensor;
+import nars.util.signal.Bitmap2DSensor;
 import org.junit.jupiter.api.Test;
 
 public class AutoConceptualizerTest {
@@ -13,7 +13,7 @@ public class AutoConceptualizerTest {
     public void test1() {
         int W = 4, H = 4;
         NAR n = NARS.tmp();
-        CameraSensor c = new CameraSensor((x,y) -> $.p(x,y), new Bitmap2D() {
+        Bitmap2DSensor c = new Bitmap2DSensor((x, y) -> $.p(x,y), new Bitmap2D() {
             @Override
             public int width() {
                 return W;
@@ -30,12 +30,12 @@ public class AutoConceptualizerTest {
             }
         }, n);
 
-        AutoConceptualizer ac = new AutoConceptualizer(c.pixels, true, 2, n);
+        AutoConceptualizer ac = new AutoConceptualizer(c.bmp.iter.order /* HACK */, true, 2, n);
 
 
         for (int i =0; i< 155; i++) {
-            c.run(n, c.pixels.size());
-            c.print(System.out);
+            c.run(n, c.bmp.area());
+            c.bmp.print(System.out);
             n.run(1);
 
             System.out.println();

@@ -9,10 +9,6 @@ import nars.term.Term;
  */
 public abstract class AbstractPred<X> extends ProxyTerm<Term> implements PrediTerm<X> {
 
-    protected AbstractPred(String x) {
-        this($.$safe(x));
-    }
-
     protected AbstractPred(Term term) {
         super(term);
     }

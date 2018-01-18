@@ -15,7 +15,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.util.signal.CameraSensor;
+import nars.util.signal.Bitmap2DSensor;
 import nars.video.PixelBag;
 import nars.video.Scale;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
@@ -114,7 +114,7 @@ public class Recog2D extends NAgentX {
 //                () -> canvas, w, h, v -> $.t(v, nar.confDefault(BELIEF)));
 
         //still
-        CameraSensor sp = senseCamera(
+        Bitmap2DSensor sp = senseCamera(
                 id
                 //$.p(id,
                 //$.the("zoom")
@@ -128,7 +128,8 @@ public class Recog2D extends NAgentX {
         train = new Training(
                 //sensors,
                 Lists.newArrayList(
-                        sp.src instanceof PixelBag ? Iterables.concat(sensors.keySet(), ((PixelBag) sp.src).actions ) : sensors.keySet()
+                        sp.bmp.src instanceof PixelBag ? Iterables.concat(sensors.keySet(), ((PixelBag) sp.bmp.src).actions ) :
+                                sensors.keySet()
                 ),
                 outs, nar);
 

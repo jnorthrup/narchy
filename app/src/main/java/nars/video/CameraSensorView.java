@@ -6,7 +6,7 @@ import nars.NAgent;
 import nars.concept.TaskConcept;
 import nars.control.DurService;
 import nars.truth.Truth;
-import nars.util.signal.Sensor2D;
+import nars.util.signal.Bitmap2DSensor;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
 import spacegraph.render.Draw;
@@ -18,15 +18,15 @@ import spacegraph.widget.meter.BitmapMatrixView;
  */
 public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixView.ViewFunction2D {
 
-    private final Sensor2D cam;
+    private final Bitmap2DSensor cam;
     private final NAR nar;
     private DurService on;
-    private float maxConceptPriority;
+//    private float maxConceptPriority;
     private long start, end;
     int dur;
 
-    public CameraSensorView(Sensor2D cam, NAgent a) {
-        super(cam.width, cam.height);
+    public CameraSensorView(Bitmap2DSensor cam, NAgent a) {
+        super(cam.width(), cam.height());
         this.cam = cam;
         this.nar = a.nar;
         this.dur = a.nar.dur();
@@ -51,7 +51,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
         dur = nn.dur();
         this.start = now - dur;
         this.end = now + dur;
-        maxConceptPriority = 1;
+//        maxConceptPriority = 1;
         update();
 //            nar instanceof Default ?
 //                ((Default) nar).focus.active.priMax() :
@@ -62,7 +62,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
     public int update(int x, int y) {
 
 
-        TaskConcept s = cam.matrix[x][y];
+        TaskConcept s = cam.get(x,y);
         Truth b = s.beliefs().truth(start, end, nar);
         float bf = b != null ? b.freq() : 0.5f;
 

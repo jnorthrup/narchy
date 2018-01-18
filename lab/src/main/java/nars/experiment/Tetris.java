@@ -6,7 +6,7 @@ import nars.*;
 import nars.experiment.tetris.TetrisState;
 import nars.op.java.Opjects;
 import nars.term.Term;
-import nars.util.signal.CameraSensor;
+import nars.util.signal.Bitmap2DSensor;
 
 import static nars.experiment.tetris.TetrisState.*;
 
@@ -26,7 +26,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
     private TetrisState state;
 
-    private final CameraSensor<Bitmap2D> pixels;
+    private final Bitmap2DSensor<Bitmap2D> pixels;
 
     public Tetris(NAR nar) throws Narsese.NarseseException {
         this(nar, Tetris.tetris_width, Tetris.tetris_height);
@@ -92,7 +92,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
 
 
         addCamera(
-                pixels = new CameraSensor<>((x, y)->
+                pixels = new Bitmap2DSensor<>((x, y)->
                     //$.func("cam", id, $.the(x), $.the(y))
                     $.inh($.p(x,y), id)
                 , this, nar)

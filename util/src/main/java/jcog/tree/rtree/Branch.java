@@ -385,7 +385,7 @@ public class Branch<T> extends AbstractNode<T, Node<T, ?>> {
             Node[] data = this.data;
             for (int i = 0; i < s; i++) {
                 Node d = data[i];
-                if (!d.intersecting(rect, t, model))
+                if (d!=null && !d.intersecting(rect, t, model)) //np check for use under readOptimistic
                     return false;
             }
         }

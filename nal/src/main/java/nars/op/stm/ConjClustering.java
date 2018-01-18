@@ -16,7 +16,7 @@ import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
 import nars.term.Term;
-import nars.truth.PreciseTruth;
+import nars.truth.DiscreteTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -272,40 +272,42 @@ public class ConjClustering extends Causable {
             ObjectFloatPair<long[]> evidence = Stamp.zip(actualTasks, Param.STAMP_CAPACITY);
             float overlap = evidence.getTwo();
             float e = Param.overlapEvidence(c2wSafe(conf), overlap);
-            PreciseTruth t = Truth.the(freq, e, nar);
-            if (t != null) {
+            if (e > 0) {
+                final DiscreteTruth t = Truth.theDiscrete(freq, e, nar);
+                if (t != null) {
 
-                Term cj = Op.conj(new FasterList(vv.keySet()));
-                if (cj!=null) {
-                    ObjectBooleanPair<Term> cp = Task.tryContent(cj.normalize(), punc, true);
-                    if (cp != null) {
+                    Term cj = Op.conj(new FasterList(vv.keySet()));
+                    if (cj != null) {
+                        ObjectBooleanPair<Term> cp = Task.tryContent(cj.normalize(), punc, true);
+                        if (cp != null) {
 
 
-                        NALTask m = new STMClusterTask(cp, t, start, end, evidence.getOne(), punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
-                        if (evidence.getTwo() > 0) m.setCyclic(true);
+                            NALTask m = new STMClusterTask(cp, t, start, end, evidence.getOne(), punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
+                            if (evidence.getTwo() > 0) m.setCyclic(true);
 
-                        m.cause = Cause.zip(nar.causeCapacity.intValue(), uu);
+                            m.cause = Cause.zip(nar.causeCapacity.intValue(), uu);
 
-                        float priAvg =
-                                //priMax;
-                                //priMin;
-                                (priMin + priMax) / 2f;
+                            float priAvg =
+                                    //priMax;
+                                    //priMin;
+                                    (priMin + priMax) / 2f;
 
-                        //complexity deduction
-                        //  how much more complex the conjunction is than the most complex of its ingredients
-                        int v = cp.getOne().volume();
-                        float cmplFactor =
-                                ((float)v) / (v + maxVolume);
+                            //complexity deduction
+                            //  how much more complex the conjunction is than the most complex of its ingredients
+                            int v = cp.getOne().volume();
+                            float cmplFactor =
+                                    ((float) v) / (v + maxVolume);
 
-                        m.priSet(Priority.fund(priAvg * cmplFactor , true, uu));
-                        tasksCreated++;
-                        gen.add(m);
-                    } else {
-                        //Task.tryContent(cj, punc, true);
-                        //logger.warn("{} failed", this);
+                            m.priSet(Priority.fund(priAvg * cmplFactor, true, uu));
+                            tasksCreated++;
+                            gen.add(m);
+                        } else {
+                            //Task.tryContent(cj, punc, true);
+                            //logger.warn("{} failed", this);
+                        }
                     }
-                }
 
+                }
             }
 
 
@@ -355,7 +357,7 @@ public class ConjClustering extends Causable {
 
     public static class STMClusterTask extends NALTask {
 
-        public STMClusterTask(@Nullable ObjectBooleanPair<Term> cp, PreciseTruth t, long start, long end, long[] evidence, byte punc, long now) throws InvalidTaskException {
+        public STMClusterTask(@Nullable ObjectBooleanPair<Term> cp, Truth t, long start, long end, long[] evidence, byte punc, long now) throws InvalidTaskException {
             super(cp.getOne(), punc, t, now, start, end, evidence);
         }
 

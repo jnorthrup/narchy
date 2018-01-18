@@ -40,11 +40,7 @@ public class GoalActionConcept extends ActionConcept {
     }
 
     public GoalActionConcept(@NotNull Term c, @NotNull NAR n, FloatParam curiosity, @NotNull MotorFunction motor) {
-        super(c,
-                //new SensorBeliefTable(n.conceptBuilder.newTemporalBeliefTable(c)),
-                //new SensorBeliefTable(n.conceptBuilder.newTemporalBeliefTable(c)),
-                null, null,
-                n);
+        super(c, n);
 
         this.curiosity = curiosity;
 

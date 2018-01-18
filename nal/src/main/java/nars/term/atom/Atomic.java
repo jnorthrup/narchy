@@ -5,7 +5,6 @@ import jcog.Texts;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
-import nars.The;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.transform.Retemporalize;
@@ -23,7 +22,7 @@ import static java.lang.Integer.MIN_VALUE;
 /**
  * Base class for Atomic types.
  */
-public interface Atomic extends Term, The {
+public interface Atomic extends Term {
 
     @Override
     default boolean OR(Predicate<Term> v) {

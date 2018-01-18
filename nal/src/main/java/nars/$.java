@@ -426,23 +426,23 @@ public enum $ {
         return tt;
     }
 
-    public static Term seti(@NotNull Collection<Term> t) {
+    public static Term seti(Collection<Term> t) {
         return $.seti(array(t));
     }
 
     public static Term sete(Term... t) {
-        return SETe.the(DTERNAL, t);
+        return SETe.a(t);
     }
 
     public static Term sete(RoaringBitmap b) {
-        return $.sete(the(b));
+        return SETe.a(ints(b)); //non-interned
     }
 
     public static Term p(RoaringBitmap b) {
-        return $.p(the(b));
+        return PROD.a(ints(b));
     }
 
-    public static Term[] the(RoaringBitmap b) {
+    public static Term[] ints(RoaringBitmap b) {
         int size = b.getCardinality();
         PeekableIntIterator ii = b.getIntIterator();
         Term[] t = new Term[size];

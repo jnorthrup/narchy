@@ -46,7 +46,7 @@ public class RLBooster implements Consumer<NAR> {
         if (env instanceof NAgentX) {
 
             ((NAgentX) env).cam.forEach(c -> {
-                c.pixels.forEach(cc -> sc.add((SensorConcept) cc));
+                c.forEach(cc -> sc.add((SensorConcept) cc));
             });
         }
         this.inputs = sc;

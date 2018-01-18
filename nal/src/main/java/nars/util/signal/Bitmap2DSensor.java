@@ -10,6 +10,7 @@ import nars.NAgent;
 import nars.Task;
 import nars.concept.SensorConcept;
 import nars.control.CauseChannel;
+import nars.exe.Causable;
 import nars.task.ITask;
 import nars.term.Compound;
 import nars.term.Term;
@@ -19,9 +20,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunctio
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.PrintStream;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -34,71 +33,60 @@ import static nars.truth.TruthFunctions.w2c;
  * manages reading a camera to a pixel grid of SensorConcepts
  * monochrome
  */
-public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Iterable<CameraSensor<P>.PixelConcept> {
+public class Bitmap2DSensor<P extends Bitmap2D> extends Causable implements Iterable<SensorConcept> {
 
 
-    public static final int RADIX = 1;
-
-    public final List<PixelConcept> pixels;
     public final CauseChannel<ITask> in;
-    private final Int2Function<Term> pixelTerm;
+
+    private final int numPixels;
+    public final Bitmap2DConcepts<P> bmp;
 
 
-
-    final int numPixels;
-
-
-    transient int w, h;
-    transient float conf;
     private int lastPixel;
-
-
     private long lastUpdate;
     int pixelsRemainPerUpdate = 0;
     static final int minUpdateDurs = 1;
 
-    //private long stamp;
+    private float pixelPriCurrent = 0;
+    private final FloatSupplier pixelPri = () -> pixelPriCurrent;
+
+    private transient float conf;
+    private final FloatToObjectFunction<Truth> brightnessTruth =
+            (v) -> $.t(v, conf);
 
     /** to calculate avg number pixels processed per duration */
     private final DescriptiveStatistics pixelsProcessed = new DescriptiveStatistics(8);
 
-
-    public CameraSensor(@Nullable Term root, P src, NAgent a) {
+    public Bitmap2DSensor(@Nullable Term root, P src, NAgent a) {
         this(root, src, a.nar);
     }
 
-    public CameraSensor(Term root, P src, NAR n) {
-        this(RadixProduct(root, src.width(), src.height(), RADIX), src, n);
+    public Bitmap2DSensor(Term root, P src, NAR n) {
+        this(RadixProduct(root, src.width(), src.height(), /*RADIX*/1), src, n);
     }
 
-    public CameraSensor(@Nullable Int2Function<Term> pixelTerm, P src, NAR n) {
-        super(src, src.width(), src.height(), n);
+    public Bitmap2DSensor(@Nullable Int2Function<Term> pixelTerm, P src, NAR n) {
+        super(n);
 
-        this.w = src.width();
-        this.h = src.height();
-        pixelsRemainPerUpdate = numPixels = w * h;
+        this.bmp = new Bitmap2DConcepts(src, pixelTerm, src.width(), src.height(), brightnessTruth, pixelPri, n);
+        this.numPixels = bmp.area();
+        this.pixelsRemainPerUpdate = numPixels; //initial value
 
         this.in = n.newCauseChannel(this);
 
-
-        this.pixelTerm = pixelTerm;
-        pixels = encode(
-                //RadixRecurse(root, w, h, RADIX)
-                //InhRecurse(root, w, h, RADIX)
-                n);
+//        this.pixels = encode(
+//                //RadixRecurse(root, w, h, RADIX)
+//                //InhRecurse(root, w, h, RADIX)
+//                n);
 
         lastUpdate = n.time();
     }
 
-    @NotNull
     @Override
-    public Iterator<PixelConcept> iterator() {
-        return pixels.iterator();
+    public Iterator<SensorConcept> iterator() {
+        return bmp.iterator();
     }
 
-
-    private final FloatToObjectFunction<Truth> brightnessTruth =
-            (v) -> $.t(v, conf);
 
 
     public static Int2Function<Compound> XY(Term root, int width, int height) {
@@ -180,26 +168,6 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
     }
 
 
-    public List<PixelConcept> encode(NAR nar) {
-        List<PixelConcept> l = $.newArrayList();
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-
-                //TODO support multiple coordinate termizations
-                Term cell = pixelTerm.get(x, y);
-
-
-                PixelConcept sss = new PixelConcept(cell, x, y, nar);
-                nar.on(sss);
-
-
-                l.add(sss);
-
-                matrix[x][y] = sss;
-            }
-        }
-        return l;
-    }
 
 //    private float distToResolution(float dist) {
 //
@@ -208,8 +176,8 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
 //        return r;
 //    }
 
-    public CameraSensor resolution(float resolution) {
-        pixels.forEach(p -> p.resolution.set(resolution));
+    public Bitmap2DSensor resolution(float resolution) {
+        bmp.forEach(p -> p.resolution.set(resolution));
         return this;
     }
 
@@ -235,13 +203,13 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
     protected int next(NAR nar, int work) {
 
 
-        int totalPixels = pixels.size();
+        int totalPixels = numPixels;
 
         long now = nar.time();
         if (now - this.lastUpdate >= nar.dur() * minUpdateDurs) {
             int pixelsProcessedInLastDur = totalPixels - this.pixelsRemainPerUpdate;
             pixelsProcessed.addValue(pixelsProcessedInLastDur);
-            src.update(1);
+            bmp.update(1);
             pixelsRemainPerUpdate = totalPixels;
             this.lastUpdate = now;
         } else {
@@ -322,7 +290,7 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
         this.lastPixel = end;
 
         return IntStream.range(start, end)
-                    .mapToObj(i -> pixels.get(i).update(now, dur, nar))
+                    .mapToObj(i -> bmp.get(i).update(now, dur, nar))
                     .filter(Objects::nonNull);
     }
 
@@ -333,68 +301,66 @@ public class CameraSensor<P extends Bitmap2D> extends Sensor2D<P> implements Ite
 //    }
 
 
-    float pixelPriCurrent = 0;
 
-    final FloatSupplier pixelPri = () -> pixelPriCurrent;
-
-    /** crude ASCII text representation of the current pixel state */
-    public void print(PrintStream out) {
-        for (int j = 0; j < height; j++) {
-            for (int i = 0; i < width; i++) {
-                float b = matrix[i][j].asFloat();
-                out.print(b >= 0.5f ? '*' : ' ');
-            }
-            out.println();
-        }
+    public SensorConcept get(int i, int j) {
+        return bmp.matrix[i][j];
     }
 
-    public class PixelConcept extends SensorConcept {
-
-        private final int x, y;
-        //private final TermContainer templates;
-
-        PixelConcept(Term cell, int x, int y, NAR nar) {
-            super(cell, nar, null, brightnessTruth);
-            setSignal(() -> Util.unitize(src.brightness(x, y)));
-            sensor.pri(pixelPri);
-
-            this.x = x;
-            this.y = y;
-
-            //                List<Term> s = $.newArrayList(4);
-//                //int extraSize = subs.size() + 4;
-//
-//                if (x > 0) s.add( concept(x-1, y) );
-//                if (x < w-1) s.add( concept(x+1, y) );
-//                if (y > 0) s.add( concept(x, y-1) );
-//                if (y < h-1) s.add( concept(x, y+1) );
-//
-//                return TermVector.the(s);
-
-//            this.templates = new PixelNeighborsXYRandom(x, y, w, h, 1);
-
-//            List<Termed> l = templates();
-//            for (int i = x - 1; i <= x + 1; i++) {
-//                for (int j = y - 1; j <= y + 1; j++) {
-//                    if (i == x && j == y) continue;
-//                    if (i < 0 || j < 0 || i >= w || j >= h) continue;
-//                    l.add(pixelTerm.get(i, j));
-//                }
-//            }
-        }
-
-
-        //        @Override
-//        protected LongSupplier update(Truth currentBelief, @NotNull NAR nar) {
-//            return ()->nextStamp;
-//        }
-
-
-//        @Override
-//        protected LongSupplier nextStamp(@NotNull NAR nar) {
-//            return CameraSensor.this::nextStamp;
-//        }
+    public int width() {
+        return bmp.width;
     }
+    public int height() {
+        return bmp.height;
+    }
+
+
+//    static public class PixelConcept extends SensorConcept {
+//
+//        private final int x, y;
+//        //private final TermContainer templates;
+//
+//        PixelConcept(Term cell, int x, int y, NAR nar) {
+//            super(cell, nar, null, brightnessTruth);
+//
+//            sensor.pri(pixelPri);
+//
+//            this.x = x;
+//            this.y = y;
+//
+//            //                List<Term> s = $.newArrayList(4);
+////                //int extraSize = subs.size() + 4;
+////
+////                if (x > 0) s.add( concept(x-1, y) );
+////                if (x < w-1) s.add( concept(x+1, y) );
+////                if (y > 0) s.add( concept(x, y-1) );
+////                if (y < h-1) s.add( concept(x, y+1) );
+////
+////                return TermVector.the(s);
+//
+////            this.templates = new PixelNeighborsXYRandom(x, y, w, h, 1);
+//
+////            List<Termed> l = templates();
+////            for (int i = x - 1; i <= x + 1; i++) {
+////                for (int j = y - 1; j <= y + 1; j++) {
+////                    if (i == x && j == y) continue;
+////                    if (i < 0 || j < 0 || i >= w || j >= h) continue;
+////                    l.add(pixelTerm.get(i, j));
+////                }
+////            }
+//        }
+//
+//
+//        //        @Override
+////        protected LongSupplier update(Truth currentBelief, @NotNull NAR nar) {
+////            return ()->nextStamp;
+////        }
+//
+//
+////        @Override
+////        protected LongSupplier nextStamp(@NotNull NAR nar) {
+////            return CameraSensor.this::nextStamp;
+////        }
+//    }
 
     /*private long nextStamp() {
         return stamp;

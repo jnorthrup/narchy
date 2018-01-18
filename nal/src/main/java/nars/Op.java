@@ -7,7 +7,6 @@ import jcog.data.bit.MetalBitSet;
 import jcog.list.FasterList;
 import jcog.memoize.HijackMemoize;
 import jcog.memoize.Memoize;
-import nars.derive.PatternCompound;
 import nars.derive.match.EllipsisMatch;
 import nars.derive.match.Ellipsislike;
 import nars.op.mental.AliasConcept;
@@ -272,8 +271,6 @@ public enum Op {
 //                    }
 
                         ci = i > 0 ? conjMerge(ci, 0, u[i], 0) : u[0];
-                        if (ci instanceof Bool)
-                            return ci;
                     }
 
                     break;
@@ -319,8 +316,8 @@ public enum Op {
                             Arrays.sort(u); //dont use Terms.sorted which will de-duplicate and remove (x &&+1 x) cases.
 
                             Term a = u[0];
-                            Term b = u[1];
                             if (a.op() == CONJ && a.dt() == XTERNAL && a.subs() == 2) {
+                                Term b = u[1];
 
                                 int va = a.volume();
                                 int vb = b.volume();
@@ -369,54 +366,52 @@ public enum Op {
             }
 
 
-            if (ci.op() == CONJ && ci.hasAny(NEG) && ci.subterms().hasAny(CONJ)) {
-                int ciDT = ci.dt();
-                if (ciDT == 0 || ciDT == DTERNAL) {
-                    //(NOT (x AND y)) AND (NOT x) == NOT X
-                    int s = ci.subs();
-                    RoaringBitmap ni = null, nc = null;
-                    for (int i = 0; i < s; i++) {
-                        Term cii = ci.sub(i);
-                        if (cii.op() == NEG) {
-                            if (cii.unneg().op() == CONJ) {
-                                if (nc == null) nc = new RoaringBitmap();
-                                nc.add(i);
-                            } else {
-                                if (ni == null) ni = new RoaringBitmap();
-                                ni.add(i);
-                            }
-                        }
-                    }
-                    if (nc != null && ni != null) {
-                        int[] bb = ni.toArray();
-                        MetalBitSet toRemove = MetalBitSet.bits(bb.length);
-                        PeekableIntIterator cc = nc.getIntIterator();
-                        while (cc.hasNext()) {
-                            int cci = cc.next();
-                            for (int j = 0; j < bb.length; j++) {
-                                Term NC = ci.sub(cci).unneg();
-                                Term NX = ci.sub(bb[j]).unneg();
-                                if (NC.contains(NX)) {
-                                    toRemove.set(cci);
+            if (ci.op() == CONJ && ci.hasAny(NEG)) {
+                Subterms cci;
+                if ((cci = ci.subterms()).hasAny(CONJ)) {
+                    int ciDT = ci.dt();
+                    if (ciDT == 0 || ciDT == DTERNAL) {
+                        //(NOT (x AND y)) AND (NOT x) == NOT X
+                        int s = cci.subs();
+                        RoaringBitmap ni = null, nc = null;
+                        for (int i = 0; i < s; i++) {
+                            Term cii = cci.sub(i);
+                            if (cii.op() == NEG) {
+                                if (cii.unneg().op() == CONJ) {
+                                    if (nc == null) nc = new RoaringBitmap();
+                                    nc.add(i);
+                                } else {
+                                    if (ni == null) ni = new RoaringBitmap();
+                                    ni.add(i);
                                 }
                             }
                         }
-                        if (toRemove.getCardinality() > 0) {
-                            return CONJ.the(ciDT, ci.subterms().termsExcept(toRemove));
+                        if (nc != null && ni != null) {
+                            int[] bb = ni.toArray();
+                            MetalBitSet toRemove = MetalBitSet.bits(bb.length);
+                            PeekableIntIterator ncc = nc.getIntIterator();
+                            while (ncc.hasNext()) {
+                                int nccc = ncc.next();
+                                for (int j = 0; j < bb.length; j++) {
+                                    Term NC = cci.sub(nccc).unneg();
+                                    Term NX = cci.sub(bb[j]).unneg();
+                                    if (NC.contains(NX)) {
+                                        toRemove.set(nccc);
+                                    }
+                                }
+                            }
+                            if (toRemove.getCardinality() > 0) {
+                                return CONJ.the(ciDT, cci.termsExcept(toRemove));
+                            }
                         }
+
+
                     }
-
-
                 }
             }
 
             return implInConjReduce(ci);
-
-
-            //memoized.apply(new Object[] { dt, u });
-            //return CONJBuilder.the(dt, u);
         }
-
 
     },
 
@@ -582,7 +577,6 @@ public enum Op {
     public static final int varBits = Op.or(VAR_PATTERN, VAR_DEP, VAR_QUERY, VAR_INDEP);
 
 
-
     /**
      * Image index ("imdex") symbol for products, and anonymous variable in products
      */
@@ -637,7 +631,9 @@ public enum Op {
 
     public final boolean beliefable, goalable;
 
-    /** TODO option for instantiating CompoundLight base's in the bottom part of this */
+    /**
+     * TODO option for instantiating CompoundLight base's in the bottom part of this
+     */
     public static Term dt(Compound base, int nextDT) {
 
         if (nextDT == XTERNAL) {
@@ -671,8 +667,11 @@ public enum Op {
         }
     }
 
-    /** returns null if wasnt contained, Null if nothing remains after removal */
-    @Nullable public static Term conjDrop(NAR nar, Term conj, Term _event, boolean earlyOrLate) {
+    /**
+     * returns null if wasnt contained, Null if nothing remains after removal
+     */
+    @Nullable
+    public static Term conjDrop(NAR nar, Term conj, Term _event, boolean earlyOrLate) {
         if (conj.op() != CONJ || conj.impossibleSubTerm(_event))
             return null;
 
@@ -688,7 +687,7 @@ public enum Op {
 
             LongObjectPair<Term> ev = events.get(eMax);
             if (ev.getTwo().equalsRoot(event)) {
-                if (events.size()==1)
+                if (events.size() == 1)
                     return Null; //emptied
 
                 events.remove(eMax);
@@ -845,7 +844,10 @@ public enum Op {
     public final int minLevel;
     public final boolean commutative;
     public final boolean temporal;
+
+    /** 1 << op.ordinal */
     public final int bit;
+
     public final boolean var;
     public final boolean atomic;
     public final boolean statement;
@@ -919,7 +921,6 @@ public enum Op {
 
         final Set<String> ATOMICS = Set.of(".", "+", "B");
         this.atomic = var || ATOMICS.contains(str);
-
 
 
         conceptualizable = !(var ||
@@ -1303,7 +1304,6 @@ public enum Op {
                     return Null;
 
 
-
                 if (et0.containsRecursively(et1, true, recursiveCommonalityDelimeterWeak)
                         || et1.containsRecursively(et0, true, recursiveCommonalityDelimeterWeak))
                     return Null; //TODO handle this better, there may be detectable or iteratively simplified reductions
@@ -1471,24 +1471,23 @@ public enum Op {
 
         if (op == IMPL) {
 
-                //special case for implications: reduce to --predicate if the subject is False
+            //special case for implications: reduce to --predicate if the subject is False
 
-                //if (dtConcurrent) { //no temporal basis
-                if (subject == True)
-                    return predicate; //true tautology
-                else if (subject == False)
-                    return predicate.neg(); //false tautology
-                else if (predicate instanceof Bool)
-                    return Null; //nothing is the "cause" of tautological trueness or falseness
+            //if (dtConcurrent) { //no temporal basis
+            if (subject == True)
+                return predicate; //true tautology
+            else if (subject == False)
+                return predicate.neg(); //false tautology
+            else if (predicate instanceof Bool)
+                return Null; //nothing is the "cause" of tautological trueness or falseness
 
-                if (subject.hasAny(InvalidImplicationSubj))
-                    return Null; //throw new InvalidTermException(op, dt, "Invalid equivalence subject", subject, predicate);
+            if (subject.hasAny(InvalidImplicationSubj))
+                return Null; //throw new InvalidTermException(op, dt, "Invalid equivalence subject", subject, predicate);
 
-                if (predicate.op() == NEG) {
-                    //negated predicate gets unwrapped to outside
-                    return IMPL.the(dt, subject, predicate.unneg()).neg();
-                }
-
+            if (predicate.op() == NEG) {
+                //negated predicate gets unwrapped to outside
+                return IMPL.the(dt, subject, predicate.unneg()).neg();
+            }
 
 
 //                //factor out any common subterms iff concurrent
@@ -1582,157 +1581,154 @@ public enum Op {
 //                }
 
 
-                // (C ==>+- (A ==>+- B))   <<==>>  ((C &&+- A) ==>+- B)
-                if (predicate.op() == IMPL) {
-                    int abDT = predicate.dt();
-                    //if (cprDT != XTERNAL) {
-                    Term a = predicate.sub(0);
+            // (C ==>+- (A ==>+- B))   <<==>>  ((C &&+- A) ==>+- B)
+            if (predicate.op() == IMPL) {
+                int abDT = predicate.dt();
+                //if (cprDT != XTERNAL) {
+                Term a = predicate.sub(0);
 
 
-                    return IMPL.the(abDT, CONJ.the(dt /*caDT */, subject, a), predicate.sub(1));
-                    //}
-                }
+                return IMPL.the(abDT, CONJ.the(dt /*caDT */, subject, a), predicate.sub(1));
+                //}
+            }
 
-                //filter duplicate events and detect contradictions
+            //filter duplicate events and detect contradictions
 
-                if (dt != XTERNAL && subject.dt() != XTERNAL && predicate.dt() != XTERNAL) {
+            if (dt != XTERNAL && subject.dt() != XTERNAL && predicate.dt() != XTERNAL) {
 
-                    ArrayHashSet<LongObjectPair<Term>> se = new ArrayHashSet<>(1);
-                    subject.eventsWhile((w, t) -> {
-                        se.add(PrimitiveTuples.pair(w, t));
-                        return true;
-                    }, 0, true, true, false, 0);
+                ArrayHashSet<LongObjectPair<Term>> se = new ArrayHashSet<>(1);
+                subject.eventsWhile((w, t) -> {
+                    se.add(PrimitiveTuples.pair(w, t));
+                    return true;
+                }, 0, true, true, false, 0);
 
-                    FasterList<LongObjectPair<Term>> pe = new FasterList(1);
-                    int pre = subject.dtRange();
-                    boolean dtNotDternal = dt != DTERNAL;
-                    int edt = pre + (dtNotDternal ? dt : 0);
+                FasterList<LongObjectPair<Term>> pe = new FasterList(1);
+                int pre = subject.dtRange();
+                boolean dtNotDternal = dt != DTERNAL;
+                int edt = pre + (dtNotDternal ? dt : 0);
 
-                    final boolean[] peChange = {false};
+                final boolean[] peChange = {false};
 
-                    //if there is DT between subject and predicate,
-                    // dont decompose parallel to keep a parallel grouping in the predicate intact. otherwise it will get arbitrarily split
-                    boolean contradiction = !predicate.eventsWhile((w, t) -> {
-                        LongObjectPair<Term> x = PrimitiveTuples.pair(w, t);
-                        if (se.contains(x)) {
-                            //dont repeat it in the predicate
-                            peChange[0] = true;
-                        } else if (se.contains(pair(w, t.neg()))) {
-                            return false; //contradiction
-                        } else {
-                            pe.add(x);
-                        }
-                        return true;
-                    }, edt, false, false, false, 0);
+                //if there is DT between subject and predicate,
+                // dont decompose parallel to keep a parallel grouping in the predicate intact. otherwise it will get arbitrarily split
+                boolean contradiction = !predicate.eventsWhile((w, t) -> {
+                    LongObjectPair<Term> x = PrimitiveTuples.pair(w, t);
+                    if (se.contains(x)) {
+                        //dont repeat it in the predicate
+                        peChange[0] = true;
+                    } else if (se.contains(pair(w, t.neg()))) {
+                        return false; //contradiction
+                    } else {
+                        pe.add(x);
+                    }
+                    return true;
+                }, edt, false, false, false, 0);
 
-                    if (contradiction)
-                        return False;
+                if (contradiction)
+                    return False;
 
-                    //merge or contradict any DTERNAL predicate components occurring
-                    // at same time
-                    if ((dt == DTERNAL || dt == 0)) {
-                        for (ListIterator<LongObjectPair<Term>> pi = pe.listIterator(); pi.hasNext(); ) {
-                            LongObjectPair<Term> pex = pi.next();
-                            Term pext = pex.getTwo();
-                            if (pext.op() == CONJ) {
-                                int pdt = pext.dt();
-                                if (pdt == DTERNAL || pdt == 0) {
-                                    long at = pex.getOne();
+                //merge or contradict any DTERNAL predicate components occurring
+                // at same time
+                if ((dt == DTERNAL || dt == 0)) {
+                    for (ListIterator<LongObjectPair<Term>> pi = pe.listIterator(); pi.hasNext(); ) {
+                        LongObjectPair<Term> pex = pi.next();
+                        Term pext = pex.getTwo();
+                        if (pext.op() == CONJ) {
+                            int pdt = pext.dt();
+                            if (pdt == DTERNAL || pdt == 0) {
+                                long at = pex.getOne();
 
-                                    RoaringBitmap pextRemovals = new RoaringBitmap();
-                                    Subterms subPexts = pext.subterms();
-                                    int subPextsN = subPexts.subs();
+                                RoaringBitmap pextRemovals = new RoaringBitmap();
+                                Subterms subPexts = pext.subterms();
+                                int subPextsN = subPexts.subs();
 
-                                    boolean absorbed = false;
-                                    for (ListIterator<LongObjectPair<Term>> si = se.listIterator(); si.hasNext(); ) {
-                                        LongObjectPair<Term> sse = si.next();
-                                        if (sse.getOne() == at) {
+                                for (ListIterator<LongObjectPair<Term>> si = se.listIterator(); si.hasNext(); ) {
+                                    LongObjectPair<Term> sse = si.next();
+                                    if (sse.getOne() == at) {
 
-                                            //determine if each component either is absorbed or contradicted
-                                            //note: true or false are propagated upward the conjunction stack, it may get eliminated
-                                            Term sset = sse.getTwo();
+                                        //determine if each component either is absorbed or contradicted
+                                        //note: true or false are propagated upward the conjunction stack, it may get eliminated
+                                        Term sset = sse.getTwo();
 
-                                            for (int i = 0; i < subPextsN; i++) {
-                                                Term subPext = subPexts.sub(i);
-                                                Term merge = CONJ.the(dt, sset, subPext);
-                                                if (merge == Null) return Null; //invalid
-                                                else if (merge == False) {
-                                                    //contradict
-                                                    return False;
-                                                } else if (merge.equals(sset)) {
-                                                    //unchanged, just drop it
-                                                    pextRemovals.add(i);
-                                                } else {
-                                                    //?? leave in predicate
-                                                }
+                                        for (int i = 0; i < subPextsN; i++) {
+                                            Term subPext = subPexts.sub(i);
+                                            Term merge = CONJ.the(dt, sset, subPext);
+                                            if (merge == Null) return Null; //invalid
+                                            else if (merge == False) {
+                                                //contradict
+                                                return False;
+                                            } else if (merge.equals(sset)) {
+                                                //unchanged, just drop it
+                                                pextRemovals.add(i);
+                                            } else {
+                                                //?? leave in predicate
                                             }
                                         }
                                     }
-                                    if (!pextRemovals.isEmpty()) {
-                                        if (pextRemovals.getCardinality()==subPextsN) {
-                                            //completely absorbed
-                                            pi.remove();
-                                        } else {
-                                            pi.set(pair(at, CONJ.the(pdt, subPexts.termsExcept(pextRemovals))));
-                                        }
-                                        peChange[0] = true;
+                                }
+                                if (!pextRemovals.isEmpty()) {
+                                    if (pextRemovals.getCardinality() == subPextsN) {
+                                        //completely absorbed
+                                        pi.remove();
+                                    } else {
+                                        pi.set(pair(at, CONJ.the(pdt, subPexts.termsExcept(pextRemovals))));
                                     }
+                                    peChange[0] = true;
                                 }
                             }
                         }
                     }
-
-
-
-
-                    int pes = pe.size();
-                    switch (pes) {
-                        case 0: return True;
-                        case 1:
-                            if (peChange[0]) {
-                                //change occurred, duplicates were removed, reconstruct new predicate
-                                int ndt = dtNotDternal ? (int) pe.minBy(LongObjectPair::getOne).getOne() - pre : DTERNAL;
-                                return IMPL.the(ndt,
-                                        subject,
-                                        predicate.dt() != DTERNAL ?
-                                                Op.conj(new FasterList<>(pe)) :
-                                                CONJ.the(DTERNAL, pe.collect(LongObjectPair::getTwo))
-                                );
-                            }
-                            break;
-                        default: {
-                            //TODO if pred has >1 events, pull all the events except the last into a conj for the subj then impl the final event
-
-                            long finalEventTime = pe.maxBy(LongObjectPair::getOne).getOne();
-                            Term finalEvent = null;
-                            int moved = 0;
-                            for (int i = 0; i < pes; i++) {
-                                LongObjectPair<Term> m = pe.get(i);
-                                if (m.getOne() != finalEventTime) {
-                                    se.add(m);
-                                    moved++;
-                                } else {
-                                    if (finalEvent == null) finalEvent = m.getTwo();
-                                    else finalEvent = CONJ.the(0, finalEvent, m.getTwo());
-                                }
-                            }
-                            if (moved > 0 || !finalEvent.equals(predicate)) {
-                                long ndt = dtNotDternal ?
-                                        finalEventTime - ((FasterList<LongObjectPair<Term>>)se.list).maxBy(LongObjectPair::getOne).getOne() :
-                                        DTERNAL;
-                                assert(ndt < Integer.MAX_VALUE);
-                                return IMPL.the((int) ndt,
-                                        Op.conj(new FasterList(se)),
-                                        finalEvent
-                                );
-                            }
-
-
-
-                        }
-                    }
-
                 }
+
+
+                int pes = pe.size();
+                switch (pes) {
+                    case 0:
+                        return True;
+                    case 1:
+                        if (peChange[0]) {
+                            //change occurred, duplicates were removed, reconstruct new predicate
+                            int ndt = dtNotDternal ? (int) pe.minBy(LongObjectPair::getOne).getOne() - pre : DTERNAL;
+                            return IMPL.the(ndt,
+                                    subject,
+                                    predicate.dt() != DTERNAL ?
+                                            Op.conj(new FasterList<>(pe)) :
+                                            CONJ.the(DTERNAL, pe.collect(LongObjectPair::getTwo))
+                            );
+                        }
+                        break;
+                    default: {
+                        //TODO if pred has >1 events, pull all the events except the last into a conj for the subj then impl the final event
+
+                        long finalEventTime = pe.maxBy(LongObjectPair::getOne).getOne();
+                        Term finalEvent = null;
+                        int moved = 0;
+                        for (int i = 0; i < pes; i++) {
+                            LongObjectPair<Term> m = pe.get(i);
+                            if (m.getOne() != finalEventTime) {
+                                se.add(m);
+                                moved++;
+                            } else {
+                                if (finalEvent == null) finalEvent = m.getTwo();
+                                else finalEvent = CONJ.the(0, finalEvent, m.getTwo());
+                            }
+                        }
+                        if (moved > 0 || !finalEvent.equals(predicate)) {
+                            long ndt = dtNotDternal ?
+                                    finalEventTime - ((FasterList<LongObjectPair<Term>>) se.list).maxBy(LongObjectPair::getOne).getOne() :
+                                    DTERNAL;
+                            assert (ndt < Integer.MAX_VALUE);
+                            return IMPL.the((int) ndt,
+                                    Op.conj(new FasterList(se)),
+                                    finalEvent
+                            );
+                        }
+
+
+                    }
+                }
+
+            }
 
 
 //            if (op == INH || op == SIM || dt == 0 || dt == DTERNAL) {
@@ -2036,6 +2032,20 @@ public enum Op {
         return _the(dt, commute(dt, u.length) ? sorted(u) : u, true);
     }
 
+    /**
+     * syntax shortcut for non-interned (heap) term construction
+     */
+    public final Term a(Term... u) {
+        return the(DTERNAL, u, false);
+    }
+
+    /**
+     * syntax shortcut for non-interned (heap) term construction
+     */
+    public final Term a(int dt, Term... u) {
+        return the(dt, u, false);
+    }
+
     public Term the(int dt, Term[] u, boolean intern) {
         return _the(dt, commute(dt, u.length) ? sorted(u) : u, intern);
     }
@@ -2046,7 +2056,7 @@ public enum Op {
 
         boolean cache = true;
         for (Term x : u) {
-            if (x instanceof PatternCompound || x instanceof UnnormalizedVariable) {
+            if (!(x instanceof The)) {
                 //HACK caching these interferes with unification.  instead fix unification then allow caching of these
                 cache = false;
                 break;
@@ -2055,18 +2065,29 @@ public enum Op {
         return cache;
     }
 
-    final static Memoize<IntArrayPair<Term>, Term> preCompoundCached =
-            new HijackMemoize<>(
-                    (nc) -> {
-                        return Op.values()[nc.one].__the(DTERNAL, nc.two);
-                    }, 128 * 1024
-                    , 4, true);
+    final static Memoize<InternedCompound, Term> preCompoundCached = new HijackMemoize<>(
+            (nc) -> nc.op.__the(DTERNAL, nc.subs), 128 * 1024,
+            4, false) {
+
+        @Override
+        public float value(InternedCompound x) {
+            return x.value(DEFAULT_VALUE);
+        }
+
+        @Override
+        protected void onIntern(InternedCompound x) {
+            x.compact(this::getIfPresent);
+        }
+
+//        @Override
+//        public void onRemove(Computation<InternedCompound, Term> x) {
+//        }
+    };
 
     public final Term _the(int dt, Term[] u, boolean intern) {
         if (intern && internable(dt, u)) {
-            return preCompoundCached.apply(new IntArrayPair<>(ordinal(), u));
+            return preCompoundCached.apply(new InternedCompound(this, u));
         } else {
-            //TODO cache temporals
             return __the(dt, u);
         }
     }
@@ -2098,8 +2119,11 @@ public enum Op {
     }
 
 
-    /** returns null if not found, and Null if no subterms remain after removal */
-    @Nullable public static Term without(Term container, Predicate<Term> filter, Random rand) {
+    /**
+     * returns null if not found, and Null if no subterms remain after removal
+     */
+    @Nullable
+    public static Term without(Term container, Predicate<Term> filter, Random rand) {
 
 
         Subterms cs = container.subterms();
@@ -2282,23 +2306,24 @@ public enum Op {
             List<Term> csa = null;
             while (oo.hasNext()) {
                 Term x = oo.next();
+                if (x.hasAll(NEG.bit | CONJ.bit)) {
+                    if (x.op() == NEG) {
+                        Term x0 = x.sub(0);
+                        if (x0.op() == CONJ && CONJ.commute(x0.dt(), x0.subs())) { //DISJUNCTION
+                            Term disj = x.unneg();
+                            SortedSet<Term> disjSubs = disj.subterms().toSetSorted();
+                            //factor out occurrences of the disj's contents outside the disjunction, so remove from inside it
+                            if (disjSubs.removeAll(outer)) {
+                                //reconstruct disj if changed
+                                oo.remove();
 
-                if (x.op() == NEG) {
-                    Term x0 = x.sub(0);
-                    if (x0.op() == CONJ && CONJ.commute(x0.dt(), x0.subs())) { //DISJUNCTION
-                        Term disj = x.unneg();
-                        SortedSet<Term> disjSubs = disj.subterms().toSetSorted();
-                        //factor out occurrences of the disj's contents outside the disjunction, so remove from inside it
-                        if (disjSubs.removeAll(outer)) {
-                            //reconstruct disj if changed
-                            oo.remove();
-
-                            if (!disjSubs.isEmpty()) {
-                                if (csa == null)
-                                    csa = $.newArrayList(1);
-                                csa.add(
-                                        CONJ.the(disj.dt(), sorted(disjSubs)).neg()
-                                );
+                                if (!disjSubs.isEmpty()) {
+                                    if (csa == null)
+                                        csa = $.newArrayList(1);
+                                    csa.add(
+                                            CONJ.the(disj.dt(), sorted(disjSubs)).neg()
+                                    );
+                                }
                             }
                         }
                     }
@@ -2331,8 +2356,6 @@ public enum Op {
 //                    CONJ.the(dt, scs);  //retry?
         }
     }
-
-
 
 
 //        /**
@@ -2373,28 +2396,59 @@ public enum Op {
 //        }
 
 
-static class IntArrayPair<X> {
-    public final int one;
-    public final X[] two;
-    private final int hash;
+    static class InternedCompound {
+        public final Op op;
+        public final Term[] subs;
+        private final int hash;
 
-    IntArrayPair(int one, X... two) {
-        this.one = one;
-        this.two = two;
-        this.hash = Util.hashCombine(one, Arrays.hashCode(two));
-    }
+        InternedCompound(Op o, Term... subs) {
+            this.op = o;
+            this.subs = subs;
 
-    @Override
-    public int hashCode() {
-        return hash;
-    }
+            int h = o.bit;
+            for (Term x : subs)
+                h = Util.hashCombine(h, x.hashCode());
 
-    @Override
-    public boolean equals(Object obj) {
-        IntArrayPair p = (IntArrayPair) obj;
-        return hash == p.hash && Arrays.equals(two, p.two);
+            this.hash = h;
+        }
+
+        /**
+         * if accepted into the interner, it can call this with a resolver function to fully intern this
+         * by resolving the subterm values which are now present in the index
+         */
+        public void compact(Function<InternedCompound, Term> intern) {
+//            for (int i = 0, subsLength = subs.length; i < subsLength; i++) {
+//                Term x = subs[i];
+//                if (x instanceof Compound) {
+//                    Term y = intern.apply(key(x));
+//                    if (y != null && y != x) {
+//                        subs[i] = y;
+//                    }
+//                }
+//            }
+        }
+
+        private InternedCompound key(Term x) {
+            return new InternedCompound(x.op(), x.subterms().arrayShared());
+        }
+
+
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            InternedCompound p = (InternedCompound) obj;
+            return hash == p.hash && op==p.op && Arrays.equals(subs, p.subs);
+        }
+
+        public float value(float base) {
+            return base / (1f + subs.length); //simple policy: prefer shorter
+        }
+
     }
-}
 
 
 }

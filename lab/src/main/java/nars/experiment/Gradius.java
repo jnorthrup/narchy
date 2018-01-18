@@ -6,7 +6,7 @@ import nars.NAR;
 import nars.NAgentX;
 import nars.concept.ScalarConcepts;
 import nars.gui.Vis;
-import nars.util.signal.CameraSensor;
+import nars.util.signal.Bitmap2DSensor;
 import nars.video.Scale;
 
 import static java4k.gradius4k.Gradius4K.*;
@@ -31,7 +31,8 @@ public class Gradius extends NAgentX {
         //senseCameraReduced($.p(id,$.the("ae")), (Supplier)()->g.image, 32,32,2,2).resolution(0.5f);
 
 
-        CameraSensor c1 = senseCamera($.p(id, $.the("global")), new Scale(() -> g.image, 24, 24)).resolution(0.05f);
+
+        Bitmap2DSensor c1 = senseCamera($.p(id, $.the("global")), new Scale(() -> g.image, 24, 24)).resolution(0.05f);
 
         senseCameraRetina($.p(id,$.the("local")), () -> g.image, 24, 16).resolution(0.1f);
 
@@ -99,11 +100,11 @@ public class Gradius extends NAgentX {
 
         /*nar.believe($.inh(*///$.sete(
 
-        actionToggle($.p("fire"),
+        actionPushButton($.inh("fire", id),
                 (b) -> g.keys[VK_SHOOT] = b);
 
-        initBipolar();
-        //initToggle();
+        //initBipolar();
+        initToggle();
 
 //        actionTriState($.p(Atomic.the("dx")), (dh) -> {
 //            g.keys[Gradius4K.VK_LEFT] = false;
@@ -146,7 +147,7 @@ public class Gradius extends NAgentX {
     }
 
     void initBipolar() {
-        actionBipolar($.the("y"), (dy) -> {
+        actionBipolar($.inh("y", id), (dy) -> {
             float thresh = 0.33f;
             if (dy < -thresh) {
                 g.keys[VK_UP] = false; g.keys[VK_DOWN] = true;
@@ -157,7 +158,7 @@ public class Gradius extends NAgentX {
             }
             return dy;
         });
-        actionBipolar($.the("x"), (dx) -> {
+        actionBipolar($.inh("x", id), (dx) -> {
            float thresh = 0.33f;
            if (dx < -thresh) {
                g.keys[VK_LEFT] = false; g.keys[VK_RIGHT] = true;

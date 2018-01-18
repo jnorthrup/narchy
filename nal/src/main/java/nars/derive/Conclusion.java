@@ -101,12 +101,14 @@ public final class Conclusion extends AbstractPred<Derivation> {
                 occ[1] = x;
             }
 
-            if (d.concPunc == GOAL && d.taskPunc == GOAL && !d.single && Op.values()[d._beliefOp].temporal) {
+            if (d.concPunc == GOAL && d.taskPunc == GOAL && !d.single && Op.values()[d._beliefOp] == IMPL) {
                 long derivedGoalStart = occ[0];
 
                 if (derivedGoalStart != ETERNAL) {
 
-                    long taskWants = d.task.myNearestTimeTo(d.time);
+                    long taskWants =
+                            d.task.start();
+                            //d.task.myNearestTimeTo(d.time);
 
                     if (taskWants == ETERNAL) {
                         taskWants = d.time; //now

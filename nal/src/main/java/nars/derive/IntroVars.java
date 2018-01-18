@@ -1,5 +1,6 @@
 package nars.derive;
 
+import nars.$;
 import nars.Op;
 import nars.control.Derivation;
 import nars.op.DepIndepVarIntroduction;
@@ -13,7 +14,7 @@ import java.util.Map;
 public class IntroVars extends AbstractPred<Derivation> {
 
     protected IntroVars() {
-        super("varIntro");
+        super($.the("varIntro"));
     }
 
     @Override

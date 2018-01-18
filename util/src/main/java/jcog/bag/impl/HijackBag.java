@@ -422,7 +422,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         //identityComparisons ? System.identityHashCode(key)
 
         // "Applies a supplemental hash function to a given hashCode, which defends against poor quality hash functions."
-        return Util.hashWangJenkins(x.hashCode());
+        //return Util.hashWangJenkins(x.hashCode());
+
+        return x.hashCode();
     }
 
 

@@ -13,7 +13,7 @@ import nars.concept.SensorConcept;
 import nars.control.AgentService;
 import nars.task.ITask;
 import nars.term.Term;
-import nars.util.signal.CameraSensor;
+import nars.util.signal.Bitmap2DSensor;
 import nars.util.signal.Signal;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,10 +57,8 @@ abstract public class NAgentY extends NAgentX {
     }
 
     @Override
-    protected <C extends Bitmap2D> CameraSensor<C> addCamera(CameraSensor<C> c) {
-        c.pixels.forEach((CameraSensor<C>.PixelConcept p) -> {
-            spec.in(() -> p.sensor.currentValue);
-        });
+    protected <C extends Bitmap2D> Bitmap2DSensor<C> addCamera(Bitmap2DSensor<C> c) {
+        c.forEach(p -> spec.in(() -> p.sensor.currentValue));
         return super.addCamera(c);
     }
 

@@ -663,7 +663,7 @@ public interface Compound extends Term, IPair, Subterms {
         Term u;
         if (changed) {
 
-            u = o._the(dt(), xy, false);
+            u = o.a(dt(), xy);
 
 //            if (recurseIfChanged)
 //                return u.evalSafe(context, remain);
