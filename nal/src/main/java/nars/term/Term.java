@@ -184,7 +184,7 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     @Nullable default Term transform(TermTransform t) {
-        Termed y = t.transform(this);
+        Termed y = t.transformAtomic(this);
         return y == null ? null : y.term();
     }
 

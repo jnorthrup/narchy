@@ -102,12 +102,12 @@ public class MapSubst implements Subst {
         }
 
         @Override
-        public @Nullable Term transform(Compound x) {
+        public @Nullable Term transformCompound(Compound x) {
             if (x.equals(from))
                 return to;
             if (x.impossibleSubTerm(from))
                 return x;
-            return Subst.super.transform(x);
+            return Subst.super.transformCompound(x);
         }
 
         @Override

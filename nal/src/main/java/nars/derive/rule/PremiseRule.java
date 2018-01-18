@@ -213,7 +213,7 @@ public class PremiseRule /*extends GenericCompound*/ {
     }
 
     private static final TermTransform UppercaseAtomsToPatternVariables = new TermTransform() {
-        @Override public Termed transform(Term atomic) {
+        @Override public Termed transformAtomic(Term atomic) {
             if (atomic instanceof Atom) {
                 if (!PostCondition.reservedMetaInfoCategories.contains(atomic)) { //do not alter keywords
                     String name = atomic.toString();

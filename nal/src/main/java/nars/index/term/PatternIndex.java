@@ -146,12 +146,10 @@ public class PatternIndex extends MapTermIndex {
 
     public static final class PremiseRuleVariableNormalization extends VariableNormalization {
 
-
         @Override
-        public Term transform(Compound t) {
-            return t.hasVars() || t.varPattern() > 0 ? /*TermTransform.super.*/transform(t, t.op(), t.dt()) : t;
+        protected boolean hasVars(Compound t) {
+            return t.hasVars() || t.varPattern() > 0;
         }
-
 
         /*@NotNull*/
         @Override

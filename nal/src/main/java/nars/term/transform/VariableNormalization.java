@@ -40,14 +40,14 @@ public class VariableNormalization extends VariableTransform {
      */
     public static final VariableTransform singleVariableNormalization = new VariableTransform() {
 
-        @Override public Term transform(Term atomic) {
+        @Override public Term transformAtomic(Term atomic) {
             return atomic instanceof Variable ? atomic.normalize((byte)1) : atomic;
         }
     };
 
 
     @Override
-    public final Termed transform(Term atomic) {
+    public final Termed transformAtomic(Term atomic) {
         if (atomic instanceof Variable) {
             if (atomic.equals(Op.Imdex)) {
                 //anonymized to a unique variable each occurrence

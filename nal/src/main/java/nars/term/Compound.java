@@ -710,7 +710,7 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     @Nullable
     default Term transform(TermTransform t) {
-        Termed y = t.transform(this);
+        Termed y = t.transformCompound(this);
         return y == null ? null : y.term();
     }
 
@@ -763,7 +763,7 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     @Nullable
     default Term temporalize(Retemporalize r) {
-        Term t = r.transform(this);
+        Term t = r.transformCompound(this);
         return t == null ? Null : t; //why happens Null?
     }
 

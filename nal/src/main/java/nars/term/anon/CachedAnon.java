@@ -1,41 +1,40 @@
 package nars.term.anon;
 
-import jcog.memoize.LinkedMRUMemoize;
-import nars.term.Compound;
 import nars.term.Term;
+import nars.term.transform.CachedTermTransform;
+import nars.term.transform.TermTransform;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
+import java.util.Map;
+
+/** TODO imiplement these as CachedTransform-wrapped sub-implementations of the Anon.GET and PUT transforms, each with their own cache */
 public class CachedAnon extends Anon {
 
-    protected final LinkedMRUMemoize.LinkedMRUMemoizeRecurseable<Term, Term> cache;
-
-
+    protected Map<Term,Term> cache;
 
     public CachedAnon(int capacity) {
-        cache = new LinkedMRUMemoize.LinkedMRUMemoizeRecurseable<>(super::get, capacity);
+        super(capacity);
     }
+
+
 
     @Override
     public void clear() {
-        super.clear();
         cache.clear();
+        super.clear();
     }
 
-    @Override
-    public Term get(Term x) {
-        if ((x instanceof Compound)) {
-            return cache.apply(x);
-        } else {
-            return super.get(x);
-        }
+    protected TermTransform newPut() {
+        //HACK
+        if (cache == null)
+            //new HashMap(capacity); //<-- cant use; CME's
+            cache = new UnifiedMap<>();
+
+        return new CachedTermTransform(super.newPut(), cache);
     }
 
-
-    @Override
-    public Term put(Term x) {
-        Term y = super.put(x);
-        if (y instanceof Compound) {
-            cache.putIfAbsent(y, x);
-        }
-        return y;
+    protected TermTransform newGet() {
+        return new CachedTermTransform(super.newGet(), cache);
     }
+
 }

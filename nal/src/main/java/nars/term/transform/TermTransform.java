@@ -12,35 +12,45 @@ import nars.term.Termed;
 import nars.term.var.NormalizedVariable;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.Op.NEG;
 import static nars.Op.VAR_QUERY;
 
 /**
  * I = input term type, T = transformable subterm type
  */
 public interface TermTransform extends TermContext {
-    /** general pathway. generally should not be overridden */
+    /**
+     * general pathway. generally should not be overridden
+     */
     @Override
     default @Nullable Termed apply(Term x) {
-        return x instanceof Compound ? transform((Compound) x) : transform(x);
+        return x instanceof Compound ? transformCompound((Compound) x) : transformAtomic(x);
     }
 
-    /** transform pathway for atomics */
-    default @Nullable Termed transform(Term atomic) {
-        assert(!(atomic instanceof Compound));
+    /**
+     * transform pathway for atomics
+     */
+    default @Nullable Termed transformAtomic(Term atomic) {
+        assert (!(atomic instanceof Compound));
         return atomic;
     }
 
-    /** transform pathway for compounds */
-    default Term transform(Compound x) {
-        return transform(x, x.op(), x.dt());
+    /**
+     * transform pathway for compounds
+     */
+    default Term transformCompound(Compound x) {
+        return transformCompound(x, x.op(), x.dt());
     }
 
-    /** should not be called directly except by implementations of TermTransform  */
-    @Nullable default Term transform(Compound x, Op op, int dt) {
+    /**
+     * should not be called directly except by implementations of TermTransform
+     */
+    @Nullable
+    default Term transformCompound(Compound x, Op op, int dt) {
 
         Subterms xx = x.subterms();
 
-        Subterms yy = transform(xx, !op.allowsBool);
+        Subterms yy = transformSubterms(xx, !op.allowsBool);
 
         if (yy == null) {
             return null;
@@ -55,7 +65,7 @@ public interface TermTransform extends TermContext {
 //            }
 
 //            //seems to happen very infrequently so probably not worth the test
-            if (x!=z && x.equals(z))
+            if (x != z && x.equals(z))
                 return x; //unchanged
 
             return z;
@@ -69,7 +79,7 @@ public interface TermTransform extends TermContext {
      * returns 'y' if changes
      * returns null if untransformable
      */
-    default Subterms transform(Subterms x, boolean boolFilter) {
+    default Subterms transformSubterms(Subterms x, boolean boolFilter) {
 
         int s = x.subs();
 
@@ -136,12 +146,13 @@ public interface TermTransform extends TermContext {
     }
 
 
-    /** constructs a new term for a result */
+    /**
+     * constructs a new term for a result
+     */
     default Term the(Op op, int dt, Subterms t) {
         return op.the(dt, t.arrayShared());
         //return op._the(dt, t.arrayShared(), false); //disable interning of intermediate results
     }
-
 
 
     /**
@@ -149,12 +160,43 @@ public interface TermTransform extends TermContext {
      */
     TermTransform queryToDepVar = new TermTransform() {
         @Override
-        public Term transform(Term atomic) {
+        public Term transformAtomic(Term atomic) {
             return (atomic.op() == VAR_QUERY) ?
                     $.varDep((((NormalizedVariable) atomic).anonNum())) :
                     atomic;
         }
     };
 
+
+    /**
+     * operates transparently through negation subterms
+     */
+    interface NegObliviousTermTransform extends TermTransform {
+
+        @Override
+        @Nullable
+        default Term transformCompound(Compound x) {
+            Op op = x.op();
+            if (op == NEG) {
+                Term xx = x.unneg();
+                Termed y = apply(xx);
+                if (y == null)
+                    return null;
+                Term yy = y.term();
+                if (yy.equals(xx))
+                    return x; //no change
+                else {
+                    Term y2 = yy.neg(); //negate the transformed subterm
+                    if (y2.equals(x))
+                        return x;
+                    else
+                        return y2;
+                }
+            } else {
+                return TermTransform.super.transformCompound(x);
+            }
+
+        }
+    }
 
 }

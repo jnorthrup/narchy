@@ -14,6 +14,7 @@ import nars.op.SubstUnified;
 import nars.op.data.differ;
 import nars.op.data.intersect;
 import nars.op.data.union;
+import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.Functor;
 import nars.term.Term;
@@ -24,7 +25,6 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.pred.PrediTerm;
-import nars.subterm.Subterms;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthOperator;
@@ -253,7 +253,7 @@ public class Derivation extends ProtoDerivation {
      * only returns derivation-specific functors.  other functors must be evaluated at task execution time
      */
     @Override
-    public final Term transform(Term atomic) {
+    public final Term transformAtomic(Term atomic) {
 
         if (atomic instanceof Bool)//assert (!(x instanceof Bool));
             return atomic;

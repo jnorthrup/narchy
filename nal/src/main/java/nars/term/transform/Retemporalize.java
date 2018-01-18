@@ -1,6 +1,5 @@
 package nars.term.transform;
 
-import jcog.data.ArrayHashSet;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -8,21 +7,20 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
 import static nars.Op.CONJ;
+import static nars.Op.IMPL;
 import static nars.Op.Temporal;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
 @FunctionalInterface
-public interface Retemporalize extends TermTransform {
+public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
 
     int dt(Compound x);
 
     @Nullable
     @Override
-    default Term transform(final Compound x) {
+    default Term transformCompound(final Compound x) {
         if (x.op().temporal || x.hasAny(Temporal)) {
             return transformTemporal(x, dt(x));
         } else {
@@ -41,9 +39,9 @@ public interface Retemporalize extends TermTransform {
 
 
         @Override
-        public @Nullable Term transform(Compound x, Op op, int dt) {
+        public @Nullable Term transformCompound(Compound x, Op op, int dt) {
             assert(dt == XTERNAL || dt == DTERNAL);
-            return xternalIfNecessary(x, Retemporalize.super.transform(x, op, dt), dt);
+            return xternalIfNecessary(x, Retemporalize.super.transformCompound(x, op, dt), dt);
         }
 
         @Override
@@ -57,10 +55,29 @@ public interface Retemporalize extends TermTransform {
                 //quick tests, not exhaustive
                 //opX, for compounds, includes the subterms in the comparison
                 //if ((y.opX() != x.opX()) || (y.volume()!=x.volume()) || y.structure()!=x.structure()) {
-                if (y == null || y instanceof Bool || y.structure()!=x.structure()) {
+                boolean corrupted = false;
+                Op op;
+                if (y == null || y instanceof Bool || (op = x.op())!=y.op()) {
+                    corrupted = true;
+                } else {
+                    if (op == CONJ) {
+                        corrupted = y.structure()!=x.structure();
+                    } else if (op == IMPL){
+                        //compare subj and pred separately
+                        for (int i = 0; i < 2; i++) {
+                            Term a = x.sub(i);
+                            Term b = y.sub(i);
+                            if (((a.opX() != b.opX()) || (a.volume() != b.volume()) || a.structure() != b.structure())) {
+                                corrupted = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (corrupted) {
                     //oops; deformed - we need XTERNAL
-                    assert(x.dt()!=XTERNAL);
-                    return Retemporalize.super.transform(x, x.op(), dtTried==DTERNAL ? XTERNAL : DTERNAL);
+                    return Retemporalize.super.transformCompound(x, x.op(), dtTried == DTERNAL ? XTERNAL : DTERNAL);
                 }
             }
             return y;
@@ -124,34 +141,34 @@ public interface Retemporalize extends TermTransform {
             return x; //no change
 
         Op op = x.op();
-        if (dtNext == XTERNAL && op == CONJ && xx.hasAny(CONJ)) {
-            //recursive conj, decompose to events
-            ArrayHashSet<Term> s = new ArrayHashSet();
-            x.eventsWhile((when, zz) -> {
-                if (!zz.equals(x)) {
-                    s.add(zz);
-                }
-                return true;
-            }, 0, false, false, false, 0);
-            List<Term> sl = s.list;
-            int sln = sl.size();
-            if (sln > 1) {
-                for (int i = 0; i < sln; i++) {
-                    Term sli = sl.get(i).transform(Retemporalize.this);
-                    if (sli == null)
-                        return null; //fail
-                    sl.set(i, sli);
-                }
-                Term y = CONJ.the(XTERNAL, sl);
-                if (x!=y && x.equals(y))
-                    return x;
-                else
-                    return y;
-            }
-        }
+//        if (dtNext == XTERNAL && op == CONJ && xx.hasAny(CONJ)) {
+//            //recursive conj, decompose to events
+//            ArrayHashSet<Term> s = new ArrayHashSet();
+//            x.eventsWhile((when, zz) -> {
+//                if (!zz.equals(x)) {
+//                    s.add(zz);
+//                }
+//                return true;
+//            }, 0, false, false, false, 0);
+//            List<Term> sl = s.list;
+//            int sln = sl.size();
+//            if (sln > 1) {
+//                for (int i = 0; i < sln; i++) {
+//                    Term sli = sl.get(i).transform(Retemporalize.this);
+//                    if (sli == null)
+//                        return null; //fail
+//                    sl.set(i, sli);
+//                }
+//                Term y = CONJ.the(XTERNAL, sl);
+//                if (x!=y && x.equals(y))
+//                    return x;
+//                else
+//                    return y;
+//            }
+//        }
 
 
-        return TermTransform.super.transform(x, op, dtNext);
+        return TermTransform.NegObliviousTermTransform.super.transformCompound(x, op, dtNext);
     }
 
 

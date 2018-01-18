@@ -10,15 +10,15 @@ import org.jetbrains.annotations.Nullable;
 public interface Subst extends TermTransform {
 
     @Override @Nullable
-    default Termed transform(Term atomic) {
+    default Termed transformAtomic(Term atomic) {
         Term y = xy(atomic);
         return y != null ? y : atomic;
     }
 
     @Override @Nullable
-    default Term transform(Compound x) {
+    default Term transformCompound(Compound x) {
         Term y = xy(x);
-        return y != null ? y : TermTransform.super.transform((Compound)x);
+        return y != null ? y : TermTransform.super.transformCompound((Compound)x);
     }
 
     /**
