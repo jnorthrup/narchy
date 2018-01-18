@@ -310,7 +310,7 @@ public class NAL8Test extends NALTest {
                 .believe("((x) &&+3 (y))", Tense.Present, 1f, 0.9f)
                 .mustBelieve(cycles, "(x)", 1f, 0.81f, 0)
                 .mustBelieve(cycles, "(y)", 1f, 0.81f, 3)
-                .mustGoal(cycles, "(x)", 1f, 0.81f, (t) -> t > 0);
+                .mustGoal(cycles, "(x)", 1f, 0.81f, (t) -> t >= 0);
     }
 
     @Test

@@ -79,7 +79,7 @@ public class Line1D {
             MetaGoal.Action.set(n.want, 2f);
 
 
-            ConjClustering conjClusterB = new ConjClustering(n,  BELIEF, t ->t.isInput(), 16, 64);
+            ConjClustering conjClusterB = new ConjClustering(n,  BELIEF, t ->true, 16, 64);
 
 //            n.onTask(x -> {
 //                if (x instanceof DerivedTask) {

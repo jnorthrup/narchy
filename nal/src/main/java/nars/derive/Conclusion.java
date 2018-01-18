@@ -106,17 +106,17 @@ public final class Conclusion extends AbstractPred<Derivation> {
 
                 if (derivedGoalStart != ETERNAL) {
 
-                    long taskStart = d.task.start();
+                    long taskWants = d.task.myNearestTimeTo(d.time);
 
-                    if (taskStart == ETERNAL) {
-                        taskStart = d.time;
+                    if (taskWants == ETERNAL) {
+                        taskWants = d.time; //now
                     }
 
-                    if (derivedGoalStart < taskStart) {
+                    if (derivedGoalStart < taskWants) {
                         //derived goal occurrs before task goal, so shift to task start
-                        long gdur = occ[1] - occ[0];
-                        occ[0] = taskStart;
-                        occ[1] = taskStart + gdur;
+                        long gdur = occ[1] - derivedGoalStart;
+                        occ[0] = taskWants;
+                        occ[1] = taskWants + gdur;
                     }
                 }
             }

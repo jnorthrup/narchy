@@ -95,13 +95,13 @@ public class ThermostatTest {
         NAR n = NARS.tmp();
 
         n.time.dur(DUR);
-        n.termVolumeMax.set(16);
-        n.freqResolution.set(0.05f);
+        n.termVolumeMax.set(20);
+        n.freqResolution.set(0.04f);
         n.confResolution.set(0.05f);
 
         float exeThresh = 0.55f;
 
-        new ConjClustering(n, BELIEF, (t) -> t.isInput(), 2, 7);
+        new ConjClustering(n, BELIEF, (t) -> true, 2, 7);
 
         //n.priDefault(BELIEF, 0.3f);
 
@@ -297,7 +297,10 @@ public class ThermostatTest {
 //            n.run(period);
 //        }
 
-        n.tasks().forEach(t -> System.out.println(t));
+        n.tasks().forEach(t -> {
+            if (!t.isInput())
+                System.out.println(t);
+        });
 
     }
 
