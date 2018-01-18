@@ -24,14 +24,7 @@ abstract public class Widget extends Switching {
 
 
     /** proxy to the content */
-    final Stacking inner = new Stacking() {
-        @Override
-        public boolean tangible() {
-            return false;
-        }
-
-
-    };
+    final Stacking inner = new Stacking();
 
     /** if non-null, a finger which is currently hovering on this */
     @Nullable Finger touchedBy;

@@ -36,11 +36,6 @@ public class MetaFrame extends Stacking {
                 new AspectAlign(n, 1f, AspectAlign.Align.LeftTopOut, 1f, 0.1f));
     }
 
-    @Override
-    public boolean tangible() {
-        return false;
-    }
-
 //    public static void toggle(Widget base) {
 //        SurfaceRoot r = base.root();
 //        if (r == null) //not attached

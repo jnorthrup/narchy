@@ -58,7 +58,7 @@ public class Tex {
         }
 
         if (texture != null) {
-            Draw.rectTex(gl, texture, bounds.min.x, bounds.min.y, bounds.w(), bounds.h(), 0, repeatScale);
+            Draw.rectTex(gl, texture, bounds.x, bounds.y, bounds.w, bounds.h, 0, repeatScale);
         }
 
     }

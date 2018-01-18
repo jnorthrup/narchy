@@ -6,7 +6,7 @@ import spacegraph.Surface;
 /**
  * Splits a surface into a top and bottom vertical column
  */
-public class VSplit<X extends Surface, Y extends Surface> extends MutableLayout {
+public class VSplit<X extends Surface, Y extends Surface> extends MutableContainer {
 
     public float split; //0.5f = middle, 0.0 = all top, 1.0 = all bottom
 
@@ -52,12 +52,12 @@ public class VSplit<X extends Surface, Y extends Surface> extends MutableLayout 
         float w = w();
         float Ysplit = Y + split * h;
 
-        Surface top = top();
+        Surface top = above();
         if (top!=null) {
             top.pos(X, Ysplit, X+w, Y+h);
         }
 
-        Surface bottom = bottom();
+        Surface bottom = below();
         if (bottom != null) {
             bottom.pos(X,  Y, X+w, Ysplit);
         }
@@ -74,10 +74,10 @@ public class VSplit<X extends Surface, Y extends Surface> extends MutableLayout 
         children.set(1, s);
     }
 
-    public final X top() {
+    public final X above() {
         return (X) children.get(0);
     }
-    public final Y bottom() {
+    public final Y below() {
         return (Y) children.get(1);
     }
 

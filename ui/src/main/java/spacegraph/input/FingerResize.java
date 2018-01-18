@@ -39,36 +39,36 @@ public class FingerResize extends FingerDragging {
         switch (mode) {
 
             case RESIZE_N: {
-                float pmy = before.min.y;
-                float bh = before.h();
+                float pmy = before.top();
+                float bh = before.h;
                 float ty = (fy - hitOnDown.y);
-                resized.pos(before.min.x, pmy,
-                        before.max.x, Math.max(pmy + aspectRatioRatioLimit * bh, bh + pmy + ty));
+                resized.pos(before.left(), pmy,
+                        before.bottom(), Math.max(pmy + aspectRatioRatioLimit * bh, bh + pmy + ty));
             }
             break;
             case RESIZE_E: {
-                float pmx = before.min.x;
-                float bw = before.w();
+                float pmx = before.left();
+                float bw = before.w;
                 float tx = (fx - hitOnDown.x);
-                resized.pos(pmx, before.min.y,
-                        Math.max(pmx + aspectRatioRatioLimit * bw, bw + pmx + tx), before.max.y);
+                resized.pos(pmx, before.top(),
+                        Math.max(pmx + aspectRatioRatioLimit * bw, bw + pmx + tx), before.bottom());
             }
             break;
 //            case RESIZE_S: {
 //                //TODO not right yet
-//                float pmy = before.min.y;
+//                float pmy = before.top();
 //                float bh = before.h();
 //                float ty = (fy - hitOnDown.y);
-//                resized.pos(before.min.x, before.max.y - bh + ty*2,
+//                resized.pos(before.left(), before.max.y - bh + ty*2,
 //                        before.max.x, Math.max(pmy + aspectRatioRatioLimit * bh, bh + pmy - ty));
 //            }
 //            break;
 
             case RESIZE_NE: {
-                float pmx = before.min.x;
-                float pmy = before.min.y;
-                float bw = before.w();
-                float bh = before.h();
+                float pmx = before.left();
+                float pmy = before.top();
+                float bw = before.w;
+                float bh = before.h;
                 float tx = (fx - hitOnDown.x);
                 float ty = (fy - hitOnDown.y);
                 resized.pos(pmx, pmy, Math.max(pmx + aspectRatioRatioLimit * bw, bw + pmx + tx), Math.max(pmy + aspectRatioRatioLimit * bh, bh + pmy + ty));
@@ -76,10 +76,10 @@ public class FingerResize extends FingerDragging {
             break;
 
             case RESIZE_SW: {
-                float pmx = before.max.x;
-                float pmy = before.max.y;
-                float bw = before.w();
-                float bh = before.h();
+                float pmx = before.right();
+                float pmy = before.bottom();
+                float bw = before.w;
+                float bh = before.h;
                 float tx = (fx - hitOnDown.x);
                 float ty = (fy - hitOnDown.y);
                 resized.pos(pmx - bw + tx, pmy - bh + ty, pmx, pmy); //TODO limit aspect ratio change

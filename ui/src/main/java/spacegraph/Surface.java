@@ -16,9 +16,10 @@ import java.io.PrintStream;
  */
 abstract public class Surface {
 
-    /** smallest recognizable dimension change */
+    /**
+     * smallest recognizable dimension change
+     */
     public static final float EPSILON = 0.0001f;
-
 
 
     /**
@@ -38,45 +39,54 @@ abstract public class Surface {
     }
 
     public float x() {
-        return bounds.min.x;
+        return bounds.x;
     }
 
-
-//    @Override
-//    public String toString() {
-//        return super.toString() + "{" +
-//                ", bounds=" + bounds +
-//                "scale=" + scale +
-//                '}';
-//    }
-
     public float y() {
-        return bounds.min.y;
+        return bounds.y;
+    }
+
+    public float left() {
+        return bounds.left();
+    }
+
+    public float top() {
+        return bounds.top();
+    }
+
+    public float right() {
+        return bounds.right();
+    }
+
+    public float bottom() {
+        return bounds.bottom();
     }
 
     public float cx() {
-        return 0.5f * (bounds.min.x + bounds.max.x);
+        return bounds.x + 0.5f * bounds.w;
     }
 
     public float cy() {
-        return 0.5f * (bounds.min.y + bounds.max.y);
+        return bounds.y + 0.5f * bounds.h;
     }
 
     abstract protected void paint(GL2 gl, int dtMS);
 
     public Surface pos(RectFloat2D r) {
-        RectFloat2D b = this.bounds;
-        if (b == null || !b.equals(r, Surface.EPSILON))
-            this.bounds = r;
+        posChanged(r);
         return this;
     }
-
-    public Surface pos(float x1, float y1, float x2, float y2) {
+    public final boolean posChanged(RectFloat2D r) {
         RectFloat2D b = this.bounds;
-        if (b ==null || !b.equals(x1, y1, x2, y2, Surface.EPSILON)) {
-            pos(new RectFloat2D(x1, y1, x2, y2));
+        if (!b.equals(r, Surface.EPSILON)) {
+            this.bounds = r;
+            return true;
         }
-        return this;
+        return false;
+    }
+
+    public final Surface pos(float x1, float y1, float x2, float y2) {
+        return pos(new RectFloat2D(x1, y1, x2, y2));
     }
 
     public AspectAlign align(AspectAlign.Align align) {
@@ -104,11 +114,11 @@ abstract public class Surface {
     }
 
     public float w() {
-        return bounds.max.x - bounds.min.x;
+        return bounds.w;
     }
 
     public float h() {
-        return bounds.max.y - bounds.min.y;
+        return bounds.h;
     }
 
     /**
@@ -122,7 +132,7 @@ abstract public class Surface {
     }
 
     public Surface move(float dx, float dy) {
-        pos(bounds.move(dx, dy));
+        pos(bounds.move(dx, dy, EPSILON));
         return this;
     }
 
@@ -155,6 +165,7 @@ abstract public class Surface {
         visible = false;
         return this;
     }
+
     public Surface show() {
         visible = true;
         return this;

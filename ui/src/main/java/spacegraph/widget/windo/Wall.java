@@ -63,7 +63,7 @@ public class Wall extends Stacking {
         }
 
         public void set(RectFloat2D r) {
-            set(r.min.x, r.min.y, r.max.x, r.max.y);
+            set(r.x, r.y, r.right(), r.bottom());
         }
 
         public void set(float x1, float y1, float x2, float y2) {

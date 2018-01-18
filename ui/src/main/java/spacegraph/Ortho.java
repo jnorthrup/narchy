@@ -10,6 +10,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.Finger;
+import spacegraph.layout.Container;
 import spacegraph.math.v3;
 import spacegraph.phys.util.AnimVector2f;
 import spacegraph.phys.util.AnimVector3f;
@@ -26,7 +27,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 /**
  * orthographic widget adapter. something which goes on the "face" of a HUD ("head"s-up-display)
  */
-public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyListener, MouseListener {
+public class Ortho extends Container implements SurfaceRoot, WindowListener, KeyListener, MouseListener {
 
     protected final AnimVector2f scale;
     boolean visible;
@@ -36,11 +37,6 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
     //temporary: world mouse coord
     protected float wmy, wmx;
 
-    /**
-     * window width/height in pixels
-     */
-    protected int W;
-    protected int H;
 
     public Surface surface;
     public SpaceGraph window;
@@ -61,9 +57,9 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
     }
 
     @Override
-    public void layout() {
+    protected void doLayout(int dtMS) {
+        surface.pos(bounds);
         surface.layout();
-        //surface.print(System.out, 0);
     }
 
     @Override
@@ -123,7 +119,6 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
     }
 
 
-
     public void start(SpaceGraph s) {
         this.window = s;
         windowResized(null);
@@ -157,19 +152,19 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
             ///if (!zoomStack.isEmpty()) {
 //                if (!zoomStack.getLast().contains(nextZoom)) {
 //                    zoomStack.clear();
-/*                } else */ if (zoomStack.size() > ZOOM_STACK_MAX) {
-                    zoomStack.removeFirst();
-                }
+            /*                } else */
+            if (zoomStack.size() > ZOOM_STACK_MAX) {
+                zoomStack.removeFirst();
+            }
             //}
             float s = scale.x;
             RectFloat2D curZoom = new RectFloat2D(cam.x - s / 2, cam.y - s / 2, cam.x + s / 2, cam.y + s / 2);
             zoomStack.addLast(curZoom);
 
 
-
             cam.set(x, y);
             float s0 = Math.max(sx, sy) * (1 + zoomMargin);
-            scale(W / s0, H / s0);
+            scale(w() / s0, h() / s0);
 
         }
 
@@ -180,7 +175,7 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
         synchronized (zoomStack) {
             if (!zoomStack.isEmpty()) {
                 RectFloat2D z = zoomStack.removeLast();
-                scale(z.w(), z.h());
+                scale(z.w, z.h);
                 cam.set((float) z.center(0), (float) z.center(1));
             }
         }
@@ -193,29 +188,18 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
         return this;
     }
 
-
-    @Override
-    public float w() {
-        return W;
-    }
-
-    @Override
-    public float h() {
-        return H;
-    }
-
     @Override
     public void windowResized(WindowEvent e) {
-        W = window.getWidth();
-        H = window.getHeight();
-        resized();
+        int W, H;
+        pos(0, 0,
+                W = window.getWidth(),
+                H = window.getHeight());
+        cam.set(W / 2f, H / 2f);
+        scale(1, 1);
+
+        layout();
     }
 
-
-    @Override
-    public Surface pos(float x1, float y1, float x2, float y2) {
-        throw new UnsupportedOperationException();
-    }
 
     @Override
     public void windowMoved(WindowEvent e) {
@@ -236,6 +220,11 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
     @Override
     public synchronized void stop() {
         surface.stop();
+    }
+
+    @Override
+    public void forEach(Consumer<Surface> o) {
+        o.accept(surface);
     }
 
     @Override
@@ -302,13 +291,14 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
 
 
     private boolean updateMouse(MouseEvent e, short[] buttonsDown) {
-        float x, y;
-
 
         if (e != null) {
 
             //screen coordinates
             float sx = e.getX();
+
+            float W = w();
+            float H = h();
             float sy = H - e.getY();
 
             wmx = +cam.x + (-0.5f * W + sx) / scale.x;
@@ -353,30 +343,22 @@ public class Ortho extends Surface implements SurfaceRoot, WindowListener, KeyLi
         }
     }
 
+
     @Override
-    protected void paint(GL2 gl, int dtMS) {
-
-
+    protected void paintBelow(GL2 gl) {
         float sx = scale.x;
         //float sy = scale.y;
-        gl.glTranslatef(W / 2f, H / 2f, 0);
+        gl.glTranslatef(w() / 2f, h() / 2f, 0);
         gl.glScalef(sx, sx, 1);
         gl.glTranslatef(-cam.x, -cam.y, 0);
         //gl.glTranslatef((sx) * -cam.x, sy * -cam.y, 0);
-
-        surface.render(gl, dtMS);
     }
 
-    protected void resized() {
-
-        surface.pos(0, 0, W, H);
-
-        scale(1, 1);
-        cam.set(W / 2f, H / 2f);
-
-        layout();
-
+    @Override
+    public int childrenCount() {
+        return 1;
     }
+
 
     @Override
     public void mouseDragged(MouseEvent e) {

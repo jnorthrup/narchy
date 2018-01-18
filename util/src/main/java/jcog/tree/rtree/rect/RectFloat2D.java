@@ -1,5 +1,6 @@
 package jcog.tree.rtree.rect;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.tree.rtree.HyperRegion;
 import jcog.tree.rtree.RTree;
@@ -11,13 +12,7 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
     public static final RectFloat2D Unit = new RectFloat2D(0, 0, 1, 1);
     public static final RectFloat2D Zero = new RectFloat2D(0, 0, 0, 0);
 
-    public final Float2D min;
-    public final Float2D max;
-
-    public RectFloat2D(final Float2D p) {
-        min = p;
-        max = p;
-    }
+    public final float x, y, w, h;
 
     public RectFloat2D(float x1, float y1, float x2, float y2) {
         if (x2 < x1) {
@@ -31,92 +26,68 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
             y1 = t;
         }
 
-        min = new Float2D(x1, y1);
-        max = new Float2D(x2, y2);
-    }
-
-    public RectFloat2D(final Float2D p1, final Float2D p2) {
-        final float minX, maxX;
-
-        if (p1.x < p2.x) {
-            minX = p1.x;
-            maxX = p2.x;
-        } else {
-            minX = p2.x;
-            maxX = p2.x;
-        }
-
-        final float minY;
-        final float maxY;
-        if (p1.y < p2.y) {
-            minY = p1.y;
-            maxY = p2.y;
-        } else {
-            minY = p2.y;
-            maxY = p2.y;
-        }
-
-        min = new Float2D(minX, minY);
-        max = new Float2D(maxX, maxY);
+        x = x1;
+        w = (x2 - x1);
+        y = y1;
+        h = (y2 - y1);
     }
 
 
-    public RectFloat2D move(float dx, float dy) {
-        if (Math.abs(dx) < Float.MIN_NORMAL && Math.abs(dy) < Float.MIN_NORMAL)
-            return this;
-        else
-            return new RectFloat2D(min.x+dx, min.y+dy, max.x+dx, max.y+dy);
+    public RectFloat2D move(float dx, float dy, float epsilon) {
+        return Math.abs(dx) < epsilon && Math.abs(dy) < epsilon ?
+                this :
+                new RectFloat2D(x + dx, y + dy, x + w + dx, y + h + dy);
     }
 
     @Override
     public RectFloat2D mbr(final HyperRegion<Float2D> r) {
+        if (r == this) return this;
+
         final RectFloat2D r2 = (RectFloat2D) r;
-        final float minX = Util.min(min.x, r2.min.x);
-        final float minY = Util.min(min.y, r2.min.y);
-        final float maxX = Util.max(max.x, r2.max.x);
-        final float maxY = Util.max(max.y, r2.max.y);
+        final float minX = Util.min(x, r2.x);
+        final float minY = Util.min(y, r2.y);
+        final float maxX = Util.max(x+w, r2.x+r2.w);
+        final float maxY = Util.max(y+h, r2.y+r2.h);
 
         return new RectFloat2D(minX, minY, maxX, maxY);
-
     }
 
     @Override
-    public int dim() {
+    public final int dim() {
         return 2;
     }
 
-    public Float2D center() {
-        final float dx = (float) center(0);
-        final float dy = (float) center(1);
-
-        return new Float2D(dx, dy);
-    }
 
     @Override
     public double center(int d) {
         if (d == 0) {
-            return min.x + (max.x - min.x) / 2.0;
+            return x + w / 2.0;
         } else {
             assert (d == 1);
-            return min.y + (max.y - min.y) / 2.0;
+            return y + h / 2.0;
         }
     }
 
 
     @Override
     public double coord(boolean maxOrMin, int dimension) {
-        Float2D e = (maxOrMin ? max : min);
-        assert(dimension==0 || dimension==1);
-        return dimension==0 ? e.x : e.y;
+        switch (dimension) {
+            case 0:
+                return maxOrMin ? (x+w) : x;
+            case 1:
+                return maxOrMin ? (y+h) : h;
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
 
     @Override
     public double range(final int dim) {
         if (dim == 0) {
-            return max.x - min.x;
+            return w;
         } else if (dim == 1) {
-            return max.y - min.y;
+            return h;
         } else {
             throw new IllegalArgumentException("Invalid dimension");
         }
@@ -127,10 +98,10 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
         if (this == r) return true;
         final RectFloat2D r2 = (RectFloat2D) r;
 
-        return min.x <= r2.min.x &&
-                max.x >= r2.max.x &&
-                min.y <= r2.min.y &&
-                max.y >= r2.max.y;
+        return x <= r2.x &&
+                x+w >= r2.x+w &&
+                y <= r2.y &&
+                y+h >= r2.y+h;
     }
 
     @Override
@@ -138,14 +109,14 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
         if (this == r) return true;
         final RectFloat2D r2 = (RectFloat2D) r;
 
-        return !((min.x > r2.max.x) || (r2.min.x > max.x) ||
-                (min.y > r2.max.y) || (r2.min.y > max.y));
+        return !((x > r2.x+w) || (r2.x > x+w) ||
+                (y > r2.y+h) || (r2.y > y+h));
     }
 
     @Override
     public double cost() {
-        final float dx = max.x - min.x;
-        final float dy = max.y - min.y;
+        final float dx = w;
+        final float dy = h;
         return Math.abs(dx * dy);
     }
 
@@ -160,35 +131,33 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
         if (!(o instanceof RectFloat2D)) return false;
 
         RectFloat2D rect2D = (RectFloat2D) o;
-        return equals(rect2D.min.x, rect2D.min.y, rect2D.max.x, rect2D.max.y, epsilon);
+        return equals(rect2D.x, rect2D.y, rect2D.w, rect2D.h, epsilon);
     }
 
-    public boolean equals(float minX, float minY, float maxX, float maxY, float epsilon) {
-        return Util.equals(min.x, minX, epsilon) &&
-                Util.equals(max.x, maxX, epsilon) &&
-                Util.equals(min.y, minY, epsilon) &&
-                Util.equals(max.y, maxY, epsilon);
+    public boolean equals(float xx, float yy, float ww, float hh, float epsilon) {
+        return Util.equals(x, xx, epsilon) &&
+                Util.equals(y, yy, epsilon) &&
+                Util.equals(w, ww, epsilon) &&
+                Util.equals(h, hh, epsilon);
     }
 
     @Override
     public int hashCode() {
-        int result = min.hashCode();
-        result = 31 * result + max.hashCode();
-        return result;
+        throw new TODO();
     }
 
     public String toString() {
         final StringBuilder sb = new StringBuilder();
         sb.append('(');
-        sb.append(Float.toString(min.x));
+        sb.append(Float.toString(x));
         sb.append(',');
-        sb.append(Float.toString(min.y));
+        sb.append(Float.toString(y));
         sb.append(')');
         sb.append(' ');
         sb.append('(');
-        sb.append(Float.toString(max.x));
+        sb.append(Float.toString(x+w));
         sb.append(',');
-        sb.append(Float.toString(max.y));
+        sb.append(Float.toString(y+h));
         sb.append(')');
 
         return sb.toString();
@@ -196,25 +165,32 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
 
     @Override
     public int compareTo(RectFloat2D o) {
-        int a = min.compareTo(o.min);
-        if (a != 0) return a;
-        int b = max.compareTo(o.max);
-        return b;
-    }
-
-    public float w() {
-        return max.x - min.x;
-    }
-
-    public float h() {
-        return max.y - min.y;
+        throw new TODO();
+//        int a = min.compareTo(o.min);
+//        if (a != 0) return a;
+//        int b = max.compareTo(o.max);
+//        return b;
     }
 
     public float mag() {
-        return Math.max( w(), h() );
+        return Math.max( w, h );
     }
 
-    public boolean contains(float x, float y) {
-        return (x >= min.x && y >= min.y && x <= max.x && y <= max.y);
+    public boolean contains(float px, float py) {
+        return (px >= x && px <= x+w && py >= y && py <= y+h);
+    }
+
+    public float top() {
+        return y;
+    }
+
+    public float left() {
+        return x;
+    }
+    public float right() {
+        return x + w;
+    }
+    public float bottom() {
+        return y + h;
     }
 }

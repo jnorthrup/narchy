@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 
-public class Switching extends Layout {
+public class Switching extends Container {
 
     private Surface current;
     private Supplier<Surface>[] states;

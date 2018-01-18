@@ -1,13 +1,13 @@
 package spacegraph;
 
 import org.jetbrains.annotations.Nullable;
-import spacegraph.layout.Layout;
+import spacegraph.layout.Container;
 
 import java.util.function.Consumer;
 
 import static spacegraph.AspectAlign.Align.Center;
 
-public class AspectAlign extends Layout {
+public class AspectAlign extends Container {
 
     /**
      * not used unless aspect ratio is set to non-NaN value
@@ -143,37 +143,37 @@ public class AspectAlign extends Layout {
 
             case Center:
                 //HACK TODO figure this out
-                tx = x() + (w - tw) / 2f;
-                ty = y() + (h - th) / 2f;
+                tx = bounds.left() + (w - tw) / 2f;
+                ty = bounds.top() + (h - th) / 2f;
                 break;
             case LeftCenter:
-                tx = x();
-                ty = y() + (h - th) / 2f;
+                tx = bounds.left();
+                ty = bounds.top() + (h - th) / 2f;
                 break;
 
             case RightTop:
-                tx = bounds.max.x - tw;
-                ty = bounds.max.y - th;
+                tx = bounds.right() - tw;
+                ty = bounds.bottom() - th;
                 break;
 
             case RightTopOut:
-                tx = bounds.max.x;
-                ty = bounds.max.y;
+                tx = bounds.right();
+                ty = bounds.bottom();
                 break;
             case LeftTopOut:
-                tx = bounds.min.x;
-                ty = bounds.max.y;
+                tx = bounds.left();
+                ty = bounds.bottom();
                 break;
 
             case LeftTop:
-                tx = x();
-                ty = bounds.max.y - th;
+                tx = bounds.left();
+                ty = bounds.bottom() - th;
                 break;
 
             case None:
             default:
-                tx = x();
-                ty = y();
+                tx = bounds.left();
+                ty = bounds.top();
                 break;
 
         }

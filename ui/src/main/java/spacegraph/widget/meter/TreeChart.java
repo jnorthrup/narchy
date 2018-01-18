@@ -80,8 +80,8 @@ public class TreeChart<X> extends Surface {
     public void update(Collection<? extends X> next, BiConsumer<X, ItemVis<X>> update, Function<X, ItemVis<X>> vis) {
         width = w();
         height = h();
-        left = bounds.min.x;
-        top = bounds.min.y;
+        left = bounds.x;
+        top = bounds.y;
 
         CircularArrayList<ItemVis<X>> display = phase.commit();
         int ns = next.size();

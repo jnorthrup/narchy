@@ -9,19 +9,19 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 
-public class MutableLayout extends Layout {
+public class MutableContainer extends Container {
 
 
     public final FastCoWList<Surface> children = new Children(0);
 
 
-    public MutableLayout(Surface... children) {
+    public MutableContainer(Surface... children) {
         super();
         if (children.length > 0)
             children(children);
     }
 
-    public MutableLayout(Collection<Surface> children) {
+    public MutableContainer(Collection<Surface> children) {
         this(children.toArray(new Surface[children.size()]));
     }
 
@@ -46,7 +46,7 @@ public class MutableLayout extends Layout {
         children.forEach(Surface::layout);
     }
 
-    public Layout children(Surface... next) {
+    public Container children(Surface... next) {
         synchronized (children) {
             if (!equals(this.children, next)) {
                 children.clear();
@@ -60,7 +60,7 @@ public class MutableLayout extends Layout {
         return this;
     }
 
-    public Layout children(List<Surface> next) {
+    public Container children(List<Surface> next) {
         synchronized (children) {
             if (!equals(this.children, next)) {
                 children.clear();
@@ -125,7 +125,7 @@ public class MutableLayout extends Layout {
                         old.stop();
                     }
                     if (neww != null && parent != null) {
-                        neww.start(MutableLayout.this);
+                        neww.start(MutableContainer.this);
                     }
                 }
             }

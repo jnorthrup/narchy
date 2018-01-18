@@ -5,7 +5,7 @@ import spacegraph.Surface;
 /**
  * TODO
  */
-public class Stacking extends MutableLayout {
+public class Stacking extends MutableContainer {
 
     public Stacking(Surface... children) {
         super(children);

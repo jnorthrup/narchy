@@ -19,11 +19,6 @@ abstract public class IconBuilder<X> implements Function<X,Surface> {
                 final int classHash = o.getClass().hashCode();
 
                 @Override
-                public boolean tangible() {
-                    return false;
-                }
-
-                @Override
                 protected void paintBelow(GL2 gl) {
                     super.paintBelow(gl);
                     Draw.colorHash(gl, classHash);

@@ -8,7 +8,7 @@ import nars.Task;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
-import spacegraph.layout.MutableLayout;
+import spacegraph.layout.MutableContainer;
 import spacegraph.math.v2;
 import spacegraph.widget.button.PushButton;
 
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 import static nars.Op.*;
 
-public class TasksView extends MutableLayout {
+public class TasksView extends MutableContainer {
 
     public static void main(String[] args) throws IOException {
 

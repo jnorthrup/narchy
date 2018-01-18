@@ -3,7 +3,7 @@ package spacegraph.widget.tab;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.layout.Grid;
-import spacegraph.layout.MutableLayout;
+import spacegraph.layout.MutableContainer;
 import spacegraph.layout.VSplit;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
@@ -20,7 +20,7 @@ public class TabPane extends VSplit {
 
 
     private final ButtonSet tabs;
-    private final MutableLayout content;
+    private final MutableContainer content;
 
     private static final float CONTENT_VISIBLE_SPLIT = 0.9f;
 

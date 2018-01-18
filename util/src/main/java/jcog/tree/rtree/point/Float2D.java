@@ -85,18 +85,4 @@ public class Float2D implements HyperPoint, Comparable<Float2D> {
         return b;
     }
 
-    public final static class Builder implements Function<Float2D, HyperRegion> {
-
-        @Override
-        public HyperRegion apply(final Float2D point) {
-            return new RectFloat2D(point);
-        }
-
-//        @Override
-//        public HyperRect getMbr(final HyperPoint p1, final HyperPoint p2) {
-//            final Point2D point1 = (Point2D)p1;
-//            final Point2D point2 = (Point2D)p2;
-//            return new Rect2D(point1, point2);
-//        }
-    }
 }

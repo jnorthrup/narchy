@@ -4,7 +4,6 @@ import jcog.exe.Loop;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatPolarNormalized;
 import jcog.math.random.XoRoShiRo128PlusRandom;
-import jcog.pri.mix.control.MixContRL;
 import jcog.signal.Bitmap2D;
 import nars.control.Deriver;
 import nars.exe.Focus;
@@ -19,7 +18,6 @@ import nars.time.RealTime;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.util.signal.Bitmap2DSensor;
-import nars.util.signal.Bitmap2DConcepts;
 import nars.video.*;
 import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.core.Bead;
@@ -36,13 +34,11 @@ import spacegraph.AspectAlign;
 import spacegraph.Ortho;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
-import spacegraph.layout.Grid;
 import spacegraph.layout.VSplit;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.ConsoleTerminal;
 import spacegraph.widget.meta.AutoSurface;
 import spacegraph.widget.meta.WindowToggleButton;
-import spacegraph.widget.meter.Plot2D;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -579,7 +575,6 @@ abstract public class NAgentX extends NAgent {
                         s.add(new Ortho(
                                 //window(
                                 grid(new AutoSurface<>(fd), new AutoSurface<>(sg.vis))) {
-                            @Override
                             protected void resized() {
 
                                 surface.pos(0, 0, W / 3, H / 4);

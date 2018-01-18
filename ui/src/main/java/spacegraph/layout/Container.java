@@ -15,7 +15,7 @@ import java.util.function.Consumer;
 /**
  * Created by me on 7/20/16.
  */
-abstract public class Layout extends Surface {
+abstract public class Container extends Surface {
 
     //final AtomicBoolean mustLayout = new AtomicBoolean(true);
     boolean mustLayout = true;
@@ -43,11 +43,9 @@ abstract public class Layout extends Surface {
 
     @Override
     public Surface pos(RectFloat2D r) {
-        RectFloat2D b = this.bounds;
-        super.pos(r);
-        if (bounds != b) //if different
+        if (posChanged(r))
             layout();
-        return null;
+        return this;
     }
 
     protected void paintAbove(GL2 gl) {
@@ -127,7 +125,7 @@ abstract public class Layout extends Surface {
                     //                float hx = relativeHit.x, hy = relativeHit.y;
 
                     if (!clipTouchBounds || (
-                            fx >= c.bounds.min.x && fx <= c.bounds.max.x && fy >= c.bounds.min.y && fy <= c.bounds.max.y)) {
+                            fx >= c.bounds.x && fx <= (c.bounds.right()) && fy >= c.bounds.y && fy <= c.bounds.bottom())) {
 
                         v2 relativeHit = new v2(finger.hit);
                         relativeHit.sub(c.x(), c.y());

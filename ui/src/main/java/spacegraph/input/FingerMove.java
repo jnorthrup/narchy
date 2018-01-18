@@ -25,8 +25,8 @@ public class FingerMove extends FingerDragging {
     }
 
     @Override public boolean drag(Finger finger) {
-        float pmx = before.min.x;
-        float pmy = before.min.y;
+        float pmx = before.x;
+        float pmy = before.y;
         v2 fh = finger.hit;
         v2 fhd = finger.hitOnDown[0];
         float tx = pmx + (x ? (fh.x - fhd.x) : 0);

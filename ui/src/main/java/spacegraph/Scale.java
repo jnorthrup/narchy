@@ -1,11 +1,11 @@
 package spacegraph;
 
 import org.jetbrains.annotations.Nullable;
-import spacegraph.layout.Layout;
+import spacegraph.layout.Container;
 
 import java.util.function.Consumer;
 
-public class Scale extends Layout {
+public class Scale extends Container {
 
     protected float scale;
 

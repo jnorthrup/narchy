@@ -1,10 +1,9 @@
 package spacegraph.widget;
 
-import com.jcraft.jsch.JSchException;
 import jcog.Texts;
 import jcog.Util;
 import spacegraph.SpaceGraph;
-import spacegraph.layout.Layout;
+import spacegraph.layout.Container;
 import spacegraph.layout.VSplit;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
@@ -14,13 +13,11 @@ import spacegraph.widget.slider.FloatSlider;
 import spacegraph.widget.slider.XYSlider;
 import spacegraph.widget.text.Label;
 
-import java.io.IOException;
-
 import static spacegraph.layout.Grid.*;
 
 public class WidgetTest {
 
-    public static void main(String[] args) throws IOException, JSchException {
+    public static void main(String[] args) {
 
         SpaceGraph s = SpaceGraph.window(
 
@@ -37,7 +34,7 @@ public class WidgetTest {
     }
 
 
-    public static Layout widgetDemo() {
+    public static Container widgetDemo() {
         return
                 grid(
                         row(new PushButton("row1"), new PushButton("row2"), new PushButton("clickMe()", (p) -> {

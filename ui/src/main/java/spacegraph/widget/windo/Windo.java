@@ -327,7 +327,7 @@ public class Windo extends Widget {
                 float h = sizeRel.y * H;
                 if (posRel.x == Float.NEGATIVE_INFINITY) {
                     //glued to left
-                    float y = Util.lerp((posRel.y) / 2f + 0.5f, win.bounds.min.y, win.bounds.max.y);
+                    float y = Util.lerp((posRel.y) / 2f + 0.5f, win.bounds.y, win.bounds.bottom());
                     x1 = win.x() - w;
                     y1 = y - h / 2;
                     x2 = win.x();
