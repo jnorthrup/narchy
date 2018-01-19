@@ -115,7 +115,7 @@ public class FZero extends NAgentX {
 //        senseNumberDifference($.inh(the("joy"), id), happy).resolution.setValue(0.02f);
         SensorConcept dAngVel = senseNumberDifference($.inh($.the("angVel"), id), () -> (float) fz.playerAngle).resolution(0.02f);
         SensorConcept dAccel = senseNumberDifference($.inh($.the("accel"), id), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.02f);
-        @NotNull ScalarConcepts ang = senseNumber($.the("ang"), () ->
+        @NotNull ScalarConcepts ang = senseNumber(level->$.inh($.p($.the("ang"), $.the(level)), id), () ->
                         (float) (0.5f + 0.5f * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
                 11,
                 ScalarConcepts.Needle
@@ -323,7 +323,7 @@ public class FZero extends NAgentX {
 //        //eternal bias to stop
 //        nar.goal(f[0].term, Tense.Eternal, 0f, 0.01f);
 //        nar.goal(f[1].term, Tense.Eternal, 0f, 0.01f);
-        actionBipolar($.inh("x", id), fair, (a) -> {
+        actionBipolar($.p($.the("x"), id), fair, (a) -> {
             float deadZone =
                     //0;
                     1 / 12f;

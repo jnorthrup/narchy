@@ -13,11 +13,11 @@ import nars.concept.TaskConcept;
 import nars.link.Tasklinks;
 import nars.task.NALTask;
 import nars.task.Revision;
+import nars.task.Tasked;
 import nars.task.signal.SignalTask;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeRange;
 import nars.term.Term;
-import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -138,7 +138,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             if (!tt.isEmpty()) {
 
 
-
                 return Param.truth(ete, start, end, dur, tt);
 //                PreciseTruth pt = Param.truth(null, start, end, dur, tt);
 //                if (pt!=null && (ete == null || (pt.evi() >= ete.evi())))
@@ -237,52 +236,52 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
         readOptimistic
-        //read
-                ((Space<TaskRegion> tree) -> {
+                //read
+                        ((Space<TaskRegion> tree) -> {
 
-            update.clear(); //in case of optimisticRead, if tried twice
+                            update.clear(); //in case of optimisticRead, if tried twice
 
-            int s = tree.size();
-            if (s == 0)
-                return;
-            if (s == 1) {
-                tree.forEach(update::add);
-                return;
-            }
-
-
-            TaskRegion bounds = (TaskRegion) (tree.root().bounds());
-
-            long boundsStart = bounds.start();
-            long boundsEnd = bounds.end();
-
-            long start = Math.min(boundsEnd, Math.max(boundsStart, _start));
-            long end = Math.max(boundsStart, Math.min(boundsEnd, _end));
-
-            float maxTimeRange = boundsEnd - boundsStart;
-            long expand = Math.max(1,
-                    (
-                            //Math.min(
-                            //(end-start)/2,
-                            Math.round(maxTimeRange / (1 << (1 + SCAN_DIVISIONS)))));
+                            int s = tree.size();
+                            if (s == 0)
+                                return;
+                            if (s == 1) {
+                                tree.forEach(update::add);
+                                return;
+                            }
 
 
-            //TODO use a polynomial or exponential scan expansion, to start narrow and grow wider faster
+                            TaskRegion bounds = (TaskRegion) (tree.root().bounds());
+
+                            long boundsStart = bounds.start();
+                            long boundsEnd = bounds.end();
+
+                            long start = Math.min(boundsEnd, Math.max(boundsStart, _start));
+                            long end = Math.max(boundsStart, Math.min(boundsEnd, _end));
+
+                            float maxTimeRange = boundsEnd - boundsStart;
+                            long expand = Math.max(1,
+                                    (
+                                            //Math.min(
+                                            //(end-start)/2,
+                                            Math.round(maxTimeRange / (1 << (1 + SCAN_DIVISIONS)))));
 
 
-            long mid = (start + end) / 2;
-            long leftStart = start, leftMid = mid, rightMid = mid, rightEnd = end;
-            boolean leftComplete = false, rightComplete = false;
-            //TODO float complete and use this as the metric for limiting with scan quality parameter
-            TimeRange r = new TimeRange(); //recycled
-            do {
+                            //TODO use a polynomial or exponential scan expansion, to start narrow and grow wider faster
 
-                //random scan order
+
+                            long mid = (start + end) / 2;
+                            long leftStart = start, leftMid = mid, rightMid = mid, rightEnd = end;
+                            boolean leftComplete = false, rightComplete = false;
+                            //TODO float complete and use this as the metric for limiting with scan quality parameter
+                            TimeRange r = new TimeRange(); //recycled
+                            do {
+
+                                //random scan order
 //                if (leftComplete || rightComplete || rng.nextBoolean()) {
-                if (!leftComplete)
-                    tree.whileEachIntersecting(r.set(leftStart, leftMid), update);
-                if (!rightComplete && !(leftStart == rightMid && leftMid == rightEnd))
-                    tree.whileEachIntersecting(r.set(rightMid, rightEnd), update);
+                                if (!leftComplete)
+                                    tree.whileEachIntersecting(r.set(leftStart, leftMid), update);
+                                if (!rightComplete && !(leftStart == rightMid && leftMid == rightEnd))
+                                    tree.whileEachIntersecting(r.set(rightMid, rightEnd), update);
 //                } else {
 //                    if (!rightComplete)
 //                        tree.whileEachIntersecting(r.set(rightMid, rightEnd), update);
@@ -290,30 +289,30 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //                        tree.whileEachIntersecting(r.set(leftStart, leftMid), update);
 //                }
 
-                if (/*attempts[0] >= maxTries || */!update.continueScan(r.set(leftStart, rightEnd)))
-                    break;
+                                if (/*attempts[0] >= maxTries || */!update.continueScan(r.set(leftStart, rightEnd)))
+                                    break;
 
-                leftMid = leftStart - 1;
-                long ls0 = leftStart;
-                leftStart = Math.max(boundsStart, leftStart - expand - 1);
-                if (ls0 == leftStart) { //no change
-                    leftComplete = true;
-                }
+                                leftMid = leftStart - 1;
+                                long ls0 = leftStart;
+                                leftStart = Math.max(boundsStart, leftStart - expand - 1);
+                                if (ls0 == leftStart) { //no change
+                                    leftComplete = true;
+                                }
 
-                rightMid = rightEnd + 1;
-                long rs0 = rightEnd;
-                rightEnd = Math.min(boundsEnd, rightEnd + expand + 1);
-                if (rs0 == rightEnd) {
-                    rightComplete = true;
-                }
+                                rightMid = rightEnd + 1;
+                                long rs0 = rightEnd;
+                                rightEnd = Math.min(boundsEnd, rightEnd + expand + 1);
+                                if (rs0 == rightEnd) {
+                                    rightComplete = true;
+                                }
 
-                if (leftComplete && rightComplete)
-                    break;
+                                if (leftComplete && rightComplete)
+                                    break;
 
-                expand *= 2;
-            } while (true);
+                                expand *= 2;
+                            } while (true);
 
-        });
+                        });
     }
 
     @Override
@@ -329,7 +328,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         float incoming = x.priElseZero();
 
-        List<Task> added = new FasterList<>(2);
+        List<Tasked> added = new FasterList<>(2);
         write(treeRW -> {
             if (treeRW.add(x)) {
                 if (!x.isDeleted()) {
@@ -341,11 +340,15 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
         for (int i = 0, addedSize = added.size(); i < addedSize; i++) {
-            Task y = added.get(i);
-            //full activation
-            float pri = y.pri();
-            if (pri == pri) {
-                Tasklinks.linkTask(y, pri, c, n);
+            Task y = added.get(i).task();
+            if (y != null) {
+                //completely activate a temporal task being stored in this table
+                float pri = y.pri();
+                if (pri == pri) {
+                    Tasklinks.linkTask(y, pri, c, n);
+                }
+            } else {
+                //eternal task input already done by calling the .task() method. it willl have returned null
             }
         }
 
@@ -361,7 +364,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     }
 
-    boolean ensureCapacity(Space<TaskRegion> treeRW, @Nullable Task inputRegion, Consumer<Task> added, NAR nar) {
+    boolean ensureCapacity(Space<TaskRegion> treeRW, @Nullable Task inputRegion, Consumer<Tasked> added, NAR nar) {
         int cap = this.capacity;
         int s = treeRW.size();
         if (s <= cap)
@@ -396,7 +399,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * returns false if the input was rejected as too weak
      */
     /*@NotNull*/
-    private boolean compress(Space<TaskRegion> tree, @Nullable Task inputRegion, FloatFunction<Task> taskStrength, Consumer<Task> added, int cap, long now, long tableDur, int perceptDur, NAR nar) {
+    private boolean compress(Space<TaskRegion> tree, @Nullable Task inputRegion, FloatFunction<Task> taskStrength, Consumer<Tasked> added, int cap, long now, long tableDur, int perceptDur, NAR nar) {
 
         FloatFunction<TaskRegion> weakestTask = (t -> -taskStrength.floatValueOf((Task) t));
 
@@ -462,7 +465,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
 
-    private boolean mergeOrDelete(Space<TaskRegion> treeRW, Top2<Leaf<TaskRegion>> l, FloatFunction<Task> taskStrength, float inputStrength, FloatFunction<TaskRegion> weakestTasks, Consumer<Task> added, NAR nar) {
+    private boolean mergeOrDelete(Space<TaskRegion> treeRW, Top2<Leaf<TaskRegion>> l, FloatFunction<Task> taskStrength, float inputStrength, FloatFunction<TaskRegion> weakestTasks, Consumer<Tasked> added, NAR nar) {
         TaskRegion a, b;
 
         Leaf<TaskRegion> la = l.a;
@@ -550,34 +553,51 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (Param.ETERNALIZE_EVICTED_TEMPORAL_TASKS)
             eternalize(at, added, nar);
 
+        at.delete();
+
         return true;
     }
 
-    protected void eternalize(Task x, Consumer<Task> added, NAR nar) {
-        if (!(x instanceof SignalTask)) {
-//        if (x.op().temporal) { //==IMPL /*x.op().statement */ /*&& !x.term().isTemporal()*/) {
-//            //experimental eternalize
-            float xc = x.conf();
-            float c = w2cSafe(x.eviEternalized((1/xc) * size() /* eternalize inversely proportional to the size of this table, emulating the future evidence that can be considered */));
-            if (c >= nar.confMin.floatValue()) {
-                Task eternalized = Task.clone(x, x.term(), new PreciseTruth(x.freq(), c),
+    protected void eternalize(Task x, Consumer<Tasked> added, NAR nar) {
+        if ((x instanceof SignalTask)) {
+            //ignore for now
+            return;
+        }
+
+        float xPri = x.pri();
+        if (xPri != xPri)
+            return; //deleted already somehow
+
+        float xc = x.conf();
+        float c = w2cSafe(x.eviEternalized((1 / xc) * size() /* eternalize inversely proportional to the size of this table, emulating the future evidence that can be considered */));
+
+        if (c >= nar.confMin.floatValue()) {
+
+            added.accept(() -> {
+                //        if (x.op().temporal) { //==IMPL /*x.op().statement */ /*&& !x.term().isTemporal()*/) {
+                //            //experimental eternalize
+
+                Task eternalized = Task.clone(x, x.term(), Truth.theDiscrete(x.freq(), c, nar),
                         x.punc(), x.creation(), ETERNAL, ETERNAL
                 );
+
                 if (eternalized != null) {
-                    eternalized.priMult(c/xc);
+
+                    eternalized.pri(xPri * c / xc);
+
                     if (Param.DEBUG)
                         eternalized.log("Eternalized Temporal");
 
-                    nar.runLater(() -> nar.input(eternalized));
-                    //added.accept(eternalized);
-                    ((NALTask) x).delete(eternalized);
-                    return;
+                    nar.input(eternalized);
+
+                    if (!(eternalized.isDeleted()))
+                        ((NALTask) x).delete(eternalized);
                 }
-            }
-//
+
+                return null;
+            });
         }
 
-        x.delete();
     }
 
 

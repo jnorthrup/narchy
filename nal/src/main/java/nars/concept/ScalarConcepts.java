@@ -10,6 +10,7 @@ import nars.control.NARService;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
+import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -176,10 +177,10 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
         return id.toString();
     }
 
-    public ScalarConcepts(FloatSupplier input, @NotNull NAR nar, ScalarEncoder truther, @NotNull Term... states) {
+    public ScalarConcepts(FloatSupplier input, @NotNull NAR nar, ScalarEncoder freqer, @NotNull Term... states) {
         super(null, $.func(ScalarConcepts.class.getSimpleName(),
                 $.sete(states),
-                $.quote(Util.toString(input)), $.the(truther.toString())
+                $.quote(Util.toString(input)), $.the(freqer.toString())
         ));
 
         int numStates = states.length;
@@ -193,12 +194,14 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
 
         this.sensors = $.newArrayList(numStates);
 
+        final FloatToObjectFunction<Truth> truther = (x) -> $.t(x, nar.confDefault(BELIEF));
+
         int i = 0;
         for (Term s : states) {
             final int ii = i++;
-            SensorConcept sc = new SensorConcept(s, nar, () -> truther.truth(asFloat(), ii, numStates),
-                    (x) -> $.t(x, nar.confDefault(BELIEF))
-                    //(x) -> $.t(1f, Math.max(nar.confMin.floatValue(), x * nar.confDefault(BELIEF)))
+            SensorConcept sc = new SensorConcept(s, nar,
+                    () -> freqer.truth(asFloat(), ii, numStates),
+                    truther
             );
             nar.on(sc);
             sensors.add(sc);
@@ -256,20 +259,6 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
 //        }
 //        return this;
 //    }
-
-
-//    @Override
-//    public void forEach(Consumer<? super SensorConcept> action) {
-//        sensors.forEach(action);
-//    }
-
-    @NotNull
-    public ScalarConcepts resolution() {
-        for (int i = 0, sensorsSize = sensors.size(); i < sensorsSize; i++) {
-            sensors.get(i);
-        }
-        return this;
-    }
 
     @NotNull
     public ScalarConcepts conf(float c) {

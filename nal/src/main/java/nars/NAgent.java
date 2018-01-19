@@ -115,13 +115,14 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
         Term happyTerm = id == null ?
                 $.the("happy") : //generally happy
-                $.inh(id, $.the("happy")); //happy in this environment
+                //$.inh(id, $.the("happy")); //happy in this environment
+                $.prop(id, $.the("happy")); //happiness of this environment
 
         FloatNormalized happyValue = new FloatPolarNormalized(
                 //new FloatHighPass(
                 () -> reward
                 //)
-        ).relax(Param.HAPPINESS_RELAXATION_RATE);
+        ).relax(Param.HAPPINESS_RE_SENSITIZATION_RATE);
 
         this.happy = new ActionInfluencingSensorConcept(happyTerm, happyValue);
 

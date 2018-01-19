@@ -150,14 +150,13 @@ public interface TemporalBeliefTable extends TaskTable {
     };
 
 
-    public void whileEach(Predicate<? super Task> each);
+    void whileEach(Predicate<? super Task> each);
 
     /** minT and maxT inclusive.  while the predicate remains true, it will continue scanning */
     default void whileEach(long minT, long maxT, Predicate<? super Task> each) {
         whileEach(x -> {
             if (x.start() >= minT && x.end() <= maxT)
-                if (!each.test(x))
-                    return false; //stop
+                return each.test(x);
             return true; //continue
         });
     }

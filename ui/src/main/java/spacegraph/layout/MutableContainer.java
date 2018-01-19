@@ -160,7 +160,7 @@ public class MutableContainer extends Container {
         return this;
     }
 
-    public final Container set(List<Surface> next) {
+    public final Container set(List<? extends Surface> next) {
         set(next.toArray(new Surface[next.size()]));
         return this;
     }

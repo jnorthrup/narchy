@@ -164,10 +164,9 @@ public class Vis {
                 return b != null ? b.freq() : Float.NaN;
             }, 0f, 1f);
 
-            grid.set(p);
             plots.add(p);
         }
-        grid.layout();
+        grid.set(plots);
 
         a.onFrame(f -> {
             plots.forEach(Plot2D::update);

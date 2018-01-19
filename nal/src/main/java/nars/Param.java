@@ -141,7 +141,7 @@ public abstract class Param {
             //8;
             //32;
 
-    public final static float HAPPINESS_RELAXATION_RATE = 0.001f;
+    public final static float HAPPINESS_RE_SENSITIZATION_RATE = 0.001f;
 
     /**
      * 'time to live', unification steps until unification is stopped

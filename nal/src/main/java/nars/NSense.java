@@ -204,14 +204,15 @@ public interface NSense {
     DurService onFrame(Consumer r);
 
     @NotNull
-    default ScalarConcepts senseNumber(Term id, FloatSupplier v, int precision, ScalarConcepts.ScalarEncoder model)  {
-        return senseNumber(v, model, Util.map(0, precision,
-                (int x) ->
-                        //($.inh(id, $.the(x)))
-                        ($.inh($.the(x), id))
-                        //($.p(id, $.the(x)))
-                ,
-                Term[]::new));
+    default ScalarConcepts senseNumber(IntFunction<Term> levelTermizer, FloatSupplier v, int precision, ScalarConcepts.ScalarEncoder model)  {
+//        IntFunction<Term> levelTermizer = (int x) ->
+//                //($.inh(id, $.the(x)))
+//                //($.p(id, $.the(x)))
+//                ($.inh($.the(x), id));
+
+        return senseNumber(v, model,
+                Util.map(0, precision,
+                    levelTermizer, Term[]::new));
     }
 
     @NotNull

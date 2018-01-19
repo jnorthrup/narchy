@@ -450,11 +450,11 @@ public interface NAct {
     default GoalActionAsyncConcept[] actionBipolarFrequencyDifferential(@NotNull Term s, boolean fair, @NotNull FloatToFloatFunction update) {
 
         Term pt =
-                $.inh( $.the("\"+\""), s);
+                $.prop(s,$.the("\"+\""));
                 //$.p(s, ZeroProduct);
                 //$.p(s,$.the("\"+\""));
         Term nt =
-                $.inh($.the("\"-\""), s);
+                $.prop(s, $.the("\"-\""));
                 //$.p(ZeroProduct, s);
                 //$.p(s,$.the("\"-\""));
 
