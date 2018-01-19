@@ -16,7 +16,6 @@ import nars.truth.Truthed;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectLongHashMap;
-import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,7 +138,7 @@ public class Revision {
 
 
                 boolean mergeOrChoose = nar.dtMergeOrChoose.get();
-                if (ao==CONJ) {
+                if (ao == CONJ) {
                     if (!a.subterms().hasAny(Op.CONJ) && !b.subterms().hasAny(Op.CONJ)) {
                         if (mergeOrChoose)
                             return dtMergeDirect(a, b, aProp, curDepth, nar);
@@ -190,33 +189,59 @@ public class Revision {
 
     }
 
-    /** TODO use aProp to bias 'a' more */
+    /**
+     * TODO handle common ending suffix, not just prefix
+     * TODO maybe merge based on the event separation time, preserving the order. currently this may shuffle the order though when events are relative to the sequence beginning this can makes sense
+     */
     private static Term dtMergeConjEvents(Term a, long bOffset, Term b, float aProp, float curDepth, boolean mergeOrChoose, Random rng) {
-        Map<Term,LongHashSet> events = new HashMap();
-        Op.conjMerge(a, 0, b, bOffset).eventsWhile((w,t)->{
-            events.computeIfAbsent(t, (tt)->new LongHashSet()).add(w);
-            return true;
-        }, 0);
 
-        FasterList<LongObjectPair<Term>> x = new FasterList(events.size());
-        for (Map.Entry<Term, LongHashSet> e : events.entrySet()) {
-            LongHashSet ww = e.getValue();
-            int ws = ww.size();
-            long w;
-            if (ws == 1) {
-                w = ww.longIterator().next();
+        FasterList<LongObjectPair<Term>> ae = a.eventList(0);
+        FasterList<LongObjectPair<Term>> be = b.eventList(bOffset);
+        int as = ae.size();
+        int bs;
+        if (as != (bs = be.size())) {
+            int pn = Math.min(as, bs) - 1;
+            FasterList<LongObjectPair<Term>> shorter = (as < bs) ? ae : be; /* prefer the shorter for the reconstruction */
+            if (pn > 0) {
+                Term prefix = conjMergeSeqEqualEvents(aProp, mergeOrChoose, rng, ae, be, pn);
+                Term suffix = Op.conjEternalize(shorter, pn, shorter.size());
+                return mergeConjSeq(ae, be, pn, aProp, mergeOrChoose, rng, suffix, prefix);
             } else {
-                if (mergeOrChoose) {
-                    //average
-                    //TODO more careful calculation here, maybe use BigDecimal in case of large numbers
-                    w = Math.round(((double)ww.sum()) / ws);
-                } else {
-                    w = ww.toArray()[rng.nextInt(ws)];
-                }
+                //entirely dternalize
+                return Op.conjEternalize(shorter, 0, shorter.size());
             }
-            x.add(pair(w, e.getKey()));
         }
 
+        return conjMergeSeqEqualEvents(aProp, mergeOrChoose, rng, ae, be, as);
+
+
+
+
+//        Map<Term,LongHashSet> events = new HashMap();
+//        a.eventseventsWhile((w,t)->{
+//            events.computeIfAbsent(t, (tt)->new LongHashSet()).add(w);
+//            return true;
+//        }, 0);
+
+//        FasterList<LongObjectPair<Term>> x = new FasterList(events.size());
+//        for (Map.Entry<Term, LongHashSet> e : events.entrySet()) {
+//            LongHashSet ww = e.getValue();
+//            int ws = ww.size();
+//            long w;
+//            if (ws == 1) {
+//                w = ww.longIterator().next();
+//            } else {
+//                if (mergeOrChoose) {
+//                    //average
+//                    //TODO more careful calculation here, maybe use BigDecimal in case of large numbers
+//                    w = Math.round(((double)ww.sum()) / ws);
+//                } else {
+//                    w = ww.toArray()[rng.nextInt(ws)];
+//                }
+//            }
+//            x.add(pair(w, e.getKey()));
+//        }
+//
 //        //it may not be valid to choose subsets of the events, in a case like where >1 occurrences of $ must remain parent
 //        int max = 1 + x.size() / 2; //HALF
 //        int all = x.size();
@@ -238,8 +263,68 @@ public class Revision {
 //                }
 //            }
 //        }
+//        return Op.conjEvents(x);
+    }
 
-        return Op.conj(x);
+    private static Term conjMergeSeqEqualEvents(float aProp, boolean mergeOrChoose, Random rng, FasterList<LongObjectPair<Term>> ae, FasterList<LongObjectPair<Term>> be, int n) {
+        int changePoint = n;
+        for (int i = 0; i < n; i++) {
+            if (!ae.get(i).getTwo().equals(be.get(i).getTwo())) {
+                changePoint = i;
+                break;
+            }
+        }
+
+        Term suffix = null;
+        if (changePoint != n) {
+            suffix = Op.conjEternalize(ae, changePoint, n);
+            if (changePoint == 0)
+                return suffix; //no prefix seq
+        }
+
+
+        Term prefix = mergeConjSeq(ae, be, changePoint, aProp, mergeOrChoose, rng, n);
+        if (suffix==null) {
+            return prefix;
+        } else {
+            return mergeConjSeq(ae, be, changePoint, aProp, mergeOrChoose, rng, suffix, prefix);
+        }
+    }
+
+    private static Term mergeConjSeq(FasterList<LongObjectPair<Term>> ae, FasterList<LongObjectPair<Term>> be, int attachPoint, float aProp, boolean mergeOrChoose, Random rng, Term suffix, Term prefix) {
+        int gap;
+        int ad = (int) (ae.get(attachPoint).getOne()-ae.get(attachPoint -1).getOne());
+        int bd = (int) (be.get(attachPoint).getOne()-be.get(attachPoint -1).getOne());
+        if (ad == bd)
+            gap = ad;
+        else {
+            if (mergeOrChoose) {
+                gap = Util.lerp(aProp, ad, bd);
+            } else {
+                gap = (rng.nextFloat() <= aProp) ? ad : bd;
+            }
+        }
+        return CONJ.the(gap, prefix, suffix);
+    }
+
+    private static Term mergeConjSeq(FasterList<LongObjectPair<Term>> ae, FasterList<LongObjectPair<Term>> be, int changePoint, float aProp, boolean mergeOrChoose, Random rng, int n) {
+        FasterList<LongObjectPair<Term>> x = new FasterList(n);
+        for (int i = 0; i < changePoint; i++) {
+            long at = ae.get(i).getOne();
+            long bt = be.get(i).getOne();
+            if (at == bt)
+                x.add(ae.get(i));
+            else {
+                if (mergeOrChoose) {
+                    long abt = Math.round(Util.lerp(aProp, at, bt));
+                    if (abt != at)
+                        x.add(pair(abt, ae.get(i).getTwo()));
+                } else {
+                    x.add(((rng.nextFloat() <= aProp) ? ae : be).get(i));
+                }
+            }
+        }
+        return Op.conjEvents(x);
     }
 
 
@@ -287,9 +372,9 @@ public class Revision {
             return a.dt(dt);
         } else {
             Term na = intermpolate(a0, 0, b0, aProp, depth, nar);
-            if (na==Null) return Null;
+            if (na == Null) return Null;
             Term nb = intermpolate(a1, 0, b1, aProp, depth, nar);
-            if (nb==Null) return Null;
+            if (nb == Null) return Null;
             return a.op().the(dt, na, nb);
         }
 

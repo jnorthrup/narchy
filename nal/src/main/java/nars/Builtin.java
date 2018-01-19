@@ -356,7 +356,7 @@ public class Builtin {
                 int toRemove = nar.random().nextInt(ee.size());
                 ee.remove(toRemove);
 
-                r = Op.conj(ee);
+                r = Op.conjEvents(ee);
 
             }
 
@@ -419,7 +419,7 @@ public class Builtin {
                     default: f = nar.random().nextInt(fs); break;
                 }
                 events.remove(f);
-                return Op.conj(events);
+                return Op.conjEvents(events);
             } else {
                 return nullToNull(Op.without(conj, (x) -> event.equalsRoot(x), nar.random()));
             }

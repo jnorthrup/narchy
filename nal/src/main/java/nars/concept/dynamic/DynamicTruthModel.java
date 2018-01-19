@@ -191,7 +191,7 @@ abstract public class DynamicTruthModel {
                         else
                             return CONJ.the(DTERNAL, eternals);
                     } else {
-                        Term x = Op.conj(events);
+                        Term x = Op.conjEvents(events);
                         if (x != null) {
                             if (eternals.isEmpty())
                                 return x;

@@ -311,7 +311,7 @@ public class TermReductionsTest extends NarseseTest {
     public void testConjEvents() throws Narsese.NarseseException {
         assertEquals(
                 "(a &&+16 ((--,a)&|b))",
-                Op.conj(
+                Op.conjEvents(
                         new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
                                 PrimitiveTuples.pair(298L, $.$("a")),
                                 PrimitiveTuples.pair(314L, $.$("b")),

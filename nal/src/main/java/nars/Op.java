@@ -691,7 +691,7 @@ public enum Op {
                     return Null; //emptied
 
                 events.remove(eMax);
-                return Op.conj(events);
+                return Op.conjEvents(events);
             } else {
                 return null;
             }
@@ -1022,7 +1022,7 @@ public enum Op {
 
         FasterList<LongObjectPair<Term>> events = new FasterList<>(eventSet.size());
         eventSet.forEachKeyValue((w, t) -> events.add(PrimitiveTuples.pair(w, t)));
-        return conj(events);
+        return conjEvents(events);
 
 //        //group all parallel clusters
 //        LongObjectPair<Term> e0 = events.get(0);
@@ -1065,8 +1065,7 @@ public enum Op {
     /**
      * constructs a correctly merged conjunction from a list of events
      */
-    /*@NotNull*/
-    public static Term conj(FasterList<LongObjectPair<Term>> events) {
+    public static Term conjEvents(FasterList<LongObjectPair<Term>> events) {
 
         int ee = events.size();
         switch (ee) {
@@ -1695,7 +1694,7 @@ public enum Op {
                             return IMPL.the(ndt,
                                     subject,
                                     predicate.dt() != DTERNAL ?
-                                            Op.conj(new FasterList<>(pe)) :
+                                            Op.conjEvents(new FasterList<>(pe)) :
                                             CONJ.the(DTERNAL, pe.collect(LongObjectPair::getTwo))
                             );
                         }
@@ -1723,7 +1722,7 @@ public enum Op {
                                         DTERNAL;
                                 assert (ndt < Integer.MAX_VALUE);
                                 return IMPL.the((int) ndt,
-                                        Op.conj(new FasterList(se)),
+                                        Op.conjEvents(new FasterList(se)),
                                         finalEvent
                                 );
                             }
@@ -2157,6 +2156,13 @@ public enum Op {
 
     public boolean isAny(int bits) {
         return ((bit & bits) != 0);
+    }
+
+    public static Term conjEternalize(FasterList<LongObjectPair<Term>> events, int start, int end) {
+        if (end - start == 1)
+            return events.get(start).getTwo();
+        else
+            return CONJ.the(DTERNAL, Util.map(start, end, (i) -> events.get(i).getTwo(), Term[]::new));
     }
 
 

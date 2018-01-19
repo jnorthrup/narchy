@@ -328,12 +328,44 @@ public class RevisionTest {
                 permuteChooses(a, b).toString());
     }
 
+
     @Test public void testIntermpolation0b() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+3 (b &&+3 c))");
         Compound b = $.$("(a &&+1 (b &&+1 c))");
         assertEquals(
                 //"[((a &&+1 b) &&+1 c), ((a &&+1 b) &&+3 c), ((a &&+3 b) &&+1 c), ((a &&+3 b) &&+3 c)]",
                 "[((a &&+1 b) &&+1 c), ((a &&+1 b) &&+5 c), ((a &&+3 b) &&+3 c), ((a &&+2 c) &&+1 b)]",
+                permuteChooses(a, b).toString());
+    }
+    @Test public void testIntermpolationOrderMismatch() throws Narsese.NarseseException {
+        Compound a = $.$("(c &&+1 (b &&+1 a))");
+        Compound b = $.$("(a &&+1 (b &&+1 c))");
+        assertEquals(
+                //"[((a &&+1 b) &&+1 c), ((a &&+1 b) &&+3 c), ((a &&+3 b) &&+1 c), ((a &&+3 b) &&+3 c)]",
+                "[(&&,a,b,c)]",
+                permuteChooses(a, b).toString());
+    }
+
+    @Test public void testIntermpolationOrderPartialMismatch() throws Narsese.NarseseException {
+        Compound a = $.$("(a &&+1 (b &&+1 c))");
+        Compound b = $.$("(a &&+1 (c &&+1 b))");
+        assertEquals(
+                "[(a &&+1 (b&&c))]",
+                permuteChooses(a, b).toString());
+    }
+
+    @Test public void testIntermpolationOrderPartialMismatch2() throws Narsese.NarseseException {
+        Compound a = $.$("(a &&+1 (b &&+1 (d &&+1 c)))");
+        Compound b = $.$("(a &&+1 (b &&+1 (c &&+1 d)))");
+        assertEquals(
+                "[((a &&+1 b) &&+1 (c&&d))]",
+                permuteChooses(a, b).toString());
+    }
+    @Test public void testIntermpolationOrderMixDternal() throws Narsese.NarseseException {
+        Compound a = $.$("(a &&+1 (b &&+1 (c &&+1 d)))");
+        Compound b = $.$("(a &&+1 (b &&+1 (c&&d)))");
+        assertEquals(
+                "[((a &&+1 b) &&+1 (c&&d))]",
                 permuteChooses(a, b).toString());
     }
 

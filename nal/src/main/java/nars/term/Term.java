@@ -648,7 +648,7 @@ public interface Term extends Termed, Comparable<Termed> {
 
 
     /* collects any contained events */
-    default void events(Consumer<LongObjectPair<Term>> events) {
+    @Deprecated default void events(Consumer<LongObjectPair<Term>> events) {
         eventsWhile((w, t) -> {
             events.accept(PrimitiveTuples.pair(w, t));
             return true; //continue
@@ -656,14 +656,27 @@ public interface Term extends Termed, Comparable<Termed> {
     }
 
     default MutableSet<LongObjectPair<Term>> eventSet(long offset) {
-        MutableSet<LongObjectPair<Term>> events = new UnifiedSet<>();
+        UnifiedSet<LongObjectPair<Term>> events = new UnifiedSet<>(1);
         eventsWhile((w, t) -> {
             events.add(PrimitiveTuples.pair(w, t));
             return true; //continue
         }, offset);
+        events.trimToSize();
         return events;
     }
-
+    /** sorted by time */
+    default FasterList<LongObjectPair<Term>> eventList(long offset) {
+        FasterList<LongObjectPair<Term>> events = new FasterList(1);
+        eventsWhile((w, t) -> {
+            events.add(PrimitiveTuples.pair(w, t));
+            return true; //continue
+        }, offset);
+        events.compact();
+        if (events.size() > 1) {
+            events.sortThisByLong(LongObjectPair::getOne);
+        }
+        return events;
+    }
     default LongObjectHashMap<Term> eventMap(long offset) {
         LongObjectHashMap<Term> events = new LongObjectHashMap();
         eventsWhile((w, t) -> {

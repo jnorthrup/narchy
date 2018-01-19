@@ -276,7 +276,7 @@ public class ConjClustering extends Causable {
                 final DiscreteTruth t = Truth.theDiscrete(freq, e, nar);
                 if (t != null) {
 
-                    Term cj = Op.conj(new FasterList(vv.keySet()));
+                    Term cj = Op.conjEvents(new FasterList(vv.keySet()));
                     if (cj != null) {
                         ObjectBooleanPair<Term> cp = Task.tryContent(cj.normalize(), punc, true);
                         if (cp != null) {

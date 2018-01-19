@@ -130,14 +130,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
      */
     default /*@NotNull*/ MutableSet<Term> toSet() {
         int s = subs();
+        UnifiedSet u = new UnifiedSet(s);
         if (s > 0) {
-            UnifiedSet u = new UnifiedSet(s);
             forEach(u::add);
-            return u;
-        } else {
-            return new UnifiedSet(0);
+            u.trimToSize();
         }
-//        return new DirectArrayUnenforcedSet<Term>(Terms.sorted(toArray())) {
+        return u;
+
+        //        return new DirectArrayUnenforcedSet<Term>(Terms.sorted(toArray())) {
 //            @Override
 //            public boolean removeIf(Predicate<? super Term> filter) {
 //
@@ -149,17 +149,21 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default /*@NotNull*/ Set<Term> toSet(Predicate<Term> ifTrue) {
         int s = subs();
         if (s > 0) {
-            Set u = new UnifiedSet(s);
+            UnifiedSet u = new UnifiedSet(s);
             for (int i = 0; i < s; i++) {
                 /*@NotNull*/
                 Term x = sub(i);
                 if (ifTrue.test(x))
                     u.add(x);
             }
-            return u;
-        } else {
-            return Collections.emptySet();
+            if (u.size() > 0) {
+                u.trimToSize();
+                return u;
+            }
         }
+
+        return Collections.emptySet();
+
 //        return new DirectArrayUnenforcedSet<Term>(Terms.sorted(toArray())) {
 //            @Override
 //            public boolean removeIf(Predicate<? super Term> filter) {
@@ -724,24 +728,24 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
-    /*@NotNull*/
-    static Set<Term> toSetExcept(/*@NotNull*/ Subterms c, /*@NotNull*/ MutableSet<Term> except) {
-
-//        return c.value(null, (x, s) -> {
+//    /*@NotNull*/
+//    static Set<Term> toSetExcept(/*@NotNull*/ Subterms c, /*@NotNull*/ MutableSet<Term> except) {
 //
-//        });
-
-        int cs = c.subs();
-        Set<Term> s = null;
-        for (int i = 0; i < cs; i++) {
-            Term x = c.sub(i);
-            if (!except.contains(x)) {
-                if (s == null) s = new UnifiedSet(cs - i /* possible remaining items that could be added*/);
-                s.add(x);
-            }
-        }
-        return s == null ? Collections.emptySet() : s;
-    }
+////        return c.value(null, (x, s) -> {
+////
+////        });
+//
+//        int cs = c.subs();
+//        Set<Term> s = null;
+//        for (int i = 0; i < cs; i++) {
+//            Term x = c.sub(i);
+//            if (!except.contains(x)) {
+//                if (s == null) s = new UnifiedSet(cs - i /* possible remaining items that could be added*/);
+//                s.add(x);
+//            }
+//        }
+//        return s == null ? Collections.emptySet() : s;
+//    }
 
 //    /**
 //     * constructs a new container with the matching elements missing
