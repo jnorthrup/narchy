@@ -29,7 +29,7 @@ public class MetaFrame extends Stacking {
                 new Label(this.base.toString())
         );
 
-        children(
+        set(
                 //new Scale(base, 0.5f),
                 new AspectAlign(base, 1f, AspectAlign.Align.RightTop, 0.1f, 0.1f),
                 new AspectAlign(m, 1f, AspectAlign.Align.RightTop, 0.1f, 0.1f),

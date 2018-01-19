@@ -2,9 +2,12 @@ package spacegraph.space;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.event.On;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SimpleSpatial;
 import spacegraph.Surface;
+import spacegraph.SurfaceBase;
+import spacegraph.SurfaceRoot;
 import spacegraph.input.Finger;
 import spacegraph.math.v3;
 import spacegraph.phys.Collidable;
@@ -14,6 +17,9 @@ import spacegraph.phys.shape.SimpleBoxShape;
 import spacegraph.phys.shape.SphereShape;
 import spacegraph.render.Draw;
 import spacegraph.render.JoglPhysics;
+import spacegraph.render.JoglSpace;
+
+import java.util.function.Consumer;
 
 import static spacegraph.math.v3.v;
 
@@ -21,7 +27,7 @@ import static spacegraph.math.v3.v;
  * https://en.wikipedia.org/wiki/Cuboid
  * Serves as a mount for an attached (forward-facing) 2D surface (embeds a surface in 3D space)
  */
-public class Cuboid<X> extends SimpleSpatial<X> {
+public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
 
     @Nullable
     public Surface front;
@@ -61,11 +67,9 @@ public class Cuboid<X> extends SimpleSpatial<X> {
     public void setFront(Surface front) {
         synchronized (this) {
             this.front = front;
+            this.fingered = null; //new Finger(this);
             if (front != null) {
-                front.start(null);
-                fingered = null; //new Finger(this);
-            } else {
-                fingered = null;
+                front.start(this);
             }
         }
     }
@@ -193,5 +197,23 @@ public class Cuboid<X> extends SimpleSpatial<X> {
             //gl.glDepthMask(true);
             gl.glPopMatrix();
         }
+    }
+
+
+    @Override
+    public void the(String key, @Nullable Object added, @Nullable Runnable onRemove) {
+        //TODO ignored
+    }
+
+    @Override
+    public Object the(String key) {
+        //TODO ignored
+        return null;
+    }
+
+    @Override
+    public On onUpdate(Consumer<JoglSpace> c) {
+        //TODO ignored
+        return On.Dummy;
     }
 }

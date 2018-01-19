@@ -167,7 +167,7 @@ public class Line1DCalibrate {
         for (FloatSupplier t : concepts) {
             Plot2D p = new Plot2D(plotHistory, Plot2D.Line);
             p.add(t.toString(), t::asFloat, 0f, 1f);
-            grid.children.add(p);
+            grid.add(p);
             plots.add(p);
         }
         grid.layout();

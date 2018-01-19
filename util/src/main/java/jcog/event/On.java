@@ -13,10 +13,18 @@ import java.util.function.Consumer;
  */
 abstract public class On<V> {
 
-    public final Topic<V> topic;
+    public final Consumer<Consumer<V>> disconnector;
+
+    protected On() {
+        this.disconnector = null;
+    }
+
+    protected On(Consumer<Consumer<V>> t) {
+        this.disconnector = t;
+    }
 
     protected On(Topic<V> t) {
-        this.topic = t;
+        this(t::disable);
     }
 
     abstract public void off();
@@ -33,14 +41,21 @@ abstract public class On<V> {
 
         @Override
         public void off() {
-            topic.disable(reaction);
+            disconnector.accept(reaction);
         }
 
         @Override
         public String toString() {
-            return "On:" + topic + "->" + reaction;
+            return "On:" + disconnector + "->" + reaction;
         }
     }
+
+    public static final On Dummy = new On((Consumer)null) {
+        @Override
+        public void off() {
+
+        }
+    };
 
     public static class Weak<V> extends On<V> implements Consumer<V> {
 
@@ -48,7 +63,6 @@ abstract public class On<V> {
         protected static final Logger logger = LoggerFactory.getLogger(Weak.class);
 
         public final WeakReference<Consumer<V>> reaction;
-
 
         Weak(Topic<V> t, Consumer<V> o) {
             super(t);
@@ -74,7 +88,7 @@ abstract public class On<V> {
 
         @Override
         public void off() {
-            topic.disable(this);
+            disconnector.accept(this);
         }
 
 //        @Override

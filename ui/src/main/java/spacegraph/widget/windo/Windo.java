@@ -223,7 +223,7 @@ public class Windo extends Widget {
 
     /** gets main content */
     public Surface get() {
-        return ((Scale)inner.children.get(0)).the;
+        return ((Scale)inner.children()[0]).the;
     }
 
     @Override
@@ -377,7 +377,7 @@ public class Windo extends Widget {
 //                ports = new LinkedHashMap<>();
 //            return ports.computeIfAbsent(x, i -> {
             Port p = new Port(x, this);
-            w.children.add(0, p);
+            w.add(/*0, */ p);
             return p;
 //            });
         }

@@ -4,7 +4,7 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.tree.rtree.rect.RectFloat2D;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 import spacegraph.input.Finger;
 import spacegraph.math.v2;
 
@@ -14,20 +14,24 @@ import java.io.PrintStream;
  * planar subspace.
  * (fractal) 2D Surface embedded relative to a parent 2D surface or 3D space
  */
-abstract public class Surface {
+abstract public class Surface implements SurfaceBase {
 
     /**
      * smallest recognizable dimension change
      */
     public static final float EPSILON = 0.0001f;
 
+    private volatile int serial =  0;
+
+    /** serial id unique to each instanced surface */
+    public final int id = ++serial;
 
     /**
      * scale can remain the unit 1 vector, normally
      */
 //    public v2 scale = new v2(1, 1); //v2.ONE;
     public RectFloat2D bounds;
-    public Surface parent;
+    public @NotNull SurfaceBase parent;
     private boolean visible = true;
 
     public Surface() {
@@ -56,6 +60,16 @@ abstract public class Surface {
 
     public float right() {
         return bounds.right();
+    }
+
+    @Override
+    public final boolean equals(Object obj) {
+        return this == obj;
+    }
+
+    @Override
+    public final int hashCode() {
+        return id;
     }
 
     public float bottom() {
@@ -94,14 +108,14 @@ abstract public class Surface {
     }
 
     public SurfaceRoot root() {
-        Surface parent = this.parent;
+        SurfaceBase parent = this.parent;
         return parent == null ? null : parent.root();
     }
 
     /**
      * null parent means it is the root surface
      */
-    public /*synchronized*/ void start(@Nullable Surface parent) {
+    public /*synchronized*/ void start(@NotNull SurfaceBase parent) {
         this.parent = parent;
     }
 
@@ -145,6 +159,11 @@ abstract public class Surface {
 
         if (!visible)
             return;
+
+        //DEBUG
+        if ((parent == null) && !(this instanceof Ortho)) {
+            throw new RuntimeException(this + " being rendered with null parent");
+        }
 
         paint(gl, dtMS);
 

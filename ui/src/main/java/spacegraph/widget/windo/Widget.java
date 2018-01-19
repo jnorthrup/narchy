@@ -1,7 +1,6 @@
 package spacegraph.widget.windo;
 
 import com.jogamp.opengl.GL2;
-import jcog.list.FastCoWList;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
 import spacegraph.SurfaceRoot;
@@ -79,17 +78,17 @@ abstract public class Widget extends Switching {
         children(child);
     }
 
-    public FastCoWList<Surface> children() {
-        return inner.children;
+    public Surface[] children() {
+        return inner.children();
     }
 
     public final Widget children(List<Surface> next) {
-        inner.children(next);
+        inner.set(next);
         return this;
     }
 
     public final Widget children(Surface... next) {
-        inner.children(next);
+        inner.set(next);
         return this;
     }
     public final Widget add(Surface x) {

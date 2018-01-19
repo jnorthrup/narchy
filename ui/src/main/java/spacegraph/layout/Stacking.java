@@ -7,6 +7,7 @@ import spacegraph.Surface;
  */
 public class Stacking extends MutableContainer {
 
+
     public Stacking(Surface... children) {
         super(children);
 //        clipTouchBounds = false;
@@ -14,19 +15,10 @@ public class Stacking extends MutableContainer {
 
     @Override
     public void doLayout(int dtMS) {
-        children.forEach((c) -> c.pos(bounds));
+        for (Surface c : children())
+            c.pos(bounds);
     }
 
-    public void add(Surface s) {
-        if (children.add(s))
-            layout();
-    }
-    public boolean remove(Surface s) {
-        if (children.remove(s)) {
-            layout();
-            return true;
-        }
-        return false;
-    }
+
 
 }

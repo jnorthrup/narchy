@@ -111,14 +111,14 @@ public class Wall extends Stacking {
             super();
             this.cbounds = new CRectFloat2D(id);
         }
-
-        /** affects internal from external action */
-        @Override public Surface pos(RectFloat2D r) {
-            cbounds.set(r);
-            //super.pos(r);
-            layout();
-            return null;
-        }
+//
+//        /** affects internal from external action */
+//        @Override public Surface pos(RectFloat2D r) {
+//            cbounds.set(r);
+//            //super.pos(r);
+//            layout();
+//            return null;
+//        }
 
         /** affects external from internal action
          * @param dtMS*/
@@ -148,12 +148,13 @@ public class Wall extends Stacking {
 
         model.update();
 
-        children.forEach(Surface::layout);
+        for (Surface c : children())
+            c.layout();
     }
 
     public Windo addWindo() {
         Windo w = new Windo();
-        children.add(w);
+        add(w);
         return w;
     }
 

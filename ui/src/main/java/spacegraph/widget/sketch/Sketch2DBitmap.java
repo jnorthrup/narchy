@@ -3,7 +3,6 @@ package spacegraph.widget.sketch;
 import com.jogamp.opengl.GL2;
 import jcog.signal.Bitmap2D;
 import org.apache.commons.math3.random.MersenneTwister;
-import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
 import spacegraph.input.Finger;
 import spacegraph.math.v2;
@@ -26,6 +25,7 @@ public class Sketch2DBitmap extends Sketch2D {
     public float brushWidth = 0.2f, brushAlpha = 0.5f;
 
     final MersenneTwister rng = new MersenneTwister();
+    private GL2 gl;
 
     public Sketch2DBitmap(int w, int h) {
         this.pw = w;
@@ -34,12 +34,6 @@ public class Sketch2DBitmap extends Sketch2D {
         this.pix = ((DataBufferInt) buf.getRaster().getDataBuffer()).getData();
     }
 
-    @Override
-    public synchronized void start(@Nullable Surface parent) {
-        super.start(parent);
-        bmp.profile = parent.root().gl().getGLProfile();
-        update();
-    }
 
     /**
      * must call this to re-generate texture so it will display
@@ -110,6 +104,12 @@ public class Sketch2DBitmap extends Sketch2D {
 
     @Override
     protected void paintIt(GL2 gl) {
+        if (gl == null) {
+            this.gl = gl;
+            bmp.profile = gl.getGLProfile();
+            update();
+        }
+
         bmp.paint(gl, bounds);
     }
 

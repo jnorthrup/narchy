@@ -1,9 +1,9 @@
 package nars.gui.graph;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.data.graph.hgraph.Node;
 import jcog.data.graph.hgraph.NodeGraph;
-import nars.NARS;
 import nars.Task;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import spacegraph.SpaceGraph;
@@ -14,7 +14,6 @@ import spacegraph.widget.button.PushButton;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.stream.Collectors;
 
 import static nars.Op.*;
 
@@ -44,7 +43,8 @@ public class TasksView extends MutableContainer {
         float tScale = 100;
         float tMin = tScale;
 
-        children.forEach(cc -> {
+        for (Surface cc : children()) {
+
             TaskIcon c = (TaskIcon) cc;//TODO make window content iteration method
 
 
@@ -96,7 +96,7 @@ public class TasksView extends MutableContainer {
             c.pos(x1, y, x2, y + h);
 
 
-        });
+        }
 
         graph.print();
 
@@ -179,7 +179,8 @@ public class TasksView extends MutableContainer {
     }
 
     public void loadTasks(File f) throws IOException {
-        NARS.shell().inputBinary(f).tasks().map(TaskIcon::new).collect(Collectors.toCollection(() -> children));
+        //NARS.shell().inputBinary(f).tasks().map(TaskIcon::new).collect(Collectors.toCollection(() -> children));
+        throw new TODO();
     }
 
     static class TaskIcon extends PushButton {

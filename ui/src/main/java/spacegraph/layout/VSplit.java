@@ -1,6 +1,7 @@
 package spacegraph.layout;
 
 import jcog.Util;
+import spacegraph.EmptySurface;
 import spacegraph.Surface;
 
 /**
@@ -12,6 +13,7 @@ public class VSplit<X extends Surface, Y extends Surface> extends MutableContain
 
     public VSplit() {
         super();
+        set(new EmptySurface(), new EmptySurface());
     }
 
     public VSplit(X top, Y bottom) {
@@ -33,7 +35,7 @@ public class VSplit<X extends Surface, Y extends Surface> extends MutableContain
     }
 
     public void set(X top, Y bottom, float split) {
-        children(top, bottom);
+        set(top, bottom);
         set(split);
         layout();
     }
@@ -66,19 +68,17 @@ public class VSplit<X extends Surface, Y extends Surface> extends MutableContain
     }
 
     public final void top(X s) {
-        //s.start(this);
-        children.set(0, s);
+        set(0, s);
     }
     public final void bottom(Y s) {
-        //s.start(this);
-        children.set(1, s);
+        set(1, s);
     }
 
     public final X above() {
-        return (X) children.get(0);
+        return (X) get(0);
     }
     public final Y below() {
-        return (Y) children.get(1);
+        return (Y) get(1);
     }
 
 }

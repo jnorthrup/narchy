@@ -4,10 +4,7 @@ import com.googlecode.lanterna.TextCharacter;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import nars.$;
-import nars.NAR;
-import nars.NAgentX;
-import nars.Task;
+import nars.*;
 import nars.control.CauseChannel;
 import nars.gui.Vis;
 import nars.task.ITask;
@@ -192,31 +189,31 @@ public abstract class ConsoleAgent extends NAgentX {
 
         public TestConsole write(char... vocabulary) {
             write = true;
-            actionTriState($.func("cursor", Atomic.the("x"), id), (d) -> {
+            Atomic agentID = Atomic.the("test");
+            actionTriState($.func("cursor", Atomic.the("x"), agentID), (d) -> {
                 switch (d) {
                     case -1:
-                        left();
+                        Left();
                         break;
 
                     case +1:
-                        right();
+                        Right();
                         break;
                 }
             });
-            actionTriState($.func("cursor", Atomic.the("y"), id), (d) -> {
+            actionTriState($.func("cursor", Atomic.the("y"), agentID), (d) -> {
                 switch (d) {
                     case -1:
-                        up();
+                        Up();
                         break;
                     case +1:
-                        down();
+                        Down();
                         break;
 
                     //case +1: Wmodel.setCursorPosition(cx, Math.min(Wmodel.getTerminalSize().getRows()-2, cy+1) ); break;
                 }
             });
             for (char c : vocabulary) {
-                Term ct = $.func(Atomic.the("write"), $.the(String.valueOf(c)), id);
 
 //                    ActionConcept m = new GoalActionConcept(ct, nar(), (b, d) -> {
 //                        boolean next = d != null && d.expectation() > 0.75f;
@@ -228,7 +225,7 @@ public abstract class ConsoleAgent extends NAgentX {
 //                    });
 //                    actions().add(m);
 
-                actionToggle(ct, d -> {
+                actionToggle($.func(Atomic.the("write"), $.the(String.valueOf(c)), agentID), d -> {
                     if (d) write(c);
                 });
             }
@@ -281,15 +278,15 @@ public abstract class ConsoleAgent extends NAgentX {
             return false;
         }
 
-        public void left() {
+        public void Left() {
             c[0] = Math.max(0, c[0] - 1);
         }
 
-        public void up() {
+        public void Up() {
             c[1] = Math.max(0, c[1] - 1);
         }
 
-        public void down() {
+        public void Down() {
             c[1] = Math.min(rows() - 1, c[1] + 1);
         }
 
@@ -297,7 +294,7 @@ public abstract class ConsoleAgent extends NAgentX {
             return chars[0].length;
         }
 
-        public void right() {
+        public void Right() {
             c[0] = Math.min(cols() - 1, c[0] + 1);
         }
 
@@ -338,16 +335,16 @@ public abstract class ConsoleAgent extends NAgentX {
                 if (!e.isPrintableKey()) {
                     switch (e.getKeyCode()) {
                         case KeyEvent.VK_DOWN:
-                            down();
+                            Down();
                             return true;
                         case KeyEvent.VK_UP:
-                            up();
+                            Up();
                             return true;
                         case KeyEvent.VK_LEFT:
-                            left();
+                            Left();
                             return true;
                         case KeyEvent.VK_RIGHT:
-                            right();
+                            Right();
                             return true;
                     }
                     return false;

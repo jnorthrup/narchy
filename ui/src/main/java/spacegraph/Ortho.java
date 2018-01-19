@@ -62,7 +62,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         surface.layout();
     }
 
-    @Override
     public GL2 gl() {
         return window.gl();
     }
@@ -105,10 +104,9 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         }
     }
 
-    @Override
-    public On onLog(Consumer o) {
-        return logs.on(o);
-    }
+//    public On onLog(Consumer o) {
+//        return logs.on(o);
+//    }
 
     public void log(Object... o) {
         logs.emit(o);
@@ -181,7 +179,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         }
     }
 
-    @Override
     public Ortho scale(float sx, float sy) {
         float s = Math.max(sx, sy);
         scale.set(s, s);

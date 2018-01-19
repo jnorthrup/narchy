@@ -38,13 +38,13 @@ public class Grid extends MutableContainer {
     public Grid(float aspect, Surface... children) {
         super();
         this.gridAspect = (aspect);
-        children(children);
+        set(children);
     }
 
     public Grid(float aspect, List<Surface> children) {
         super();
         this.gridAspect = (aspect);
-        children(children);
+        set(children);
     }
 
     public boolean isGrid() {
@@ -75,7 +75,7 @@ public class Grid extends MutableContainer {
     @Override
     public void doLayout(int dtMS) {
 
-        Surface[] children = this.children.copy;
+        Surface[] children = this.children();
         if (children == null) return;
         int n = children.length;
         float a = gridAspect;

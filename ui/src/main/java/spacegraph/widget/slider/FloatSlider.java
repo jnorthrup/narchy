@@ -10,7 +10,7 @@ import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedur
 import org.jetbrains.annotations.Nullable;
 import spacegraph.AspectAlign;
 import spacegraph.Scale;
-import spacegraph.Surface;
+import spacegraph.SurfaceBase;
 import spacegraph.widget.text.Label;
 import spacegraph.widget.windo.Widget;
 
@@ -56,7 +56,7 @@ public class FloatSlider extends Widget {
     }
 
     @Override
-    public synchronized void start(@Nullable Surface parent) {
+    public synchronized void start(@Nullable SurfaceBase parent) {
         super.start(parent);
         updateText();
     }

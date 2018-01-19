@@ -1,33 +1,27 @@
 package spacegraph;
 
-import com.jogamp.opengl.GL2;
 import jcog.event.On;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.render.JoglSpace;
 
 import java.util.function.Consumer;
 
-public interface SurfaceRoot {
+public interface SurfaceRoot extends SurfaceBase {
 
     default SurfaceRoot root() {
         return this;
     }
 
-    Ortho move(float x, float y);
-
-    default Ortho scale(float s) {
-        return scale(s, s);
+    default void zoom(float x, float y, float sx, float sy) {
+        //ignored
+    }
+    default void unzoom() {
+        //ignored
     }
 
-    Ortho scale(float sx, float sy);
+    ///** broadcast notifications, logs, etc */
+    //On onLog(Consumer o);
 
-    void zoom(float x, float y, float sx, float sy);
-    void unzoom();
-
-    /** receives notifications, logs, etc */
-    On onLog(Consumer o);
-
-    GL2 gl();
 
     /**
      * puts value into singleton table

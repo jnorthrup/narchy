@@ -103,6 +103,7 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
 
     @Override
     public void doLayout(int dtMS) {
+        super.doLayout(dtMS);
 
         float va = h()/w(); //visual aspect ratio
         int r, c;
@@ -116,7 +117,6 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
         r = Math.max(3, r);
         c = Math.max(3, c);
         resize(c, r);
-        super.doLayout(dtMS);
     }
 
     private FontRenderContext getFontRenderContext() {

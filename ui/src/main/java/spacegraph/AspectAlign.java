@@ -1,13 +1,8 @@
 package spacegraph;
 
-import org.jetbrains.annotations.Nullable;
-import spacegraph.layout.Container;
-
-import java.util.function.Consumer;
-
 import static spacegraph.AspectAlign.Align.Center;
 
-public class AspectAlign extends Container {
+public class AspectAlign extends UnitContainer {
 
     /**
      * not used unless aspect ratio is set to non-NaN value
@@ -24,8 +19,6 @@ public class AspectAlign extends Container {
      * after the 100% aspect size has been calculated
      */
     protected float scaleX, scaleY;
-
-    public final Surface the;
 
     protected AspectAlign() {
         this(1f);
@@ -57,28 +50,11 @@ public class AspectAlign extends Container {
     }
 
     public AspectAlign(Surface the, float aspect, Align a, float scaleX, float scaleY) {
-        this.the = the;
+        super(the);
         this.aspect = aspect;
         this.align = a;
         this.scaleX = scaleX;
         this.scaleY = scaleY;
-    }
-
-    @Override
-    public void start(@Nullable Surface parent) {
-        synchronized (this) {
-            super.start(parent);
-            if (the != null) {
-                the.start(this);
-                layout();
-            }
-        }
-    }
-
-
-    @Override
-    public int childrenCount() {
-        return 1;
     }
 
     public AspectAlign scale(float sx, float sy) {
@@ -182,8 +158,7 @@ public class AspectAlign extends Container {
     }
 
     protected void doLayout(float tx, float ty, float tw, float th) {
-        if (the!=null)
-            the.pos(tx, ty, tx+tw, ty+th);
+        the.pos(tx, ty, tx+tw, ty+th);
     }
 
     @Override
@@ -197,12 +172,6 @@ public class AspectAlign extends Container {
 //    public spacegraph.AspectAlign align(Align align, float width, float height) {
 //        return align(align, height / width);
 //    }
-
-    @Override
-    public void forEach(Consumer<Surface> o) {
-        if (the!=null)
-            o.accept(the);
-    }
 
     public AspectAlign scale(float s) {
         return scale(s, s);

@@ -6,8 +6,6 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.layout.Grid;
 import spacegraph.widget.button.ToggleButton;
 
-import java.util.Collections;
-
 /** set of buttons, which may be linked behaviorally in various ways */
 public class ButtonSet<T extends ToggleButton> extends Grid {
 
@@ -61,7 +59,7 @@ public class ButtonSet<T extends ToggleButton> extends Grid {
 
         }
 
-        Collections.addAll(children, buttons);
+        set(buttons);
 
         if (mode == Mode.One) {
             //select the first by default

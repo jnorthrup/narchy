@@ -12,7 +12,7 @@ import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminalListener;
 import com.jogamp.newt.event.KeyEvent;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.Surface;
+import spacegraph.SurfaceBase;
 
 import java.io.OutputStream;
 import java.util.TreeSet;
@@ -72,7 +72,7 @@ public class ConsoleTerminal extends BitmapConsoleSurface/*ConsoleSurface*/ {
     }
 
     @Override
-    public synchronized void start(@Nullable Surface parent) {
+    public synchronized void start(@Nullable SurfaceBase parent) {
         super.start(parent);
 
         term.addVirtualTerminalListener(listener = new VirtualTerminalListener() {

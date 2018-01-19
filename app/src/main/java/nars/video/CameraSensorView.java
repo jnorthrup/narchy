@@ -8,7 +8,7 @@ import nars.control.DurService;
 import nars.truth.Truth;
 import nars.util.signal.Bitmap2DSensor;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.Surface;
+import spacegraph.SurfaceBase;
 import spacegraph.render.Draw;
 import spacegraph.widget.meter.BitmapMatrixView;
 
@@ -33,7 +33,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
     }
 
     @Override
-    public void start(@Nullable Surface parent) {
+    public void start(@Nullable SurfaceBase parent) {
         super.start(parent);
         on = DurService.on(nar, this::accept);
     }

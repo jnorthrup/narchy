@@ -42,7 +42,7 @@ abstract public class Container extends Surface {
 
 
     @Override
-    public Surface pos(RectFloat2D r) {
+    public final Surface pos(RectFloat2D r) {
         if (posChanged(r))
             layout();
         return this;

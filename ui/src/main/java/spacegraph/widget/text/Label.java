@@ -3,6 +3,7 @@ package spacegraph.widget.text;
 import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.AspectAlign;
+import spacegraph.EmptySurface;
 import spacegraph.math.Color4f;
 import spacegraph.render.Draw;
 
@@ -28,7 +29,7 @@ public class Label extends AspectAlign {
     }
 
     public Label(String s) {
-        super();
+        super(new EmptySurface());
         text(s);
     }
 

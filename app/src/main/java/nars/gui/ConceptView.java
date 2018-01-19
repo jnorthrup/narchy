@@ -6,7 +6,7 @@ import nars.concept.Concept;
 import nars.control.DurService;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.Surface;
+import spacegraph.SurfaceBase;
 import spacegraph.layout.Grid;
 import spacegraph.widget.console.ConsoleTerminal;
 
@@ -31,7 +31,7 @@ public class ConceptView extends Grid {
 
         io.term.setForegroundColor(TextColor.ANSI.WHITE);
 
-        children(io);
+        set(io);
 
     }
 
@@ -57,16 +57,19 @@ public class ConceptView extends Grid {
     }
 
     @Override
-    public void start(@Nullable Surface parent) {
+    public void start(@Nullable SurfaceBase parent) {
         super.start(parent);
         on = DurService.on(nar, this::update);
     }
+
     @Override
-    public synchronized void stop() {
-        if (on!=null) {
-            on.off();
-            on = null;
+    public void stop() {
+        synchronized (this) {
+            if (on != null) {
+                on.off();
+                on = null;
+            }
+            super.stop();
         }
-        super.stop();
     }
 }

@@ -39,7 +39,10 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
     }
 
     public static <E> Iterator<E> get(E... e) {
-        return ArrayIterator.get(e, e.length);
+        if (e == null)
+            return Collections.emptyIterator();
+        else
+            return ArrayIterator.get(e, e.length);
     }
 
     public static <E> Iterator<E> get(E[] e, int size) {

@@ -164,7 +164,7 @@ public class Vis {
                 return b != null ? b.freq() : Float.NaN;
             }, 0f, 1f);
 
-            grid.children.add(p);
+            grid.set(p);
             plots.add(p);
         }
         grid.layout();
@@ -342,7 +342,7 @@ public class Vis {
 
             TextEdit console = new TextEdit(20, 3);
             console.textBox.setCaretWarp(true);
-            children(plot1, plot2, plot3, console.surface());
+            set(plot1, plot2, plot3, console.surface());
 
             //plot1.add("Conf", nar.emotion.confident::getSum);
             plot2.add("Busy", nar.emotion.busyVol::getSum);
@@ -376,12 +376,14 @@ public class Vis {
         }
 
         @Override
-        public synchronized void stop() {
-            if (on != null) {
-                on.off();
-                on = null;
+        public void stop() {
+            synchronized (this) {
+                if (on != null) {
+                    on.off();
+                    on = null;
+                }
+                super.stop();
             }
-            super.stop();
         }
 
     }
@@ -403,11 +405,11 @@ public class Vis {
                     .map(c -> new BeliefTableChart(nar, c, btRange)).collect(toList());
 
             if (!s.isEmpty()) {
-                children(s);
+                set(s);
 //                on = DurService.on(nar, this);
             } else {
 //                on = null;
-                children(label("(empty)"));
+                set(label("(empty)"));
             }
 
         }

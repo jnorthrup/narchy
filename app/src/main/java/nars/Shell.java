@@ -201,13 +201,11 @@ public class Shell {
                     pressable.accept(finger);
                 }
 
-                @Override
-                public synchronized void start(@Nullable Surface parent) {
-                    super.start(parent);
-                }
 
                 @Override
                 public void doLayout(int dtMS) {
+
+                    super.doLayout(dtMS);
 
                     float cc, rr;
                     float boundsAspect = h() / w();
@@ -225,7 +223,6 @@ public class Shell {
 
                     resize(Math.max(2, Math.round(cc)), Math.max(2, Math.round(rr)));
 
-                    super.doLayout(dtMS);
                 }
 
             };

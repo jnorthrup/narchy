@@ -1,18 +1,11 @@
 package spacegraph;
 
-import org.jetbrains.annotations.Nullable;
-import spacegraph.layout.Container;
-
-import java.util.function.Consumer;
-
-public class Scale extends Container {
+public class Scale extends UnitContainer {
 
     protected float scale;
 
-    public final Surface the;
-
     public Scale(Surface the, float s) {
-        this.the = the;
+        super(the);
         scale(s);
     }
 
@@ -21,26 +14,10 @@ public class Scale extends Container {
         return this;
     }
 
-    @Override
-    public int childrenCount() {
-        return 1;
-    }
-
     public float scale() {
         return scale;
     }
 
-    @Override
-    public synchronized void start(@Nullable Surface parent) {
-        super.start(parent);
-        the.start(this);
-    }
-
-    @Override
-    public synchronized void stop() {
-        the.stop();
-        super.stop();
-    }
 
     @Override
     protected void doLayout(int dtMS) {
@@ -60,8 +37,4 @@ public class Scale extends Container {
     }
 
 
-    @Override
-    public void forEach(Consumer<Surface> o) {
-        o.accept(the);
-    }
 }

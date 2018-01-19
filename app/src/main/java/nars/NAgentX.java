@@ -577,10 +577,12 @@ abstract public class NAgentX extends NAgent {
                                 grid(new AutoSurface<>(fd), new AutoSurface<>(sg.vis))) {
                             protected void resized() {
 
-                                surface.pos(0, 0, W / 3, H / 4);
+                                float w = w();
+                                float h = h();
+                                surface.pos(0, 0, w / 3, h / 4);
 
                                 scale.set(1, 1);
-                                cam.set(W / 2, H / 2);
+                                cam.set(w / 2, h / 2);
 
                                 layout();
                             }

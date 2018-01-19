@@ -3,6 +3,7 @@ package spacegraph.layout;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.EmptySurface;
 import spacegraph.Surface;
+import spacegraph.SurfaceBase;
 
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -12,7 +13,7 @@ public class Switching extends Container {
 
     private Surface current;
     private Supplier<Surface>[] states;
-    protected int switched = -1;
+    protected volatile int switched = -1;
 
     public Switching(Supplier<Surface>... states) {
         super();
@@ -39,25 +40,27 @@ public class Switching extends Container {
     /** selects the active state */
     public void state(int next) {
         synchronized(this) {
-            if (switched ==next)
+            if (switched == next)
                 return;
 
-            if (current!=null) {
-                current.stop();
-            }
+            Surface prev = this.current;
 
-            current = (states[switched = next].get());
-            layout();
+            (current = (states[switched = next].get())).start(this);
+
+            if (prev!=null)
+                prev.stop();
         }
+
+        layout();
     }
 
     @Override
-    public void start(@Nullable Surface parent) {
+    public void start(@Nullable SurfaceBase parent) {
         synchronized (this) {
             super.start(parent);
             current.start(this);
-            layout();
         }
+        layout();
     }
 
     @Override
@@ -81,7 +84,8 @@ public class Switching extends Container {
 
     @Override
     public void forEach(Consumer<Surface> o) {
-        o.accept(current);
+        if (current.parent!=null) //if ready
+            o.accept(current);
     }
 
 }

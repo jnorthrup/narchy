@@ -8,7 +8,6 @@ import spacegraph.input.Finger;
 import spacegraph.math.v2;
 import spacegraph.phys.util.AnimVector2f;
 import spacegraph.render.Draw;
-import spacegraph.widget.windo.Widget;
 import spacegraph.widget.windo.Windo;
 
 import java.util.Arrays;
@@ -282,25 +281,25 @@ public class ZoomOrtho extends Ortho {
         }
 
 
-        @Override
-        public synchronized void start(@Nullable Surface parent) {
-            super.start(parent);
-            root().onLog(t -> {
+//        @Override
+//        public synchronized void start(@Nullable SurfaceBase parent) {
+//            super.start(parent);
+////            root().onLog(t -> {
+////
+////                String m;
+////                if (t instanceof Object[])
+////                    m = Arrays.toString((Object[]) t);
+////                else
+////                    m = t.toString();
+////
+//////                notifications.putAsync(new PLink(m, 1f));
+//////                notifications.commit();
+////            });
+//        }
 
-                String m;
-                if (t instanceof Object[])
-                    m = Arrays.toString((Object[]) t);
-                else
-                    m = t.toString();
-
-//                notifications.putAsync(new PLink(m, 1f));
-//                notifications.commit();
-            });
-        }
-
-        final Widget bottomRightMenu = new Widget() {
-
-        };
+//        final Widget bottomRightMenu = new Widget() {
+//
+//        };
 
         @Override
         public boolean opaque() {

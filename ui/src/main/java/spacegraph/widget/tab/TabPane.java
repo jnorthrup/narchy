@@ -37,14 +37,14 @@ public class TabPane extends VSplit {
             return new CheckBox(label).on((cb, a) -> {
                 synchronized (content) {
                     if (a) {
-                        content.children.add(created[0] =  creator.get() );
+                        content.add(created[0] =  creator.get() );
                         set(CONTENT_VISIBLE_SPLIT); //hide empty content area
                     } else {
                          if (created[0] !=null) {
-                             content.children.remove(created[0]);
+                             content.remove(created[0]);
                              created[0] = null;
                          }
-                         if (content.children.isEmpty()) {
+                         if (content.isEmpty()) {
                             set(0f); //hide empty content area
                          }
                     }
@@ -52,7 +52,7 @@ public class TabPane extends VSplit {
             });
         }).toArray(ToggleButton[]::new));
 
-        children(tabs, content);
+        set(tabs, content);
     }
 
 

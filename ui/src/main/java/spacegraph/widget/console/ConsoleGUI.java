@@ -10,7 +10,7 @@ import com.googlecode.lanterna.screen.TerminalScreen;
 import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
 import jcog.event.On;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.Surface;
+import spacegraph.SurfaceBase;
 
 import java.io.IOException;
 import java.util.List;
@@ -46,7 +46,7 @@ public class ConsoleGUI extends ConsoleTerminal {
             new TextColor.RGB(15,15,15));
 
     @Override
-    public void start(@Nullable Surface parent) {
+    public void start(@Nullable SurfaceBase parent) {
         synchronized (this) {
             super.start(parent);
 //                thr = new Thread(this);

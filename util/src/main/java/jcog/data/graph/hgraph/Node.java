@@ -24,13 +24,11 @@
 package jcog.data.graph.hgraph;
 
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
 import jcog.list.ArrayIterator;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.PrintStream;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -92,15 +90,9 @@ public class Node<N, E> {
         }
 
         @Override
-        public Iterator<X> iterator() {
-            switch (update()) {
-                case 0:
-                    return Collections.emptyIterator();
-                case 1:
-                    return Iterators.singletonIterator((X)cache[0]);
-                default:
-                    return new ArrayIterator(cache);
-            }
+        public Iterator iterator() {
+            update();
+            return ArrayIterator.get(cache);
         }
 
         @Override

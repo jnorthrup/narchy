@@ -84,7 +84,7 @@ public class WaveCapture extends Loop {
         );
 
         if (source instanceof AudioSource)
-            v.children.add(new FloatSlider(((AudioSource)source).gain));
+            v.add(new FloatSlider(((AudioSource)source).gain));
 
         eachBuffer.on(() -> {
             freqHistory.update();

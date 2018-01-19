@@ -8,6 +8,7 @@ import jcog.list.FasterList;
 import jcog.math.FloatParam;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
+import spacegraph.SurfaceBase;
 import spacegraph.layout.Grid;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
@@ -42,18 +43,21 @@ public class AutoSurface<X> extends Grid {
     }
 
     @Override
-    public synchronized void start(@Nullable Surface parent) {
+    public void start(@Nullable SurfaceBase parent) {
 
-        if (ons == null)
+
+
+        synchronized (this) {
+
             ons = new Ons();
+            List<Surface> l = new FasterList();
+            collect(obj, l, 0);
+            seen.clear();
 
-        List<Surface> l = new FasterList();
+            super.start(parent);
 
-        collect(obj, l, 0);
-
-        children(l);
-
-        super.start(parent);
+            set(l);
+        }
     }
 
     private void collect(Object y, List<Surface> l, int depth) {
@@ -167,12 +171,14 @@ public class AutoSurface<X> extends Grid {
     }
 
     @Override
-    public synchronized void stop() {
-        if (ons != null) {
-            ons.off();
-            ons = null;
+    public void stop() {
+        synchronized (this) {
+            if (ons != null) {
+                ons.off();
+                ons = null;
+            }
+            super.stop();
         }
-        super.stop();
     }
 
     public void collectFields(Object x, List<Surface> l, int depth) {

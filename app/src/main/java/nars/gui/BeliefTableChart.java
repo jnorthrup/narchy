@@ -13,7 +13,7 @@ import nars.truth.Truth;
 import nars.truth.TruthWave;
 import nars.truth.Truthed;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.Surface;
+import spacegraph.SurfaceBase;
 import spacegraph.render.Draw;
 import spacegraph.widget.text.Label;
 import spacegraph.widget.windo.Widget;
@@ -90,18 +90,22 @@ public class BeliefTableChart extends Widget {
     }
 
     @Override
-    public synchronized void start(@Nullable Surface parent) {
-        super.start(parent);
-        on = DurService.on(nar, this::update);
+    public void start(@Nullable SurfaceBase parent) {
+        synchronized (this) {
+            super.start(parent);
+            on = DurService.on(nar, this::update);
+        }
     }
 
     @Override
-    public synchronized void stop() {
-        if (on!=null) {
-            on.off();
-            on = null;
+    public void stop() {
+        synchronized (this) {
+            if (on != null) {
+                on.off();
+                on = null;
+            }
+            super.stop();
         }
-        super.stop();
     }
 
 //    @Override

@@ -6,7 +6,6 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
@@ -24,20 +23,20 @@ public class FastCoWList<X> extends FasterList<X> {
 
     public FastCoWList(int capacity, IntFunction<X[]> arrayBuilder) {
         super(capacity);
-        this.copy = null;
-        this.arrayBuilder = arrayBuilder;
+        this.copy = (this.arrayBuilder = arrayBuilder).apply(0);
+
     }
 
     private final void commit() {
-        this.copy = (size == 0) ? null :
-                                  toArrayRecycled(arrayBuilder);
+        this.copy = //(size == 0) ? null :
+                toArrayRecycled(arrayBuilder);
     }
 
 
     @Override
     public Iterator<X> iterator() {
         X[] copy = this.copy;
-        return copy!=null ? ArrayIterator.get(copy) : Collections.emptyIterator();
+        return ArrayIterator.get(copy);
     }
 
     @Override
@@ -49,11 +48,16 @@ public class FastCoWList<X> extends FasterList<X> {
     @Override
     public void clear() {
         synchronized (this) {
-            int s = size();
-            if (s > 0) {
-                super.clear();
+            if (super.clearIfChanged())
                 commit();
-            }
+        }
+    }
+
+    public void set(Collection<X> newContent) {
+        synchronized (this) {
+            super.clear();
+            super.addAll(newContent);
+            commit();
         }
     }
 
@@ -71,7 +75,7 @@ public class FastCoWList<X> extends FasterList<X> {
     @Override
     public void forEach(Consumer c) {
         X[] copy = this.copy;
-        if (copy!=null) {
+        if (copy != null) {
             for (X x : copy)
                 c.accept(x);
         }
@@ -88,6 +92,7 @@ public class FastCoWList<X> extends FasterList<X> {
             return false;
         }
     }
+
     @Override
     public boolean addAll(Collection<? extends X> source) {
         throw new TODO();
@@ -109,7 +114,7 @@ public class FastCoWList<X> extends FasterList<X> {
         if (c == null)
             return ArrayUtils.EMPTY_FLOAT_ARRAY;
         int n = c.length;
-        if (n !=target.length) {
+        if (n != target.length) {
             target = new float[n];
         }
         for (int i = 0; i < n; i++) {
@@ -118,10 +123,14 @@ public class FastCoWList<X> extends FasterList<X> {
         return target;
     }
 
-    public void set(X... newValues) {
+    /**
+     * directly set
+     */
+    public void set(X[] newValues) {
         synchronized (this) {
-            clear();
-            Collections.addAll(this, newValues);
+            items = newValues;
+            size = newValues.length;
+            commit();
         }
     }
 

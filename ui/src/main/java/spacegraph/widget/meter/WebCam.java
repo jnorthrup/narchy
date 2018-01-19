@@ -152,7 +152,7 @@ public class WebCam {
 
     Ons webcamListeners = new Ons();
     public void on(WebcamListener wl) {
-        webcamListeners.add(new On(null) {
+        webcamListeners.add(new On() {
             {
                 webcam.addWebcamListener(wl);
             }
