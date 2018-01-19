@@ -40,8 +40,12 @@ public interface Variable extends Atomic {
         return 0.5f;
     }
 
+    @Override
+    default Term conceptual() {
+        throw new UnsupportedOperationException();
+    }
 
-//    @Override
+    //    @Override
 //    @Nullable
 //    default Set<Variable> varsUnique(@Nullable Op type) {
 //        if ((type == null || op() == type))

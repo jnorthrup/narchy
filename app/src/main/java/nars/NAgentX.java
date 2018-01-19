@@ -219,7 +219,7 @@ abstract public class NAgentX extends NAgent {
         NAgent a = init.apply(n);
 
         new Deriver(a.fire(), Deriver.deriver(1, 8,
-                "motivation.nal"
+                "motivation.nal","goal_analogy.nal"
         ).apply(n).deriver, n) {
 //            @Override
 //            protected long matchTime(Task task) {

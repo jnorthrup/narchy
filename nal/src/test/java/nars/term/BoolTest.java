@@ -122,7 +122,7 @@ public class BoolTest {
             assertReduction("((--,x)" + sect + "x)", o.the(x, x.neg())); //unchanged
 
             assertEquals(x, o.the(x, True));
-            assertEquals(False, o.the(x, False));
+            assertEquals(Null /* False ?  */, o.the(x, False));
             assertEquals(Null, o.the(x, Null));
         }
     }

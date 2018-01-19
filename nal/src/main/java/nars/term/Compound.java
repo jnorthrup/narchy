@@ -777,7 +777,8 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     default Term conceptual() {
 
-        if (op() == NEG)
+        Op op;
+        if ((op = op()) == NEG)
             return unneg().conceptual();
 
         Term term = root().unneg(); //unneg just in case
@@ -790,8 +791,9 @@ public interface Compound extends Term, IPair, Subterms {
             if (term2 == null)
                 return Null;
 
-            if (!term2.op().conceptualizable)
-                return Null;
+            assert(term2.op() == op);
+//            if (!term2.op().conceptualizable)
+//                return Null;
 
             term = term2;
         }

@@ -281,27 +281,26 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
             if (ttt == null)
                 return;
 
-            Term tt = ttt.term().conceptual();
-            if (!tt.equals(src.id.term())) {
-                @Deprecated Concept cc = nar.concept(tt); //TODO generic key should be Term not Concept this would avoid a lookup in the main index
-                if (cc != null) {
-                    ConceptWidget tgt = cc.meta(spaceID);
-                    if (tgt != null && tgt.active()) {
-                        //                Concept c = space.nar.concept(tt);
-                        //                if (c != null) {
+            Term term = ttt.term();
+            if (term.op().conceptualizable) {
+                Term tt = term.conceptual();
+                if (!tt.equals(src.id.term())) {
+                    @Deprecated Concept cc = nar.concept(tt); //TODO generic key should be Term not Concept this would avoid a lookup in the main index
+                    if (cc != null) {
+                        ConceptWidget tgt = cc.meta(spaceID);
+                        if (tgt != null && tgt.active()) {
+                            //                Concept c = space.nar.concept(tt);
+                            //                if (c != null) {
 
-                        int type;
-                        if (!!(ttt instanceof Task)) {
-                            type = TASKLINK;
-                        } else {
-                            type = TERMLINK;
+                            int type;
+                            type = ttt instanceof Task ? TASKLINK : TERMLINK;
+
+                            edges.putAsync(new ConceptWidget.EdgeComponent(link, src, tgt, type, pri * edgeBrightness.floatValue()));
+                            //new PLinkUntilDeleted(ate, pri)
+                            //new PLink(ate, pri)
+
+                            //                }
                         }
-
-                        edges.putAsync(new ConceptWidget.EdgeComponent(link, src, tgt, type, pri * edgeBrightness.floatValue()));
-                        //new PLinkUntilDeleted(ate, pri)
-                        //new PLink(ate, pri)
-
-                        //                }
                     }
                 }
             }

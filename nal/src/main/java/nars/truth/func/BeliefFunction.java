@@ -75,6 +75,7 @@ public enum BeliefFunction implements TruthOperator {
 
     /**
      * polarizes according to an implication belief and its effective negation reduction
+     * TODO rename 'PB' to 'Sym'
      */
     DeductionPB() {
         @Override
@@ -89,6 +90,7 @@ public enum BeliefFunction implements TruthOperator {
     },
 
     //@AllowOverlap
+    //* TODO rename 'PB' to 'Sym'
     DeductionRecursive() {
         @Override
         public Truth apply(Truth T, Truth B, NAR m, float minConf) {
@@ -97,6 +99,7 @@ public enum BeliefFunction implements TruthOperator {
     },
 
     //@AllowOverlap
+    //* TODO rename 'PB' to 'Sym'
     DeductionRecursivePB() {
         @Override
         public Truth apply(Truth T, Truth B, NAR m, float minConf) {
@@ -110,6 +113,7 @@ public enum BeliefFunction implements TruthOperator {
             return TruthFunctions.induction(T, B, minConf);
         }
     },
+    //* TODO rename 'PB' to 'Sym'
     InductionPB() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
@@ -151,6 +155,7 @@ public enum BeliefFunction implements TruthOperator {
      * here if the belief is negated, then both task and belief truths are
      * applied to the truth function negated.  but the resulting truth
      * is unaffected as it derives the subject of the implication.
+     * * TODO rename 'PB' to 'Sym'
      */
     AbductionPB() {
         @Override
@@ -165,6 +170,7 @@ public enum BeliefFunction implements TruthOperator {
     },
 
     //@AllowOverlap
+    //* TODO rename 'PB' to 'Sym'
     AbductionRecursivePB() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
@@ -224,6 +230,23 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
+    Intersection() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return TruthFunctions.intersection(T, B, minConf);
+        }
+    },
+    IntersectionSym() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            if (T.isPositive()) {
+                return TruthFunctions.intersection(T, B, minConf);
+            } else {
+                Truth C = TruthFunctions.intersection(T.neg(), B.neg(), minConf);
+                return C!=null ? C.neg() : C;
+            }
+        }
+    },
     Union() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
@@ -231,10 +254,15 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
-    Intersection() {
+    UnionSym() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return TruthFunctions.intersection(T, B, minConf);
+            if (T.isPositive()) {
+                return TruthFunctions.union(T, B, minConf);
+            } else {
+                Truth C = TruthFunctions.union(T.neg(), B.neg(), minConf);
+                return C!=null ? C.neg() : C;
+            }
         }
     },
 

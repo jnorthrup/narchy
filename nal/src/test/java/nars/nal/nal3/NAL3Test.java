@@ -2,6 +2,8 @@ package nars.nal.nal3;
 
 
 import nars.$;
+import nars.NAR;
+import nars.NARS;
 import nars.Narsese;
 import nars.test.TestNAR;
 import nars.util.NALTest;
@@ -13,16 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL3Test extends NALTest {
 
     public static final int cycles = 2500;
-
-
-
-//    @Override
-//    protected NAR nar() {
-//        return new NARS().nal(3).
-//                deriverAdd(Deriver.deriver(3,
-//                "nal3.guess.nal" //additional rules
-//        )).get();
-//    }
+    
+    @Override protected NAR nar() { return NARS.tmp(3); }
 
     @Test
     public void compound_composition_two_premises() {

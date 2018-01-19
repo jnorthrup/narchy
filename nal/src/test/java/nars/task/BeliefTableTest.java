@@ -194,7 +194,7 @@ public class BeliefTableTest {
         n.inputAt(10, "a:y. :|:");
         n.run(128);
 
-        for (String t : new String[]{"a:(x|y)", "a:(x&y)","a:(x~y)","a:(y~x)"} ) {
+        for (String t : new String[]{"a:(x|y)", "a:(x&y)", "a:(x~y)", "a:(y~x)"}) {
             assertDuration(n, t, 2, 10);
         }
 
@@ -215,7 +215,7 @@ public class BeliefTableTest {
 
     static void assertDuration(NAR n, String c, long start, long end) throws Narsese.NarseseException {
         TaskConcept cc = (TaskConcept) n.conceptualize(c);
-        assertNotNull(cc,c + " unconceptualized");
+        assertNotNull(cc, c + " unconceptualized");
 
         List<Task> tt = cc.beliefs().streamTasks().collect(toList());
         assertTrue(cc.beliefs() instanceof DynamicBeliefTable || !tt.isEmpty(), c + " not believed");
@@ -262,7 +262,7 @@ public class BeliefTableTest {
             //n.forEachTask(System.out::println);
 
             //INTERMPOLATION APPLIED AFTER REVECTION:
-            assertEquals(correctMerge, cc.beliefs().match((long) 0, null, n).term().toString());
+            assertEquals(correctMerge, cc.beliefs().match(0, null, n).term().toString());
         }
     }
 
@@ -293,21 +293,31 @@ public class BeliefTableTest {
     }
 
     @Test
-    public void testDTDiff() {
+    public void testDTDiffSame() {
 
         //+- matches anything
-        assertEquals(dtDiff("(x ==>+5 y)", "(x ==>+- y)"), dtDiff("(x ==>+5 y)", "(x ==>+5 y)"));
+        float same = dtDiff("(x ==>+5 y)", "(x ==>+5 y)");
+        assertEquals(0f, same, 0.001f);
+        assertEquals(dtDiff("(x ==>+5 y)", "(x ==>+- y)"), same);
+    }
+    @Test
+    public void testDTImpl1() {
 
-        assertTrue(
-    dtDiff("(x ==>+5 y)", "(x ==>+2 y)") >
-            dtDiff("(x ==>+5 y)", "(x ==>+4 y)")
-        );
+        float a52 = dtDiff("(x ==>+5 y)", "(x ==>+2 y)");
+        float a54 = dtDiff("(x ==>+5 y)", "(x ==>+4 y)");
+        assertEquals(3, a52, 0.001f);
+        assertEquals(1, a54, 0.001f);
+        assertTrue(a52 > a54);
+    }
+    @Test
+    public void testDTImplEmbeddedConj() {
 
         //difference in the subterm has less impact than at the root
-        assertTrue(
-    dtDiff("(x ==>+5 (y &&+1 z))", "(x ==>+4 (y &&+1 z))") >
-            dtDiff("(x ==>+5 (y &&+1 z))", "(x ==>+5 (y &&+2 z))")
-        );
+        float a = dtDiff("((x &&+1 y) ==>+1 z)", "((x &&+1 y) ==>+2 z)");
+        float b = dtDiff("((x &&+1 y) ==>+1 z)", "((x &&+2 y) ==>+1 z)");
+        assertEquals(a, 1, 0.1f);
+        assertEquals(a, 0.5f, 0.1f);
+        assertTrue(a > b );
     }
 
     static float dtDiff(String x, String y) {

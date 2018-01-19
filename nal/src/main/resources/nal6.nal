@@ -1,3 +1,28 @@
+    //strong unification
+    (Y ==> X), Z, task(positive), task(".")     |- subIfUnifiesAny(X,Y,Z,"$"), (Belief:DeductionRecursive)
+    (Y ==> X), Z, task(negative), task(".")     |- subIfUnifiesAny(--X,Y,Z,"$"), (Belief:DeductionRecursiveN)
+    (--Y ==> X), Z, task(positive), task(".")   |- subIfUnifiesAny(X,Y,Z,"$"), (Belief:DeductionRecursivePN)
+    (--Y ==> X), Z, task(negative), task(".")   |- subIfUnifiesAny(--X,Y,Z,"$"), (Belief:DeductionRecursiveNN)
+    (X ==> Y), Z, task(".")     |- subIfUnifiesAny(X,Y,Z,"$"), (Belief:AbductionRecursivePB)
+
+// Conditional syllogism && Independent Variable Elimination
+//      If after M, P usually happens, and M happens, it means P is expected to happen
+// original:
+//    M, (M ==> P), shift_occurrence_forward(M,"==>")  |- P, (Truth:Deduction, Desire:Induction, Order:ForAllSame)
+//    M, (P ==> M), shift_occurrence_backward(P,"==>") |- P, (Truth:Abduction, Desire:Deduction, Order:ForAllSame)
+
+    B, (A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Deduction, Goal:DeciInduction)
+        //B, (A ==> C),  notImpl(B), task(".") |- subIfUnifiesAny(C,A,B,"$",strict), (Belief:DeductionRecursivePB)
+        //B, (B ==> C),  notImpl(B), task("!") |- C, (Goal:DeciInduction)
+
+    B, (--A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursivePBN, Goal:DeciInductionN)
+        //B, (--A ==> C),  notImpl(B), task(".") |- subIfUnifiesAny(C,A,B,"$",strict), (Belief:DeductionRecursivePBN)
+        //B, (--B ==> C),  notImpl(B), task("!") |- C, (Goal:DeciInductionN)
+
+    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Deduction)
+    //B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionPB, Goal:DeciDeduction)
+        //B, (C ==> B), notImpl(B), task("!") |- C (Goal:DeciDeduction)
+
 //// implication-based syllogism ////////////////////////////////////////////////////////////////////////////////////
 //       (A ==> B) ------- (B ==> C)
 //            \               /
@@ -9,14 +34,6 @@
     //"Please note that the temporal order in the conclusion of a weak rule is
     //not necessarily the same as the order in the premises, given the hypothetical
     //nature of such a rule."
-
-    //strong unification
-    (Y ==> X), Z, task(positive), task(".")     |- subIfUnifiesAny(X,Y,Z,"$"), (Belief:DeductionRecursive)
-    (Y ==> X), Z, task(negative), task(".")     |- subIfUnifiesAny(--X,Y,Z,"$"), (Belief:DeductionRecursiveN)
-    (--Y ==> X), Z, task(positive), task(".")   |- subIfUnifiesAny(X,Y,Z,"$"), (Belief:DeductionRecursivePN)
-    (--Y ==> X), Z, task(negative), task(".")   |- subIfUnifiesAny(--X,Y,Z,"$"), (Belief:DeductionRecursiveNN)
-    (X ==> Y), Z, task(".")     |- subIfUnifiesAny(X,Y,Z,"$"), (Belief:AbductionRecursivePB)
-
 
     //If after S M happens, and after M P happens, so P happens after S
     (M ==> P), (S ==> M) |- (S ==>+- P), (Belief:Deduction)
@@ -79,13 +96,13 @@
 //Same as for inheritance
 
 
-    (P ==> M), (S ==> M), neq(P,S) |- ((P &&+- S) ==>+- M), (Belief:Intersection)
-    (P ==> M), (S ==> M), neq(P,S) |- (--(--P &&+- --S) ==>+- M), (Belief:Union)
+    (P ==> M), (S ==> M), neq(P,S) |- ((P &&+- S) ==>+- M), (Belief:IntersectionSym)
+    (P ==> M), (S ==> M), neq(P,S) |- (--(--P &&+- --S) ==>+- M), (Belief:UnionSym)
 
 
-    (M ==> P), (M ==> S), belief(positive), neq(P,S) |- (M ==>+- (P &&+- S)), (Belief:Intersection)
-        (M ==> P), (M ==> S), belief(negative), neq(P,S) |- (M ==>+- (P &&+- --S)), (Belief:IntersectionPN)
-    (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- --(--P &&+- --S)), (Belief:Union)
+    (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- (P &&+- S)), (Belief:IntersectionSym)
+        //(M ==> P), (M ==> S), belief(negative), neq(P,S) |- (M ==>+- (P &&+- --S)), (Belief:IntersectionPN)
+    (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- --(--P &&+- --S)), (Belief:UnionSym)
 
 
 //// implication-based decomposition ////////////////////////////////////////////////////////////////////////////////////
@@ -114,23 +131,6 @@
 
 
 
-// Conditional syllogism && Independent Variable Elimination
-//      If after M, P usually happens, and M happens, it means P is expected to happen
-// original:
-//    M, (M ==> P), shift_occurrence_forward(M,"==>")  |- P, (Truth:Deduction, Desire:Induction, Order:ForAllSame)
-//    M, (P ==> M), shift_occurrence_backward(P,"==>") |- P, (Truth:Abduction, Desire:Deduction, Order:ForAllSame)
-
-    B, (A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Deduction, Goal:DeciInduction)
-        //B, (A ==> C),  notImpl(B), task(".") |- subIfUnifiesAny(C,A,B,"$",strict), (Belief:DeductionRecursivePB)
-        //B, (B ==> C),  notImpl(B), task("!") |- C, (Goal:DeciInduction)
-
-    B, (--A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursivePBN, Goal:DeciInductionN)
-        //B, (--A ==> C),  notImpl(B), task(".") |- subIfUnifiesAny(C,A,B,"$",strict), (Belief:DeductionRecursivePBN)
-        //B, (--B ==> C),  notImpl(B), task("!") |- C, (Goal:DeciInductionN)
-
-    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Deduction)
-    //B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionPB, Goal:DeciDeduction)
-        //B, (C ==> B), notImpl(B), task("!") |- C (Goal:DeciDeduction)
 
 
 
@@ -179,9 +179,9 @@
     (X ==> C), (B==>M), is(X,"&&"), in(B,X) |- ((conjWithout(X,B) &&+- M) ==>+- C), (Belief:AbductionPB)
         //((&&,B,A..+) ==> C), (B ==> M), neq(B,M) |- ((&&,M,A..+) ==>+- C), (Belief:AbductionPB)
 
-    (X ==> C), M, is(X,"&&") |- ((X &&+- M) ==>+- C), (Belief:Induction)
+
         //((&&,A..+) ==> C), M,                    |- ((&&,M,A..+) ==>+- C), (Belief:Induction)
-    (X ==> C), (Y ==> C), is(X,"&&"),is(Y,"&&"), neq(X,Y) |- (differ(Y,X) ==>+- differ(X,Y)), (Belief:Induction)
+    (X ==> C), (Y ==> C), is(X,"&&"),is(Y,"&&"), neq(X,Y) |- (differ(Y,X) ==>+- differ(X,Y)), (Belief:InductionPB)
         //((&&,M,A..+) ==> C), ((&&,B,A..+)==>C)   |- (B ==>+- M), (Belief:Induction)
 
     //((&&,M,X,A..*) ==> C), (Y ==> C), task(".") |- subIfUnifiesAny((M ==>+- C),X,Y), (Belief:AbductionPB)
@@ -214,7 +214,7 @@
 
     ((&&,M,A..+) ==> C), (B ==> M)  |- (((&&,A..+) &&+- B) ==>+- C), (Belief:Deduction)
     ((&&,B,A..+) ==> C), (B ==> M) |- (((&&,A..+) &&+- M) ==>+- C), (Belief:Induction)
-    ((&&,A..+) ==> C), M,  notImpl(M) |- (((&&,A..+) &&+- M) ==>+- C), (Belief:Induction)
+    //((&&,A..+) ==> C), M,  notImpl(M) |- (((&&,A..+) &&+- M) ==>+- C), (Belief:Induction)
 
     ((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C), neq(X,Y) |- (X ==>+- Y), (Belief:InductionPB)
     ((&&,X,A..+) ==> C), ((&&,Y,A..+) ==> C), neq(X,Y) |- (Y ==>+- X), (Belief:InductionPB)

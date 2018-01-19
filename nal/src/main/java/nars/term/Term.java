@@ -772,7 +772,8 @@ public interface Term extends Termed, Comparable<Termed> {
      * different
      */
     default Term conceptual() {
-        throw new UnsupportedOperationException();
+        //throw new UnsupportedOperationException();
+        return this;
     }
 
     /**

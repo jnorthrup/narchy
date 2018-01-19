@@ -111,11 +111,16 @@ public abstract class TermIndex implements TermContext {
             //otherwise if it is deleted, continue
             y = ct.term();
         } else {
-            y = x.term().conceptual();
-            Op yop = y.op();
-            if (!yop.conceptualizable || yop !=x.op()) {
-                //x.term().conceptual(); //HACK for debugging
-                //throw new RuntimeException("conceptualization fault: " + x + " -> " + y);
+            Term xx = x.term();
+            if (xx.op().conceptualizable) {
+                y = xx.conceptual();
+                Op yop = y.op();
+                if (!yop.conceptualizable || yop != x.op()) {
+                    //x.term().conceptual(); //HACK for debugging
+                    //throw new RuntimeException("conceptualization fault: " + x + " -> " + y);
+                    return null;
+                }
+            } else {
                 return null;
             }
         }

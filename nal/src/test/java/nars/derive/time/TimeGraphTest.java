@@ -127,7 +127,7 @@ class TimeGraphTest {
     @Test
     public void testImplWithConjPredicate1() {
         assertSolved("(one ==>+- (two &&+1 three))", A,
-                "(one ==>+1 (two &&+1 three))");
+                "((one &&+1 two) ==>+1 three)");
     }
 
     @Test public void testDecomposeImplConj() throws Narsese.NarseseException {

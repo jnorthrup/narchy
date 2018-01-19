@@ -16,6 +16,7 @@ import nars.truth.Truthed;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectLongHashMap;
+import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,10 +26,10 @@ import java.util.Map;
 import java.util.Random;
 
 import static jcog.Util.lerp;
-import static nars.Op.CONJ;
-import static nars.Op.Null;
+import static nars.Op.*;
 import static nars.time.Tense.*;
 import static nars.truth.TruthFunctions.c2wSafe;
+import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
  * Revision / Projection / Revection Utilities
@@ -138,24 +139,23 @@ public class Revision {
 
 
                 boolean mergeOrChoose = nar.dtMergeOrChoose.get();
-                if (!mergeOrChoose) {
-                    Random rng = nar.random();
-                    return choose(a, b, aProp, rng);
-                } else {
-                    switch (ao) {
-                        case CONJ:
-                            if (!a.subterms().hasAny(Op.CONJ) && !b.subterms().hasAny(Op.CONJ)) {
-                                return dtMergeDirect(a, b, aProp, curDepth, nar);
-                            } else {
-                                //event-based merge
-                                return dtMergeConjMerge(a, bOffset, b, aProp, curDepth, nar.random());
-                            }
-                        case IMPL:
+                if (ao==CONJ) {
+                    if (!a.subterms().hasAny(Op.CONJ) && !b.subterms().hasAny(Op.CONJ)) {
+                        if (mergeOrChoose)
                             return dtMergeDirect(a, b, aProp, curDepth, nar);
-                        default:
-                            throw new RuntimeException();
+                        else
+                            return choose(a, b, aProp, nar.random());
+                    } else {
+                        return dtMergeConjEvents(a, bOffset, b, aProp, curDepth, mergeOrChoose, nar.random());
                     }
-                }
+                } else if (ao == IMPL) {
+                    if (mergeOrChoose) {
+                        return dtMergeDirect(a, b, aProp, curDepth, nar);
+                    } else {
+                        return choose(a, b, aProp, nar.random());
+                    }
+                } else
+                    throw new UnsupportedOperationException();
             } else {
                 if (a.equals(b)) {
                     return a;
@@ -190,32 +190,54 @@ public class Revision {
 
     }
 
-    private static Term dtMergeConjMerge(Term a, long bOffset, Term b, float aProp, float v, Random rng) {
-        FasterList<LongObjectPair<Term>> ab = Op.conjMerge(a, 0, b, bOffset).eventList();
+    /** TODO use aProp to bias 'a' more */
+    private static Term dtMergeConjEvents(Term a, long bOffset, Term b, float aProp, float curDepth, boolean mergeOrChoose, Random rng) {
+        Map<Term,LongHashSet> events = new HashMap();
+        Op.conjMerge(a, 0, b, bOffset).eventsWhile((w,t)->{
+            events.computeIfAbsent(t, (tt)->new LongHashSet()).add(w);
+            return true;
+        }, 0);
 
-        //it may not be valid to choose subsets of the events, in a case like where >1 occurrences of $ must remain parent
-
-        FasterList<LongObjectPair<Term>> x = new FasterList(ab);
-        int max = 1 + x.size() / 2; //HALF
-        int all = x.size();
-        int excess = all - max;
-        if (excess > 0) {
-
-            //decide on some items to remove
-            //must keep the endpoints unless a shift and adjustment are reported
-            //to the callee which decides this for the revised task
-
-            //for now just remove some inner tasks
-            if (all - excess < 2)
-                return null; //retain the endpoints
-            else if (all - excess == 2)
-                x = new FasterList(2).addingAll(x.get(0), x.get(all - 1)); //retain only the endpoints
-            else {
-                for (int i = 0; i < excess; i++) {
-                    x.remove(rng.nextInt(x.size() - 2) + 1);
+        FasterList<LongObjectPair<Term>> x = new FasterList(events.size());
+        for (Map.Entry<Term, LongHashSet> e : events.entrySet()) {
+            LongHashSet ww = e.getValue();
+            int ws = ww.size();
+            long w;
+            if (ws == 1) {
+                w = ww.longIterator().next();
+            } else {
+                if (mergeOrChoose) {
+                    //average
+                    //TODO more careful calculation here, maybe use BigDecimal in case of large numbers
+                    w = Math.round(((double)ww.sum()) / ws);
+                } else {
+                    w = ww.toArray()[rng.nextInt(ws)];
                 }
             }
+            x.add(pair(w, e.getKey()));
         }
+
+//        //it may not be valid to choose subsets of the events, in a case like where >1 occurrences of $ must remain parent
+//        int max = 1 + x.size() / 2; //HALF
+//        int all = x.size();
+//        int excess = all - max;
+//        if (excess > 0) {
+//
+//            //decide on some items to remove
+//            //must keep the endpoints unless a shift and adjustment are reported
+//            //to the callee which decides this for the revised task
+//
+//            //for now just remove some inner tasks
+//            if (all - excess < 2)
+//                return null; //retain the endpoints
+//            else if (all - excess == 2)
+//                x = new FasterList(2).addingAll(x.get(0), x.get(all - 1)); //retain only the endpoints
+//            else {
+//                for (int i = 0; i < excess; i++) {
+//                    x.remove(rng.nextInt(x.size() - 2) + 1);
+//                }
+//            }
+//        }
 
         return Op.conj(x);
     }

@@ -20,7 +20,7 @@
 
 
 //implication to similarity (equivalence emulation)
-    //(P ==> S), (S ==> P), task(positive), task(".")   |-   (S <-> P),  (Punctuation:Question)
+    (P ==> S), (S ==> P), task(positive), task(".")   |-   (S <-> P),  (Punctuation:Question)
     (P ==> S), (--S ==> P), task(negative), task(".") |- (--S <-> P),  (Punctuation:Question)
 
     //all these are probably wrong:
