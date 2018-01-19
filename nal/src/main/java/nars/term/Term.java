@@ -463,12 +463,12 @@ public interface Term extends Termed, Comparable<Termed> {
 
 
     /**
-     * computes the first occuring event's time relative to the start of the
-     * temporal term
+     * computes the first occuring event's time relative to the start of a conjunction
      *
      * @param x subterm which must be present
      */
     default int subTime(/*@NotNull*/ Term x) {
+
         int d = subTimeSafe(x);
         if (d != DTERNAL)
             return d;
@@ -643,14 +643,6 @@ public interface Term extends Termed, Comparable<Termed> {
      * includes itself in the count unless it's a CONJ sequence in which case it becomes the sum of the subterms event counts
      */
     default int eventCount() {
-        if (op() == CONJ) {
-            int dt = this.dt();
-            if (dt != DTERNAL) {
-                return subterms().sum(Term::eventCount);
-                //intify((sum, x) -> sum + x.eventCount(), 0);
-            }
-        }
-
         return 1;
     }
 
@@ -780,7 +772,7 @@ public interface Term extends Termed, Comparable<Termed> {
      * different
      */
     default Term conceptual() {
-        return Null;
+        throw new UnsupportedOperationException();
     }
 
     /**

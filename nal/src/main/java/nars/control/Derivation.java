@@ -306,22 +306,9 @@ public class Derivation extends ProtoDerivation {
         this.nar = nar;
         this.random = nar.random();
 
-        Functor.LambdaFunctor polarizeFunc = Functor.f2("polarize", (subterm, whichTask) -> {
-            Truth compared;
-            if (whichTask.equals(PremiseRule.Task)) {
-                compared = taskTruth;
-            } else {
-                compared = beliefTruth;
-            }
-            if (compared == null)
-                return Null;
-            else
-                return compared.isNegative() ? subterm.neg() : subterm;
-        });
-
         Termed[] derivationFunctors = new Termed[]{
-                new uniSubAny(),
-                new uniSub(),
+                uniSubAny,
+                uniSub,
                 polarizeFunc
         };
         Map<Term, Termed> m = new HashMap<>(derivationFunctors.length + 2);
@@ -332,8 +319,8 @@ public class Derivation extends ProtoDerivation {
         for (Termed x : derivationFunctors)
             m.put(x.term(), x);
 
-        m.put(TaskTerm, () -> taskTerm);
-        m.put(BeliefTerm, () -> beliefTerm);
+        m.put(TaskTerm, taskTerm);
+        m.put(BeliefTerm, beliefTerm);
         this.derivationFunctors = Maps.immutable.ofMap(m);
     }
 
@@ -548,9 +535,9 @@ public class Derivation extends ProtoDerivation {
         if (evidenceDouble == null) {
             float te, be, tb;
             if (task.isBeliefOrGoal()) {
-                //for belief/goal use the relative conf
-                te = taskTruth.conf();
-                be = beliefTruth != null ? beliefTruth.conf() : 0; //beliefTruth can be zero in temporal cases
+                //for belief/goal use the relative evi
+                te = taskTruth.evi();
+                be = beliefTruth != null ? beliefTruth.evi() : 0; //beliefTruth can be zero in temporal cases
                 tb = te / (te + be);
             } else {
                 //for question/quest, use the relative priority
@@ -582,11 +569,6 @@ public class Derivation extends ProtoDerivation {
         super.clear();
     }
 
-//    public int getAndSetTTL(int next) {
-//        int before = this.ttl;
-//        this.ttl = next;
-//        return before;
-//    }
 
     /**
      * called at the end of the cycle, input all generated derivations
@@ -624,12 +606,7 @@ public class Derivation extends ProtoDerivation {
     };
 
     final static Atom uniSubAnyFunc = (Atom) $.the("subIfUnifiesAny");
-    private static class uniSubAny extends SubstUnified {
-
-        public uniSubAny() {
-            super(uniSubAnyFunc);
-        }
-
+    private static final SubstUnified uniSubAny = new SubstUnified(uniSubAnyFunc) {
         @Override
         public Term apply(Subterms xx) {
             Term y = super.apply(xx);
@@ -643,14 +620,10 @@ public class Derivation extends ProtoDerivation {
             }
             return y;
         }
-    }
+    };
 
-    final static Atom uniSubFunc = (Atom) $.the("substitute");
-    private static class uniSub extends Subst {
 
-        public uniSub() {
-            super(uniSubFunc);
-        }
+    private static Subst uniSub = new Subst() {
 
         @Override
         public @Nullable Term apply(Subterms xx) {
@@ -665,7 +638,19 @@ public class Derivation extends ProtoDerivation {
             }
             return y;
         }
-    }
+    };
+    final Functor.LambdaFunctor polarizeFunc = Functor.f2("polarize", (subterm, whichTask) -> {
+        Truth compared;
+        if (whichTask.equals(PremiseRule.Task)) {
+            compared = taskTruth;
+        } else {
+            compared = beliefTruth;
+        }
+        if (compared == null)
+            return Null;
+        else
+            return compared.isNegative() ? subterm.neg() : subterm;
+    });
 
     //    /**
 //     * experimental memoization of transform results

@@ -15,3 +15,4 @@
 
     (W --> (-,S,B)), (W --> B), task("?"), neqRCom(S,B) |- (W --> (-,S,B)), (Belief:BeliefStructuralDifference, Punctuation:Belief)
     ((~,S,B) --> W), (B --> W), task("?"), neqRCom(S,B) |- ((~,S,B) --> W), (Belief:BeliefStructuralDifference, Punctuation:Belief)
+

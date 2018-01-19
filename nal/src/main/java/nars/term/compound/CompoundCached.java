@@ -58,17 +58,14 @@ public class CompoundCached implements Compound, The {
 
     @Override
     public Term root() {
-        return (rooted != null) ? rooted
-                :
-                (this.rooted = Compound.super.root());
+        Term rooted = this.rooted;
+        return (rooted != null) ? rooted : (this.rooted = Compound.super.root());
     }
-
 
     @Override
     public Term conceptual() {
-        return (concepted != null) ? concepted
-                :
-                (this.concepted = Compound.super.conceptual());
+        Term concepted = this.concepted;
+        return (concepted != null) ? concepted : (this.concepted = Compound.super.conceptual());
     }
 
     @Override

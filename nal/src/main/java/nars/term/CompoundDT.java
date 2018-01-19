@@ -15,48 +15,58 @@ public interface CompoundDT extends Compound {
     int dt();
 
     @Override
+    default int eventCount() {
+        if (op() == CONJ) {
+            int dt = this.dt();
+            if (dt != DTERNAL) {
+                return subterms().sum(Term::eventCount);
+                //intify((sum, x) -> sum + x.eventCount(), 0);
+            }
+        }
+        return 1;
+    }
+
+    @Override
     default int subTimeSafe(Term x, int after) {
         if (equals(x))
             return 0;
 
         Op op = op();
-        if (!op.temporal || impossibleSubTerm(x))
+        if (op!=CONJ || impossibleSubTerm(x))
             return DTERNAL;
 
         //TODO do shuffled search to return different equivalent results wherever they may appear
 
 
         int dt = dt();
-//        if (dt == DTERNAL)
-//            return DTERNAL;
+        assert(dt!=DTERNAL);
         if (dt == XTERNAL) //unknown
             return DTERNAL;
 
         /*@NotNull*/
         Subterms yy = subterms();
 
-
         if (op == IMPL) {
-            //only two options
-            Term s0 = yy.sub(0);
-            if (s0.equals(x)) {
-                return 0;
-            }
-            int s1offset = s0.dtRange() + (dt == DTERNAL ? 0 : dt);
-            Term s1 = yy.sub(1);
-            if (s1.equals(x)) {
-                return s1offset; //the subject's dtrange + the dt between points to the start of the predicate
-            }
-            if (s0.op() == CONJ) {
-                int s0d = s0.subTimeSafe(x);
-                if (s0d != DTERNAL)
-                    return s0d;
-            }
-            if (s1.op() == CONJ) {
-                int s1d = s1.subTimeSafe(x);
-                if (s1d != DTERNAL)
-                    return s1d + s1offset;
-            }
+//            //only two options
+//            Term s0 = yy.sub(0);
+//            if (s0.equals(x)) {
+//                return 0;
+//            }
+//            int s1offset = s0.dtRange() + (dt == DTERNAL ? 0 : dt);
+//            Term s1 = yy.sub(1);
+//            if (s1.equals(x)) {
+//                return s1offset; //the subject's dtrange + the dt between points to the start of the predicate
+//            }
+//            if (s0.op() == CONJ) {
+//                int s0d = s0.subTimeSafe(x);
+//                if (s0d != DTERNAL)
+//                    return s0d;
+//            }
+//            if (s1.op() == CONJ) {
+//                int s1d = s1.subTimeSafe(x);
+//                if (s1d != DTERNAL)
+//                    return s1d + s1offset;
+//            }
 
         } else if (op == CONJ) {
 

@@ -216,7 +216,7 @@ public enum $ {
 
 
     public static <T extends Term> T sim(Term subj, Term pred) {
-        return (T) SIM.the(DTERNAL, subj, pred);
+        return (T) SIM.the(subj, pred);
     }
 
 

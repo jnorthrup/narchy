@@ -267,15 +267,18 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     public void testConjParallelConceptualShouldntBeXTERNAL() throws Narsese.NarseseException {
 
+        assertEquals(1, $("(&&,a,b,c)").eventCount());
+        assertEquals(3, $("(&|,a,b,c)").eventCount());
+        assertEquals(3, CONJ.the(XTERNAL, $("a"), $("b"), $("c")).eventCount());
 
-        for (int dt : new int[]{ /*XTERNAL,*/ DTERNAL, 0}) {
+        for (int dt : new int[]{ /*XTERNAL,*/ 0, DTERNAL}) {
             assertEquals("(&&,a,b,c)",
                     CONJ.the(
                             dt,
                             $.$("a"),
                             $.$("b"),
                             $.$("c")
-                    ).conceptual().toString());
+                    ).conceptual().toString(), ()->"dt=" + dt);
         }
 
         //"(&&,(--,(&&,(bx-->noid),(happy-->noid),#1)),(--,(&&,(bx-->noid),(happy-->noid),#1)),(--,(dx-->noid)))",
@@ -500,13 +503,13 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     public void testDiffIntEqual() {
 
-        assertEquals(Null, diffi(p, p));
+        assertEquals(False, diffi(p, p));
     }
 
     @Test
     public void testDiffExtEqual() {
 
-        assertEquals(Null, diffe(p, p));
+        assertEquals(False, diffe(p, p));
     }
 
 
@@ -1059,27 +1062,6 @@ public class TermReductionsTest extends NarseseTest {
         //..
     }
 
-    @Test
-    public void testSimEquivOfAbsoluteTrueNull1() {
-        assertEquals(True, sim(True, True));
-    }
-
-    @Test
-    public void testSimEquivOfAbsoluteTrueNull2() {
-        assertEquals(Null, sim(Null, Null));
-    }
-
-    @Test
-    public void testSimEquivOfAbsoluteTrueNull3() {
-        assertEquals(Null, sim(True, Null));
-    }
-
-    @Test
-    public void testSimEquivOfAbsoluteTrueNull4() {
-        assertEquals(Null, sim(True.neg(), Null));
-        assertEquals(False, sim(True, False));
-        assertEquals(True, sim(True.neg(), False));
-    }
 
     /**
      * conjunction and disjunction subterms which can occurr as a result
@@ -1181,6 +1163,9 @@ public class TermReductionsTest extends NarseseTest {
         assertEquals(exp, $safe(is), () -> exp + " reduces to " + is);
     }
 
+    static void assertReduction(String exp, Term is)  {
+        assertEquals(exp, is.toString(), () -> exp + " reduces to " + is);
+    }
 
     @Test
     public void testReducibleImpl() {

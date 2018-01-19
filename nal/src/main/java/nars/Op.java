@@ -1295,8 +1295,11 @@ public enum Op {
                 if (et0.equals(et1))
                     return False;
 
-                //true tautology - the difference of something with its negation will always be everything, ie. freq==1 : True
-                if (et1.neg().equals(et0))
+//                //true tautology - the difference of something with its negation will always be everything, ie. freq==1 : True
+//                if (et1.neg().equals(et0))
+//                    return True;
+
+                if (et0 == True && et1 == False) //TRUE - FALSE
                     return True;
 
                 //null tautology - incomputable comparisons with truth
@@ -1582,7 +1585,7 @@ public enum Op {
 
 
             // (C ==>+- (A ==>+- B))   <<==>>  ((C &&+- A) ==>+- B)
-            if (predicate.op() == IMPL) {
+            if (predicate.op() == IMPL && dt!=XTERNAL) {
                 int abDT = predicate.dt();
                 //if (cprDT != XTERNAL) {
                 Term a = predicate.sub(0);
@@ -1698,30 +1701,32 @@ public enum Op {
                         }
                         break;
                     default: {
-                        //TODO if pred has >1 events, pull all the events except the last into a conj for the subj then impl the final event
+                        //TODO if pred has >1 events, and dt is temporal, pull all the events except the last into a conj for the subj then impl the final event
 
-                        long finalEventTime = pe.maxBy(LongObjectPair::getOne).getOne();
-                        Term finalEvent = null;
-                        int moved = 0;
-                        for (int i = 0; i < pes; i++) {
-                            LongObjectPair<Term> m = pe.get(i);
-                            if (m.getOne() != finalEventTime) {
-                                se.add(m);
-                                moved++;
-                            } else {
-                                if (finalEvent == null) finalEvent = m.getTwo();
-                                else finalEvent = CONJ.the(0, finalEvent, m.getTwo());
+                        if (dt!=DTERNAL) {
+                            long finalEventTime = pe.maxBy(LongObjectPair::getOne).getOne();
+                            Term finalEvent = null;
+                            int moved = 0;
+                            for (int i = 0; i < pes; i++) {
+                                LongObjectPair<Term> m = pe.get(i);
+                                if (m.getOne() != finalEventTime) {
+                                    se.add(m);
+                                    moved++;
+                                } else {
+                                    if (finalEvent == null) finalEvent = m.getTwo();
+                                    else finalEvent = CONJ.the(0, finalEvent, m.getTwo());
+                                }
                             }
-                        }
-                        if (moved > 0 || !finalEvent.equals(predicate)) {
-                            long ndt = dtNotDternal ?
-                                    finalEventTime - ((FasterList<LongObjectPair<Term>>) se.list).maxBy(LongObjectPair::getOne).getOne() :
-                                    DTERNAL;
-                            assert (ndt < Integer.MAX_VALUE);
-                            return IMPL.the((int) ndt,
-                                    Op.conj(new FasterList(se)),
-                                    finalEvent
-                            );
+                            if (moved > 0 || !finalEvent.equals(predicate)) {
+                                long ndt = dtNotDternal ?
+                                        finalEventTime - ((FasterList<LongObjectPair<Term>>) se.list).maxBy(LongObjectPair::getOne).getOne() :
+                                        DTERNAL;
+                                assert (ndt < Integer.MAX_VALUE);
+                                return IMPL.the((int) ndt,
+                                        Op.conj(new FasterList(se)),
+                                        finalEvent
+                                );
+                            }
                         }
 
 

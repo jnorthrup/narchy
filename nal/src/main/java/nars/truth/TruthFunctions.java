@@ -326,7 +326,32 @@ public final class TruthFunctions {
 //    }
 
 
-    /* ----- double argument functions, called in CompositionalRules ----- */
+    /*In the confidence functions, each case for the conclusion to reach its
+    maximum is separately considered. The plus operator is used in place of an
+    or operator, because the two cases involved are mutually exclusive, rather
+    than independent of each other.
+
+    Fint : Intersection
+    f = and(f1, f2)
+    c = or(and(not(f1), c1), and(not(f2), c2)) + and(f1, c1, f2, c2)
+    Funi : Union
+    f = or(f1, f2)
+    c = or(and(f1, c1), and(f2, c2)) + and(not(f1), c1, not(f2), c2)
+    Fdif : Difference
+    f = and(f1, not(f2))
+    c = or(and(not(f1), c1), and(f2, c2)) + and(f1, c1, not(f2), c2)
+    */
+
+
+    static float compConf(float f1, float c1, boolean not1, float f2, float c2, boolean not2) {
+        float F1 = not1 ? (1-f1) : f1;
+        float F2 = not2 ? (1-f2) : f2;
+        if (Param.STRONG_COMPOSITION) {
+            return or(and(F1, c1), and(F2, c2)) + and((1 - F1), c1, (1 - F2), c2);
+        } else {
+            return c1*c2;
+        }
+    }
 
     /**
      * {<M --> S>, <M <-> P>} |- <M --> (S|P)>
@@ -336,11 +361,10 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion
      */
     @Nullable
-    public static Truth union(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
-        float abConf = and(a.conf(), b.conf());
-        return (abConf < minConf) ?
-                null :
-                t(or(a.freq(), b.freq()), abConf);
+    public static Truth union(/*@NotNull*/ Truth v1, /*@NotNull*/ Truth v2, float minConf) {
+        float f1 = v1.freq(), f2 = v2.freq(), c1 = v1.conf(), c2 = v2.conf();
+        float c = compConf(f1, c1, true, f2, c2, true);
+        return (c < minConf) ? null : $.t(or(f1, f2), c);
     }
 
     /**
@@ -352,31 +376,17 @@ public final class TruthFunctions {
      */
     @Nullable
     public static Truth intersection(Truth v1, /*@NotNull*/ Truth v2, float minConf) {
-        float c =
-                and(v1.conf(), v2.conf());
-        //w2c(and(v1.evi(), v2.evi()));
-        return (c < minConf) ?
-                null :
-                t(and(v1.freq(), v2.freq()), c);
+        float f1 = v1.freq(), f2 = v2.freq(), c1 = v1.conf(), c2 = v2.conf();
+        float c = compConf(f1, c1, false, f2, c2, false);
+        return (c < minConf) ? null : $.t(and(f1, f2), c);
     }
 
-//    public static Truth intersection(@Nullable List<Truth> truths, float minConf) {
-//        float f = 1f;
-//        float c = 1f;
-//        for (Truth t : truths) {
-//            f *= t.freq();
-//            c *= t.conf();
-//            if (c < minConf)
-//                return null;
-//        }
-//        return $.t(f, c);
-//    }
-
-//    private static float freqInterp(float f1, float f2, float c1, float c2) {
-//        float w1 = c2w(c1);
-//        float w2 = c2w(c2);
-//        return lerp(f2, f1, w1/(w1+w2));
-//    }
+    @Nullable
+    public static Truth difference(Truth v1, /*@NotNull*/ Truth v2, float minConf) {
+        float f1 = v1.freq(), f2 = v2.freq(), c1 = v1.conf(), c2 = v2.conf();
+        float c = compConf(f1, c1, false, f2, c2, true);
+        return (c < minConf) ? null : $.t(and(f1, 1-f2), c);
+    }
 
 //    /**
 //     * {(||, A, B), (--, B)} |- A
@@ -460,26 +470,6 @@ public final class TruthFunctions {
         return c < minConf ? null : t(z ? f : 1 - f, c);
     }
 
-    @Nullable
-    public static Truth difference(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
-        return intersection(a, b.neg(), minConf);
-
-//        float f1 = a.freq();
-//        float f2 = b.freq();
-//
-//        float c1 = a.conf();
-//        float c2 = b.conf();
-//
-//        //      or(and(not(f 1 ), c 1 ), and(f 2 , c 2 ))
-//        //    + and(f 1 , c 1 , not(f 2 ), c 2 )
-//        ///float cA =  or(and( 1 - f1, c1 ), and( f2 , c2 ));
-//        float cA =  and(and( 1 - f1, c1 ), and( f2 , c2 ));
-//        float cB =  and( f1 , c1, (1-f2), c2 );
-//        float c = Math.max(cA, cB);
-//
-//        return (c < minConf) ? null : t(and(f1, (1 - f2)), c);
-
-    }
 
 
 //    public static float eternalize(float conf) {
@@ -525,6 +515,7 @@ public final class TruthFunctions {
     public static float w2cSafe(float w) {
         return w2cSafe(w, Param.HORIZON);
     }
+
     public static float w2cSafe(float w, float horizon) {
         return w / (w + horizon);
     }

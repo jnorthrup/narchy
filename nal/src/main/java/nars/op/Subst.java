@@ -24,11 +24,12 @@ public class Subst extends Functor {
     final static Term DEP_VAR = $.quote("#");
 
 
+    final static Atom id = (Atom) $.the("substitute");
 
     public static final Subst the = new Subst();
 
-    private Subst() {
-        super((Atom) $.the("substitute"));
+    protected Subst() {
+        super(id);
     }
 
     protected Subst(Atom id) {

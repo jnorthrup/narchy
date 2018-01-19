@@ -89,17 +89,19 @@ public class BoolTest {
 
             //raw
             assertReduction(False, "(x" + diff + "x)");
-            assertReduction(True, "(x" + diff + "(--,x))");
+            assertReduction("(x" + diff + "(--,x))", "(x" + diff + "(--,x))");  //unchanged
 
             //subj
-            assertReduction(Null, "((x" + diff + "x)-->a)");
-            assertReduction(Null, "((x" + diff + "(--,x))-->a)");
-            assertReduction(Null, "(((--,x)" + diff + "x)-->a)");
+            assertReduction(Null, "((x" + diff + "x)-->y)");
+            assertReduction(Null, "(--(x" + diff + "x)-->y)");
+            assertReduction("((x" + diff + "(--,x))-->y)", "((x" + diff + "(--,x))-->y)"); //unchanged
+            assertReduction("(((--,x)" + diff + "x)-->y)", "(((--,x)" + diff + "x)-->y)"); //unchanged
 
             //pred
-            assertReduction("(a-->Ⅎ)", "(a-->(x" + diff + "x))");
-            assertReduction("(a-->†)", "(a-->(x" + diff + "(--,x)))");
-            assertReduction("(a-->†)", "(a-->((--,x)" + diff + "x))");
+            assertReduction("(y-->Ⅎ)",  "(y --> (x" + diff + "x))");
+            assertReduction("(y-->†)",  "(y --> --(x" + diff + "x))");
+            assertReduction("(y-->(x" + diff + "(--,x)))", "(y-->(x" + diff + "(--,x)))"); //unchanged
+            assertReduction("(y-->((--,x)" + diff + "x))", "(y-->((--,x)" + diff + "x))"); //unchanged
 
 
             assertEquals(False, o.the(x,x));
@@ -111,7 +113,18 @@ public class BoolTest {
 
     @Test
     public void testIntersectionTautologies() {
-        //TODO
+        for (Op o : new Op[] { SECTe, SECTi } ) {
+
+            String sect = o.str;
+
+            //raw
+            assertEquals(x, o.the(x, x));
+            assertReduction("((--,x)" + sect + "x)", o.the(x, x.neg())); //unchanged
+
+            assertEquals(x, o.the(x, True));
+            assertEquals(False, o.the(x, False));
+            assertEquals(Null, o.the(x, Null));
+        }
     }
 
     @Test
@@ -120,5 +133,6 @@ public class BoolTest {
     }
 
     static final Term x = $.$safe("x");
+    static final Term y = $.$safe("y");
 
 }

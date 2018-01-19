@@ -25,7 +25,6 @@ import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
 import nars.IO;
 import nars.Op;
-import nars.Param;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.TermContext;
 import nars.subterm.Subterms;
@@ -774,6 +773,7 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
+
     @Override
     default Term conceptual() {
 
@@ -785,24 +785,16 @@ public interface Compound extends Term, IPair, Subterms {
         if (!term.op().conceptualizable)
             return Null;
 
-        term = term.normalize();
-        if (term == null)
-            return Null;
+        Term term2 = term.normalize();
+        if (term2!=term) {
+            if (term2 == null)
+                return Null;
 
-        if (!term.op().conceptualizable)
-            return Null;
-        //!Task.validConceptTerm(term, true)
+            if (!term2.op().conceptualizable)
+                return Null;
 
-        if (Param.DEBUG_EXTRA) {
-            if (this != term) {
-                //DEBUG_EXTRA
-                Term t2 = term.conceptual();
-                if (!t2.equals(term)) {
-                    throw new RuntimeException("templates only should be generated for rooted terms:\n\t" + term + "\n\t" + t2);
-                }
-            }
+            term = term2;
         }
-
 
         return term;
     }

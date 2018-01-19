@@ -54,8 +54,9 @@ public abstract class Param {
 
 
     public static final boolean FILTER_DYNAMIC_MATCHES = true;
-    //    private float minHypoPremisesPerConceptFire = 3;
-    //    private float maxHypoPremisesPerConceptFire = 6;
+
+    /** experimental increased confidence calculation for composition, taken from the NAL spec but is different from OpenNARS */
+    public static final boolean STRONG_COMPOSITION = false;
 
 
     public static boolean DEBUG_FILTER_DUPLICATE_MATCHES = Param.DEBUG_EXTRA;

@@ -101,6 +101,8 @@ public abstract class TermIndex implements TermContext {
     @Nullable
     public final Concept concept(Termed x, boolean createIfMissing) {
 
+        x = x.unneg();
+
         Term y;
         if (x instanceof Concept) {
             Concept ct = (Concept) x;

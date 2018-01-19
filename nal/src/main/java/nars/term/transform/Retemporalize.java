@@ -38,7 +38,7 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
 
         @Override
         public @Nullable Term transformCompound(Compound x, Op op, int dt) {
-            assert(dt == XTERNAL || dt == DTERNAL);
+            assert (dt == XTERNAL || dt == DTERNAL);
             return xternalIfNecessary(x, Retemporalize.super.transformCompound(x, op, dt), dt);
         }
 
@@ -48,39 +48,89 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
         }
 
         Term xternalIfNecessary(Compound x, Term y, int dtTried) {
-
-            if (x!=y) {
-                //quick tests, not exhaustive
-                //opX, for compounds, includes the subterms in the comparison
-                //if ((y.opX() != x.opX()) || (y.volume()!=x.volume()) || y.structure()!=x.structure()) {
-                boolean corrupted = false;
-                Op op;
-                if (y == null || y instanceof Bool || (op = x.op())!=y.op()) {
-                    corrupted = true;
-                } else {
-                    if (op == CONJ) {
-                        //verify event count remains the same
-
-                        corrupted = y.structure()!=x.structure() || x.eventCount()!=y.eventCount();
-                    } else if (op == IMPL){
-                        //compare subj and pred separately
-                        for (int i = 0; i < 2; i++) {
-                            Term a = x.sub(i);
-                            Term b = y.sub(i);
-                            if (!a.equals(b) && (((a.opX() != b.opX()) || (a.volume() != b.volume()) || a.structure() != b.structure() || x.eventCount()!=y.eventCount()))) {
-                                corrupted = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                if (corrupted) {
-                    //oops; deformed - we need XTERNAL
-                    return Retemporalize.super.transformCompound(x, x.op(), dtTried == DTERNAL ? XTERNAL : DTERNAL);
-                }
+            if (x != y && corrupted(x, y)) {
+                //oops; deformed - we need XTERNAL
+                return Retemporalize.super.transformCompound(x, x.op(), dtTried == DTERNAL ? XTERNAL : DTERNAL);
             }
             return y;
+        }
+
+        /** verifies events remain unchanged */
+        private boolean corrupted(Term x, Term y) {
+            Op xop;
+            if (y == null || y instanceof Bool || ((xop = x.op())!=y.op())) {
+                return true;
+            }
+
+            if (!x.equals(y)) {
+
+                switch (xop) {
+                    case CONJ:
+                        return conjCorrupted(x, y);
+                    case IMPL:
+                        return implCorrupted(x, y);
+                    default:
+                        return (x.subs() != y.subs()) || (y.volume() != x.volume()) || y.structure() != x.structure(); //etc
+                }
+            }
+
+            return false;
+        }
+
+        private boolean implCorrupted(Term x, Term y) {
+            if (y.op() != IMPL || x.structure() != y.structure() || x.volume() != y.volume())
+                return true;
+            //compare subj and pred separately
+
+            for (int i = 0; i < 2; i++) {
+                Term a = x.sub(i);
+                Term b = y.sub(i);
+                if (corrupted(a, b)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private boolean conjCorrupted(Term x, Term y) {
+            boolean corrupted;
+            if (y.structure() != x.structure()) {
+                corrupted = true;
+            } else {
+                switch (x.dt()) {
+                    case 0:
+                    case DTERNAL:
+                    case XTERNAL:
+                        corrupted = (x.subs() != y.subs() || x.volume() != y.volume());
+                        break;
+                    default:
+//                        System.out.println(x + " " + recursiveEvents(x));
+//                        System.out.println(y + " " + recursiveEvents(y));
+//                        System.out.println();
+                        corrupted = recursiveEvents(x) != recursiveEvents(y);
+                        break;
+                }
+            }
+            return corrupted;
+        }
+
+        int recursiveEvents(Term x) {
+            if (x.op() == NEG && x.unneg().op()==CONJ) {
+                x = x.unneg();
+            } else if (x.op() != CONJ) {
+                return 1;
+            }
+
+            return x.intifyShallow((s,t) -> {
+                switch (t.op()) {
+                    case NEG:
+                        return s + recursiveEvents(t.unneg()); //blow past through it
+                    case CONJ:
+                        return s + recursiveEvents(t); //t.sum(this::recursiveEvents);
+                    default:
+                        return s + 1;
+                }
+            }, 0);
         }
 
         @Override
@@ -131,7 +181,6 @@ public interface Retemporalize extends TermTransform.NegObliviousTermTransform {
 
         }
     };
-
 
 
     default Term transformTemporal(Compound x, int dtNext) {
