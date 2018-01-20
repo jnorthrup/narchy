@@ -1,11 +1,15 @@
 package nars.term.anon;
 
 import jcog.list.FasterList;
+import nars.Op;
 import nars.Task;
+import nars.The;
 import nars.subterm.Subterms;
+import nars.subterm.TermList;
 import nars.subterm.TermVector;
 import nars.task.TaskProxy;
 import nars.term.Compound;
+import nars.term.CompoundDTLight;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
@@ -19,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import static nars.term.anon.Anom.MAX_ANOM;
+import static nars.time.Tense.DTERNAL;
 
 /**
  * term anonymization context, for canonicalization and generification of compounds
@@ -49,8 +54,20 @@ public class Anon {
         return (byte) s;
     };
 
+    static class DirectTermTransform implements TermTransform {
+        @Override
+        public Term the(Op op, int dt, TermList t) {
+            Term x = The.rawCompoundBuilder.apply(op, t.arraySharedSafe());
+            if (dt!=DTERNAL && x.op().temporal) {
+                return new CompoundDTLight((Compound)x, dt);
+            } else {
+                return x;
+            }
+        }
+    }
+
     protected TermTransform newPut() {
-        return new TermTransform() {
+        return new DirectTermTransform() {
             @Override
             public final @Nullable Termed transformAtomic(Term atomic) {
                 return put(atomic);
@@ -59,7 +76,7 @@ public class Anon {
     }
 
     protected TermTransform newGet() {
-        return new TermTransform() {
+        return new DirectTermTransform() {
             @Override
             public final @Nullable Termed transformAtomic(Term atomic) {
                 return get(atomic);

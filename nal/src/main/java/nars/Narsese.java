@@ -387,7 +387,7 @@ public class Narsese {
      */
     Term _term(String s) throws NarseseException {
 
-        Exception ee;
+        Exception ee = null;
         try {
             //Term x = singleTerms.get(s);
 
@@ -404,7 +404,7 @@ public class Narsese {
                     return (Term) x;
             }
 
-            return Null;
+
 
         } catch (Exception e) {
             ee = e;

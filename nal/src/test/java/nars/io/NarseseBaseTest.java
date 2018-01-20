@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static nars.Op.PROD;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class NarseseBaseTest extends NarseseTest {
@@ -141,7 +142,7 @@ public class NarseseBaseTest extends NarseseTest {
         String tt = "(a,b,c)";
         Task t = task(tt + '@');
         assertNotNull(t);
-        assertEquals(Op.PROD, t.op());
+        assertEquals(PROD, t.op());
         assertEquals(tt, t.term().toString());
         assertEquals('@', t.punc());
         assertNull(t.truth());
@@ -162,7 +163,7 @@ public class NarseseBaseTest extends NarseseTest {
         Compound pt = term("(a, b, c)");
 
         assertNotNull(pt);
-        assertEquals(Op.PROD, pt.op());
+        assertEquals(PROD, pt.op());
 
         testProductABC(pt);
 
@@ -200,7 +201,7 @@ public class NarseseBaseTest extends NarseseTest {
         assertEquals(2, a.subs());
 
         Compound b = term("(x * y)");
-        assertEquals(Op.PROD, b.op());
+        assertEquals(PROD, b.op());
         assertEquals(2, b.subs());
 
         Compound c = term("(<a -->b> && y)");
@@ -295,6 +296,12 @@ public class NarseseBaseTest extends NarseseTest {
         taskParses("break({t001},SELF)! %1.00;0.95%");
     }
 
+    @Test
+    public void testWeirdParse() throws Narsese.NarseseException {
+        assertThrows(Narsese.NarseseException.class,()-> $.$("( &&-59 ,a, b, c)").toString());
+        assertEquals("(&&,a,b,c,-59)", $.$("(&&,a,b,c,-59)"));
+        assertEquals("(&&,a,b,c,-59)", $.$("(&&,-59,a,b,c)"));
+    }
 
     @Test
     public void testCompoundTermOpenerCloserStatements() throws Narsese.NarseseException {
@@ -545,8 +552,9 @@ public class NarseseBaseTest extends NarseseTest {
 
     @Test
     public void testEmptyProduct() throws Narsese.NarseseException {
-        Compound e = term("()");
-        assertNotNull(e);
+        Term e = term("()");
+        assertSame(Op.ZeroProduct, e);
+        assertEquals(PROD, e.op());
         assertEquals(0, e.subs());
         assertEquals(term("()"), term("( )"));
         assertEquals(term("()"), term(" (   )"));

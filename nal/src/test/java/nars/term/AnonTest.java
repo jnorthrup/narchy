@@ -40,9 +40,19 @@ public class AnonTest {
 
         assertAnon("(_1-->#1)", "(a-->#1)");
 
+        assertAnon("{_1}", "{a}");
+        assertAnon("{_1,_2}", "{a,b}");
+        assertAnon("{_1,_2,_3}", "{a,b,c}");
+        assertAnon("(_1 ==>+- _2)", "(x ==>+- y)");
+
         assertAnon("(((_1-->(_2,_3,#1))==>(_4,_5)),?2)",
                 "(((a-->(b,c,#2))==>(e,f)),?1)");
 
+    }
+
+    @Test public void testCompoundsWithNegations() throws Narsese.NarseseException {
+        assertAnon("((--,_1),_1,_2)", "((--,a), a, c)");
+        assertAnon("(--,((--,_1),_1,_2))", "--((--,a), a, c)");
     }
 
     @Test @Disabled
@@ -107,6 +117,7 @@ public class AnonTest {
         return assertAnon(expect, $(test));
     }
 
+    /** roundtrip test */
     static Anon assertAnon(String expect, Term x) {
         Anon a = new Anon();
         Term y = a.put(x);

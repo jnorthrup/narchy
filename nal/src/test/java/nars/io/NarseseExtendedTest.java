@@ -192,6 +192,15 @@ public class NarseseExtendedTest extends NarseseTest {
         assertEquals("(--,sentence(x))", term("--sentence(x)").toString());
     }
 
+    @Test public void testNegationShortHandAsSubterms() throws Narsese.NarseseException {
+        assertEquals("(--,a)", term("--a").toString());
+        assertEquals("((--,a))", term("(--a)").toString());
+        assertEquals("((--,a),a,c)", term("( --a , a, c)").toString());
+        assertEquals("((--,a),a,c)", term("(--a, a, c)").toString());
+        assertEquals("(a,(--,a),c)", term("(a, --a, c)").toString());
+        assertEquals("((--,a),(--,(a)),a,c)", term("(--a, --(a), a, c)").toString());
+    }
+
     @Test public void testNegation3() throws Narsese.NarseseException {
 
 
@@ -201,12 +210,12 @@ public class NarseseExtendedTest extends NarseseTest {
 
         assertEquals( "(--,(x&&y))", term("-- (x && y)").toString() );
 
-        assertEquals( term("(goto(z) <=>+5 --(x))"),
-                term("(goto(z) <=>+5 (--,(x)))")
+        assertEquals( term("(goto(z) ==>+5 --(x))"),
+                term("(goto(z) ==>+5 (--,(x)))")
         );
 
-        assertEquals( term("(goto(z) <=>+5 --x:y)"),
-                      term("(goto(z) <=>+5 (--,x:y))")
+        assertEquals( term("(goto(z) ==>+5 --x:y)"),
+                      term("(goto(z) ==>+5 (--,x:y))")
         );
 
         Compound nab = term("--(a & b)");

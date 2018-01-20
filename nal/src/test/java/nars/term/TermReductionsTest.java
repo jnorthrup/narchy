@@ -189,7 +189,7 @@ public class TermReductionsTest extends NarseseTest {
 
         assertReduction("((a &&+5 $1) ==>+5 c)", "((a &&+5 $1)=|>($1 &&+5 c))");
 
-        assertReduction(Null, "((a &&+5 $1) ==>-5 a");
+        assertReduction(True, "((a &&+5 $1) ==>-5 a)");
 
     }
 
@@ -878,7 +878,7 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     public void testRepeatInverseEquivalent() throws Narsese.NarseseException {
         assertEquals($("((a1) &&-1 (a1))"), $("((a1) &&+1 (a1))"));
-        assertEquals($("((a1) <=>-1 (a1))"), $("((a1) <=>+1 (a1))"));
+        assertEquals($("((a1) =|> (a1))"), $("((a1) =|> (a1))"));
     }
 
     @Test

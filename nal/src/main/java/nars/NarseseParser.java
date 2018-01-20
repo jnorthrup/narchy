@@ -342,8 +342,6 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                         seq(oper, ColonReverseInheritance()),
 
-                        //negation shorthand
-                        seq(NEG.str, Term(), push(($.the(pop())).neg())),
 
 
                         //TODO match Ellipsis as an optional continuation of the prefix variable that was already parsed.\
@@ -403,6 +401,8 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                         AtomStr(),
 
                         Variable(),
+                        //negation shorthand
+                        seq(NEG.str, Term(), push(($.the(pop())).neg())),
 
                         //deprecated form: <a --> b>
                         seq(OLD_STATEMENT_OPENER,
@@ -715,7 +715,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
     Rule sepArgSep() {
         return firstOf(
-                seq(s(), optional(ARGUMENT_SEPARATOR), s()),
+                seq(s(), /*optional*/(ARGUMENT_SEPARATOR), s()),
                 ss()
         );
     }

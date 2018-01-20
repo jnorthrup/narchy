@@ -6,7 +6,6 @@ import nars.Task;
 import nars.control.MetaGoal;
 import nars.table.BeliefTable;
 import nars.table.DefaultBeliefTable;
-import nars.task.DerivedTask;
 import nars.task.NALTask;
 import nars.task.signal.SignalTask;
 import nars.truth.Stamp;
@@ -96,7 +95,7 @@ public class PredictionFeedback {
     private static boolean signalOrRevisedSignal(short cause, Task existing) {
         if (existing instanceof SignalTask)
             return true;
-        if (existing instanceof DerivedTask)
+        if (existing.isCyclic())
             return false;
 
         short[] cc = existing.cause();
@@ -105,10 +104,11 @@ public class PredictionFeedback {
             case 0: return false;
             case 1: return cc[0] == cause;
             default:
-                for (short x : cc)
-                    if (x != cause)
-                        return false;
-                return true;
+                return false;
+//                for (short x : cc)
+//                    if (x != cause)
+//                        return false;
+//                return true;
         }
     }
 

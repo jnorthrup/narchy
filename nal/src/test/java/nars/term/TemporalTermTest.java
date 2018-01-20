@@ -422,20 +422,6 @@ public class TemporalTermTest {
         testParse("(goto(#1) &&-5 at(SELF,#1))", "(at(SELF,#1) &&+5 goto(#1))");
     }
 
-    @Test
-    public void testCommutiveEquivAgain1() throws Narsese.NarseseException {
-        assertEquals($("((--,(0,0)) <=>+48 (happy))"), $("((happy) <=>-48 (--,(0,0)))"));
-    }
-
-    @Test
-    public void testCommutiveEquivAgain2() throws Narsese.NarseseException {
-        assertEquals($("((--,(0,0)) <=>+48 (happy))"), $("((--,(happy)) <=>-48 (0,0))"));
-    }
-
-    @Test
-    public void testCommutiveEquivAgain3() throws Narsese.NarseseException {
-        assertEquals($("((--,(0,0)) <=>+48 (--,(happy)))"), $("((--,(happy)) <=>-48 (--,(0,0)))"));
-    }
 
     void testParse(String s) {
         testParse(s, null);
@@ -819,21 +805,7 @@ public class TemporalTermTest {
         assertNotEquals(Op.Null, x.dt(XTERNAL));
     }
 
-    @Test
-    public void testWeirdParse() throws Narsese.NarseseException {
-        assertEquals("(&&,a,b,c,-59)", $("( &&-59 ,a, b, c)").toString());
 
-//        assertNotNull(x.dt(0));
-//        assertNotNull(x.dt(0).dt(DTERNAL));
-//        assertEquals(x, x.dt(0).dt(DTERNAL));
-//
-//        try {
-//            x.dt(-59);
-//            assertTrue(x.toString(), false);
-//        } catch (InvalidTerm e) {
-//            assertTrue(true);
-//        }
-    }
 
     @Test
     public void testConjRoot() throws Narsese.NarseseException {

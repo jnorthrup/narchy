@@ -57,7 +57,7 @@ public interface TermTransform extends TermContext {
         } else if (yy != xx || op != x.op()) {
 
 
-            Term z = the(op, dt, yy);
+            Term z = the(op, dt, (TermList)yy);
 
 
 //            if (op==x.op() && Arrays.equals(xx.arrayShared(),z.subterms().arrayShared())) {
@@ -151,10 +151,11 @@ public interface TermTransform extends TermContext {
     /**
      * constructs a new term for a result
      */
-    default Term the(Op op, int dt, Subterms t) {
+    default Term the(Op op, int dt, TermList t) {
         return op.the(dt,
         //return op.a(dt,
-                ((TermList)t).toArrayRecycled(Term[]::new)); //optimized impl for TermList (FasterList)
+                t.arraySharedSafe()
+                ); //optimized impl for TermList (FasterList)
                 //t.arrayShared());
 
     }

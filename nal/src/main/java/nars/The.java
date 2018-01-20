@@ -6,6 +6,7 @@ import nars.derive.match.Ellipsis;
 import nars.derive.match.EllipsisMatch;
 import nars.index.term.ByteKeyProtoCompound;
 import nars.subterm.ArrayTermVector;
+import nars.subterm.Neg;
 import nars.subterm.Subterms;
 import nars.subterm.UnitSubterm;
 import nars.term.Term;
@@ -174,12 +175,22 @@ public interface The {
             assert (o.minSize <= s || hasEllipsis) :
                     "subterm underflow: " + o + ' ' + (subterms);
 
-            if (s == 1 && o!=PROD) {
-                //use full CachedCompound for PROD
-                return new CachedUnitCompound(o, subterms[0]);
-            } else {
-                return new CompoundCached(o, The._subterms(subterms));
+            if (s == 1) {
+                switch (o) {
+                    case NEG:
+                        return Neg.the(subterms[0]);
+                    case PROD:
+                        //use full CachedCompound for PROD
+                        //use default below
+                        break;
+                    default:
+                        return new CachedUnitCompound(o, subterms[0]);
+                }
+
+
             }
+
+            return new CompoundCached(o, The._subterms(subterms));
 
         };
 

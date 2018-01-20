@@ -69,7 +69,9 @@ public enum Op {
 
         @Override
         public Term __the(int dt, Term[] u) {
-            assert (u.length == 1); //assert (dt == DTERNAL || dt == XTERNAL);
+            //assert(u.length == 1);
+            if (u.length != 1) //assert (dt == DTERNAL || dt == XTERNAL);
+                throw new RuntimeException("negation requires one subterm");
             return Neg.the(u[0]);
         }
 

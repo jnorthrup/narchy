@@ -95,4 +95,9 @@ public class TermList extends FasterList<Term> implements Subterms {
             addWithoutResizeCheck(x.sub(i));
         }
     }
+
+    /** use this only if the TermList is done being modified */
+    public Term[] arraySharedSafe() {
+        return toArrayRecycled(Term[]::new);
+    }
 }
