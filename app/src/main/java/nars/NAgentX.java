@@ -197,14 +197,14 @@ abstract public class NAgentX extends NAgent {
         n.conceptActivation.set(0.1f);
 
         n.dtMergeOrChoose.set(true);
-        n.dtDither.set(
-            1f
-            //0.5f //nyquist
+        n.dtDither(
+            //1f
+            0.5f //nyquist
         );
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(32);
+        n.termVolumeMax.set(36);
 
         n.beliefConfidence(0.9f);
         n.goalConfidence(0.9f);
@@ -233,7 +233,7 @@ abstract public class NAgentX extends NAgent {
         Loop aLoop = a.runFPS(agentFPS);
 
 
-        //n.dtDither.setValue(0.25f);
+
         //n.dtMergeOrChoose.setValue(true);
 
         //STMLinkage stmLink = new STMLinkage(n, 1, false);

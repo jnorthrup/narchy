@@ -723,6 +723,9 @@ public enum Util {
     public static int round(int x, int dither) {
         return dither * Math.round(((float) x) / dither);
     }
+    public static long round(long x, int dither) {
+        return dither * Math.round(((double) x) / dither);
+    }
 
     public static float floor(float value, float epsilon) {
         return (float) (Math.floor(value / epsilon) * epsilon);

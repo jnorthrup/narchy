@@ -20,8 +20,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static jcog.Util.unitize;
 import static nars.Op.*;
 import static nars.control.MetaGoal.*;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
 
 /**
  * NAR Parameters
@@ -216,31 +214,14 @@ public abstract class Param {
      * how many durations above which to dither dt relations to dt=0 (parallel)
      * set to zero to disable dithering.  typically the value will be 0..1.0.
      */
-    public final MutableFloat dtDither = new MutableFloat(0.5f);
+    private final MutableFloat dtDither = new MutableFloat(0.5f);
+
+    public void dtDither(float durations) {
+        dtDither.set(durations);
+    }
 
     public int dtDitherCycles() {
         return Math.max(1, Math.round(dtDither.floatValue() * dur()));
-    }
-
-    /**
-     * dt in cycles
-     */
-    public int dtDither(int dt) {
-
-        int dither = dtDitherCycles();
-        if (dither > 1) {
-            if (dt == DTERNAL)
-                return DTERNAL;
-            if (dt == XTERNAL)
-                return XTERNAL;
-
-            if (Math.abs(dt) < dither)
-                return 0; //collapse to simultaneity with present moment
-            else
-                return Util.round(dt, dither);
-        } else {
-            return dt; //unaffected
-        }
     }
 
     abstract int dur();
@@ -651,6 +632,7 @@ public abstract class Param {
         //evi * Util.sqr(1f-Util.unitize(overlap));
         //evi * (1f-overlap);
     }
+
 
 
 }

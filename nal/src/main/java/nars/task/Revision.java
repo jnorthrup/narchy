@@ -9,6 +9,7 @@ import nars.Task;
 import nars.control.Cause;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -23,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.TreeSet;
 
 import static jcog.Util.lerp;
 import static nars.Op.*;
@@ -139,20 +141,11 @@ public class Revision {
 
                 boolean mergeOrChoose = nar.dtMergeOrChoose.get();
                 if (ao == CONJ) {
-                    if (!a.subterms().hasAny(Op.CONJ) && !b.subterms().hasAny(Op.CONJ)) {
-                        if (mergeOrChoose)
-                            return dtMergeDirect(a, b, aProp, curDepth, nar);
-                        else
-                            return choose(a, b, aProp, nar.random());
-                    } else {
-                        return dtMergeConjEvents(a, bOffset, b, aProp, curDepth, mergeOrChoose, nar.random());
-                    }
+
+                    return dtMergeConjEvents(a, bOffset, b, aProp, curDepth, mergeOrChoose, nar.random(), nar.dtDitherCycles());
+
                 } else if (ao == IMPL) {
-                    if (mergeOrChoose) {
-                        return dtMergeDirect(a, b, aProp, curDepth, nar);
-                    } else {
-                        return choose(a, b, aProp, nar.random());
-                    }
+                    return dtMergeDirect(a, b, aProp, curDepth, nar, mergeOrChoose);
                 } else
                     throw new UnsupportedOperationException();
             } else {
@@ -193,28 +186,92 @@ public class Revision {
      * TODO handle common ending suffix, not just prefix
      * TODO maybe merge based on the event separation time, preserving the order. currently this may shuffle the order though when events are relative to the sequence beginning this can makes sense
      */
-    private static Term dtMergeConjEvents(Term a, long bOffset, Term b, float aProp, float curDepth, boolean mergeOrChoose, Random rng) {
+    private static Term dtMergeConjEvents(Term a, long bOffset, Term b, float aProp, float curDepth, boolean mergeOrChoose, Random rng, int dither) {
 
-        FasterList<LongObjectPair<Term>> ae = a.eventList(0);
-        FasterList<LongObjectPair<Term>> be = b.eventList(bOffset);
+        FasterList<LongObjectPair<Term>> ae = a.eventList(0, dither);
+        FasterList<LongObjectPair<Term>> be = b.eventList(bOffset, dither);
+
+
         int as = ae.size();
         int bs;
         if (as != (bs = be.size())) {
-            int pn = Math.min(as, bs) - 1;
+            int pnn = Math.min(as, bs);
+            int pn = pnn - 1;
             FasterList<LongObjectPair<Term>> shorter = (as < bs) ? ae : be; /* prefer the shorter for the reconstruction */
             if (pn > 0) {
-                Term prefix = conjMergeSeqEqualEvents(aProp, mergeOrChoose, rng, ae, be, pn);
-                Term suffix = Op.conjEternalize(shorter, pn, shorter.size());
-                return mergeConjSeq(ae, be, pn, aProp, mergeOrChoose, rng, suffix, prefix);
+                //decide forward or reverse
+                int matchesForward = 0, matchesReverse = 0;
+                for (int i = 0; i < pnn; i++) {
+                    if (ae.get(i).getTwo().equals(be.get(i).getTwo()))
+                        matchesForward++;
+                    else
+                        break;
+                }
+                if (matchesForward < pnn) {
+                    for (int i = 0; i < pnn; i++) {
+                        Term aa = ae.get((as - 1) - i).getTwo();
+                        Term bb = be.get((bs - 1) - i).getTwo();
+                        if (aa.equals(bb))
+                            matchesReverse++;
+                        else
+                            break;
+                    }
+                }
+                if (matchesForward > matchesReverse) {
+                    Term prefix = conjMergeSeqEqualEvents(ae, be, aProp, mergeOrChoose, rng, pn, dither);
+                    if (prefix == Null) return Null;
+                    Term suffix = Op.conjEternalize(shorter, pn, shorter.size());
+                    if (suffix == Null) return Null;
+                    return mergeConjSeq(ae, be, pn, aProp, mergeOrChoose, rng, suffix, prefix, dither);
+                } else {
+                    TreeSet<Term> ete = new TreeSet();
+                    long lastA = 0, lastB = 0;
+
+                    if (ae.size() != be.size()) {
+                        boolean alarger = ae.size() > be.size();
+                        FasterList<LongObjectPair<Term>> longer = alarger ? ae : be;
+                        int toRemove = Math.abs(ae.size() - be.size());
+                        for (int i = 0; i < toRemove; i++) {
+                            LongObjectPair<Term> lr = longer.remove(0);
+                            long lro = lr.getOne();
+                            if (alarger)
+                                lastA = Math.max(lastA, lro);
+                            else
+                                lastB = Math.max(lastB, lro);
+                            ete.add(lr.getTwo());
+                        }
+                        assert (ae.size() == be.size());
+                    }
+                    while (ae.size() > matchesReverse) {
+                        if (!ae.isEmpty()) {
+                            LongObjectPair<Term> ar = ae.remove(0);
+                            lastA = Math.max(lastA, ar.getOne());
+                            ete.add(ar.getTwo());
+                        }
+                        if (!be.isEmpty()) {
+                            LongObjectPair<Term> br = be.remove(0);
+                            lastB = Math.max(lastB, br.getOne());
+                            ete.add(br.getTwo());
+                        }
+                    }
+
+                    Term prefix = CONJ.the(DTERNAL, ete);
+                    if (prefix == Null) return Null;
+                    Term suffix = conjMergeSeqEqualEvents(ae, be, aProp, mergeOrChoose, rng, ae.size(), dither);
+                    if (suffix == Null) return Null;
+
+                    int ad = (int) (ae.get(0).getOne() - lastA);
+                    int bd = (int) (be.get(0).getOne() - lastB);
+                    int ditheredGap = ditheredGap(ad, bd, aProp, mergeOrChoose, rng);
+                    return mergeConjSeq(suffix, prefix, ditheredGap);
+                }
             } else {
                 //entirely dternalize
                 return Op.conjEternalize(shorter, 0, shorter.size());
             }
         }
 
-        return conjMergeSeqEqualEvents(aProp, mergeOrChoose, rng, ae, be, as);
-
-
+        return conjMergeSeqEqualEvents(ae, be, aProp, mergeOrChoose, rng, as, dither);
 
 
 //        Map<Term,LongHashSet> events = new HashMap();
@@ -266,12 +323,30 @@ public class Revision {
 //        return Op.conjEvents(x);
     }
 
-    private static Term conjMergeSeqEqualEvents(float aProp, boolean mergeOrChoose, Random rng, FasterList<LongObjectPair<Term>> ae, FasterList<LongObjectPair<Term>> be, int n) {
+    private static Term conjMergeSeqEqualEvents(FasterList<LongObjectPair<Term>> ae, FasterList<LongObjectPair<Term>> be, float aProp, boolean mergeOrChoose, Random rng, int n, int dither) {
+
+
         int changePoint = n;
         for (int i = 0; i < n; i++) {
             if (!ae.get(i).getTwo().equals(be.get(i).getTwo())) {
                 changePoint = i;
                 break;
+            }
+        }
+        if (n >= 3 && changePoint < n / 2) {
+            //try reverse to match the ends
+            int changePointRev = 0;
+            for (int i = n - 1; i >= 0; i--) {
+                if (!ae.get(i).getTwo().equals(be.get(i).getTwo())) {
+                    changePointRev = i;
+                    break;
+                }
+            }
+            if (changePointRev != changePoint) {
+                //match in reverse mode
+                changePoint = (n - 1) - changePointRev;
+                ae.reverseThis();
+                be.reverseThis();
             }
         }
 
@@ -284,17 +359,22 @@ public class Revision {
 
 
         Term prefix = mergeConjSeq(ae, be, changePoint, aProp, mergeOrChoose, rng, n);
-        if (suffix==null) {
+        if (suffix == null) {
             return prefix;
         } else {
-            return mergeConjSeq(ae, be, changePoint, aProp, mergeOrChoose, rng, suffix, prefix);
+            return mergeConjSeq(ae, be, changePoint, aProp, mergeOrChoose, rng, suffix, prefix, dither);
         }
     }
 
-    private static Term mergeConjSeq(FasterList<LongObjectPair<Term>> ae, FasterList<LongObjectPair<Term>> be, int attachPoint, float aProp, boolean mergeOrChoose, Random rng, Term suffix, Term prefix) {
+    private static Term mergeConjSeq(FasterList<LongObjectPair<Term>> ae, FasterList<LongObjectPair<Term>> be, int attachPoint, float aProp, boolean mergeOrChoose, Random rng, Term suffix, Term prefix, int dither) {
+        int ad = (int) (ae.get(attachPoint).getOne() - ae.get(attachPoint - 1).getOne());
+        int bd = (int) (be.get(attachPoint).getOne() - be.get(attachPoint - 1).getOne());
+        int gap = ditheredGap(ad, bd, aProp, mergeOrChoose, rng);
+        return mergeConjSeq(suffix, prefix, Tense.dither(gap, dither));
+    }
+
+    private static int ditheredGap(int ad, int bd, float aProp, boolean mergeOrChoose, Random rng) {
         int gap;
-        int ad = (int) (ae.get(attachPoint).getOne()-ae.get(attachPoint -1).getOne());
-        int bd = (int) (be.get(attachPoint).getOne()-be.get(attachPoint -1).getOne());
         if (ad == bd)
             gap = ad;
         else {
@@ -304,7 +384,11 @@ public class Revision {
                 gap = (rng.nextFloat() <= aProp) ? ad : bd;
             }
         }
-        return CONJ.the(gap, prefix, suffix);
+        return gap;
+    }
+
+    private static Term mergeConjSeq(Term suffix, Term prefix, int ditheredGap) {
+        return CONJ.the(ditheredGap, prefix, suffix);
     }
 
     private static Term mergeConjSeq(FasterList<LongObjectPair<Term>> ae, FasterList<LongObjectPair<Term>> be, int changePoint, float aProp, boolean mergeOrChoose, Random rng, int n) {
@@ -329,10 +413,9 @@ public class Revision {
 
 
     /*@NotNull*/
-    private static Term dtMergeDirect(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp, float depth, NAR nar) {
+    private static Term dtMergeDirect(/*@NotNull*/ Term a, /*@NotNull*/ Term b, float aProp, float depth, NAR nar, boolean mergeOrChoose) {
 
         int adt = a.dt();
-
         int bdt = b.dt();
 
 
@@ -346,21 +429,24 @@ public class Revision {
         if (adt == bdt) {
             dt = adt;
         } else {
-            boolean mergeOrChoose = nar.dtMergeOrChoose.get();
-            if (mergeOrChoose) {
-                if (adt == DTERNAL || adt == XTERNAL) {
-                    dt = bdt;
-                } else if (bdt == DTERNAL || bdt == XTERNAL) {
-                    dt = adt;
-                } else {
-                    dt = lerp(aProp, bdt, adt);
-                }
+            if ((adt == XTERNAL) || (bdt == XTERNAL)) {
+                dt = XTERNAL;
+            } else if ((adt == DTERNAL || bdt == DTERNAL) || ((adt >= 0) != (bdt >= 0))) {
+                //opposite directions, so settle for DTERNAL
+                dt = DTERNAL;
             } else {
-                dt = (choose(a, b, aProp, nar.random()) == a) ? adt : bdt;
+
+                if (mergeOrChoose) {
+
+                    dt = lerp(aProp, bdt, adt);
+
+                } else {
+                    dt = (choose(a, b, aProp, nar.random()) == a) ? adt : bdt;
+                }
             }
         }
 
-        dt = nar.dtDither(dt);
+        dt = Tense.dither(dt, nar.dtDitherCycles());
 
         Term a0 = a.sub(0);
         Term a1 = a.sub(1);
@@ -571,10 +657,9 @@ public class Revision {
                     i = Param.MAX_TERMPOLATE_RETRIES; //no need to retry
                 } else {
                     long dt = bs - as;
-                    t = intermpolate(at, dt, bt, aProp, nar);
+                    t = intermpolate(at, Tense.dither(dt, nar), bt, aProp, nar);
                     if (t == null || !t.op().conceptualizable)
                         continue;
-
                 }
 
 

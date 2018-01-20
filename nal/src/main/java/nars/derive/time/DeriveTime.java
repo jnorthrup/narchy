@@ -8,6 +8,7 @@ import nars.task.TimeFusion;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
+import nars.time.Tense;
 
 import java.util.*;
 
@@ -37,7 +38,6 @@ public class DeriveTime extends TimeGraph {
 
     private final Task task, belief;
 
-    private final int dither;
     private final Derivation d;
 
     final Map<Term, ArrayHashSet<Event>> cache;
@@ -54,7 +54,6 @@ public class DeriveTime extends TimeGraph {
         this.d = copy.d;
         this.task = copy.task;
         this.belief = copy.belief;
-        this.dither = copy.dither;
 
         //TODO optimized clone of the copy's graph
         //this.byTerm.putAll(copy.byTerm);
@@ -82,7 +81,6 @@ public class DeriveTime extends TimeGraph {
 
     public DeriveTime(Derivation d, boolean single) {
         this.d = d;
-        this.dither = d.nar.dtDitherCycles();
         this.cache = new HashMap();
 
         know(this.task = d.task);
@@ -126,7 +124,7 @@ public class DeriveTime extends TimeGraph {
 
     @Override
     protected Term dt(Term x, int dt) {
-        int ddt = d.nar.dtDither(dt);
+        int ddt = Tense.dither(dt, d.nar.dtDitherCycles());
         Term y = super.dt(x, ddt);
         if (y instanceof Bool && ddt != dt) {
             //the dithered dt has destroyed it, so try the non-dithered (more precise) dt

@@ -17,8 +17,6 @@ package jcog.util;
 
 import jdk.nashorn.api.scripting.URLReader;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.text.DateFormat;
@@ -74,7 +72,7 @@ public class Grok implements Serializable {
 
     }
 
-    private static final Logger LOG = LoggerFactory.getLogger(Grok.class);
+    //private static final Logger LOG = LoggerFactory.getLogger(Grok.class);
     /**
      * Named regex of the originalGrokPattern.
      */

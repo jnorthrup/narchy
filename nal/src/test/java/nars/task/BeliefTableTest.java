@@ -163,7 +163,7 @@ public class BeliefTableTest {
     @Test
     public void testDurationDithering() {
         NAR n = NARS.tmp();
-        n.dtDither.set(1f);
+        n.dtDither(1f);
         n.time.dur(3);
         TestNAR t = new TestNAR(n);
         t.confTolerance(0.1f);

@@ -41,6 +41,7 @@ import nars.term.transform.Retemporalize;
 import nars.term.transform.TermTransform;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.Variable;
+import nars.time.Tense;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -665,10 +666,12 @@ public interface Term extends Termed, Comparable<Termed> {
         return events;
     }
     /** sorted by time */
-    default FasterList<LongObjectPair<Term>> eventList(long offset) {
+    default FasterList<LongObjectPair<Term>> eventList(long offset, int dtDither) {
         FasterList<LongObjectPair<Term>> events = new FasterList(1);
         eventsWhile((w, t) -> {
-            events.add(PrimitiveTuples.pair(w, t));
+            events.add(PrimitiveTuples.pair(
+                    (dtDither > 1) ? Tense.dither(w, dtDither) : w,
+                    t));
             return true; //continue
         }, offset);
         events.compact();
@@ -693,18 +696,10 @@ public interface Term extends Termed, Comparable<Termed> {
      * event list, sorted by time
      */
     default FasterList<LongObjectPair<Term>> eventList() {
-        return eventList(0);
+        return eventList(0, 1);
     }
 
-    /**
-     * event list, sorted by time
-     */
-    default FasterList<LongObjectPair<Term>> eventList(int offset) {
-        MutableSet<LongObjectPair<Term>> s = eventSet(offset);
-        FasterList l = new FasterList(s);
-        l.sortThis();
-        return l;
-    }
+
 
     default boolean eventsWhile(LongObjectPredicate<Term> whileEachEvent, long dt) {
         return eventsWhile(whileEachEvent, dt, true, false, false, 0);

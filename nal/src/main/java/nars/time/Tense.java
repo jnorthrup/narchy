@@ -1,10 +1,13 @@
 package nars.time;
 
+import jcog.Util;
 import nars.NAR;
 
 
-/** tense modes, and various Temporal utility functions and constants */
-public enum Tense  {
+/**
+ * tense modes, and various Temporal utility functions and constants
+ */
+public enum Tense {
 
     Eternal(":-:"),
     Past(":\\:"),
@@ -18,12 +21,15 @@ public enum Tense  {
     public static final long ETERNAL = Long.MIN_VALUE;
     public static final long TIMELESS = Long.MAX_VALUE;
 
-    /** integer version of long ETERNAL */
+    /**
+     * integer version of long ETERNAL
+     */
     public static final int DTERNAL = Integer.MIN_VALUE;
 
-    /** a dt placeholder value for preventing premature flattening during derivation term construction */
+    /**
+     * a dt placeholder value for preventing premature flattening during derivation term construction
+     */
     public static final int XTERNAL = Integer.MAX_VALUE;
-
 
 
     public final String symbol;
@@ -73,12 +79,46 @@ public enum Tense  {
         }
     }
 
+    public static long dither(long dt, int dither) {
+        if (dither > 1) {
+            if (dt == ETERNAL) return ETERNAL;
+            else if (dt == TIMELESS) return TIMELESS;
+            else return Math.abs(dt) < dither ? 0 : Util.round(dt, dither); //collapse to simultaneous if less than the dither
+        } else {
+            return dt;
+        }
+    }
+
+    public static int dither(int dt, NAR nar) {
+        return dither(dt, nar.dtDitherCycles());
+    }
+
+    public static long dither(long t, NAR nar) {
+        return dither(t, nar.dtDitherCycles());
+    }
+
+    public static int dither(int dt, int dither) {
+        switch (dt) {
+            case DTERNAL:
+                return DTERNAL;
+            case XTERNAL:
+                return XTERNAL;
+            case 0:
+                return 0;
+            default:
+                if (dither > 1)
+                    //collapse to simultaneous if less than the dither
+                    return Math.abs(dt) < dither ? 0 : Util.round(dt, dither);
+                else
+                    return dt; //unaffected
+        }
+    }
+
 
     @Override
     public String toString() {
         return symbol;
     }
-    
 
 
 }
