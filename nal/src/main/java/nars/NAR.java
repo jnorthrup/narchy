@@ -1138,8 +1138,12 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         return outputBinary(f, false);
     }
 
-    public NAR outputBinary(@NotNull File f, boolean append) throws IOException {
-        return outputBinary(f, append, t -> t);
+    public final NAR outputBinary(@NotNull File f, boolean append) throws IOException {
+        return outputBinary(f, append, ((Task t) -> t));
+    }
+
+    public final NAR outputBinary(@NotNull File f, boolean append, Predicate<Task> each) throws IOException {
+        return outputBinary(f, append, (Task t) -> each.test(t) ? t : null);
     }
 
     public NAR outputBinary(@NotNull File f, boolean append, Function<Task, Task> each) throws IOException {
@@ -1151,7 +1155,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     }
 
     public final NAR outputBinary(OutputStream o) {
-        return outputBinary(o, (x)->x);
+        return outputBinary(o, (Task x)->x);
+    }
+    public final NAR outputBinary(OutputStream o, Predicate<Task> filter) {
+        return outputBinary(o, (Task x)-> filter.test(x) ? x : null);
     }
 
     /**
@@ -1231,10 +1238,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         return outputBinary(new FileOutputStream(o), f);
     }
 
-    @NotNull
-    public NAR output(@NotNull OutputStream o, boolean binary) {
+
+    public NAR output(OutputStream o, boolean binary) {
         if (binary) {
-            return outputBinary(o, x -> x.isDeleted() ? null : x);
+            return outputBinary(o, (Task x) -> x.isDeleted() ? null : x);
         } else {
             return outputText(o, x -> x.isDeleted() ? null : x);
         }
@@ -1244,23 +1251,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      * byte codec input stream of tasks, to be input after decode
      * TODO use input(Stream<Task>..</Task>
      */
-    @NotNull
-    public NAR inputBinary(@NotNull InputStream i) throws IOException {
+    public NAR inputBinary(InputStream i) throws IOException {
 
-        //SnappyFramedInputStream i = new SnappyFramedInputStream(tasks, true);
-        DataInputStream ii = new DataInputStream(i);
+        int count = IO.readTasks(i, this::input);
 
-        int count = 0;
-
-        while (i.available() > 0 /*|| (i.available() > 0) || (ii.available() > 0)*/) {
-            Task t = IO.readTask(ii);
-            input(t);
-            count++;
-        }
 
         logger.info("input {} tasks from {}", count, i);
 
-        ii.close();
 
         return this;
     }

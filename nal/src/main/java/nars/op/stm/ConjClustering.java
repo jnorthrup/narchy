@@ -16,6 +16,7 @@ import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.DiscreteTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -23,8 +24,6 @@ import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -68,7 +67,8 @@ public class ConjClustering extends Causable {
     private long now;
     private float confMin;
     private int volMax;
-    private final static Logger logger = LoggerFactory.getLogger(ConjClustering.class);
+    //private final static Logger logger = LoggerFactory.getLogger(ConjClustering.class);
+    private int ditherTime;
 
     public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {
         super(nar);
@@ -97,6 +97,7 @@ public class ConjClustering extends Causable {
 
 
         now = nar.time();
+        ditherTime = nar.dtDitherCycles();
         confMin = nar.confMin.floatValue();
         this.volMax = nar.termVolumeMax.intValue();
 
@@ -177,6 +178,7 @@ public class ConjClustering extends Causable {
         Map<LongObjectPair<Term>, Task> vv = new HashMap<>();
         FasterList<Task> actualTasks = new FasterList();
 
+
         main: while (gg.hasNext() && gen.size() < taskLimitPerCentroid) {
 
             vv.clear();
@@ -202,8 +204,8 @@ public class ConjClustering extends Causable {
                         //gg.peek().id;
                 Term xt = t.term();
 
-                long zs = t.start();
-                long ze = t.end();
+                long zs = Tense.dither(t.start(), ditherTime);
+                long ze = Tense.dither(t.end(), ditherTime);
                 if (start > zs) start = zs;
                 if (end < ze) end = ze;
 //                assert (end >= start);

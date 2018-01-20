@@ -122,7 +122,7 @@ public class GoalActionAsyncConcept extends ActionConcept {
             feedBelief.set(this, f, stamper, beliefTime, dur, nar)
         );
 
-        PredictionFeedback.accept(feedBelief.get() /* in case stretched */, beliefs, nar);
+        PredictionFeedback.feedbackNewSignal(feedBelief.get() /* in case stretched */, beliefs, nar);
     }
 
     //not working yet:

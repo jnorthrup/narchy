@@ -27,6 +27,8 @@ public class SensorConcept extends WiredConcept implements FloatFunction<Term>, 
     public FloatSupplier signal;
     private float currentValue = Float.NaN;
 
+    private transient short cause = -1;
+
     //static final Logger logger = LoggerFactory.getLogger(SensorConcept.class);
 
     public SensorConcept(Term c, NAR n, FloatSupplier signal, FloatToObjectFunction<Truth> truth) {
@@ -81,10 +83,14 @@ public class SensorConcept extends WiredConcept implements FloatFunction<Term>, 
     public boolean add(Task t, NAR n) {
 
         //feedback prefilter non-signal beliefs
-        if (t.isBelief() && !(t instanceof SignalTask)) {
-            PredictionFeedback.accept(t, beliefs, n);
-            if (t.isDeleted())
-                return false;
+        if (!(t instanceof SignalTask) && cause >= 0) {
+            if (t.isBelief()) {
+                PredictionFeedback.feedbackNewBelief(cause, t, beliefs, n);
+                if (t.isDeleted())
+                    return false;
+            }
+        } else {
+            this.cause = ((SignalTask) t).cause[0];
         }
 
         return super.add(t, n);
@@ -94,7 +100,7 @@ public class SensorConcept extends WiredConcept implements FloatFunction<Term>, 
     public Task update(long time, int dur, NAR n) {
         Task x = sensor.update(this, n, time, dur);
 
-        PredictionFeedback.accept(sensor.get() /* get() again in case x is stretched it will be null */, beliefs, n);
+        PredictionFeedback.feedbackNewSignal(sensor.get() /* get() again in case x is stretched it will be null */, beliefs, n);
 
         return x;
     }

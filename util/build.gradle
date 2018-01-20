@@ -42,4 +42,8 @@ dependencies {
         exclude(module: 'annotations')
     }
     compile group: 'org.iq80.snappy', name: 'snappy', version: '0.4'
+
+    compile(group: 'com.netflix.servo', name: 'servo-core', version: '0.12.19') {
+        exclude(module: 'slf4j-api')
+    }
 }

@@ -126,7 +126,7 @@ public class DeriveTime extends TimeGraph {
 
     @Override
     protected Term dt(Term x, int dt) {
-        int ddt = Tense.dither(dt, d.nar.dtDitherCycles());
+        int ddt = Tense.dither(dt, d.ditherTime);
         Term y = super.dt(x, ddt);
         if (y instanceof Bool && ddt != dt) {
             //the dithered dt has destroyed it, so try the non-dithered (more precise) dt

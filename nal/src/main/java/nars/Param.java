@@ -213,6 +213,7 @@ public abstract class Param {
     /**
      * how many durations above which to dither dt relations to dt=0 (parallel)
      * set to zero to disable dithering.  typically the value will be 0..1.0.
+     * TODO move this to Time class and cache the cycle value rather than dynamically computing it
      */
     private final MutableFloat dtDither = new MutableFloat(0.5f);
 

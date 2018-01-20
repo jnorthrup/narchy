@@ -20,10 +20,9 @@ import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import javax.script.ScriptException;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
+import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.term.Functor.f0;
@@ -243,7 +242,7 @@ public class Builtin {
         }));
 
         nar.on(Functor.f2((Atom) $.the("without"), (Term container, Term content) ->
-                nullToNull(Op.without(container, (x)->(x.equalsRoot(content)), nar.random()))));
+                nullToNull(Op.without(container, (x) -> (x.equalsRoot(content)), nar.random()))));
 
         /**
          * TODO rename this to 'dropAnyCommutive'
@@ -414,9 +413,14 @@ public class Builtin {
 
                 int fs = found.size(), f;
                 switch (fs) {
-                    case 0: return Null;
-                    case 1: f = 0; break;
-                    default: f = nar.random().nextInt(fs); break;
+                    case 0:
+                        return Null;
+                    case 1:
+                        f = 0;
+                        break;
+                    default:
+                        f = nar.random().nextInt(fs);
+                        break;
                 }
                 events.remove(f);
                 return Op.conjEvents(events);
@@ -542,6 +546,10 @@ public class Builtin {
             }
         });
 
+        initMemoryOps(nar);
+    }
+
+    public static void initMemoryOps(NAR nar) {
         nar.onOp1("load", (id, nn) -> {
             nar.runLater(() -> {
                 User.the().get(id.toString(), (byte[] x) -> {
@@ -550,17 +558,54 @@ public class Builtin {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    nn.logger.info("loaded {}", id);
                 });
             });
         });
-        nar.onOp1("save", (id, nn) -> {
+
+        /** eternal tasks only */
+        nar.onOp1("remember", (id, nn) -> {
             nar.runLater(() -> {
-                ByteArrayOutputStream memDump;
-                nn.outputBinary(memDump = new ByteArrayOutputStream(128 * 1024));
-                User.the().put(id.toString(), memDump.toByteArray());
+                save(nn, id, Task::isEternal);
+                nn.logger.info("remembered {}", id);
             });
         });
 
+        /** all tasks */
+        nar.onOp1("save", (id, nn) -> {
+            nar.runLater(() -> {
+                save(nn, id, (t) -> true);
+                nn.logger.info("saved {}", id);
+            });
+        });
+
+        nar.onOp2("memory2txtfile", (id, filePath, nn) -> {
+            nar.runLater(() -> {
+                try {
+                    PrintStream p = new PrintStream(new FileOutputStream( $.unquote(filePath) ));
+                    User.the().get(id.toString(), (byte[] x) -> {
+                        try {
+                            IO.readTasks(x, (Task t) -> {
+                                p.println(t.toString(true));
+                            });
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                    p.close();
+                    
+                    nn.logger.info("saved {} to {}", id, filePath);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            });
+        });
+    }
+
+    static void save(NAR nar, Term id, Predicate<Task> filter) {
+        ByteArrayOutputStream memDump;
+        nar.outputBinary(memDump = new ByteArrayOutputStream(256 * 1024), filter);
+        User.the().put(id.toString(), memDump.toByteArray());
     }
 
     public static class System {

@@ -10,6 +10,7 @@ import nars.task.DerivedTask;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.pred.AbstractPred;
+import nars.time.Tense;
 import nars.truth.Truth;
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -57,8 +58,9 @@ public class Taskify extends AbstractPred<Derivation> {
 
         DerivedTask t = (DerivedTask) Task.tryTask(x, punc, tru, (C, tr) -> {
 
-            long start = occ[0];
-            long end = occ[1];
+            int dither = d.ditherTime;
+            long start = Tense.dither(occ[0], dither);
+            long end = Tense.dither(occ[1], dither);
             assert (end >= start): "task has reversed occurrence: " + start + ".." + end;
 
             long[] evi = d.single ? d.evidenceSingle() : d.evidenceDouble();

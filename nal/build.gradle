@@ -39,9 +39,7 @@ buildscript {
 
 dependencies {
     compile project(':util')
-    compile(group: 'com.netflix.servo', name: 'servo-core', version: '0.12.19') {
-        exclude(module: 'slf4j-api')
-    }
+
     compile(group: 'com.github.fge', name: 'grappa', version: '2.1.0-beta.3') {
         exclude(module: 'guava')
         exclude(module: 'asm-debug-all')

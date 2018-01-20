@@ -147,6 +147,7 @@ public class Derivation extends ProtoDerivation {
      * original non-anonymized tasks
      */
     public TruthOperator truthFunction;
+    public int ditherTime;
     //public Map<Term, Term> xyDyn = new HashMap();
 
 
@@ -289,6 +290,7 @@ public class Derivation extends ProtoDerivation {
         if (now != this.time) {
             this.time = now;
             this.dur = nar.dur();
+            this.ditherTime = nar.dtDitherCycles();
             this.freqRes = nar.freqResolution.floatValue();
             this.confRes = nar.confResolution.floatValue();
             this.confMin = nar.confMin.floatValue();

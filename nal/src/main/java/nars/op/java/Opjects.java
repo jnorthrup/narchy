@@ -637,8 +637,8 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     }
 
     protected boolean evoked(Task task, Object[] args) {
-        //if (!task.isInput() && task.meta("pretend") == null)
-            //logger.info("evoke: {}", Param.DEBUG ? task.proof() : task);
+        if (!task.isInput() && task.meta("pretend") == null)
+            logger.info("evoke: {} {}", this, Param.DEBUG ? task.proof() : task);
 
         return true;
     }

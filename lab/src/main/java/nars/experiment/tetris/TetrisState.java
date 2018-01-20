@@ -151,7 +151,7 @@ public class TetrisState {
     }
 
     /* This code applies the action, but doesn't do the default fall of 1 square */
-    public boolean act(int theAction) {
+    public synchronized boolean act(int theAction) {
 
 
         int nextRotation = currentRotation;
@@ -198,11 +198,11 @@ public class TetrisState {
         return act(nextRotation, nextX, nextY);
     }
 
-    public boolean act() {
+    protected boolean act() {
         return act(currentRotation, currentX, currentY);
     }
 
-    public boolean act(int nextRotation, int nextX, int nextY) {
+    protected boolean act(int nextRotation, int nextX, int nextY) {
 
         //Check if the resulting position is legal. If so, accept it.
         //Otherwise, don't change anything
@@ -363,16 +363,16 @@ public class TetrisState {
 
     }
 
-    private boolean nextInBounds() {
+    public boolean nextInBounds() {
         return inBounds(currentX, currentY + 1, currentRotation);
     }
 
-    private boolean nextColliding() {
+    public boolean nextColliding() {
         return colliding(currentX, currentY + 1, currentRotation);
     }
 
     /*Ok, at this point, they've just taken their action.  We now need to make them fall 1 spot, and check if the game is over, etc */
-    void update() {
+    private void update() {
         act();
         time++;
 
@@ -580,7 +580,7 @@ public class TetrisState {
 
     }
 
-    public Random getRandom() {
+    private Random getRandom() {
         return randomGenerator;
     }
 

@@ -1,26 +1,28 @@
 package nars;
 
+import com.netflix.servo.Metric;
 import com.netflix.servo.MonitorRegistry;
-import com.netflix.servo.monitor.*;
+import com.netflix.servo.monitor.Counter;
+import com.netflix.servo.monitor.StepCounter;
 import com.netflix.servo.publish.BasicMetricFilter;
 import com.netflix.servo.publish.MonitorRegistryMetricPoller;
 import com.netflix.servo.publish.PollRunnable;
-import jcog.list.FasterList;
-import jcog.meter.event.BufferedFloatGuage;
+import com.netflix.servo.util.Clock;
+import jcog.meter.FastCounter;
+import jcog.meter.Meter;
+import jcog.meter.MetricsMapper;
+import jcog.meter.event.AtomicFloatGuage;
 import jcog.pri.Pri;
 import nars.control.MetaGoal;
-import nars.util.ConcurrentMonitorRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.PrintStream;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.SortedMap;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import static jcog.Texts.n4;
-import static nars.NInner.id;
+import static jcog.meter.Meter.meter;
 
 /**
  * emotion state: self-felt internal mental states; variables used to record emotional values
@@ -29,24 +31,24 @@ import static nars.NInner.id;
  * <p>
  * default impl
  */
-public class Emotion extends ConcurrentMonitorRegistry {
+public class Emotion implements Meter {
 
     /**
      * priority rate of Task processing attempted
      */
-    public final Counter busyPri = new StepCounter(id("busyPri"));
+    public final Counter busyPri = new StepCounter(meter("busyPri"));
 
 
-    public final Counter conceptFire = new FastCounter(id("concept fire"));
-    public final Counter taskFire = new FastCounter(id("task fire"));
-    public final Counter taskActivation_x100 = new FastCounter(id("task activation pri sum x100"));
-    public final Counter premiseFire = new FastCounter(id("premise fire"));
-    public final Counter premiseFail = new FastCounter(id("premise fail"));
+    public final Counter conceptFire = new FastCounter(meter("concept fire"));
+    public final Counter taskFire = new FastCounter(meter("task fire"));
+    public final Counter taskActivation_x100 = new FastCounter(meter("task activation pri sum x100"));
+    public final Counter premiseFire = new FastCounter(meter("premise fire"));
+    public final Counter premiseFail = new FastCounter(meter("premise fail"));
 
-    public final Counter deriveTask = new FastCounter(id("derive task"));
-    public final Counter deriveEval = new FastCounter(id("derive eval"));
-    public final Counter deriveTemporalFail = new FastCounter(id("derive temporal fail"));
-    public final Counter deriveFail = new FastCounter(id("derive fail"));
+    public final Counter deriveTask = new FastCounter(meter("derive task"));
+    public final Counter deriveEval = new FastCounter(meter("derive eval"));
+    public final Counter deriveTemporalFail = new FastCounter(meter("derive temporal fail"));
+    public final Counter deriveFail = new FastCounter(meter("derive fail"));
     //public final Counter taskIgnored = new FastCounter(id("task ignored"));
 
 
@@ -62,7 +64,7 @@ public class Emotion extends ConcurrentMonitorRegistry {
 
 
     @NotNull
-    public final BufferedFloatGuage busyVol;
+    public final AtomicFloatGuage busyVol;
 
 //    /**
 //     * priority rate of Task processing which affected concepts
@@ -80,7 +82,7 @@ public class Emotion extends ConcurrentMonitorRegistry {
      * happiness rate
      */
     @NotNull
-    public final BufferedFloatGuage happy;
+    public final AtomicFloatGuage happy;
     private final NAR nar;
 
     float _happy;
@@ -112,9 +114,9 @@ public class Emotion extends ConcurrentMonitorRegistry {
 
         this.nar = n;
 
-        this.happy = new BufferedFloatGuage("happy");
+        this.happy = new AtomicFloatGuage("happy");
 
-        this.busyVol = new BufferedFloatGuage("busyV");
+        this.busyVol = new AtomicFloatGuage("busyV");
 
 //        this.learnPri = new BufferedFloatGuage("learnP");
 //        this.learnVol = new BufferedFloatGuage("learnV");
@@ -126,11 +128,34 @@ public class Emotion extends ConcurrentMonitorRegistry {
 
         //this.errrVol = new BufferedFloatGuage("error");
 
-        if (getClass() == Emotion.class) //HACK
-            registerFields(this);
+//        if (getClass() == Emotion.class) //HACK
+//            registerFields(this);
 
     }
 
+    @Override
+    public String name() {
+        return "emotion";
+    }
+
+    @Override
+    public Clock clock() {
+        return nar.time;
+    }
+
+    public Runnable getter(MonitorRegistry reg, Supplier<Map<String,Object>> p) {
+        return new PollRunnable(
+                new MonitorRegistryMetricPoller(reg),
+                BasicMetricFilter.MATCH_ALL,
+                new MetricsMapper(name(), clock(), p) {
+                    @Override
+                    protected void update(List<Metric> metrics, Map<String, Object> map) {
+                        super.update(metrics, map);
+                        map.put("emotion", summary());
+                    }
+                }
+        );
+    }
 
     /**
      * new frame started
@@ -138,9 +163,9 @@ public class Emotion extends ConcurrentMonitorRegistry {
     public void cycle() {
 
         _happy = happy.getSum();
-        happy.clear();
+        happy.commit();
 
-        busyVol.clear();
+        busyVol.commit();
 
     }
 
@@ -292,12 +317,7 @@ public class Emotion extends ConcurrentMonitorRegistry {
 
     }
 
-    public void stat(SortedMap<String, Object> x) {
 
-        monitors.forEach(m -> x.put(m.getConfig().getName(), m.getValue()));
-
-        x.put("emotion", summary());
-    }
 
     /**
      * sensory prefilter
@@ -345,83 +365,6 @@ public class Emotion extends ConcurrentMonitorRegistry {
         MetaGoal.learn(MetaGoal.Answer, answer.cause(), str, nar);
     }
 
-    public Runnable printer(PrintStream out) {
-        return printer(new FastMonitorRegistry(monitors), out);
-    }
-
-    static final class FastCounter extends AtomicLong implements Monitor<Number>, Counter {
-        protected final MonitorConfig config;
-
-        FastCounter(MonitorConfig config) {
-            this.config = config;
-        }
-
-        @Override
-        public final void increment() {
-            incrementAndGet();
-        }
-
-        @Override
-        public void increment(long amount) {
-            getAndAdd(amount);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public final Number getValue(int pollerIdx) {
-            return get();
-        }
-
-        @Override
-        public final Number getValue() {
-            return get();
-        }
-
-        @Override
-        public final MonitorConfig getConfig() {
-            return config;
-        }
-    }
-
-    static final class FastMonitorRegistry implements MonitorRegistry {
-
-        private final FasterList<Monitor<?>> monitors;
-
-        public FastMonitorRegistry(Collection<Monitor<?>> monitors) {
-            this.monitors = new FasterList<>(monitors);
-            this.monitors.sortThis(Comparator.comparing((m)->m.getConfig().getName()));
-        }
-
-        @Override
-        public Collection<Monitor<?>> getRegisteredMonitors() {
-            return monitors;
-        }
-
-        @Override
-        public void register(Monitor<?> monitor) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public void unregister(Monitor<?> monitor) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean isRegistered(Monitor<?> monitor) {
-            throw new UnsupportedOperationException();
-        }
-    }
-
-    public PollRunnable printer(MonitorRegistry reg, PrintStream p) {
-        return new PollRunnable(
-                new MonitorRegistryMetricPoller(reg),
-                BasicMetricFilter.MATCH_ALL,
-                new NInner.PrintStreamMetricObserver("x", nar.time, p)
-        );
-    }
 
 
 //    /** float to long at the default conversion precision */

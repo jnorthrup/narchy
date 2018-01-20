@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static nars.IO.TaskSerialization.TermFirst;
@@ -41,6 +42,23 @@ import static nars.time.Tense.XTERNAL;
  * TODO use http://google.github.io/guava/releases/snapshot/api/docs/com/google/common/io/ByteStreams.html
  */
 public class IO {
+
+    public static int readTasks(byte[] t, Consumer<Task> each) throws IOException {
+        return readTasks(new ByteArrayInputStream(t), each);
+    }
+
+    public static int readTasks(InputStream i, Consumer<Task> each) throws IOException {
+        //SnappyFramedInputStream i = new SnappyFramedInputStream(tasks, true);
+        DataInputStream ii = new DataInputStream(i);
+        int count = 0;
+        while (i.available() > 0 /*|| (i.available() > 0) || (ii.available() > 0)*/) {
+            Task t = readTask(ii);
+            each.accept(t);
+            count++;
+        }
+        ii.close();
+        return count;
+    }
 
     public interface TermEncoder {
         default void write(Term x) {

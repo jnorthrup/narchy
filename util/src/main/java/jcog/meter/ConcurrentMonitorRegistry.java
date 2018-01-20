@@ -1,5 +1,5 @@
 
-package nars.util;
+package jcog.meter;
 
 import com.google.common.collect.Sets;
 import com.netflix.servo.MonitorRegistry;
@@ -20,6 +20,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 /**
  * MonitorRegistry implementation for Servo monitoring API
@@ -29,12 +30,16 @@ public class ConcurrentMonitorRegistry implements MonitorRegistry {
 
     public final Set<Monitor<?>> monitors = Sets.newConcurrentHashSet();
 
-    public void registerFields(Object o) {
-        Util.getAllDeclaredFields(this, true).forEach(f -> {
+    public void registerFields(Object x) {
+        monitorFields(x, this::registerFields);
+    }
+
+    public static void monitorFields(Object x, Consumer<Monitor> o) {
+        Util.getAllDeclaredFields(x, true).forEach(f -> {
             if (Monitor.class.isAssignableFrom( f.getType() )) {
                 if (f.trySetAccessible()) {
                     try {
-                        register((Monitor) f.get(this));
+                        o.accept((Monitor) f.get(x));
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                         //logger.error("monitor registeration: {} {}", f, e);

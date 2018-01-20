@@ -6,6 +6,7 @@ import nars.Task;
 import nars.control.MetaGoal;
 import nars.table.BeliefTable;
 import nars.table.DefaultBeliefTable;
+import nars.task.DerivedTask;
 import nars.task.NALTask;
 import nars.task.signal.SignalTask;
 import nars.truth.Stamp;
@@ -24,40 +25,62 @@ public class PredictionFeedback {
         this.table = table;
     }*/
 
-    static public void accept(Task x, BeliefTable table, NAR nar) {
+
+
+    /**
+     * punish any held non-signal beliefs during the current signal task which has just been input.
+     * time which contradict this sensor reading, and reward those which it supports
+     */
+    static public void feedbackNewSignal(SignalTask x, BeliefTable table, NAR nar) {
         if (x == null)
             return;
 
-        if (x instanceof SignalTask) {
-            feedbackNewSignal((SignalTask) x, table, nar);
-        } else {
-            feedbackNewBelief(x, table, nar);
-        }
+        long start = x.start();
+        long end = x.end();
+
+        List<Task> trash = new FasterList(0);
+        ((DefaultBeliefTable) table).temporal.whileEach(start, end, (y) -> {
+
+            if (y instanceof SignalTask)
+                return true; //ignore previous signaltask
+
+            if (absorb(x, y, start, end, nar)) {
+                trash.add(y);
+            }
+
+            return true; //continue
+        });
+
+        trash.forEach(table::removeTask);
+
     }
+
 
     /**
      * TODO handle stretched tasks
      */
-    static void feedbackNewBelief(Task y, BeliefTable table, NAR nar) {
+    public static void feedbackNewBelief(short cause, Task y, BeliefTable table, NAR nar) {
 
         long start = y.start();
         long end = y.end();
         int dur = nar.dur();
 
-        final SignalTask[] strongestSignal = new SignalTask[1];
+        final Task[] strongestSignal = new Task[1];
         float[] strongest = new float[] { y.evi(start, end, dur) };
-        ((DefaultBeliefTable) table).temporal.whileEach(start, end, (nextSignal) -> {
+        ((DefaultBeliefTable) table).temporal.whileEach(start, end, (existing) -> {
             //TODO or if the cause is purely this Cause id (to include pure revisions of signal tasks)
-            if (nextSignal instanceof SignalTask && !nextSignal.isDeleted()) {
-                float nextStrength = strength(nextSignal, start, end, dur);
+
+
+            if (signalOrRevisedSignal(cause, existing) && !existing.isDeleted()) {
+                float nextStrength = strength(existing, start, end, dur);
                 if (nextStrength > strongest[0]) {
-                    strongestSignal[0] = ((SignalTask) nextSignal);
+                    strongestSignal[0] = existing;
                     strongest[0] = nextStrength;
                 }
             }
             return true;
         });
-        SignalTask signal = strongestSignal[0];
+        Task signal = strongestSignal[0];
         if (signal == null)
             return;
 
@@ -70,6 +93,25 @@ public class PredictionFeedback {
         absorb(signal, y, start, end, nar);
     }
 
+    private static boolean signalOrRevisedSignal(short cause, Task existing) {
+        if (existing instanceof SignalTask)
+            return true;
+        if (existing instanceof DerivedTask)
+            return false;
+
+        short[] cc = existing.cause();
+        int n = cc.length;
+        switch (n) {
+            case 0: return false;
+            case 1: return cc[0] == cause;
+            default:
+                for (short x : cc)
+                    if (x != cause)
+                        return false;
+                return true;
+        }
+    }
+
     /** true if next is stronger than current */
     private static float strength(Task x, long start, long end, int dur) {
         return
@@ -77,30 +119,6 @@ public class PredictionFeedback {
         ;
     }
 
-    /**
-     * punish any held non-signal beliefs during the current signal task which has just been input.
-     * time which contradict this sensor reading, and reward those which it supports
-     */
-    static void feedbackNewSignal(SignalTask signal, BeliefTable table, NAR nar) {
-
-        long start = signal.start();
-        long end = signal.end();
-
-        List<Task> trash = new FasterList(0);
-        ((DefaultBeliefTable) table).temporal.whileEach(start, end, (y) -> {
-
-            if (y instanceof SignalTask)
-                return true; //ignore previous signaltask
-
-            if (absorb(signal, y, start, end, nar)) {
-                trash.add(y);
-            }
-
-            return true; //continue
-        });
-
-        trash.forEach(table::removeTask);
-    }
 
 
 
