@@ -217,6 +217,7 @@ public class Revision {
                             break;
                     }
                 }
+
                 if (matchesForward > matchesReverse) {
                     Term prefix = conjMergeSeqEqualEvents(ae, be, aProp, mergeOrChoose, rng, pn, dither);
                     if (prefix == Null) return Null;
@@ -257,13 +258,18 @@ public class Revision {
 
                     Term prefix = CONJ.the(DTERNAL, ete);
                     if (prefix == Null) return Null;
-                    Term suffix = conjMergeSeqEqualEvents(ae, be, aProp, mergeOrChoose, rng, ae.size(), dither);
-                    if (suffix == Null) return Null;
+                    if (ae.isEmpty() && be.isEmpty()) {
+                        return prefix;
+                    } else {
+                        Term suffix = conjMergeSeqEqualEvents(ae, be, aProp, mergeOrChoose, rng, ae.size(), dither);
+                        if (suffix == Null) return Null;
 
-                    int ad = (int) (ae.get(0).getOne() - lastA);
-                    int bd = (int) (be.get(0).getOne() - lastB);
-                    int ditheredGap = ditheredGap(ad, bd, aProp, mergeOrChoose, rng);
-                    return mergeConjSeq(suffix, prefix, ditheredGap);
+
+                        int ad = (int) (ae.get(0).getOne() - lastA);
+                        int bd = (int) (be.get(0).getOne() - lastB);
+                        int ditheredGap = ditheredGap(ad, bd, aProp, mergeOrChoose, rng);
+                        return mergeConjSeq(suffix, prefix, ditheredGap);
+                    }
                 }
             } else {
                 //entirely dternalize

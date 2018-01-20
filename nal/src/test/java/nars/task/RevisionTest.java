@@ -363,6 +363,12 @@ public class RevisionTest {
         Compound b = $.$("((a &&   b) &&+1 c)");
         permuteChoose(a, b, "[((a&&b) &&+1 c)]");
     }
+    @Test public void testIntermpolationWrongOrderSoDternalOnlyOption() throws Narsese.NarseseException {
+        Compound a = $.$("(((right-->tetris) &&+5 (rotCW-->tetris)) &&+51 (tetris-->[happy]))");
+        Compound b = $.$("(((tetris-->[happy])&&(right-->tetris)) &&+11 (rotCW-->tetris))");
+        permuteChoose(a, b, "[(&&,(tetris-->[happy]),(right-->tetris),(rotCW-->tetris))]");
+    }
+
 
     @Test public void testIntermpolationOrderMixDternal2() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+1 (b &&+1 (c &&+1 d)))");
