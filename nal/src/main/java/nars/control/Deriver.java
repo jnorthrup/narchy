@@ -150,6 +150,7 @@ public class Deriver extends Causable {
                 if (premise == null) break; //end
 
                 if (premise.match(d, this::matchTime, matchTTL) != null) {
+                    n.emotion.premiseFire.increment();
 
                     boolean derivable = proto(d);
                     if (derivable) {
@@ -161,6 +162,8 @@ public class Deriver extends Causable {
                     }
 
                     //System.err.println(derivable + " " + premise.taskLink.get() + "\t" + premise.termLink + "\t" + d.can + " ..+" + d.derivations.size());
+                } else {
+                    n.emotion.premiseFail.increment();
                 }
             }
 

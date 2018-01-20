@@ -34,7 +34,7 @@ import static nars.time.Tense.*;
 public class DeriveTime extends TimeGraph {
 
     //    private final static Logger logger = LoggerFactory.getLogger(DeriveTime.class);
-    static final int TEMPORAL_ITERATIONS = 16;
+    static final int TEMPORAL_ITERATIONS = 8;
 
     private final Task task, belief;
 
@@ -63,7 +63,7 @@ public class DeriveTime extends TimeGraph {
         copy.byTerm.values().forEach(this::add); //add to byTerm AND graph
         copy.byTerm.keySet().forEach(x -> {
             Term y = x.eval(d);
-            if (y != null && !y.equals(x) && y.op().conceptualizable) {
+            if (y!=x && !y.equals(x) && y.op().conceptualizable) {
                 link(know(x), 0, know(y));
             }
         });
@@ -81,12 +81,14 @@ public class DeriveTime extends TimeGraph {
 
     public DeriveTime(Derivation d, boolean single) {
         this.d = d;
-        this.cache = new HashMap();
+        this.cache = new HashMap(0);
 
         know(this.task = d.task);
 
-        if (!single /*&& d._belief != null */ && !d._belief.equals(d._task)) {
-            know(this.belief = d.belief);
+        if (!single) {
+            this.belief = d.belief;
+            if (!d._belief.equals(d._task))
+                know(this.belief);
         } else {
             this.belief = null;
         }

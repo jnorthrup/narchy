@@ -64,7 +64,6 @@ public class Premise extends Pri {
     public Derivation match(Derivation d, ToLongFunction<Task> matchTime, int matchTTL) {
 
         NAR n = d.nar;
-        n.emotion.conceptFirePremises.increment();
 
         //nar.emotion.count("Premise_run");
 

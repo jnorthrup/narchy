@@ -1,5 +1,6 @@
 package nars.experiment.minicraft.top;
 
+import jcog.Util;
 import nars.experiment.minicraft.top.entity.Player;
 import nars.experiment.minicraft.top.gfx.Color;
 import nars.experiment.minicraft.top.gfx.Font;
@@ -112,7 +113,8 @@ public class TopDownMinicraft extends Canvas implements Runnable {
         hasWon = false;
 
         levels = new Level[5];
-        currentLevel = 3;
+        currentLevel =
+                3; //(int)(Math.random()*5);
 
         levels[4] = new Level(128, 128, 1, null);
         levels[3] = new Level(128, 128, 0, levels[4]);
@@ -148,11 +150,7 @@ public class TopDownMinicraft extends Canvas implements Runnable {
             lastTime = now;
             frame();
 
-            try {
-                Thread.sleep(2);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            Util.sleep(2);
 
             int fpsIntervalMS = 10000;
             if (System.currentTimeMillis() - lastTimer1 > fpsIntervalMS) {
@@ -365,10 +363,10 @@ public class TopDownMinicraft extends Canvas implements Runnable {
 
     public static void main(String[] args) {
         TopDownMinicraft game = new TopDownMinicraft();
-        start(game, true);
+        start(game);
     }
 
-    public static void start(TopDownMinicraft game, boolean auto) {
+    public static void start(TopDownMinicraft game) {
         game.setMinimumSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
         game.setMaximumSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));
         game.setPreferredSize(new Dimension(WIDTH * SCALE, HEIGHT * SCALE));

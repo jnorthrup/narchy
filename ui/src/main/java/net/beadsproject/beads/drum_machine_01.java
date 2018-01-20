@@ -84,7 +84,7 @@ public class drum_machine_01
 //    });
     
     ac.start();
-    Util.pause(100000);
+      Util.sleep((long) 100000);
   }
   
   public void keyDown(int midiPitch)

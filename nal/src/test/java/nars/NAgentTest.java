@@ -1,20 +1,21 @@
 package nars;
 
+import nars.task.DerivedTask;
 import nars.term.Term;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NAgentTest {
 
     static NAR nar() {
-        Param.DEBUG = true;
 
         NAR n = NARS.tmp();
-        n.termVolumeMax.set(14);
-        n.freqResolution.set(0.02f);
+        n.termVolumeMax.set(16);
+        n.freqResolution.set(0.25f);
         n.confResolution.set(0.02f);
         n.time.dur(1);
         //n.logWhen(System.out, false, true, true);
@@ -22,36 +23,40 @@ public class NAgentTest {
         //MetaGoal.Action.set(n.want, 2f);
         //MetaGoal.Desire.set(n.want, 1f);
         //n.freqResolution.set(0.1f);
+
+        //Param.DEBUG = true;
+        if (Param.DEBUG) {
+            n.onTask(t -> {
+                if (t instanceof DerivedTask && t.isGoal()) {
+                    System.out.println(t.proof());
+                }
+            });
+        }
         return n;
     }
 
-    @Test
-    public void testToggleSamePos() {
+    @ParameterizedTest
+    @ValueSource(strings={"tt", "tf", "ft", "ff"})
+    public void testSame(String x) {
 
-        MiniTest a = new ToggleSame(nar(), $.the("t"), $.$safe("t:y"), true);
-//        a.nar.onTask(t -> {
-//            if (t.isGoal() && t instanceof DerivedTask) {
-//                System.out.println(t.proof());
-//            }
-//        });
-        a.runSynch(600);
+        boolean posOrNeg = x.charAt(0) == 't';
+        boolean toggleOrPush = x.charAt(1) == 't';
 
-        assertTrue(a.avgReward() > 0.1f);
-        assertTrue(a.dex.getMean() > 0.02f);
-    }
+        System.out.println((posOrNeg ? "positive" : " negative") + " and " + (toggleOrPush ? "toggle" : " push"));
+        MiniTest a = new ToggleSame(nar(), $.the("t"),
+                //$.$safe("t:y"),
+                $.$safe("(t,y)"),
+                posOrNeg, toggleOrPush);
 
-    @Test
-    public void testToggleSameNeg() {
+        a.runSynch(1000);
 
-        MiniTest a = new ToggleSame(nar(), $.the("t"), $.$safe("t:y"), false);
-        a.runSynch(600);
-
-        assertTrue(a.avgReward() > 0.1f);
-        assertTrue(a.dex.getMean() > 0.02f);
+        assertTrue(a.avgReward() > 0.25f);
+        assertTrue(a.dex.getMean() > 0.1f);
     }
 
 
     abstract static class MiniTest extends NAgent {
+        private final Runnable statPrint;
         public float rewardSum = 0;
         final DescriptiveStatistics dex = new DescriptiveStatistics();
 
@@ -61,12 +66,17 @@ public class NAgentTest {
 
         public MiniTest(Term id, NAR n) {
             super(id, n);
+            statPrint = n.emotion.printer(System.out);
         }
+
+
 
         @Override
         public void runSynch(int frames) {
             super.runSynch(frames);
-            System.out.println(this + " avgReward=" + avgReward() + "\n" + dex.toString());
+            System.out.println(this + " avgReward=" + avgReward() + " dexMean=" + dex.getMean() + " dexMax=" + dex.getMax());
+            statPrint.run();
+            nar.stats(System.out);
         }
 
         @Override
@@ -83,7 +93,7 @@ public class NAgentTest {
         abstract float reward();
 
         public float avgReward() {
-            return rewardSum / (((float)nar.time())/nar.dur());
+            return rewardSum / (((float) nar.time()) / nar.dur());
         }
     }
 
@@ -92,7 +102,7 @@ public class NAgentTest {
         private final boolean posOrNeg;
         private float y;
 
-        public ToggleSame(NAR n, Term env, Term action, boolean posOrNeg) {
+        public ToggleSame(NAR n, Term env, Term action, boolean posOrNeg, boolean toggleOrPush) {
             super(env, n);
             y = 0;
             this.posOrNeg = posOrNeg;
@@ -101,8 +111,10 @@ public class NAgentTest {
                 //System.err.println(n.time() + ": " + v);
                 this.y = v ? 1 : -1;
             };
-            actionToggle(action, pushed);
-            //actionPushButton(action, pushed);
+            if (toggleOrPush)
+                actionToggle(action, pushed);
+            else
+                actionPushButton(action, pushed);
         }
 
         @Override
@@ -113,6 +125,7 @@ public class NAgentTest {
         }
 
     }
+
 
 //        n.onTask(t->{
 //            if (t.isGoal()) {

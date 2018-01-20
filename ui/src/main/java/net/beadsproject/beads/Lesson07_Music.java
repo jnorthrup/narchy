@@ -78,7 +78,7 @@ public class Lesson07_Music {
             ac.out.dependsOn(clock);
 
             ac.start();
-            Util.pause(1000000);
+            Util.sleep((long) 1000000);
         }
     }
     public static class Music2 {
@@ -156,7 +156,7 @@ public class Lesson07_Music {
             ac.out.dependsOn(clock);
 
             ac.start();
-            Util.pause(1000000);
+            Util.sleep((long) 1000000);
         }
 
     }

@@ -49,7 +49,7 @@ public class Player extends Mob {
 		inventory.add(new FurnitureItem(new Lantern()));
 		inventory.add(new FurnitureItem(new Oven()));
 
-		inventory.add(new PowerGloveItem());
+		//inventory.add(new PowerGloveItem());
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public class Player extends Mob {
 
 		int xa = 0;
 		int ya = 0;
-		int speed = 8;
+		int speed = 6;
 		if (input.up.down) ya-=speed;
 		if (input.down.down) ya+=speed;
 		if (input.left.down) xa-=speed;

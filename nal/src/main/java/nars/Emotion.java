@@ -1,8 +1,11 @@
 package nars;
 
-import com.netflix.servo.monitor.BasicCounter;
-import com.netflix.servo.monitor.Counter;
-import com.netflix.servo.monitor.StepCounter;
+import com.netflix.servo.MonitorRegistry;
+import com.netflix.servo.monitor.*;
+import com.netflix.servo.publish.BasicMetricFilter;
+import com.netflix.servo.publish.MonitorRegistryMetricPoller;
+import com.netflix.servo.publish.PollRunnable;
+import jcog.list.FasterList;
 import jcog.meter.event.BufferedFloatGuage;
 import jcog.pri.Pri;
 import nars.control.MetaGoal;
@@ -10,7 +13,11 @@ import nars.util.ConcurrentMonitorRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.PrintStream;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.SortedMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 import static jcog.Texts.n4;
 import static nars.NInner.id;
@@ -30,27 +37,28 @@ public class Emotion extends ConcurrentMonitorRegistry {
     public final Counter busyPri = new StepCounter(id("busyPri"));
 
 
-    public final Counter conceptActivations = new BasicCounter(id("concept fire count"));
-    public final Counter taskActivations_x100 = new BasicCounter(id("task activations x100"));
-    public final Counter conceptFirePremises = new BasicCounter(id("concept fire premises"));
+    public final Counter conceptFire = new FastCounter(id("concept fire"));
+    public final Counter taskFire = new FastCounter(id("task fire"));
+    public final Counter taskActivation_x100 = new FastCounter(id("task activation pri sum x100"));
+    public final Counter premiseFire = new FastCounter(id("premise fire"));
+    public final Counter premiseFail = new FastCounter(id("premise fail"));
 
-    public final Counter taskDerived = new BasicCounter(id("task derived"));
-    //public final Counter taskIgnored = new BasicCounter(id("task ignored"));
+    public final Counter deriveTask = new FastCounter(id("derive task"));
+    public final Counter deriveEval = new FastCounter(id("derive eval"));
+    public final Counter deriveTemporalFail = new FastCounter(id("derive temporal fail"));
+    public final Counter deriveFail = new FastCounter(id("derive fail"));
+    //public final Counter taskIgnored = new FastCounter(id("task ignored"));
 
 
 //    /**
 //     * setup stage, where substitution is applied to generate a conclusion term from the pattern
 //     */
-//    public final Counter derivationTry = new BasicCounter(id("derivation try"));
+//    public final Counter derivationTry = new FastCounter(id("derivation try"));
 
-    /**
-     * a successful conclusion term gets evaluated and temporalized and formed into a Task
-     */
-    public final Counter derivationEval = new BasicCounter(id("derivation eval"));
 
 //    /** count of times that deriver reached ttl=0. if this is high it means more TTL should
 //     * be budgeted for each derivation */
-//    public final Counter derivationDeath = new BasicCounter(id("derivation death"));
+//    public final Counter derivationDeath = new FastCounter(id("derivation death"));
 
 
     @NotNull
@@ -311,7 +319,8 @@ public class Emotion extends ConcurrentMonitorRegistry {
 
     /** effective activation percentage */
     public void onActivate(Task t, float activation) {
-        taskActivations_x100.increment(Math.round(activation*100));
+        taskFire.increment();
+        taskActivation_x100.increment(Math.round(activation*100));
     }
 
     public void onAnswer(Task questionTask, @Nullable Task answer) {
@@ -334,6 +343,84 @@ public class Emotion extends ConcurrentMonitorRegistry {
         //reward answer for answering the question
         float str = ansConf * qOrig;
         MetaGoal.learn(MetaGoal.Answer, answer.cause(), str, nar);
+    }
+
+    public Runnable printer(PrintStream out) {
+        return printer(new FastMonitorRegistry(monitors), out);
+    }
+
+    static final class FastCounter extends AtomicLong implements Monitor<Number>, Counter {
+        protected final MonitorConfig config;
+
+        FastCounter(MonitorConfig config) {
+            this.config = config;
+        }
+
+        @Override
+        public final void increment() {
+            incrementAndGet();
+        }
+
+        @Override
+        public void increment(long amount) {
+            getAndAdd(amount);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public final Number getValue(int pollerIdx) {
+            return get();
+        }
+
+        @Override
+        public final Number getValue() {
+            return get();
+        }
+
+        @Override
+        public final MonitorConfig getConfig() {
+            return config;
+        }
+    }
+
+    static final class FastMonitorRegistry implements MonitorRegistry {
+
+        private final FasterList<Monitor<?>> monitors;
+
+        public FastMonitorRegistry(Collection<Monitor<?>> monitors) {
+            this.monitors = new FasterList<>(monitors);
+            this.monitors.sortThis(Comparator.comparing((m)->m.getConfig().getName()));
+        }
+
+        @Override
+        public Collection<Monitor<?>> getRegisteredMonitors() {
+            return monitors;
+        }
+
+        @Override
+        public void register(Monitor<?> monitor) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void unregister(Monitor<?> monitor) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isRegistered(Monitor<?> monitor) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    public PollRunnable printer(MonitorRegistry reg, PrintStream p) {
+        return new PollRunnable(
+                new MonitorRegistryMetricPoller(reg),
+                BasicMetricFilter.MATCH_ALL,
+                new NInner.PrintStreamMetricObserver("x", nar.time, p)
+        );
     }
 
 

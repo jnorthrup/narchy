@@ -79,6 +79,6 @@ public class LFO_Granulation_01
     
     // begin audio processing
     ac.start();
-    Util.pause(100*1000);
+      Util.sleep((long) (100 * 1000));
   }
 }

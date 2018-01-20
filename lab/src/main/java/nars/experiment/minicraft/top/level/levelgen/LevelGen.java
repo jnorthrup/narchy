@@ -71,7 +71,6 @@ public class LevelGen {
 	}
 
 	public static byte[][] createAndValidateTopMap(int w, int h) {
-		int attempt = 0;
 		do {
 			byte[][] result = createTopMap(w, h);
 
@@ -92,7 +91,6 @@ public class LevelGen {
 	}
 
 	public static byte[][] createAndValidateUndergroundMap(int w, int h, int depth) {
-		int attempt = 0;
 		do {
 			byte[][] result = createUndergroundMap(w, h, depth);
 
@@ -112,7 +110,6 @@ public class LevelGen {
 	}
 
 	public static byte[][] createAndValidateSkyMap(int w, int h) {
-		int attempt = 0;
 		do {
 			byte[][] result = createSkyMap(w, h);
 

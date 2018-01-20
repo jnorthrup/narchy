@@ -63,6 +63,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.locks.LockSupport;
 import java.util.function.*;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
@@ -723,6 +724,7 @@ public enum Util {
     public static int round(int x, int dither) {
         return dither * Math.round(((float) x) / dither);
     }
+
     public static long round(long x, int dither) {
         return dither * Math.round(((double) x) / dither);
     }
@@ -1257,6 +1259,7 @@ public enum Util {
             y += value.floatValueOf(x);
         return y;
     }
+
     public static <X> double sum(ToDoubleFunction<X> value, X... xx) {
         double y = 0;
         for (X x : xx)
@@ -1602,41 +1605,42 @@ public enum Util {
         }
     }
 
-    /**
-     * http://www.qat.com/using-waitnotify-instead-thread-sleep-java/
-     */
-    public static void pause(long milli) {
-        if (milli <= 0) return;
-
-        final Thread t = Thread.currentThread();
-        long start = System.currentTimeMillis();
-        long now = start;
-        while (now - start < milli) {
-            long ignore = milli - (now - start);
-            if (ignore > 0L) {
-                try {
-                    synchronized (t) {
-                        t.wait(ignore);
-                    }
-                } catch (InterruptedException var9) {
-                }
-            }
-            now = System.currentTimeMillis();
-        }
-    }
+//* http://www.qat.com/using-waitnotify-instead-thread-sleep-java/
+//        if (milli <= 0) return;
+//
+//        final Thread t = Thread.currentThread();
+//        long start = System.currentTimeMillis();
+//        long now = start;
+//        while (now - start < milli) {
+//            long ignore = milli - (now - start);
+//            if (ignore > 0L) {
+//                try {
+//                    synchronized (t) {
+//                        t.wait(ignore);
+//                    }
+//                } catch (InterruptedException var9) {
+//                }
+//            }
+//            now = System.currentTimeMillis();
+//        }
 
 
     public static boolean sleep(long periodMS) {
         if (periodMS <= 0) {
             Thread.yield();
         } else {
-            try {
-                Thread.sleep(periodMS);
-            } catch (InterruptedException e) {
-                //TODO
-                //e.printStackTrace();
-                return false;
+            if (periodMS > 10) {
+                try {
+                    Thread.sleep(periodMS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    return false;
+                }
+            } else {
+                long timeNanos = periodMS * 1000000;
+                LockSupport.parkNanos(timeNanos);
             }
+
         }
         return true;
     }
@@ -2031,12 +2035,12 @@ public enum Util {
     }
 
     public static void toMap(HashBag<?> f, String header, BiConsumer<String, Object> x) {
-        f.forEachWithIndex((e,n)->{
+        f.forEachWithIndex((e, n) -> {
             x.accept(header + " " + e, n);
         });
     }
 
-    public static void toMap(Iterator<? extends Map.Entry<?,?>> f, String header, BiConsumer<String, Object> x) {
+    public static void toMap(Iterator<? extends Map.Entry<?, ?>> f, String header, BiConsumer<String, Object> x) {
         f.forEachRemaining((e) -> {
             x.accept(header + " " + e.getKey(), e.getValue());
         });
@@ -2193,7 +2197,7 @@ public enum Util {
     /* domain: [0..1], range: [0..1] */
     public static float smoothDischarge(float x) {
         x = unitize(x);
-        return 2*(x-1)/(x-2);
+        return 2 * (x - 1) / (x - 2);
     }
 
     /**
@@ -2203,7 +2207,8 @@ public enum Util {
      * @return an {@code Optional} containing the URL of the class' location; never
      * {@code null} but potentially empty
      */
-    @Nullable public static URL locate(ClassLoader loader, String className) {
+    @Nullable
+    public static URL locate(ClassLoader loader, String className) {
         // determine class loader
 
         if (loader == null) {
@@ -2218,8 +2223,7 @@ public enum Util {
             //className = className.replace(".", "/") + ".class";
             try {
                 return (loader.getResource(className));
-            }
-            catch (Throwable ignore) {
+            } catch (Throwable ignore) {
                 /* ignore */
             }
         }

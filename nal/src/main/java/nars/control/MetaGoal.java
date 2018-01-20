@@ -145,11 +145,11 @@ public enum MetaGoal {
 //                )
                 .in(new FloatNormalized(
                         //TODO use a Long-specific impl of this:
-                        new FloatFirstOrderDifference(n::time, () -> n.emotion.taskDerived.getValue().longValue())
+                        new FloatFirstOrderDifference(n::time, () -> n.emotion.deriveTask.getValue().longValue())
                 ).relax(0.1f))
                 .in(new FloatNormalized(
                                 //TODO use a Long-specific impl of this:
-                                new FloatFirstOrderDifference(n::time, () -> n.emotion.conceptFirePremises.getValue().longValue())
+                                new FloatFirstOrderDifference(n::time, () -> n.emotion.premiseFire.getValue().longValue())
                         ).relax(0.1f)
                 ).in(new FloatNormalized(
                                 n.emotion.busyVol::getSum

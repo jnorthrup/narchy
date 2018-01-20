@@ -267,8 +267,8 @@ public class Revision {
 
                         int ad = (int) (ae.get(0).getOne() - lastA);
                         int bd = (int) (be.get(0).getOne() - lastB);
-                        int ditheredGap = ditheredGap(ad, bd, aProp, mergeOrChoose, rng);
-                        return mergeConjSeq(suffix, prefix, ditheredGap);
+                        int gap = gap(ad, bd, aProp, mergeOrChoose, rng);
+                        return mergeConjSeq(prefix, suffix, gap, dither);
                     }
                 }
             } else {
@@ -375,11 +375,11 @@ public class Revision {
     private static Term mergeConjSeq(FasterList<LongObjectPair<Term>> ae, FasterList<LongObjectPair<Term>> be, int attachPoint, float aProp, boolean mergeOrChoose, Random rng, Term suffix, Term prefix, int dither) {
         int ad = (int) (ae.get(attachPoint).getOne() - ae.get(attachPoint - 1).getOne());
         int bd = (int) (be.get(attachPoint).getOne() - be.get(attachPoint - 1).getOne());
-        int gap = ditheredGap(ad, bd, aProp, mergeOrChoose, rng);
-        return mergeConjSeq(suffix, prefix, Tense.dither(gap, dither));
+        int gap = gap(ad, bd, aProp, mergeOrChoose, rng);
+        return mergeConjSeq(prefix, suffix, gap, dither);
     }
 
-    private static int ditheredGap(int ad, int bd, float aProp, boolean mergeOrChoose, Random rng) {
+    private static int gap(int ad, int bd, float aProp, boolean mergeOrChoose, Random rng) {
         int gap;
         if (ad == bd)
             gap = ad;
@@ -393,8 +393,11 @@ public class Revision {
         return gap;
     }
 
-    private static Term mergeConjSeq(Term suffix, Term prefix, int ditheredGap) {
+    private static Term mergeConjSeq(Term prefix, Term suffix, int gap, int dither) {
+        int ditheredGap = Tense.dither(gap, dither);
         return CONJ.the(ditheredGap, prefix, suffix);
+        //int ditheredGap = Tense.dither(gap + prefix.dtRange(), dither);
+        //return Op.conjMerge(prefix, 0, suffix, ditheredGap);
     }
 
     private static Term mergeConjSeq(FasterList<LongObjectPair<Term>> ae, FasterList<LongObjectPair<Term>> be, int changePoint, float aProp, boolean mergeOrChoose, Random rng, int n) {
@@ -663,7 +666,7 @@ public class Revision {
                     i = Param.MAX_TERMPOLATE_RETRIES; //no need to retry
                 } else {
                     long dt = bs - as;
-                    t = intermpolate(at, Tense.dither(dt, nar), bt, aProp, nar);
+                    t = intermpolate(at, dt, bt, aProp, nar);
                     if (t == null || !t.op().conceptualizable)
                         continue;
                 }

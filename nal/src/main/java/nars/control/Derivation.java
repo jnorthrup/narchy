@@ -587,7 +587,7 @@ public class Derivation extends ProtoDerivation {
 
         int s = derivations.size();
         if (s > 0) {
-            nar.emotion.taskDerived.increment(s);
+            nar.emotion.deriveTask.increment(s);
             target.accept(derivations.values());
             derivations.clear();
         }

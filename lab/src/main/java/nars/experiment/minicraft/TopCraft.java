@@ -116,15 +116,27 @@ public class TopCraft extends NAgentX {
            input.right.pressed(r);
         });
         actionTriState($.func("y",id), (i)->{
-            boolean u = false, d = false;
-            switch (i) {
-                case -1:  u = true;  break;
-                case +1:  d = true;  break;
+            if (craft.menu==null) {
+                boolean u = false, d = false;
+                switch (i) {
+                    case -1:
+                        u = true;
+                        break;
+                    case +1:
+                        d = true;
+                        break;
+                }
+                input.up.pressed(u);
+                input.down.pressed(d);
             }
-            input.up.pressed(u);
-            input.down.pressed(d);
         });
-        actionToggle($.func("menu", id), input.menu::pressed);
+        actionPushButton($.func("next",id), (i)->{
+           if (craft.menu!=null) {
+               input.up.pressed(false);
+               input.down.pressIfUnpressed();
+           }
+        });
+        actionToggle($.func("menu", id), input.menu::pressIfUnpressed);
 
 //        Param.DEBUG = true;
 //        nar.onTask(t ->{
@@ -134,7 +146,7 @@ public class TopCraft extends NAgentX {
 //            }
 //        });
 
-        TopDownMinicraft.start(craft, false);
+        TopDownMinicraft.start(craft);
     }
 
 

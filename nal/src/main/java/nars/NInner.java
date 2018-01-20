@@ -3,8 +3,6 @@ package nars;
 import com.netflix.servo.Metric;
 import com.netflix.servo.monitor.*;
 import com.netflix.servo.publish.BaseMetricObserver;
-import com.netflix.servo.publish.BasicMetricFilter;
-import com.netflix.servo.publish.MonitorRegistryMetricPoller;
 import com.netflix.servo.publish.PollRunnable;
 import com.netflix.servo.tag.BasicTagList;
 import com.netflix.servo.tag.Tag;
@@ -22,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -32,7 +29,7 @@ import static java.util.Collections.singleton;
 /**
  * inner sense: low-level internal experience
  */
-public class NInner extends ConcurrentMonitorRegistry.WithJMX {
+public class NInner extends ConcurrentMonitorRegistry/*.WithJMX*/ {
 
     static final Logger logger = LoggerFactory.getLogger(NInner.class);
 
@@ -41,14 +38,14 @@ public class NInner extends ConcurrentMonitorRegistry.WithJMX {
     private On onCycle;
 
     public NInner(NAR n) {
-        super("NAR." + n.self());
+        //super("NAR." + n.self());
         this.nar = n;
 
 //        this.poller =
 //                new MonitorRegistryMetricPoller(this);
 
 
-        register(new BasicCompositeMonitor(id("emotion"), new ArrayList(nar.emotion.getRegisteredMonitors())));
+        register(new BasicCompositeMonitor(id("emotion"), new FasterList(nar.emotion.getRegisteredMonitors())));
 
         //MetricObserver obs = new FileMetricObserver("stats", directory);
 
@@ -58,11 +55,7 @@ public class NInner extends ConcurrentMonitorRegistry.WithJMX {
 
 //            MetricObserver transform = new CounterToRateMetricTransform(
 //                    obs, 1, TimeUnit.SECONDS);
-        PollRunnable task = new PollRunnable(
-                new MonitorRegistryMetricPoller(this),
-                BasicMetricFilter.MATCH_ALL,
-                new PrintStreamMetricObserver("x", nar.time, System.out)
-        );
+        PollRunnable task = nar.emotion.printer(this, System.out);
         new Loop(2000) {
 
             @Override
@@ -132,8 +125,8 @@ public class NInner extends ConcurrentMonitorRegistry.WithJMX {
             out.println(clock.now());
             for (Metric m : metrics) {
                 out.append(m.getConfig().getName()).append('\t')
-                        .append(m.getConfig().getTags().toString()).append('\t')
-                        .append(m.getValue().toString()).append('\n');
+                        .append(m.getValue().toString()).append('\t')
+                        .append(m.getConfig().getTags().toString()).append('\n');
             }
         }
     }

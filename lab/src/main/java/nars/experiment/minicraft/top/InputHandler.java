@@ -14,24 +14,29 @@ public class InputHandler implements KeyListener {
 			keys.add(this);
 		}
 
+		public void pressIfUnpressed() {
+			if (!clicked)
+				pressed(true);
+		}
+
 		public void pressed(boolean pressed) {
-//			if (pressed != down) {
-//				down = pressed;
-//			}
-//			if (pressed) {
-//				presses++;
-//			}
-			down = clicked = pressed;
-			presses = pressed ? 1 : 0;
+			//if (pressed != down) {
+				down = pressed;
+			//}
+			if (pressed) {
+				presses++;
+			}
+//			down = clicked = pressed;
+//			presses = pressed ? 1 : 0;
 		}
 
 		public void tick() {
-//			if (absorbs < presses) {
-//				absorbs++;
-//				clicked = true;
-//			} else {
-//				clicked = false;
-//			}
+			if (absorbs < presses) {
+				absorbs++;
+				clicked = true;
+			} else {
+				clicked = false;
+			}
 		}
 	}
 

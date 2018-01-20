@@ -1265,7 +1265,7 @@ public enum Draw {
         List<HGlyph> glyphs = new FasterList();
         String[] lines = null;
 
-        //this started happening after switching back to gradle which at the present seems to cause malfunctioned class loading on jdk9
+        //HACK this started happening after switching back to gradle which at the present seems to cause malfunctioned class loading on jdk9
         for (int tries = 0; tries < 2 && lines == null; tries++) {
             try {
                 String font =
@@ -1285,7 +1285,7 @@ public enum Draw {
             } catch (IOException e) {
 
             }
-            Util.pause(50);
+            Util.sleep(50);
         }
         if (lines == null) {
             lines = ArrayUtils.EMPTY_STRING_ARRAY;

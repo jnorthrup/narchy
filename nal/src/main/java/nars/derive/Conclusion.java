@@ -44,7 +44,7 @@ public final class Conclusion extends AbstractPred<Derivation> {
 
         NAR nar = d.nar;
 
-        nar.emotion.derivationEval.increment();
+        nar.emotion.deriveEval.increment();
 
 //        d.xyDyn.clear();
         Term c1 = pattern.eval(d);
@@ -81,8 +81,10 @@ public final class Conclusion extends AbstractPred<Derivation> {
 
 
             //invalid or impossible temporalization; could not determine temporal attributes. seems this can happen normally
-            if (c1!=c2 && !valid(c2, d))
+            if (c1!=c2 && !valid(c2, d)) {
+                d.nar.emotion.deriveTemporalFail.increment();
                 return false;
+            }
 
 
             if (d.concPunc == BELIEF || d.concPunc == GOAL) {

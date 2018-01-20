@@ -315,14 +315,15 @@ public interface NAct {
     default void actionToggle(@NotNull Term s, @NotNull BooleanProcedure onChange) {
         float thresh =
                 //0.5f + Param.TRUTH_EPSILON;
-                //0.75f;
                 0.55f;
+                //0.75f;
+
         actionToggle(s, thresh, Float.NaN, 0f, () -> onChange.value(true), () -> onChange.value(false));
     }
     default void actionPushButton(@NotNull Term s, @NotNull BooleanProcedure onChange) {
         float thresh =
-                0.5f + Param.TRUTH_EPSILON;
-                //0.55f;
+                //0.5f + Param.TRUTH_EPSILON;
+                0.55f;
                 //0.75f;
                 //0.6f;
         actionToggle(s, thresh, 0, 0f, () -> onChange.value(true), () -> onChange.value(false));

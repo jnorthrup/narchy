@@ -98,7 +98,7 @@ public class arpeggiator_01
 
     beatClock.start();
     ac.start();
-    Util.pause(100000);
+      Util.sleep((long) 100000);
   }
   
   static private float pitchToFrequency(int midiPitch)

@@ -8,7 +8,6 @@ import com.netflix.servo.monitor.CompositeMonitor;
 import com.netflix.servo.monitor.Monitor;
 import com.netflix.servo.monitor.MonitorConfig;
 import com.netflix.servo.monitor.NumericMonitor;
-import com.netflix.servo.util.UnmodifiableList;
 import jcog.Util;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,7 +20,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * MonitorRegistry implementation for Servo monitoring API
@@ -51,11 +49,11 @@ public class ConcurrentMonitorRegistry implements MonitorRegistry {
         private final ConcurrentMap<MonitorConfig, Monitor<?>> monitors;
         private final String name;
         private final ObjectNameMapper mapper;
-        private final ConcurrentMap<ObjectName, Object> locks = new ConcurrentHashMap<>();
+        //private final ConcurrentMap<ObjectName, Object> locks = new ConcurrentHashMap<>();
 
         private final AtomicBoolean updatePending = new AtomicBoolean(false);
-        private final AtomicReference<Collection<Monitor<?>>> monitorList =
-                new AtomicReference<>(UnmodifiableList.<Monitor<?>>of());
+//        private final AtomicReference<Collection<Monitor<?>>> monitorList =
+//                new AtomicReference<>(UnmodifiableList.<Monitor<?>>of());
 
         /**
          * Creates a new instance that registers metrics with the local mbean

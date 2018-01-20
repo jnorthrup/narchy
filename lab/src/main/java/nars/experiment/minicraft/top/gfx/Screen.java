@@ -1,5 +1,7 @@
 package nars.experiment.minicraft.top.gfx;
 
+import java.util.Arrays;
+
 public class Screen {
 	/*
 	 * public static final int MAP_WIDTH = 64; // Must be 2^x public static final int MAP_WIDTH_MASK = MAP_WIDTH - 1;
@@ -38,8 +40,7 @@ public class Screen {
 	}
 
 	public void clear(int color) {
-		for (int i = 0; i < pixels.length; i++)
-			pixels[i] = color;
+		Arrays.fill(pixels, color);
 	}
 
 	/*
@@ -85,7 +86,7 @@ public class Screen {
 		this.yOffset = yOffset;
 	}
 
-	private static final int[] dither = { 0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5, };
+	private static final int[] dither = { 0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5 };
 
 	public void overlay(Screen screen2, int xa, int ya) {
 		int[] oPixels = screen2.pixels;
@@ -107,7 +108,7 @@ public class Screen {
 		int x1 = x + r;
 		int y0 = y - r;
 		int y1 = y + r;
-
+		int rr = r * r;
 		if (x0 < 0) x0 = 0;
 		if (y0 < 0) y0 = 0;
 		if (x1 > w) x1 = w;
@@ -120,11 +121,12 @@ public class Screen {
 				int xd = xx - x;
 				int dist = xd * xd + yd;
 				// System.out.println(dist);
-				if (dist <= r * r) {
-					int br = 255 - dist * 255 / (r * r);
+
+				if (dist <= rr) {
+					float br = 255 - dist * 255f / (rr);
 					int pi = xx + yy * w;
 					if (pixels[pi] < br)
-						pixels[pi] = br;
+						pixels[pi] = Math.round(br);
 				}
 			}
 		}

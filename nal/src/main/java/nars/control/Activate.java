@@ -86,7 +86,7 @@ public class Activate extends PLink<Concept> implements Termed {
 
 
     void activateTemplates(NAR nar, BatchActivation ba) {
-        nar.emotion.conceptActivations.increment();
+        nar.emotion.conceptFire.increment();
 
         float cost = TermLinks.linkTemplates(id, priElseZero(), nar.momentum.floatValue(), nar, ba);
         if (cost >= Pri.EPSILON)
