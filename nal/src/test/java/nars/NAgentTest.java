@@ -18,6 +18,9 @@ public class NAgentTest {
         n.freqResolution.set(0.1f);
         n.confResolution.set(0.02f);
         n.time.dur(1);
+//        n.emotion.deriveFailEval.why.on((e)->{
+//           System.out.println(e);
+//        });
         //n.want(MetaGoal.Perceive, -0.1f);
 
         //n.logWhen(System.out, false, true, true);

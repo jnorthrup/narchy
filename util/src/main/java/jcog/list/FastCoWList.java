@@ -40,9 +40,14 @@ public class FastCoWList<X> extends FasterList<X> {
     }
 
     @Override
-    public int size() {
+    public final int size() {
         X[] x = this.copy;
         return x != null ? x.length : 0;
+    }
+
+    @Override
+    public final boolean isEmpty() {
+        return copy.length == 0;
     }
 
     @Override

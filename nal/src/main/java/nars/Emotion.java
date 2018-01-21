@@ -39,21 +39,21 @@ public class Emotion implements Meter {
     public final Counter busyPri = new StepCounter(meter("busyPri"));
 
 
-    public final Counter conceptFire = new FastCounter(meter("concept fire"));
-    public final Counter taskFire = new FastCounter(meter("task fire"));
-    public final Counter taskActivation_x100 = new FastCounter(meter("task activation pri sum x100"));
-    public final Counter premiseFire = new FastCounter(meter("premise fire"));
-    public final Counter premiseFailMatch = new FastCounter(meter("premise fail"));
-    public final Counter premiseUnderivable = new FastCounter(meter("premise underivable"));
+    public final Counter conceptFire = new FastCounter(("concept fire"));
+    public final Counter taskFire = new FastCounter(("task fire"));
+    public final Counter taskActivation_x100 = new FastCounter(("task activation pri sum x100"));
+    public final Counter premiseFire = new FastCounter(("premise fire"));
+    public final Counter premiseFailMatch = new FastCounter(("premise fail"));
+    public final Counter premiseUnderivable = new FastCounter(("premise underivable"));
 
-    public final Counter deriveTask = new FastCounter(meter("derive task"));
-    public final Counter deriveEval = new FastCounter(meter("derive eval"));
-    public final Counter deriveFailTemporal = new FastCounter(meter("derive fail temporal"));
-    public final Counter deriveFailEval = new FastCounter(meter("derive fail eval"));
-    public final Counter deriveFailVolLimit = new FastCounter(meter("derive fail vol limit"));
-    public final Counter deriveFailTaskify = new FastCounter(meter("derive fail taskify"));
-    public final Counter deriveFailParentDuplicate = new FastCounter(meter("derive fail parent duplicate"));  //parent copy
-    public final Counter deriveFailDerivationDuplicate = new FastCounter(meter("derive fail derivation duplicate")); //sibling copy
+    public final Counter deriveTask = new FastCounter(("derive task"));
+    public final Counter deriveEval = new FastCounter(("derive eval"));
+    public final Counter deriveFailTemporal = new FastCounter(("derive fail temporal"));
+    public final FastCounter.ExplainedCounter deriveFailEval = new FastCounter.ExplainedCounter(("derive fail eval"));
+    public final Counter deriveFailVolLimit = new FastCounter(("derive fail vol limit"));
+    public final Counter deriveFailTaskify = new FastCounter(("derive fail taskify"));
+    public final Counter deriveFailParentDuplicate = new FastCounter(("derive fail parent duplicate"));  //parent copy
+    public final Counter deriveFailDerivationDuplicate = new FastCounter(("derive fail derivation duplicate")); //sibling copy
 
     //public final Counter taskIgnored = new FastCounter(id("task ignored"));
 
@@ -113,7 +113,7 @@ public class Emotion implements Meter {
 //    public final FloatGuage alert;
 
 
-    //final ResourceMeter resourceMeter = new ResourceMeter();
+    //final ResourceMeter resourceMeter = new Resource();
 
     public Emotion(NAR n) {
         super();

@@ -381,6 +381,12 @@ public class PremiseRule {
                     constraints.add(new SubOfConstraint(Y, X, true, false, true));
                     break;
 
+                    case "inNeg": //recursive
+                    //X inNeg Y : --X is recursive subterm of Y
+                    constraints.add(new SubOfConstraint(X, Y, false, false, true, true));
+                    constraints.add(new SubOfConstraint(Y, X, true, false, true, true));
+                    break;
+
                 case "eqOrIn": //recursive
                     constraints.add(new SubOfConstraint(X, Y, false, true, true));
                     constraints.add(new SubOfConstraint(Y, X, true, true, true));
@@ -678,6 +684,7 @@ public class PremiseRule {
     }
 
     private void neqPrefilter(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, Term y) {
+        assert(!taskPattern.equals(beliefPattern));
         if ((taskPattern.equals(x) && beliefPattern.equals(y)) || (taskPattern.equals(y) && beliefPattern.equals(x))) {
             pres.add(TaskBeliefInequal.the);
         }

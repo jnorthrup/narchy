@@ -52,9 +52,9 @@ public class Taskify extends AbstractPred<Derivation> {
         Term x0 = d.derivedTerm.get();
         Term x = d.anon.get(x0);
         if (x == null || !Conclusion.valid((x = x.normalize()))) {
-            //d.nar.emotion.deriveFailEval.increment();
-            //return false; //when the values were finally dereferenced, the result produced an invalid compound
-            throw new RuntimeException("un-anonymizing " + x0 + " produced " + x);
+            d.nar.emotion.deriveFailTaskify.increment();
+            return false; //when the values were finally dereferenced, the result produced an invalid compound
+            //throw new RuntimeException("un-anonymizing " + x0 + " produced " + x);
         }
 
         long[] occ = d.concOcc;

@@ -14,10 +14,11 @@ import java.util.function.Supplier;
 /**
  * use this to meter Monitor fields of a class, ex:
  *
- * public final Counter deriveEval = new FastCounter(meter("event"));
+ * public final Counter deriveEval = new FastCounter("event");
 
  */
 public interface Meter { ;
+
 
     public static MonitorConfig meter(String name) {
         return MonitorConfig.builder(name).build();
