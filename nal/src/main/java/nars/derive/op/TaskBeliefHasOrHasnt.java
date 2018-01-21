@@ -15,7 +15,7 @@ public final class TaskBeliefHasOrHasnt extends AbstractPred<ProtoDerivation> {
     private final boolean includeOrExclude;
 
     public TaskBeliefHasOrHasnt(int structure, boolean testTask, boolean testBelief, boolean includeExclude) {
-        super($.func((includeExclude ? "OpHas" : "opHasNot"), $.the(structure), $.the(testTask ? "1" : "0"), $.the(testBelief ? "1" : "0")));
+        super($.func((includeExclude ? "OpHas" : "OpHasNot"), $.the(structure), $.the(testTask ? 1 : 0), $.the(testBelief ? 1 : 0)));
         this.structure = structure;
         this.task = testTask;
         this.belief = testBelief;

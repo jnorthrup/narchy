@@ -89,6 +89,10 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
         return filenames.stream().flatMap(n -> ruleCache.apply(n).stream());
     }
 
+    public PremiseRuleSet(NAR nar, String... rules) {
+        this(new PatternIndex(), nar, rules);
+    }
+
     public PremiseRuleSet(PatternIndex index, NAR nar, String... rules) {
         this(parse(Stream.of(rules)), index, nar);
     }
@@ -208,8 +212,8 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
 //            .maximumSize(4 * 1024)
 //            .builder();
 
-    @NotNull
-    public static Stream<Pair<PremiseRule, String>> parse(@NotNull Stream<String> rawRules) {
+
+    public static Stream<Pair<PremiseRule, String>> parse(Stream<String> rawRules) {
 
         return rawRules.map(src -> Tuples.pair(lines.computeIfAbsent(src, s -> {
             try {

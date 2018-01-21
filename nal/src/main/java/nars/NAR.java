@@ -1534,4 +1534,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     public final void out(Object x) {
         eventTask.emit(Operator.log(time(), x));
     }
+
+    public void want(MetaGoal g, float v) {
+        g.set(want, v);
+    }
 }

@@ -47,8 +47,13 @@ public class Emotion implements Meter {
 
     public final Counter deriveTask = new FastCounter(meter("derive task"));
     public final Counter deriveEval = new FastCounter(meter("derive eval"));
-    public final Counter deriveTemporalFail = new FastCounter(meter("derive temporal fail"));
-    public final Counter deriveFail = new FastCounter(meter("derive fail"));
+    public final Counter deriveFailTemporal = new FastCounter(meter("derive fail temporal"));
+    public final Counter deriveFailEval = new FastCounter(meter("derive fail eval"));
+    public final Counter deriveFailVolLimit = new FastCounter(meter("derive fail vol limit"));
+    public final Counter deriveFailTaskify = new FastCounter(meter("derive fail taskify"));
+    public final Counter deriveFailParentDuplicate = new FastCounter(meter("derive fail parent duplicate"));  //parent copy
+    public final Counter deriveFailDerivationDuplicate = new FastCounter(meter("derive fail derivation duplicate")); //sibling copy
+
     //public final Counter taskIgnored = new FastCounter(id("task ignored"));
 
 

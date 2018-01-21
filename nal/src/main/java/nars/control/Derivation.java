@@ -48,8 +48,14 @@ import static nars.time.Tense.ETERNAL;
  */
 public class Derivation extends ProtoDerivation {
 
-    public static final Atomic TaskTerm = Atomic.the("_taskTerm");
-    public static final Atomic BeliefTerm = Atomic.the("_beliefTerm");
+    /** initial capacity, it will grow as needed */
+    int ANON_CAPACITY = 16;
+
+    /** fixed size */
+    int ANON_CACHE_SIZE = ANON_CAPACITY * 1024;
+
+//    public static final Atomic TaskTerm = Atomic.the("_taskTerm");
+//    public static final Atomic BeliefTerm = Atomic.the("_beliefTerm");
 
 
     public NAR nar;
@@ -194,7 +200,7 @@ public class Derivation extends ProtoDerivation {
         };
 
         anon =
-                new CachedAnon(16);
+                new CachedAnon(ANON_CAPACITY, ANON_CACHE_SIZE);
                 //new Anon(16);
 
         //anon = new Anon();
@@ -321,8 +327,8 @@ public class Derivation extends ProtoDerivation {
         for (Termed x : derivationFunctors)
             m.put(x.term(), x);
 
-        m.put(TaskTerm, taskTerm);
-        m.put(BeliefTerm, beliefTerm);
+//        m.put(TaskTerm, taskTerm);
+//        m.put(BeliefTerm, beliefTerm);
         this.derivationFunctors = Maps.immutable.ofMap(m);
     }
 

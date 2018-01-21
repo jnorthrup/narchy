@@ -194,7 +194,7 @@ abstract public class NAgentX extends NAgent {
 
         //n.defaultWants();
 
-        n.conceptActivation.set(0.1f);
+        n.conceptActivation.set(0.5f);
 
         n.dtMergeOrChoose.set(true);
         n.dtDither(

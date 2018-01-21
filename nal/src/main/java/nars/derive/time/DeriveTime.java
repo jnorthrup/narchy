@@ -2,6 +2,7 @@ package nars.derive.time;
 
 import jcog.data.ArrayHashSet;
 import nars.Op;
+import nars.Param;
 import nars.Task;
 import nars.control.Derivation;
 import nars.task.TimeFusion;
@@ -32,9 +33,6 @@ import static nars.time.Tense.*;
  * the derivation will not be temporalizable and this method returns null.
  */
 public class DeriveTime extends TimeGraph {
-
-    //    private final static Logger logger = LoggerFactory.getLogger(DeriveTime.class);
-    static final int TEMPORAL_ITERATIONS = 8;
 
     private final Task task, belief;
 
@@ -324,9 +322,9 @@ public class DeriveTime extends TimeGraph {
 
 
     protected ArrayHashSet<Event> solveAll(Term pattern) {
-        ArrayHashSet<Event> solutions = new ArrayHashSet(TEMPORAL_ITERATIONS);
+        ArrayHashSet<Event> solutions = new ArrayHashSet(Param.TEMPORAL_SOLVER_ITERATIONS);
 
-        final int[] triesRemain = {TEMPORAL_ITERATIONS};
+        final int[] triesRemain = {Param.TEMPORAL_SOLVER_ITERATIONS};
 
         solve(pattern, false /* take everything */, (solution) -> {
             assert (solution != null);

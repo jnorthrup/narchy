@@ -14,10 +14,12 @@ public class NAgentTest {
     static NAR nar() {
 
         NAR n = NARS.tmp();
-        n.termVolumeMax.set(16);
-        n.freqResolution.set(0.25f);
+        n.termVolumeMax.set(24);
+        n.freqResolution.set(0.1f);
         n.confResolution.set(0.02f);
         n.time.dur(1);
+        //n.want(MetaGoal.Perceive, -0.1f);
+
         //n.logWhen(System.out, false, true, true);
 
         //MetaGoal.Action.set(n.want, 2f);

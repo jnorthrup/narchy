@@ -22,6 +22,18 @@ public class OpIs extends MatchConstraint {
         op = o;
     }
 
+    @Override
+    public boolean invalid(Term y, Unify f) {
+        return y.op()!=op;
+    }
+
+    @Override
+    public float cost() {
+        return 0.1f;
+    }
+
+
+
 //    static class OpIsAtomic extends OpIs {
 //        public OpIsAtomic(Term target, Op o) {
 //            super(target, o);
@@ -36,14 +48,5 @@ public class OpIs extends MatchConstraint {
 //        }
 //    }
 
-    @Override
-    public boolean invalid(Term y, Unify f) {
-        return y.op()!=op;
-    }
-
-    @Override
-    public float cost() {
-        return 0.1f;
-    }
 }
 

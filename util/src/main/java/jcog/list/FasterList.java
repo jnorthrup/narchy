@@ -408,6 +408,16 @@ public class FasterList<X> extends FastList<X> {
         return true;
     }
 
+    public int addAndGetSize(X newItem) {
+        int s;
+        if (this.items.length == (s = this.size)) {
+            this.ensureCapacityForAdd();
+        }
+        addWithoutResizeCheck(newItem);
+        return s + 1;
+    }
+
+
     private void ensureCapacityForAdd() {
         this.items = (X[]) (
                 (this.items.length == 0) ?
@@ -559,7 +569,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
 
-    public X added(X x) {
+    public X addThen(X x) {
         add(x);
         return x;
     }
@@ -575,15 +585,36 @@ public class FasterList<X> extends FastList<X> {
                 }
                 break;
 
-            //TODO fast case 2
-        }
+            //TODO fast case 2?
 
-        ListIterator<X> l = listIterator();
-        while (l.hasNext()) {
-            if (l.next() == null)
-                l.remove();
+            default:
+                removeIf(Objects::isNull);
+
         }
     }
 
+    @Override
+    public boolean removeIf(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {
+        int nowFilled = 0;
+        int s0 = this.size;
+        if (s0 == 0) return false;
+        X[] xx = this.items;
+        for (int i = 0; i < s0; i++) {
+            X x = xx[i];
+            if (!predicate.accept(x)) {
+                // keep it
+                if (nowFilled != i) {
+                    xx[nowFilled] = x;
+                }
+                nowFilled++;
+            }
+        }
+        if (nowFilled < s0) {
+            Arrays.fill(items, nowFilled, s0, null);
+            this.size = nowFilled;
+            return true;
+        } else
+            return false;
+    }
 
 }

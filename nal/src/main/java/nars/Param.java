@@ -56,6 +56,10 @@ public abstract class Param {
     /** experimental increased confidence calculation for composition, taken from the NAL spec but is different from OpenNARS */
     public static final boolean STRONG_COMPOSITION = false;
 
+    //    private final static Logger logger = LoggerFactory.getLogger(DeriveTime.class);
+
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 16;
+
 
     public static boolean DEBUG_FILTER_DUPLICATE_MATCHES = Param.DEBUG_EXTRA;
 
@@ -145,7 +149,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmean = new MutableInteger(32);
+    public final MutableInteger matchTTLmean = new MutableInteger(64);
 
     /**
      * how much percent of a premise's allocated TTL can be used in the belief matching phase.
@@ -174,7 +178,7 @@ public abstract class Param {
     /**
      * cost of a repeat (of another within the premise's batch) task derivation
      */
-    public static final int TTL_DERIVE_TASK_REPEAT = 2;
+    public static final int TTL_DERIVE_TASK_REPEAT = TTL_DERIVE_TASK_SUCCESS * 2;
 
     /**
      * cost of a task derived, but too similar to one of its parents
@@ -184,7 +188,7 @@ public abstract class Param {
     /**
      * cost of a failed/aborted task derivation
      */
-    public static final int TTL_DERIVE_TASK_FAIL = 2;
+    public static final int TTL_DERIVE_TASK_FAIL = 1;
 
     //    /**
 //     * number between 0 and 1 controlling the proportion of activation going

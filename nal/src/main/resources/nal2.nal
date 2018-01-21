@@ -40,10 +40,10 @@
 
 //Set Decomposition
 
-    (C --> X), X, is(X,"{") |- (C --> dropAnySet(X)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    (C --> X), X, is(X,"[") |- (C --> dropAnySet(X)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    (X --> C), X, is(X,"{") |- (dropAnySet(X) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    (X --> C), X, is(X,"[") |- (dropAnySet(X) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (C --> X), X, is(X,"{"),subsMin(X,2) |- (C --> dropAnySet(X)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (C --> X), X, is(X,"["),subsMin(X,2) |- (C --> dropAnySet(X)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (X --> C), X, is(X,"{"),subsMin(X,2) |- (dropAnySet(X) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (X --> C), X, is(X,"["),subsMin(X,2) |- (dropAnySet(X) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 
 //Set Un-recurser

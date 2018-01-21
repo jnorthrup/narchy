@@ -37,24 +37,31 @@ public class Taskify extends AbstractPred<Derivation> {
     @Override
     public boolean test(Derivation d) {
 
-        Term x0 = d.derivedTerm.get();
-        Term x = d.anon.get(x0);
-        if (x == null || !x.op().conceptualizable)
-            return false; //when the values were finally dereferenced, the result produced an invalid compound
-
-        long[] occ = d.concOcc;
-        byte punc = d.concPunc;
-        assert (punc != 0) : "no punctuation assigned";
-
         Truth tru = d.concTruth;
         if (tru!=null) {
             tru = tru.ditherDiscrete(d.freqRes, d.confRes, d.confMin,
                     //TimeFusion.eviEternalize(tru.evi(), d.concEviFactor)
                     tru.evi() * d.concEviFactor
             );
-            if (tru == null)
+            if (tru == null) {
+                d.nar.emotion.deriveFailTaskify.increment();
                 return false;
+            }
         }
+
+        Term x0 = d.derivedTerm.get();
+        Term x = d.anon.get(x0);
+        if (x == null || !Conclusion.valid((x = x.normalize()))) {
+            //d.nar.emotion.deriveFailEval.increment();
+            //return false; //when the values were finally dereferenced, the result produced an invalid compound
+            throw new RuntimeException("un-anonymizing " + x0 + " produced " + x);
+        }
+
+        long[] occ = d.concOcc;
+        byte punc = d.concPunc;
+        assert (punc != 0) : "no punctuation assigned";
+
+
 
         DerivedTask t = (DerivedTask) Task.tryTask(x, punc, tru, (C, tr) -> {
 
@@ -71,6 +78,7 @@ public class Taskify extends AbstractPred<Derivation> {
         });
 
         if (t == null) {
+            d.nar.emotion.deriveFailTaskify.increment();
             return spam(d, Param.TTL_DERIVE_TASK_FAIL);
         }
 
@@ -78,16 +86,12 @@ public class Taskify extends AbstractPred<Derivation> {
             t.setCyclic(true);
 
         if (same(t, d._task, d.freqRes) || (d._belief != null && same(t, d._belief, d.freqRes))) {
-            //created a duplicate of the task
+            d.nar.emotion.deriveFailParentDuplicate.increment();
             return spam(d, Param.TTL_DERIVE_TASK_SAME);
         }
 
-        float priority = Param.derivationPriority(t, d)
-                //* channel.amp()
-        ;
-
+        float priority = Param.derivationPriority(t, d);
         assert (priority == priority);
-
         t.priSet(priority);
 
         if (Param.DEBUG)
@@ -96,6 +100,7 @@ public class Taskify extends AbstractPred<Derivation> {
         t.cause = ArrayUtils.addAll(d.parentCause, channel.id);
 
         if (d.add(t) != t) {
+            d.nar.emotion.deriveFailDerivationDuplicate.increment();
             spam(d, Param.TTL_DERIVE_TASK_REPEAT);
         } else {
             d.use(Param.TTL_DERIVE_TASK_SUCCESS);

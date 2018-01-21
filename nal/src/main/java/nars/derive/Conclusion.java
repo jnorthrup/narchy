@@ -49,8 +49,14 @@ public final class Conclusion extends AbstractPred<Derivation> {
 //        d.xyDyn.clear();
         Term c1 = pattern.eval(d);
 
-        if (!valid(c1, d))
+        if (!valid(c1)) {
+            d.nar.emotion.deriveFailEval.increment();
             return false;
+        }
+        if (c1.volume() > d.termVolMax) {
+            d.nar.emotion.deriveFailVolLimit.increment();
+            return false;
+        }
 
         if (c1.op() == NEG) {
             c1 = c1.unneg();
@@ -81,20 +87,12 @@ public final class Conclusion extends AbstractPred<Derivation> {
 
 
             //invalid or impossible temporalization; could not determine temporal attributes. seems this can happen normally
-            if (c1!=c2 && !valid(c2, d)) {
-                d.nar.emotion.deriveTemporalFail.increment();
+            //only should eliminate XTERNAL from beliefs and goals.  ok if it's in questions/quests since it's the only way to express indefinite temporal repetition
+            if ((c1!=c2 && !valid(c2)) || ((d.concPunc == BELIEF || d.concPunc == GOAL) && c2.hasXternal())) {
+                d.nar.emotion.deriveFailTemporal.increment();
                 return false;
             }
 
-
-            if (d.concPunc == BELIEF || d.concPunc == GOAL) {
-                //only should eliminate XTERNAL from beliefs and goals.  ok if it's in questions/quests since it's the only way to express indefinite temporal repetition
-                //c2 = c2.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
-                //if (c2 == null)
-                //  return false;
-                if (c2.hasXternal())
-                    return false;
-            }
 
             if (occ[0] > occ[1]) {
                 //HACK swap the reversed occ
@@ -128,22 +126,21 @@ public final class Conclusion extends AbstractPred<Derivation> {
         } else {
             if (d.concPunc == BELIEF || d.concPunc == GOAL) {
                 c2 = c1.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
-                if (c1!=c2 && !valid(c2, d))
+                if (c1!=c2 && !valid(c2)) {
+                    d.nar.emotion.deriveFailTemporal.increment();
                     return false;
+                }
             } else {
                 c2 = c1;
             }
         }
 
-
-        Term c3 = c2.normalize();
-        return (c2==c3 || valid(c3,d)) && d.derivedTerm.set(c3) != null;
+        return d.derivedTerm.set(c2) != null;
     }
 
-    protected boolean valid(Term x, Derivation d) {
+    static boolean valid(Term x) {
         return (x != null) &&
                 x.op().conceptualizable &&
-                (x.volume() <= d.termVolMax) &&
                 !x.hasAny(VAR_PATTERN) && x.hasAny(ConstantAtomics);
     }
 

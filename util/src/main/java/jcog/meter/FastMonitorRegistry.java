@@ -14,7 +14,7 @@ public final class FastMonitorRegistry implements MonitorRegistry {
     public FastMonitorRegistry(Object x) {
         monitors = new FasterList<>();
         ConcurrentMonitorRegistry.monitorFields(x, monitors::add);
-        monitors.compact();
+        this.monitors.sortThis(Comparator.comparing((m)->m.getConfig().getName()));
     }
 
     public FastMonitorRegistry(Collection<Monitor<?>> monitors) {

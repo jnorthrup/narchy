@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Random;
 
 import static nars.$.$;
+import static nars.Op.CONJ;
 import static nars.Op.PROD;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,24 +45,32 @@ public class AnonTest {
         assertAnon("{_1,_2}", "{a,b}");
         assertAnon("{_1,_2,_3}", "{a,b,c}");
         assertAnon("(_1 ==>+- _2)", "(x ==>+- y)");
+        {
+            Anon a = assertAnon("((_1&&_2) ==>+- _3)" , "((x&&y) ==>+- z)");
+            assertEquals("(x&&y)", a.get(CONJ.the(Anom.the(1), Anom.the(2))).toString());
+        }
+
 
         assertAnon("(((_1-->(_2,_3,#1))==>(_4,_5)),?2)",
                 "(((a-->(b,c,#2))==>(e,f)),?1)");
 
     }
 
-    @Test public void testCompoundsWithNegations() throws Narsese.NarseseException {
+    @Test
+    public void testCompoundsWithNegations() throws Narsese.NarseseException {
         assertAnon("((--,_1),_1,_2)", "((--,a), a, c)");
         assertAnon("(--,((--,_1),_1,_2))", "--((--,a), a, c)");
     }
 
-    @Test @Disabled
+    @Test
+    @Disabled
     public void testIntRange() throws Narsese.NarseseException {
         assertEquals("(4..6-->x)", $("((|,4,5,6)-->x)").toString());
         assertAnon("(_0-->_1)", "((|,4,5,6)-->x)");
     }
 
-    @Test public void testCompounds2() throws Narsese.NarseseException {
+    @Test
+    public void testCompounds2() throws Narsese.NarseseException {
         //TODO check that this is correct (includes a impl in conj reduction):
         String xs = "(((($1-->tetris) ==>-1422 (happy-->$1)) &&+105 (--,(((isRow,(8,true),true)~(checkScore,()))-->tetris))) &&+7 ((--,(((isRow,(8,true),true)~(checkScore,()))-->tetris)) &&+74 ((act,0,true)-->#2)))";
         String ys = "(((($2-->_5) &&+105 (--,(((_1,(_2,_3),_3)~(_4,()))-->_5))) &&+7 ((--,(((_1,(_2,_3),_3)~(_4,()))-->_5)) &&+81 ((_6,_7,_3)-->#1))) ==>-1832 (_8-->$2))";
@@ -71,8 +80,8 @@ public class AnonTest {
     }
 
 
-
-    @Test public void testAnomVector() {
+    @Test
+    public void testAnomVector() {
 
         Term[] x = {Anom.the(3), Anom.the(1), Anom.the(2)};
 
@@ -81,7 +90,8 @@ public class AnonTest {
         assertEqual(new ArrayTermVector(x), new AnonVector(x));
     }
 
-    @Test public void testAnomVectorNegations() {
+    @Test
+    public void testAnomVectorNegations() {
 
         Term[] x = {Anom.the(3), Anom.the(1), Anom.the(2).neg()};
 
@@ -93,13 +103,14 @@ public class AnonTest {
         assertTrue(av.contains(twoNeg));
         assertFalse(av.contains(twoNeg.neg()));
         assertTrue(av.containsRecursively(twoNeg));
-        assertTrue(av.containsRecursively(twoNeg.neg()), ()->av + " containsRecursively " + twoNeg.neg());
+        assertTrue(av.containsRecursively(twoNeg.neg()), () -> av + " containsRecursively " + twoNeg.neg());
 
 
         //assertTrue(The.subterms(x) instanceof AnonVector );
     }
 
-    @Test public void testMixedAnonVector() {
+    @Test
+    public void testMixedAnonVector() {
 
         Term[] x = {$.varDep(1), $.varIndep(2), $.varQuery(3), Anom.the(4)};
         Random rng = new XoRoShiRo128PlusRandom(1);
@@ -117,7 +128,9 @@ public class AnonTest {
         return assertAnon(expect, $(test));
     }
 
-    /** roundtrip test */
+    /**
+     * roundtrip test
+     */
     static Anon assertAnon(String expect, Term x) {
         Anon a = new Anon();
         Term y = a.put(x);
@@ -128,8 +141,8 @@ public class AnonTest {
     }
 
     static void assertEqual(TermVector v, AnonVector a) {
-        assertEquals(v,a);
-        assertEquals(v.toString(),a.toString());
+        assertEquals(v, a);
+        assertEquals(v.toString(), a.toString());
         assertEquals(v.hashCode(), a.hashCode());
         assertEquals(v.hashCodeSubterms(), a.hashCodeSubterms());
         assertTrue(Iterators.elementsEqual(v.iterator(), a.iterator()));

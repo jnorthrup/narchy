@@ -18,8 +18,8 @@ public final class DeriverRoot {
 
     public void printRecursive() {
 
-        what.printRecursive();
-        can.printRecursive();
+        TrieDeriver.print(what);
+        TrieDeriver.print(can);
 
     }
 }

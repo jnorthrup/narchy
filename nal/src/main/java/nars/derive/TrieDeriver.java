@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.list.FasterList;
 import jcog.tree.perfect.TrieNode;
 import nars.$;
+import nars.NAR;
 import nars.Op;
 import nars.control.Derivation;
 import nars.control.ProtoDerivation;
@@ -41,7 +42,7 @@ public final class TrieDeriver {
     final TermTrie<PrediTerm<Derivation>, PrediTerm<Derivation>> path;
     final FasterList<ValueFork> postChoices = new FasterList();
 
-    public TrieDeriver(PremiseRuleSet r) {
+    private TrieDeriver(PremiseRuleSet r) {
 
         path = new TermTrie<>();
 
@@ -93,7 +94,15 @@ public final class TrieDeriver {
     }
 
 
-    public static DeriverRoot the(PremiseRuleSet r, Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
+    public static DeriverRoot the(NAR n, String... rules) {
+        return the(new PremiseRuleSet(n, rules));
+    }
+
+    public static DeriverRoot the(PremiseRuleSet r) {
+        return the(r, null);
+    }
+
+    public static DeriverRoot the(PremiseRuleSet r, @Nullable Function<PrediTerm<Derivation>, PrediTerm<Derivation>> each) {
         TrieDeriver t = new TrieDeriver(r);
 
         FasterList<ValueFork> pc = t.postChoices;
@@ -343,7 +352,7 @@ public final class TrieDeriver {
 //        return compile(path, each);
 //    }
 
-    static <D extends ProtoDerivation> PrediTerm<D> compile(TermTrie<PrediTerm<D>, PrediTerm<D>> trie, Function<PrediTerm<D>, PrediTerm<D>> each) {
+    static <D extends ProtoDerivation> PrediTerm<D> compile(TermTrie<PrediTerm<D>, PrediTerm<D>> trie, Function<PrediTerm<D>, @Nullable PrediTerm<D>> each) {
         List<PrediTerm<D>> bb = compile(trie.root);
         PrediTerm<D>[] roots = bb.toArray(new PrediTerm[bb.size()]);
 
@@ -383,6 +392,8 @@ public final class TrieDeriver {
 
         return compileSwitch(bb);
     }
+
+
 
     private static class SubCond {
         public final PrediTerm p;

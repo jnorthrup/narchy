@@ -111,7 +111,7 @@ public class NARS {
     }
     public NARS deriverAddRules(String... rules) {
         deriverAdd(
-                Deriver.deriver((n) -> new PremiseRuleSet(new PatternIndex(), n, rules))
+                Deriver.deriver((n) -> new PremiseRuleSet(n, rules))
         );
         return this;
     }

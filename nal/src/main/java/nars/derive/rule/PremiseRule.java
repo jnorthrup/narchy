@@ -44,8 +44,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
  * A rule which matches a Premise and produces a Task
  * contains: preconditions, predicates, postconditions, post-evaluations and metainfo
  */
-public class PremiseRule /*extends GenericCompound*/ {
-
+public class PremiseRule {
 
     public static final Atomic Task = Atomic.the("task");
     public static final Atomic Belief = Atomic.the("belief");
@@ -53,15 +52,10 @@ public class PremiseRule /*extends GenericCompound*/ {
     private static final Term QUESTION_PUNCTUATION = $.inh(Atomic.the("Question"), Atomic.the("Punctuation"));
     public final Term id;
 
-
-    public boolean permuteBackward;
-    public boolean permuteForward;
-
-
     /**
      * conditions which can be tested before unification
      */
-    private PrediTerm<ProtoDerivation>[] PRE;
+    public PrediTerm<ProtoDerivation>[] PRE;
 
     /**
      * consequences applied after unification
@@ -77,7 +71,7 @@ public class PremiseRule /*extends GenericCompound*/ {
     final List<PrediTerm<Derivation>> post = $.newArrayList();
 
     PremiseRule(Pair<PremiseRule, String> x) {
-        this((Subterms)(x.getOne().id));
+        this((Subterms) (x.getOne().id));
         withSource(x.getTwo());
     }
 
@@ -213,7 +207,8 @@ public class PremiseRule /*extends GenericCompound*/ {
     }
 
     private static final TermTransform UppercaseAtomsToPatternVariables = new TermTransform() {
-        @Override public Termed transformAtomic(Term atomic) {
+        @Override
+        public Termed transformAtomic(Term atomic) {
             if (atomic instanceof Atom) {
                 if (!PostCondition.reservedMetaInfoCategories.contains(atomic)) { //do not alter keywords
                     String name = atomic.toString();
@@ -232,7 +227,7 @@ public class PremiseRule /*extends GenericCompound*/ {
     public final PremiseRule normalize(PatternIndex index) {
         Term t = index.pattern(id.transform(UppercaseAtomsToPatternVariables));
         if (t != this)
-            return new PremiseRule((Compound)t);
+            return new PremiseRule((Compound) t);
         else
             return this;
     }
@@ -353,21 +348,21 @@ public class PremiseRule /*extends GenericCompound*/ {
                     termIsNot(pres, taskPattern, beliefPattern, constraints, X, Op.IMPL.bit);
                     break;
 
-                 case "subOf": //non-recursive
+                case "subOf": //non-recursive
                     //X subOf Y : X is subterm of Y
                     neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
                     constraints.add(new SubOfConstraint(X, Y, false, false, false));
                     constraints.add(new SubOfConstraint(Y, X, true, false, false));
                     break;
 
-                 case "in": //recursive
+                case "in": //recursive
                     //X in Y : X is recursive subterm of Y
                     neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
                     constraints.add(new SubOfConstraint(X, Y, false, false, true));
                     constraints.add(new SubOfConstraint(Y, X, true, false, true));
                     break;
 
-                 case "eqOrIn": //recursive
+                case "eqOrIn": //recursive
                     constraints.add(new SubOfConstraint(X, Y, false, true, true));
                     constraints.add(new SubOfConstraint(Y, X, true, true, true));
                     break;
@@ -386,11 +381,22 @@ public class PremiseRule /*extends GenericCompound*/ {
 //                     termIsAny(pres, taskPattern, beliefPattern, constraints, X, struct);
 //                     break;
 
-                 case "is":
+                case "subsMin":
+                    int min = $.intValue(Y);
+                    constraints.add(new SubsMin(X, min));
+                    if (taskPattern.equals(X)) {
+                        pres.add(SubsMin.proto(true, min));
+                    }
+                    if (!taskPattern.equals(beliefPattern) && beliefPattern.equals(X)) {
+                        pres.add(SubsMin.proto(false, min));
+                    }
+                    break;
+
+                case "is":
                     //TODO make var arg version of this
-                     Op o = Op.the($.unquote(Y));
-                     assert (o != null);
-                     termIs(pres, taskPattern, beliefPattern, constraints, X, o);
+                    Op o = Op.the($.unquote(Y));
+                    assert (o != null);
+                    termIs(pres, taskPattern, beliefPattern, constraints, X, o);
                     break;
 
 //                case "has":
@@ -624,7 +630,6 @@ public class PremiseRule /*extends GenericCompound*/ {
 
         //store to arrays
         this.PRE = pres.toArray(new PrediTerm[pres.size()]);
-
 
 
         //        if (getConclusionTermPattern().containsTemporal()) {

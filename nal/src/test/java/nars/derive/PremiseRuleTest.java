@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class PremiseRuleTest {
 
-    final NAR n = NARS.tmp();
+
 
     @NotNull
     public static PremiseRule parse(@NotNull String src) throws Narsese.NarseseException {
@@ -169,6 +169,15 @@ public class PremiseRuleTest {
         assertEquals(15, y.volume());
     }
 
+
+    @Test public void testMinSubsRulePredicate() throws Narsese.NarseseException {
+        //test that the constraint on %2 being of size > 1 is testable in the Proto phase
+
+        DeriverRoot d = TrieDeriver.the(NARS.shell(),
+                "(A-->B),B,is(B,\"[\"),subsMin(B,2) |- (A-->dropAnySet(B)), (Belief:StructuralDeduction)");
+        d.printRecursive();
+
+    }
 
     @Test
     public void printTermRecursive() throws Narsese.NarseseException {
