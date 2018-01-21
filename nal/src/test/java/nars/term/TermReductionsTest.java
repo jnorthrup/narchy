@@ -160,6 +160,11 @@ public class TermReductionsTest extends NarseseTest {
 //    }
 
     @Test
+    public void testImplicationTrue2() {
+        assertReduction(True, "((&&,x1,$1) ==> $1)");
+    }
+
+    @Test
     public void testImplicationNegatedPredicate() {
         assertReduction("(--,((P)==>(Q)))", "((P)==>(--,(Q)))");
         assertReduction("((--,(P))==>(Q))", "((--,(P))==>(Q))");

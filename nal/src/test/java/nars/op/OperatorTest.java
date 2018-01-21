@@ -156,10 +156,10 @@ public class OperatorTest {
     @Test
     public void testCommandDefault() throws Narsese.NarseseException {
         final NAR t = NARS.shell();
-        Task a = t.input("(a b c);").get(0);
+        Task a = t.input("(a, b, c);").get(0);
         assertNotNull(a);
         assertTrue(a.isCommand());
-        assertEquals($.$("(a b c)"), a.term());
+        assertEquals($.$("(a, b, c)"), a.term());
     }
 ////    @Test public void testOperatorEquality() {
 ////        assertNotNull( $.oper("echo") );

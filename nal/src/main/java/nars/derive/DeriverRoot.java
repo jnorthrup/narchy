@@ -3,23 +3,25 @@ package nars.derive;
 import nars.control.Derivation;
 import nars.term.pred.PrediTerm;
 
+import java.io.PrintStream;
+
 /** what -> can */
 public final class DeriverRoot {
 
     public final PrediTerm<Derivation> what;
     public final Try can;
 
+
+
     public DeriverRoot(PrediTerm<Derivation> what, Try can) {
-        //this.id = ($.p(what, can ));
         this.what = what;
         this.can = can;
     }
 
-
     public void printRecursive() {
-
-        TrieDeriver.print(what);
-        TrieDeriver.print(can);
-
+        printRecursive(System.out);
+    }
+    public void printRecursive(PrintStream out) {
+        TrieDeriver.print(this, out);
     }
 }

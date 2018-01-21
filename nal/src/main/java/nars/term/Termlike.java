@@ -87,7 +87,7 @@ public interface Termlike {
     }
 
     default boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
-        return containsRecursively(t, false, inSubtermsOf);
+        return !impossibleSubTerm(t) && containsRecursively(t, false, inSubtermsOf);
     }
 
     /**

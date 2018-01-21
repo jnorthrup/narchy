@@ -282,11 +282,10 @@ public interface Atomic extends Term {
     }
 
 
-    static boolean equals(Atomic x, Atomic y) {
-        if (x.hashCode() != y.hashCode())
-            return false;
-
-        return Arrays.equals(x.bytes(), y.bytes());
+    static boolean equals(Atomic x, Object y) {
+        return (y instanceof Atomic) &&
+               (x.hashCode() == y.hashCode()) &&
+               Arrays.equals(x.bytes(), ((Atomic)y).bytes());
     }
     
 }

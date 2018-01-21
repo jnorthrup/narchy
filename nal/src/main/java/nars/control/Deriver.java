@@ -109,7 +109,7 @@ public class Deriver extends Causable {
 
         Derivation d = derivation.get().cycle(n, deriver);
 
-        int matchTTL = Param.TTL_PREMISE_MIN * 4;
+        int matchTTL = Param.TTL_MIN * 4;
 //        int ttlMin = nar1.matchTTLmin.intValue();
         int deriveTTL = n.matchTTLmean.intValue();
 
@@ -156,14 +156,16 @@ public class Deriver extends Causable {
                     if (derivable) {
                         //specific ttl as fraction of the total TTL allocated to the burst, proportional to its priority contribution
                         int ttl = Math.round(Util.lerp(
-                                premise.priElseZero()/totalPremiesPri, Param.TTL_PREMISE_MIN, totalTTL));
+                                premise.priElseZero()/totalPremiesPri, Param.TTL_MIN, totalTTL));
 
-                        derive(d, ttl);
+                        d.derive(ttl);
+                    } else {
+                        n.emotion.premiseUnderivable.increment();
                     }
 
                     //System.err.println(derivable + " " + premise.taskLink.get() + "\t" + premise.termLink + "\t" + d.can + " ..+" + d.derivations.size());
                 } else {
-                    n.emotion.premiseFail.increment();
+                    n.emotion.premiseFailMatch.increment();
                 }
             }
 
@@ -180,16 +182,6 @@ public class Deriver extends Causable {
     private boolean proto(Derivation x) {
         int[] trys = x.will = whats.apply(new ProtoDerivation.PremiseKey(x));
         return trys.length > 0;
-    }
-
-    /**
-     * 2. TRY stage
-     */
-    private void derive(Derivation x, int ttl) {
-        if (x.derive()) {
-            x.setTTL(ttl);
-            deriver.can.test(x);
-        }
     }
 
     @Override

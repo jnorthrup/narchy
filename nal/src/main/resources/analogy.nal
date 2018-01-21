@@ -7,6 +7,7 @@
  Z, (--X<->Y), eqOrIn(X,Z)  |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:AnalogyN, Goal:InductionN)
  //X, (X<->Y)                 |- (--,Y), (Goal:WeakPN)
  //X, (--X<->Y)               |- (--,Y), (Goal:WeakNN)
+(X-->A), (($1-->A)<->($1-->B)), neqRCom(X,B) |- (X-->B), (Belief:Analogy, Goal:Induction)
 
  //suspect:
 // Z, (X<->Y), eqOrIn(X,Z), belief(negative)   |- (--, subIfUnifiesAny(Z, X, Y, strict, force)), (Belief:AnalogyPN, Goal:WeakPN)
@@ -21,6 +22,7 @@
             //(P --> M), (S <-> M), neqRCom(S,P) |- (P --> S), (Belief:Analogy, Goal:Strong)
                     //TODO write test case for this
             //variable elimination 4b:
+
         //    (X --> A),        ((Y --> A)<->(Y --> C)),  neqRCom(X,C), neq(X,Y)      |- (X-->C), (Belief:Analogy, Goal:Strong)
          //       (X --> A),  (--(Y --> A)<->(Y --> C)),  neqRCom(X,C), neq(X,Y)      |- (X-->C), (Belief:AnalogyN, Goal:StrongN)
           //  (A --> X),        ((A --> Y)<->(C --> Y)),  neqRCom(X,C), neq(X,Y)      |- (C-->X), (Belief:Analogy, Goal:Strong)

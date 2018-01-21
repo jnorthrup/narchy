@@ -1,21 +1,22 @@
 package nars.derive;
 
-import nars.*;
+import nars.$;
+import nars.NARS;
+import nars.Narsese;
 import nars.derive.rule.PremiseRule;
 import nars.derive.rule.PremiseRuleSet;
-import nars.index.term.PatternIndex;
 import nars.term.Compound;
 import nars.term.Term;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * Created by me on 7/7/15.
  */
 public class PremiseRuleTest {
-
 
 
     @NotNull
@@ -29,8 +30,8 @@ public class PremiseRuleTest {
         String a = "<x --> #1>";
         String b = "<y --> #1>";
         Term p = $.p(
-            Narsese.term(a),
-            Narsese.term(b)
+                Narsese.term(a),
+                Narsese.term(b)
         );
         String expect = "((x-->#1),(y-->#1))";
         assertEquals(expect, p.toString());
@@ -45,8 +46,6 @@ public class PremiseRuleTest {
 
     @Test
     public void testParser() throws Narsese.NarseseException {
-
-        final Narsese p = Narsese.the();
 
         //NAR p = new NAR(new Default());
 
@@ -139,42 +138,57 @@ public class PremiseRuleTest {
 //        assertTrue(!x.toString().contains("%B"));
 //    }
 
+
     @Test
-    public void testPatternVarNormalization() throws Narsese.NarseseException {
-
-        //Narsese p = Narsese.the();
-
-        //TODO test combination of lowercase and uppercase pattern terms
-//        TaskRule x = p.term("<<A --> b> |- (X & y)>");
-//
-//        assertEquals("((<%A --> b>), ((&, %X, y)))", x.toString());
-
-
-        //        PremiseRule r = (PremiseRule) p.term(onlyRule);
-//        return rule(
-//                r
-//        );
-        Compound y = (Compound) parse("(S --> P), (--,S) |- (P --> S), (Belief:Conversion)").id;
-        assertTrue(y.hasAny(Op.NEG));
-
-        assertNotNull(y);
-
-        PatternIndex i = new PatternIndex();
-        y = (Compound) (y.normalize((byte) 0));
-        assertNotNull(y);
-        PremiseRule.printRecursive(y);
-
-        //assertEquals("(((%1-->%2),(--,%1)),((%2-->%1),((Conversion-->Belief))))", y.toString());
-        assertEquals(10, y.complexity());
-        assertEquals(15, y.volume());
-    }
-
-
-    @Test public void testMinSubsRulePredicate() throws Narsese.NarseseException {
+    public void testMinSubsRulePredicate() {
         //test that the constraint on %2 being of size > 1 is testable in the Proto phase
 
         DeriverRoot d = TrieDeriver.the(NARS.shell(),
                 "(A-->B),B,is(B,\"[\"),subsMin(B,2) |- (A-->dropAnySet(B)), (Belief:StructuralDeduction)");
+        d.printRecursive();
+        assertNotNull(d);
+    }
+
+    @Test
+    public void testDoubleOnlyTruthAddsRequiresBeliefPredicate() {
+        //test that the constraint on %2 being of size > 1 is testable in the Proto phase
+
+        DeriverRoot d = TrieDeriver.the(NARS.shell(),
+                "X,Y |- (X&&Y), (Belief:Intersection)");
+
+        d.printRecursive();
+        assertEquals("((\".!\"-->task),Belief,can({0}))", d.what.toString());
+    }
+
+    @Test
+    public void testTryFork() {
+
+        DeriverRoot d = TrieDeriver.the(NARS.shell(),
+                "X,Y |- (X&&Y), (Belief:Intersection)",
+                "X,Y |- (||,X,Y), (Belief:Union)"
+        );
+/*
+TODO - share unification state for different truth/conclusions
+    TruthFork {
+      (Union,_):
+      (Intersection,_):
+         (unify...
+         (
+      and {
+        truth(Union,_)
+        unify(task,%1)
+        unify(belief,%2) {
+          and {
+            derive((||,%1,%2))
+            taskify(3)
+          }
+        }
+      }
+      and {
+        truth(Intersection,_)
+        unify(task,%1)
+        unify(belief,%2) {
+ */
         d.printRecursive();
 
     }

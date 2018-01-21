@@ -144,6 +144,7 @@ public abstract class Param {
             //8;
             //32;
 
+    /** happiness automatic gain control time parameter */
     public final static float HAPPINESS_RE_SENSITIZATION_RATE = 0.001f;
 
     /**
@@ -156,7 +157,7 @@ public abstract class Param {
      */
     public static final float BELIEF_MATCH_TTL_FRACTION = 0.1f;
 
-    public static final int TTL_PREMISE_MIN =
+    public static final int TTL_MIN =
             Param.TTL_UNIFY * 2 +
                     Param.TTL_DERIVE_TASK_SUCCESS;
 

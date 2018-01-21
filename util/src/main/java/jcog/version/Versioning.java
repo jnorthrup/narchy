@@ -30,8 +30,11 @@ public class Versioning<X>
 
 
     public final boolean revertLive(int to) {
-        revert(to);
-        return live();
+        if (live()) {
+            revert(to);
+            return true;
+        }
+        return false;
     }
 
     /**

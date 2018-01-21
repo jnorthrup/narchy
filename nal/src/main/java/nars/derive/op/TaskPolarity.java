@@ -59,6 +59,14 @@ abstract public class TaskPolarity extends AbstractPred<ProtoDerivation> {
         }
     };
 
+    /** requires a double premise, excluding single */
+    public static final PrediTerm<ProtoDerivation> belief = new TaskPolarity("Belief") {
+        @Override
+        public boolean test(ProtoDerivation m) {
+            return m.beliefPolarity!=0;
+        }
+    };
+
     @Override
     public float cost() {
         return 0.1f;

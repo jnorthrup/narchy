@@ -1258,12 +1258,12 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testPreconditionCombineNeg() { //may be equivalent to another case
+    public void testPreconditionCombineNeg() {
 
         test
                 .believe("((x) ==>+5 (z))")
                 .believe("(--(y) ==>+5 (z))")
-                .mustBelieve(cycles, "( ((x) &&+0 --(y)) ==>+5 (z))", 1f, 0.81f);
+                .mustBelieve(cycles, "( ((x) &| --(y)) ==>+5 (z))", 1f, 0.81f);
     }
 
     @Test
@@ -1564,6 +1564,13 @@ public class NAL7Test extends NALTest {
           */
 
     }
-
+    @Test
+    public void nal5_conditional_induction0Simple() {
+        TestNAR tester = test;
+        tester.believe("((&&,x1,a) ==>+2 c)");
+        tester.believe("((&&,y1,a) ==>+1 c)");
+        tester.mustBelieve(cycles, "(x1 ==>+1 y1)", 1.00f, 0.45f);
+        tester.mustBelieve(cycles, "(y1 ==>-1 x1)", 1.00f, 0.45f);
+    }
 
 }

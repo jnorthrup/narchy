@@ -210,6 +210,10 @@ public class TestNAR {
                 logger.trace("{}", trace.getBuffer());
 
 
+            System.out.flush();
+            System.err.flush();
+
+            nar.emotion.printer(System.out).run();
             nar.stats(System.out);
 
         }

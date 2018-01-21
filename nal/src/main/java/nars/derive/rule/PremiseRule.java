@@ -1,6 +1,7 @@
 package nars.derive.rule;
 
 import com.google.common.collect.Sets;
+import jcog.TODO;
 import jcog.list.FasterList;
 import nars.$;
 import nars.NAR;
@@ -118,6 +119,23 @@ public class PremiseRule {
         if ((post.goalTruth != null) && !post.goalTruth.equals(TruthOperator.NONE) && (goal == null)) {
             throw new RuntimeException("unknown GoalFunction: " + post.goalTruth);
         }
+
+        //if (puncOverride==0) {
+            if (belief!=null && goal!=null) {
+                if (!belief.single() && !goal.single()) {
+                    pre.add(TaskPolarity.belief);
+                } else if (belief.single() ^ goal.single()){
+                    throw new TODO();
+                }
+            } else if (belief!=null && !belief.single()) {
+                pre.add(TaskPolarity.belief);
+            } else if (goal!=null && !goal.single()) {
+                pre.add(TaskPolarity.belief);
+            }
+
+            //TODO add more specific conditions that also work
+        //}
+
 
 
         String beliefLabel = belief != null ? belief.toString() : "_";
@@ -237,6 +255,7 @@ public class PremiseRule {
     final PremiseRule setup(PatternIndex index, NAR nar) /* throws PremiseRuleException */ {
 
         compile(index);
+
 
         //1. construct precondition term array
         //Term[] terms = terms();

@@ -196,10 +196,11 @@ public interface Compound extends Term, IPair, Subterms {
         Subterms xsubs = subterms();
         Subterms ysubs = ty.subterms();
 
-        if (xsubs.subs() != ysubs.subs())
+        int xs;
+        if ((xs=xsubs.subs()) != ysubs.subs())
             return false;
 
-        if (isCommutative()) {
+        if (xs>1 && isCommutative()) {
             return xsubs.unifyCommute(ysubs, u);
         } else {
             //do not do a fast termcontainer test unless it's linear; in commutive mode we want to allow permutations even if they are initially equal
@@ -624,7 +625,7 @@ public interface Compound extends Term, IPair, Subterms {
         Term[] xy = arrayShared();
         //any contained evaluables
         Op o = op();
-        int possiblyFunctional = o == INH ? Op.funcInnerBits : Op.funcBits;
+        //int possiblyFunctional = o == INH ? Op.funcInnerBits : Op.funcBits;
         boolean changed = false;
         //boolean recurseIfChanged = false;
         int ellipsisAdds = 0, ellipsisRemoves = 0;
@@ -662,7 +663,7 @@ public interface Compound extends Term, IPair, Subterms {
         Term u;
         if (changed) {
 
-            u = o.a(dt(), xy);
+            u = o.the(dt(), xy);
 
 //            if (recurseIfChanged)
 //                return u.evalSafe(context, remain);

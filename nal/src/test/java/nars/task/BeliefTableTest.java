@@ -316,8 +316,7 @@ public class BeliefTableTest {
         float a = dtDiff("((x &&+1 y) ==>+1 z)", "((x &&+1 y) ==>+2 z)");
         float b = dtDiff("((x &&+1 y) ==>+1 z)", "((x &&+2 y) ==>+1 z)");
         assertEquals(a, 1, 0.1f);
-        assertEquals(a, 0.5f, 0.1f);
-        assertTrue(a > b );
+        assertEquals(b, 0.5f, 0.1f);
     }
 
     static float dtDiff(String x, String y) {

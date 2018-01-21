@@ -20,7 +20,9 @@ public class TermListTest {
         "(a,b,c)",
         "((a),b,c)",
         "((a),(b,c))",
-        "((a),{$b,(#a)},[?c],(%d|e),(f&&g),{1,b,()),(h ==>+1 j),--(k-->m),((l &&+1 k) ==>-3 n))",
+        "((a),{$b,(#a)})",
+        "((a),[?c])",
+        "((a),{$b,(#a)},[?c],(%d|e),(f&&g),{1,b,()},(h ==>+1 j),--(k-->m),((l &&+1 k) ==>-3 n))",
     })
     public void test1(String i) {
         assertReallyEquals(i);

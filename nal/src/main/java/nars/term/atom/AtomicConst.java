@@ -58,8 +58,7 @@ public abstract class AtomicConst implements Atomic {
 
     @Override
     public boolean equals(Object u) {
-        return (this == u) ||
-               ((u instanceof Atomic) && Atomic.equals(this, (Atomic)u));
+        return (this == u) || Atomic.equals(this, u);
     }
 
     @Override public String toString() {

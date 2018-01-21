@@ -135,7 +135,8 @@ public final class TrieDeriver {
         if (p instanceof DeriverRoot) {
 
             DeriverRoot r = (DeriverRoot) p;
-            print(AndCondition.the(new PrediTerm[]{r.what, r.can}) /* HACK */, out, indent);
+            print(r.what, out, indent);
+            print(r.can, out, indent);
 
         } else if (p instanceof UnifyTerm.UnifySubtermThenConclude) {
             UnifyTerm.UnifySubtermThenConclude u = (UnifyTerm.UnifySubtermThenConclude) p;
@@ -336,7 +337,7 @@ public final class TrieDeriver {
         print(d, System.out);
     }
 
-    public static void print(PrediTerm<Derivation> d, PrintStream out) {
+    public static void print(Object d, PrintStream out) {
         TrieDeriver.print(d, out, 0);
 
 //        out.println("Fork {");

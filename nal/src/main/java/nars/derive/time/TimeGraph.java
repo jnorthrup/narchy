@@ -59,13 +59,9 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         public final static TimeSpan TS_ETERNAL = new TimeSpan(ETERNAL);
 
         public static TimeSpan the(long dt) {
-            assert (dt != TIMELESS);
-            //if (Param.DEBUG_EXTRA) {
-            if (dt == XTERNAL) //TEMPORARY
-                throw new RuntimeException("probably meant to use XTERNAL");
-            if (dt == DTERNAL) //TEMPORARY
-                throw new RuntimeException("probably meant to use ETERNAL");
-            //}
+            assert(dt!=TIMELESS);
+            assert(dt!=XTERNAL):"probably meant to use TIMELESS";
+            assert(dt!=DTERNAL):"probably meant to use ETERNAL";
 
             if (dt == 0) {
                 return TS_ZERO;
@@ -233,7 +229,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 //            byTerm.put(tRoot, event);
 
         int edt = eventTerm.dt(), eventDT;
-        if (dternalAsZero && edt == DTERNAL)
+        if (edt == DTERNAL && dternalAsZero)
             eventDT = 0;
         else
             eventDT = edt;
@@ -261,7 +257,9 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 Event se = know(subj);
                 Term pred = eventTerm.sub(1);
                 Event pe = know(pred);
-                if (eventDT != XTERNAL && eventDT != DTERNAL) {
+                if (eventDT == DTERNAL) {
+                    link(se, ETERNAL, pe);
+                } else if (eventDT != XTERNAL) {
 
                     int st = subj.dtRange();
 
@@ -271,13 +269,13 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                     subj.eventsWhile((w, y) -> {
                         link(know(y), eventDT + st - w, pe);
                         return true;
-                    }, 0, true, false, false, 0);
+                    }, 0, false, false, false, 0);
 
                     //if (pred.hasAny(CONJ)) {
                     pred.eventsWhile((w, y) -> {
                         link(se, eventDT + st + w, know(y));
                         return true;
-                    }, 0, true, false, false, 0);
+                    }, 0, false, false, false, 0);
 
                 }
 
@@ -322,25 +320,42 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 //locate the events and sub-events absolutely
                 switch (eventDT) {
                     case XTERNAL:
+                        break;
+
                     case DTERNAL:
+                    case 0:
+
                         //  eventTerm.subterms().forEach(this::know); //TODO can these be absolute if the event is?
+                        boolean timed = et != ETERNAL;
+                        for (Term s : eventTerm.subterms()) {
+                            link(event, (eventDT == 0 || timed) ? 0 : ETERNAL,
+                                    eventDT == 0 ?
+                                        knowConjComponent(et, 0, s) : //0
+                                            (timed ? know(s, et) :  //DTERNAL and TIMED
+                                                    know(s)) //DTERNAL and TIMELESS
+                            );
+                        }
                         break;
                     default:
 
                         eventTerm.eventsWhile((w, y) -> {
 
-                            link(event, w, et != TIMELESS ?
-                                    know(y, et == ETERNAL ? ETERNAL : w + et) :
-                                    know(y));
+                            link(event, w, knowConjComponent(et, w, y));
 
                             return true;
-                        }, 0, true, false, false, 0);
+                        }, 0, false, false, false, 0);
                         break;
                 }
 
                 break;
         }
 
+    }
+
+    private Event knowConjComponent(long et, long w, Term y) {
+        return (et != TIMELESS) ?
+                know(y, (et == ETERNAL) ? ETERNAL : (w + et)) :
+                know(y);
     }
 
 
@@ -533,21 +548,28 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
      * since CONJ will be constructed with conjMerge, if x is conj the dt between events must be calculated from start-start. otherwise it is implication and this is measured internally
      */
     static long dt(Term x, Event aa, Event bb) {
-        long bWhen = bb.when();
+
         long aWhen = aa.when();
-        assert (aWhen != XTERNAL);
-        assert (bWhen != XTERNAL);
-        if (aWhen == ETERNAL || bWhen == ETERNAL)
+        long bWhen;
+        if (aWhen == ETERNAL || (bWhen = bb.when()) == ETERNAL)
             return DTERNAL;
         else {
+            assert (aWhen != XTERNAL);
+            assert (bWhen != XTERNAL);
             return bWhen - aWhen;
         }
         //return bb.start() - (x.op() == CONJ ? aa.start() : aa.end());
     }
 
     private boolean solveDT(Term x, long start, long ddt, Predicate<Event> each) {
-        assert (ddt < Integer.MAX_VALUE) : ddt + " dt calculated";
-        int dt = (int) ddt;
+        assert(ddt != TIMELESS && ddt != XTERNAL);
+        int dt;
+        if (ddt == ETERNAL) {
+            dt = DTERNAL;
+        } else {
+            assert (ddt < Integer.MAX_VALUE) : ddt + " dt calculated";
+            dt = (int)ddt;
+        }
         Term y = dt(x, dt);
 
         if (y instanceof Bool)
@@ -764,9 +786,16 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                     //BooleanObjectPair<Edge<Event, TimeSpan>> pathStart = path.get(0);
 //                    Term pathStartTerm = pathStart.getTwo().from(pathStart.getOne()).id.id;
 
-                    long startTime = pathEndTime == ETERNAL ?
-                            ETERNAL :
-                            pathEndTime - pathTime(path, false);
+                    long startTime;
+                    if (pathEndTime == ETERNAL) {
+                        startTime = ETERNAL;
+                    } else {
+                        long pathStartTime = pathTime(path, false);
+                        if (pathStartTime == ETERNAL)
+                            startTime = ETERNAL;
+                        else
+                            startTime = pathEndTime - pathStartTime;
+                    }
 
                     return each.test(event(x.id, startTime));
                 }
@@ -791,7 +820,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             return x.hasNext() ? Iterators.transform(Iterators.filter(Iterators.transform(
                     Iterators.filter(x, preFilter::test),
                     TimeGraph.this::node),
-                    e -> e != n && e != null && !log.hasVisited(e)),
+                    e -> e != n && !log.hasVisited(e)),
                     that ->
                             new Edge<>(n, that, TS_ZERO) //co-occurring
             ) : null;
@@ -820,7 +849,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 if (spanDT == ETERNAL) {
                     //no change, crossed a DTERNAL step. this may signal something
                     if (!eternalAsZero)
-                        return ETERNAL;
+                        return ETERNAL; //short-circuit to eternity
                 } else if (spanDT != 0) {
                     t += (spanDT) * (r.getOne() ? +1 : -1);
                 }

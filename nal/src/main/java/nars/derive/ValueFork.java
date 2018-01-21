@@ -57,6 +57,32 @@ public class ValueFork extends ForkDerivation<Derivation> {
         causes = Util.map(c -> c.channel, Cause[]::new, conc);
 
     }
+    @Override
+    public boolean test(Derivation d) {
+
+        int before = d.now();
+
+        int N = this.branches.length;
+        if (N == 1) {
+            this.branches[0].test(d);
+            return d.revertLive(before);
+        } else {
+
+            float[] w = Util.marginMax(N, i -> causes[i].value(), 1f / N, 0);
+
+            Roulette.selectRouletteUnique(N, i->w[i], (b) -> {
+
+                this.branches[b].test(d);
+
+                return d.revertLive(before);
+
+            }, d.random);
+
+            return d.live();
+        }
+    }
+
+
 
     @Override
     public PrediTerm<Derivation> transform(Function<PrediTerm<Derivation>, PrediTerm<Derivation>> f) {
@@ -108,31 +134,6 @@ public class ValueFork extends ForkDerivation<Derivation> {
 ////        }
 //    }
 
-
-    @Override
-    public boolean test(Derivation d) {
-
-        int before = d.now();
-
-        int N = this.branches.length;
-        if (N == 1) {
-            this.branches[0].test(d);
-            return d.revertLive(before) && d.use(1);
-        } else {
-
-            float[] w = Util.marginMax(N, i -> causes[i].value(), 1f / N, 0);
-
-            Roulette.selectRouletteUnique(N, i->w[i], (b) -> {
-
-                this.branches[b].test(d);
-
-                return d.revertLive(before) && d.use(1);
-
-            }, d.random);
-
-            return d.live();
-        }
-    }
 
 
     /**

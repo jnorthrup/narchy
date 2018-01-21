@@ -1,32 +1,33 @@
 package nars.derive;
 
+import com.google.common.base.Joiner;
 import jcog.Util;
 import jcog.decide.Roulette;
-import nars.$;
+import nars.Param;
 import nars.control.Cause;
 import nars.control.Derivation;
 import nars.term.Term;
-import nars.term.pred.AbstractPred;
 import nars.term.pred.PrediTerm;
+import org.apache.commons.lang3.ArrayUtils;
 
-import java.util.Arrays;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
 /**
  * set of branches, subsets of which a premise "can" "try"
  */
-public class Try extends AbstractPred<Derivation> {
+public class Try implements Consumer<Derivation> {
 
 //    public final ValueCache cache;
     public final PrediTerm<Derivation>[] branches;
     public final Cause[] causes;
 
     Try(PrediTerm<Derivation>[] branches, Cause[] causes) {
-        super($.func("try",
-                branches.length < 127 ? branches :
-                new Term[] {  $.the(Arrays.toString(branches)) } //HACK
-        ));
+//        super($.func("try",
+//                branches.length < 127 ? branches :
+//                new Term[] {  $.the(Arrays.toString(branches)) } //HACK
+//        ));
         this.branches = branches;
         this.causes = causes;
     }
@@ -36,23 +37,26 @@ public class Try extends AbstractPred<Derivation> {
              Stream.of(branches).flatMap(b -> Stream.of(b.causes)).toArray(Cause[]::new));
     }
 
-    @Override
-    public PrediTerm<Derivation> transform(Function<PrediTerm<Derivation>, PrediTerm<Derivation>> f) {
+    public Try transform(Function<PrediTerm<Derivation>, PrediTerm<Derivation>> f) {
         return new Try(
                 PrediTerm.transform(f, branches), causes
         );
     }
 
 
+    @Override
+    public String toString() {
+        return Joiner.on(",").join(branches);
+    }
 
     @Override
-    public boolean test(Derivation d) {
+    public void accept(Derivation d) {
 
         int[] choices = d.will;
         int N = choices.length;
         switch (N) {
             case 0:
-                return false;
+                throw new RuntimeException("zero causes should not even reach here");
             case 1:
 
                 branches[choices[0]].test(d);
@@ -60,22 +64,77 @@ public class Try extends AbstractPred<Derivation> {
                 break;
             default:
 
-                int[] c = choices;
-                float[] w = Util.marginMax(N, x ->
-                        Util.sum(Cause::value, ((ValueFork)(branches[c[x]])).causes), //sum of downstream cause values
-                        1f / N, 0
-                );
-
-                int before = d.now();
-                Roulette.selectRouletteUnique(N, i -> w[i], (i) -> {
-                    branches[c[i]].test(d);
-                    return d.revertLive(before);
-                }, d.random);
+                forkRoulette(d, choices, 0.5f);
+                //forkTTLBudget(d, choices);
 
                 break;
         }
+    }
 
-        return false;
+    /** TTL and the value of each decides budget to allocate to each branch. then these are tried in shuffled order */
+    public void forkTTLBudget(Derivation d, int[] choices) {
+
+        float ttlTotal = d.ttl;
+        int n = choices.length;
+        float[] w = Util.marginMax(n, x ->
+                        valueSum(choices[x]), //sum of downstream cause values
+                1f / n, 0
+        );
+        float valueSum = Util.sum(w);
+
+        int[] order = new int[n];
+        for (int i = 0; i < n; i++) order[i] = i;
+        ArrayUtils.shuffle(order, d.random);
+
+        int k = 0;
+        int start = d.now();
+        while (d.ttl > 0) {
+            int ttlSave = d.ttl;
+
+            int c = order[(k++)%n];
+            int ttlFrac = Math.max(Param.TTL_MIN, Math.round(ttlTotal * w[c]/valueSum));
+            d.ttl = ttlFrac;
+
+            branches[choices[c]].test(d);
+            d.revert(start);
+
+            int ttlUsed = Math.max(1, ttlSave - d.ttl);
+            d.ttl = ttlSave - ttlUsed;
+        }
+
+    }
+
+    public void forkRoulette(Derivation d, int[] choices, float reserve) {
+        int n = choices.length;
+        float[] w = Util.marginMax(n, x ->
+                        valueSum(choices[x]), //sum of downstream cause values
+                1f / n, 0
+        );
+
+        int before = d.now();
+        Roulette.selectRouletteUnique(n, i -> w[i], (i) -> {
+            int ttlSave = d.ttl;
+
+            int ttlFrac = Math.max(Param.TTL_MIN, Math.round(ttlSave*reserve));
+            d.ttl = ttlFrac;
+
+            branches[choices[i]].test(d);
+            d.revert(before);
+
+            int ttlUsed = Math.max(1, ttlFrac - d.ttl);
+
+            return (d.ttl = ttlSave - ttlUsed) > 0;
+
+        }, d.random);
+    }
+
+    public float valueSum(int choice) {
+        return Util.sum(Cause::value, ((ValueFork)(branches[choice])).causes);
+    }
+
+    public void recurseTerms(Consumer<Term> each) {
+        for (PrediTerm p : branches)
+            p.recurseTerms(each);
     }
 
 //    public int tryBranch(Derivation d, short[] routing, int sample) {

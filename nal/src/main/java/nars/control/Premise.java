@@ -43,6 +43,8 @@ public class Premise extends Pri {
         this.hash = Util.hashCombine(task.hashCode(), term.hashCode());
     }
 
+    final static int var = Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit;
+
     /**
      * resolve the most relevant belief of a given term/concept
      * <p>
@@ -95,12 +97,13 @@ public class Premise extends Pri {
 
         Op to = taskTerm.op();
         Op bo = beliefTerm.op();
-        if (to.var || bo.var || to == bo) {
+        if (to == bo) {
             if (taskTerm.equalsRoot(beliefTerm)) {
                 beliefConceptCanAnswerTaskConcept[0] = true;
             } else {
-                int var = Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit;
-                if (taskTerm.hasAny(var) || beliefTerm.hasAny(var)) {
+
+                //non-symmetric unify only variables in the task by belief contents
+                if ((!beliefTerm.op().conceptualizable) && (taskTerm.hasAny(var))) {
 
                     Term _beliefTerm = beliefTerm;
                     final Term[] unifiedBeliefTerm = new Term[]{null};
@@ -205,9 +208,9 @@ public class Premise extends Pri {
         if (belief != null) {
             beliefTerm = belief.term().unneg(); //use the belief's actual possibly-temporalized term
 
-            if (belief.equals(task)) { //do not repeat the same task for belief
-                belief = null; //force structural transform; also prevents potential inductive feedback loop
-            }
+//            if (belief.equals(task)) { //do not repeat the same task for belief
+//                belief = null; //force structural transform; also prevents potential inductive feedback loop
+//            }
         }
 
         if (beliefTerm instanceof Bool) {

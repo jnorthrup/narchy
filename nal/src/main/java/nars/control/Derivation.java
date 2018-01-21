@@ -114,6 +114,7 @@ public class Derivation extends ProtoDerivation {
 
     public Task _task;
     public Task _belief;
+    public Term _beliefTerm;
 
 
     /**
@@ -339,6 +340,7 @@ public class Derivation extends ProtoDerivation {
 
         this.task = this.belief = null;
         this._task = this._belief = null;
+        this._beliefTerm = null;
 
         this.beliefTruth = this.taskTruth = null;
 
@@ -420,7 +422,8 @@ public class Derivation extends ProtoDerivation {
             beliefTerm = this.beliefTerm = this.belief.term();
         } else {
             this.belief = null;
-            beliefTerm = this.beliefTerm = anon.put(_beliefTerm);
+            if ((beliefTerm = this.beliefTerm = anon.put(this._beliefTerm = _beliefTerm))==null)
+                throw new NullPointerException(_belief + " could not be anonymized");
         }
 
 
@@ -434,7 +437,7 @@ public class Derivation extends ProtoDerivation {
     }
 
     /** called after protoderivation has returned some possible Try's */
-    public boolean derive() {
+    public void derive(int ttl) {
 //        int ttv = taskTerm.vars();
 //        if (ttv > 0 && bt.vars() > 0) {
 //            bt = bt.normalize(ttv); //shift variables up to be unique compared to taskTerm's
@@ -509,7 +512,8 @@ public class Derivation extends ProtoDerivation {
                 premiseEviSingle;
 
 
-        return true;
+        setTTL(ttl);
+        deriver.can.accept(this);
     }
 
     @Override
@@ -562,7 +566,7 @@ public class Derivation extends ProtoDerivation {
 
     @Override
     public String toString() {
-        return task + " " + (belief != null ? belief : beliefTerm)
+        return _task + " " + (_belief != null ? _belief : _beliefTerm)
                 + ' ' + super.toString();
     }
 

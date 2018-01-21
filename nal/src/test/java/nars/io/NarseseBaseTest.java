@@ -185,6 +185,7 @@ public class NarseseBaseTest extends NarseseTest {
     }
 
     @Test public void testDisjunctionBinary() throws Narsese.NarseseException {
+        assertEquals("(||,a,b)", $.$("(a||b)").toString());
         assertEquals("(||,a,b)", $.$("(a || b)").toString());
     }
 

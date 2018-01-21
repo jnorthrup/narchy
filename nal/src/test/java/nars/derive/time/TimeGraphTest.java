@@ -117,13 +117,6 @@ class TimeGraphTest {
                 "(a &&+10 c)@1");
     }
 
-    private static final String[] implWithConjPredicateSolutions = {
-            //using one@1
-            "(one ==>+1 (two &&+1 three))@ETE"
-            //using two@20
-            //"(one ==>+1 (two &&+1 three))@19"
-    };
-
     @Test
     public void testImplWithConjPredicate1() {
         assertSolved("(one ==>+- (two &&+1 three))", A,
@@ -142,7 +135,13 @@ class TimeGraphTest {
 
     @Test
     public void testImplWithConjPredicate2() {
-        assertSolved("(one ==>+- (two &&+- three))", A, implWithConjPredicateSolutions);
+        assertSolved("(one ==>+- (two &&+- three))", A, new String[]{
+                //using one@1
+
+                "((one &&+1 two) ==>+1 three)", "(one ==>+- (two &&+1 three))" //@ETE ?
+                //using two@20
+                //"(one ==>+1 (two &&+1 three))@19"
+        });
     }
 
     final List<Runnable> afterEach = $.newArrayList();

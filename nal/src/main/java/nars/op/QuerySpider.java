@@ -30,7 +30,7 @@ public class QuerySpider extends NARService {
                     new UnifySubst(null, nar, (z) -> {
                         //TODO
                         return true;
-                    }, Param.TTL_PREMISE_MIN).unify(tt, r.v, true);
+                    }, Param.TTL_MIN).unify(tt, r.v, true);
                     return true;
                 });
             }

@@ -21,13 +21,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 230;
+    public static final int cycles = 530;
 
 
     @BeforeEach
     public void setTolerance() {
         test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS);
-        test.nar.time.dur(3);
     }
 
     @Test
@@ -659,13 +658,21 @@ public class NAL8Test extends NALTest {
     }
 
 
-    @Test
-    public void testGoalImplComponentEternal() {
-
+    @ParameterizedTest @ValueSource(strings = {"&|","&&"})
+    public void testGoalImplComponentEternal(String conj) {
         test
-                .input("(happy)!")
-                .input("((--,(in)) =|> ((happy)&&(--,(out)))).")
-                .mustGoal(cycles, "(in)", 0f, 0.42f);
+            .log()
+            .input("happy!")
+            .input("(in =|> (happy " + conj + " --out)).")
+            .mustBelieve(cycles, "(in=|>happy)", 1f, 0.81f)
+            .mustGoal(cycles, "in", 1f, 0.73f);
+    }
+
+    @ParameterizedTest @ValueSource(strings = {"&&","&|"})
+    public void testGoalImplComponentEternalSubjNeg(String conj) {
+        test.input("happy!")
+            .input("(--in =|> (happy " + conj + " --out)).")
+            .mustGoal(cycles, "in", 0f, 0.42f);
     }
 
     @Test
@@ -786,11 +793,13 @@ public class NAL8Test extends NALTest {
         assertEquals(2, subjPred.length);
 
         test
+                .log()
                 .inputAt(start, "(" + subjPred[0] + " ==>" + ((dt >= 0 ? "+" : "-") + Math.abs(dt)) + " " + subjPred[1] + "). :|:")
                 .inputAt(when, "b! :|:")
                 .mustGoal(cycles, subjPred[0], 1f, 0.45f,
                         (t) -> t == goalAt) //desired NOW, not at time 10 as would happen during normal decompose
-                .mustNotOutput(cycles, subjPred[0], GOAL, t -> t != goalAt);
+                .mustNotOutput(cycles, subjPred[0], GOAL, t -> t != goalAt)
+        ;
     }
 
     @Test
@@ -839,7 +848,6 @@ public class NAL8Test extends NALTest {
     public void implDecomposeGoalBeforeTemporalImpl() {
         //predictive impl
         test
-                .confTolerance(0.05f)
                 //.log()
                 .inputAt(1, "(x ==>-1 y). :|:") //should not affect the fact that the goal is relative to the 'y!' task, except it is slightly weaker
                 .inputAt(2, "y! :|:")

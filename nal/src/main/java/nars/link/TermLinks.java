@@ -134,7 +134,7 @@ public enum TermLinks {
 
 
             case SIM:
-                if (x.sub(0).isAny(Op.SetBits) || x.sub(1).isAny(Op.SetBits))
+                if (x.sub(0).isAny(Op.VariableBits | Op.SetBits) || x.sub(1).isAny(Op.VariableBits | Op.SetBits))
                     return 3; //HACK NAL2 structural transform linking to NAL1 statement
                 else
                     return 2;

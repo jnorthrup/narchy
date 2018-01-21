@@ -1970,6 +1970,8 @@ public enum Util {
 
     /**
      * builds a MarginMax weight array, which can be applied in a Roulette decision
+     * a lower margin > 0 controls the amount of exploration while values
+     * closer to zero prefer exploitation of provided probabilities
      */
     @Paper
     public static float[] marginMax(int num, IntToFloatFunction build, float lower, float upper) {

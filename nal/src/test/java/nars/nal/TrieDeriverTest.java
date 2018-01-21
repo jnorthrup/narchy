@@ -4,17 +4,14 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.control.Derivation;
 import nars.control.Deriver;
 import nars.derive.DeriverRoot;
 import nars.derive.TrieDeriver;
-import nars.derive.instrument.DebugDerivationPredicate;
 import nars.derive.rule.PremiseRule;
 import nars.derive.rule.PremiseRuleSet;
 import nars.index.term.PatternIndex;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.pred.PrediTerm;
 import nars.test.TestNAR;
 import net.byteseek.utils.collections.IdentityHashSet;
 import org.eclipse.collections.api.tuple.Pair;
@@ -110,7 +107,7 @@ public class TrieDeriverTest {
 
         assertNotEquals(0, rules.length);
 
-        @NotNull PatternIndex pi = new PatternIndex();
+        PatternIndex pi = new PatternIndex();
 
         Stream<Pair<PremiseRule, String>> parsed = PremiseRuleSet.parse(Stream.of(rules));
 
@@ -122,7 +119,7 @@ public class TrieDeriverTest {
 
         if (debug) {
             //d.printRecursive();
-            PrediTerm<Derivation> dd = d.what.transform(DebugDerivationPredicate::new);
+            //PrediTerm<Derivation> dd = d.what.transform(DebugDerivationPredicate::new);
         }
 
         Set<Term> byEquality = new HashSet();
@@ -133,6 +130,7 @@ public class TrieDeriverTest {
         };
         d.what.recurseTerms(adder);
         d.can.recurseTerms(adder);
+
 
 //        if (debug) {
 //            System.out.println("           volume: " + d.volume());

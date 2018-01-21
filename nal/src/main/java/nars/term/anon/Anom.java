@@ -31,7 +31,7 @@ public final class Anom extends Int implements AnonID {
 
     @Override
     public String toString() {
-        return "_" + Integer.toString(anonNum());
+        return "_" +  Integer.toString(id);
     }
 
     @Override
@@ -45,7 +45,7 @@ public final class Anom extends Int implements AnonID {
     }
 
     @Override
-    public final boolean equals(Object obj) {
+    public boolean equals(Object obj) {
         return this == obj;
     }
 

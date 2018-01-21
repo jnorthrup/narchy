@@ -341,7 +341,7 @@ public abstract class Unify extends Versioning implements Subst {
 //            else
 
             //return y0.equals(y);// || unify(y0, y);
-            return y0.equals(y);
+            return y0.equalsRoot(y);
 
         } else /*if (matchType(x0))*/ {
 

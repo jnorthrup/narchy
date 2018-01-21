@@ -1,7 +1,6 @@
 package nars.derive;
 
 import nars.NAR;
-import nars.Op;
 import nars.control.Derivation;
 import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
@@ -101,27 +100,27 @@ public final class Conclusion extends AbstractPred<Derivation> {
                 occ[1] = x;
             }
 
-            if (d.concPunc == GOAL && d.taskPunc == GOAL && !d.single && Op.values()[d._beliefOp] == IMPL) {
-                long derivedGoalStart = occ[0];
-
-                if (derivedGoalStart != ETERNAL) {
-
-                    long taskWants =
-                            d.task.start();
-                            //d.task.myNearestTimeTo(d.time);
-
-                    if (taskWants == ETERNAL) {
-                        taskWants = d.time; //now
-                    }
-
-                    if (derivedGoalStart < taskWants) {
-                        //derived goal occurrs before task goal, so shift to task start
-                        long gdur = occ[1] - derivedGoalStart;
-                        occ[0] = taskWants;
-                        occ[1] = taskWants + gdur;
-                    }
-                }
-            }
+//            if (d.concPunc == GOAL && d.taskPunc == GOAL && !d.single && Op.values()[d._beliefOp] == IMPL) {
+//                long derivedGoalStart = occ[0];
+//
+//                if (derivedGoalStart != ETERNAL) {
+//
+//                    long taskWants =
+//                            d.task.start();
+//                            //d.task.myNearestTimeTo(d.time);
+//
+//                    if (taskWants == ETERNAL) {
+//                        taskWants = d.time; //now
+//                    }
+//
+//                    if (derivedGoalStart < taskWants) {
+//                        //derived goal occurrs before task goal, so shift to task start
+//                        long gdur = occ[1] - derivedGoalStart;
+//                        occ[0] = taskWants;
+//                        occ[1] = taskWants + gdur;
+//                    }
+//                }
+//            }
 
         } else {
             if (d.concPunc == BELIEF || d.concPunc == GOAL) {
