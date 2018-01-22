@@ -11,7 +11,7 @@ import static nars.time.Tense.ETERNAL;
 public class NAL6Test extends NALTest {
 
 
-    final int cycles = 2500;
+    final int cycles = 1500;
 
     @Test
     public void variable_unification_revision() {
@@ -204,18 +204,25 @@ public class NAL6Test extends NALTest {
     }
 
     @Test
-    public void variable_elimination_sim() {
+    public void variable_elimination_sim_subj() {
 
         TestNAR tester = test;
-
-        tester.log();
         tester.believe("(($x --> bird) <-> ($x --> swimmer))"); //en("Some bird can swim.");
         tester.believe("(swan --> bird)", 0.90f, 0.9f); //en("Swan is a type of bird.");
         tester.mustBelieve(cycles, "(swan --> swimmer)", 0.90f, //en("I guess swan can swim.");
                 0.81f);
         //0.43f);
     }
+    @Test
+    public void variable_elimination_sim_pred() {
 
+        TestNAR tester = test;
+        tester.believe("((bird --> $x) <-> (swimmer --> $x))");
+        tester.believe("(bird --> swan)", 0.90f, 0.9f);
+        tester.mustBelieve(cycles, "(swimmer --> swan)", 0.90f,
+                0.81f);
+        //0.43f);
+    }
     @Test
     public void variable_elimination5() {
 

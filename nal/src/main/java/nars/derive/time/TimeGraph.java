@@ -868,6 +868,8 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                     //no change, crossed a DTERNAL step. this may signal something
                     if (!eternalAsZero)
                         return ETERNAL; //short-circuit to eternity
+                    //else: continue
+
                 } else if (spanDT != 0) {
                     t += (spanDT) * (r.getOne() ? +1 : -1);
                 }
@@ -930,19 +932,36 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                     if (dt == TIMELESS)
                         return null;
 
-                    if (rev && dt != ETERNAL) {
-                        dt = -dt; //reverse
-                        startTime = endTime;
+                    if (dt == ETERNAL) {
+                        long w;
+                        if (startTime==TIMELESS) {
+                            w = endTime;
+                        } else {
+                            if (startTime == ETERNAL)
+                                w = endTime;
+                            else {
+                                w = startTime;
+                            }
+                        }
+
+                        return new long[] { w, ETERNAL };
+                    } else {
+                        if (rev) {
+                            dt = -dt; //reverse
+                            long s = startTime;
+                            startTime = endTime;
+                            endTime = s;
+                        }
+
+                        //TODO may need to subtract from dt any inner events with dtRange
+
+
+                        return new long[]{
+                                (startTime != TIMELESS || endTime == TIMELESS) ?
+                                        startTime :
+                                        (endTime != ETERNAL ? endTime - dt : ETERNAL)
+                                , dt};
                     }
-
-                    //TODO may need to subtract from dt any inner events with dtRange
-
-
-                    return new long[]{
-                            (startTime != TIMELESS || endTime == TIMELESS) ?
-                                    startTime :
-                                    (endTime != ETERNAL ? endTime - dt : ETERNAL)
-                            , dt};
                 }
             }
             return null;

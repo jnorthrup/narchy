@@ -32,8 +32,8 @@
     (A --> C), (B --> C), neq(A,B),is(A,"["),is(B,"[") |- (differ(A,B) --> C), (Belief:Difference)
 
 //Set Goals
-    (A --> C), (B --> C), task("!"), neq(A,B),is(A,"{"),is(B,"{") |- (intersect(A,B) --> C), (Goal:Induction)
-    (A --> C), (B --> C), task("!"), neq(A,B),is(A,"["),is(B,"[") |- (union(A,B) --> C), (Goal:Induction)
+    (A --> C), (B --> C), task("!"), neq(A,B),is(A,"{"),is(B,"{") |- (intersect(A,B) --> C), (Goal:Weak)
+    (A --> C), (B --> C), task("!"), neq(A,B),is(A,"["),is(B,"[") |- (union(A,B) --> C), (Goal:Weak)
     //TODO more
         //(A --> C), (B --> C), task("!"), neq(A,B),is(A,"+"),is(B,"+") |- (intersect(A,B) --> C), (Goal:Induction)
         //(A --> C), (B --> C), task("!"), neq(A,B),is(A,"+"),is(B,"+") |- (union(A,B) --> C), (Goal:Induction)
