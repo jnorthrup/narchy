@@ -2,7 +2,10 @@ package nars.concept.state;
 
 import jcog.Util;
 import jcog.math.MutableInteger;
-import nars.concept.*;
+import nars.concept.ActionConcept;
+import nars.concept.Concept;
+import nars.concept.PermanentConcept;
+import nars.concept.TaskConcept;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 
 import static jcog.Util.clamp;

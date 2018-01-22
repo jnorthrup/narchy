@@ -8,7 +8,6 @@ import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
 import spacegraph.Surface;
 import spacegraph.input.Finger;
-import spacegraph.math.v2;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -74,12 +73,12 @@ public class TextEdit extends DefaultVirtualTerminal {
             }
 
             @Override
-            public Surface onTouch(Finger finger, v2 hitPoint, short[] buttons) {
+            public Surface onTouch(Finger finger, short[] buttons) {
                 /** middle mouse button paste */
                 Finger.clicked(2, ()->{
                     paste();
                 });
-                return super.onTouch(finger, hitPoint, buttons);
+                return super.onTouch(finger, buttons);
             }
 
 

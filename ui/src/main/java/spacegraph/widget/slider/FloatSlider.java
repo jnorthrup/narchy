@@ -5,6 +5,7 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.math.FloatParam;
 import jcog.math.FloatSupplier;
+import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
@@ -56,9 +57,11 @@ public class FloatSlider extends Widget {
     }
 
     @Override
-    public synchronized void start(@Nullable SurfaceBase parent) {
-        super.start(parent);
-        updateText();
+    public void start(@Nullable SurfaceBase parent) {
+        synchronized (this) {
+            super.start(parent);
+            updateText();
+        }
     }
 
     private void updateText() {
@@ -101,8 +104,9 @@ public class FloatSlider extends Widget {
             this.max = max;
         }
 
+
         @Override
-        protected void paint(GL2 gl, int dtMS) {
+        protected void paintWidget(GL2 gl, RectFloat2D bounds) {
 //            super.paint(gl, dtMS);
 //        }
 //
@@ -111,7 +115,7 @@ public class FloatSlider extends Widget {
             if (input != null)
                 super.value(input.asFloat());
 
-            super.paint(gl, dtMS);
+            super.paintWidget(gl, bounds);
         }
 
         @Override

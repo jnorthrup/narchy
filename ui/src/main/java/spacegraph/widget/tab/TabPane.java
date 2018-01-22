@@ -52,7 +52,7 @@ public class TabPane extends Splitting {
             });
         }).toArray(ToggleButton[]::new));
 
-        set(tabs, content);
+        split(0).set(tabs, content);
     }
 
 

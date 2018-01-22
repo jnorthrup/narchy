@@ -113,7 +113,7 @@ public class Maze extends CompoundSpatial {
         int indCount = 0;
         for (int a = 0; a < countsqp; a++) {
             int xi = a % (count + 1);
-            int yi = (int) Math.floor(a / (count + 1));
+            int yi = (int) Math.floor(a / (count + 1f));
             float xx = xi - hdim;
             float zz = yi  - hdim;
             float yy = 0;

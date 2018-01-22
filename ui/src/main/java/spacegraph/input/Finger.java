@@ -1,6 +1,7 @@
 package spacegraph.input;
 
 import com.jogamp.nativewindow.util.Point;
+import jcog.tree.rtree.rect.RectFloat2D;
 import org.apache.commons.lang3.ArrayUtils;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Ortho;
@@ -89,7 +90,7 @@ public class Finger {
         Surface s;
         if (root!=null && fingering == null) {
 
-            s = root.onTouch(this, hit, nextButtonDown);
+            s = root.onTouch(this, nextButtonDown);
             if (s instanceof Widget) {
                 if (!on((Widget) s))
                     s = null;
@@ -180,7 +181,7 @@ public class Finger {
                 if (fingering == null) {
                     fingering = f;
                     f.start(this);
-                    root.surface.onTouch(this, null, ArrayUtils.EMPTY_SHORT_ARRAY); //release all fingering on surfaces
+                    root.surface.onTouch(this, ArrayUtils.EMPTY_SHORT_ARRAY); //release all fingering on surfaces
                     return true;
                 }
             }
@@ -219,5 +220,17 @@ public class Finger {
 
     public boolean isFingering() {
         return fingering!=null;
+    }
+
+    public v2 relativeHit(Surface c) {
+        return relative(hit, c);
+    }
+
+    public static v2 relative(v2 x, Surface c) {
+        v2 y = new v2(x);
+        RectFloat2D b = c.bounds;
+        y.sub(b.x, b.y);
+        y.scale(1f / b.w, 1f / b.h);
+        return y;
     }
 }

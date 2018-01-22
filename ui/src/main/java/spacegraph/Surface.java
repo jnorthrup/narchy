@@ -9,6 +9,7 @@ import spacegraph.input.Finger;
 import spacegraph.math.v2;
 
 import java.io.PrintStream;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * planar subspace.
@@ -21,10 +22,10 @@ abstract public class Surface implements SurfaceBase {
      */
     public static final float EPSILON = 0.0001f;
 
-    private volatile int serial =  0;
+    private final AtomicInteger serial = new AtomicInteger();
 
     /** serial id unique to each instanced surface */
-    public final int id = ++serial;
+    public final int id = serial.incrementAndGet();
 
     /**
      * scale can remain the unit 1 vector, normally
@@ -140,7 +141,7 @@ abstract public class Surface implements SurfaceBase {
      * returns non-null if the event has been absorbed by a speciifc sub-surface
      * or null if nothing absorbed the gesture
      */
-    public Surface onTouch(Finger finger, @Deprecated v2 hitPoint, @Deprecated short[] buttons) {
+    public Surface onTouch(Finger finger, @Deprecated short[] buttons) {
         //System.out.println(this + " " + hitPoint + " " + Arrays.toString(buttons));
 
         return null;

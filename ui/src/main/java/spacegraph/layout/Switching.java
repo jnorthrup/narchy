@@ -38,10 +38,10 @@ public class Switching extends Container {
 
 
     /** selects the active state */
-    public void state(int next) {
+    public Switching state(int next) {
         synchronized(this) {
             if (switched == next)
-                return;
+                return this;
 
             Surface prevSurface = this.current;
 
@@ -56,6 +56,7 @@ public class Switching extends Container {
         }
 
         layout();
+        return this;
     }
 
     @Override

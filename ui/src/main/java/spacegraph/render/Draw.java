@@ -531,6 +531,19 @@ public enum Draw {
 //        gl.glEnd();
     }
 
+    public static void rectAlphaCorners(GL2 gl, float x1, float y1, float x2, float y2, float[] color, float[] cornerAlphas) {
+        gl.glBegin(GL2.GL_QUADS);
+        gl.glColor4f(color[0], color[1], color[2], cornerAlphas[0]);
+        gl.glVertex3f(x1, y1, 0);
+        gl.glColor4f(color[0], color[1], color[2], cornerAlphas[1]);
+        gl.glVertex3f(x2, y1, 0);
+        gl.glColor4f(color[0], color[1], color[2], cornerAlphas[2]);
+        gl.glVertex3f(x2, y2, 0);
+        gl.glColor4f(color[0], color[1], color[2], cornerAlphas[3]);
+        gl.glVertex3f(x1, y2, 0);
+        gl.glEnd();
+
+    }
     public static void rect(GL2 gl, int x1, int y1, int w, int h) {
 
         gl.glRecti(x1, y1, x1 + w, y1 + h);

@@ -89,8 +89,8 @@ abstract public class Container extends Surface {
 
 
     @Override
-    public Surface onTouch(Finger finger, v2 hitPoint, short[] buttons) {
-        Surface x = super.onTouch(finger, hitPoint, buttons);
+    public Surface onTouch(Finger finger, short[] buttons) {
+        Surface x = super.onTouch(finger, buttons);
         if (x != null)
             return x;
 
@@ -99,8 +99,8 @@ abstract public class Container extends Surface {
         if (childrenCount() > 0) {
 
             // Draw forward, propagate touch events backwards
-            if (hitPoint == null) {
-                forEach(c -> c.onTouch(finger, null, null));
+            if (finger == null) {
+                forEach(c -> c.onTouch(finger, null));
                 return null;
             } else {
 
@@ -125,15 +125,10 @@ abstract public class Container extends Surface {
                     //                float hx = relativeHit.x, hy = relativeHit.y;
 
                     if (!clipTouchBounds || (
-                            fx >= c.bounds.x && fx <= (c.bounds.right()) && fy >= c.bounds.y && fy <= c.bounds.bottom())) {
+                            fx >= c.left() && fx <= c.right() && fy >= c.top() && fy <= c.bottom())) {
 
-                        v2 relativeHit = new v2(finger.hit);
-                        relativeHit.sub(c.x(), c.y());
-                        float csx = c.w();
-                        float csy = c.h();
-                        relativeHit.scale(1f / csx, 1f / csy);
 
-                        Surface s = c.onTouch(finger, relativeHit, buttons);
+                        Surface s = c.onTouch(finger, buttons);
                         if (s != null) {
                             if (found[0] == null || found[0].bounds.cost() > s.bounds.cost())
                                 found[0] = s; //FIFO

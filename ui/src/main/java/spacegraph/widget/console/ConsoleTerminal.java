@@ -72,43 +72,47 @@ public class ConsoleTerminal extends BitmapConsoleSurface/*ConsoleSurface*/ {
     }
 
     @Override
-    public synchronized void start(@Nullable SurfaceBase parent) {
-        super.start(parent);
+    public void start(@Nullable SurfaceBase parent) {
+        synchronized (this) {
+            super.start(parent);
 
-        term.addVirtualTerminalListener(listener = new VirtualTerminalListener() {
+            term.addVirtualTerminalListener(listener = new VirtualTerminalListener() {
 
 
-            @Override
-            public void onFlush() {
-                needUpdate.set(true);
-            }
+                @Override
+                public void onFlush() {
+                    needUpdate.set(true);
+                }
 
-            @Override
-            public void onBell() {
+                @Override
+                public void onBell() {
 
-            }
+                }
 
-            @Override
-            public void onClose() {
-            }
+                @Override
+                public void onClose() {
+                }
 
-            @Override
-            public void onResized(Terminal terminal, TerminalSize terminalSize) {
-                //render();
-            }
-        });
+                @Override
+                public void onResized(Terminal terminal, TerminalSize terminalSize) {
+                    //render();
+                }
+            });
 
-        needUpdate.set(true);
-        //term.addInput(KeyStroke.fromString("<pageup>")); //HACK trigger redraw
+            needUpdate.set(true);
+            //term.addInput(KeyStroke.fromString("<pageup>")); //HACK trigger redraw
 
+        }
     }
 
     @Override
-    public synchronized void stop() {
-        term.close();
-        term.removeVirtualTerminalListener(listener);
-        listener = null;
-        super.stop();
+    public void stop() {
+        synchronized (this) {
+            term.close();
+            term.removeVirtualTerminalListener(listener);
+            listener = null;
+            super.stop();
+        }
     }
 
 

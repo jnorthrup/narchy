@@ -2,6 +2,7 @@ package nars.gui;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.tree.rtree.rect.RectFloat2D;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
@@ -204,7 +205,7 @@ public class BeliefTableChart extends Widget {
     }
 
     @Override
-    protected void paintIt(GL2 ggl) {
+    protected void paintWidget(GL2 ggl, RectFloat2D bounds) {
 
         /*if (!redraw.compareAndSet(true, false)) {
             return;
@@ -216,7 +217,7 @@ public class BeliefTableChart extends Widget {
         //clear
         //clear(1f /*0.5f*/);
 
-        Draw.bounds(ggl, this, (gl) -> {
+        Draw.bounds(ggl, bounds, (gl) -> {
 
 
             long minT, maxT;
@@ -264,7 +265,7 @@ public class BeliefTableChart extends Widget {
             gl.glColor3f(0.5f, 0.5f, 0.5f); //border
             Draw.rectStroke(gl, 0, 0, 1, 1);
 
-            String currentTermString = termString;
+            //String currentTermString = termString;
             if (cc != null) {
                 draw(term, cc, gl, minT, maxT);
                 termString = cc.toString();

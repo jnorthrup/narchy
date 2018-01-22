@@ -73,10 +73,10 @@ public class Windo extends Widget {
     RectFloat2D before = null;
 
     @Override
-    public Surface onTouch(Finger finger, v2 hitPoint, short[] buttons) {
+    public Surface onTouch(Finger finger, short[] buttons) {
 
         if (!fingerable())
-            return super.onTouch(finger, hitPoint, buttons); //pass-through
+            return super.onTouch(finger, buttons); //pass-through
 
         if (finger != null) {
             float fx = finger.hit.x;
@@ -89,93 +89,92 @@ public class Windo extends Widget {
             }
 
             Surface s = //dragMode == null ? super.onTouch(finger, hitPoint, buttons) : this;
-                    super.onTouch(finger, hitPoint, buttons);
+                    super.onTouch(finger, buttons);
 
             if (s == this) {
 
                 //if (moveable()) System.out.println(bounds + "\thit=" + finger.hit + "\thitGlobal=" + finger.hitGlobal);
+                v2 hitPoint = finger.relativeHit(this);
 
-                if (hitPoint != null) {
-
-                    hover = true;
-
-
-                    if (dragMode == null/* && hitPoint.x >= 0 && hitPoint.y >= 0 && hitPoint.x <= 1f && hitPoint.y <= 1f*/) {
-
-                        potentialDragMode = null;
-
-                        if (potentialDragMode == null && hitPoint.x >= 0.5f - resizeBorder / 2f && hitPoint.x <= 0.5f + resizeBorder / 2) {
-                            if (potentialDragMode == null && hitPoint.y <= resizeBorder) {
-                                potentialDragMode = DragEdit.RESIZE_S;
-                            }
-                            if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
-                                potentialDragMode = DragEdit.RESIZE_N;
-                            }
-                        }
-
-                        if (potentialDragMode == null && hitPoint.y >= 0.5f - resizeBorder / 2f && hitPoint.y <= 0.5f + resizeBorder / 2) {
-                            if (potentialDragMode == null && hitPoint.x <= resizeBorder) {
-                                potentialDragMode = DragEdit.RESIZE_W;
-                            }
-                            if (potentialDragMode == null && hitPoint.x >= 1f - resizeBorder) {
-                                potentialDragMode = DragEdit.RESIZE_E;
-                            }
-                        }
-
-                        if (potentialDragMode == null && hitPoint.x <= resizeBorder) {
-                            if (potentialDragMode == null && hitPoint.y <= resizeBorder) {
-                                potentialDragMode = DragEdit.RESIZE_SW;
-                            }
-                            if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
-                                potentialDragMode = DragEdit.RESIZE_NW;
-                            }
-                        }
-
-                        if (potentialDragMode == null && hitPoint.x >= 1f - resizeBorder) {
-
-                            if (potentialDragMode == null && hitPoint.y <= resizeBorder) {
-                                potentialDragMode = DragEdit.RESIZE_SE;
-                            }
-                            if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
-                                potentialDragMode = DragEdit.RESIZE_NE;
-                            }
-                        }
+                hover = true;
 
 
-                        if (potentialDragMode == null)
-                            potentialDragMode = MOVE;
-                    }
+                if (dragMode == null/* && hitPoint.x >= 0 && hitPoint.y >= 0 && hitPoint.x <= 1f && hitPoint.y <= 1f*/) {
 
-
-                    boolean bDrag = buttons != null && buttons.length > 0 && buttons[0] == 1;
-                    if (bDrag) {
-                        if (dragMode == null && potentialDragMode != null) {
-
-                            if (fingerable(potentialDragMode)) {
-                                //finger.lock(0, )..
-                                before = bounds; //TODO store these in a shared Finger-context "posOnHit" field, not in this instance
-
-                                Fingering d = fingering(potentialDragMode);
-                                if (d != null && finger.tryFingering(d)) {
-                                    dragMode = d;
-                                }
-                            } else {
-                                dragMode = null;
-                            }
-
-                        }
-                    } else {
-                        dragMode = null;
-                    }
-
-                    return this;
-                } else {
                     potentialDragMode = null;
+
+                    if (potentialDragMode == null && hitPoint.x >= 0.5f - resizeBorder / 2f && hitPoint.x <= 0.5f + resizeBorder / 2) {
+                        if (potentialDragMode == null && hitPoint.y <= resizeBorder) {
+                            potentialDragMode = DragEdit.RESIZE_S;
+                        }
+                        if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
+                            potentialDragMode = DragEdit.RESIZE_N;
+                        }
+                    }
+
+                    if (potentialDragMode == null && hitPoint.y >= 0.5f - resizeBorder / 2f && hitPoint.y <= 0.5f + resizeBorder / 2) {
+                        if (potentialDragMode == null && hitPoint.x <= resizeBorder) {
+                            potentialDragMode = DragEdit.RESIZE_W;
+                        }
+                        if (potentialDragMode == null && hitPoint.x >= 1f - resizeBorder) {
+                            potentialDragMode = DragEdit.RESIZE_E;
+                        }
+                    }
+
+                    if (potentialDragMode == null && hitPoint.x <= resizeBorder) {
+                        if (potentialDragMode == null && hitPoint.y <= resizeBorder) {
+                            potentialDragMode = DragEdit.RESIZE_SW;
+                        }
+                        if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
+                            potentialDragMode = DragEdit.RESIZE_NW;
+                        }
+                    }
+
+                    if (potentialDragMode == null && hitPoint.x >= 1f - resizeBorder) {
+
+                        if (potentialDragMode == null && hitPoint.y <= resizeBorder) {
+                            potentialDragMode = DragEdit.RESIZE_SE;
+                        }
+                        if (potentialDragMode == null && hitPoint.y >= 1f - resizeBorder) {
+                            potentialDragMode = DragEdit.RESIZE_NE;
+                        }
+                    }
+
+
+                    if (potentialDragMode == null)
+                        potentialDragMode = MOVE;
+                }
+
+
+                boolean bDrag = buttons != null && buttons.length > 0 && buttons[0] == 1;
+                if (bDrag) {
+                    if (dragMode == null && potentialDragMode != null) {
+
+                        if (fingerable(potentialDragMode)) {
+                            //finger.lock(0, )..
+                            before = bounds; //TODO store these in a shared Finger-context "posOnHit" field, not in this instance
+
+                            Fingering d = fingering(potentialDragMode);
+                            if (d != null && finger.tryFingering(d)) {
+                                dragMode = d;
+                            }
+                        } else {
+                            dragMode = null;
+                        }
+
+                    }
+                } else {
                     dragMode = null;
                 }
+
+                return this;
+
             }
 
             return s;
+        }  else {
+            potentialDragMode = null;
+            dragMode = null;
         }
 
         hover = false;

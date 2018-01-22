@@ -1,11 +1,8 @@
 package spacegraph.widget.meta;
 
-import spacegraph.AspectAlign;
-import spacegraph.Scale;
 import spacegraph.Surface;
-import spacegraph.layout.Stacking;
+import spacegraph.layout.Bordering;
 import spacegraph.widget.button.PushButton;
-import spacegraph.widget.text.Label;
 import spacegraph.widget.windo.Widget;
 
 import static spacegraph.layout.Gridding.grid;
@@ -13,29 +10,48 @@ import static spacegraph.layout.Gridding.grid;
 /**
  * a dynamic frame for attaching to widgets providing access to context menus, controls, and display
  */
-public class MetaFrame extends Stacking {
+public class MetaFrame extends Bordering {
 
 //    private final Widget widget;
 
 
     public MetaFrame(Widget widget) {
-        super();
+        super(widget.content);
 //        this.widget = widget;
 
         Surface m = grid(
                 new PushButton("@"), //tag
-                new PushButton("?"), //inspect
-                new PushButton("X")  //hide
-        );
-        Surface n = grid(
-                new Label(name(widget))
+                new PushButton("?") //inspect
         );
 
-        set(
-                new Scale(widget.content, 0.9f),
-                //widget.content,
-                new AspectAlign(m, 1f, AspectAlign.Align.RightTop, 0.1f, 0.1f),
-                new AspectAlign(n, 1f, AspectAlign.Align.LeftTopOut, 1f, 0.1f));
+        Runnable zoomer = () -> {
+            //TODO if already significantly zoomed (ex: > 75% view consumed by the widget) then unzoom
+            widget.root().zoom(widget);
+        };
+
+
+        Surface n =
+                //new BitmapLabel(name(widget));
+                //new Label(name(widget));
+                grid(new PushButton(name(widget), zoomer));
+
+        PushButton hideButton = new PushButton("X");
+
+        borderWest = 0;
+        set(N, n);
+        set(E, m);
+        set(NE, hideButton);
+
+        //PushButton zoomButton = new PushButton("*", zoomer);
+        //set(SW, zoomButton);
+
+
+        Surface wm = (widget instanceof Menu) ? ((Menu) widget).menu() : null;
+        if (wm != null)
+            set(S, wm);
+        else
+            borderSouth = 0;
+
     }
 
     protected String name(Surface widget) {
@@ -71,4 +87,7 @@ public class MetaFrame extends Stacking {
     }
 
 
+    public interface Menu {
+        public Surface menu();
+    }
 }

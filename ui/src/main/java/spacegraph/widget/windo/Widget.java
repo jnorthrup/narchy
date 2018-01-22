@@ -21,8 +21,8 @@ import java.util.List;
 abstract public class Widget extends Switching {
 
 
-    static final int STATE_RAW = 0;
-    static final int STATE_META = 1;
+    public static final int RAW = 0;
+    public static final int META = 1;
 
 
 
@@ -59,6 +59,10 @@ abstract public class Widget extends Switching {
     public final Stacking content = new Stacking() {
 
 
+        @Override
+        public boolean tangible() {
+            return true;
+        }
 
         /**
          * indicates current level of activity of this component, which can be raised by various
@@ -125,6 +129,13 @@ abstract public class Widget extends Switching {
             //Draw.rect(gl, 0, 0, 1, 1);
         }
 
+        @Override
+        public Surface onTouch(Finger finger, short[] buttons) {
+            Surface x = super.onTouch(finger, buttons);
+            if (x == this)
+                return Widget.this;
+            return x;
+        }
 
         @Override
         protected final void paintIt(GL2 gl) {
@@ -145,6 +156,10 @@ abstract public class Widget extends Switching {
 
     };
 
+
+    public boolean isTouched() {
+        return touchedBy!=null;
+    }
 
     @Override
     protected final void paintIt(GL2 gl) {
@@ -196,7 +211,7 @@ abstract public class Widget extends Switching {
 
     @Override
     public boolean tangible() {
-        return true;
+        return false;
     }
 
     public void touch(@Nullable Finger finger) {
@@ -239,16 +254,16 @@ abstract public class Widget extends Switching {
             }
 
         } else {
-            onTouch(null, null, null);
+            onTouch(null, null);
         }
     }
 
     private int nextState(int curState) {
         switch (curState) {
-            case STATE_RAW:
-                return STATE_META;
-            case STATE_META:
-                return STATE_RAW;
+            case RAW:
+                return META;
+            case META:
+                return RAW;
             default:
                 throw new UnsupportedOperationException();
         }

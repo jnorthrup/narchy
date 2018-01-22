@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.list.FasterList;
 import jcog.math.FloatParam;
+import jcog.tree.rtree.rect.RectFloat2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgent;
@@ -76,11 +77,11 @@ public class ExecCharts {
                                 w -> new FloatSlider(n.want[w], -2f, +2f) {
 
                                     @Override
-                                    protected void paintIt(GL2 gl) {
+                                    protected void paintWidget(GL2 gl, RectFloat2D bounds) {
                                         if (auto.on()) {
                                             value(n.want[w]);
                                         }
-                                        super.paintIt(gl);
+
                                     }
                                 }
                                         .text(MetaGoal.values()[w].name())

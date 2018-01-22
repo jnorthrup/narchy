@@ -58,6 +58,19 @@ public class FastCoWList<X> extends FasterList<X> {
         }
     }
 
+    @Override
+    public X set(int index, X element) {
+        X old;
+        synchronized (this) {
+            old = get(index);
+            if (old!=element) {
+                super.setFast(index, element);
+                commit();
+            }
+        }
+        return old;
+    }
+
     public void set(Collection<X> newContent) {
         synchronized (this) {
             super.clear();

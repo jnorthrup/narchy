@@ -2,7 +2,6 @@ package spacegraph.widget.meta;
 
 import spacegraph.Surface;
 import spacegraph.input.Finger;
-import spacegraph.math.v2;
 import spacegraph.widget.windo.Widget;
 
 import java.util.function.Consumer;
@@ -25,19 +24,21 @@ public class Cover extends Widget {
     }
 
     public void toggle() {
-        if ((uncovered = !uncovered)) {
-            children(full.get());
-        } else {
-            children(icon.get());
+        synchronized (this) {
+            if ((uncovered = !uncovered)) {
+                children(full.get());
+            } else {
+                children(icon.get());
+            }
         }
     }
 
     @Override
-    public Surface onTouch(Finger finger, v2 hitPoint, short[] buttons) {
+    public Surface onTouch(Finger finger, short[] buttons) {
         if (!uncovered) {
             onClick.accept(finger);
         }
-        return super.onTouch(finger, hitPoint, buttons);
+        return super.onTouch(finger, buttons);
 //        Surface s = super.onTouch(finger, hitPoint, buttons);
 //        if (s != null) {
 //            return s;

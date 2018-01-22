@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.*;
-import static nars.$.conj;
 import static nars.Op.*;
 import static nars.term.TermTest.assertValid;
 import static nars.term.TermTest.assertValidTermValidConceptInvalidTaskContent;

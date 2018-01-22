@@ -9,7 +9,6 @@ import nars.derive.rule.PremiseRuleSet;
 import nars.exe.AbstractExec;
 import nars.exe.Exec;
 import nars.exe.UniExec;
-import nars.index.term.PatternIndex;
 import nars.index.term.TermIndex;
 import nars.index.term.map.CaffeineIndex;
 import nars.index.term.map.MapTermIndex;

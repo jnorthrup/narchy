@@ -58,14 +58,11 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         this.cam = new AnimVector3f(8f);
         this.surface = content;
 
-        this.fingerUpdate = new Animated() {
-            @Override
-            public boolean animate(float dt) {
-                if (hasFocus()) {
-                    updateMouse(wmx, wmy, buttonsDown);
-                }
-                return true;
+        this.fingerUpdate = dt -> {
+            if (hasFocus()) {
+                updateMouse(wmx, wmy, buttonsDown);
             }
+            return true;
         };
     }
 
@@ -250,8 +247,10 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     }
 
     @Override
-    public synchronized void stop() {
-        surface.stop();
+    public void stop() {
+        synchronized (this) {
+            surface.stop();
+        }
     }
 
     @Override

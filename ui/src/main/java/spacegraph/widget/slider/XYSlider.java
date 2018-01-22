@@ -2,23 +2,33 @@ package spacegraph.widget.slider;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
 import spacegraph.Surface;
 import spacegraph.input.Finger;
 import spacegraph.math.v2;
 import spacegraph.render.Draw;
+import spacegraph.widget.windo.Widget;
 
 /**
  * Created by me on 6/26/16.
  */
-public class XYSlider extends Surface {
+public class XYSlider extends Widget {
 
     final v2 knob = new v2(0.5f, 0.5f);
 
-
-
-
     FloatFloatProcedure change = null;
+    private float[] knobColor = new float[] { 0.75f, 0.75f, 0.75f };
+
+
+    private static final float _low = 0.2f;
+    private static final float _HIH = 0.8f;
+    private static final float[] lefAlphaCorners = new float[] {_low, _HIH, _HIH, _low};
+    private static final float[] rihAlphaCorners = new float[] {_HIH, _low, _low, _HIH};
+    private static final float[] topAlphaCorners = new float[] {_HIH, _HIH, _low, _low};
+    private static final float[] botAlphaCorners = new float[] {_low, _low, _HIH, _HIH};
+    private boolean pressing;
+
 
     public XYSlider() {
         super();
@@ -30,15 +40,21 @@ public class XYSlider extends Surface {
     }
 
     @Override
-    public Surface onTouch(Finger finger, v2 hitPoint, short[] buttons) {
-        if (leftButton(buttons)) {
-            if (!Util.equals(knob.x, hitPoint.x, Float.MIN_NORMAL) || !Util.equals(knob.y, hitPoint.y, Float.MIN_NORMAL)) {
-                knob.set(hitPoint);
-                updated();
+    public Surface onTouch(Finger finger, short[] buttons) {
+        if (finger!=null && leftButton(buttons)) {
+            pressing = true;
+            v2 hitPoint = finger.relativeHit(content);
+            if (hitPoint.inUnit()) {
+                if (!Util.equals(knob.x, hitPoint.x, Float.MIN_NORMAL) || !Util.equals(knob.y, hitPoint.y, Float.MIN_NORMAL)) {
+                    knob.set(hitPoint);
+                    updated();
+                }
+                return this;
             }
-            return this;
+        } else {
+            pressing = false;
         }
-        return super.onTouch(finger, hitPoint, buttons);
+        return super.onTouch(finger, buttons);
     }
 
 
@@ -50,9 +66,8 @@ public class XYSlider extends Surface {
         }
     }
 
-
     @Override
-    protected void paint(GL2 gl, int dtMS) {
+    protected void paintWidget(GL2 gl, RectFloat2D bounds) {
         gl.glColor4f(0f, 0f, 0f, 0.8f); //background
         Draw.rect(gl, bounds);
 
@@ -62,13 +77,30 @@ public class XYSlider extends Surface {
         float px = knob.x;
         float py = knob.y;
 
-        gl.glColor4f(0.75f, 0.75f, 0.75f, 0.75f);
-        float W = Math.min(w(),h()) * 0.1f;
-        float h1 = py*h() - W / 2f;
-        Draw.rect(gl, x(), y()+(h1)-W/2, w(), W); //horiz
+        float knobThick = pressing ? 0.08f : 0.04f;
 
-        float w1 = px*w() - W / 2f;
-        Draw.rect(gl, x()+(w1)- W /2, y(), W, h()); //vert
+
+        float bw = bounds.w;
+        float bh = bounds.h;
+        float KT = Math.min(bw, bh) * knobThick;
+        float kw = bounds.x+(px* bw);
+        float kh = bounds.y+(py* bh);
+        float KTH = KT / 2;
+        Draw.rectAlphaCorners(gl,
+                bounds.x, kh - KTH,
+                kw - KTH, kh + KTH, knobColor, lefAlphaCorners);
+        Draw.rectAlphaCorners(gl,
+                kw + KTH, kh - KTH,
+                bounds.x + bw, kh + KTH, knobColor, rihAlphaCorners);
+
+        Draw.rectAlphaCorners(gl,
+                kw - KTH, bounds.y,
+                kw + KTH, kh- KTH, knobColor, botAlphaCorners);
+        Draw.rectAlphaCorners(gl,
+                kw - KTH, kh + KTH,
+                kw + KTH, bounds.y + bh, knobColor, topAlphaCorners);
+
+        //Draw.rectAlphaCorners(gl, kw, kh- KTH, kw+ KTH, bounds.h, knobColor, botAlphaCorners);
 
 //        //gl.glColor4f(0.2f, 0.8f, 0f, 0.75f);
 //        float knobSize = this.knobWidth;

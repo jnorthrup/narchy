@@ -78,9 +78,11 @@ public class MutableContainer extends Container {
             existing = get(index);
             if (existing != next) {
                 existing.stop();
-                next.start(this);
 
-                children.setFast(index, next);
+                children.set(index, next);
+
+                if (this.parent!=null)
+                    next.start(this);
             }
         }
         layout();

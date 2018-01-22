@@ -32,8 +32,8 @@ public class CompoundCached implements Compound, The {
     final int _volume;
     final int _structure;
 
-    private static volatile int SERIAL = 0;
-    public final int serial = SERIAL++;
+//    private static final AtomicInteger SERIAL = new AtomicInteger();
+//    public final int serial = SERIAL.getAndIncrement();
 
     private transient Term rooted = null;
     private transient Term concepted = null;

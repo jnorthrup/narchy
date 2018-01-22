@@ -5,7 +5,6 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.Finger;
-import spacegraph.math.v2;
 import spacegraph.phys.util.AnimVector2f;
 import spacegraph.render.Draw;
 import spacegraph.widget.windo.Windo;
@@ -38,7 +37,7 @@ public class ZoomOrtho extends Ortho {
     private int pmx, pmy;
 
 
-    private float pressZoomOutRate = 0.25f;
+    private float pressZoomOutRate = 0.4f;
 
     public ZoomOrtho(Surface content) {
         super(content);
@@ -68,15 +67,6 @@ public class ZoomOrtho extends Ortho {
 //        });
     }
 
-    @Override
-    public synchronized void start(SpaceGraph s) {
-
-
-        super.start(s);
-
-        //call this after the window is ready in case the surface wants early access to the GL context
-        //hud.children(initContent); initContent = null;
-    }
 
 //    @Override
 //    public void setSurface(Surface content) {
@@ -378,11 +368,11 @@ public class ZoomOrtho extends Ortho {
 
 
         @Override
-        public Surface onTouch(Finger finger, v2 hitPoint, short[] buttons) {
+        public Surface onTouch(Finger finger, short[] buttons) {
 
 
             //System.out.println(hitPoint);
-            if (hitPoint != null) {
+            if (finger != null) {
 
 //                float lmx = finger.hit.x; //hitPoint.x;
 //                float lmy = finger.hit.y; //hitPoint.y;
@@ -393,7 +383,7 @@ public class ZoomOrtho extends Ortho {
 
             }
 
-            Surface x = super.onTouch(finger, hitPoint, buttons);
+            Surface x = super.onTouch(finger, buttons);
             if (x == this) {
                 return null; //pass-thru
             } else

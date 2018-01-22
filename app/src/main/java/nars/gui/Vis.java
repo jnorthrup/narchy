@@ -3,6 +3,7 @@ package nars.gui;
 import com.google.common.collect.Lists;
 import com.jogamp.opengl.GL2;
 import jcog.pri.PriReference;
+import jcog.tree.rtree.rect.RectFloat2D;
 import nars.$;
 import nars.NAR;
 import nars.NAgent;
@@ -138,7 +139,7 @@ public class Vis {
             Plot2D p = new Plot2D(plotHistory, Plot2D.Line /*BarWave*/) {
 
                 @Override
-                protected void paintIt(GL2 gl) {
+                protected void paintWidget(GL2 gl, RectFloat2D bounds) {
                     Concept concept = a.nar.concept(t);
 
                     bb[0] = a.nar.beliefTruth(concept, a.nar.time());
@@ -149,8 +150,6 @@ public class Vis {
                     backgroundColor[1] = 0;
                     backgroundColor[2] = b >= 0 ? b / 4f : 0;
                     backgroundColor[3] = 0.9f;
-
-                    super.paintIt(gl);
                 }
             };
             p.setTitle(t.toString());

@@ -1,6 +1,5 @@
 package nars.term.pred;
 
-import nars.$;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 

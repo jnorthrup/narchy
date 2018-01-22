@@ -20,6 +20,7 @@ import nars.index.term.PatternIndex;
 import nars.term.Term;
 
 import java.io.PrintStream;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -89,11 +90,11 @@ public class Deriver extends Causable {
         this(nar.exe::fire, deriver, nar);
     }
 
-    static volatile int serial = 0;
+    private static final AtomicInteger serial = new AtomicInteger();
 
     public Deriver(Consumer<Predicate<Activate>> source, DeriverRoot deriver, NAR nar) {
         super(null,
-                $.func("deriver", $.the(serial++)) //HACK
+                $.func("deriver", $.the(serial.getAndIncrement())) //HACK
         );
         this.deriver = deriver;
         this.concepts = source;

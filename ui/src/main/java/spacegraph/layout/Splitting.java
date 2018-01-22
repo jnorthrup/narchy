@@ -14,15 +14,18 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableCont
     boolean vertical;
 
     public Splitting() {
-        super();
-        set(new EmptySurface(), new EmptySurface());
+        this(new EmptySurface(), new EmptySurface(), 0.5f, true);
     }
 
     @Deprecated public Splitting(X top, Y bottom, float split) {
         this(top, bottom, split, true);
     }
 
-    public Splitting(X top, Y bottom, float split, boolean vertical) {
+    public Splitting(X top, Y bottom, boolean vertical, float split) {
+        this(top, bottom, split, vertical);
+    }
+
+    protected Splitting(Surface top, Surface bottom, float split, boolean vertical) {
         super(top,bottom);
         this.vertical = vertical;
         split(split);

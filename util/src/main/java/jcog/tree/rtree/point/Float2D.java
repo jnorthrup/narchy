@@ -1,10 +1,6 @@
 package jcog.tree.rtree.point;
 
 import jcog.tree.rtree.HyperPoint;
-import jcog.tree.rtree.HyperRegion;
-import jcog.tree.rtree.rect.RectFloat2D;
-
-import java.util.function.Function;
 
 public class Float2D implements HyperPoint, Comparable<Float2D> {
     public final float x;

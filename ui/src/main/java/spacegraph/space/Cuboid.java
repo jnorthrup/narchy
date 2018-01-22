@@ -6,7 +6,6 @@ import jcog.event.On;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SimpleSpatial;
 import spacegraph.Surface;
-import spacegraph.SurfaceBase;
 import spacegraph.SurfaceRoot;
 import spacegraph.input.Finger;
 import spacegraph.math.v3;

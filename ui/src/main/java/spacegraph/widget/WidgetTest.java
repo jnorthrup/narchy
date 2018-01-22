@@ -8,10 +8,12 @@ import spacegraph.layout.Splitting;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.TextEdit;
+import spacegraph.widget.sketch.Sketch2DBitmap;
 import spacegraph.widget.slider.BaseSlider;
 import spacegraph.widget.slider.FloatSlider;
 import spacegraph.widget.slider.XYSlider;
 import spacegraph.widget.text.Label;
+import spacegraph.widget.windo.Widget;
 
 import static spacegraph.layout.Gridding.*;
 
@@ -54,8 +56,9 @@ public class WidgetTest {
                                 new FloatSlider("solid slider", .25f  /* pause */, 0, 1),
                                 new FloatSlider("knob slider", 0.75f, 0, 1).type(BaseSlider.Knob)
                         ),
-                        new XYSlider(),
-                        new DummyConsole().surface()
+                        new XYSlider().state(Widget.META),
+                        new DummyConsole().surface(),
+                        new Sketch2DBitmap(256, 256).state(Widget.META)
                 );
     }
 

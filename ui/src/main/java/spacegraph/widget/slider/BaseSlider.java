@@ -2,6 +2,7 @@ package spacegraph.widget.slider;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
@@ -10,6 +11,7 @@ import spacegraph.Surface;
 import spacegraph.input.Finger;
 import spacegraph.math.v2;
 import spacegraph.render.Draw;
+import spacegraph.widget.windo.Widget;
 
 import static spacegraph.layout.Gridding.col;
 import static spacegraph.layout.Gridding.grid;
@@ -17,13 +19,13 @@ import static spacegraph.layout.Gridding.grid;
 /**
  * abstract 1D slider/scrollbar
  */
-public class BaseSlider extends Surface {
+public class BaseSlider extends Widget {
 
 
     /** dead-zone at the edges to latch min/max values */
     private static final float margin = 0.02f;
 
-    private static final float EPSILON = Float.MIN_NORMAL;
+    //private static final float EPSILON = Float.MIN_NORMAL;
 
     @Nullable ObjectFloatProcedure<BaseSlider> change;
     private float p;
@@ -41,12 +43,11 @@ public class BaseSlider extends Surface {
     }
 
     @Override
-    protected void paint(GL2 gl, int dtMS) {
+    protected void paintWidget(GL2 gl, RectFloat2D bounds) {
         Draw.bounds(gl, bounds, (g)->{
             draw.value(this.p, g);
         });
     }
-
 
     FloatObjectProcedure<GL2> draw = SolidLeft;
 
@@ -56,16 +57,17 @@ public class BaseSlider extends Surface {
     }
 
     @Override
-    public Surface onTouch(Finger finger, v2 hitPoint, short[] buttons) {
-        if (hitPoint!=null && leftButton(buttons)) {
-            //System.out.println(this + " touched " + hitPoint + " " + Arrays.toString(buttons));
+    public Surface onTouch(Finger finger, short[] buttons) {
 
-            _set(p(hitPoint));
-
-            return this;
+        if (finger!=null && leftButton(buttons)) {
+            v2 hitPoint = finger.relativeHit(content);
+            if (hitPoint.inUnit()) {
+                _set(p(hitPoint));
+                return this;
+            }
         }
 
-        return super.onTouch(finger, hitPoint, buttons);
+        return super.onTouch(finger, buttons);
     }
 
 
