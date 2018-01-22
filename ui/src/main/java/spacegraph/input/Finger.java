@@ -94,6 +94,10 @@ public class Finger {
                 if (!on((Widget) s))
                     s = null;
             } else {
+                if (touching!=null) {
+                    touching.touch(null);
+                    touching = null;
+                }
                 s = null;
             }
         } else {

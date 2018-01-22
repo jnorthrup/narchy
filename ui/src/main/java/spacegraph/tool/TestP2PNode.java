@@ -3,7 +3,7 @@ package spacegraph.tool;
 import spacegraph.SimpleSpatial;
 import spacegraph.SpaceGraph;
 import spacegraph.layout.Flatten;
-import spacegraph.layout.Grid;
+import spacegraph.layout.Gridding;
 import spacegraph.phys.Dynamic;
 import spacegraph.phys.Dynamics;
 import spacegraph.phys.constraint.DistanceConstraint;
@@ -18,7 +18,7 @@ import spacegraph.widget.slider.XYSlider;
 public class TestP2PNode extends Cuboid {
 
     public TestP2PNode(float w, float h) {
-        super(new Grid(), w, h);
+        super(new Gridding(), w, h);
     }
 
     public static class TestP2PLink extends Cuboid {

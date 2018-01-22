@@ -11,7 +11,7 @@ import nars.control.DurService;
 import nars.term.Termed;
 import nars.truth.Truth;
 import spacegraph.Surface;
-import spacegraph.layout.Grid;
+import spacegraph.layout.Gridding;
 import spacegraph.layout.Stacking;
 import spacegraph.math.Color3f;
 import spacegraph.widget.console.ConsoleTerminal;
@@ -29,7 +29,7 @@ import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
-import static spacegraph.layout.Grid.col;
+import static spacegraph.layout.Gridding.col;
 
 /**
  * SpaceGraph-based visualization utilities for NAR analysis
@@ -128,10 +128,10 @@ public class Vis {
 //        return grid;
 //    }
 
-    public static Grid conceptBeliefPlots(NAgent a, Iterable<? extends Termed> concepts, int plotHistory) {
+    public static Gridding conceptBeliefPlots(NAgent a, Iterable<? extends Termed> concepts, int plotHistory) {
 
         //TODO make a lambda Grid constructor
-        Grid grid = new Grid();
+        Gridding grid = new Gridding();
         List<Plot2D> plots = $.newArrayList();
         for (Termed t : concepts) {
             final Truth[] bb = {$.t(0.5f, 0.5f)};
@@ -318,7 +318,7 @@ public class Vis {
     }
 
 
-    public static class EmotionPlot extends Grid {
+    public static class EmotionPlot extends Gridding {
 
         private final int plotHistory;
         @Deprecated
@@ -387,7 +387,7 @@ public class Vis {
 
     }
 
-    public static class BeliefChartsGrid extends Grid implements Consumer<NAR> {
+    public static class BeliefChartsGrid extends Gridding implements Consumer<NAR> {
 
         private final int window;
         //        private final DurService on;

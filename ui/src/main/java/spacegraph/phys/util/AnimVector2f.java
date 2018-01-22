@@ -75,7 +75,10 @@ public class AnimVector2f extends v2 implements Animated {
     }
 
 
-
+    public AnimVector2f scale(float s) {
+        set(this.x * s, this.y * s);
+        return this;
+    }
 
     @Override
     public void set(float x, float y) {

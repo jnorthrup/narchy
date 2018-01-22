@@ -17,7 +17,7 @@ import spacegraph.widget.button.PushButton;
 
 import java.util.Map;
 
-import static spacegraph.layout.Grid.grid;
+import static spacegraph.layout.Gridding.grid;
 import static spacegraph.widget.windo.Windo.DragEdit.MOVE;
 
 /**

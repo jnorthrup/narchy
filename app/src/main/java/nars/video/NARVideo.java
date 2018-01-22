@@ -7,7 +7,7 @@ import nars.control.NARService;
 import nars.control.NARServiceSet;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
-import spacegraph.layout.Grid;
+import spacegraph.layout.Gridding;
 import spacegraph.widget.meter.WebCam;
 
 import static spacegraph.SpaceGraph.window;
@@ -32,7 +32,7 @@ public class NARVideo extends NARServiceSet {
         Video(NAR nar, Webcam cam) {
             super(null, $.p($.the("video"), $.the(cam.getName())));
             this.cam = cam;
-            surface = new Grid(); //blank
+            surface = new Gridding(); //blank
             nar.off(this); //default off
         }
 
@@ -56,7 +56,7 @@ public class NARVideo extends NARServiceSet {
                 if (surfaceWindow != null)
                     surfaceWindow.off();
 
-                surface = new Grid();
+                surface = new Gridding();
                 c.stop();
                 cam.close();
             }

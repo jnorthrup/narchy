@@ -8,7 +8,7 @@ import nars.exe.AbstractExec;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
-import spacegraph.layout.Grid;
+import spacegraph.layout.Gridding;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.meter.Plot2D;
 import spacegraph.widget.tab.TabPane;
@@ -40,7 +40,7 @@ public class ConceptSurface extends TabPane {
 
                                 return 0f; // Float.NaN;
                             });
-                    return DurSurface.get(new Grid(
+                    return DurSurface.get(new Gridding(
                             new PushButton("+ Boost").click((b) -> {
                                 n.activate(id, 1f);
                             }),
@@ -54,7 +54,7 @@ public class ConceptSurface extends TabPane {
                 "termlinks", () -> Vis.bagHistogram((Iterable) (n.concept(id).termlinks()::iterator), 10),
                 "tasklinks", () -> Vis.bagHistogram((Iterable) (n.concept(id).tasklinks()::iterator), 10),
                 "goal", () -> {
-                    return new Grid(
+                    return new Gridding(
                             new PushButton("gOAL tRUE").click((b) -> {
                                 long now = n.time();
                                 n.input(new NALTask(id, GOAL, $.t(1f, n.confDefault(GOAL)), now, now, now + n.dur(), n.time.nextInputStamp()).pri(n.priDefault(GOAL)));
@@ -66,7 +66,7 @@ public class ConceptSurface extends TabPane {
                     );
                 },
                 "predict", () -> {
-                    return new Grid(
+                    return new Gridding(
                             new PushButton("What +1").click((b) -> {
                                 long now = n.time();
                                 n.input(new NALTask(id, QUESTION, null, now, now, now + n.dur(), n.time.nextInputStamp()).pri(n.priDefault(QUESTION)));

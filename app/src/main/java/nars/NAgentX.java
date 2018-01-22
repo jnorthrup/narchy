@@ -34,7 +34,7 @@ import spacegraph.AspectAlign;
 import spacegraph.Ortho;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
-import spacegraph.layout.VSplit;
+import spacegraph.layout.Splitting;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.ConsoleTerminal;
 import spacegraph.widget.meta.AutoSurface;
@@ -54,8 +54,8 @@ import static nars.$.$;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
-import static spacegraph.layout.Grid.col;
-import static spacegraph.layout.Grid.grid;
+import static spacegraph.layout.Gridding.col;
+import static spacegraph.layout.Gridding.grid;
 
 /**
  * Extensions to NAgent interface:
@@ -537,7 +537,7 @@ abstract public class NAgentX extends NAgent {
         NAR nar = a.nar;
         a.nar.runLater(() -> {
             window(
-                    new VSplit(
+                    new Splitting(
                             new Vis.EmotionPlot(64, a),
                     grid(
 

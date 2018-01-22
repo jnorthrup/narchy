@@ -7,12 +7,12 @@ import nars.control.DurService;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SurfaceBase;
-import spacegraph.layout.Grid;
+import spacegraph.layout.Gridding;
 import spacegraph.widget.console.ConsoleTerminal;
 
 import java.io.IOException;
 
-public class ConceptView extends Grid {
+public class ConceptView extends Gridding {
 
     private final Termed term;
     private final ConsoleTerminal io;

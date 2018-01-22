@@ -16,7 +16,7 @@ import spacegraph.widget.meta.AutoSurface;
 import java.util.List;
 
 import static spacegraph.SpaceGraph.window;
-import static spacegraph.layout.Grid.grid;
+import static spacegraph.layout.Gridding.grid;
 
 
 /**

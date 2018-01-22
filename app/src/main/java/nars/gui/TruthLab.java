@@ -10,7 +10,7 @@ import nars.term.Compound;
 import nars.truth.Truth;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
-import spacegraph.layout.Grid;
+import spacegraph.layout.Gridding;
 import spacegraph.render.Draw;
 
 import java.util.Collection;
@@ -25,7 +25,7 @@ import static spacegraph.render.Draw.push;
 /**
  * Tool for analyzing and tuning temporal dynamics among a set of specified concepts
  */
-public class TruthLab extends Grid {
+public class TruthLab extends Gridding {
 
     private final List<ConceptTimeline> views;
     private final NAR nar;
@@ -167,7 +167,7 @@ public class TruthLab extends Grid {
         }
     }
 
-    public class ConceptTimeline extends Grid {
+    public class ConceptTimeline extends Gridding {
         private final Compound term;
         private final boolean showBeliefs;
 

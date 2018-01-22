@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.Scale;
 import spacegraph.Surface;
 import spacegraph.input.Finger;
-import spacegraph.layout.Grid;
+import spacegraph.layout.Gridding;
 import spacegraph.widget.console.ConsoleTerminal;
 import spacegraph.widget.slider.XYSlider;
 import spacegraph.widget.text.LabeledPane;
@@ -169,7 +169,7 @@ public class Shell {
         public ConsoleWidget(VirtualTerminal term) {
 
 
-            Surface menu = new Scale(new LabeledPane("Text Scale", new Grid(
+            Surface menu = new Scale(new LabeledPane("Text Scale", new Gridding(
                     new XYSlider()
             )), 0.5f);
 

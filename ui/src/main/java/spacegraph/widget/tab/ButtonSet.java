@@ -3,11 +3,11 @@ package spacegraph.widget.tab;
 import jcog.data.ArrayHashSet;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.layout.Grid;
+import spacegraph.layout.Gridding;
 import spacegraph.widget.button.ToggleButton;
 
 /** set of buttons, which may be linked behaviorally in various ways */
-public class ButtonSet<T extends ToggleButton> extends Grid {
+public class ButtonSet<T extends ToggleButton> extends Gridding {
 
 
     /** uses both set and list (for ordering) aspects of the ArrayHashSet */

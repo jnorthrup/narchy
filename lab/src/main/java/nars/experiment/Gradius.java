@@ -11,7 +11,7 @@ import nars.video.Scale;
 
 import static java4k.gradius4k.Gradius4K.*;
 import static spacegraph.SpaceGraph.window;
-import static spacegraph.layout.Grid.col;
+import static spacegraph.layout.Gridding.col;
 
 /**
  * Created by me on 4/30/17.

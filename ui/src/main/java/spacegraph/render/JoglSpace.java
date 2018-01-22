@@ -277,7 +277,7 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
 
     private void updateIfReady() {
 
-        if (window.isVisible() && ready.compareAndSet(true,false)) {
+        if (ready.compareAndSet(true,false) && window.isVisible()) {
             update();
         }
     }

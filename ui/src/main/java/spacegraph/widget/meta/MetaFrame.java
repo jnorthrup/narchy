@@ -8,7 +8,7 @@ import spacegraph.widget.button.PushButton;
 import spacegraph.widget.text.Label;
 import spacegraph.widget.windo.Widget;
 
-import static spacegraph.layout.Grid.grid;
+import static spacegraph.layout.Gridding.grid;
 
 /**
  * a dynamic frame for attaching to widgets providing access to context menus, controls, and display

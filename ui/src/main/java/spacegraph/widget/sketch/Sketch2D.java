@@ -3,13 +3,13 @@ package spacegraph.widget.sketch;
 import jcog.Util;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
-import spacegraph.layout.VSplit;
+import spacegraph.layout.Splitting;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.slider.XYSlider;
 import spacegraph.widget.tab.ButtonSet;
 import spacegraph.widget.windo.Widget;
 
-import static spacegraph.layout.Grid.grid;
+import static spacegraph.layout.Gridding.grid;
 
 /**
  * gesture-aware general-purpose 2d graphical input widgets
@@ -48,7 +48,7 @@ abstract public class Sketch2D extends Widget {
                 }).set(0.5f, 0.75f)
         );
 
-        VSplit<ButtonSet, Sketch2DBitmap> sketch = new VSplit(
+        Splitting<ButtonSet, Sketch2DBitmap> sketch = new Splitting(
                 grid(colorMenu, toolMenu), canvas,
                 0.8f);
 

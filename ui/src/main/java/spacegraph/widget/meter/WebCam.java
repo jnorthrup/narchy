@@ -13,8 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
-import spacegraph.layout.Grid;
-import spacegraph.layout.VSplit;
+import spacegraph.layout.Gridding;
+import spacegraph.layout.Splitting;
 import spacegraph.render.Tex;
 import spacegraph.widget.button.PushButton;
 
@@ -249,7 +249,7 @@ public class WebCam {
             ts.update(iimage);
         });
 
-        return new VSplit(ts.view(), new Grid(new PushButton("snap").click(()->{
+        return new Splitting(ts.view(), new Gridding(new PushButton("snap").click(()->{
             byte[] bytes = ((DataBufferByte)iimage.getRaster().getDataBuffer()).getData();
             User.the().put(
                     "(\"" + webcam.getName() +"\"," + System.currentTimeMillis() + ")",

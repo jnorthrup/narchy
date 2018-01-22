@@ -45,6 +45,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     final Topic logs = new ListTopic();
     private short[] buttonsDown;
     private Animated fingerUpdate;
+    private boolean focused = false;
 
     public Ortho() {
         this(new EmptySurface());
@@ -56,13 +57,20 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         this.scale = new AnimVector2f(1, 1, 6f);
         this.cam = new AnimVector3f(8f);
         this.surface = content;
+
         this.fingerUpdate = new Animated() {
             @Override
             public boolean animate(float dt) {
-                updateMouse(wmx, wmy, buttonsDown);
+                if (hasFocus()) {
+                    updateMouse(wmx, wmy, buttonsDown);
+                }
                 return true;
             }
         };
+    }
+
+    public boolean hasFocus() {
+        return focused;
     }
 
     @Override
@@ -128,14 +136,19 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 
     public void start(SpaceGraph s) {
         this.window = s;
-        windowResized(null);
         s.addWindowListener(this);
+        this.focused = window.window.hasFocus();
         s.addMouseListener(this);
         s.addKeyListener(this);
+
+        surface.start(this);
+
+        windowResized(null);
+
         s.dyn.addAnimation(scale);
         s.dyn.addAnimation((Animated) cam);
         s.dyn.addAnimation(fingerUpdate);
-        surface.start(this);
+
     }
 
     @Override
@@ -248,11 +261,12 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 
     @Override
     public void windowGainedFocus(WindowEvent e) {
-
+        focused = true;
     }
 
     @Override
     public void windowLostFocus(WindowEvent e) {
+        focused = false;
         updateMouse(null);
     }
 
@@ -336,7 +350,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         } else {
 
             this.buttonsDown = null;
-            //updateMouse(wmx, wmy, null);
+            updateMouse(wmx, wmy, null);
 
             return false;
         }

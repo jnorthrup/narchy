@@ -21,7 +21,7 @@ public class ZoomOrtho extends Ortho {
     float zoomRate = 0.2f;
 
 
-    final static float minZoom = 0.05f;
+    final static float minZoom = 0.25f;
     final static float maxZoom = 10f;
 
     final static short PAN_BUTTON = 2;
@@ -30,14 +30,15 @@ public class ZoomOrtho extends Ortho {
     private int[] panStart = null;
     private final int[] moveTarget = new int[2];
     @Deprecated
-    private final int[] resizeTarget = new int[2];
+//    private final int[] resizeTarget = new int[2];
     private final int[] windowStart = new int[2];
 //    private InsetsImmutable windowInsets;
 
     final HUD hud = new HUD();
     private int pmx, pmy;
 
-    transient Surface initContent;
+
+    private float pressZoomOutRate = 0.25f;
 
     public ZoomOrtho(Surface content) {
         super(content);
@@ -159,9 +160,13 @@ public class ZoomOrtho extends Ortho {
     protected void updatePan() {
         if (!finger.isFingering()) {
 
-
             boolean[] bd = finger.buttonDown; //e.getButtonsDown();
-            if (bd.length > 0 && (bd[PAN_BUTTON]) || (bd[MOVE_WINDOW_BUTTON])) {
+
+            if (bd[1] && finger.touching==null && Math.max(scale.x,scale.y) > minZoom) {
+                scale.scale(1f * (1f - pressZoomOutRate));
+            }
+
+            if (bd[PAN_BUTTON] || bd[MOVE_WINDOW_BUTTON]) {
                 //int mx = e.getX();
                 //int my = window.getHeight() - e.getY();
                 int mx = Finger.pointer.getX();

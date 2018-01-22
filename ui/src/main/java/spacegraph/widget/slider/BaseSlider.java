@@ -11,8 +11,8 @@ import spacegraph.input.Finger;
 import spacegraph.math.v2;
 import spacegraph.render.Draw;
 
-import static spacegraph.layout.Grid.col;
-import static spacegraph.layout.Grid.grid;
+import static spacegraph.layout.Gridding.col;
+import static spacegraph.layout.Gridding.grid;
 
 /**
  * abstract 1D slider/scrollbar

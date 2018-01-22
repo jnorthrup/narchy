@@ -91,7 +91,7 @@ public class Dynamics<X> extends Collisions<X> {
     protected boolean ownsConstrainer;
     //protected OArrayList<RaycastVehicle> vehicles = new OArrayList<RaycastVehicle>();
     private final List<Animated> animations = new FasterList();
-    protected int profileTimings;
+//    protected int profileTimings;
     private float dt;
     private final Iterable<Spatial<X>> spatials;
 
@@ -908,7 +908,7 @@ public class Dynamics<X> extends Collisions<X> {
     private boolean updateAnimation(Animated animated) {
         try {
             return !animated.animate(curDT); //invert for the 'removeIf'
-        } catch (Exception e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             return true;
         }

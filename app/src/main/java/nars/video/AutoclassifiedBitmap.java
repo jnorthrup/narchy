@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 import static nars.truth.TruthFunctions.w2c;
 import static nars.util.signal.Bitmap2DSensor.coord;
-import static spacegraph.layout.Grid.col;
+import static spacegraph.layout.Gridding.col;
 
 /**
  * Created by me on 9/22/16.

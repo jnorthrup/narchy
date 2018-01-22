@@ -17,7 +17,7 @@ import static jcog.Util.lerp;
     aspect ratio=+inf: col (x)
                  else: grid( %x, %(ratio * x) )
  */
-public class Grid extends MutableContainer {
+public class Gridding extends MutableContainer {
 
 
     public static final float HORIZONTAL = 0f;
@@ -27,21 +27,21 @@ public class Grid extends MutableContainer {
     float margin = 0.05f;
     float gridAspect = Float.NaN;
 
-    public Grid(Surface... children) {
+    public Gridding(Surface... children) {
         this(SQUARE, children);
     }
 
-    public Grid(List<Surface> children) {
+    public Gridding(List<Surface> children) {
         this(SQUARE, children);
     }
 
-    public Grid(float aspect, Surface... children) {
+    public Gridding(float aspect, Surface... children) {
         super();
         this.gridAspect = (aspect);
         set(children);
     }
 
-    public Grid(float aspect, List<Surface> children) {
+    public Gridding(float aspect, List<Surface> children) {
         super();
         this.gridAspect = (aspect);
         set(children);
@@ -52,7 +52,7 @@ public class Grid extends MutableContainer {
         return a!=0 && a!=Float.POSITIVE_INFINITY;
     }
 
-    public Grid aspect(float gridAspect) {
+    public Gridding aspect(float gridAspect) {
         this.gridAspect = gridAspect;
         layout();
         return this;
@@ -179,14 +179,14 @@ public class Grid extends MutableContainer {
         }
     }
 
-    public static Grid grid(Iterable<? extends Surface> content) {
+    public static Gridding grid(Iterable<? extends Surface> content) {
         return grid( Iterables.toArray(content, Surface.class ) );
     }
 
-    public static Grid grid(Surface... content) {
-        return new Grid(new FasterList<>(content));
+    public static Gridding grid(Surface... content) {
+        return new Gridding(new FasterList<>(content));
     }
-    public static <S> Grid grid(Collection<S> c, Function<S,Surface> builder) {
+    public static <S> Gridding grid(Collection<S> c, Function<S,Surface> builder) {
         Surface ss [] = new Surface[c.size()];
         int i = 0;
         for (S x : c) {
@@ -195,10 +195,10 @@ public class Grid extends MutableContainer {
         return grid(ss);
     }
 
-    public static Grid row(Collection<? extends Surface> content) {
+    public static Gridding row(Collection<? extends Surface> content) {
         return row(array(content));
     }
-    public static Grid col(Collection<? extends Surface> content) {
+    public static Gridding col(Collection<? extends Surface> content) {
         return col(array(content));
     }
 
@@ -206,15 +206,15 @@ public class Grid extends MutableContainer {
         return content.toArray(new Surface[content.size()]);
     }
 
-    public static Grid row(Surface... content) {
-        return new Grid(HORIZONTAL, content);
+    public static Gridding row(Surface... content) {
+        return new Gridding(HORIZONTAL, content);
     }
-    public static Grid col(Surface... content) {
-        return new Grid(VERTICAL, content);
+    public static Gridding col(Surface... content) {
+        return new Gridding(VERTICAL, content);
     }
-    public static Grid grid(int num, IntFunction<Surface> build) {
+    public static Gridding grid(int num, IntFunction<Surface> build) {
         Surface[] x = Util.map(0, num, build, Surface[]::new);
-        return new Grid(new FasterList(x));
+        return new Gridding(new FasterList(x));
     }
 
 }

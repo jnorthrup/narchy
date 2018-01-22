@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.learn.lstm.DistractedSequenceRecall;
 import jcog.learn.lstm.SimpleLSTM;
 import jcog.math.random.XorShift128PlusRandom;
-import spacegraph.layout.Grid;
+import spacegraph.layout.Gridding;
 import spacegraph.render.Draw;
 import spacegraph.widget.meter.MatrixView;
 
@@ -15,7 +15,7 @@ import static spacegraph.SpaceGraph.window;
 /**
  * Created by me on 11/22/16.
  */
-public class LSTMView extends Grid {
+public class LSTMView extends Gridding {
 
     public static final MatrixView.ViewFunction1D colorize = (x, gl) -> {
         x = x/2f + 0.5f;

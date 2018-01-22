@@ -15,8 +15,8 @@ import nars.exe.Causable;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.Surface;
-import spacegraph.layout.Grid;
-import spacegraph.layout.VSplit;
+import spacegraph.layout.Gridding;
+import spacegraph.layout.Splitting;
 import spacegraph.render.Draw;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.meta.AutoSurface;
@@ -30,7 +30,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static spacegraph.layout.Grid.*;
+import static spacegraph.layout.Gridding.*;
 
 public class ExecCharts {
 
@@ -62,14 +62,14 @@ public class ExecCharts {
             }
         };
 
-        return new VSplit(bmp, new AutoSurface<>(gain), 0.1f);
+        return new Splitting(bmp, new AutoSurface<>(gain), 0.1f);
     }
 
     public static Surface metaGoalControls(NAR n) {
         CheckBox auto = new CheckBox("Auto");
         //auto.set(true);
 
-        Grid g = grid(
+        Gridding g = grid(
 //                Stream.concat(
 //                        Stream.of(auto),
                         IntStream.range(0, n.want.length).mapToObj(
@@ -95,7 +95,7 @@ public class ExecCharts {
     }
 
     public static Surface exePanel(NAR n) {
-        return new VSplit(new AutoSurface<>(n.loop),
+        return new Splitting(new AutoSurface<>(n.loop),
                 col(
                         //metaGoalChart(a),
                         row(

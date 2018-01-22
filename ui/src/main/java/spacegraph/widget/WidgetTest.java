@@ -4,7 +4,7 @@ import jcog.Texts;
 import jcog.Util;
 import spacegraph.SpaceGraph;
 import spacegraph.layout.Container;
-import spacegraph.layout.VSplit;
+import spacegraph.layout.Splitting;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.TextEdit;
@@ -13,7 +13,7 @@ import spacegraph.widget.slider.FloatSlider;
 import spacegraph.widget.slider.XYSlider;
 import spacegraph.widget.text.Label;
 
-import static spacegraph.layout.Grid.*;
+import static spacegraph.layout.Gridding.*;
 
 public class WidgetTest {
 
@@ -40,7 +40,7 @@ public class WidgetTest {
                         row(new PushButton("row1"), new PushButton("row2"), new PushButton("clickMe()", (p) -> {
                             p.setLabel(Texts.n2(Math.random()));
                         })),
-                        new VSplit(
+                        new Splitting(
                                 new PushButton("vsplit"),
                                 row(
                                         col(new CheckBox("checkbox"), new CheckBox("checkbox")),

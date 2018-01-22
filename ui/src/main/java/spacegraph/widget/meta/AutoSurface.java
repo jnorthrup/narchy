@@ -9,7 +9,7 @@ import jcog.math.FloatParam;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
 import spacegraph.SurfaceBase;
-import spacegraph.layout.Grid;
+import spacegraph.layout.Gridding;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.slider.AllOrNothingSlider;
@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Created by me on 2/28/17.
  */
-public class AutoSurface<X> extends Grid {
+public class AutoSurface<X> extends Gridding {
 
     final Set<Object> seen = Sets.newSetFromMap(new IdentityHashMap());
 
@@ -143,7 +143,7 @@ public class AutoSurface<X> extends Grid {
                                 () -> new LabeledPane(
                                                 label,
                                                 //yLabel!=null ? yLabel : sx.toString(),
-                                                new Grid(
+                                                new Gridding(
                                                         //enable
                                                         AllOrNothingSlider.AllOrNothingSlider(fs),
 //                                new CheckBox("On").set(s.isOn()).on((ToggleButton tb, boolean on)->{

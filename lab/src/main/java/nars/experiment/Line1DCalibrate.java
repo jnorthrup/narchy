@@ -9,7 +9,7 @@ import nars.Param;
 import nars.task.DerivedTask;
 import nars.test.agent.Line1DSimplest;
 import nars.truth.PreciseTruth;
-import spacegraph.layout.Grid;
+import spacegraph.layout.Gridding;
 import spacegraph.widget.meter.Plot2D;
 
 import java.util.Collection;
@@ -18,7 +18,7 @@ import java.util.List;
 import static java.lang.Math.PI;
 import static jcog.Texts.n2;
 import static jcog.Texts.n4;
-import static spacegraph.layout.Grid.VERTICAL;
+import static spacegraph.layout.Gridding.VERTICAL;
 
 public class Line1DCalibrate {
 
@@ -159,10 +159,10 @@ public class Line1DCalibrate {
 
     }
 
-    public static Grid conceptPlot(NAR nar, Iterable<FloatSupplier> concepts, int plotHistory) {
+    public static Gridding conceptPlot(NAR nar, Iterable<FloatSupplier> concepts, int plotHistory) {
 
         //TODO make a lambda Grid constructor
-        Grid grid = new Grid(VERTICAL);
+        Gridding grid = new Gridding(VERTICAL);
         List<Plot2D> plots = $.newArrayList();
         for (FloatSupplier t : concepts) {
             Plot2D p = new Plot2D(plotHistory, Plot2D.Line);

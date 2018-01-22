@@ -13,7 +13,7 @@ import nars.op.stm.ConjClustering;
 import nars.test.agent.Line1DSimplest;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
-import spacegraph.layout.Grid;
+import spacegraph.layout.Gridding;
 import spacegraph.widget.meta.AutoSurface;
 import spacegraph.widget.meter.Plot2D;
 
@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static java.lang.Math.PI;
 import static nars.Op.BELIEF;
 import static spacegraph.SpaceGraph.window;
-import static spacegraph.layout.Grid.*;
+import static spacegraph.layout.Gridding.*;
 
 /**
  * Created by me on 3/15/17.
@@ -214,10 +214,10 @@ public class Line1D {
 
         }
 
-        public static Grid conceptPlot(NAR nar, Iterable<FloatSupplier> concepts, int plotHistory) {
+        public static Gridding conceptPlot(NAR nar, Iterable<FloatSupplier> concepts, int plotHistory) {
 
             //TODO make a lambda Grid constructor
-            Grid grid = new Grid(VERTICAL);
+            Gridding grid = new Gridding(VERTICAL);
             List<Plot2D> plots = $.newArrayList();
             for (FloatSupplier t : concepts) {
                 Plot2D p = new Plot2D(plotHistory, Plot2D.Line);

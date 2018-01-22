@@ -23,7 +23,7 @@ import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
-import spacegraph.layout.Grid;
+import spacegraph.layout.Gridding;
 import spacegraph.render.Draw;
 import spacegraph.widget.meter.Plot2D;
 
@@ -40,8 +40,8 @@ import java.util.stream.IntStream;
 import static java.util.stream.Collectors.toList;
 import static jcog.Texts.n2;
 import static nars.Op.BELIEF;
-import static spacegraph.layout.Grid.col;
-import static spacegraph.layout.Grid.row;
+import static spacegraph.layout.Gridding.col;
+import static spacegraph.layout.Gridding.row;
 
 /**
  * Created by me on 10/8/16.
@@ -147,7 +147,7 @@ public class Recog2D extends NAgentX {
 
         int history = 256;
 
-        Grid g = col(
+        Gridding g = col(
 
                 row(beliefTableCharts(nar, out.keySet(), 256)),
 
