@@ -20,7 +20,8 @@ public enum GoalFunction implements TruthOperator {
     Strong() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return desireStrongOriginal(T, B, minConf);
+            return desireStrongNew(T, B, minConf);
+            //return desireStrongOriginal(T, B, minConf);
             //return TruthFunctions.desire(T, B, minConf, false);
         }
     },
@@ -29,7 +30,8 @@ public enum GoalFunction implements TruthOperator {
     Weak() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return desireWeakOriginal(T, B, minConf);
+            return desireWeakNew(T, B, minConf);
+            //return desireWeakOriginal(T, B, minConf);
             //return TruthFunctions.desire(T, B, minConf, true);
         }
     },

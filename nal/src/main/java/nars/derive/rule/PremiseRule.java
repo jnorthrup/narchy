@@ -685,7 +685,7 @@ public class PremiseRule {
 
     private void neqPrefilter(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, Term y) {
         assert(!taskPattern.equals(beliefPattern));
-        if ((taskPattern.equals(x) && beliefPattern.equals(y)) || (taskPattern.equals(y) && beliefPattern.equals(x))) {
+        if ((taskPattern.equalsRoot(x) && beliefPattern.equalsRoot(y)) || (taskPattern.equalsRoot(y) && beliefPattern.equalsRoot(x))) {
             pres.add(TaskBeliefInequal.the);
         }
     }

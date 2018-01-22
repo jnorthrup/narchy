@@ -166,7 +166,7 @@ public class NAL5Test extends NALTest {
         test
         .believe("(x && y)")
         .believe("x", 0.80f, 0.9f)
-        .mustBelieve(cycles, "y", 0.80f, 0.43f);
+        .mustBelieve(cycles*2, "y", 0.80f, 0.43f);
     }
 
     @Test

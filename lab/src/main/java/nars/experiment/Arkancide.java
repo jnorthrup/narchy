@@ -3,7 +3,10 @@ package nars.experiment;
 
 import jcog.Util;
 import jcog.math.FloatParam;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.NAgentX;
+import nars.Narsese;
 import nars.concept.SensorConcept;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.BufferedImageBitmap2D;
@@ -29,8 +32,8 @@ public class Arkancide extends NAgentX {
     //public final FloatParam paddleSpeed = new FloatParam(2f, 0.1f, 3f);
 
 
-    final int visW = 24;
-    final int visH = 12;
+    final int visW = 32;
+    final int visH = 24;
 
     //final int afterlife = 60;
 
@@ -43,7 +46,7 @@ public class Arkancide extends NAgentX {
     private float prevScore;
 
     public static void main(String[] args) {
-        Param.DEBUG = true;
+        //Param.DEBUG = true;
 
         //runRT(Arkancide::new);
         //nRT(Arkancide::new, 25, 5);
@@ -66,7 +69,7 @@ public class Arkancide extends NAgentX {
                 e.printStackTrace();
             }
 
-            //new RLBooster(a, new HaiQAgent());
+            //new RLBooster(a, HaiQAgent::new, 2 );
 
 
             return a;
@@ -115,8 +118,8 @@ public class Arkancide extends NAgentX {
         initBipolar();
         //initToggle();
 
-        float resX = 0.05f; //Math.max(0.01f, 0.5f / visW); //dont need more resolution than 1/pixel_width
-        float resY = 0.05f; //Math.max(0.01f, 0.5f / visH); //dont need more resolution than 1/pixel_width
+        float resX = 0.01f; //Math.max(0.01f, 0.5f / visW); //dont need more resolution than 1/pixel_width
+        float resY = 0.01f; //Math.max(0.01f, 0.5f / visH); //dont need more resolution than 1/pixel_width
 
         if (cam) {
 

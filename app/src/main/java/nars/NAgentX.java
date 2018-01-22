@@ -83,7 +83,7 @@ abstract public class NAgentX extends NAgent {
                 id != null ? $.inh($.the("joy"), id) : $.the("joy"),
                 new FloatPolarNormalized(new FloatFirstOrderDifference(nar::time,
                         () -> reward)));
-        alwaysWant(joy, nar.confDefault(GOAL)/2f);
+        alwaysWant(joy, nar.confDefault(GOAL)*0.75f);
 
         if (Param.DEBUG) {
 //            nar.onTask(x -> {
@@ -166,7 +166,8 @@ abstract public class NAgentX extends NAgent {
 //                        //CoolNQuiet
 //                        (512, THREADS, 64, false))
                 .exe(new PoolMultiExec(
-                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)), 512, 128)
+                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
+                        1024, 128)
                 )
 
                 .time(clock)

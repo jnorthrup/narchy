@@ -14,27 +14,32 @@
 //               \         /
 //                (A --> C)
 
-    (A --> B), (B --> C), neqRCom(A,C)      |- (A --> C), (Belief:Deduction, Goal:Induction)
-
+    (A --> B), (B --> C), neqRCom(A,C)      |- (A --> C), (Belief:Deduction, Goal:Strong)
 
         (A --> B), (B --> C), task("?"), neqRCom(A,C)  |- (A --> C), (Punctuation:Question)
             (A --> B), (B --> C), task("@"), neqRCom(A,C)  |- (A --> C), (Punctuation:Quest)
         (A --> B), (B --> C), task("?"), neqRCom(A,C)  |- (C --> A), (Punctuation:Question)
             (A --> B), (B --> C), task("@"), neqRCom(A,C)  |- (C --> A), (Punctuation:Quest)
 
-    (A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Belief:Abduction)
-        (A --> B), (A --> C), task("?"), neqRCom(B,C)  |- (C --> B), (Punctuation:Question)
+    (A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Belief:Abduction, Goal:Induction)
+        (A --> B), (A --> C), task("?"), belief(positive), neqRCom(B,C) |- (C --> B), (Punctuation:Question)
+        (A --> B), (A --> C), task("?"), belief(negative), neqRCom(B,C) |- (--C --> B), (Punctuation:Question)
+        (A --> B), (A --> C), task("?"), belief(positive), neqRCom(B,C) |- (C <-> B), (Punctuation:Question)
+        (A --> B), (A --> C), task("?"), belief(negative), neqRCom(B,C) |- (--C <-> B), (Punctuation:Question)
             (A --> B), (A --> C), task("@"), neqRCom(B,C)  |- (C --> B), (Punctuation:Quest)
         (A --> B), (A --> C), task("?"), neqRCom(B,C)  |- (B --> C), (Punctuation:Question)
-            (A --> B), (A --> C), task("@"), neqRCom(B,C)  |- (B --> C), (Punctuation:Quest)
+            //(A --> B), (A --> C), task("@"), neqRCom(B,C)  |- (B --> C), (Punctuation:Quest)
 
-    (A --> C), (B --> C), neqRCom(A,B)      |- (A --> B), (Belief:Induction)
-        (A --> C), (B --> C), task("?"), neqRCom(A,B)  |- (A --> B), (Punctuation:Question)
+    (A --> C), (B --> C), neqRCom(A,B)      |- (A --> B), (Belief:Induction, Goal:Induction)
+        (A --> C), (B --> C), task("?"), belief(positive), neqRCom(A,B) |- (A --> B), (Punctuation:Question)
+        (A --> C), (B --> C), task("?"), belief(negative), neqRCom(A,B) |- (A --> --B), (Punctuation:Question)
+        (A --> C), (B --> C), task("?"), belief(positive), neqRCom(A,B) |- (A <-> B), (Punctuation:Question)
+        (A --> C), (B --> C), task("?"), belief(negative), neqRCom(A,B) |- (A <-> --B), (Punctuation:Question)
             (A --> C), (B --> C), task("@"), neqRCom(A,B)  |- (A --> B), (Punctuation:Quest)
         (A --> C), (B --> C), task("?"), neqRCom(A,B)  |- (B --> A), (Punctuation:Question)
-            (A --> C), (B --> C), task("@"), neqRCom(A,B)  |- (B --> A), (Punctuation:Quest)
+            //(A --> C), (B --> C), task("@"), neqRCom(A,B)  |- (B --> A), (Punctuation:Quest)
 
-    (A --> B), (B --> C), neqRCom(A,C)      |- (C --> A), (Belief:Exemplification)
+    (A --> B), (B --> C), neqRCom(A,C)      |- (C --> A), (Belief:Exemplification, Goal:Weak)
 
 
 
@@ -46,7 +51,7 @@
     (M --> P), (M --> S), neqRCom(S,P) |- (P <-> S), (Belief:Comparison)
 
 
-    (M <-> P), (S <-> M), neqRCom(S,P) |- (S <-> P), (Belief:Resemblance, Goal:Induction)
+    (M <-> P), (S <-> M), neqRCom(S,P) |- (S <-> P), (Belief:Resemblance, Goal:Strong)
             //TODO write test case for this
 
 
@@ -64,10 +69,6 @@
     //(X <-> Y), X, task("?") |- Y,   (Punctuation:Question)
     //(X <-> Y), X, task("@") |- Y,   (Punctuation:Quest)
 
-    (A --> C), (B --> C), belief(positive), neqRCom(A,B), task("?") |- (A <-> B), (Punctuation:Question)
-    (A --> C), (B --> C), belief(negative), neqRCom(A,B), task("?") |- (A <-> --B), (Punctuation:Question)
-    (C --> A), (C --> B), belief(positive), neqRCom(A,B), task("?") |- (A <-> B), (Punctuation:Question)
-    (C --> A), (C --> B), belief(negative), neqRCom(A,B), task("?") |- (A <-> --B), (Punctuation:Question)
 
 
 /////////    (S <-> --P), (P <-> --S) |- (--S <-> --P), (Belief:Intersection)

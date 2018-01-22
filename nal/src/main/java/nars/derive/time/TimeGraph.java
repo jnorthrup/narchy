@@ -258,24 +258,30 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 Term pred = eventTerm.sub(1);
                 Event pe = know(pred);
                 if (eventDT == DTERNAL) {
+
                     link(se, ETERNAL, pe);
+
                 } else if (eventDT != XTERNAL) {
 
                     int st = subj.dtRange();
 
+
+
                     link(se, (eventDT + st), pe);
 
-                    //if (subj.hasAny(CONJ)) {
-                    subj.eventsWhile((w, y) -> {
-                        link(know(y), eventDT + st - w, pe);
-                        return true;
-                    }, 0, false, false, false, 0);
 
-                    //if (pred.hasAny(CONJ)) {
-                    pred.eventsWhile((w, y) -> {
-                        link(se, eventDT + st + w, know(y));
-                        return true;
-                    }, 0, false, false, false, 0);
+
+//                    //if (subj.hasAny(CONJ)) {
+//                    subj.eventsWhile((w, y) -> {
+//                        link(know(y), eventDT + st - w, pe);
+//                        return true;
+//                    }, 0, false, false, false, 0);
+//
+//                    //if (pred.hasAny(CONJ)) {
+//                    pred.eventsWhile((w, y) -> {
+//                        link(se, eventDT + st + w, know(y));
+//                        return true;
+//                    }, 0, false, false, false, 0);
 
                 }
 
@@ -284,7 +290,6 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 break;
             case CONJ:
                 //Subterms tt = eventTerm.subterms();
-                long et = event.when();
 
 
                 //int s = tt.subs();
@@ -318,11 +323,24 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 //                } else
 
                 //locate the events and sub-events absolutely
+                long et = event.when();
+
                 switch (eventDT) {
                     case XTERNAL:
                         break;
 
                     case DTERNAL:
+
+                        Subterms es = eventTerm.subterms();
+                        int esn = es.subs();
+                        Term prev = es.sub(0);
+                        for (int i = 1; i < esn; i++) { //dternal chain
+                            Term next = es.sub(i);
+                            link(knowComponent(et, 0, prev), ETERNAL, knowComponent(et, 0, next));
+                            prev = next;
+                        }
+
+                        break;
                     case 0:
 
                         //  eventTerm.subterms().forEach(this::know); //TODO can these be absolute if the event is?
@@ -330,7 +348,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                         for (Term s : eventTerm.subterms()) {
                             link(event, (eventDT == 0 || timed) ? 0 : ETERNAL,
                                     eventDT == 0 ?
-                                        knowConjComponent(et, 0, s) : //0
+                                        knowComponent(et, 0, s) : //0
                                             (timed ? know(s, et) :  //DTERNAL and TIMED
                                                     know(s)) //DTERNAL and TIMELESS
                             );
@@ -340,7 +358,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
                         eventTerm.eventsWhile((w, y) -> {
 
-                            link(event, w, knowConjComponent(et, w, y));
+                            link(event, w, knowComponent(et, w, y));
 
                             return true;
                         }, 0, false, false, false, 0);
@@ -352,7 +370,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
     }
 
-    private Event knowConjComponent(long et, long w, Term y) {
+    private Event knowComponent(long et, long w, Term y) {
         return (et != TIMELESS) ?
                 know(y, (et == ETERNAL) ? ETERNAL : (w + et)) :
                 know(y);

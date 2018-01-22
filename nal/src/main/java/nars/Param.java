@@ -54,11 +54,11 @@ public abstract class Param {
     public static final boolean FILTER_DYNAMIC_MATCHES = true;
 
     /** experimental increased confidence calculation for composition, taken from the NAL spec but is different from OpenNARS */
-    public static final boolean STRONG_COMPOSITION = false;
+    public static boolean STRONG_COMPOSITION = false;
 
     //    private final static Logger logger = LoggerFactory.getLogger(DeriveTime.class);
 
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 16;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 24;
 
 
     public static boolean DEBUG_FILTER_DUPLICATE_MATCHES = Param.DEBUG_EXTRA;

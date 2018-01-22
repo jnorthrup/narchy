@@ -6,6 +6,7 @@ import nars.subterm.Subterms;
 import nars.subterm.UnitSubterm;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Termlike;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -26,6 +27,18 @@ public abstract class UnitCompound implements Compound {
                  hashCodeSubterms(),
                  op().id);
     }
+
+    @Override
+    public boolean contains(Term t) {
+        return the().equals(t);
+    }
+
+    @Override
+    public boolean containsRoot(Term x) {
+        return the().equalsRoot(x);
+    }
+
+
 
     @Override
     public final int hashCodeSubterms() {
@@ -68,7 +81,7 @@ public abstract class UnitCompound implements Compound {
     public boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
         if (!impossibleSubTerm(t) && inSubtermsOf.test(this)) {
             Term sub = sub();
-            return sub.equals(t) || sub.containsRecursively(t, root, inSubtermsOf);
+            return (root ? sub.equalsRoot(t) : sub.equals(t)) || sub.containsRecursively(t, root, inSubtermsOf);
         }
         return false;
     }
@@ -92,17 +105,23 @@ public abstract class UnitCompound implements Compound {
     }
 
     @Override
+    public boolean impossibleSubTerm(Termlike target) {
+        Term sub = sub();
+        return !sub.hasAll(target.structure()) || impossibleSubTermVolume(target.volume());
+    }
+
+    @Override
     public boolean isNormalized() {
         return sub().isNormalized();
     }
 
     @Override
-    public boolean isCommutative() {
+    public final boolean isCommutative() {
         return false;
     }
 
     @Override
-    public int dt() {
+    public final int dt() {
         return DTERNAL;
     }
 }

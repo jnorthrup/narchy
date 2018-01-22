@@ -18,6 +18,10 @@ import static spacegraph.layout.Grid.col;
  */
 public class Gradius extends NAgentX {
 
+    static {
+        //Param.STRONG_COMPOSITION = true;
+    }
+
     private final Gradius4K g;
 
     public Gradius(NAR nar) {
@@ -32,9 +36,9 @@ public class Gradius extends NAgentX {
 
 
 
-        Bitmap2DSensor c1 = senseCamera($.p(id, $.the("global")), new Scale(() -> g.image, 24, 24)).resolution(0.05f);
+        Bitmap2DSensor c1 = senseCamera($.p(id, $.the("global")), new Scale(() -> g.image, 50, 50)).resolution(0.05f);
 
-        senseCameraRetina($.p(id,$.the("local")), () -> g.image, 24, 16).resolution(0.1f);
+        senseCameraRetina($.p(id,$.the("local")), () -> g.image, 16, 16).resolution(0.04f);
 
 
         //BufferedImageBitmap2D cc = new Scale(() -> g.image, 48, 48).blur();

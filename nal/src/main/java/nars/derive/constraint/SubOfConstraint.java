@@ -49,13 +49,13 @@ public class SubOfConstraint extends MatchConstraint {
         if (negatedAsSubterm)
             xx = xx.neg();
 
-        if (canEqual && xx.equals(yy))
+        if (canEqual && xx.equalsRoot(yy))
             return false;
 
         return !(
                 recursive ?
-                    (reverse ? xx.containsRecursively(yy) : yy.containsRecursively(xx)) :
-                    (reverse ? xx.contains(yy) : yy.contains(xx))
+                    (reverse ? xx.containsRecursively(yy, true, (x)->true) : yy.containsRecursively(xx, true, (x)->true)) :
+                    (reverse ? xx.containsRoot(yy) : yy.containsRoot(xx))
         );
     }
 }

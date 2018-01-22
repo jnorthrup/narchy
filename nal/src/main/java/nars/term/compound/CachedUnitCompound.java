@@ -19,6 +19,7 @@ public class CachedUnitCompound extends UnitCompound implements The {
 
     /** structure including this compound's op (cached) */
     transient private final int cstruct;
+    private final short volume;
 
 
     public CachedUnitCompound(/*@NotNull*/ Op op, /*@NotNull*/ Term sub) {
@@ -28,6 +29,15 @@ public class CachedUnitCompound extends UnitCompound implements The {
         this.op = op;
         this.chash = super.hashCode();
         this.cstruct = op.bit | sub.structure();
+
+        int v = sub.volume() + 1;
+        assert(v < Short.MAX_VALUE);
+        this.volume = (short) v;
+    }
+
+    @Override
+    public int volume() {
+        return volume;
     }
 
     @Override
@@ -58,4 +68,8 @@ public class CachedUnitCompound extends UnitCompound implements The {
         return op;
     }
 
+    @Override
+    public boolean impossibleSubTermVolume(int otherTermVolume) {
+        return otherTermVolume > volume-1;
+    }
 }

@@ -310,7 +310,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         if (s > 0 && !impossibleSubTerm(y)) {
             for (int i = 0; i < s; i++) {
                 Term x = sub(i);
-                if (x == y || (root ? x.equals(y) : x.equalsRoot(y)) || x.containsRecursively(y, root, subTermOf))
+                if (x == y || (root ? x.equalsRoot(y) : x.equals(y)) || x.containsRecursively(y, root, subTermOf))
                     return true;
             }
         }

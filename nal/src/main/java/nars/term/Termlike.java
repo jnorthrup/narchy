@@ -145,8 +145,7 @@ public interface Termlike {
         //if the OR produces a different result compared to subterms,
         // it means there is some component of the other term which is not found
         //return ((possibleSubtermStructure | existingStructure) != existingStructure);
-        return (!hasAll(target.structure())) ||
-                (impossibleSubTermVolume(target.volume()));
+        return !hasAll(target.structure()) || impossibleSubTermVolume(target.volume());
     }
 
     /**

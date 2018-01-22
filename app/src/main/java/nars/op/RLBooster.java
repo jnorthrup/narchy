@@ -36,6 +36,8 @@ public class RLBooster implements Consumer<NAR> {
     public final FloatParam conf = new FloatParam(0.5f, 0f, 1f);
 
     public RLBooster(NAgent env, IntIntToObjectFunc<Agent> rl, int actionDiscretization) {
+        assert(actionDiscretization>1);
+
         this.env = env;
 
 
