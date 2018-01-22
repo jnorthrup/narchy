@@ -2,6 +2,7 @@ package spacegraph.widget.sketch;
 
 import com.jogamp.opengl.GL2;
 import jcog.signal.Bitmap2D;
+import jcog.tree.rtree.rect.RectFloat2D;
 import org.apache.commons.math3.random.MersenneTwister;
 import spacegraph.Surface;
 import spacegraph.input.Finger;
@@ -103,7 +104,7 @@ public class Sketch2DBitmap extends Sketch2D {
     }
 
     @Override
-    protected void paintIt(GL2 gl) {
+    protected void paintWidget(GL2 gl, RectFloat2D bounds) {
         if (gl == null) {
             this.gl = gl;
             bmp.profile = gl.getGLProfile();

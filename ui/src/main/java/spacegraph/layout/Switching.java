@@ -43,12 +43,16 @@ public class Switching extends Container {
             if (switched == next)
                 return;
 
-            Surface prev = this.current;
+            Surface prevSurface = this.current;
 
-            (current = (states[switched = next].get())).start(this);
+            Surface nextSurface = (current = (states[switched = next].get()));
 
-            if (prev!=null)
-                prev.stop();
+            if (prevSurface != null)
+                prevSurface.stop();
+
+            if (parent!=null) {
+                nextSurface.start(this);
+            }
         }
 
         layout();
@@ -58,6 +62,7 @@ public class Switching extends Container {
     public void start(@Nullable SurfaceBase parent) {
         synchronized (this) {
             super.start(parent);
+            assert(current.parent==null);
             current.start(this);
         }
         layout();

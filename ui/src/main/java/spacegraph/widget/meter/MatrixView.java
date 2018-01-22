@@ -3,6 +3,7 @@ package spacegraph.widget.meter;
 import com.jogamp.opengl.GL2;
 import jcog.math.FloatSupplier;
 import jcog.math.tensor.ArrayTensor;
+import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.render.Draw;
 import spacegraph.widget.windo.Widget;
@@ -159,7 +160,7 @@ public class MatrixView extends Widget {
     }
 
     @Override
-    protected void paintIt(GL2 gl) {
+    protected void paintWidget(GL2 gl, RectFloat2D bounds) {
 
         float h = this.h;
         float w = this.w;

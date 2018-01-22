@@ -1,10 +1,12 @@
 package spacegraph.widget.meta;
 
 import spacegraph.AspectAlign;
+import spacegraph.Scale;
 import spacegraph.Surface;
 import spacegraph.layout.Stacking;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.text.Label;
+import spacegraph.widget.windo.Widget;
 
 import static spacegraph.layout.Grid.grid;
 
@@ -13,12 +15,12 @@ import static spacegraph.layout.Grid.grid;
  */
 public class MetaFrame extends Stacking {
 
-    private final Surface base;
+//    private final Widget widget;
 
 
-    public MetaFrame(Surface base) {
+    public MetaFrame(Widget widget) {
         super();
-        this.base = base;
+//        this.widget = widget;
 
         Surface m = grid(
                 new PushButton("@"), //tag
@@ -26,15 +28,20 @@ public class MetaFrame extends Stacking {
                 new PushButton("X")  //hide
         );
         Surface n = grid(
-                new Label(this.base.toString())
+                new Label(name(widget))
         );
 
         set(
-                //new Scale(base, 0.5f),
-                new AspectAlign(base, 1f, AspectAlign.Align.RightTop, 0.1f, 0.1f),
+                new Scale(widget.content, 0.9f),
+                //widget.content,
                 new AspectAlign(m, 1f, AspectAlign.Align.RightTop, 0.1f, 0.1f),
                 new AspectAlign(n, 1f, AspectAlign.Align.LeftTopOut, 1f, 0.1f));
     }
+
+    protected String name(Surface widget) {
+        return widget.toString();
+    }
+
 
 //    public static void toggle(Widget base) {
 //        SurfaceRoot r = base.root();

@@ -2,6 +2,7 @@ package spacegraph.widget.console;
 
 import com.googlecode.lanterna.TextCharacter;
 import com.jogamp.opengl.GL2;
+import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.render.Draw;
 
 import java.awt.*;
@@ -36,8 +37,8 @@ public abstract class ConsoleSurface extends AbstractConsoleSurface {
     }
 
     @Override
-    public void paintIt(GL2 gl) {
-        Draw.bounds(gl, this, this::doPaint);
+    public void paintWidget(GL2 gl, RectFloat2D bounds) {
+        Draw.bounds(gl, bounds, this::doPaint);
     }
 
 

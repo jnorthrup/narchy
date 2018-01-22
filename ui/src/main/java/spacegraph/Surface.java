@@ -31,7 +31,7 @@ abstract public class Surface implements SurfaceBase {
      */
 //    public v2 scale = new v2(1, 1); //v2.ONE;
     public RectFloat2D bounds;
-    public @NotNull SurfaceBase parent;
+    public SurfaceBase parent;
     private boolean visible = true;
 
     public Surface() {

@@ -223,18 +223,16 @@ public class Windo extends Widget {
 
     /** gets main content */
     public Surface get() {
-        return ((Scale)inner.children()[0]).the;
+        return ((Scale) content.children()[0]).the;
     }
 
     @Override
-    protected void paintIt(GL2 gl) {
+    protected void paintWidget(GL2 gl, RectFloat2D bounds) {
         paintBack(gl);
 
 
         prepaint(gl);
 
-        float W = w(); //window.getWidth();
-        float H = h(); //window.getHeight();
 
 //        gl.glColor4f(0.8f, 0.6f, 0f, 0.25f);
 

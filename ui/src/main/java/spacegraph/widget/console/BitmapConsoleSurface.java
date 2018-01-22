@@ -3,6 +3,7 @@ package spacegraph.widget.console;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.jogamp.opengl.GL2;
+import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.render.Tex;
 
 import java.awt.*;
@@ -83,7 +84,7 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
     }
 
     @Override
-    public void paintIt(GL2 gl) {
+    public void paintWidget(GL2 gl, RectFloat2D bounds) {
         render();
         tex.paint(gl, bounds);
     }

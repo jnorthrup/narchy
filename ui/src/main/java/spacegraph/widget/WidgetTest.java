@@ -19,7 +19,7 @@ public class WidgetTest {
 
     public static void main(String[] args) {
 
-        SpaceGraph s = SpaceGraph.window(
+        SpaceGraph.window(
 
                 widgetDemo()
                 , 1200, 800);

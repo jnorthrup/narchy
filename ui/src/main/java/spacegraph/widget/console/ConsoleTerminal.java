@@ -94,7 +94,7 @@ public class ConsoleTerminal extends BitmapConsoleSurface/*ConsoleSurface*/ {
 
             @Override
             public void onResized(Terminal terminal, TerminalSize terminalSize) {
-                render();
+                //render();
             }
         });
 

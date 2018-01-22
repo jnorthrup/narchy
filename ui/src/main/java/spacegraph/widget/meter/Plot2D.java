@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import jcog.event.On;
 import jcog.list.FasterList;
+import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import spacegraph.render.Draw;
 import spacegraph.widget.windo.Widget;
@@ -178,8 +179,8 @@ public class Plot2D extends Widget {
     }
 
     @Override
-    protected void paintIt(GL2 gl) {
-        Draw.bounds(gl, x(), y(), w(),h(), this::paintUnit);
+    protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+        Draw.bounds(gl, bounds, this::paintUnit);
     }
 
     protected void paintUnit(GL2 gl) {
