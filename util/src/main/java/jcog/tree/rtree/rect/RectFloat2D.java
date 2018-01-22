@@ -61,10 +61,10 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
     @Override
     public double center(int d) {
         if (d == 0) {
-            return x + w / 2.0;
+            return cx();
         } else {
             assert (d == 1);
-            return y + h / 2.0;
+            return cy();
         }
     }
 
@@ -192,5 +192,12 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
     }
     public float bottom() {
         return y + h;
+    }
+
+    public float cx() {
+        return x + w/2;
+    }
+    public float cy() {
+        return y + h/2;
     }
 }

@@ -42,6 +42,7 @@ abstract public class Surface implements SurfaceBase {
         return buttons != null && buttons.length == 1 && buttons[0] == 1;
     }
 
+
     public float x() {
         return bounds.x;
     }

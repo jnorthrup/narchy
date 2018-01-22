@@ -147,6 +147,16 @@ public abstract class Tuple3f implements java.io.Serializable, Cloneable {
     public void set(float x, float y) {
         set(x, y, 0);
     }
+    public void setLerp(float x, float y, float z, float speed) {
+        if (speed == 1f) {
+            set(x, y, z);
+        } else if (speed > 0) {
+            set(Util.lerp(speed, this.x, x),
+                Util.lerp(speed, this.y, y),
+                Util.lerp(speed, this.z, z)
+            );
+        }
+    }
 
     public final void setNegative(Tuple3f v) {
         set(-v.x, -v.y, -v.z);

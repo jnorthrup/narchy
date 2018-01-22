@@ -12,7 +12,7 @@ public interface SurfaceRoot extends SurfaceBase {
         return this;
     }
 
-    default void zoom(float x, float y, float sx, float sy) {
+    default void zoom(Surface s) {
         //ignored
     }
     default void unzoom() {

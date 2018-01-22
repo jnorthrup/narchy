@@ -8,7 +8,6 @@ import jcog.event.Topic;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.Pair;
-import org.jetbrains.annotations.Nullable;
 import spacegraph.input.Finger;
 import spacegraph.layout.Container;
 import spacegraph.math.v3;
@@ -21,6 +20,7 @@ import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -43,6 +43,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     protected final v3 cam;
 
     final Topic logs = new ListTopic();
+    private short[] buttonsDown;
+    private Animated fingerUpdate;
 
     public Ortho() {
         this(new EmptySurface());
@@ -54,6 +56,13 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         this.scale = new AnimVector2f(1, 1, 6f);
         this.cam = new AnimVector3f(8f);
         this.surface = content;
+        this.fingerUpdate = new Animated() {
+            @Override
+            public boolean animate(float dt) {
+                updateMouse(wmx, wmy, buttonsDown);
+                return true;
+            }
+        };
     }
 
     @Override
@@ -125,6 +134,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         s.addKeyListener(this);
         s.dyn.addAnimation(scale);
         s.dyn.addAnimation((Animated) cam);
+        s.dyn.addAnimation(fingerUpdate);
         surface.start(this);
     }
 
@@ -140,11 +150,11 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 
 
     float zoomMargin = 0.25f;
-    final ArrayDeque<RectFloat2D> zoomStack = new ArrayDeque();
+    final ArrayDeque<Supplier<RectFloat2D>> zoomStack = new ArrayDeque();
     static final int ZOOM_STACK_MAX = 8; //FOR safety
 
     @Override
-    public void zoom(float x, float y, float sx, float sy) {
+    public void zoom(Surface su) {
 
         synchronized (zoomStack) {
             ///if (!zoomStack.isEmpty()) {
@@ -157,30 +167,42 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
             //}
             float s = scale.x;
             RectFloat2D curZoom = new RectFloat2D(cam.x - s / 2, cam.y - s / 2, cam.x + s / 2, cam.y + s / 2);
-            zoomStack.addLast(curZoom);
+            zoomStack.addLast(()->curZoom);
 
-
-            cam.set(x, y);
-            float s0 = Math.max(sx, sy) * (1 + zoomMargin);
-            scale(w() / s0, h() / s0);
+            zoom(su.bounds);
 
         }
 
+    }
+
+    public void zoom(RectFloat2D b) {
+        zoom(b.cx(), b.cy(), b.w, b.h, zoomMargin, 1);
+    }
+
+    public void zoom(RectFloat2D b, float speed) {
+        zoom(b.cx(), b.cy(), b.w, b.h, zoomMargin, speed);
+    }
+
+    public void zoom(float x, float y, float sx, float sy, float margin, float speed) {
+        float s0 = (1 + margin);
+        cam.set(x, y);
+        cam.setLerp(x, y, 0, speed);
+        scale(w() / (sx * s0), h() / (sy * s0));
     }
 
     @Override
     public void unzoom() {
         synchronized (zoomStack) {
             if (!zoomStack.isEmpty()) {
-                RectFloat2D z = zoomStack.removeLast();
+                RectFloat2D z = zoomStack.removeLast().get();
                 scale(z.w, z.h);
-                cam.set((float) z.center(0), (float) z.center(1));
+                cam.set(z.cx(), z.cy());
             }
         }
     }
 
     public Ortho scale(float sx, float sy) {
-        float s = Math.max(sx, sy);
+        float s = Math.min(sx, sy);
         scale.set(s, s);
         return this;
     }
@@ -282,7 +304,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         updateMouse(e);
     }
 
-    private void updateMouse(MouseEvent e) {
+    protected void updateMouse(MouseEvent e) {
         updateMouse(e, e != null ? e.getButtonsDown() : null);
     }
 
@@ -301,27 +323,29 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
             wmx = +cam.x + (-0.5f * W + sx) / scale.x;
             wmy = +cam.y + (-0.5f * H + sy) / scale.x;
 
-            updateMouse(e, sx, sy, buttonsDown);
-            return true;
-
-        } else {
-
-            updateMouse(null, wmx, wmy, null);
-
-            return false;
-        }
-    }
-
-    public Surface updateMouse(@Nullable MouseEvent e, float sx, float sy, short[] buttonsDown) {
-
-        if (e != null) {
             if (window != null) {
                 if (window.window != null) {
                     Finger.pointer.set(window.windowX + e.getX(), window.windowY + e.getY());
                 }
             }
 
+            this.buttonsDown = buttonsDown;
+            //updateMouse(sx, sy, buttonsDown);
+            return true;
+
+        } else {
+
+            this.buttonsDown = null;
+            //updateMouse(wmx, wmy, null);
+
+            return false;
         }
+    }
+
+
+    /** called each frame regardless of mouse activity */
+    Surface updateMouse(float sx, float sy, short[] buttonsDown) {
+
 
         /*if (e == null) {
             off();
@@ -332,8 +356,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         //if (lx >= 0 && ly >= 0 && lx <= 1f && ly <= 1f) {
         if ((s = finger.on(sx, sy, wmx, wmy, buttonsDown)) != null) {
             log("on", s);
-            if (e != null)
-                e.setConsumed(true);
+//            if (e != null)
+//                e.setConsumed(true);
             return s;
         } else {
             return null;

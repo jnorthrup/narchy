@@ -3,9 +3,11 @@ package spacegraph.widget.windo;
 import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.Ortho;
 import spacegraph.Surface;
 import spacegraph.SurfaceRoot;
 import spacegraph.input.Finger;
+import spacegraph.input.FingerDragging;
 import spacegraph.layout.Stacking;
 import spacegraph.layout.Switching;
 import spacegraph.render.Draw;
@@ -143,6 +145,7 @@ abstract public class Widget extends Switching {
 
     };
 
+
     @Override
     protected final void paintIt(GL2 gl) {
 
@@ -157,7 +160,7 @@ abstract public class Widget extends Switching {
         states(
             ()-> content,
             ()->{
-                //return new VSplit(inner, grid(new Label(toString()), new PushButton("x")), 0.1f);
+                //meta
                 return new MetaFrame(this);
             }
         );
@@ -198,22 +201,56 @@ abstract public class Widget extends Switching {
 
     public void touch(@Nullable Finger finger) {
         touchedBy = finger;
-        if (finger == null) {
-            onTouch(null, null, null);
-        } else {
-            if (finger.clickReleased(2)) { //released right button
+        if (finger != null) {
 
-                state(switched == STATE_RAW ? STATE_META : STATE_RAW); //toggle
+            if (finger.clickedNow(2)) { //released right button
 
-                SurfaceRoot r = root();
-                if (r!=null) {
-                    if (switched == STATE_META)
-                        r.zoom(cx(), cy(), w(), h());
-                    else
-                        r.unzoom();
-                }
+                int curState = switched;
+                int nextState = nextState(curState);
+                state(nextState); //toggle
 
+//                SurfaceRoot r = root();
+//                if (r!=null) {
+//                    switch (curState) {
+//                        case STATE_META:
+//                            r.zoom(this);
+//                            break;
+//                        case STATE_ZOOM:
+//                            r.unzoom();
+//                            break;
+//                    }
+//                }
+            } else if (finger.pressedNow(1)) {
+                finger.tryFingering(new FingerDragging(1) {
+
+                    SurfaceRoot r = root();
+
+                    @Override
+                    public void start(Finger f) {
+
+                    }
+
+                    @Override
+                    protected boolean drag(Finger f) {
+                        ((Ortho)r).zoom(bounds, 0.5f);
+                        return true;
+                    }
+                });
             }
+
+        } else {
+            onTouch(null, null, null);
+        }
+    }
+
+    private int nextState(int curState) {
+        switch (curState) {
+            case STATE_RAW:
+                return STATE_META;
+            case STATE_META:
+                return STATE_RAW;
+            default:
+                throw new UnsupportedOperationException();
         }
     }
 

@@ -149,15 +149,22 @@ public class Finger {
 
 
     public boolean released(int button) {
-        return prevButtonDown[button] && !buttonDown[button];
+        return !buttonDown[button];
     }
 
     public boolean pressed(int button) {
-        return !prevButtonDown[button] && buttonDown[button];
+        return buttonDown[button];
+    }
+    public boolean pressedNow(int i) {
+        return pressed(i) && !prevButtonDown[i];
+    }
+    public boolean releasedNow(int i) {
+        return !pressed(i) && prevButtonDown[i];
     }
 
-    public boolean clickReleased(int button) {
-        return released(button) && !dragging(button);
+    /** additionally tests for no dragging while pressed */
+    public boolean clickedNow(int button) {
+        return releasedNow(button) && !dragging(button);
     }
 
     /**
@@ -189,16 +196,14 @@ public class Finger {
         return (finger) -> {
 
             if (finger != null) {
-                if (finger.clickReleased(button)) {
+                if (finger.clickedNow(button)) {
                     if (clicked!=null) clicked.run();
-                    idle[0] = false;
-                } else if (finger.pressed(button)) {
+                } else if (finger.pressedNow(button)) {
                     if (armed!=null) armed.run();
-                    idle[0] = false;
                 } else {
                     if (hover!=null) hover.run();
-                    idle[0] = false;
                 }
+                idle[0] = false;
             } else {
                 if (becameIdle!=null && !idle[0]) {
                     becameIdle.run();
@@ -206,5 +211,9 @@ public class Finger {
                 }
             }
         };
+    }
+
+    public boolean isFingering() {
+        return fingering!=null;
     }
 }

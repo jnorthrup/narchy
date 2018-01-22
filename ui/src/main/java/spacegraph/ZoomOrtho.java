@@ -24,8 +24,8 @@ public class ZoomOrtho extends Ortho {
     final static float minZoom = 0.05f;
     final static float maxZoom = 10f;
 
-    final static short PAN_BUTTON = 3;
-    final static short MOVE_WINDOW_BUTTON = 2;
+    final static short PAN_BUTTON = 2;
+    final static short MOVE_WINDOW_BUTTON = 1;
 
     private int[] panStart = null;
     private final int[] moveTarget = new int[2];
@@ -146,54 +146,64 @@ public class ZoomOrtho extends Ortho {
 
 
     @Override
-    public void mouseDragged(MouseEvent e) {
-        super.mouseDragged(e);
+    Surface updateMouse(float sx, float sy, short[] buttonsDown) {
+        Surface s = super.updateMouse(sx, sy, buttonsDown);
 
-        short[] bd = e.getButtonsDown();
+        updatePan();
 
-        if (bd.length > 0 && (bd[0] == PAN_BUTTON) || (bd[0] == MOVE_WINDOW_BUTTON)) {
-            //int mx = e.getX();
-            //int my = window.getHeight() - e.getY();
-            int mx = Finger.pointer.getX();
-            int my = Finger.pointer.getY();
-            if (panStart == null) {
+        return s;
+    }
 
-                panStart = new int[2];
-                panStart[0] = mx;
-                panStart[1] = my;
 
-                if (bd[0] == MOVE_WINDOW_BUTTON) {
-                    //TODO compute this in the EDT on the first invocation
-                    //Point p = new Point();
 
-                    windowStart[0] = window.windowX;
-                    windowStart[1] = window.windowY;
-                    //window.window.getInsets();
+    protected void updatePan() {
+        if (!finger.isFingering()) {
 
-                    //TODO
-                    //hud.dragMode = hud.potentialDragMode;
 
-                    //System.out.println("window drag mode: " + dragMode);
-                }
+            boolean[] bd = finger.buttonDown; //e.getButtonsDown();
+            if (bd.length > 0 && (bd[PAN_BUTTON]) || (bd[MOVE_WINDOW_BUTTON])) {
+                //int mx = e.getX();
+                //int my = window.getHeight() - e.getY();
+                int mx = Finger.pointer.getX();
+                int my = Finger.pointer.getY();
+                if (panStart == null) {
 
-            } else {
+                    panStart = new int[2];
+                    panStart[0] = mx;
+                    panStart[1] = my;
 
-                int dx = mx - panStart[0];
-                int dy = my - panStart[1];
-                if (dx == 0 && dy == 0) {
+                    if (bd[MOVE_WINDOW_BUTTON]) {
+                        //TODO compute this in the EDT on the first invocation
+                        //Point p = new Point();
 
-                } else {
-                    if (bd[0] == PAN_BUTTON) {
-
-                        cam.add(-dx / scale.x, +dy / scale.x);
-                        panStart[0] = mx;
-                        panStart[1] = my;
-
-                    } else if (bd[0] == MOVE_WINDOW_BUTTON) {
-
-                        //compute even if the window is in progress
+                        windowStart[0] = window.windowX;
+                        windowStart[1] = window.windowY;
+                        //window.window.getInsets();
 
                         //TODO
+                        //hud.dragMode = hud.potentialDragMode;
+
+                        //System.out.println("window drag mode: " + dragMode);
+                    }
+
+                } else {
+
+                    int dx = mx - panStart[0];
+                    int dy = my - panStart[1];
+                    if (dx == 0 && dy == 0) {
+
+                    } else {
+                        if (bd[PAN_BUTTON]) {
+
+                            cam.add(-dx / scale.x, +dy / scale.x);
+                            panStart[0] = mx;
+                            panStart[1] = my;
+
+                        } else if (bd[MOVE_WINDOW_BUTTON]) {
+
+                            //compute even if the window is in progress
+
+                            //TODO
 //                        if (hud.dragMode == Windo.WindowDragging.MOVE) {
 //
 //
@@ -231,12 +241,13 @@ public class ZoomOrtho extends Ortho {
 //
 //                        }
 //
+                        }
                     }
                 }
+            } else {
+                panStart = null;
+                hud.dragMode = null;
             }
-        } else {
-            panStart = null;
-            hud.dragMode = null;
         }
     }
 
