@@ -34,6 +34,7 @@ public enum BeliefFunction implements TruthOperator {
 //    },
 
 
+    /** this is not balanced for negative T */
     Deduction() {
         @Override
         public Truth apply(Truth T, Truth B, NAR m, float minConf) {

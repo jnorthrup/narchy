@@ -19,7 +19,7 @@
         //B, (--A ==> C),  notImpl(B), task(".") |- subIfUnifiesAny(C,A,B,"$",strict), (Belief:DeductionRecursivePBN)
         //B, (--B ==> C),  notImpl(B), task("!") |- C, (Goal:DeciInductionN)
 
-    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Deduction)
+    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Strong)
     //B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionPB, Goal:DeciDeduction)
         //B, (C ==> B), notImpl(B), task("!") |- C (Goal:DeciDeduction)
 

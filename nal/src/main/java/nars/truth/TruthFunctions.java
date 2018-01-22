@@ -271,8 +271,8 @@ public final class TruthFunctions {
     }
 
 
-    /** similar semantics to induction/abduction to handle negative 'a' truths
-     *  but stronger than ordinary belief induction
+    /**
+     * frequency determined entirely by the desire component.
      */
     @Nullable public static Truth desireStrongNew(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
         float bFreq = b.freq();
