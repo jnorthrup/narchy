@@ -118,10 +118,13 @@ public class Try implements Consumer<Derivation> {
         Roulette.selectRouletteUnique(n, i -> w[i], (i) -> {
             int ttlSave = d.ttl;
 
-            int ttlFrac = Math.max(Param.TTL_MIN, Math.round(ttlSave*reserve));
+            int ci = choices[i];
+
+            int fanout = ((ValueFork)(branches[ci])).causes.length;
+            int ttlFrac = Math.min(ttlSave, Math.max(fanout * Param.TTL_MIN, Math.round(ttlSave*reserve)));
             d.ttl = ttlFrac;
 
-            branches[choices[i]].test(d);
+            branches[ci].test(d);
             d.revert(before);
 
             int ttlUsed = Math.max(1, ttlFrac - d.ttl);

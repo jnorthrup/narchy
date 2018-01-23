@@ -106,6 +106,11 @@ public class FasterList<X> extends FastList<X> {
         return items[index];
         //}
     }
+    public X get(Random random) {
+        //if (index < this.size) {
+        return items[random.nextInt(size)];
+        //}
+    }
 
     @Nullable
     public final X getSafe(int index) {

@@ -30,7 +30,7 @@ public class NAgentTest {
         //MetaGoal.Desire.set(n.want, 1f);
         //n.freqResolution.set(0.1f);
 
-        //Param.DEBUG = true;
+        Param.DEBUG = false;
         if (Param.DEBUG) {
             n.onTask(t -> {
                 if (t instanceof DerivedTask && t.isGoal()) {

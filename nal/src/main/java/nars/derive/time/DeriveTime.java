@@ -6,22 +6,20 @@ import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.control.Derivation;
+import nars.derive.match.EllipsisMatch;
 import nars.task.TimeFusion;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
+import nars.term.var.VarPattern;
 import nars.time.Tense;
-import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
-import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Supplier;
 
 import static nars.Op.CONJ;
 import static nars.time.Tense.*;
-import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 
 /**
@@ -45,7 +43,10 @@ public class DeriveTime extends TimeGraph {
 
     private final Derivation d;
 
-    final Map<Term, ArrayHashSet<Event>> cache;
+    /**
+     * on .get(), also sets the occurrence time and any other derivation state
+     */
+    final Map<Term, Supplier<Term>> cache;
 
     @Override
     public void clear() {
@@ -68,12 +69,21 @@ public class DeriveTime extends TimeGraph {
 
         //for now, just do manual reconstruct
         copy.byTerm.values().forEach(this::add); //add to byTerm AND graph
+
         copy.byTerm.keySet().forEach(x -> {
             Term y = x.eval(d);
             if (y != x && !y.equals(x) && y.op().conceptualizable) {
                 link(know(x), 0, know(y));
             }
         });
+
+        //link all non-pattern var substitutions
+        d.xy.forEach((x,y)->{
+            if (!(x instanceof VarPattern) && x.op().conceptualizable && !(x instanceof EllipsisMatch)) {
+                link(know(x), 0, know(y));
+            }
+        });
+
 
     }
 
@@ -202,71 +212,71 @@ public class DeriveTime extends TimeGraph {
         return d.random;
     }
 
-    /**
-     * temporary override patches
-     */
-    protected Term override(Term pattern) {
-        //case ConjEventA: a conjunction pattern consisting of 2 precisely known events separated by an XTERNAL
-        if (pattern.op() == CONJ) {
-            if (pattern.dt() == XTERNAL) {
-                Term a = pattern.sub(0);
-                Event ae = absolute(a);
-                if (ae != null) {
-                    Term b = pattern.sub(1);
-                    Event be = absolute(b);
-                    if (be != null) {
-                        long aew = ae.when();
-                        long bew = be.when();
-                        if (aew == ETERNAL ^ bew == ETERNAL) {
-                            //mix of eternal and temporal, so simultaneous at the temporal
-                            long occ;
-                            if (aew == ETERNAL) {
-                                occ = bew;
-                            } else {
-                                occ = aew;
-                            }
-                            d.concOcc[0] = d.concOcc[1] = occ;
-                            //return Op.conjMerge(ae.id, 0, be.id, 0);
-                            return CONJ.the(ae.id, be.id);
-
-                        } else if (aew == ETERNAL) {
-                            //both eternal, so dternal
-                            d.concOcc[0] = d.concOcc[1] = ETERNAL;
-                            return pattern.dt(DTERNAL);
-                        } else {
-                            //both events
-                            long occ, dt;
-                            Term t;
-                            if (aew < bew) {
-                                dt = bew - aew;
-                                occ = aew;
-                                t = Op.conjMerge(ae.id, 0, be.id, (int) dt);
-                            } else {
-                                dt = aew - bew;
-                                occ = bew;
-                                t = Op.conjMerge(be.id, 0, ae.id, (int) dt);
-                            }
-                            if (Math.abs(dt) < Integer.MAX_VALUE - 1) {
-                                d.concOcc[0] = d.concOcc[1] = occ;
-                                return t;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return null;
-    }
+//    /**
+//     * temporary override patches
+//     */
+//    protected Term override(Term pattern) {
+//        //case ConjEventA: a conjunction pattern consisting of 2 precisely known events separated by an XTERNAL
+//        if (pattern.op() == CONJ) {
+//            if (pattern.dt() == XTERNAL) {
+//                Term a = pattern.sub(0);
+//                Event ae = absolute(a);
+//                if (ae != null) {
+//                    Term b = pattern.sub(1);
+//                    Event be = absolute(b);
+//                    if (be != null) {
+//                        long aew = ae.when();
+//                        long bew = be.when();
+//                        if (aew == ETERNAL ^ bew == ETERNAL) {
+//                            //mix of eternal and temporal, so simultaneous at the temporal
+//                            long occ;
+//                            if (aew == ETERNAL) {
+//                                occ = bew;
+//                            } else {
+//                                occ = aew;
+//                            }
+//                            d.concOcc[0] = d.concOcc[1] = occ;
+//                            //return Op.conjMerge(ae.id, 0, be.id, 0);
+//                            return CONJ.the(ae.id, be.id);
+//
+//                        } else if (aew == ETERNAL) {
+//                            //both eternal, so dternal
+//                            d.concOcc[0] = d.concOcc[1] = ETERNAL;
+//                            return pattern.dt(DTERNAL);
+//                        } else {
+//                            //both events
+//                            long occ, dt;
+//                            Term t;
+//                            if (aew < bew) {
+//                                dt = bew - aew;
+//                                occ = aew;
+//                                t = Op.conjMerge(ae.id, 0, be.id, (int) dt);
+//                            } else {
+//                                dt = aew - bew;
+//                                occ = bew;
+//                                t = Op.conjMerge(be.id, 0, ae.id, (int) dt);
+//                            }
+//                            if (Math.abs(dt) < Integer.MAX_VALUE - 1) {
+//                                d.concOcc[0] = d.concOcc[1] = occ;
+//                                return t;
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        return null;
+//    }
 
     public void know(Task t) {
         Term tt = t.term();
         //both positive and negative possibilities
         Iterable<Event> ee = know(t, tt);
-        if (autoNegEvents && tt.op() != CONJ) {
-            for (Event e : ee)
-                link(know(tt.neg()), 0, e);
-        }
+//        if (autoNegEvents && tt.op() != CONJ) {
+//            for (Event e : ee)
+//                link(know(tt.neg()), 0, e);
+//        }
     }
 
     private Iterable<Event> know(Task task, Term term) {
@@ -285,39 +295,20 @@ public class DeriveTime extends TimeGraph {
     public Term solve(Term pattern) {
         assert (pattern.op().conceptualizable);
 
-        Term overrideSolution = override(pattern);
-        if (overrideSolution != null) {
-            return overrideSolution;
-        }
+//        Term overrideSolution = override(pattern);
+//        if (overrideSolution != null) {
+//            return overrideSolution;
+//        }
 
         d.concOcc[0] = d.concOcc[1] = ETERNAL; //reset just in case
 
 //        long[] occ = d.concOcc;
 
-        ArrayHashSet<Event> solutions = cache != null ? solveCached(pattern) : solveAll(pattern);
-        int ss = solutions.size();
+        return (cache != null ? solveCached(pattern) : solveAll(pattern)).get();
 
-        switch (ss) {
-            case 0:
-                return solveRaw(pattern);
-            case 1:
-                return solveThe(solutions.first());
-            default:
-                //return solveRandomOne(solutions);
-                return solveMerged(solutions);
-        }
 
     }
 
-
-    /**
-     * this one sucks
-     */
-    @Nullable Term solveRandomOne(ArrayHashSet<Event> solutions) {
-        Event event;
-        event = solutions.get(d.random);
-        return solveThe(event);
-    }
 
     @Nullable
     Term solveThe(Event event) {
@@ -335,62 +326,138 @@ public class DeriveTime extends TimeGraph {
     }
 
 
-    @Nullable Term solveMerged(ArrayHashSet<Event> solutions) {
-        UnifiedMap<Term, LongHashSet> when = new UnifiedMap(2);
-        solutions.forEach(s -> {
-            long w = s.when();
-            when.computeIfAbsent(s.id, (x) -> new LongHashSet()).add(w);
+    @Nullable
+    static Term solveMerged(int dur, long[] occ, Event... events) {
+        return solveMerged(ArrayHashSet.of(events), dur, occ);
+    }
+
+    @Nullable
+    static Term solveMerged(ArrayHashSet<Event> solutions, int dur, long[] occ) {
+
+
+        final TreeSet<Term> eternals = new TreeSet();
+        solutions.removeIf(s -> {
+            if (s.when() == ETERNAL) {
+                eternals.add(s.id);
+                return true;
+            }
+            return false;
         });
-        //TODO weighted random selection
-        Pair<Term, LongHashSet> t = when.keyValuesView().maxBy((e) -> e.getTwo().size());
-        LongHashSet ww = t.getTwo();
-        int n = ww.size();
-        Term tt = t.getOne();
+        final TreeSet<Term> eeternals = !eternals.isEmpty() ? eternals : null;
 
-        //TODO check sequence contiguousity and separate with conjunctions as necessary
-        long min = ww.min();
-        if (min == ETERNAL) {
-            d.concOcc[0] = d.concOcc[1] = ETERNAL;
-            return tt;
-        } else {
-            long max = ww.max();
-            if (max == TIMELESS) {
-                return solveRaw(tt);
-            } else {
-                if (max - min < d.dur) {
-                    d.concOcc[0] = min;
-                    d.concOcc[1] = max;
-                    return tt;
-                } else {
-                    //TODO simple case for n=1
-                    FasterList<LongObjectPair<Term>> ee = new FasterList(n);
-                    //TODO estimate max volume these can be large
-                    ww.forEach(l -> {
-                        ee.add(pair(l, tt));
-                    });
-                    Term r = Op.conjEvents(ee);
-                    if (r != null && r.op().conceptualizable) {
-                        d.concOcc[0] = d.concOcc[1] = min;
-                        return r;
-                    }
+        Term first = null;
+        boolean differentTimedTerms = false;
+        long min = Long.MAX_VALUE, max = Long.MIN_VALUE;
+        boolean timeless = false, timed = false;
+        int temporals = 0;
+
+        if (eeternals != null) {
+            solutions.removeIf(s -> {
+                if (s.when() == TIMELESS) {
+                    return eeternals.contains(s.id);
                 }
+                return false;
+            });
+        }
+        //remove any events that have been absorbed as eternals:
+        Iterator<Event> ii = solutions.iterator();
+        while (ii.hasNext()) {
+            Event e = ii.next();
 
+            long w = e.when();
+            if (w == TIMELESS) {
+
+                timeless = true;
+
+            } else {
+                timed = true;
+                min = Math.min(min, w);
+                max = Math.max(max, w);
+                if (eeternals != null) {
+                    eeternals.remove(e.id); //prefer the temporal version, being more specific
+                }
+            }
+
+            if (first == null)
+                first = e.id;
+            else {
+                if (!first.equals(e.id)) {
+                    differentTimedTerms = true;
+                }
+            }
+            //if (e.id.op()==IMPL)
+            if (e.id.op().temporal)
+                temporals++;
+        }
+
+        Term eternalComponent = (eeternals == null) ? null : CONJ.the(DTERNAL, eeternals);
+
+        if (eternalComponent instanceof Bool)
+            eternalComponent = null; //ignore it
+
+        if (!differentTimedTerms) {
+            if (timeless && !timed) {
+                occ[0] = occ[1] = TIMELESS;
+                return eternalComponent != null ? CONJ.the(eternalComponent, first) : first;
+            } else if (timed && (max - min) <= dur) {
+                //all temporal and within a duration
+                occ[0] = min;
+                occ[1] = max;
+                return eternalComponent != null ? CONJ.the(eternalComponent, first) : first;
             }
         }
 
+        if (timeless) {
+            if (!timed && eternalComponent == null) {
+                return null; //all timeless
+            } else {
+                //TODO mix of timeless and timed, can merge the time events at least and choose from either at random
+                //solutions.removeIf(x -> x.when() == TIMELESS); //ignore timeless events
+                return null;
+            }
+        }
 
-        return null;
+        if (temporals > 0) {
+            //TODO implications can be combined if they share common subj or predicate?
+            return null; //dont combine implication events
+        }
 
+
+
+        if (solutions.isEmpty()) {
+            occ[0] = occ[1] = ETERNAL;
+            return eternalComponent;
+        }
+
+
+        //construct sequence
+        Term temporalComponent = Op.conjEvents((FasterList) solutions.list);
+
+        if (temporalComponent instanceof Bool) {
+            occ[0] = occ[1] = ETERNAL;
+            return eternalComponent; //ignore it
+        } else if (temporalComponent != null) {
+            occ[0] = min; //sequence start
+            occ[1] = min;
+
+            if (eternalComponent != null) {
+                return CONJ.the(eternalComponent, temporalComponent);
+            } else {
+                return temporalComponent;
+            }
+        } else {
+            return null;
+        }
 
     }
 
 
-    protected ArrayHashSet<Event> solveCached(Term pattern) {
+    protected Supplier<Term> solveCached(Term pattern) {
         return cache.computeIfAbsent(pattern, this::solveAll);
     }
 
 
-    protected ArrayHashSet<Event> solveAll(Term pattern) {
+    protected Supplier<Term> solveAll(Term pattern) {
         ArrayHashSet<Event> solutions = new ArrayHashSet(Param.TEMPORAL_SOLVER_ITERATIONS);
 
         final int[] triesRemain = {Param.TEMPORAL_SOLVER_ITERATIONS};
@@ -398,40 +465,70 @@ public class DeriveTime extends TimeGraph {
 
         solve(pattern, false /* take everything */, (solution) -> {
             assert (solution != null);
-            if (!solution.id.op().conceptualizable) {
-                //skip
-            } else if (solution instanceof Relative && rejectRelative[0]) {
-                //skip
-            } else {
-
-                if (!rejectRelative[0] && solution instanceof Absolute) {
-                    solutions.removeIf(x -> x instanceof Relative); //remove existing relative solutions now that an absolute exists
-                    rejectRelative[0] = true;
-                }
-
-                //TODO test equivalence with task and belief terms and occurrences, and continue iterating up to a max # of tries if it produced a useless equivalent result
-
-                Event first = solutions.first();
-
-                if (first == null) {
-                    solutions.add(solution);
-                } else {
-                    Event merged = merge(first, solution);
-                    if (merged == null) {
-                        //add alternate
-                        solutions.add(solution);
-                    } else if (merged == solution) {
-                        //replace all, this is the first fully valid one
-                        solutions.clear();
-                        solutions.add(solution);
-                    }
-                }
-            }
+            solutions.add(solution);
+//            if (!solution.id.op().conceptualizable) {
+//                //skip
+//            } else if (solution instanceof Relative && rejectRelative[0]) {
+//                //skip
+//            } else {
+//
+//                if (!rejectRelative[0] && solution instanceof Absolute) {
+//                    solutions.removeIf(x -> x instanceof Relative); //remove existing relative solutions now that an absolute exists
+//                    rejectRelative[0] = true;
+//                }
+//
+//                //TODO test equivalence with task and belief terms and occurrences, and continue iterating up to a max # of tries if it produced a useless equivalent result
+//
+//                Event first = solutions.first();
+//
+//                if (first == null) {
+//                    solutions.add(solution);
+//                } else {
+//                    Event merged = merge(first, solution);
+//                    if (merged == null) {
+//                        //add alternate
+//                        solutions.add(solution);
+//                    } else if (merged == solution) {
+//                        //replace all, this is the first fully valid one
+//                        solutions.clear();
+//                        solutions.add(solution);
+//                    }
+//                }
+//            }
 
             return triesRemain[0]-- > 0;
         });
 
-        return !solutions.isEmpty() ? solutions : ArrayHashSet.EMPTY;
+        return solution(pattern, solutions);
+    }
+
+    protected Supplier<Term> solution(Term pattern, ArrayHashSet<Event> solutions) {
+        int ss = solutions.size();
+
+        switch (ss) {
+            case 0:
+                return () -> solveRaw(pattern);
+            case 1:
+                return () -> solveThe(solutions.first());
+            default:
+
+                //return solveRandomOne(solutions);
+                FasterList<Event> solutionsCopy = new FasterList(solutions.list);
+                long[] when = new long[]{TIMELESS, TIMELESS};
+                Term tt = solveMerged(solutions, d.dur, when);
+                if (tt == null || tt instanceof Bool || tt.volume() > d.termVolMax) {
+                    //use a copy because solveMerged modifies the input
+                    return () -> solveThe(solutionsCopy.get(random())); //choose one at random
+                } else if (when[0] == TIMELESS) {
+                    return () -> solveRaw(tt);
+                } else {
+                    return () -> {
+                        d.concOcc[0] = when[0];
+                        d.concOcc[1] = when[1];
+                        return tt;
+                    };
+                }
+        }
     }
 
     /**
@@ -488,21 +585,32 @@ public class DeriveTime extends TimeGraph {
                     }
                 }
             } else {
-//                if (taskEvent && beliefEvent) {
-                //two events: fuse time
-                //assert (!belief.isEternal());
-                TimeFusion joint = new TimeFusion(task.start(), task.end(), belief.start(), belief.end());
-                //                    if (joint.factor <= Pri.EPSILON) //allow for questions/quests, if this ever happens
-                //                        return null;
+                /*if (x.op().temporal) {
+                    return null; //ambiguous, unsolution
+                } else */
+                {
+                    //                if (taskEvent && beliefEvent) {
+                    //two events: fuse time
+                    //assert (!belief.isEternal());
+                    TimeFusion joint = new TimeFusion(task.start(), task.end(), belief.start(), belief.end());
+                    //                    if (joint.factor <= Pri.EPSILON) //allow for questions/quests, if this ever happens
+                    //                        return null;
 
-                s = joint.unionStart;
-                assert (s != ETERNAL);
-                e = joint.unionEnd;
-                d.concEviFactor *= joint.factor;
-//                } else {
-//                    //either task or belief were temporal, so should have been solved
-//                    return null;
-//                }
+                    s = joint.unionStart;
+                    assert (s != ETERNAL);
+
+                    //                if (x.op()==IMPL) {
+                    //                    e = s; //point-like left-aligned
+                    //                } else {
+                    e = joint.unionEnd;
+                    //                }
+
+                    d.concEviFactor *= joint.factor;
+                    //                } else {
+                    //                    //either task or belief were temporal, so should have been solved
+                    //                    return null;
+                    //                }
+                }
             }
         }
 

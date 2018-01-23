@@ -119,44 +119,58 @@ public class ActivateTest {
     public void testTemplates2() throws Narsese.NarseseException {
         //layer 2:
         testTemplates("open(John,door)",
-                "[(John,door), John, door, open]");
+                //"[(John,door), John, door, open]"
+                "[(John,door), open]"
+                );
     }
 
     @Test
     public void testTemplates3() throws Narsese.NarseseException {
         //layer 3:
         testTemplates("(open(John,door) ==> #x)",
-                "[open(John,door), (John,door), John, door, open, #1]");
+                //"[open(John,door), (John,door), John, door, open, #1]"
+                "[open(John,door), (John,door), open, #1]"
+        );
     }
 
     @Test
     public void testTemplates4() throws Narsese.NarseseException {
         //dont descend past layer 3:
         testTemplates("(open(John,portal:interdimensional) ==> #x)",
-                "[open(John,(interdimensional-->portal)), (John,(interdimensional-->portal)), (interdimensional-->portal), John, open, #1]");
+        //"[open(John,(interdimensional-->portal)), (John,(interdimensional-->portal)), (interdimensional-->portal), John, open, #1]"
+                "[open(John,(interdimensional-->portal)), (John,(interdimensional-->portal)), open, #1]"
+
+        );
     }
 
     @Test
     public void testTemplates4b() throws Narsese.NarseseException {
         testTemplates("(open(John,portal(a(d),b,c)) ==> #x)",
-                "[open(John,portal(a(d),b,c)), (John,portal(a(d),b,c)), portal(a(d),b,c), John, open, #1]");
+                //"[open(John,portal(a(d),b,c)), (John,portal(a(d),b,c)), portal(a(d),b,c), John, open, #1]"
+                "[open(John,portal(a(d),b,c)), (John,portal(a(d),b,c)), open, #1]"
+        );
     }
 
     @Test
     public void testFunction() throws Narsese.NarseseException {
         testTemplates("f(x)",
-                "[(x), f, x]");
+                //"[(x), f, x]"
+                "[(x), f]"
+        );
     }
     @Test
     public void testIntersection() throws Narsese.NarseseException {
         testTemplates("((0|1)-->2)",
-                "[(0|1), 0, 1, 2]");
+                "[(0|1), 0, 1, 2]"
+        );
     }
 
     @Test
     public void testTemplatesWithInt2() throws Narsese.NarseseException {
         testTemplates("num((0))",
-                "[((0)), (0), num]");
+                //"[((0)), (0), num]"
+                "[((0)), num]"
+        );
     }
 
     @Test

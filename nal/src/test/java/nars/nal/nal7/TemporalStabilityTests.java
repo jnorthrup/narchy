@@ -137,9 +137,19 @@ public class TemporalStabilityTests {
     @Test public void testTemporalStabilityLinkedImpl() {
         new T1(linkedimpl, 1, 2, 5).test(CYCLES, NARS.tmp());
     }
+
+    @Test public void testTemporalStabilityLinkedTemporalConjSmall() {
+        new T1(conjSeq2, new int[] { 1, 6 }, 1, 16).test(100, NARS.tmp());
+    }
+
+    @Test public void testTemporalStabilityLinkedTemporalConjOverlapping() {
+        new T1(conjSeq2, new int[] { 1, 3 }, 1, 16).test(100, NARS.tmp());
+    }
+
     @Test public void testTemporalStabilityLinkedTemporalConj() {
         new T1(conjSeq2, new int[] { 1, 6, 11 }, 1, 16).test(CYCLES, NARS.tmp());
     }
+
     @Test public void testTemporalStabilityConjInvertor() {
         new T1(conjInvertor, new int[] { 1, 6, 11 }, 1, 16).test(CYCLES, NARS.tmp());
     }

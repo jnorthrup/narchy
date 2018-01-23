@@ -23,7 +23,7 @@ import java.util.Random;
 import java.util.Set;
 
 import static java.util.Collections.emptyList;
-import static nars.Op.INT;
+import static nars.Op.*;
 
 public enum TermLinks {
     ;
@@ -50,7 +50,7 @@ public enum TermLinks {
             TermLinks.templates(term, tc, 0,
                     //2
                     //term.isAny(IMPL.bit | CONJ.bit | INH.bit) ? 4 : 2
-                    layers(term)
+                    term, layers(term)
             );
 
 //            //"if ((tEquivalence || (tImplication && (i == 0))) && ((t1 instanceof Conjunction) || (t1 instanceof Negation))) {"
@@ -78,29 +78,45 @@ public enum TermLinks {
     /**
      * recurses
      */
-    static void templates(Term _x, Set<Termed> tc, int depth, int maxDepth) {
+    static void templates(Term _x, Set<Termed> tc, int depth, Term root, int maxDepth) {
 
         Term x = _x;
 
-        Op o = x.op();
 //        switch (o) {
 //            case VAR_QUERY:
 //                return; //NO
 //        }
 
-        if ((depth > 0 || selfTermLink(x)) && !(tc.add(x)))
+        if (((depth > 0) || selfTermLink(x)) && !tc.add(x))
             return; //already added
 
-
-        if ((++depth >= maxDepth) || !o.conceptualizable)
+        if ((++depth >= maxDepth) || !templateRecurseInto(root, depth, x))
             return;
 
         Subterms bb = x.subterms();
         int bs = bb.subs();
         if (bs > 0) {
             int nextDepth = depth;
-            bb.forEach(s -> templates(s.unneg(), tc, nextDepth, maxDepth));
+            bb.forEach(s -> templates(s.unneg(), tc, nextDepth, root, maxDepth));
         }
+    }
+
+    /** whether to recurse templates past a certain subterm.
+     *  implements specific structural exclusions */
+    private static boolean templateRecurseInto(Term root, int depth, Term subterm) {
+        Op s = subterm.op();
+        if (!s.conceptualizable || s.atomic)
+            return false;
+
+
+        Op r = root.op();
+        if (depth >= 2 && (r == IMPL || r == CONJ)) {
+            return !s.isAny(PROD.bit | Op.SetBits | Op.SECTe.bit | Op.SECTi.bit);
+        }
+        if (depth >= 2 && s == PROD)
+            return false;
+
+        return true;
     }
 
 

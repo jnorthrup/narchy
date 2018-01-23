@@ -104,7 +104,7 @@ public class RevectionTest {
         Task e = t(0f, 0.1f, 7).evidence(5).apply(n);
 
         for (int i = 0; i < 15; i++) {
-            System.out.println(i + " " + Param.truth(null, (long) i, 1, 1, Lists.newArrayList(a, b, c, d, e)));
+            System.out.println(i + " " + Param.truth(null, i, i, 1, Lists.newArrayList(a, b, c, d, e)));
         }
 
     }

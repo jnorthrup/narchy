@@ -6,6 +6,7 @@ import nars.term.Term;
 import nars.term.atom.Int;
 import nars.time.Tense;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.time.Tense.*;
@@ -243,6 +244,7 @@ public class NarseseExtendedTest extends NarseseTest {
                 term("--a:--b").toString() );
     }
 
+    @Disabled
     @Test public void testOptionalCommas() throws Narsese.NarseseException {
         Term pABC1 = $.$("(a b c)");
         Term pABC2 = $.$("(a,b,c)");

@@ -304,7 +304,9 @@ public class Deriver extends Causable {
                 Task t = tasklink.get();
                 if (t != null) {
 
-                    float p = merge.apply(pri, termlink.priElseZero());// * nar.amp(t);
+                    float p = merge.apply(pri,
+                                termlink.priElseZero())
+                                     * nar.amp(t);
                     if (p > minAdmission()) {
                         add(new Premise(t, termlink.get(), p));
                     } else {

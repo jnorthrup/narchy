@@ -107,12 +107,22 @@ public class TimeGraphTest {
     }
 
     @Test public void testExact() throws Narsese.NarseseException {
-        /** c is the same event, @6 */
+
         TimeGraph cc1 = newTimeGraph(1);
         cc1.know($.$("(a &&+5 b)"), 1);
         cc1.print();
         assertSolved("(a &&+- b)", cc1,
                 "(a &&+5 b)@1");
+    }
+
+    @Test public void testLinkedTemporalConj() throws Narsese.NarseseException {
+
+        TimeGraph cc1 = newTimeGraph(1);
+        cc1.know($.$("(a &&+5 b)"), 1);
+        cc1.know($.$("(b &&+5 c)"), 6);
+        cc1.print();
+        assertSolved("((b &&+5 c) &&+- (a &&+5 b))", cc1,
+                "((a &&+5 b) &&+5 c)", "((a &&+5 b) &&+5 c)@1");
     }
 
     @Test
@@ -121,6 +131,7 @@ public class TimeGraphTest {
                 "(one ==>+1 (two &&+1 three))");
         A.print();
     }
+
 
     @Test public void testDecomposeImplConj() throws Narsese.NarseseException {
         /*
@@ -152,8 +163,30 @@ public class TimeGraphTest {
         assertSolved("(--x ==>+- y)", C, "((--,x) ==>+1 y)");
         C.print();
     }
-
-
+    @Test
+    public void testConjSimpleOccurrences() throws Narsese.NarseseException {
+        TimeGraph C = newTimeGraph(1);
+        C.know($.$("(x &&+5 y)"), 1);
+        C.know($.$("(y &&+5 z)"), 6);
+        C.know($.$("(w &&+5 x)"), -4);
+        C.print();
+        System.out.println();
+        assertSolved("x", C, "x@1");
+        assertSolved("y", C, "y@6");
+        assertSolved("z", C, "z@11");
+        assertSolved("w", C, "w@-4");
+        C.print();
+    }
+    @Test
+    public void testConjTrickyOccurrences() throws Narsese.NarseseException {
+        TimeGraph C = newTimeGraph(1);
+        C.know($.$("(x &&+5 y)"), 1);
+        C.know($.$("(y &&+5 z)"), 3);
+        System.out.println();
+        assertSolved("x", C, "x@1", "x@-2");
+        assertSolved("y", C, "y@6", "y@3");
+        assertSolved("z", C, "z@11", "z@8");
+    }
     final List<Runnable> afterEach = $.newArrayList();
 
     @AfterEach
@@ -175,7 +208,7 @@ public class TimeGraphTest {
 
         int nodesAfter = A.nodes().size();
         long edgesAfter = A.edges().count();
-//        assertEquals(edgesBefore, edgesAfter, "# of edges changed as a result of solving");
+        //assertEquals(edgesBefore, edgesAfter, "# of edges changed as a result of solving");
 //        assertEquals(nodesBefore, nodesAfter, ()->"# of nodes changed as a result of solving:\n\t" + nodes + "\n\t" + A.nodes());
 
     }

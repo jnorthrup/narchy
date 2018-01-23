@@ -40,6 +40,7 @@ package jcog.data;
 import jcog.list.FasterList;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * Analogous to {@link java.util.LinkedHashSet}, but with an {@link java.util.ArrayList} instead of a {@link java.util.LinkedList},
@@ -111,7 +112,13 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 	}
 	
 	// ArraySet methods
-	
+
+
+	@Override
+	public void forEach(Consumer<? super X> action) {
+		list.forEach(action);
+	}
+
 	@Override
 	public ListIterator<X> listIterator() {
 		return new ArrayHashSetIterator();
@@ -191,9 +198,9 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 	
 	@Override
 	public void clear() {
-		if (list!= EMPTY_LIST) {
-			set.clear();
+		if (list != EMPTY_LIST) {
 			list = EMPTY_LIST;
+			set.clear();
 		}
 	}
 
@@ -207,6 +214,13 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 		Collections.shuffle(list, random);
 	}
 
+	public static <X> ArrayHashSet<X> of(X... x) {
+		ArrayHashSet a = new ArrayHashSet(x.length);
+		for (X xx : x) {
+			a.add(xx);
+		}
+		return a;
+	}
 
 
 	// end of methods not required to be implemented, but more efficient
@@ -263,17 +277,20 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
 		@Override
 		public void remove() {
-			arrayListIterator.remove();
 			boolean removed = set.remove(lastElementProvided);
 			assert(removed);
+
+			arrayListIterator.remove();
+
+			if (list.isEmpty())
+				list = EMPTY_LIST;
 		}
 
 		@Override
 		public void set(X element) {
 			if (element.equals(lastElementProvided)) {
 				// no need to do anything
-			}
-			else {
+			} else {
 				if (set.contains(element)) {
 					// cannot add because element would appear more than once
 					throw new IllegalArgumentException("Cannot set already-present element in a different position in ArrayHashSet.");

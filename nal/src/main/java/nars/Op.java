@@ -1,6 +1,7 @@
 package nars;
 
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.data.ArrayHashSet;
 import jcog.data.bit.MetalBitSet;
@@ -150,6 +151,8 @@ public enum Op {
      * conjunction
      */
     CONJ("&&", true, 5, Args.GTETwo) {
+
+
         @Override
         public Term __the(int dt, Term[] u) {
             final int n = u.length;
@@ -1084,28 +1087,31 @@ public enum Op {
             case 1:
                 return events.get(0).getTwo();
             default:
-                if (ee > 1) {
-                    //events.sort(LongObjectPair::compareTo);
-                    events.sortThis(LongObjectPair::compareTo);
+                events.sortThisByLong(LongObjectPair::getOne);
 
-                    ListIterator<LongObjectPair<Term>> ii = events.listIterator();
-                    long prevtime = ETERNAL;
-                    while (ii.hasNext()) {
-                        LongObjectPair<Term> x = ii.next();
-                        long now = x.getOne();
-                        if (prevtime != ETERNAL && prevtime == now) {
-                            ii.remove();
-                            ee--;
-                            LongObjectPair<Term> y = ii.previous();
-                            Term xyt = CONJ.the(0, x.getTwo(), y.getTwo());
-                            if (xyt == Null) return Null;
-                            if (xyt == False) return False;
-                            LongObjectPair<Term> xy = pair(now, xyt);
-                            ii.set(xy);
-                            ii.next();
-                        }
-                        prevtime = now;
+                ListIterator<LongObjectPair<Term>> ii = events.listIterator();
+                long prevtime = ETERNAL;
+                while (ii.hasNext()) {
+                    LongObjectPair<Term> x = ii.next();
+                    long now = x.getOne();
+
+                    if (now == ETERNAL)
+                        throw new TODO();
+                    else if (now == TIMELESS)
+                        throw new RuntimeException();
+
+                    if (prevtime != ETERNAL && prevtime == now) {
+                        ii.remove();
+                        ee--;
+                        LongObjectPair<Term> y = ii.previous();
+                        Term xyt = CONJ.the(0, x.getTwo(), y.getTwo());
+                        if (xyt == Null) return Null;
+                        if (xyt == False) return False;
+                        LongObjectPair<Term> xy = pair(now, xyt);
+                        ii.set(xy);
+                        ii.next();
                     }
+                    prevtime = now;
                 }
                 return conjSeq(events, 0, events.size());
         }
@@ -2059,6 +2065,11 @@ public enum Op {
         return _the(dt, commute(dt, u.length) ? sorted(u) : u, true);
     }
 
+    /** alternate method args order for 2-term w/ infix DT */
+    public final Term the(Term a, int dt, Term b) {
+        return the(dt, a, b);
+    }
+
     /**
      * syntax shortcut for non-interned (heap) term construction
      */
@@ -2101,10 +2112,10 @@ public enum Op {
             return x.value(DEFAULT_VALUE);
         }
 
-        @Override
-        protected void onIntern(InternedCompound x) {
-            x.compact(this::getIfPresent);
-        }
+//        @Override
+//        protected void onIntern(InternedCompound x) {
+//            x.compact(this::getIfPresent);
+//        }
 
 //        @Override
 //        public void onRemove(Computation<InternedCompound, Term> x) {
@@ -2460,21 +2471,21 @@ public enum Op {
             this.hash = h;
         }
 
-        /**
-         * if accepted into the interner, it can call this with a resolver function to fully intern this
-         * by resolving the subterm values which are now present in the index
-         */
-        public void compact(Function<InternedCompound, Term> intern) {
-//            for (int i = 0, subsLength = subs.length; i < subsLength; i++) {
-//                Term x = subs[i];
-//                if (x instanceof Compound) {
-//                    Term y = intern.apply(key(x));
-//                    if (y != null && y != x) {
-//                        subs[i] = y;
-//                    }
-//                }
-//            }
-        }
+//        /**
+//         * if accepted into the interner, it can call this with a resolver function to fully intern this
+//         * by resolving the subterm values which are now present in the index
+//         */
+//        public void compact(Function<InternedCompound, Term> intern) {
+////            for (int i = 0, subsLength = subs.length; i < subsLength; i++) {
+////                Term x = subs[i];
+////                if (x instanceof Compound) {
+////                    Term y = intern.apply(key(x));
+////                    if (y != null && y != x) {
+////                        subs[i] = y;
+////                    }
+////                }
+////            }
+//        }
 
         private InternedCompound key(Term x) {
             return new InternedCompound(x.op(), x.subterms().arrayShared());

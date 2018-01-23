@@ -291,12 +291,14 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 
     @Override
     public void mouseEntered(MouseEvent e) {
+        focused = true;
         updateMouse(e);
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
         updateMouse(null);
+        focused = false;
     }
 
     @Override

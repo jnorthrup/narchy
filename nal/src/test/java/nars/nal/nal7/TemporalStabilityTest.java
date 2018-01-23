@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import static nars.time.Tense.ETERNAL;
 
 
-abstract public class TemporalStabilityTest {
+abstract class TemporalStabilityTest {
 
     boolean unstable;
 

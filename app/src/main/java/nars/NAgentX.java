@@ -12,6 +12,7 @@ import nars.gui.Vis;
 import nars.gui.graph.EdgeDirected;
 import nars.gui.graph.run.SimpleConceptGraph1;
 import nars.index.term.map.CaffeineIndex;
+import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
 import nars.time.RealTime;
@@ -142,7 +143,7 @@ abstract public class NAgentX extends NAgent {
 //        );
 
 
-        int THREADS = Math.max(1, Runtime.getRuntime().availableProcessors() - 1);
+        //int THREADS = Math.max(1, Runtime.getRuntime().availableProcessors() - 1);
 
         //Predicate<Activate> randomBool = (a) -> ThreadLocalRandom.current().nextBoolean();
 
@@ -167,7 +168,7 @@ abstract public class NAgentX extends NAgent {
 //                        (512, THREADS, 64, false))
                 .exe(new PoolMultiExec(
                         new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
-                        1024, 128)
+                        512, 128)
                 )
 
                 .time(clock)
@@ -205,7 +206,7 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(36);
+        n.termVolumeMax.set(32);
 
         n.beliefConfidence(0.9f);
         n.goalConfidence(0.9f);
@@ -271,7 +272,7 @@ abstract public class NAgentX extends NAgent {
 
 
         ///needs tryContent before its safe
-        //Inperience inp = new Inperience(n, 6);
+        Inperience inp = new Inperience(n, 6);
 //
 
 //        Abbreviation abb = new Abbreviation(n, "z", 3, 6, 10f, 32);

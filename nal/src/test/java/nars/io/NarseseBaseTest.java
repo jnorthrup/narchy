@@ -300,8 +300,8 @@ public class NarseseBaseTest extends NarseseTest {
     @Test
     public void testWeirdParse() throws Narsese.NarseseException {
         assertThrows(Narsese.NarseseException.class,()-> $.$("( &&-59 ,a, b, c)").toString());
-        assertEquals("(&&,a,b,c,-59)", $.$("(&&,a,b,c,-59)"));
-        assertEquals("(&&,a,b,c,-59)", $.$("(&&,-59,a,b,c)"));
+        assertEquals("(&&,a,b,c,-59)", $.$("(&&,a,b,c,-59)").toString());
+        assertEquals("(&&,a,b,c,-59)", $.$("(&&,-59,a,b,c)").toString());
     }
 
     @Test

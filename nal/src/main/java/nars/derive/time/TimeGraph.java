@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
+import jcog.TODO;
 import jcog.Util;
 import jcog.data.graph.hgraph.Edge;
 import jcog.data.graph.hgraph.Node;
@@ -16,7 +17,9 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
+import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
@@ -403,9 +406,9 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             Term b = xx.sub(1);
 
 
-            {
-                UnifiedSet<Event> ae = new UnifiedSet();
-                UnifiedSet<Event> be = new UnifiedSet();
+            if (!a.hasXternal() && !b.hasXternal()) {
+                UnifiedSet<Event> ae = new UnifiedSet(2);
+                UnifiedSet<Event> be = new UnifiedSet(2);
                 solveOccurrence(event(a, TIMELESS), ax -> {
                     if (ax instanceof Absolute) ae.add(ax);
                     return true;
@@ -425,7 +428,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             }
 
 
-            UnifiedSet<Event>[] abs = new UnifiedSet[2]; //exact occurrences of each subterm
+//            UnifiedSet<Event>[] abs = new UnifiedSet[2]; //exact occurrences of each subterm
 
             boolean aEqB = b.equals(a);
 
@@ -434,11 +437,11 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             int[] phase = new int[]{0};
             Consumer<Event> collect = z -> {
                 int p = phase[0];
-                if (z instanceof Absolute) {
-                    if (abs[p] == null) abs[p] = new UnifiedSet(2);
-                    abs[p].add(z);
-                    //}
-                }
+//                if (z instanceof Absolute) {
+//                    if (abs[p] == null) abs[p] = new UnifiedSet(2);
+//                    abs[p].add(z);
+//                    //}
+//                }
                     rels.add(z);
             };
 
@@ -447,7 +450,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 //                byTerm.get(a.neg()).forEach(collect); //if nothing, look for negations
 
             if (aEqB) {
-                abs[1] = abs[0];
+//                abs[1] = abs[0];
             } else {
                 phase[0] = 1;
                 byTerm.get(b).forEach(collect);
@@ -455,25 +458,25 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 //                    byTerm.get(b.neg()).forEach(collect);  //if nothing, look for negations
             }
 
-            if (abs[0] != null && abs[1] != null) {
+//            if (abs[0] != null && abs[1] != null) {
                 //known exact occurrences for both subterms
                 //iterate all possibilities
                 //TODO order in some way
                 //TODO other simple cases: 1 -> N
-                if (abs[0].size() == 1 && abs[1].size() == 1) {
-                    //simple case:
-                    Event aa = abs[0].iterator().next();
-                    Event bb = abs[1].iterator().next();
-                    if (!solveDT(x, each, aa, bb))
-                        return false;
-                } else {
-                    if (!abs[0].allSatisfy(ae ->
-                            abs[1].allSatisfyWith((be, aaee) ->
-                                    solveDT(x, each, aaee, be), ae)))
-                        return false;
-                }
+//                if (abs[0].size() == 1 && abs[1].size() == 1) {
+//                    //simple case:
+//                    Event aa = abs[0].iterator().next();
+//                    Event bb = abs[1].iterator().next();
+//                    if (!solveDT(x, each, aa, bb))
+//                        return false;
+//                } else {
+//                    if (!abs[0].allSatisfy(ae ->
+//                            abs[1].allSatisfyWith((be, aaee) ->
+//                                    solveDT(x, each, aaee, be), ae)))
+//                        return false;
+//                }
 
-            }
+//            }
 
 
             int ns = rels.size();
@@ -657,9 +660,10 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
             Term xEarly = x.sub(early);
             Term xLate = x.sub(1 - early);
+
             return Op.conjMerge(
                     xEarly, 0,
-                    xLate, dt + xEarly.dtRange());
+                    xLate, dt);
         } else {
             //?
         }
@@ -869,8 +873,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                     Iterators.filter(x, preFilter::test),
                     TimeGraph.this::node),
                     e -> e != n && !log.hasVisited(e)),
-                    that ->
-                            new Edge<>(n, that, TS_ZERO) //co-occurring
+                    that -> new Edge<>(n, that, TS_ZERO) //co-occurring
             ) : null;
         }
 
@@ -1053,7 +1056,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     /**
      * absolutely specified event
      */
-    public abstract static class Event {
+    public abstract static class Event implements LongObjectPair<Term> {
 
         public final Term id;
         private final int hash;
@@ -1095,7 +1098,20 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             }
         }
 
+        @Override
+        public long getOne() {
+            return when();
+        }
 
+        @Override
+        public Term getTwo() {
+            return id;
+        }
+
+        @Override
+        public int compareTo(@NotNull LongObjectPair<Term> o) {
+            throw new TODO();
+        }
     }
 
     static class Absolute extends Event {
@@ -1103,7 +1119,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
         static final long SAFETY_PAD = 32 * 1024;
 
-        private Absolute(Term t, long when) {
+        protected Absolute(Term t, long when) {
             super(t, when);
 
             //validation

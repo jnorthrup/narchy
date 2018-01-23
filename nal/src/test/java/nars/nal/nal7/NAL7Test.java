@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 0.6f;
-    public int cycles = 450;
+    public int cycles = 350;
 
     @BeforeEach
     public void setTolerance() {

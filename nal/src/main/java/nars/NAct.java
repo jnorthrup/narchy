@@ -511,7 +511,7 @@ public interface NAct {
                     float curiEvi =
                             //c2w(n.confDefault(BELIEF));
                             //eviMin*2;
-                            Math.max(c2wSafe(w2cSafe(eviMin)*2), Math.min(e[0], e[1])); //match desire conf, min=2*minConf
+                            Math.max(c2wSafe(w2cSafe(eviMin)*2), Util.mean(e[0], e[1])); //match desire conf, min=2*minConf
 
                     e[0] = e[1] = curiEvi;
                     curious = true;

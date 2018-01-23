@@ -1,9 +1,11 @@
-package nars.term;
+package nars.subterm;
 
 import nars.$;
 import nars.Narsese;
 import nars.The;
-import nars.subterm.Subterms;
+import nars.term.Compound;
+import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Atomic;
 import org.junit.jupiter.api.Test;
 

@@ -6,6 +6,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Task;
 import nars.control.DurService;
+import nars.control.MetaGoal;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
 import nars.time.Tense;
@@ -87,7 +88,7 @@ public class ThermostatTest {
     @Disabled
     public void test1() {
         //Param.DEBUG = true;
-        final int DUR = 2;
+        final int DUR = 4;
 
         final int subTrainings = 1;
         final int thinkDurs = 2;
@@ -95,13 +96,17 @@ public class ThermostatTest {
         NAR n = NARS.tmp();
 
         n.time.dur(DUR);
-        n.termVolumeMax.set(20);
-        n.freqResolution.set(0.1f);
-        n.confResolution.set(0.05f);
+        n.termVolumeMax.set(22);
+        n.freqResolution.set(0.05f);
+        n.confResolution.set(0.04f);
 
-        float exeThresh = 0.55f;
+        n.want(MetaGoal.Desire, 1f);
+        n.want(MetaGoal.Believe, 0.1f);
+        n.want(MetaGoal.Perceive, -0.05f);
 
-        new ConjClustering(n, BELIEF, (t) -> true, 2, 7);
+        float exeThresh = 0.51f;
+
+        new ConjClustering(n, BELIEF, (t) -> true, 3, 16);
 
         //n.priDefault(BELIEF, 0.3f);
 
