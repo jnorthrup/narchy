@@ -254,6 +254,7 @@ public class Derivation extends ProtoDerivation {
                 nar.get(Atomic.the("ifConjCommNoDepVars")),
                 nar.get(Atomic.the("indicesOf")),
                 nar.get(Atomic.the("substDiff")),
+                nar.get(Atomic.the("ifNeqRoot")),
         };
     }
 

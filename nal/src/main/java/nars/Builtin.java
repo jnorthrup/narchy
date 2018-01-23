@@ -170,6 +170,13 @@ public class Builtin {
                 return False;
             }),
 
+            Functor.f2("ifNeqRoot", (returned, compareTo) -> {
+                if (!returned.equalsRoot(compareTo))
+                    return returned; //unconditionally true
+                else
+                    return Null;
+            }),
+
             //TODO for binding equal values
 //            Functor.f2("equality", (x, y) ->
 //                    x.equals(y) ? True : ((x instanceof Variable) || (y instanceof Variable) ? null :

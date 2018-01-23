@@ -20,7 +20,6 @@
  */
 package nars.term;
 
-import jcog.Util;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
 import nars.IO;
@@ -472,23 +471,23 @@ public interface Compound extends Term, IPair, Subterms {
         return nextDT != DTERNAL ? Op.dt(this, nextDT) : this;
     }
 
-    /**
-     * similar to a indexOf() call, this will search for a int[]
-     * path to the first subterm occurrence of the supplied term,
-     * or null if none was found
-     */
-    @Nullable
-    default byte[] isSubterm(/*@NotNull*/ Term t) {
-        if (!impossibleSubTerm(t)) {
-            ByteArrayList l = new ByteArrayList();
-
-            if (pathFirst(this, t, l)) {
-
-                return Util.reverse(l);
-            }
-        }
-        return null;
-    }
+//    /**
+//     * similar to a indexOf() call, this will search for a int[]
+//     * path to the first subterm occurrence of the supplied term,
+//     * or null if none was found
+//     */
+//    @Nullable
+//    default byte[] isSubterm(/*@NotNull*/ Term t) {
+//        if (!impossibleSubTerm(t)) {
+//            ByteArrayList l = new ByteArrayList();
+//
+//            if (pathFirst(this, t, l)) {
+//
+//                return Util.reverse(l);
+//            }
+//        }
+//        return null;
+//    }
 
 
     /**

@@ -48,8 +48,10 @@ public class TopNUnique<X> extends TopN<X> {
 
     @Override
     public void clear() {
-        map.clear();
-        super.clear();
+        if (size > 0) {
+            map.clear();
+            super.clear();
+        }
     }
 
     @Override

@@ -691,7 +691,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         };
     }
 
+    /** simple version, ignores term content */
     FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end, int dur) {
+        return taskStrength(start, end, dur);
+    }
+
+    /** dtDiff needs work */
+    FloatFunction<Task> taskStrengthComparingTemplates(@Nullable Term template, long start, long end, int dur) {
         if (template == null || !template.isTemporal() || template.equals(template.root())) { //TODO this result can be cached for the entire table once knowing what term it stores
             return taskStrength(start, end, dur);
         } else {

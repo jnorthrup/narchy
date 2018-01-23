@@ -45,7 +45,7 @@ public abstract class Param {
     /**
      * min ratio of effective priority to input priority necessary for certain novel-only actions
      */
-    public static final float ACTIVATION_THRESHOLD = 0.1f;
+    public static final float ACTIVATION_THRESHOLD = 0.01f;
 
     public static final boolean ETERNALIZE_EVICTED_TEMPORAL_TASKS = true;
 
@@ -150,7 +150,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmean = new MutableInteger(64);
+    public final MutableInteger matchTTLmean = new MutableInteger(48);
 
     /**
      * how much percent of a premise's allocated TTL can be used in the belief matching phase.

@@ -14,13 +14,14 @@ public class NAgentTest {
     static NAR nar() {
 
         NAR n = NARS.tmp();
-        n.termVolumeMax.set(24);
-        n.freqResolution.set(0.1f);
+        n.termVolumeMax.set(22);
+        n.freqResolution.set(0.05f);
         n.confResolution.set(0.02f);
         n.time.dur(1);
-//        n.emotion.deriveFailEval.why.on((e)->{
-//           System.out.println(e);
-//        });
+
+//        n.emotion.deriveFailTemporal.why.on(new Meter.ReasonCollector());
+        //n.emotion.deriveFailEval.why.on(new Meter.ReasonCollector());
+
         //n.want(MetaGoal.Perceive, -0.1f);
 
         //n.logWhen(System.out, false, true, true);
@@ -53,10 +54,10 @@ public class NAgentTest {
                 $.$safe("(t,y)"),
                 posOrNeg, toggleOrPush);
 
-        a.runSynch(1500);
+        a.runSynch(2000);
 
         assertTrue(a.avgReward() > 0.25f);
-        assertTrue(a.dex.getMean() > 0.1f);
+        assertTrue(a.dex.getMean() > 0.02f);
     }
 
 

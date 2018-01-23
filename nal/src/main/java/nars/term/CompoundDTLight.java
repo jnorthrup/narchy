@@ -5,9 +5,7 @@ import nars.Op;
 import nars.Param;
 import nars.derive.PatternCompound;
 import nars.subterm.Subterms;
-import nars.term.transform.TermTransform;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
@@ -33,6 +31,8 @@ public class CompoundDTLight implements CompoundDT {
     public CompoundDTLight(Compound base, int dt) {
 
         Op op = base.op();
+
+        assert(!(base instanceof CompoundDT) && ((op.temporal && dt!=DTERNAL) || this instanceof PatternCompound));
 
         Subterms s = base.subterms();
 
@@ -113,7 +113,7 @@ public class CompoundDTLight implements CompoundDT {
 
     @Override
     public boolean contains(Term t) {
-        return ref.subterms().contains(t);
+        return ref.contains(t);
     }
 
     @Override
@@ -139,7 +139,7 @@ public class CompoundDTLight implements CompoundDT {
 
     @Override
     public final Term dt(int nextDT) {
-        return nextDT != dt ? Op.dt(ref, nextDT) : this;
+        return (nextDT == dt) ? this : Op.dt(this, nextDT);
     }
 
     @Override
@@ -176,10 +176,6 @@ public class CompoundDTLight implements CompoundDT {
 //        return Compound.super.root();
 //        //return ref.root();
 //    }
-
-    public @Nullable Term transform(TermTransform t, Compound parent) {
-        return transform(t);
-    }
 
 
     @Override

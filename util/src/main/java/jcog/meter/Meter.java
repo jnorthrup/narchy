@@ -6,9 +6,11 @@ import com.netflix.servo.publish.BasicMetricFilter;
 import com.netflix.servo.publish.MonitorRegistryMetricPoller;
 import com.netflix.servo.publish.PollRunnable;
 import com.netflix.servo.util.Clock;
+import org.eclipse.collections.impl.bag.mutable.HashBag;
 
 import java.io.PrintStream;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 /**
@@ -50,4 +52,22 @@ public interface Meter { ;
     Clock clock();
     String name();
 
+    class ReasonCollector implements Consumer {
+        HashBag<Object> reasons = new HashBag();
+
+        {
+         Runtime.getRuntime().addShutdownHook(new Thread(()->{
+             synchronized (Thread.class) {
+                 reasons.topOccurrences(8).forEach((x) -> {
+                     System.out.println(x.getTwo() + "\t" + x.getOne());
+                 });
+             }
+         }));
+        }
+
+        @Override
+        public void accept(Object e) {
+            reasons.add(e);
+        }
+    }
 }

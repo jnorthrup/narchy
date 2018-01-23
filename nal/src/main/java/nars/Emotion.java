@@ -8,6 +8,7 @@ import com.netflix.servo.publish.BasicMetricFilter;
 import com.netflix.servo.publish.MonitorRegistryMetricPoller;
 import com.netflix.servo.publish.PollRunnable;
 import com.netflix.servo.util.Clock;
+import jcog.meter.ExplainedCounter;
 import jcog.meter.FastCounter;
 import jcog.meter.Meter;
 import jcog.meter.MetricsMapper;
@@ -48,8 +49,8 @@ public class Emotion implements Meter {
 
     public final Counter deriveTask = new FastCounter(("derive task"));
     public final Counter deriveEval = new FastCounter(("derive eval"));
-    public final Counter deriveFailTemporal = new FastCounter(("derive fail temporal"));
-    public final FastCounter.ExplainedCounter deriveFailEval = new FastCounter.ExplainedCounter(("derive fail eval"));
+    public final ExplainedCounter deriveFailTemporal = new ExplainedCounter(("derive fail temporal"));
+    public final ExplainedCounter deriveFailEval = new ExplainedCounter(("derive fail eval"));
     public final Counter deriveFailVolLimit = new FastCounter(("derive fail vol limit"));
     public final Counter deriveFailTaskify = new FastCounter(("derive fail taskify"));
     public final Counter deriveFailParentDuplicate = new FastCounter(("derive fail parent duplicate"));  //parent copy

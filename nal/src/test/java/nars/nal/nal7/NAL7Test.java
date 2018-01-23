@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 0.6f;
-    public int cycles = 150;
+    public int cycles = 450;
 
     @BeforeEach
     public void setTolerance() {
@@ -64,13 +64,14 @@ public class NAL7Test extends NALTest {
     public void induction_on_events_neg2() {
 
         test
+                .log()
                 .input("x:before. :|:")
-                .inputAt(10, "(--,x:after). :|:")
-                .mustBelieve(cycles, "(x:before ==>+10 x:after)", 0.00f, 0.45f /*abductionConf*/, 0)
-                .mustBelieve(cycles, "((--,x:after) ==>-10 x:before)", 1.00f, 0.45f /*inductionConf*/, 10)
-                .mustBelieve(cycles, "(x:before &&+10 (--,x:after))", 1.00f, 0.81f /*intersectionConf*/, 0)
-                .mustNotOutput(cycles, "(x:before &&-10 (--,x:after))", BELIEF,
-                        (t -> t == 0 || t == 10));
+                .inputAt(1, "(--,x:after). :|:")
+                .mustBelieve(cycles, "(x:before ==>+1 x:after)", 0.00f, 0.45f /*abductionConf*/, 0)
+                .mustBelieve(cycles, "((--,x:after) ==>-1 x:before)", 1.00f, 0.45f /*inductionConf*/, 10)
+                .mustBelieve(cycles, "(x:before &&+1 (--,x:after))", 1.00f, 0.81f /*intersectionConf*/, 0)
+                .mustNotOutput(cycles, "(x:before &&-1 (--,x:after))", BELIEF,
+                        (t -> t == 0 || t == 1));
 //                .mustBelieve(cycles, "(x:after <=>-10 x:before)", 0.00f, 0.45f /*comparisonConf*/, 0, 10)
     }
 

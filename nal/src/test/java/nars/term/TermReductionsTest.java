@@ -996,6 +996,18 @@ public class TermReductionsTest extends NarseseTest {
                 $("(--a ==>+1 a)").dt(XTERNAL).toString());
     }
 
+    @Test public void testImplXternalPredicateImpl() {
+        assertReduction("((x &&+- y) ==>+1 z)",
+                "(x ==>+- (y ==>+1 z))");
+        assertReduction("(((x &&+1 y) &&+- z) ==>+1 w)",
+                "((x &&+1 y) ==>+- (z ==>+1 w))");
+    }
+//
+//    @Test public void testImplXternalPredicateConj() {
+//        assertReduction("((x &&+- y) ==>+1 z)",
+//                "(x ==>+- (y &&+1 z))");
+//    }
+
     @Test
     public void testImplCommonSubterms2() {
         assertReduction(True, "((tetris(isRowClear,7,true)&&tetris(7,14))==>tetris(7,14))");

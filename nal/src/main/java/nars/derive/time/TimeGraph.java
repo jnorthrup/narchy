@@ -15,7 +15,6 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import org.apache.commons.math3.exception.MathArithmeticException;
-import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
@@ -59,9 +58,9 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         public final static TimeSpan TS_ETERNAL = new TimeSpan(ETERNAL);
 
         public static TimeSpan the(long dt) {
-            assert(dt!=TIMELESS);
-            assert(dt!=XTERNAL):"probably meant to use TIMELESS";
-            assert(dt!=DTERNAL):"probably meant to use ETERNAL";
+            assert (dt != TIMELESS);
+            assert (dt != XTERNAL) : "probably meant to use TIMELESS";
+            assert (dt != DTERNAL) : "probably meant to use ETERNAL";
 
             if (dt == 0) {
                 return TS_ZERO;
@@ -193,8 +192,8 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 //        if (dt == ETERNAL || dt == TIMELESS || dt == 0) {
         //lexical order
 
-        if (dt == 0 && x.id.unneg().equals(y.id/*.unneg()*/))
-            return; //throw new RuntimeException("instantaneous self loop");
+//        if (dt == 0 && x.id.unneg().equals(y.id/*.unneg()*/))
+//            return; //throw new RuntimeException("instantaneous self loop");
 
         int vc = Integer.compare(x.id.volume(), y.id.volume());
         if (vc == 0) {
@@ -223,7 +222,12 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         Event event = x.id;
         Term eventTerm = event.id;
 
-        byTerm.put(eventTerm, event);
+        if (byTerm.put(eventTerm, event)) {
+            if (autoUnneg) {
+                link(know(eventTerm), 0, know(eventTerm.neg()));
+            }
+        }
+
 //        Term tRoot = eventTerm.root();
 //        if (!tRoot.equals(eventTerm))
 //            byTerm.put(tRoot, event);
@@ -233,6 +237,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             eventDT = 0;
         else
             eventDT = edt;
+
 
         switch (eventTerm.op()) {
 //            case INH:
@@ -247,10 +252,10 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 //                }
 //                break;
 
-            case NEG:
-                if (autoUnneg)
-                    link(know(eventTerm.unneg()), 0, event); //lower priority?
-                break;
+//            case NEG:
+//                if (autoUnneg)
+//                    link(know(eventTerm.unneg()), 0, event); //lower priority?
+//                break;
             case IMPL:
 
                 Term subj = eventTerm.sub(0);
@@ -266,9 +271,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                     int st = subj.dtRange();
 
 
-
                     link(se, (eventDT + st), pe);
-
 
 
 //                    //if (subj.hasAny(CONJ)) {
@@ -348,7 +351,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                         for (Term s : eventTerm.subterms()) {
                             link(event, (eventDT == 0 || timed) ? 0 : ETERNAL,
                                     eventDT == 0 ?
-                                        knowComponent(et, 0, s) : //0
+                                            knowComponent(et, 0, s) : //0
                                             (timed ? know(s, et) :  //DTERNAL and TIMED
                                                     know(s)) //DTERNAL and TIMELESS
                             );
@@ -394,54 +397,78 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 //        }
 
 
-        int subs = x.subs();
+        int subs = xx.subs();
         if (subs == 2) {
             Term a = xx.sub(0);
             Term b = xx.sub(1);
-            MutableSet<Event>[] exact = new MutableSet[2]; //exact occurrences of each subterm
+
+
+            {
+                UnifiedSet<Event> ae = new UnifiedSet();
+                UnifiedSet<Event> be = new UnifiedSet();
+                solveOccurrence(event(a, TIMELESS), ax -> {
+                    if (ax instanceof Absolute) ae.add(ax);
+                    return true;
+                });
+                if (!ae.isEmpty()) {
+                    solveOccurrence(event(b, TIMELESS), bx -> {
+                        if (bx instanceof Absolute) be.add(bx);
+                        return true;
+                    });
+                    if (!be.isEmpty()) {
+                        if (!ae.allSatisfy(ax ->
+                                be.allSatisfyWith((bx, axx) ->
+                                        solveDT(x, each, axx, bx), ax)))
+                            return false;
+                    }
+                }
+            }
+
+
+            UnifiedSet<Event>[] abs = new UnifiedSet[2]; //exact occurrences of each subterm
 
             boolean aEqB = b.equals(a);
 
 
-            List<Event> sources = new FasterList<>();
-            int[] phase =  new int[]{ 0 };
+            FasterList<Event> rels = new FasterList<>(4);
+            int[] phase = new int[]{0};
             Consumer<Event> collect = z -> {
+                int p = phase[0];
                 if (z instanceof Absolute) {
-                    int p = phase[0];
-                    if (exact[p] == null) exact[p] = new UnifiedSet(2);
-                    exact[p].add(z);
+                    if (abs[p] == null) abs[p] = new UnifiedSet(2);
+                    abs[p].add(z);
+                    //}
                 }
-
-                sources.add(z);
+                    rels.add(z);
             };
 
             byTerm.get(a).forEach(collect);
-            if (exact[0] == null)
-                byTerm.get(a.neg()).forEach(collect); //if nothing, look for negations
+//            if (abs[0] == null)
+//                byTerm.get(a.neg()).forEach(collect); //if nothing, look for negations
 
             if (aEqB) {
-                exact[1] = exact[0];
+                abs[1] = abs[0];
             } else {
                 phase[0] = 1;
                 byTerm.get(b).forEach(collect);
-                if (exact[1] == null)
-                    byTerm.get(b.neg()).forEach(collect);  //if nothing, look for negations
+//                if (abs[1] == null)
+//                    byTerm.get(b.neg()).forEach(collect);  //if nothing, look for negations
             }
 
-            if (exact[0] != null && exact[1] != null) {
+            if (abs[0] != null && abs[1] != null) {
                 //known exact occurrences for both subterms
                 //iterate all possibilities
                 //TODO order in some way
                 //TODO other simple cases: 1 -> N
-                if (exact[0].size() == 1 && exact[1].size() == 1) {
+                if (abs[0].size() == 1 && abs[1].size() == 1) {
                     //simple case:
-                    Event aa = exact[0].iterator().next();
-                    Event bb = exact[1].iterator().next();
+                    Event aa = abs[0].iterator().next();
+                    Event bb = abs[1].iterator().next();
                     if (!solveDT(x, each, aa, bb))
                         return false;
                 } else {
-                    if (!exact[0].allSatisfy(ae ->
-                            exact[1].allSatisfyWith((be, aaee) ->
+                    if (!abs[0].allSatisfy(ae ->
+                            abs[1].allSatisfyWith((be, aaee) ->
                                     solveDT(x, each, aaee, be), ae)))
                         return false;
                 }
@@ -449,16 +476,18 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             }
 
 
-            int ns = sources.size();
+            int ns = rels.size();
             if (ns > 0) {
-                //TODO sort to process smallest terms first
+
                 if (ns > 1) {
-                    sources.sort(Comparator.comparingInt(z -> z.id.volume()));
+                    //sort by volume
+                    rels.sortThisByInt(s -> s.id.volume());
+
                 }
 
                 //            boolean repeat = a.unneg().equals(b.unneg()); //if true, then we must be careful when trying this in a commutive-like result which would collapse the two terms
 
-                return dfs(sources, new CrossTimeSolver() {
+                return dfs(rels, new CrossTimeSolver() {
                     @Override
                     protected boolean next(BooleanObjectPair<Edge<Event, TimeSpan>> move, Node<Event, TimeSpan> next) {
 
@@ -557,9 +586,8 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 //                start = astart;
 //            }
 //        } else {
-        long start = aa.when();
 //        }
-        return solveDT(x, start, dt(x, aa, bb), each);
+        return solveDT(x, TIMELESS, dt(x, aa, bb), each);
     }
 
     /**
@@ -580,13 +608,13 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     }
 
     private boolean solveDT(Term x, long start, long ddt, Predicate<Event> each) {
-        assert(ddt != TIMELESS && ddt != XTERNAL);
+        assert (ddt != TIMELESS && ddt != XTERNAL);
         int dt;
         if (ddt == ETERNAL) {
             dt = DTERNAL;
         } else {
             assert (ddt < Integer.MAX_VALUE) : ddt + " dt calculated";
-            dt = (int)ddt;
+            dt = (int) ddt;
         }
         Term y = dt(x, dt);
 
@@ -617,14 +645,16 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         }
 
         //CONSTRUCT NEW TERM
-        Term y;
         Op xo = x.op();
         if (xo == IMPL) {
             return x.dt(dt != XTERNAL ? dt - x.sub(0).dtRange() : dt);
         } else if (xo == CONJ) {
-            int early = Op.conjEarlyLate(x, true);
+            int early;
+
+            early = Op.conjEarlyLate(x, true);
             if (early == 1)
                 dt = -dt;
+
             Term xEarly = x.sub(early);
             Term xLate = x.sub(1 - early);
             return Op.conjMerge(
@@ -906,6 +936,9 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                 Event startEvent = pathStart(path);
                 Event endEvent = pathEnd(path);
 
+//                if (!(startEvent instanceof Absolute && endEvent instanceof Absolute))
+//                    return null;
+
                 Term startTerm = startEvent.id;
 
                 boolean fwd = startTerm.equals(a) && endB;
@@ -934,7 +967,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
                     if (dt == ETERNAL) {
                         long w;
-                        if (startTime==TIMELESS) {
+                        if (startTime == TIMELESS) {
                             w = endTime;
                         } else {
                             if (startTime == ETERNAL)
@@ -944,7 +977,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                             }
                         }
 
-                        return new long[] { w, ETERNAL };
+                        return new long[]{w, ETERNAL};
                     } else {
                         if (rev) {
                             dt = -dt; //reverse

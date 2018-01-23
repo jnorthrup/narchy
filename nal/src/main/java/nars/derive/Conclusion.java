@@ -92,7 +92,10 @@ public final class Conclusion extends AbstractPred<Derivation> {
             //invalid or impossible temporalization; could not determine temporal attributes. seems this can happen normally
             //only should eliminate XTERNAL from beliefs and goals.  ok if it's in questions/quests since it's the only way to express indefinite temporal repetition
             if ((c1!=c2 && !valid(c2)) || ((d.concPunc == BELIEF || d.concPunc == GOAL) && c2.hasXternal())) {
-                d.nar.emotion.deriveFailTemporal.increment();
+                Term c1e = c1;
+                d.nar.emotion.deriveFailTemporal.increment(()->{
+                    return rule + "\n\t" + d.toString() + "\n\t" + d.xy.toString() + "\n\t -> " + c1e + "\n\t" + dtt;
+                });
                 return false;
             }
 

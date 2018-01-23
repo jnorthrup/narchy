@@ -1,9 +1,10 @@
     //strong unification
-    (Y ==> X), Z, task(positive), task(".")     |- subIfUnifiesAny(X,Y,Z,"$"), (Belief:DeductionRecursive)
-    (Y ==> X), Z, task(negative), task(".")     |- subIfUnifiesAny(--X,Y,Z,"$"), (Belief:DeductionRecursiveN)
-    (--Y ==> X), Z, task(positive), task(".")   |- subIfUnifiesAny(X,Y,Z,"$"), (Belief:DeductionRecursivePN)
-    (--Y ==> X), Z, task(negative), task(".")   |- subIfUnifiesAny(--X,Y,Z,"$"), (Belief:DeductionRecursiveNN)
-    (X ==> Y), Z, task(".")     |- subIfUnifiesAny(X,Y,Z,"$"), (Belief:AbductionRecursivePB)
+    //      should these be restricted to "$" var subst
+    (Y ==> X), Z, task(positive), task(".")     |- subIfUnifiesAny(X,Y,Z), (Belief:DeductionRecursive)
+    (Y ==> X), Z, task(negative), task(".")     |- subIfUnifiesAny(--X,Y,Z), (Belief:DeductionRecursiveN)
+    (--Y ==> X), Z, task(positive), task(".")   |- subIfUnifiesAny(X,Y,Z), (Belief:DeductionRecursivePN)
+    (--Y ==> X), Z, task(negative), task(".")   |- subIfUnifiesAny(--X,Y,Z), (Belief:DeductionRecursiveNN)
+    (X ==> Y), Z, task(".")     |- subIfUnifiesAny(X,Y,Z), (Belief:AbductionRecursivePB)
 
 // Conditional syllogism && Independent Variable Elimination
 //      If after M, P usually happens, and M happens, it means P is expected to happen
@@ -288,13 +289,13 @@
 
 
     //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
-    X, C, belief("&&"), task(positive), in(X,C) |- conjDropIfLatest(C,X), (Goal:Strong)
+    X, C, belief("&&"), task(positive), in(X,C) |- ifNeqRoot(conjDropIfLatest(C,X),--X), (Goal:Weak)
     //X is the desired non-outcome.  C is a sequence ending in it.   this forms a goal of the sequence minus the trailing
-    X, C, belief("&&"), task(negative), inNeg(X,C) |- conjDropIfLatest(C,--X), (Goal:Strong)
+    X, C, belief("&&"), task(negative), inNeg(X,C) |- ifNeqRoot(conjDropIfLatest(C,--X), X), (Goal:Weak)
     //X is the undesired outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
-    X, C, belief("&&"), task(negative), in(X,C) |- (--,conjDropIfLatest(C,X)), (Goal:Strong)
+    X, C, belief("&&"), task(negative), in(X,C) |- ifNeqRoot((--,conjDropIfLatest(C,X)), X), (Goal:Weak)
     //X is the desired non-outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
-    X, C, belief("&&"), task(positive), inNeg(X,C) |- (--,conjDropIfLatest(C,--X)), (Goal:Strong)
+    X, C, belief("&&"), task(positive), inNeg(X,C) |- ifNeqRoot((--,conjDropIfLatest(C,--X)), --X), (Goal:Weak)
 
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),conjEvent(C,late),B), (Goal:Strong)
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),--conjEvent(C,late),B), (Goal:StrongN)

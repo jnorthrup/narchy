@@ -681,6 +681,32 @@ public class TemporalTermTest {
 //        assertEquals(DTERNAL, x.subTimeSafe($("a"))); //a is not an event within x
 //    }
 
+    @Test public void testTransformedImplDoesntActuallyOverlap() throws Narsese.NarseseException {
+        assertEquals("(((#1 &&+7 (_1,_2)) &&+143 (_1,_2)) ==>+7 (_1,_2))",
+                $("(((#1 &&+7 (_1,_2)) &&+143 (_1,_2)) ==>+- (_1,_2))").dt(7).toString());
+    }
+
+    @Test public void testConjEarlyLate() throws Narsese.NarseseException {
+        {
+            Term yThenZ = $("(y &&+1 z)");
+            assertEquals("y", yThenZ.sub(Op.conjEarlyLate(yThenZ, true)).toString());
+            assertEquals("z", yThenZ.sub(Op.conjEarlyLate(yThenZ, false)).toString());
+        }
+        {
+            Term yThenZ = $("(y &&+0 z)");
+            assertEquals("y", yThenZ.sub(Op.conjEarlyLate(yThenZ, true)).toString());
+            assertEquals("z", yThenZ.sub(Op.conjEarlyLate(yThenZ, false)).toString());
+        }
+
+        {
+            Term zThenY = $("(z &&+1 y)");
+            assertEquals("z", zThenY.sub(Op.conjEarlyLate(zThenY, true)).toString());
+            assertEquals("y", zThenY.sub(Op.conjEarlyLate(zThenY, false)).toString());
+        }
+
+    }
+
+
     @Test
     public void subtermTimeWithConjInImpl() throws Narsese.NarseseException {
         Term t = $("(((a &&+5 b) &&+5 c) ==>-5 d)");

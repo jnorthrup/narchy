@@ -140,13 +140,13 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 	
 	@Override
 	public boolean add(X element) {
-		boolean modified = set.add(element);
-		if (modified) {
+		if (set.add(element)) {
 			if (list == EMPTY_LIST)
 				list = new FasterList<>(1);
 			list.add(element);
+			return true;
 		}
-		return modified;
+		return false;
 	}
 
 	@Override

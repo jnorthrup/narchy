@@ -357,7 +357,9 @@ public enum Op {
                     return u.length > 1 ? compound(CONJ, XTERNAL, u) : u[0];
 
                 default: {
-                    assert (n == 2);
+                    if (n!=2) {
+                        return Null;
+                    }
 
                     Term a = u[0];
                     Term b = u[1];
@@ -638,35 +640,39 @@ public enum Op {
      */
     public static Term dt(Compound base, int nextDT) {
 
-        if (nextDT == XTERNAL) {
-            return new CompoundDTLight(base, XTERNAL);
-        } else {
-            Subterms subs = base.subterms();
-            int ns = subs.subs();
-//                if (nextDT == DTERNAL && ns == 2 && !subs.sub(0).unneg().equals(subs.sub(1).unneg()))
-//                    return base; //re-use base only if the terms are inequal
+        if (base.dt() == nextDT) return base;
 
-            /*@NotNull*/
-            if (ns > 2 && !concurrent(nextDT))
-                return Null; //tried to temporalize what can only be commutive
+        return base.op().the(nextDT, base.arrayShared());
 
-
-            Term[] ss = subs.arrayShared();
-
-            Op o = base.op();
-            assert (o.temporal);
-            if (o.commutative) {
-
-                if (ss.length == 2) {
-                    //must re-arrange the order to lexicographic, and invert dt
-                    return o.the(nextDT != DTERNAL ? -nextDT : DTERNAL, ss[1], ss[0]);
-                } else {
-                    return o.the(nextDT, ss);
-                }
-            } else {
-                return o.the(nextDT, ss);
-            }
-        }
+//        if (nextDT == XTERNAL) {
+//            return new CompoundDTLight(base, XTERNAL);
+//        } else {
+//            Subterms subs = base.subterms();
+//            int ns = subs.subs();
+////                if (nextDT == DTERNAL && ns == 2 && !subs.sub(0).unneg().equals(subs.sub(1).unneg()))
+////                    return base; //re-use base only if the terms are inequal
+//
+//            /*@NotNull*/
+//            if (ns > 2 && !concurrent(nextDT))
+//                return Null; //tried to temporalize what can only be commutive
+//
+//
+//            Term[] ss = subs.arrayShared();
+//
+//            Op o = base.op();
+//            assert (o.temporal);
+//            if (o.commutative) {
+//
+//                if (ss.length == 2) {
+//                    //must re-arrange the order to lexicographic, and invert dt
+//                    return o.the(nextDT != DTERNAL ? -nextDT : DTERNAL, ss[1], ss[0]);
+//                } else {
+//                    return o.the(nextDT, ss);
+//                }
+//            } else {
+//                return o.the(nextDT, ss);
+//            }
+//        }
     }
 
     /**
@@ -847,7 +853,9 @@ public enum Op {
     public final boolean commutative;
     public final boolean temporal;
 
-    /** 1 << op.ordinal */
+    /**
+     * 1 << op.ordinal
+     */
     public final int bit;
 
     public final boolean var;
@@ -1586,15 +1594,28 @@ public enum Op {
 
 
             // (C ==>+- (A ==>+- B))   <<==>>  ((C &&+- A) ==>+- B)
-            if (predicate.op() == IMPL && dt!=XTERNAL) {
-                int abDT = predicate.dt();
-                //if (cprDT != XTERNAL) {
-                Term a = predicate.sub(0);
-
-
-                return IMPL.the(abDT, CONJ.the(dt /*caDT */, subject, a), predicate.sub(1));
-                //}
+            switch (predicate.op()) {
+                case IMPL: {
+                    return IMPL.the(predicate.dt(),
+                            CONJ.the(dt /*caDT */, subject, predicate.sub(0)),
+                            predicate.sub(1));
+                }
+//                case CONJ: {
+//                    // (C ==>+- (A &&+ B))   <<==>>  ((C &&+- A) ==>+ B)
+//                    // only if (A &&+ B) is temporal and A is the earlier of the two events
+//                    int pdt = predicate.dt();
+//                    if (pdt != 0 && pdt != XTERNAL && pdt != DTERNAL) {
+//                        int e = conjEarlyLate(predicate, true);
+//                        Term early = predicate.sub(e);
+//                        Term late = predicate.sub(1 - e);
+//                        return IMPL.the(pdt,
+//                                CONJ.the(dt /*caDT */, subject, early),
+//                                late);
+//                    }
+//
+//                }
             }
+
 
             //filter duplicate events and detect contradictions
 
@@ -1704,7 +1725,7 @@ public enum Op {
                     default: {
                         //TODO if pred has >1 events, and dt is temporal, pull all the events except the last into a conj for the subj then impl the final event
 
-                        if (dt!=DTERNAL) {
+                        if (dt != DTERNAL) {
                             long finalEventTime = pe.maxBy(LongObjectPair::getOne).getOne();
                             Term finalEvent = null;
                             int moved = 0;
@@ -2152,8 +2173,22 @@ public enum Op {
 
     public static int conjEarlyLate(Term x, boolean earlyOrLate) {
         assert (x.op() == CONJ);
-        int d = x.sub(0).compareTo(x.sub(1));
-        return (d >= 0 ? (earlyOrLate ? 0 : 1) : (earlyOrLate ? 1 : 0));
+        int dt = x.dt();
+        switch (dt) {
+            case DTERNAL:
+            case XTERNAL:
+            case 0:
+                return earlyOrLate ? 0 : 1;
+
+            default: {
+//                int d = x.sub(0).compareTo(x.sub(1));
+//                if (d > 0)
+//                    throw new RuntimeException();
+//                if (dt < 0) earlyOrLate = !earlyOrLate;
+//                return (d <= 0 ? (earlyOrLate ? 0 : 1) : (earlyOrLate ? 1 : 0));
+                return (dt < 0) ? (earlyOrLate ? 1 : 0) : (earlyOrLate ? 0 : 1);
+            }
+        }
     }
 
     public boolean isAny(int bits) {
@@ -2454,7 +2489,7 @@ public enum Op {
         @Override
         public boolean equals(Object obj) {
             InternedCompound p = (InternedCompound) obj;
-            return hash == p.hash && op==p.op && Arrays.equals(subs, p.subs);
+            return hash == p.hash && op == p.op && Arrays.equals(subs, p.subs);
         }
 
         public float value(float base) {

@@ -64,7 +64,10 @@ public class Try implements Consumer<Derivation> {
                 break;
             default:
 
-                forkRoulette(d, choices, 1f/((float)Math.sqrt(N)));
+                forkRoulette(d, choices,
+                        1f/N
+                        //1f/((float)Math.sqrt(N))
+                );
                 //forkTTLBudget(d, choices);
 
                 break;

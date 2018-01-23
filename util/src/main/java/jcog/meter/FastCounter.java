@@ -51,20 +51,4 @@ public class FastCounter extends AtomicLong implements Monitor<Number>, Counter 
         return config;
     }
 
-    public static class ExplainedCounter<E> extends FastCounter {
-
-        public final Topic<E> why = new ListTopic<>();
-
-        public ExplainedCounter(String name) {
-            super(name);
-        }
-
-
-        public void increment(Supplier<E> explainer) {
-            super.increment();
-            if (!why.isEmpty()) {
-                why.emit(explainer.get());
-            }
-        }
-    }
 }

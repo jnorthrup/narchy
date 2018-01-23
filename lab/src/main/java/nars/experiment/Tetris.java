@@ -15,7 +15,7 @@ import static nars.experiment.tetris.TetrisState.*;
  */
 public class Tetris extends NAgentX implements Bitmap2D {
 
-    public final FloatParam timePerFall = new FloatParam(1f, 1f, 32f);
+    public final FloatParam timePerFall = new FloatParam(2f, 1f, 32f);
 
     public static final int tetris_width = 8;
     public static final int tetris_height = 16;
