@@ -1,6 +1,7 @@
 package nars.derive.time;
 
 import jcog.data.ArrayHashSet;
+import jcog.list.FasterList;
 import nars.Op;
 import nars.Param;
 import nars.Task;
@@ -10,11 +11,17 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.time.Tense;
+import org.eclipse.collections.api.tuple.Pair;
+import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
+import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 import static nars.Op.CONJ;
 import static nars.time.Tense.*;
+import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 
 /**
@@ -46,7 +53,9 @@ public class DeriveTime extends TimeGraph {
         cache.clear();
     }
 
-    /** for dynamic */
+    /**
+     * for dynamic
+     */
     DeriveTime(DeriveTime copy) {
         this.cache = null;
         this.d = copy.d;
@@ -61,7 +70,7 @@ public class DeriveTime extends TimeGraph {
         copy.byTerm.values().forEach(this::add); //add to byTerm AND graph
         copy.byTerm.keySet().forEach(x -> {
             Term y = x.eval(d);
-            if (y!=x && !y.equals(x) && y.op().conceptualizable) {
+            if (y != x && !y.equals(x) && y.op().conceptualizable) {
                 link(know(x), 0, know(y));
             }
         });
@@ -99,7 +108,7 @@ public class DeriveTime extends TimeGraph {
      * if current state of the derivation produced novel terms as a result of substitutions, etc
      */
     public DeriveTime get() {
-        if (ifDynamic(task)!=null || (belief!=null && ifDynamic(belief)!=null)) {
+        if (ifDynamic(task) != null || (belief != null && ifDynamic(belief) != null)) {
             return new DeriveTime(this);
         } else {
             return this;
@@ -263,13 +272,13 @@ public class DeriveTime extends TimeGraph {
     private Iterable<Event> know(Task task, Term term) {
         long start = task.start();
         long end = task.end();
-        if (end != start && end - start >= d.dur) {
+        if (end != start && (end - start) >= d.dur) {
             //add each endpoint separately
             return List.of(
                     event(term, start, true),
                     event(term, end, true));
         } else {
-            return Collections.singleton(event(term, start, true));
+            return Collections.singleton(event(term, start == ETERNAL ? ETERNAL : (start + end) / 2 /* midpoint */, true));
         }
     }
 
@@ -283,23 +292,35 @@ public class DeriveTime extends TimeGraph {
 
         d.concOcc[0] = d.concOcc[1] = ETERNAL; //reset just in case
 
-        long[] occ = d.concOcc;
+//        long[] occ = d.concOcc;
 
         ArrayHashSet<Event> solutions = cache != null ? solveCached(pattern) : solveAll(pattern);
         int ss = solutions.size();
 
-        Event event;
         switch (ss) {
             case 0:
                 return solveRaw(pattern);
             case 1:
-                event = solutions.get(d.random);
-                break;
+                return solveThe(solutions.first());
             default:
-                event = solutions.first();
-                break;
+                //return solveRandomOne(solutions);
+                return solveMerged(solutions);
         }
 
+    }
+
+
+    /**
+     * this one sucks
+     */
+    @Nullable Term solveRandomOne(ArrayHashSet<Event> solutions) {
+        Event event;
+        event = solutions.get(d.random);
+        return solveThe(event);
+    }
+
+    @Nullable
+    Term solveThe(Event event) {
         Term st = event.id;
 
         long es = event.when();
@@ -308,9 +329,57 @@ public class DeriveTime extends TimeGraph {
         } else {
             if (!eternalCheck(es))
                 return null;
-            occ[0] = occ[1] = es;
+            d.concOcc[0] = d.concOcc[1] = es;
             return st;
         }
+    }
+
+
+    @Nullable Term solveMerged(ArrayHashSet<Event> solutions) {
+        UnifiedMap<Term, LongHashSet> when = new UnifiedMap(2);
+        solutions.forEach(s -> {
+            long w = s.when();
+            when.computeIfAbsent(s.id, (x) -> new LongHashSet()).add(w);
+        });
+        //TODO weighted random selection
+        Pair<Term, LongHashSet> t = when.keyValuesView().maxBy((e) -> e.getTwo().size());
+        LongHashSet ww = t.getTwo();
+        int n = ww.size();
+        Term tt = t.getOne();
+
+        //TODO check sequence contiguousity and separate with conjunctions as necessary
+        long min = ww.min();
+        if (min == ETERNAL) {
+            d.concOcc[0] = d.concOcc[1] = ETERNAL;
+            return tt;
+        } else {
+            long max = ww.max();
+            if (max == TIMELESS) {
+                return solveRaw(tt);
+            } else {
+                if (max - min < d.dur) {
+                    d.concOcc[0] = min;
+                    d.concOcc[1] = max;
+                    return tt;
+                } else {
+                    //TODO simple case for n=1
+                    FasterList<LongObjectPair<Term>> ee = new FasterList(n);
+                    //TODO estimate max volume these can be large
+                    ww.forEach(l -> {
+                        ee.add(pair(l, tt));
+                    });
+                    Term r = Op.conjEvents(ee);
+                    if (r != null && r.op().conceptualizable) {
+                        d.concOcc[0] = d.concOcc[1] = min;
+                        return r;
+                    }
+                }
+
+            }
+        }
+
+
+        return null;
 
 
     }
@@ -325,26 +394,37 @@ public class DeriveTime extends TimeGraph {
         ArrayHashSet<Event> solutions = new ArrayHashSet(Param.TEMPORAL_SOLVER_ITERATIONS);
 
         final int[] triesRemain = {Param.TEMPORAL_SOLVER_ITERATIONS};
+        final boolean[] rejectRelative = {false};
 
         solve(pattern, false /* take everything */, (solution) -> {
             assert (solution != null);
-            assert (solution.id.op().conceptualizable);
-
-            //TODO test equivalence with task and belief terms and occurrences, and continue iterating up to a max # of tries if it produced a useless equivalent result
-
-            Event first = solutions.first();
-
-            if (first == null) {
-                solutions.add(solution);
+            if (!solution.id.op().conceptualizable) {
+                //skip
+            } else if (solution instanceof Relative && rejectRelative[0]) {
+                //skip
             } else {
-                Event merged = merge(first, solution);
-                if (merged == null) {
-                    //add alternate
+
+                if (!rejectRelative[0] && solution instanceof Absolute) {
+                    solutions.removeIf(x -> x instanceof Relative); //remove existing relative solutions now that an absolute exists
+                    rejectRelative[0] = true;
+                }
+
+                //TODO test equivalence with task and belief terms and occurrences, and continue iterating up to a max # of tries if it produced a useless equivalent result
+
+                Event first = solutions.first();
+
+                if (first == null) {
                     solutions.add(solution);
-                } else if (merged == solution) {
-                    //replace all, this is the first fully valid one
-                    solutions.clear();
-                    solutions.add(solution);
+                } else {
+                    Event merged = merge(first, solution);
+                    if (merged == null) {
+                        //add alternate
+                        solutions.add(solution);
+                    } else if (merged == solution) {
+                        //replace all, this is the first fully valid one
+                        solutions.clear();
+                        solutions.add(solution);
+                    }
                 }
             }
 

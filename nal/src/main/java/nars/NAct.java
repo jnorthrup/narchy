@@ -27,6 +27,7 @@ import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static nars.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.c2wSafe;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * Created by me on 9/30/16.
@@ -484,9 +485,7 @@ public interface NAct {
                     n.confDefault(GOAL);
                     //confMin * 4;
                     //w2c(c2w(n.confDefault(GOAL))/2f);
-            float curiEvi =
-                    //c2w(n.confDefault(BELIEF));
-                    eviMin*2;
+
 
             boolean p = action.term().equals(pt);
             int ip = p ? 0 : 1;
@@ -509,6 +508,11 @@ public interface NAct {
                 float cur = curiosity().floatValue();
                 if (cur > 0 && rng.nextFloat() <= cur) {
                     x = (rng.nextFloat() - 0.5f) * 2f;
+                    float curiEvi =
+                            //c2w(n.confDefault(BELIEF));
+                            //eviMin*2;
+                            Math.max(c2wSafe(w2cSafe(eviMin)*2), Math.min(e[0], e[1])); //match desire conf, min=2*minConf
+
                     e[0] = e[1] = curiEvi;
                     curious = true;
                 } else {

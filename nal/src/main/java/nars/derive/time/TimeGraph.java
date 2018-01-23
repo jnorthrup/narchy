@@ -1058,7 +1058,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         public final Term id;
         private final int hash;
 
-        protected Event(Term id, long start) {
+        Event(Term id, long start) {
             this.id = id;
             this.hash = Util.hashCombine(id.hashCode(), Long.hashCode(start));
         }

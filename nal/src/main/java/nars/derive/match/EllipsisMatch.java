@@ -86,7 +86,8 @@ public class EllipsisMatch extends CompoundLight {
 
     @Override
     public @Nullable Term temporalize(Retemporalize r) {
-        throw new UnsupportedOperationException();
+        //throw new UnsupportedOperationException();
+        return this; //HACK
     }
 
 

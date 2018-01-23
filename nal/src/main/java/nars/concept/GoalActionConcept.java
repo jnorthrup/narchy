@@ -77,12 +77,15 @@ public class GoalActionConcept extends ActionConcept {
         Truth goal;
         ITask curiosityGoal;
 
+        goal = this.goals().truth(pStart, pEnd, nar);
+
         if (nar.random().nextFloat() < cur) {
 //            // curiosity override
 //
             float curiConf =
                         //nar.confDefault(GOAL);
-                        nar.confMin.floatValue() * 2;
+                        //nar.confMin.floatValue() * 2;
+                        Math.max(goal!=null ? goal.conf() : 0, nar.confMin.floatValue() * 2); //match goal conf
 
                     //nar.confDefault(GOAL) * CURIOSITY_CONF_FACTOR;
 //                    Math.max(goal != null ? goal.conf() : 0,
@@ -119,7 +122,6 @@ public class GoalActionConcept extends ActionConcept {
             //action.set(term(), null, stamper, now, dur, nar);
 
             curiosityGoal = null;
-            goal = this.goals().truth(pStart, pEnd, nar);
 
             //HACK EXPERIMENT combine belief and goal
             //if (belief!=null) {

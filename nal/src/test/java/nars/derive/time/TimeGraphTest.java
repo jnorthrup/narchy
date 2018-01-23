@@ -106,6 +106,15 @@ public class TimeGraphTest {
                 "(a &&+10 c)@1");
     }
 
+    @Test public void testExact() throws Narsese.NarseseException {
+        /** c is the same event, @6 */
+        TimeGraph cc1 = newTimeGraph(1);
+        cc1.know($.$("(a &&+5 b)"), 1);
+        cc1.print();
+        assertSolved("(a &&+- b)", cc1,
+                "(a &&+5 b)@1");
+    }
+
     @Test
     public void testImplWithConjPredicate1() {
         assertSolved("(one ==>+- (two &&+1 three))", A,
