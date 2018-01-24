@@ -6,18 +6,15 @@ import jcog.math.FloatParamRounded;
 import jcog.math.MutableInteger;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
-import nars.control.Derivation;
 import nars.task.Tasked;
 import nars.task.TruthPolation;
 import nars.term.atom.Atom;
 import nars.truth.PreciseTruth;
-import nars.truth.Truth;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static jcog.Util.unitize;
 import static nars.Op.*;
 import static nars.control.MetaGoal.*;
 
@@ -50,10 +47,11 @@ public abstract class Param {
     public static final boolean ETERNALIZE_EVICTED_TEMPORAL_TASKS = true;
 
 
-
     public static final boolean FILTER_DYNAMIC_MATCHES = true;
 
-    /** experimental increased confidence calculation for composition, taken from the NAL spec but is different from OpenNARS */
+    /**
+     * experimental increased confidence calculation for composition, taken from the NAL spec but is different from OpenNARS
+     */
     public static boolean STRONG_COMPOSITION = false;
 
     //    private final static Logger logger = LoggerFactory.getLogger(DeriveTime.class);
@@ -64,7 +62,7 @@ public abstract class Param {
     public static boolean DEBUG_FILTER_DUPLICATE_MATCHES = Param.DEBUG_EXTRA;
 
 
-    public final FloatParam forgetRate = new FloatParam(0.75f, 0f, 2f);
+    public final FloatParam forgetRate = new FloatParam(1f, 0f, 2f);
 
     /**
      * hard limit to prevent infinite looping
@@ -106,7 +104,7 @@ public abstract class Param {
 
     public static final PriMerge tasklinkMerge =
             PriMerge.max;
-            //PriMerge.plus; //not safe to plus without enough headroom
+    //PriMerge.plus; //not safe to plus without enough headroom
 
     //    /**
 //     * budgets premises from their links, but isolated from affecting the derivation budgets, which are from the tasks (and not the links)
@@ -118,7 +116,6 @@ public abstract class Param {
 //            //UtilityFunctions::aveAri;
 //            //Math::min;
 //            //Math::max;
-
 
 
     /**
@@ -140,11 +137,13 @@ public abstract class Param {
     public final static int SIGNAL_LATCH_TIME_MAX =
             //0;
             8;
-            //Integer.MAX_VALUE;
-            //8;
-            //32;
+    //Integer.MAX_VALUE;
+    //8;
+    //32;
 
-    /** happiness automatic gain control time parameter */
+    /**
+     * happiness automatic gain control time parameter
+     */
     public final static float HAPPINESS_RE_SENSITIZATION_RATE = 0.001f;
 
     /**
@@ -237,63 +236,6 @@ public abstract class Param {
     //Integer.MAX_VALUE / 16384;
 
 
-    public static float derivationPriority(Task t, Derivation d) {
-
-        float discount = 1f;
-
-        //t.volume();
-
-        {
-            //relative growth compared to parent complexity
-//        int pCompl = d.parentComplexity;
-//        float relGrowth =
-//                unitize(((float) pCompl) / (pCompl + dCompl));
-//        discount *= (relGrowth);
-        }
-
-        {
-            //absolute size relative to limit
-            //float p = 1f / (1f + ((float)t.complexity())/termVolumeMax.floatValue());
-        }
-
-        Truth derivedTruth = t.truth();
-        {
-
-            float dCompl = t.voluplexity();
-            //float increase = (dCompl-d.parentComplexityMax);
-            //if (increase > Pri.EPSILON) {
-            int penalty = 1;
-            float change = penalty + Math.abs(dCompl-d.parentComplexityMax); //absolute change: penalize drastic complexification or simplification, relative to parent task(s) complexity
-
-                //relative increase in complexity
-                //calculate the increases proportion to the "headroom" remaining for term expansion
-                //ie. as the complexity progressively grows toward the limit, the discount accelerates
-                float complexityHeadroom = Math.max(1, d.termVolMax - d.parentComplexityMax);
-                float headroomConsumed = Util.unitize(change /* increase */ / complexityHeadroom );
-                float headroomRemain = 1f - headroomConsumed;
-
-                //note: applies more severe discount for questions/quest since the truth deduction can not apply
-                discount *= (derivedTruth != null) ? headroomRemain : Util.sqr(headroomRemain);
-
-        }
-
-
-        if (/* belief or goal */ derivedTruth != null) {
-
-            //loss of relative confidence: prefer confidence, relative to the premise which formed it
-            float parentEvi = d.single ? d.premiseEviSingle : d.premiseEviDouble;
-            if (parentEvi > 0) {
-                discount *= unitize(derivedTruth.evi() / parentEvi );
-            }
-
-            //optional: prefer polarized
-            //c *= (1f + p * (0.5f - Math.abs(t.freq()-0.5f)));
-        }
-
-        return discount * d.pri;
-
-        //return Util.lerp(1f-t.originality(),discount, 1) * d.premisePri; //more lenient derivation budgeting priority reduction in proportion to lack of originality
-    }
 
 
     /**
@@ -444,6 +386,14 @@ public abstract class Param {
      */
     public final FloatParam momentum = new FloatParam(0.5f, 0, 1f);
 
+
+    /**
+     * tolerance of complexity
+     * low values (~0) will penalize complexity in derivations maximally (preferring simplicity)
+     * high values (~1) will penalize complexity in deriations minimally (allowing complexity)
+     */
+    public final FloatParam deep = new FloatParam(0.5f, 0, 1f);
+
     /**
      * computes the projected evidence at a specific distance (dt) from a perceptual moment evidence
      * with a perceptual duration used as a time constant
@@ -484,14 +434,13 @@ public abstract class Param {
 
         TruthPolation.TruthPolationBasic t =
                 //new TruthPolation.TruthPolationBasic(start, end, dur);
-                new TruthPolation.TruthPolationBasic(start, end, dur, temporals, topEternal!=null);
+                new TruthPolation.TruthPolationBasic(start, end, dur, temporals, topEternal != null);
         //new TruthPolation.TruthPolationConf(start, end, dur);
         //new TruthPolation.TruthPolationConf(start, end, dur);
         //new TruthPolation.TruthPolationGreedy(start, end, dur, ThreadLocalRandom.current());
         //..SoftMax..
         //new TruthPolation.TruthPolationRoulette(start, end, dur, ThreadLocalRandom.current());
         //new TruthPolationWithVariance(when, dur);
-
 
 
         // Contribution of each task's truth
@@ -507,7 +456,7 @@ public abstract class Param {
 
                 //long totalSpan = Math.max(1, t.spanEnd - t.spanStart);
                 long totalCovered = Math.max(1, t.rangeSum); //estimate
-                float temporalDensity = ((float)totalCovered)/Math.max(1, end-start);
+                float temporalDensity = ((float) totalCovered) / Math.max(1, end - start);
                 float eviDecay = 1 / ((1 + tempEvi * temporalDensity));
 
                 float eteEvi = topEternal.evi();
@@ -633,7 +582,6 @@ public abstract class Param {
         //evi * Util.sqr(1f-Util.unitize(overlap));
         //evi * (1f-overlap);
     }
-
 
 
 }

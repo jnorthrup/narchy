@@ -90,7 +90,7 @@ public class Taskify extends AbstractPred<Derivation> {
             return spam(d, Param.TTL_DERIVE_TASK_SAME);
         }
 
-        float priority = Param.derivationPriority(t, d);
+        float priority = d.deriver.derivationPriority(t, d);
         assert (priority == priority);
         t.priSet(priority);
 

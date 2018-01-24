@@ -46,10 +46,7 @@ public class RLBooster implements Consumer<NAR> {
         List<SensorConcept> sc = $.newArrayList();
         sc.addAll(env.sensors.keySet());
         if (env instanceof NAgentX) {
-
-            ((NAgentX) env).cam.forEach(c -> {
-                c.forEach(cc -> sc.add((SensorConcept) cc));
-            });
+            ((NAgentX) env).cam.forEach(c -> c.forEach(sc::add));
         }
         this.inputs = sc;
         this.inD = sc.size();

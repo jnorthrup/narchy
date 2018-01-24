@@ -58,8 +58,8 @@ public class Tasklinks {
 
 
 
-        if (priApplied > Pri.EPSILON)
-            linkTaskTemplates(cc, t, priApplied, nar);
+//        if (priApplied > Pri.EPSILON)
+//            linkTaskTemplates(cc, t, priApplied, nar);
 
         if (activate) {
 
@@ -90,7 +90,7 @@ public class Tasklinks {
         }
     }
 
-    private static void linkTaskTemplates(Concept c, Task t, float priApplied, NAR nar) {
+    public static void linkTaskTemplates(Concept c, Task t, float priApplied, NAR nar) {
 
         List<Termed> ts = c.templates();
         int tss = ts.size();

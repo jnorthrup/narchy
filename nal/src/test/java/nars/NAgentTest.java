@@ -14,7 +14,7 @@ public class NAgentTest {
     static NAR nar() {
 
         NAR n = NARS.tmp();
-        n.termVolumeMax.set(22);
+        n.termVolumeMax.set(18);
         n.freqResolution.set(0.05f);
         n.confResolution.set(0.02f);
         n.time.dur(1);
@@ -26,8 +26,6 @@ public class NAgentTest {
 
         //n.logWhen(System.out, false, true, true);
 
-        //MetaGoal.Action.set(n.want, 2f);
-        //MetaGoal.Desire.set(n.want, 1f);
         //n.freqResolution.set(0.1f);
 
         Param.DEBUG = false;

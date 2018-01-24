@@ -1,10 +1,15 @@
 package nars;
 
+import jcog.TODO;
+import jcog.data.map.MRUCache;
 import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
+import nars.concept.Concept;
+import nars.concept.PermanentConcept;
 import nars.concept.builder.ConceptBuilder;
 import nars.concept.builder.DefaultConceptBuilder;
 import nars.control.Deriver;
+import nars.control.Derivers;
 import nars.derive.rule.PremiseRuleSet;
 import nars.exe.AbstractExec;
 import nars.exe.Exec;
@@ -13,6 +18,8 @@ import nars.index.term.TermIndex;
 import nars.index.term.map.CaffeineIndex;
 import nars.index.term.map.MapTermIndex;
 import nars.op.stm.STMLinkage;
+import nars.term.Term;
+import nars.term.Termed;
 import nars.time.CycleTime;
 import nars.time.RealTime;
 import nars.time.Time;
@@ -21,8 +28,8 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -94,7 +101,7 @@ public class NARS {
      */
     public NARS deriverAdd(int minLevel, int maxLevel) {
         derivers.add(
-                Deriver.deriver(minLevel, maxLevel)
+                Derivers.deriver(minLevel, maxLevel)
         );
         return this;
     }
@@ -104,7 +111,7 @@ public class NARS {
      */
     public NARS deriverAdd(String... ruleFiles) {
         deriverAdd(
-                Deriver.deriver(1, 9, ruleFiles)
+                Derivers.deriver(1, 9, ruleFiles)
         );
         return this;
     }
@@ -130,7 +137,20 @@ public class NARS {
 
         index = () ->
                 //new CaffeineIndex(new DefaultConceptBuilder(), 8*1024, 16*1024, null)
-                new MapTermIndex(new /*Linked*/HashMap(64, 0.9f));
+                new MapTermIndex(
+                        //new /*Linked*/HashMap(256, 0.9f)
+                        new MRUCache<>(2048) {
+                            @Override
+                            protected void onEvict(Map.Entry<Term, Termed> entry) {
+                                Termed c = entry.getValue();
+                                if (c instanceof PermanentConcept) {
+                                    throw new TODO(); //TODO reinsert
+                                } else {
+                                    ((Concept)c).delete(null /* HACK */);
+                                }
+                            }
+                        }
+                );
 
         time = new CycleTime();
 
@@ -255,7 +275,7 @@ public class NARS {
 
             nar.conceptActivation.set( 2f/Math.sqrt(((AbstractExec)nar.exe).active.capacity()) );
 
-            nar.termVolumeMax.set(40);
+            nar.termVolumeMax.set(50);
             //nar.confMin.setValue(0.05f);
 
             nar.DEFAULT_BELIEF_PRIORITY = 0.5f;

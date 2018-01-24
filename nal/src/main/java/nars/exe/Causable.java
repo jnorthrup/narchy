@@ -35,6 +35,11 @@ abstract public class Causable extends NARService {
         this(nar, null);
     }
 
+    /** if using this constructor, make sure to call 'nar.on(this);' in the callee */
+    protected Causable(Term id) {
+        this(null, id);
+    }
+
     protected Causable(NAR nar, Term id) {
         super(null, id);
         busy = singleton() ? new AtomicBoolean(false) : null;

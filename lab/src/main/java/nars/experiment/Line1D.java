@@ -193,6 +193,7 @@ public class Line1D {
 
             //n.truthResolution.setValue(0.25f);
 
+            //new RLBooster(exp.agent, HaiQAgent::new, 5);
 
 //            n.beliefConfidence(0.5f);
 //            n.goalConfidence(0.5f);

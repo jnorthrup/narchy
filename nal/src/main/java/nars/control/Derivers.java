@@ -1,8 +1,13 @@
 package nars.control;
 
+import nars.NAR;
+import nars.derive.rule.PremiseRuleSet;
+import nars.index.term.PatternIndex;
+
 import java.util.Collections;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 
 /**
  * utility class for working witih Deriver's
@@ -49,5 +54,18 @@ public class Derivers {
         Collections.addAll(files, otherFiles);
 
         return files;
+    }
+
+    /**
+     * loads default deriver rules, specified by a range (inclusive) of levels. this allows creation
+     * of multiple deriver layers each targetting a specific range of the NAL spectrum
+     */
+    public static Function<NAR, Deriver> deriver(int minLevel, int maxLevel, String... extraFiles) {
+        assert ((minLevel <= maxLevel && maxLevel > 0) || extraFiles.length > 0);
+
+        return Deriver.deriver(nar ->
+                PremiseRuleSet.rules(nar, new PatternIndex(),
+                        standard(minLevel, maxLevel, extraFiles)
+                ));
     }
 }

@@ -14,8 +14,6 @@ import static nars.test.DeductiveChainTest.inh;
 
 public class SimpleConceptGraph1 extends DynamicConceptSpace {
 
-
-
     public SimpleConceptGraph1(NAR nar, int visibleNodes, int maxEdgesPerNodeMax) {
         this(nar, ()->nar.exe.active().iterator(),
                 visibleNodes, maxEdgesPerNodeMax);

@@ -255,6 +255,7 @@ public class User {
     public <X> void getAll(String query, Predicate<DocObj> yy) {
         logger.debug("getAll {}", query);
         Query q = new QueryBuilder(analyzer).createPhraseQuery("i", query);
+        //new WildcardQuery()
         search((iis) -> {
             try {
                 TopDocs y = iis.search(q, 16);

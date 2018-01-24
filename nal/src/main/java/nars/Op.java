@@ -1330,8 +1330,18 @@ public enum Op {
 
     }
 
+    static boolean hasNull(Term[] t) {
+        for (Term x : t)
+            if (x == Null)
+                return true;
+        return false;
+    }
 
     private static Term differ(/*@NotNull*/ Op op, Term... t) {
+
+
+        if (hasNull(t))
+            return Null;
 
         //TODO product 1D, 2D, etc unwrap
         //if (t.length >= 2 && Util.and((Term tt) -> tt.op() == PROD && tt.subs()==1, t)) {
@@ -1473,8 +1483,7 @@ public enum Op {
      * use with caution
      */
     public static Term instance(Op op, int dt, Term... subterms) {
-        Term c = instance(op, subterms);
-        return instance(dt, c);
+        return instance(dt, instance(op, subterms));
     }
 
     public static Term instance(int dt, Term c) {
@@ -1497,6 +1506,8 @@ public enum Op {
             Term x = u[i];
             if (!hasEllipsis && x instanceof Ellipsis)
                 hasEllipsis = true;
+            if (x == Null)
+                return Null;
         }
 
 
@@ -1558,7 +1569,7 @@ public enum Op {
     private static final int InvalidImplicationSubj = or(IMPL);
 
     /*@NotNull*/
-    static Term statement(/*@NotNull*/ Op op, int dt, /*@NotNull*/ Term subject, /*@NotNull*/ Term predicate) {
+    static Term statement(/*@NotNull*/ Op op, int dt, final Term subject, final Term predicate) {
 
         if (subject == Null || predicate == Null)
             return Null;
@@ -2157,6 +2168,10 @@ public enum Op {
 
     /*@NotNull*/
     public Term the(int dt, Term... u) {
+
+        if (Op.hasNull(u))
+            return Null;
+
         return compound(dt, commute(dt, u.length) ? sorted(u) : u, true);
     }
 

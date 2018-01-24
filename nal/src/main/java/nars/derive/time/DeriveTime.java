@@ -18,8 +18,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Supplier;
 
-import static nars.Op.CONJ;
-import static nars.time.Tense.*;
+import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.TIMELESS;
 
 
 /**
@@ -78,7 +78,7 @@ public class DeriveTime extends TimeGraph {
         });
 
         //link all non-pattern var substitutions
-        d.xy.forEach((x,y)->{
+        d.xy.forEach((x, y) -> {
             if (!(x instanceof VarPattern) && x.op().conceptualizable && !(x instanceof EllipsisMatch)) {
                 link(know(x), 0, know(y));
             }
@@ -352,13 +352,9 @@ public class DeriveTime extends TimeGraph {
         int temporals = 0;
 
         if (eeternals != null) {
-            solutions.removeIf(s -> {
-                if (s.when() == TIMELESS) {
-                    return eeternals.contains(s.id);
-                }
-                return false;
-            });
+            solutions.removeIf(s -> s.when() == TIMELESS && eeternals.contains(s.id));
         }
+
         //remove any events that have been absorbed as eternals:
         Iterator<Event> ii = solutions.iterator();
         while (ii.hasNext()) {
@@ -391,64 +387,92 @@ public class DeriveTime extends TimeGraph {
                 temporals++;
         }
 
-        Term eternalComponent = (eeternals == null) ? null : CONJ.the(DTERNAL, eeternals);
-
-        if (eternalComponent instanceof Bool)
-            eternalComponent = null; //ignore it
+//        Term eternalComponent = (eeternals == null) ? null : CONJ.the(DTERNAL, eeternals);
+//
+//        if (eternalComponent instanceof Bool)
+//            eternalComponent = null; //ignore it
 
         if (!differentTimedTerms) {
-            if (timeless && !timed) {
-                occ[0] = occ[1] = TIMELESS;
-                return eternalComponent != null ? CONJ.the(eternalComponent, first) : first;
-            } else if (timed && (max - min) <= dur) {
-                //all temporal and within a duration
-                occ[0] = min;
-                occ[1] = max;
-                return eternalComponent != null ? CONJ.the(eternalComponent, first) : first;
+            if (timed && eeternals == null && (max - min <= dur)) {
+                if (first.op().temporal) {
+                    occ[0] = occ[1] = min;
+                } else {
+                    occ[0] = min;
+                    occ[1] = max;
+                }
+                return first;
             }
-        }
-
-        if (timeless) {
-            if (!timed && eternalComponent == null) {
-                return null; //all timeless
-            } else {
-                //TODO mix of timeless and timed, can merge the time events at least and choose from either at random
-                //solutions.removeIf(x -> x.when() == TIMELESS); //ignore timeless events
+            if (eternals!=null) {
                 return null;
             }
-        }
-
-        if (temporals > 0) {
-            //TODO implications can be combined if they share common subj or predicate?
-            return null; //dont combine implication events
-        }
-
-
-
-        if (solutions.isEmpty()) {
-            occ[0] = occ[1] = ETERNAL;
-            return eternalComponent;
-        }
-
-
-        //construct sequence
-        Term temporalComponent = Op.conjEvents((FasterList) solutions.list);
-
-        if (temporalComponent instanceof Bool) {
-            return null; //the components may be ok individually
-        } else if (temporalComponent != null) {
-            occ[0] = min; //sequence start
-            occ[1] = min;
-
-            if (eternalComponent != null) {
-                return CONJ.the(eternalComponent, temporalComponent);
-            } else {
-                return temporalComponent;
+            if (timeless && eeternals == null) {
+                occ[0] = occ[1] = TIMELESS;
+                return first;
             }
-        } else {
-            return null;
+
+//            if (timeless && !timed) {
+//                occ[0] = occ[1] = TIMELESS;
+//                return eternalComponent != null ? CONJ.the(eternalComponent, first) : first;
+//            } else if (timed && (max - min) <= dur) {
+//                //all temporal and within a duration
+//                occ[0] = min;
+//                occ[1] = max;
+//                if (eternalComponent != null) {
+//                    Term c = CONJ.the(eternalComponent, first);
+//                    if (c.dtRange()!=(max-min))
+//                        return null; //some shift occurred, new occurrence needs recalculated
+//                    else
+//                        return c; //ok right time
+//                } else {
+//                    return first;
+//                }
+//            }
         }
 
+        //TODO something like below but ensures correct occurence time in case of shift
+        return null;
+//
+//        if (timeless) {
+//            if (!timed && eternalComponent == null) {
+//                return null; //all timeless
+//            } else {
+//                //TODO mix of timeless and timed, can merge the time events at least and choose from either at random
+//                //solutions.removeIf(x -> x.when() == TIMELESS); //ignore timeless events
+//                return null;
+//            }
+//        }
+//
+//        if (temporals > 0) {
+//            //TODO implications can be combined if they share common subj or predicate?
+//            return null; //dont combine implication events
+//        }
+//
+//
+//
+//        if (solutions.isEmpty()) {
+//            occ[0] = occ[1] = ETERNAL;
+//            return eternalComponent;
+//        }
+//
+//
+//        //construct sequence
+//        Term temporalComponent = Op.conjEvents((FasterList) solutions.list);
+//
+//        if (temporalComponent instanceof Bool) {
+//            return null; //the components may be ok individually
+//        } else if (temporalComponent != null) {
+//            occ[0] = min; //sequence start
+//            occ[1] = min;
+//
+//            if (eternalComponent != null) {
+//                return CONJ.the(eternalComponent, temporalComponent);
+//            } else {
+//                return temporalComponent;
+//            }
+//        } else {
+//            return null;
+//        }
+//
     }
 
 
@@ -517,7 +541,13 @@ public class DeriveTime extends TimeGraph {
                 long[] when = new long[]{TIMELESS, TIMELESS};
                 Term tt = solveMerged(solutions, d.dur, when);
                 if (tt == null || tt instanceof Bool || tt.volume() > d.termVolMax) {
-                    //use a copy because solveMerged modifies the input
+                    //HACK use a copy because solveMerged modifies the input
+                    int timed = solutionsCopy.count(t -> t instanceof Absolute);
+                    if (timed > 0) {
+                        //filter timeless
+                        solutionsCopy.removeIf(t -> t instanceof Relative);
+                    }
+
                     return () -> solveThe(solutionsCopy.get(random())); //choose one at random
                 } else if (when[0] == TIMELESS) {
                     return () -> solveRaw(tt);

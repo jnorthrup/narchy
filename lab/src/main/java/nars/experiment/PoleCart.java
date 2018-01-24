@@ -1,11 +1,13 @@
 package nars.experiment;
 
 import jcog.Util;
+import jcog.learn.ql.HaiQAgent;
 import jcog.math.FloatPolarNormalized;
 import nars.*;
 import nars.concept.SensorConcept;
 import nars.gui.ConceptSurface;
 import nars.gui.Vis;
+import nars.op.RLBooster;
 
 import javax.swing.*;
 import java.awt.*;
@@ -153,6 +155,7 @@ public class PoleCart extends NAgentX {
 //            nar.goal(f[1].term, Tense.Eternal, 0f, 0.01f);
         }
 
+
 //        actionUnipolar($.p("left"), (a) -> {
 //            if (!manualOverride)
 //                action = Util.clampBi((float) (action + a));
@@ -198,6 +201,9 @@ public class PoleCart extends NAgentX {
         window(Vis.beliefCharts(100,
                 sensors,
                 nar), 600, 600);
+
+        new RLBooster(this, HaiQAgent::new, 3);
+
         this.panel = new JPanel(new BorderLayout()) {
             public Stroke stroke = new BasicStroke(4);
 

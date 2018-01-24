@@ -1,6 +1,10 @@
 package nars.control;
 
 import jcog.pri.Pri;
+import jcog.pri.PriReference;
+import jcog.pri.Prioritized;
+import jcog.sort.TopNUnique;
+import jcog.util.FloatFloatToFloatFunction;
 import jcog.version.Versioned;
 import nars.$;
 import nars.NAR;
@@ -133,7 +137,7 @@ public class Derivation extends ProtoDerivation {
 
     public short[] parentCause;
 
-    public DeriverRoot deriver;
+    public DeriverRoot derive;
     public boolean single;
     public float parentComplexityMax;
 
@@ -155,6 +159,57 @@ public class Derivation extends ProtoDerivation {
      */
     public TruthOperator truthFunction;
     public int ditherTime;
+    public Deriver deriver;
+
+    public final TopNUniquePremises premises = new TopNUniquePremises();
+
+    protected class TopNUniquePremises extends TopNUnique<Premise> {
+        private int premisesRemain;
+
+        final FloatFloatToFloatFunction merge = Param.taskTermLinksToPremise;
+
+        TopNUniquePremises() {
+            super(Prioritized::pri);
+        }
+
+        @Override
+        protected void merge(Premise existing, Premise next) {
+            existing.priMax(next.pri());
+        }
+
+        /**
+         * call before generating a concept's premises
+         */
+        public void setTTL(int hypotheticalPremisePerConcept) {
+            this.premisesRemain = hypotheticalPremisePerConcept;
+        }
+
+        /**
+         * returns whether to continue
+         */
+        public boolean tryAdd(PriReference<Task> tasklink, PriReference<Term> termlink) {
+            float pri = tasklink.pri();
+            if (pri == pri) {
+
+                Task t = tasklink.get();
+                if (t != null) {
+
+                    float p = merge.apply(pri,
+                            termlink.priElseZero())
+                            * nar.amp(t);
+                    if (p > minAdmission()) {
+                        add(new Premise(t, termlink.get(), p));
+                    } else {
+                        //System.out.println("rejected early");
+                    }
+                }
+
+            }
+            return --premisesRemain > 0;
+        }
+    }
+
+
     //public Map<Term, Term> xyDyn = new HashMap();
 
 
@@ -288,7 +343,7 @@ public class Derivation extends ProtoDerivation {
 //        }
     }
 
-    public Derivation cycle(NAR nar, DeriverRoot deriver) {
+    public Derivation cycle(NAR nar, Deriver deri, DeriverRoot deriverRoot) {
         NAR pnar = this.nar;
         if (pnar != nar) {
             init(nar);
@@ -306,7 +361,8 @@ public class Derivation extends ProtoDerivation {
             //transformsCache.cleanUp();
         }
 
-        this.deriver = deriver;
+        this.derive = deriverRoot;
+        this.deriver = deri;
 
         return this;
     }
@@ -514,7 +570,7 @@ public class Derivation extends ProtoDerivation {
 
 
         setTTL(ttl);
-        deriver.can.accept(this);
+        derive.can.accept(this);
     }
 
     @Override

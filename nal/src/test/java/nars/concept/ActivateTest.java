@@ -61,7 +61,7 @@ public class ActivateTest {
                 termlinkHits.addOccurrences(/*tasklink.get() + " " +*/ tls, 1);
                 taskHits.addOccurrences(/*tasklink.get() + " " +*/ (ptask + " " + pterm), 1);
                 return --remain[0] > 0;
-            });
+            }, 3);
             ba.commit(nar);
         }
 

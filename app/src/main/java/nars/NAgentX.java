@@ -6,6 +6,7 @@ import jcog.math.FloatPolarNormalized;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Bitmap2D;
 import nars.control.Deriver;
+import nars.control.Derivers;
 import nars.exe.Focus;
 import nars.exe.PoolMultiExec;
 import nars.gui.Vis;
@@ -67,7 +68,7 @@ import static spacegraph.layout.Gridding.grid;
 abstract public class NAgentX extends NAgent {
 
 
-    public final Set<Bitmap2DSensor> cam = new LinkedHashSet<>();
+    public final Set<Bitmap2DSensor<?>> cam = new LinkedHashSet<>();
 
 //    @Override
 //    public Set<Termed> concepts() {
@@ -206,7 +207,7 @@ abstract public class NAgentX extends NAgent {
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(32);
+        n.termVolumeMax.set(40);
 
         n.beliefConfidence(0.9f);
         n.goalConfidence(0.9f);
@@ -220,7 +221,7 @@ abstract public class NAgentX extends NAgent {
 
         NAgent a = init.apply(n);
 
-        new Deriver(a.fire(), Deriver.deriver(1, 8,
+        new Deriver(a.fire(), Derivers.deriver(1, 8,
                 "motivation.nal","goal_analogy.nal"
         ).apply(n).deriver, n) {
 //            @Override

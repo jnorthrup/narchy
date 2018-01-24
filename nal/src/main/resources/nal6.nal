@@ -323,8 +323,8 @@
 
 //Anonymous Analogy (NAL5)
     //originally this only unified depvar (dep var elimination)
-     (&&,X,A..+), Y, neq(X,Y),isNot(X,"#")    |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)
-     (&&,--X,A..+), Y, neq(X,Y),isNot(X,"#")  |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogyPN)
+     (&&,X,A..+), Y, isNot(X,"#")    |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)
+     (&&,--X,A..+), Y, isNot(X,"#")  |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogyPN)
 
 
      //((&&,X,A..+) && Z), Z |- (X &&+- Z), (Belief:StructuralDeduction, Goal:StructuralDeduction)

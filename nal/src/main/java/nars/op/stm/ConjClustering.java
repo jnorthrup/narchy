@@ -36,8 +36,8 @@ import static nars.truth.TruthFunctions.c2wSafe;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 public class ConjClustering extends Causable {
-    private final CauseChannel<ITask> in;
 
+    private final CauseChannel<ITask> in;
 
     final static BagClustering.Dimensionalize<Task> ConjClusterModel = new BagClustering.Dimensionalize<>(3) {
 
@@ -67,7 +67,6 @@ public class ConjClustering extends Causable {
     private long now;
     private float confMin;
     private int volMax;
-    //private final static Logger logger = LoggerFactory.getLogger(ConjClustering.class);
     private int ditherTime;
 
     public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {
@@ -78,7 +77,7 @@ public class ConjClustering extends Causable {
         this.bag = new BagClustering<>(ConjClusterModel, centroids, capacity);
 
         nar.onTask(t -> {
-            if (!t.isEternal() && t.punc() == punc  && filter.test(t)) {
+            if (!t.isEternal() && t.punc() == punc && filter.test(t)) {
                 bag.put(t,
                         //t.priElseZero() * (1f / t.volume()) //prefer smaller events
                         t.priElseZero()
@@ -101,7 +100,7 @@ public class ConjClustering extends Causable {
         confMin = nar.confMin.floatValue();
         this.volMax = nar.termVolumeMax.intValue();
 
-        taskLimitPerCentroid = Math.max(1, Math.round(((float)work)/bag.net.centroids.length));
+        taskLimitPerCentroid = Math.max(1, Math.round(((float) work) / bag.net.centroids.length));
         tasksCreated = 0;
 
         bag.commitGroups(1, nar, this::conjoinCentroid);
@@ -172,14 +171,15 @@ public class ConjClustering extends Causable {
 
         Iterator<VLink<Task>> gg =
                 group.filter(x -> x != null && !x.isDeleted()).iterator();
-                //Iterators.peekingIterator();
+        //Iterators.peekingIterator();
 
 
         Map<LongObjectPair<Term>, Task> vv = new HashMap<>();
         FasterList<Task> actualTasks = new FasterList();
 
 
-        main: while (gg.hasNext() && gen.size() < taskLimitPerCentroid) {
+        main:
+        while (gg.hasNext() && gen.size() < taskLimitPerCentroid) {
 
             vv.clear();
             actualTasks.clear();
@@ -189,6 +189,7 @@ public class ConjClustering extends Causable {
             long start = Long.MAX_VALUE;
 
 
+            int dur = nar.dur();
             float freq = 1f;
             float conf = 1f;
             float priMax = Float.NEGATIVE_INFINITY, priMin = Float.POSITIVE_INFINITY;
@@ -201,13 +202,11 @@ public class ConjClustering extends Causable {
 
                 Task t =
                         gg.next().id;
-                        //gg.peek().id;
+                //gg.peek().id;
                 Term xt = t.term();
 
                 long zs = Tense.dither(t.start(), ditherTime);
                 long ze = Tense.dither(t.end(), ditherTime);
-                if (start > zs) start = zs;
-                if (end < ze) end = ze;
 //                assert (end >= start);
 
                 Truth tx = t.truth();
@@ -230,15 +229,18 @@ public class ConjClustering extends Causable {
 
                 if (!vv.containsKey(pair(zs, xtNeg)) && null == vv.putIfAbsent(ps, t)) {
                     vol += xtv;
+                    if (start > zs) start = zs;
+                    if (end < zs) end = zs;
                     involved = true;
                 }
 
-                if (ze != zs) {
+                if (ze - zs >= dur) {
                     //endpoint
                     if (vol + xtv + 1 < volMax) {
                         LongObjectPair<Term> pe = pair(ze, xt);
                         if (!vv.containsKey(pair(ze, xtNeg)) && null == vv.putIfAbsent(pe, t)) { //end point, if different from start
                             vol += xtv;
+                            if (end < ze) end = ze;
                             involved = true;
                         }
                     }
@@ -280,32 +282,42 @@ public class ConjClustering extends Causable {
 
                     Term cj = Op.conjEvents(new FasterList(vv.keySet()));
                     if (cj != null) {
-                        ObjectBooleanPair<Term> cp = Task.tryContent(cj.normalize(), punc, true);
-                        if (cp != null) {
+
+                        cj = cj.normalize();
 
 
-                            NALTask m = new STMClusterTask(cp, t, start, end, evidence.getOne(), punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
-                            if (evidence.getTwo() > 0) m.setCyclic(true);
+                        if (Math.abs(cj.dtRange() - (end - start)) < ditherTime) { //test if merge collapse occurred and occurrence time needs recalculated
 
-                            m.cause = Cause.zip(nar.causeCapacity.intValue(), uu);
 
-                            float priAvg =
-                                    //priMax;
-                                    //priMin;
-                                    (priMin + priMax) / 2f;
+                            ObjectBooleanPair<Term> cp = Task.tryContent(cj, punc, true);
+                            if (cp != null) {
 
-                            //complexity deduction
-                            //  how much more complex the conjunction is than the most complex of its ingredients
-                            int v = cp.getOne().volume();
-                            float cmplFactor =
-                                    ((float) v) / (v + maxVolume);
 
-                            m.priSet(Priority.fund(priAvg * cmplFactor, true, uu));
-                            tasksCreated++;
-                            gen.add(m);
+                                NALTask m = new STMClusterTask(cp, t, start, end, evidence.getOne(), punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
+                                if (evidence.getTwo() > 0) m.setCyclic(true);
+
+                                m.cause = Cause.zip(nar.causeCapacity.intValue(), uu);
+
+                                float priAvg =
+                                        //priMax;
+                                        //priMin;
+                                        (priMin + priMax) / 2f;
+
+                                //complexity deduction
+                                //  how much more complex the conjunction is than the most complex of its ingredients
+                                int v = cp.getOne().volume();
+                                float cmplFactor =
+                                        ((float) v) / (v + maxVolume);
+
+                                m.priSet(Priority.fund(priAvg * cmplFactor, true, uu));
+                                tasksCreated++;
+                                gen.add(m);
+                            } else {
+                                //Task.tryContent(cj, punc, true);
+                                //logger.warn("{} failed", this);
+                            }
                         } else {
-                            //Task.tryContent(cj, punc, true);
-                            //logger.warn("{} failed", this);
+                            //System.out.println("merge collapse, recalcu");
                         }
                     }
 

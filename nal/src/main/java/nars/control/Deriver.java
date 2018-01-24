@@ -4,10 +4,6 @@ import jcog.Util;
 import jcog.memoize.HijackMemoize;
 import jcog.memoize.Memoize;
 import jcog.pri.Pri;
-import jcog.pri.PriReference;
-import jcog.pri.Prioritized;
-import jcog.sort.TopNUnique;
-import jcog.util.FloatFloatToFloatFunction;
 import nars.$;
 import nars.NAR;
 import nars.Param;
@@ -16,8 +12,7 @@ import nars.derive.DeriverRoot;
 import nars.derive.TrieDeriver;
 import nars.derive.rule.PremiseRuleSet;
 import nars.exe.Causable;
-import nars.index.term.PatternIndex;
-import nars.term.Term;
+import nars.truth.Truth;
 
 import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -26,6 +21,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static jcog.Util.unitize;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -36,30 +32,43 @@ import static nars.time.Tense.ETERNAL;
  */
 public class Deriver extends Causable {
 
+    /** source of concepts supplied to this for this deriver */
     private final Consumer<Predicate<Activate>> concepts;
+
+    /** list of conclusions that in which this deriver can result */
     private final Cause[] subCauses;
 
 
     /**
      * how many premises to generate per concept in pre-derivation
      */
-    int HypotheticalPremisePerConcept = 5;
+    int HypotheticalPremisePerConcept = 4;
+
+    /**
+     * controls the rate at which tasklinks 'spread' to interact with termlinks
+     */
+    int termLinksPerTaskLink = 3;
+
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
      */
-    int premisesPerConcept = 3;
+    int premisesPerConcept = 2;
 
-    int burstMax = 8;
+    int burstMax = 16;
+
+    int conceptsPerIteration = 1;
 
     /**
      * TODO move this to a 'CachingDeriver' subclass
      */
-    public final Memoize<ProtoDerivation.PremiseKey, int[]> whats =
+    final Memoize<ProtoDerivation.PremiseKey, int[]> whats =
             new HijackMemoize<>(ProtoDerivation.PremiseKey::solve,
                     32 * 1024, 3, false);
-    private long now;
-    private int conceptsPerIteration = 1;
+
+
+
+    transient private long now;
 
 
     public static Function<NAR, Deriver> deriver(Function<NAR, PremiseRuleSet> rules) {
@@ -70,17 +79,70 @@ public class Deriver extends Causable {
                 ), nar);
     }
 
-    /**
-     * loads default deriver rules, specified by a range (inclusive) of levels. this allows creation
-     * of multiple deriver layers each targetting a specific range of the NAL spectrum
-     */
-    public static Function<NAR, Deriver> deriver(int minLevel, int maxLevel, String... extraFiles) {
-        assert ((minLevel <= maxLevel && maxLevel > 0) || extraFiles.length > 0);
+    public float derivationPriority(Task t, Derivation d) {
 
-        return deriver(nar ->
-                PremiseRuleSet.rules(nar, new PatternIndex(),
-                        Derivers.standard(minLevel, maxLevel, extraFiles)
-                ));
+        float discount = 1f;
+
+        //t.volume();
+
+        {
+            //relative growth compared to parent complexity
+//        int pCompl = d.parentComplexity;
+//        float relGrowth =
+//                unitize(((float) pCompl) / (pCompl + dCompl));
+//        discount *= (relGrowth);
+        }
+
+        {
+            //absolute size relative to limit
+            //float p = 1f / (1f + ((float)t.complexity())/termVolumeMax.floatValue());
+        }
+
+        Truth derivedTruth = t.truth();
+        {
+
+            float dCompl = t.voluplexity();
+            float simplicity = 1 - d.nar.deep.floatValue();
+//            if (simplicity > Float.MIN_NORMAL) {
+
+//                //float increase = (dCompl-d.parentComplexityMax);
+//                //if (increase > Pri.EPSILON) {
+//                int penalty = 1;
+//                float change = penalty + Math.abs(dCompl - d.parentComplexityMax); //absolute change: penalize drastic complexification or simplification, relative to parent task(s) complexity
+//
+//                //relative increase in complexity
+//                //calculate the increases proportion to the "headroom" remaining for term expansion
+//                //ie. as the complexity progressively grows toward the limit, the discount accelerates
+//                float complexityHeadroom = Math.max(1, d.termVolMax - d.parentComplexityMax);
+//                float headroomConsumed = Util.unitize(change /* increase */ / complexityHeadroom);
+//                float headroomRemain = 1f - headroomConsumed * simplicity;
+//
+//                //note: applies more severe discount for questions/quest since the truth deduction can not apply
+//                discount *= (derivedTruth != null) ? headroomRemain : Util.sqr(headroomRemain);
+//            }
+
+            //absolute
+            int max = d.termVolMax;
+            float headroomRemain = Util.unitize( 1f - (dCompl / max) * simplicity );
+            discount *= (derivedTruth != null) ? headroomRemain : Util.sqr(headroomRemain);
+        }
+
+
+        if (/* belief or goal */ derivedTruth != null) {
+
+            //loss of relative confidence: prefer confidence, relative to the premise which formed it
+            float parentEvi = d.single ? d.premiseEviSingle : d.premiseEviDouble;
+            if (parentEvi > 0) {
+                discount *= unitize(derivedTruth.evi() / parentEvi);
+            }
+
+            //optional: prefer polarized
+            //c *= (1f + p * (0.5f - Math.abs(t.freq()-0.5f)));
+        }
+
+        return discount * d.pri;
+
+        //return Util.lerp(1f-t.originality(),discount, 1) * d.premisePri; //more lenient derivation budgeting priority reduction in proportion to lack of originality
     }
 
     public final DeriverRoot deriver;
@@ -93,7 +155,7 @@ public class Deriver extends Causable {
     private static final AtomicInteger serial = new AtomicInteger();
 
     public Deriver(Consumer<Predicate<Activate>> source, DeriverRoot deriver, NAR nar) {
-        super(null,
+        super(
                 $.func("deriver", $.the(serial.getAndIncrement())) //HACK
         );
         this.deriver = deriver;
@@ -108,14 +170,13 @@ public class Deriver extends Causable {
     @Override
     protected int next(NAR n, final int iterations) {
 
-        Derivation d = derivation.get().cycle(n, deriver);
+        Derivation d = derivation.get().cycle(n, this, deriver);
 
-        int matchTTL = Param.TTL_MIN * 4;
-//        int ttlMin = nar1.matchTTLmin.intValue();
+        int matchTTL = Param.TTL_MIN * 2;
         int deriveTTL = n.matchTTLmean.intValue();
 
 
-        TopNUniquePremises premises = new TopNUniquePremises();
+        Derivation.TopNUniquePremises premises = d.premises;
 
         int ammo = iterations * conceptsPerIteration;
         final int[] fired = {0};
@@ -133,7 +194,7 @@ public class Deriver extends Causable {
             concepts.accept(a -> {
                 fired[0]++;
                 premises.setTTL(HypotheticalPremisePerConcept);
-                a.premises(n, d.activator, premises::tryAdd);
+                a.premises(n, d.activator, premises::tryAdd, termLinksPerTaskLink);
                 return (--burst[0]) > 0;
             });
 
@@ -181,8 +242,7 @@ public class Deriver extends Causable {
      * 1. CAN (proto) stage
      */
     private boolean proto(Derivation x) {
-        int[] trys = x.will = whats.apply(new ProtoDerivation.PremiseKey(x));
-        return trys.length > 0;
+        return (x.will = whats.apply(new ProtoDerivation.PremiseKey(x))).length > 0;
     }
 
     @Override
@@ -254,7 +314,7 @@ public class Deriver extends Causable {
 //    };
 
 
-    public static Stream<Deriver> derivers(NAR n) {
+    static Stream<Deriver> derivers(NAR n) {
         return n.services().filter(Deriver.class::isInstance).map(Deriver.class::cast);
     }
 
@@ -267,57 +327,10 @@ public class Deriver extends Causable {
         });
     }
 
-    //    public final IterableThreadLocal<Derivation> derivation =
-//            new IterableThreadLocal<>(() -> new Derivation(this));
-    public static final ThreadLocal<Derivation> derivation =
-            ThreadLocal.withInitial(Derivation::new);
-
-    static final FloatFloatToFloatFunction merge = Param.taskTermLinksToPremise;
-
-    protected class TopNUniquePremises extends TopNUnique<Premise> {
-        private int premisesRemain;
+    public static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
 
 
-        public TopNUniquePremises() {
-            super(Prioritized::pri);
-        }
 
-        @Override
-        protected void merge(Premise existing, Premise next) {
-            existing.priMax(next.pri());
-        }
-
-        /**
-         * call before generating a concept's premises
-         */
-        public void setTTL(int hypotheticalPremisePerConcept) {
-            this.premisesRemain = hypotheticalPremisePerConcept;
-        }
-
-        /**
-         * returns whether to continue
-         */
-        public boolean tryAdd(PriReference<Task> tasklink, PriReference<Term> termlink) {
-            float pri = tasklink.pri();
-            if (pri == pri) {
-
-                Task t = tasklink.get();
-                if (t != null) {
-
-                    float p = merge.apply(pri,
-                                termlink.priElseZero())
-                                     * nar.amp(t);
-                    if (p > minAdmission()) {
-                        add(new Premise(t, termlink.get(), p));
-                    } else {
-                        //System.out.println("rejected early");
-                    }
-                }
-
-            }
-            return --premisesRemain > 0;
-        }
-    }
 }
 
 

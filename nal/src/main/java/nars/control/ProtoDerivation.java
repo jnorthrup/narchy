@@ -100,7 +100,7 @@ public abstract class ProtoDerivation extends Unify {
 
             assert(derivation.can.isEmpty()); //only place this is used
 
-            derivation.deriver.what.test(derivation);
+            derivation.derive.what.test(derivation);
 
             int[] result = derivation.can.toArray();
 

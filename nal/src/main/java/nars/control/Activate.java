@@ -7,6 +7,7 @@ import jcog.pri.PriReference;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
+import nars.link.Tasklinks;
 import nars.link.TermLinks;
 import nars.term.Term;
 import nars.term.Termed;
@@ -20,10 +21,6 @@ import java.util.function.Predicate;
  */
 public class Activate extends PLink<Concept> implements Termed {
 
-    /**
-     * controls the rate at which tasklinks 'spread' to interact with termlinks
-     */
-    static int termlinksPerTasklink = 3;
 
     public Activate(Concept c, float pri) {
         super(c, pri);
@@ -33,32 +30,39 @@ public class Activate extends PLink<Concept> implements Termed {
      * hypothesize premises, up to a max specified #
      */
     /*@NotNull*/
-    public void premises(NAR nar, BatchActivation ba, BiPredicate<PriReference<Task>, PriReference<Term>> each) {
+    public void premises(NAR nar, BatchActivation ba, BiPredicate<PriReference<Task>, PriReference<Term>> each, int _termlinksPerTasklink) {
 
 
 
-        activateTemplates(nar, ba);
+
+
 
         final Bag<Term, PriReference<Term>> termlinks = id.termlinks();
-        int ntermlinks = termlinks.size();
-        if (ntermlinks == 0)
-            return;
+
 
         final Bag tasklinks = id.tasklinks();
+
+        float linkForgetting = nar.forgetRate.floatValue();
+        tasklinks.commit(tasklinks.forget(linkForgetting));
         int ntasklinks = tasklinks.size();
         if (ntasklinks == 0)
             return;
 
 
-        float linkForgetting = nar.forgetRate.floatValue();
         termlinks.commit(termlinks.forget(linkForgetting));
 
+        activateTemplates(nar, ba);
 
-        tasklinks.commit(tasklinks.forget(linkForgetting));
+        int ntermlinks = termlinks.size();
+        if (ntermlinks == 0) {
+            //if (termlinks.size()==0)
+                return; //TODO this happens with raw products, find other cases too
+        }
+        int termlinksPerTasklink = Math.min(ntermlinks, _termlinksPerTasklink);
 
 
 
-        int termlinksPerTasklink = Activate.termlinksPerTasklink;
+
         int[] ttl = { tasklinks.size() *  termlinksPerTasklink };
 
         tasklinks.sample((Predicate<PriReference<Task>>) tasklink -> {
@@ -66,6 +70,9 @@ public class Activate extends PLink<Concept> implements Termed {
 
             Task task = tasklink.get();
             if (task != null) {
+
+                //if (priApplied > Pri.EPSILON)
+                Tasklinks.linkTaskTemplates(id, task, pri * task.priElseZero(), nar);
 
                 termlinks.sample(termlinksPerTasklink, (termlink) -> {
                     if (!each.test(tasklink, termlink)) {
