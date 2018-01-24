@@ -97,6 +97,7 @@ abstract public class SubstUnified extends Functor {
         }
 
         Term input = aa[0];
+        //if (input instanceof Bool)return Null;
         //if (input == Null) return Null;
 
         Term x = aa[1];

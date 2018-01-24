@@ -2,6 +2,7 @@ package nars;
 
 import jcog.User;
 import jcog.exe.Loop;
+import org.apache.lucene.document.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.SpaceGraph;
@@ -114,7 +115,7 @@ public class GUI {
 
             public Query start() {
                 if (kontinue) {
-                    System.out.println("query start: " + q);
+                    //System.out.println("query start: " + q);
                     user.run(this);
                 }
                 return this;
@@ -122,7 +123,20 @@ public class GUI {
 
             @Override
             public boolean test(User.DocObj docObj) {
-                System.out.println(q + ": " + docObj);
+                //System.out.println(q + ": " + docObj);
+                Document d = docObj.doc();
+
+                String id = d.get("i");
+                System.out.println(id);
+                switch (d.get("c")) {
+                    case "blob":
+                        //
+                        break;
+                }
+                d.forEach(f -> {
+                    System.out.println(f.name() + " " + f.fieldType());
+                });
+
                 return kontinue;
             }
 

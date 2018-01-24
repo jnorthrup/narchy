@@ -15,7 +15,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.BytesRef;
-import org.apache.lucene.util.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -252,10 +251,11 @@ public class User {
     }
 
 
-    public <X> void getAll(String query, Predicate<DocObj> yy) {
+    public void getAll(String query, Predicate<DocObj> yy) {
         logger.debug("getAll {}", query);
-        Query q = new QueryBuilder(analyzer).createPhraseQuery("i", query);
+        //Query q = new QueryBuilder(analyzer).createPhraseQuery("i", query);
         //new WildcardQuery()
+        Query q = new FuzzyQuery(new Term("i", query));
         search((iis) -> {
             try {
                 TopDocs y = iis.search(q, 16);
