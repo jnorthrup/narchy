@@ -10,6 +10,10 @@ buildscript {
         classpath 'info.solidsoft.gradle.pitest:gradle-pitest-plugin:1.2.4'
     }
 }
+//plugins {
+////https://github.com/melix/jmh-gradle-plugin
+//    id "me.champeau.gradle.jmh" version "0.4.5"
+//}
 
 //apply plugin: 'org.jetbrains.grammarkit'
 //grammarKit {

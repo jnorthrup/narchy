@@ -386,7 +386,8 @@ public class DeriveTime extends TimeGraph {
                 }
             }
             //if (e.id.op()==IMPL)
-            if (e.id.op().temporal)
+            //if (e.id.op().temporal)
+            if (e.id.hasAny(Op.Temporal)) //is or has
                 temporals++;
         }
 
@@ -434,8 +435,7 @@ public class DeriveTime extends TimeGraph {
         Term temporalComponent = Op.conjEvents((FasterList) solutions.list);
 
         if (temporalComponent instanceof Bool) {
-            occ[0] = occ[1] = ETERNAL;
-            return eternalComponent; //ignore it
+            return null; //the components may be ok individually
         } else if (temporalComponent != null) {
             occ[0] = min; //sequence start
             occ[1] = min;

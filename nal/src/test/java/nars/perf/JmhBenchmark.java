@@ -8,6 +8,7 @@ import org.openjdk.jmh.runner.RunnerException;
 import org.openjdk.jmh.runner.options.ChainedOptionsBuilder;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 import org.openjdk.jmh.runner.options.TimeValue;
+import org.openjdk.jmh.runner.options.VerboseMode;
 
 import java.util.Collection;
 import java.util.function.Consumer;
@@ -20,7 +21,7 @@ public enum JmhBenchmark {
 	;
 
 	public static void perf(Class c, Consumer<ChainedOptionsBuilder> config) throws RunnerException {
-		perf(c.getSimpleName(), config);
+		perf(c.getName(), config);
 	}
 
 	public static void perf(String include, Consumer<ChainedOptionsBuilder> config) throws RunnerException {
@@ -28,14 +29,14 @@ public enum JmhBenchmark {
 				.include(include)
 				.shouldDoGC(true)
 				.warmupIterations(1)
+				.threads(1)
+				//.forks(1)
 //				.measurementIterations(iterations)
 //				.measurementBatchSize(batchSize)
-				//.threads(1)
-				//.forks(1)
-				.resultFormat(ResultFormatType.TEXT)
-				//.verbosity(VerboseMode.EXTRA) //VERBOSE OUTPUT
 
-			    //.addProfiler(StackProfiler2.class)
+				.resultFormat(ResultFormatType.TEXT)
+				.verbosity(VerboseMode.EXTRA) //VERBOSE OUTPUT
+				.addProfiler(StackProfiler2.class)
 
 //			    .addProfiler(PausesProfiler.class, "period=10" /*uS */)
 //        		.addProfiler(SafepointsProfiler.class)
@@ -67,11 +68,12 @@ public enum JmhBenchmark {
 
 		config.accept(opt);
 
+
+
 		Collection<RunResult> result = new Runner(opt.build()).run();
 		result.forEach(r -> {
 			r.getSecondaryResults().forEach((k,v)->{
 				if (v instanceof StackProfiler2.StackResult) {
-
 				}
 //				if (v instanceof StackProfiler.StackResult) {
 //					StackProfiler.StackResult s = (StackProfiler.StackResult)v;

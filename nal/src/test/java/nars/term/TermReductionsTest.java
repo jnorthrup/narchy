@@ -6,7 +6,6 @@ import nars.io.NarseseTest;
 import nars.task.util.InvalidTaskException;
 import nars.term.atom.Atomic;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
-import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
@@ -18,6 +17,7 @@ import static nars.term.TermTest.assertValid;
 import static nars.term.TermTest.assertValidTermValidConceptInvalidTaskContent;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
+import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -312,16 +312,63 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testConjEvents() throws Narsese.NarseseException {
+    public void testConjEvents1a() throws Narsese.NarseseException {
         assertEquals(
                 "(a &&+16 ((--,a)&|b))",
                 Op.conjEvents(
                         new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
-                                PrimitiveTuples.pair(298L, $.$("a")),
-                                PrimitiveTuples.pair(314L, $.$("b")),
-                                PrimitiveTuples.pair(314L, $.$("(--,a)"))})
+                                pair(298L, $.$("a")),
+                                pair(314L, $.$("b")),
+                                pair(314L, $.$("(--,a)"))})
                 ).toString()
         );
+    }
+    @Test
+    public void testConjEvents1b() throws Narsese.NarseseException {
+        assertEquals(
+                "((a&|b) &&+1 (--,a))",
+                Op.conjEvents(
+                        new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
+                                pair(1L, $.$("a")),
+                                pair(1L, $.$("b")),
+                                pair(2L, $.$("(--,a)"))})
+                ).toString()
+        );
+    }
+    @Test
+    public void testConjEvents2() throws Narsese.NarseseException {
+        assertEquals(
+                "(((a &&+1 (&|,b1,b2,b3)) &&+1 c) &&+1 (d1&|d2))",
+                Op.conjEvents(
+                        new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
+                                pair(1L, $.$("a")),
+                                pair(2L, $.$("b1")),
+                                pair(2L, $.$("b2")),
+                                pair(2L, $.$("b3")),
+                                pair(3L, $.$("c")),
+                                pair(4L, $.$("d1")),
+                                pair(4L, $.$("d2")),
+                                pair(5L, True /* ignored */)
+                        })).toString());
+    }
+
+    @Test
+    public void testConjEventsWithFalse() throws Narsese.NarseseException {
+        assertEquals(
+                False,
+                Op.conjEvents(
+                        new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
+                                pair(1L, $.$("a")),
+                                pair(2L, $.$("b1")),
+                                pair(2L, False)
+                        })));
+        assertEquals(
+                False,
+                Op.conjEvents(
+                        new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
+                                pair(1L, $.$("a")),
+                                pair(1L, $.$("--a"))
+                        })));
     }
 
     @Test

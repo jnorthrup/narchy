@@ -340,9 +340,6 @@ public class PremiseRule {
                     constraints.add(new NoCommonSubtermConstraint(Y, X, true));
                     break;
 
-                case "notSet":
-                    termIsNot(pres, taskPattern, beliefPattern, constraints, X, Op.SetBits);
-                    break;
 
 //                case "set":
 //                    if (taskPattern.equals(X) || beliefPattern.equals(X))
@@ -417,12 +414,24 @@ public class PremiseRule {
                     }
                     break;
 
-                case "is":
+                case "notSet":
+                    termIsNot(pres, taskPattern, beliefPattern, constraints, X, Op.SetBits);
+                    break;
+
+                case "isNot": {
+                    Op o = Op.the($.unquote(Y));
+                    assert (o != null);
+                    termIsNot(pres, taskPattern, beliefPattern, constraints, X, o.bit);
+                    break;
+                }
+
+                case "is": {
                     //TODO make var arg version of this
                     Op o = Op.the($.unquote(Y));
                     assert (o != null);
                     termIs(pres, taskPattern, beliefPattern, constraints, X, o);
                     break;
+                }
 
 //                case "has":
 //                    //TODO make var arg version of this
@@ -701,13 +710,15 @@ public class PremiseRule {
 
     private static void includesOp(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, Op o) {
         if (!o.atomic) // any atomic terms these will be Anon 'd and thus undetectable
-            includesOp(pres, taskPattern, beliefPattern, x, o.bit, true);
+            includesOp(pres, taskPattern, beliefPattern, x, o.bit, true, true);
+        else
+            throw new TODO("is this valid");
     }
 
-    private static void includesOp(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, int struct, boolean includeExclude) {
+    private static void includesOp(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, Term x, int struct, boolean includeExclude, boolean recurse) {
         //TODO test for presence of any atomic terms these will be Anon'd and thus undetectable
-        boolean inTask = taskPattern.equals(x) || taskPattern.containsRecursively(x);
-        boolean inBelief = beliefPattern.equals(x) || beliefPattern.containsRecursively(x);
+        boolean inTask = taskPattern.equals(x) || (recurse && taskPattern.containsRecursively(x));
+        boolean inBelief = beliefPattern.equals(x) || (recurse && beliefPattern.containsRecursively(x));
         if (inTask || inBelief)
             pres.add(new TaskBeliefHasOrHasnt(struct, inTask, inBelief, includeExclude));
     }
@@ -716,7 +727,7 @@ public class PremiseRule {
     private static void termIsNot(Set<PrediTerm<ProtoDerivation>> pres, Term taskPattern, Term beliefPattern, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term x, int struct) {
         //TODO test for presence of any atomic terms these will be Anon'd and thus undetectable
         constraints.add(new OpIsNot(x, struct));
-        includesOp(pres, taskPattern, beliefPattern, x, struct, false);
+        includesOp(pres, taskPattern, beliefPattern, x, struct, false, false);
     }
 
 //    private static void termHasAny(Term task, Term belief, @NotNull Set<PrediTerm> pres, @NotNull SortedSet<MatchConstraint> constraints, @NotNull Term x, Op o) {

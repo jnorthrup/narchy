@@ -201,11 +201,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
                 } else if (v == null) {
                     return u; //null means to keep the same
                 } else  {
-                    if (v!=u && u.equals(v)) {
-                        return u;
-                    } else {
-                        return v;
-                    }
+                    return ((v != u) && u.equals(v)) ? u : v;
                 }
             }
         }

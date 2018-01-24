@@ -1,7 +1,6 @@
 package nars.op;
 
 import nars.Op;
-import nars.Param;
 import nars.control.Derivation;
 import nars.control.Deriver;
 import nars.subterm.Subterms;
@@ -126,15 +125,15 @@ abstract public class SubstUnified extends Functor {
             if (!hasAnyOp/* && mustSubstitute()*/) {
                 output = null; //no change
             } else {
-                int subTTL = Math.round(Param.BELIEF_MATCH_TTL_FRACTION * parent.ttl);
-                if (subTTL > 0) {
-                    SubUnify su = new SubUnify(parent, op, subTTL);
+//                int subTTL = Math.round(Param.BELIEF_MATCH_TTL_FRACTION * parent.ttl);
+//                if (subTTL > 0) {
+                    SubUnify su = new SubUnify(parent, op, parent.ttl);
                     su.strict = strict;
                     output = su.tryMatch(input, x, y);
-                    parent.use(subTTL - su.ttl);
-                } else {
-                    output = null;
-                }
+                    parent.use(parent.ttl - su.ttl);
+//                } else {
+//                    output = null;
+//                }
             }
 
             if (output == null) {

@@ -1,5 +1,7 @@
 package nars.nal.nal5;
 
+import nars.NAR;
+import nars.NARS;
 import nars.test.TestNAR;
 import nars.util.NALTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +15,11 @@ import static nars.time.Tense.ETERNAL;
 public class NAL5Test extends NALTest {
 
     final int cycles = 750;
+
+    @Override
+    protected NAR nar() {
+        return NARS.tmp(6);
+    }
 
     @BeforeEach
     public void nal() {
@@ -151,7 +158,7 @@ public class NAL5Test extends NALTest {
     }
 
 
-//    @Test
+    //    @Test
 //    public void comparisonNegNeg(){
 //        TestNAR tester = test();
 //        tester.log();
@@ -160,21 +167,28 @@ public class NAL5Test extends NALTest {
 //        tester.mustBelieve(cycles,"<(x) <=> (y)>", ????
 //    }
 
+    @Test
+    public void anonymous_analogy1_depvar() {
+        test
+                .believe("(a:#1 && y)")
+                .believe("a:x", 0.80f, 0.9f)
+                .mustBelieve(cycles * 2, "y", 0.80f, 0.43f);
+    }
 
     @Test
     public void anonymous_analogy1_pos2() {
         test
-        .believe("(x && y)")
-        .believe("x", 0.80f, 0.9f)
-        .mustBelieve(cycles*2, "y", 0.80f, 0.43f);
+                .believe("(x && y)")
+                .believe("x", 0.80f, 0.9f)
+                .mustBelieve(cycles * 2, "y", 0.80f, 0.43f);
     }
 
     @Test
     public void anonymous_analogy1_pos3() {
         test
-        .believe("(&&, x, y, z)")
-        .believe("x", 0.80f, 0.9f)
-        .mustBelieve(cycles, "(y && z)", 0.80f, 0.43f);
+                .believe("(&&, x, y, z)")
+                .believe("x", 0.80f, 0.9f)
+                .mustBelieve(cycles, "(y && z)", 0.80f, 0.43f);
     }
 
     @Test
@@ -231,16 +245,16 @@ public class NAL5Test extends NALTest {
     @Test
     public void compound_decomposition_subj_posneg() {
         test.believe("((b && --c)==>a)", 1.0f, 0.9f)
-        .mustBelieve(cycles, "(b==>a)", 1.00f, 0.81f)
-        .mustBelieve(cycles, "(--c==>a)", 1.00f, 0.81f);
+                .mustBelieve(cycles, "(b==>a)", 1.00f, 0.81f)
+                .mustBelieve(cycles, "(--c==>a)", 1.00f, 0.81f);
     }
 
     @Test
     public void compound_decomposition_pred_posneg() {
 
         test.believe("(a==>(b && --c))", 1.0f, 0.9f)
-        .mustBelieve(cycles, "(a==>b)", 1.00f, 0.81f)
-        .mustBelieve(cycles, "(a==>c)", 0.00f, 0.81f);
+                .mustBelieve(cycles, "(a==>b)", 1.00f, 0.81f)
+                .mustBelieve(cycles, "(a==>c)", 0.00f, 0.81f);
     }
 
     @Test
@@ -497,8 +511,8 @@ public class NAL5Test extends NALTest {
         TestNAR tester = test;
         tester.believe("<(&&,<r --> [f]>,<r --> [w]>) ==> <r --> [l]>>", 0.9f, 0.9f);
         tester.believe("<(&&,<r --> [f]>,<r --> b>) ==> <r --> [l]>>");
-        tester.mustBelieve(cycles*4, "<<r --> b> ==> <r --> [w]>>", 1f, 0.42f);
-        tester.mustBelieve(cycles*4, "<<r --> [w]> ==> <r --> b>>", 0.90f, 0.45f);
+        tester.mustBelieve(cycles * 4, "<<r --> b> ==> <r --> [w]>>", 1f, 0.42f);
+        tester.mustBelieve(cycles * 4, "<<r --> [w]> ==> <r --> b>>", 0.90f, 0.45f);
     }
 
     @Test
@@ -510,6 +524,7 @@ public class NAL5Test extends NALTest {
         tester.mustBelieve(cycles, "<(&&,<robin --> [chirping]>,<robin --> [withBeak]>) ==> <robin --> bird>>", 1.00f, 0.42f); //.en("I guess that if robin chirps and robin has a beak, then robin is a bird.");
 
     }
+
     @Test
     public void conditional_induction0Simple() {
         TestNAR tester = test;
@@ -536,6 +551,7 @@ public class NAL5Test extends NALTest {
         tester.mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f);
         tester.mustBelieve(cycles, "(y1 ==> x1)", 1.00f, 0.45f);
     }
+
     @Test
     public void conditional_induction0SimpleDepVar3() {
         TestNAR tester = test;
@@ -573,6 +589,7 @@ public class NAL5Test extends NALTest {
         tester.mustBelieve(cycles, "(a ==> b)", 1.00f, 0.45f);
         tester.mustBelieve(cycles, "(b ==> a)", 1.00f, 0.45f);
     }
+
     @Test
     public void conditional_induction0NegBoth() {
         TestNAR tester = test;
@@ -581,6 +598,7 @@ public class NAL5Test extends NALTest {
         tester.mustBelieve(cycles, "((x1&&x2) ==> (y1&&y2))", 1.00f, 0.45f);
         tester.mustBelieve(cycles, "((y1&&y2) ==> (x1&&x2))", 1.00f, 0.45f);
     }
+
     @Test
     public void conditional_induction0NegInner() {
         TestNAR tester = test;

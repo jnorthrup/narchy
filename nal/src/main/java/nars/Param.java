@@ -152,11 +152,6 @@ public abstract class Param {
      */
     public final MutableInteger matchTTLmean = new MutableInteger(64);
 
-    /**
-     * how much percent of a premise's allocated TTL can be used in the belief matching phase.
-     */
-    public static final float BELIEF_MATCH_TTL_FRACTION = 0.1f;
-
     public static final int TTL_MIN =
             Param.TTL_UNIFY * 2 +
                     Param.TTL_DERIVE_TASK_SUCCESS;

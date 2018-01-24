@@ -1,6 +1,7 @@
 package nars.perf;
 
 import jcog.Texts;
+import jcog.Util;
 import jcog.list.FasterList;
 import jcog.tree.perfect.Trie;
 import jcog.tree.perfect.TrieMatch;
@@ -23,6 +24,7 @@ import org.openjdk.jmh.results.*;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumMap;
@@ -140,7 +142,7 @@ public class StackProfiler2 implements InternalProfiler {
     @Override
     public Collection<? extends Result> afterIteration(BenchmarkParams benchmarkParams, IterationParams iterationParams, IterationResult result) {
         samplingTask.stop();
-        return Collections.singleton(new StackResult(samplingTask.stacks, topStacks));
+        return Collections.singleton(new StackResult(samplingTask.stacks, new HashBag() /* TODO */, topStacks));
     }
 
     @Override
@@ -148,25 +150,27 @@ public class StackProfiler2 implements InternalProfiler {
         return "Simple and naive Java stack profiler++";
     }
 
-    public class SamplingTask implements Runnable {
+    class SamplingTask implements Runnable {
 
         private final Thread thread;
         private final Map<Thread.State, HashBag<StackRecord>> stacks;
 
-        public SamplingTask() {
+        SamplingTask() {
             stacks = new EnumMap<>(Thread.State.class);
             for (Thread.State s : Thread.State.values()) {
-                stacks.put(s, new HashBag<StackRecord>());
+                stacks.put(s, new HashBag<>());
             }
             thread = new Thread(this);
             thread.setName("Sampling Thread");
+            thread.setPriority(Thread.MAX_PRIORITY);
         }
 
         @Override
         public void run() {
+            ThreadMXBean threadBean = ManagementFactory.getThreadMXBean();
             while (!Thread.interrupted()) {
-                measure(ManagementFactory.getThreadMXBean().dumpAllThreads(false, false));
-                if (!pause(periodMsec))
+                measure(threadBean.dumpAllThreads(false, false));
+                if (!Util.sleep(periodMsec))
                     break;
             }
         }
@@ -194,7 +198,7 @@ public class StackProfiler2 implements InternalProfiler {
                 //   - Get the remaining number of stack lines and builder the stack record
 
 
-                StackRecord lines = new StackRecord();
+                StackRecord lines = new StackRecord(stackLines);
                 Stream.of(info.getStackTrace())
                         .filter(f -> !exclude(f.getClassName()))
                         .limit(stackLines)
@@ -258,24 +262,29 @@ public class StackProfiler2 implements InternalProfiler {
         }
     }
 
-    public static class StackRecord extends FasterList<Pair<String, IntObjectPair<String>>> {
-        private static final long serialVersionUID = -1829626661894754733L;
+    static class StackRecord extends FasterList<Pair<String, IntObjectPair<String>>> {
 
         private int hash;
 
         public StackRecord() {
-            super(16);
+            this(16);
+        }
+
+        public StackRecord(int cap) {
+            super(cap);
         }
 
         public void commit() {
+            compact();
             this.hash = super.hashCode();
         }
 
         @Override
         public boolean equals(Object o) {
+
             if (this == o) return true;
-            if (o == null || getClass() != o.getClass() || hash != o.hashCode()) return false;
-            return super.equals(o);
+            StackRecord r = (StackRecord)o;
+            return hash == r.hash && super.equals(r);
         }
 
         @Override
@@ -303,15 +312,17 @@ public class StackProfiler2 implements InternalProfiler {
     }
 
     public static class StackResult extends Result<StackResult> {
-        private static final long serialVersionUID = 2609170863630346073L;
 
-        private final Map<Thread.State, HashBag<StackRecord>> stacks;
-        private final int topStacks;
+        private final Map<Thread.State, HashBag<StackRecord>> calleeSum;
+        private final int topStacks, topCallees;
+        private final HashBag<Pair<String, IntObjectPair<String>>> calledSum;
 
-        public StackResult(Map<Thread.State, HashBag<StackRecord>> stacks, int topStacks) {
+        public StackResult(Map<Thread.State, HashBag<StackRecord>> calleeSum, HashBag<Pair<String, IntObjectPair<String>>> calledSum, int topStacks) {
             super(ResultRole.SECONDARY, Defaults.PREFIX + "stack", of(Double.NaN), "---", AggregationPolicy.AVG);
-            this.stacks = stacks;
+            this.calleeSum = calleeSum;
+            this.calledSum = calledSum;
             this.topStacks = topStacks;
+            this.topCallees = topStacks * 4;
         }
 
         @Override
@@ -331,10 +342,12 @@ public class StackProfiler2 implements InternalProfiler {
 
         @Override
         public String extendedInfo() {
-            return getStack(stacks);
+            return toString(calleeSum) + "\n" + toString(calledSum);
         }
 
-        public String getStack(final Map<Thread.State, HashBag<StackRecord>> stacks) {
+
+
+        public String toString(final Map<Thread.State, HashBag<StackRecord>> stacks) {
 
             int top = 32;
 //
@@ -354,8 +367,7 @@ public class StackProfiler2 implements InternalProfiler {
                 sb.append("\n");
             });
 
-            String s = sb.toString();
-            return s;
+            return sb.toString();
 
 //            List<Thread.State> sortedStates = new ArrayList<>(stacks.keySet());
 //            Collections.sort(sortedStates, new Comparator<Thread.State>() {
@@ -420,21 +432,37 @@ public class StackProfiler2 implements InternalProfiler {
 //            return builder.toString();
         }
 
+        private String toString(HashBag<Pair<String, IntObjectPair<String>>> calleeSum) {
+            StringBuilder sb = new StringBuilder(16*1024).append("CALlEES\n");
+
+            float totalHundredths = calleeSum.size()/100f;
+            calleeSum.topOccurrences(topCallees).forEach((x) -> {
+                sb.append('\t').append( Texts.n4(x.getTwo()/totalHundredths) ).append("%\t").append(x.getOne()).append('\n');
+            });
+
+            return sb.toString();
+
+        }
     }
 
     public static class StackResultAggregator implements Aggregator<StackResult> {
         @Override
         public StackResult aggregate(Collection<StackResult> results) {
             int topStacks = 0;
-            Map<Thread.State, HashBag<StackRecord>> sum = new EnumMap<>(Thread.State.class);
+            Map<Thread.State, HashBag<StackRecord>> calleeSum = new EnumMap<>(Thread.State.class);
+            HashBag<Pair<String, IntObjectPair<String>>> calledSum = new HashBag();
             for (StackResult r : results) {
-                r.stacks.forEach((key, value) -> {
-                    HashBag<StackRecord> sumSet = sum.computeIfAbsent(key, (x) -> new HashBag<StackRecord>());
-                    value.forEachWithOccurrences(sumSet::addOccurrences);
+                r.calleeSum.forEach((key, value) -> {
+                    HashBag<StackRecord> sumSet = calleeSum.computeIfAbsent(key, (x) -> new HashBag<>());
+                    value.forEachWithOccurrences((x,o)->{
+                        sumSet.addOccurrences(x, o);
+                        calledSum.addOccurrences(x.getFirst(), o);
+                    });
+
                 });
                 topStacks = r.topStacks;
             }
-            return new StackResult(sum, topStacks);
+            return new StackResult(calleeSum, calledSum, topStacks);
         }
     }
 

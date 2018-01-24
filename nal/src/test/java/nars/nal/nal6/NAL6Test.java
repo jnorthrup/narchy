@@ -1,5 +1,7 @@
 package nars.nal.nal6;
 
+import nars.NAR;
+import nars.NARS;
 import nars.test.TestNAR;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Disabled;
@@ -12,6 +14,10 @@ public class NAL6Test extends NALTest {
 
 
     final int cycles = 2500;
+
+    @Override protected NAR nar() {
+        return NARS.tmp(6);
+    }
 
     @Test
     public void variable_unification_revision() {
@@ -87,10 +93,10 @@ public class NAL6Test extends NALTest {
         tester.believe("<(&&,<$x --> flyer>,<$x --> [chirping]>, <($x, worms) --> food>) ==> <$x --> bird>>"); //en("If something can fly, chirp, and eats worms, then it is a bird.");
         tester.believe("<(&&,<$y --> [chirping]>,<$y --> [withWings]>) ==> <$y --> bird>>"); //en("If something can chirp and has wings, then it is a bird.");
         tester.mustBelieve(cycles, "<(&&,<$1 --> flyer>,<($1,worms) --> food>) ==> <$1 --> [withWings]>>", 1.00f,
-                0.4f
+                0.45f
                 /*0.45f*/); //en("If something can fly and eats worms, then I guess it has wings.");
         tester.mustBelieve(cycles, "<<$1 --> [withWings]> ==> (&&,<$1 --> flyer>,<($1,worms) --> food>)>", 1.00f,
-                0.4f
+                0.45f
                 /*0.45f*/); //en("I guess if something has wings, then it can fly and eats worms.");
 
 

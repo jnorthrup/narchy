@@ -431,15 +431,15 @@ public enum $ {
     }
 
     public static Term sete(Term... t) {
-        return SETe.a(t);
+        return SETe.the(t);
     }
 
     public static Term sete(RoaringBitmap b) {
-        return SETe.a(ints(b)); //non-interned
+        return SETe.the(ints(b)); //non-interned
     }
 
     public static Term p(RoaringBitmap b) {
-        return PROD.a(ints(b));
+        return PROD.the(ints(b));
     }
 
     public static Term[] ints(RoaringBitmap b) {

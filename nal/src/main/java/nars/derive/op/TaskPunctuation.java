@@ -16,7 +16,7 @@ final public class TaskPunctuation extends AbstractPred<ProtoDerivation> {
     public final byte punc;
 
     TaskPunctuation(byte p) {
-        this(p, INH.a($.quote((char) p), $.the("task")));
+        this(p, INH.the($.quote((char) p), $.the("task")));
     }
 
     TaskPunctuation(byte p, Term id) {

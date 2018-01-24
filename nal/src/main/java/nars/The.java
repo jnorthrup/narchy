@@ -59,21 +59,8 @@ public interface The {
 //                    , 4, false);
     //, false);
 
-    public static Term compound(Op o, Term... u) {
 
-//        boolean cache = cacheable(u);
-//
-//        if (!cache) {
-        return rawCompoundBuilder.apply(o, u);
-//        } else {
-//            //System.out.println(o + " " + Arrays.toString(u));
-//            return compoundCached.apply(new IntArrayPair(o.id, u));
-//        }
-    }
-
-
-
-        Function<Term[], nars.subterm.Subterms> RawSubtermBuilder = (t) -> {
+    Function<Term[], nars.subterm.Subterms> RawSubtermBuilder = (t) -> {
             if (t.length == 0)
                 return nars.subterm.Subterms.Empty;
 
@@ -157,79 +144,43 @@ public interface The {
 
 
 
-        BiFunction<Op, Term[], Term> rawCompoundBuilder = (o, subterms) -> {
-            assert (!o.atomic) : o + " is atomic, with subterms: " + (subterms);
 
-            boolean hasEllipsis = false;
-
-            for (int i = 0, subtermsSize = subterms.length; i < subtermsSize; i++) {
-                Term x = subterms[i];
-                if (!hasEllipsis && x instanceof Ellipsis)
-                    hasEllipsis = true;
-            }
-
-
-            int s = subterms.length;
-            assert (o.maxSize >= s) :
-                    "subterm overflow: " + o + ' ' + (subterms);
-            assert (o.minSize <= s || hasEllipsis) :
-                    "subterm underflow: " + o + ' ' + (subterms);
-
-            if (s == 1) {
-                switch (o) {
-                    case NEG:
-                        return Neg.the(subterms[0]);
-                    case PROD:
-                        //use full CachedCompound for PROD
-                        //use default below
-                        break;
-                    default:
-                        return new CachedUnitCompound(o, subterms[0]);
-                }
-
-
-            }
-
-            return new CompoundCached(o, The._subterms(subterms));
-
-        };
-
-        Supplier<BiFunction<Op, Term[], Term>> SoftCompoundBuilder = () ->
-                new BiFunction<>() {
-
-                    final SoftMemoize<ByteKeyProtoCompound, Term> cache = new SoftMemoize<>((v) -> rawCompoundBuilder.apply(v.op, v.subs /* HACK */), 64 * 1024, true);
-
-                    @Override
-                    public Term apply(Op op, Term[] terms) {
-                        return cache.apply(new ByteKeyProtoCompound(op, terms).commit());
-                    }
-                };
-        //
-        Supplier<BiFunction<Op, Term[], Term>> CaffeineCompoundBuilder = () -> new BiFunction<>() {
-
-            final CaffeineMemoize<ByteKeyProtoCompound, Term> cache = CaffeineMemoize.build((v) -> rawCompoundBuilder.apply(v.op, v.subs /* HACK */),
-                    256 * 1024, false);
-
-            @Override
-            public Term apply(Op op, Term[] terms) {
-                return cache.apply(new ByteKeyProtoCompound(op, terms).commit());
-            }
-        };
-        //
-//        public static final Supplier<BiFunction<Op, Term[], Term>> HijackCompoundBuilder = ()->new BiFunction<>() {
+//        Supplier<BiFunction<Op, Term[], Term>> SoftCompoundBuilder = () ->
+//                new BiFunction<>() {
 //
-//            final HijackMemoize<NewCompound, Term> cache
-//                    = new HijackMemoize<>((x) -> rawCompoundBuilder.apply(x.op, x.subs),
-//                    128 * 1024 + 7 /* ~prime */, 3);
+//                    final SoftMemoize<ByteKeyProtoCompound, Term> cache = new SoftMemoize<>((v) -> rawCompoundBuilder.apply(v.op, v.subs /* HACK */), 64 * 1024, true);
+//
+//                    @Override
+//                    public Term apply(Op op, Term[] terms) {
+//                        return cache.apply(new ByteKeyProtoCompound(op, terms).commit());
+//                    }
+//                };
+//        //
+//        Supplier<BiFunction<Op, Term[], Term>> CaffeineCompoundBuilder = () -> new BiFunction<>() {
+//
+//            final CaffeineMemoize<ByteKeyProtoCompound, Term> cache = CaffeineMemoize.build((v) -> rawCompoundBuilder.apply(v.op, v.subs /* HACK */),
+//                    256 * 1024, false);
 //
 //            @Override
-//            public Term apply(Op o, Term[] subterms) {
-//                return cache.apply(
-//                        new NewCompound(o, subterms).commit()
-//                );
+//            public Term apply(Op op, Term[] terms) {
+//                return cache.apply(new ByteKeyProtoCompound(op, terms).commit());
 //            }
 //        };
-//
+//        //
+////        public static final Supplier<BiFunction<Op, Term[], Term>> HijackCompoundBuilder = ()->new BiFunction<>() {
+////
+////            final HijackMemoize<NewCompound, Term> cache
+////                    = new HijackMemoize<>((x) -> rawCompoundBuilder.apply(x.op, x.subs),
+////                    128 * 1024 + 7 /* ~prime */, 3);
+////
+////            @Override
+////            public Term apply(Op o, Term[] subterms) {
+////                return cache.apply(
+////                        new NewCompound(o, subterms).commit()
+////                );
+////            }
+////        };
+////
 
         //CaffeineCompoundBuilder.get();
         //HijackCompoundBuilder;

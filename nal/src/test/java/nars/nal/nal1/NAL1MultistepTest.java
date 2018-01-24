@@ -1,5 +1,7 @@
 package nars.nal.nal1;
 
+import nars.NAR;
+import nars.NARS;
 import nars.test.DeductiveChainTest;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
@@ -10,9 +12,11 @@ import static nars.test.DeductiveChainTest.*;
 
 public class NAL1MultistepTest extends NALTest {
 
+    @Override protected NAR nar() {
+        return NARS.tmp(6);
+    }
 
     @Test public void multistepInh2() {
-        test.nar.log();
         new DeductiveChainTest(test, 2, 1000, inh);
     }
 
@@ -21,7 +25,7 @@ public class NAL1MultistepTest extends NALTest {
     }
 
     @Test public void multistepInh3() {
-        new DeductiveChainTest(test, 3, 1000, inh);
+        new DeductiveChainTest(test, 3, 2000, inh);
     }
     @Test public void multistepSim3() {
         new DeductiveChainTest(test, 3, 1000, sim);
