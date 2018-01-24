@@ -4,18 +4,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Topic;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StoredField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.*;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.BytesRef;
+import org.apache.lucene.util.QueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +46,9 @@ public class User {
     static final Logger logger = LoggerFactory.getLogger(User.class);
 
     private final Directory d;
-    private DirectoryReader ir;
+
     private IndexWriter iw;
+    final StandardAnalyzer analyzer = new StandardAnalyzer();
 
     public synchronized static User the() {
         if (user == null)
@@ -104,7 +105,7 @@ public class User {
 
         try {
             iw = new IndexWriter(d, iwc);
-            ir = DirectoryReader.open(iw);
+            //ir = DirectoryReader.open(iw);
         } catch (IOException e) {
             throw new Error(e);
         }
@@ -192,6 +193,75 @@ public class User {
         }
     }
 
+    /** view for a search result document, w/ score and method to decode to lazily object.
+     * it will be changesd on each iterated result so don't keep it.
+     * caches the generated document to a field while it's still visiting it.
+     * */
+    public final class DocObj {
+
+        private final IndexReader reader;
+        private int doc;
+        private float score;
+        private Document _doc;
+
+        public DocObj(IndexReader reader) {
+            this.reader = reader;
+        }
+
+        DocObj update(int doc, float score) {
+            this.doc = doc; this.score = score;
+            this._doc = null;
+            return this;
+        }
+
+        public float score() {
+            return score;
+        }
+
+        @Override
+        public String toString() {
+            return score() + " " + doc();
+        }
+
+        public Document doc() {
+
+            if (this._doc!=null)
+                return _doc;
+
+            try {
+                return this._doc = reader.document(doc);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        public Object obj() {
+            return undocument(doc());
+        }
+
+    }
+
+
+    public <X> void getAll(String query, Predicate<DocObj> yy) {
+        logger.debug("getAll {}", query);
+        Query q = new QueryBuilder(analyzer).createPhraseQuery("i", query);
+        search((iis) -> {
+            try {
+                TopDocs y = iis.search(q, 16);
+                if (y.totalHits > 0) {
+                    DocObj d = new DocObj(iis.getIndexReader());
+                    for (ScoreDoc sd : y.scoreDocs) {
+                        if (!yy.test(d.update(sd.doc, sd.score)))
+                            break;
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
     public <X> void get(String id, Supplier<X> ifAbsent, Consumer<X> with) {
         logger.debug("get {}", id);
         final Document[] D = new Document[1];
@@ -242,14 +312,17 @@ public class User {
     }
 
     private void read(Consumer<IndexReader> with) {
-//        try {
+        try {
 
+            DirectoryReader r = DirectoryReader.open(iw);
 
-        with.accept(ir);
+            with.accept(r);
 
-//        } catch (IOException e) {
-//            logger.error("read", e);
-//        }
+            r.close();
+
+        } catch (IOException e) {
+            logger.error("read", e);
+        }
     }
 
     private void search(Consumer<IndexSearcher> with) {
