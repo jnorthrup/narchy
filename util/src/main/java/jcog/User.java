@@ -193,6 +193,10 @@ public class User {
         }
     }
 
+    public void run(Runnable r) {
+        exe.submit(r);
+    }
+
     /** view for a search result document, w/ score and method to decode to lazily object.
      * it will be changesd on each iterated result so don't keep it.
      * caches the generated document to a field while it's still visiting it.
@@ -240,6 +244,11 @@ public class User {
             return undocument(doc());
         }
 
+        public void clear() {
+            doc = -1;
+            score = Float.NaN;
+            _doc = null;
+        }
     }
 
 
@@ -255,6 +264,7 @@ public class User {
                         if (!yy.test(d.update(sd.doc, sd.score)))
                             break;
                     }
+                    d.clear();
                 }
             } catch (IOException e) {
                 e.printStackTrace();

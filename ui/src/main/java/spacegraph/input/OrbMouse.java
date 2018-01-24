@@ -40,7 +40,7 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
     public v3 hitPoint;
     protected final VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
     public ClosestRay pickRay;
-    public Finger finger = new Finger(null);
+    public final Finger finger = new Finger(null);
 
     public OrbMouse(JoglPhysics g) {
 

@@ -84,7 +84,7 @@ public class FZero extends NAgentX {
 
 
         //initToggle();
-        initBipolar(true);
+        initBipolar(false);
 
 //        actionUnipolar(p("left"), (r) -> {
 //            //if (r > 0.5f)

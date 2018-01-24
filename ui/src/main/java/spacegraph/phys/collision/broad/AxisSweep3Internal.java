@@ -41,8 +41,8 @@ import spacegraph.phys.math.VectorUtil;
  */
 public abstract class AxisSweep3Internal extends Broadphase {
 
-	protected int bpHandleMask;
-	protected int handleSentinel;
+	protected final int bpHandleMask;
+	protected final int handleSentinel;
 	
 	protected final v3 worldAabbMin = new v3(); // overall system bounds
 	protected final v3 worldAabbMax = new v3(); // overall system bounds
@@ -50,7 +50,7 @@ public abstract class AxisSweep3Internal extends Broadphase {
 	protected final v3 quantize = new v3();     // scaling factor for quantization
 
 	protected int numHandles;                               // number of active handles
-	protected int maxHandles;                               // max number of handles
+	protected final int maxHandles;                               // max number of handles
 	protected final Handle[] handles;                            // handles pool
 	protected int firstFreeHandle;		                    // free handles list
 
@@ -61,12 +61,12 @@ public abstract class AxisSweep3Internal extends Broadphase {
 	// OverlappingPairCallback is an additional optional user callback for adding/removing overlapping pairs, similar interface to OverlappingPairCache.
 	protected OverlappingPairCallback userPairCallback;
 	
-	protected boolean ownsPairCache;
+	protected final boolean ownsPairCache;
 
 	protected int invalidPair;
 	
 	// JAVA NOTE: added
-	protected int mask;
+	protected final int mask;
 	
 	AxisSweep3Internal(v3 worldAabbMin, v3 worldAabbMax, int handleMask, int handleSentinel, int userMaxHandles/* = 16384*/, OverlappingPairCache pairCache/*=0*/) {
 		this.bpHandleMask = handleMask;

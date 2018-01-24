@@ -115,8 +115,8 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
             c = Math.round(scale * charAspect);
             r = Math.round(c * va / charAspect);
         }
-        r = Math.max(3, r);
-        c = Math.max(3, c);
+        r = Math.max(1, r);
+        c = Math.max(2, c);
         resize(c, r);
     }
 

@@ -39,13 +39,13 @@ public class ContactSolverInfo {
 	public float maxErrorReduction = 20f;
 	public float sor = 1.3f;
 	public float erp = 0.2f; // used as Baumgarte factor
-	public float erp2 = 0.1f; // used in Split Impulse
+	public final float erp2 = 0.1f; // used in Split Impulse
 	public boolean splitImpulse;
-	public float splitImpulsePenetrationThreshold = -0.02f;
+	public final float splitImpulsePenetrationThreshold = -0.02f;
 	public float linearSlop;
-	public float warmstartingFactor = 0.85f;
+	public final float warmstartingFactor = 0.85f;
 	
-	public int solverMode = SolverMode.SOLVER_RANDMIZE_ORDER | SolverMode.SOLVER_CACHE_FRIENDLY | SolverMode.SOLVER_USE_WARMSTARTING;
+	public final int solverMode = SolverMode.SOLVER_RANDMIZE_ORDER | SolverMode.SOLVER_CACHE_FRIENDLY | SolverMode.SOLVER_USE_WARMSTARTING;
 
 	public ContactSolverInfo() {
 	}

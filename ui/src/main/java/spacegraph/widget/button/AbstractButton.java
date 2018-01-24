@@ -13,7 +13,7 @@ public abstract class AbstractButton extends Widget {
 
 
 
-    Consumer<Finger> pressable = Finger.clicked(0, ()->{
+    final Consumer<Finger> pressable = Finger.clicked(0, ()->{
         dz = 0;
         onClick();
     }, ()-> {

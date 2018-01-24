@@ -35,6 +35,11 @@ public class ConsoleGUI extends ConsoleTerminal {
 
     }
 
+    public ConsoleGUI scale(int scale) {
+        this.scale = scale;
+        return this;
+    }
+
     static final Theme DARK = SimpleTheme.makeTheme(
             true,
             TextColor.ANSI.WHITE, //baseForeground,
@@ -42,7 +47,7 @@ public class ConsoleGUI extends ConsoleTerminal {
             TextColor.ANSI.WHITE, // editableForeground,
             TextColor.ANSI.BLUE, //editableBackground,
             TextColor.ANSI.WHITE, //selectedForeground,
-            new TextColor.RGB(55,75,55), //selectedBackground,
+            new TextColor.RGB(25,25,25), //selectedBackground,
             new TextColor.RGB(15,15,15));
 
     @Override

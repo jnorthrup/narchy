@@ -24,25 +24,81 @@ public class TextEdit extends DefaultVirtualTerminal {
         this(c, r, "");
     }
 
+    public TextEdit() {
+        this("", true);
+    }
+
+
+    public TextEdit(String initialContent, boolean multiline) {
+        this(-1, -1, initialContent, multiline);
+    }
+
+
     public TextEdit(int c, int r, String initialContent) {
-        super(new TerminalSize(c, r));
+        this(c, r, initialContent, r>1);
+    }
+
+    public TextEdit(int c, int r, String initialContent, boolean multiline) {
+        super();
+
 
         setCursorVisible(true);
 
-        textBox = new TextBox(initialContent, r>1 ? TextBox.Style.MULTI_LINE : TextBox.Style.SINGLE_LINE) {
+        textBox = new TextBox(initialContent, multiline ? TextBox.Style.MULTI_LINE : TextBox.Style.SINGLE_LINE) {
 
 //            {
 //                setBacklogSize(8); //???
 //            }
+//
+//            public String getLine(int index) {
+//                if (getLineCount() == 0) return "";
+//                return super.getLine(index);
+//            }
+//
+//            @Override
+//            public String getText() {
+//                if (getLineCount() == 0) return "";
+//                return super.getText();
+//            }
+
 
             @Override
             public Result handleKeyStroke(KeyStroke keyStroke) {
                 if (!onKey(keyStroke))
                     return Result.HANDLED;
 
-                return super.handleKeyStroke(keyStroke);
+                String before = getText();
+                Result r = super.handleKeyStroke(keyStroke);
+                if (r == Result.HANDLED) {
+                    //HACK
+                    String after = getText();
+                    if (!before.equals(after))
+                        textChange(after);
+                }
+                return r;
             }
+
+            @Override
+            public TextBox setText(String next) {
+                String prev = getSize().getColumns()== 0 ? null : this.getText();
+                if (prev == null || !prev.equals(next)) {
+                    synchronized (this) {
+                        super.setText(next);
+                    }
+                    textChange(next);
+                }
+                return this;
+            }
+
         };
+
+        if (c!=-1)
+            textBox.setSize(new TerminalSize(c, r));
+
+    }
+
+    protected void textChange(String next) {
+
     }
 
 
@@ -60,12 +116,14 @@ public class TextEdit extends DefaultVirtualTerminal {
     }
 
 
-    public Surface surface() {
+    public ConsoleGUI surface() {
         ConsoleGUI g = new ConsoleGUI(this) {
+
+
 
             @Override
             protected void init(BasicWindow window) {
-                textBox.setPreferredSize(new TerminalSize(window.getSize().getColumns() - 2, window.getSize().getRows() - 2));
+                //textBox.setPreferredSize(new TerminalSize(window.getSize().getColumns() - 2, window.getSize().getRows() - 2));
 
                 textBox.takeFocus();
 

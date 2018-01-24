@@ -7,16 +7,12 @@ import com.jogamp.opengl.*;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.AnimatorBase;
-import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.gl2.GLUT;
-import jcog.Util;
 import jcog.exe.Loop;
 import jcog.list.FastCoWList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
@@ -535,90 +531,90 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
 
     }
 
-    private static class MyFPSAnimator extends FPSAnimator {
-
-        int idealFPS, minFPS;
-        float lagTolerancePercentFPS = 0.05f;
-
-        public MyFPSAnimator(int idealFPS, int minFPS, int updateEveryNFrames) {
-            super(idealFPS);
-
-            setIgnoreExceptions(true);
-            setPrintExceptions(false);
-
-            this.idealFPS = idealFPS;
-            this.minFPS = minFPS;
-
-            setUpdateFPSFrames(updateEveryNFrames, new PrintStream(new OutputStream() {
-
-                @Override
-                public void write(int b) {
-                }
-
-                long lastUpdate;
-
-                @Override
-                public void flush() {
-                    long l = getLastFPSUpdateTime();
-                    if (lastUpdate == l)
-                        return;
-                    updateFPS();
-                    lastUpdate = l;
-                }
-
-            }, true));
-
-        }
-
-
-        protected void updateFPS() {
-            //logger.info("{}", MyFPSAnimator.this);
-
-            int currentFPS = getFPS();
-            float lastFPS = getLastFPS();
-            float lag = currentFPS - lastFPS;
-
-            float error = lag / currentFPS;
-
-            float nextFPS = Float.NaN;
-
-            if (error > lagTolerancePercentFPS) {
-                if (currentFPS > minFPS) {
-                    //decrease fps
-                    nextFPS = Util.lerp(0.1f, currentFPS, minFPS);
-                }
-            } else {
-                if (currentFPS < idealFPS) {
-                    //increase fps
-                    nextFPS = Util.lerp(0.1f, currentFPS, idealFPS);
-                }
-            }
-
-            int inextFPS = Math.max(1, Math.round(nextFPS));
-            if (nextFPS == nextFPS && inextFPS != currentFPS) {
-                //stop();
-                logger.debug("animator rate change from {} to {} fps because currentFPS={} and lastFPS={} ", currentFPS, inextFPS, currentFPS, lastFPS);
-
-                Thread x = animThread; //HACK to make it think it's stopped when we just want to change the FPS value ffs!
-                animThread = null;
-
-                setFPS(inextFPS);
-                animThread = x;
-
-                //start();
-            }
-
-//            if (logger.isDebugEnabled()) {
-//                if (!meters.isEmpty()) {
-//                    meters.forEach((m, x) -> {
-//                        logger.info("{} {}ms", m, ((JoglPhysics) m).frameTimeMS.mean());
-//                    });
+//    private static class MyFPSAnimator extends FPSAnimator {
+//
+//        int idealFPS, minFPS;
+//        float lagTolerancePercentFPS = 0.05f;
+//
+//        public MyFPSAnimator(int idealFPS, int minFPS, int updateEveryNFrames) {
+//            super(idealFPS);
+//
+//            setIgnoreExceptions(true);
+//            setPrintExceptions(false);
+//
+//            this.idealFPS = idealFPS;
+//            this.minFPS = minFPS;
+//
+//            setUpdateFPSFrames(updateEveryNFrames, new PrintStream(new OutputStream() {
+//
+//                @Override
+//                public void write(int b) {
+//                }
+//
+//                long lastUpdate;
+//
+//                @Override
+//                public void flush() {
+//                    long l = getLastFPSUpdateTime();
+//                    if (lastUpdate == l)
+//                        return;
+//                    updateFPS();
+//                    lastUpdate = l;
+//                }
+//
+//            }, true));
+//
+//        }
+//
+//
+//        protected void updateFPS() {
+//            //logger.info("{}", MyFPSAnimator.this);
+//
+//            int currentFPS = getFPS();
+//            float lastFPS = getLastFPS();
+//            float lag = currentFPS - lastFPS;
+//
+//            float error = lag / currentFPS;
+//
+//            float nextFPS = Float.NaN;
+//
+//            if (error > lagTolerancePercentFPS) {
+//                if (currentFPS > minFPS) {
+//                    //decrease fps
+//                    nextFPS = Util.lerp(0.1f, currentFPS, minFPS);
+//                }
+//            } else {
+//                if (currentFPS < idealFPS) {
+//                    //increase fps
+//                    nextFPS = Util.lerp(0.1f, currentFPS, idealFPS);
 //                }
 //            }
-        }
-
-
-    }
+//
+//            int inextFPS = Math.max(1, Math.round(nextFPS));
+//            if (nextFPS == nextFPS && inextFPS != currentFPS) {
+//                //stop();
+//                logger.debug("animator rate change from {} to {} fps because currentFPS={} and lastFPS={} ", currentFPS, inextFPS, currentFPS, lastFPS);
+//
+//                Thread x = animThread; //HACK to make it think it's stopped when we just want to change the FPS value ffs!
+//                animThread = null;
+//
+//                setFPS(inextFPS);
+//                animThread = x;
+//
+//                //start();
+//            }
+//
+////            if (logger.isDebugEnabled()) {
+////                if (!meters.isEmpty()) {
+////                    meters.forEach((m, x) -> {
+////                        logger.info("{} {}ms", m, ((JoglPhysics) m).frameTimeMS.mean());
+////                    });
+////                }
+////            }
+//        }
+//
+//
+//    }
 
     // See http://www.lighthouse3d.com/opengl/glut/index.php?bmpfontortho
     protected void ortho() {

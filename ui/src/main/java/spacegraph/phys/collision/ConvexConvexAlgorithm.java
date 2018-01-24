@@ -236,8 +236,8 @@ public class ConvexConvexAlgorithm extends CollisionAlgorithm {
 
 	public static class CreateFunc extends CollisionAlgorithmCreateFunc {
 
-		public ConvexPenetrationDepthSolver pdSolver;
-		public SimplexSolverInterface simplexSolver;
+		public final ConvexPenetrationDepthSolver pdSolver;
+		public final SimplexSolverInterface simplexSolver;
 
 		public CreateFunc(SimplexSolverInterface simplexSolver, ConvexPenetrationDepthSolver pdSolver) {
 			this.simplexSolver = simplexSolver;

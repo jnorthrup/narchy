@@ -6,7 +6,6 @@ import nars.NAR;
 import nars.NAgentX;
 import nars.concept.ScalarConcepts;
 import nars.gui.Vis;
-import nars.util.signal.Bitmap2DSensor;
 import nars.video.Scale;
 
 import static java4k.gradius4k.Gradius4K.*;
@@ -35,8 +34,16 @@ public class Gradius extends NAgentX {
         //senseCameraReduced($.p(id,$.the("ae")), (Supplier)()->g.image, 32,32,2,2).resolution(0.5f);
 
 
+        senseCamera($.p(id, $.the("ul")), new Scale(() -> g.image, 25, 25)
+                .window(0, 0, 0.5f, 0.5f)).resolution(0.05f);
+        senseCamera($.p(id, $.the("ur")), new Scale(() -> g.image, 25, 25)
+                .window(0.5f, 0, 1f, 0.5f)).resolution(0.05f);
+        senseCamera($.p(id, $.the("bl")), new Scale(() -> g.image, 25, 25)
+                .window(0, 0.5f, 0.5f, 1f)).resolution(0.05f);
+        senseCamera($.p(id, $.the("br")), new Scale(() -> g.image, 25, 25)
+                .window(0.5f, 0.5f, 1f, 1f)).resolution(0.05f);
 
-        Bitmap2DSensor c1 = senseCamera($.p(id, $.the("global")), new Scale(() -> g.image, 50, 50)).resolution(0.05f);
+        //Bitmap2DSensor c1 = senseCamera($.p(id, $.the("global")), new Scale(() -> g.image, 50, 50)).resolution(0.05f);
 
         senseCameraRetina($.p(id,$.the("local")), () -> g.image, 16, 16).resolution(0.04f);
 
@@ -107,8 +114,8 @@ public class Gradius extends NAgentX {
         actionPushButton($.inh("fire", id),
                 (b) -> g.keys[VK_SHOOT] = b);
 
-        //initBipolar();
-        initToggle();
+        initBipolar();
+        //initToggle();
 
 //        actionTriState($.p(Atomic.the("dx")), (dh) -> {
 //            g.keys[Gradius4K.VK_LEFT] = false;

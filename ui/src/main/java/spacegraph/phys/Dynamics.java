@@ -61,13 +61,9 @@ import static spacegraph.phys.Dynamic.ifDynamic;
 public class Dynamics<X> extends Collisions<X> {
 
     private static final Comparator<TypedConstraint> sortConstraintOnIslandPredicate = (lhs, rhs) -> {
-        if (lhs == rhs)
-            return 0;
-
-        int rIslandId0, lIslandId0;
-        rIslandId0 = getConstraintIslandId(rhs);
-        lIslandId0 = getConstraintIslandId(lhs);
-        return lIslandId0 < rIslandId0 ? -1 : +1;
+        return (lhs == rhs) ? 0
+                :
+                ((getConstraintIslandId(lhs) < getConstraintIslandId(rhs)) ? -1 : +1);
     };
 
     protected final Constrainer constrainer;
@@ -76,7 +72,7 @@ public class Dynamics<X> extends Collisions<X> {
     @Nullable protected v3 gravity;
 
 
-    Flip<List<Collidable>> coll = new Flip(FasterList::new);
+    final Flip<List<Collidable>> coll = new Flip(FasterList::new);
     private List<Collidable> collidable = new FasterList();
 
     final FasterList<BroadConstraint> broadConstraints = new FasterList<>(0);
@@ -512,9 +508,9 @@ public class Dynamics<X> extends Collisions<X> {
 //    }
 
     private static int getConstraintIslandId(TypedConstraint lhs) {
-        Collidable rcolObj0 = lhs.getRigidBodyA();
-        Collidable rcolObj1 = lhs.getRigidBodyB();
-        return rcolObj0.tag() >= 0 ? rcolObj0.tag() : rcolObj1.tag();
+        int rcolObj0 = lhs.getRigidBodyA().tag();
+        int rcolObj1 = lhs.getRigidBodyB().tag();
+        return rcolObj0 >= 0 ? rcolObj0 : rcolObj1;
     }
 
     /**

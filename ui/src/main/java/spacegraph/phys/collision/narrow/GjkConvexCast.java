@@ -96,90 +96,86 @@ public class GjkConvexCast extends ConvexCast {
 		gjk.init(convexA, convexB, simplexSolver, null); // penetrationDepthSolver);		
 		DiscreteCollisionDetectorInterface.ClosestPointInput input = new DiscreteCollisionDetectorInterface.ClosestPointInput();
 		input.init();
-		try {
-			// we don't use margins during CCD
-			//	gjk.setIgnoreMargin(true);
+		// we don't use margins during CCD
+		//	gjk.setIgnoreMargin(true);
 
-			input.transformA.set(fromA);
-			input.transformB.set(fromB);
-			gjk.getClosestPoints(input, pointCollector);
+		input.transformA.set(fromA);
+		input.transformB.set(fromB);
+		gjk.getClosestPoints(input, pointCollector);
 
-			hasResult = pointCollector.hasResult;
-			c.set(pointCollector.pointInWorld);
+		hasResult = pointCollector.hasResult;
+		c.set(pointCollector.pointInWorld);
 
-			if (hasResult) {
-				float dist;
-				dist = pointCollector.distance;
-				n.set(pointCollector.normalOnBInWorld);
+		if (hasResult) {
+            float dist;
+            dist = pointCollector.distance;
+            n.set(pointCollector.normalOnBInWorld);
 
-				// not close enough
-				while (dist > radius) {
-					numIter++;
-					if (numIter > maxIter) {
-						return false; // todo: report a failure
-					}
-					float dLambda = 0f;
+            // not close enough
+            while (dist > radius) {
+                numIter++;
+                if (numIter > maxIter) {
+                    return false; // todo: report a failure
+                }
+                float dLambda = 0f;
 
-					float projectedLinearVelocity = r.dot(n);
+                float projectedLinearVelocity = r.dot(n);
 
-					dLambda = dist / (projectedLinearVelocity);
+                dLambda = dist / (projectedLinearVelocity);
 
-					lambda = lambda - dLambda;
+                lambda = lambda - dLambda;
 
-					if (lambda > 1f) {
-						return false;
-					}
-					if (lambda < 0f) {
-						return false;					// todo: next check with relative epsilon
-					}
-					
-					if (lambda <= lastLambda) {
-						return false;
-					//n.setValue(0,0,0);
-					//break;
-					}
-					lastLambda = lambda;
+                if (lambda > 1f) {
+                    return false;
+                }
+                if (lambda < 0f) {
+                    return false;					// todo: next check with relative epsilon
+                }
 
-					// interpolate to next lambda
-					result.debugDraw(lambda);
-					VectorUtil.setInterpolate3(input.transformA, fromA, toA, lambda);
-					VectorUtil.setInterpolate3(input.transformB, fromB, toB, lambda);
+                if (lambda <= lastLambda) {
+                    return false;
+                //n.setValue(0,0,0);
+                //break;
+                }
+                lastLambda = lambda;
 
-					gjk.getClosestPoints(input, pointCollector);
-					if (pointCollector.hasResult) {
-						if (pointCollector.distance < 0f) {
-							result.fraction = lastLambda;
-							n.set(pointCollector.normalOnBInWorld);
-							result.normal.set(n);
-							result.hitPoint.set(pointCollector.pointInWorld);
-							return true;
-						}
-						c.set(pointCollector.pointInWorld);
-						n.set(pointCollector.normalOnBInWorld);
-						dist = pointCollector.distance;
-					}
-					else {
-						// ??
-						return false;
-					}
+                // interpolate to next lambda
+                result.debugDraw(lambda);
+                VectorUtil.setInterpolate3(input.transformA, fromA, toA, lambda);
+                VectorUtil.setInterpolate3(input.transformB, fromB, toB, lambda);
 
-				}
+                gjk.getClosestPoints(input, pointCollector);
+                if (pointCollector.hasResult) {
+                    if (pointCollector.distance < 0f) {
+                        result.fraction = lastLambda;
+                        n.set(pointCollector.normalOnBInWorld);
+                        result.normal.set(n);
+                        result.hitPoint.set(pointCollector.pointInWorld);
+                        return true;
+                    }
+                    c.set(pointCollector.pointInWorld);
+                    n.set(pointCollector.normalOnBInWorld);
+                    dist = pointCollector.distance;
+                }
+                else {
+                    // ??
+                    return false;
+                }
 
-				// is n normalized?
-				// don't report time of impact for motion away from the contact normal (or causes minor penetration)
-				if (n.dot(r) >= -result.allowedPenetration) {
-					return false;
-				}
-				result.fraction = lambda;
-				result.normal.set(n);
-				result.hitPoint.set(c);
-				return true;
-			}
+            }
 
-			return false;
-		}
-		finally {
-		}
+            // is n normalized?
+            // don't report time of impact for motion away from the contact normal (or causes minor penetration)
+            if (n.dot(r) >= -result.allowedPenetration) {
+                return false;
+            }
+            result.fraction = lambda;
+            result.normal.set(n);
+            result.hitPoint.set(c);
+            return true;
+        }
+
+		return false;
 	}
 	
 }

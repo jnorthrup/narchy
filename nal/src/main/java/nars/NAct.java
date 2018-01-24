@@ -34,6 +34,9 @@ import static nars.truth.TruthFunctions.w2cSafe;
  */
 public interface NAct {
 
+    Term PLUS = $.the("\"+\"");
+    Term NEG = $.the("\"-\"");
+
     @NotNull Map<ActionConcept, CauseChannel<ITask>> actions();
 
     NAR nar();
@@ -452,11 +455,13 @@ public interface NAct {
     default GoalActionAsyncConcept[] actionBipolarFrequencyDifferential(@NotNull Term s, boolean fair, @NotNull FloatToFloatFunction update) {
 
         Term pt =
-                $.prop(s,$.the("\"+\""));
+                $.inh(s, PLUS);
+                //$.prop(s,$.the("\"+\""));
                 //$.p(s, ZeroProduct);
                 //$.p(s,$.the("\"+\""));
         Term nt =
-                $.prop(s, $.the("\"-\""));
+                $.inh(s, NEG);
+                //$.prop(s, $.the("\"-\""));
                 //$.p(ZeroProduct, s);
                 //$.p(s,$.the("\"-\""));
 
@@ -552,14 +557,16 @@ public interface NAct {
                         //df *= 1f - Math.abs(e[0] - e[1]) / eMax;
                         //df *= Util.sqr(eMin / eMax); //more cautious
                         //df *= Math.min(w2cSafe(e[0]), w2cSafe(e[1])) / w2cSafe(eMax);
-
-                        x = Util.clamp(df, -1f, +1f);
+                        x = df;
                     }
 
 
                 }
 
+                x = Util.clamp(x, -1f, +1f);
+
                 float y = update.valueOf(x); //-1..+1
+                //System.out.println(x + " " + y);
 
 
                 //w2c(Math.abs(y) * c2w(restConf));
@@ -574,8 +581,8 @@ public interface NAct {
 //                    } else {
 //                        yp = yn = 0;
 //                    }
-                    float yp = y >= 0 ? 0.5f + y/2f : 0.5f - y/2f;
-                    float yn = y >= 0 ? 0.5f - y/2f : 0.5f + y/2f;
+                    float yp = 0.5f + y/2f;
+                    float yn = 1f - yp; //y >= 0 ? 0.5f - y/2f : 0.5f + y/2f;
 //                    float yp = y > 0 ? 0.5f + y/2f : 0;
 //                    float yn = y < 0 ? 0.5f - y/2f : 0;
 

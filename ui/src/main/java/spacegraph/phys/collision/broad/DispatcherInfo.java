@@ -32,14 +32,14 @@ public class DispatcherInfo {
 
 	public float timeStep;
 	public int stepCount;
-	public DispatchFunc dispatchFunc;
+	public final DispatchFunc dispatchFunc;
 	public float timeOfImpact;
 	public boolean useContinuous;
 
 	public boolean enableSatConvex;
 	public boolean enableSPU = true;
 	public boolean useEpa = true;
-	public float allowedCcdPenetration = 0.04f;
+	public final float allowedCcdPenetration = 0.04f;
 	//btStackAlloc*	m_stackAllocator;
 
 	public DispatcherInfo() {

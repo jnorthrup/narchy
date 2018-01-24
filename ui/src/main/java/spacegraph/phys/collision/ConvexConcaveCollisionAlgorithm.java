@@ -177,7 +177,7 @@ public class ConvexConcaveCollisionAlgorithm extends CollisionAlgorithm {
 		public final Transform ccdSphereToTrans = new Transform();
 		public final Transform meshTransform = new Transform();
 
-		public float ccdSphereRadius;
+		public final float ccdSphereRadius;
 		public float hitFraction;
 
 		private final Transform ident = new Transform();

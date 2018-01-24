@@ -49,7 +49,7 @@ public final class Dbvt {
 	
 	public Node root;
 	public Node free;
-	public int lkhd = -1;
+	public final int lkhd = -1;
 	public int leaves;
 	public /*unsigned*/ int opath;
 

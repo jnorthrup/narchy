@@ -44,7 +44,7 @@ public final class DefaultConceptState extends ConceptState {
                     //http://fooplot.com/#W3sidHlwZSI6MCwiZXEiOiI2NC8oMl4oeC80KSkiLCJjb2xvciI6IiMwMDAwMDAifSx7InR5cGUiOjEwMDAsIndpbmRvdyI6WyItNzQuMzIzMjM3MjA4NTc0ODciLCI3Ny4wMTY2ODExNjY0NDAwOCIsIi0yMi4zNjE2Njk2NTc0OTEwOCIsIjcwLjc3MDU4NzgwNDA1NjU4Il19XQ--
                     //HACK
 
-                    int maxLinks = 64;
+                    int maxLinks = 32;
                     return Math.round((maxLinks) / (1f+vol/2f));
 
                     //int l = Math.max(minLinks, (int) Math.round(maxLinks / (Math.pow(2, (vol - 1) / (Math.sqrt(maxVol))))));
@@ -54,7 +54,7 @@ public final class DefaultConceptState extends ConceptState {
                 (vol) -> { //vol to tasklinks
 
                     //HACK
-                    int maxLinks = 32;
+                    int maxLinks = 16;
                     return Math.round((maxLinks) / (1f+vol/2f));
 
 

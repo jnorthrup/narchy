@@ -35,12 +35,12 @@ import spacegraph.phys.shape.TriangleShape;
  */
 public abstract class TriangleConvexcastCallback extends TriangleCallback {
 
-	public ConvexShape convexShape;
+	public final ConvexShape convexShape;
 	public final Transform convexShapeFrom = new Transform();
 	public final Transform convexShapeTo = new Transform();
 	public final Transform triangleToWorld = new Transform();
 	public float hitFraction;
-	public float triangleCollisionMargin;
+	public final float triangleCollisionMargin;
 
 	protected TriangleConvexcastCallback(ConvexShape convexShape, Transform convexShapeFrom, Transform convexShapeTo, Transform triangleToWorld, float triangleCollisionMargin) {
 		this.convexShape = convexShape;

@@ -3,9 +3,9 @@ package spacegraph.widget.windo;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.tree.rtree.rect.RectFloat2D;
-import spacegraph.Scale;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
+import spacegraph.UnitContainer;
 import spacegraph.input.Finger;
 import spacegraph.input.FingerMove;
 import spacegraph.input.FingerResize;
@@ -222,7 +222,7 @@ public class Windo extends Widget {
 
     /** gets main content */
     public Surface get() {
-        return ((Scale) content.children()[0]).the;
+        return ((UnitContainer) content.children()[0]).the;
     }
 
     @Override

@@ -333,9 +333,9 @@ public abstract class Collisions<X> extends BulletGlobals {
     }
 
     private static class BridgeTriangleConvexcastCallback extends TriangleConvexcastCallback {
-        public ConvexResultCallback resultCallback;
-        public Collidable collidable;
-        public ConcaveShape triangleMesh;
+        public final ConvexResultCallback resultCallback;
+        public final Collidable collidable;
+        public final ConcaveShape triangleMesh;
         public boolean normalInWorldSpace;
 
         public BridgeTriangleConvexcastCallback(ConvexShape castShape, Transform from, Transform to, ConvexResultCallback resultCallback, Collidable collidable, ConcaveShape triangleMesh, Transform triangleToWorld) {
@@ -649,7 +649,7 @@ public abstract class Collisions<X> extends BulletGlobals {
         public float closestHitFraction = 1f;
         public Collidable collidable;
         public short collisionFilterGroup = CollisionFilterGroups.DEFAULT_FILTER;
-        public short collisionFilterMask = CollisionFilterGroups.ALL_FILTER;
+        public final short collisionFilterMask = CollisionFilterGroups.ALL_FILTER;
 
         public boolean hasHit() {
             return (collidable != null);
@@ -665,11 +665,11 @@ public abstract class Collisions<X> extends BulletGlobals {
     }
 
     public static class LocalConvexResult {
-        public Collidable hitCollidable;
-        public LocalShapeInfo localShapeInfo;
+        public final Collidable hitCollidable;
+        public final LocalShapeInfo localShapeInfo;
         public final v3 hitNormalLocal = new v3();
         public final v3 hitPointLocal = new v3();
-        public float hitFraction;
+        public final float hitFraction;
 
         public LocalConvexResult(Collidable hitCollidable, LocalShapeInfo localShapeInfo, v3 hitNormalLocal, v3 hitPointLocal, float hitFraction) {
             this.hitCollidable = hitCollidable;
@@ -738,9 +738,9 @@ public abstract class Collisions<X> extends BulletGlobals {
     }
 
     private static class BridgeTriangleRaycastCallback extends TriangleRaycastCallback {
-        public RayResultCallback resultCallback;
-        public Collidable collidable;
-        public ConcaveShape triangleMesh;
+        public final RayResultCallback resultCallback;
+        public final Collidable collidable;
+        public final ConcaveShape triangleMesh;
 
         public BridgeTriangleRaycastCallback(v3 from, v3 to, RayResultCallback resultCallback, Collidable collidable, ConcaveShape triangleMesh) {
             super(from, to);

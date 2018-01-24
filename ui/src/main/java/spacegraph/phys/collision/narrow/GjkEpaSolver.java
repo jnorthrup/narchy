@@ -652,145 +652,141 @@ public class GjkEpaSolver {
 		}
 		
 		public float EvaluatePD(float accuracy) {
-			try {
-				v3 tmp = new v3();
+            v3 tmp = new v3();
 
-				//btBlock* sablock = sa->beginBlock();
-				Face bestface = null;
-				int markid = 1;
-				depth = -cstInf;
-				normal.set(0f, 0f, 0f);
-				root = null;
-				nfaces = 0;
-				iterations = 0;
-				failed = false;
-				/* Prepare hull		*/
-				if (gjk.EncloseOrigin()) {
-					//const U* pfidx = 0;
-					int[][] pfidx_ptr = null;
-					int pfidx_index = 0;
+            //btBlock* sablock = sa->beginBlock();
+            Face bestface = null;
+            int markid = 1;
+            depth = -cstInf;
+            normal.set(0f, 0f, 0f);
+            root = null;
+            nfaces = 0;
+            iterations = 0;
+            failed = false;
+            /* Prepare hull		*/
+            if (gjk.EncloseOrigin()) {
+                //const U* pfidx = 0;
+                int[][] pfidx_ptr = null;
+                int pfidx_index = 0;
 
-					int nfidx = 0;
-					//const U* peidx = 0;
-					int[][] peidx_ptr = null;
-					int peidx_index = 0;
+                int nfidx = 0;
+                //const U* peidx = 0;
+                int[][] peidx_ptr = null;
+                int peidx_index = 0;
 
-					int neidx = 0;
-					Mkv[] basemkv = new Mkv[5];
-					Face[] basefaces = new Face[6];
-					switch (gjk.order) {
-						// Tetrahedron
-						case 3:
-                            //pfidx=(const U*)fidx;
-                            pfidx_ptr = tetrahedron_fidx;
-                            pfidx_index = 0;
+                int neidx = 0;
+                Mkv[] basemkv = new Mkv[5];
+                Face[] basefaces = new Face[6];
+                switch (gjk.order) {
+                    // Tetrahedron
+                    case 3:
+//pfidx=(const U*)fidx;
+pfidx_ptr = tetrahedron_fidx;
+pfidx_index = 0;
 
-                            nfidx = 4;
+nfidx = 4;
 
-                            //peidx=(const U*)eidx;
-                            peidx_ptr = tetrahedron_eidx;
-                            peidx_index = 0;
+//peidx=(const U*)eidx;
+peidx_ptr = tetrahedron_eidx;
+peidx_index = 0;
 
-                            neidx = 6;
+neidx = 6;
+break;
+                    // Hexahedron
+                    case 4:
+//pfidx=(const U*)fidx;
+pfidx_ptr = hexahedron_fidx;
+pfidx_index = 0;
+
+nfidx = 6;
+
+//peidx=(const U*)eidx;
+peidx_ptr = hexahedron_eidx;
+peidx_index = 0;
+
+neidx = 9;
+break;
+                }
+                int i;
+
+                for (i = 0; i <= gjk.order; ++i) {
+                    basemkv[i] = new Mkv();
+                    basemkv[i].set(gjk.simplex[i]);
+                }
+                for (i = 0; i < nfidx; ++i, pfidx_index++) {
+                    basefaces[i] = NewFace(basemkv[pfidx_ptr[pfidx_index][0]], basemkv[pfidx_ptr[pfidx_index][1]], basemkv[pfidx_ptr[pfidx_index][2]]);
+                }
+                for (i = 0; i < neidx; ++i, peidx_index++) {
+                    Link(basefaces[peidx_ptr[peidx_index][0]], peidx_ptr[peidx_index][1], basefaces[peidx_ptr[peidx_index][2]], peidx_ptr[peidx_index][3]);
+                }
+            }
+            if (0 == nfaces) {
+                //sa->endBlock(sablock);
+                return (depth);
+            }
+            /* Expand hull		*/
+            for (; iterations < EPA_maxiterations; ++iterations) {
+                Face bf = FindBest();
+                if (bf != null) {
+                    tmp.negate(bf.n);
+                    Mkv w = Support(tmp);
+                    float d = bf.n.dot(w.w) + bf.d;
+                    bestface = bf;
+                    if (d < -accuracy) {
+                        Face[] cf = {null};
+                        Face[] ff = {null};
+                        int nf = 0;
+                        Detach(bf);
+                        bf.mark = ++markid;
+                        for (int i = 0; i < 3; ++i) {
+                            nf += BuildHorizon(markid, w, bf.f[i], bf.e[i], cf, ff);
+                        }
+                        if (nf <= 2) {
                             break;
-						// Hexahedron
-						case 4:
-                            //pfidx=(const U*)fidx;
-                            pfidx_ptr = hexahedron_fidx;
-                            pfidx_index = 0;
+                        }
+                        Link(cf[0], 1, ff[0], 2);
+                    }
+                    else {
+                        break;
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+            /* Extract contact	*/
+            if (bestface != null) {
+                v3 b = GetCoordinates(bestface);
+                normal.set(bestface.n);
+                depth = Math.max(0, bestface.d);
+                for (int i = 0; i < 2; ++i) {
+                    float s = i != 0 ? -1f : 1f;
+                    for (int j = 0; j < 3; ++j) {
+                        tmp.scale(s, bestface.v[j].r);
+                        gjk.LocalSupport(tmp, i, features[i][j]);
+                    }
+                }
 
-                            nfidx = 6;
+                v3 tmp1 = new v3();
+                v3 tmp2 = new v3();
+                v3 tmp3 = new v3();
 
-                            //peidx=(const U*)eidx;
-                            peidx_ptr = hexahedron_eidx;
-                            peidx_index = 0;
+                tmp1.scale(b.x, features[0][0]);
+                tmp2.scale(b.y, features[0][1]);
+                tmp3.scale(b.z, features[0][2]);
+                VectorUtil.add(nearest[0], tmp1, tmp2, tmp3);
 
-                            neidx = 9;
-                            break;
-					}
-					int i;
-
-					for (i = 0; i <= gjk.order; ++i) {
-						basemkv[i] = new Mkv();
-						basemkv[i].set(gjk.simplex[i]);
-					}
-					for (i = 0; i < nfidx; ++i, pfidx_index++) {
-						basefaces[i] = NewFace(basemkv[pfidx_ptr[pfidx_index][0]], basemkv[pfidx_ptr[pfidx_index][1]], basemkv[pfidx_ptr[pfidx_index][2]]);
-					}
-					for (i = 0; i < neidx; ++i, peidx_index++) {
-						Link(basefaces[peidx_ptr[peidx_index][0]], peidx_ptr[peidx_index][1], basefaces[peidx_ptr[peidx_index][2]], peidx_ptr[peidx_index][3]);
-					}
-				}
-				if (0 == nfaces) {
-					//sa->endBlock(sablock);
-					return (depth);
-				}
-				/* Expand hull		*/
-				for (; iterations < EPA_maxiterations; ++iterations) {
-					Face bf = FindBest();
-					if (bf != null) {
-						tmp.negate(bf.n);
-						Mkv w = Support(tmp);
-						float d = bf.n.dot(w.w) + bf.d;
-						bestface = bf;
-						if (d < -accuracy) {
-							Face[] cf = {null};
-							Face[] ff = {null};
-							int nf = 0;
-							Detach(bf);
-							bf.mark = ++markid;
-							for (int i = 0; i < 3; ++i) {
-								nf += BuildHorizon(markid, w, bf.f[i], bf.e[i], cf, ff);
-							}
-							if (nf <= 2) {
-								break;
-							}
-							Link(cf[0], 1, ff[0], 2);
-						}
-						else {
-							break;
-						}
-					}
-					else {
-						break;
-					}
-				}
-				/* Extract contact	*/
-				if (bestface != null) {
-					v3 b = GetCoordinates(bestface);
-					normal.set(bestface.n);
-					depth = Math.max(0, bestface.d);
-					for (int i = 0; i < 2; ++i) {
-						float s = i != 0 ? -1f : 1f;
-						for (int j = 0; j < 3; ++j) {
-							tmp.scale(s, bestface.v[j].r);
-							gjk.LocalSupport(tmp, i, features[i][j]);
-						}
-					}
-
-					v3 tmp1 = new v3();
-					v3 tmp2 = new v3();
-					v3 tmp3 = new v3();
-
-					tmp1.scale(b.x, features[0][0]);
-					tmp2.scale(b.y, features[0][1]);
-					tmp3.scale(b.z, features[0][2]);
-					VectorUtil.add(nearest[0], tmp1, tmp2, tmp3);
-
-					tmp1.scale(b.x, features[1][0]);
-					tmp2.scale(b.y, features[1][1]);
-					tmp3.scale(b.z, features[1][2]);
-					VectorUtil.add(nearest[1], tmp1, tmp2, tmp3);
-				}
-				else {
-					failed = true;
-				}
-				//sa->endBlock(sablock);
-				return (depth);
-			}
-			finally {
-			}
-		}
+                tmp1.scale(b.x, features[1][0]);
+                tmp2.scale(b.y, features[1][1]);
+                tmp3.scale(b.z, features[1][2]);
+                VectorUtil.add(nearest[1], tmp1, tmp2, tmp3);
+            }
+            else {
+                failed = true;
+            }
+            //sa->endBlock(sablock);
+            return (depth);
+        }
 		
 	}
 	
