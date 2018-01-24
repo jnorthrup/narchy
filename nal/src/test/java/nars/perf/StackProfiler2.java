@@ -73,7 +73,7 @@ public class StackProfiler2 implements InternalProfiler {
             "Attach Listener"
     };
 
-    private final int stackLines = 20;
+    private final int stackLines = 12;
     private final int topStacks = 10;
     private final int periodMsec = 1;
     private final Trie<String, Boolean> excludePackageNames;

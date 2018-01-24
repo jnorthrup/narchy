@@ -13,8 +13,6 @@ import org.junit.platform.launcher.listeners.LoggingListener;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.runner.RunnerException;
 
-import java.util.function.Function;
-
 import static nars.perf.JmhBenchmark.perf;
 
 /**
@@ -56,7 +54,7 @@ public class NARTestBenchmark {
                 .selectors(
                         //selectPackage("com.example.mytests"),
                         (ClassSelector[])Util.map(
-                                (Function<Class, ClassSelector>) DiscoverySelectors::selectClass,
+                                DiscoverySelectors::selectClass,
                                 new ClassSelector[testClasses.length], testClasses)
 
                         //selectClass(FastCompoundNAL1Test.class)
