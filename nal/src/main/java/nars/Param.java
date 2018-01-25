@@ -56,7 +56,7 @@ public abstract class Param {
 
     //    private final static Logger logger = LoggerFactory.getLogger(DeriveTime.class);
 
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 8;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 6;
 
 
     public static boolean DEBUG_FILTER_DUPLICATE_MATCHES = Param.DEBUG_EXTRA;

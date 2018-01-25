@@ -2,6 +2,7 @@ package nars.derive.time;
 
 import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
+import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.control.Derivation;
@@ -17,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Supplier;
 
+import static nars.Op.IMPL;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 
@@ -99,13 +101,38 @@ public class DeriveTime extends TimeGraph {
         this.d = d;
         this.cache = new HashMap(0);
 
-        know(this.task = d.task);
-
         if (!single) {
-            this.belief = d.belief;
-            if (!d._belief.equals(d._task))
-                know(this.belief);
+            Term tt = (this.task=d.task).term();
+            Term bb = (this.belief=d.belief).term();
+            boolean taskTime, beliefTime;
+            Op tto = tt.op();
+            Op bbo = bb.op();
+            if (tto==IMPL && bbo!=IMPL) {
+                beliefTime = true;
+                taskTime = false;
+            } else if (tto!=IMPL && bbo==IMPL) {
+                beliefTime = false;
+                taskTime = true;
+            } else {
+                beliefTime = taskTime = true;
+            }
+
+            if (taskTime) {
+                know(task);
+            } else {
+                know(tt);
+            }
+
+
+            if (!d.belief.equals(d.task)) {
+                if (beliefTime) {
+                    know(belief);
+                } else {
+                    know(bb);
+                }
+            }
         } else {
+            know(this.task = d.task);
             this.belief = null;
         }
 
@@ -269,9 +296,8 @@ public class DeriveTime extends TimeGraph {
 //    }
 
     public void know(Task t) {
-        Term tt = t.term();
+        Iterable<Event> ee = know(t, t.term());
         //both positive and negative possibilities
-        Iterable<Event> ee = know(t, tt);
 //        if (autoNegEvents && tt.op() != CONJ) {
 //            for (Event e : ee)
 //                link(know(tt.neg()), 0, e);
