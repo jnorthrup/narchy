@@ -1,7 +1,6 @@
 package jcog.data.graph.hgraph;
 
 import com.google.common.collect.Iterables;
-import jcog.TODO;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -55,6 +54,16 @@ public class NodeGraph<N, E> {
 
     protected void onAdd(Node<N, E> r) {
 
+    }
+
+    public boolean edgeAdd(N from, E data, N to) {
+        Node<N, E> f = node(from);
+        if (f == null)
+            throw new NullPointerException();
+        Node<N, E> t = node(to);
+        if (t == null)
+            throw new NullPointerException();
+        return edgeAdd(f, data, t);
     }
 
     public boolean edgeAdd(Node<N, E> from, E data, Node<N, E> to) {
@@ -118,88 +127,46 @@ public class NodeGraph<N, E> {
 //    }
 
     
-    public void traverseBFS(Node<N, E> startingNode, Search tv, boolean longestPath) {
-        throw new TODO();
 
-//        if (longestPath) {
-//            markReachable(startingNode);
-//        }
-
-//        tv.start();
-//        try {
-//
-//            Queue<Node<N, E>> queue = new LinkedList<>();
-//            queue.add(startingNode);
-//            startingNode.setVisited(true);
-//            int layer = 0;
-//            Node<N, E> lastOfLayer = startingNode;
-//            final Node[] lastAdded = {null};
-//
-//            while (!queue.isEmpty()) {
-//
-//                Node<N, E> current = queue.poll();
-//                tv.visitNode(current, layer);
-//                current.setActive(false);
-//
-//
-//                current.out().forEach(e -> {
-//                    if (!e.to.isVisited()) {
-//
-//                        final boolean[] allow = {true};
-//                        if (longestPath) {
-//                            e.to.in().allMatch(pred -> {
-//                                Node<N, E> p = pred.to;
-//                                if ((!p.isVisited() || p.isActive()) && p.isReachable()) {
-//                                    allow[0] = false;
-//                                    return false;
-//                                }
-//                                return true;
-//                            });
-//                        }
-//
-//                        if (allow[0]) {
-//                            queue.offer(e.to);
-//                            lastAdded[0] = e.to;
-//                            e.to.setVisited(true);
-//                            e.to.setActive(true);
-//                        }
-//                    }
-//                });
-//
-//                if (current == lastOfLayer && !queue.isEmpty()) {
-//                    lastOfLayer = lastAdded[0];
-//                    layer++;
-//                }
-//            }
-//        } finally {
-//            tv.stop();
-//        }
-    }
 
 
 
     public boolean dfs(N startingNode, Search<N, E> tv) {
         return dfs(List.of(startingNode), tv);
     }
+    public boolean bfs(N startingNode, Search<N, E> tv) {
+        return bfs(List.of(startingNode), tv);
+    }
 
     public boolean dfs(Iterable<N> startingNodes, Search<N, E> tv) {
         return dfsNodes(Iterables.transform(startingNodes, this::add), tv);
     }
+    public boolean bfs(Iterable<N> startingNodes, Search<N, E> tv) {
+        return bfsNodes(Iterables.transform(startingNodes, this::add), tv);
+    }
 
-    public boolean dfsNodes(Iterable<Node<N, E>> startingNodes, Search<N, E> search) {
+    private boolean bfsNodes(Iterable<Node<N, E>> startingNodes, Search<N, E> search) {
+        search.start();
+        try {
+            for (Node n : startingNodes)
+                if (!search.bfs(n))
+                    return false;
+
+            return true;
+        } finally {
+            search.stop();
+        }
+    }
+    private boolean dfsNodes(Iterable<Node<N, E>> startingNodes, Search<N, E> search) {
 
         search.start();
         try {
 
-
-
-            for (Node n : startingNodes) {
-                if (!search.visit(n))
+            for (Node n : startingNodes)
+                if (!search.dfs(n))
                     return false;
-            }
 
             return true;
-
         } finally {
             search.stop();
         }

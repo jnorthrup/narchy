@@ -10,6 +10,8 @@ import nars.util.signal.Bitmap2DSensor;
 import nars.video.AutoclassifiedBitmap;
 import nars.video.PixelBag;
 
+import static spacegraph.SpaceGraph.window;
+
 //import org.jcodec.codecs.h264.H264Encoder;
 //import org.jcodec.codecs.h264.H264Utils;
 //import org.jcodec.codecs.h264.encode.H264FixedRateControl;
@@ -78,19 +80,26 @@ public class TopCraft extends NAgentX {
 //                e.printStackTrace();
 //            }
 //        }
-        pixels = senseCameraRetina("cam", ()->craft.image, 32,32);
+        //pixels = senseCameraRetina("cam", ()->craft.image, 32,32);
         //pixels = addFreqCamera("see", ()->craft.image, 64,64, (v) -> $.t( v, alpha));
 
         //senseCameraReduced($.the("camr"), (Supplier)()->craft.image, 10,12,4,3);
                 //.resolution(0.5f);
 
-//        int nx = 8;
-//        camAE = new AutoclassifiedBitmap("cae", pixels., nx, nx,   (subX, subY) -> {
-//            //context metadata: camera zoom, to give a sense of scale
-//            //return new float[]{subX / ((float) (nx - 1)), subY / ((float) (nx - 1)), pixels.src.Z};
-//            return new float[]{ pixels.bmp.src.Z};
-//        }, 24, this);
-//        window(camAE.newChart(), 500, 500);
+        PixelBag p = PixelBag.of(() -> craft.image, 64, 64).addActions(id, this);
+        int nx = 8;
+        camAE = new AutoclassifiedBitmap("cae", p.pixels, nx, nx,   (subX, subY) -> {
+            //context metadata: camera zoom, to give a sense of scale
+            //return new float[]{subX / ((float) (nx - 1)), subY / ((float) (nx - 1)), pixels.src.Z};
+            return new float[]{ p.X, p.Y, p.Z };
+        }, 4, this) {
+            @Override
+            public void accept(NAR n) {
+                p.update(1);
+                super.accept(n);
+            }
+        };
+        window(camAE.newChart(), 500, 500);
 
 
         senseSwitch($.func("dir",id), ()->craft.player.dir, 0, 4);

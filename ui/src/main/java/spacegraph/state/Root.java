@@ -52,7 +52,7 @@ abstract public class Root implements Contexter {
 
 
         root.user.put("x", "abc");
-        root.user.getAll("x", (d)->{
+        root.user.get("x", 3, (d)->{
             System.out.println(d);
             return true;
         });

@@ -99,11 +99,11 @@ public class NALTask extends Pri implements Task {
         if (that instanceof Task) {
             if (hash != that.hashCode()) return false;
             t = (Task) that;
-        } else if (that instanceof Tasked) {
-
-            t = ((Tasked) that).task();
-            if (this == that) return true;
-            if (hash != that.hashCode()) return false;
+//        } else if (that instanceof Tasked) {
+//
+//            t = ((Tasked) that).task();
+//            if (this == that) return true;
+//            if (hash != that.hashCode()) return false;
         } else {
             return false;
         }

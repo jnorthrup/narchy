@@ -18,7 +18,6 @@ import nars.op.stm.ConjClustering;
 import nars.term.Term;
 import nars.time.RealTime;
 import nars.time.Tense;
-import nars.truth.Truth;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.*;
 import net.beadsproject.beads.core.AudioContext;
@@ -27,7 +26,6 @@ import net.beadsproject.beads.core.UGen;
 import net.beadsproject.beads.data.Buffer;
 import net.beadsproject.beads.ugens.*;
 import org.HdrHistogram.DoubleHistogram;
-import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
@@ -718,10 +716,10 @@ abstract public class NAgentX extends NAgent {
         return senseCameraRetina(id, new SwingBitmap2D(w), pw, ph);
     }
 
-    protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Container w, int pw, int ph, FloatToObjectFunction<
-            Truth> pixelTruth) throws Narsese.NarseseException {
-        return senseCameraRetina(id, new SwingBitmap2D(w), pw, ph);
-    }
+//    protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Container w, int pw, int ph, FloatToObjectFunction<
+//            Truth> pixelTruth) throws Narsese.NarseseException {
+//        return senseCameraRetina(id, new SwingBitmap2D(w), pw, ph);
+//    }
 
     protected Bitmap2DSensor<PixelBag> senseCameraRetina(String id, Supplier<BufferedImage> w, int pw, int ph) throws
             Narsese.NarseseException {

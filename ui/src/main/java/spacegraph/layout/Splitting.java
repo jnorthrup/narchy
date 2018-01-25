@@ -56,10 +56,11 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableCont
         return this;
     }
 
-    public void split(X top, Y bottom, float split) {
+    public Splitting split(X top, Y bottom, float split) {
         set(top, bottom);
         split(split);
         layout();
+        return this;
     }
 
     @Override

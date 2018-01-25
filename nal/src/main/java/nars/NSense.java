@@ -51,15 +51,25 @@ public interface NSense {
     @NotNull
     default SensorConcept sense(@NotNull Term term, FloatSupplier value, FloatToObjectFunction<Truth> truthFunc) {
         SensorConcept s = new SensorConcept(term, nar(), value, truthFunc);
-
         addSensor(s);
         return s;
     }
+    @NotNull
+    default SensorConcept sense(CauseChannel c, Term term, FloatSupplier value, FloatToObjectFunction<Truth> truthFunc) {
+        SensorConcept s = new SensorConcept(term, nar(), value, truthFunc);
+        addSensor(s, c);
+        return s;
+    }
 
-    default void addSensor(SensorConcept c) {
-        CauseChannel<ITask> existing = sensors().put(c, nar().newCauseChannel(c));
+    default void addSensor(SensorConcept c, CauseChannel cause) {
+        CauseChannel<ITask> existing = sensors().put(c, cause);
         assert(existing == null);
         nar().on(c);
+    }
+
+    default void addSensor(SensorConcept c) {
+        CauseChannel<ITask> cause = nar().newCauseChannel(c);
+        addSensor(c, cause);
     }
 
     /**

@@ -9,6 +9,9 @@ public interface TraveLog {
     /** returns false if it was already added */
     boolean visit(Node n);
 
+
+    void unvisit(Node n);
+
     boolean hasVisited(Node n);
 
 
@@ -26,6 +29,11 @@ public interface TraveLog {
         @Override
         public boolean visit(Node n) {
             return visit.add(n.serial);
+        }
+
+        @Override
+        public void unvisit(Node n) {
+            visit.remove(n.serial);
         }
 
         @Override

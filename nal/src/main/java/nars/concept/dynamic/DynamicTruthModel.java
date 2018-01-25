@@ -7,7 +7,6 @@ import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
-import nars.concept.NodeConcept;
 import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.task.util.TaskRegion;
@@ -84,12 +83,11 @@ abstract public class DynamicTruthModel {
 
             @Nullable Task bt;
             if (!(subConcept instanceof TaskConcept)) {
-                if (Param.DEBUG) {
-                    if (!(subConcept == null || !(subConcept instanceof NodeConcept)))
-                        throw new RuntimeException(it + " does not reference a TaskConcept: " + subConcept);
-                }
-
-                bt = null;
+//                if (Param.DEBUG) {
+//                    if (!(subConcept == null || !(subConcept instanceof NodeConcept)))
+//                        throw new RuntimeException(it + " does not reference a TaskConcept: " + subConcept);
+//                }
+                return null;
             } else {
 
                 BeliefTable table = (BeliefTable) subConcept.table(beliefOrGoal ? BELIEF : GOAL);

@@ -48,7 +48,6 @@ import static nars.time.Tense.*;
 public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
     private static final boolean dternalAsZero = false;
-    static final boolean autoNegEvents = true;
     private static final boolean autoUnneg = true;
 
     static class TimeSpan {
@@ -227,7 +226,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
         if (byTerm.put(eventTerm, event)) {
             if (autoUnneg) {
-                link(know(eventTerm), 0, know(eventTerm.neg()));
+                link(know(eventTerm), 0, know(eventTerm.neg())); //WEAK
             }
         }
 
@@ -278,16 +277,16 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
 
 //                    //if (subj.hasAny(CONJ)) {
-//                    subj.eventsWhile((w, y) -> {
-//                        link(know(y), eventDT + st - w, pe);
-//                        return true;
-//                    }, 0, false, false, false, 0);
+                    subj.eventsWhile((w, y) -> {
+                        link(know(y), eventDT + st - w, pe);
+                        return true;
+                    }, 0, true, true, false, 0);
 //
 //                    //if (pred.hasAny(CONJ)) {
-//                    pred.eventsWhile((w, y) -> {
-//                        link(se, eventDT + st + w, know(y));
-//                        return true;
-//                    }, 0, false, false, false, 0);
+                    pred.eventsWhile((w, y) -> {
+                        link(se, eventDT + st + w, know(y));
+                        return true;
+                    }, 0, true, true, false, 0);
 
                 }
 
@@ -490,7 +489,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
                 //            boolean repeat = a.unneg().equals(b.unneg()); //if true, then we must be careful when trying this in a commutive-like result which would collapse the two terms
 
-                return dfs(rels, new CrossTimeSolver() {
+                return bfs(rels, new CrossTimeSolver() {
                     @Override
                     protected boolean next(BooleanObjectPair<Edge<Event, TimeSpan>> move, Node<Event, TimeSpan> next) {
 
@@ -828,7 +827,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
      */
     private boolean solveOccurrence(Event x, Predicate<Event> each) {
 
-        return dfs(x, new CrossTimeSolver() {
+        return bfs(x, new CrossTimeSolver() {
             @Override
             protected boolean next(BooleanObjectPair<Edge<Event, TimeSpan>> move, Node<Event, TimeSpan> n) {
 
@@ -963,7 +962,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                         //compute from one end to the other, summing dt in the correct direction along the way
                         //special handling for encountered absolute terms and DTERNAL
 
-                        dt = pathTime(path, false);
+                        dt = pathTime(path, true);
                     }
                     if (dt == TIMELESS)
                         return null;

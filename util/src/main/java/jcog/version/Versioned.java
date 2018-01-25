@@ -68,7 +68,8 @@ public class Versioned<X> extends
 //        } else return null;
 
         if (context.add(this)) {
-            addWithoutResizeCheck(nextValue);
+            add(nextValue);
+            //addWithoutResizeCheck(nextValue);
             return this;
         } else {
             return null;

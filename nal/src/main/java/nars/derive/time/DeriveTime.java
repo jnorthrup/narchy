@@ -2,7 +2,6 @@ package nars.derive.time;
 
 import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
-import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.control.Derivation;
@@ -349,7 +348,7 @@ public class DeriveTime extends TimeGraph {
         boolean differentTimedTerms = false;
         long min = Long.MAX_VALUE, max = Long.MIN_VALUE;
         boolean timeless = false, timed = false;
-        int temporals = 0;
+//        int temporals = 0;
 
         if (eeternals != null) {
             solutions.removeIf(s -> s.when() == TIMELESS && eeternals.contains(s.id));
@@ -383,8 +382,8 @@ public class DeriveTime extends TimeGraph {
             }
             //if (e.id.op()==IMPL)
             //if (e.id.op().temporal)
-            if (e.id.hasAny(Op.Temporal)) //is or has
-                temporals++;
+//            if (e.id.hasAny(Op.Temporal)) //is or has
+//                temporals++;
         }
 
 //        Term eternalComponent = (eeternals == null) ? null : CONJ.the(DTERNAL, eeternals);
@@ -628,6 +627,7 @@ public class DeriveTime extends TimeGraph {
 
                     s = joint.unionStart;
                     assert (s != ETERNAL);
+
 
                     //                if (x.op()==IMPL) {
                     //                    e = s; //point-like left-aligned

@@ -120,8 +120,10 @@ public class Try implements Consumer<Derivation> {
 
             int ci = choices[i];
 
-            int fanout = ((ValueFork)(branches[ci])).causes.length;
-            int ttlFrac = Math.min(ttlSave, Math.max(fanout * Param.TTL_MIN, Math.round(ttlSave*reserve)));
+            //int fanout = ((ValueFork)(branches[ci])).causes.length;
+            int ttlFrac =
+                    Math.round(ttlSave*reserve);
+                    //Math.min(ttlSave, Math.max(fanout * Param.TTL_MIN, Math.round(ttlSave*reserve)));
             d.ttl = ttlFrac;
 
             branches[ci].test(d);

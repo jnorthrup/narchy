@@ -22,7 +22,7 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
     protected BufferedImage backbuffer;
     protected Font font;
     protected Graphics2D backbufferGraphics;
-    Color cursorColor = Color.ORANGE;
+    Color cursorColor = new Color(255, 200, 0, 127);
     boolean antialias = true;
     boolean quality = false;
     protected int cursorCol;

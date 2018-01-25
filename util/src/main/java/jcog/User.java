@@ -15,6 +15,7 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.BytesRef;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -199,6 +200,8 @@ public class User {
     /** view for a search result document, w/ score and method to decode to lazily object.
      * it will be changesd on each iterated result so don't keep it.
      * caches the generated document to a field while it's still visiting it.
+     *
+     * maybe use: https://lucene.apache.org/core/7_2_1/misc/org/apache/lucene/document/LazyDocument.html
      * */
     public final class DocObj {
 
@@ -207,13 +210,13 @@ public class User {
         private float score;
         private Document _doc;
 
-        public DocObj(IndexReader reader) {
+        private DocObj(IndexReader reader) {
             this.reader = reader;
         }
 
-        DocObj update(int doc, float score) {
-            this.doc = doc; this.score = score;
+        private DocObj update(int doc, float score) {
             this._doc = null;
+            this.doc = doc; this.score = score;
             return this;
         }
 
@@ -243,7 +246,7 @@ public class User {
             return undocument(doc());
         }
 
-        public void clear() {
+        private void clear() {
             doc = -1;
             score = Float.NaN;
             _doc = null;
@@ -251,14 +254,21 @@ public class User {
     }
 
 
-    public void getAll(String query, Predicate<DocObj> yy) {
-        logger.debug("getAll {}", query);
+    public void get(String query, int n, Predicate<DocObj> yy) {
         //Query q = new QueryBuilder(analyzer).createPhraseQuery("i", query);
         //new WildcardQuery()
-        Query q = new FuzzyQuery(new Term("i", query));
+        get(new FuzzyQuery(new Term("i", query)), n, yy);
+    }
+
+    public final void get(Query q, int n, Predicate<DocObj> yy) {
+        get(q, n, null, yy);
+    }
+
+    public void get(Query q, int n, @Nullable FieldDoc after, Predicate<DocObj> yy) {
+        logger.debug("query {}", q);
         search((iis) -> {
             try {
-                TopDocs y = iis.search(q, 16);
+                TopDocs y = iis.searchAfter(after, q, n);
                 if (y.totalHits > 0) {
                     DocObj d = new DocObj(iis.getIndexReader());
                     for (ScoreDoc sd : y.scoreDocs) {
@@ -268,7 +278,7 @@ public class User {
                     d.clear();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("search {}", q, e);
             }
         });
     }
@@ -352,7 +362,7 @@ public class User {
         });
     }
 
-    <X> X undocument(Document doc) {
+    public <X> X undocument(Document doc) {
         String codec = doc.get("c");
         return (X) codecs.get(codec).unapply(doc);
     }

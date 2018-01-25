@@ -152,6 +152,12 @@ public class ConsoleTerminal extends BitmapConsoleSurface/*ConsoleSurface*/ {
                 case KeyEvent.VK_INSERT:
                     c = KeyType.Insert;
                     break;
+                case KeyEvent.VK_HOME:
+                    c = KeyType.Home;
+                    break;
+                case KeyEvent.VK_END:
+                    c = KeyType.End;
+                    break;
                 case KeyEvent.VK_DELETE:
                     c = KeyType.Delete;
                     break;

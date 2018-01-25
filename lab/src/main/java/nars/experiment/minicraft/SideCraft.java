@@ -14,6 +14,7 @@ import nars.video.PixelBag;
 import java.awt.image.BufferedImage;
 
 import static nars.$.$;
+import static spacegraph.SpaceGraph.window;
 
 /**
  * Created by me on 9/19/16.
@@ -41,21 +42,13 @@ public class SideCraft extends NAgentX {
         this.craft = new SideScrollMinicraft();
 
 
-        //swingCam.input(W/4, H/4, W/2, H/2); //50%
-
-//        Scale cam = new Scale(swingCam, 48, 48);
-//        SwingCamera swing = new SwingCamera(((AwtGraphicsHandler) craft.gfx).buffer);
-//        nar.onFrame(nn -> {
-//            swing.update();
-//        });
-
         BufferedImage camBuffer = ((AwtGraphicsHandler) craft.gfx).buffer;
 
         PixelBag cam = PixelBag.of(() -> camBuffer, 48, 32).addActions($.$("cra"), this);
 
 
-        //camAE = new PixelAutoClassifier("cra", cam.pixels, 8, 8, 32, this);
-        //window(camAE.newChart(), 500, 500);
+        camAE = new AutoclassifiedBitmap("cra", cam.pixels, 8, 8, 32, this);
+        window(camAE.newChart(), 500, 500);
 
 
         pixels = senseCamera("cra", cam);

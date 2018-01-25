@@ -3,17 +3,17 @@ package nars.video;
 import jcog.Util;
 import jcog.learn.Autoencoder;
 import nars.*;
-import nars.concept.SensorConcept;
+import nars.control.CauseChannel;
+import nars.task.ITask;
 import nars.term.Term;
 import spacegraph.Surface;
-import spacegraph.widget.meter.MatrixView;
+import spacegraph.layout.Gridding;
+import spacegraph.widget.meter.BitmapMatrixView;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
 
 import static nars.truth.TruthFunctions.w2c;
-import static nars.util.signal.Bitmap2DSensor.coord;
-import static spacegraph.layout.Gridding.col;
 
 /**
  * Created by me on 9/22/16.
@@ -26,7 +26,7 @@ public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
     public static final MetaBits NoMetaBits = (x, y) -> Util.EmptyFloatArray;
     private final NAR nar;
     private final MetaBits metabits;
-    private final SensorConcept[][][] conceptOut;
+    //private final SensorConcept[][][] conceptOut;
 
     private final float[][] pixIn;
 
@@ -45,10 +45,15 @@ public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
 
 
     public Surface newChart() {
-        return col(
-            new MatrixView(W.length, W[0].length, MatrixView.arrayRenderer(W)),
-            new MatrixView(pixRecon.length, pixRecon[0].length, MatrixView.arrayRenderer(pixRecon))
-        );
+
+        return new Gridding(
+            new BitmapMatrixView(W),
+            new BitmapMatrixView(pixRecon)
+        ) {
+            {
+                agent.onFrame(()-> forEach(x -> ((BitmapMatrixView)x).update()));
+            }
+        };
     }
 
 
@@ -88,15 +93,17 @@ public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
         this.pixEnable = new boolean[nw][nh][states];
         this.pixConf = new float[nw][nh];
 
-        this.conceptOut = new SensorConcept[nw][nh][states];
+        //this.conceptOut = new SensorConcept[nw][nh][states];
 
+        Term r = $.the(root);
+        CauseChannel<ITask> c = nar.newCauseChannel(this);
         for (int i = 0; i< nw; i++) {
             for (int j = 0; j < nh; j++) {
-                Term coord= $.p(coord('x', i, nw), coord('y', j, nh));
+                Term coord = coord(r, i, j);
                 for (int k = 0; k < states; k++) {
-                    Term term = $.func(root, coord, $.the(k));
+                    Term term = $.prop(coord, $.the(k));
                     int ii = i;  int jj = j; int kk = k;
-                    agent.sense(term, () -> pixEnable[ii][jj][kk] ? 1f : Float.NaN, (v) ->
+                    agent.sense(c, term, () -> pixEnable[ii][jj][kk] ? 1f : Float.NaN, (v) ->
                             pixConf[ii][jj] > Param.TRUTH_EPSILON  ? $.t(v, pixConf[ii][jj]) : null);
                 }
             }
@@ -104,6 +111,11 @@ public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
 
         agent.onFrame(this);
 
+    }
+
+    public Term coord(Term root, int i, int j) {
+        //return $.p(Bitmap2DSensor.coord('x', i, nw), Bitmap2DSensor.coord('y', j, nh));
+        return $.inh($.p($.the(i), $.the(j)), root);
     }
 
     @Override public void accept(NAR n) {

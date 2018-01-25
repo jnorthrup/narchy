@@ -30,8 +30,8 @@ public abstract class PixelBag implements Bitmap2D {
      * Z = 0: zoomed in all the way
      * = 1: zoomed out all the way
      */
-    float X;
-    float Y;
+    public float X;
+    public float Y;
     public float Z;
 
 //    public float minX = 0f;
@@ -48,7 +48,7 @@ public abstract class PixelBag implements Bitmap2D {
      * increase >1 to allow zoom out beyond input size (ex: thumbnail size)
      */
     float maxZoomOut =
-            1.25f;
+            1.0f;
             //1.25f;
 
     public boolean vflip;

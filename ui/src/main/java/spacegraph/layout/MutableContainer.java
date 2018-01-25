@@ -190,6 +190,16 @@ public class MutableContainer extends Container {
         return children.isEmpty();
     }
 
+    public void clear() {
+        synchronized (this) {
+            if (size()> 0) {
+                children.forEach(Surface::stop);
+                children.clear();
+                layout();
+            }
+        }
+    }
+
 //    private class Children extends FastCoWList<Surface> {
 //
 //        public Children(int capacity) {

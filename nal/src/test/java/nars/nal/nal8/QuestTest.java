@@ -51,9 +51,9 @@ public class QuestTest {
         if (goalFirst) {
             goal(nar);
             nar.run(timeBetween);
-            question(nar, valid);
+            quest(nar, valid);
         } else {
-            question(nar, valid);
+            quest(nar, valid);
             nar.run(timeBetween);
             goal(nar);
         }
@@ -63,7 +63,7 @@ public class QuestTest {
         assertTrue(valid.get());
     }
 
-    public void question(NAR nar, AtomicBoolean valid) throws Narsese.NarseseException {
+    public void quest(NAR nar, AtomicBoolean valid) throws Narsese.NarseseException {
         nar.question($("a:?b@"), ETERNAL, QUEST, (q, a) -> {
             //System.out.println("answer: " + a);
             //System.out.println(" " + a.getLog());

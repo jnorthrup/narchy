@@ -94,6 +94,10 @@ public class BitmapMatrixView extends Surface {
         this.bmp = new Tex();
     }
 
+    public BitmapMatrixView(float[][] f) {
+        this(f.length, f[0].length, arrayRenderer(f));
+    }
+
 //    public static final ViewFunction1D bipolar1 = (x, gl) -> {
 //        Draw.colorBipolar(gl, x);
 //        return 0;

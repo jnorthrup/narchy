@@ -182,11 +182,27 @@ public class TimeGraphTest {
         TimeGraph C = newTimeGraph(1);
         C.know($.$("(x &&+5 y)"), 1);
         C.know($.$("(y &&+5 z)"), 3);
-        System.out.println();
         assertSolved("x", C, "x@1", "x@-2");
         assertSolved("y", C, "y@6", "y@3");
         assertSolved("z", C, "z@11", "z@8");
     }
+
+    @Test
+    public void testImplCrossDternalInternalConj() throws Narsese.NarseseException {
+        TimeGraph C = newTimeGraph(1);
+
+        C.know($.$("((a&&x) ==>+1 b)"), 1);
+        //C.print(); System.out.println();
+        assertSolved("(a ==>+- b)", C, "(a ==>+1 b)");
+        //C.print(); System.out.println();
+    }
+    @Test
+    public void testImplCrossParallelInternalConj() throws Narsese.NarseseException {
+        TimeGraph C = newTimeGraph(1);
+        C.know($.$("((a&|x) ==>+1 b)"), 1);
+        assertSolved("(a ==>+- b)", C, "(a ==>+1 b)");
+    }
+
     final List<Runnable> afterEach = $.newArrayList();
 
     @AfterEach

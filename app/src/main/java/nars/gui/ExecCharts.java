@@ -109,12 +109,10 @@ public class ExecCharts {
     public static Surface causePanel(NAR nar) {
 
         TreeChart<Causable> x = new TreeChart();
+        List<Causable> s = $.newArrayList();
+        Function<Causable, TreeChart.ItemVis<Causable>> updater = TreeChart.cached();
 
         return new DurSurface(x, nar) {
-
-            Function<Causable, TreeChart.ItemVis<Causable>> updater = TreeChart.cached();
-
-            List<Causable> s = $.newArrayList();
 
             @Override protected void update() {
                 s.clear();
