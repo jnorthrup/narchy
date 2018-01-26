@@ -22,7 +22,8 @@ public class IntroVars extends AbstractPred<Derivation> {
         Term x = p.derivedTerm.get();
 
         @Nullable Pair<Term, Map<Term, Term>> xy = DepIndepVarIntroduction.varIntroX(x, p.random);
-        if (xy == null) return false;
+        if (xy == null)
+            return false;
 
         Term y = xy.getOne();
         if (!(y.op().conceptualizable) || (y.equals(x) /* keep only if it differs */)) {
@@ -31,6 +32,8 @@ public class IntroVars extends AbstractPred<Derivation> {
             if (!y.hasAny(Op.ConstantAtomics)) {
                 return false; //entirely variablized
             } else {
+                //Map<Term, Term> changes = xy.getTwo();
+                //p.xy.putAll(changes);
                 p.derivedTerm.set(y);
                 return true;
             }

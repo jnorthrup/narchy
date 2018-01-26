@@ -54,10 +54,16 @@ public class SimpleGraph1 extends DynamicListSpace<Term,TermWidget<Term>> {
 
     @Override
     public void start(SpaceGraph<Term> space) {
-        cache = new SpatialCache(space, 64);
+        synchronized (this) {
+            cache = new SpatialCache(space, 64);
+        }
     }
 
-
+    @Override
+    public synchronized void stop() {
+        cache.clear();
+        cache = null;
+    }
 
     class DefaultTermWidget extends TermWidget<Term> {
 

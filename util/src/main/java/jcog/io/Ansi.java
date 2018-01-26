@@ -195,7 +195,7 @@ public final class Ansi {
   }
 
   /** Clears from the cursor to the end of line. */
-  public String clearToTheEndOfLine() {
+  public static String clearToTheEndOfLine() {
     return ANSI_ERASE_TO_THE_END_OF_LINE;
   }
 

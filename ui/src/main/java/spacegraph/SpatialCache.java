@@ -7,12 +7,12 @@ import java.util.function.Function;
 
 public class SpatialCache<X, Y extends Spatial<X>> {
 
-    private final MRUCache<X, Y> atoms;
+    private final MRUCache<X, Y> cache;
     private final SpaceGraph space;
 
     public SpatialCache(SpaceGraph space, int capacity) {
         this.space = space;
-        atoms = new MRUCache<>(capacity) {
+        cache = new MRUCache<>(capacity) {
             @Override
             protected void onEvict(Map.Entry<X, Y> entry) {
                 space.remove(entry.getValue());
@@ -36,13 +36,13 @@ public class SpatialCache<X, Y extends Spatial<X>> {
     }
 
     public Y getOrAdd(X x, Function<X, Y> materializer) {
-        Y y = atoms.computeIfAbsent(x, materializer);
+        Y y = cache.computeIfAbsent(x, materializer);
         y.activate();
         return y;
     }
 
     public Y get(Object x) {
-        Spatial y = atoms.get(x);
+        Spatial y = cache.get(x);
         if (y != null)
             y.activate();
         return (Y) y;
@@ -50,9 +50,13 @@ public class SpatialCache<X, Y extends Spatial<X>> {
 
 
     public void remove(X x) {
-        Y y = atoms.remove(x);
+        Y y = cache.remove(x);
         if (y != null) {
             space.remove(y);
         }
+    }
+
+    public void clear() {
+        cache.clear();
     }
 }

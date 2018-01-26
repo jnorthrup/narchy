@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;
@@ -60,7 +61,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     public volatile AtomicReferenceArray<V> map;
 
     private static final SpinMutex mutex = new Treadmill2();
-    private static volatile int serial = 0;
+    private static final AtomicInteger serial = new AtomicInteger();
 
 
 
@@ -89,7 +90,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
 
     protected HijackBag(int initialCapacity, int reprobes) {
-        this.id = serial++;
+        this.id = (serial.getAndIncrement());
         this.reprobes = reprobes;
         this.map = EMPTY_ARRAY;
 

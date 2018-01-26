@@ -166,7 +166,7 @@ public class ConcurrentMapStream<K, V> extends ConcurrentHashMap<K, ConcurrentMa
         StringBuilder sb = new StringBuilder();
         sb.append('[');
         for (RankedItem entry : values()) {
-            sb.append("(").append(entry.doubleValue()).append(": ").append(entry.the).append("),");
+            sb.append('(').append(entry.doubleValue()).append(": ").append(entry.the).append("),");
         }
         sb.deleteCharAt(sb.length() - 1);
         sb.append(']');

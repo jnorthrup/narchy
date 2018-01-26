@@ -249,7 +249,7 @@ public class DecisionTree<K, V> {
         printSubtree(root, o);
     }
 
-    private void printSubtree(Node<?> node, PrintStream o) {
+    private static void printSubtree(Node<?> node, PrintStream o) {
         if (!node.isEmpty() && node.get(0) != null) {
             print(node.get(0), true, "", o);
         }
@@ -322,12 +322,8 @@ public class DecisionTree<K, V> {
 
 
         public Stream<Node<V>> recurse() {
-            return Stream.concat(
-                    Stream.of(this),
-                    !isEmpty() ?
-                            Streams.concat(stream().map(Node::recurse).toArray(Stream[]::new))
-                            :
-                            Stream.empty());
+            return isEmpty() ? Stream.of(this) :
+                    Stream.concat(Stream.of(this),Streams.concat(stream().map(Node<V>::recurse).toArray(Stream[]::new)));
         }
 
         public static <V> Node<V> feature(Predicate feature) {

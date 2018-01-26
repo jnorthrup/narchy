@@ -16,6 +16,7 @@ package jcog.util;
 import jcog.list.FasterList;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Iterator;
 
 /**
@@ -41,9 +42,7 @@ public class Array2DIterable<X> implements Iterable<X> {
         order = new FasterList(area);
 
         for (int j = 0; j < rows; j++) {
-            for (int i = 0; i < cols; i++) {
-                order.add(x[j][i]);
-            }
+            order.addAll(Arrays.asList(x[j]).subList(0, cols));
         }
 
         //fillSpiralArray(array2D, 0, 0, true, true, area);

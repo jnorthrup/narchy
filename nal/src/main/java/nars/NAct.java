@@ -160,7 +160,7 @@ public interface NAct {
     default void actionTriState(@NotNull Term cc, @NotNull IntPredicate i) {
         //final int[] state = {0};
         //new GoalActionConcept(cc, this, (b, d) -> {
-        actionBipolar(cc, (float f) -> {
+        actionBipolar(cc, true, (float f) -> {
 
             f = f / 2f + 0.5f;
 
@@ -317,13 +317,18 @@ public interface NAct {
     }
 
     default void actionToggle(@NotNull Term s, @NotNull BooleanProcedure onChange) {
-        float thresh =
-                //0.5f + Param.TRUTH_EPSILON;
-                0.55f;
-                //0.75f;
+        //SUSPECT
+//        float thresh =
+//                //0.5f + Param.TRUTH_EPSILON;
+//                0.55f;
+//                //0.75f;
+//
+//        actionToggle(s, thresh, Float.NaN, 0f, () -> onChange.value(true), () -> onChange.value(false));
 
-        actionToggle(s, thresh, Float.NaN, 0f, () -> onChange.value(true), () -> onChange.value(false));
+        actionPushButton(s, onChange);
+
     }
+
     default void actionPushButton(@NotNull Term s, @NotNull BooleanProcedure onChange) {
         float thresh =
                 //0.5f + Param.TRUTH_EPSILON;

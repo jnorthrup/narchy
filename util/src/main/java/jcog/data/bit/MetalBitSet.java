@@ -3,6 +3,7 @@ package jcog.data.bit;
 import jcog.TODO;
 
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 /**
  * Bare metal bitset implementation. For performance reasons, this
@@ -209,6 +210,7 @@ abstract public class MetalBitSet {
 
     public static class VolatileIntBitSet extends MetalBitSet {
 
+        static final AtomicIntegerFieldUpdater _x = AtomicIntegerFieldUpdater.newUpdater(VolatileIntBitSet.class, "x");
         private volatile int x;
 
         @Override
@@ -223,11 +225,14 @@ abstract public class MetalBitSet {
 
         @Override
         public void set(int i) {
-            x |= (1 << i);
+            int mask = i<<i;
+            _x.updateAndGet(this, (v)-> v|(mask) );
         }
+
         @Override
         public void clear(int i) {
-            x &= ~(1 << i);
+            int mask = ~(i<<i);
+            _x.updateAndGet(this, (v)-> v&(mask) );
         }
 
         @Override

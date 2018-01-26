@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -616,8 +617,8 @@ public class Grok implements Serializable {
             // while (!done){
             // done = true;
             for (Map.Entry<String, Grok> pairs : patterns.entrySet()) {
-                String key = pairs.getKey().toString();
-                Grok value = (Grok) pairs.getValue();
+                String key = pairs.getKey();
+                Grok value = pairs.getValue();
 
                 // We want to search with more complex pattern
                 // We avoid word, small number, space....
@@ -789,7 +790,7 @@ public class Grok implements Serializable {
     @FunctionalInterface
     interface IConverter<T> {
 
-        default T convert(String value, String informat) throws Exception {
+        default T convert(String value, String informat) throws ParseException {
             return null;
         }
 
@@ -870,7 +871,7 @@ public class Grok implements Serializable {
         }
 
         @Override
-        public Date convert(String value, String informat) throws java.text.ParseException {
+        public Date convert(String value, String informat) throws ParseException {
             SimpleDateFormat formatter = new SimpleDateFormat(informat, Converter.locale);
             return formatter.parse(value);
         }

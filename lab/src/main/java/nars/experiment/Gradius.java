@@ -158,8 +158,9 @@ public class Gradius extends NAgentX {
     }
 
     void initBipolar() {
-        actionBipolar($.inh("y", id), (dy) -> {
-            float thresh = 0.33f;
+        //TODO use actionTriState
+        actionBipolar($.p($.the("y"), id), (dy) -> {
+            float thresh = 0.1f;
             if (dy < -thresh) {
                 g.keys[VK_UP] = false; g.keys[VK_DOWN] = true;
             } else if (dy > +thresh) {
@@ -169,8 +170,8 @@ public class Gradius extends NAgentX {
             }
             return dy;
         });
-        actionBipolar($.inh("x", id), (dx) -> {
-           float thresh = 0.33f;
+        actionBipolar($.p($.the("x"), id), (dx) -> {
+           float thresh = 0.1f;
            if (dx < -thresh) {
                g.keys[VK_LEFT] = false; g.keys[VK_RIGHT] = true;
            } else if (dx > +thresh) {

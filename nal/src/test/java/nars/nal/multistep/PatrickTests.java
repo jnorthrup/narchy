@@ -117,16 +117,19 @@ public class PatrickTests extends NALTest {
         TestNAR tt = test;
         //Param.TRACE = true;
 
-        int cycles = 2000;
+        int cycles = 4000;
 
         tt.confTolerance(0.5f);
 //        MetaGoal.Desire.want(nar.want, 0.5f);
         tt.nar.freqResolution.set(0.1f);
-        tt.nar.confResolution.set(0.02f);
+        tt.nar.confResolution.set(0.04f);
+        tt.nar.confMin.set(0.2f);
         //tt.nar.DEFAULT_BELIEF_PRIORITY = 0.1f;
         tt.nar.time.dur(10);
-        tt.nar.termVolumeMax.set(40);
-        tt.nar.deep.set(0.9f);
+        tt.nar.termVolumeMax.set(30);
+        //tt.nar.deep.set(0.75f);
+        //tt.log();
+//        tt.nar.emotion.deriveFailTemporal.why.on((x)->System.out.println(x));
 
 
 

@@ -241,7 +241,7 @@ public class ConcurrentMonitorRegistry implements MonitorRegistry {
                         null); // notifications
             }
 
-            private MBeanAttributeInfo createAttributeInfo(Monitor<?> m) {
+            private static MBeanAttributeInfo createAttributeInfo(Monitor<?> m) {
                 final String type = (m instanceof NumericMonitor<?>)
                         ? Number.class.getName()
                         : String.class.getName();

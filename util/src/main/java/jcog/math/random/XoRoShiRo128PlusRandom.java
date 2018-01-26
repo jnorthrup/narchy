@@ -224,7 +224,7 @@ public class XoRoShiRo128PlusRandom extends Random {
      * @param seed a seed for this generator.
      */
     @Override
-    public void setSeed(final long seed) {
+    public synchronized void setSeed(final long seed) {
         final XorShift1024StarRandom.SplitMix64RandomGenerator r = new XorShift1024StarRandom.SplitMix64RandomGenerator(seed);
         s0 = r.nextLong();
         s1 = r.nextLong();

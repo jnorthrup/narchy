@@ -216,9 +216,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
 	public static <X> ArrayHashSet<X> of(X... x) {
 		ArrayHashSet a = new ArrayHashSet(x.length);
-		for (X xx : x) {
-			a.add(xx);
-		}
+		Collections.addAll(a, x);
 		return a;
 	}
 

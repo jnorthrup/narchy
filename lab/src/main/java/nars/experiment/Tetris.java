@@ -179,8 +179,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
         final Term RIGHT = $.inh("right", id);
         final Term ROT = $.inh("rotCW", id);
 
-        actionToggle(LEFT, () -> state.act(TetrisState.LEFT));
-        actionToggle(RIGHT, () -> state.act(TetrisState.RIGHT));
+        actionPushButton(LEFT, () -> state.act(TetrisState.LEFT));
+        actionPushButton(RIGHT, () -> state.act(TetrisState.RIGHT));
         actionPushButton(ROT, () -> state.act(CW));
         //actionToggle($.p("rotCCW"), ()-> state.take_action(CCW));
     }

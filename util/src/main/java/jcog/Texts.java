@@ -702,7 +702,7 @@ public enum Texts {
     public static String iPad(long v, int digits) {
         String s = String.valueOf(v);
         while (s.length() < digits)
-            s = " " + s;
+            s = ' ' + s;
         return s;
     }
 

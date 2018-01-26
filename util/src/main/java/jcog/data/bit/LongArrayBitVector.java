@@ -700,7 +700,8 @@ public class LongArrayBitVector extends AbstractBitVector implements Cloneable, 
 	public int hashCode() {
 		long h = 0x9e3779b97f4a7c13L ^ length;
 		int numWords = numWords( length );
-		for( int i = 0; i < numWords; i++ ) h ^= ( h << 5 ) + bits[ i ] + ( h >>> 2 );
+		for( int i = 0; i < numWords; i++ )
+			h ^= ( h << 5 ) + bits[ i ] + ( h >>> 2 );
         assert !ASSERTS || (int) ((h >>> 32) ^ h) == super.hashCode();
 		return (int)( ( h >>> 32 ) ^ h );
 	}

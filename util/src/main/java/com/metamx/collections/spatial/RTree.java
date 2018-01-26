@@ -36,7 +36,7 @@ public class RTree {
     public final SplitStrategy split;
     public final BitmapFactory bmp;
     private Node root;
-    private volatile int size;
+    private int size;
 
     public RTree(BitmapFactory bmp) {
         this(0, new LinearGutmanSplitStrategy(0, 0, bmp), bmp);

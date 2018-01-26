@@ -58,8 +58,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
      */
     public SimpleIntSet(Set<Integer> set) {
         this(set.size());
-        for (Integer integer : set)
-            this.add(integer);
+        this.addAll(set);
     }
 
     /**
@@ -69,8 +68,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
      */
     public SimpleIntSet(Collection<Integer> collection) {
         this();
-        for (Integer integer : collection)
-            this.add(integer);
+        this.addAll(collection);
     }
 
 

@@ -2,7 +2,6 @@ package nars.derive.time;
 
 import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
-import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.control.Derivation;
@@ -18,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Supplier;
 
-import static nars.Op.IMPL;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 
@@ -105,15 +103,19 @@ public class DeriveTime extends TimeGraph {
             Term tt = (this.task=d.task).term();
             Term bb = (this.belief=d.belief).term();
             boolean taskTime, beliefTime;
-            Op tto = tt.op();
-            Op bbo = bb.op();
-            if (tto==IMPL && bbo!=IMPL && !(task.isEternal() && !belief.isEternal())) {
-                beliefTime = true;
-                taskTime = false;
-            } else if (tto!=IMPL && bbo==IMPL && !(belief.isEternal() && !task.isEternal())) {
-                beliefTime = false;
-                taskTime = true;
-            } else {
+//            Op tto = tt.op();
+//            Op bbo = bb.op();
+//            if (tto==IMPL && bbo!=IMPL && !(task.isEternal() && !belief.isEternal())) {
+//                beliefTime = true;
+//                taskTime = false;
+//            } else
+
+//                if (tto!=IMPL && bbo==IMPL && !(belief.isEternal() && !task.isEternal())) {
+//                beliefTime = false;
+//                taskTime = true;
+//            } else
+
+                {
                 beliefTime = taskTime = true;
             }
 
