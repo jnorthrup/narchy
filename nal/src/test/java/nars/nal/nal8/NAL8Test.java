@@ -894,8 +894,19 @@ public class NAL8Test extends NALTest {
     @Test
     public void testConjPrior() {
         test.input("happy!")
-                .input("((((--,happy) &&+2 happy) &&+20 y) &&+2 ((--,y) &&+1 happy)). :|:")
-                .mustGoal(cycles, "(y &&+2 (--,y))!", 1f, 0.5f, (t) -> t >= 0);
+            .input("((((--,happy) &&+2 happy) &&+20 y) &&+2 ((--,y) &&+1 happy)). :|:")
+            .mustGoal(cycles, "(y &&+2 (--,y))!", 1f, 0.5f, (t) -> t >= 0);
     }
-
+    @Test
+    public void testSimilarityGoalPosBelief() {
+        test.goal("(it<->here)")
+            .believe("(here<->near)")
+            .mustGoal(cycles, "(it<->near)!", 1f, 0.45f);
+    }
+    @Test
+    public void testSimilarityGoalNegBelief() {
+        test.goal("--(it<->here)")
+            .believe("(here<->near)")
+            .mustGoal(cycles, "(it<->near)!", 0f, 0.45f);
+    }
 }

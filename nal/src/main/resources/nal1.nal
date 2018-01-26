@@ -14,14 +14,14 @@
 //               \         /
 //                (A --> C)
 
-    (A --> B), (B --> C), neqRCom(A,C)      |- (A --> C), (Belief:Deduction, Goal:Strong)
+    (A --> B), (B --> C), neqRCom(A,C)      |- (A --> C), (Belief:Deduction, Goal:Weak)
 
         (A --> B), (B --> C), task("?"), neqRCom(A,C)  |- (A --> C), (Punctuation:Question)
             (A --> B), (B --> C), task("@"), neqRCom(A,C)  |- (A --> C), (Punctuation:Quest)
         (A --> B), (B --> C), task("?"), neqRCom(A,C)  |- (C --> A), (Punctuation:Question)
             (A --> B), (B --> C), task("@"), neqRCom(A,C)  |- (C --> A), (Punctuation:Quest)
 
-    (A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Belief:Abduction, Goal:Induction)
+    (A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Belief:Abduction, Goal:Weak)
         (A --> B), (A --> C), task("?"), belief(positive), neqRCom(B,C) |- (C --> B), (Punctuation:Question)
         (A --> B), (A --> C), task("?"), belief(negative), neqRCom(B,C) |- (--C --> B), (Punctuation:Question)
         (A --> B), (A --> C), task("?"), belief(positive), neqRCom(B,C) |- (C <-> B), (Punctuation:Question)
@@ -30,7 +30,7 @@
         (A --> B), (A --> C), task("?"), neqRCom(B,C)  |- (B --> C), (Punctuation:Question)
             //(A --> B), (A --> C), task("@"), neqRCom(B,C)  |- (B --> C), (Punctuation:Quest)
 
-    (A --> C), (B --> C), neqRCom(A,B)      |- (A --> B), (Belief:Induction, Goal:Induction)
+    (A --> C), (B --> C), neqRCom(A,B)      |- (A --> B), (Belief:Induction, Goal:Weak)
         (A --> C), (B --> C), task("?"), belief(positive), neqRCom(A,B) |- (A --> B), (Punctuation:Question)
         (A --> C), (B --> C), task("?"), belief(negative), neqRCom(A,B) |- (A --> --B), (Punctuation:Question)
         (A --> C), (B --> C), task("?"), belief(positive), neqRCom(A,B) |- (A <-> B), (Punctuation:Question)
@@ -51,18 +51,18 @@
     (M --> P), (M --> S), neqRCom(S,P) |- (P <-> S), (Belief:Comparison)
 
 
-    (M <-> P), (S <-> M), neqRCom(S,P) |- (S <-> P), (Belief:Resemblance, Goal:Strong)
+    (M <-> P), (S <-> M), neqRCom(S,P) |- (S <-> P), (Belief:Resemblance, Goal:Weak)
             //TODO write test case for this
 
 
 //// inheritance from similarty <- todo check why this one was missing ////////////////////////////////////////////////////////////////////////////////////
 
-    (S <-> P), (P --> S) |- (S --> P), (Belief:ReduceConjunction, Goal:Induction)
+    (S <-> P), (P --> S) |- (S --> P), (Belief:ReduceConjunction, Goal:Weak)
 
 //// similarity from inheritance ////////////////////////////////////////////////////////////////////////////////////
 //If S is a special case of P, and P is a special case of S, then S and P are similar
 
-    (S --> P), (P --> S) |- (S <-> P), (Belief:Intersection, Goal:Induction)
+    (S --> P), (P --> S) |- (S <-> P), (Belief:Intersection, Goal:Weak)
 
     (X <-> Y), X, task("?") |- (Y-->X),   (Punctuation:Question)
     (X <-> Y), Y, task("?") |- (X-->Y),   (Punctuation:Question)

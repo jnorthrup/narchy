@@ -1,6 +1,5 @@
 package nars.op.stm;
 
-import jcog.Util;
 import jcog.list.FasterList;
 import jcog.pri.Priority;
 import jcog.pri.VLink;
@@ -27,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -39,30 +37,8 @@ public class ConjClustering extends Causable {
 
     private final CauseChannel<ITask> in;
 
-    final static BagClustering.Dimensionalize<Task> ConjClusterModel = new BagClustering.Dimensionalize<>(3) {
-
-        @Override
-        public void coord(Task t, double[] c) {
-            c[0] = t.start();
-            Truth tt = t.truth();
-            c[1] = tt.polarity(); //0..+1 //if negative, will be negated in subterms
-            c[2] = tt.conf(); //0..+1
-        }
-
-        @Override
-        public double distanceSq(double[] a, double[] b) {
-            return Util.sqr(
-                    Math.abs(a[0] - b[0])
-            ) +    //time
-
-                    (Math.abs(a[1] - b[1]))  //freq
-                    + (Math.abs(a[2] - b[2])  //conf
-
-            );
-
-        }
-    };
-    private final BagClustering<Task> bag;
+    final BagClustering.Dimensionalize<Task> ConjClusterModel;
+    protected final BagClustering<Task> bag;
     private final byte punc;
     private long now;
     private float confMin;
@@ -72,9 +48,33 @@ public class ConjClustering extends Causable {
     public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {
         super(nar);
 
+        this.ConjClusterModel = new BagClustering.Dimensionalize<>(4) {
+
+            @Override
+            public void coord(Task t, double[] c) {
+                c[0] = t.start();
+                c[3] = t.priElseZero(); //0..+1
+                Truth tt = t.truth();
+                c[1] = tt.polarity(); //0..+1 //if negative, will be negated in subterms
+                c[2] = tt.conf(); //0..+1
+            }
+
+            @Override
+            public double distanceSq(double[] a, double[] b) {
+                return (1 + ((double)Math.abs(a[0] - b[0]))/nar.dur())    //d(time)/dur
+                        *
+                        (
+                          Math.abs(a[1] - b[1])  //d(freq_polarity)
+                        + Math.abs(a[2] - b[2])  //d(conf)
+                        + Math.abs(a[3] - b[3])  //d(pri)
+                        );
+            }
+        };
+
+        this.bag = new BagClustering<>(ConjClusterModel, centroids, capacity);
+
         this.punc = punc;
         this.in = nar.newCauseChannel(this);
-        this.bag = new BagClustering<>(ConjClusterModel, centroids, capacity);
 
         nar.onTask(t -> {
             if (!t.isEternal() && t.punc() == punc && filter.test(t)) {
@@ -88,11 +88,12 @@ public class ConjClustering extends Causable {
         });
     }
 
-    private int tasksCreated, taskLimitPerCentroid;
+    private int taskLimitPerCentroid;
 
+    private final FasterList<Task> gen = new FasterList();
 
     @Override
-    protected int next(NAR nar, int work) {
+    protected int next(NAR nar, int work /* max tasks generated per centroid, >=1 */) {
 
 
         now = nar.time();
@@ -101,9 +102,15 @@ public class ConjClustering extends Causable {
         this.volMax = nar.termVolumeMax.intValue();
 
         taskLimitPerCentroid = Math.max(1, Math.round(((float) work) / bag.net.centroids.length));
-        tasksCreated = 0;
+
+        gen.clear();
 
         bag.commitGroups(1, nar, this::conjoinCentroid);
+
+        if (!gen.isEmpty()) {
+//            System.out.println(gen);
+            in.input(gen);
+        }
 
         /* decrease cluster bag vlink priority by at least as much as the priority lost by the task during conjing
            helps ensures fair induction of new items and replacement of processed items (which can remain indefinitely)*/
@@ -115,7 +122,7 @@ public class ConjClustering extends Causable {
                 t.delete();
         });
 
-        return tasksCreated;
+        return (int) Math.ceil(((float)gen.size())/bag.net.centroids.length);
     }
 
 //    /**
@@ -167,7 +174,6 @@ public class ConjClustering extends Causable {
         //chunk(group.filter(Objects::nonNull).takeWhile(kontinue)
         //.map(x -> x.id), maxConjSize, volMax).takeWhile(kontinue).map(tasks -> {
 
-        List<ITask> gen = new FasterList();
 
         Iterator<VLink<Task>> gg =
                 group.filter(x -> x != null && !x.isDeleted()).iterator();
@@ -178,8 +184,10 @@ public class ConjClustering extends Causable {
         FasterList<Task> actualTasks = new FasterList();
 
 
+        int centroidGen = 0;
+
         main:
-        while (gg.hasNext() && gen.size() < taskLimitPerCentroid) {
+        while (gg.hasNext() && centroidGen < taskLimitPerCentroid) {
 
             vv.clear();
             actualTasks.clear();
@@ -310,8 +318,8 @@ public class ConjClustering extends Causable {
                                         ((float) v) / (v + maxVolume);
 
                                 m.priSet(Priority.fund(priAvg * cmplFactor, true, uu));
-                                tasksCreated++;
                                 gen.add(m);
+                                centroidGen++;
                             } else {
                                 //Task.tryContent(cj, punc, true);
                                 //logger.warn("{} failed", this);
@@ -327,10 +335,7 @@ public class ConjClustering extends Causable {
 
         }
 
-        if (!gen.isEmpty()) {
-//            System.out.println(gen);
-            in.input(gen);
-        }
+
 
     }
 

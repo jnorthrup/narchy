@@ -172,7 +172,7 @@ public class NAgentTest {
             float r = y == prev ? 0 : 1;
             prev = y;
             y = 0; //reset
-            System.out.println(nar.time() + " " + r);
+            //System.out.println(nar.time() + " " + r);
             return r;
         }
 

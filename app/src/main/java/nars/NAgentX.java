@@ -180,8 +180,8 @@ abstract public class NAgentX extends NAgent {
                 .deriverAdd("goal_analogy.nal")
                 .index(
                         new CaffeineIndex(
-                                //200 * 1024
-                                100 * 1024
+                                200 * 1024
+                                //100 * 1024
                                 //50 * 1024
                                 //20 * 1024
                         )

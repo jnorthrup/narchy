@@ -152,7 +152,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmean = new MutableInteger(164);
+    public final MutableInteger matchTTLmean = new MutableInteger(196);
 
     public static final int TTL_MIN =
             Param.TTL_UNIFY * 2 +

@@ -16,7 +16,7 @@ public interface Truthed  {
 
     /** value between 0 and 1 indicating how distant the frequency is from 0.5 (neutral) */
     default float polarity() {
-        return Math.abs(0.5f - freq())*2f;
+        return Math.abs(freq() - 0.5f)*2f;
     }
     /**
      * Check if the truth value is negative

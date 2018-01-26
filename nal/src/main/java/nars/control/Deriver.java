@@ -64,7 +64,7 @@ public class Deriver extends Causable {
      */
     final Memoize<ProtoDerivation.PremiseKey, int[]> whats =
             new HijackMemoize<>(ProtoDerivation.PremiseKey::solve,
-                    32 * 1024, 3, false);
+                    48 * 1024, 4, false);
 
 
 

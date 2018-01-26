@@ -361,12 +361,10 @@ public class DeriveTime extends TimeGraph {
 
 
         final TreeSet<Term> eternals = new TreeSet();
-        solutions.removeIf(s -> {
+        solutions.forEach(s -> {
             if (s.when() == ETERNAL) {
                 eternals.add(s.id);
-                return true;
             }
-            return false;
         });
         final TreeSet<Term> eeternals = !eternals.isEmpty() ? eternals : null;
 
@@ -557,7 +555,7 @@ public class DeriveTime extends TimeGraph {
             return ()->solveRaw(pattern);
 
         int timed = ((FasterList)solutions.list).count(t -> t instanceof Absolute);
-        if (timed > 0) {
+        if (timed > 0 && timed < ss) {
             if (solutions.removeIf(t -> t instanceof Relative)) //filter timeless
                 ss = solutions.size();
         }

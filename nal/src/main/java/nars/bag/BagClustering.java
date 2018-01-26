@@ -5,14 +5,12 @@ import jcog.bag.impl.ConcurrentArrayBag;
 import jcog.learn.gng.NeuralGasNet;
 import jcog.learn.gng.impl.Centroid;
 import jcog.list.FasterList;
-import jcog.pri.Prioritized;
 import jcog.pri.VLink;
 import jcog.pri.op.PriMerge;
 import jcog.util.Flip;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
@@ -79,7 +77,6 @@ public class BagClustering<X> {
     }
 
 
-
     public void print() {
         print(System.out);
     }
@@ -120,24 +117,18 @@ public class BagClustering<X> {
         return bag.size();
     }
 
-    public <Y> void commitGroups(int iter, Y y, BiConsumer<Stream<VLink<X>>,Y> each) {
+    public <Y> void commitGroups(int iter, Y y, BiConsumer<Stream<VLink<X>>, Y> each) {
         commit(iter, (sorted) -> {
             int current = -1;
             int n = sorted.size();
             int bs = -1;
             for (int i = 0; i < n; i++) {
                 VLink<X> x = sorted.get(i);
-                X xx = x.get();
-                if (xx instanceof Prioritized && ((Prioritized)xx).isDeleted()) {
-                    x.delete();
-                    sorted.set(i, null);
-                    continue;
-                }
 
-                if (current != x.centroid) {
+                if (current != x.centroid || (i == n-1)) {
                     current = x.centroid;
                     if (bs != -1 && i - bs > 1)
-                        each.accept(IntStream.range(bs, i).mapToObj(sorted::get), y);
+                        each.accept(IntStream.range(bs, i+1).mapToObj(sorted::get), y);
                     bs = i;
                 }
             }
@@ -158,7 +149,9 @@ public class BagClustering<X> {
 
         abstract public void coord(X t, double[] d);
 
-        /** default impl, feel free to override */
+        /**
+         * default impl, feel free to override
+         */
         public double distanceSq(double[] a, double[] b) {
             return Centroid.distanceCartesianSq(a, b);
         }
@@ -166,54 +159,48 @@ public class BagClustering<X> {
     }
 
 
-
-
-
     public boolean commit(int iterations, Consumer<List<VLink<X>>> takeSortedClusters) {
 
-        if (busy.compareAndSet(false, true)) {
-
-            try {
-                synchronized (bag) {
-
-                    int s = bag.size();
-                    if (s == 0)
-                        return false;
-
-                    bag.commit(); //first, apply bag forgetting
-
-                    //                net.compact();
-                    //int cc = bag.capacity();
-
-                    for (int i = 0; i < iterations; i++) {
-                        bag.forEach(this::learn);
-                    }
-
-                    FasterList<VLink<X>> x = sorted.write();
-                    x.clear();
-                    bag.forEach(x::add);
-                    x.sortThisByInt(xx -> xx.centroid );
-                    x.sort(Comparator.comparingInt(a -> a.centroid));
-                    takeSortedClusters.accept(x);
-                    sorted.commit();
-                }
-            } catch (Throwable t) {
-                throw new RuntimeException(t);
-            } finally {
-                 busy.set(false);
-
-            }
-
-            return true;
-        } else {
+        if (!busy.compareAndSet(false, true))
             return false;
+
+        try {
+            synchronized (bag) {
+
+                int s = bag.size();
+                if (s == 0)
+                    return false;
+
+                bag.commit(); //first, apply bag forgetting
+
+                //                net.compact();
+                //int cc = bag.capacity();
+
+                for (int i = 0; i < iterations; i++) {
+                    bag.forEach(this::learn);
+                }
+
+                FasterList<VLink<X>> x = sorted.write();
+                x.clear();
+                bag.forEach(x::add);
+                x.sortThisByInt(xx -> xx.centroid);
+                //x.sort(Comparator.comparingInt(a -> a.centroid));
+                takeSortedClusters.accept(x);
+                sorted.commit();
+            }
+        } finally {
+            busy.set(false);
         }
+
+        return true;
+
 
     }
 
 
     private void learn(VLink<X> x) {
-        if (x.coord[0]!=x.coord[0])
+        double x0 = x.coord[0];
+        if (x0 != x0)
             model.coord(x.id, x.coord);
 
         x.centroid = net.put(x.coord).id;
@@ -243,7 +230,7 @@ public class BagClustering<X> {
         if (xx != null && xx.centroid >= 0) {
             @Nullable VLink<X> yy = bag.get(y);
             if (yy != null && yy.centroid >= 0) {
-                return Math.sqrt( net.distanceSq.distance(xx.coord, yy.coord) );
+                return Math.sqrt(net.distanceSq.distance(xx.coord, yy.coord));
             }
         }
         return Double.POSITIVE_INFINITY;
