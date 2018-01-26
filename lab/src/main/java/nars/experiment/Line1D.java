@@ -205,12 +205,13 @@ public class Line1D {
             //n.start();
             //n.run(10000);
             n.startFPS(100f);
+            //n.run();
 
-            n.concepts().forEach(x -> {
+//            n.concepts().forEach(x -> {
 //                if (x.op() == IMPL) {
-                    x.print();
+//                    x.print();
 //                }
-            });
+//            });
 
 
         }

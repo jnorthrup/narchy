@@ -107,10 +107,10 @@ public class DeriveTime extends TimeGraph {
             boolean taskTime, beliefTime;
             Op tto = tt.op();
             Op bbo = bb.op();
-            if (tto==IMPL && bbo!=IMPL) {
+            if (tto==IMPL && bbo!=IMPL && !(task.isEternal() && !belief.isEternal())) {
                 beliefTime = true;
                 taskTime = false;
-            } else if (tto!=IMPL && bbo==IMPL) {
+            } else if (tto!=IMPL && bbo==IMPL && !(belief.isEternal() && !task.isEternal())) {
                 beliefTime = false;
                 taskTime = true;
             } else {

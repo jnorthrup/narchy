@@ -554,7 +554,7 @@ public class Derivation extends ProtoDerivation {
         float taskPri = _task.priElseZero();
         this.pri =
                 //p.priElseZero(); //use the premise pri directly
-                _belief == null ? taskPri : Param.TaskBeliefDerivation.apply(taskPri, _belief.priElseZero());
+                _belief == null ? taskPri : Param.TaskBeliefToDerivation.apply(taskPri, _belief.priElseZero());
 
 //        float parentValue =
 //                //nar.evaluate(parentCause); /* value of the parent cause as a multiplier above and below 1.0x */
@@ -709,6 +709,9 @@ public class Derivation extends ProtoDerivation {
         }
     };
     final Functor.LambdaFunctor polarizeFunc = Functor.f2("polarize", (subterm, whichTask) -> {
+        if (subterm instanceof Bool)
+            return subterm;
+
         Truth compared;
         if (whichTask.equals(PremiseRule.Task)) {
             compared = taskTruth;

@@ -45,7 +45,7 @@ public class Taskify extends AbstractPred<Derivation> {
             );
             if (tru == null) {
                 d.nar.emotion.deriveFailTaskify.increment();
-                return false;
+                return true;
             }
         }
 
@@ -53,7 +53,7 @@ public class Taskify extends AbstractPred<Derivation> {
         Term x = d.anon.get(x0);
         if (x == null || !Conclusion.valid((x = x.normalize()))) {
             d.nar.emotion.deriveFailTaskify.increment();
-            return false; //when the values were finally dereferenced, the result produced an invalid compound
+            return true; //when the values were finally dereferenced, the result produced an invalid compound
             //throw new RuntimeException("un-anonymizing " + x0 + " produced " + x);
         }
 

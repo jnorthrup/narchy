@@ -56,7 +56,7 @@ public abstract class Param {
 
     //    private final static Logger logger = LoggerFactory.getLogger(DeriveTime.class);
 
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 6;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 12;
 
 
     public static boolean DEBUG_FILTER_DUPLICATE_MATCHES = Param.DEBUG_EXTRA;
@@ -121,10 +121,10 @@ public abstract class Param {
     /**
      * max budget for derivations from the task and optional belief budget
      */
-    public static final FloatFloatToFloatFunction TaskBeliefDerivation =
+    public static final FloatFloatToFloatFunction TaskBeliefToDerivation =
             //Math::max;
-            Util::or;
-    //Util::and;
+            //Util::or;
+    Util::and;
     //UtilityFunctions::aveAri;
 
 
@@ -149,7 +149,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmean = new MutableInteger(96);
+    public final MutableInteger matchTTLmean = new MutableInteger(164);
 
     public static final int TTL_MIN =
             Param.TTL_UNIFY * 2 +
@@ -173,12 +173,12 @@ public abstract class Param {
     /**
      * cost of a repeat (of another within the premise's batch) task derivation
      */
-    public static final int TTL_DERIVE_TASK_REPEAT = TTL_DERIVE_TASK_SUCCESS * 2;
+    public static final int TTL_DERIVE_TASK_REPEAT = TTL_DERIVE_TASK_SUCCESS;
 
     /**
      * cost of a task derived, but too similar to one of its parents
      */
-    public static final int TTL_DERIVE_TASK_SAME = 2;
+    public static final int TTL_DERIVE_TASK_SAME = TTL_DERIVE_TASK_REPEAT;
 
     /**
      * cost of a failed/aborted task derivation
