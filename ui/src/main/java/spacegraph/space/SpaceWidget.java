@@ -1,30 +1,26 @@
-package nars.gui.graph;
+package spacegraph.space;
 
 import com.jogamp.opengl.GL2;
-import nars.term.Termed;
 import spacegraph.SimpleSpatial;
 import spacegraph.Surface;
 import spacegraph.input.Finger;
 import spacegraph.math.Quat4f;
 import spacegraph.phys.Collidable;
 import spacegraph.phys.collision.ClosestRay;
-import spacegraph.phys.shape.CollisionShape;
-import spacegraph.phys.shape.SphereShape;
 import spacegraph.render.Draw;
 import spacegraph.render.JoglPhysics;
 import spacegraph.render.JoglSpace;
-import spacegraph.space.Cuboid;
-import spacegraph.space.EDraw;
 import spacegraph.widget.button.PushButton;
 
 import java.util.List;
 import java.util.function.Consumer;
 
-abstract public class TermWidget<T extends Termed> extends Cuboid<T> {
+/** a spatial holding a Surface, implementing an interface between 3d and 2d UI dynamics */
+abstract public class SpaceWidget<T> extends Cuboid<T> {
 
     boolean touched = false;
 
-    public TermWidget(T x) {
+    public SpaceWidget(T x) {
         super(x, 1, 1);
 
         setFront(
@@ -43,10 +39,7 @@ abstract public class TermWidget<T extends Termed> extends Cuboid<T> {
     protected void onClicked(PushButton b) {
     }
 
-    @Override
-    protected CollisionShape newShape() {
-        return id.op().atomic ? new SphereShape() : super.newShape() /* cube */;
-    }
+
 
     abstract public Iterable<? extends EDraw<?>> edges();
 
@@ -114,12 +107,12 @@ abstract public class TermWidget<T extends Termed> extends Cuboid<T> {
         }
     }
 
-    public interface TermVis<X extends TermWidget> extends Consumer<List<X>> {
+    public interface TermVis<X extends SpaceWidget> extends Consumer<List<X>> {
 
     }
 
     /** for simple element-wise functions */
-    public interface BasicTermVis<X extends TermWidget> extends Consumer<List<X>> {
+    public interface SimpleNodeVis<X extends SpaceWidget> extends Consumer<List<X>> {
         default void accept(List<X> l) {
             l.forEach(this::each);
         }

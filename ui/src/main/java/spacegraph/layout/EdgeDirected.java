@@ -1,10 +1,10 @@
-package nars.gui.graph;
+package spacegraph.layout;
 
 import spacegraph.SimpleSpatial;
 import spacegraph.Spatial;
-import spacegraph.layout.ForceDirected;
 import spacegraph.phys.Collidable;
 import spacegraph.phys.collision.broad.Broadphase;
+import spacegraph.space.SpaceWidget;
 
 import java.util.List;
 
@@ -21,8 +21,8 @@ public class EdgeDirected extends ForceDirected {
             Spatial A = ((Spatial) c.data());
 
             //TODO abstract the Edges as a feature to optionally add to a TermWidget, not just for ConceptWidgets
-            if (A instanceof TermWidget) {
-                ((TermWidget<?>) A).edges().forEach(e -> {
+            if (A instanceof SpaceWidget) {
+                ((SpaceWidget<?>) A).edges().forEach(e -> {
 
                     float attraction = e.attraction;
                     if (attraction > 0) {

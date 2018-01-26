@@ -15,13 +15,14 @@ import nars.concept.Concept;
 import nars.control.Activate;
 import nars.control.DurService;
 import nars.gui.ConceptSurface;
-import nars.gui.DynamicListSpace;
+import spacegraph.space.DynamicListSpace;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.phys.shape.SphereShape;
 import spacegraph.render.Draw;
+import spacegraph.space.SpaceWidget;
 import spacegraph.widget.button.PushButton;
 
 import java.util.List;
@@ -32,7 +33,7 @@ import java.util.function.BiConsumer;
 import static jcog.Util.sqr;
 import static spacegraph.SpaceGraph.window;
 
-public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget> {
+public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
     public final NAR nar;
     final Bagregate<Activate> concepts;
@@ -48,7 +49,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
     //final StampedLock rw = new StampedLock();
 
 
-    public TermWidget.TermVis vis;
+    public SpaceWidget.TermVis vis;
 
     public DynamicConceptSpace(NAR nar, @Nullable Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super();
@@ -140,7 +141,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept, ConceptWidget
         return next.read();
     }
 
-    public class ConceptVis2 implements TermWidget.TermVis<ConceptWidget>, BiConsumer<ConceptWidget, PriReference<? extends Termed>> {
+    public class ConceptVis2 implements SpaceWidget.TermVis<ConceptWidget>, BiConsumer<ConceptWidget, PriReference<? extends Termed>> {
 
         static final int TASKLINK = 0;
         static final int TERMLINK = 1;

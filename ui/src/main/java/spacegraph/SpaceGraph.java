@@ -7,7 +7,6 @@ import com.jogamp.opengl.GL2;
 import jcog.event.ListTopic;
 import jcog.event.Topic;
 import jcog.list.FasterList;
-import org.jetbrains.annotations.NotNull;
 import spacegraph.input.FPSLook;
 import spacegraph.input.KeyXYZ;
 import spacegraph.input.OrbMouse;
@@ -16,7 +15,7 @@ import spacegraph.phys.constraint.BroadConstraint;
 import spacegraph.render.JoglPhysics;
 import spacegraph.render.JoglSpace;
 import spacegraph.render.SpaceGraphFlat;
-import spacegraph.space.ListSpace;
+import spacegraph.space.DynamicListSpace;
 import spacegraph.widget.meta.AutoSurface;
 
 import java.util.Iterator;
@@ -34,7 +33,7 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
 
     final List<Ortho> orthos = new FasterList<>(1);
 
-    final List<AbstractSpace<X, Spatial<X>>> inputs = new FasterList<>(1);
+    final List<AbstractSpace<X>> inputs = new FasterList<>(1);
 
 
     final List<Ortho> preAdd = new FasterList();
@@ -60,7 +59,7 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
     }
 
 
-    public SpaceGraph(AbstractSpace<X, ?>... cc) {
+    public SpaceGraph(AbstractSpace<X>... cc) {
         this();
 
         for (AbstractSpace c : cc)
@@ -96,13 +95,13 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
         c.start(this);
     }
 
-    public SpaceGraph add(AbstractSpace<X, Spatial<X>> c) {
+    public SpaceGraph add(AbstractSpace<X> c) {
         if (inputs.add(c))
             c.start(this);
         return this;
     }
 
-    public void removeSpace(AbstractSpace<X, ?> c) {
+    public void removeSpace(AbstractSpace<X> c) {
         if (inputs.remove(c)) {
             c.stop();
         }
@@ -157,8 +156,6 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
 
     }
 
-
-    @NotNull
     @Override
     public Iterator<Spatial<X>> iterator() {
         throw new UnsupportedOperationException("use forEach()");
@@ -192,26 +189,25 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
     }
 
     @Override
-    protected void update() {
+    protected void update(long dtMS) {
 
         toRemove.forEach(x -> x.delete(dyn));
         toRemove.clear();
 
-        this.inputs.forEach(this::update);
 
-        super.update();
+        List<AbstractSpace<X>> ii = this.inputs;
+        for (int i = 0, inputs1Size = ii.size(); i < inputs1Size; i++) {
+            AbstractSpace<X> s = ii.get(i);
+
+            s.update(this, dtMS);
+
+        }
+
+        super.update(dtMS);
 
         onUpdate.emit(this);
     }
 
-
-    final void update(AbstractSpace<X, Spatial<X>> s) {
-
-        s.forEach(x -> x.update(dyn));
-
-        s.update(this);
-
-    }
 
     public String summary() {
         return dyn.summary();
@@ -228,8 +224,16 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
 //        System.out.println();
 //    }
 
-    public ListSpace<X, ?> add(Spatial<X>... s) {
-        ListSpace<X, Spatial<X>> l = new ListSpace<>(s);
+    public DynamicListSpace<X> add(Spatial<X>... s) {
+        DynamicListSpace<X> l = new DynamicListSpace<X>() {
+
+            final List<Spatial<X>> ls = new FasterList().with(s);
+
+            @Override
+            protected List<? extends Spatial<X>> get() {
+                return ls;
+            }
+        };
         add(l);
         return l;
     }

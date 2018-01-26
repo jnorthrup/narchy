@@ -1,91 +1,50 @@
-package nars.gui;
+package spacegraph.space;
 
-import jcog.event.On;
-import nars.gui.graph.DynamicConceptSpace;
-import nars.gui.graph.EdgeDirected;
-import nars.term.Term;
 import spacegraph.AbstractSpace;
 import spacegraph.Active;
 import spacegraph.SpaceGraph;
 import spacegraph.Spatial;
+import spacegraph.layout.EdgeDirected;
 import spacegraph.layout.Flatten;
-import spacegraph.phys.util.Animated;
-import spacegraph.space.ListSpace;
-import spacegraph.widget.meta.AutoSurface;
 
 import java.util.List;
-
-import static spacegraph.SpaceGraph.window;
-import static spacegraph.layout.Gridding.grid;
+import java.util.function.Consumer;
 
 
 /**
  * thread-safe visualization of a set of spatials, and
  * calls to their per-frame rendering animation
  */
-public abstract class DynamicListSpace<X,Y extends Spatial<X>> extends ListSpace<X,Y> implements Animated {
+public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
 
-
-    //private final TriConsumer<NAR, SpaceGraph<Term>, List<Spatial<X>>> collect;
-    private On on;
-
-    public SpaceGraph<X> space;
-
-
-    //public final MutableFloat maxPri = new MutableFloat(1.0f);
-    //public final MutableFloat minPri = new MutableFloat(0.0f);
-
-
-    //private String keywordFilter;
-    //private final ConceptFilter eachConcept = new ConceptFilter();
-
-
-
-    public DynamicListSpace() {
-        super();
-
-//        nar.onCycle(x -> {
-//            updateIfNotBusy(this::update);
-//
-//        });
-    }
-
-    @Override
-    public boolean animate(float dt) {
-
-        //updateIfNotBusy(this::render);
-
-        return true;
-    }
-
-    @Override
-    public synchronized void stop() {
-        super.stop();
-        //if (on!=null) {
-            space.dyn.removeAnimation(this);
-            active.forEach(space::remove);
-            active.clear();
-            on.off();
-            on = null;
-        //}
-    }
-
-    public final boolean running() {
-        return on != null;
-    }
-
+    private SpaceGraph<X> space;
+    public List<? extends Spatial<X>> active = List.of();
 
 
     @Override
     public void start(SpaceGraph<X> space) {
         this.space = space;
-        space.dyn.addAnimation(this);
-        //on = nar.onCycle(nn -> updateIfNotBusy(this::update));
     }
 
 
     @Override
-    public void update(SpaceGraph<X> s) {
+    public void stop() {
+        synchronized (this) {
+            super.stop();
+            //if (on!=null) {
+            active.forEach(space::remove);
+            active.clear();
+            //}
+        }
+    }
+
+    @Override
+    public void forEach(Consumer<? super Spatial<X>> each) {
+        active.forEach(each::accept);
+    }
+
+    @Override
+    protected void update(SpaceGraph<X> s, long dtMS) {
 
         List<? extends Spatial<X>> prev = this.active;
 
@@ -103,16 +62,17 @@ public abstract class DynamicListSpace<X,Y extends Spatial<X>> extends ListSpace
                 x.order = -1;
         });
 
-        super.update(s);
-    }
+        active.forEach(x -> x.update(s.dyn));
 
+        super.update(s, dtMS);
+    }
 
     abstract protected List<? extends Spatial<X>> get();
 
 
 
     /** displays in a window with default force-directed options */
-    public SpaceGraph<Term> show(int w, int h, boolean flat) {
+    @Deprecated public SpaceGraph show(int w, int h, boolean flat) {
 
 
 //                        new SpaceTransform<Term>() {
@@ -128,14 +88,14 @@ public abstract class DynamicListSpace<X,Y extends Spatial<X>> extends ListSpace
 
 
 
-                //new Spiral()
+        //new Spiral()
 //                        //new FastOrganicLayout()
 
 
 
 
         AbstractSpace ss = flat ? with(new Flatten(0.25f, 0.25f)) : this;
-        SpaceGraph<Term> s = new SpaceGraph<>(
+        SpaceGraph s = new SpaceGraph<>(
                 ss
         );
 
@@ -146,13 +106,13 @@ public abstract class DynamicListSpace<X,Y extends Spatial<X>> extends ListSpace
 
         //s.ortho(Vis.logConsole(nar, 90, 40, new FloatParam(0f)).opacity(0.25f));
 
-        if (this instanceof DynamicConceptSpace) {
-            window(
-                    grid(new AutoSurface<>(fd)
-                            , new AutoSurface<>(((DynamicConceptSpace) this).vis)
-                    ),
-                    400, 400);
-        }
+//        if (this instanceof DynamicConceptSpace) {
+//            window(
+//                    grid(new AutoSurface<>(fd)
+//                            , new AutoSurface<>(((DynamicConceptSpace) this).vis)
+//                    ),
+//                    400, 400);
+//        }
 
         //Vis.conceptsWindow2D
         s
@@ -163,8 +123,6 @@ public abstract class DynamicListSpace<X,Y extends Spatial<X>> extends ListSpace
         return s;
 
     }
-
-
 }
 
 //    public static ConceptWidget newLinkWidget(final NAR nar, SpaceGraph<Term> space, final ConceptWidget core, Term SRC, Term TARGET, BLink bt, boolean task) {

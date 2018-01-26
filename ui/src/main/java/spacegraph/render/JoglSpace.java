@@ -265,28 +265,33 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
 
     }
 
-    abstract protected void update();
+    abstract protected void update(long dtMS);
 
     /** dtMS - time transpired since last call (millisecons)
      * @param dtMS*/
     abstract protected void render(int dtMS);
 
+    private long frameLastRenderedMS = System.currentTimeMillis();
+    private long frameLastUpdateMS = frameLastRenderedMS;
+
     private void updateIfReady() {
 
         if (ready.compareAndSet(true,false) && window.isVisible()) {
-            update();
+
+            long nowMS = System.currentTimeMillis(), dtMS = nowMS - frameLastUpdateMS;
+            this.frameLastUpdateMS= nowMS;
+
+            update(dtMS);
         }
     }
 
-    long lastFrameStartMS = System.currentTimeMillis();
 
     @Override
     public final void display(GLAutoDrawable drawable) {
 
-        long nowMS = System.currentTimeMillis();
-        long dtMS = nowMS - lastFrameStartMS;
+        long nowMS = System.currentTimeMillis(), dtMS = nowMS - frameLastRenderedMS;
         if (dtMS > Integer.MAX_VALUE) dtMS = Integer.MAX_VALUE;
-        this.lastFrameStartMS = nowMS;
+        this.frameLastRenderedMS = nowMS;
 
         render((int)dtMS);
         ready.set(true);

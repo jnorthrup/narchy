@@ -9,8 +9,11 @@ import nars.concept.Concept;
 import nars.term.Termed;
 import spacegraph.SpaceGraph;
 import spacegraph.phys.Dynamic;
+import spacegraph.phys.shape.CollisionShape;
+import spacegraph.phys.shape.SphereShape;
 import spacegraph.render.Draw;
 import spacegraph.space.EDraw;
+import spacegraph.space.SpaceWidget;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,7 +24,7 @@ import static nars.gui.graph.DynamicConceptSpace.ConceptVis2.TERMLINK;
 import static spacegraph.math.v3.v;
 
 
-public class ConceptWidget extends TermWidget<Concept> {
+public class ConceptWidget extends SpaceWidget<Concept> {
 
     public float pri;
 
@@ -44,6 +47,11 @@ public class ConceptWidget extends TermWidget<Concept> {
 //        for (int i = 0; i < edges; i++)
 //            this.edges.add(new EDraw());
 
+    }
+
+    @Override
+    protected CollisionShape newShape() {
+        return id.op().atomic ? new SphereShape() : super.newShape() /* cube */;
     }
 
     @Override

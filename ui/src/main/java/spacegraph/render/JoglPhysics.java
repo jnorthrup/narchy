@@ -30,7 +30,6 @@ import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLException;
 import com.jogamp.opengl.math.FloatUtil;
-import org.jetbrains.annotations.NotNull;
 import spacegraph.Spatial;
 import spacegraph.math.v3;
 import spacegraph.phys.Collidable;
@@ -41,7 +40,6 @@ import spacegraph.phys.collision.DefaultIntersecter;
 import spacegraph.phys.collision.broad.Broadphase;
 import spacegraph.phys.collision.broad.DbvtBroadphase;
 import spacegraph.phys.collision.broad.Intersecter;
-import spacegraph.phys.math.Clock;
 import spacegraph.phys.math.DebugDrawModes;
 import spacegraph.phys.math.Transform;
 import spacegraph.phys.shape.CollisionShape;
@@ -89,10 +87,10 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
     //protected final BulletStack stack = BulletStack.get();
 
 
-    protected final Clock clock = new Clock();
+    //protected final Clock clock = new Clock();
 
     // this is the most important class
-    public final @NotNull Dynamics<X> dyn;
+    public final Dynamics<X> dyn;
 
 
     protected int debug;
@@ -294,16 +292,13 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
 
     //final AtomicBoolean busy = new AtomicBoolean(false);
 
-    @Override protected void update() {
+    @Override protected void update(long dtMS) {
 
-
-        long dt = clock.getTimeThenReset();
-        lastFrameTime = dt / 1000f;
 
         if (simulating) {
             // NOTE: SimpleDynamics world doesn't handle fixed-time-stepping
             dyn.update(
-                    Math.max(dt, 1000000f / RENDER_FPS_IDEAL) / 1000000.f, maxSubsteps
+                    Math.max(dtMS/1000f, 1000000f / RENDER_FPS_IDEAL) / 1000000.f, maxSubsteps
                     //clock.getTimeThenReset()
             );
         }

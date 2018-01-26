@@ -10,7 +10,7 @@ import nars.control.Derivers;
 import nars.exe.Focus;
 import nars.exe.PoolMultiExec;
 import nars.gui.Vis;
-import nars.gui.graph.EdgeDirected;
+import spacegraph.layout.EdgeDirected;
 import nars.gui.graph.run.SimpleConceptGraph1;
 import nars.index.term.map.CaffeineIndex;
 import nars.op.mental.Inperience;

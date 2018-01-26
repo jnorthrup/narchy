@@ -12,7 +12,7 @@ import spacegraph.input.FingerResize;
 import spacegraph.input.Fingering;
 import spacegraph.math.v2;
 import spacegraph.render.Draw;
-import spacegraph.widget.WidgetTest;
+import spacegraph.test.WidgetTest;
 import spacegraph.widget.button.PushButton;
 
 import java.util.Map;

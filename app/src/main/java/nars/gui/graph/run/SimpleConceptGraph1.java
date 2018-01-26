@@ -11,6 +11,8 @@ import nars.task.NALTask;
 import nars.test.DeductiveChainTest;
 
 import static nars.test.DeductiveChainTest.inh;
+import static spacegraph.SpaceGraph.window;
+import static spacegraph.layout.Gridding.grid;
 
 public class SimpleConceptGraph1 extends DynamicConceptSpace {
 
@@ -22,6 +24,8 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
     public SimpleConceptGraph1(NAR nar, Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super(nar, concepts, maxNodes, maxEdgesPerNodeMax);
     }
+
+
 
 //    @Override
 //    protected boolean include(Termed x) {
