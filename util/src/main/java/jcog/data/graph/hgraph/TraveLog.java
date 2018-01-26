@@ -19,7 +19,7 @@ public interface TraveLog {
 
     class IntHashTraveLog implements TraveLog {
 
-        final IntHashSet visit = new IntHashSet();
+        final IntHashSet visit = new IntHashSet(8);
 
         @Override
         public void clear() {

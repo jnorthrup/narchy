@@ -10,6 +10,7 @@ import jcog.data.graph.hgraph.Edge;
 import jcog.data.graph.hgraph.Node;
 import jcog.data.graph.hgraph.NodeGraph;
 import jcog.data.graph.hgraph.Search;
+import jcog.list.Cons;
 import jcog.list.FasterList;
 import nars.Op;
 import nars.subterm.Subterms;
@@ -886,12 +887,13 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         /**
          * computes the length of time spanned from start to the end of the given path
          */
-        public long pathTime(FasterList<BooleanObjectPair<Edge<Event, TimeSpan>>> path, boolean eternalAsZero) {
+        public long pathTime(List<BooleanObjectPair<Edge<Event, TimeSpan>>> path, boolean eternalAsZero) {
 
             long t = 0;
             //compute relative path
-            for (int i = 0, pathSize = path.size(); i < pathSize; i++) {
-                BooleanObjectPair<Edge<Event, TimeSpan>> r = path.get(i);
+            for (BooleanObjectPair<Edge<Event, TimeSpan>> r : path) {
+//            for (int i = 0, pathSize = path.size(); i < pathSize; i++) {
+//                BooleanObjectPair<Edge<Event, TimeSpan>> r = path.get(i);
                 Edge<Event, TimeSpan> event = r.getTwo();
 
                 long spanDT = event.get().dt;
@@ -911,13 +913,14 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             return t;
         }
 
-        protected Event pathStart(FasterList<BooleanObjectPair<Edge<Event, TimeSpan>>> path) {
-            BooleanObjectPair<Edge<Event, TimeSpan>> step = path.getFirst();
+        protected Event pathStart(List<BooleanObjectPair<Edge<Event, TimeSpan>>> path) {
+            BooleanObjectPair<Edge<Event, TimeSpan>> step = path.get(0);
             return step.getTwo().from(step.getOne()).id;
         }
 
-        protected Event pathEnd(FasterList<BooleanObjectPair<Edge<Event, TimeSpan>>> path) {
-            BooleanObjectPair<Edge<Event, TimeSpan>> step = path.getLast();
+        protected Event pathEnd(List<BooleanObjectPair<Edge<Event, TimeSpan>>> path) {
+            BooleanObjectPair<Edge<Event, TimeSpan>> step = path instanceof Cons ?
+                    ((Cons<BooleanObjectPair<Edge<Event,TimeSpan>>>)path).tail : path.get(path.size()-1);
             return step.getTwo().to(step.getOne()).id;
         }
 
@@ -929,7 +932,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
          * returns (startTime, dt) if solved, null if dt can not be calculated.
          */
         @Nullable
-        protected long[] pathDT(Node<Event, TimeSpan> n, Term a, Term b, FasterList<BooleanObjectPair<Edge<Event, TimeSpan>>> path) {
+        protected long[] pathDT(Node<Event, TimeSpan> n, Term a, Term b, List<BooleanObjectPair<Edge<Event, TimeSpan>>> path) {
             Term endTerm = n.id.id;
             boolean endA = a.equals(endTerm);
             boolean endB = b.equals(endTerm);

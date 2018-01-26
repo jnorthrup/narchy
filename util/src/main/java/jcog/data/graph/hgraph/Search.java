@@ -1,15 +1,12 @@
 package jcog.data.graph.hgraph;
 
 import com.google.common.collect.Iterators;
-import jcog.list.FasterList;
+import jcog.list.Cons;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
-import org.eclipse.collections.impl.list.mutable.FastList;
 import org.eclipse.collections.impl.tuple.Tuples;
 
-import java.util.ArrayDeque;
-import java.util.Iterator;
-import java.util.Queue;
+import java.util.*;
 
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -24,7 +21,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 abstract public class Search<N, E> {
 
     public final TraveLog log;
-    public FasterList<BooleanObjectPair<Edge<N, E>>> path = new FasterList();
+    public List<BooleanObjectPair<Edge<N, E>>> path = null;
     protected Node<N, E> at = null;
 
     protected Search() {
@@ -36,28 +33,28 @@ abstract public class Search<N, E> {
     }
 
     public void start() {
-        path.clear();
-        log.clear();
-        at = null;
+
     }
 
     public void stop() {
-
-
+        at = null;
+        log.clear();
+        path = null;
     }
 
-    protected boolean bfs(Node<N, E> start) {
+    protected boolean bfs(Node<N, E> start, Queue<Pair<List<BooleanObjectPair<Edge<N, E>>>,Node<N,E>>> q) {
 
-        Queue<Pair<FasterList<BooleanObjectPair<Edge<N, E>>>,Node<N,E>>> q = new ArrayDeque();
-        q.add(Tuples.pair(path = new FasterList(0),start));
+
+        q.add(Tuples.pair(path = Collections.emptyList(),start));
 
         log.visit(start);
 
 
-        Pair<FasterList<BooleanObjectPair<Edge<N, E>>>, Node<N, E>> current;
+        Pair<List<BooleanObjectPair<Edge<N, E>>>, Node<N, E>> current;
         while ((current = q.poll())!=null) {
 
-            path = current.getOne();
+            List<BooleanObjectPair<Edge<N, E>>> path = current.getOne();
+            this.path = path;
 
             Iterator<Edge<N, E>> ee = next(this.at = current.getTwo()).iterator();
             while (ee.hasNext()) {
@@ -70,9 +67,9 @@ abstract public class Search<N, E> {
                 {
 
 
-                    FastList<BooleanObjectPair<Edge<N, E>>> pp = path.clone();
-                    pp.add(pair(next == e.to, e));
-                    q.add(Tuples.pair((FasterList) pp,next));
+
+                    List<BooleanObjectPair<Edge<N, E>>> pp = Cons.the(this.path, pair(next == e.to, e));
+                    q.add(Tuples.pair(pp,next));
 
 
 
@@ -83,7 +80,8 @@ abstract public class Search<N, E> {
 
             Node<N, E> next = current.getTwo();
             if (start!=next) {
-                BooleanObjectPair<Edge<N, E>> move = current.getOne().getLast();
+                BooleanObjectPair<Edge<N, E>> move =
+                        path instanceof Cons ? ((Cons<BooleanObjectPair<Edge<N, E>>>)path).tail : path.get(path.size()-1);
                 //guard
                 if (!next(move, next))
                     return false; //leaves path intact on exit
@@ -126,7 +124,7 @@ abstract public class Search<N, E> {
 
             //pop
             this.at = current;
-            path.removeLast();
+            path.remove(path.size()-1);
 
             return true;
         });

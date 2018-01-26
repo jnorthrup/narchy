@@ -31,14 +31,11 @@ class NodeGraphTest {
         NodeGraph n = g1();
         List<String> trace = new FasterList();
         n.bfs("a", new Search() {
-
-            @Override
-            protected boolean next(BooleanObjectPair move, Node next) {
+            @Override protected boolean next(BooleanObjectPair move, Node next) {
                 trace.add(path.toString());
                 return true;
             }
         });
-        System.out.println(trace);
         assertEquals(4, trace.size());
         assertEquals("[[true:a => ab => b], [true:a => ae => e], [true:a => ab => b, true:b => bc => c], [true:a => ab => b, true:b => bc => c, true:c => cd => d]]", trace.toString());
     }

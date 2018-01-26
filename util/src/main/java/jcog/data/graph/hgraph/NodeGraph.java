@@ -1,6 +1,9 @@
 package jcog.data.graph.hgraph;
 
 import com.google.common.collect.Iterables;
+import jcog.list.FasterList;
+import org.eclipse.collections.api.tuple.Pair;
+import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 
 import java.io.PrintStream;
 import java.util.*;
@@ -148,9 +151,14 @@ public class NodeGraph<N, E> {
     private boolean bfsNodes(Iterable<Node<N, E>> startingNodes, Search<N, E> search) {
         search.start();
         try {
-            for (Node n : startingNodes)
-                if (!search.bfs(n))
+
+            Queue<Pair<List<BooleanObjectPair<Edge<N, E>>>,Node<N,E>>> q = new ArrayDeque();
+
+            for (Node n : startingNodes) {
+                if (!search.bfs(n, q))
                     return false;
+                q.clear();
+            }
 
             return true;
         } finally {
@@ -161,6 +169,8 @@ public class NodeGraph<N, E> {
 
         search.start();
         try {
+
+            search.path = new FasterList(8);
 
             for (Node n : startingNodes)
                 if (!search.dfs(n))
