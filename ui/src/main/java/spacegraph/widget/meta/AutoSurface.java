@@ -49,10 +49,10 @@ public class AutoSurface<X> extends Gridding {
 
         synchronized (this) {
 
+            seen.clear();
             ons = new Ons();
             List<Surface> l = new FasterList();
             collect(obj, l, 0);
-            seen.clear();
 
             super.start(parent);
 

@@ -26,9 +26,9 @@ public class Cover extends Widget {
     public void toggle() {
         synchronized (this) {
             if ((uncovered = !uncovered)) {
-                children(full.get());
+                content.set(full.get());
             } else {
-                children(icon.get());
+                content.set(icon.get());
             }
         }
     }

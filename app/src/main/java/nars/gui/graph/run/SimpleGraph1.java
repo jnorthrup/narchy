@@ -1,8 +1,10 @@
 package nars.gui.graph.run;
 
+import com.google.common.collect.Iterables;
 import com.google.common.graph.Graph;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
+import jcog.data.graph.hgraph.NodeGraph;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import nars.gui.DynamicListSpace;
@@ -15,15 +17,19 @@ import spacegraph.space.EDraw;
 
 import java.util.List;
 import java.util.Random;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * display a directed graph by wrapping its elements in NAR concepts (HACK)
  */
 public class SimpleGraph1 extends DynamicListSpace<Term,TermWidget<Term>> {
 
-//    final Surface status = new Label("ready");
 
+    final Random rng = new XoRoShiRo128PlusRandom(1);
     final TermWidget.BasicTermVis<TermWidget<Term>> vis = w -> {
+
+        w.moveDelta((rng.nextFloat()-0.5f)*0.1f, (rng.nextFloat()-0.5f)*0.1f, (rng.nextFloat()-0.5f)*0.1f);
 
         w.scale(5, 5, 5);
 
@@ -34,8 +40,8 @@ public class SimpleGraph1 extends DynamicListSpace<Term,TermWidget<Term>> {
             x.g = 0.5f;
             x.b = 0;
             x.a = 1;
-            x.width = 10;
-            x.priSet(0.5f);
+            x.width = x.pri()*4;
+            //x.priSet(0.5f);
             x.attraction = 1;
             x.attractionDist = 1;
         });
@@ -51,7 +57,7 @@ public class SimpleGraph1 extends DynamicListSpace<Term,TermWidget<Term>> {
         cache = new SpatialCache(space, 64);
     }
 
-    final Random rng = new XoRoShiRo128PlusRandom(1);
+
 
     class DefaultTermWidget extends TermWidget<Term> {
 
@@ -59,7 +65,9 @@ public class SimpleGraph1 extends DynamicListSpace<Term,TermWidget<Term>> {
 
         public DefaultTermWidget(Term x) {
             super(x);
-            move(rng.nextFloat()-0.5f, rng.nextFloat()-0.5f, rng.nextFloat()-0.5f);
+            move((rng.nextFloat()-0.5f)*10,
+                    (rng.nextFloat()-0.5f)*10,
+                    (rng.nextFloat()-0.5f)*10);
         }
 
         @Override
@@ -69,27 +77,43 @@ public class SimpleGraph1 extends DynamicListSpace<Term,TermWidget<Term>> {
     }
 
 
-    protected SimpleGraph1 commit(Graph<Term> g) {
-        List<TermWidget<Term>> n2 = $.newArrayList(g.nodes().size());
+    /** adapts guava Graph as input */
+    public SimpleGraph1 commit(Graph<Term> g) {
+        return commit(n -> g.nodes().forEach(n), c->c.accept(g::successors));
+    }
 
-        g.nodes().forEach(x -> {
+    public SimpleGraph1 commit(NodeGraph<Term,Term> g) {
+        return commit(
+                n -> g.nodes().forEach(z -> n.accept(z.id)),
+                c->c.accept(x-> Iterables.transform(g.node(x).edges(false,true),
+                        //zz -> zz.id //edge label
+                        zz -> zz.to.id //edge target
+                )));
+    }
+
+    public SimpleGraph1 commit(Consumer<Consumer<Term>> nodes, Consumer<Consumer<Function<Term,Iterable<Term>>>> edges) {
+        List<TermWidget<Term>> n2 = $.newArrayList(); //g.nodes().size());
+
+        nodes.accept(x->{
+        //g.nodes().forEach(x -> {
             //HACK todo use proxyterms in a cache
             //c.termlinks().clear();
 
             DefaultTermWidget src = cache.getOrAdd(x, DefaultTermWidget::new);
 
-            g.successors(x).forEach((Term y) ->
+            edges.accept(e -> e.apply(x).forEach(edge ->
+            //g.successors(x).forEach((Term y) ->
                     src.edges.add(new EDraw<>(
-                            src, cache.getOrAdd(y, DefaultTermWidget::new), 0.5f)));
+                            src, cache.getOrAdd(edge, DefaultTermWidget::new), 0.5f)))
+            );
 
             n2.add(src);
         });
 
         this.active = n2;
-
-
         return this;
     }
+
 
 
     @Override
@@ -105,17 +129,22 @@ public class SimpleGraph1 extends DynamicListSpace<Term,TermWidget<Term>> {
         g.putEdge($.the("y"), $.the("z"));
         g.putEdge($.the("y"), $.the("w"));
 
-
-//        NAR n = NARS.tmp();
-//        n.input("a:b.","b:c.");
-//        n.run(10);
-//        AdjGraph<Term, Float> g = TermGraph.termlink(n);
+        NodeGraph<Term,Term> h = new NodeGraph();
+        h.add($.the("x"));
+        h.add($.the("y"));
+        h.add($.the("z"));
+        h.add($.the("a"));
+        h.edgeAdd($.the("x"), $.the("xy"), $.the("y"));
+        h.edgeAdd($.the("x"), $.the("xz"), $.the("z"));
+        h.edgeAdd($.the("y"), $.the("yz"), $.the("z"));
+        h.edgeAdd($.the("a"), $.the("ay"), $.the("y"));
 
         SimpleGraph1 cs = new SimpleGraph1() {
             @Override
             public void start(SpaceGraph space) {
                 super.start(space);
-                commit(g);
+                //commit(g);
+                commit(h);
             }
         };
 

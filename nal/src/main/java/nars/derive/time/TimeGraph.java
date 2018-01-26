@@ -896,7 +896,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 //                BooleanObjectPair<Edge<Event, TimeSpan>> r = path.get(i);
                 Edge<Event, TimeSpan> event = r.getTwo();
 
-                long spanDT = event.get().dt;
+                long spanDT = event.id.dt;
 
                 if (spanDT == ETERNAL) {
                     //no change, crossed a DTERNAL step. this may signal something

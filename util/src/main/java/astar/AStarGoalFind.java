@@ -18,7 +18,7 @@ public class AStarGoalFind<F extends Solution> {
 
 
     // Amount of debug output 0,1,2
-    private int verbose;
+//    private int verbose;
     public Solution bestNodeAfterSearch;
     // The maximum number of completed nodes. After that number the algorithm returns null.
     // If negative, the search will run until the goal node is found.
@@ -88,10 +88,10 @@ public class AStarGoalFind<F extends Solution> {
             //and heuristic costs to the goal
             F currentNode = openSet.poll();
 
-            //debug output according to verbose
-            System.out.println((verbose > 1 ? "Open set: " + openSet + "\n" : "")
-                    + (verbose > 0 ? "Current node: " + currentNode + "\n" : "")
-                    + (verbose > 1 ? "Closed set: " + closedSet : ""));
+//            //debug output according to verbose
+//            System.out.println((verbose > 1 ? "Open set: " + openSet + "\n" : "")
+//                    + (verbose > 0 ? "Current node: " + currentNode + "\n" : "")
+//                    + (verbose > 1 ? "Closed set: " + closedSet : ""));
 
             if (goalNode.goalOf(currentNode)) {
                 //we know the shortest path to the goal node, done

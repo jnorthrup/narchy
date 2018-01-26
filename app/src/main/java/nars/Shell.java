@@ -12,7 +12,6 @@ import com.googlecode.lanterna.terminal.TerminalResizeListener;
 import com.googlecode.lanterna.terminal.swing.*;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import jcog.Texts;
-import nars.audio.NARAudio;
 import nars.gui.Vis;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Scale;
@@ -20,6 +19,8 @@ import spacegraph.Surface;
 import spacegraph.input.Finger;
 import spacegraph.layout.Gridding;
 import spacegraph.widget.console.ConsoleTerminal;
+import spacegraph.widget.meta.AutoSurface;
+import spacegraph.widget.meta.OmniBox;
 import spacegraph.widget.slider.XYSlider;
 import spacegraph.widget.text.LabeledPane;
 import spacegraph.widget.windo.Widget;
@@ -234,20 +235,11 @@ public class Shell {
 
     public void shellGL(NAR nar) {
 
-        ConsoleWidget c = new ConsoleWidget(new TextUI(nar).session(TERMINAL_DISPLAY_FPS));
+        //window(Vis.top(nar), 1024, 1024);
+        //window(new AutoSurface<>(nar), 700, 600);
 
-        NARAudio audio = new NARAudio(nar);
-        //audio.sensors.keySet().forEach(s -> s.sensor.pri(()->0.05f));
-
-
-        window(Vis.top(nar), 1024, 1024);
-
-//        SpaceGraph.window(
-//                //c,
-//                new VSplit(c, audio.newMonitorPane(), 0.1f),
-//                1000, 800
-//        );
-
+        window(new OmniBox(), 600, 200);
+        window(new AutoSurface<>(nar.services).aspect(0.1f), 800, 800);
     }
 
 

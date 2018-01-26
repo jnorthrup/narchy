@@ -126,12 +126,6 @@ public abstract class DynamicListSpace<X,Y extends Spatial<X>> extends ListSpace
 //                            }
 //                        }
 
-                //new Flatten()
-//                        new Flatten() {
-//                            protected void locate(SimpleSpatial s, v3 f) {
-//                                f.set(s.x(), s.y(), 10 - ((Term) (s.key)).volume() * 1);
-//                            }
-//                        }
 
 
                 //new Spiral()
@@ -141,10 +135,13 @@ public abstract class DynamicListSpace<X,Y extends Spatial<X>> extends ListSpace
 
 
         AbstractSpace ss = flat ? with(new Flatten(0.25f, 0.25f)) : this;
-        SpaceGraph<Term> s = new SpaceGraph<>(ss);
+        SpaceGraph<Term> s = new SpaceGraph<>(
+                ss
+        );
 
         EdgeDirected fd = new EdgeDirected();
         s.dyn.addBroadConstraint(fd);
+        fd.attraction.set(fd.attraction.get() * 8);
 
 
         //s.ortho(Vis.logConsole(nar, 90, 40, new FloatParam(0f)).opacity(0.25f));

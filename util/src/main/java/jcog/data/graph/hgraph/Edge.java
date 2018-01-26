@@ -33,15 +33,15 @@ import org.jetbrains.annotations.Nullable;
 public class Edge<N, E> {
 
     private final int hash;
-    private final E data;
+    public final E id;
     public final Node<N, E> from;
     public final Node<N, E> to;
 
-    public Edge(Node<N, E> from, Node<N, E> to, E data) {
-        this.data = data;
+    public Edge(Node<N, E> from, Node<N, E> to, E id) {
+        this.id = id;
         this.from = from;
         this.to = to;
-        this.hash = Util.hashCombine(data.hashCode(), from.hashCode(), to.hashCode());
+        this.hash = Util.hashCombine(id.hashCode(), from.hashCode(), to.hashCode());
     }
 
     @Override
@@ -54,11 +54,7 @@ public class Edge<N, E> {
         if (this == obj) return true;
         if (!(obj instanceof Edge)) return false;
         Edge ee = (Edge) obj;
-        return from == ee.from && to == ee.to && data.equals(ee.data);
-    }
-
-    public E get() {
-        return data;
+        return from == ee.from && to == ee.to && id.equals(ee.id);
     }
 
     public boolean isSelfLoop() {
@@ -82,7 +78,7 @@ public class Edge<N, E> {
 
     @Override
     public String toString() {
-        return from + " => " + data + " => " + to;
+        return from + " => " + id + " => " + to;
     }
 
     public Node<N,E> to(boolean outOrIn) {

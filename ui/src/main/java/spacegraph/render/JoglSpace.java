@@ -22,7 +22,7 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
 
 
     final static int RENDER_FPS_IDEAL = 30;
-    final static int UPDATE_FPS_IDEAL = 20;
+    final static int UPDATE_FPS_IDEAL = 40;
 
     //protected static final MyFPSAnimator a = new MyFPSAnimator(JoglSpace.FPS_IDEAL, FPS_MIN, FPS_IDEAL);
     protected static final GameAnimatorControl a;
