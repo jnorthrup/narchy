@@ -376,9 +376,9 @@ public class DeriveTime extends TimeGraph {
         boolean timeless = false, timed = false;
 //        int temporals = 0;
 
-        if (eeternals != null) {
-            solutions.removeIf(s -> s.when() == TIMELESS && eeternals.contains(s.id));
-        }
+//        if (eeternals != null) {
+//            solutions.removeIf(s -> s.when() == TIMELESS && eeternals.contains(s.id));
+//        }
 
         //remove any events that have been absorbed as eternals:
         Iterator<Event> ii = solutions.iterator();
@@ -390,7 +390,7 @@ public class DeriveTime extends TimeGraph {
 
                 timeless = true;
 
-            } else {
+            } else if (w != ETERNAL) {
                 timed = true;
                 min = Math.min(min, w);
                 max = Math.max(max, w);
@@ -419,15 +419,15 @@ public class DeriveTime extends TimeGraph {
 
         if (!differentTimedTerms) {
             if (timed && eeternals == null && (max - min <= dur)) {
-                if (first.op().temporal) {
-                    occ[0] = occ[1] = min;
-                } else {
+//                if (first.op().temporal) {
+//                    occ[0] = occ[1] = min;
+//                } else {
                     occ[0] = min;
                     occ[1] = max;
-                }
+//                }
                 return first;
             }
-            if (eternals!=null) {
+            if (eeternals!=null) {
                 return null;
             }
             if (timeless && eeternals == null) {
@@ -553,6 +553,14 @@ public class DeriveTime extends TimeGraph {
 
     protected Supplier<Term> solution(Term pattern, ArrayHashSet<Event> solutions) {
         int ss = solutions.size();
+        if (ss == 0)
+            return ()->solveRaw(pattern);
+
+        int timed = ((FasterList)solutions.list).count(t -> t instanceof Absolute);
+        if (timed > 0) {
+            if (solutions.removeIf(t -> t instanceof Relative)) //filter timeless
+                ss = solutions.size();
+        }
 
         switch (ss) {
             case 0:
@@ -562,18 +570,13 @@ public class DeriveTime extends TimeGraph {
             default:
 
                 //return solveRandomOne(solutions);
-                FasterList<Event> solutionsCopy = new FasterList(solutions.list);
+                //FasterList<Event> solutionsCopy = new FasterList(solutions.list);
                 long[] when = new long[]{TIMELESS, TIMELESS};
                 Term tt = solveMerged(solutions, d.dur, when);
                 if (tt == null || tt instanceof Bool || tt.volume() > d.termVolMax) {
                     //HACK use a copy because solveMerged modifies the input
-                    int timed = solutionsCopy.count(t -> t instanceof Absolute);
-                    if (timed > 0) {
-                        //filter timeless
-                        solutionsCopy.removeIf(t -> t instanceof Relative);
-                    }
 
-                    return () -> solveThe(solutionsCopy.get(random())); //choose one at random
+                    return () -> solveThe(solutions.get(random())); //choose one at random
                 } else if (when[0] == TIMELESS) {
                     return () -> solveRaw(tt);
                 } else {

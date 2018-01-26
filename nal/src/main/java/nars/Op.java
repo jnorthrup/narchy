@@ -2217,7 +2217,7 @@ public enum Op {
         return cache;
     }
 
-    final static Memoize<InternedCompound, Term> preCompoundCached = new HijackMemoize<>(
+    final static Memoize<InternedCompound, Term> cache = new HijackMemoize<>(
             (nc) -> nc.op.compound(DTERNAL, nc.subs), 128 * 1024,
             4, false) {
 
@@ -2238,7 +2238,7 @@ public enum Op {
 
     protected Term compound(int dt, Term[] u, boolean intern) {
         return (intern && internable(dt, u)) ?
-            preCompoundCached.apply(new InternedCompound(this, u)) :
+            cache.apply(new InternedCompound(this, u)) :
             compound(dt, u);
     }
 

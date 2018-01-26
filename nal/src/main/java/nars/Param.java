@@ -104,7 +104,7 @@ public abstract class Param {
 
     public static final PriMerge tasklinkMerge =
             PriMerge.max;
-    //PriMerge.plus; //not safe to plus without enough headroom
+            //PriMerge.plus;
 
     //    /**
 //     * budgets premises from their links, but isolated from affecting the derivation budgets, which are from the tasks (and not the links)
@@ -136,7 +136,10 @@ public abstract class Param {
      */
     public final static int SIGNAL_LATCH_TIME_MAX =
             //0;
-            8;
+            //2;
+            4;
+            //8;
+            //16;
     //Integer.MAX_VALUE;
     //8;
     //32;

@@ -358,7 +358,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
     @Override
     public String summary() {
         StringBuilder sb = new StringBuilder(64);
-        sb.append("N=").append(size()).append(' ');
+        sb.append(" N=").append(size()).append(' ');
         float rate = statReset((k, v) -> {
             sb.append(k).append('=').append(v).append(' ');
         });

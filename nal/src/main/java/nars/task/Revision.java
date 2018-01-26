@@ -603,7 +603,7 @@ public class Revision {
         if (bn == null)
             return null;
 
-        Truth rawTruth = revise(an, bn, joint.factor, c2wSafe(confMin));
+        Truth rawTruth = revise(an, bn, joint.factor(Math.abs( an.freq() - bn.freq() )), c2wSafe(confMin));
         if (rawTruth == null)
             return null;
 

@@ -12,14 +12,21 @@ import static nars.time.Tense.ETERNAL;
 
 public final class TimeFusion {
 
-    public final float factor;
+    public float factor;
     public final long unionStart;
     public final long unionEnd;
+
 
     public TimeFusion(long as, long ae, long bs, long be) {
         this(new Interval(as, ae), new Interval(bs, be));
         assert (as <= ae);
         assert (bs <= be);
+    }
+
+    /** HACK TODO more accurate - call after union fusion calculated  */
+    public float factor(float freqDifference) {
+        factor *= (1f - freqDifference);
+        return factor;
     }
 
     TimeFusion(Interval... x) {

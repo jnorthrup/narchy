@@ -126,21 +126,6 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     }
 
 
-    //    @Override
-//    public void forEach(Consumer<? super Task> action) {
-//        //synchronized (this) {
-//            super.forEach(action);
-//        //}
-//    }
-
-    //    protected final Task removeWeakest(Object reason) {
-//        if (!isEmpty()) {
-//            Task x = remove(size() - 1);
-//            x.delete(reason);
-//        }
-//    }
-
-
     public Task strongest() {
         Object[] l = this.list;
         return (l.length == 0) ? null : (Task) l[0];
@@ -165,21 +150,6 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         return -w.conf();
     }
 
-//    public final float minRank() {
-//        Task w = weakest();
-//        return w == null ? 0 : rank(w);
-//    }
-//
-//    @Override
-//    public final int compare(/*@NotNull*/ Task o1, /*@NotNull*/ Task o2) {
-//        float f1 = rank(o2); //reversed
-//        float f2 = rank(o1);
-//        if (f1 < f2)
-//            return -1;
-//        if (f1 > f2)
-//            return 1;
-//        return 0;
-//    }
 
     @Deprecated
     void removeTask(/*@NotNull*/ Task t, @Nullable String reason) {
@@ -216,6 +186,8 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                 break;
 
             if (x.equals(y)) {
+                if (x!=y && x.isInput())
+                    throw new RuntimeException("different input task instances with same stamp");
                 return x;
             }
 

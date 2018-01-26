@@ -40,7 +40,6 @@ public class Taskify extends AbstractPred<Derivation> {
         Truth tru = d.concTruth;
         if (tru!=null) {
             tru = tru.ditherDiscrete(d.freqRes, d.confRes, d.confMin,
-                    //TimeFusion.eviEternalize(tru.evi(), d.concEviFactor)
                     tru.evi() * d.concEviFactor
             );
             if (tru == null) {
@@ -82,13 +81,13 @@ public class Taskify extends AbstractPred<Derivation> {
             return spam(d, Param.TTL_DERIVE_TASK_FAIL);
         }
 
-        if (d.single)
-            t.setCyclic(true);
-
         if (same(t, d._task, d.freqRes) || (d._belief != null && same(t, d._belief, d.freqRes))) {
             d.nar.emotion.deriveFailParentDuplicate.increment();
             return spam(d, Param.TTL_DERIVE_TASK_SAME);
         }
+
+        if (d.single)
+            t.setCyclic(true);
 
         float priority = d.deriver.derivationPriority(t, d);
         assert (priority == priority);

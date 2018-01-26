@@ -46,7 +46,7 @@ abstract public class Search<N, E> {
 
 
         q.add(Tuples.pair(path = Collections.emptyList(), start));
-
+        log.visit(start);
 
         Pair<List<BooleanObjectPair<Edge<N, E>>>, Node<N, E>> current;
         while ((current = q.poll()) != null) {

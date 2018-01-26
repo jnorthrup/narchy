@@ -110,7 +110,8 @@ public class GoalActionAsyncConcept extends ActionConcept {
         if (g!=null) {
 //            //fg = feedGoal.task(term, g, goalTime-dur, goalTime, nar.time.nextStamp()); //allow the feedback goal (Ex: curiosity) to override, otherwise use the current goal
 //            fg = feedGoal.set(this, g, stamper, goalTime, dur, nar);
-            fg = GoalActionConcept.curiosity(nar, g, term, curiosityStamp);
+            //fg = GoalActionConcept.curiosity(nar, g, term, curiosityStamp);
+            fg = null;
         }
         else
             fg = null;

@@ -16,7 +16,7 @@ public class NAgentTest {
         NAR n = NARS.tmp();
         n.termVolumeMax.set(18);
         n.freqResolution.set(0.05f);
-        n.confResolution.set(0.02f);
+        n.confResolution.set(0.04f);
         n.time.dur(1);
 
 //        n.emotion.deriveFailTemporal.why.on(new Meter.ReasonCollector());
@@ -58,6 +58,23 @@ public class NAgentTest {
         assertTrue(a.dex.getMean() > 0.02f);
     }
 
+    @ParameterizedTest
+    @ValueSource(strings={"t", "f"})
+    public void testOscillate(String x) {
+
+        boolean toggleOrPush = x.charAt(0) == 't';
+
+        System.out.println((toggleOrPush ? "toggle" : " push"));
+        MiniTest a = new ToggleOscillate(nar(), $.the("t"),
+                $.$safe("t:y"),
+                //$.$safe("(t,y)"),
+                toggleOrPush);
+
+        a.runSynch(3000);
+
+        assertTrue(a.avgReward() > 0.2f); //0.1 ~= curiosity baseline
+        assertTrue(a.dex.getMean() > 0.02f);
+    }
 
     abstract static class MiniTest extends NAgent {
         private final Runnable statPrint;
@@ -130,6 +147,36 @@ public class NAgentTest {
 
     }
 
+    /** reward for rapid inversion/oscillation of input action */
+    static class ToggleOscillate extends MiniTest {
+
+        private int y;
+        private int prev = 0;
+
+        public ToggleOscillate(NAR n, Term env, Term action, boolean toggleOrPush) {
+            super(env, n);
+            y = 0;
+
+            BooleanProcedure pushed = (v) -> {
+                //System.err.println(n.time() + ": " + v);
+                this.y = v ? 1 : -1;
+            };
+            if (toggleOrPush)
+                actionToggle(action, pushed);
+            else
+                actionPushButton(action, pushed);
+        }
+
+        @Override
+        float reward() {
+            float r = y == prev ? 0 : 1;
+            prev = y;
+            y = 0; //reset
+            System.out.println(nar.time() + " " + r);
+            return r;
+        }
+
+    }
 
 //        n.onTask(t->{
 //            if (t.isGoal()) {

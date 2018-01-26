@@ -30,7 +30,7 @@ public class GoalActionConcept extends ActionConcept {
     private final FloatParam curiosity;
 
 //    /** shared curiosity stamp */
-    final long curiosityStamp;
+//    final long curiosityStamp;
 
     @NotNull
     private final MotorFunction motor;
@@ -54,9 +54,8 @@ public class GoalActionConcept extends ActionConcept {
         this.motor = motor;
         //this.goals = newBeliefTable(nar, false); //pre-create
 
-        curiosityStamp = n.time.nextStamp();
-    }
 
+    }
 
 
     @Override
@@ -65,10 +64,10 @@ public class GoalActionConcept extends ActionConcept {
 
         long pStart =
                 //now;
-                now - dur/2;
+                now - dur / 2;
         long pEnd =
                 //now;
-                now + dur/2;
+                now + dur / 2;
 
 
         float cur = curiosity.floatValue();
@@ -79,15 +78,15 @@ public class GoalActionConcept extends ActionConcept {
 
         goal = this.goals().truth(pStart, pEnd, nar);
 
-        if (nar.random().nextFloat() < cur) {
+        if (nar.random().nextFloat() < cur * (1f - (goal!=null ? goal.conf() : 0))) {
 //            // curiosity override
 //
             float curiConf =
-                        //nar.confDefault(GOAL);
-                        //nar.confMin.floatValue() * 2;
-                        Math.max(goal!=null ? goal.conf() : 0, nar.confMin.floatValue() * 2); //match goal conf
+                    //nar.confDefault(GOAL);
+                    //nar.confMin.floatValue() * 2;
+                    Math.max(goal != null ? goal.conf() : 0, nar.confMin.floatValue() * 2); //match goal conf
 
-                    //nar.confDefault(GOAL) * CURIOSITY_CONF_FACTOR;
+            //nar.confDefault(GOAL) * CURIOSITY_CONF_FACTOR;
 //                    Math.max(goal != null ? goal.conf() : 0,
 //                            nar.confDefault(GOAL) * CURIOSITY_CONF_FACTOR);
 
@@ -103,7 +102,9 @@ public class GoalActionConcept extends ActionConcept {
 ////                            + now / (curiPeriod * (2 * Math.PI) * dur)) + 1f)/2f;
 //
             goal = new PreciseTruth(nar.random().nextFloat(), curiConf);
-            curiosityGoal = curiosity(nar, goal, term, curiosityStamp);
+//            long curiosityStamp = nar.time.nextStamp();
+//            curiosityGoal = curiosity(nar, goal, term, curiosityStamp);
+            curiosityGoal = null;
 
 //            curious = true;
 //
@@ -117,7 +118,8 @@ public class GoalActionConcept extends ActionConcept {
 ////                }
 
 
-        } else {
+        } else
+            {
 
             //action.set(term(), null, stamper, now, dur, nar);
 
@@ -126,19 +128,18 @@ public class GoalActionConcept extends ActionConcept {
             //HACK EXPERIMENT combine belief and goal
             //if (belief!=null) {
 
-                //float hope = belief.eviEternalized();
+            //float hope = belief.eviEternalized();
 
-                //if (goal == null) {
-                    //goal = belief.withEvi(hope); //what one images will happen maybe is what one wants
-                //} else {
-                    //goal = Revision.revise(goal, belief.withEvi(hope), Math.abs(belief.freq()-goal.freq()), 0 );
-                //}
+            //if (goal == null) {
+            //goal = belief.withEvi(hope); //what one images will happen maybe is what one wants
+            //} else {
+            //goal = Revision.revise(goal, belief.withEvi(hope), Math.abs(belief.freq()-goal.freq()), 0 );
+            //}
 
             //}
 
 //            fg = action.set(this, goal, stamper, now, dur, nar);
         }
-
 
 
         Truth belief = this.beliefs().truth(pStart, pEnd, nar);
@@ -157,7 +158,7 @@ public class GoalActionConcept extends ActionConcept {
         long now = nar.time();
         int dur = nar.dur();
 
-        SignalTask curiosity = new SignalTask(term, GOAL, goal, now, now, now+dur, curiosityStamp);
+        SignalTask curiosity = new SignalTask(term, GOAL, goal, now, now, now + dur, curiosityStamp);
         //curiosity.setCyclic(true);
         //curiosity.pri(nar.priDefault(GOAL));
         curiosity.pri(0);
