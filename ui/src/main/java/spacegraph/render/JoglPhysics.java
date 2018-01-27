@@ -32,7 +32,6 @@ import com.jogamp.opengl.GLException;
 import com.jogamp.opengl.math.FloatUtil;
 import spacegraph.Spatial;
 import spacegraph.math.v3;
-import spacegraph.phys.Collidable;
 import spacegraph.phys.Dynamic;
 import spacegraph.phys.Dynamics;
 import spacegraph.phys.collision.DefaultCollisionConfiguration;
@@ -54,13 +53,9 @@ import static spacegraph.math.v3.v;
 
 abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, Iterable<Spatial<X>> {
 
-
-
-
     private final float cameraSpeed = 5f;
     private final float cameraRotateSpeed = 5f;
     private boolean simulating = true;
-    private float lastFrameTime;
 
     private final int maxSubsteps = 0; //set to zero for variable timing
     protected float aspect;
@@ -99,24 +94,14 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
     public final v3 camPos;
     public final v3 camFwd;
     public final v3 camUp;
-    //    public final MutableFloat cameraDistance;
-//    public final MutableFloat ele;
-//    public final MutableFloat azi;
     public float top;
     public float bottom;
     float tanFovV;
-    //float fov;
     float left;
     float right;
 
     public float zNear = 0.5f;
     public float zFar = 1200;
-
-
-    protected boolean stepping = true;
-    protected int lastKey;
-
-
 
     protected JoglPhysics() {
         super();
@@ -149,14 +134,6 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
 
     }
 
-
-
-    /**
-     * return false to remove this object during the beginning of the physics frame
-     */
-    protected boolean valid(int nextID, Collidable<X> c) {
-        return true;
-    }
 
     @Override
     protected void init(GL2 gl2) {
@@ -368,7 +345,7 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
      * in seconds
      */
     public float getLastFrameTime() {
-        return lastFrameTime;
+        return System.currentTimeMillis() - frameLastUpdateMS;
     }
 
 

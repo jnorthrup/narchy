@@ -40,7 +40,6 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
     private final Flip<List<ConceptWidget>> next = new Flip(FasterList::new);
     final float bagUpdateRate = 0.25f;
-    private final int maxNodes;
     private DurService on;
 
     volatile static int serial = 0;
@@ -58,7 +57,6 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
         vis = new ConceptVis2(maxNodes * maxEdgesPerNodeMax);
         this.nar = nar;
-        this.maxNodes = maxNodes;
 
         if (concepts == null)
             concepts = (Iterable) this;

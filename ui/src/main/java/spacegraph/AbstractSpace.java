@@ -17,7 +17,7 @@ abstract public class AbstractSpace<X>  {
 //    private long now;
 //    private long dt;
 
-    final List<SpaceTransform<X>> transforms = new FasterList();
+    protected final List<SpaceTransform<X>> transforms = new FasterList();
 
     public AbstractSpace with(SpaceTransform<X>... t) {
         Collections.addAll(this.transforms, t);

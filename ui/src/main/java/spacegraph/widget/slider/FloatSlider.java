@@ -18,7 +18,7 @@ import spacegraph.widget.windo.Widget;
 /**
  * Created by me on 11/18/16.
  */
-public class FloatSlider extends Widget {
+@Deprecated public class FloatSlider extends Widget {
 
     final Label label = new Label();
     public FloatSupplier input;
@@ -37,6 +37,8 @@ public class FloatSlider extends Widget {
         updateText();
 
     }
+
+
 
     public FloatSlider(String label, float v, float min, float max) {
         this(v, min, max);

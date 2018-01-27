@@ -106,14 +106,6 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
 
         //s.ortho(Vis.logConsole(nar, 90, 40, new FloatParam(0f)).opacity(0.25f));
 
-//        if (this instanceof DynamicConceptSpace) {
-//            window(
-//                    grid(new AutoSurface<>(fd)
-//                            , new AutoSurface<>(((DynamicConceptSpace) this).vis)
-//                    ),
-//                    400, 400);
-//        }
-
         //Vis.conceptsWindow2D
         s
                 //.ortho(logConsole( n, 90, 40, new FloatParam(0f)).opacity(0.25f))

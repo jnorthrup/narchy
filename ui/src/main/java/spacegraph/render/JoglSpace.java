@@ -271,8 +271,8 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
      * @param dtMS*/
     abstract protected void render(int dtMS);
 
-    private long frameLastRenderedMS = System.currentTimeMillis();
-    private long frameLastUpdateMS = frameLastRenderedMS;
+    protected long frameLastRenderedMS = System.currentTimeMillis();
+    protected long frameLastUpdateMS = frameLastRenderedMS;
 
     private void updateIfReady() {
 

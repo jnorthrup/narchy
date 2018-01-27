@@ -5,9 +5,6 @@ import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseEvent;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Spatial;
-import spacegraph.math.Matrix4f;
-import spacegraph.math.SingularMatrixException;
-import spacegraph.math.Vector4f;
 import spacegraph.math.v3;
 import spacegraph.phys.Collidable;
 import spacegraph.phys.Dynamic;
@@ -39,7 +36,6 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
     public Collidable picked;
     public v3 hitPoint;
     protected final VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
-    public ClosestRay pickRay;
     public final Finger finger = new Finger(null);
 
     public OrbMouse(JoglPhysics g) {
@@ -401,7 +397,7 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
     }
 
     @Nullable
-    public ClosestRay mousePick(int x, int y) {
+    ClosestRay mousePick(int x, int y) {
 //        float top = 1f;
 //        float bottom = -1f;
 //        float nearPlane = 1f;
@@ -475,52 +471,52 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
         return r;
     }
 
-    private v3 mousePick0(int px, int py) {
-        int ww = space.getWidth();
-        int hh = space.getHeight();
-        if (ww == 0 || hh == 0)
-            return null;
-
-        float x = (2.0f * px) / ww - 1.0f;
-        float y = 1.0f - (2.0f * py) / hh;
-        float z = 1.0f;
-        Vector4f ray_eye = new Vector4f(x * 2f, y * 2f, -1.0f, 1.0f);
-
-        //https://capnramses.github.io/opengl/raycasting.html
-
-        Matrix4f viewMatrixInv = new Matrix4f(space.mat4f);
-
-        try {
-            viewMatrixInv.invert();
-        } catch (SingularMatrixException e) {
-            return null;
-        }
-        viewMatrixInv.transform(ray_eye);
-        ray_eye.setZ(-1f);
-        ray_eye.setW(1f);
-
-        viewMatrixInv.transform(ray_eye);
-        v3 ray_wor = v(ray_eye.x, ray_eye.y, ray_eye.z);
-        ray_wor.normalize();
-        ray_wor.scale(1000f);
-
-
-        //if (mouseDragDX == 0) { //if not already dragging somewhere "outside"
-
-        //ray_wor.add(space.camPos);
-
-        v3 from = space.camPos;
-        v3 to = ray_wor;
-        to.add(from);
-
-        return to;
-        //this.pickRay = rayCallback;
-
-//        space.dyn.rayTest(from, to, rayCallback.set(from, to), simplexSolver);
-//        return rayCallback;
-
-
-    }
+//    private v3 mousePick0(int px, int py) {
+//        int ww = space.getWidth();
+//        int hh = space.getHeight();
+//        if (ww == 0 || hh == 0)
+//            return null;
+//
+//        float x = (2.0f * px) / ww - 1.0f;
+//        float y = 1.0f - (2.0f * py) / hh;
+//        float z = 1.0f;
+//        Vector4f ray_eye = new Vector4f(x * 2f, y * 2f, -1.0f, 1.0f);
+//
+//        //https://capnramses.github.io/opengl/raycasting.html
+//
+//        Matrix4f viewMatrixInv = new Matrix4f(space.mat4f);
+//
+//        try {
+//            viewMatrixInv.invert();
+//        } catch (SingularMatrixException e) {
+//            return null;
+//        }
+//        viewMatrixInv.transform(ray_eye);
+//        ray_eye.setZ(-1f);
+//        ray_eye.setW(1f);
+//
+//        viewMatrixInv.transform(ray_eye);
+//        v3 ray_wor = v(ray_eye.x, ray_eye.y, ray_eye.z);
+//        ray_wor.normalize();
+//        ray_wor.scale(1000f);
+//
+//
+//        //if (mouseDragDX == 0) { //if not already dragging somewhere "outside"
+//
+//        //ray_wor.add(space.camPos);
+//
+//        v3 from = space.camPos;
+//        v3 to = ray_wor;
+//        to.add(from);
+//
+//        return to;
+//        //this.pickRay = rayCallback;
+//
+////        space.dyn.rayTest(from, to, rayCallback.set(from, to), simplexSolver);
+////        return rayCallback;
+//
+//
+//    }
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -550,7 +546,7 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
         int y = e.getY();
         if (!mouseMotionFunc(x, y, e.getButtonsDown())) {
             pickConstrain(e.getButton(), 1, x, y);
-            e.setConsumed(true);
+            //e.setConsumed(true);
         }
     }
 
@@ -595,7 +591,7 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
         mouseDragPrevX = x;
         mouseDragPrevY = y;
 
-        e.setConsumed(true);
+        //e.setConsumed(true);
     }
 
     @Override

@@ -408,11 +408,11 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 
     }
 
-    static final float zoomDilation = 1.05f;
+//    static final float zoomDilation = 1.05f;
 
-    public static float getTargetHeight(RectFloat2D rect) {
-        float r = rect.mag() / 2.0f * zoomDilation;
-        double focus = Math.toRadians(45 /* degrees */);
-        return r * (float) (Math.sin(Math.PI / 2.0 - focus / 2.0) / Math.sin(focus / 2.0));
-    }
+//    public static float getTargetHeight(RectFloat2D rect) {
+//        float r = rect.mag() / 2.0f * zoomDilation;
+//        double focus = Math.toRadians(45 /* degrees */);
+//        return r * (float) (Math.sin(Math.PI / 2.0 - focus / 2.0) / Math.sin(focus / 2.0));
+//    }
 }
