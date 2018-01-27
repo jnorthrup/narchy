@@ -420,7 +420,7 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
 //        glu.gluLookAt(camPos.x, camPos.y, camPos.z,
 //                camPosTarget.x, camPosTarget.y, camPosTarget.z,
 //                camUp.x, camUp.y, camUp.z);
-        glu.gluLookAt(camPos.x - camFwd.x, camPos.y - camFwd.y, camPos.z - camFwd.z,
+        Draw.glu.gluLookAt(camPos.x - camFwd.x, camPos.y - camFwd.y, camPos.z - camFwd.z,
                 camPos.x, camPos.y, camPos.z,
                 camUp.x, camUp.y, camUp.z);
 

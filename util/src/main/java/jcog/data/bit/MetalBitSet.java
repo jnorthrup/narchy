@@ -208,9 +208,9 @@ abstract public class MetalBitSet {
         }
     }
 
-    public static class VolatileIntBitSet extends MetalBitSet {
+    public static class AtomicIntBitSet extends MetalBitSet {
 
-        static final AtomicIntegerFieldUpdater _x = AtomicIntegerFieldUpdater.newUpdater(VolatileIntBitSet.class, "x");
+        static final AtomicIntegerFieldUpdater<AtomicIntBitSet> _x = AtomicIntegerFieldUpdater.newUpdater(AtomicIntBitSet.class, "x");
         private volatile int x;
 
         @Override
@@ -226,13 +226,13 @@ abstract public class MetalBitSet {
         @Override
         public void set(int i) {
             int mask = i<<i;
-            _x.updateAndGet(this, (v)-> v|(mask) );
+            _x.updateAndGet(this, v-> v|(mask) );
         }
 
         @Override
         public void clear(int i) {
             int mask = ~(i<<i);
-            _x.updateAndGet(this, (v)-> v&(mask) );
+            _x.updateAndGet(this, v-> v&(mask) );
         }
 
         @Override
@@ -252,10 +252,11 @@ abstract public class MetalBitSet {
     }
 
     public static MetalBitSet bits(int size) {
-        if (size < 32) {
+        if (size <= 32) {
             return new IntBitSet();
         } else {
             return new LongArrayBitSet(size);
         }
     }
+
 }

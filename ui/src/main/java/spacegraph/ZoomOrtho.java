@@ -1,6 +1,7 @@
 package spacegraph;
 
 import com.jogamp.newt.event.MouseEvent;
+import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +37,8 @@ public class ZoomOrtho extends Ortho {
     final HUD hud = new HUD();
     private int pmx, pmy;
 
+    final AtomicBoolean windowMoving = new AtomicBoolean(false);
+
 
     private float pressZoomOutRate = 0.4f;
 
@@ -67,6 +70,10 @@ public class ZoomOrtho extends Ortho {
 //        });
     }
 
+    @Override
+    public void windowResized(WindowEvent e) {
+        pos(0, 0, window.getWidth(), window.getHeight()); //re-maximize
+    }
 
 //    @Override
 //    public void setSurface(Surface content) {
@@ -81,10 +88,9 @@ public class ZoomOrtho extends Ortho {
 //    }
 
 
-    final AtomicBoolean windowMoving = new AtomicBoolean(false);
 
-    int windowMinWidth = 64;
-    int windowMinHeight = 64;
+//    int windowMinWidth = 64;
+//    int windowMinHeight = 64;
 
 
     private void moveWindow() {

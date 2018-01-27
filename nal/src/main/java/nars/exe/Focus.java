@@ -178,7 +178,7 @@ public class Focus extends Flip<Focus.Schedule> {
 
         final static int WINDOW = 4;
 
-        final MetalBitSet active = new MetalBitSet.VolatileIntBitSet();
+        final MetalBitSet active = new MetalBitSet.AtomicIntBitSet();
 
         public Causable[] can = new Causable[0];
 

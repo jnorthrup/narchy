@@ -75,11 +75,11 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
 
 
 
-    public Ortho ortho(Surface ortho) {
-        Ortho o = new Ortho(ortho);
-        add(o);
-        return o;
-    }
+//    public Ortho ortho(Surface ortho) {
+//        Ortho o = new Ortho(ortho);
+//        add(o);
+//        return o;
+//    }
 
     public SpaceGraph add(Ortho c) {
         if (window == null) {

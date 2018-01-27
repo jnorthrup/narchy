@@ -6,6 +6,7 @@ import jcog.Texts;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.NotNull;
 import spacegraph.input.Finger;
+import spacegraph.layout.AspectAlign;
 import spacegraph.math.v2;
 
 import java.io.PrintStream;

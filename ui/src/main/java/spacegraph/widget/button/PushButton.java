@@ -1,7 +1,7 @@
 package spacegraph.widget.button;
 
 import org.jetbrains.annotations.Nullable;
-import spacegraph.AspectAlign;
+import spacegraph.layout.AspectAlign;
 import spacegraph.widget.text.Label;
 
 import java.util.function.Consumer;

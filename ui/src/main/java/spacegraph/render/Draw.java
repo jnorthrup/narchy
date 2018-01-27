@@ -26,7 +26,9 @@ package spacegraph.render;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.ImmModeSink;
+import com.jogamp.opengl.util.gl2.GLUT;
 import com.jogamp.opengl.util.texture.Texture;
 import jcog.Util;
 import jcog.list.FasterList;
@@ -55,8 +57,6 @@ import java.util.function.Consumer;
 import static com.jogamp.opengl.GL.*;
 import static jcog.Util.unitize;
 import static spacegraph.math.v3.v;
-import static spacegraph.render.JoglSpace.glsrt;
-import static spacegraph.render.JoglSpace.glut;
 
 /**
  * @author jezek2
@@ -88,6 +88,10 @@ public enum Draw {
 		g_display_lists.clear();
 	}
 	*/
+
+    public static final GLU glu = new GLU();
+    public final static GLSRT glsrt = new GLSRT(glu);
+    public static final GLUT glut = new GLUT();
 
     public static void drawCoordSystem(GL gl) {
         ImmModeSink vbo = ImmModeSink.createFixed(3 * 4,

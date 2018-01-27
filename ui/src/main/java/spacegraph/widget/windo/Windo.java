@@ -5,7 +5,7 @@ import jcog.Util;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
-import spacegraph.UnitContainer;
+import spacegraph.layout.UnitContainer;
 import spacegraph.input.Finger;
 import spacegraph.input.FingerMove;
 import spacegraph.input.FingerResize;

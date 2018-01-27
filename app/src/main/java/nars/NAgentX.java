@@ -30,7 +30,7 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.AspectAlign;
+import spacegraph.layout.AspectAlign;
 import spacegraph.Ortho;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
@@ -581,12 +581,7 @@ abstract public class NAgentX extends NAgent {
 
                                 float w = w();
                                 float h = h();
-                                surface.pos(0, 0, w / 3, h / 4);
-
-                                scale.set(1, 1);
-                                cam.set(w / 2, h / 2);
-
-                                layout();
+                                pos(0, 0, w / 3, h / 4);
                             }
                         });
 

@@ -1,7 +1,8 @@
-package spacegraph;
+package spacegraph.layout;
 
 import org.jetbrains.annotations.NotNull;
-import spacegraph.layout.Container;
+import spacegraph.Surface;
+import spacegraph.SurfaceBase;
 
 import java.util.function.Consumer;
 

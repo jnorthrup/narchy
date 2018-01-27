@@ -6,11 +6,13 @@ import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.glu.GLUtessellator;
 import com.jogamp.opengl.glu.GLUtessellatorCallback;
 import jcog.list.FasterList;
-import spacegraph.SpaceGraph;
+import spacegraph.AbstractSpatial;
 import spacegraph.geo.osm.GeoCoordinate;
 import spacegraph.geo.osm.Osm;
 import spacegraph.geo.osm.OsmNode;
 import spacegraph.geo.osm.OsmWay;
+import spacegraph.phys.Collidable;
+import spacegraph.render.Draw;
 
 import java.util.List;
 import java.util.Map;
@@ -22,9 +24,9 @@ import static com.jogamp.opengl.GL.GL_POINTS;
 /**
  * Created by unkei on 2017/04/25.
  */
-public class OsmSpace extends SpaceGraph implements GLUtessellatorCallback {
+public class OsmSpace extends AbstractSpatial<Osm> implements GLUtessellatorCallback {
 
-    Osm osm;
+
     //    double scale = 0.3; //global scale
 //    double scaleLat = 1;
 //    double scaleLon = 1;
@@ -36,10 +38,11 @@ public class OsmSpace extends SpaceGraph implements GLUtessellatorCallback {
 
     final GLUtessellator tobj = GLU.gluNewTess();
 
-    Consumer<OsmSpace> render = null;
+    Consumer<GL2> render = null;
+    private GL2 gl;
 
     public OsmSpace(Osm osm) {
-        super();
+        super(osm);
         min = new GeoCoordinate(0, 0);
         max = new GeoCoordinate(0, 0);
 
@@ -50,12 +53,6 @@ public class OsmSpace extends SpaceGraph implements GLUtessellatorCallback {
         GLU.gluTessCallback(tobj, GLU.GLU_TESS_COMBINE, this);
 
 
-        setOsm(osm);
-
-    }
-
-    public void setOsm(Osm osm) {
-        this.osm = osm;
         double minLat = osm.bounds.minLat;
         double minLon = osm.bounds.minLon;
         double maxLat = osm.bounds.maxLat;
@@ -63,6 +60,17 @@ public class OsmSpace extends SpaceGraph implements GLUtessellatorCallback {
 //        scaleLat = scale * 2f / (maxLat - minLat);
 //        scaleLon = scale * 2f / (maxLon - minLon);
 //        center = new GeoCoordinate((maxLat + minLat) / 2, (maxLon + minLon) / 2);
+
+    }
+
+    @Override
+    public void forEachBody(Consumer<Collidable> c) {
+        //none
+    }
+
+    @Override
+    public float radius() {
+        return 0; //N/A
     }
 
     static void project(GeoCoordinate global, double[] target) {
@@ -85,10 +93,19 @@ public class OsmSpace extends SpaceGraph implements GLUtessellatorCallback {
 
     }
 
+    @Override
+    public void renderAbsolute(GL2 gl, int dtMS) {
+        if (render == null) {
+            render = compile();
+            this.gl = gl;
+        }
+        render.accept(gl);
+    }
 
-    protected void compile() {
-        List<Consumer<OsmSpace>> draw = new FasterList();
 
+    protected Consumer<GL2> compile() {
+        List<Consumer<GL2>> draw = new FasterList();
+        Osm osm = id;
         for (OsmWay way : osm.ways) {
 
             Map<String, String> tags = way.tags;
@@ -194,8 +211,7 @@ public class OsmSpace extends SpaceGraph implements GLUtessellatorCallback {
                     ci[6] = a;
                 }
 
-                draw.add((v) -> {
-                    GL2 gl = v.gl;
+                draw.add((gl) -> {
                     gl.glColor4f(r * 0.5f, g * .5f, b * 0.5f, a);
                     gl.glLineWidth(lw);
                     gl.glLineStipple(1, ls);
@@ -221,8 +237,7 @@ public class OsmSpace extends SpaceGraph implements GLUtessellatorCallback {
                     project(ways.get(i).geoCoordinate, c3, i * 3);
                 }
 
-                draw.add((v) -> {
-                    GL2 gl = v.gl;
+                draw.add((gl) -> {
                     gl.glColor4f(r, g, b, a);
                     gl.glLineWidth(lw);
                     gl.glLineStipple(1, ls);
@@ -274,9 +289,7 @@ public class OsmSpace extends SpaceGraph implements GLUtessellatorCallback {
             double[] c3 = new double[3];
             project(node.geoCoordinate, c3);
 
-            draw.add((v) -> {
-                GL2 gl = v.gl;
-
+            draw.add((gl) -> {
                 gl.glPointSize(pointSize);
                 gl.glBegin(GL_POINTS);
                 gl.glColor4f(r, g, b, a);
@@ -287,20 +300,20 @@ public class OsmSpace extends SpaceGraph implements GLUtessellatorCallback {
 
         }
 
-        render = (v) -> draw.forEach(d -> d.accept(v));
+        return (v) -> draw.forEach(d -> d.accept(v));
     }
 
-    @Override
-    protected void render(int dtMS) {
-
-        if (render == null) {
-            compile();
-        }
-
-        render.accept(this);
-
-        super.render(dtMS);
-    }
+//    @Override
+//    protected void render(int dtMS) {
+//
+//        if (render == null) {
+//            compile();
+//        }
+//
+//        render.accept(this);
+//
+//        super.render(dtMS);
+//    }
 
 //    @Override
 //    public void reshape(GLAutoDrawable glAutoDrawable, int x, int y, int w, int h) {
@@ -396,7 +409,7 @@ public class OsmSpace extends SpaceGraph implements GLUtessellatorCallback {
     @Override
     public void error(int errnum) {
 
-        String estring = glu.gluErrorString(errnum);
+        String estring = Draw.glu.gluErrorString(errnum);
         System.err.println("Tessellation Error: " + estring);
         System.exit(0);
     }

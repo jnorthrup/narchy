@@ -1,4 +1,4 @@
-package spacegraph.tool;
+package spacegraph.test;
 
 import com.google.common.primitives.Doubles;
 import com.jogamp.opengl.GL2;
@@ -9,7 +9,6 @@ import jcog.math.FloatParam;
 import jcog.math.StreamingNormalizer;
 import jcog.net.attn.MeshMap;
 import spacegraph.SimpleSpatial;
-import spacegraph.SpaceGraph;
 import spacegraph.phys.Collidable;
 import spacegraph.render.Draw;
 
@@ -120,7 +119,7 @@ public class Dimensionaleyez extends SimpleSpatial {
             float size = last;
 
             Draw.hsb(gl, hue, sat, p, bri);
-            SpaceGraph.glut.glutSolidCube(1f * size);
+            Draw.glut.glutSolidCube(1f * size);
             gl.glPopMatrix();
         });
     }

@@ -1,5 +1,7 @@
 package spacegraph;
 
+import spacegraph.layout.UnitContainer;
+
 public class Scale extends UnitContainer {
 
     protected float scale;

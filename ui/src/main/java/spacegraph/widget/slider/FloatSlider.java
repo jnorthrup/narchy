@@ -9,7 +9,7 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.AspectAlign;
+import spacegraph.layout.AspectAlign;
 import spacegraph.Scale;
 import spacegraph.SurfaceBase;
 import spacegraph.widget.text.Label;

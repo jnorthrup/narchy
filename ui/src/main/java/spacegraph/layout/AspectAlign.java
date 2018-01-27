@@ -1,6 +1,8 @@
-package spacegraph;
+package spacegraph.layout;
 
-import static spacegraph.AspectAlign.Align.Center;
+import spacegraph.Surface;
+
+import static spacegraph.layout.AspectAlign.Align.Center;
 
 public class AspectAlign extends UnitContainer {
 
@@ -162,7 +164,7 @@ public class AspectAlign extends UnitContainer {
     }
 
     @Override
-    public spacegraph.AspectAlign align(Align align) {
+    public AspectAlign align(Align align) {
         this.align = align;
         return this;
     }

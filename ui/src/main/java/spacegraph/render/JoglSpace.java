@@ -5,9 +5,7 @@ import com.jogamp.newt.event.*;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
-import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.AnimatorBase;
-import com.jogamp.opengl.util.gl2.GLUT;
 import jcog.exe.Loop;
 import jcog.list.FastCoWList;
 import org.slf4j.Logger;
@@ -62,10 +60,6 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
 
 
     }
-
-    public static final GLU glu = new GLU();
-    public final static GLSRT glsrt = new GLSRT(JoglSpace.glu);
-    public static final GLUT glut = new GLUT();
 
     public GLWindow window;
     protected GL2 gl;

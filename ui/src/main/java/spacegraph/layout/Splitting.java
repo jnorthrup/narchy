@@ -2,7 +2,6 @@ package spacegraph.layout;
 
 import jcog.TODO;
 import jcog.Util;
-import spacegraph.EmptySurface;
 import spacegraph.Surface;
 
 /**

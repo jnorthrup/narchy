@@ -3,24 +3,27 @@ package spacegraph.geo;
 import com.jogamp.newt.event.WindowAdapter;
 import com.jogamp.newt.event.WindowEvent;
 import jcog.User;
-import jcog.tree.rtree.ConcurrentRTree;
-import jcog.tree.rtree.RTree;
-import jcog.tree.rtree.rect.RectDoubleND;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spacegraph.SpaceGraph;
+import spacegraph.SubOrtho;
 import spacegraph.geo.osm.Osm;
+import spacegraph.test.WidgetTest;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.URL;
 
-/** "in real life" geospatial data cache */
+/**
+ * "in real life" geospatial data cache
+ */
 public class IRL {
 
-    @Deprecated public final Osm osm = new Osm();
+    @Deprecated
+    public final Osm osm = new Osm();
     private final User user;
 
-    final ConcurrentRTree<RectDoubleND> tree = new ConcurrentRTree(new RTree(new RectDoubleND.Builder(), 2, 3, RTree.DEFAULT_SPLIT_TYPE));
+//    final ConcurrentRTree<RectDoubleND> tree = new ConcurrentRTree(new RTree(new RectDoubleND.Builder(), 2, 3, RTree.DEFAULT_SPLIT_TYPE));
 
     public IRL(User u) {
         this.user = u;
@@ -31,7 +34,7 @@ public class IRL {
     public void load(double lonMin, double latMin, double lonMax, double latMax) {
         try {
             URL u = Osm.url("http://api.openstreetmap.org", lonMin, latMin, lonMax, latMax);
-            user.get(u.toString(), ()->{
+            user.get(u.toString(), () -> {
                 try {
                     logger.info("reading {}", u);
                     return u.openStream().readAllBytes();
@@ -57,18 +60,21 @@ public class IRL {
 
         //https://wiki.openstreetmap.org/wiki/API_v0.6
         //http://api.openstreetmap.org/api/0.6/changeset/#id/comment
-                                   // /api/0.6/map?bbox=min_lon,min_lat,max_lon,max_lat (W,S,E,N)
+        // /api/0.6/map?bbox=min_lon,min_lat,max_lon,max_lat (W,S,E,N)
 
-            IRL i = new IRL(User.the());
-            i.load(-80.65,28.58,-80.60,28.63);
+        IRL i = new IRL(User.the());
+        i.load(-80.65, 28.58, -80.60, 28.63);
 
-            new OsmSpace(i.osm).show(800, 800).addWindowListener(new WindowAdapter() {
-                @Override
-                public void windowDestroyed(WindowEvent e) {
-                    super.windowDestroyed(e);
-                    System.exit(0);
-                }
-            });
+        SpaceGraph sg = new SpaceGraph(new OsmSpace(i.osm));
+        sg.show(800, 800);
+        sg.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowDestroyed(WindowEvent e) {
+                super.windowDestroyed(e);
+                System.exit(0);
+            }
+        });
+        sg.add(new SubOrtho(WidgetTest.widgetDemo()).posWindow(0, 0, 0.3f, 1f));
 
     }
 }

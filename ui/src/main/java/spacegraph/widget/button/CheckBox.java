@@ -4,7 +4,7 @@ import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
-import spacegraph.AspectAlign;
+import spacegraph.layout.AspectAlign;
 import spacegraph.render.Draw;
 import spacegraph.widget.text.Label;
 

@@ -1,6 +1,5 @@
 package nars.gui.graph.run;
 
-import com.jogamp.newt.event.WindowEvent;
 import jcog.math.MultiStatistics;
 import jcog.meter.event.CSVOutput;
 import nars.NAR;
@@ -10,9 +9,8 @@ import nars.gui.graph.DynamicConceptSpace;
 import nars.task.ITask;
 import nars.task.NALTask;
 import nars.test.DeductiveChainTest;
-import spacegraph.Ortho;
 import spacegraph.SpaceGraph;
-import spacegraph.layout.Gridding;
+import spacegraph.SubOrtho;
 import spacegraph.widget.meta.AutoSurface;
 
 import static nars.test.DeductiveChainTest.inh;
@@ -103,26 +101,15 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
         SimpleConceptGraph1 cs = new SimpleConceptGraph1(n,
                 /* TODO */ 128, 5);
 
-        SpaceGraph sg = cs.show(1400, 1200, false);
+        SpaceGraph sg = cs.show(1400, 1000, false);
 
 
-        Gridding ctrl = grid(
-                //new AutoSurface<>(cs.transforms.get(0) /* FD hack */),
+        sg.add(new SubOrtho(grid(
+                new AutoSurface<>(sg.dyn.broadConstraints.get(0) /* FD hack */),
                 new AutoSurface<>(cs.vis)
-        );
-        sg.add(new Ortho(ctrl) {
-            @Override
-            public void windowResized(WindowEvent e) {
-                int W, H;
-                pos(0, 0,
-                        W = window.getWidth()/2,
-                        H = window.getHeight());
-                cam.set(W / 2f, H / 2f);
-                scale(1, 1);
+        )).posWindow(0,0,0.5f,1f));
 
-                layout();
-            }
-        });
+        n.startFPS(fps);
 
 
 
@@ -140,7 +127,6 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
 
         //n.services.printServices(System.out);
 
-        n.startFPS(fps);
 
         //n.run(600);
         //n.log();

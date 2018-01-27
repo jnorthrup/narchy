@@ -1,7 +1,6 @@
 package spacegraph.layout;
 
 import org.jetbrains.annotations.Nullable;
-import spacegraph.EmptySurface;
 import spacegraph.Surface;
 import spacegraph.SurfaceBase;
 

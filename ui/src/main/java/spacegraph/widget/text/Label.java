@@ -2,8 +2,8 @@ package spacegraph.widget.text;
 
 import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat2D;
-import spacegraph.AspectAlign;
-import spacegraph.EmptySurface;
+import spacegraph.layout.AspectAlign;
+import spacegraph.layout.EmptySurface;
 import spacegraph.math.Color4f;
 import spacegraph.render.Draw;
 

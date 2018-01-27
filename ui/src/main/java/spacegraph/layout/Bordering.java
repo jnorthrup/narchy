@@ -1,7 +1,6 @@
 package spacegraph.layout;
 
 import jcog.TODO;
-import spacegraph.EmptySurface;
 import spacegraph.Surface;
 
 /* 9-element subdivision

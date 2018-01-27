@@ -19,6 +19,7 @@ import spacegraph.render.JoglSpace;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -30,6 +31,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 public class Ortho extends Container implements SurfaceRoot, WindowListener, KeyListener, MouseListener {
 
     protected final AnimVector2f scale;
+
     boolean visible;
 
     final Finger finger;
@@ -42,14 +44,17 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     public SpaceGraph window;
     protected final v3 cam;
 
-    final Topic logs = new ListTopic();
     private short[] buttonsDown;
+
     private Animated fingerUpdate;
+    private final AtomicBoolean fingerUpdateForce = new AtomicBoolean(true);
+
     private boolean focused = false;
 
-    public Ortho() {
-        this(new EmptySurface());
-    }
+    final Map<String, Pair<Object, Runnable>> singletons = new HashMap();
+    final Topic logs = new ListTopic();
+
+
 
     public Ortho(Surface content) {
         super();
@@ -59,7 +64,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         this.surface = content;
 
         this.fingerUpdate = dt -> {
-            if (hasFocus()) {
+            if (hasFocus() || fingerUpdateForce.compareAndSet(true, false)) {
                 updateMouse(wmx, wmy, buttonsDown);
             }
             return true;
@@ -72,15 +77,16 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 
     @Override
     protected void doLayout(int dtMS) {
+        cam.set(bounds.w / 2f, bounds.h / 2f);
+        scale(1, 1);
+
         surface.pos(bounds);
-        surface.layout();
     }
 
     public GL2 gl() {
         return window.gl();
     }
 
-    final Map<String, Pair<Object, Runnable>> singletons = new HashMap();
 
 
     @Override
@@ -140,12 +146,11 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 
         surface.start(this);
 
-        windowResized(null);
-
         s.dyn.addAnimation(scale);
         s.dyn.addAnimation((Animated) cam);
         s.dyn.addAnimation(fingerUpdate);
 
+        windowResized(null);
     }
 
     @Override
@@ -219,13 +224,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 
     @Override
     public void windowResized(WindowEvent e) {
-        int W, H;
-        pos(0, 0,
-                W = window.getWidth(),
-                H = window.getHeight());
-        cam.set(W / 2f, H / 2f);
-        scale(1, 1);
-
         layout();
     }
 
@@ -265,8 +263,9 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 
     @Override
     public void windowLostFocus(WindowEvent e) {
-        focused = false;
         updateMouse(null);
+        fingerUpdateForce.set(true);
+        focused = false;
     }
 
     @Override
@@ -293,11 +292,13 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     public void mouseEntered(MouseEvent e) {
         focused = true;
         updateMouse(e);
+        fingerUpdateForce.set(true);
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
         updateMouse(null);
+        fingerUpdateForce.set(true);
         focused = false;
     }
 
@@ -351,7 +352,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         } else {
 
             this.buttonsDown = null;
-            updateMouse(wmx, wmy, null);
+            //updateMouse(wmx, wmy, null);
 
             return false;
         }

@@ -75,7 +75,7 @@ public class Dynamics<X> extends Collisions<X> {
     final Flip<List<Collidable>> coll = new Flip(FasterList::new);
     private List<Collidable> collidable = new FasterList();
 
-    final FasterList<BroadConstraint> broadConstraints = new FasterList<>(0);
+    public final FasterList<BroadConstraint> broadConstraints = new FasterList<>(0);
     final FasterList<TypedConstraint> sortedConstraints = new FasterList<>(0);
     final InplaceSolverIslandCallback solverCallback = new InplaceSolverIslandCallback();
 
