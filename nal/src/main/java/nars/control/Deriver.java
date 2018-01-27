@@ -190,7 +190,7 @@ public class Deriver extends Causable {
             int premiseLimit = burstSize * premisesPerConcept;
             premises.clear(premiseLimit, Premise[]::new);
 
-            //fire a burst of concepts to generate hypothetica premises.  collect a fraction of these (ex: 50%), ranked by priority
+            //fire a burst of concepts to generate hypothetical premises.  collect a fraction of these (ex: 50%), ranked by priority
             concepts.accept(a -> {
                 fired[0]++;
                 premises.setTTL(HypotheticalPremisePerConcept);

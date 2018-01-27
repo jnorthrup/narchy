@@ -3,8 +3,14 @@
 //      https://en.wikipedia.org/wiki/Fluid_Concepts_and_Creative_Analogies
 //      https://cogsci.indiana.edu/
 
+  //want/notWant X, and X similar Y then want/notWant Y
     X, (X<->Y)                          |- Y, (Belief:Analogy, Goal:Strong)
-    X, (--X<->Y)                        |- Y, (Belief:AnalogyN, Goal:WeakN)
+  //want/notWant X,  and not X similar Y then not/want Y
+    X, (X<->Y)                          |- --Y, (Goal:WeakPN)
+
+    X, (--X<->Y)                        |- Y, (Belief:AnalogyN, Goal:StrongN)
+    X, (--X<->Y)                        |- --Y, (Goal:WeakNN)
+
     Z, (X<->Y), neq(Z,X), neq(Z,Y)      |- subIfUnifiesAny(Y, X, Z, strict), (Belief:Analogy, Goal:Weak)
     Z, (--X<->Y), neq(Z,X), neq(Z,Y)    |- subIfUnifiesAny(Y, X, Z, strict), (Belief:AnalogyN, Goal:WeakN)
     Z, (X<->Y), in(X,Z)                 |- subIfUnifiesAny(Z, X, Y, strict, force), (Belief:Analogy, Goal:Weak)

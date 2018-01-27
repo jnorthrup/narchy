@@ -110,8 +110,8 @@ public abstract class Param {
 //     * budgets premises from their links, but isolated from affecting the derivation budgets, which are from the tasks (and not the links)
 //     */
     public static final FloatFloatToFloatFunction taskTermLinksToPremise =
-            Util::or;
-    //Util::and;
+            //Util::or;
+    Util::and;
 //            //UtilityFunctions::aveGeo;
 //            //UtilityFunctions::aveAri;
 //            //Math::min;
@@ -123,8 +123,8 @@ public abstract class Param {
      */
     public static final FloatFloatToFloatFunction TaskBeliefToDerivation =
             //Math::max;
-            //Util::or;
-    Util::and;
+            Util::or;
+    //Util::and;
     //UtilityFunctions::aveAri;
 
 

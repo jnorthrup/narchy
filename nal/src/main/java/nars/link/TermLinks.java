@@ -113,7 +113,7 @@ public enum TermLinks {
         if (depth >= 2 && (r == IMPL || r == CONJ)) {
             return !s.isAny(PROD.bit | Op.SetBits | Op.SECTe.bit | Op.SECTi.bit);
         }
-        if (depth >= 2 && s == PROD)
+        if (depth > 2 && s == PROD)
             return false;
 
         return true;

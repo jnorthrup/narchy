@@ -23,16 +23,17 @@ import java.util.function.Function;
 /**
  * display a directed graph by wrapping its elements in NAR concepts (HACK)
  */
-public class SimpleGraph1 extends DynamicListSpace {
+public class SimpleGraph1<X> extends DynamicListSpace<X> {
 
 
-    final Random rng = new XoRoShiRo128PlusRandom(1);
+//    final Random rng = new XoRoShiRo128PlusRandom(1);
 
-    protected final SpaceWidget.SimpleNodeVis<SpaceWidget<?>> vis = w -> {
+    /** default */
+    protected static final SpaceWidget.SimpleNodeVis<SpaceWidget<?>> defaultVis = w -> {
 
 
 
-        w.scale(16, 5, 2);
+        w.scale(16, 16, 2);
 
         //w.body.setMass(100);
         //w.body.setDamping(0.1f, 0.1f);
@@ -50,16 +51,22 @@ public class SimpleGraph1 extends DynamicListSpace {
             x.attractionDist = 1;
         });
     };
-    private SpatialCache<Object,DefaultSpaceWidget> cache;
+    private SpatialCache<X, DefaultSpaceWidget<X>> cache;
+    protected final SpaceWidget.SimpleNodeVis vis;
 
     public SimpleGraph1() {
+        this((SpaceWidget.SimpleNodeVis)defaultVis);
+    }
+
+    public SimpleGraph1(SpaceWidget.SimpleNodeVis<SpaceWidget<X>> vis) {
         super();
+        this.vis = vis;
     }
 
     @Override
     public void start(SpaceGraph space) {
         synchronized (this) {
-            cache = new SpatialCache(space, 512);
+            cache = new SpatialCache<>(space, 512);
         }
     }
 
@@ -72,19 +79,19 @@ public class SimpleGraph1 extends DynamicListSpace {
     }
 
     @Override
-    protected List<? extends Spatial> get() {
+    protected List<? extends Spatial<X>> get() {
         vis.accept(active);
         return active;
     }
 
     final static Random rng2 = new XoRoShiRo128PlusRandom(1);
 
-    static class DefaultSpaceWidget extends SpaceWidget<Object> {
+    public static class DefaultSpaceWidget<X> extends SpaceWidget<X> {
 
         public final List<EDraw<SpaceWidget>> edges = new FasterList();
 
 
-        public DefaultSpaceWidget(Object x) {
+        public DefaultSpaceWidget(X x) {
             super(x);
 
             move((rng2.nextFloat()-0.5f)*1, (rng2.nextFloat()-0.5f)*1f, (rng2.nextFloat()-0.5f)*1f);
@@ -107,11 +114,11 @@ public class SimpleGraph1 extends DynamicListSpace {
 
 
     /** adapts guava Graph as input */
-    public SimpleGraph1 commit(Graph<Object> g) {
+    public SimpleGraph1 commit(Graph<X> g) {
         return commit(g.nodes(), g::successors);
     }
 
-    public SimpleGraph1 commit(NodeGraph<Object,Object> g) {
+    public SimpleGraph1 commit(NodeGraph<X,Object> g) {
         return commit(
                 Iterables.transform(g.nodes(), x-> x.id),
                 x-> Iterables.transform(
@@ -121,17 +128,17 @@ public class SimpleGraph1 extends DynamicListSpace {
                 ));
     }
 
-    public SimpleGraph1 commit(Iterable nodes, Function<Object,Iterable<?>> edges) {
-        List<SpaceWidget<?>> n2 = new FasterList();
+    public SimpleGraph1 commit(Iterable<X> nodes, Function<X,Iterable<X>> edges) {
+        List<SpaceWidget<X>> n2 = new FasterList();
 
         nodes.forEach((x)->{
         //g.nodes().forEach(x -> {
             //HACK todo use proxyterms in a cache
             //c.termlinks().clear();
 
-            DefaultSpaceWidget src = cache.getOrAdd(x, DefaultSpaceWidget::new);
+            DefaultSpaceWidget<X> src = cache.getOrAdd(x, DefaultSpaceWidget::new);
 
-            edges.apply(x).forEach((Object edge) ->
+            edges.apply(x).forEach((X edge) ->
             //g.successors(x).forEach((Term y) ->
                     src.edges.add(new EDraw<>(
                             src, cache.getOrAdd(edge, DefaultSpaceWidget::new), 0.5f))

@@ -226,7 +226,9 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         Term eventTerm = event.id;
 
         if (byTerm.put(eventTerm, event)) {
+
             if (autoUnneg) {
+                //link(x.id, 0, know(eventTerm.neg())); //WEAK
                 link(know(eventTerm), 0, know(eventTerm.neg())); //WEAK
             }
         }
@@ -269,6 +271,16 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
                     link(se, ETERNAL, pe);
 
+                    subj.eventsWhile((w, y) -> {
+                        link(know(y), ETERNAL, pe);
+                        return true;
+                    }, 0, true, true, false, 0);
+
+                    pred.eventsWhile((w, y) -> {
+                        link(se, ETERNAL, know(y));
+                        return true;
+                    }, 0, true, true, false, 0);
+
                 } else if (eventDT != XTERNAL) {
 
                     int st = subj.dtRange();
@@ -276,14 +288,11 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
                     link(se, (eventDT + st), pe);
 
-
-//                    //if (subj.hasAny(CONJ)) {
                     subj.eventsWhile((w, y) -> {
                         link(know(y), eventDT + st - w, pe);
                         return true;
                     }, 0, true, true, false, 0);
-//
-//                    //if (pred.hasAny(CONJ)) {
+
                     pred.eventsWhile((w, y) -> {
                         link(se, eventDT + st + w, know(y));
                         return true;
@@ -1116,7 +1125,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         }
     }
 
-    static class Absolute extends Event {
+    public static class Absolute extends Event {
         protected final long when;
 
         static final long SAFETY_PAD = 32 * 1024;

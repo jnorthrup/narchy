@@ -112,7 +112,7 @@ abstract public class SpaceWidget<T> extends Cuboid<T> {
     }
 
     /** for simple element-wise functions */
-    public interface SimpleNodeVis<X extends SpaceWidget> extends Consumer<List<X>> {
+    public interface SimpleNodeVis<X extends SpaceWidget<?>> extends Consumer<List<X>> {
         default void accept(List<X> l) {
             l.forEach(this::each);
         }
