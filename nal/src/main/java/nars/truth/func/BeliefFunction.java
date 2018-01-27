@@ -91,23 +91,22 @@ public enum BeliefFunction implements TruthOperator {
     },
 
 
-    //* TODO rename 'PB' to 'Sym'
-    //@AllowOverlap
-    DeductionRecursive() {
-        @Override
-        public Truth apply(Truth T, Truth B, NAR m, float minConf) {
-            return Deduction.apply(T, B, m, minConf);
-        }
-    },
+//    //@AllowOverlap
+//    DeductionRecursive() {
+//        @Override
+//        public Truth apply(Truth T, Truth B, NAR m, float minConf) {
+//            return Deduction.apply(T, B, m, minConf);
+//        }
+//    },
 
-    //@AllowOverlap
-    //* TODO rename 'PB' to 'Sym'
-    DeductionRecursivePB() {
-        @Override
-        public Truth apply(Truth T, Truth B, NAR m, float minConf) {
-            return DeductionPB.apply(T, B, m, minConf);
-        }
-    },
+//    @AllowOverlap
+//    //* TODO rename 'PB' to 'Sym'
+//    DeductionRecursivePB() {
+//        @Override
+//        public Truth apply(Truth T, Truth B, NAR m, float minConf) {
+//            return DeductionPB.apply(T, B, m, minConf);
+//        }
+//    },
 
     Induction() {
         @Override
@@ -171,14 +170,14 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
-    //@AllowOverlap
-    //* TODO rename 'PB' to 'Sym'
-    AbductionRecursivePB() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            return AbductionPB.apply(T,B,m,minConf);
-        }
-    },
+//    //@AllowOverlap
+//    //* TODO rename 'PB' to 'Sym'
+//    AbductionRecursivePB() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+//            return AbductionPB.apply(T,B,m,minConf);
+//        }
+//    },
 
 //    AbductionNeg() {
 //        

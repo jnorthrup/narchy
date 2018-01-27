@@ -160,7 +160,7 @@ public interface NAct {
     default void actionTriState(@NotNull Term cc, @NotNull IntPredicate i) {
         //final int[] state = {0};
         //new GoalActionConcept(cc, this, (b, d) -> {
-        actionBipolar(cc, false, (float f) -> {
+        actionBipolar(cc, true, (float f) -> {
 
             f = f / 2f + 0.5f;
 

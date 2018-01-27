@@ -426,11 +426,11 @@ public class NAL8Test extends NALTest {
         //by deduction
 
         test
-                .goal("(reward)")
-                .believe("((good) ==> (reward))", 1, 0.9f)
-                .believe("(--(bad) ==> (reward))", 1, 0.9f)
-                .mustGoal(cycles, "(good)", 1.0f, 0.45f)
-                .mustGoal(cycles, "(bad)", 0.0f, 0.45f);
+                .goal("reward")
+                .believe("(good ==> reward)", 1, 0.9f)
+                .believe("(--bad ==> reward)", 1, 0.9f)
+                .mustGoal(cycles, "good", 1.0f, 0.45f)
+                .mustGoal(cycles, "bad", 0.0f, 0.45f);
 
     }
 

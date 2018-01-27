@@ -227,8 +227,9 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
         if (byTerm.put(eventTerm, event)) {
 
+
             if (autoUnneg) {
-                //link(x.id, 0, know(eventTerm.neg())); //WEAK
+                //link(event, 0, know(eventTerm.neg())); //WEAK
                 link(know(eventTerm), 0, know(eventTerm.neg())); //WEAK
             }
         }
@@ -943,23 +944,27 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         @Nullable
         protected long[] pathDT(Node<Event, TimeSpan> n, Term a, Term b, List<BooleanObjectPair<Edge<Event, TimeSpan>>> path) {
             Term endTerm = n.id.id;
-            boolean endA = a.equals(endTerm);
-            boolean endB = b.equals(endTerm);
+            int adjEnd;
+            boolean endA = ((adjEnd = a.subTimeSafe(endTerm))==0); //TODO use offset for the endTerm if endTermRelB!=0 and !=DTERNAL (not sub event)
+            boolean endB = !endA &&
+                    ((adjEnd = b.subTimeSafe(endTerm))==0); //TODO use offset for the endTerm if endTermRelB!=0 and !=DTERNAL (not sub event)
+
+            if (adjEnd == DTERNAL)
+                return null;
 
             if (endA || endB) {
                 Event startEvent = pathStart(path);
-                Event endEvent = pathEnd(path);
-
-//                if (!(startEvent instanceof Absolute && endEvent instanceof Absolute))
-//                    return null;
 
                 Term startTerm = startEvent.id;
 
-                boolean fwd = startTerm.equals(a) && endB;
-                boolean rev = startTerm.equals(b) && endA;
+                boolean fwd = endB && (startTerm.equals(a)||a.subTimeSafe(startTerm)==0);
+                boolean rev = !fwd && (
+                        endA && (startTerm.equals(b)||b.subTimeSafe(startTerm)==0));//TODO use offset for the endTerm if endTermRelB!=0 and !=DTERNAL (not sub event)
                 if (fwd || rev) {
 
                     long startTime = startEvent.when();
+
+                    Event endEvent = pathEnd(path);
                     long endTime = endEvent.when();
 
 
@@ -993,6 +998,10 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
                         return new long[]{w, ETERNAL};
                     } else {
+
+                        if (a.equals(b))
+                            rev = random().nextBoolean(); //equal chance for each direction
+
                         if (rev) {
                             dt = -dt; //reverse
                             long s = startTime;

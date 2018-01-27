@@ -56,7 +56,7 @@ public abstract class Param {
 
     //    private final static Logger logger = LoggerFactory.getLogger(DeriveTime.class);
 
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 12;
+    public static final int TEMPORAL_SOLVER_ITERATIONS = 8;
 
 
     public static boolean DEBUG_FILTER_DUPLICATE_MATCHES = Param.DEBUG_EXTRA;
@@ -152,7 +152,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmean = new MutableInteger(196);
+    public final MutableInteger matchTTLmean = new MutableInteger(96);
 
     public static final int TTL_MIN =
             Param.TTL_UNIFY * 2 +
