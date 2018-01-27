@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 0.85f;
-    public int cycles = 350;
+    public int cycles = 550;
 
     @BeforeEach
     public void setTolerance() {
@@ -1149,16 +1149,23 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
+    public void multiConditionSyllogismPrePre() {
+        test
+            .input("((open(door)&|hold(key))=|>enter(room)). :|:")
+            .mustBelieve(cycles,"(open(door)=|>enter(room))", 1f, 0.73f, 0);
+    }
+
+    @Test
     public void multiConditionSyllogismPre() {
         //    Y, ((&&,X,A..+) ==> B), time(dtBeliefExact), notImpl(A..+) |- subIfUnifiesAny(((&&,A..+) ==>+- B),X,Y), (Belief:Deduction)
 
         test
                 .input("hold(key). :|:")
                 .input("((hold(#x) &| open(door)) =|> enter(room)). :|:")
-                .mustBelieve(cycles, "(open(door) =|> enter(room))",
+                .mustBelieve(cycles*2, "(open(door) =|> enter(room))",
                         1.00f, 0.81f,
                         0)
-                .mustBelieve(cycles*5, "(hold(key) =|> enter(room))",
+                .mustBelieve(cycles*2, "(hold(key) =|> enter(room))",
                         1.00f, 0.73f,
                         0)
         ;

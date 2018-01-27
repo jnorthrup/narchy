@@ -18,6 +18,8 @@ import java.io.IOException;
 
 public class TextEdit extends DefaultVirtualTerminal {
 
+    private static final float DEFAULT_ALPHA = 0.9f;
+
     public final TextBox textBox;
 
     public TextEdit(int c, int r) {
@@ -143,6 +145,7 @@ public class TextEdit extends DefaultVirtualTerminal {
 
 
         };
+        g.alpha(DEFAULT_ALPHA);
         return g;
     }
 

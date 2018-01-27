@@ -510,7 +510,7 @@ public class DeriveTime extends TimeGraph {
         ArrayHashSet<Event> solutions = new ArrayHashSet(Param.TEMPORAL_SOLVER_ITERATIONS);
 
         final int[] triesRemain = {Param.TEMPORAL_SOLVER_ITERATIONS};
-        final boolean[] rejectRelative = {false};
+        //final boolean[] rejectRelative = {false};
 
         solve(pattern, false /* take everything */, (solution) -> {
             assert (solution != null);
@@ -625,23 +625,29 @@ public class DeriveTime extends TimeGraph {
                 }
             }
         } else {
-
-            if (belief == null || (belief.isEternal())) {
-                if (!taskEvent) {
-                    //transformed task term, should have been solved
-                    return null;
+            if (belief == null) {
+                //inherit task time
+                s = task.start();
+                e = task.end();
+            } else if (belief.isEternal()) {
+                if (!task.isEternal()) {
+                    //inherit task time
+                    s = task.start();
+                    e = task.end();
                 } else {
-                    //event: inherit task time
-                    boolean beliefEvent = belief == null || (
-                            !belief.term().op().temporal
-                    );
-                    if (beliefEvent) {
-                        s = task.start();
-                        e = task.end();
-                    } else {
-                        return null; //should have calculated solution normally
-                    }
+                    s = e = ETERNAL;
                 }
+//                    //event: inherit task time
+//                    boolean beliefEvent = belief == null || (
+//                            !belief.term().op().temporal
+//                    );
+//                    if (beliefEvent) {
+//                        s = task.start();
+//                        e = task.end();
+//                    } else {
+//                        return null; //should have calculated solution normally
+//                    }
+//                }
             } else {
                 /*if (x.op().temporal) {
                     return null; //ambiguous, unsolution

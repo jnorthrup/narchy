@@ -136,7 +136,7 @@ public enum TermLinks {
         switch (x.op()) {
 
             case PROD:
-                return 0;
+                return 2;
 
             case SETe:
             case SETi:

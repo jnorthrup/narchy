@@ -186,8 +186,8 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                 break;
 
             if (x.equals(y)) {
-                if (x!=y && x.isInput())
-                    throw new RuntimeException("different input task instances with same stamp");
+                /*if (x!=y && x.isInput())
+                    throw new RuntimeException("different input task instances with same stamp");*/
                 return x;
             }
 

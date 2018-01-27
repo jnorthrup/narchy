@@ -115,8 +115,8 @@ public class Arkancide extends NAgentX {
 
         paddleSpeed = 120 * noid.BALL_VELOCITY;
 
-        //initBipolarRelative();
-        initToggle();
+        initBipolarRelative();
+        //initToggle();
 
         float resX = 0.01f; //Math.max(0.01f, 0.5f / visW); //dont need more resolution than 1/pixel_width
         float resY = 0.01f; //Math.max(0.01f, 0.5f / visH); //dont need more resolution than 1/pixel_width

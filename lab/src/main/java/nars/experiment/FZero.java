@@ -323,7 +323,7 @@ public class FZero extends NAgentX {
 //        //eternal bias to stop
 //        nar.goal(f[0].term, Tense.Eternal, 0f, 0.01f);
 //        nar.goal(f[1].term, Tense.Eternal, 0f, 0.01f);
-        actionBipolar($.p($.the("x"), id), fair, (a) -> {
+        actionBipolar(/*$.p($.the("x"), */(id), fair, (a) -> {
             float deadZone =
                     //0;
                     1 / 12f;

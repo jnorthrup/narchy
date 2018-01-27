@@ -50,12 +50,23 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
                 new TextEdit() {
                     @Override
                     protected void onKeyCtrlEnter() {
-                        n.clear();
-                        try {
-                            n.input(text());
-                        } catch (Narsese.NarseseException e) {
-                            e.printStackTrace();
-                        }
+                        n.runLater(()->{
+                            n.clear();
+                            n.terms.clear();
+                            //n.reset();
+
+
+                            n.runLater(()-> {
+                                try {
+                                    n.input(text());
+                                } catch (Narsese.NarseseException e) {
+                                    e.printStackTrace();
+                                }
+                            });
+
+                        });
+
+
                     }
                 }.surface();
                 //new Splitting()

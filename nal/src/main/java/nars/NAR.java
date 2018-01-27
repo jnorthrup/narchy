@@ -297,6 +297,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
         synchronized (exe) {
 
+            boolean running = loop.isRunning();
+
             stop();
 
             time.clear(this);

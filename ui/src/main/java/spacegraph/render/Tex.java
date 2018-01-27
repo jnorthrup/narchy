@@ -35,10 +35,14 @@ public class Tex {
     private Object src;
 
     public final void paint(GL2 gl, RectFloat2D bounds) {
-        paint(gl, bounds, -1);
+        paint(gl, bounds, 1f);
     }
 
-    public void paint(GL2 gl, RectFloat2D bounds, float repeatScale) {
+    public final void paint(GL2 gl, RectFloat2D bounds, float alpha) {
+        paint(gl, bounds, -1, alpha);
+    }
+
+    public void paint(GL2 gl, RectFloat2D bounds, float repeatScale, float alpha) {
 
 
         if (profile == null) {
@@ -58,7 +62,7 @@ public class Tex {
         }
 
         if (texture != null) {
-            Draw.rectTex(gl, texture, bounds.x, bounds.y, bounds.w, bounds.h, 0, repeatScale);
+            Draw.rectTex(gl, texture, bounds.x, bounds.y, bounds.w, bounds.h, 0, repeatScale, alpha);
         }
 
     }

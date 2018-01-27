@@ -90,8 +90,9 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
-    //@AllowOverlap
+
     //* TODO rename 'PB' to 'Sym'
+    //@AllowOverlap
     DeductionRecursive() {
         @Override
         public Truth apply(Truth T, Truth B, NAR m, float minConf) {

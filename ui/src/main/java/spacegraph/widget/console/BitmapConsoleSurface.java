@@ -31,6 +31,8 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
     protected int fontHeight;
     protected float charAspect;
     int scale = 16;
+    private float alpha = 1f;
+
 
     protected BitmapConsoleSurface() {
 
@@ -73,7 +75,10 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
 
     }
 
-
+    public BitmapConsoleSurface alpha(float alpha) {
+        this.alpha = alpha;
+        return this;
+    }
     protected void render() {
         if (needUpdate.compareAndSet(true, false)) {
             ensureBufferSize();
@@ -86,7 +91,7 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
     @Override
     public void paintWidget(GL2 gl, RectFloat2D bounds) {
         render();
-        tex.paint(gl, bounds);
+        tex.paint(gl, bounds, alpha);
     }
 
 

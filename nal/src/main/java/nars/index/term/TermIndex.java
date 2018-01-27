@@ -160,7 +160,10 @@ public abstract class TermIndex implements TermContext {
         if (value instanceof Concept) {
             if (value instanceof PermanentConcept) {
                 //refuse deletion
-                set(value);
+                nar.runLater(()->{
+                    set(value);
+                });
+
             } else {
 
                 Concept c = (Concept) value;

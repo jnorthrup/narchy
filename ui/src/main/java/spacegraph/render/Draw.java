@@ -569,7 +569,7 @@ public enum Draw {
         }
     }
 
-    public static void rectTex(GL2 gl, Texture tt, float x1, float y1, float w, float h, float z, float repeatScale) {
+    public static void rectTex(GL2 gl, Texture tt, float x1, float y1, float w, float h, float z, float repeatScale, float alpha) {
 
 //        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
 //        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
@@ -588,7 +588,7 @@ public enum Draw {
 
 
         //gl.glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-        gl.glColor3f(1.0f, 1.0f, 1.0f);
+        gl.glColor4f(1.0f, 1.0f, 1.0f, alpha);
 
 
         boolean repeat = repeatScale > 0;

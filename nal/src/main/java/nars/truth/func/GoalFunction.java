@@ -44,20 +44,20 @@ public enum GoalFunction implements TruthOperator {
         }
     },
 
-//    /** deduction used for bipolar implication results. symmetric for positive or negative T unlike ordinary deduction */
+   /** deduction used for bipolar implication results. symmetric for positive or negative T unlike ordinary deduction */
 //    //@AllowOverlap
-//    DeciDeduction() {
-//        @Override
-//        public Truth apply(Truth T, Truth B, NAR m, float minConf) {
-//            if (!T.isNegative()) {
-//                return BeliefFunction.Deduction.apply(T, B, m, minConf);
-//            } else {
-//                Truth d = BeliefFunction.Deduction.apply(T.neg(), B, m, minConf);
-//                return d != null ? d.neg() : null;
-//            }
-//        }
-//
-//    },
+    DeciDeduction() {
+        @Override
+        public Truth apply(Truth T, Truth B, NAR m, float minConf) {
+            if (!T.isNegative()) {
+                return BeliefFunction.Deduction.apply(T, B, m, minConf);
+            } else {
+                Truth d = BeliefFunction.Deduction.apply(T.neg(), B, m, minConf);
+                return d != null ? d.neg() : null;
+            }
+        }
+
+    },
 
     Induction() {
         @Override

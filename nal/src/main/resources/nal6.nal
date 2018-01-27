@@ -12,15 +12,15 @@
 //    M, (M ==> P), shift_occurrence_forward(M,"==>")  |- P, (Truth:Deduction, Desire:Induction, Order:ForAllSame)
 //    M, (P ==> M), shift_occurrence_backward(P,"==>") |- P, (Truth:Abduction, Desire:Deduction, Order:ForAllSame)
 
-    B, (A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Deduction, Goal:DeciInduction)
+    B, (A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursivePB, Goal:Weak)
         //B, (A ==> C),  notImpl(B), task(".") |- subIfUnifiesAny(C,A,B,"$",strict), (Belief:DeductionRecursivePB)
         //B, (B ==> C),  notImpl(B), task("!") |- C, (Goal:DeciInduction)
 
-    B, (--A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursivePBN, Goal:DeciInductionN)
+    B, (--A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionRecursivePBN, Goal:WeakN)
         //B, (--A ==> C),  notImpl(B), task(".") |- subIfUnifiesAny(C,A,B,"$",strict), (Belief:DeductionRecursivePBN)
         //B, (--B ==> C),  notImpl(B), task("!") |- C, (Goal:DeciInductionN)
 
-    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Strong)
+    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionPB, Goal:Strong)
     //B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionPB, Goal:DeciDeduction)
         //B, (C ==> B), notImpl(B), task("!") |- C (Goal:DeciDeduction)
 
@@ -188,11 +188,11 @@
     //((&&,M,X,A..*) ==> C), (Y ==> C), task(".") |- subIfUnifiesAny((M ==>+- C),X,Y), (Belief:AbductionPB)
     //((&&,M,A..+) ==> X), ((&&,A..+) ==> Y), task(".") |- subIfUnifiesAny((M ==>+- C),X,Y,"$"), (Belief:AbductionPB)
 
-    //Y, (B ==> (&&,X,A..+)), task(".") |- subIfUnifiesAny((B ==>+- (&&,A..+)),X,Y), (Belief:DeductionPB)
-    //Y, (B ==> (&&,--X,A..+)), task(".") |- subIfUnifiesAny((B ==>+- (&&,A..+)),X,Y), (Belief:DeductionPBN)
+    Y, (B ==> (&&,X,A..+)) |- subIfUnifiesAny((B ==>+- X),X,Y), (Belief:Deduction)
+    Y, (B ==> (&&,--X,A..+)) |- subIfUnifiesAny(--(B ==>+- X),X,Y), (Belief:DeductionN)
 
-    //Y, ((&&,X,A..+) ==> B) |- subIfUnifiesAny(((&&,A..+) ==>+- B),X,Y), (Belief:Deduction)
-    //Y, ((&&,--X,A..+) ==> B) |- subIfUnifiesAny(((&&,A..+) ==>+- B),X,Y), (Belief:DeductionN)
+    Y, ((&&,X,A..+) ==> B) |- subIfUnifiesAny((X ==>+- B),X,Y), (Belief:Deduction)
+    Y, ((&&,--X,A..+) ==> B) |- subIfUnifiesAny((--X ==>+- B),X,Y), (Belief:DeductionN)
 
 
 //// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
@@ -323,8 +323,10 @@
 
 //Anonymous Analogy (NAL5)
     //originally this only unified depvar (dep var elimination)
-     (&&,X,A..+), Y, isNot(X,"#")    |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)
-     (&&,--X,A..+), Y, isNot(X,"#")  |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogyPN)
+     (&&,X,A..+), Y    |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)
+            //, isNot(X,"#")
+     (&&,--X,A..+), Y   |- subIfUnifiesAny((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogyPN)
+            //, isNot(X,"#")
 
 
      //((&&,X,A..+) && Z), Z |- (X &&+- Z), (Belief:StructuralDeduction, Goal:StructuralDeduction)
