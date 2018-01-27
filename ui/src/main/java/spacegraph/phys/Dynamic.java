@@ -153,7 +153,7 @@ public class Dynamic<X> extends Collidable<X> {
 //			optionalMotionState.getWorldTransform(worldTransform);
 //		} else
 //		{
-			this.transform.setIdentity();
+//			this.transform.setIdentity();
 //		}
 
 		interpolationWorldTransform.set(transform);

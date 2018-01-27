@@ -31,12 +31,12 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
     //private final String label;
     public CollisionShape shape;
 
-    /** prevents physics movement */
-    public boolean motionLock;
+//    /** prevents physics movement */
+//    public boolean motionLock;
 
 
     public final float[] shapeColor;
-    public final Transform transform = new Transform();
+    public final Transform transform = new Transform().setIdentity();
     public boolean active;
 
     public SimpleSpatial(X x) {
@@ -141,10 +141,11 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
     }
 
     public SimpleSpatial move(float x, float y, float z) {
-        if (!motionLock) {
-            transform().set(x, y, z);
-            reactivate();
-        }
+//        if (motionLock)
+//            return this;
+
+        transform.set(x, y, z);
+        reactivate();
         return this;
     }
 
@@ -164,13 +165,13 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
 
 
     public void rotate(Quaternion target, float speed) {
-        if (motionLock) return;
+//        if (motionLock) return;
         rotate(target, speed, new Quaternion());
     }
 
     public void rotate(Quaternion target, float speed, Quaternion tmp) {
-        if (motionLock)
-            return;
+//        if (motionLock)
+//            return;
 
         Quaternion current = transform.getRotation(tmp);
         current.setSlerp(current, target, speed);
@@ -186,7 +187,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
     }
 
 
-    public void reactivate() {
+    void reactivate() {
         if (body!=null)
             body.activate(collidable());
     }
@@ -298,9 +299,9 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
 
 
 
-    public void motionLock(boolean b) {
-        motionLock = b;
-    }
+//    public void motionLock(boolean b) {
+//        motionLock = b;
+//    }
     public float x() {  return transform().x;        }
     public float y() {  return transform().y;        }
     public float z() {  return transform().z;        }

@@ -334,7 +334,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 
             float W = w();
             float H = h();
-            float sy = H - e.getY();
+            float sy = window.getHeight() - e.getY();
 
             wmx = +cam.x + (-0.5f * W + sx) / scale.x;
             wmy = +cam.y + (-0.5f * H + sy) / scale.x;

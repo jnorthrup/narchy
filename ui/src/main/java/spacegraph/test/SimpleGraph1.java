@@ -10,6 +10,7 @@ import jcog.math.random.XoRoShiRo128PlusRandom;
 import spacegraph.SpaceGraph;
 import spacegraph.Spatial;
 import spacegraph.SpatialCache;
+import spacegraph.phys.Dynamic;
 import spacegraph.render.Draw;
 import spacegraph.space.DynamicListSpace;
 import spacegraph.space.EDraw;
@@ -27,11 +28,14 @@ public class SimpleGraph1 extends DynamicListSpace {
 
     final Random rng = new XoRoShiRo128PlusRandom(1);
 
-    final SpaceWidget.SimpleNodeVis<SpaceWidget<?>> vis = w -> {
+    protected final SpaceWidget.SimpleNodeVis<SpaceWidget<?>> vis = w -> {
 
-        w.moveDelta((rng.nextFloat()-0.5f)*0.1f, (rng.nextFloat()-0.5f)*0.1f, (rng.nextFloat()-0.5f)*0.1f);
 
-        w.scale(8, 5, 5);
+
+        w.scale(16, 5, 2);
+
+        //w.body.setMass(100);
+        //w.body.setDamping(0.1f, 0.1f);
 
         Draw.colorHash(w.id, w.shapeColor);
 
@@ -55,7 +59,7 @@ public class SimpleGraph1 extends DynamicListSpace {
     @Override
     public void start(SpaceGraph space) {
         synchronized (this) {
-            cache = new SpatialCache(space, 64);
+            cache = new SpatialCache(space, 512);
         }
     }
 
@@ -69,16 +73,30 @@ public class SimpleGraph1 extends DynamicListSpace {
 
     @Override
     protected List<? extends Spatial> get() {
-        vis.accept((List) active);
+        vis.accept(active);
         return active;
     }
+
+    final static Random rng2 = new XoRoShiRo128PlusRandom(1);
 
     static class DefaultSpaceWidget extends SpaceWidget<Object> {
 
         public final List<EDraw<SpaceWidget>> edges = new FasterList();
 
+
         public DefaultSpaceWidget(Object x) {
             super(x);
+
+            move((rng2.nextFloat()-0.5f)*1, (rng2.nextFloat()-0.5f)*1f, (rng2.nextFloat()-0.5f)*1f);
+
+        }
+
+        @Override
+        public Dynamic newBody(boolean collidesWithOthersLikeThis) {
+            Dynamic d = super.newBody(collidesWithOthersLikeThis);
+            d.setMass(100);
+            d.setDamping(0.9f, 0.1f);
+            return d;
         }
 
         @Override

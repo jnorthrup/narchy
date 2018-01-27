@@ -753,12 +753,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     public void forEach(Consumer<? super Y> action) {
 
         /*synchronized (items)*/ {
-            int s = size();
-            if (s == 0)
-                return;
-
             Object[] x = items.array();
-            for (int i = 0; i < s; i++) {
+            for (int i = 0; i < Math.min(x.length, size()); i++) {
                 Object a = x[i];
                 if (a != null) {
                     Y b = (Y) a;

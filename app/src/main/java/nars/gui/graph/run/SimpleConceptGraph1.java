@@ -1,13 +1,9 @@
 package nars.gui.graph.run;
 
-import jcog.math.MultiStatistics;
-import jcog.meter.event.CSVOutput;
 import nars.NAR;
 import nars.NARS;
 import nars.control.Activate;
 import nars.gui.graph.DynamicConceptSpace;
-import nars.task.ITask;
-import nars.task.NALTask;
 import nars.test.DeductiveChainTest;
 import spacegraph.SpaceGraph;
 import spacegraph.SubOrtho;
@@ -27,35 +23,31 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
         super(nar, concepts, maxNodes, maxEdgesPerNodeMax);
     }
 
-
-
-//    @Override
-//    protected boolean include(Termed x) {
-//        return true;
-//        //return atomsEnabled.get() || !(x.term() instanceof Atomic);
-////                return term instanceof Compound &&
-////                        term.complexity()==3 && term.toString().endsWith("-->x)");
-//    }
-
-//    public static class TaskTreeChart extends NARChart<ITask> {
-//
-//        public TaskTreeChart(@NotNull Iterable<ITask> b, int limit, NAR nar) {
-//            super(new Bagregate(b, limit, 1f), nar);
-//        }
-//
-//        @Override
-//        public void accept(ITask x, ItemVis<ITask> y) {
-//            float p = x.priElseZero();
-//            y.update(p, 0.25f + 0.5f * p, 0.25f, 0.25f);
-//        }
-//    }
-
     public static void main(String[] args) {
 
 //        Param.DEBUG = true;
         //Param.TRACE = true;
         NAR n = NARS.threadSafe();
+
+
+        new DeductiveChainTest(n, 8,  2048, inh);
+
+
+
+        SimpleConceptGraph1 cs = new SimpleConceptGraph1(n,
+                /* TODO */ 128, 5);
+
+        SpaceGraph sg = cs.show(1400, 1000, true);
+
+
+        sg.add(new SubOrtho(grid(
+                new AutoSurface<>(sg.dyn.broadConstraints.get(0) /* FD hack */),
+                new AutoSurface<>(cs.vis)
+        )).posWindow(0,0,1f,0.2f));
+
         float fps = 32;
+        n.startFPS(fps);
+
         //n.conceptActivation.set(0.2f);
 
         //csvPriority(n, "/tmp/x.csv");
@@ -75,11 +67,6 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
 //        n.inputAt(2, "b:a.");
 //        n.inputAt(3, "c:b.");
 
-        new DeductiveChainTest(n, 8,  2048, inh);
-        //n.mix.stream("Derive").setValue(0.005f); //quiet derivation
-        //n.focus.activationRate.setValue(0.05f);
-
-
 //                "(x:a ==> x:b).",
 //                "(x:b ==> x:c).",
 //                "(x:c ==> x:d).",
@@ -91,27 +78,6 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
 //        for (int i = 0; i < 10; i++) {
 //            n.inputAt(i * 5 , i % 2 == 0 ? "x:c! :|:" : "--x:c! :|:");
 //        }
-
-
-//        SpaceGraph.window(
-//            new TaskTreeChart(Iterables.transform(te.active, (CLink<ITask> x)-> x), 32, n),
-//            500, 500
-//        );
-
-        SimpleConceptGraph1 cs = new SimpleConceptGraph1(n,
-                /* TODO */ 128, 5);
-
-        SpaceGraph sg = cs.show(1400, 1000, false);
-
-
-        sg.add(new SubOrtho(grid(
-                new AutoSurface<>(sg.dyn.broadConstraints.get(0) /* FD hack */),
-                new AutoSurface<>(cs.vis)
-        )).posWindow(0,0,0.5f,1f));
-
-        n.startFPS(fps);
-
-
 
 
         //n.log();
@@ -181,32 +147,32 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
     }
 
 
-    public static void csvPriority(NAR n, String path) {
-
-        CSVOutput csv = new CSVOutput(
-                //new File(path),
-                System.out,
-                "time", "ALL_Pri", "NAL_Pri", "ConceptFire_Pri", "busy");
-
-        MultiStatistics<ITask> exeTasks = new MultiStatistics<ITask>()
-                .classify("NALTask", NALTask.class::isInstance)
-                .classify("ConceptFire", Activate.class::isInstance)
-                ;
-//        n.onCycle((nn)->{
-//            n.exe.forEach(exeTasks);
-//            csv.out(
-//                    nn.time(),
+//    public static void csvPriority(NAR n, String path) {
 //
-//                    ((StatisticalSummary) exeTasks.cond.get(0)).getSum(),
+//        CSVOutput csv = new CSVOutput(
+//                //new File(path),
+//                System.out,
+//                "time", "ALL_Pri", "NAL_Pri", "ConceptFire_Pri", "busy");
 //
-//                    ((StatisticalSummary) exeTasks.cond.get(1)).getSum(),
-//
-//                    ((StatisticalSummary) exeTasks.cond.get(2)).getSum(),
-//
-//                    nn.emotion.busyVol.getSum()
-//            );
-//            exeTasks.clear();
-//        });
-    }
+//        MultiStatistics<ITask> exeTasks = new MultiStatistics<ITask>()
+//                .classify("NALTask", NALTask.class::isInstance)
+//                .classify("ConceptFire", Activate.class::isInstance)
+//                ;
+////        n.onCycle((nn)->{
+////            n.exe.forEach(exeTasks);
+////            csv.out(
+////                    nn.time(),
+////
+////                    ((StatisticalSummary) exeTasks.cond.get(0)).getSum(),
+////
+////                    ((StatisticalSummary) exeTasks.cond.get(1)).getSum(),
+////
+////                    ((StatisticalSummary) exeTasks.cond.get(2)).getSum(),
+////
+////                    nn.emotion.busyVol.getSum()
+////            );
+////            exeTasks.clear();
+////        });
+//    }
 
 }
