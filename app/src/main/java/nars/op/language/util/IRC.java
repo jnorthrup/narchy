@@ -1,4 +1,4 @@
-package nars.language.util;
+package nars.op.language.util;
 
 import com.google.common.collect.ImmutableSortedSet;
 import org.eclipse.collections.impl.factory.Iterables;

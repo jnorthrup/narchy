@@ -2,14 +2,15 @@ package nars.gui.graph.run;
 
 import nars.NAR;
 import nars.NARS;
+import nars.Narsese;
 import nars.control.Activate;
 import nars.gui.graph.DynamicConceptSpace;
-import nars.test.DeductiveChainTest;
 import spacegraph.SpaceGraph;
 import spacegraph.SubOrtho;
+import spacegraph.Surface;
+import spacegraph.widget.console.TextEdit;
 import spacegraph.widget.meta.AutoSurface;
 
-import static nars.test.DeductiveChainTest.inh;
 import static spacegraph.layout.Gridding.grid;
 
 public class SimpleConceptGraph1 extends DynamicConceptSpace {
@@ -30,20 +31,38 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
         NAR n = NARS.threadSafe();
 
 
-        new DeductiveChainTest(n, 8,  2048, inh);
+        //new DeductiveChainTest(n, 8,  2048, inh);
 
 
 
-        SimpleConceptGraph1 cs = new SimpleConceptGraph1(n,
+        SimpleConceptGraph1 g = new SimpleConceptGraph1(n,
                 /* TODO */ 128, 5);
 
-        SpaceGraph sg = cs.show(1400, 1000, true);
+        SpaceGraph sg = g.show(1400, 1000, true);
 
 
         sg.add(new SubOrtho(grid(
                 new AutoSurface<>(sg.dyn.broadConstraints.get(0) /* FD hack */),
-                new AutoSurface<>(cs.vis)
+                new AutoSurface<>(g.vis)
         )).posWindow(0,0,1f,0.2f));
+
+        Surface inputPanel =
+                new TextEdit() {
+                    @Override
+                    protected void onKeyCtrlEnter() {
+                        n.clear();
+                        try {
+                            n.input(text());
+                        } catch (Narsese.NarseseException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }.surface();
+                //new Splitting()
+
+        sg.add(new SubOrtho(
+                inputPanel
+        ).posWindow(0,0.8f, 0.2f,0.6f));
 
         float fps = 32;
         n.startFPS(fps);

@@ -1,4 +1,4 @@
-package nars.language;
+package nars.op.language;
 
 import com.google.common.collect.TreeBasedTable;
 import jcog.list.FasterList;

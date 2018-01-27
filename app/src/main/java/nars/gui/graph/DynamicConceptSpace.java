@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.bag.Bag;
 import jcog.bag.impl.ConcurrentArrayBag;
 import jcog.bag.util.Bagregate;
+import jcog.event.Ons;
 import jcog.list.FasterList;
 import jcog.math.FloatParam;
 import jcog.pri.PriReference;
@@ -15,13 +16,13 @@ import nars.concept.Concept;
 import nars.control.Activate;
 import nars.control.DurService;
 import nars.gui.ConceptSurface;
-import spacegraph.space.DynamicListSpace;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.phys.shape.SphereShape;
 import spacegraph.render.Draw;
+import spacegraph.space.DynamicListSpace;
 import spacegraph.space.SpaceWidget;
 import spacegraph.widget.button.PushButton;
 
@@ -40,7 +41,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
     private final Flip<List<ConceptWidget>> next = new Flip(FasterList::new);
     final float bagUpdateRate = 0.25f;
-    private DurService on;
+
 
     volatile static int serial = 0;
     final String spaceID;
@@ -49,6 +50,9 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
 
     public SpaceWidget.TermVis vis;
+
+    private DurService onDur;
+    private Ons onClear;
 
     public DynamicConceptSpace(NAR nar, @Nullable Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super();
@@ -72,6 +76,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                 }
             }
         };
+
     }
 
 
@@ -79,23 +84,36 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
     @Override
     public void start(SpaceGraph<Concept> space) {
-        super.start(space);
-        on = DurService.on(nar, () -> {
-            if (!updated.get() && concepts.update()) {
+        synchronized (this) {
+            super.start(space);
+            onDur = DurService.on(nar, () -> {
+                if (!updated.get() && concepts.update()) {
 
 
+                    updated.set(true);
+                }
 
-                updated.set(true);
-            }
+            }).durs(1);
+            this.onClear = new Ons(nar.eventClear.on(() -> {
+                synchronized (this) {
+                    next.write().clear();
+                    next.commit();
+                    concepts.clear();
+                }
+            }));
+        }
 
-        }).durs(1);
     }
 
     @Override
-    public synchronized void stop() {
-        on.off();
-        on = null;
-        super.stop();
+    public void stop() {
+        synchronized (this) {
+            onDur.off();
+            onDur = null;
+            onClear.off();
+            onClear = null;
+            super.stop();
+        }
     }
 
 

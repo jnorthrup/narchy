@@ -5,9 +5,11 @@ import spacegraph.Surface;
 import spacegraph.SurfaceBase;
 
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 
+/** TODO extend UnitContainer */
 public class Switching extends Container {
 
     private Surface current;
@@ -92,5 +94,11 @@ public class Switching extends Container {
         if (current.parent!=null) //if ready
             o.accept(current);
     }
-
+    @Override
+    public boolean whileEach(Predicate<Surface> o) {
+        if (current.parent!=null)
+            return o.test(current);
+        else
+            return true;
+    }
 }

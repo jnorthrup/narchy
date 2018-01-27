@@ -53,12 +53,12 @@ public class Bitmap2DConcepts<S extends Bitmap2D> implements Iterable<SensorConc
     }
 
     /** # of pixels */
-    public int area() {
+    public final int area() {
         return width * height;
     }
 
     /** iterate columns (x) first, then rows (y) */
-    @Override public Iterator<SensorConcept> iterator() {
+    @Override final public Iterator<SensorConcept> iterator() {
         return iter.iterator();
     }
 

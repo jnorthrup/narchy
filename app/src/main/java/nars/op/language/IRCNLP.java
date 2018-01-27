@@ -1,9 +1,9 @@
 
-package nars.language;
+package nars.op.language;
 
 import nars.*;
 import nars.bag.leak.TaskLeak;
-import nars.language.util.IRC;
+import nars.op.language.util.IRC;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;

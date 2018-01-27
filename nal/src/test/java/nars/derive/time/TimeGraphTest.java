@@ -82,7 +82,7 @@ public class TimeGraphTest {
     public void testSimpleImplWithOneKnownAbsoluteSubEvent() {
         A.print();
         assertSolved("(one ==>+- three)", A,
-                "(one ==>+2 three)");
+                "(one ==>+2 three)", "(one ==>+20 three)", "(one ==>-16 three)");
     }
 
     @Test public void testImplChain1() {

@@ -90,7 +90,7 @@ public class ConjClustering extends Causable {
 
     private int taskLimitPerCentroid;
 
-    private final FasterList<Task> gen = new FasterList();
+    private FasterList<Task> gen = null;
 
     @Override
     protected int next(NAR nar, int work /* max tasks generated per centroid, >=1 */) {
@@ -103,7 +103,7 @@ public class ConjClustering extends Causable {
 
         taskLimitPerCentroid = Math.max(1, Math.round(((float) work) / bag.net.centroids.length));
 
-        gen.clear();
+        gen = new FasterList();
 
         bag.commitGroups(1, nar, this::conjoinCentroid);
 

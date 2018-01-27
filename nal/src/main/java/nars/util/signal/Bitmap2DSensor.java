@@ -231,6 +231,9 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Causable implements Iter
         //confidence proportional to the amount of the frame processed per duration, calculated in aggregate because
         //each call will only proceed some of the image potentially but multiple times per duration
         float meanPixelsProcessedPerDuration = (float) pixelsProcessed.getMean();
+        if (meanPixelsProcessedPerDuration!=meanPixelsProcessedPerDuration)
+            meanPixelsProcessedPerDuration = 0;
+
         this.conf = w2c(Util.lerp( (meanPixelsProcessedPerDuration) / numPixels, c2w(nar.confMin.floatValue()), c2w(nar.confDefault(BELIEF))));
 
         //System.out.println(meanPixelsProcessedPerDuration + "/" + numPixels + " -> " + conf + "%");

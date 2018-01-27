@@ -1,9 +1,10 @@
-package nars.op.stm;
+package nars.op;
 
 import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.op.stm.ConjClustering;
 import nars.time.Tense;
 import org.junit.jupiter.api.Test;
 

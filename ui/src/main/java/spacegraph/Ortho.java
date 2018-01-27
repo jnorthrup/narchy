@@ -15,12 +15,14 @@ import spacegraph.phys.util.AnimVector2f;
 import spacegraph.phys.util.AnimVector3f;
 import spacegraph.phys.util.Animated;
 import spacegraph.render.JoglSpace;
+import spacegraph.widget.windo.Widget;
 
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -257,6 +259,11 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     }
 
     @Override
+    public boolean whileEach(Predicate<Surface> o) {
+        return o.test(surface);
+    }
+
+    @Override
     public void windowGainedFocus(WindowEvent e) {
         focused = true;
     }
@@ -275,12 +282,24 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 
     @Override
     public void keyPressed(KeyEvent e) {
-        surface.onKey(e, true);
+        setKey(e, true);
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
-        surface.onKey(e, false);
+        setKey(e, false);
+    }
+
+    private void setKey(KeyEvent e, boolean pressOrRelease) {
+        if (e.isConsumed())
+            return;
+
+        Widget t = finger.touching;
+        if (t !=null) {
+            if (!t.onKey(e, pressOrRelease))
+                e.setConsumed(true);
+        }
+
     }
 
     @Override

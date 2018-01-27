@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
+import java.util.function.Predicate;
 
 public class MutableContainer extends Container {
 
@@ -176,6 +177,15 @@ public class MutableContainer extends Container {
         }
     }
 
+    @Override
+    public boolean whileEach(Predicate<Surface> o) {
+        for (Surface x : children.copy) {
+            if (x.parent!=null) //if ready
+                if (!o.test(x))
+                    return false;
+        }
+        return true;
+    }
 
     final static Surface[] EMPTY_SURFACE_ARRAY = new Surface[0];
 

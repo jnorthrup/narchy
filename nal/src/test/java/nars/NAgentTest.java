@@ -1,11 +1,15 @@
 package nars;
 
-import nars.task.DerivedTask;
+import jcog.learn.ql.HaiQAgent;
+import nars.op.RLBooster;
 import nars.term.Term;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.function.Consumer;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -14,8 +18,8 @@ public class NAgentTest {
     static NAR nar() {
 
         NAR n = NARS.tmp();
-        n.termVolumeMax.set(18);
-        n.freqResolution.set(0.05f);
+        n.termVolumeMax.set(14);
+        n.freqResolution.set(0.1f);
         n.confResolution.set(0.04f);
         n.time.dur(1);
 
@@ -24,23 +28,23 @@ public class NAgentTest {
 
         //n.want(MetaGoal.Perceive, -0.1f);
 
-        //n.logWhen(System.out, false, true, true);
+//        n.logWhen(System.out, false, true, true);
 
         //n.freqResolution.set(0.1f);
 
-        Param.DEBUG = false;
-        if (Param.DEBUG) {
-            n.onTask(t -> {
-                if (t instanceof DerivedTask && t.isGoal()) {
-                    System.out.println(t.proof());
-                }
-            });
-        }
+//        Param.DEBUG = true;
+//        if (Param.DEBUG) {
+//            n.onTask(t -> {
+//                if (t instanceof DerivedTask && t.isGoal()) {
+//                    System.out.println(t.proof());
+//                }
+//            });
+//        }
         return n;
     }
 
     @ParameterizedTest
-    @ValueSource(strings={"tt", "tf", "ft", "ff"})
+    @ValueSource(strings={/*"tt", "tf", */"ft", "ff"})
     public void testSame(String x) {
 
         boolean posOrNeg = x.charAt(0) == 't';
@@ -59,22 +63,43 @@ public class NAgentTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings={"t", "f"})
+    @ValueSource(strings={/*"t",*/ "f"})
     public void testOscillate(String x) {
 
-        boolean toggleOrPush = x.charAt(0) == 't';
+        NAR n = nar();
+        assertOscillatesAction(n, (a)->{});
+    }
 
-        System.out.println((toggleOrPush ? "toggle" : " push"));
-        MiniTest a = new ToggleOscillate(nar(), $.the("t"),
+    @Test
+    public void testOscillate_RLBoost_only() {
+
+        NAR n = NARS.shell();
+
+        assertOscillatesAction(n, (a)->{
+            new RLBooster(a, HaiQAgent::new, 2);
+        });
+
+    }
+
+    static void assertOscillatesAction(NAR n, Consumer<NAgent> init) {
+
+//        System.out.println((toggleOrPush ? "toggle" : " push"));
+
+        MiniTest a = new ToggleOscillate(n, $.the("t"),
                 $.$safe("t:y"),
                 //$.$safe("(t,y)"),
-                toggleOrPush);
+                true);
+                //toggleOrPush);
+
+        init.accept(a);
 
         a.runSynch(3000);
 
-        assertTrue(a.avgReward() > 0.2f); //0.1 ~= curiosity baseline
-        assertTrue(a.dex.getMean() > 0.02f);
+        assertTrue(-(-1-a.avgReward()) > 0.2f); //oscillation density
+        assertTrue(a.dex.getMean() > 0.1f);
     }
+
+
 
     abstract static class MiniTest extends NAgent {
         private final Runnable statPrint;
@@ -169,7 +194,7 @@ public class NAgentTest {
 
         @Override
         float reward() {
-            float r = y == prev ? 0 : 1;
+            float r = y == prev ? -1 : 1;
             prev = y;
             y = 0; //reset
             //System.out.println(nar.time() + " " + r);

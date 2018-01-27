@@ -4,10 +4,9 @@ import jcog.decide.DecideEpsilonGreedy;
 import jcog.decide.DecideSoftmax;
 import jcog.decide.Deciding;
 import jcog.learn.Agent;
-import jcog.math.Range;
+import jcog.math.FloatParam;
 import jcog.math.random.XorShift128PlusRandom;
 import org.apache.commons.lang3.mutable.MutableFloat;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
@@ -16,15 +15,12 @@ import java.util.Random;
  */
 public class HaiQ extends Agent {
 
-    @NotNull
     public final Random rng;
 
     //@NotNull
     //final Hsom som;
 
-    @NotNull
     public float[][] q; // state x action
-    @NotNull
     public float[][] et;
 
 
@@ -63,8 +59,7 @@ public class HaiQ extends Agent {
      */
     public float Gamma, Lambda;
 
-    @Range(min = 0, max = 1f)
-    public final MutableFloat Alpha = new MutableFloat();
+    public final MutableFloat Alpha = new FloatParam(0, 0, 1f);
 
     /** input selection; HaiQAgent will not use this in its override of perceive */
     private final Deciding decideInput;
@@ -81,8 +76,6 @@ public class HaiQ extends Agent {
 
     public HaiQ(int inputs, int actions) {
         super(inputs, actions);
-
-        //som = new Hsom(inputs, states);
 
         q = new float[inputs][actions];
         et = new float[inputs][actions];
@@ -110,7 +103,7 @@ public class HaiQ extends Agent {
     int learn(int state, float reward, float learningFactor, boolean decide) {
 
         if (reward != reward)
-            reward = 0; //interpret NaN as neutral 0
+            reward = 0; //HACK interpret NaN as neutral 0
 
         // 1. decide next action
         int action = decide ? nextAction(state) : -1;

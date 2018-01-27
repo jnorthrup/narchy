@@ -26,7 +26,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Arkancide extends NAgentX {
 
     static boolean numeric = true;
-    static boolean cam = true;
+    static boolean cam = false;
 
     public final FloatParam ballSpeed = new FloatParam(0.75f, 0.04f, 6f);
     //public final FloatParam paddleSpeed = new FloatParam(2f, 0.1f, 3f);
@@ -115,8 +115,8 @@ public class Arkancide extends NAgentX {
 
         paddleSpeed = 120 * noid.BALL_VELOCITY;
 
-        initBipolar();
-        //initToggle();
+        //initBipolarRelative();
+        initToggle();
 
         float resX = 0.01f; //Math.max(0.01f, 0.5f / visW); //dont need more resolution than 1/pixel_width
         float resY = 0.01f; //Math.max(0.01f, 0.5f / visH); //dont need more resolution than 1/pixel_width
@@ -245,22 +245,23 @@ public class Arkancide extends NAgentX {
 
     }
 
-    private void initBipolar() {
+    private void initBipolarRelative() {
         actionBipolar($.inh("X", id), true, (dx) -> {
-//            if (noid.paddle.move(dx * paddleSpeed))
-//                return dx;
-//            else
-//                return 0;
-
+            if (noid.paddle.move(dx * paddleSpeed))
+                return dx;
+            else
+                return 0;
+        });
+    }
+    private void initBipolarDirect() {
+        actionBipolar($.inh("X", id), true, (dx) -> {
             noid.paddle.set(dx/2f+0.5f);
             return dx;
         });
     }
-
     private void initToggle() {
         actionToggle($.inh("L", id), () -> noid.paddle.move(-paddleSpeed));
         actionToggle($.inh("R", id), () -> noid.paddle.move(+paddleSpeed));
-
     }
 
     @Override

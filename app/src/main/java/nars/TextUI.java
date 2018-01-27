@@ -31,7 +31,7 @@ import jcog.pri.op.PriMerge;
 import nars.control.Activate;
 import nars.control.DurService;
 import nars.control.NARService;
-import nars.language.NARHear;
+import nars.op.language.NARHear;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 

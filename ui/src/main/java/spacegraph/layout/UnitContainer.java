@@ -5,6 +5,7 @@ import spacegraph.Surface;
 import spacegraph.SurfaceBase;
 
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public abstract class UnitContainer extends Container {
 
@@ -40,5 +41,12 @@ public abstract class UnitContainer extends Container {
     public void forEach(Consumer<Surface> o) {
         if (the.parent!=null) //if ready
             o.accept(the);
+    }
+    @Override
+    public boolean whileEach(Predicate<Surface> o) {
+        if (the.parent!=null)
+            return o.test(the);
+        else
+            return true;
     }
 }

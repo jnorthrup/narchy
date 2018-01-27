@@ -11,6 +11,7 @@ import spacegraph.math.v2;
 import java.io.PrintStream;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * Created by me on 7/20/16.
@@ -154,7 +155,7 @@ abstract public class Container extends Surface {
     @Override
     public boolean onKey(KeyEvent e, boolean pressed) {
         if (!super.onKey(e, pressed)) {
-            forEach(c -> c.onKey(e, pressed));
+            whileEach(c -> c.onKey(e, pressed));
         }
         return false;
     }
@@ -176,6 +177,8 @@ abstract public class Container extends Surface {
     }
 
     abstract public void forEach(Consumer<Surface> o);
+
+    abstract public boolean whileEach(Predicate<Surface> o);
 
     /**
      * identity compare

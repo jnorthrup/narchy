@@ -13,7 +13,7 @@ import static nars.time.Tense.ETERNAL;
 public class NAL6Test extends NALTest {
 
 
-    final int cycles = 1300;
+    final int cycles = 2500;
 
     @Override protected NAR nar() {
         return NARS.tmp(6);
@@ -274,9 +274,9 @@ public class NAL6Test extends NALTest {
     public void multiple_variable_elimination() {
 
         TestNAR tester = test;
-        tester.believe("<(&&,<$x --> key>,<$y --> lock>) ==> open($x, $y)>"); //en("Every lock can be opened by every key.");
-        tester.believe("<{lock1} --> lock>"); //en("Lock-1 is a lock.");
-        tester.mustBelieve(cycles * 2, "<<$1 --> key> ==> open($1, {lock1})>", 1.00f, 0.73f); //en("Lock-1 can be opened by every key.");
+        tester.believe("((($x --> key) && ($y --> lock)) ==> open($x, $y))"); //en("Every lock can be opened by every key.");
+        tester.believe("({lock1} --> lock)"); //en("Lock-1 is a lock.");
+        tester.mustBelieve(cycles * 3, "(($1 --> key) ==> open($1, {lock1}))", 1.00f, 0.73f); //en("Lock-1 can be opened by every key.");
 
     }
 
@@ -298,7 +298,7 @@ public class NAL6Test extends NALTest {
         TestNAR tester = test;
         tester.believe("(&&,<#x --> lock>,(<$y --> key> ==> open($y,#x)))"); //en("There is a lock that can be opened by every key.");
         tester.believe("<{lock1} --> lock>"); //en("Lock-1 is a lock.");
-        tester.mustBelieve(cycles, "<<$1 --> key> ==> open($1,{lock1})>", 1.00f,
+        tester.mustBelieve(cycles*2, "<<$1 --> key> ==> open($1,{lock1})>", 1.00f,
                 0.73f);
         //0.43f); //en("I guess Lock-1 can be opened by every key.");
 
@@ -469,18 +469,18 @@ public class NAL6Test extends NALTest {
     public void second_level_variable_unification() {
 
         TestNAR tester = test;
-        tester.believe("(&&,<#1 --> lock>,<<$2 --> key> ==> open($2, #1)>)", 1.00f, 0.90f); //en("there is a lock which is opened by all keys");
-        tester.believe("<{key1} --> key>", 1.00f, 0.90f); //en("key1 is a key");
-        tester.mustBelieve(cycles, "(&&,<#1 --> lock>,open({key1}, #1))", 1.00f, 0.81f); //en("there is a lock which is opened by key1");
+        tester.believe("(((#1 --> lock) && ($2 --> key)) ==> open($2, #1))", 1.00f, 0.90f); //en("there is a lock which is opened by all keys");
+        tester.believe("({key1} --> key)", 1.00f, 0.90f); //en("key1 is a key");
+        tester.mustBelieve(cycles, "((#1 --> lock) && open({key1}, #1))", 1.00f, 0.81f); //en("there is a lock which is opened by key1");
     }
 
     @Test
     public void second_level_variable_unification_neg() {
 
         TestNAR tester = test;
-        tester.believe("(&&,<#1 --> lock>,<--($2 --> key) ==> open($2, #1)>)");
+        tester.believe("(((#1 --> lock) && --($2 --> key)) ==> open($2, #1))");
         tester.believe("--({key1} --> key)");
-        tester.mustBelieve(cycles, "(&&,<#1 --> lock>,open({key1}, #1))", 1.00f, 0.81f);
+        tester.mustBelieve(cycles, "((#1 --> lock) && open({key1}, #1))", 1.00f, 0.81f);
     }
 
 
@@ -617,7 +617,6 @@ public class NAL6Test extends NALTest {
     public void strong_elimination() {
 
         TestNAR tester = test;
-        tester.log();
         tester.believe("((test($a,is,cat) && sentence($a,is,$b)) ==> ($a --> $b))");
         tester.believe("test(tim,is,cat)");
         tester.mustBelieve(cycles, "(sentence(tim,is,$1) ==> (tim --> $1))",

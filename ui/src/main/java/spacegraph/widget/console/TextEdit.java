@@ -64,6 +64,7 @@ public class TextEdit extends DefaultVirtualTerminal {
 
             @Override
             public Result handleKeyStroke(KeyStroke keyStroke) {
+
                 if (!onKey(keyStroke))
                     return Result.HANDLED;
 
@@ -75,6 +76,7 @@ public class TextEdit extends DefaultVirtualTerminal {
                     if (!before.equals(after))
                         textChange(after);
                 }
+
                 return r;
             }
 

@@ -8,6 +8,7 @@ import static nars.Op.CONJ;
 import static nars.Op.IMPL;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.TIMELESS;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DeriveTimeTest {
@@ -70,7 +71,7 @@ public class DeriveTimeTest {
     }
 
     static void assertSolution(Term yExpected, long start, long end, TimeGraph.Event... events) {
-        long[] occ = new long[] { ETERNAL, ETERNAL };
+        long[] occ = new long[] { TIMELESS, TIMELESS };
         Term y = DeriveTime.solveMerged(1, occ, events);
 
         assertEquals(yExpected, y);

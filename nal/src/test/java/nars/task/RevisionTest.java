@@ -102,7 +102,7 @@ public class RevisionTest {
     @Test
     public void testTruthOscillation() {
 
-        NAR n = newNAR(8);
+        NAR n = NARS.shell(); //newNAR(8);
 
 
         Param.DEBUG = true;

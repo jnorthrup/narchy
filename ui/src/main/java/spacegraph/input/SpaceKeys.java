@@ -67,19 +67,30 @@ public abstract class SpaceKeys extends KeyAdapter implements Consumer<SpaceGrap
 
     @Override
     public void keyReleased(KeyEvent e) {
-        setKey((int) e.getKeyCode(), false);
+        setKey(e, false);
     }
 
     @Override
     public void keyPressed(KeyEvent e) {
-        setKey((int) e.getKeyCode(), true);
+        setKey(e, true);
     }
 
-    protected void setKey(int c, boolean state) {
+    public void setKey(KeyEvent e, boolean pressOrRelease) {
+        if (e.isConsumed())
+            return;
+
+        if (setKey(e.getKeyCode(), pressOrRelease)) {
+            e.setConsumed(true);
+        }
+    }
+
+    protected boolean setKey(int c, boolean state) {
         if ((state ? keyPressed : keyReleased).containsKey(c)) {
             synchronized (on) {
                 queue.add(state ? c : -c);
+                return true;
             }
         }
+        return false;
     }
 }

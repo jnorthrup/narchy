@@ -5,12 +5,9 @@ import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatPolarNormalized;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Bitmap2D;
-import nars.control.Deriver;
-import nars.control.Derivers;
 import nars.exe.Focus;
 import nars.exe.PoolMultiExec;
 import nars.gui.Vis;
-import spacegraph.layout.EdgeDirected;
 import nars.gui.graph.run.SimpleConceptGraph1;
 import nars.index.term.map.CaffeineIndex;
 import nars.op.mental.Inperience;
@@ -30,10 +27,11 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.layout.AspectAlign;
 import spacegraph.Ortho;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
+import spacegraph.layout.AspectAlign;
+import spacegraph.layout.EdgeDirected;
 import spacegraph.layout.Splitting;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.ConsoleTerminal;
@@ -174,10 +172,11 @@ abstract public class NAgentX extends NAgent {
                 .deriverAdd(1, 1)
                 .deriverAdd(2, 5)
                 .deriverAdd(6, 8)
-                //.deriverAdd(6,6) //extra NAL6
                 .deriverAdd("motivation.nal")
-                //.deriverAdd("list.nal")
                 .deriverAdd("goal_analogy.nal")
+                //.deriverAdd(6,6) //extra NAL6
+                //.deriverAdd("list.nal")
+
                 .index(
                         new CaffeineIndex(
                                 200 * 1024
@@ -219,17 +218,19 @@ abstract public class NAgentX extends NAgent {
 
         NAgent a = init.apply(n);
 
-        new Deriver(a.fire(), Derivers.deriver(1, 8,
-                "motivation.nal","goal_analogy.nal"
-        ).apply(n).deriver, n) {
-//            @Override
-//            protected long matchTime(Task task) {
+//        new RLBooster(a, HaiQAgent::new, 1);
 
-//                    return this.now +
-//                            Util.sqr(n.random().nextInt(4)) * n.dur(); //forward
+//        new Deriver(a.fire(), Derivers.deriver(1, 8,
+//                "motivation.nal","goal_analogy.nal"
+//        ).apply(n).deriver, n) {
+////            @Override
+////            protected long matchTime(Task task) {
 //
-//            }
-        };
+////                    return this.now +
+////                            Util.sqr(n.random().nextInt(4)) * n.dur(); //forward
+////
+////            }
+//        };
 
         Loop aLoop = a.runFPS(agentFPS);
 

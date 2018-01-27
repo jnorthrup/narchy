@@ -20,6 +20,7 @@ public class ProxyTerm<T extends Term> implements Term, CompoundDT {
     public final /*HACK make unpublic */ T ref;
 
     public ProxyTerm(T t) {
+        //assert(!(this instanceof The));
         this.ref = t;
     }
 

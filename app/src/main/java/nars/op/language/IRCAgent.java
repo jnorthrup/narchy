@@ -1,11 +1,11 @@
-package nars.language;
+package nars.op.language;
 
 import nars.NAR;
 import nars.NARchy;
 import nars.Param;
 import nars.Task;
 import nars.bag.leak.TaskLeak;
-import nars.language.util.IRC;
+import nars.op.language.util.IRC;
 import org.jetbrains.annotations.NotNull;
 import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.events.MessageEvent;

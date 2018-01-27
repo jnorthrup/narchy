@@ -29,14 +29,16 @@ public class RLBooster implements Consumer<NAR> {
     public final NAgent env;
     public final Agent rl;
     final float[] input;
-    final Runnable[] output;
+
+    @Deprecated final Runnable[] output;
+
     final int inD, outD;
     private final CauseChannel<ITask> in;
     private final List<SensorConcept> inputs;
     public final FloatParam conf = new FloatParam(0.5f, 0f, 1f);
 
     public RLBooster(NAgent env, IntIntToObjectFunc<Agent> rl, int actionDiscretization) {
-        assert(actionDiscretization>1);
+        assert(actionDiscretization>=1);
 
         this.env = env;
 
@@ -45,9 +47,9 @@ public class RLBooster implements Consumer<NAR> {
 
         List<SensorConcept> sc = $.newArrayList();
         sc.addAll(env.sensors.keySet());
-        if (env instanceof NAgentX) {
-            ((NAgentX) env).cam.forEach(c -> c.forEach(sc::add));
-        }
+//        if (env instanceof NAgentX) {
+//            ((NAgentX) env).cam.forEach(c -> c.forEach(sc::add));
+//        }
         this.inputs = sc;
         this.inD = sc.size();
 
@@ -71,25 +73,36 @@ public class RLBooster implements Consumer<NAR> {
         Concept[] ca = new Concept[env.actions.size()];
         Signal[] ag = new Signal[ca.length];
         int agN = 0;
+
+        float OFFfreq
+                = 0f;
+                // = Float.NaN;
+
         for (ActionConcept a : env.actions.keySet()) {
-            Signal aGoal = new Signal(GOAL, env.nar.freqResolution).pri(() -> env.nar.priDefault(GOAL));
+            Signal aGoal = new Signal(GOAL, env.nar.freqResolution)
+                    .pri(() -> env.nar.priDefault(GOAL));
             final int aa = agN;
             ca[agN] = a;
             ag[agN++] = aGoal;
 
             for (int j = 0; j < actionDiscretization; j++) {
-                float value = ((float)j) / (actionDiscretization-1);
+
+                /** TODO support other discretizations */
+                float value = actionDiscretization==1 ? 1f /* full */ :
+                        ((float)j) / (actionDiscretization-1);
+
                 output[i++] = () -> {
                     NAR nar = env.nar;
                     List<Task> toInput = $.newArrayList(ca.length);
                     long now = nar.time();
                     int dur = nar.dur();
+                    Truth off = OFFfreq == OFFfreq ? $.t(OFFfreq, conf.floatValue()) : null;
                     for (int k = 0; k < ag.length; k++) {
                         Truth tK;
                         if (k == aa) {
                             tK = $.t(value, conf.floatValue());
                         } else {
-                            tK = null; //cancel all other concept goal signals
+                            tK = off; //cancel all other concept goal signals
                         }
                         Task tt = ag[k].set(ca[k], tK, nar.time::nextStamp, now, dur, nar);
                         if (tt!=null)
@@ -97,15 +110,16 @@ public class RLBooster implements Consumer<NAR> {
                     }
                     if (!toInput.isEmpty())
                         in.input(toInput);
-//                    env.nar.goal(env.nar.priDefault(GOAL), a.term(), t, value, conf);
                 };
             }
         }
+        assert(actionDiscretization>1 || agN>1);
 
         env.onFrame(this);
     }
 
     float[] input() {
+        //TODO replace with a Tensor API vector function
         int i = 0;
         for (SensorConcept s : inputs) {
             input[i++] = s.asFloat();
@@ -118,6 +132,7 @@ public class RLBooster implements Consumer<NAR> {
     @Override
     public void accept(NAR ignored) {
 
+        //TODO provide actual action vector, not what it thinks it enacted by itself
         int o = rl.act(env.reward, input());
         //System.out.println(now + " "  + o + " " + a.o.floatValue() + " " + " " + a.rewardValue);
 

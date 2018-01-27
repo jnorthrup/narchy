@@ -24,7 +24,6 @@ public class HaiQAgent extends HaiQ {
     float perceptionForget;
     public FloatSupplier perceptionError;
     public float lastPerceptionError;
-    private final int states;
 
     //float aeForget = 1f;
 
@@ -34,12 +33,11 @@ public class HaiQAgent extends HaiQ {
     }
 
     public HaiQAgent(int inputs, BiFunction<Integer,Integer,Integer> states, int outputs) {
-        this(inputs, states.apply(inputs, outputs).intValue(), outputs);
+        this(inputs, states.apply(inputs, outputs), outputs);
     }
 
     public HaiQAgent(int inputs, int states, int outputs) {
         super(states, outputs);
-        this.states = states;
         //logger.info("start {} -> {} -> {}", inputs, states, outputs);
         this.perceptionAlpha =
                 //1f/(inputs);
