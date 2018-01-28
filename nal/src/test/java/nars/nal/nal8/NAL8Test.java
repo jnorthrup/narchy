@@ -442,14 +442,11 @@ public class NAL8Test extends NALTest {
                 .goal("--reward")
                 .believe("(good ==> reward)", 1, 0.9f)
                 .believe("(bad ==> reward)", 0, 0.9f)
-                .mustGoal(cycles, "bad", 1.0f,
-                        0.81f)
-                //0.45f)
-                //nothing strong about 'good' should be concluded
+                .mustGoal(cycles, "bad", 1.0f, 0.81f)
                 .mustNotOutput(cycles, "good", GOAL, 0f, 1f, 0.8f, 1f, ETERNAL)
-        //.mustNotGoal(cycles, "good", 0.0f, 0.45f)
         ;
     }
+    
 
     @Test
     public void testInhibition0() {

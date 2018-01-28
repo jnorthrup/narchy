@@ -71,6 +71,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
      * action exploration rate; analogous to epsilon in QLearning
      */
     public final FloatParam curiosity;
+    public final FloatParam depress = new FloatParam(0.5f, 0f, 1f);
 
 
     public final AtomicBoolean enabled = new AtomicBoolean(false);
@@ -302,7 +303,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         this.dur = nar.dur();
         this.now = nar.time();
 
-        reward = act();
+        reward = act() - depress.floatValue();
 
         for (Runnable r : sensorUpdates)
             r.run();

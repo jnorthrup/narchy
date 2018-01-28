@@ -84,7 +84,7 @@ public class FZero extends NAgentX {
 
 
         //initToggle();
-        initBipolar(false);
+        initBipolar(true);
 
 //        actionUnipolar(p("left"), (r) -> {
 //            //if (r > 0.5f)
@@ -378,24 +378,28 @@ public class FZero extends NAgentX {
         fz.update();
 
         double distance = fz.vehicleMetrics[0][1];
-        double deltaDistance = (distance - lastDistance) / 50f;
-        deltaDistance = Math.min(deltaDistance, 0.1f);
+        double deltaDistance = (distance - lastDistance) / 5f;
+        //deltaDistance = Math.min(deltaDistance, 0.1f);
 
         lastDistance = distance;
 
-        //lifesupport
-        fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));
+
+
 
         //System.out.println("head=" + fz.playerAngle%(2*3.14f) + " pow=" + fz.power + " vel=" + fz.vehicleMetrics[0][6] + " deltaDist=" + deltaDistance);
 
 
-        float ambientSadness = 0f;
 
-        return Util.clamp(
+        float r = Util.clamp(
                 //-0.5f /* bias */ +
                 (float) (-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
                         //((float)fz.vehicleMetrics[0][6]/100f)+
-                        deltaDistance), -1f, +1f) - ambientSadness;
+                        deltaDistance), -1f, +1f);
+
+        //lifesupport
+        fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));
+
+        return r;
     }
 
 

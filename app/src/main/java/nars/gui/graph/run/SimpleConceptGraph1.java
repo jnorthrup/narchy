@@ -21,12 +21,12 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
     private final AtomicBoolean reloadReady = new AtomicBoolean(false);
     private final TextEdit inputbox;
 
-    public SimpleConceptGraph1(NAR nar, int visibleNodes, int maxEdgesPerNodeMax) {
+    private SimpleConceptGraph1(NAR nar, int visibleNodes, int maxEdgesPerNodeMax) {
         this(nar, () -> nar.exe.active().iterator(),
                 visibleNodes, maxEdgesPerNodeMax);
     }
 
-    public SimpleConceptGraph1(NAR nar, Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {
+    private SimpleConceptGraph1(NAR nar, Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super(nar, concepts, maxNodes, maxEdgesPerNodeMax);
 
         SpaceGraph sg = show(1400, 1000, true);

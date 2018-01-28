@@ -49,11 +49,10 @@ public enum GoalFunction implements TruthOperator {
     DeciDeduction() {
         @Override
         public Truth apply(Truth T, Truth B, NAR m, float minConf) {
-            if (!T.isNegative()) {
+            if (!B.isNegative()) {
                 return BeliefFunction.Deduction.apply(T, B, m, minConf);
             } else {
-                Truth d = BeliefFunction.Deduction.apply(T.neg(), B, m, minConf);
-                return d != null ? d.neg() : null;
+                return BeliefFunction.Deduction.apply(T.neg(), B.neg(), m, minConf);
             }
         }
 

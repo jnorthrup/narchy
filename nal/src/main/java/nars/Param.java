@@ -44,7 +44,7 @@ public abstract class Param {
      */
     public static final float ACTIVATION_THRESHOLD = 0.01f;
 
-    public static final boolean ETERNALIZE_EVICTED_TEMPORAL_TASKS = true;
+    public static final boolean ETERNALIZE_EVICTED_TEMPORAL_TASKS = false;
 
 
     public static final boolean FILTER_DYNAMIC_MATCHES = true;

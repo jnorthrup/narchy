@@ -10,7 +10,7 @@ import nars.control.Derivers;
 import nars.exe.Focus;
 import nars.exe.PoolMultiExec;
 import nars.gui.Vis;
-import nars.gui.graph.run.SimpleConceptGraph1;
+import nars.gui.graph.DynamicConceptSpace;
 import nars.index.term.map.CaffeineIndex;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
@@ -568,9 +568,9 @@ abstract public class NAgentX extends NAgent {
                     new WindowToggleButton("top", () -> new ConsoleTerminal(new nars.TextUI(nar).session(10f))),
 
                     new WindowToggleButton("concept graph", () -> {
-                        SimpleConceptGraph1 sg;
+                        DynamicConceptSpace sg;
                         SpaceGraph s = new SpaceGraph<>(
-                                sg = new SimpleConceptGraph1(nar,
+                                sg = new DynamicConceptSpace(nar, ()->nar.exe.active().iterator(),
                                         128, 16)
                         );
                         EdgeDirected fd = new EdgeDirected();
