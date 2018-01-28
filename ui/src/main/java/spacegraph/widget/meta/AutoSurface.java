@@ -115,7 +115,7 @@ public class AutoSurface<X> extends Gridding {
 
     }
 
-    private Surface newSwitch(EnumParam x) {
+    private ButtonSet newSwitch(EnumParam x) {
 
         ToggleButton[] b = ((EnumSet<?>) EnumSet.allOf(x.klass)).stream().map(e -> {
             CheckBox tb = new CheckBox(e.name());

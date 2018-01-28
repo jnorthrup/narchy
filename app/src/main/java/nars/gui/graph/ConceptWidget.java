@@ -126,7 +126,7 @@ public class ConceptWidget extends SpaceWidget<Concept> {
             cw.scale(nodeScale, nodeScale, nodeScale);
 
 
-            Draw.hsb((cw.id.op().ordinal() / 16f), 0.75f + 0.25f * p, 0.75f, 0.9f, cw.shapeColor);
+            Draw.hsb(cw.shapeColor, (cw.id.op().ordinal() / 16f), 0.75f + 0.25f * p, 0.75f, 0.9f);
         }
 
 

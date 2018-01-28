@@ -30,7 +30,7 @@ public class CrosshairSurface extends Surface implements MouseListener {
 
         if (!mouseEnabled) {
             //HACK
-            space.addMouseListener(this);
+            space.addMouseListenerPost(this);
             mouseEnabled = true;
         }
 

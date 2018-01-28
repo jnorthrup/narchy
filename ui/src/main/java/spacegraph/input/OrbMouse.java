@@ -105,7 +105,7 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
 
     private void pickConstrain(int button, int state, int x, int y) {
 
-        ClosestRay rayCallback = mousePick(x, y);
+        //ClosestRay rayCallback = mousePick(x, y);
 
         switch (button) {
             case MouseEvent.BUTTON1:
@@ -540,6 +540,9 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
+        if (e.isConsumed())
+            return;
+
         mouseDragDX = mouseDragDY = 0;
 
         int x = e.getX();
@@ -548,10 +551,15 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
             pickConstrain(e.getButton(), 1, x, y);
             //e.setConsumed(true);
         }
+
+        e.setConsumed(true);
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        if (e.isConsumed())
+            return;
+
         int dragThresh = 1;
         boolean dragging = Math.abs(mouseDragDX) < dragThresh;
         if (dragging && mouseClick(e.getButton(), e.getX(), e.getY())) {
@@ -567,6 +575,8 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
         }
         if (dragging)
             clearDrag();
+
+        e.setConsumed(true);
     }
 
 
@@ -575,6 +585,8 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
     //
     @Override
     public void mouseDragged(MouseEvent e) {
+        if (e.isConsumed())
+            return;
 
         int x = e.getX();
         int y = e.getY();
@@ -591,7 +603,6 @@ public class OrbMouse extends SpaceMouse implements KeyListener {
         mouseDragPrevX = x;
         mouseDragPrevY = y;
 
-        //e.setConsumed(true);
     }
 
     @Override

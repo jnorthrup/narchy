@@ -19,6 +19,7 @@ import nars.control.DurService;
 import nars.gui.ConceptSurface;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.phys.shape.SphereShape;
@@ -33,6 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 
 import static jcog.Util.sqr;
+import static nars.gui.graph.DynamicConceptSpace.ColorNode.*;
 import static spacegraph.SpaceGraph.window;
 
 public class DynamicConceptSpace extends DynamicListSpace<Concept> {
@@ -158,11 +160,54 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         return next.read();
     }
 
-    public enum NodeColoring {
-        Priority,
-        Hash,
-        Op,
-        Complexity
+    public enum ColorNode {
+        Priority {
+            @Override
+            public void color(ConceptWidget cw, NAR nar) {
+//                Draw.colorUnipolarHue(
+//                        cw.id.hashCode(), cw.shapeColor, cw.pri);
+                float p = cw.pri;
+                p = 0.25f + 0.75f * p;
+                float[] sc = cw.shapeColor;
+                sc[0] = sc[1] = sc[2] = p;
+            }
+        },
+
+        Belief {
+            @Override
+            public void color(ConceptWidget cw, NAR nar) {
+                Truth beliefTruth = cw.id.beliefs().truth(nar.time(), nar);
+                float beliefTruthFreq;
+                if (beliefTruth != null) {
+                    beliefTruthFreq = beliefTruth.freq();
+                    Draw.colorUnipolarHue(cw.shapeColor, beliefTruthFreq, 0.25f, 0.75f, 0.1f + beliefTruth.conf() * 0.9f);
+                } else {
+                    Draw.colorRGBA(cw.shapeColor, 0.5f, 0.5f, 0.5f, 0.1f);
+                }
+            }
+        },
+
+        Hash {
+            @Override
+            public void color(ConceptWidget cw, NAR nar) {
+                Draw.colorHash(cw.id.hashCode(), cw.shapeColor, 0.1f + 0.9f * cw.pri);
+            }
+        },
+        Op {
+            @Override
+            public void color(ConceptWidget cw, NAR nar) {
+                Draw.colorHash(cw.id.op().hashCode(), cw.shapeColor, 0.1f + 0.9f * cw.pri);
+            }
+        },
+        Complexity {
+            @Override
+            public void color(ConceptWidget cw, NAR nar) {
+                float c = Util.unitize(cw.id.volume() / 32f);
+                Draw.colorUnipolarHue(cw.shapeColor, c, 0.1f, 0.9f);
+            }
+        };
+
+        abstract public void color(ConceptWidget cw, NAR nar);
     }
 
     public class ConceptVis2 implements SpaceWidget.TermVis<ConceptWidget>, BiConsumer<ConceptWidget, PriReference<? extends Termed>> {
@@ -185,7 +230,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         public final FloatParam separation = new FloatParam(1f, 0f, 6f);
         public final FloatParam lineAlphaMin = new FloatParam(0.1f, 0f, 1f);
         public final FloatParam lineAlphaMax = new FloatParam(0.8f, 0f, 1f);
-        public final EnumParam<NodeColoring> nodeColoring = new EnumParam(NodeColoring.Hash);
+        public final EnumParam<ColorNode> colorNode = new EnumParam(Hash, ColorNode.class);
 
         public final FloatParam edgeBrightness = new FloatParam(1 / 16f, 0f, 2f);
 
@@ -391,12 +436,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 ////                float angle = 45 + belief.freq() * 180f + (goal.freq() - 0.5f) * 90f;
 //                //angle / 360f
 
-//            switch (colorMode) {
-//                case HASH:
-                    Draw.colorHash(cw.id.hashCode(), cw.shapeColor, 0.1f + 0.9f * p);// * or(belief.conf(), goal.conf()), 0.9f, cw.shapeColor);
-//                  break;
-//                case BELIEF:
-//            }
+            colorNode.get().color(cw, nar);
 
 
             cw.edges.write().clear();

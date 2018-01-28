@@ -326,8 +326,11 @@ public abstract class JoglSpace implements GLEventListener, WindowListener {
         return show(title, w, h, Integer.MIN_VALUE, Integer.MIN_VALUE);
     }
 
-    public void addMouseListener(MouseListener m) {
+    public void addMouseListenerPost(MouseListener m) {
         window.addMouseListener(m);
+    }
+    public void addMouseListenerPre(MouseListener m) {
+        window.addMouseListener(0, m);
     }
 
     public void addWindowListener(WindowListener m) {

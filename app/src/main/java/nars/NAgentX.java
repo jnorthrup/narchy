@@ -29,8 +29,8 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.Ortho;
 import spacegraph.SpaceGraph;
+import spacegraph.SubOrtho;
 import spacegraph.Surface;
 import spacegraph.layout.AspectAlign;
 import spacegraph.layout.EdgeDirected;
@@ -577,16 +577,11 @@ abstract public class NAgentX extends NAgent {
                         s.dyn.addBroadConstraint(fd);
                         fd.attraction.set(fd.attraction.get() * 8);
 
-                        s.add(new Ortho(
+                        s.add(new SubOrtho(
                                 //window(
                                 grid(new AutoSurface<>(fd), new AutoSurface<>(sg.vis))) {
-                            protected void resized() {
 
-                                float w = w();
-                                float h = h();
-                                pos(0, 0, w / 3, h / 4);
-                            }
-                        });
+                        }.posWindow(0, 0, 1f, 0.2f));
 
                         //,  400, 400);
                         //.pos(0, 0, 0.5f, 0.5f)

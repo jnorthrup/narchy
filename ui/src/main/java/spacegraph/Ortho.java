@@ -143,7 +143,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         this.window = s;
         s.addWindowListener(this);
         this.focused = window.window.hasFocus();
-        s.addMouseListener(this);
+        s.addMouseListenerPre(this);
         s.addKeyListener(this);
 
         surface.start(this);
@@ -323,15 +323,24 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 
     @Override
     public void mousePressed(MouseEvent e) {
-        updateMouse(e);
+        if (e.isConsumed())
+            return;
+        if (updateMouse(e)) {
+            if (finger.touching!=null) e.setConsumed(true);
+        }
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
+        if (e.isConsumed())
+            return;
         short[] bd = e.getButtonsDown();
         int ii = ArrayUtils.indexOf(bd, e.getButton());
         bd[ii] = -1;
         updateMouse(e, bd);
+
+        if (finger.touching!=null) e.setConsumed(true);
+
     }
 
     @Override
@@ -339,10 +348,9 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         updateMouse(e);
     }
 
-    protected void updateMouse(MouseEvent e) {
-        updateMouse(e, e != null ? e.getButtonsDown() : null);
+    protected boolean updateMouse(MouseEvent e) {
+        return updateMouse(e, e != null ? e.getButtonsDown() : null);
     }
-
 
     private boolean updateMouse(MouseEvent e, short[] buttonsDown) {
 
@@ -418,8 +426,10 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 
     @Override
     public void mouseDragged(MouseEvent e) {
-
-        updateMouse(e);
+        if (e.isConsumed())
+            return;
+        if (updateMouse(e))
+            if (finger.touching!=null) e.setConsumed(true);
     }
 
 

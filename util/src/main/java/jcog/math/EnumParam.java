@@ -2,17 +2,18 @@ package jcog.math;
 
 public class EnumParam<C extends Enum<C>> {
 
-    public final Class<C> klass;
-    public Enum<C> value;
+    public final Class<Enum<C>> klass;
+    public C value;
 
-    public EnumParam(Enum<C> value) {
-        this.klass = (Class<C>) value.getClass();
+    public EnumParam(C value, Class<Enum<C>> klass) {
+        this.value = value;
+        this.klass = klass;
     }
-    public void set(Enum<C> next) {
+    public void set(C next) {
         this.value = next;
     }
 
-    public Enum<C> get() {
+    public C get() {
         return value;
     }
 }

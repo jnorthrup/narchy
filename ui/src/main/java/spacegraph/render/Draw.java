@@ -35,7 +35,6 @@ import jcog.list.FasterList;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SimpleSpatial;
 import spacegraph.Surface;
@@ -725,18 +724,17 @@ public enum Draw {
 
     public static void hsb(GL2 gl, float hue, float saturation, float brightness, float a) {
         float[] f = new float[4];
-        hsb(hue, saturation, brightness, a, f);
+        hsb(f, hue, saturation, brightness, a);
         gl.glColor4fv(f, 0);
     }
 
     public static int hsb(float hue, float saturation, float brightness) {
         float[] f = new float[4];
-        hsb(hue, saturation, brightness, 1, f);
+        hsb(f, hue, saturation, brightness, 1);
         return rgbInt(f[0], f[1], f[2]);
     }
 
-    @NotNull
-    public static float[] hsb(float hue, float saturation, float brightness, float a, @Nullable float[] target) {
+    public static float[] hsb(@Nullable float[] target, float hue, float saturation, float brightness, float a) {
         if (target == null || target.length < 4)
             target = new float[4];
 
@@ -835,12 +833,26 @@ public enum Draw {
         hsb(gl, hue, 0.7f, 0.7f, 1f);
     }
 
+    public static void colorUnipolarHue(float[] c, float v) {
+        colorUnipolarHue(c, v, 0, 1);
+    }
+
+    public static void colorUnipolarHue(float[] c, float v, float hueMin, float hueMax) {
+        colorUnipolarHue(c, v, hueMin, hueMax, 1f);
+    }
+
+    public static void colorUnipolarHue(float[] c, float v, float hueMin, float hueMax, float alpha) {
+        float hue = Util.lerp(v, hueMin, hueMax);
+        hsb(c, hue, 0.7f, 0.7f, alpha);
+    }
+
+
     public static void colorHash(Object x, float[] color) {
         colorHash(x.hashCode(), color, 1f);
     }
 
     public static void colorHash(int hash, float[] color, float sat, float bri, float alpha) {
-        Draw.hsb((Math.abs(hash) % 500) / 500f * 360.0f, sat, bri, alpha, color);
+        Draw.hsb(color, (Math.abs(hash) % 500) / 500f * 360.0f, sat, bri, alpha);
     }
 
     public static void colorHash(int hash, float[] color, float alpha) {
@@ -888,6 +900,11 @@ public enum Draw {
 
     public static void rect(GL2 gl, RectFloat2D bounds) {
         Draw.rect(gl, bounds.x, bounds.y, bounds.w, bounds.h);
+    }
+
+
+    public static void colorRGBA(float[] c, float r, float g, float b, float a) {
+        c[0] = r; c[1] = g; c[2] = b; c[3] = a;
     }
 
 

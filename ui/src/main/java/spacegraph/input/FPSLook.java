@@ -60,6 +60,8 @@ public class FPSLook extends SpaceMouse {
 
             prevX = x;
             prevY = y;
+
+            //e.setConsumed(true);
         }
     }
 

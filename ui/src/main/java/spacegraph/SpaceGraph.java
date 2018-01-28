@@ -150,8 +150,8 @@ public class SpaceGraph<X> extends JoglPhysics<X> {
     protected void initInput() {
 
         //default 3D input controls
-        addMouseListener(new FPSLook(this));
-        addMouseListener(new OrbMouse(this));
+        addMouseListenerPost(new FPSLook(this));
+        addMouseListenerPost(new OrbMouse(this));
         addKeyListener(new KeyXYZ(this));
 
     }
