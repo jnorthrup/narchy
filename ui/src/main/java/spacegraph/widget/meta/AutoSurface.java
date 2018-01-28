@@ -5,6 +5,7 @@ import jcog.Services;
 import jcog.Util;
 import jcog.event.Ons;
 import jcog.list.FasterList;
+import jcog.math.EnumParam;
 import jcog.math.FloatParam;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
@@ -12,8 +13,10 @@ import spacegraph.SurfaceBase;
 import spacegraph.layout.Gridding;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
+import spacegraph.widget.button.ToggleButton;
 import spacegraph.widget.slider.AllOrNothingSlider;
 import spacegraph.widget.slider.FloatSlider;
+import spacegraph.widget.tab.ButtonSet;
 import spacegraph.widget.text.LabeledPane;
 
 import java.lang.reflect.Field;
@@ -89,6 +92,8 @@ public class AutoSurface<X> extends Gridding {
 //                        l.add(new CheckBox(k, (MutableBoolean) y));
         } else if (x instanceof Runnable) {
             target.add(new PushButton(yLabel, (Runnable) x));
+        } else if (x instanceof EnumParam) {
+            target.add(newSwitch((EnumParam)x));
         }
 
 
@@ -108,6 +113,21 @@ public class AutoSurface<X> extends Gridding {
             }
         }
 
+    }
+
+    private Surface newSwitch(EnumParam x) {
+
+        ToggleButton[] b = ((EnumSet<?>) EnumSet.allOf(x.klass)).stream().map(e -> {
+            CheckBox tb = new CheckBox(e.name());
+            tb.on((c,enabled)->{
+                if (enabled)
+                    x.set(e);
+            });
+            return tb;
+        }).toArray(ToggleButton[]::new);
+
+        ButtonSet s = new ButtonSet(ButtonSet.Mode.One, b);
+        return s;
     }
 
     private Surface collectElements(Collection<?> x, int depth) {

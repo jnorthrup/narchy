@@ -6,6 +6,7 @@ import jcog.bag.impl.ConcurrentArrayBag;
 import jcog.bag.util.Bagregate;
 import jcog.event.Ons;
 import jcog.list.FasterList;
+import jcog.math.EnumParam;
 import jcog.math.FloatParam;
 import jcog.pri.PriReference;
 import jcog.pri.op.PriMerge;
@@ -157,10 +158,18 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         return next.read();
     }
 
+    public enum NodeColoring {
+        Priority,
+        Hash,
+        Op,
+        Complexity
+    }
+
     public class ConceptVis2 implements SpaceWidget.TermVis<ConceptWidget>, BiConsumer<ConceptWidget, PriReference<? extends Termed>> {
 
         static final int TASKLINK = 0;
         static final int TERMLINK = 1;
+
 
 
         public Bag<ConceptWidget.EdgeComponent, ConceptWidget.EdgeComponent> edges;
@@ -176,7 +185,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         public final FloatParam separation = new FloatParam(1f, 0f, 6f);
         public final FloatParam lineAlphaMin = new FloatParam(0.1f, 0f, 1f);
         public final FloatParam lineAlphaMax = new FloatParam(0.8f, 0f, 1f);
-
+        public final EnumParam<NodeColoring> nodeColoring = new EnumParam(NodeColoring.Hash);
 
         public final FloatParam edgeBrightness = new FloatParam(1 / 16f, 0f, 2f);
 

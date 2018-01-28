@@ -29,7 +29,7 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
     private SimpleConceptGraph1(NAR nar, Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super(nar, concepts, maxNodes, maxEdgesPerNodeMax);
 
-        SpaceGraph sg = show(1400, 1000, true);
+        SpaceGraph sg = show(1400, 1000, false);
 
 
         sg.add(new SubOrtho(grid(
@@ -59,7 +59,7 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
     @Override
     protected void update(SpaceGraph<Concept> s, long dtMS) {
         if (reloadReady.getAndSet(false)) {
-            active.clear();
+//            active.clear();
             reload();
         }
 
