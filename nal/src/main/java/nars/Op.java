@@ -1272,8 +1272,12 @@ public enum Op {
         int whichImpl = -1;
         int conjSize = conj.subs();
 
+
+        boolean implIsNeg = false;
         for (int i = 0; i < conjSize; i++) {
-            if (conj.subIs(i, Op.IMPL)) {
+            Term conjSub = conj.sub(i);
+            Op conjSubOp = conjSub.op();
+            if (conjSubOp ==IMPL) {
                 //only handle the first implication in this iteration
 //                if (implDT == XTERNAL) {
 //                    //dont proceed any further if XTERNAL
@@ -1281,13 +1285,19 @@ public enum Op {
 //                }
                 whichImpl = i;
                 break;
+            } else if (conjSubOp == NEG) {
+                if (conjSub.unneg().op()==IMPL) {
+                    whichImpl = i;
+                    implIsNeg = true;
+                    break;
+                }
             }
         }
 
         if (whichImpl == -1)
             return conj;
 
-        Term implication = conj.sub(whichImpl);
+        Term implication = conj.sub(whichImpl).unneg();
 
 
         Term other;
@@ -1306,6 +1316,16 @@ public enum Op {
                 other = CONJ.the(conjDT, css /* assumes commutive since > 2 */);
         }
 
+        if (other.op()==IMPL) {
+            //TODO if other is negated impl
+            if ((other.dt() == DTERNAL) && other.sub(1).equals(implication.sub(1))) {
+                //same predicate
+                other = other.sub(0);
+            } else {
+                //cant be combined
+                return conj;
+            }
+        }
 
         if (whichImpl == 0 && conjDT != DTERNAL) {
             conjDT = -conjDT; //reverse dt if impl is from the 0th subterm
@@ -1326,7 +1346,7 @@ public enum Op {
                 (implDT != DTERNAL && implDT != XTERNAL) ?
                         implDT + preInInner - conjInner.dtRange() :
                         implDT,
-                conjInner, implication.sub(1));
+                conjInner, implication.sub(1)).negIf(implIsNeg);
 
     }
 

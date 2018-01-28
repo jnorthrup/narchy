@@ -101,8 +101,8 @@ public class NARio extends NAgentX {
 //        nar.believe("nario:{narioLocal, narioGlobal}");
 
 
-        //initBipolar();
-        initToggle();
+        initBipolar();
+        //initToggle();
 
 
         SensorConcept dvx = senseNumberDifference($safe("nario:vx"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).

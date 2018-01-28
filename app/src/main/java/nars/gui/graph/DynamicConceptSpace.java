@@ -336,10 +336,11 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             //sqrt because the area will be the sqr of this dimension
 
             float volume = 1f / (1f + cw.id.complexity());
-            float density = 5f * volume;
+            float density = 5f / (1f + volume);
             float ep = 1 + p;
             float minSize = this.minSize.floatValue();
-            float nodeScale = minSize + (ep * ep) * maxSizeMult.floatValue() * volume /* ^1/3? */;
+            float nodeScale = minSize + (ep * ep) * maxSizeMult.floatValue()
+                    ;//* volume /* ^1/3? */;
             //1f + 2f * p;
 
             boolean atomic = (cw.id.op().atomic);
@@ -348,7 +349,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
             if (cw.shape instanceof SphereShape) {
                 float r = nodeScale;
-                cw.scale(r, r, r);
+                cw.scale(r, r, 0.5f);
             } else {
                 float l = nodeScale * 1.618f;
                 float w = nodeScale;
@@ -380,7 +381,14 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 ////
 ////                float angle = 45 + belief.freq() * 180f + (goal.freq() - 0.5f) * 90f;
 //                //angle / 360f
-            Draw.colorHash(cw.id.hashCode(), cw.shapeColor, 0.1f + 0.9f * p);// * or(belief.conf(), goal.conf()), 0.9f, cw.shapeColor);
+
+//            switch (colorMode) {
+//                case HASH:
+                    Draw.colorHash(cw.id.hashCode(), cw.shapeColor, 0.1f + 0.9f * p);// * or(belief.conf(), goal.conf()), 0.9f, cw.shapeColor);
+//                  break;
+//                case BELIEF:
+//            }
+
 
             cw.edges.write().clear();
             cw.id.tasklinks().forEach(x -> this.accept(cw, x));

@@ -3,6 +3,7 @@ package nars.gui.graph.run;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.concept.Concept;
 import nars.control.Activate;
 import nars.gui.graph.DynamicConceptSpace;
 import spacegraph.SpaceGraph;
@@ -11,18 +12,80 @@ import spacegraph.Surface;
 import spacegraph.widget.console.TextEdit;
 import spacegraph.widget.meta.AutoSurface;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import static spacegraph.layout.Gridding.grid;
 
 public class SimpleConceptGraph1 extends DynamicConceptSpace {
 
+    private final AtomicBoolean reloadReady = new AtomicBoolean(false);
+    private final TextEdit inputbox;
+
     public SimpleConceptGraph1(NAR nar, int visibleNodes, int maxEdgesPerNodeMax) {
-        this(nar, ()->nar.exe.active().iterator(),
+        this(nar, () -> nar.exe.active().iterator(),
                 visibleNodes, maxEdgesPerNodeMax);
     }
 
     public SimpleConceptGraph1(NAR nar, Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super(nar, concepts, maxNodes, maxEdgesPerNodeMax);
+
+        SpaceGraph sg = show(1400, 1000, true);
+
+
+        sg.add(new SubOrtho(grid(
+                new AutoSurface<>(sg.dyn.broadConstraints.get(0) /* FD hack */),
+                new AutoSurface<>(vis)
+        )).posWindow(0, 0, 1f, 0.2f));
+
+        Surface inputPanel =
+                (inputbox = new TextEdit() {
+                    @Override
+                    protected void onKeyCtrlEnter() {
+                        reload();
+                    }
+
+                }).surface();
+        //new Splitting()
+
+        sg.add(new SubOrtho(
+                inputPanel
+        ).posWindow(0, 0.8f, 0.2f, 0.6f));
+
+        float fps = 16;
+        nar.startFPS(fps);
+
     }
+
+    @Override
+    protected void update(SpaceGraph<Concept> s, long dtMS) {
+        if (reloadReady.getAndSet(false)) {
+            active.clear();
+            reload();
+        }
+
+        super.update(s, dtMS);
+    }
+
+    private void reload() {
+        nar.runLater(() -> {
+
+            nar.clear();
+            nar.terms.clear();
+            //n.reset();
+
+
+            nar.runLater(() -> {
+                try {
+                    nar.input(inputbox.text());
+                } catch (Narsese.NarseseException e) {
+                    e.printStackTrace();
+                }
+            });
+
+
+        });
+    }
+
 
     public static void main(String[] args) {
 
@@ -34,49 +97,9 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
         //new DeductiveChainTest(n, 8,  2048, inh);
 
 
-
         SimpleConceptGraph1 g = new SimpleConceptGraph1(n,
                 /* TODO */ 128, 5);
 
-        SpaceGraph sg = g.show(1400, 1000, true);
-
-
-        sg.add(new SubOrtho(grid(
-                new AutoSurface<>(sg.dyn.broadConstraints.get(0) /* FD hack */),
-                new AutoSurface<>(g.vis)
-        )).posWindow(0,0,1f,0.2f));
-
-        Surface inputPanel =
-                new TextEdit() {
-                    @Override
-                    protected void onKeyCtrlEnter() {
-                        n.runLater(()->{
-                            n.clear();
-                            n.terms.clear();
-                            //n.reset();
-
-
-                            n.runLater(()-> {
-                                try {
-                                    n.input(text());
-                                } catch (Narsese.NarseseException e) {
-                                    e.printStackTrace();
-                                }
-                            });
-
-                        });
-
-
-                    }
-                }.surface();
-                //new Splitting()
-
-        sg.add(new SubOrtho(
-                inputPanel
-        ).posWindow(0,0.8f, 0.2f,0.6f));
-
-        float fps = 32;
-        n.startFPS(fps);
 
         //n.conceptActivation.set(0.2f);
 
@@ -141,15 +164,12 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
 //        n.run(1).input("$1.0 x(get,4)!");
 
 
-
-
 //                "{a,b}.", "{b,c}.","{c,d}."
 //                ,"{d,e}.","{e,a}.", "(a,b,c,b)! :|:"
 
-                //,"(a &&+1 b). :|:"
+        //,"(a &&+1 b). :|:"
 
-                //"$.50 at(SELF,{t001}). :|: %1.0;.90%", "$.70 (at(SELF,{t001}) &&+5 open({t001}))! %1.0;.90%" // //goal_ded_2
-
+        //"$.50 at(SELF,{t001}). :|: %1.0;.90%", "$.70 (at(SELF,{t001}) &&+5 open({t001}))! %1.0;.90%" // //goal_ded_2
 
 
         //new DeductiveChainTest(n, 10, 9999991, (x, y) -> $.p($.the(x), $.the(y)));

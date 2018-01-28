@@ -42,18 +42,18 @@
       (M ==> P), (S ==> M), task("?") |- (S ==>+- P), (Punctuation:Question)
       (M ==> P), (S ==> M), task("?") |- (P ==>+- S), (Punctuation:Question)
 
-        (S ==> M), (M ==> P) |- (S ==>+- P), (Belief:Deduction)
+        //(S ==> M), (M ==> P) |- (S ==>+- P), (Belief:Deduction)
 
 
         //experimental:
-            (S ==> M), (--M ==> P) |- (S ==>+- P), (Belief:DeductionN)
+            //(S ==> M), (--M ==> P) |- (S ==>+- P), (Belief:DeductionN)
 
     (M ==> S), (M ==> P) |- (S ==>+- P), (Belief:Abduction)
 
       (M ==> S), (M ==> P), task("?") |- (S ==>+- P), (Punctuation:Question)
       (M ==> S), (M ==> P), task("?") |- (P ==>+- S), (Punctuation:Question)
 
-        (M ==> S), (M ==> P) |- (P ==>+- S), (Belief:Abduction)
+        //(M ==> S), (M ==> P) |- (P ==>+- S), (Belief:Abduction)
 
     //polar balance is possible here, if the impl are both neg ie. --M (as it would unwrap)
     (P ==> M), (S ==> M) |- (P ==>+- S), (Belief:InductionPB)
@@ -61,16 +61,16 @@
       (P ==> M), (S ==> M), task("?") |- (S ==>+- P), (Punctuation:Question)
       (P ==> M), (S ==> M), task("?") |- (P ==>+- S), (Punctuation:Question)
 
-        (P ==> M), (S ==> M) |- (S ==>+- P), (Belief:InductionPB)
+        //(S ==> M), (P ==> M)  |- (S ==>+- P), (Belief:InductionPB)
 
     (P ==> M), (M ==> S) |- (S ==>+- P), (Belief:Exemplification)
 
       (P ==> M), (M ==> S) , task("?") |- (S ==>+- P), (Punctuation:Question)
       (P ==> M), (M ==> S) , task("?") |- (P ==>+- S), (Punctuation:Question)
 
-        (M ==> S), (P ==> M) |- (S ==>+- P), (Belief:Exemplification)
+        //(M ==> S), (P ==> M) |- (S ==>+- P), (Belief:Exemplification)
         //experimental:
-            (P ==> M), (--M ==> S) |- (S ==>+- P), (Belief:ExemplificationN)
+            //(P ==> M), (--M ==> S) |- (S ==>+- P), (Belief:ExemplificationN)
 
 
     //the comparison rules here emulates what Comparison did in generating <=> which are modeled here as a pair of opposing ==>

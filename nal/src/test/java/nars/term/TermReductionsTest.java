@@ -1277,6 +1277,21 @@ public class TermReductionsTest extends NarseseTest {
         assertReduction("(((--,(in)) &&+1 (happy)) ==>+2 (out))", "((--,(in)) ==>+1 ((happy) ==>+2 (out)))");
     }
 
+    @Test public void testImplInConjPos() throws Narsese.NarseseException {
+        assertEquals(True, $.$("((c==>a)&&a)"));
+    }
+    @Test public void testImplInConjNeg() throws Narsese.NarseseException {
+        assertEquals(True, $.$("((--,(c==>a))&&(--,a))")); //since --(c==>a) == (c==>--a)
+    }
+    @Test public void testImplInConj2xPos() throws Narsese.NarseseException {
+        assertEquals("((c&&d)==>a)", $.$("((c==>a) && (d==>a))").toString());
+    }
+    @Test public void testImplInConj2xNeg() throws Narsese.NarseseException {
+        assertEquals("(--,((c&&d)==>a))", $.$("(--(c==>a) && --(d==>a))").toString());
+    }
+    @Test public void testImplInConj2xPosTemporal() throws Narsese.NarseseException {
+        assertEquals("((c &&+1 d) ==>+1 a)", $.$("((c ==>+2 a) && (d ==>+1 a))").toString());
+    }
 
     @Test
     public void testConjunctiveCoNegationAcrossImpl() {

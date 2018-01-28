@@ -1,6 +1,7 @@
 package nars.table;
 
 import com.google.common.collect.Streams;
+import jcog.Util;
 import jcog.pri.Priority;
 import jcog.sort.SortedArray;
 import nars.NAR;
@@ -17,6 +18,7 @@ import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.Consumer;
@@ -192,8 +194,17 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
             }
 
             //TODO use overlappingFraction
-            if (Stamp.overlapping(y, x))
-                continue;
+            if (Stamp.overlapping(y, x)) {
+                boolean FILTER_WEAKER_BUT_EQUAL = false;
+                if (FILTER_WEAKER_BUT_EQUAL && !y.isInput() && x.conf() >= y.conf() &&
+                    Util.equals(x.freq(), y.freq(), nar.freqResolution.floatValue()) &&
+                    Arrays.equals(y.stamp(), x.stamp())) {
+                    y.delete();
+                    return null; //subsume by stronger belief with same freq and stamp
+                } else {
+                    continue;
+                }
+            }
 
 
             //
@@ -393,7 +404,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                     }
                 }
             } else {
-                if (insert(input)) {
+                if (!input.isDeleted() && insert(input)) {
                     activated = input;
                 } else {
                     activated = null;

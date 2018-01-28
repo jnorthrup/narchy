@@ -15,6 +15,7 @@ import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static nars.time.Tense.ETERNAL;
@@ -512,7 +513,7 @@ public class DeriveTime extends TimeGraph {
         final int[] triesRemain = {Param.TEMPORAL_SOLVER_ITERATIONS};
         //final boolean[] rejectRelative = {false};
 
-        solve(pattern, false /* take everything */, (solution) -> {
+        Predicate<Event> each = (solution) -> {
             assert (solution != null);
             solutions.add(solution);
 //            if (!solution.id.op().conceptualizable) {
@@ -546,15 +547,31 @@ public class DeriveTime extends TimeGraph {
 //            }
 
             return triesRemain[0]-- > 0;
-        });
+        };
+        solve(pattern, false /* take everything */, each);
 
-        return solution(pattern, solutions);
+//        boolean neg = false;
+//        if (solutions.isEmpty() && pattern.op()==NEG) {
+//            solve(pattern.unneg(), false, each);
+//            neg = true;
+//        }
+
+        Supplier<Term> x = solution(pattern, solutions);
+//        if (x!=null && neg) {
+//            return ()-> {
+//                Term y = x.get();
+//                return y.neg();
+//            };
+//        } else {
+            return x;
+//        }
     }
 
     protected Supplier<Term> solution(Term pattern, ArrayHashSet<Event> solutions) {
         int ss = solutions.size();
-        if (ss == 0)
-            return ()->solveRaw(pattern);
+        if (ss == 0) {
+            return () -> solveRaw(pattern);
+        }
 
         int timed = ((FasterList)solutions.list).count(t -> t instanceof Absolute);
         if (timed > 0 && timed < ss) {

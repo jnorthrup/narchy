@@ -123,8 +123,8 @@ public abstract class Param {
      */
     public static final FloatFloatToFloatFunction TaskBeliefToDerivation =
             //Math::max;
-            Util::or;
-    //Util::and;
+            //Util::or;
+            Util::and;
     //UtilityFunctions::aveAri;
 
 
@@ -152,7 +152,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmean = new MutableInteger(96);
+    public final MutableInteger matchTTLmean = new MutableInteger(164);
 
     public static final int TTL_MIN =
             Param.TTL_UNIFY * 2 +

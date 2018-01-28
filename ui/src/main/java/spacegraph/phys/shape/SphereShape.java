@@ -49,6 +49,15 @@ public class SphereShape extends ConvexInternalShape {
 		collisionMargin = radius;
 	}
 
+// TODO
+//	public void setSize(float x, float y, float z) {
+//		float radius = Util.max(x, y, z);
+//		implicitShapeDimensions.x = x;
+//		//setLocalScaling(x, y, z);
+//		implicitShapeDimensions.y = y;
+//		implicitShapeDimensions.z = z;
+//		collisionMargin = radius;
+//	}
 	@Override
 	public void setLocalScaling(float x, float y, float z) {
 		super.setLocalScaling(x, y, z);
