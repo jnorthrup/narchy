@@ -4,15 +4,12 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import jcog.Util;
 import jcog.math.FloatSupplier;
-import jcog.net.MeshOptimize;
-import jcog.optimize.Optimize;
 import nars.*;
 import nars.control.MetaGoal;
 import nars.gui.Vis;
 import nars.op.stm.ConjClustering;
 import nars.test.agent.Line1DSimplest;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
 import spacegraph.layout.Gridding;
 import spacegraph.widget.meta.AutoSurface;
 import spacegraph.widget.meter.Plot2D;
@@ -318,69 +315,69 @@ public class Line1D {
         }
     }
 
-
-    public static class Line1DOptimize {
-
-        public static void main(String[] args) {
-
-            int maxIterations = 1024;
-            int repeats = 2;
-
-            Optimize<NAR> o = new MeshOptimize<NAR>("d1", () -> {
-
-                NAR n = new NARS().get();
-                n.random().setSeed(System.nanoTime());
-
-                n.time.dur(5);
-                n.termVolumeMax.set(12);
-
-                return n;
-            })/*.tweak("beliefConf", 0.1f, 0.9f, 0.1f, (y, x) -> {
-                x.beliefConfidence(y);
-            })*/.tweak("goalConf", 0.1f, 0.9f, 0.1f, (y, x) -> {
-                x.goalConfidence(y);
-            }).tweak("belfPri", 0.1f, 1.0f, 0.1f, (y, x) -> {
-                x.DEFAULT_BELIEF_PRIORITY = (y);
-            }).tweak("goalPri", 0.1f, 1.0f, 0.1f, (y, x) -> {
-                x.DEFAULT_GOAL_PRIORITY = (y);
-            }).tweak("questionPri", 0.1f, 1.0f, 0.1f, (y, x) -> {
-                x.DEFAULT_QUESTION_PRIORITY = (y);
-                x.DEFAULT_QUEST_PRIORITY = (y);
-            })
-
-                    /*.tweak("termVolMax", 10, 25, 1, (y, x) -> {
-                x.termVolumeMax.setValue(y);
-//            }).tweak("exeRate", 0.1f, 0.9f, 0.1f, (y, x) -> {
-//                ((TaskExecutor) x.exe).exePerCycleMax.setValue(y);
-            })*//*.tweak("activation", 0.1f, 1f, 0.1f, (y, x) -> {
-                x.in.streams.values().forEach(s -> s.setValue(y));
-            })*//*.tweak("stmSize", 1, 2, 1, (y, x) -> {
-                ((Default) x).stmLinkage.capacity.setValue(y);
-            })*//*.tweak("confMin", 0.05f, 0.5f, 0.01f, (y, x) -> {
-                x.confMin.setValue(y);
-            })*//*.tweak("truthResolution", 0.01f, 0.04f, 0.01f, (y, x) -> {
-                x.truthResolution.setValue(y);
-            })*/;
-
-            Optimize.Result r = o.run(maxIterations, repeats, new Line1DExperiment());
-
-            r.print();
-
-            RealDecisionTree t = r.predict(3, o.tweaks.size());
-            t.print();
-
-//            float predictedScore = t.get(0, 1, 0, 1, Float.NaN);
-//            System.out.println(predictedScore);
-
-            //t.root().recurse().forEach(x -> System.out.println(x));
-
-//            System.out.println(t.leaves().collect(toList()));
-
-
-        }
-
-
-    }
+//
+//    public static class Line1DOptimize {
+//
+//        public static void main(String[] args) {
+//
+//            int maxIterations = 1024;
+//            int repeats = 2;
+//
+//            Optimize<NAR> o = new MeshOptimize<NAR>("d1", () -> {
+//
+//                NAR n = new NARS().get();
+//                n.random().setSeed(System.nanoTime());
+//
+//                n.time.dur(5);
+//                n.termVolumeMax.set(12);
+//
+//                return n;
+//            })/*.tweak("beliefConf", 0.1f, 0.9f, 0.1f, (y, x) -> {
+//                x.beliefConfidence(y);
+//            })*/.tweak("goalConf", 0.1f, 0.9f, 0.1f, (y, x) -> {
+//                x.goalConfidence(y);
+//            }).tweak("belfPri", 0.1f, 1.0f, 0.1f, (y, x) -> {
+//                x.DEFAULT_BELIEF_PRIORITY = (y);
+//            }).tweak("goalPri", 0.1f, 1.0f, 0.1f, (y, x) -> {
+//                x.DEFAULT_GOAL_PRIORITY = (y);
+//            }).tweak("questionPri", 0.1f, 1.0f, 0.1f, (y, x) -> {
+//                x.DEFAULT_QUESTION_PRIORITY = (y);
+//                x.DEFAULT_QUEST_PRIORITY = (y);
+//            })
+//
+//                    /*.tweak("termVolMax", 10, 25, 1, (y, x) -> {
+//                x.termVolumeMax.setValue(y);
+////            }).tweak("exeRate", 0.1f, 0.9f, 0.1f, (y, x) -> {
+////                ((TaskExecutor) x.exe).exePerCycleMax.setValue(y);
+//            })*//*.tweak("activation", 0.1f, 1f, 0.1f, (y, x) -> {
+//                x.in.streams.values().forEach(s -> s.setValue(y));
+//            })*//*.tweak("stmSize", 1, 2, 1, (y, x) -> {
+//                ((Default) x).stmLinkage.capacity.setValue(y);
+//            })*//*.tweak("confMin", 0.05f, 0.5f, 0.01f, (y, x) -> {
+//                x.confMin.setValue(y);
+//            })*//*.tweak("truthResolution", 0.01f, 0.04f, 0.01f, (y, x) -> {
+//                x.truthResolution.setValue(y);
+//            })*/;
+//
+//            Optimize.Result r = o.run(maxIterations, repeats, new Line1DExperiment());
+//
+//            r.print();
+//
+//            RealDecisionTree t = r.tree(3, o.tweaks.tweaks.size());
+//            t.print();
+//
+////            float predictedScore = t.get(0, 1, 0, 1, Float.NaN);
+////            System.out.println(predictedScore);
+//
+//            //t.root().recurse().forEach(x -> System.out.println(x));
+//
+////            System.out.println(t.leaves().collect(toList()));
+//
+//
+//        }
+//
+//
+//    }
 
     public static class Line1DTrainer {
 

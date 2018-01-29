@@ -192,8 +192,8 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
     }
 
     /** TODO use VarHandle or something faster than reflect.Field */
-    static class FieldAccessor extends Accessor {
-        final Field field;
+    public static class FieldAccessor extends Accessor {
+        public final Field field;
 
         FieldAccessor(Field field) {
             this.field = field;
@@ -223,7 +223,7 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
         }
     }
 
-    static class ArrayAccessor extends Accessor {
+    public static class ArrayAccessor extends Accessor {
         final Class type;
         final int index;
 

@@ -1,5 +1,6 @@
 package jcog.optimize;
 
+import com.google.common.base.Joiner;
 import jcog.list.FasterList;
 import jcog.meter.event.CSVOutput;
 import org.apache.commons.lang3.ArrayUtils;
@@ -8,16 +9,12 @@ import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction;
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.BOBYQAOptimizer;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
-import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 import org.eclipse.collections.api.tuple.primitive.DoubleObjectPair;
-import org.intelligentjava.machinelearning.decisiontree.FloatTable;
-import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -28,78 +25,39 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  */
 public class Optimize<X> {
 
+    public final Tweaks<X> tweaks;
     final Supplier<X> subject;
-
-    public final List<Tweak<X>> tweaks = new FasterList();
 
     private final boolean trace = true;
     private final static Logger logger = LoggerFactory.getLogger(Optimize.class);
     private CSVOutput csv;
 
-    public Optimize(Supplier<X> subject) {
+    public Optimize(Supplier<X> subject, Tweaks<X> t) {
+        this(subject, t, Map.of());
+    }
+
+    public Optimize(Supplier<X> subject, Tweaks<X> t, Map<String, Float> hints) {
+        SortedSet<String> u = t.unknown(hints);
+        if (t.ready.isEmpty()) {
+            throw new RuntimeException("tweaks not ready:\n" + Joiner.on('\n').join(u));
+        }
+        if (!u.isEmpty()) {
+            for (String w : u) {
+                logger.warn("unknown: {}", w);
+            }
+        }
+
         this.subject = subject;
+        this.tweaks = t;
     }
 
-
-    public /*@NotNull*/ Optimize<X> tweak(int min, int max, ObjectFloatProcedure<X> apply) {
-        return tweak(min, max, 1, apply);
+    public final Result<X> run(int maxIterations, FloatFunction<X> eval) {
+        return run(maxIterations, 1, eval);
     }
 
-    public /*@NotNull*/ Optimize<X> tweak(String key, int min, int max, int inc, ObjectIntProcedure<X> apply) {
-        return tweak(key, min, max, inc, (ObjectFloatProcedure<X>)(X x, float v)->{
-            apply.accept(x, Math.round(v));
-        });
-    }
+    public Result<X> run(int maxIterations, int repeats, FloatFunction<X> eval) {
 
-//    public /*@NotNull*/ Optimize<X> tweak(int min, int max, int inc, ObjectFloatProcedure<X> apply) {
-//        return tweak(apply.toString(), min, max, inc, apply);
-//    }
-
-    public /*@NotNull*/ Optimize<X> tweak(String key, int min, int max, ObjectFloatProcedure<X> apply) {
-        return tweak(key, min, max, 1f, apply);
-    }
-
-    public /*@NotNull*/ Optimize<X> tweak(float min, float max, float inc, ObjectFloatProcedure<X> apply) {
-        return tweak(apply.toString(), min, max, inc, apply);
-    }
-
-    public Optimize<X> tweak(String parameter, float min, float max, float inc, ObjectFloatProcedure<X> apply) {
-        tweaks.add(new FloatRange<>(parameter, min, max, inc, apply));
-        return this;
-    }
-
-//    public /*@NotNull*/ Optimize<X> tweak(String parameter, float min, float max, float inc, @NotNull String invoker) {
-//        Map m = new HashMap(4);
-//
-//        tweaks.add(new FloatRange<>(parameter, min, max, inc, (v,x) -> {
-//            //accessible by both these:
-//            m.put(parameter, v);
-//            m.put("x", v);
-//
-//            //integer rounded:
-//            m.put("i", Math.round(v));
-//
-//            try {
-//                Ognl.getValue(invoker, m, x);
-//            } catch (OgnlException e) {
-//                e.printStackTrace();
-//            }
-//        }));
-//        return this;
-//    }
-
-
-    /*@NotNull*/
-    public Result run(int maxIterations, FloatFunction<X> eval) {
-
-        return run(
-                maxIterations, 1, eval);
-    }
-
-    /*@NotNull*/
-    public Result run(int maxIterations, int repeats, @NotNull FloatFunction<X> eval) {
-
-        int i = 0;
+        int dim = 0;
         int n = tweaks.size();
 
         double[] mid = new double[n];
@@ -109,31 +67,35 @@ public class Optimize<X> {
         double[] inc = new double[n];
         double[] range = new double[n];
 
+
         for (Tweak w : tweaks) {
             //w.apply.value((float) point[i++], x);
-            FloatRange s = (FloatRange) w;
-            mid[i] = (s.getMax() + s.getMin()) / 2f;
-            min[i] = (s.getMin());
-            max[i] = (s.getMax());
-            inc[i] = s.getInc();
-            range[i] = max[i] - min[i];
+            TweakFloat s = (TweakFloat) w;
+            mid[dim] = (s.getMax() + s.getMin()) / 2f;
+            min[dim] = (s.getMin());
+            max[dim] = (s.getMax());
+            inc[dim] = s.getInc();
+            range[dim] = max[dim] - min[dim];
             //sigma[i] = Math.abs(max[i] - min[i]) * 0.75f; //(s.getInc());
-            i++;
+            dim++;
         }
 
 
-        List<DoubleObjectPair<double[]>> experiments = new FasterList();
+        FasterList<DoubleObjectPair<double[]>> experiments = new FasterList();
 
 
         ObjectiveFunction func = new ObjectiveFunction(point -> {
 
 
-            float score;
+            double score;
             try {
-                float sum = 0;
+                double sum = 0;
                 for (int r = 0; r < repeats; r++) {
+
                     X x = subject(point);
+
                     sum += eval.floatValueOf(x);
+
                 }
                 score = sum / repeats;
             } catch (Exception e) {
@@ -146,13 +108,17 @@ public class Optimize<X> {
                 csv.out(ArrayUtils.add(point, score));
             //System.out.println(Joiner.on(",").join(Doubles.asList(point)) + ",\t" + score);
 
-            experiments.add(pair((double) score, point));
-            onExperiment(point, score);
+            experiments.add(pair(score, point));
+            experimentIteration(point, score);
             return score;
         });
 
 
-        startExperiments();
+        if (trace) {
+            csv = new CSVOutput(System.out, Stream.concat(tweaks.stream().map(t -> t.id), Stream.of("score")).toArray(String[]::new));
+        }
+
+        experimentStart();
 
 //                pop size = (int) (16 * Math.round(Util.sqr(tweaks.size()))) /* estimate */,
 //        CMAESOptimizer optim = new CMAESOptimizer(maxIterations, Double.NEGATIVE_INFINITY, true, 0,
@@ -167,18 +133,23 @@ public class Optimize<X> {
 //                new CMAESOptimizer.PopulationSize(populationSize)
 //            );
 
-        int dim = tweaks.size();
+
         final int numIterpolationPoints = 3 * dim; //2 * dim + 1 + 1;
-        PointValuePair r = new BOBYQAOptimizer(numIterpolationPoints,
+        BOBYQAOptimizer opt = new BOBYQAOptimizer(numIterpolationPoints,
                 dim * 2.0,
-                1.0E-3D)
+                1.0E-3D);
+        try {
+            PointValuePair r = opt
                     .optimize(
-                        MaxEval.unlimited(), //new MaxEval(maxIterations),
-                        new MaxIter(maxIterations),
-                        func,
-                        GoalType.MAXIMIZE,
-                        new SimpleBounds(min, max),
-                        new InitialGuess(mid));
+                            MaxEval.unlimited(), //new MaxEval(maxIterations),
+                            new MaxIter(maxIterations),
+                            func,
+                            GoalType.MAXIMIZE,
+                            new SimpleBounds(min, max),
+                            new InitialGuess(mid));
+        } catch (Throwable t) {
+            logger.info("{} {}", opt, t);
+        }
 
 //        PointValuePair r = new SimplexOptimizer(1e-10, 1e-30).optimize(
 //                new MaxEval(maxIterations),
@@ -190,18 +161,17 @@ public class Optimize<X> {
 //        );
 
 
-        return new Result(experiments, r);
+        return new Result<>(experiments, eval, tweaks);
 
 
     }
 
-    private void startExperiments() {
-        if (trace) {
-            csv = new CSVOutput(System.out, Stream.concat(tweaks.stream().map(t -> t.id), Stream.of("score")).toArray(String[]::new));
-        }
+    /** called before experiment starts */
+    protected void experimentStart() {
     }
 
-    protected void onExperiment(double[] point, double score) {
+    /** called after each iteration */
+    protected void experimentIteration(double[] point, double score) {
     }
 
     /**
@@ -209,111 +179,11 @@ public class Optimize<X> {
      */
     private X subject(double[] point) {
         X x = subject.get();
-        int i1 = 0;
-        for (int i = 0, tweaksSize = tweaks.size(); i < tweaksSize; i++) {
-            tweaks.get(i).apply.value(x, (float) point[i1++]);
-        }
+
+        for (int i = 0, dim = point.length; i < dim; i++)
+            tweaks.get(i).apply.value(x, (float) point[i]);
+
         return x;
-    }
-
-    public class Result {
-
-        public final PointValuePair optimal;
-        public final List<DoubleObjectPair<double[]>> experiments;
-
-
-        public Result(List<DoubleObjectPair<double[]>> experiments, PointValuePair r) {
-            this.optimal = r;
-            this.experiments = experiments;
-        }
-
-        public void print() {
-            //System.out.println("optimal: " + optimal);
-            System.out.println("score=" + optimal.getSecond());
-            double[] p = optimal.getPoint();
-            for (int i = 0; i < p.length; i++) {
-                System.out.println(tweaks.get(i).id + ' ' + p[i]);
-            }
-
-        }
-
-        public RealDecisionTree predict(int discretization, int maxDepth) {
-            if (experiments.isEmpty())
-                return null;
-
-
-            FloatTable<String> data = new FloatTable<>(
-                    ArrayUtils.add(
-                            tweaks.stream().map(Tweak::toString).toArray(String[]::new), "score")
-            );
-
-            int cols = data.cols.length;
-
-            for (DoubleObjectPair<double[]> exp : experiments) {
-                float[] r = new float[cols];
-                int i = 0;
-                for (double x : exp.getTwo()) {
-                    r[i++] = (float) x;
-                }
-                r[i] = (float) exp.getOne();
-                data.add(r);
-            }
-
-            RealDecisionTree rt = new RealDecisionTree(data, cols - 1 /* score */, maxDepth, discretization);
-
-            return rt;
-
-        }
-    }
-
-    /**
-     * a knob but cooler
-     */
-    public static class Tweak<X> {
-        public final ObjectFloatProcedure<X> apply;
-        private final String id;
-
-        public Tweak(String id, ObjectFloatProcedure<X> apply) {
-            this.id = id;
-            this.apply = apply;
-        }
-
-        @Override
-        public String toString() {
-            return id;
-        }
-    }
-
-    private static class FloatRange<X> extends Tweak<X> {
-        private final String parameter;
-        private final float min, max;
-        private final float inc;
-
-        private FloatRange(String parameter, float min, float max, float inc, ObjectFloatProcedure<X> apply) {
-            super(parameter, apply);
-            this.parameter = parameter;
-            this.min = min;
-            this.max = max;
-            this.inc = inc;
-        }
-
-        public String getParameter() {
-            return parameter;
-        }
-
-        public float getMin() {
-            return min;
-        }
-
-        public float getMax() {
-            return max;
-        }
-
-        public float getInc() {
-            return inc;
-        }
-
-
     }
 
 }

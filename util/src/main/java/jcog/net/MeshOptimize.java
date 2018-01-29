@@ -4,6 +4,7 @@ import com.google.common.primitives.Floats;
 import jcog.Util;
 import jcog.net.attn.MeshMap;
 import jcog.optimize.Optimize;
+import jcog.optimize.Tweaks;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.List;
@@ -18,8 +19,8 @@ public class MeshOptimize<X> extends Optimize<X> {
     /** should get serialized compactly though by msgpack */
     private final MeshMap<Integer, List<Float>> m;
 
-    public MeshOptimize(String id, Supplier<X> subject) {
-        super(subject);
+    public MeshOptimize(String id, Supplier<X> subject, Tweaks<X> tweaks) {
+        super(subject, tweaks);
 
         m = MeshMap.get(id, (k,v)->{
             System.out.println("optimize recv: " + v);
@@ -28,8 +29,8 @@ public class MeshOptimize<X> extends Optimize<X> {
     }
 
     @Override
-    protected void onExperiment(double[] point, double score) {
-        super.onExperiment(point, score);
+    protected void experimentIteration(double[] point, double score) {
+        super.experimentIteration(point, score);
         m.put(serial.incrementAndGet(), Floats.asList(ArrayUtils.add(Util.toFloat(point), (float)score)));
     }
 }

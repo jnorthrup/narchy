@@ -1,16 +1,23 @@
 package jcog.optimize;
 
+import jcog.math.Range;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AutoOptimizeTest {
+public class AutoTweaksTest {
 
     public static class Model {
         public final SubModel sub = new SubModel();
-        public int tweakInt = 0;
-        public final int untweakInt = 0;
+
+        @Range(min=0, max=5, step=0.1f)
         public float tweakFloat = 0;
+
+        @Range(min=-2, max=+2, step=1f)
+        public int tweakInt = 0;
+
+        public final int untweakInt = 0;
 
         public float score() {
             return (float) (
@@ -21,14 +28,17 @@ public class AutoOptimizeTest {
     }
 
     public static class SubModel {
+        @Range(min=0, max=3, step=0.05f)
         public float tweakFloatSub;
     }
 
     @Test
     public void test1() {
-        AutoOptimize<Model> a = new AutoOptimize(Model::new);
-        assertEquals(3, a.tweaks.size());
-        Optimize.Result r = a.run(10, Model::score);
+        AutoTweaks<Model> a = new AutoTweaks(Model::new);
+        assertEquals(3, a.all.size());
+        Result<Model> r = a.optimize(10, Model::score);
         r.print();
+        r.tree(3, 4).print();
+        assertTrue(r.best().getOne() > 5f);
     }
 }

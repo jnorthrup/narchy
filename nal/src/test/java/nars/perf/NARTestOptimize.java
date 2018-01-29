@@ -1,6 +1,7 @@
 package nars.perf;
 
 import jcog.optimize.Optimize;
+import jcog.optimize.Result;
 import nars.nal.nal1.NAL1Test;
 import nars.util.NALTest;
 
@@ -22,7 +23,7 @@ public class NARTestOptimize {
         System.setProperty("junit.jupiter.extensions.autodetection.enabled", "true");
 
 
-        Optimize.Result r = new Optimize<NALTest>(()-> new NAL1Test())
+        Result r = new Optimize<NALTest>(()-> new NAL1Test())
 //                .tweak(128, 128, 1, "nars.Param", "TTL_MUTATE")
 //                .tweak(1, 2, 1, "nars.Param", "TTL_DERIVE_TASK_SUCCESS")
 
