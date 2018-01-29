@@ -159,7 +159,7 @@ public class ZoomOrtho extends Ortho {
             boolean[] bd = finger.buttonDown; //e.getButtonsDown();
 
             if (bd[1] && finger.touching==null && Math.max(scale.x,scale.y) > minZoom) {
-                scale.scale(1f * (1f - pressZoomOutRate));
+                scale.scaled(1f * (1f - pressZoomOutRate));
             }
 
             if (bd[PAN_BUTTON] || bd[MOVE_WINDOW_BUTTON]) {

@@ -18,8 +18,9 @@
 package alice.tuprolog;
 
 import java.io.*;
+import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.LinkedList;
+import java.util.Deque;
 
 /**
  * BNF for tuProlog
@@ -85,7 +86,7 @@ public class Tokenizer extends StreamTokenizer implements Serializable {
     /**/
     
     //used to enable pushback from the parser. Not in any way connected with pushBack2 and super.pushBack().
-    private final LinkedList<Token> tokenList = new LinkedList<>();
+    private final Deque<Token> tokenList = new ArrayDeque<>();
 
     //used in the double lookahead check that . following ints is a fraction marker or end marker (pushback() only works on one level)
     private PushBack pushBack2;

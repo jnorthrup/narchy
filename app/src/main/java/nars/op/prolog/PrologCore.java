@@ -58,7 +58,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
     private final NAR nar;
 
-    final Map<Term, Struct> beliefs = new ConcurrentHashMap();
+    final Map<Term, alice.tuprolog.Term> beliefs = new ConcurrentHashMap();
 
     /**
      * beliefs above this expectation will be asserted as prolog beliefs
@@ -292,7 +292,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
     //TODO use wrapper classes which link to the original terms so they can be re-used instead o reallocating fresh ones that will equals() anyway
     private static Term nterm(alice.tuprolog.Term t) {
-        if (t instanceof Struct) {
+        if (t instanceof alice.tuprolog.Term) {
             Struct s = (Struct) t;
             if (s.subs() > 0) {
                 switch (s.name()) {
@@ -368,11 +368,11 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
     }
 
 
-    public static Struct assertion(alice.tuprolog.Term p) {
+    public static alice.tuprolog.Term assertion(alice.tuprolog.Term p) {
         return new Struct("assertz", p);
     }
 
-    public static Struct retraction(alice.tuprolog.Term p) {
+    public static alice.tuprolog.Term retraction(alice.tuprolog.Term p) {
         return new Struct("retract", p);
     }
 
@@ -389,7 +389,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
         return p;
     }
 
-    public static Struct tterm(String punc, final alice.tuprolog.Term nalTerm, boolean isTrue) {
+    public static alice.tuprolog.Term tterm(String punc, final alice.tuprolog.Term nalTerm, boolean isTrue) {
         return new Struct(punc, nalTerm, isTrue ? ONE : ZERO);
     }
 
@@ -414,7 +414,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
                         if (subj.op() == PROD) {
                             alice.tuprolog.Term args = st[0];
                             return new Struct(wrapAtom(pred.toString()),
-                                    args instanceof Struct ?
+                                    args instanceof alice.tuprolog.Term ?
                                             Iterators.toArray(((Struct) st[0]).listIterator(), alice.tuprolog.Term.class) :
                                             new alice.tuprolog.Term[]{args});
                         }

@@ -230,7 +230,7 @@ public class Finger {
         v2 y = new v2(x);
         RectFloat2D b = c.bounds;
         y.sub(b.x, b.y);
-        y.scale(1f / b.w, 1f / b.h);
+        y.scaled(1f / b.w, 1f / b.h);
         return y;
     }
 }

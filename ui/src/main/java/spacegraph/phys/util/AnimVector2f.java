@@ -3,6 +3,7 @@ package spacegraph.phys.util;
 import jcog.Util;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 import spacegraph.math.v3;
 import spacegraph.phys.Dynamics;
@@ -75,18 +76,19 @@ public class AnimVector2f extends v2 implements Animated {
     }
 
 
-    public AnimVector2f scale(float s) {
+    public AnimVector2f scaled(float s) {
         set(this.x * s, this.y * s);
         return this;
     }
 
     @Override
-    public void set(float x, float y) {
+    public Tuple2f set(float x, float y) {
         float px = this.x;
         if (px != px || x!=x)
             super.set(x, y); //initialization: if invalidated, use the target value immediately
 
         target.set(x, y); //interpolation
+        return this;
     }
 
     @Override

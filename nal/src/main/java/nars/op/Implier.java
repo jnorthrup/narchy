@@ -1,9 +1,13 @@
 package nars.op;
 
 import com.google.common.collect.Iterables;
+import jcog.bag.impl.ArrayBag;
+import jcog.bag.impl.PLinkArrayBag;
 import jcog.data.graph.AdjGraph;
 import jcog.list.FasterList;
 import jcog.math.FloatParam;
+import jcog.pri.PLink;
+import jcog.pri.op.PriMerge;
 import nars.*;
 import nars.concept.ActionConcept;
 import nars.concept.Concept;
@@ -11,12 +15,15 @@ import nars.control.CauseChannel;
 import nars.control.DurService;
 import nars.task.ITask;
 import nars.task.NALTask;
+import nars.task.signal.SignalTask;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.TruthAccumulator;
 import nars.truth.func.BeliefFunction;
 import nars.truth.func.TruthOperator;
 import nars.util.graph.TermGraph;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,11 +62,13 @@ public class Implier extends DurService {
     final Map<LongObjectPair<Term>, TruthAccumulator> goalTruth = new HashMap();
 
     final static TruthOperator ded = BeliefFunction.get($.the("Deduction"));
-    //final static TruthOperator ind = GoalFunction.get($.the("DeciInduction"));
+    final static TruthOperator ind = BeliefFunction.get($.the("Induction"));
 
     private final FloatParam strength = new FloatParam(0.5f, 0f, 1f);
     private long then, now;
     private int dur;
+
+    final ArrayBag<Task,PLink<Task>> implTasks = new PLinkArrayBag(256, PriMerge.max, new HashMap());
 
     public Implier(NAR n, float[] relativeTargetDur, Term... seeds) {
         this(n, List.of(seeds), relativeTargetDur);
@@ -104,9 +113,10 @@ public class Implier extends DurService {
         search(nar);
 
         int implCount = impl.edgeCount();
-
         if (implCount == 0)
             return;
+
+        //impl.edges.forEach
 
 
         dur = nar.dur();
@@ -116,10 +126,12 @@ public class Implier extends DurService {
         beliefTruth.clear();
         goalTruth.clear();
 
+        int dtDither = nar.dtDitherCycles();
+
         for (float relativeTargetDur : relativeTargetDurs) {
 
 
-            long nextThen = now + Math.round(relativeTargetDur * dur);
+            long nextThen = Tense.dither(now + Math.round(relativeTargetDur * dur), dtDither);
             if (then == nextThen)
                 continue; //same time as previous iteration, don't repeat
 
@@ -145,6 +157,8 @@ public class Implier extends DurService {
 
     private void imply(Task impl) {
 
+        if (ArrayUtils.indexOf(impl.cause(), in.id)!=-1)
+            return; //avoid cyclical logic by any implications at least partially resulting from this cause
 
         int implDT = impl.dt();
         if (implDT == DTERNAL)
@@ -160,17 +174,16 @@ public class Implier extends DurService {
 
         Term P = implTerm.sub(1);
 
+        /*
+        C = condition
+        S = subj
+        P = pred
+        */
 
         {
         /*
-            C = condition
-            S = subj
-            P = pred
-            S, (S ==> P),  notImpl(B) |- P (Belief:Deduction, Goal:DeciInduction)
-
-
+            S, (S ==> P) |- P (Belief:Deduction)
             P_belief(C,S) = ded(S_belief, impl_belief)
-            //TODO if impl is neg
          */
 
             long when = then;
@@ -179,69 +192,90 @@ public class Implier extends DurService {
 
                 Truth S_belief = nar.beliefTruth(S, when);
                 if (S_belief != null) {
-
-                    {
+                    if (implTruth.isPositive()) {
                         //IMPL+
-                        Truth P_belief = ded.apply(S_belief.negIf(Sneg), implTruth, nar, Float.MIN_NORMAL);
-                        if (P_belief != null)
-                            believe(P, then + implDT, P_belief);
-                    }
-                    {
+                        Truth P_belief_pos = ded.apply(S_belief.negIf(Sneg), implTruth, nar, Float.MIN_NORMAL);
+                        if (P_belief_pos != null)
+                            believe(P, then + implDT, P_belief_pos);
+                    } else {
                         //IMPL-
-                        Truth P_belief = ded.apply(S_belief.negIf(!Sneg), implTruth.neg(), nar, Float.MIN_NORMAL);
-                        if (P_belief != null)
-                            believe(P, then + implDT, P_belief.neg());
+                        Truth P_belief_neg = ded.apply(S_belief.negIf(Sneg), implTruth.neg(), nar, Float.MIN_NORMAL);
+                        if (P_belief_neg != null)
+                            believe(P, then + implDT, P_belief_neg.neg());
                     }
                 }
             }
         }
 
-//        Truth Gdesire = nar.goalTruth(pred, this.then + implDT); //the desire at the predicate time
-//        if (Gdesire == null)
-//            return;
+        {
+        /*
+            S, (S ==> P) |- P (Goal:Induction)
+            P_goal(C,S) = ind(S_goal, impl_belief)
+         */
+
+            long when = then;
+            Truth implTruth = impl.truth(when, dur, nar);
+            if (implTruth!=null) {
+
+                Truth S_goal = nar.goalTruth(S, when);
+                if (S_goal != null) {
+                    if (implTruth.isPositive()) {
+
+                        //IMPL+
+                        Truth P_goal_pos = ind.apply(S_goal.negIf(Sneg), implTruth, nar, Float.MIN_NORMAL);
+                        if (P_goal_pos != null)
+                            goal(P, then + implDT, P_goal_pos);
+                    } else {
+                        //IMPL-
+                        Truth P_goal_neg = ind.apply(S_goal.negIf(Sneg), implTruth.neg(), nar, Float.MIN_NORMAL);
+                        if (P_goal_neg != null)
+                            goal(P, then + implDT, P_goal_neg.neg());
+                    }
+                }
+            }
+        }
+        {
+        /*
+            P, (S ==> P) |- S (Goal:Deduction)
+            S_goal(C,S) = ded(P_goal, impl_belief)
+         */
+
+            long when = then;
+            Truth implTruth = impl.truth(when, dur, nar);
+            if (implTruth!=null) {
+
+                Truth P_goal = nar.goalTruth(P, when + implDT);
+                if (P_goal != null) {
+                    if (implTruth.isPositive()) {
+
+                        //IMPL+
+                        Truth S_goal_pos = ded.apply(P_goal, implTruth, nar, Float.MIN_NORMAL);
+                        if (S_goal_pos != null)
+                            goal(P, then, S_goal_pos);
+                    } else {
+                        //IMPL-
+                        Truth S_goal_neg = ded.apply(P_goal.neg(), implTruth.neg(), nar, Float.MIN_NORMAL);
+                        if (S_goal_neg != null)
+                            goal(P, then, S_goal_neg);
+                    }
+                }
+            }
+        }
 
 
-//        Truth Sg = ded.apply(Gdesire, $.t(impl.freq(), implConf), nar, 0);
-//
-//        if (Sg != null) {
-//            goal(goalTruth, subj, Sg);
-//        }
-
-
-        //experimental:
-        //            {
-        //                //G, (G ==> P) |- P (Goal:InductionRecursivePB)
-        //                //G, ((--,G) ==> P) |- P (Goal:InductionRecursivePBN)
-        //
-        //                //HACK only immediate future otherwise it needs scheduled further
-        //                if (implDT >= 0 && implDT <= dur/2) {
-        //
-        //                    Truth Ps = desire(subj, nowStart, nowEnd); //subj desire now
-        //                    if (Ps == null)
-        //                        return;
-        //
-        //                    float implFreq = f;
-        //
-        //
-        //
-        //                    if (Ps.isNegative()) {
-        //                        subj = subj.neg();
-        //                        Ps = Ps.neg();
-        //                    }
-        //
-        //                    //TODO invert g and choose indRec/indRecN
-        //                    Truth Pg = indRec.apply(Ps, $.t(implFreq, implConf), nar, confSubMin);
-        //                    if (Pg != null) {
-        //                        goal(goalTruth, pred, Pg);
-        //                    }
-        //                }
-        //            }
-
+        //TODO
+        //   P,   (S ==> P) |-   S (Belief:Abduction)
+        //   P, (--S ==> P) |- --S (Belief:Abduction)
+        // x P,   (S ==> P) |-   S (Goal:Deduction)  ^^above
+        //   P, (--S ==> P) |- --S (Goal:Deduction)
 
     }
 
-    private void believe(Term p, long at, Truth p_belief) {
-        beliefTruth.computeIfAbsent(pair(at, p), (k) -> new TruthAccumulator()).add(p_belief);
+    private void believe(Term p, long at, Truth belief) {
+        beliefTruth.computeIfAbsent(pair(at, p), (k) -> new TruthAccumulator()).add(belief);
+    }
+    private void goal(Term p, long at, Truth goal) {
+        goalTruth.computeIfAbsent(pair(at, p), (k) -> new TruthAccumulator()).add(goal);
     }
 
     private void commit() {
@@ -266,14 +300,14 @@ public class Implier extends DurService {
         truths.forEach((tw, a) -> {
             Term t = tw.getTwo();
             long w = tw.getOne();
+            long wEnd = w + dur;
             @Nullable Truth uu = a.commitSum().dither(freqRes, confRes, confMin, strength);
-            long[] stamp = nar.time.nextInputStamp();
+            long stamp = nar.time.nextStamp();
             NALTask y;
-            if (uu != null && uu.conf() > confMin) {
-
-                y = new NALTask(t, punc, uu, now, w, w, stamp);
+            if (uu != null && uu.conf() >= confMin) {
+                y = new SignalTask(t, punc, uu, now, w, wEnd, stamp);
             } else {
-                y = new NALTask(t, punc == GOAL ? QUEST : QUESTION, null, now, w, w, stamp);
+                y = new SignalTask(t, punc == GOAL ? QUEST : QUESTION, null, now, w, wEnd, stamp);
             }
             y.pri(nar.priDefault(y.punc));
 

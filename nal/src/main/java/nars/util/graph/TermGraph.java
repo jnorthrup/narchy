@@ -11,6 +11,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.transform.Retemporalize;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -73,10 +74,16 @@ public enum TermGraph {
 
         public static void update(AdjGraph<Term, Term> g, Iterable<Term> sources, NAR nar, Predicate<Term> acceptNode, Predicate<Term> acceptEdge) {
 
-            @Deprecated Set<Term> done = Sets.newConcurrentHashSet();
+            @Deprecated Set<Term> done =
+                    //Sets.newConcurrentHashSet();
+                    new HashSet();
 
             //TODO bag for pending concepts to visit?
-            Set<Termed> next = Sets.newConcurrentHashSet();
+            Set<Termed> next =
+                    Sets.newConcurrentHashSet();
+                    //new UnifiedSet();
+                    //new LinkedHashSet<>();
+
             Iterables.addAll(next, sources);
 
             int maxSize = 512;
@@ -187,13 +194,10 @@ public enum TermGraph {
                 //}
             }
         };
-        tc.termlinks().forEach(each);
+        //tc.termlinks().forEach(each);
         tc.tasklinks().forEach(each);
     }
 
-    protected boolean acceptTerm(Term p) {
-        return true;
-    }
 
 
 }

@@ -24,7 +24,7 @@ class Flag implements java.io.Serializable {
 
     private volatile Term value;
     private final Struct valueList;
-    private final Term   defaultValue;
+//    private final Term   defaultValue;
     private final boolean modifiable;
     private final String  libraryName;
     
@@ -39,7 +39,7 @@ class Flag implements java.io.Serializable {
      */
     public Flag(Struct valueSet, Term defValue, boolean modifiable, String library) {
         this.valueList = valueSet;
-        this.defaultValue = defValue;
+//        this.defaultValue = defValue;
         this.modifiable = modifiable;
         this.libraryName = library;
         this.value = defValue;

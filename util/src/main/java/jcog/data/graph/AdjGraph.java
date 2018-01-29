@@ -106,7 +106,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     /**
      * edge values indexed by their unique 64-bit id formed from the id's of the src (32bit int) and target (32bit int)
      */
-    private final LongObjectHashMap<E> edges;
+    public final LongObjectHashMap<E> edges;
 
 
     /**

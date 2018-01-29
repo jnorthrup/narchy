@@ -39,9 +39,6 @@ import spacegraph.phys.BulletGlobals;
  */
 public class v2 extends Tuple2f {
 
-    // Combatible with 1.1
-    static final long serialVersionUID = -2168194326883512320L;
-    public static v2 ONE = new v2RO(1, 1);
 
     /**
      * Constructs and initializes a Vector2f from the specified xy coordinates.
@@ -166,29 +163,20 @@ public class v2 extends Tuple2f {
     }
 
 
-    /**
-     * Normalizes this vector in place.
-     */
-    public final float normalize() {
-        float norm = (float) Math.sqrt(this.x * this.x + this.y * this.y);
-        if (norm >= BulletGlobals.FLT_EPSILON) {
-            set(this.x / norm, this.y / norm);
-        }
-        return norm;
-    }
 
-    /**
-     * read-only v2
-     */
-    public static class v2RO extends v2 {
-        public v2RO(float x, float y) {
-            super(x, y);
-        }
 
-        @Override
-        public void set(float x, float y) {
-            throw new RuntimeException("cant modify");
-        }
-    }
+//    /**
+//     * read-only v2
+//     */
+//    public static class v2RO extends v2 {
+//        public v2RO(float x, float y) {
+//            super(x, y);
+//        }
+//
+//        @Override
+//        public Tuple2f set(float x, float y) {
+//            throw new RuntimeException("cant modify");
+//        }
+//    }
 
 }

@@ -75,6 +75,33 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
         this.y = t[1];
     }
 
+    public final static Tuple2f abs(Tuple2f a) {
+        return new v2(Math.abs(a.x), Math.abs(a.y));
+    }
+
+    public final static void absToOut(Tuple2f a, Tuple2f out) {
+        out.x = Math.abs(a.x);
+        out.y = Math.abs(a.y);
+    }
+
+    public final static float dot(final Tuple2f a, final Tuple2f b) {
+        return a.x * b.x + a.y * b.y;
+    }
+
+    public final static void negateToOut(Tuple2f a, Tuple2f out) {
+        out.x = -a.x;
+        out.y = -a.y;
+    }
+
+    public final static void minToOut(Tuple2f a, Tuple2f b, Tuple2f out) {
+        out.x = a.x < b.x ? a.x : b.x;
+        out.y = a.y < b.y ? a.y : b.y;
+    }
+
+    public final static void maxToOut(Tuple2f a, Tuple2f b, Tuple2f out) {
+        out.x = a.x > b.x ? a.x : b.x;
+        out.y = a.y > b.y ? a.y : b.y;
+    }
 
 
     /**
@@ -133,9 +160,10 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
      * @param x the x coordinate
      * @param y the y coordinate
      */
-    public void set(float x, float y) {
+    public Tuple2f set(float x, float y) {
         this.x = x;
         this.y = y;
+        return this;
     }
 
 
@@ -156,9 +184,10 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
      *
      * @param t1 the tuple to be copied
      */
-    public final void set(Tuple2f t1) {
+    public final Tuple2f set(Tuple2f t1) {
         this.x = t1.x;
         this.y = t1.y;
+        return this;
     }
 
 //    TODO
@@ -208,12 +237,15 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
      *
      * @param t1 the other tuple
      */
-    public final Tuple2f add(Tuple2f t1) {
-        this.x += t1.x;
-        this.y += t1.y;
-        return this;
+    public final Tuple2f added(Tuple2f t1) {
+        return added(t1.x, t1.y);
     }
 
+    public final Tuple2f added(float tx, float ty) {
+        this.x += tx;
+        this.y += ty;
+        return this;
+    }
 
     /**
      * Sets the value of this tuple to the vector difference of
@@ -235,32 +267,64 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
      *
      * @param t1 the other tuple
      */
-    public final void sub(Tuple2f t1) {
+    public final Tuple2f subbed(Tuple2f t1) {
         this.x -= t1.x;
         this.y -= t1.y;
+        return this;
     }
 
     public final void sub(float dx, float dy) {
         set(this.x - dx, this.y - dy);
     }
 
+    public final static float cross(final Tuple2f a, final Tuple2f b) {
+        return a.x * b.y - a.y * b.x;
+    }
+
+    public final static Tuple2f cross(Tuple2f a, float s) {
+        float y1 = -s * a.x;
+        return new v2(s * a.y, y1);
+    }
+
+    /**
+     * True if the vector represents a pair of valid, non-infinite floating point numbers.
+     */
+    public final boolean isValid() {
+        return !Float.isNaN(x) && !Float.isInfinite(x) && !Float.isNaN(y) && !Float.isInfinite(y);
+    }
+
+    public final static Tuple2f min(Tuple2f a, Tuple2f b) {
+        float x1 = a.x < b.x ? a.x : b.x;
+        float y1 = a.y < b.y ? a.y : b.y;
+        return new v2(x1, y1);
+    }
+
+    public final static Tuple2f max(Tuple2f a, Tuple2f b) {
+        float x1 = a.x > b.x ? a.x : b.x;
+        float y1 = a.y > b.y ? a.y : b.y;
+        return new v2(x1, y1);
+    }
+
+
     /**
      * Sets the value of this tuple to the negation of tuple t1.
      *
      * @param t1 the source tuple
      */
-    public final void negate(Tuple2f t1) {
+    public final Tuple2f negated(Tuple2f t1) {
         this.x = -t1.x;
         this.y = -t1.y;
+        return this;
     }
 
 
     /**
      * Negates the value of this vector in place.
      */
-    public final void negate() {
+    public final Tuple2f negated() {
         this.x = -this.x;
         this.y = -this.y;
+        return this;
     }
 
 
@@ -271,11 +335,40 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
      * @param s  the scalar value
      * @param t1 the source tuple
      */
-    public final void scale(float s, Tuple2f t1) {
+    public final void scaled(float s, Tuple2f t1) {
         this.x = s * t1.x;
         this.y = s * t1.y;
     }
 
+
+    public final static void crossToOut(Tuple2f a, float s, Tuple2f out) {
+        final float tempy = -s * a.x;
+        out.x = s * a.y;
+        out.y = tempy;
+    }
+
+    public final static void crossToOutUnsafe(Tuple2f a, float s, Tuple2f out) {
+        assert (out != a);
+        out.x = s * a.y;
+        out.y = -s * a.x;
+    }
+
+    public final static Tuple2f cross(float s, Tuple2f a) {
+        float x1 = -s * a.y;
+        return new v2(x1, s * a.x);
+    }
+
+    public final static void crossToOut(float s, Tuple2f a, Tuple2f out) {
+        final float tempY = s * a.x;
+        out.x = -s * a.y;
+        out.y = tempY;
+    }
+
+    public final static void crossToOutUnsafe(float s, Tuple2f a, Tuple2f out) {
+        assert (out != a);
+        out.x = -s * a.y;
+        out.y = s * a.x;
+    }
 
     /**
      * Sets the value of this tuple to the scalar multiplication
@@ -283,19 +376,19 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
      *
      * @param s the scalar value
      */
-    public Tuple2f scale(float s) {
+    public Tuple2f scaled(float s) {
         this.x *= s;
         this.y *= s;
         return this;
     }
 
     /** multiplies each component */
-    public final void scale(Tuple2f z) {
+    public final void scaled(Tuple2f z) {
         this.x *= z.x;
         this.y *= z.y;
     }
 
-    public final void scale(float sx, float sy) {
+    public final void scaled(float sx, float sy) {
         this.x *= sx;
         this.y *= sy;
     }
@@ -560,25 +653,43 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
 
     }
 
-    /**
-     * Creates a new object of the same class as this object.
-     *
-     * @return a clone of this instance.
-     * @throws OutOfMemoryError if there is not enough memory.
-     * @see java.lang.Cloneable
-     * @since vecmath 1.3
-     */
-    @Override
-    public Object clone() {
-        // Since there are no arrays we can just use Object.clone()
-        try {
-            return super.clone();
-        } catch (CloneNotSupportedException e) {
-            // this shouldn't happen, since we are Cloneable
-            throw new InternalError();
-        }
+//    /**
+//     * Creates a new object of the same class as this object.
+//     *
+//     * @return a clone of this instance.
+//     * @throws OutOfMemoryError if there is not enough memory.
+//     * @see java.lang.Cloneable
+//     * @since vecmath 1.3
+//     */
+//    @Override
+//    public Object clone() {
+//        // Since there are no arrays we can just use Object.clone()
+//        try {
+//            return super.clone();
+//        } catch (CloneNotSupportedException e) {
+//            // this shouldn't happen, since we are Cloneable
+//            throw new InternalError();
+//        }
+//    }
+
+    public Tuple2f clone() {
+        return new v2(x, y);
+    }
+    public final void absLocal() {
+        x = Math.abs(x);
+        y = Math.abs(y);
     }
 
+    /**
+     * Normalizes this vector in place.
+     */
+    public final float normalize() {
+        float norm = (float) Math.sqrt(this.x * this.x + this.y * this.y);
+        if (norm >= BulletGlobals.FLT_EPSILON) {
+            set(this.x / norm, this.y / norm);
+        }
+        return norm;
+    }
 
     /**
      * Get the <i>x</i> coordinate.
@@ -631,5 +742,20 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
         if (v == this) return 0;
         float d = Util.sqr(x - v.x) + Util.sqr(y - v.y);
         return d;
+    }
+
+    public void setZero() {
+        set(0,0);
+    }
+
+    public Tuple2f add(Tuple2f u) {
+        return new v2(x + u.x, y + u.y);
+    }
+    public Tuple2f sub(Tuple2f u) {
+        return new v2(x - u.x, y - u.y);
+    }
+
+    public Tuple2f scale(float s) {
+        return new v2(x * s, y * s);
     }
 }

@@ -25,11 +25,10 @@ import java.io.Serializable;
  *
  */
 class Token implements Serializable {
-	private static final long serialVersionUID = 1L;
     // token textual representation
-    final String seq;
+    public final String seq;
     // token type and attribute
-    final int type;
+    public final int type;
     
     public Token(String seq_,int type_) {
         seq = seq_;
@@ -45,10 +44,6 @@ class Token implements Serializable {
      */
     public int getAttribute() {
         return type & Tokenizer.ATTRMASK;
-    }
-
-    public String getValue(){
-        return seq;
     }
 
     public boolean isOperator(boolean commaIsEndMarker) {

@@ -39,7 +39,6 @@ import static alice.tuprolog.Parser.defaultOps;
  *
  */
 public class Theory implements Iterable<Term>, Serializable {
-	private static final long serialVersionUID = 1L;
 
 	public static Theory Null = new Theory();
 

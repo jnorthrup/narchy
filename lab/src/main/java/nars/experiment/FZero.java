@@ -8,7 +8,6 @@ import nars.Task;
 import nars.concept.ScalarConcepts;
 import nars.concept.SensorConcept;
 import nars.gui.Vis;
-import nars.op.Implier;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
@@ -35,7 +34,7 @@ public class FZero extends NAgentX {
 
         //Param.DEBUG = true;
 
-        float fps = 20f;
+        float fps = 10f;
 
         NAgentX.runRT((n) -> {
 
@@ -90,7 +89,7 @@ public class FZero extends NAgentX {
 
 
         //initToggle();
-        initBipolar(true);
+        initBipolar(false);
 
         //new Implier(1, this, new float[] { 0, 1 });
 
@@ -334,7 +333,7 @@ public class FZero extends NAgentX {
         actionBipolar(/*$.p($.the("x"), */(id), fair, (a) -> {
             float deadZone =
                     //0;
-                    1 / 12f;
+                    1 / 20f;
             float aa = a;
             if (Math.abs(a) > deadZone) {
                 if (a > 0) a -= deadZone;

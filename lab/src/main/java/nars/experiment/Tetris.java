@@ -200,6 +200,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
             }
         });
 
+
+
         actionPushButton($.func("R", id), () -> state.act(CW));
 
 //        actionTriState($("R"), (i) -> {
@@ -271,6 +273,7 @@ public class Tetris extends NAgentX implements Bitmap2D {
 //        if (downMotivation > actionThresholdHigh) {
 //            state.take_action(FALL);
 //        }
+
     }
 
     @Override

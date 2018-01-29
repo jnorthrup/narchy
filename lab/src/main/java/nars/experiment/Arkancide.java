@@ -7,7 +7,6 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.Narsese;
-import nars.concept.SensorConcept;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.BufferedImageBitmap2D;
 import nars.video.Scale;
@@ -26,7 +25,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Arkancide extends NAgentX {
 
     static boolean numeric = true;
-    static boolean cam = false;
+    static boolean cam = true;
 
     public final FloatParam ballSpeed = new FloatParam(0.75f, 0.04f, 6f);
     //public final FloatParam paddleSpeed = new FloatParam(2f, 0.1f, 3f);
@@ -71,10 +70,12 @@ public class Arkancide extends NAgentX {
 
             //new RLBooster(a, HaiQAgent::new, 2 );
 
+            //new Implier(1, a, new float[] { 1 });
+
 
             return a;
 
-        }, 30);
+        }, 20);
 
 
 //        nar.forEachActiveConcept(c -> {
@@ -115,7 +116,9 @@ public class Arkancide extends NAgentX {
 
         paddleSpeed = 120 * noid.BALL_VELOCITY;
 
-        initBipolarRelative();
+        //initBipolarDirect();
+        //initBipolarRelative();
+        initUnipolar();
         //initToggle();
 
         float resX = 0.01f; //Math.max(0.01f, 0.5f / visW); //dont need more resolution than 1/pixel_width
@@ -125,7 +128,7 @@ public class Arkancide extends NAgentX {
 
             BufferedImageBitmap2D sw = new Scale(new SwingBitmap2D(noid), visW, visH);//.blur();
             Bitmap2DSensor cc = senseCamera(id.toString(), sw, visW, visH)
-                    .resolution(0.25f);
+                    .resolution(0.2f);
 //            CameraSensor ccAe = senseCameraReduced($.the("noidAE"), sw, 16)
 //                    .resolution(0.25f);
 
@@ -135,10 +138,10 @@ public class Arkancide extends NAgentX {
 
 
         if (numeric) {
-            SensorConcept px = senseNumber($.inh("px", id), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
-            SensorConcept dx = senseNumber($.inh("dx", id), (() -> Math.abs(noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
-            SensorConcept bx = senseNumber($.inh("bx", id), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
-            SensorConcept by = senseNumber($.inh("by", id), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
+            senseNumberBi($.inh("px", id), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
+            senseNumberBi($.inh("dx", id), (() -> Math.abs(noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
+            senseNumberBi($.inh("bx", id), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
+            senseNumberBi($.inh("by", id), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
             //SensorConcept d = senseNumber("noid:bvx", new FloatPolarNormalized(() -> noid.ball.velocityX)).resolution(0.25f);
             //SensorConcept e = senseNumber("noid:bvy", new FloatPolarNormalized(() -> noid.ball.velocityY)).resolution(0.25f);
 
@@ -260,8 +263,13 @@ public class Arkancide extends NAgentX {
         });
     }
     private void initToggle() {
-        actionToggle($.inh("L", id), () -> noid.paddle.move(-paddleSpeed));
-        actionToggle($.inh("R", id), () -> noid.paddle.move(+paddleSpeed));
+        //BAD because whichever 'key' is second cancels the first
+        actionPushButton($.inh("L", id), () -> noid.paddle.move(-paddleSpeed));
+        actionPushButton($.inh("R", id), () -> noid.paddle.move(+paddleSpeed));
+    }
+    private void initUnipolar() {
+        actionUnipolar($.inh("L", id), (u)-> noid.paddle.move(-paddleSpeed*u) ? u : 0);
+        actionUnipolar($.inh("R", id), (u)-> noid.paddle.move(+paddleSpeed*u) ? u : 0);
     }
 
     @Override
@@ -605,7 +613,7 @@ public class Arkancide extends NAgentX {
             this.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
             this.addKeyListener(this);
             this.setLocationRelativeTo(null);
-            setIgnoreRepaint(true);
+            //setIgnoreRepaint(true);
 
             if (visible)
                 this.setVisible(true);
@@ -666,8 +674,8 @@ public class Arkancide extends NAgentX {
             //}
 
 
-            SwingUtilities.invokeLater(this::repaint);
-            //repaint();
+            //SwingUtilities.invokeLater(this::repaint);
+            repaint();
 
             return score;
         }

@@ -41,7 +41,7 @@ public class PrologToNAL {
     }
 
     private static nars.term.Term N(alice.tuprolog.Term t) {
-        if (t instanceof Struct) {
+        if (t instanceof alice.tuprolog.Term) {
             Struct s = (Struct) t;
             String name = s.name();
             switch (name) {

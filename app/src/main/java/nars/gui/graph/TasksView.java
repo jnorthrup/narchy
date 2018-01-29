@@ -153,7 +153,7 @@ public class TasksView extends MutableContainer {
         v2 bc = new v2(b.id.x(), b.id.y());
 
         v2 delta = new v2(ac);
-        delta.sub(bc);
+        delta.subbed(bc);
 
         float dist = delta.normalize();
         dist -= (a.id.radius() + b.id.radius());
