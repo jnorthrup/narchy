@@ -49,7 +49,7 @@ public class Atom extends Term<Atom> {
             char[] carr = _theAtom.toCharArray();
             java.util.Vector<String> vs = new java.util.Vector<>();
             for (char c : carr) {
-                vs.add(c+"");
+                vs.add(String.valueOf(c));
             }
             return new List<>(vs);
         }

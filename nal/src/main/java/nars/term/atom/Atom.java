@@ -23,11 +23,6 @@ public class Atom extends AtomicConst implements The {
         super(ATOM, validateAtomID(id));
     }
 
-    @Override
-    public Term conceptual() {
-        return this;
-    }
-
     @NotNull
     private static String validateAtomID(String id) {
         if (id.isEmpty())

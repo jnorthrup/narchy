@@ -65,7 +65,7 @@ public class Parser {
 	private final Tokenizer tokenizer;
 	private OperatorManager ops = defaultOps;
 	/*Castagna 06/2011*/
-	private HashMap<Term, Integer> offsetsMap;		 
+	private final HashMap<Term, Integer> offsetsMap;
 	private int tokenStart;
 	/**/    
 

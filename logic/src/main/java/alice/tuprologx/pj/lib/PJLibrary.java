@@ -191,7 +191,7 @@ public class PJLibrary extends Library {
 				Prolog.warn("Invalid constructor arguments.");
 				return false;
 			} catch (NoSuchMethodException ex) {
-				Prolog.warn("Constructor not found: " + args.getTypes());
+				Prolog.warn("Constructor not found: " + Arrays.toString(args.getTypes()));
 				return false;
 			} catch (InstantiationException ex) {
 				Prolog.warn("Objects of class " + clName + " cannot be instantiated");
@@ -703,7 +703,7 @@ public class PJLibrary extends Library {
                     return unify(what, value);
                 }
                 case "class [C": {
-                    Term value = new Struct("" + Array.getChar(obj, index.intValue()));
+                    Term value = new Struct(String.valueOf(Array.getChar(obj, index.intValue())));
                     return unify(what, value);
                 }
                 case "class [Z":

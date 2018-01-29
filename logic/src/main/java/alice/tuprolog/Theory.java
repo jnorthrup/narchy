@@ -40,7 +40,7 @@ import static alice.tuprolog.Parser.defaultOps;
  */
 public class Theory implements Iterable<Term>, Serializable {
 
-	public static Theory Null = new Theory();
+	public static final Theory Null = new Theory();
 
     private String theory;
     private Struct clauseList;

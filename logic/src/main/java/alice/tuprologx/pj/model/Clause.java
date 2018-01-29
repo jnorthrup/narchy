@@ -17,7 +17,7 @@ import alice.tuprolog.Struct;
  */
 public class Clause<H extends Term<?>, B extends Term<?>> extends Compound2<H,B> {
     
-    private final boolean isFact;
+    public final boolean isFact;
     
     /** Creates a new instance of Clause */
     @SuppressWarnings("unchecked")
@@ -52,18 +52,14 @@ public class Clause<H extends Term<?>, B extends Term<?>> extends Compound2<H,B>
     public B getBody() {
         return get1();
     }
-    
-    public boolean isFact() {
-        return isFact;
-    }
-    
+
     public String toString() {
-        return "Clause{"+getHead()+(isFact() ? "" : " :- "+getBody())+ '}';
+        return "Clause{"+getHead()+(isFact ? "" : " :- "+getBody())+ '}';
     }
 
     @Override
     public Struct marshal() {
-        return !isFact() ? super.marshal() : (Struct) getHead().marshal();
+        return !isFact ? super.marshal() : (Struct) getHead().marshal();
     }
     
     public boolean match(String name, int arity) {

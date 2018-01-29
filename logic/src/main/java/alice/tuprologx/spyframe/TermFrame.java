@@ -26,7 +26,7 @@ public class TermFrame extends JFrame implements ActionListener{
   public static final ToTree<Term> term2tree= new ToTree<>() {
     @Override
     public Node makeTreeFrom(Term term) {
-        Node node = new Node("" + term);
+        Node node = new Node(String.valueOf(term));
         node.textcolor = node.bordercolor = Color.BLACK;
         //make it more specific if possible
         if (term instanceof Var) {
@@ -65,7 +65,7 @@ public class TermFrame extends JFrame implements ActionListener{
     c.add(new JScrollPane(ptt));
     input=new JTextField();
     c.add(input, BorderLayout.SOUTH);
-    input.setText(""+term);
+    input.setText(String.valueOf(term));
     pack();
     setVisible(true);
     input.addActionListener(this);
@@ -79,7 +79,7 @@ public class TermFrame extends JFrame implements ActionListener{
    */
   public void setTerm(Term term){
     ptt.setStructure(term);
-    input.setText(""+term);
+    input.setText(String.valueOf(term));
     validate();
   }
 

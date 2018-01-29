@@ -241,7 +241,7 @@ public class OOLibrary extends Library {
                 Prolog.warn("Invalid constructor arguments.");
                 throw new JavaException(ex);
             } catch (NoSuchMethodException ex) {
-                Prolog.warn("Constructor not found: " + args.getTypes());
+                Prolog.warn("Constructor not found: " + Arrays.toString(args.getTypes()));
                 throw new JavaException(ex);
             } catch (InstantiationException ex) {
                 Prolog.warn(
@@ -268,7 +268,7 @@ public class OOLibrary extends Library {
      * @throws JavaException, Exception
      */
     @SuppressWarnings("unchecked")
-	public <T> boolean new_lambda_3(Term interfaceName, Term implementation, Term id)throws JavaException {
+	public <T> boolean new_lambda_3(Term interfaceName, Term implementation, Term id) {
 //    	try {
 //    		counter++;
 //    		String target_class=(interfaceName.toString()).substring(1, interfaceName.toString().length()-1);

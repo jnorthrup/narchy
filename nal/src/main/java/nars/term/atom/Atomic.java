@@ -186,7 +186,7 @@ public interface Atomic extends Term {
 
     @Override
     default boolean ORrecurse(Predicate<Term> v) {
-        return AND(v);
+        return OR(v);
     }
 
     @Override
@@ -266,7 +266,7 @@ public interface Atomic extends Term {
     /**
      * determines if the string is invalid as an unquoted term according to the characters present
      */
-    public static boolean isQuoteNecessary(CharSequence t) {
+    static boolean isQuoteNecessary(CharSequence t) {
         int len = t.length();
 
         if (len > 1 && (t.charAt(0) == '\"') && (t.charAt(len - 1) == '\"'))

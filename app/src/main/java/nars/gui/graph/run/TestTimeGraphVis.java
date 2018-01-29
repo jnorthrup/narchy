@@ -1,6 +1,6 @@
 package nars.gui.graph.run;
 
-import jcog.data.graph.NodeGraph;
+import jcog.data.graph.MapNodeGraph;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
@@ -28,7 +28,7 @@ public class TestTimeGraphVis extends SimpleGraph1<TimeGraph.Event> {
         });
     }
 
-    static NodeGraph dt() {
+    static MapNodeGraph dt() {
         TimeGraph A = new TimeGraph();
         A.know($.$safe("((one &&+1 two) ==>+1 (three &&+1 four))"), ETERNAL);
         A.know($.$safe("one"), 1);

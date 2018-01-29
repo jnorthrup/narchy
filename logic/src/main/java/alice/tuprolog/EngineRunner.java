@@ -34,7 +34,7 @@ public class EngineRunner implements java.io.Serializable, Runnable{
 	private Term bagOfgoal;
 	private Term bagOfBag;
 
-    private final int id;
+    public final int id;
     private int pid;
     private boolean detached;
     private boolean solving;
@@ -44,7 +44,7 @@ public class EngineRunner implements java.io.Serializable, Runnable{
     private int countNext;
     private Lock lockVar;               
     private Condition cond;
-    private Object semaphore;
+    private final Object semaphore = new Object();
     
     /* Current environment */
     Engine env;
@@ -110,7 +110,6 @@ public class EngineRunner implements java.io.Serializable, Runnable{
         countNext = 0;
         lockVar = new ReentrantLock();  
         cond = lockVar.newCondition();
-        semaphore = new Object();
         return this;
     }
 
@@ -184,11 +183,11 @@ public class EngineRunner implements java.io.Serializable, Runnable{
             env = new Engine(this, query);
             StateEnd result = env.run();
             defreeze();
-            
+
             sinfo = new Solution(
                     query,
                     result.getResultGoal(),
-                    result.getResultDemo(),
+                    result.endState,
                     result.getResultVars()
             );
             if(this.sinfoSetOf!=null)
@@ -247,7 +246,7 @@ public class EngineRunner implements java.io.Serializable, Runnable{
             sinfo = new Solution(
                     env.query,
                     result.getResultGoal(),
-                    result.getResultDemo(),
+                    result.endState,
                     result.getResultVars()
             );
             if(this.sinfoSetOf!=null)
@@ -373,12 +372,12 @@ public class EngineRunner implements java.io.Serializable, Runnable{
                         // TODO Auto-generated catch block
                         e.printStackTrace();
                 }
-        }    
-        
+        }
+
         public int getId(){
                 return id;
         }
-        
+
         public int getPid(){
                 return pid;
         }

@@ -68,7 +68,7 @@ public class DeriveTime extends TimeGraph {
         //this.nodes...
 
         //for now, just do manual reconstruct
-        copy.byTerm.values().forEach(this::add); //add to byTerm AND graph
+        copy.byTerm.values().forEach(this::addNode); //add to byTerm AND graph
 
         copy.byTerm.keySet().forEach(x -> {
             Term y = x.eval(d);

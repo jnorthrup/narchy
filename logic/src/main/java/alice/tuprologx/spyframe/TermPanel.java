@@ -27,7 +27,7 @@ public class TermPanel extends JPanel implements ActionListener{
   public static final ToTree<Term> term2tree= new ToTree<>() {
     @Override
     public Node makeTreeFrom(Term term) {
-        Node node = new Node("" + term);
+        Node node = new Node(String.valueOf(term));
         node.textcolor = node.bordercolor = Color.BLACK;
         //make it more specific if possible
         if (term instanceof Var) {
@@ -64,7 +64,7 @@ public class TermPanel extends JPanel implements ActionListener{
     add(new JScrollPane(ptt));
     input=new JTextField();
     add(input, BorderLayout.SOUTH);
-    input.setText(""+term);
+    input.setText(String.valueOf(term));
     setVisible(true);
     input.addActionListener(this);
   }
@@ -77,7 +77,7 @@ public class TermPanel extends JPanel implements ActionListener{
    */
   public void setTerm(Term term){
     ptt.setStructure(term);
-    input.setText(""+term);
+    input.setText(String.valueOf(term));
     validate();
   }
 

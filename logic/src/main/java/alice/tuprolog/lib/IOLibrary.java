@@ -381,7 +381,7 @@ public class IOLibrary extends Library {
 
     }
 
-    public boolean nl_0() throws PrologError {
+    public boolean nl_0() {
         if (outputStreamName.equals(STDOUT_NAME)) { /* Changed from "stdout" to STDOUT_NAME */
             engine.output("\n");
         } else {

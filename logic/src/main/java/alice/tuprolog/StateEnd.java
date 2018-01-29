@@ -17,6 +17,8 @@
  */
 package alice.tuprolog;
 
+import jcog.list.FasterList;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -28,7 +30,7 @@ import java.util.StringTokenizer;
  */
 public class StateEnd extends State {
 
-    private final int endState;
+    public final int endState;
     private Struct goal;
     private List<Var> vars;
     private int setOfCounter;
@@ -43,10 +45,6 @@ public class StateEnd extends State {
         endState = end;
     }
 
-    public int getResultDemo() {
-        return endState;
-    }
-
     public Struct getResultGoal() {
         return goal;
     }
@@ -58,7 +56,7 @@ public class StateEnd extends State {
 
     @Override
     void run(Engine e) {
-        vars = new ArrayList<>();
+        vars = new FasterList<>();
         goal = (Struct) e.startGoal.copyResult(e.goalVars, vars);
 //        System.out.println("STATE END: STAMPO LE VAR del GOAL****"+e.goalVars);
 //        System.out.println("STATE END: STATE END "+vars+ " GOAL "+goal);  
@@ -109,7 +107,7 @@ public class StateEnd extends State {
                 Term gVar = (Var) a[y];
                 while (!findName && gVar != null && gVar instanceof Var) {
                     //System.out.println("**** ----- verifico uguaglianza con "+gVar);
-                    if (((Var) gVar).name().compareTo(((Var) link).name()) == 0) {
+                    if (gVar==link || ((Var) gVar).name().equals(((Var) link).name())) {
                         //System.out.println(link +" **** ----- ***** il nome uguale a "+gVar);
                         //System.out.println(((Struct)initGoalBag).getArg(0));
                         //System.out.println(link +" **** ----- ***** sostituisco "+initGoalBag+" in pos "+pos+" con "+(Var)a[y]);
@@ -239,12 +237,12 @@ public class StateEnd extends State {
                                 initGoalBagListVar.add(((Var) initGoalBagList.get(m)).name());
                         }
                         //System.out.println("Lista VAR "+initGoalBagListVar);
-                        ArrayList<Term> left = new ArrayList<>();
+                        List<Term> left = new ArrayList<>();
                         left.add(initGoalBagList.get(0));
-                        ArrayList<Term> right = new ArrayList<>();
-                        ArrayList<Term> right_temp = new ArrayList<>();
+                        List<Term> right = new ArrayList<>();
+                        List<Term> right_temp = new ArrayList<>();
                         //right.add(initGoalBagList.get(1));
-                        ArrayList<Term> left_temp = new ArrayList<>();
+                        List<Term> left_temp = new ArrayList<>();
                         for (int m = 1; m < initGoalBagList.size(); m++) {
                             int k = 0;
                             for (k = 0; k < left.size(); k++) {
@@ -310,7 +308,7 @@ public class StateEnd extends State {
                     initGoalBag = new Struct(initGoalBagTemp.name(), t1);
 
                     //System.out.println("Creo una lista a partire dalla struttura di initBag ");//serve per unificare
-                    ArrayList<Term> initBagList = new ArrayList<>();
+                    List<Term> initBagList = new ArrayList<>();
                     Struct initBagTemp = (Struct) ((Var) initBag).link();
                     while (initBagTemp.subs() > 0) {
                         Term t0 = initBagTemp.sub(0);
@@ -432,7 +430,7 @@ public class StateEnd extends State {
             //System.out.println("Le var della bagof sono "+c.getEngineMan().getBagOFvarSet());
             Var v = (Var) engineMan.getBagOFvarSet();
             Struct varList = (Struct) v.link(); //lista delle variabili nel goal bagof con nomi interni alla bagof
-            ArrayList<String> lGoalVar = new ArrayList<>(); //lista delle variabili nel goal bagof con nomi goal
+            List<String> lGoalVar = new ArrayList<>(); //lista delle variabili nel goal bagof con nomi goal
             //ArrayList<String> lGoalVar_copy=new ArrayList<String>() ; //????????mi serve la copia per sostituire le var sia nel goal originale che nel risultato
             //System.out.println("Lista variabili goal bagof nomi interni alla bagof varList "+varList);
             //Object[] a=(e.goalVars).toArray();

@@ -30,7 +30,7 @@ public class SubGoalStore {
      * Ripristina ClauseStore allo stato i-esimo
      */
     public Term backTo(SubGoal identifier) {
-        popSubGoal((SubGoal) identifier);
+        popSubGoal(identifier);
         index--;
         return fetch();
     }

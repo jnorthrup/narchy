@@ -4,7 +4,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.graph.Graph;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
-import jcog.data.graph.NodeGraph;
+import jcog.data.graph.MapNodeGraph;
 import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import spacegraph.SpaceGraph;
@@ -118,7 +118,7 @@ public class SimpleGraph1<X> extends DynamicListSpace<X> {
         return commit(g.nodes(), g::successors);
     }
 
-    public SimpleGraph1 commit(NodeGraph<X,Object> g) {
+    public SimpleGraph1 commit(MapNodeGraph<X,Object> g) {
         return commit(
                 Iterables.transform(g.nodes(), x-> x.id),
                 x-> Iterables.transform(
@@ -162,15 +162,15 @@ public class SimpleGraph1<X> extends DynamicListSpace<X> {
         g.putEdge(("y"), ("z"));
         g.putEdge(("y"), ("w"));
 
-        NodeGraph h = new NodeGraph();
-        h.add(("x"));
-        h.add(("y"));
-        h.add(("z"));
-        h.add(("a"));
-        h.edgeAdd(("x"), ("xy"), ("y"));
-        h.edgeAdd(("x"), ("xz"), ("z"));
-        h.edgeAdd(("y"), ("yz"), ("z"));
-        h.edgeAdd(("a"), ("ay"), ("y"));
+        MapNodeGraph h = new MapNodeGraph();
+        h.addNode(("x"));
+        h.addNode(("y"));
+        h.addNode(("z"));
+        h.addNode(("a"));
+        h.addEdge(("x"), ("xy"), ("y"));
+        h.addEdge(("x"), ("xz"), ("z"));
+        h.addEdge(("y"), ("yz"), ("z"));
+        h.addEdge(("a"), ("ay"), ("y"));
 
         SimpleGraph1 cs = new SimpleGraph1() {
             @Override

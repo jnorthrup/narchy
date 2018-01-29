@@ -6,7 +6,8 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import jcog.TODO;
 import jcog.Util;
-import jcog.data.graph.NodeGraph;
+import jcog.data.graph.ImmutableDirectedEdge;
+import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.search.Search;
 import jcog.list.Cons;
 import jcog.list.FasterList;
@@ -44,7 +45,7 @@ import static nars.time.Tense.*;
  * DTERNAL relationships can be maintained separate
  * from +0.
  */
-public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
+public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
     private static final boolean dternalAsZero = false;
     private static final boolean autoUnneg = true;
@@ -145,7 +146,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             e = new Relative(t);
         }
 
-        return add ? add(e).id : event(e);
+        return add ? addNode(e).id : event(e);
     }
 
     //    protected Event absolute(Term t) {
@@ -175,13 +176,13 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     }
 
     public Event event(Event e) {
-        Node<Event, TimeSpan> existing = node(e);
+        Node<nars.derive.time.TimeGraph.Event,nars.derive.time.TimeGraph.TimeSpan> existing = node(e);
         return existing != null ? existing.id : e;
     }
 
 
     public boolean link(Event before, TimeSpan e, Event after) {
-        return edgeAdd(add(before), e, add(after));
+        return addEdge(addNode(before), e, addNode(after));
     }
 
     public void link(Event x, long dt, Event y) {
@@ -219,7 +220,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     }
 
     @Override
-    protected void onAdd(Node<Event, TimeSpan> x) {
+    protected void onAdd(Node<nars.derive.time.TimeGraph.Event,nars.derive.time.TimeGraph.TimeSpan> x) {
         Event event = x.id;
         Term eventTerm = event.id;
 
@@ -505,7 +506,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
                 return bfs(rels, new CrossTimeSolver() {
                     @Override
-                    protected boolean next(BooleanObjectPair<Edge<Event, TimeSpan>> move, Node<Event, TimeSpan> next) {
+                    protected boolean next(BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>> move, Node<nars.derive.time.TimeGraph.Event,nars.derive.time.TimeGraph.TimeSpan> next) {
 
                         //System.out.println(path);
 
@@ -843,7 +844,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
         return bfs(x, new CrossTimeSolver() {
             @Override
-            protected boolean next(BooleanObjectPair<Edge<Event, TimeSpan>> move, Node<Event, TimeSpan> n) {
+            protected boolean next(BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>> move, Node<nars.derive.time.TimeGraph.Event,nars.derive.time.TimeGraph.TimeSpan> n) {
 
                 if (n.id instanceof Absolute) {
 
@@ -876,17 +877,17 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     abstract protected class TimeSolver extends Search<Event, TimeSpan> {
 
 
-        @Nullable Iterator<Edge<Event, TimeSpan>> dynamicLink(Node<Event, TimeSpan> n) {
+        @Nullable Iterator<ImmutableDirectedEdge<Event, TimeSpan>> dynamicLink(Node<nars.derive.time.TimeGraph.Event,nars.derive.time.TimeGraph.TimeSpan> n) {
             return dynamicLink(n, x -> true);
         }
 
-        @Nullable Iterator<Edge<Event, TimeSpan>> dynamicLink(Node<Event, TimeSpan> n, Predicate<Event> preFilter) {
+        @Nullable Iterator<ImmutableDirectedEdge<Event, TimeSpan>> dynamicLink(Node<nars.derive.time.TimeGraph.Event,nars.derive.time.TimeGraph.TimeSpan> n, Predicate<Event> preFilter) {
             Iterator<Event> x = byTerm.get(n.id.id).iterator();
             return x.hasNext() ? Iterators.transform(Iterators.filter(Iterators.transform(
                     Iterators.filter(x, preFilter::test),
                     TimeGraph.this::node),
                     e -> e != n && !log.hasVisited(e)),
-                    that -> new Edge<>(n, that, TS_ZERO) //co-occurring
+                    that -> new ImmutableDirectedEdge<>(n, that, TS_ZERO) //co-occurring
             ) : null;
         }
 
@@ -900,14 +901,14 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         /**
          * computes the length of time spanned from start to the end of the given path
          */
-        long pathTime(List<BooleanObjectPair<Edge<Event, TimeSpan>>> path, boolean eternalAsZero) {
+        long pathTime(List<BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>>> path, boolean eternalAsZero) {
 
             long t = 0;
             //compute relative path
-            for (BooleanObjectPair<Edge<Event, TimeSpan>> r : path) {
+            for (BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>> r : path) {
 //            for (int i = 0, pathSize = path.size(); i < pathSize; i++) {
 //                BooleanObjectPair<Edge<Event, TimeSpan>> r = path.get(i);
-                Edge<Event, TimeSpan> event = r.getTwo();
+                ImmutableDirectedEdge<Event, TimeSpan> event = r.getTwo();
 
                 long spanDT = event.id.dt;
 
@@ -926,14 +927,14 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
             return t;
         }
 
-        protected Event pathStart(List<BooleanObjectPair<Edge<Event, TimeSpan>>> path) {
-            BooleanObjectPair<Edge<Event, TimeSpan>> step = path.get(0);
+        protected Event pathStart(List<BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>>> path) {
+            BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>> step = path.get(0);
             return step.getTwo().from(step.getOne()).id;
         }
 
-        protected Event pathEnd(List<BooleanObjectPair<Edge<Event, TimeSpan>>> path) {
-            BooleanObjectPair<Edge<Event, TimeSpan>> step = path instanceof Cons ?
-                    ((Cons<BooleanObjectPair<Edge<Event,TimeSpan>>>)path).tail : path.get(path.size()-1);
+        protected Event pathEnd(List<BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>>> path) {
+            BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>> step = path instanceof Cons ?
+                    ((Cons<BooleanObjectPair<ImmutableDirectedEdge<Event,TimeSpan>>>)path).tail : path.get(path.size()-1);
             return step.getTwo().to(step.getOne()).id;
         }
 
@@ -945,7 +946,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
          * returns (startTime, dt) if solved, null if dt can not be calculated.
          */
         @Nullable
-        protected long[] pathDT(Node<Event, TimeSpan> n, Term a, Term b, List<BooleanObjectPair<Edge<Event, TimeSpan>>> path) {
+        protected long[] pathDT(Node<nars.derive.time.TimeGraph.Event,nars.derive.time.TimeGraph.TimeSpan> n, Term a, Term b, List<BooleanObjectPair<ImmutableDirectedEdge<Event, TimeSpan>>> path) {
             Term endTerm = n.id.id;
             int adjEnd;
             boolean endA = ((adjEnd = a.subTimeSafe(endTerm))==0); //TODO use offset for the endTerm if endTermRelB!=0 and !=DTERNAL (not sub event)
@@ -1035,11 +1036,11 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
     abstract protected class CrossTimeSolver extends TimeSolver {
 
         @Override
-        protected Iterable<Edge<Event, TimeSpan>> next(Node<Event, TimeSpan> n) {
-            Iterable<Edge<Event, TimeSpan>> e = n.edges(true, true);
+        protected Iterable<ImmutableDirectedEdge<Event, TimeSpan>> next(Node<nars.derive.time.TimeGraph.Event,nars.derive.time.TimeGraph.TimeSpan> n) {
+            Iterable<ImmutableDirectedEdge<Event, TimeSpan>> e = n.edges(true, true);
 
             //must be cached to avoid concurrent modification exception
-            Iterator<Edge<Event, TimeSpan>> d = dynamicLink(n);
+            Iterator<ImmutableDirectedEdge<Event, TimeSpan>> d = dynamicLink(n);
 
             return (d != null && d.hasNext()) ? Iterables.concat(e, new FasterList<>(d)) : e;
         }

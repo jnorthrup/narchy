@@ -92,13 +92,13 @@ public class SpyFrame extends JFrame implements ActionListener, SpyListener{
 
     }
 };
-  Prolog prolog;
+  final Prolog prolog;
   Thread pprocess;
-  JTextField number;
-  JTextArea results;
-  JButton next;
+  final JTextField number;
+  final JTextArea results;
+  final JButton next;
   int steps;
-  Tree<List<ExecutionContext>> tree;
+  final Tree<List<ExecutionContext>> tree;
 
   /** Creates the main window for spying a prolog goal finding process.
    * @param theory for the prolog engine.

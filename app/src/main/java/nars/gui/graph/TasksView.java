@@ -2,6 +2,7 @@ package nars.gui.graph;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.NodeGraph;
 import nars.Task;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
@@ -37,7 +38,7 @@ public class TasksView extends MutableContainer {
 
     public void layoutTimeline() {
 
-        final NodeGraph<Surface, String> graph = new NodeGraph();
+        final MapNodeGraph<Surface, String> graph = new MapNodeGraph();
 
         float tScale = 100;
         float tMin = tScale;
@@ -49,20 +50,20 @@ public class TasksView extends MutableContainer {
 
             Task t = c.task;
 
-            NodeGraph.Node<Surface, String> tn = graph.add(c);
+            NodeGraph.MutableNode<Surface, String> tn = graph.addNode(c);
 
             for (long e : t.stamp()) {
-                NodeGraph.Node en = graph.node(evidences.getIfAbsentPutWithKey(e, (ee) -> {
+                NodeGraph.MutableNode en = graph.node(evidences.getIfAbsentPutWithKey(e, (ee) -> {
                     Surface s = new PushButton("_" + ee);
 
                     //TODO make evidence buttons visibility toggleable
                     //children.add(s);
 
-                    graph.add(s);
+                    graph.addNode(s);
                     return s;
                 }));
 
-                graph.edgeAdd(en, "stamp", tn);
+                graph.addEdge(en, "stamp", tn);
             }
 
             float minH = 30;
@@ -114,7 +115,7 @@ public class TasksView extends MutableContainer {
 
     }
 
-    private void layoutForceDirect(NodeGraph<Surface, String> graph) {
+    private void layoutForceDirect(MapNodeGraph<Surface, String> graph) {
 
 
         float maxRepelDist = 2000;
@@ -147,7 +148,7 @@ public class TasksView extends MutableContainer {
     /**
      * speed < 0 = repel, speed > 0 = attract
      */
-    private void direct(float limit, float speed, NodeGraph.Node<Surface, String> a, NodeGraph.Node<Surface, String> b) {
+    private void direct(float limit, float speed, NodeGraph.Node<spacegraph.Surface,String> a, NodeGraph.Node<spacegraph.Surface,String> b) {
         v2 ac = new v2(a.id.x(), a.id.y());
 
         v2 bc = new v2(b.id.x(), b.id.y());

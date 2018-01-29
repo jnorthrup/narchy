@@ -1,5 +1,6 @@
 package jcog.data.graph.search;
 
+import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.NodeGraph;
 import jcog.list.FasterList;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
@@ -43,12 +44,12 @@ class NodeGraphTest {
 
 
     static NodeGraph g1() {
-        NodeGraph n = new NodeGraph();
-        n.add("a");
-        n.add("b");
-        n.add("c");
-        n.add("d");
-        n.add("e");
+        MapNodeGraph n = new MapNodeGraph();
+        n.addNode("a");
+        n.addNode("b");
+        n.addNode("c");
+        n.addNode("d");
+        n.addNode("e");
         edge(n, "a", "b");
         edge(n, "b", "c");
         edge(n, "c", "d");
@@ -56,7 +57,7 @@ class NodeGraphTest {
         return n;
     }
 
-    static void edge(NodeGraph n, String a, String b) {
-        n.edgeAdd(a, a+b, b);
+    static void edge(MapNodeGraph n, String a, String b) {
+        n.addEdge(a, a+b, b);
     }
 }

@@ -3,6 +3,8 @@ package nars.term.atom;
 import jcog.Util;
 import nars.Op;
 
+import java.io.IOException;
+
 import static java.lang.System.arraycopy;
 
 /**
@@ -65,6 +67,17 @@ public abstract class AtomicConst implements Atomic {
         return new String(bytesCached, 3, bytesCached.length-3);
     }
 
+
+    @Override
+    public void append(Appendable w) throws IOException {
+        //TODO 2-char special case
+        if (bytesCached.length==3+1) {
+            //special case single char ASCII
+            w.append((char)bytesCached[3]);
+        } else {
+            Atomic.super.append(w);
+        }
+    }
 
     @Override
     public int complexity() {

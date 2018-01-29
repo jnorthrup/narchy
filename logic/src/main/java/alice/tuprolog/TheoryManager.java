@@ -298,7 +298,7 @@ public class TheoryManager {
     /**
      * remove all the clauses of lib theory
      */
-    public synchronized void removeLibraryTheory(String libName) {
+    public void removeLibraryTheory(String libName) {
         for (Iterator<ClauseInfo> allClauses = staticDBase.iterator(); allClauses.hasNext(); ) {
             ClauseInfo d = allClauses.next();
             if (d.libName != null && libName.equals(d.libName)) {
