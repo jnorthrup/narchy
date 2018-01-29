@@ -68,7 +68,7 @@ class NodeGraphTest {
         MapNodeGraph<Object, Object> h = new MapNodeGraph<>();
         h.addEdge(h.addNode("y"), "yx", h.addNode("x"));
 
-        ObjectGraph o = new ObjectGraph(h) {
+        ObjectGraph o = new ObjectGraph(3, h) {
 
             @Override
             protected boolean access(Object root, FasterList<Pair<Class, ObjectGraph.Accessor>> path, Object target) {

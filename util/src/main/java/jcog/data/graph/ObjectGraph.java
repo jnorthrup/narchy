@@ -1,13 +1,16 @@
 package jcog.data.graph;
 
+import jcog.TODO;
 import jcog.list.FasterList;
 import org.eclipse.collections.api.tuple.Pair;
+import org.eclipse.collections.impl.list.mutable.FastList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.IdentityHashMap;
+import java.util.function.BiConsumer;
 import java.util.stream.Stream;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -19,14 +22,23 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
 
     private static final Logger logger = LoggerFactory.getLogger(ObjectGraph.class);
 
-    public ObjectGraph(Object... seeds) {
-        super(new IdentityHashMap<>());
-        for (Object x: seeds)
-            add(x, 3);
+    public ObjectGraph(int depth, Object... seeds) {
+        this();
+        add(depth, seeds);
     }
 
-    protected MutableNode<Object,Accessor> add(Object x, int level) {
-        return add(x, x, new FasterList<>(), level);
+    public ObjectGraph() {
+        super(new IdentityHashMap<>());
+    }
+
+    public ObjectGraph add(int depth, Object... xx) {
+        for (Object x: xx)
+            add(x, depth);
+        return this;
+    }
+
+    public MutableNode<Object,Accessor> add(Object x, int depth) {
+        return add(x, x, new FasterList<>(), depth);
     }
 
     protected MutableNode<Object,Accessor> add(Object root, Object x, FasterList<Pair<Class,Accessor>> path, int level) {
@@ -162,9 +174,24 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
         return s;
     }
 
-    public static class Accessor {
-
+    /** creates a field setter from a path */
+    public static <X,V> BiConsumer<X,V> setter(FastList<Pair<Class, Accessor>> path) {
+        return (X root, V val) -> {
+            Object current = root;
+            for (int i = 0, pathSize = path.size()-1; i < pathSize; i++) {
+                Pair<Class, Accessor> p = path.get(i);
+                current = p.getTwo().get(current);
+            }
+            path.getLast().getTwo().set(current, val);
+        };
     }
+
+    abstract public static class Accessor {
+        abstract Object get(Object container);
+        abstract void set(Object container, Object value);
+    }
+
+    /** TODO use VarHandle or something faster than reflect.Field */
     static class FieldAccessor extends Accessor {
         final Field field;
 
@@ -175,6 +202,24 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
         @Override
         public String toString() {
             return field.getName();
+        }
+
+        @Override
+        Object get(Object container) {
+            try {
+                return field.get(container);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        @Override
+        void set(Object container, Object value) {
+            try {
+                field.set(container, value);
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -190,6 +235,16 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
         @Override
         public String toString() {
             return type + "[" + index + ']';
+        }
+
+        @Override
+        Object get(Object container) {
+            throw new TODO();
+        }
+
+        @Override
+        void set(Object container, Object value) {
+            throw new TODO();
         }
     }
 }

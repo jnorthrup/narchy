@@ -362,7 +362,7 @@ public class Line1D {
                 x.truthResolution.setValue(y);
             })*/;
 
-            Optimize.Result r = o.run(64, maxIterations, repeats, new Line1DExperiment());
+            Optimize.Result r = o.run(maxIterations, repeats, new Line1DExperiment());
 
             r.print();
 

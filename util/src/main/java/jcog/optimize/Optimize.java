@@ -1,18 +1,15 @@
 package jcog.optimize;
 
-import jcog.Util;
 import jcog.list.FasterList;
 import jcog.meter.event.CSVOutput;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.math3.optim.InitialGuess;
-import org.apache.commons.math3.optim.MaxEval;
-import org.apache.commons.math3.optim.PointValuePair;
-import org.apache.commons.math3.optim.SimpleBounds;
+import org.apache.commons.math3.optim.*;
 import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction;
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.BOBYQAOptimizer;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 import org.eclipse.collections.api.tuple.primitive.DoubleObjectPair;
 import org.intelligentjava.machinelearning.decisiontree.FloatTable;
 import org.intelligentjava.machinelearning.decisiontree.RealDecisionTree;
@@ -30,9 +27,11 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  * Optimization solver wrapper w/ lambdas
  */
 public class Optimize<X> {
+
     final Supplier<X> subject;
 
     public final List<Tweak<X>> tweaks = new FasterList();
+
     private final boolean trace = true;
     private final static Logger logger = LoggerFactory.getLogger(Optimize.class);
     private CSVOutput csv;
@@ -42,23 +41,29 @@ public class Optimize<X> {
     }
 
 
-    public /*@NotNull*/ Optimize<X> tweak(int min, int max, FloatObjectProcedure<X> apply) {
+    public /*@NotNull*/ Optimize<X> tweak(int min, int max, ObjectFloatProcedure<X> apply) {
         return tweak(min, max, 1, apply);
     }
 
-    public /*@NotNull*/ Optimize<X> tweak(int min, int max, int inc, FloatObjectProcedure<X> apply) {
+    public /*@NotNull*/ Optimize<X> tweak(String key, int min, int max, int inc, ObjectIntProcedure<X> apply) {
+        return tweak(key, min, max, inc, (ObjectFloatProcedure<X>)(X x, float v)->{
+            apply.accept(x, Math.round(v));
+        });
+    }
+
+//    public /*@NotNull*/ Optimize<X> tweak(int min, int max, int inc, ObjectFloatProcedure<X> apply) {
+//        return tweak(apply.toString(), min, max, inc, apply);
+//    }
+
+    public /*@NotNull*/ Optimize<X> tweak(String key, int min, int max, ObjectFloatProcedure<X> apply) {
+        return tweak(key, min, max, 1f, apply);
+    }
+
+    public /*@NotNull*/ Optimize<X> tweak(float min, float max, float inc, ObjectFloatProcedure<X> apply) {
         return tweak(apply.toString(), min, max, inc, apply);
     }
 
-    public /*@NotNull*/ Optimize<X> tweak(String parameter, int min, int max, FloatObjectProcedure<X> apply) {
-        return tweak(parameter, min, max, 1f, apply);
-    }
-
-    public /*@NotNull*/ Optimize<X> tweak(float min, float max, float inc, FloatObjectProcedure<X> apply) {
-        return tweak(apply.toString(), min, max, inc, apply);
-    }
-
-    public Optimize<X> tweak(String parameter, float min, float max, float inc, FloatObjectProcedure<X> apply) {
+    public Optimize<X> tweak(String parameter, float min, float max, float inc, ObjectFloatProcedure<X> apply) {
         tweaks.add(new FloatRange<>(parameter, min, max, inc, apply));
         return this;
     }
@@ -86,13 +91,13 @@ public class Optimize<X> {
 
     /*@NotNull*/
     public Result run(int maxIterations, FloatFunction<X> eval) {
+
         return run(
-                (int) (16 * Math.round(Util.sqr(tweaks.size()))) /* estimate */,
                 maxIterations, 1, eval);
     }
 
     /*@NotNull*/
-    public Result run(int populationSize, int maxIterations, int repeats, @NotNull FloatFunction<X> eval) {
+    public Result run(int maxIterations, int repeats, @NotNull FloatFunction<X> eval) {
 
         int i = 0;
         int n = tweaks.size();
@@ -149,6 +154,7 @@ public class Optimize<X> {
 
         startExperiments();
 
+//                pop size = (int) (16 * Math.round(Util.sqr(tweaks.size()))) /* estimate */,
 //        CMAESOptimizer optim = new CMAESOptimizer(maxIterations, Double.NEGATIVE_INFINITY, true, 0,
 //                1, new MersenneTwister(3), false, null);
 //        PointValuePair r = optim.optimize(
@@ -163,8 +169,12 @@ public class Optimize<X> {
 
         int dim = tweaks.size();
         final int numIterpolationPoints = 3 * dim; //2 * dim + 1 + 1;
-        PointValuePair r = new BOBYQAOptimizer(numIterpolationPoints, dim * 2.0, 1.0E-8D)
-                    .optimize(new MaxEval(maxIterations),
+        PointValuePair r = new BOBYQAOptimizer(numIterpolationPoints,
+                dim * 2.0,
+                1.0E-3D)
+                    .optimize(
+                        MaxEval.unlimited(), //new MaxEval(maxIterations),
+                        new MaxIter(maxIterations),
                         func,
                         GoalType.MAXIMIZE,
                         new SimpleBounds(min, max),
@@ -201,7 +211,7 @@ public class Optimize<X> {
         X x = subject.get();
         int i1 = 0;
         for (int i = 0, tweaksSize = tweaks.size(); i < tweaksSize; i++) {
-            tweaks.get(i).apply.value((float) point[i1++], x);
+            tweaks.get(i).apply.value(x, (float) point[i1++]);
         }
         return x;
     }
@@ -260,10 +270,10 @@ public class Optimize<X> {
      * a knob but cooler
      */
     public static class Tweak<X> {
-        public final FloatObjectProcedure<X> apply;
+        public final ObjectFloatProcedure<X> apply;
         private final String id;
 
-        public Tweak(String id, FloatObjectProcedure<X> apply) {
+        public Tweak(String id, ObjectFloatProcedure<X> apply) {
             this.id = id;
             this.apply = apply;
         }
@@ -279,7 +289,7 @@ public class Optimize<X> {
         private final float min, max;
         private final float inc;
 
-        private FloatRange(String parameter, float min, float max, float inc, FloatObjectProcedure<X> apply) {
+        private FloatRange(String parameter, float min, float max, float inc, ObjectFloatProcedure<X> apply) {
             super(parameter, apply);
             this.parameter = parameter;
             this.min = min;
