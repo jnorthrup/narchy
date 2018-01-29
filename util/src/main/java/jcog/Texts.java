@@ -300,6 +300,8 @@ public enum Texts {
                 return ".99";
             case 90:
                 return ".90";
+            case 50:
+                return ".50";
             case 0:
                 return "0.0";
         }

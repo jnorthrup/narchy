@@ -6,6 +6,7 @@ import nars.*;
 import nars.concept.SensorConcept;
 import nars.gui.ConceptSurface;
 import nars.gui.Vis;
+import nars.op.Implier;
 
 import javax.swing.*;
 import java.awt.*;
@@ -152,6 +153,8 @@ public class PoleCart extends NAgentX {
 //            nar.goal(f[0].term, Tense.Eternal, 0f, 0.01f);
 //            nar.goal(f[1].term, Tense.Eternal, 0f, 0.01f);
         }
+
+        new Implier(1, this, new float[] { 0, 1 });
 
 
 //        actionUnipolar($.p("left"), (a) -> {

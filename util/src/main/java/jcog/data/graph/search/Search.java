@@ -1,6 +1,7 @@
-package jcog.data.graph.hgraph;
+package jcog.data.graph.search;
 
 import com.google.common.collect.Iterators;
+import jcog.data.graph.NodeGraph;
 import jcog.list.Cons;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
@@ -21,8 +22,8 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 abstract public class Search<N, E> {
 
     public final TraveLog log;
-    public List<BooleanObjectPair<Edge<N, E>>> path = null;
-    protected Node<N, E> at = null;
+    public List<BooleanObjectPair<NodeGraph.Edge<N, E>>> path = null;
+    protected NodeGraph.Node<N, E> at = null;
 
     protected Search() {
         this(new TraveLog.IntHashTraveLog());
@@ -42,37 +43,37 @@ abstract public class Search<N, E> {
         path = null;
     }
 
-    protected boolean bfs(Node<N, E> start, Queue<Pair<List<BooleanObjectPair<Edge<N, E>>>, Node<N, E>>> q) {
+    public boolean bfs(NodeGraph.Node<N, E> start, Queue<Pair<List<BooleanObjectPair<NodeGraph.Edge<N, E>>>, NodeGraph.Node<N, E>>> q) {
 
 
         q.add(Tuples.pair(path = Collections.emptyList(), start));
         log.visit(start);
 
-        Pair<List<BooleanObjectPair<Edge<N, E>>>, Node<N, E>> current;
+        Pair<List<BooleanObjectPair<NodeGraph.Edge<N, E>>>, NodeGraph.Node<N, E>> current;
         while ((current = q.poll()) != null) {
 
-            Node<N, E> at = this.at = current.getTwo();
+            NodeGraph.Node<N, E> at = this.at = current.getTwo();
 
-            List<BooleanObjectPair<Edge<N, E>>> path = current.getOne();
+            List<BooleanObjectPair<NodeGraph.Edge<N, E>>> path = current.getOne();
             this.path = path;
 
 
-            Iterator<Edge<N, E>> ee = next(at).iterator();
+            Iterator<NodeGraph.Edge<N, E>> ee = next(at).iterator();
             while (ee.hasNext()) {
-                Edge<N, E> e = ee.next();
-                Node<N, E> next = e.other(at);
+                NodeGraph.Edge<N, E> e = ee.next();
+                NodeGraph.Node<N, E> next = e.other(at);
                 if (!log.visit(next))
                     continue;
 
-                List<BooleanObjectPair<Edge<N, E>>> pp = Cons.the(path, pair(next == e.to, e));
+                List<BooleanObjectPair<NodeGraph.Edge<N, E>>> pp = Cons.the(path, pair(next == e.to, e));
                 q.add(Tuples.pair(pp, next));
             }
 
 
-            Node<N, E> next = current.getTwo();
+            NodeGraph.Node<N, E> next = current.getTwo();
             if (start != next) {
-                BooleanObjectPair<Edge<N, E>> move =
-                        path instanceof Cons ? ((Cons<BooleanObjectPair<Edge<N, E>>>) path).tail : path.get(path.size() - 1);
+                BooleanObjectPair<NodeGraph.Edge<N, E>> move =
+                        path instanceof Cons ? ((Cons<BooleanObjectPair<NodeGraph.Edge<N, E>>>) path).tail : path.get(path.size() - 1);
                 //guard
                 if (!next(move, next))
                     return false; //leaves path intact on exit
@@ -85,12 +86,12 @@ abstract public class Search<N, E> {
         return true;
     }
 
-    protected boolean dfs(Node<N, E> current) {
+    public boolean dfs(NodeGraph.Node<N, E> current) {
 
         if (!log.visit(current))
             return true; //skip
 
-        Iterator<Edge<N, E>> n = next(current).iterator();
+        Iterator<NodeGraph.Edge<N, E>> n = next(current).iterator();
         if (!n.hasNext())
             return true;
 
@@ -98,12 +99,12 @@ abstract public class Search<N, E> {
 
         return Iterators.all(n, e -> {
 
-            Node<N, E> next = e.other(this.at);
+            NodeGraph.Node<N, E> next = e.other(this.at);
 
             if (log.hasVisited(next))
                 return true; //pre-skip, avoiding some work
 
-            BooleanObjectPair<Edge<N, E>> move = pair(next == e.to, e);
+            BooleanObjectPair<NodeGraph.Edge<N, E>> move = pair(next == e.to, e);
 
             //push
             path.add(move);
@@ -121,9 +122,9 @@ abstract public class Search<N, E> {
 
     }
 
-    protected Iterable<Edge<N, E>> next(Node<N, E> current) {
+    protected Iterable<NodeGraph.Edge<N, E>> next(NodeGraph.Node<N, E> current) {
         return current.edges(true, true);
     }
 
-    abstract protected boolean next(BooleanObjectPair<Edge<N, E>> move, Node<N, E> next);
+    abstract protected boolean next(BooleanObjectPair<NodeGraph.Edge<N, E>> move, NodeGraph.Node<N, E> next);
 }

@@ -1,5 +1,6 @@
-package jcog.data.graph.hgraph;
+package jcog.data.graph.search;
 
+import jcog.data.graph.NodeGraph;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 
 /** search log history for detecting cycles, reachability, etc */
@@ -7,12 +8,12 @@ public interface TraveLog {
     void clear();
 
     /** returns false if it was already added */
-    boolean visit(Node n);
+    boolean visit(NodeGraph.Node n);
 
 
-    void unvisit(Node n);
+    void unvisit(NodeGraph.Node n);
 
-    boolean hasVisited(Node n);
+    boolean hasVisited(NodeGraph.Node n);
 
 
     //TODO: reachable, etc
@@ -27,17 +28,17 @@ public interface TraveLog {
         }
 
         @Override
-        public boolean visit(Node n) {
+        public boolean visit(NodeGraph.Node n) {
             return visit.add(n.serial);
         }
 
         @Override
-        public void unvisit(Node n) {
+        public void unvisit(NodeGraph.Node n) {
             visit.remove(n.serial);
         }
 
         @Override
-        public boolean hasVisited(Node n) {
+        public boolean hasVisited(NodeGraph.Node n) {
             return visit.contains(n.serial);
         }
 

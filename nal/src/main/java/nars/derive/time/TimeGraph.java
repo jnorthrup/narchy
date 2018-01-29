@@ -6,10 +6,8 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import jcog.TODO;
 import jcog.Util;
-import jcog.data.graph.hgraph.Edge;
-import jcog.data.graph.hgraph.Node;
-import jcog.data.graph.hgraph.NodeGraph;
-import jcog.data.graph.hgraph.Search;
+import jcog.data.graph.NodeGraph;
+import jcog.data.graph.search.Search;
 import jcog.list.Cons;
 import jcog.list.FasterList;
 import nars.Op;
@@ -423,16 +421,21 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
                     if (ax instanceof Absolute) ae.add(ax);
                     return true;
                 });
-                if (!ae.isEmpty()) {
+                int aes = ae.size();
+                if (aes > 0) {
                     solveOccurrence(event(b, TIMELESS), bx -> {
                         if (bx instanceof Absolute) be.add(bx);
                         return true;
                     });
-                    if (!be.isEmpty()) {
-                        if (!ae.allSatisfy(ax ->
-                                be.allSatisfyWith((bx, axx) ->
-                                        solveDT(x, each, axx, bx), ax)))
-                            return false;
+                    int bes = be.size();
+                    if (bes > 0) {
+                        //search only if one to N; there may be incorrect possibilities among N to N comparisons
+                        if (aes == 1 || bes == 1) {
+                            if (!ae.allSatisfy(ax ->
+                                    be.allSatisfyWith((bx, axx) ->
+                                            solveDT(x, each, axx, bx), ax)))
+                                return false;
+                        }
                     }
                 }
             }
@@ -897,7 +900,7 @@ public class TimeGraph extends NodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
         /**
          * computes the length of time spanned from start to the end of the given path
          */
-        public long pathTime(List<BooleanObjectPair<Edge<Event, TimeSpan>>> path, boolean eternalAsZero) {
+        long pathTime(List<BooleanObjectPair<Edge<Event, TimeSpan>>> path, boolean eternalAsZero) {
 
             long t = 0;
             //compute relative path

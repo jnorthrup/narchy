@@ -100,7 +100,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
      * provide constant access to nodes based on indexes.
      */
     public final ObjectIntHashMap<Node<V>> nodes;
-    private final IntObjectHashMap<Node<V>> antinodes;
+    public final IntObjectHashMap<Node<V>> antinodes;
 
 
     /**

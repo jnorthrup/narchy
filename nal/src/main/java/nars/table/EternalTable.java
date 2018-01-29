@@ -13,6 +13,7 @@ import nars.link.Tasklinks;
 import nars.task.NALTask;
 import nars.task.Revision;
 import nars.term.Term;
+import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -193,44 +194,55 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
                 return x;
             }
 
-            //TODO use overlappingFraction
-            if (Stamp.overlapping(y, x)) {
+
+            //same conf, same stamp, both non-cyclic; interpolate to avoid one being preferred over another arbitrarily
+            if (Util.equals(x.conf(), y.conf(), nar.confResolution.floatValue()) &&
+                    (!x.isCyclic() && !y.isCyclic()) && x.stamp().equals(y.stamp())) {
+
+                conclusion = new PreciseTruth(0.5f * (x.freq() + y.freq()), x.conf());
+
+            } else if (Stamp.overlapping(y, x)) {
                 boolean FILTER_WEAKER_BUT_EQUAL = false;
                 if (FILTER_WEAKER_BUT_EQUAL && !y.isInput() && x.conf() >= y.conf() &&
                     Util.equals(x.freq(), y.freq(), nar.freqResolution.floatValue()) &&
                     Arrays.equals(y.stamp(), x.stamp())) {
                     y.delete();
                     return null; //subsume by stronger belief with same freq and stamp
-                } else {
-                    continue;
                 }
+
+                continue; //unrevisable
+
+            } else {
+
+
+                //
+                //            float factor = tRel * freqMatch;
+                //            if (factor < best) {
+                //                //even with conf=1.0 it wouldnt be enough to exceed existing best match
+                //                continue;
+                //            }
+
+                //            float minValidConf = Math.min(newBeliefConf, x.conf());
+                //            if (minValidConf < bestConf) continue;
+                //            float minValidRank = BeliefTable.rankEternalByOriginality(minValidConf, totalEvidence);
+                //            if (minValidRank < bestRank) continue;
+
+                Truth xt = x.truth();
+
+                //TODO use overlappingFraction?
+
+                Truth yt = Revision.revise(newBeliefTruth, xt, 1f, conclusion == null ? 0 : conclusion.evi());
+                if (yt == null)
+                    continue;
+
+                yt = yt.ditherDiscrete(nar);
+                if (yt == null || yt.equals(xt, nar) || yt.equals(newBeliefTruth, nar)) ////avoid a weak or duplicate truth
+                    continue;
+
+                conclusion = yt;
             }
 
-
-            //
-            //            float factor = tRel * freqMatch;
-            //            if (factor < best) {
-            //                //even with conf=1.0 it wouldnt be enough to exceed existing best match
-            //                continue;
-            //            }
-
-            //            float minValidConf = Math.min(newBeliefConf, x.conf());
-            //            if (minValidConf < bestConf) continue;
-            //            float minValidRank = BeliefTable.rankEternalByOriginality(minValidConf, totalEvidence);
-            //            if (minValidRank < bestRank) continue;
-
-            Truth xt = x.truth();
-
-            Truth yt = Revision.revise(newBeliefTruth, xt, 1f, conclusion == null ? 0 : conclusion.evi());
-            if (yt == null)
-                continue;
-
-            yt = yt.ditherDiscrete(nar);
-            if (yt == null || yt.equals(xt,nar) || yt.equals(newBeliefTruth, nar)) ////avoid a weak or duplicate truth
-                continue;
-
             oldBelief = x;
-            conclusion = yt;
 
         }
 

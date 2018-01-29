@@ -24,7 +24,7 @@ public class PreciseTruth implements Truth {
         assert ((freq == freq) && (freq >= 0) && (freq <= 1)):
                 "invalid freq: " + freq;
         this.f = freq;
-        assert ((ce == ce) && (ce > 0)):
+        assert ((ce == ce) && (ce >= Float.MIN_NORMAL)):
                 "invalid evidence/conf: " + ce;
         float e;
         if (xIsConfOrEvidence) {

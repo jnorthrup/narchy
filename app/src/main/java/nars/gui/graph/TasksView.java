@@ -2,8 +2,7 @@ package nars.gui.graph;
 
 import jcog.TODO;
 import jcog.Util;
-import jcog.data.graph.hgraph.Node;
-import jcog.data.graph.hgraph.NodeGraph;
+import jcog.data.graph.NodeGraph;
 import nars.Task;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import spacegraph.SpaceGraph;
@@ -50,10 +49,10 @@ public class TasksView extends MutableContainer {
 
             Task t = c.task;
 
-            Node<Surface, String> tn = graph.add(c);
+            NodeGraph.Node<Surface, String> tn = graph.add(c);
 
             for (long e : t.stamp()) {
-                Node en = graph.node(evidences.getIfAbsentPutWithKey(e, (ee) -> {
+                NodeGraph.Node en = graph.node(evidences.getIfAbsentPutWithKey(e, (ee) -> {
                     Surface s = new PushButton("_" + ee);
 
                     //TODO make evidence buttons visibility toggleable
@@ -148,7 +147,7 @@ public class TasksView extends MutableContainer {
     /**
      * speed < 0 = repel, speed > 0 = attract
      */
-    private void direct(float limit, float speed, Node<Surface, String> a, Node<Surface, String> b) {
+    private void direct(float limit, float speed, NodeGraph.Node<Surface, String> a, NodeGraph.Node<Surface, String> b) {
         v2 ac = new v2(a.id.x(), a.id.y());
 
         v2 bc = new v2(b.id.x(), b.id.y());

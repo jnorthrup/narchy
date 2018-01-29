@@ -4,7 +4,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.graph.Graph;
 import com.google.common.graph.GraphBuilder;
 import com.google.common.graph.MutableGraph;
-import jcog.data.graph.hgraph.NodeGraph;
+import jcog.data.graph.NodeGraph;
 import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import spacegraph.SpaceGraph;

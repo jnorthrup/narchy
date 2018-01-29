@@ -191,13 +191,12 @@ public class Tetris extends NAgentX implements Bitmap2D {
         actionTriState($.func("X", id), (i) -> {
             switch (i) {
                 case -1:
-                    state.act(LEFT);
-                    break;
-                case 0:
-                    break;
+                    return state.act(LEFT);
                 case +1:
-                    state.act(RIGHT);
-                    break;
+                    return state.act(RIGHT);
+                default:
+                case 0:
+                    return true;
             }
         });
 

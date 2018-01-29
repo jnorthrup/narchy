@@ -38,7 +38,6 @@ public enum BeliefFunction implements TruthOperator {
     Deduction() {
         @Override
         public Truth apply(Truth T, Truth B, NAR m, float minConf) {
-
             return TruthFunctions.deduction(T, B, minConf);
         }
     },

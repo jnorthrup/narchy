@@ -8,6 +8,7 @@ import nars.Task;
 import nars.concept.ScalarConcepts;
 import nars.concept.SensorConcept;
 import nars.gui.Vis;
+import nars.op.Implier;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
@@ -61,7 +62,12 @@ public class FZero extends NAgentX {
         Bitmap2DSensor<Scale> c = senseCamera($.the("cam"), new Scale(() -> fz.image,
                 //32, 24
                 24, 16
-        )/*.blur()*/).resolution(0.1f);
+        )/*.blur()*/).resolution(0.04f);
+
+        Bitmap2DSensor<Scale> cDelta = senseCamera($.the("camDelta"), new Scale(() -> fz.image,
+                //32, 24
+                6, 4
+        )/*.blur()*/).modeDiffer().resolution(0.1f);
 
 
 //        new AutoConceptualizer(c.pixels, true, 10, nar) {
@@ -85,6 +91,8 @@ public class FZero extends NAgentX {
 
         //initToggle();
         initBipolar(true);
+
+        //new Implier(1, this, new float[] { 0, 1 });
 
 //        actionUnipolar(p("left"), (r) -> {
 //            //if (r > 0.5f)
@@ -113,14 +121,14 @@ public class FZero extends NAgentX {
 //        });
 
 //        senseNumberDifference($.inh(the("joy"), id), happy).resolution.setValue(0.02f);
-        SensorConcept dAngVel = senseNumberDifference($.inh($.the("angVel"), id), () -> (float) fz.playerAngle).resolution(0.02f);
-        SensorConcept dAccel = senseNumberDifference($.inh($.the("accel"), id), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.02f);
-        @NotNull ScalarConcepts ang = senseNumber(level->$.inh($.p($.the("ang"), $.the(level)), id), () ->
-                        (float) (0.5f + 0.5f * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
-                11,
+        SensorConcept dAngVel = senseNumberDifference($.inh(id, $.the("angVel")), () -> (float) fz.playerAngle).resolution(0.02f);
+        SensorConcept dAccel = senseNumberDifference($.inh(id, $.the("accel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.02f);
+        @NotNull ScalarConcepts ang = senseNumber(level->$.inh($.p(id, $.the("ang")), $.the(level)), () ->
+                        (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
+                4,
                 ScalarConcepts.Needle
                 //ScalarConcepts.Fluid
-        ).resolution(0.1f);
+        ).resolution(0.2f);
         /*window(
                 Vis.conceptBeliefPlots(this, ang , 16), 300, 300);*/
 

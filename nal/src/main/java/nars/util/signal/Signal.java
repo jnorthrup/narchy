@@ -1,16 +1,18 @@
 package nars.util.signal;
 
 import jcog.math.FloatSupplier;
+import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
 import nars.concept.Concept;
 import nars.task.signal.*;
-import nars.truth.PreciseTruth;
 import nars.truth.Truth;
+import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.function.LongSupplier;
 
 /**
@@ -19,6 +21,14 @@ import java.util.function.LongSupplier;
  */
 public class Signal {
 
+
+    /** update directly with next value */
+    public static Function<FloatSupplier,FloatFloatToObjectFunction<Truth>> SET = (conf)->
+            ((p,n) -> n==n ? $.t(n, conf.asFloat()) : null);
+
+    /** first order difference */
+    public static Function<FloatSupplier,FloatFloatToObjectFunction<Truth>> DIFF = (conf)->
+            ((p,n) -> (n==n) ? ((p==p) ? $.t((n-p)/2f + 0.5f, conf.asFloat()) : $.t(0.5f, conf.asFloat())) : $.t(0.5f, conf.asFloat()));
 
     private FloatSupplier pri;
 
@@ -62,7 +72,9 @@ public class Signal {
             if (last == null && nextTruth == null)
                 return null;
 
-            @Nullable PreciseTruth tt = nextTruth != null ? nextTruth.dither(nar) : null;
+            @Nullable Truth tt =
+                    //nextTruth;
+                    nextTruth != null ? nextTruth.dither(nar) : null;
 
 
             TruthletTask next;
@@ -117,7 +129,6 @@ public class Signal {
     }
 
     public TruthletTask taskStart(Concept c, SignalTask last, Truth t, long start, long end, long stamp, int dur) {
-
 
         boolean smooth = false;
 

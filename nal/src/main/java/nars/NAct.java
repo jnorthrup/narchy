@@ -46,6 +46,7 @@ public interface NAct {
      */
     FloatParam curiosity();
 
+    /** TODO make BooleanPredicate version for feedback */
     default void actionToggle(@NotNull Term t, float thresh, float defaultValue /* 0 or NaN */, float momentumOn, @NotNull Runnable on, @NotNull Runnable off) {
 
 

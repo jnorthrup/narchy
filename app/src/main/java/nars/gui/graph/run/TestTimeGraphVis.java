@@ -1,6 +1,6 @@
 package nars.gui.graph.run;
 
-import jcog.data.graph.hgraph.NodeGraph;
+import jcog.data.graph.NodeGraph;
 import nars.$;
 import nars.NAR;
 import nars.NARS;

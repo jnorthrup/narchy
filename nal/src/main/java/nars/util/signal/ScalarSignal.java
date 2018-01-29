@@ -8,13 +8,12 @@ import nars.concept.SensorConcept;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
+import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
-import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.DoubleSupplier;
 import java.util.function.LongSupplier;
 
 import static nars.Op.BELIEF;
@@ -26,14 +25,14 @@ import static nars.Op.BELIEF;
  * when NAR wants to update the signal, it will call Function.apply. it can return
  * an update Task, or null if no change
  */
-public class ScalarSignal extends Signal implements DoubleSupplier {
+public class ScalarSignal extends Signal {
 
 
     private final Term term;
 
 
     private final FloatFunction<Term> value;
-    private final FloatToObjectFunction<Truth> truthFloatFunction;
+    private final FloatFloatToObjectFunction<Truth> truthFloatFunction;
 
 
     public float currentValue = Float.NaN;
@@ -42,11 +41,11 @@ public class ScalarSignal extends Signal implements DoubleSupplier {
     public final static FloatToFloatFunction direct = n -> n;
 
 
-    public ScalarSignal(Term t, FloatFunction<Term> value, @Nullable FloatToObjectFunction<Truth> truthFloatFunction, FloatSupplier resolution) {
+    public ScalarSignal(Term t, FloatFunction<Term> value, FloatFloatToObjectFunction<Truth> truthFloatFunction, FloatSupplier resolution) {
         super(BELIEF, resolution);
         this.term = t;
         this.value = value;
-        this.truthFloatFunction = truthFloatFunction == null ? (v) -> null : truthFloatFunction;
+        this.truthFloatFunction = truthFloatFunction;
     }
 
 
@@ -64,14 +63,20 @@ public class ScalarSignal extends Signal implements DoubleSupplier {
 
         float next = Util.unitize(Util.round(value.floatValueOf(term), resolution.asFloat()));
 
-        currentValue = (next);
+        float prevValue = currentValue;
 
-        Truth truth = (next == next) ? truthFloatFunction.valueOf(next) : null;
+        Truth truth = truthFloatFunction.value(prevValue, next);
 
-        return set(c,
+        Task nextTask = set(c,
                 truth,
                 stamp(truth, nar),
                 now, dur, nar);
+
+        if (nextTask!=null) {
+            currentValue = next;
+        }
+
+        return nextTask;
     }
 
     protected LongSupplier stamp(Truth currentBelief, NAR nar) {
@@ -106,11 +111,6 @@ public class ScalarSignal extends Signal implements DoubleSupplier {
         return term;
     }
 
-
-    @Override
-    public double getAsDouble() {
-        return currentValue;
-    }
 
 
 }

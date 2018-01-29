@@ -9,7 +9,7 @@ import nars.NAR;
 import nars.concept.SensorConcept;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
+import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -27,7 +27,9 @@ public class Bitmap2DConcepts<S extends Bitmap2D> implements Iterable<SensorConc
 
     public final Array2DIterable<SensorConcept> iter;
 
-    protected Bitmap2DConcepts(S src, @Nullable Int2Function<Term> pixelTerm, int width, int height, FloatToObjectFunction<Truth> brightToTruth, FloatSupplier pri, NAR n) {
+    protected FloatFloatToObjectFunction<Truth> brightnessTruth;
+
+    protected Bitmap2DConcepts(S src, @Nullable Int2Function<Term> pixelTerm, int width, int height, FloatSupplier pri, NAR n) {
 
         this.src = src;
         this.width = width;
@@ -35,15 +37,19 @@ public class Bitmap2DConcepts<S extends Bitmap2D> implements Iterable<SensorConc
         //this.pixelTerm = pixelTerm;
         this.matrix = new SensorConcept[width][height];
 
+        FloatFloatToObjectFunction<Truth> b = (p, v) -> brightnessTruth.value(p, v);
+
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
 
                 int xx = x;
                 int yy = y;
+
+                FloatSupplier f = () -> Util.unitize(src.brightness(xx, yy));
+
+
                 SensorConcept sss = new SensorConcept(pixelTerm.get(x, y), n,
-                    () -> Util.unitize(src.brightness(xx, yy)),
-                    brightToTruth)
-                        .pri(pri);
+                        f, b).pri(pri);
 
                 n.on(matrix[x][y] = sss);
             }

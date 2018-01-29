@@ -14,9 +14,7 @@ import nars.exe.Causable;
 import nars.task.ITask;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.truth.Truth;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -51,8 +49,10 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Causable implements Iter
     private final FloatSupplier pixelPri = () -> pixelPriCurrent;
 
     private transient float conf;
-    private final FloatToObjectFunction<Truth> brightnessTruth =
-            (v) -> $.t(v, conf);
+
+
+
+
 
     /** to calculate avg number pixels processed per duration */
     private final DescriptiveStatistics pixelsProcessed = new DescriptiveStatistics(8);
@@ -68,9 +68,13 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Causable implements Iter
     public Bitmap2DSensor(@Nullable Int2Function<Term> pixelTerm, P src, NAR n) {
         super(n);
 
-        this.bmp = new Bitmap2DConcepts(src, pixelTerm, src.width(), src.height(), brightnessTruth, pixelPri, n);
+        this.bmp = new Bitmap2DConcepts(src, pixelTerm,
+                src.width(), src.height(),
+                pixelPri, n);
         this.numPixels = bmp.area();
         this.pixelsRemainPerUpdate = numPixels; //initial value
+
+        modeUpdate(); //default
 
         this.in = n.newCauseChannel(this);
 
@@ -276,6 +280,17 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Causable implements Iter
 
 
         return pixelsToProcess;
+    }
+
+    /** sets difference mode */
+    public Bitmap2DSensor modeDiffer() {
+        bmp.brightnessTruth = Signal.DIFF.apply(()->conf);
+        return this;
+    }
+
+    public Bitmap2DSensor modeUpdate() {
+        bmp.brightnessTruth = Signal.SET.apply(()->conf);
+        return this;
     }
 
     /**

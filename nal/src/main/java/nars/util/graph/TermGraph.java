@@ -4,10 +4,9 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import jcog.data.graph.AdjGraph;
 import jcog.pri.PriReference;
-import nars.$;
 import nars.NAR;
-import nars.Task;
 import nars.concept.Concept;
+import nars.concept.TaskConcept;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.transform.Retemporalize;
@@ -15,10 +14,10 @@ import nars.term.transform.Retemporalize;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static nars.Op.IMPL;
-import static nars.time.Tense.XTERNAL;
 
 public enum TermGraph {
     ;
@@ -27,6 +26,7 @@ public enum TermGraph {
         AdjGraph<Term, Float> g = new AdjGraph<>(true);
         return termlink(nar, g);
     }
+
     public static AdjGraph<Term, Float> termlink(NAR nar, AdjGraph<Term, Float> g) {
         return termlink(nar, nar.conceptsActive(), g);
     }
@@ -51,33 +51,27 @@ public enum TermGraph {
     }
 
 
-    public static class ImplGraph {
+    public static enum Statements {
+        ;
 
         //final static String VERTEX = "V";
 
-        public ImplGraph() {
-            super();
-//            nar.onTask(t -> {
-//                if (t.isBelief())
-//                    task(nar, t);
-//            });
+//        public ImplGraph() {
+//            super();
+////            nar.onTask(t -> {
+////                if (t.isBelief())
+////                    task(nar, t);
+////            });
+//
+//        }
 
-        }
+//        protected boolean accept(Task t) {
+//            //example:
+//            return t.op() == IMPL;
+//        }
 
-        protected boolean accept(Task t) {
-            //example:
-            return t.op() == IMPL;
-        }
 
-        public AdjGraph<Term, Term> snapshot(Iterable<Term> sources, NAR nar) {
-            return snapshot(null, sources, nar);
-        }
-
-        public AdjGraph<Term, Term> snapshot(AdjGraph<Term, Term> g, Iterable<Term> sources, NAR nar) {
-
-            if (g == null) {
-                g = new AdjGraph<>(true);
-            }
+        public static void update(AdjGraph<Term, Term> g, Iterable<Term> sources, NAR nar, Predicate<Term> acceptNode, Predicate<Term> acceptEdge) {
 
             @Deprecated Set<Term> done = Sets.newConcurrentHashSet();
 
@@ -93,113 +87,114 @@ public enum TermGraph {
                     ii.remove();
                     if (!done.add(t))
                         continue;
-                    AdjGraph<Term, Term> gg = g;
+
+                    Concept tc = nar.concept(t);
+                    if (tc == null || !(tc instanceof TaskConcept))
+                        return; //ignore non-conceptualized
+
                     recurseTerm(nar, g, (impl) -> {
-                        if (!done.add(impl)) {
+                        if (acceptEdge.test(impl) && done.add(impl)) {
                             Term s = impl.sub(0);
-                            if (!acceptTerm(s)) {
+                            if (!acceptNode.test(s))
                                 return;
-                            }
 
                             Term p = impl.sub(1);
-                            if (!acceptTerm(p)) {
+                            if (!acceptNode.test(p))
                                 return;
-                            }
 
                             s = s.temporalize(Retemporalize.retemporalizeAllToZero);
-                            if (s == null)
+                            if (s == null || !s.op().conceptualizable)
                                 return;
+
+
                             p = p.temporalize(Retemporalize.retemporalizeAllToZero);
-                            if (p == null)
+                            if (p == null || !p.op().conceptualizable)
                                 return;
 
                             next.add(s);
                             next.add(p);
-                            impl(gg, nar, impl, s, p);
+                            if (s.op().conceptualizable && p.op().conceptualizable) {
+                                g.addNode(s);
+                                g.addNode(p);
+                                g.setEdge(s, p, impl.conceptual());
+                            }
                         }
-                    }, t);
+                    }, tc);
                 }
             } while (!next.isEmpty() && g.nodeCount() < maxSize);
 
-            //System.out.println(g.nodeCount() + " " + g.edgeCount());
-            return g;
         }
 
-        protected void recurseTerm(NAR nar, AdjGraph<Term, Term> g, Consumer<Term> next, Term t) {
-
-
-            Concept tc = nar.concept(t);
-            if (tc == null)
-                return; //ignore non-conceptualized
-
-            Consumer<PriReference<? extends Termed>> each = ml -> {
-
-                Termed termed = ml.get(); if (termed == null) return;
-                Term term = termed.term();  if (term == null) return;
-                Term l = term.conceptual();
-
-                if (l.op() == IMPL && !l.hasVarQuery() /*&& l.subterms().containsRecursively(t)*/ /* && m.vars()==0 */
-                    //&& ((Compound)m).containsTermRecursively(t)) {
-                        ) {
-
-
-                    //if (!g.nodes().contains(s) || !done.contains(p)) {
-//                            if ((s.equals(t) || s.containsRecursively(t)) ||
-//                                    (p.equals(t) || p.containsRecursively(t))) {
-                    next.accept(l);
-                    // }
-                    //}
-                }
-            };
-            tc.termlinks().forEach(each);
-            tc.tasklinks().forEach(each);
-        }
-
-        protected boolean acceptTerm(Term p) {
-            return true;
-        }
-
-        private void impl(AdjGraph<Term, Term> g, NAR nar, Term l, Term subj, Term pred) {
-
-//            int dur = nar.dur();
-//            Task t = nar.belief(l, when);
-//            if (t == null)
-//                return;
-
-//            int dt = t.dt();
-//            if (dt == DTERNAL)
-//                dt = 0;
+//        private static void impl(AdjGraph<Term, Term> g, NAR nar, Term l, Term subj, Term pred) {
 //
-//            float evi =
-//                    t.evi(when, dur);
-//            //dt!=DTERNAL ? w2c(TruthPolation.evidenceDecay(t.evi(), dur, dt)) : t.conf();
+////            int dur = nar.dur();
+////            Task t = nar.belief(l, when);
+////            if (t == null)
+////                return;
 //
-//            float freq = t.freq();
-//            boolean neg;
-//            float val = (freq - 0.5f) * 2f * evi;
-//            if (val < 0f) {
-//                val = -val;
-//                neg = true;
-//            } else {
-//                neg = false;
-//            }
+////            int dt = t.dt();
+////            if (dt == DTERNAL)
+////                dt = 0;
+////
+////            float evi =
+////                    t.evi(when, dur);
+////            //dt!=DTERNAL ? w2c(TruthPolation.evidenceDecay(t.evi(), dur, dt)) : t.conf();
+////
+////            float freq = t.freq();
+////            boolean neg;
+////            float val = (freq - 0.5f) * 2f * evi;
+////            if (val < 0f) {
+////                val = -val;
+////                neg = true;
+////            } else {
+////                neg = false;
+////            }
+////
+////            val *= TruthPolation.evidenceDecay(1f, dur, Math.abs(dt));
+////
+////            if (val!=val || val < Priority.EPSILON)
+////                return;
+////
+////            boolean reverse = dt < 0;
+////            Term S = reverse ? pred.negIf(neg) : subj;
+////            Term P = reverse ? subj : pred.negIf(neg);
 //
-//            val *= TruthPolation.evidenceDecay(1f, dur, Math.abs(dt));
-//
-//            if (val!=val || val < Priority.EPSILON)
-//                return;
-//
-//            boolean reverse = dt < 0;
-//            Term S = reverse ? pred.negIf(neg) : subj;
-//            Term P = reverse ? subj : pred.negIf(neg);
-            if (subj.op().conceptualizable && pred.op().conceptualizable ) {
-                g.addNode(subj);
-                g.addNode(pred);
-                g.setEdge(subj, pred, $.impl(subj, XTERNAL /* whatever best matches, regardless of time */, pred));
-            }
-        }
+//        }
 
     }
+
+    protected static void recurseTerm(NAR nar, AdjGraph<Term, Term> g, Consumer<Term> next, Concept tc)  {
+
+        //if (g.antinodes.contains())
+
+        Consumer<PriReference<? extends Termed>> each = ml -> {
+
+            Termed termed = ml.get();
+            if (termed == null) return;
+            Term term = termed.term();
+            if (term == null) return;
+
+            if (term.op() == IMPL && !term.hasVarQuery() /*&& l.subterms().containsRecursively(t)*/ /* && m.vars()==0 */
+                //&& ((Compound)m).containsTermRecursively(t)) {
+                    ) {
+
+
+                //if (!g.nodes().contains(s) || !done.contains(p)) {
+//                            if ((s.equals(t) || s.containsRecursively(t)) ||
+//                                    (p.equals(t) || p.containsRecursively(t))) {
+                next.accept(term.conceptual());
+                // }
+                //}
+            }
+        };
+        tc.termlinks().forEach(each);
+        tc.tasklinks().forEach(each);
+    }
+
+    protected boolean acceptTerm(Term p) {
+        return true;
+    }
+
 
 }
 

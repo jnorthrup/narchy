@@ -13,14 +13,18 @@
 //    M, (P ==> M), shift_occurrence_backward(P,"==>") |- P, (Truth:Abduction, Desire:Deduction, Order:ForAllSame)
 
     B, (A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Deduction, Goal:DeciInduction)
+    B, (A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionPN, Goal:DeciInductionPN)
         //B, (A ==> C),  notImpl(B), task(".") |- subIfUnifiesAny(C,A,B,"$",strict), (Belief:DeductionRecursivePB)
         //B, (B ==> C),  notImpl(B), task("!") |- C, (Goal:DeciInduction)
 
     B, (--A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionN, Goal:DeciInductionN)
+    B, (--A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionNN, Goal:DeciInductionNN)
         //B, (--A ==> C),  notImpl(B), task(".") |- subIfUnifiesAny(C,A,B,"$",strict), (Belief:DeductionRecursivePBN)
         //B, (--B ==> C),  notImpl(B), task("!") |- C, (Goal:DeciInductionN)
 
-    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionPB, Goal:DeciDeduction)
+    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Deduction)
+    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DeductionNN)
+    //B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionPB, Goal:DeciDeduction)
     //B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionPB, Goal:DeciDeduction)
         //B, (C ==> B), notImpl(B), task("!") |- C (Goal:DeciDeduction)
 

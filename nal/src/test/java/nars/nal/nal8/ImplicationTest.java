@@ -3,45 +3,58 @@ package nars.nal.nal8;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
+import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
+import static jcog.Texts.n2;
+import static nars.Op.BELIEF;
 import static nars.Op.IMPL;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/** exhaustive parametric implication deduction/induction belief/goal tests */
 public class ImplicationTest {
 
     static final Term x = $.the("x");
     static final Term y = $.the("y");
-    //static final Term z = $.the("z");
     static final boolean[] B = new boolean[] { true, false };
 
     @Test public void testBelief() {
         //Z, X==>Y
         StringBuilder o = new StringBuilder();
-        for (boolean sp : B) {
-            Term z = sp ? x : y;
-            for (boolean zz : B) {
+        for (float condFreq : new float[] { 0, 1, 0.5f }) {
+            for (boolean sp : B) {
+                Term z = sp ? x : y;
                 for (boolean xx : B) {
                     for (boolean yy : B) {
                         NAR n = NARS.tmp(6);
 
-                        Term cond = z.negIf(!zz);
                         Term impl = IMPL.the(x.negIf(!xx), y.negIf(!yy));
 
                         n.believe(impl);
-                        n.believe(cond);
-                        n.run(16);
+                        n.believe(z, condFreq, n.confDefault(BELIEF));
+                        n.run(256);
 
 
 
                         Term nz = sp ? y : x;
+
+                        BeliefTable nzb = n.concept(nz).beliefs();
+
+                        int bs = nzb.size();
+                        if (bs == 2) {
+                            nzb.print();
+                            System.out.println();
+                        }
+                        //assert(bs == 0 || bs == 1 || bs == 3); //either one answer, or something revised to 0.5 via 2
+
                         @Nullable Truth nzt = n.beliefTruth(nz, ETERNAL);
-                        o.append(cond + ". " + impl + ". " + nz + "=" + nzt + "\n");
+
+                        o.append(z + ". %" + n2(condFreq) + "% " + impl + ". " + nz + "=" + nzt + "\n");
                     }
                 }
             }
@@ -63,6 +76,18 @@ public class ImplicationTest {
             "(--,y). (--,(x==>y)). x=%1.0;.45%\n" +
             "(--,y). ((--,x)==>y). x=null\n" +
             "(--,y). (--,((--,x)==>y)). x=%0.0;.45%\n", o.toString());
+
+    }
+
+    @Test public void test50BeliefAbductionWTF() {
+        //y. %.50% (--,(x==>y)). x=%0.0;.29%
+        NAR n = NARS.tmp(6);
+        n.log();
+        n.believe(IMPL.the(x, y.neg()));
+        n.believe(y, 0.5f, n.confDefault(BELIEF));
+        n.run(16256);
+
+        @Nullable Truth nzt = n.beliefTruth(x, ETERNAL);
 
     }
 

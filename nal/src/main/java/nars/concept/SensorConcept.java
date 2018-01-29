@@ -9,6 +9,7 @@ import nars.task.util.PredictionFeedback;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.util.signal.ScalarSignal;
+import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
 import org.jetbrains.annotations.Nullable;
@@ -32,11 +33,15 @@ public class SensorConcept extends WiredConcept implements FloatFunction<Term>, 
     //static final Logger logger = LoggerFactory.getLogger(SensorConcept.class);
 
     public SensorConcept(Term c, NAR n, FloatSupplier signal, FloatToObjectFunction<Truth> truth) {
+        this(c, n, signal, (prev,next)->truth.valueOf(next));
+    }
+
+    public SensorConcept(Term c, NAR n, FloatSupplier signal, FloatFloatToObjectFunction<Truth> truth) {
         this(c, n.terms.conceptBuilder, signal, truth);
         sensor.pri(() -> n.priDefault(BELIEF));
     }
 
-    public SensorConcept(Term c, ConceptBuilder b, FloatSupplier signal, FloatToObjectFunction<Truth> truth) {
+    public SensorConcept(Term c, ConceptBuilder b, FloatSupplier signal, FloatFloatToObjectFunction<Truth> truth) {
         super(c,
                 //new SensorBeliefTable(n.conceptBuilder.newTemporalBeliefTable(c)),
                 null,

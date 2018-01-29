@@ -27,6 +27,7 @@ public class TimeGraphTest {
         A.know($.$safe("two"), 20);
 
     }
+
     final TimeGraph B; {
         //               .believe("(y ==>+3 x)")
         //                .believe("(y ==>+2 z)")
@@ -61,6 +62,7 @@ public class TimeGraphTest {
     public void testSimpleConjWithOneKnownAbsoluteSubEvent2() {
         assertSolved("(one &&+- two)", A,
                 "(one &&+1 two)","(one &&+1 two)@1", "(one &&+19 two)@1", "(one &&+1 two)@19");
+
     }
 
     @Test
@@ -160,7 +162,8 @@ public class TimeGraphTest {
         C.know($.$("y"), 2);
         C.print();
         System.out.println();
-        assertSolved("(--x ==>+- y)", C, "((--,x) ==>+1 y)");
+        assertSolved("(--x ==>+- y)", C,
+                "((--,x) ==>+1 y)", "((--,x) ==>+1 y)@1");
         C.print();
     }
     @Test

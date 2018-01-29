@@ -136,13 +136,12 @@ public abstract class Param {
      */
     public final static int SIGNAL_LATCH_TIME_MAX =
             //0;
-            //2;
-            4;
+            2;
+            //4;
             //8;
             //16;
-    //Integer.MAX_VALUE;
-    //8;
-    //32;
+            //Integer.MAX_VALUE;
+
 
     /**
      * happiness automatic gain control time parameter
