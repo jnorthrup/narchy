@@ -59,10 +59,8 @@ abstract public class Search<N, E> {
             this.path = path;
 
 
-            Iterator<ImmutableDirectedEdge<N, E>> ee = next(at).iterator();
-            while (ee.hasNext()) {
-                ImmutableDirectedEdge<N, E> e = ee.next();
-                NodeGraph.Node<N,E> next = e.other(at);
+            for (ImmutableDirectedEdge<N, E> e : next(at)) {
+                NodeGraph.Node<N, E> next = e.other(at);
                 if (!log.visit(next))
                     continue;
 

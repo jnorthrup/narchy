@@ -20,11 +20,18 @@ public abstract class NodeGraph<N, E> {
 
     abstract public Node<N, E> node(Object key);
 
-    abstract public void clear();
 
     abstract public void forEachNode(Consumer<Node<N,E>> n);
 
     protected abstract Node<N,E> newNode(N data);
+
+
+    /**
+     * can override in mutable subclass implementations
+     */
+    public void clear() {
+        throw new UnsupportedOperationException();
+    }
 
     /**
      * gets existing node, or creates and adds a node if missing
@@ -167,7 +174,7 @@ public abstract class NodeGraph<N, E> {
             );
         }
 
-        private MutableNode(N id, Collection<ImmutableDirectedEdge<N, E>> in, Collection<ImmutableDirectedEdge<N, E>> out) {
+        protected MutableNode(N id, Collection<ImmutableDirectedEdge<N, E>> in, Collection<ImmutableDirectedEdge<N, E>> out) {
             super(id);
             this.in = in;
             this.out = out;

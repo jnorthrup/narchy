@@ -2,10 +2,13 @@ package jcog.data.graph.search;
 
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.NodeGraph;
+import jcog.data.graph.ObjectGraph;
 import jcog.list.FasterList;
+import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -59,5 +62,35 @@ class NodeGraphTest {
 
     static void edge(MapNodeGraph n, String a, String b) {
         n.addEdge(a, a+b, b);
+    }
+
+    @Test public void testObjectGraph() {
+        MapNodeGraph<Object, Object> h = new MapNodeGraph<>();
+        h.addEdge(h.addNode("y"), "yx", h.addNode("x"));
+
+        ObjectGraph o = new ObjectGraph(h) {
+
+            @Override
+            protected boolean access(Object root, FasterList<Pair<Class, ObjectGraph.Accessor>> path, Object target) {
+                System.out.println(root + " -> " + target + "\n\t" + path);
+                return true;
+            }
+
+            @Override
+            public boolean includeValue(Object value) {
+                return true;
+            }
+
+            @Override
+            public boolean includeClass(Class<?> c) {
+                return !c.isPrimitive();
+            }
+
+            @Override
+            public boolean includeField(Field f) {
+                return true;
+            }
+        };
+        o.print();
     }
 }

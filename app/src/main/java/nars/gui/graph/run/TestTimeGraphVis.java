@@ -2,8 +2,6 @@ package nars.gui.graph.run;
 
 import jcog.data.graph.MapNodeGraph;
 import nars.$;
-import nars.NAR;
-import nars.NARS;
 import nars.derive.time.TimeGraph;
 import spacegraph.SpaceGraph;
 import spacegraph.SubOrtho;
@@ -38,7 +36,7 @@ public class TestTimeGraphVis extends SimpleGraph1<TimeGraph.Event> {
     }
     public static void main(String[] args) {
 
-        NAR n = NARS.threadSafe();
+        //NAR n = NARS.threadSafe();
 
 
         TestTimeGraphVis cs = new TestTimeGraphVis();
@@ -53,6 +51,14 @@ public class TestTimeGraphVis extends SimpleGraph1<TimeGraph.Event> {
         )).posWindow(0, 0, 1f, 0.2f));
 
         cs.commit(dt(/*..*/));
+
+//        {
+//            MapNodeGraph<Object, Object> h = new MapNodeGraph<>();
+//            h.addEdge(h.addNode("y"), "yx", h.addNode("x"));
+//
+//            ObjectGraph o = new ObjectGraph(h);
+//            cs.commit(o);
+//        }
     }
 
 }

@@ -219,7 +219,7 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
     public String toString() {
         return nodes + " * " + Joiner.on(",").join(Iterables.transform(edges.keyValuesView(), (e)-> {
             long id = e.getOne();
-            return (id >> 32) + "->" + (id & 0xffffffffL) + "=" + e.getTwo();
+            return (id >> 32) + "->" + (id & 0xffffffffL) + '=' + e.getTwo();
         }));
     }
 

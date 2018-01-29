@@ -333,8 +333,8 @@ public class GraphMeter {
         dist(g, k);
 
         for (int i = 0; i < b.length; ++i) b[i] = 0;
-        for (int i = 0; i < d.length; ++i) {
-            if (d[i] >= 0 && d[i] < b.length) b[d[i]]++;
+        for (int aD : d) {
+            if (aD >= 0 && aD < b.length) b[aD]++;
         }
     }
 

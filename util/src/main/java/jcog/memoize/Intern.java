@@ -334,6 +334,9 @@ public final class Intern {
             this.hasher = hasher;
         }
 
+        public Hasher getHasher() {
+            return hasher;
+        }
     }
 
     private static WeakHasherMap</*@Interned*/ Integer, WeakReference</*@Interned*/ Integer>>

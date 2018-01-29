@@ -53,7 +53,7 @@ public class TasksView extends MutableContainer {
             NodeGraph.MutableNode<Surface, String> tn = graph.addNode(c);
 
             for (long e : t.stamp()) {
-                NodeGraph.MutableNode en = graph.node(evidences.getIfAbsentPutWithKey(e, (ee) -> {
+                NodeGraph.Node en = graph.node(evidences.getIfAbsentPutWithKey(e, (ee) -> {
                     Surface s = new PushButton("_" + ee);
 
                     //TODO make evidence buttons visibility toggleable
@@ -63,7 +63,7 @@ public class TasksView extends MutableContainer {
                     return s;
                 }));
 
-                graph.addEdge(en, "stamp", tn);
+                graph.addEdge((NodeGraph.MutableNode)en, "stamp", tn);
             }
 
             float minH = 30;

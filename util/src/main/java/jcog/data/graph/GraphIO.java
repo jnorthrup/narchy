@@ -171,9 +171,7 @@ public class GraphIO {
 
         for (int i = 0; i < g.size(); ++i) {
             BitSet bs = new BitSet(g.size());
-            g.neighbors(i).forEach(o -> {
-                bs.set(o);
-            });
+            g.neighbors(i).forEach(bs::set);
             for (int j = 0; j < g.size(); ++j) {
                 out.print(bs.get(j) ? " 1" : " 0");
             }

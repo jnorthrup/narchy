@@ -62,14 +62,13 @@ public class FastUndirGraph extends ConstUndirGraph {
         for (int i = 0; i < max; ++i) {
             int ii = i;
             g.neighbors(i).forEach(out -> {
-                int j = out;
-                if (!g.isEdge(j, ii))
-                    in[j].add(ii);
+                if (!g.isEdge(out, ii))
+                    in[out].add(ii);
                 // But always add the link to the triangle
-                if (ii > j) // make sure i>j
-                    triangle[ii].set(j);
+                if (ii > out) // make sure i>j
+                    triangle[ii].set(out);
                 else
-                    triangle[j].set(ii);
+                    triangle[out].set(ii);
             });
         }
     }

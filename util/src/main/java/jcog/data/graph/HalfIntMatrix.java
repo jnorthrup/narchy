@@ -131,7 +131,7 @@ public class HalfIntMatrix {
 	 */
 	public void set(final int row, final int col, final int value) {
 		assert row >= 0 && col >= 0 && row < size && col < size : "row/col out of bounds: "
-				+ row + "/" + col + " size: " + size;
+				+ row + '/' + col + " size: " + size;
 		matrix[idx(row, col)] = value;
 	}
 
