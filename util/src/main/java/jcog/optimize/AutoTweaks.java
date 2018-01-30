@@ -56,16 +56,24 @@ public class AutoTweaks<X> extends Tweaks<X> {
 
             @Override
             protected boolean access(Object root, FasterList<Pair<Class, Accessor>> path, Object target) {
+                if (this.nodes.containsKey(target))
+                    return false; //prevent cycle
+
                 Class<?> targetType = target.getClass();
                 if (tweakable(targetType)) {
                     tweak((X)root, path.clone(), targetType);
                 }
+
+                if (Primitives.unwrap(target.getClass()).isPrimitive())
+                    return false; //dont add the primitive value itself which would get caught later in the cycle detector above
+
                 return true;
             }
 
+
             @Override
             public boolean recurse(Object x) {
-                return !valueHolder(x.getClass());
+                return !tweakable(x.getClass());
             }
 
             @Override
@@ -81,14 +89,15 @@ public class AutoTweaks<X> extends Tweaks<X> {
             @Override
             public boolean includeField(Field f) {
                 int m = f.getModifiers();
-                if (!Modifier.isPublic(m))
+                if (!Modifier.isPublic(m) || !AutoTweaks.this.includeField(f))
                     return false;
 
-                Class<?> t = Primitives.unwrap(f.getType());
+                Class<?> t = Primitives.wrap(f.getType());
+                boolean primitive = Primitives.unwrap(f.getType()).isPrimitive();
                 if (tweakable(t)) {
-                    return (!t.isPrimitive() || !Modifier.isFinal(m));
+                    return (!primitive || !Modifier.isFinal(m));
                 } else
-                    return AutoTweaks.this.includeField(f); //explore further into Object's, final or not
+                    return !primitive; //explore further into Object's, final or not
             }
         };
 
@@ -166,11 +175,6 @@ public class AutoTweaks<X> extends Tweaks<X> {
         }));
     }
 
-    /** whethre the class is a terminal value holder itself, handled by special Tweak implementations */
-    protected boolean valueHolder(Class c) {
-        return tweakers.containsKey(c);
-    }
-
     protected boolean includeField(Field f) {
         return true;
     }
@@ -197,7 +201,7 @@ public class AutoTweaks<X> extends Tweaks<X> {
         String key = key(path);
 
         //TODO find matching Super-types
-        tweakers.get(targetType).learn(sample, key, path);
+        tweakers.get(Primitives.wrap(targetType)).learn(sample, key, path);
 
         learn(key, path);
     }
@@ -206,7 +210,7 @@ public class AutoTweaks<X> extends Tweaks<X> {
 
 
     public boolean tweakable(Class<?> t) {
-        return valueHolder(t);
+        return tweakers.containsKey(Primitives.wrap(t));
     }
 
 

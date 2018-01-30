@@ -6,21 +6,17 @@ import nars.NAR;
 import nars.NARS;
 import nars.nal.nal6.NAL6Test;
 
-import java.lang.reflect.Field;
-import java.util.Set;
-
 public class NARTestOptimize {
 
     public static void main(String[] args) {
 
-        Set<String> includeFields = Set.of("TTL_DERIVE_TASK_SUCCESS");
 
         Result<NAR> r = new AutoTweaks<>(()-> NARS.tmp()) {
 
-            @Override
-            protected boolean includeField(Field f) {
-                return includeFields.contains(f.getName());
-            }
+//            @Override
+//            protected boolean includeField(Field f) {
+//                return includeFields.contains(f.getName());
+//            }
         }
         .optimize(16, (n)->{
 

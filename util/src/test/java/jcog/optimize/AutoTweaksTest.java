@@ -39,8 +39,7 @@ public class AutoTweaksTest {
     @Test
     public void test1() {
         AutoTweaks<Model> a = new AutoTweaks(Model::new);
-        assertEquals(5, a.all.size());
-//        assertEquals(4, a.ready.size());
+        assertEquals(4, a.all.size());
         Result<Model> r = a.optimize(64, Model::score);
         r.print();
         r.tree(3, 4).print();

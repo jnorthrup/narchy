@@ -110,10 +110,10 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
     private void access(Object root, MutableNode<Object, Accessor> src, Class<?> srcClass, Object target, Accessor axe, FasterList<Pair<Class, Accessor>> path, int level) {
         path.add(pair(srcClass, axe));
 
-        if (!access(root, path, target))
-            return;
+        if (access(root, path, target)) {
+            addEdge(src, axe, add(root, target, path, level - 1));
+        }
 
-        addEdge(src, axe, add(root, target, path, level - 1));
         path.removeLast();
     }
 

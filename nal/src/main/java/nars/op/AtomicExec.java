@@ -135,7 +135,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
             float delta = g - b;
             if (delta >= goalDeltaThresh) {
-                n.logger.info("{} EVOKE (b={},g={}) {}", n.time(),
+                logger.info("{} EVOKE (b={},g={}) {}", n.time(),
                         n4(b), n4(g), xx);
                 evoke.add(new TruthletTask(xx, GOAL, Truthlet
                         .impulse(now, now + dur, 1f, 0f, c2w(n.confDefault(GOAL))), n));

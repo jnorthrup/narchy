@@ -82,7 +82,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
 
 
-    public Logger logger;
+    protected Logger logger;
 
     static final Set<String> logEvents = Set.of("eventTask");
     static final String VERSION = "NARchy v?.?";
