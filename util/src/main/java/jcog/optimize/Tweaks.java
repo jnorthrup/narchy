@@ -46,7 +46,7 @@ public class Tweaks<X> implements Iterable<Tweak<X>> {
     }
 
     public Tweaks tweak(String id, float min, float max, float inc, ObjectFloatProcedure<X> apply) {
-        all.add(new TweakFloat<X>(id, min, max, inc, apply));
+        all.add(new TweakFloat<>(id, min, max, inc, apply));
         return this;
     }
 
@@ -86,10 +86,6 @@ public class Tweaks<X> implements Iterable<Tweak<X>> {
     }
 
     public Optimize<X> optimize(Supplier<X> subjects) {
-        return optimize(subjects, Map.of());
-    }
-
-    public Optimize<X> optimize(Supplier<X> subjects, Map<String, Float> hints) {
-        return new Optimize(subjects, this, hints);
+        return new Optimize(subjects, this);
     }
 }

@@ -2,11 +2,11 @@ package jcog.math;
 
 import jcog.Util;
 
-public class FloatParamRounded extends FloatParam {
+public class FloatRangeRounded extends FloatRange {
 
     float epsilon = Float.MIN_NORMAL;
 
-    public FloatParamRounded(float value, float min, float max, float epsilon) {
+    public FloatRangeRounded(float value, float min, float max, float epsilon) {
         super(value, min, max);
         this.epsilon = epsilon;
         set(value); //set again

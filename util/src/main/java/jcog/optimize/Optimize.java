@@ -4,10 +4,15 @@ import com.google.common.base.Joiner;
 import jcog.list.FasterList;
 import jcog.meter.event.CSVOutput;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.math3.optim.*;
+import org.apache.commons.math3.optim.InitialGuess;
+import org.apache.commons.math3.optim.MaxEval;
+import org.apache.commons.math3.optim.MaxIter;
+import org.apache.commons.math3.optim.SimpleBounds;
 import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction;
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.BOBYQAOptimizer;
+import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.MultiDirectionalSimplex;
+import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.tuple.primitive.DoubleObjectPair;
 import org.slf4j.Logger;
@@ -25,6 +30,12 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  */
 public class Optimize<X> {
 
+    /**
+     * if a tweak's 'inc' (increment) is not provided,
+     * use the known max/min range divided by this value as 'inc'
+     */
+    static final float autoInc_default = 4f;
+
     public final Tweaks<X> tweaks;
     final Supplier<X> subject;
 
@@ -33,7 +44,7 @@ public class Optimize<X> {
     private CSVOutput csv;
 
     public Optimize(Supplier<X> subject, Tweaks<X> t) {
-        this(subject, t, Map.of());
+        this(subject, t, Map.of("autoInc", autoInc_default));
     }
 
     public Optimize(Supplier<X> subject, Tweaks<X> t, Map<String, Float> hints) {
@@ -57,39 +68,41 @@ public class Optimize<X> {
 
     public Result<X> run(int maxIterations, int repeats, FloatFunction<X> eval) {
 
-        int dim = 0;
-        int n = tweaks.size();
+        assert (repeats >= 1);
 
-        double[] mid = new double[n];
+
+        final int dim = tweaks.size();
+
+        double[] mid = new double[dim];
         //double[] sigma = new double[n];
-        double[] min = new double[n];
-        double[] max = new double[n];
-        double[] inc = new double[n];
-        double[] range = new double[n];
+        double[] min = new double[dim];
+        double[] max = new double[dim];
+        double[] inc = new double[dim];
+        double[] range = new double[dim];
 
-
+        int i = 0;
         for (Tweak w : tweaks) {
-            //w.apply.value((float) point[i++], x);
             TweakFloat s = (TweakFloat) w;
-            mid[dim] = (s.getMax() + s.getMin()) / 2f;
-            min[dim] = (s.getMin());
-            max[dim] = (s.getMax());
-            inc[dim] = s.getInc();
-            range[dim] = max[dim] - min[dim];
+            mid[i] = (s.getMax() + s.getMin()) / 2f;
+            min[i] = (s.getMin());
+            max[i] = (s.getMax());
+            inc[i] = s.getInc();
+            range[i] = max[i] - min[i];
             //sigma[i] = Math.abs(max[i] - min[i]) * 0.75f; //(s.getInc());
-            dim++;
+            i++;
         }
 
 
-        FasterList<DoubleObjectPair<double[]>> experiments = new FasterList();
+        FasterList<DoubleObjectPair<double[]>> experiments = new FasterList(maxIterations);
 
 
         ObjectiveFunction func = new ObjectiveFunction(point -> {
 
-
             double score;
             try {
+
                 double sum = 0;
+
                 for (int r = 0; r < repeats; r++) {
 
                     X x = subject(point);
@@ -97,7 +110,9 @@ public class Optimize<X> {
                     sum += eval.floatValueOf(x);
 
                 }
+
                 score = sum / repeats;
+
             } catch (Exception e) {
                 logger.error("{} {} {}", this, point, e);
                 score = Float.NEGATIVE_INFINITY;
@@ -114,13 +129,36 @@ public class Optimize<X> {
         });
 
 
-        if (trace) {
+        if (trace)
             csv = new CSVOutput(System.out, Stream.concat(tweaks.stream().map(t -> t.id), Stream.of("score")).toArray(String[]::new));
-        }
 
         experimentStart();
 
-//                pop size = (int) (16 * Math.round(Util.sqr(tweaks.size()))) /* estimate */,
+        try {
+            solve(dim, func, mid, min, max, inc, maxIterations);
+        } catch (Throwable t) {
+            logger.info("solve {} {}", func, t);
+        }
+
+        return new Result<>(experiments, eval, tweaks);
+
+
+    }
+
+    public void solve(int dim, ObjectiveFunction func, double[] mid, double[] min, double[] max, double[] inc, int maxIterations) {
+        if (dim == 1) {
+            //use a solver capable of 1 dim
+            new SimplexOptimizer(1e-10, 1e-30).optimize(
+                    new MaxEval(maxIterations),
+                    func,
+                    GoalType.MAXIMIZE,
+                    new InitialGuess(mid),
+                    //new NelderMeadSimplex(inc)
+                    new MultiDirectionalSimplex(inc)
+            );
+        } else {
+
+            //                pop size = (int) (16 * Math.round(Util.sqr(tweaks.size()))) /* estimate */,
 //        CMAESOptimizer optim = new CMAESOptimizer(maxIterations, Double.NEGATIVE_INFINITY, true, 0,
 //                1, new MersenneTwister(3), false, null);
 //        PointValuePair r = optim.optimize(
@@ -134,43 +172,29 @@ public class Optimize<X> {
 //            );
 
 
-        final int numIterpolationPoints = 3 * dim; //2 * dim + 1 + 1;
-        BOBYQAOptimizer opt = new BOBYQAOptimizer(numIterpolationPoints,
-                dim * 2.0,
-                1.0E-3D);
-        try {
-            PointValuePair r = opt
-                    .optimize(
-                            MaxEval.unlimited(), //new MaxEval(maxIterations),
-                            new MaxIter(maxIterations),
-                            func,
-                            GoalType.MAXIMIZE,
-                            new SimpleBounds(min, max),
-                            new InitialGuess(mid));
-        } catch (Throwable t) {
-            logger.info("{} {}", opt, t);
+            final int numIterpolationPoints = 3 * dim; //2 * dim + 1 + 1;
+            new BOBYQAOptimizer(numIterpolationPoints,
+                    dim * 2.0,
+                    1.0E-4D /* ? */).optimize(
+                    MaxEval.unlimited(), //new MaxEval(maxIterations),
+                    new MaxIter(maxIterations),
+                    func,
+                    GoalType.MAXIMIZE,
+                    new SimpleBounds(min, max),
+                    new InitialGuess(mid));
         }
-
-//        PointValuePair r = new SimplexOptimizer(1e-10, 1e-30).optimize(
-//                new MaxEval(maxIterations),
-//                func,
-//                GoalType.MAXIMIZE,
-//                new InitialGuess(mid),
-//                //new NelderMeadSimplex(inc)
-//                new MultiDirectionalSimplex(inc)
-//        );
-
-
-        return new Result<>(experiments, eval, tweaks);
-
 
     }
 
-    /** called before experiment starts */
+    /**
+     * called before experiment starts
+     */
     protected void experimentStart() {
     }
 
-    /** called after each iteration */
+    /**
+     * called after each iteration
+     */
     protected void experimentIteration(double[] point, double score) {
     }
 

@@ -1,6 +1,6 @@
 package nars.concept;
 
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Param;
 import nars.concept.builder.ConceptBuilder;
@@ -26,7 +26,7 @@ import nars.term.Term;
 public class WiredConcept extends TaskConcept implements PermanentConcept {
 
 
-    public FloatParam resolution = new FloatParam(Param.TRUTH_EPSILON, 0f, 1f);
+    public FloatRange resolution = new FloatRange(Param.TRUTH_EPSILON, 0f, 1f);
 
     protected WiredConcept(Term term, NAR n) {
         this(term, null /* default by concept builder */, null /* default by concept builder */, n.terms.conceptBuilder);

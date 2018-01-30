@@ -5,7 +5,7 @@ import jcog.event.On;
 import jcog.exe.Loop;
 import jcog.list.FasterList;
 import jcog.math.FloatNormalized;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import jcog.math.FloatPolarNormalized;
 import nars.concept.ActionConcept;
 import nars.concept.Concept;
@@ -70,8 +70,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     /**
      * action exploration rate; analogous to epsilon in QLearning
      */
-    public final FloatParam curiosity;
-    public final FloatParam depress = new FloatParam(0.5f, 0f, 1f);
+    public final FloatRange curiosity;
+    public final FloatRange depress = new FloatRange(0.5f, 0f, 1f);
 
 
     public final AtomicBoolean enabled = new AtomicBoolean(false);
@@ -92,7 +92,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     public final NAR nar;
     private int dur;
 
-    public final FloatParam motivation = new FloatParam(1f, 0f, 1f);
+    public final FloatRange motivation = new FloatRange(1f, 0f, 1f);
     protected List<Task> always = $.newArrayList();
 
     /** concepts (which are present at start time) */
@@ -142,7 +142,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
         //fireHappy = Activation.get(happy, 1f, new ConceptFire(happy, 1f);
 
-        curiosity = new FloatParam(0.10f, 0f, 1f);
+        curiosity = new FloatRange(0.10f, 0f, 1f);
 
 
 //        if (id == null) id = $.quote(getClass().toString());
@@ -180,7 +180,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     }
 
     @Override
-    public FloatParam curiosity() {
+    public FloatRange curiosity() {
         return curiosity;
     }
 

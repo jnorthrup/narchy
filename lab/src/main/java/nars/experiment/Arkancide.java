@@ -2,7 +2,7 @@ package nars.experiment;
 
 
 import jcog.Util;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -27,7 +27,7 @@ public class Arkancide extends NAgentX {
     static boolean numeric = true;
     static boolean cam = true;
 
-    public final FloatParam ballSpeed = new FloatParam(0.75f, 0.04f, 6f);
+    public final FloatRange ballSpeed = new FloatRange(0.75f, 0.04f, 6f);
     //public final FloatParam paddleSpeed = new FloatParam(2f, 0.1f, 3f);
 
 

@@ -1,7 +1,7 @@
 package nars.op.stm;
 
 import jcog.Util;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import jcog.pri.Prioritized;
 import nars.NAR;
 import nars.Task;
@@ -23,7 +23,7 @@ public final class STMLinkage extends TaskService {
 
     public final BlockingQueue<Task> stm;
 
-    final FloatParam strength = new FloatParam(1f, 0f, 1f);
+    final FloatRange strength = new FloatRange(1f, 0f, 1f);
     private final boolean allowNonInput;
     private final Cause cause;
 

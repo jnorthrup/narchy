@@ -1,55 +1,56 @@
 package nars.perf;
 
-import jcog.optimize.Optimize;
+import jcog.optimize.AutoTweaks;
 import jcog.optimize.Result;
-import nars.nal.nal1.NAL1Test;
-import nars.util.NALTest;
+import nars.NAR;
+import nars.NARS;
+import nars.nal.nal6.NAL6Test;
+
+import java.lang.reflect.Field;
+import java.util.Set;
 
 public class NARTestOptimize {
 
-    /*
-
-//            Class mainClass = classloader.loadClass(entryClass);
-//
-//            System.out.println(Arrays.toString(mainClass.getMethods()));
-//
-//            Method main = mainClass.getMethod("main2", String[].class);
-//
-//            main.invoke(null, new Object[]{ArrayUtils.EMPTY_STRING_ARRAY});
-     */
-
     public static void main(String[] args) {
 
-        System.setProperty("junit.jupiter.extensions.autodetection.enabled", "true");
+        Set<String> includeFields = Set.of("TTL_DERIVE_TASK_SUCCESS");
 
+        Result<NAR> r = new AutoTweaks<>(()-> NARS.tmp()) {
 
-        Result r = new Optimize<NALTest>(()-> new NAL1Test())
-//                .tweak(128, 128, 1, "nars.Param", "TTL_MUTATE")
-//                .tweak(1, 2, 1, "nars.Param", "TTL_DERIVE_TASK_SUCCESS")
+            @Override
+            protected boolean includeField(Field f) {
+                return includeFields.contains(f.getName());
+            }
+        }
+        .optimize(16, (n)->{
 
+            NAL6Test t = new NAL6Test() {
+                @Override
+                protected NAR nar() {
+                    return n;
+                }
+            };
 
-        .tweak("ttlFactor", 4, 64, (float x, NALTest t) -> {
+            try {
 
-            t.test.nar.matchTTLmean.set(x);
+                t.variable_elimination5();
+                t.test.run(t.cycles, true);
 
-        }).tweak("termVolumeMax", 8, 32, (float x, NALTest t) -> {
+                return t.test.score;
+            } catch (Throwable e) {
+                return 0;
+            }
 
-            t.test.nar.termVolumeMax.set(x);
-
-        }).run(16, (t)->{
-            t.test.run(100, true);
-            //t.test.test();
-            return t.test.score;
         });
 
-                //.run(16, new MyNAL1MultistepTest());
-
         r.print();
+        r.tree(4, 4).print();
 
 
     }
 
 }
+
 
 //    public static void main(String[] args) {
 //

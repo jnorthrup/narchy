@@ -5,7 +5,7 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.exe.Loop;
 import jcog.learn.gng.NeuralGasMap;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import jcog.math.StreamingNormalizer;
 import jcog.net.attn.MeshMap;
 import spacegraph.SimpleSpatial;
@@ -35,7 +35,7 @@ public class Dimensionaleyez extends SimpleSpatial {
     final static int THREE_D = 3;
     final static int IN = 5;
     final NeuralGasMap n = new NeuralGasMap(IN, 64, THREE_D);
-    final FloatParam scale = new FloatParam(10, 0.5f, 300f);
+    final FloatRange scale = new FloatRange(10, 0.5f, 300f);
 
     final Queue<double[]> queue =
             Util.blockingQueue(1024);

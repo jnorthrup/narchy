@@ -1,9 +1,10 @@
 package nars;
 
 import jcog.Util;
-import jcog.math.FloatParam;
-import jcog.math.FloatParamRounded;
+import jcog.math.FloatRange;
+import jcog.math.FloatRangeRounded;
 import jcog.math.MutableInteger;
+import jcog.math.Range;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.task.Tasked;
@@ -62,7 +63,7 @@ public abstract class Param {
     public static boolean DEBUG_FILTER_DUPLICATE_MATCHES = Param.DEBUG_EXTRA;
 
 
-    public final FloatParam forgetRate = new FloatParam(1f, 0f, 2f);
+    public final FloatRange forgetRate = new FloatRange(1f, 0f, 2f);
 
     /**
      * hard limit to prevent infinite looping
@@ -170,17 +171,20 @@ public abstract class Param {
     /**
      * cost of a successful task derivation
      */
-    public static final int TTL_DERIVE_TASK_SUCCESS = 4;
+    @Range(min=0, max=32)
+    public static int TTL_DERIVE_TASK_SUCCESS = 4;
 
     /**
      * cost of a repeat (of another within the premise's batch) task derivation
      */
-    public static final int TTL_DERIVE_TASK_REPEAT = TTL_DERIVE_TASK_SUCCESS;
+    @Range(min=0, max=32)
+    public static int TTL_DERIVE_TASK_REPEAT = TTL_DERIVE_TASK_SUCCESS;
 
     /**
      * cost of a task derived, but too similar to one of its parents
      */
-    public static final int TTL_DERIVE_TASK_SAME = TTL_DERIVE_TASK_REPEAT;
+    @Range(min=0, max=32)
+    public static int TTL_DERIVE_TASK_SAME = TTL_DERIVE_TASK_REPEAT;
 
     /**
      * cost of a failed/aborted task derivation
@@ -193,9 +197,9 @@ public abstract class Param {
 //     * when calculated, the total activation will sum to 1.0.
 //     * so 0.5 is equal amounts for both, 0 is full backward, 1 is full forward.
 //     */
-    public final FloatParam termlinkBalance = new FloatParam(0.5f, 0, 1f);
+    public final FloatRange termlinkBalance = new FloatRange(0.5f, 0, 1f);
 
-    public final FloatParam conceptActivation = new FloatParam(1f, 0, 1f);
+    public final FloatRange conceptActivation = new FloatRange(1f, 0, 1f);
 
     public final float[] want = newWants();
 
@@ -309,7 +313,7 @@ public abstract class Param {
      */
     public static final int STAMP_CAPACITY = 16;
 
-    public static final FloatParam causeCapacity = new FloatParam(32, 0, 128);
+    public static final FloatRange causeCapacity = new FloatRange(32, 0, 128);
 
     /**
      * hard limit for cause capacity in case the runtime parameter otherwise disobeyed
@@ -359,17 +363,17 @@ public abstract class Param {
     /**
      * truth confidence threshold necessary to form tasks
      */
-    public final FloatParam confMin = new FloatParam(TRUTH_EPSILON, TRUTH_EPSILON, 1f);
+    public final FloatRange confMin = new FloatRange(TRUTH_EPSILON, TRUTH_EPSILON, 1f);
 
     /**
      * global truth frequency resolution by which reasoning is dithered
      */
-    public final FloatParam freqResolution = new FloatParamRounded(TRUTH_EPSILON, TRUTH_EPSILON, 1f, TRUTH_EPSILON);
+    public final FloatRange freqResolution = new FloatRangeRounded(TRUTH_EPSILON, TRUTH_EPSILON, 1f, TRUTH_EPSILON);
 
     /**
      * global truth confidence resolution by which reasoning is dithered
      */
-    public final FloatParam confResolution = new FloatParamRounded(TRUTH_EPSILON, TRUTH_EPSILON, 1f, TRUTH_EPSILON) {
+    public final FloatRange confResolution = new FloatRangeRounded(TRUTH_EPSILON, TRUTH_EPSILON, 1f, TRUTH_EPSILON) {
         @Override
         public void set(float value) {
             super.set(value);
@@ -386,7 +390,7 @@ public abstract class Param {
      * 0 momentum means an activation is fired completely and suddenly
      * 1 momentum means it retains all activation
      */
-    public final FloatParam momentum = new FloatParam(0.5f, 0, 1f);
+    public final FloatRange momentum = new FloatRange(0.5f, 0, 1f);
 
 
     /**
@@ -394,7 +398,7 @@ public abstract class Param {
      * low values (~0) will penalize complexity in derivations maximally (preferring simplicity)
      * high values (~1) will penalize complexity in deriations minimally (allowing complexity)
      */
-    public final FloatParam deep = new FloatParam(0.5f, 0, 1f);
+    public final FloatRange deep = new FloatRange(0.5f, 0, 1f);
 
     /**
      * computes the projected evidence at a specific distance (dt) from a perceptual moment evidence

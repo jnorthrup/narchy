@@ -11,6 +11,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.util.IdentityHashMap;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -46,7 +47,7 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
 
         MutableNode<Object, Accessor> n = addNode(x);
 
-        if (level == 0)
+        if ((level == 0) || !recurse(x))
             return n;
 
         Class<?> clazz = x.getClass();
@@ -124,6 +125,9 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
         return false;
     }
 
+    /** whether to recurse into a value, after having added it as a node */
+    public boolean recurse(Object x) { return true; }
+
     abstract public boolean includeValue(Object v);
 
     abstract public boolean includeClass(Class<?> c);
@@ -178,14 +182,24 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
     public static <X,V> BiConsumer<X,V> setter(FastList<Pair<Class, Accessor>> path) {
         return (X root, V val) -> {
             Object current = root;
-            for (int i = 0, pathSize = path.size()-1; i < pathSize; i++) {
-                Pair<Class, Accessor> p = path.get(i);
-                current = p.getTwo().get(current);
-            }
+
+            for (int i = 0, pathSize = path.size()-1; i < pathSize; i++)
+                current = path.get(i).getTwo().get(current);
+
             path.getLast().getTwo().set(current, val);
         };
     }
+    /** creates a field getter from a path */
+    public static <X,Y> Function<X,Y> getter(FastList<Pair<Class, Accessor>> path) {
+        return (X root) -> {
+            Object current = root;
 
+            for (int i = 0, pathSize = path.size()-1; i < pathSize; i++)
+                current = path.get(i).getTwo().get(current);
+
+            return (Y) path.getLast().getTwo().get(current);
+        };
+    }
     abstract public static class Accessor {
         abstract Object get(Object container);
         abstract void set(Object container, Object value);

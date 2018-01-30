@@ -1,6 +1,6 @@
 package jcog.pri.mix;
 
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import jcog.pri.Prioritized;
 import jcog.pri.Priority;
 
@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 /** a sink channel (ie. target/destination) for streams of Priority instances,
  *      with mix controls. safe for multiple writers, as long as the target
  *      consumer also is. */
-public class PSink<X extends Priority, Y extends Priority> extends FloatParam implements Function<X, Y>, Consumer<X> {
+public class PSink<X extends Priority, Y extends Priority> extends FloatRange implements Function<X, Y>, Consumer<X> {
 
     public final Object id;
     private final Consumer<Y> target;

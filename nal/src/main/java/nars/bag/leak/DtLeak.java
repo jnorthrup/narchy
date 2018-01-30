@@ -1,7 +1,7 @@
 package nars.bag.leak;
 
 import jcog.bag.Bag;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.ThreadLocalRandom;
@@ -23,13 +23,13 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
     float RATE_THRESH = 1f;
 
     @NotNull
-    public final FloatParam rate /* base rate items per dt */;
+    public final FloatRange rate /* base rate items per dt */;
 
 
     protected long lastLeak = ETERNAL;
     private float lastBudget;
 
-    protected DtLeak(@NotNull Bag<X, Y> bag, @NotNull FloatParam rate) {
+    protected DtLeak(@NotNull Bag<X, Y> bag, @NotNull FloatRange rate) {
         super(bag);
         this.rate = rate;
     }

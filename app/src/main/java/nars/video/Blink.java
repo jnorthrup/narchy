@@ -1,6 +1,6 @@
 package nars.video;
 
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import jcog.math.random.XorShift128PlusRandom;
 import jcog.signal.Bitmap2D;
 
@@ -16,7 +16,7 @@ public class Blink implements Bitmap2D {
     /**
      * percentage of duty cycle during which input is visible
      */
-    private final FloatParam visibleProb = new FloatParam(0, 0, 1f);
+    private final FloatRange visibleProb = new FloatRange(0, 0, 1f);
 
     final Random rng = new XorShift128PlusRandom(1);
     boolean blinked;

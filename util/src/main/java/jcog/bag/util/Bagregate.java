@@ -1,7 +1,7 @@
 package jcog.bag.util;
 
 import jcog.bag.impl.ConcurrentArrayBag;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
@@ -32,7 +32,7 @@ public class Bagregate<X extends Prioritized> extends ConcurrentArrayBag<X, PriR
         super(PriMerge.plus, capacity);
 
         this.src = src;
-        this.scale = new FloatParam(scale);
+        this.scale = new FloatRange(scale);
 
     }
 

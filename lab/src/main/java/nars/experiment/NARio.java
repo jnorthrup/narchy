@@ -1,7 +1,7 @@
 package nars.experiment;
 
 import jcog.Util;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -248,8 +248,8 @@ public class NARio extends NAgentX {
 
     int lastCoins;
 
-    public final FloatParam MoveRight = new FloatParam(0.25f, 0f, 1f);
-    public final FloatParam EarnCoin = new FloatParam(0.95f, 0f, 1f);
+    public final FloatRange MoveRight = new FloatRange(0.25f, 0f, 1f);
+    public final FloatRange EarnCoin = new FloatRange(0.95f, 0f, 1f);
 
     float lastX;
 

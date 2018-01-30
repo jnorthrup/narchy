@@ -5,7 +5,7 @@ import jcog.bag.impl.ArrayBag;
 import jcog.bag.impl.PLinkArrayBag;
 import jcog.data.graph.AdjGraph;
 import jcog.list.FasterList;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import jcog.pri.PLink;
 import jcog.pri.op.PriMerge;
 import nars.*;
@@ -64,7 +64,7 @@ public class Implier extends DurService {
     final static TruthOperator ded = BeliefFunction.get($.the("Deduction"));
     final static TruthOperator ind = BeliefFunction.get($.the("Induction"));
 
-    private final FloatParam strength = new FloatParam(0.5f, 0f, 1f);
+    private final FloatRange strength = new FloatRange(0.5f, 0f, 1f);
     private long then, now;
     private int dur;
 

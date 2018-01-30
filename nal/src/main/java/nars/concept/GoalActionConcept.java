@@ -1,6 +1,6 @@
 package nars.concept;
 
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import nars.NAR;
 import nars.NAct;
 import nars.Task;
@@ -27,7 +27,7 @@ public class GoalActionConcept extends ActionConcept {
     public final Signal feedback;
 //    public final Signal action;
 
-    private final FloatParam curiosity;
+    private final FloatRange curiosity;
 
 //    /** shared curiosity stamp */
 //    final long curiosityStamp;
@@ -39,7 +39,7 @@ public class GoalActionConcept extends ActionConcept {
         this(c, act.nar(), act.curiosity(), motor);
     }
 
-    public GoalActionConcept(@NotNull Term c, @NotNull NAR n, FloatParam curiosity, @NotNull MotorFunction motor) {
+    public GoalActionConcept(@NotNull Term c, @NotNull NAR n, FloatRange curiosity, @NotNull MotorFunction motor) {
         super(c, n);
 
         this.curiosity = curiosity;

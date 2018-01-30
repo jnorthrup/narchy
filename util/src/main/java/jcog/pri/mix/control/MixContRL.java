@@ -7,7 +7,7 @@ import jcog.learn.classify.BooleanClassifier;
 import jcog.learn.classify.EnumClassifier;
 import jcog.list.FasterList;
 import jcog.math.AtomicSummaryStatistics;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.math.tensor.ArrayTensor;
 import jcog.math.tensor.Tensor;
@@ -48,7 +48,7 @@ import static jcog.Util.sqr;
 public class MixContRL<X extends Priority> extends Loop implements PSinks<X, CLink<X>> {
 
     public final MixChannel[] mix;
-    public final FloatParam priMin = new FloatParam(Prioritized.EPSILON, 0f, 1f);
+    public final FloatRange priMin = new FloatRange(Prioritized.EPSILON, 0f, 1f);
 
 //    float dynamicRange = 4f;
 //    public final FloatParam gainMin = new FloatParam(1/dynamicRange, 0f, 0f);

@@ -1,7 +1,7 @@
 package nars;
 
 import jcog.Util;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import jcog.util.FloatConsumer;
 import nars.concept.ActionConcept;
 import nars.concept.GoalActionAsyncConcept;
@@ -44,7 +44,7 @@ public interface NAct {
     /**
      * master curiosity factor, for all actions
      */
-    FloatParam curiosity();
+    FloatRange curiosity();
 
     /** TODO make BooleanPredicate version for feedback */
     default void actionToggle(@NotNull Term t, float thresh, float defaultValue /* 0 or NaN */, float momentumOn, @NotNull Runnable on, @NotNull Runnable off) {

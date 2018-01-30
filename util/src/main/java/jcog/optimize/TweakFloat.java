@@ -37,10 +37,20 @@ public class TweakFloat<X> extends Tweak<X> {
 
     @Override
     public List<String> unknown(Map<String,Float> hints) {
-        List<String> unknown = new FasterList<>(3);
+        FasterList<String> unknown = new FasterList<>(3);
         this.min = unknown(this.min, "min", hints, unknown);
         this.max = unknown(this.max, "max", hints, unknown);
+
+
         this.inc = unknown(this.inc, "inc", hints, unknown);
+        if (this.inc!=this.inc && (max==max) && (min==min)) {
+            //infer 'inc' if max and min are known and autoDiscrete hint is provided
+            float autoInc = hints.getOrDefault("autoInc", Float.NaN);
+            if (autoInc==autoInc) {
+                this.inc = (max-min)/autoInc;
+                unknown.removeLast();
+            }
+        }
         return unknown;
     }
 

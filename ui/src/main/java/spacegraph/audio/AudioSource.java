@@ -2,7 +2,7 @@ package spacegraph.audio;
 
 import com.google.common.base.Joiner;
 import jcog.Util;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 
 import javax.sound.sampled.*;
 import java.nio.ByteBuffer;
@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Signal sampled from system sound devices (via Java Media)
  */
 public class AudioSource implements WaveSource {
-    public final FloatParam frameRate;
+    public final FloatRange frameRate;
     public final int device;
     private TargetDataLine line;
     public final Mixer mixer;
@@ -24,7 +24,7 @@ public class AudioSource implements WaveSource {
     private byte[] audioBytes;
     private short[] samples;
     private final int bytesPerSample;
-    public final FloatParam gain = new FloatParam(1f, 0, 32f);
+    public final FloatRange gain = new FloatRange(1f, 0, 32f);
 
 //    private short sampleMin, sampleMax;
 
@@ -32,7 +32,7 @@ public class AudioSource implements WaveSource {
 
     public AudioSource(int device, float frameRate) {
         this.device = device;
-        this.frameRate = new FloatParam(frameRate, 1f, 40f);
+        this.frameRate = new FloatRange(frameRate, 1f, 40f);
 
         // Pick a format...
         // NOTE: It is better to enumerate the formats that the system supports,

@@ -1,6 +1,6 @@
 package nars.op.mental;
 
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.Op;
@@ -41,14 +41,14 @@ public class Inperience extends LeakBack {
      * original value: 0.66
      */
     @NotNull
-    public final FloatParam confMin = new FloatParam(0.5f);
+    public final FloatRange confMin = new FloatRange(0.5f);
 
     /**
      * max frequency difference from either 0.0 or 1.0 to be polarized enough.
      * use the < 0.5 value here, ex: 0.1 means that 0..0.1 and 0.9..1.0 will be accepted
      */
     @NotNull
-    public final FloatParam freqMax = new FloatParam(0.1f);
+    public final FloatRange freqMax = new FloatRange(0.1f);
 
 
     /**

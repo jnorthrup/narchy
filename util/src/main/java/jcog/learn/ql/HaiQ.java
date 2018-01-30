@@ -4,7 +4,7 @@ import jcog.decide.DecideEpsilonGreedy;
 import jcog.decide.DecideSoftmax;
 import jcog.decide.Deciding;
 import jcog.learn.Agent;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import jcog.math.random.XorShift128PlusRandom;
 import org.apache.commons.lang3.mutable.MutableFloat;
 
@@ -59,7 +59,7 @@ public class HaiQ extends Agent {
      */
     public float Gamma, Lambda;
 
-    public final MutableFloat Alpha = new FloatParam(0, 0, 1f);
+    public final MutableFloat Alpha = new FloatRange(0, 0, 1f);
 
     /** input selection; HaiQAgent will not use this in its override of perceive */
     private final Deciding decideInput;

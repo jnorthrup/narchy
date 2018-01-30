@@ -2,7 +2,7 @@ package nars.op.mental;
 
 
 import jcog.bag.impl.ConcurrentArrayBag;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import jcog.math.MutableIntRange;
 import jcog.pri.PLink;
 import jcog.pri.Prioritized;
@@ -71,7 +71,7 @@ public class Abbreviation/*<S extends Term>*/ extends TaskService {
             public Compound key(PLink<Compound> l) {
                 return l.get();
             }
-        }, new FloatParam(selectionRate)) {
+        }, new FloatRange(selectionRate)) {
 
             @Override
             protected float receive(PLink<Compound> b) {

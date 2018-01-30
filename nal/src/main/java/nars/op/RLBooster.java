@@ -1,7 +1,7 @@
 package nars.op;
 
 import jcog.learn.Agent;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import jcog.math.IntIntToObjectFunc;
 import nars.*;
 import nars.concept.ActionConcept;
@@ -35,7 +35,7 @@ public class RLBooster implements Consumer<NAR> {
     final int inD, outD;
     private final CauseChannel<ITask> in;
     private final List<SensorConcept> inputs;
-    public final FloatParam conf = new FloatParam(0.5f, 0f, 1f);
+    public final FloatRange conf = new FloatRange(0.5f, 0f, 1f);
 
     public RLBooster(NAgent env, IntIntToObjectFunc<Agent> rl, int actionDiscretization) {
         assert(actionDiscretization>=1);

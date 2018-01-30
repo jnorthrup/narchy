@@ -22,7 +22,7 @@ import com.googlecode.lanterna.terminal.virtual.VirtualTerminalListener;
 import jcog.bag.impl.ArrayBag;
 import jcog.bag.impl.ConcurrentArrayBag;
 import jcog.event.On;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import jcog.math.MutableInteger;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
@@ -93,7 +93,7 @@ public class TextUI {
     private class TextGUI extends NARService implements Runnable {
 
 
-        public final FloatParam guiUpdateFPS;
+        public final FloatRange guiUpdateFPS;
         private final Terminal terminal;
         private TerminalScreen screen;
         private Thread thread;
@@ -102,7 +102,7 @@ public class TextUI {
         public TextGUI(NAR nar, Terminal terminal, float fps) {
             super(nar);
             this.terminal = terminal;
-            this.guiUpdateFPS = new FloatParam(fps, 0.01f, 20f);
+            this.guiUpdateFPS = new FloatRange(fps, 0.01f, 20f);
             sessions.add(this);
         }
 

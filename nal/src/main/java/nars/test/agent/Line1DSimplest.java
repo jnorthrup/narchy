@@ -1,7 +1,7 @@
 package nars.test.agent;
 
 import jcog.Util;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.NAgent;
@@ -18,10 +18,10 @@ public class Line1DSimplest extends NAgent {
     /**
      * the target value
      */
-    public final FloatParam i = new FloatParam(0.5f, 0, 1f);
-    public final FloatParam o = new FloatParam(0.5f, 0, 1f);
+    public final FloatRange i = new FloatRange(0.5f, 0, 1f);
+    public final FloatRange o = new FloatRange(0.5f, 0, 1f);
 
-    public final FloatParam speed = new FloatParam(0.25f, 0f, 0.5f);
+    public final FloatRange speed = new FloatRange(0.25f, 0f, 0.5f);
 
 //    @NotNull
 //    public GoalActionConcept up, down;

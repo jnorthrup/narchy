@@ -3,7 +3,7 @@ package spacegraph.widget.slider;
 import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.Util;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
@@ -46,7 +46,7 @@ import spacegraph.widget.windo.Widget;
         //this.label.set(label);
     }
 
-    public FloatSlider(FloatParam f) {
+    public FloatSlider(FloatRange f) {
         this(f.floatValue(), f.min, f.max);
         input = f;
         slider.on((s, v) -> f.set(v));

@@ -3,7 +3,7 @@ package nars.gui;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.list.FasterList;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import jcog.tree.rtree.rect.RectFloat2D;
 import nars.$;
 import nars.NAR;
@@ -40,7 +40,7 @@ public class ExecCharts {
 
         int s = nar.causes.size();
 
-        FloatParam gain = new FloatParam(20f, 0f, 20f);
+        FloatRange gain = new FloatRange(20f, 0f, 20f);
 
         BitmapMatrixView bmp = new BitmapMatrixView((i) ->
                 Util.tanhFast(

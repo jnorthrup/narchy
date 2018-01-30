@@ -6,7 +6,7 @@ import jcog.Util;
 import jcog.event.Ons;
 import jcog.list.FasterList;
 import jcog.math.EnumParam;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
 import spacegraph.SurfaceBase;
@@ -84,8 +84,8 @@ public class AutoSurface<X> extends Gridding {
         }
 
 
-        if (x instanceof FloatParam) {
-            target.add(new MyFloatSlider((FloatParam) x, yLabel));
+        if (x instanceof FloatRange) {
+            target.add(new MyFloatSlider((FloatRange) x, yLabel));
         } else if (x instanceof AtomicBoolean) {
             target.add(new CheckBox(yLabel, (AtomicBoolean) x));
 //                    } else if (y instanceof MutableBoolean) {
@@ -232,7 +232,7 @@ public class AutoSurface<X> extends Gridding {
     private static class MyFloatSlider extends FloatSlider {
         private final String k;
 
-        public MyFloatSlider(FloatParam p, String k) {
+        public MyFloatSlider(FloatRange p, String k) {
             super(p);
             this.k = k;
         }

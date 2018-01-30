@@ -1,6 +1,6 @@
 package spacegraph.layout;
 
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import spacegraph.SimpleSpatial;
 import spacegraph.Spatial;
 import spacegraph.math.v3;
@@ -23,8 +23,8 @@ public class ForceDirected implements spacegraph.phys.constraint.BroadConstraint
 
     boolean center = true;
 
-    public final FloatParam repel = new FloatParam(8f, 0, 16f);
-    public final FloatParam attraction = new FloatParam(0.1f, 0, 3f);
+    public final FloatRange repel = new FloatRange(8f, 0, 16f);
+    public final FloatRange attraction = new FloatRange(0.1f, 0, 3f);
 
 
 

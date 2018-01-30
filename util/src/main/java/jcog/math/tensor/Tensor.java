@@ -8,10 +8,88 @@ import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction
 import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
 import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.function.Supplier;
 
 public interface Tensor extends Supplier<float[]> {
+
+    static Tensor vectorFromTo(int start, int end) {
+
+        return vectorFromToBy(start, end, 1);
+    }
+
+    static Tensor vectorFromToBy(int start, int end, int steps) {
+
+        int elements = (end - start + steps) / steps;
+        float[] values = new float[elements];
+
+        for (int i = 0; i < elements; i++)
+            values[i] = start + i * steps;
+
+        return new ArrayTensor((float[])values);
+    }
+
+    static Tensor empty(int dimension) {
+        return vectorOf(0, dimension);
+    }
+
+    static Tensor vectorOf(float value, int dimension) {
+        float[] values = new float[dimension];
+        Arrays.fill(values, value);
+        return new ArrayTensor(values);
+    }
+
+    static Tensor forEach(Tensor vector, FloatToFloatFunction operator) {
+        return new FuncTensor(vector, operator);
+    }
+
+    static Tensor logEach(Tensor vector) {
+        return forEach(vector, d -> (float)Math.log(d));
+    }
+
+    static Tensor sqrtEach(Tensor vector) {
+        return forEach(vector, d -> (float)Math.sqrt(d));
+    }
+
+    static Tensor powEach(Tensor vector, double power) {
+        return forEach(vector, d -> (float)Math.pow(d, power));
+    }
+
+    static float[] copyVectorValues(Tensor vector) {
+        return vector.snapshot();
+    }
+
+    static Tensor scale(Tensor vector, Tensor scale) {
+
+        float[] values = copyVectorValues(vector);
+
+        for (int i = 0; i < values.length; i++)
+            values[i] *= scale.get(i);
+
+        return new ArrayTensor(values);
+    }
+
+    static Tensor normalize(Tensor vector) {
+        return vector.scale(1f / sum(vector));
+    }
+
+    static float sum(Tensor vector) {
+        return vector.sum();
+    }
+
+    static Tensor randomVector(int dimension, float min, float max) {
+        final Random random = new Random();
+        return forEach(new ArrayTensor(new float[dimension]),
+                        d -> (float)random.nextDouble() * (max - min) + min);
+    }
+
+    static Tensor randomVectorGauss(int dimension, float mean, float standardDeviation) {
+        final Random random = new Random();
+        return forEach(new ArrayTensor(dimension),
+                        d -> (float)random.nextGaussian() * standardDeviation + mean);
+    }
 
     @Override
     default float[] get() {

@@ -3,7 +3,7 @@ package nars.util.signal;
 import jcog.Texts;
 import jcog.Util;
 import jcog.math.FloatNormalized;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import jcog.math.FloatPolarNormalized;
 import nars.$;
 import nars.NAR;
@@ -124,7 +124,7 @@ public class ScalarConceptsTest {
     public void testServiceAndHardEncoder2() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
 
-        FloatParam x = new FloatParam(0f, 0f, 1f);
+        FloatRange x = new FloatRange(0f, 0f, 1f);
         ScalarConcepts xc = new ScalarConcepts(x, n, ScalarConcepts.Fluid,
                 $.$("x(0)"), $.$("x(1)")
         );

@@ -1,7 +1,7 @@
 package nars;
 
 import jcog.exe.Loop;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -12,11 +12,11 @@ public class NARLoop extends Loop {
 
     public final NAR nar;
 
-    public final FloatParam throttle = new FloatParam(1f, 0f, 1f);
+    public final FloatRange throttle = new FloatRange(1f, 0f, 1f);
 
     /** scheduler temporal granularity (in sec) -
      * fraction of cycle that a task is scheduled to run proportionally to */
-    public final FloatParam jiffy = new FloatParam(0.1f, 0.001f, 1f);
+    public final FloatRange jiffy = new FloatRange(0.1f, 0.001f, 1f);
 
     /**
      * starts paused; thread is not automatically created

@@ -2,7 +2,7 @@ package nars.bag.leak;
 
 import jcog.bag.Bag;
 import jcog.bag.impl.ConcurrentArrayBag;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import jcog.pri.PLink;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
@@ -33,11 +33,11 @@ public abstract class TaskLeak extends Causable {
     }
 
     protected TaskLeak(@NotNull Bag<Task, PLink<Task>> bag, float ratePerDuration, @NotNull NAR n) {
-        this(bag, new FloatParam(ratePerDuration), n);
+        this(bag, new FloatRange(ratePerDuration), n);
     }
 
 
-    TaskLeak(@NotNull Bag<Task, PLink<Task>> bag, @NotNull FloatParam rate, @NotNull NAR n) {
+    TaskLeak(@NotNull Bag<Task, PLink<Task>> bag, @NotNull FloatRange rate, @NotNull NAR n) {
         super(n);
         this.in = new DtLeak<>(bag, rate) {
             @Override

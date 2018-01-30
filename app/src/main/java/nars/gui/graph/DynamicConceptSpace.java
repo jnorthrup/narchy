@@ -7,7 +7,7 @@ import jcog.bag.util.Bagregate;
 import jcog.event.Ons;
 import jcog.list.FasterList;
 import jcog.math.EnumParam;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import jcog.pri.PriReference;
 import jcog.pri.op.PriMerge;
 import jcog.util.Flip;
@@ -220,19 +220,19 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         public Bag<ConceptWidget.EdgeComponent, ConceptWidget.EdgeComponent> edges;
 
         int maxEdges;
-        public final FloatParam minSize = new FloatParam(1f, 0.1f, 5f);
-        public final FloatParam maxSizeMult = new FloatParam(2f, 1f, 5f);
+        public final FloatRange minSize = new FloatRange(1f, 0.1f, 5f);
+        public final FloatRange maxSizeMult = new FloatRange(2f, 1f, 5f);
         public final AtomicBoolean showLabel = new AtomicBoolean(true);
-        public final FloatParam termlinkOpacity = new FloatParam(1f, 0f, 1f);
-        public final FloatParam tasklinkOpacity = new FloatParam(1f, 0f, 1f);
-        public final FloatParam lineWidthMax = new FloatParam(1f, 0f, 4f);
-        public final FloatParam lineWidthMin = new FloatParam(0.1f, 0f, 4f);
-        public final FloatParam separation = new FloatParam(1f, 0f, 6f);
-        public final FloatParam lineAlphaMin = new FloatParam(0.1f, 0f, 1f);
-        public final FloatParam lineAlphaMax = new FloatParam(0.8f, 0f, 1f);
+        public final FloatRange termlinkOpacity = new FloatRange(1f, 0f, 1f);
+        public final FloatRange tasklinkOpacity = new FloatRange(1f, 0f, 1f);
+        public final FloatRange lineWidthMax = new FloatRange(1f, 0f, 4f);
+        public final FloatRange lineWidthMin = new FloatRange(0.1f, 0f, 4f);
+        public final FloatRange separation = new FloatRange(1f, 0f, 6f);
+        public final FloatRange lineAlphaMin = new FloatRange(0.1f, 0f, 1f);
+        public final FloatRange lineAlphaMax = new FloatRange(0.8f, 0f, 1f);
         public final EnumParam<ColorNode> colorNode = new EnumParam(Hash, ColorNode.class);
 
-        public final FloatParam edgeBrightness = new FloatParam(1 / 16f, 0f, 2f);
+        public final FloatRange edgeBrightness = new FloatRange(1 / 16f, 0f, 2f);
 
         public ConceptVis2(int maxEdges) {
             super();

@@ -8,7 +8,7 @@ import jcog.bag.impl.HijackBag;
 import jcog.bag.impl.hijack.PriorityHijackBag;
 import jcog.data.byt.DynBytes;
 import jcog.io.BinTxt;
-import jcog.math.FloatParam;
+import jcog.math.FloatRange;
 import jcog.math.RecycledSummaryStatistics;
 import jcog.math.random.XorShift128PlusRandom;
 import jcog.net.attn.HashMapTagSet;
@@ -65,7 +65,7 @@ public class UDPeer extends UDP {
     /**
      * rate of sharing peer needs
      */
-    private static final FloatParam empathy = new FloatParam(0.5f);
+    private static final FloatRange empathy = new FloatRange(0.5f);
 
     private static final byte DEFAULT_PING_TTL = 2;
     private static final byte DEFAULT_ATTN_TTL = DEFAULT_PING_TTL;
