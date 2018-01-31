@@ -49,7 +49,6 @@ public class AutoTweaks<X> extends Tweaks<X> {
         discover(subject.get());
     }
 
-
     private void discover(X x /* sample instance */) {
 
         ObjectGraph o = new ObjectGraph() {
@@ -83,6 +82,7 @@ public class AutoTweaks<X> extends Tweaks<X> {
 
             @Override
             public boolean includeClass(Class<?> c) {
+                //return !excludedClasses.contains(c);
                 return true;
             }
 
@@ -119,7 +119,7 @@ public class AutoTweaks<X> extends Tweaks<X> {
 
             Float.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p)->{
                 final BiConsumer<X, Float> set = ObjectGraph.setter(p);
-                tweak(k, set::accept);
+                tweak(k, Float.NaN, Float.NaN, Float.NaN, set::accept);
             },
 
 //            AtomicBoolean.class, null,
@@ -170,9 +170,8 @@ public class AutoTweaks<X> extends Tweaks<X> {
     }
 
     private String key(List<Pair<Class, ObjectGraph.Accessor>> path) {
-        return Joiner.on(':').join(Iterables.transform(path, (e)->{
-            return e.getOne().getName() + "." + e.getTwo();
-        }));
+        return Joiner.on(':').join(Iterables.transform(path, e ->
+                e.getOne().getName() + "." + e.getTwo()));
     }
 
     protected boolean includeField(Field f) {
@@ -180,7 +179,7 @@ public class AutoTweaks<X> extends Tweaks<X> {
     }
 
     @Override
-    public SortedSet<String> unknown(Map<String, Float> additionalHints) {
+    public Pair<List<Tweak<X>>, SortedSet<String>> get(Map<String, Float> additionalHints) {
         Map<String, Float> h;
         if (!this.hints.isEmpty()) {
             if (additionalHints.isEmpty()) {
@@ -194,7 +193,7 @@ public class AutoTweaks<X> extends Tweaks<X> {
         } else {
             h = additionalHints;
         }
-        return super.unknown(h);
+        return super.get(h);
     }
 
     protected void tweak(X sample, FastList<Pair<Class, ObjectGraph.Accessor>> path, Class targetType) {
@@ -218,7 +217,7 @@ public class AutoTweaks<X> extends Tweaks<X> {
         return optimize(subjects);
     }
 
-    public Result<X> optimize(int maxIterations, FloatFunction<X> eval) {
+    public Result<X> optimize(int maxIterations, FloatFunction<Supplier<X>> eval) {
         return optimize().run(maxIterations, eval);
     }
 

@@ -14,10 +14,12 @@ import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.BOBYQAOptimizer;
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.MultiDirectionalSimplex;
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.DoubleObjectPair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.function.Supplier;
@@ -27,6 +29,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
  * Optimization solver wrapper w/ lambdas
+ * instance of an experiment
  */
 public class Optimize<X> {
 
@@ -34,39 +37,44 @@ public class Optimize<X> {
      * if a tweak's 'inc' (increment) is not provided,
      * use the known max/min range divided by this value as 'inc'
      */
-    static final float autoInc_default = 4f;
+    static final float autoInc_default = 5f;
 
-    public final Tweaks<X> tweaks;
+    public final List<Tweak<X>> tweaks;
     final Supplier<X> subject;
 
     private final boolean trace = true;
     private final static Logger logger = LoggerFactory.getLogger(Optimize.class);
+
     private CSVOutput csv;
 
-    public Optimize(Supplier<X> subject, Tweaks<X> t) {
+    protected Optimize(Supplier<X> subject, Tweaks<X> t) {
         this(subject, t, Map.of("autoInc", autoInc_default));
     }
 
-    public Optimize(Supplier<X> subject, Tweaks<X> t, Map<String, Float> hints) {
-        SortedSet<String> u = t.unknown(hints);
-        if (t.ready.isEmpty()) {
-            throw new RuntimeException("tweaks not ready:\n" + Joiner.on('\n').join(u));
+    protected Optimize(Supplier<X> subject, Tweaks<X> t, Map<String, Float> hints) {
+        Pair<List<Tweak<X>>, SortedSet<String>> uu = t.get(hints);
+        List<Tweak<X>> ready = uu.getOne();
+        SortedSet<String> unknown = uu.getTwo();
+        if (ready.isEmpty()) {
+            throw new RuntimeException("tweaks not ready:\n" + Joiner.on('\n').join(unknown));
         }
-        if (!u.isEmpty()) {
-            for (String w : u) {
+
+
+        if (!unknown.isEmpty()) {
+            for (String w : unknown) {
                 logger.warn("unknown: {}", w);
             }
         }
 
         this.subject = subject;
-        this.tweaks = t;
+        this.tweaks = ready;
     }
 
-    public final Result<X> run(int maxIterations, FloatFunction<X> eval) {
+    public final Result<X> run(int maxIterations, FloatFunction<Supplier<X>> eval) {
         return run(maxIterations, 1, eval);
     }
 
-    public Result<X> run(int maxIterations, int repeats, FloatFunction<X> eval) {
+    public Result<X> run(int maxIterations, int repeats, FloatFunction<Supplier<X>> eval) {
 
         assert (repeats >= 1);
 
@@ -93,7 +101,7 @@ public class Optimize<X> {
         }
 
 
-        FasterList<DoubleObjectPair<double[]>> experiments = new FasterList(maxIterations);
+        FasterList<DoubleObjectPair<double[]>> experiments = new FasterList<>(maxIterations);
 
 
         ObjectiveFunction func = new ObjectiveFunction(point -> {
@@ -105,7 +113,7 @@ public class Optimize<X> {
 
                 for (int r = 0; r < repeats; r++) {
 
-                    X x = subject(point);
+                    Supplier<X> x = ()->subject(point);
 
                     sum += eval.floatValueOf(x);
 
@@ -140,7 +148,7 @@ public class Optimize<X> {
             logger.info("solve {} {}", func, t);
         }
 
-        return new Result<>(experiments, eval, tweaks);
+        return new Result<>(experiments, tweaks);
 
 
     }
@@ -204,8 +212,9 @@ public class Optimize<X> {
     private X subject(double[] point) {
         X x = subject.get();
 
-        for (int i = 0, dim = point.length; i < dim; i++)
-            tweaks.get(i).apply.value(x, (float) point[i]);
+        for (int i = 0, dim = point.length; i < dim; i++) {
+            point[i] = tweaks.get(i).apply.value(x, (float) point[i]);
+        }
 
         return x;
     }

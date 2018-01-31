@@ -40,7 +40,7 @@ public class AutoTweaksTest {
     public void test1() {
         AutoTweaks<Model> a = new AutoTweaks(Model::new);
         assertEquals(4, a.all.size());
-        Result<Model> r = a.optimize(64, Model::score);
+        Result<Model> r = a.optimize(64, (m)->m.get().score());
         r.print();
         r.tree(3, 4).print();
         assertTrue(r.best().getOne() > 5f);

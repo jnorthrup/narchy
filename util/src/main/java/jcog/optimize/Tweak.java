@@ -1,6 +1,6 @@
 package jcog.optimize;
 
-import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
+import jcog.util.ObjectFloatToFloatFunction;
 
 import java.util.Collections;
 import java.util.List;
@@ -11,11 +11,11 @@ import java.util.Map;
  */
 public class Tweak<X> {
 
-    public final ObjectFloatProcedure<X> apply;
+    public final ObjectFloatToFloatFunction<X> apply;
     public final String id;
 
     /** transduces a generic floating point value to a change in a property of the experiment subject */
-    public Tweak(String id, ObjectFloatProcedure<X> apply) {
+    public Tweak(String id, ObjectFloatToFloatFunction<X> apply) {
         this.id = id;
         this.apply = apply;
     }

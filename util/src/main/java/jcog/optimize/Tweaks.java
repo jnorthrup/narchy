@@ -1,51 +1,53 @@
 package jcog.optimize;
 
 import jcog.list.FasterList;
+import jcog.util.ObjectFloatToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
+import org.eclipse.collections.api.tuple.Pair;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
+
+import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /** schema for optimization experimentation */
-public class Tweaks<X> implements Iterable<Tweak<X>> {
+public class Tweaks<X>  {
 
     /** set of all partially or fully ready Tweaks */
     protected final List<Tweak<X>> all = new FasterList();
-
-    /** set of all ready Tweaks */
-    protected final List<Tweak<X>> ready = new FasterList();
-
 
     public Tweaks() {
     }
 
     public Tweaks tweak(String key, ObjectIntProcedure<X> apply) {
-        return tweak(key, Float.NaN, Float.NaN, Float.NaN, (ObjectFloatProcedure<X>) (X x, float v) -> {
-            apply.accept(x, Math.round(v));
+        return tweak(key, Float.NaN, Float.NaN, Float.NaN, (X x, float v) -> {
+            int i = Math.round(v);
+            apply.accept(x, i);
+            return i;
         });
     }
 
     public Tweaks tweak(String key, int min, int max, int inc, ObjectIntProcedure<X> apply) {
-        return tweak(key, min, max, inc, (ObjectFloatProcedure<X>) (X x, float v) -> {
-            apply.accept(x, Math.round(v));
+        return tweak(key, min, max, inc, (X x, float v) -> {
+            int i = Math.round(v);
+            apply.accept(x, i);
+            return i;
         });
     }
 
-    public Tweaks tweak(String key, int min, int max, ObjectFloatProcedure<X> apply) {
-        return tweak(key, min, max, 1f, apply);
-    }
-
-    public Tweaks tweak(float min, float max, float inc, ObjectFloatProcedure<X> apply) {
-        return tweak(apply.toString(), min, max, inc, apply);
-    }
-
-    public Tweaks tweak(String parameter, ObjectFloatProcedure<X> apply) {
-        return tweak(parameter, Float.NaN, Float.NaN,Float.NaN, apply);
-    }
-
     public Tweaks tweak(String id, float min, float max, float inc, ObjectFloatProcedure<X> apply) {
+        all.add(new TweakFloat<>(id, min, max, inc, (X x, float v) -> {
+            apply.value(x, v);
+            return v;
+        }));
+        return this;
+    }
+
+    public Tweaks tweak(String id, float min, float max, float inc, ObjectFloatToFloatFunction<X> apply) {
         all.add(new TweakFloat<>(id, min, max, inc, apply));
         return this;
     }
@@ -53,7 +55,8 @@ public class Tweaks<X> implements Iterable<Tweak<X>> {
 
     /** whether all parameters are specified and ready for experimentation
      * @param hints*/
-    public SortedSet<String> unknown(Map<String, Float> hints) {
+    public Pair<List<Tweak<X>>, SortedSet<String>> get(Map<String, Float> hints) {
+        final List<Tweak<X>> ready = new FasterList();
         ready.clear();
 
         TreeSet<String> unknowns = new TreeSet<>();
@@ -66,26 +69,28 @@ public class Tweaks<X> implements Iterable<Tweak<X>> {
             }
         }
 
-        return unknowns;
-    }
-
-    public int size() {
-        return ready.size();
-    }
-    public Tweak<X> get(int i) {
-        return ready.get(i);
-    }
-
-    public Stream<Tweak<X>> stream() {
-        return ready.stream();
-    }
-
-    @Override
-    public Iterator<Tweak<X>> iterator() {
-        return ready.iterator();
+        return pair(ready, unknowns);
     }
 
     public Optimize<X> optimize(Supplier<X> subjects) {
         return new Optimize(subjects, this);
     }
+
+//    public int size() {
+//        return ready.size();
+//    }
+//    public Tweak<X> get(int i) {
+//        return ready.get(i);
+//    }
+//
+//    public Stream<Tweak<X>> stream() {
+//        return ready.stream();
+//    }
+//
+//    @Override
+//    public Iterator<Tweak<X>> iterator() {
+//        return ready.iterator();
+//    }
+
+
 }

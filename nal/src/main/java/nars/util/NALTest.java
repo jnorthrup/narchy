@@ -11,6 +11,8 @@ import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestReporter;
 import org.slf4j.LoggerFactory;
 
+import java.util.function.Supplier;
+
 
 //@ExtendWith(NALTestStats.class)
 public abstract class NALTest {
@@ -29,6 +31,15 @@ public abstract class NALTest {
 
     protected NALTest() {
         test = new TestNAR(nar = nar()) {
+            @Override
+            protected void assertSuccess(boolean success) {
+                afterTest(testInfo);
+                super.assertSuccess(success);
+            }
+        };
+    }
+    protected NALTest(Supplier<NAR> s) {
+        test = new TestNAR(nar = s.get()) {
             @Override
             protected void assertSuccess(boolean success) {
                 afterTest(testInfo);

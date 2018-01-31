@@ -5,8 +5,38 @@ import jcog.optimize.Result;
 import nars.NAR;
 import nars.NARS;
 import nars.nal.nal6.NAL6Test;
+import nars.util.NALTest;
+import org.junit.jupiter.api.Test;
+
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 public class NARTestOptimize {
+
+    /** HACK runs all Junit test methods, summing the scores.
+     * TODO use proper JUnit5 test runner api but it is a mess to figure out right now */
+    static float tests(Supplier<NAR>s, Class<? extends NALTest> c) {
+
+        int cycles = 200;
+
+        return (float) Stream.of(c.getMethods()).filter(x -> x.getAnnotation(Test.class)!=null).parallel().mapToDouble(m -> {
+            NALTest t = null;
+            try {
+                t = c.getConstructor(Supplier.class).newInstance(s);
+                m.invoke(t);
+                try {
+                    t.test.run(cycles, false);
+                    return t.test.score;
+                } catch (Throwable ee) {
+                    return 0f;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return 0f;
+            }
+
+        }).sum();
+    }
 
     public static void main(String[] args) {
 
@@ -18,29 +48,30 @@ public class NARTestOptimize {
 //                return includeFields.contains(f.getName());
 //            }
         }
-        .optimize(16, (n)->{
+        .optimize(24, (n)->{
 
-            NAL6Test t = new NAL6Test() {
-                @Override
-                protected NAR nar() {
-                    return n;
-                }
-            };
-
-            try {
-
-                t.variable_elimination5();
-                t.test.run(t.cycles, true);
-
-                return t.test.score;
-            } catch (Throwable e) {
-                return 0;
-            }
+            return tests(n, NAL6Test.class);
+//            NAL6Test t = new NAL6Test() {
+//                @Override
+//                protected NAR nar() {
+//                    return n.get();
+//                }
+//            };
+//
+//            try {
+//
+//                t.variable_elimination5();
+//                t.test.run(t.cycles, false);
+//
+//                return t.test.score;
+//            } catch (Throwable e) {
+//                return 0;
+//            }
 
         });
 
         r.print();
-        r.tree(4, 4).print();
+        r.tree(3, 8).print();
 
 
     }
