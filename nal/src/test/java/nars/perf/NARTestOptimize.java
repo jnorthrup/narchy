@@ -3,6 +3,7 @@ package nars.perf;
 import jcog.optimize.AutoTweaks;
 import jcog.optimize.Result;
 import nars.NAR;
+import nars.NARLoop;
 import nars.NARS;
 import nars.nal.nal6.NAL6Test;
 import nars.util.NALTest;
@@ -41,34 +42,11 @@ public class NARTestOptimize {
     public static void main(String[] args) {
 
 
-        Result<NAR> r = new AutoTweaks<>(()-> NARS.tmp()) {
-
-//            @Override
-//            protected boolean includeField(Field f) {
-//                return includeFields.contains(f.getName());
-//            }
-        }
-        .optimize(24, (n)->{
-
-            return tests(n, NAL6Test.class);
-//            NAL6Test t = new NAL6Test() {
-//                @Override
-//                protected NAR nar() {
-//                    return n.get();
-//                }
-//            };
-//
-//            try {
-//
-//                t.variable_elimination5();
-//                t.test.run(t.cycles, false);
-//
-//                return t.test.score;
-//            } catch (Throwable e) {
-//                return 0;
-//            }
-
-        });
+        Result<NAR> r = new AutoTweaks<>(()-> NARS.tmp())
+            .exclude(NARLoop.class)
+            .optimize(24, (n)->{
+                return tests(n, NAL6Test.class);
+            });
 
         r.print();
         r.tree(3, 8).print();

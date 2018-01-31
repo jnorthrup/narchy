@@ -17,7 +17,7 @@ public class AutoTweaksTest {
         @Range(min=0, max=5/*, step=1f*/) //autoInc will apply
         public float tweakFloat = 0;
 
-        @Range(min=-2, max=+2, step=1f)
+        @Range(min=-4, max=+4, step=2f)
         public int tweakInt = 0;
 
         public final int untweakInt = 0;

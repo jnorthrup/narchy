@@ -6,17 +6,17 @@ import com.google.common.primitives.Primitives;
 import jcog.data.graph.ObjectGraph;
 import jcog.list.FasterList;
 import jcog.math.FloatRange;
+import jcog.math.IntRange;
 import jcog.math.Range;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.list.mutable.FastList;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedSet;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -43,10 +43,16 @@ public class AutoTweaks<X> extends Tweaks<X> {
     private final Supplier<X> subjects;
     private Map<String, Float> hints = new HashMap();
 
+    Set<Class> excludedClasses = new HashSet();
+
     public AutoTweaks(Supplier<X> subject) {
         super();
         this.subjects = subject;
-        discover(subject.get());
+    }
+
+    public AutoTweaks<X> exclude(Class c) {
+        excludedClasses.add(c);
+        return this;
     }
 
     private void discover(X x /* sample instance */) {
@@ -59,31 +65,31 @@ public class AutoTweaks<X> extends Tweaks<X> {
                     return false; //prevent cycle
 
                 Class<?> targetType = target.getClass();
+                if (excludedClasses.contains(targetType))
+                    return false;
+
                 if (tweakable(targetType)) {
                     tweak((X)root, path.clone(), targetType);
                 }
 
-                if (Primitives.unwrap(target.getClass()).isPrimitive())
-                    return false; //dont add the primitive value itself which would get caught later in the cycle detector above
-
-                return true;
+                return !Primitives.unwrap(target.getClass()).isPrimitive();
             }
 
 
             @Override
             public boolean recurse(Object x) {
-                return !tweakable(x.getClass());
+                Class<?> xc = x.getClass();
+                return !excludedClasses.contains(xc) && !tweakable(xc);
             }
 
             @Override
             public boolean includeValue(Object v) {
-                return true;
+                return !excludedClasses.contains(v.getClass());
             }
 
             @Override
             public boolean includeClass(Class<?> c) {
-                //return !excludedClasses.contains(c);
-                return true;
+                return !excludedClasses.contains(c);
             }
 
             @Override
@@ -110,40 +116,58 @@ public class AutoTweaks<X> extends Tweaks<X> {
     }
 
     final Map<Class,Tweaker<X>> tweakers = Map.of(
-//            Boolean.class, null,
+
+            Boolean.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p)->{
+                final BiConsumer<X, Boolean> set = ObjectGraph.setter(p);
+                tweak(k, 0, 1, 0.5f, (x, v)->{
+                    boolean b = v >= 0.5f;
+                    set.accept(x, b);
+                    return (b) ? 1f : 0f;
+                });
+            },
+
+            AtomicBoolean.class, (sample, k, p)->{
+                final Function<X, AtomicBoolean> get = ObjectGraph.getter(p);
+                AtomicBoolean fr = get.apply(sample); //use the min/max at the time this is constructed, which assumes they will remain the same
+                tweak(k, 0, 1, 0.5f, (x, v)->{
+                    boolean b = v >= 0.5f;
+                    fr.set(b);
+                    return b ? 1f : 0f;
+                });
+            },
 
             Integer.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p)->{
                 final BiConsumer<X, Integer> set = ObjectGraph.setter(p);
                 tweak(k, set::accept);
             },
+            IntRange.class,  (sample, k, p)->{
+                final Function<X, IntRange> get = ObjectGraph.getter(p);
+                IntRange fr = get.apply(sample); //use the min/max at the time this is constructed, which assumes they will remain the same
+                tweak(k, fr.min, fr.max, -1, (ObjectIntProcedure<X>)(x, v)->{ fr.set(v); });
+            },
+//            AtomicInteger.class, null,
+//            MutableInteger.class, null,
 
             Float.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p)->{
                 final BiConsumer<X, Float> set = ObjectGraph.setter(p);
                 tweak(k, Float.NaN, Float.NaN, Float.NaN, set::accept);
             },
-
-//            AtomicBoolean.class, null,
-//            AtomicInteger.class, null,
-//            AtomicDouble.class, null,
-//            AtomicLong.class, null,
-//
 //            MutableFloat.class, null,
-//            MutableInteger.class, null,
-//            MutableDouble.class, null,
-//            MutableLong.class, null,
-//
+
+
             FloatRange.class, (sample, k, p)->{
                 final Function<X, FloatRange> get = ObjectGraph.getter(p);
-
-                //use the min/max at the time this is constructed, which assumes they will remain the same
-                FloatRange fr = get.apply(sample);
-
-                tweak(k, fr.min, fr.max, Float.NaN, (x,v)->{
-                    fr.set(v);
-                });
+                FloatRange fr = get.apply(sample); //use the min/max at the time this is constructed, which assumes they will remain the same
+                tweak(k, fr.min, fr.max, Float.NaN, (x,v)->{ fr.set(v); });
             }
 
 //            FloatRangeRounded.class, null
+//            AtomicDouble.class, null,
+//            AtomicLong.class, null,
+//
+//            MutableDouble.class, null,
+//            MutableLong.class, null,
+
     );
 
     /** extract any hints from the path (ex: annotations, etc) */
@@ -214,6 +238,7 @@ public class AutoTweaks<X> extends Tweaks<X> {
 
 
     public Optimize<X> optimize() {
+        discover(this.subjects.get());
         return optimize(subjects);
     }
 

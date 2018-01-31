@@ -1,18 +1,19 @@
 package jcog.optimize;
 
 import com.google.common.base.Joiner;
+import jcog.Util;
 import jcog.list.FasterList;
 import jcog.meter.event.CSVOutput;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.optim.InitialGuess;
 import org.apache.commons.math3.optim.MaxEval;
-import org.apache.commons.math3.optim.MaxIter;
 import org.apache.commons.math3.optim.SimpleBounds;
 import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction;
-import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.BOBYQAOptimizer;
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.MultiDirectionalSimplex;
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
+import org.apache.commons.math3.random.MersenneTwister;
+import org.apache.commons.math3.util.MathArrays;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.DoubleObjectPair;
@@ -113,7 +114,7 @@ public class Optimize<X> {
 
                 for (int r = 0; r < repeats; r++) {
 
-                    Supplier<X> x = ()->subject(point);
+                    Supplier<X> x = () -> subject(point);
 
                     sum += eval.floatValueOf(x);
 
@@ -166,30 +167,31 @@ public class Optimize<X> {
             );
         } else {
 
-            //                pop size = (int) (16 * Math.round(Util.sqr(tweaks.size()))) /* estimate */,
-//        CMAESOptimizer optim = new CMAESOptimizer(maxIterations, Double.NEGATIVE_INFINITY, true, 0,
-//                1, new MersenneTwister(3), false, null);
-//        PointValuePair r = optim.optimize(
-//                new MaxEval(maxIterations), //<- ignored?
-//                func,
-//                GoalType.MAXIMIZE,
-//                new SimpleBounds(min, max),
-//                new InitialGuess(mid),
-//                new CMAESOptimizer.Sigma(MathArrays.scale(1f, inc)),
-//                new CMAESOptimizer.PopulationSize(populationSize)
-//            );
+            int popSize = (int) (2 * Math.round(Util.sqr(tweaks.size()))); /* estimate */
 
-
-            final int numIterpolationPoints = 3 * dim; //2 * dim + 1 + 1;
-            new BOBYQAOptimizer(numIterpolationPoints,
-                    dim * 2.0,
-                    1.0E-4D /* ? */).optimize(
-                    MaxEval.unlimited(), //new MaxEval(maxIterations),
-                    new MaxIter(maxIterations),
+            new MyCMAESOptimizer(maxIterations, Double.NEGATIVE_INFINITY,
+                    true, 0,
+                    1, new MersenneTwister(3),
+                    true, null).optimize(
+                    new MaxEval(maxIterations), //<- ignored?
                     func,
                     GoalType.MAXIMIZE,
                     new SimpleBounds(min, max),
-                    new InitialGuess(mid));
+                    new InitialGuess(mid),
+                    new MyCMAESOptimizer.Sigma(MathArrays.scale(1f, inc)),
+                    new MyCMAESOptimizer.PopulationSize(popSize)
+            );
+
+//            final int numIterpolationPoints = 3 * dim; //2 * dim + 1 + 1;
+//            new BOBYQAOptimizer(numIterpolationPoints,
+//                    dim * 2.0,
+//                    1.0E-4D /* ? */).optimize(
+//                    MaxEval.unlimited(), //new MaxEval(maxIterations),
+//                    new MaxIter(maxIterations),
+//                    func,
+//                    GoalType.MAXIMIZE,
+//                    new SimpleBounds(min, max),
+//                    new InitialGuess(mid));
         }
 
     }

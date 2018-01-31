@@ -32,7 +32,7 @@ public class Tweaks<X>  {
     }
 
     public Tweaks tweak(String key, int min, int max, int inc, ObjectIntProcedure<X> apply) {
-        return tweak(key, min, max, inc, (X x, float v) -> {
+        return tweak(key, min, max, inc < 0 ? Float.NaN : inc, (X x, float v) -> {
             int i = Math.round(v);
             apply.accept(x, i);
             return i;

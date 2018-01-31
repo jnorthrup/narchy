@@ -1,10 +1,7 @@
 package nars;
 
 import jcog.Util;
-import jcog.math.FloatRange;
-import jcog.math.FloatRangeRounded;
-import jcog.math.MutableInteger;
-import jcog.math.Range;
+import jcog.math.*;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.task.Tasked;
@@ -308,12 +305,14 @@ public abstract class Param {
     public static final float HORIZON = 1f;
 
     public static final int MAX_VARIABLE_CACHED_PER_TYPE = 16;
+
     /**
      * Maximum length of the evidental base of the Stamp, a power of 2
+     * TODO IntRange
      */
     public static final int STAMP_CAPACITY = 16;
 
-    public static final FloatRange causeCapacity = new FloatRange(32, 0, 128);
+    public static final IntRange causeCapacity = new IntRange(32, 0, 128);
 
     /**
      * hard limit for cause capacity in case the runtime parameter otherwise disobeyed

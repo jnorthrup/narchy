@@ -22,10 +22,12 @@ package jcog.math;
  * limitations under the License.
  */
 
+import java.util.function.IntSupplier;
+
 /**
  * A mutable <code>integer</code> wrapper.
  */
-public class MutableInteger extends Number implements Comparable, Mutable {
+public class MutableInteger extends Number implements Comparable, Mutable,IntSupplier {
 
 
     /**
@@ -111,6 +113,11 @@ public class MutableInteger extends Number implements Comparable, Mutable {
     @Override
     public int intValue() {
         return value;
+    }
+
+    @Override
+    public final int getAsInt() {
+        return intValue();
     }
 
     /**
