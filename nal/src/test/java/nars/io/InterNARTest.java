@@ -23,7 +23,6 @@ public class InterNARTest {
         int preCycles = 1;
         int postCycles = 25;
 
-        Param.ANSWER_REPORTING = false;
 
         NAR a = NARS.threadSafe();
         a.setSelf("a");

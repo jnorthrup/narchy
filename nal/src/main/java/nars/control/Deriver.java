@@ -1,6 +1,7 @@
 package nars.control;
 
 import jcog.Util;
+import jcog.math.Range;
 import jcog.memoize.HijackMemoize;
 import jcog.memoize.Memoize;
 import jcog.pri.Pri;
@@ -42,29 +43,35 @@ public class Deriver extends Causable {
     /**
      * how many premises to generate per concept in pre-derivation
      */
-    int HypotheticalPremisePerConcept = 4;
+    @Range(min=1, max=16)
+    public int HypotheticalPremisePerConcept = 4;
 
     /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks
      */
-    int termLinksPerTaskLink = 3;
+    @Range(min=1, max=16)
+    public int termLinksPerTaskLink = 3;
 
 
     /**
      * how many premises to keep per concept; should be <= Hypothetical count
      */
-    int premisesPerConcept = 2;
+    @Range(min=1, max=16)
+    public int premisesPerConcept = 2;
 
-    int burstMax = 16;
+    @Range(min=1, max=1024)
+    public int burstMax = 16;
+
 
     int conceptsPerIteration = 1;
+
 
     /**
      * TODO move this to a 'CachingDeriver' subclass
      */
     final Memoize<ProtoDerivation.PremiseKey, int[]> whats =
             new HijackMemoize<>(ProtoDerivation.PremiseKey::solve,
-                    48 * 1024, 4, false);
+                    32 * 1024, 4, false);
 
 
 
@@ -172,7 +179,7 @@ public class Deriver extends Causable {
 
         Derivation d = derivation.get().cycle(n, this, deriver);
 
-        int matchTTL = Param.TTL_MIN * 2;
+        int matchTTL = Param.TTL_MIN() * 2;
         int deriveTTL = n.matchTTLmean.intValue();
 
 
@@ -218,7 +225,7 @@ public class Deriver extends Causable {
                     if (derivable) {
                         //specific ttl as fraction of the total TTL allocated to the burst, proportional to its priority contribution
                         int ttl = Math.round(Util.lerp(
-                                premise.priElseZero()/totalPremiesPri, Param.TTL_MIN, totalTTL));
+                                premise.priElseZero()/totalPremiesPri, Param.TTL_MIN(), totalTTL));
 
                         d.derive(ttl);
                     } else {

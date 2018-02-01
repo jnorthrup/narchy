@@ -247,9 +247,9 @@ public class Services<X, C>  {
         this(id, ForkJoinPool.commonPool());
     }
 
-    protected Services() {
-        this(null, ForkJoinPool.commonPool());
-    }
+//    protected Services() {
+//        this(null, ForkJoinPool.commonPool());
+//    }
 
     /**
      * Constructs a new instance for managing the given services.

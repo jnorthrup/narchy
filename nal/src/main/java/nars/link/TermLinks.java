@@ -14,12 +14,10 @@ import nars.control.BatchActivation;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.atom.Int;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
 
 import static java.util.Collections.emptyList;
@@ -253,45 +251,45 @@ public enum TermLinks {
 //
 //    }
 
-    /**
-     * preprocess termlink
-     */
-    private static Termed mutateTermlink(Term t, Random rng) {
-
-        if (Param.MUTATE_INT_CONTAINING_TERMS_RATE > 0) {
-            if (t.hasAny(INT)) {
-                Subterms ts = t.subterms();
-                if (ts.OR(Int.class::isInstance) && rng.nextFloat() <= Param.MUTATE_INT_CONTAINING_TERMS_RATE) {
-
-                    Term[] xx = ts.arrayClone();
-                    boolean changed = false;
-                    for (int i = 0; i < xx.length; i++) {
-                        Term y = xx[i];
-                        if (y instanceof Int && y.op() == INT) {
-                            int shift =
-                                    rng.nextInt(3) - 1;
-                            //nar.random().nextInt(5) - 2;
-                            if (shift != 0) {
-                                int yy = ((Int) y).id;
-                                int j =
-                                        Math.max(0 /* avoid negs for now */, yy + shift);
-                                if (yy != j) {
-                                    xx[i] = Int.the(j);
-                                    changed = true;
-                                }
-                            }
-                        }
-                    }
-                    if (changed)
-                        return t.op().the(t.dt(), xx);
-
-                }
-            }
-
-        }
-
-        return t;
-    }
+//    /**
+//     * preprocess termlink
+//     */
+//    private static Termed mutateTermlink(Term t, Random rng) {
+//
+//        if (Param.MUTATE_INT_CONTAINING_TERMS_RATE > 0) {
+//            if (t.hasAny(INT)) {
+//                Subterms ts = t.subterms();
+//                if (ts.OR(Int.class::isInstance) && rng.nextFloat() <= Param.MUTATE_INT_CONTAINING_TERMS_RATE) {
+//
+//                    Term[] xx = ts.arrayClone();
+//                    boolean changed = false;
+//                    for (int i = 0; i < xx.length; i++) {
+//                        Term y = xx[i];
+//                        if (y instanceof Int && y.op() == INT) {
+//                            int shift =
+//                                    rng.nextInt(3) - 1;
+//                            //nar.random().nextInt(5) - 2;
+//                            if (shift != 0) {
+//                                int yy = ((Int) y).id;
+//                                int j =
+//                                        Math.max(0 /* avoid negs for now */, yy + shift);
+//                                if (yy != j) {
+//                                    xx[i] = Int.the(j);
+//                                    changed = true;
+//                                }
+//                            }
+//                        }
+//                    }
+//                    if (changed)
+//                        return t.op().the(t.dt(), xx);
+//
+//                }
+//            }
+//
+//        }
+//
+//        return t;
+//    }
 
 //    @NotNull
 //    public static Concept[] templateConcepts(List<Termed> templates) {

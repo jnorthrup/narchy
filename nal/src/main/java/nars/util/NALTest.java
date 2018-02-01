@@ -23,7 +23,7 @@ public abstract class NALTest {
 
     protected static final org.slf4j.Logger logger = LoggerFactory.getLogger(NALTest.class);
 
-    public final NAR nar;
+    public NAR nar;
     public final TestNAR test;
     public final MetaGoal.Report metagoals = new MetaGoal.Report();
 
@@ -51,7 +51,6 @@ public abstract class NALTest {
     @BeforeEach
     void init() {
         Param.DEBUG = true;
-        Param.ANSWER_REPORTING = false;
     }
 
 

@@ -26,8 +26,14 @@ import java.util.function.Supplier;
  * TODO
  *      - MutableFloat, AtomicInteger, etc.. tweaks - but dont descend into these (terminal)
  *      - boolean, AtomicBoolean, MutableBoolean etc tweaks
+ *      - @Range annotations on primitive array values (the annotation will be on the array, which it can find at the previous Path element)
  *      - enum tweaks
  *      - String tweaks
+ *
+ *      - Map accessor
+ *      - List/collection accessor
+ *
+ *      - lambda accessors for dynamically specified access
  *
  *      - hint string expressions, in place of current autoInc
  *              would be:   X.inc = (X.max - X.min)/4
@@ -39,11 +45,11 @@ import java.util.function.Supplier;
  * */
 public class AutoTweaks<X> extends Tweaks<X> {
 
-    private static final int DEFAULT_DEPTH = 4;
+    private static final int DEFAULT_DEPTH = 7;
     private final Supplier<X> subjects;
-    private Map<String, Float> hints = new HashMap();
+    private final Map<String, Float> hints = new HashMap();
 
-    Set<Class> excludedClasses = new HashSet();
+    final Set<Class> excludedClasses = new HashSet();
 
     public AutoTweaks(Supplier<X> subject) {
         super();

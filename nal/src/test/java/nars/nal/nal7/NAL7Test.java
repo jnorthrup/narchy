@@ -64,7 +64,6 @@ public class NAL7Test extends NALTest {
     public void induction_on_events_neg2() {
 
         test
-                .log()
                 .input("x:before. :|:")
                 .inputAt(1, "(--,x:after). :|:")
                 .mustBelieve(cycles, "(x:before ==>+1 x:after)", 0.00f, 0.45f /*abductionConf*/, 0)
@@ -526,7 +525,6 @@ public class NAL7Test extends NALTest {
     @Test
     public void induction_on_events_conj_pos_neg() {
         test
-                .log()
                 .inputAt(1, "(a &&+5 (--,a)). :|:")
                 .inputAt(6, "(b &&+5 (--,b)). :|:")
                 .mustBelieve(cycles, "((a &&+5 ((--,a)&|b)) &&+5 (--,b))", 1.00f, 0.81f, 1)
@@ -549,7 +547,6 @@ public class NAL7Test extends NALTest {
     public void induction_on_events_neg_neg() {
 
         test
-                .log()
                 .inputAt(1, "--a. :|:")
                 .inputAt(2, "--b. :|:")
                 .mustBelieve(cycles, "(--a &&+1 --b)", 1.00f, 0.81f, 1)
@@ -869,7 +866,6 @@ public class NAL7Test extends NALTest {
     @Test
     public void testImplInductionEternalTemporal() {
         test
-                .log()
                 .input("a:x.")
                 .input("a:y. :|:")
                 .mustBelieve(cycles, "(a:x ==> a:y)", 1f, 0.45f, 0)
@@ -1355,7 +1351,6 @@ public class NAL7Test extends NALTest {
         */
 
         test
-                .log()
                 .inputAt(1, "(a). :|:")
                 .inputAt(2, "((b) &&+3 (d)). :|:")
                 .mustBelieve(cycles, "(((a) &&+1 (b)) &&+3 (d))", 1f, 0.81f, 1)

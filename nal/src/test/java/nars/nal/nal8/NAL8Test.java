@@ -99,7 +99,6 @@ public class NAL8Test extends NALTest {
     public void subgoal_2() {
 
         test
-                .log()
                 .input("(hold(SELF,{t002}) &&+5 (at(SELF,{t001}) && open({t001})))! :|:")
                 .mustGoal(cycles, "hold(SELF,{t002})", 1.0f, 0.81f, 0)
                 .mustNotOutput(cycles, "hold(SELF,{t002})", GOAL, ETERNAL);
@@ -190,7 +189,6 @@ public class NAL8Test extends NALTest {
             $.07 (x(intValue,(),3) ==>-48 x(intValue,(),3)). 3600 %1.0;.19% {5415: 1;2;4;9;d;e;l}
         */
         test
-                //.log()
                 .goal("x(intValue,(),3)", Tense.Present, 1f, 0.9f)
                 .believe("(x(intValue,(),3) ==>-48 x(intValue,(),3))")
                 .mustGoal(cycles, "x(intValue,(),3)", 1f, 0.81f, 48, 48);
@@ -438,7 +436,6 @@ public class NAL8Test extends NALTest {
     public void testInhibitionInverse() {
 
         test
-                .log()
                 .goal("--reward")
                 .believe("(good ==> reward)", 1, 0.9f)
                 .believe("(bad ==> reward)", 0, 0.9f)
@@ -452,7 +449,6 @@ public class NAL8Test extends NALTest {
     public void testInhibition0() {
 
         test
-                //.log()
                 .goal("reward")
                 .believe("(bad ==> --reward)", 1, 0.9f)
                 //.mustGoal(cycles, "bad", 0.0f, 0.45f)
@@ -464,7 +460,6 @@ public class NAL8Test extends NALTest {
         //deisreDed, and its negative counterpart for the negated belief
 
         test
-                //.log()
                 .goal("(reward)")
                 .believe("((good) ==> (reward))", 1, 0.9f)
 //                .believe("((bad) ==> --(reward))", 1, 0.9f)
@@ -479,7 +474,6 @@ public class NAL8Test extends NALTest {
     public void testInhibitionReverse() {
 
         test
-                //.log()
                 .goal("(reward)")
                 .believe("((reward) ==> (good))", 1, 0.9f)
 //                .believe("((--,(reward)) ==> (bad))", 1, 0.9f)
@@ -658,7 +652,6 @@ public class NAL8Test extends NALTest {
     @ParameterizedTest @ValueSource(strings = {"&|","&&"})
     public void testGoalImplComponentEternal(String conj) {
         test
-            .log()
             .input("happy!")
             .input("(in =|> (happy " + conj + " --out)).")
             .mustBelieve(cycles, "(in=|>happy)", 1f, 0.81f)
@@ -790,7 +783,6 @@ public class NAL8Test extends NALTest {
         assertEquals(2, subjPred.length);
 
         test
-                .log()
                 .inputAt(start, "(" + subjPred[0] + " ==>" + ((dt >= 0 ? "+" : "-") + Math.abs(dt)) + " " + subjPred[1] + "). :|:")
                 .inputAt(when, "b! :|:")
                 .mustGoal(cycles, subjPred[0], 1f, 0.45f,
@@ -814,7 +806,6 @@ public class NAL8Test extends NALTest {
     public void conjDecomposeGoalAfterNegNeg() {
 
         test
-                //.log()
                 .inputAt(3, "((a) &&+3 --(b)). :|:")
                 .inputAt(6, "(--,(b))! :|:")
                 .mustGoal(cycles, "(a)", 1f, 0.81f, (t) -> t >= 6) //since b is not desired now, it should reverse predict the goal of (a)
@@ -845,7 +836,6 @@ public class NAL8Test extends NALTest {
     public void implDecomposeGoalBeforeTemporalImpl() {
         //predictive impl
         test
-                //.log()
                 .inputAt(1, "(x ==>-1 y). :|:") //should not affect the fact that the goal is relative to the 'y!' task, except it is slightly weaker
                 .inputAt(2, "y! :|:")
                 .mustGoal(cycles, "x", 1f, 0.81f, 3);
@@ -869,7 +859,6 @@ public class NAL8Test extends NALTest {
     public void questImplDt() {
 
         test
-                //.log()
                 .inputAt(0, "((a),(b)).") //to create termlinks
                 .inputAt(0, "(a). :|:")
                 .inputAt(4, "(b)@ :|:")

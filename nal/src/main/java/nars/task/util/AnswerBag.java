@@ -24,7 +24,7 @@ public final class AnswerBag extends PLinkArrayBag<Twin<Task>> {
 
     @Override
     public void onAdd(@NotNull PriReference<Twin<Task>> x) {
-        if (Param.ANSWER_REPORTING) {
+        if (Param.DEBUG_REPORT_ANSWERS) {
             Twin<Task> qa = x.get();
             nar.input(Operator.log(nar.time(), qa.getOne() + "  " + qa.getTwo()));
         }

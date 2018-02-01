@@ -7,8 +7,6 @@ import nars.util.NALTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.util.function.Supplier;
-
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 
@@ -19,14 +17,6 @@ public class NAL6Test extends NALTest {
 
     @Override protected NAR nar() {
         return NARS.tmp(6);
-    }
-
-    public NAL6Test() {
-        super();
-    }
-
-    public NAL6Test(Supplier<NAR> s) {
-        super(s);
     }
 
     @Test

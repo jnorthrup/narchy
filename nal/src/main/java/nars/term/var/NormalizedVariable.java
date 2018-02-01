@@ -125,7 +125,7 @@ public abstract class NormalizedVariable implements Variable, AnonID {
     /**
      * numerically-indexed variable instance cache; prevents duplicates and speeds comparisons
      */
-    private static final NormalizedVariable[][] varCache = new NormalizedVariable[4][Param.MAX_VARIABLE_CACHED_PER_TYPE];
+    private static final NormalizedVariable[][] varCache = new NormalizedVariable[4][Param.MAX_INTERNED_VARS];
 
     @NotNull
     public static Op typeIndex(char c) {
@@ -179,7 +179,7 @@ public abstract class NormalizedVariable implements Variable, AnonID {
         //precompute cached variable instances
         for (Op o : new Op[]{Op.VAR_PATTERN, Op.VAR_QUERY, Op.VAR_DEP, Op.VAR_INDEP}) {
             int t = opToVarIndex(o);
-            for (byte i = 1; i < Param.MAX_VARIABLE_CACHED_PER_TYPE; i++) {
+            for (byte i = 1; i < Param.MAX_INTERNED_VARS; i++) {
                 varCache[t][i] = vNew(o, i);
             }
         }
@@ -206,7 +206,7 @@ public abstract class NormalizedVariable implements Variable, AnonID {
 
     public static NormalizedVariable the(/*@NotNull*/ Op type, byte id) {
         assert(id > 0);
-        if (id < Param.MAX_VARIABLE_CACHED_PER_TYPE) {
+        if (id < Param.MAX_INTERNED_VARS) {
             return varCache[NormalizedVariable.opToVarIndex(type)][id];
         } else {
             return vNew(type, id);

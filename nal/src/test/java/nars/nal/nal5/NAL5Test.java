@@ -4,7 +4,6 @@ import nars.NAR;
 import nars.NARS;
 import nars.test.TestNAR;
 import nars.util.NALTest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -21,11 +20,6 @@ public class NAL5Test extends NALTest {
         return NARS.tmp(6);
     }
 
-    @BeforeEach
-    public void nal() {
-
-        test.nar.termVolumeMax.set(18);
-    }
 
     @Test
     public void revision() {

@@ -283,7 +283,7 @@ public class NARS {
             nar.DEFAULT_QUEST_PRIORITY = nar.DEFAULT_QUESTION_PRIORITY = 0.5f;
 
 
-            nar.defaultWants();
+            //nar.defaultWants();
 
 
         }

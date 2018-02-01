@@ -19,6 +19,19 @@ import java.util.List;
 
 /** adapted from Apache Commons Math 3.6 */
 public class MyCMAESOptimizer extends MultivariateOptimizer {
+
+    //TODO optimize with... MyCMAESOptimizer
+    static final double dimensionDivisorWTF = 10.0;
+    static final double big_magic_number_WTF = 1.0e14;
+    static final double tENmILLION = 1.0e7;
+    static final double hUNDreDtHOUSAND = 1.0E5;
+    static final double oNEtHOUSAND = 1.0e3;
+    static final double epsilonWTF11 = 1.0e-11;
+    static final double EPSILON_WTF12 = 1.0e-12;
+    static final double epsilonwtf13 = 1.0e-13;
+    static final double epsilon6WTF = 1.0e-6;
+
+
     // global search parameters
     /**
      * Population size, offspring number. The primary strategy parameter to play
@@ -426,7 +439,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
                 break generationLoop;
             }
             // condition number of the covariance matrix exceeds 1e14
-            if (max(diagD) / min(diagD) > 1.0e7) {
+            if (max(diagD) / min(diagD) > tENmILLION) {
                 break generationLoop;
             }
             // user defined termination
@@ -454,7 +467,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
                 statisticsSigmaHistory.add(sigma);
                 statisticsFitnessHistory.add(bestFitness);
                 statisticsMeanHistory.add(xmean.transpose());
-                statisticsDHistory.add(diagD.transpose().scalarMultiply(1.0E5));
+                statisticsDHistory.add(diagD.transpose().scalarMultiply(hUNDreDtHOUSAND));
             }
         }
         return optimum;
@@ -529,10 +542,10 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
         sigma = max(insigma); // overall standard deviation
 
         // initialize termination criteria
-        stopTolUpX = 1.0e3 * max(insigma);
-        stopTolX = 1.0e-11 * max(insigma);
-        stopTolFun = 1.0e-12;
-        stopTolHistFun = 1.0e-13;
+        stopTolUpX = oNEtHOUSAND * max(insigma);
+        stopTolX = epsilonWTF11 * max(insigma);
+        this.stopTolFun = EPSILON_WTF12;
+        this.stopTolHistFun = epsilonwtf13;
 
         // initialize selection strategy parameters
         mu = lambda / 2; // number of parents/points for recombination
@@ -555,7 +568,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
         damps = (1 + 2 * Math.max(0, Math.sqrt((mueff - 1) /
                 (dimension + 1)) - 1)) *
                 Math.max(0.3,
-                        1 - dimension / (1.0e-6 + maxIterations)) + cs; // minor increment
+                        1 - dimension / (epsilon6WTF + maxIterations)) + cs; // minor increment
         ccov1 = 2 / ((dimension + 1.3) * (dimension + 1.3) + mueff);
         ccovmu = Math.min(1 - ccov1, 2 * (mueff - 2 + 1 / mueff) /
                 ((dimension + 2) * (dimension + 2) + mueff));
@@ -704,14 +717,17 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
         updateBD(negccov);
     }
 
+
     /**
      * Update B and D from C.
      *
      * @param negccov Negative covariance factor.
      */
-    private void updateBD(double negccov) {
+    private void updateBD(double negccov)
+    {
+
         if (ccov1 + ccovmu + negccov > 0 &&
-                (iterations % 1.0 / (ccov1 + ccovmu + negccov) / dimension / 10.0) < 1) {
+                (iterations % 1.0 / (ccov1 + ccovmu + negccov) / dimension / dimensionDivisorWTF) < 1) {
             // to achieve O(N^2)
             C = triu(C, 0).add(triu(C, 1).transpose());
             // enforce symmetry to prevent complex numbers
@@ -719,18 +735,19 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
             B = eig.getV(); // eigen decomposition, B==normalized eigenvectors
             D = eig.getD();
             diagD = diag(D);
+
             if (min(diagD) <= 0) {
                 for (int i = 0; i < dimension; i++) {
                     if (diagD.getEntry(i, 0) < 0) {
                         diagD.setEntry(i, 0, 0);
                     }
                 }
-                final double tfac = max(diagD) / 1.0e14;
+                final double tfac = max(diagD) / big_magic_number_WTF;
                 C = C.add(eye(dimension, dimension).scalarMultiply(tfac));
                 diagD = diagD.add(ones(dimension, 1).scalarMultiply(tfac));
             }
-            if (max(diagD) > 1.0e14 * min(diagD)) {
-                final double tfac = max(diagD) / 1.0e14 - min(diagD);
+            if (max(diagD) > big_magic_number_WTF * min(diagD)) {
+                final double tfac = max(diagD) / big_magic_number_WTF - min(diagD);
                 C = C.add(eye(dimension, dimension).scalarMultiply(tfac));
                 diagD = diagD.add(ones(dimension, 1).scalarMultiply(tfac));
             }

@@ -167,7 +167,7 @@ public class Optimize<X> {
             );
         } else {
 
-            int popSize = (int) (2 * Math.round(Util.sqr(tweaks.size()))); /* estimate */
+            int popSize = 4 * Math.round(Util.sqr(tweaks.size())); /* estimate */
 
             new MyCMAESOptimizer(maxIterations, Double.NEGATIVE_INFINITY,
                     true, 0,

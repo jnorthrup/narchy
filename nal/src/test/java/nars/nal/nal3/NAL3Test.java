@@ -65,7 +65,6 @@ public class NAL3Test extends NALTest {
     public void set_operations() {
 
         test
-                .log()
                 .believe("<planetX --> {Mars,Pluto,Venus}>", 0.9f, 0.9f) //.en("PlanetX is Mars, Pluto, or Venus.");
                 .believe("<planetX --> {Pluto,Saturn}>", 0.7f, 0.9f) //.en("PlanetX is probably Pluto or Saturn.");
                 .mustBelieve(cycles, "<planetX --> {Mars,Pluto,Saturn,Venus}>", 0.97f, 0.81f) //.en("PlanetX is Mars, Pluto, Saturn, or Venus.");
@@ -217,7 +216,6 @@ public class NAL3Test extends NALTest {
     public void compound_composition_one_premise2() throws Narsese.NarseseException {
 
         TestNAR tester = test;
-        tester.log();
         tester.believe("<swan --> bird>", 0.9f, 0.9f); //.en("Swan is a type of bird.");
         tester.ask("<(&,swan,swimmer) --> bird>"); //.en("Is swimming swan a type of bird?");
         tester.mustBelieve(cycles, "<(&,swan,swimmer) --> bird>", 0.90f, 0.73f); //.en("Swimming swan is a type of bird.");

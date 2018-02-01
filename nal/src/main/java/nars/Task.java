@@ -703,7 +703,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             Concept concept = concept(nar, true);
             if (concept != null) {
                 AnswerBag answers = concept.meta("?", (x) ->
-                        new AnswerBag(nar, Param.MAX_INPUT_ANSWERS)
+                        new AnswerBag(nar, Param.ANSWER_BAG_CAPACITY)
                 );
                 answers.commit().putAsync(new PLink<>(twin(this, answer),
                         (this.priElseZero()) * (answer.conf())));

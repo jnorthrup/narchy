@@ -27,10 +27,10 @@ public abstract class Param {
      */
     public static final int MAX_EVAL_RECURSION = 32;
 
-    /**
-     * rate that integers in integer-containing termlink compounds will be dynamically mutated on activation
-     */
-    public static final float MUTATE_INT_CONTAINING_TERMS_RATE = 0.25f;
+//    /**
+//     * rate that integers in integer-containing termlink compounds will be dynamically mutated on activation
+//     */
+//    public static final float MUTATE_INT_CONTAINING_TERMS_RATE = 0.25f;
 
     /**
      * allow leaking of internal Term[] arrays for read-only purposes
@@ -40,7 +40,8 @@ public abstract class Param {
     /**
      * min ratio of effective priority to input priority necessary for certain novel-only actions
      */
-    public static final float ACTIVATION_THRESHOLD = 0.01f;
+    @Range(min=0, max=0.5f)
+    public static float ACTIVATION_THRESHOLD = 0.01f;
 
     public static final boolean ETERNALIZE_EVICTED_TEMPORAL_TASKS = false;
 
@@ -50,16 +51,18 @@ public abstract class Param {
     /**
      * experimental increased confidence calculation for composition, taken from the NAL spec but is different from OpenNARS
      */
-    public static boolean STRONG_COMPOSITION = false;
-
-    //    private final static Logger logger = LoggerFactory.getLogger(DeriveTime.class);
-
-    public static final int TEMPORAL_SOLVER_ITERATIONS = 8;
+    public static final boolean STRONG_COMPOSITION = false;
 
 
-    public static boolean DEBUG_FILTER_DUPLICATE_MATCHES = Param.DEBUG_EXTRA;
+
+    @Range(min=1, max=16)
+    public static int TEMPORAL_SOLVER_ITERATIONS = 8;
 
 
+    public static final boolean DEBUG_FILTER_DUPLICATE_MATCHES = false;
+
+
+    /** default bag forget rate */
     public final FloatRange forgetRate = new FloatRange(1f, 0f, 2f);
 
     /**
@@ -74,11 +77,6 @@ public abstract class Param {
      */
     public final AtomicBoolean dtMergeOrChoose = new AtomicBoolean(false);
 
-    /**
-     * how many INT terms are canonically interned/cached. [0..n)
-     */
-    public final static int MAX_INTERNED_INTS = 64;
-
 
     public static final boolean FILTER_SIMILAR_DERIVATIONS = true;
     public static final boolean DEBUG_SIMILAR_DERIVATIONS = false;
@@ -89,10 +87,10 @@ public abstract class Param {
      * it is enabled for unit tests automatically regardless of the value here.
      */
     public static boolean DEBUG;
-    public static boolean DEBUG_EXTRA;
+    public static final boolean DEBUG_EXTRA = false;
 
 
-    //Budget Merging: the sequence listed here is important
+    //Budget Merging: the sequence listed here is significant
 
     public static final PriMerge activateMerge = PriMerge.plus;
 
@@ -142,51 +140,54 @@ public abstract class Param {
 
 
     /**
-     * happiness automatic gain control time parameter
+     * NAgent happiness automatic gain control time parameter
      */
     public final static float HAPPINESS_RE_SENSITIZATION_RATE = 0.001f;
 
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final MutableInteger matchTTLmean = new MutableInteger(164);
+    public final IntRange matchTTLmean = new IntRange(620, 0, 1024);
 
-    public static final int TTL_MIN =
-            Param.TTL_UNIFY * 2 +
-                    Param.TTL_DERIVE_TASK_SUCCESS;
+    public static final int TTL_MIN() {
+            return Param.TTL_UNIFY * 2 +
+                    Param.TTL_DERIVE_TASK_SUCCESS; }
 
     /**
      * cost of attempting a unification
      */
-    public static final int TTL_UNIFY = 1;
+    @Range(min=0, max=64)
+    public static int TTL_UNIFY = 2;
 
     /**
      * cost of executing a termute permutation
      */
-    public static final int TTL_MUTATE = 1;
+    @Range(min=0, max=64)
+    public static int TTL_MUTATE = 2;
 
     /**
      * cost of a successful task derivation
      */
-    @Range(min=0, max=32)
-    public static int TTL_DERIVE_TASK_SUCCESS = 4;
+    @Range(min=0, max=64)
+    public static int TTL_DERIVE_TASK_SUCCESS = 40;
 
     /**
      * cost of a repeat (of another within the premise's batch) task derivation
      */
-    @Range(min=0, max=32)
-    public static int TTL_DERIVE_TASK_REPEAT = TTL_DERIVE_TASK_SUCCESS;
+    @Range(min=0, max=64)
+    public static int TTL_DERIVE_TASK_REPEAT = 15;
 
     /**
      * cost of a task derived, but too similar to one of its parents
      */
-    @Range(min=0, max=32)
-    public static int TTL_DERIVE_TASK_SAME = TTL_DERIVE_TASK_REPEAT;
+    @Range(min=0, max=64)
+    public static int TTL_DERIVE_TASK_SAME = 25;
 
     /**
      * cost of a failed/aborted task derivation
      */
-    public static final int TTL_DERIVE_TASK_FAIL = 1;
+    @Range(min=0, max=64)
+    public static int TTL_DERIVE_TASK_FAIL = 32;
 
     //    /**
 //     * number between 0 and 1 controlling the proportion of activation going
@@ -200,17 +201,17 @@ public abstract class Param {
 
     public final float[] want = newWants();
 
-    protected void defaultWants() {
-        float[] w = this.want;
-
-        //follows the pos/neg guidelines described in the comment of each MetaGoal
-        Perceive.set(w, -0.005f);
-        Believe.set(w, 0.01f);
-        Desire.set(w, 0.1f);
-        Accurate.set(w, 0.1f);
-        Answer.set(w, 0.1f);
-        Action.set(w, 1f);
-    }
+//    protected void defaultWants() {
+//        float[] w = this.want;
+//
+//        //follows the pos/neg guidelines described in the comment of each MetaGoal
+//        Perceive.set(w, -0.005f);
+//        Believe.set(w, 0.01f);
+//        Desire.set(w, 0.1f);
+//        Accurate.set(w, 0.1f);
+//        Answer.set(w, 0.1f);
+//        Action.set(w, 1f);
+//    }
 
     /**
      * how many durations above which to dither dt relations to dt=0 (parallel)
@@ -253,50 +254,29 @@ public abstract class Param {
     public static final int COMPOUND_SUBTERMS_MAX = 127;
 
     /**
-     * how many answers to record per input question task (in its concept's answer bag)
+     * how many answers to record per input question task (per each concept's answer bag)
      */
-    public static final int MAX_INPUT_ANSWERS = 8;
+    public static final int ANSWER_BAG_CAPACITY = 8;
 
     /**
      * max retries for termpolation to produce a valid task content result during revision
      */
     public static final int MAX_TERMPOLATE_RETRIES = 1;
 
+    public static final boolean DEBUG_REPORT_ANSWERS = false;
 
-//    /** determines if an input goal or command operation task executes */
-//    public static float EXECUTION_THRESHOLD = 0.666f;
-
-    public static boolean ANSWER_REPORTING = true;
-
-
-//    public static final boolean DERIVATION_TRANSFORM_CACHE = false;
-//
-//    /** -1 for softref */
-//    public static final int DERIVATION_TRANSFORM_CACHE_SIZE_PER_THREAD =
-//            //-1; //softref
-//            32 * 1024;
 
     /**
      * hard upper-bound limit on Compound term complexity;
      * if this is exceeded it may indicate a recursively
      * malformed term due to a serious inference bug
      */
-    public final MutableInteger termVolumeMax = new MutableInteger(COMPOUND_VOLUME_MAX);
-
-    //public static final boolean ARITHMETIC_INDUCTION = false;
+    public final IntRange termVolumeMax = new IntRange(COMPOUND_VOLUME_MAX, 0, COMPOUND_VOLUME_MAX);
 
 
-//    /** whether derivation's concepts are cross-termlink'ed with the premise concept */
-//    public static boolean DERIVATION_TERMLINKED;
-//    public static boolean DERIVATION_TASKLINKED;
-
-
-    //    //TODO use 'I' for SELf, it is 3 characters shorter
-//    public static final Atom DEFAULT_SELF = (Atom) $.the("I");
     static Atom randomSelf() {
         return (Atom) $.quote("I_" + Util.uuid64());
     }
-
 
     /**
      * Evidential Horizon, the amount of future evidence to be considered
@@ -304,7 +284,15 @@ public abstract class Param {
      */
     public static final float HORIZON = 1f;
 
-    public static final int MAX_VARIABLE_CACHED_PER_TYPE = 16;
+
+
+    public static final int MAX_INTERNED_VARS = 16;
+
+    /**
+     * how many INT terms are canonically interned/cached. [0..n)
+     */
+    public final static int MAX_INTERNED_INTS = 64;
+
 
     /**
      * Maximum length of the evidental base of the Stamp, a power of 2

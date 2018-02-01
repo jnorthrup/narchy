@@ -95,7 +95,7 @@ public class Try implements Consumer<Derivation> {
             int ttlSave = d.ttl;
 
             int c = order[(k++)%n];
-            int ttlFrac = Math.max(Param.TTL_MIN, Math.round(ttlTotal * w[c]/valueSum));
+            int ttlFrac = Math.max(Param.TTL_MIN(), Math.round(ttlTotal * w[c]/valueSum));
             d.ttl = ttlFrac;
 
             branches[choices[c]].test(d);

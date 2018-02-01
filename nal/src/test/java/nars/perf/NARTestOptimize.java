@@ -5,7 +5,13 @@ import jcog.optimize.Result;
 import nars.NAR;
 import nars.NARLoop;
 import nars.NARS;
+import nars.nal.nal1.NAL1Test;
+import nars.nal.nal2.NAL2Test;
+import nars.nal.nal3.NAL3Test;
+import nars.nal.nal5.NAL5Test;
 import nars.nal.nal6.NAL6Test;
+import nars.nal.nal7.NAL7Test;
+import nars.nal.nal8.NAL8Test;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
 
@@ -16,20 +22,21 @@ public class NARTestOptimize {
 
     /** HACK runs all Junit test methods, summing the scores.
      * TODO use proper JUnit5 test runner api but it is a mess to figure out right now */
-    static float tests(Supplier<NAR>s, Class<? extends NALTest> c) {
+    static float tests(Supplier<NAR>s, Class<? extends NALTest>... c) {
 
-        int cycles = 200;
 
-        return (float) Stream.of(c.getMethods()).filter(x -> x.getAnnotation(Test.class)!=null).parallel().mapToDouble(m -> {
-            NALTest t = null;
+
+        return (float) Stream.of(c).flatMap(cc -> Stream.of(cc.getMethods())).filter(x -> x.getAnnotation(Test.class)!=null).parallel().mapToDouble(m -> {
             try {
-                t = c.getConstructor(Supplier.class).newInstance(s);
+                NALTest t = (NALTest) m.getDeclaringClass().getConstructor().newInstance();
+                t.nar = s.get(); //overwrite NAR with the supplier
                 m.invoke(t);
                 try {
-                    t.test.run(cycles, false);
+                    t.test.test(false);
                     return t.test.score;
+                    //return 1 + t.test.score; //+1 for successful completion
                 } catch (Throwable ee) {
-                    return 0f;
+                    return -1f;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -42,14 +49,24 @@ public class NARTestOptimize {
     public static void main(String[] args) {
 
 
-        Result<NAR> r = new AutoTweaks<>(()-> NARS.tmp())
+        Result<NAR> r = new AutoTweaks<>(()->{
+            NAR n = NARS.tmp();
+            return n;
+        })
             .exclude(NARLoop.class)
-            .optimize(24, (n)->{
-                return tests(n, NAL6Test.class);
+            .optimize(128, (n)->{
+                return tests(n,
+                        NAL1Test.class,
+                        NAL2Test.class,
+                        NAL3Test.class,
+                        NAL5Test.class,
+                        NAL6Test.class,
+                        NAL7Test.class,
+                        NAL8Test.class);
             });
 
         r.print();
-        r.tree(3, 8).print();
+        r.tree(2, 8).print();
 
 
     }
