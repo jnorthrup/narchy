@@ -1,7 +1,7 @@
 package nars.derive.instrument;
 
 import jcog.Texts;
-import nars.control.Derivation;
+import nars.derive.Derivation;
 import nars.derive.op.UnifyTerm;
 import nars.term.pred.AndCondition;
 import nars.term.pred.Fork;

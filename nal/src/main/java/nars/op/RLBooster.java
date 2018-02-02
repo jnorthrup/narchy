@@ -21,6 +21,7 @@ import static nars.Op.GOAL;
 
 /**
  * NAgent Reinforcement Learning Algorithm Accelerator
+ * TODO use AgentBuilder
  */
 public class RLBooster implements Consumer<NAR> {
 

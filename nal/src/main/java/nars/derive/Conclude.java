@@ -4,8 +4,6 @@ import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.control.Cause;
-import nars.control.Derivation;
-import nars.control.ProtoDerivation;
 import nars.derive.constraint.MatchConstraint;
 import nars.derive.match.Ellipsis;
 import nars.derive.op.AbstractPatternOp;

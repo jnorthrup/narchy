@@ -10,8 +10,6 @@ import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
 import nars.nal.nal5.NAL5Test;
 import nars.nal.nal6.NAL6Test;
-import nars.nal.nal7.NAL7Test;
-import nars.nal.nal8.NAL8Test;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
 
@@ -30,11 +28,12 @@ public class NARTestOptimize {
             try {
                 NALTest t = (NALTest) m.getDeclaringClass().getConstructor().newInstance();
                 t.nar = s.get(); //overwrite NAR with the supplier
+                t.nar.random().setSeed(System.nanoTime());
                 m.invoke(t);
                 try {
                     t.test.test(false);
-                    return t.test.score;
-                    //return 1 + t.test.score; //+1 for successful completion
+                    //return t.test.score;
+                    return 1 + t.test.score; //+1 for successful completion
                 } catch (Throwable ee) {
                     return -1f;
                 }
@@ -54,15 +53,16 @@ public class NARTestOptimize {
             return n;
         })
             .exclude(NARLoop.class)
-            .optimize(128, (n)->{
+            .optimize(256, 2, (n)->{
                 return tests(n,
                         NAL1Test.class,
                         NAL2Test.class,
                         NAL3Test.class,
                         NAL5Test.class,
-                        NAL6Test.class,
-                        NAL7Test.class,
-                        NAL8Test.class);
+                        NAL6Test.class
+                        //NAL7Test.class,
+                        //NAL8Test.class
+                );
             });
 
         r.print();

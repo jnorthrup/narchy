@@ -2,7 +2,6 @@ package nars.derive;
 
 import nars.NAR;
 import nars.Op;
-import nars.control.Derivation;
 import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
 import nars.term.Term;

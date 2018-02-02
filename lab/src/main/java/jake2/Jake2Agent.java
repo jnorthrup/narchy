@@ -10,8 +10,8 @@ import jake2.render.JoglGL2Renderer;
 import jake2.sys.IN;
 import jcog.learn.ql.HaiQAgent;
 import nars.NAR;
+import nars.NAgentX;
 import nars.Narsese;
-import nars.experiment.NAgentY;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.PixelBag;
 
@@ -28,7 +28,7 @@ import static nars.$.$;
 /**
  * Created by me on 9/22/16.
  */
-public class Jake2Agent extends NAgentY implements Runnable {
+public class Jake2Agent extends NAgentX implements Runnable {
 
     ByteBuffer seen;
     int width, height;
@@ -101,7 +101,7 @@ public class Jake2Agent extends NAgentY implements Runnable {
     final PlayerData player = new PlayerData();
 
     public Jake2Agent(NAR nar) throws Narsese.NarseseException {
-        super("q", nar, HaiQAgent::new);
+        super("q", nar);
 
 
         Bitmap2DSensor<PixelBag> qcam =

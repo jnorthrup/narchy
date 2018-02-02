@@ -169,25 +169,25 @@ public abstract class Param {
      * cost of a successful task derivation
      */
     @Range(min=0, max=64)
-    public static int TTL_DERIVE_TASK_SUCCESS = 40;
+    public static int TTL_DERIVE_TASK_SUCCESS = 37;
 
     /**
      * cost of a repeat (of another within the premise's batch) task derivation
      */
     @Range(min=0, max=64)
-    public static int TTL_DERIVE_TASK_REPEAT = 15;
+    public static int TTL_DERIVE_TASK_REPEAT = 42;
 
     /**
      * cost of a task derived, but too similar to one of its parents
      */
     @Range(min=0, max=64)
-    public static int TTL_DERIVE_TASK_SAME = 25;
+    public static int TTL_DERIVE_TASK_SAME = 30;
 
     /**
      * cost of a failed/aborted task derivation
      */
     @Range(min=0, max=64)
-    public static int TTL_DERIVE_TASK_FAIL = 32;
+    public static int TTL_DERIVE_TASK_FAIL = 28;
 
     //    /**
 //     * number between 0 and 1 controlling the proportion of activation going
@@ -300,7 +300,7 @@ public abstract class Param {
      */
     public static final int STAMP_CAPACITY = 16;
 
-    public static final IntRange causeCapacity = new IntRange(32, 0, 128);
+    public static final IntRange causeCapacity = new IntRange(64, 0, 128);
 
     /**
      * hard limit for cause capacity in case the runtime parameter otherwise disobeyed

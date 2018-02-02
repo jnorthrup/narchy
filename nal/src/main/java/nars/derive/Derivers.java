@@ -1,4 +1,4 @@
-package nars.control;
+package nars.derive;
 
 import nars.NAR;
 import nars.derive.rule.PremiseRuleSet;

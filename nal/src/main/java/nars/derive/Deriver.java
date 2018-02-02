@@ -1,4 +1,4 @@
-package nars.control;
+package nars.derive;
 
 import jcog.Util;
 import jcog.math.Range;
@@ -9,8 +9,8 @@ import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.derive.DeriverRoot;
-import nars.derive.TrieDeriver;
+import nars.control.Activate;
+import nars.control.Cause;
 import nars.derive.rule.PremiseRuleSet;
 import nars.exe.Causable;
 import nars.truth.Truth;

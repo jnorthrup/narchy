@@ -243,13 +243,17 @@ public class AutoTweaks<X> extends Tweaks<X> {
     }
 
 
-    public Optimize<X> optimize() {
-        discover(this.subjects.get());
-        return optimize(subjects);
-    }
 
     public Result<X> optimize(int maxIterations, FloatFunction<Supplier<X>> eval) {
-        return optimize().run(maxIterations, eval);
+        return optimize(maxIterations, 1, eval);
+    }
+
+    public Result<X> optimize(int maxIterations, int repeats, FloatFunction<Supplier<X>> eval) {
+        X sample = this.subjects.get();
+        discover(sample);
+        float sampleScore = eval.floatValueOf(subjects);
+        System.err.println("control score=" + sampleScore);
+        return optimize(subjects).run(maxIterations, repeats, eval);
     }
 
 }

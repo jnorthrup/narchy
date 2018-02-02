@@ -46,7 +46,7 @@ public class ActivateTest {
 
         Term A = $.the("a");
 
-        BatchActivation ba = BatchActivation.get();
+        BatchActivation ba = new BatchActivation();
         for (int i = 0; i < 100; i++) {
             final int[] remain = {9};
             cf.premises(nar, ba, (task, term) -> {

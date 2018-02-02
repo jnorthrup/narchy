@@ -2,7 +2,7 @@ package nars.derive.op;
 
 import nars.$;
 import nars.Op;
-import nars.control.ProtoDerivation;
+import nars.derive.ProtoDerivation;
 import nars.term.pred.AbstractPred;
 import nars.term.pred.PrediTerm;
 

@@ -4,7 +4,7 @@ import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
 import nars.Param;
 import nars.Task;
-import nars.control.Derivation;
+import nars.derive.Derivation;
 import nars.derive.match.EllipsisMatch;
 import nars.task.TimeFusion;
 import nars.term.Term;

@@ -1,8 +1,8 @@
 package nars.op;
 
 import nars.Op;
-import nars.control.Derivation;
-import nars.control.Deriver;
+import nars.derive.Derivation;
+import nars.derive.Deriver;
 import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;

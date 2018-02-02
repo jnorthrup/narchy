@@ -5,7 +5,6 @@ import jcog.Util;
 import jcog.decide.Roulette;
 import nars.Param;
 import nars.control.Cause;
-import nars.control.Derivation;
 import nars.term.Term;
 import nars.term.pred.PrediTerm;
 import org.apache.commons.lang3.ArrayUtils;

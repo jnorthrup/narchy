@@ -1,4 +1,4 @@
-package nars.control;
+package nars.derive;
 
 import jcog.pri.Pri;
 import jcog.pri.PriReference;
@@ -10,7 +10,8 @@ import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.derive.DeriverRoot;
+import nars.control.BatchActivation;
+import nars.control.Cause;
 import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
 import nars.op.Subst;

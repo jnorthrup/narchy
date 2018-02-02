@@ -1,7 +1,7 @@
 package nars.derive.constraint;
 
 import nars.$;
-import nars.control.ProtoDerivation;
+import nars.derive.ProtoDerivation;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.pred.AbstractPred;

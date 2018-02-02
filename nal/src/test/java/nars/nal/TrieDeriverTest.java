@@ -4,7 +4,7 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.control.Deriver;
+import nars.derive.Deriver;
 import nars.derive.DeriverRoot;
 import nars.derive.TrieDeriver;
 import nars.derive.rule.PremiseRule;

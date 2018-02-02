@@ -1,4 +1,4 @@
-package nars.control;
+package nars.derive;
 
 import com.google.common.io.ByteArrayDataOutput;
 import jcog.data.byt.DynBytes;

@@ -9,6 +9,7 @@ import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
 import nars.NAR;
 import nars.NAgent;
+import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectDoubleHashMap;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
@@ -131,7 +132,7 @@ public enum MetaGoal {
 
     public static AgentService newController(NAgent a) {
         NAR n = a.nar;
-        AgentService.AgentBuilder b = new AgentService.AgentBuilder(
+        AgentBuilder b = new AgentBuilder(
                 //DQN::new,
                 HaiQAgent::new,
                 //() -> Util.tanhFast(a.dexterity())) //reward function
@@ -189,7 +190,7 @@ public enum MetaGoal {
 //                        StepController.harmonic(a.curiosity::setValue, 0.01f, 0.16f)
 //                ).get(n);
 
-        return b.get(n);
+        return new AgentService(new MutableFloat(1), n, b.get());
 
     }
 

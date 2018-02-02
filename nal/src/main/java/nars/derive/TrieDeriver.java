@@ -6,8 +6,6 @@ import jcog.tree.perfect.TrieNode;
 import nars.$;
 import nars.NAR;
 import nars.Op;
-import nars.control.Derivation;
-import nars.control.ProtoDerivation;
 import nars.derive.constraint.MatchConstraint;
 import nars.derive.op.TaskBeliefOp;
 import nars.derive.op.UnifyTerm;

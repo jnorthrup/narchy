@@ -2,7 +2,7 @@ package nars.derive.op;
 
 import nars.$;
 import nars.Param;
-import nars.control.Derivation;
+import nars.derive.Derivation;
 import nars.derive.rule.PremiseRule;
 import nars.term.Term;
 import nars.term.atom.Atomic;

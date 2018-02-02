@@ -9,18 +9,17 @@ public class BatchActivation {
 
     final ObjectFloatHashMap<Concept> a = new SaneObjectFloatHashMap<>(64);
 
-    final static ThreadLocal<BatchActivation> the = ThreadLocal.withInitial(BatchActivation::new);
+//    final static ThreadLocal<BatchActivation> the = ThreadLocal.withInitial(BatchActivation::new);
+//
+//    //final static LongHashSet active = new LongHashSet();
+//
+//    public static BatchActivation get() {
+//        return the.get();
+//    }
 
-    //final static LongHashSet active = new LongHashSet();
+    public BatchActivation() {
 
-    public static BatchActivation get() {
-        return the.get();
     }
-
-    BatchActivation() {
-
-    }
-
 
     public void commit(NAR nar) {
         if (!a.isEmpty()) {

@@ -972,9 +972,11 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
      * @return Matrix representing the element-wise logarithm of m.
      */
     private static RealMatrix log(final RealMatrix m) {
-        final double[][] d = new double[m.getRowDimension()][m.getColumnDimension()];
-        for (int r = 0; r < m.getRowDimension(); r++) {
-            for (int c = 0; c < m.getColumnDimension(); c++) {
+        int R = m.getRowDimension();
+        int C = m.getColumnDimension();
+        final double[][] d = new double[R][C];
+        for (int r = 0; r < R; r++) {
+            for (int c = 0; c < C; c++) {
                 d[r][c] = Math.log(m.getEntry(r, c));
             }
         }
@@ -986,9 +988,11 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
      * @return Matrix representing the element-wise square root of m.
      */
     private static RealMatrix sqrt(final RealMatrix m) {
-        final double[][] d = new double[m.getRowDimension()][m.getColumnDimension()];
-        for (int r = 0; r < m.getRowDimension(); r++) {
-            for (int c = 0; c < m.getColumnDimension(); c++) {
+        int R = m.getRowDimension();
+        int C = m.getColumnDimension();
+        final double[][] d = new double[R][C];
+        for (int r = 0; r < R; r++) {
+            for (int c = 0; c < C; c++) {
                 d[r][c] = Math.sqrt(m.getEntry(r, c));
             }
         }
@@ -1016,9 +1020,11 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
      * @return the matrix where the elements of m and n are element-wise multiplied.
      */
     private static RealMatrix times(final RealMatrix m, final RealMatrix n) {
-        final double[][] d = new double[m.getRowDimension()][m.getColumnDimension()];
-        for (int r = 0; r < m.getRowDimension(); r++) {
-            for (int c = 0; c < m.getColumnDimension(); c++) {
+        int R = m.getRowDimension();
+        int C = m.getColumnDimension();
+        final double[][] d = new double[R][C];
+        for (int r = 0; r < R; r++) {
+            for (int c = 0; c < C; c++) {
                 d[r][c] = m.getEntry(r, c) * n.getEntry(r, c);
             }
         }

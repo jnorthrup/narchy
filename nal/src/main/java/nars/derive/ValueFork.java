@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.decide.Roulette;
 import nars.$;
 import nars.control.Cause;
-import nars.control.Derivation;
 import nars.derive.op.UnifyTerm;
 import nars.term.pred.AbstractPred;
 import nars.term.pred.AndCondition;

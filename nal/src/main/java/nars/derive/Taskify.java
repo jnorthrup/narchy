@@ -4,7 +4,6 @@ import jcog.Util;
 import nars.$;
 import nars.Param;
 import nars.Task;
-import nars.control.Derivation;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
 import nars.task.NALTask;

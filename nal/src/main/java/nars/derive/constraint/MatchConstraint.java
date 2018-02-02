@@ -6,7 +6,7 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.list.FasterList;
 import nars.$;
-import nars.control.Derivation;
+import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.pred.AbstractPred;
 import nars.term.pred.AndCondition;
