@@ -28,6 +28,16 @@
     //B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionPB, Goal:DeciDeduction)
         //B, (C ==> B), notImpl(B), task("!") |- C (Goal:DeciDeduction)
 
+    //Y, (B ==> (&&,X,A..+)) |- subIfUnifiesAny((B ==>+- (&&,A..+)),X,Y), (Belief:Deduction)
+    //Y, (B ==> (&&,--X,A..+)) |- subIfUnifiesAny((B ==>+- (&&,A..+)),X,Y), (Belief:DeductionN)
+
+    //Y, ((&&,X,A..+) ==> B) |- subIfUnifiesAny((X ==>+- B),X,Y), (Belief:Deduction)
+    //Y, ((&&,--X,A..+) ==> B) |- subIfUnifiesAny((--X ==>+- B),X,Y), (Belief:DeductionN)
+
+        //((&&,M,X,A..*) ==> C), (Y ==> C), task(".") |- subIfUnifiesAny((M ==>+- C),X,Y), (Belief:AbductionPB)
+        //((&&,M,A..+) ==> X), ((&&,A..+) ==> Y), task(".") |- subIfUnifiesAny((M ==>+- C),X,Y,"$"), (Belief:AbductionPB)
+
+
 //// implication-based syllogism ////////////////////////////////////////////////////////////////////////////////////
 //       (A ==> B) ------- (B ==> C)
 //            \               /
@@ -169,11 +179,11 @@
 //   original:   ((&&,M,A_1..n) ==> C), ((&&,A,A_1..n) ==> C) |- (A ==> M), (Truth:Induction, Order:ForAllSame)
 
     (X ==> C), M,  belief(positive), is(X,"&&"), in(M,X) |- (conjWithout(X,M) ==>+- C), (Belief:Deduction)
-    (X ==> C), M,  belief(negative), is(X,"&&"), in(M,X) |- (conjWithout(X,--M) ==>+- C), (Belief:DeductionPN)
+    (X ==> C), M,  belief(negative), is(X,"&&"), inNeg(M,X) |- (conjWithout(X,--M) ==>+- C), (Belief:DeductionPN)
 
         //((&&,M,A..+) ==> C), M,                  |- ((&&,A..+) ==>+- C), (Belief:Deduction)
     (X ==> C), (B==>M), belief(positive), is(X,"&&"), in(M,X) |- ((conjWithout(X,M) &&+- B) ==>+- C), (Belief:Deduction)
-    (X ==> C), (B==>M), belief(negative), is(X,"&&"), in(M,X) |- ((conjWithout(X,--M) &&+- B) ==>+- C), (Belief:DeductionPN)
+    (X ==> C), (B==>M), belief(negative), is(X,"&&"), inNeg(M,X) |- ((conjWithout(X,--M) &&+- B) ==>+- C), (Belief:DeductionPN)
         //((&&,M,A..+) ==> C), (B ==> M), neq(B,M) |- ((&&,B,A..+) ==>+- C), (Belief:Deduction)
 
     (X ==> C), (Y==>C), is(X,"&&"), is(Y,"&&"), neq(X,Y)   |- differ(Y,X), (Belief:AbductionPB)
@@ -182,6 +192,7 @@
         //((&&,M,A..+) ==> C), ((&&,A..+) ==> C)   |- M, (Belief:AbductionPB)
 
     (X ==> C), (B==>M), is(X,"&&"), in(B,X) |- ((conjWithout(X,B) &&+- M) ==>+- C), (Belief:AbductionPB)
+        (X ==> C), (--B==>M), is(X,"&&"), inNeg(B,X) |- ((conjWithout(X,--B) &&+- M) ==>+- C), (Belief:AbductionPB)
         //((&&,B,A..+) ==> C), (B ==> M), neq(B,M) |- ((&&,M,A..+) ==>+- C), (Belief:AbductionPB)
 
 
@@ -189,14 +200,6 @@
     (X ==> C), (Y ==> C), is(X,"&&"),is(Y,"&&"), neq(X,Y) |- (differ(Y,X) ==>+- differ(X,Y)), (Belief:InductionPB)
         //((&&,M,A..+) ==> C), ((&&,B,A..+)==>C)   |- (B ==>+- M), (Belief:Induction)
 
-    //((&&,M,X,A..*) ==> C), (Y ==> C), task(".") |- subIfUnifiesAny((M ==>+- C),X,Y), (Belief:AbductionPB)
-    //((&&,M,A..+) ==> X), ((&&,A..+) ==> Y), task(".") |- subIfUnifiesAny((M ==>+- C),X,Y,"$"), (Belief:AbductionPB)
-
-    Y, (B ==> (&&,X,A..+)) |- subIfUnifiesAny((B ==>+- X),X,Y), (Belief:Deduction)
-    Y, (B ==> (&&,--X,A..+)) |- subIfUnifiesAny(--(B ==>+- X),X,Y), (Belief:DeductionN)
-
-    Y, ((&&,X,A..+) ==> B) |- subIfUnifiesAny((X ==>+- B),X,Y), (Belief:Deduction)
-    Y, ((&&,--X,A..+) ==> B) |- subIfUnifiesAny((--X ==>+- B),X,Y), (Belief:DeductionN)
 
 
 //// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////

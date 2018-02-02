@@ -34,7 +34,7 @@ public class FZero extends NAgentX {
 
         //Param.DEBUG = true;
 
-        float fps = 10f;
+        float fps = 15f;
 
         NAgentX.runRT((n) -> {
 

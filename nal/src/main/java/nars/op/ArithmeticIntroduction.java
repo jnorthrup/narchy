@@ -1,5 +1,6 @@
 package nars.op;
 
+import jcog.Util;
 import jcog.list.FasterList;
 import nars.$;
 import nars.term.Term;
@@ -7,15 +8,16 @@ import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.atom.Int;
 import nars.term.var.Variable;
+import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
+import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
-import static nars.Op.CONJ;
-import static nars.Op.INT;
-import static nars.Op.SIM;
+import static nars.Op.*;
 
 /**
  * introduces arithmetic relationships between differing numeric subterms
@@ -56,59 +58,52 @@ public class ArithmeticIntroduction {
         int[] ii = ints.toSortedArray();  //increasing so that relational comparisons can assume that 'a' < 'b'
 
         //potential mods to select from
-        FasterList<Supplier<Term[]>> mods = new FasterList(1);
+        //FasterList<Supplier<Term[]>> mods = new FasterList(1);
+        IntObjectHashMap<List<Supplier<Term[]>>> mods = new IntObjectHashMap();
+
+        Variable v = $.varDep("x");
 
         //test arithmetic relationships
         for (int a = 0; a < ui; a++) {
+            int ia = ii[a];
             for (int b = a + 1; b < ui; b++) {
-                int ia = ii[a];
                 int ib = ii[b];
+                assert(ib > ia);
 
-
-                if (ib == ia + 1 && (ia!=0)) {
-                    mods.add(() -> {
-                        Variable vx = $.varDep("x");
-                        return new Term[]{
-                            Int.the(ia), vx,
-                            Int.the(ib), $.func("add", vx, $.the(1))
-                        };
+                if (ib - ia < ia && (ia!=0)) {
+                    //Add if the delta < 'ia'
+                    mods.getIfAbsentPut(ia, FasterList::new).add(()-> new Term[]{
+                        Int.the(ib), $.func("add", v, $.the(ib - ia))
                     });
-                }
+                } else if ((ia!=0 && ia!=1) && (ib!=0 && ib!=1) && Util.equals(ib/ia, (int)(((float)ib)/ia), Float.MIN_NORMAL)) {
 
-                if (ib == ia*2 && (ia!=1 /* use add if ia==1 */)) {
-                    mods.add(() -> {
-                        Variable vx = $.varDep("x");
-                        return new Term[]{
-                                Int.the(ia), vx,
-                                Int.the(ib), $.func("mul", vx, $.the(2))
-                        };
+                    mods.getIfAbsentPut(ia, FasterList::new).add(()-> new Term[]{
+                            Int.the(ib), $.func("mul", v, $.the(ib/ia))
                     });
                 }
 
             }
         }
+        if (mods.isEmpty())
+            return x;
 
-        int nm = mods.size();
+        //TODO fair select randomly if multiple of the same length
+        IntObjectPair<List<Supplier<Term[]>>> m = mods.keyValuesView().maxBy(e -> e.getTwo().size());
+        int base = m.getOne();
+        Term baseTerm = Int.the(base);
+        if (anon!=null)
+            baseTerm = anon.put(baseTerm);
 
-        Supplier<Term[]> m;
-        switch (nm) {
-            case 0:
-                return x;
-            case 1:
-                m = mods.get(0);
-                break;
-            default:
-                m = mods.get(rng);
-                break;
+        Term yy = x.replace(baseTerm, v);
+
+        for (Supplier<Term[]> s : m.getTwo()) {
+            Term[] mm = s.get();
+            if (anon!=null)
+                mm[0] = anon.put(mm[0]);
+            yy = yy.replace(mm[0], mm[1]);
         }
+        Term y = CONJ.the(yy, SIM.the(baseTerm, v));
 
-        Term[] mm = m.get();
-        if (anon!=null) {
-            mm[0] = anon.put(mm[0]);
-            mm[2] = anon.put(mm[2]);
-        }
-        Term yy = x.replace(mm[0], mm[1]).replace(mm[2], mm[3]);
-        Term y = CONJ.the(yy, SIM.the(mm[0], mm[1]));
         if (x.isNormalized()) {
             y = y.normalize();
         }

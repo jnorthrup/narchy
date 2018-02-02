@@ -24,8 +24,8 @@ public class ArithmeticTest {
     }
 
     @Test public void test2() throws Narsese.NarseseException {
-        assertEquals("(x(#1,add(#1,1))&&(#1<->0))",
-                ArithmeticIntroduction.apply($.$("x(0,1)"), rng).toString());
+        assertEquals("(x(#1,add(#1,1))&&(#1<->2))",
+                ArithmeticIntroduction.apply($.$("x(2,3)"), rng).toString());
     }
 
     @Test
@@ -68,12 +68,18 @@ public class ArithmeticTest {
         NAR n = NARS.tmp();
         TestNAR t = new TestNAR(n);
         t.log();
-        t.believe("(x:1,x:2)");
-        t.believe("(x:2,x:3)");
-        t.believe("(x:3,x:4)");
-        t.believe("(x:4,x:5)");
-            t.ask("(x:5,?1)");
-        t.mustBelieve(1000, "(x:5,x:6)", 1f, 0.81f);
+//        t.believe("(x:1,x:2)");
+//        t.believe("(x:2,x:3)");
+//        t.believe("(x:3,x:4)");
+//        t.believe("(x:4,x:5)");
+//            t.ask("(x:5,?1)");
+//        t.mustBelieve(1000, "(x:5,x:6)", 1f, 0.81f);
+        t.believe("a:1");
+        t.believe("a:2");
+        t.believe("a:3");
+        t.believe("a:4");
+        t.ask("#x:5");
+        t.mustBelieve(1000, "a:5", 1f, 0.81f);
         t.test(true);
     }
 
