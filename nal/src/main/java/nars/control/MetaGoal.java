@@ -7,9 +7,9 @@ import jcog.learn.ql.HaiQAgent;
 import jcog.list.FasterList;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
+import jcog.math.FloatPolarNormalized;
 import nars.NAR;
 import nars.NAgent;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectDoubleHashMap;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
@@ -130,13 +130,16 @@ public enum MetaGoal {
     }
 
 
-    public static AgentService newController(NAgent a) {
+    public static AgentBuilder newController(NAgent a) {
         NAR n = a.nar;
+
+        Arrays.fill(n.want, 0);
+
         AgentBuilder b = new AgentBuilder(
                 //DQN::new,
                 HaiQAgent::new,
                 //() -> Util.tanhFast(a.dexterity())) //reward function
-                () -> a.dexterity() * Util.tanhFast(a.reward) /* - lag */) //reward function
+                () -> a.enabled.get() ? (0.1f + a.dexterity()) * Util.tanhFast(a.reward) /* - lag */ : 0f) //reward function
 
                 .in(a::dexterity)
                 .in(a.happy)
@@ -157,15 +160,14 @@ public enum MetaGoal {
                         ).relax(0.1f)
                 );
 
-        Arrays.fill(n.want, 0);
 
         for (MetaGoal g : values()) {
             final int gg = g.ordinal();
             float min = -2;
             float max = +2;
-            b.in(new FloatNormalized(() -> n.want[gg], min, max));
+            b.in(new FloatPolarNormalized(() -> n.want[gg], min, max));
 
-            float step = 0.25f;
+            float step = 0.5f;
 
             b.out(2, (w) -> {
                 float str = 0.05f + step * Math.abs(n.want[gg] / 4f);
@@ -190,8 +192,8 @@ public enum MetaGoal {
 //                        StepController.harmonic(a.curiosity::setValue, 0.01f, 0.16f)
 //                ).get(n);
 
-        return new AgentService(new MutableFloat(1), n, b.get());
 
+        return b;
     }
 
     public static class Report extends ObjectDoubleHashMap<ObjectBytePair<Cause>> {

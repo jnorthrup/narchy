@@ -2,8 +2,12 @@ package nars;
 
 import jcog.exe.Loop;
 import jcog.math.FloatFirstOrderDifference;
+import jcog.math.FloatNormalized;
 import jcog.math.FloatPolarNormalized;
 import jcog.signal.Bitmap2D;
+import nars.control.AgentBuilder;
+import nars.control.AgentService;
+import nars.control.MetaGoal;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.exe.Focus;
@@ -24,6 +28,7 @@ import net.beadsproject.beads.core.UGen;
 import net.beadsproject.beads.data.Buffer;
 import net.beadsproject.beads.ugens.*;
 import org.HdrHistogram.DoubleHistogram;
+import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
@@ -113,8 +118,8 @@ abstract public class NAgentX extends NAgent {
     public static NAR runRT(Function<NAR, NAgent> init, float narFPS, float agentFPS) {
 
         //The.Subterms.the =
-                //The.Subterms.CaffeineSubtermBuilder.get();
-                //The.Subterms.HijackSubtermBuilder.get();
+        //The.Subterms.CaffeineSubtermBuilder.get();
+        //The.Subterms.HijackSubtermBuilder.get();
 
         //The.Subterms.SoftSubtermBuilder.get();
 //        The.Compound.the =
@@ -200,8 +205,8 @@ abstract public class NAgentX extends NAgent {
 
         n.dtMergeOrChoose.set(true);
         n.dtDither(
-            //1f
-            0.5f //nyquist
+                //1f
+                0.5f //nyquist
         );
 
         n.confMin.set(0.01f);
@@ -223,7 +228,7 @@ abstract public class NAgentX extends NAgent {
 //        new RLBooster(a, HaiQAgent::new, 1);
 
         new Deriver(a.fire(), Derivers.deriver(1, 8,
-                "motivation.nal","goal_analogy.nal"
+                "motivation.nal", "goal_analogy.nal"
         ).apply(n).deriver, n) {
 //            @Override
 //            protected long matchTime(Task task) {
@@ -234,8 +239,51 @@ abstract public class NAgentX extends NAgent {
 //            }
         };
 
-        Loop aLoop = a.runFPS(agentFPS);
 
+
+
+        {
+            AgentBuilder b = MetaGoal.newController(a);
+//                .in(a::dexterity)
+//                .in(new FloatNormalized(()->a.reward).decay(0.9f))
+//                .in(new FloatNormalized(
+//                        ((Emotivation) n.emotion).cycleDTRealMean::getValue)
+//                            .decay(0.9f)
+//                )
+                b.in(new FloatNormalized(
+                        //TODO use a Long-specific impl of this:
+                        new FloatFirstOrderDifference(n::time, () -> n.emotion.deriveTask.getValue().longValue())
+                ).relax(0.99f))
+//                .in(new FloatNormalized(
+//                        //TODO use a Long-specific impl of this:
+//                        new FirstOrderDifferenceFloat(n::time, () -> n.emotion.conceptFirePremises.getValue().longValue())
+//                    ).decay(0.9f)
+                .in(new FloatNormalized(
+                        () -> n.emotion.busyVol.getSum()
+                    ).relax(0.99f))
+                .out(2, (onOff)->{
+                    switch(onOff) {
+                        case 0:
+                            a.enabled.set(false); //pause
+                            break;
+                        case 1:
+                            a.enabled.set(true); //un-pause
+                            break;
+                    }
+                })
+//                ).out(
+//                        new StepController((x) -> n.time.dur(Math.round(x)), 1, n.dur(), n.dur()*2)
+//                .out(
+//                        StepController.harmonic(n.confMin::set, 0.01f, 0.5f)
+//                )//.out(
+//                        StepController.harmonic(n.truthResolution::setValue, 0.01f, 0.08f)
+//                ).out(
+//                        StepController.harmonic(a.curiosity::setValue, 0.01f, 0.16f)
+//                ).get(n);
+
+                ;
+            new AgentService(new MutableFloat(1), n, b.get());
+        }
 
 
         //n.dtMergeOrChoose.setValue(true);
@@ -315,39 +363,6 @@ abstract public class NAgentX extends NAgent {
 //                //0,1,4
 //        );
 
-//        AgentService p = new AgentService.AgentBuilder(
-//                //DQN::new,
-//                HaiQAgent::new,
-//                //() -> Util.tanhFast(a.dexterity())) //reward function
-//                () -> a.dexterity() * Util.tanhFast( a.reward) /* - lag */ ) //reward function
-//
-//                .in(a::dexterity)
-//                .in(new FloatNormalized(()->a.reward).decay(0.9f))
-//                .in(new FloatNormalized(
-//                        ((Emotivation) n.emotion).cycleDTRealMean::getValue)
-//                            .decay(0.9f)
-//                )
-//                .in(new FloatNormalized(
-//                        //TODO use a Long-specific impl of this:
-//                        new FirstOrderDifferenceFloat(n::time, () -> n.emotion.taskDerived.getValue().longValue())
-//                ).decay(0.9f))
-//                .in(new FloatNormalized(
-//                        //TODO use a Long-specific impl of this:
-//                        new FirstOrderDifferenceFloat(n::time, () -> n.emotion.conceptFirePremises.getValue().longValue())
-//                    ).decay(0.9f)
-//                ).in(new FloatNormalized(
-//                        () -> n.emotion.busyVol.getSum()
-//                    ).decay(0.9f)
-//                ).out(
-//                        new StepController((x) -> n.time.dur(Math.round(x)), 1, n.dur(), n.dur()*2)
-//                ).out(
-//                        StepController.harmonic(n.confMin::setValue, 0.01f, 0.08f)
-//                ).out(
-//                        StepController.harmonic(n.truthResolution::setValue, 0.01f, 0.08f)
-//                ).out(
-//                        StepController.harmonic(a.curiosity::setValue, 0.01f, 0.16f)
-//                ).get(n);
-
 //
 //        window(new MatrixView(p.in, (x, gl) -> {
 //            Draw.colorBipolar(gl, x);
@@ -358,23 +373,20 @@ abstract public class NAgentX extends NAgent {
         //get ready
         System.gc();
 
-        Loop loop = a.nar.startFPS(narFPS);
+        Loop loop = n.startFPS(narFPS);
 
 
-        a.nar.runLater(() ->
-
-        {
-
-            //a.nar.services.printServices(System.out);
+        a.nar.runLater(() -> {
 
             chart(a);
+
+            window(Vis.top(a.nar), 800, 800);
 
 //            window(new ConceptView(a.happy,n), 800, 600);
 
 
-            window(Vis.top(a.nar), 800, 800);
-//            window(
-//                    ExecCharts.exePanel(n, a), 800, 800);
+            //START AGENT
+            Loop aLoop = a.runFPS(agentFPS);
 
         });
 
