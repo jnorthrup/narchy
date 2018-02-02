@@ -12,6 +12,7 @@ import nars.concept.builder.ConceptBuilder;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.atom.Int;
 import nars.term.pred.AbstractPred;
 import nars.term.var.Variable;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.IntPredicate;
 import java.util.function.Supplier;
 
 import static nars.Op.*;
@@ -84,13 +86,9 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
     }
 
     public static LambdaFunctor f(@NotNull Atom termAtom, int arityRequired, @NotNull Function<Subterms, Term> ff) {
-        return f(termAtom, (tt) -> {
-            if (tt.subs() != arityRequired)
-                return null;
-            //throw new RuntimeException(termAtom + " requires " + arityRequired + " arguments: " + Arrays.toString(tt));
-
-            return ff.apply(tt);
-        });
+        return f(termAtom, (tt) ->
+                (tt.subs() != arityRequired) ? null : ff.apply(tt)
+        );
     }
 
     /**
@@ -212,15 +210,28 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
      * two argument non-variable integer functor (convenience method)
      */
     @FunctionalInterface
-    public interface IntIntFunc {
+    public interface IntIntToIntFunction {
         int apply(int x, int y);
     }
 
-    public static Concept f2Int(@NotNull String termAtom, @NotNull IntIntFunc ff) {
-        return f2(fName(termAtom), (xt, yt) -> {
-            try {
-                return $.the(ff.apply($.intValue(xt), $.intValue(yt)));
-            } catch (NumberFormatException ignored) {
+    public static Concept f2Int(String termAtom, boolean commutive, @Nullable IntPredicate identityComponent, IntIntToIntFunction ff) {
+        Atom f = fName(termAtom);
+        return f2(f, (xt, yt) -> {
+            boolean xi = xt.op() == INT;
+            boolean yi = yt.op() == INT;
+            if (xi && yi) {
+                return Int.the( ff.apply(((Int)xt).id, ((Int)yt).id ) );
+            } else {
+                if (identityComponent!=null) {
+                    if (xi && identityComponent.test(((Int) xt).id))
+                        return yt;
+                    if (yi && identityComponent.test(((Int) yt).id))
+                        return xt;
+                }
+
+                if (commutive && xt.compareTo(yt) > 0) {
+                    return $.func(f, yt, xt);
+                }
                 return null;
             }
         });

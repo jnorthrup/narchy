@@ -6,7 +6,10 @@ import jcog.pri.Prioritized;
 import jcog.sort.TopNUnique;
 import jcog.util.FloatFloatToFloatFunction;
 import jcog.version.Versioned;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.Param;
+import nars.Task;
 import nars.derive.DeriverRoot;
 import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
@@ -16,7 +19,6 @@ import nars.op.data.differ;
 import nars.op.data.intersect;
 import nars.op.data.union;
 import nars.subterm.Subterms;
-import nars.subterm.TermList;
 import nars.task.NALTask;
 import nars.term.Functor;
 import nars.term.Term;
@@ -297,6 +299,10 @@ public class Derivation extends ProtoDerivation {
                 union.the,
                 differ.the,
                 intersect.the,
+
+//                nar.get(Atomic.the("add")),
+//                nar.get(Atomic.the("mul")),
+
                 nar.get(Atomic.the("dropAnyEvent")),
                 nar.get(Atomic.the("dropAnySet")),
                 nar.get(Atomic.the("without")),

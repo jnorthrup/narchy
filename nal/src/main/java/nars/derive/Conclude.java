@@ -14,71 +14,30 @@ import nars.derive.op.TaskBeliefOp;
 import nars.derive.op.UnifyTerm;
 import nars.derive.rule.PremiseRule;
 import nars.index.term.PatternIndex;
+import nars.op.ArithmeticIntroduction;
+import nars.op.DepIndepVarIntroduction;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.term.pred.AbstractPred;
 import nars.term.pred.AndCondition;
 import nars.term.pred.PrediTerm;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
+
+import static nars.derive.Conclude.IntroVars.VAR_INTRO;
 
 /**
  * Conclusion builder
  */
 public final class Conclude {
 
-    private static final Term VAR_INTRO = $.the("varIntro");
+    public static final IntroVars introVars = new IntroVars();
 
-
-    static public PrediTerm<Derivation> the(PremiseRule rule, PatternIndex index, NAR nar) {
-
-        Term pattern = rule.conclusion().sub(0);
-
-        //TODO may interfere with constraints, functors, etc or other features, ie.
-        // if the pattern is a product for example?
-        //            pattern = pattern.replace(ta, Derivation._taskTerm);
-        // determine if any cases where a shortcut like this can work (ie. no constraints, not a product etc)
-
-        //        //substitute compound occurrences of the exact task and belief terms with the short-cut
-//        Term ta = rule.getTask();
-//        if (!ta.op().var) {
-//            if (pattern.equals(ta))
-//                pattern = Derivation.TaskTerm;
-//        }
-//        Term tb = rule.getBelief();
-//        if (!tb.op().var) {
-//            //pattern = pattern.replace(tb, Derivation._beliefTerm);
-//            if (pattern.equals(tb))
-//                pattern = Derivation.BeliefTerm;
-//        }
-
-        //HACK unwrap varIntro so we can apply it at the end of the derivation process, not before like other functors
-        boolean introVars;
-        Pair<Termed, Term> outerFunctor = Op.functor(pattern, (i)->i.equals(VAR_INTRO) ? VAR_INTRO : null);
-        if (outerFunctor != null) {
-            introVars = true;
-            pattern = outerFunctor.getTwo().sub(0);
-        } else {
-            introVars = false;
-        }
-
-        pattern = index.get(pattern, true).term(); //get(pattern, true).term();
-
-        Taskify taskify = new Taskify( nar.newCause((s)->new RuleCause(rule, s)));
-
-        Term concID = $.func("derive", /*$.the(cid), */pattern/* prod args */);
-        Conclusion conc = new Conclusion(concID, pattern, rule);
-        return AndCondition.the(
-                conc,
-                introVars ? //Fork.fork(
-                        AndCondition.the(new IntroVars(), taskify)
-                        //makeTask)
-                        : taskify
-        );
-
-    }
 
     public static void match(final PremiseRule rule, List<PrediTerm<ProtoDerivation>> pre, List<PrediTerm<Derivation>> post, @NotNull SortedSet<MatchConstraint> constraints, PatternIndex index, NAR nar) {
 
@@ -155,6 +114,54 @@ public final class Conclude {
 
     }
 
+
+    static public PrediTerm<Derivation> the(PremiseRule rule, PatternIndex index, NAR nar) {
+
+        Term pattern = rule.conclusion().sub(0);
+
+        //TODO may interfere with constraints, functors, etc or other features, ie.
+        // if the pattern is a product for example?
+        //            pattern = pattern.replace(ta, Derivation._taskTerm);
+        // determine if any cases where a shortcut like this can work (ie. no constraints, not a product etc)
+
+        //        //substitute compound occurrences of the exact task and belief terms with the short-cut
+//        Term ta = rule.getTask();
+//        if (!ta.op().var) {
+//            if (pattern.equals(ta))
+//                pattern = Derivation.TaskTerm;
+//        }
+//        Term tb = rule.getBelief();
+//        if (!tb.op().var) {
+//            //pattern = pattern.replace(tb, Derivation._beliefTerm);
+//            if (pattern.equals(tb))
+//                pattern = Derivation.BeliefTerm;
+//        }
+
+        //HACK unwrap varIntro so we can apply it at the end of the derivation process, not before like other functors
+        boolean introVars;
+        Pair<Termed, Term> outerFunctor = Op.functor(pattern, (i)->i.equals(VAR_INTRO) ? VAR_INTRO : null);
+        if (outerFunctor != null) {
+            introVars = true;
+            pattern = outerFunctor.getTwo().sub(0);
+        } else {
+            introVars = false;
+        }
+
+        pattern = index.get(pattern, true).term();
+
+        Taskify taskify = new Taskify( nar.newCause((s)->new RuleCause(rule, s)));
+
+        return AndCondition.the(
+                new Conclusion($.func("derive", pattern), pattern, rule),
+                introVars ?
+                    AndCondition.the(Conclude.introVars, taskify)
+                        :
+                    taskify
+        );
+
+    }
+
+
     private static boolean taskFirst(Term task, Term belief) {
         return true;
     }
@@ -191,11 +198,11 @@ public final class Conclude {
      * derivation inputs are batched for input by another method
      * holds the deriver id also that it can be applied at the end of a derivation.
      */
-    public static class RuleCause extends Cause {
+    static class RuleCause extends Cause {
         public final PremiseRule rule;
         public final String ruleString;
 
-        public RuleCause(PremiseRule rule, short id) {
+        RuleCause(PremiseRule rule, short id) {
             super(id);
             this.rule = rule;
             this.ruleString = rule.toString();
@@ -208,79 +215,43 @@ public final class Conclude {
     }
 
 
-    //    public static class RuleFeedbackDerivedTask extends DerivedTask.DefaultDerivedTask {
-//
-//        private final @NotNull PremiseRule rule;
-//
-//        public RuleFeedbackDerivedTask(@NotNull Termed<Compound> tc, @Nullable Truth truth, byte punct, long[] evidence, @NotNull Derivation premise, @NotNull PremiseRule rule, long now, long[] occ) {
-//            super(tc, truth, punct, evidence, premise, now, occ);
-//            this.rule = rule;
-//        }
-//
-//        @Override
-//        public void feedback(TruthDelta delta, float deltaConfidence, float deltaSatisfaction, NAR nar) {
-//            if (!isDeleted())
-//                Conclude.feedback(premise, rule, this, delta, deltaConfidence, deltaSatisfaction, nar);
-//            super.feedback(delta, deltaConfidence, deltaSatisfaction, nar);
-//
-//        }
-//    }
-//
-//    static class RuleStats {
-//        final SummaryStatistics pri = new SummaryStatistics();
-//        final SummaryStatistics dSat = new SummaryStatistics();
-//        final SummaryStatistics dConf = new SummaryStatistics();
-//
-//        public long count() {
-//            return dSat.getN();
-//        }
-//
-//    }
-//
-//    static final Map<NAR, Map<PremiseRule, RuleStats>> stats = new ConcurrentHashMap();
-//
-//    private static void feedback(Premise premise, @NotNull PremiseRule rule, @NotNull RuleFeedbackDerivedTask t, @Nullable TruthDelta delta, float deltaConfidence, float deltaSatisfaction, NAR nar) {
-//        Map<PremiseRule, RuleStats> x = stats.computeIfAbsent(nar, n -> new ConcurrentHashMap<>());
-//
-//        RuleStats s = x.computeIfAbsent(rule, d -> new RuleStats());
-//
-//        s.pri.addValue(t.pri());
-//
-//        if (delta != null) {
-//            s.dSat.addValue(Math.abs(deltaSatisfaction));
-//            s.dConf.addValue(Math.abs(deltaConfidence));
-//        }
-//
-//    }
-//
-//    static public void printStats(NAR nar) {
-//        stats.get(nar).forEach((r, s) -> {
-//            long n = s.count();
-//
-//            System.out.println(
-//                    r + "\t" +
-//                            Texts.n4(s.pri.getSum()) + '\t' +
-//                            Texts.n4(s.dConf.getSum()) + '\t' +
-//                            Texts.n4(s.dSat.getSum()) + '\t' +
-//                            n
-//                    //" \t " + mean +
-//            );
-//        });
-//    }
+
+    static class IntroVars extends AbstractPred<Derivation> {
+
+        static final Term VAR_INTRO = $.the("varIntro");
+
+        private IntroVars() {
+            super(VAR_INTRO);
+        }
+
+        @Override
+        public boolean test(Derivation p) {
+            Term x = p.derivedTerm.get();
+
+            Term xa = ArithmeticIntroduction.apply(x, p.anon, p.random);
+            Term y;
+            if (!xa.equals(x)) {
+                y = xa;
+            } else {
+                @Nullable Pair<Term, Map<Term, Term>> xy = DepIndepVarIntroduction.the.apply(x, p.random);
+                if (xy == null)
+                    return false;
+                y = xy.getOne();
+            }
 
 
-//    final static HashBag<PremiseRule> posGoal = new HashBag();
-//    final static HashBag<PremiseRule> negGoal = new HashBag();
-//    static {
-//
-//        Runtime.getRuntime().addShutdownHook(new Thread(()-> {
-//            System.out.println("POS GOAL:\n" + print(posGoal));
-//            System.out.println("NEG GOAL:\n" + print(negGoal));
-//        }));
-//    }
-//
-//    private static String print(HashBag<PremiseRule> h) {
-//        return Joiner.on("\n").join(h.topOccurrences(h.size())) + "\n" + h.size() + " total";
-//    }
-
+            if (!(y.op().conceptualizable) || (y.equals(x) /* keep only if it differs */)) {
+                return false;
+            } else {
+                if (!y.hasAny(Op.ConstantAtomics)) {
+                    return false; //entirely variablized
+                } else {
+                    //Map<Term, Term> changes = xy.getTwo();
+                    //p.xy.putAll(changes);
+                    p.derivedTerm.set(y);
+                    return true;
+                }
+            }
+        }
+    }
 }

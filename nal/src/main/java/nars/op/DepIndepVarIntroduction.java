@@ -21,20 +21,7 @@ import static nars.Op.*;
  */
 public class DepIndepVarIntroduction extends VarIntroduction {
 
-    static final DepIndepVarIntroduction the = new DepIndepVarIntroduction();
-
-    @Nullable public static Pair<Term, Map<Term, Term>> varIntroX(Term x, Random rng) {
-        return the.accept(x, rng);
-    }
-
-    @Nullable public static Term varIntro(Term x, Random rng) {
-        Pair<Term, Map<Term, Term>> result = varIntroX(x, rng);
-        if (result!=null) {
-            return result.getOne();
-        } else {
-            return Null;
-        }
-    }
+    public static final DepIndepVarIntroduction the = new DepIndepVarIntroduction();
 
     final static int ConjOrStatementBits = Op.IMPL.bit | Op.CONJ.bit; //NOT including similarity or inheritance because variables acorss these would be loopy
 
@@ -44,14 +31,13 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     private static final ToIntFunction<Term> depIndepFilter = t ->
             t.hasAny(DepOrIndepBits | Op.NEG.bit) ? 0 : 1;
 
-
-    public DepIndepVarIntroduction() {
-
+    @Override
+    public Pair<Term, Map<Term, Term>> apply(Term x, Random r) {
+        if (x.hasAny(ConjOrStatementBits))
+            return super.apply(x, r);
+        else
+            return null;
     }
-
-
-
-    //(t.op()==VAR_INDEP || t.op()==VAR_DEP) ? 0 : 1;
 
     @Override
     protected Term next(Term input, Random shuffle) {

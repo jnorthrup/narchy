@@ -28,7 +28,7 @@ public class Anon {
     final ObjectByteHashMap<Term> fwd;
 
     /** id -> term */
-    final FasterList<Term> rev = new FasterList<>(0);
+    public final FasterList<Term> rev = new FasterList<>(0);
 
     private final TermTransform PUT, GET;
 

@@ -322,43 +322,26 @@ public class PremiseRule {
 
 
                 case "neqAndCom":
-                    //neqPrefilter(pres, taskTermPattern, beliefTermPattern, X, Y, neq);
                     neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
                     neq(constraints, X, Y);
-                    constraints.add(new CommonSubtermConstraint(X, Y));
-                    constraints.add(new CommonSubtermConstraint(Y, X));
+                    //temporarily disabled to support arithmetic induction
+//                    constraints.add(new CommonSubtermConstraint(X, Y));
+//                    constraints.add(new CommonSubtermConstraint(Y, X));
                     break;
 
-//                case "neqCom":
-//                    //neqPrefilter(pres, taskTermPattern, beliefTermPattern, X, Y, neqCom);
-//                    constraints.add(new NoCommonSubtermConstraint(X, Y, false));
-//                    constraints.add(new NoCommonSubtermConstraint(Y, X, false));
-//                    break;
+
                 case "neqRCom":
                     neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
                     constraints.add(new NoCommonSubtermConstraint(X, Y, true));
                     constraints.add(new NoCommonSubtermConstraint(Y, X, true));
                     break;
 
-
-//                case "set":
-//                    if (taskPattern.equals(X) || beliefPattern.equals(X))
-//                        pres.add(new TaskBeliefHas(Op.SetBits, taskPattern.equals(X), beliefPattern.equals(X)));
-//                    constraints.add(new OpInConstraint(X, Op.SETi, Op.SETe));
-//                    break;
-//
-//
                 case "opSECTe":
                     termIs(pres, taskPattern, beliefPattern, constraints, X, Op.SECTe);
                     break;
                 case "opSECTi":
                     termIs(pres, taskPattern, beliefPattern, constraints, X, Op.SECTi);
                     break;
-
-//
-//                case "notEqui":
-//                    opNotContaining(taskTermPattern, beliefTermPattern, pres, constraints, X, Op.EQUI.bit);
-//                    break;
 
                 case "notImpl":
                     termIsNot(pres, taskPattern, beliefPattern, constraints, X, Op.IMPL.bit);
@@ -378,7 +361,7 @@ public class PremiseRule {
                     constraints.add(new SubOfConstraint(Y, X, true, false, true));
                     break;
 
-                    case "inNeg": //recursive
+                case "inNeg": //recursive
                     //X inNeg Y : --X is recursive subterm of Y
                     constraints.add(new SubOfConstraint(X, Y, false, false, true, true));
                     constraints.add(new SubOfConstraint(Y, X, true, false, true, true));

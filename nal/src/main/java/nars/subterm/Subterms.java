@@ -234,27 +234,26 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return b.subterms().recurseTermsToSet(commonStructure, scratch, false);
     }
 
-    /*@NotNull*/
-    default Set<Term> recurseTermsToSet() {
-        return recurseTermsToSet(null);
-    }
 
     /**
      * gets the set of unique recursively contained terms of a specific type
      * TODO generalize to a provided lambda predicate selector
      */
     /*@NotNull*/
-    default Set<Term> recurseTermsToSet(@Nullable Op onlyType) {
+    default Set<Term> recurseTermsToSet(Op onlyType) {
         if (onlyType != null && !hasAny(onlyType))
             return Sets.mutable.empty();
 
         Set<Term> t = new HashSet(volume());//$.newHashSet(volume() /* estimate */);
 
         //TODO use an additional predicate to cull subterms which don't contain the target type
-        recurseTerms((t1) -> {
-            if (onlyType == null || t1.op() == onlyType) //TODO make recurseTerms by Op then it can navigate to subterms using structure hash
-                t.add(t1);
-        });
+        recurseTerms(
+            tt->tt.hasAny(onlyType),
+            tt -> {
+                if (tt.op() == onlyType) //TODO make recurseTerms by Op then it can navigate to subterms using structure hash
+                    t.add(tt);
+                return true;
+            }, null);
         return t;
     }
 

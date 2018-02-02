@@ -15,6 +15,7 @@ import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.atom.Int;
 import nars.term.var.Variable;
+import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -192,7 +193,10 @@ public class Builtin {
                 return null;
             }),
 
-            Functor.f2Int("add", (x, y) -> x + y),
+            //TODO add exceptions for identities: ex: add(#x,0) --> #x  etc
+            Functor.f2Int("add", true, (i)->i==0, (x, y) -> x + y),
+            Functor.f2Int("mul", true, (i)->i==1, (x, y) -> x * y),
+
             //Functor.f2Int("sub", (x, y) -> x - y),
 
 
@@ -205,8 +209,10 @@ public class Builtin {
             nar.on(t);
         }
 
-        nar.on(Functor.f1("varIntro", (x) ->
-                DepIndepVarIntroduction.varIntro(x, nar.random())));
+        nar.on(Functor.f1("varIntro", (x) -> {
+            Pair<Term, Map<Term, Term>> result = DepIndepVarIntroduction.the.apply(x, nar.random());
+            return result != null ? result.getOne() : Null;
+        }));
 
 //        nar.on(Functor.f("service", (TermContainer c) ->
 //                $.sete(

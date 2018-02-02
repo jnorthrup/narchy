@@ -7,8 +7,6 @@ import org.eclipse.collections.impl.tuple.Tuples;
 import java.util.Map;
 import java.util.Random;
 
-import static nars.op.DepIndepVarIntroduction.ConjOrStatementBits;
-
 /**
  * a generalized variable introduction model that can transform tasks
  */
@@ -17,9 +15,9 @@ public abstract class VarIntroduction {
 //    static final int maxSubstitutions = 1;
 
 
-    public Pair<Term, Map<Term, Term>> accept(Term x, Random r) {
+    public Pair<Term, Map<Term, Term>> apply(Term x, Random r) {
 
-        if (x.volume() < 2 || !x.hasAny(ConjOrStatementBits))
+        if (x.volume() < 2)
             return null;
 
         boolean inputWasNormalized = x.isNormalized();

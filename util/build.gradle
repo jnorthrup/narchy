@@ -8,18 +8,18 @@ dependencies {
     compile(group: 'com.conversantmedia', name: 'disruptor', version: '1.2.11') {
         exclude(module:'slf4j-api')
     }
-    compile group: 'org.fusesource.jansi', name: 'jansi', version: '1.16'
+    compile group: 'org.fusesource.jansi', name: 'jansi', version: '1.17'
 
     compile group: 'tec.uom', name: 'uom-se', version: '1.0.8'
     compile group: 'org.hdrhistogram', name: 'HdrHistogram', version: '2.1.10'
     compile group: 'org.msgpack', name: 'jackson-dataformat-msgpack', version: '0.8.14'
-    compile (group: 'org.roaringbitmap', name: 'RoaringBitmap', version: '0.6.66') {
+    compile (group: 'org.roaringbitmap', name: 'RoaringBitmap', version: '0.7.0') {
         exclude(module: 'commons-lang3')
         exclude(module: 'guava')
     }
-    compile group: 'com.google.guava', name: 'guava', version: '23.6-jre'
+    compile group: 'com.google.guava', name: 'guava', version: '24.0-jre'
     compile group: 'org.ow2.asm', name: 'asm-debug-all', version: '6.0_BETA'
-    compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.7.9'
+    compile group: 'net.bytebuddy', name: 'byte-buddy', version: '1.7.10'
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
 
     compile group: 'org.javassist', name: 'javassist', version: '3.22.0-GA'
