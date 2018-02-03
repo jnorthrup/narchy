@@ -12,7 +12,6 @@ import nars.derive.op.TaskBeliefOp;
 import nars.derive.op.UnifyTerm;
 import nars.derive.rule.PremiseRule;
 import nars.index.term.PatternIndex;
-import nars.op.ArithmeticIntroduction;
 import nars.op.DepIndepVarIntroduction;
 import nars.term.Term;
 import nars.term.Termed;
@@ -63,7 +62,6 @@ public final class Conclude {
         }
 
 
-
         //        } else {
         //            if (x0.containsTermRecursively(x1)) {
         //                //pre.add(new TermContainsRecursively(x0, x1));
@@ -81,7 +79,8 @@ public final class Conclude {
 
         if (taskPattern.equals(beliefPattern)) {
             post.add(new UnifyTerm.UnifySubtermThenConclude(0, taskPattern, conc));
-        } if (taskFirst(taskPattern, beliefPattern)) {
+        }
+        if (taskFirst(taskPattern, beliefPattern)) {
             //task first
             post.add(new UnifyTerm.UnifySubterm(0, taskPattern));
             post.add(new UnifyTerm.UnifySubtermThenConclude(1, beliefPattern, conc));
@@ -137,7 +136,7 @@ public final class Conclude {
 
         //HACK unwrap varIntro so we can apply it at the end of the derivation process, not before like other functors
         boolean introVars;
-        Pair<Termed, Term> outerFunctor = Op.functor(pattern, (i)->i.equals(VAR_INTRO) ? VAR_INTRO : null);
+        Pair<Termed, Term> outerFunctor = Op.functor(pattern, (i) -> i.equals(VAR_INTRO) ? VAR_INTRO : null);
         if (outerFunctor != null) {
             introVars = true;
             pattern = outerFunctor.getTwo().sub(0);
@@ -147,14 +146,14 @@ public final class Conclude {
 
         pattern = index.get(pattern, true).term();
 
-        Taskify taskify = new Taskify( nar.newCause((s)->new RuleCause(rule, s)));
+        Taskify taskify = new Taskify(nar.newCause((s) -> new RuleCause(rule, s)));
 
         return AndCondition.the(
                 new Conclusion($.func("derive", pattern), pattern, rule),
                 introVars ?
-                    AndCondition.the(Conclude.introVars, taskify)
+                        AndCondition.the(Conclude.introVars, taskify)
                         :
-                    taskify
+                        taskify
         );
 
     }
@@ -192,7 +191,8 @@ public final class Conclude {
         //return task.varPattern() <= belief.varPattern();
     }
 
-    /** just a cause, not an input channel.
+    /**
+     * just a cause, not an input channel.
      * derivation inputs are batched for input by another method
      * holds the deriver id also that it can be applied at the end of a derivation.
      */
@@ -213,7 +213,6 @@ public final class Conclude {
     }
 
 
-
     static class IntroVars extends AbstractPred<Derivation> {
 
         static final Term VAR_INTRO = $.the("varIntro");
@@ -226,17 +225,12 @@ public final class Conclude {
         public boolean test(Derivation p) {
             Term x = p.derivedTerm.get();
 
-            Term xa = ArithmeticIntroduction.apply(x, p.anon, p.random);
             Term y;
-            if (!xa.equals(x)) {
-                y = xa;
-            } else {
-                @Nullable Pair<Term, Map<Term, Term>> xy = DepIndepVarIntroduction.the.apply(x, p.random);
-                if (xy == null)
-                    return false;
-                y = xy.getOne();
-            }
 
+            @Nullable Pair<Term, Map<Term, Term>> xy = DepIndepVarIntroduction.the.apply(x, p.random);
+            if (xy == null)
+                return false;
+            y = xy.getOne();
 
             if (!(y.op().conceptualizable) || (y.equals(x) /* keep only if it differs */)) {
                 return false;

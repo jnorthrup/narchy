@@ -324,9 +324,8 @@ public class PremiseRule {
                 case "neqAndCom":
                     neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
                     neq(constraints, X, Y);
-                    //temporarily disabled to support arithmetic induction
-//                    constraints.add(new CommonSubtermConstraint(X, Y));
-//                    constraints.add(new CommonSubtermConstraint(Y, X));
+                    constraints.add(new CommonSubtermConstraint(X, Y));
+                    constraints.add(new CommonSubtermConstraint(Y, X));
                     break;
 
 

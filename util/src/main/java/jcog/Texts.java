@@ -606,6 +606,16 @@ public enum Texts {
         return sb.toString();
     }
 
+    /** prints an array of numbers separated by tab, suitable for a TSV line */
+    public static String n2(byte... v) {
+        StringBuilder sb = new StringBuilder(v.length * 3);
+        int s = v.length;
+        for (int i = 0; i < s; i++) {
+            sb.append(Integer.toHexString(Byte.toUnsignedInt(v[i]))).append(' ');
+        }
+        return sb.toString();
+    }
+
 //    /** fast append to CharBuffer */
 //    public final static CharBuffer append(final CharBuffer c, final CharSequence s) {
 //        if (s instanceof CharBuffer) {            

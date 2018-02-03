@@ -11,6 +11,7 @@ import nars.exe.PoolMultiExec;
 import nars.gui.Vis;
 import nars.gui.graph.DynamicConceptSpace;
 import nars.index.term.map.CaffeineIndex;
+import nars.op.ArithmeticIntroduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
@@ -299,6 +300,8 @@ abstract public class NAgentX extends NAgent {
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 32, 128);
         ConjClustering conjClusterBnonInput = new ConjClustering(n, BELIEF, (t->!t.isInput()), 4, 16);
+
+        ArithmeticIntroduction arith = new ArithmeticIntroduction(64, n);
 
 //        RelationClustering relCluster = new RelationClustering(n,
 //                (t)->t.isBelief() && !t.isEternal() && !t.term().isTemporal() ? t.conf() : Float.NaN,

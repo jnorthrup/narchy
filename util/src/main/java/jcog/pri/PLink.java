@@ -19,6 +19,10 @@ public class PLink<X> extends AbstractPLink<X> {
         float p = pri;
         return (p==p) ? new PLink<>(id, p) : null;
     }
+    @Override
+    public boolean equals(Object that) {
+        return (this == that) || id.equals(((AbstractPLink) that).get());
+    }
 
     @Override
     public boolean isDeleted() {

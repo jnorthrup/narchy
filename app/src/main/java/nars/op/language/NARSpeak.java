@@ -24,7 +24,7 @@ import static nars.Op.BELIEF;
 public class NARSpeak {
     private final NAR nar;
     private final AtomicExec sayer;
-    private final Opjects op;
+//    private final Opjects op;
 
     /** emitted on each utterance */
     public final Topic<Object> spoken = new ListTopic();
@@ -54,23 +54,28 @@ public class NARSpeak {
         }, 0.51f));
 
 
-        this.op = new Opjects(nar);
-        op.the("speech", this);
+//        this.op = new Opjects(nar);
+        //SpeechControl speechControl = new SpeechControl();
+//        op.the("speech", SpeechControl.class);
 
-        chatty();
+        //speechControl.chatty();
     }
 
+    public class SpeechControl {
 
-    public void quiet() {
-        sayer.exeThresh.set(1f);
-    }
+        public SpeechControl() { }
 
-    public void normal() {
-        sayer.exeThresh.set(0.75f);
-    }
+        public void quiet() {
+            sayer.exeThresh.set(1f);
+        }
 
-    public void chatty() {
-        sayer.exeThresh.set(0.51f);
+        public void normal() {
+            sayer.exeThresh.set(0.75f);
+        }
+
+        public void chatty() {
+            sayer.exeThresh.set(0.51f);
+        }
     }
 
     //MaryTTSpeech.speak(""); //forces load of TTS so it will be ready ASAP and not load on the first use
@@ -87,23 +92,24 @@ public class NARSpeak {
 
 
     /** 'speechd' speech dispatcher - executes via command line */
-    public static class speechdDispatcher {
-        public speechdDispatcher(NARSpeak s) {
+    public static class CmdlineSpeechDispatcher {
+
+        public CmdlineSpeechDispatcher(NARSpeak s) {
             s.spoken.on(this::speak);
         }
 
         private void speak(Object x) {
             String s = x.toString();
             try {
+                //TODO semaphore to limit # of simultaneous voices
                 Process p = new ProcessBuilder().command("/usr/bin/speak", "\"" + s +"\"").start();
                 p.onExit().handle((z,y)->{
-                    System.out.println("done: " + z);
+                    //System.out.println("done: " + z);
                     return null;
                 });
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
 
         }
 

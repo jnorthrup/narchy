@@ -448,16 +448,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         if (capacity == 0)
             return null;
 
-        //<anti-elitism pressure relief on insert>
-        float ep0 = pressure.floatValue();
-        float BAG_ANTI_ELITISM_THRESHOLD = 0.5f;
-        if (ep0 >= capacity() * BAG_ANTI_ELITISM_THRESHOLD) {
-            if (pressure.compareAndSet(ep0, 0f)) {
-                //got the release of pressure
-                commit();
-            }
-        }
-        //</anti-elitism pressure relief on insert>
+        commitIfPressured();
 
 
         X key = key(incoming);
@@ -570,6 +561,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 //        }
 
     }
+
+
 
     private boolean insert(/*@NotNull*/ Y incoming, @Nullable FasterList<Y>[] trash) {
 

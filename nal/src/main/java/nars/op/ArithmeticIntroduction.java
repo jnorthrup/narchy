@@ -3,6 +3,10 @@ package nars.op;
 import jcog.Util;
 import jcog.list.FasterList;
 import nars.$;
+import nars.NAR;
+import nars.Op;
+import nars.Task;
+import nars.bag.leak.LeakBack;
 import nars.term.Term;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
@@ -22,7 +26,7 @@ import static nars.Op.*;
 /**
  * introduces arithmetic relationships between differing numeric subterms
  */
-public class ArithmeticIntroduction {
+public class ArithmeticIntroduction extends LeakBack {
 
     public static Term apply(Term x, Random rng) {
         return apply(x, null, rng);
@@ -59,7 +63,7 @@ public class ArithmeticIntroduction {
 
         //potential mods to select from
         //FasterList<Supplier<Term[]>> mods = new FasterList(1);
-        IntObjectHashMap<List<Supplier<Term[]>>> mods = new IntObjectHashMap();
+        IntObjectHashMap<List<Supplier<Term[]>>> mods = new IntObjectHashMap(ii.length);
 
         Variable v = $.varDep("x");
 
@@ -73,7 +77,7 @@ public class ArithmeticIntroduction {
                 if (ib - ia < ia && (ia!=0)) {
                     //Add if the delta < 'ia'
                     mods.getIfAbsentPut(ia, FasterList::new).add(()-> new Term[]{
-                        Int.the(ib), $.func("add", v, $.the(ib - ia))
+                            Int.the(ib), $.func("add", v, $.the(ib - ia))
                     });
                 } else if ((ia!=0 && ia!=1) && (ib!=0 && ib!=1) && Util.equals(ib/ia, (int)(((float)ib)/ia), Float.MIN_NORMAL)) {
 
@@ -109,5 +113,35 @@ public class ArithmeticIntroduction {
         }
         return y;
     }
+
+
+    private final NAR nar;
+
+    public ArithmeticIntroduction(int taskCapacity, NAR n) {
+        super(taskCapacity, n);
+        this.nar = n;
+    }
+
+    @Override
+    protected boolean preFilter(Task next) {
+        return next.term().hasAny(Op.INT);
+    }
+
+    @Override
+    protected float leak(Task xx) {
+        Term x = xx.term();
+        Term y = apply(x, nar.random());
+        if (!y.equals(x)) {
+            Task yy = Task.clone(xx, y);
+            if (yy!=null) {
+                out.input(yy);
+                return 1;
+            }
+        }
+
+        return 0;
+    }
+
+
 
 }

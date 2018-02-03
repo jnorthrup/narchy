@@ -59,7 +59,10 @@ public class NARchy extends NARS {
 
             NARHear.readURL(nar);
 
-            new NARSpeak(nar);
+            {
+                NARSpeak s = new NARSpeak(nar);
+                new NARSpeak.CmdlineSpeechDispatcher(s);
+            }
 
 //            //new NoteFS("/tmp/nal", nar);
 

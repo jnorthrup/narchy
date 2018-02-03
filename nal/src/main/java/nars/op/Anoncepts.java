@@ -2,7 +2,6 @@ package nars.op;
 
 import jcog.Paper;
 import jcog.Skill;
-import jcog.bloom.StableBloomFilter;
 import nars.NAR;
 import nars.Task;
 import nars.bag.leak.LeakBack;
@@ -33,7 +32,7 @@ import java.util.List;
 public class Anoncepts extends LeakBack {
 
     private final NAR nar;
-    private final StableBloomFilter<Task> filter;
+//    private final StableBloomFilter<Task> filter;
 
     /** used also for termlinks */
     public final MutableFloat conceptActivationRate = new MutableFloat(1f);
@@ -44,7 +43,7 @@ public class Anoncepts extends LeakBack {
         super(taskCapacity, n);
         this.nar = n;
 
-        filter = Task.newBloomFilter(1024 /* small */, n.random());
+//        filter = Task.newBloomFilter(1024 /* small */, n.random());
 
         conceptActivationRate.set(1f/taskCapacity);
         taskLinkActivationRate.set(1f/taskCapacity);
@@ -52,10 +51,10 @@ public class Anoncepts extends LeakBack {
 
     @Override
     protected boolean preFilter(Task next) {
-        if (filter.addIfMissing(next)) {
+//        if (filter.addIfMissing(next)) {
             return super.preFilter(next);
-        }
-        return false;
+//        }
+//        return false;
     }
 
     @Override
@@ -84,7 +83,7 @@ public class Anoncepts extends LeakBack {
     }
 
     private static class AnonConcept extends NodeConcept {
-        public AnonConcept(Term a, NAR nar) {
+        AnonConcept(Term a, NAR nar) {
             super(a, nar);
         }
 
@@ -92,4 +91,6 @@ public class Anoncepts extends LeakBack {
             return Collections.emptyList();
         }
     }
+
+
 }

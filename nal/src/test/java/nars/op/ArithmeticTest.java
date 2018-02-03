@@ -66,6 +66,8 @@ public class ArithmeticTest {
     @Test
     public void testCompleteAddInduction() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
+        new ArithmeticIntroduction(16, n);
+
         TestNAR t = new TestNAR(n);
         t.log();
 //        t.believe("(x:1,x:2)");

@@ -512,6 +512,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     @Override
     public final V put(/*@NotNull*/ V v,  /* TODO */ @Nullable MutableFloat overflowing) {
 
+        commitIfPressured();
+
 //        float p = pri(v);
 //        if (p != p)
 //            return null; //already deleted

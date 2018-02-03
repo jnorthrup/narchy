@@ -266,6 +266,18 @@ public interface Bag<K, V> extends Table<K, V> {
 
     }
 
+    default void commitIfPressured() {
+        //<anti-elitism pressure relief on insert>
+        float ep0 = depressurize();
+        float BAG_ANTI_ELITISM_THRESHOLD = 0.5f;
+        if (ep0 >= capacity() * BAG_ANTI_ELITISM_THRESHOLD) {
+            commit();
+        } else {
+            pressurize(ep0); //repressurize
+        }
+        //</anti-elitism pressure relief on insert>
+    }
+
     default float priAvg() {
         int s = size();
         return (s == 0) ? 0 : (priSum() / s);

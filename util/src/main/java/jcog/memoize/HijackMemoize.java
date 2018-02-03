@@ -257,7 +257,16 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
         //pressurize disabled
     }
 
-    @NotNull
+    @Override
+    public void commitIfPressured() {
+        //disabled
+    }
+
+    @Override
+    public float depressurize() {
+        return 0f; //disabled
+    }
+
     @Override
     public HijackBag<X, Computation<X, Y>> commit(@Nullable Consumer<Computation<X, Y>> update) {
         return this;
