@@ -80,7 +80,11 @@ abstract public class NAgentX extends NAgent {
         super(id, nar);
 
         ActionInfluencingSensorConcept joy = new ActionInfluencingSensorConcept(
-                id != null ? $.inh($.the("joy"), id) : $.the("joy"),
+                id != null ?
+                        //$.inh($.the("joy"), id)
+                        $.prop($.the(id), $.the("joy"))
+                        :
+                        $.the("joy"),
                 new FloatPolarNormalized(new FloatFirstOrderDifference(nar::time,
                         () -> reward)));
         alwaysWant(joy, nar.confDefault(GOAL)*0.75f);

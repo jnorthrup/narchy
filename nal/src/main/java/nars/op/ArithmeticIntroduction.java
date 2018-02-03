@@ -12,6 +12,8 @@ import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.atom.Int;
 import nars.term.var.Variable;
+import org.eclipse.collections.api.RichIterable;
+import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
@@ -75,14 +77,27 @@ public class ArithmeticIntroduction extends LeakBack {
                 assert(ib > ia);
 
                 if (ib - ia < ia && (ia!=0)) {
-                    //Add if the delta < 'ia'
+
                     mods.getIfAbsentPut(ia, FasterList::new).add(()-> new Term[]{
                             Int.the(ib), $.func("add", v, $.the(ib - ia))
                     });
+
+                    mods.getIfAbsentPut(ib, FasterList::new).add(()-> new Term[]{
+                            Int.the(ia), $.func("add", v, $.the(ia - ib))
+                    });
+
                 } else if ((ia!=0 && ia!=1) && (ib!=0 && ib!=1) && Util.equals(ib/ia, (int)(((float)ib)/ia), Float.MIN_NORMAL)) {
 
                     mods.getIfAbsentPut(ia, FasterList::new).add(()-> new Term[]{
                             Int.the(ib), $.func("mul", v, $.the(ib/ia))
+                    });
+                } else if (ia == -ib) {
+                    //negation (x * -1)
+                    mods.getIfAbsentPut(ia, FasterList::new).add(()-> new Term[]{
+                            Int.the(ib), $.func("mul", v, $.the(-1))
+                    });
+                    mods.getIfAbsentPut(ib, FasterList::new).add(()-> new Term[]{
+                            Int.the(ia), $.func("mul", v, $.the(-1))
                     });
                 }
 
@@ -92,7 +107,15 @@ public class ArithmeticIntroduction extends LeakBack {
             return x;
 
         //TODO fair select randomly if multiple of the same length
-        IntObjectPair<List<Supplier<Term[]>>> m = mods.keyValuesView().maxBy(e -> e.getTwo().size());
+
+        RichIterable<IntObjectPair<List<Supplier<Term[]>>>> mkv = mods.keyValuesView();
+
+        int ms = mkv.maxBy(e -> e.getTwo().size()).getTwo().size();
+        mkv.reject(e->e.getTwo().size() < ms);
+        MutableList<IntObjectPair<List<Supplier<Term[]>>>> mmm = mkv.toList();
+        int mmms = mmm.size();
+
+        IntObjectPair<List<Supplier<Term[]>>> m = mmm.get(mmms <= 1 ? 0 : rng.nextInt(mmms));
         int base = m.getOne();
         Term baseTerm = Int.the(base);
         if (anon!=null)
