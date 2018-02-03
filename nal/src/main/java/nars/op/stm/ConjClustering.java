@@ -44,6 +44,7 @@ public class ConjClustering extends Causable {
     private float confMin;
     private int volMax;
     private int ditherTime;
+    private float termVolumeMaxFactor = 0.5f;
 
     public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {
         super(nar);
@@ -96,12 +97,11 @@ public class ConjClustering extends Causable {
     protected int next(NAR nar, int work /* max tasks generated per centroid, >=1 */) {
 
 
-        now = nar.time();
-        ditherTime = nar.dtDitherCycles();
-        confMin = nar.confMin.floatValue();
-        this.volMax = nar.termVolumeMax.intValue();
-
-        taskLimitPerCentroid = Math.max(1, Math.round(((float) work) / bag.net.centroids.length));
+        this.now = nar.time();
+        this.ditherTime = nar.dtDitherCycles();
+        this.confMin = nar.confMin.floatValue();
+        this.volMax = Math.round(nar.termVolumeMax.intValue() * termVolumeMaxFactor);
+        this.taskLimitPerCentroid = Math.max(1, Math.round(((float) work) / bag.net.centroids.length));
 
         gen = new FasterList();
 

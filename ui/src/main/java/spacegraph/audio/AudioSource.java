@@ -15,9 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class AudioSource implements WaveSource {
     public final FloatRange frameRate;
-    public final int device;
     private TargetDataLine line;
-    public final Mixer mixer;
     public final DataLine.Info dataLineInfo;
     public final AudioFormat audioFormat;
 
@@ -30,8 +28,7 @@ public class AudioSource implements WaveSource {
 
 
 
-    public AudioSource(int device, float frameRate) {
-        this.device = device;
+    public AudioSource(float frameRate) {
         this.frameRate = new FloatRange(frameRate, 1f, 40f);
 
         // Pick a format...
@@ -40,13 +37,9 @@ public class AudioSource implements WaveSource {
         audioFormat = new AudioFormat(22050, 16, 1, true, false);
         bytesPerSample = 2;
 
-
-
         dataLineInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
         System.out.println(dataLineInfo);
 
-        Mixer.Info[] minfoSet = AudioSystem.getMixerInfo();
-        mixer = AudioSystem.getMixer(minfoSet[device]);
     }
 
     public void printDevices() {
@@ -76,9 +69,6 @@ public class AudioSource implements WaveSource {
         try {
             //line = (TargetDataLine) mixer.getLine(dataLineInfo);
             line = (TargetDataLine) AudioSystem.getLine(dataLineInfo);
-            line.open(audioFormat);
-            line.start();
-
 
             int sampleRate = (int) audioFormat.getSampleRate();
             int numChannels = audioFormat.getChannels();
@@ -90,6 +80,9 @@ public class AudioSource implements WaveSource {
             int audioBufferSizeAllocated = Util.largestPowerOf2NoGreaterThan(audioBufferSize);
             audioBytes = new byte[audioBufferSizeAllocated * bytesPerSample];
             samples = new short[audioBufferSizeAllocated];
+
+            line.open(audioFormat, audioBufferSize);
+            line.start();
 
             return audioBufferSize;
         } catch (LineUnavailableException e) {

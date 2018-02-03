@@ -1,6 +1,8 @@
 package nars.op.language;
 
 import com.google.common.base.Joiner;
+import jcog.event.ListTopic;
+import jcog.event.Topic;
 import nars.$;
 import nars.NAR;
 import nars.NAgent;
@@ -14,19 +16,18 @@ import nars.time.Tense;
 import net.beadsproject.beads.ugens.Clock;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+
 import static nars.Op.BELIEF;
 
+/** TODO make extend NARService and support start/re-start */
 public class NARSpeak {
     private final NAR nar;
     private final AtomicExec sayer;
     private final Opjects op;
 
-    public NARSpeak() {
-        //for proxy
-        nar = null;
-        sayer = null;
-        op = null;
-    }
+    /** emitted on each utterance */
+    public final Topic<Object> spoken = new ListTopic();
 
     public NARSpeak(NAR nar) {
         this.nar = nar;
@@ -42,7 +43,8 @@ public class NARSpeak {
 //                            .map(x -> $.func("say", $.the(x.toString())))
 //                            .toArray(Term[]::new));
 
-                System.err.println(text);
+                spoken.emit(text);
+                //System.err.println(text);
                 //MaryTTSpeech.speak(text);
 
                 Atomic qt = $.quote(text);
@@ -83,6 +85,29 @@ public class NARSpeak {
 //                e.printStackTrace();
 //            }
 
+
+    /** 'speechd' speech dispatcher - executes via command line */
+    public static class speechdDispatcher {
+        public speechdDispatcher(NARSpeak s) {
+            s.spoken.on(this::speak);
+        }
+
+        private void speak(Object x) {
+            String s = x.toString();
+            try {
+                Process p = new ProcessBuilder().command("/usr/bin/speak", "\"" + s +"\"").start();
+                p.onExit().handle((z,y)->{
+                    System.out.println("done: " + z);
+                    return null;
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+        }
+
+    }
 
     private static class VocalCommentary {
         public VocalCommentary(Clock ac, NAgent a) {
