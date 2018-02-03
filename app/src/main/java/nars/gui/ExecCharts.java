@@ -68,7 +68,7 @@ public class ExecCharts {
 
     public static Surface metaGoalControls(NAR n) {
         CheckBox auto = new CheckBox("Auto");
-        auto.set(true);
+        auto.set(false);
 
         Gridding g = grid(
 //                Stream.concat(

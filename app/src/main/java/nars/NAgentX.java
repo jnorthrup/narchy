@@ -2,12 +2,8 @@ package nars;
 
 import jcog.exe.Loop;
 import jcog.math.FloatFirstOrderDifference;
-import jcog.math.FloatNormalized;
 import jcog.math.FloatPolarNormalized;
 import jcog.signal.Bitmap2D;
-import nars.control.AgentBuilder;
-import nars.control.AgentService;
-import nars.control.MetaGoal;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.exe.Focus;
@@ -28,7 +24,6 @@ import net.beadsproject.beads.core.UGen;
 import net.beadsproject.beads.data.Buffer;
 import net.beadsproject.beads.ugens.*;
 import org.HdrHistogram.DoubleHistogram;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
@@ -242,48 +237,48 @@ abstract public class NAgentX extends NAgent {
 
 
 
-        {
-            AgentBuilder b = MetaGoal.newController(a);
-//                .in(a::dexterity)
-//                .in(new FloatNormalized(()->a.reward).decay(0.9f))
-//                .in(new FloatNormalized(
-//                        ((Emotivation) n.emotion).cycleDTRealMean::getValue)
-//                            .decay(0.9f)
-//                )
-                b.in(new FloatNormalized(
-                        //TODO use a Long-specific impl of this:
-                        new FloatFirstOrderDifference(n::time, () -> n.emotion.deriveTask.getValue().longValue())
-                ).relax(0.99f))
-//                .in(new FloatNormalized(
+//        {
+//          AgentBuilder b = MetaGoal.newController(a);
+////                .in(a::dexterity)
+////                .in(new FloatNormalized(()->a.reward).decay(0.9f))
+////                .in(new FloatNormalized(
+////                        ((Emotivation) n.emotion).cycleDTRealMean::getValue)
+////                            .decay(0.9f)
+////                )
+//                b.in(new FloatNormalized(
 //                        //TODO use a Long-specific impl of this:
-//                        new FirstOrderDifferenceFloat(n::time, () -> n.emotion.conceptFirePremises.getValue().longValue())
-//                    ).decay(0.9f)
-                .in(new FloatNormalized(
-                        () -> n.emotion.busyVol.getSum()
-                    ).relax(0.99f))
-                .out(2, (onOff)->{
-                    switch(onOff) {
-                        case 0:
-                            a.enabled.set(false); //pause
-                            break;
-                        case 1:
-                            a.enabled.set(true); //un-pause
-                            break;
-                    }
-                })
-//                ).out(
-//                        new StepController((x) -> n.time.dur(Math.round(x)), 1, n.dur(), n.dur()*2)
-//                .out(
-//                        StepController.harmonic(n.confMin::set, 0.01f, 0.5f)
-//                )//.out(
-//                        StepController.harmonic(n.truthResolution::setValue, 0.01f, 0.08f)
-//                ).out(
-//                        StepController.harmonic(a.curiosity::setValue, 0.01f, 0.16f)
-//                ).get(n);
-
-                ;
-            new AgentService(new MutableFloat(1), n, b.get());
-        }
+//                        new FloatFirstOrderDifference(n::time, () -> n.emotion.deriveTask.getValue().longValue())
+//                ).relax(0.99f))
+////                .in(new FloatNormalized(
+////                        //TODO use a Long-specific impl of this:
+////                        new FirstOrderDifferenceFloat(n::time, () -> n.emotion.conceptFirePremises.getValue().longValue())
+////                    ).decay(0.9f)
+//                .in(new FloatNormalized(
+//                        () -> n.emotion.busyVol.getSum()
+//                    ).relax(0.99f))
+//                .out(2, (onOff)->{
+//                    switch(onOff) {
+//                        case 0:
+//                            a.enabled.set(false); //pause
+//                            break;
+//                        case 1:
+//                            a.enabled.set(true); //un-pause
+//                            break;
+//                    }
+//                })
+////                ).out(
+////                        new StepController((x) -> n.time.dur(Math.round(x)), 1, n.dur(), n.dur()*2)
+////                .out(
+////                        StepController.harmonic(n.confMin::set, 0.01f, 0.5f)
+////                )//.out(
+////                        StepController.harmonic(n.truthResolution::setValue, 0.01f, 0.08f)
+////                ).out(
+////                        StepController.harmonic(a.curiosity::setValue, 0.01f, 0.16f)
+////                ).get(n);
+//
+//                ;
+//            new AgentService(new MutableFloat(1), n, b.get());
+//        }
 
 
         //n.dtMergeOrChoose.setValue(true);

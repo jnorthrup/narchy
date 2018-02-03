@@ -275,8 +275,7 @@ public final class TruthFunctions {
      * frequency determined entirely by the desire component.
      */
     @Nullable public static Truth desireStrongNew(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
-        float bFreq = b.freq();
-        float c = and(a.conf(), b.conf(), bFreq);
+        float c = and(a.conf(), b.conf(), b.freq());
         //float c = w2cSafe(and(a.evi(), b.evi(), bFreq));
         return c < minConf ? null : $.t(a.freq(), c);
     }
@@ -290,8 +289,7 @@ public final class TruthFunctions {
         return c < minConf ? null : desire(a.freq(), bFreq, c);
     }
     public static Truth desireWeakNew(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
-        float bFreq = b.freq();
-        float c = and(a.conf(), b.conf(), bFreq, w2c(1.0f));
+        float c = and(a.conf(), b.conf(), b.freq(), w2c(1.0f));
         return c < minConf ? null : $.t(a.freq(), c);
     }
 
