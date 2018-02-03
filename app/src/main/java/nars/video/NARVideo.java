@@ -12,14 +12,12 @@ import spacegraph.widget.meter.WebCam;
 
 import static spacegraph.SpaceGraph.window;
 
-public class NARVideo extends NARServiceSet {
+public class NARVideo extends NARServiceSet<NARVideo.Video> {
+
     public NARVideo(NAR nar) {
         super(nar);
 
-
-        Webcam.getWebcams().forEach(w -> {
-            add(new Video(nar, w));
-        });
+        Webcam.getWebcams().forEach(w -> add(new Video(nar, w)));
     }
 
     static class Video extends NARService {

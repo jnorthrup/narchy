@@ -79,4 +79,5 @@ public class NARchy extends NARS {
         return ui();
     }
 
+
 }
