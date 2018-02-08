@@ -69,12 +69,11 @@ public class PoleCart extends NAgentX {
     // Constants used for physics
     static final double cartMass = 1.;
     static final double poleMass = 0.1;
-    static final double poleLength = 1.;
-    static final double forceMag = 20.;
-    static final double tau = 0.02;
-    static final double fricCart = 0.001;
-    static final double fricPole =
-            0.008;
+    static final double poleLength = 0.9f;
+    static final double forceMag = 30.;
+    static final double tau = 0.01;
+    static final double fricCart = 0.008;
+    static final double fricPole = 0.004;
     static final double totalMass = cartMass + poleMass;
     static final double halfPole = 0.5 * poleLength;
     static final double poleMassLength = halfPole * poleMass;

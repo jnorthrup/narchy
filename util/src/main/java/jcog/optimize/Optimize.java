@@ -26,6 +26,7 @@ import java.util.SortedSet;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
+import static jcog.Texts.n4;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
@@ -38,12 +39,12 @@ public class Optimize<X> {
      * if a tweak's 'inc' (increment) is not provided,
      * use the known max/min range divided by this value as 'inc'
      */
-    static final float autoInc_default = 5f;
+    static final float autoInc_default = 2f;
 
     public final List<Tweak<X>> tweaks;
     final Supplier<X> subject;
 
-    private final boolean trace = true;
+    private final boolean trace = false;
     private final static Logger logger = LoggerFactory.getLogger(Optimize.class);
 
     private CSVOutput csv;
@@ -105,6 +106,8 @@ public class Optimize<X> {
         FasterList<DoubleObjectPair<double[]>> experiments = new FasterList<>(maxIterations);
 
 
+        final double[] maxScore = {Double.NEGATIVE_INFINITY};
+
         ObjectiveFunction func = new ObjectiveFunction(point -> {
 
             double score;
@@ -130,7 +133,11 @@ public class Optimize<X> {
 
             if (trace)
                 csv.out(ArrayUtils.add(point, score));
-            //System.out.println(Joiner.on(",").join(Doubles.asList(point)) + ",\t" + score);
+
+            maxScore[0] = Math.max(maxScore[0], score);
+            System.out.println(
+                n4(score) + "/" + n4(maxScore[0]) + "\t" + n4(point)
+            );
 
             experiments.add(pair(score, point));
             experimentIteration(point, score);
@@ -167,11 +174,11 @@ public class Optimize<X> {
             );
         } else {
 
-            int popSize = 4 * Math.round(Util.sqr(tweaks.size())); /* estimate */
+            int popSize = 8 * Math.round(Util.sqr(tweaks.size())); /* estimate */
 
             new MyCMAESOptimizer(maxIterations, Double.NEGATIVE_INFINITY,
                     true, 0,
-                    1, new MersenneTwister(3),
+                    1, new MersenneTwister(System.nanoTime()),
                     true, null).optimize(
                     new MaxEval(maxIterations), //<- ignored?
                     func,

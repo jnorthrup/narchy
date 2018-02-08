@@ -61,7 +61,7 @@ public class NARchy extends NARS {
 
             {
                 NARSpeak s = new NARSpeak(nar);
-                new NARSpeak.CmdlineSpeechDispatcher(s);
+                new NARSpeak.NativeSpeechDispatcher(s);
             }
 
 //            //new NoteFS("/tmp/nal", nar);

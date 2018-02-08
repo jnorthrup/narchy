@@ -2,6 +2,7 @@ package nars;
 
 import jcog.Util;
 import jcog.math.*;
+import jcog.pri.Pri;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.task.Tasked;
@@ -38,10 +39,10 @@ public abstract class Param {
     public static final boolean TERM_ARRAY_SHARE = true;
 
     /**
-     * min ratio of effective priority to input priority necessary for certain novel-only actions
+     * pri threshold for emitting task activation events
      */
     @Range(min=0, max=0.5f)
-    public static float ACTIVATION_THRESHOLD = 0.01f;
+    public static float TASK_ACTIVATION_THRESHOLD = Pri.EPSILON*1;
 
     public static final boolean ETERNALIZE_EVICTED_TEMPORAL_TASKS = false;
 

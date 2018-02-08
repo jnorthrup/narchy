@@ -96,6 +96,8 @@ public class ConjClustering extends Causable {
     @Override
     protected int next(NAR nar, int work /* max tasks generated per centroid, >=1 */) {
 
+        if (bag.bag.isEmpty())
+            return -1; //done for cycle
 
         this.now = nar.time();
         this.ditherTime = nar.dtDitherCycles();

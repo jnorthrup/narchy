@@ -22,20 +22,28 @@ import java.util.List;
 public class Tasklinks {
 
 
-    public static void linkTask(Task t, float pri, Concept cc) {
-        linkTask(t, pri, cc, null);
-    }
+//    public static void linkTask(Task t, float pri, Concept cc) {
+//        linkTask(t, pri, cc, null);
+//    }
 
     public static void linkTask(Task x, float p, Bag b) {
         linkTask(x, p, b, null);
     }
 
     static void linkTask(Task x, float p, Bag<Task, PriReference<Task>> b, @Nullable MutableFloat overflow) {
-        PLinkUntilDeleted<Task> l = new PLinkUntilDeleted<>(x, p);
-        if (overflow != null)
-            b.put(l, overflow);
-        else
-            b.putAsync(l);
+        PLinkUntilDeleted<Task> xx = new PLinkUntilDeleted<>(x, p);
+        if (overflow != null) {
+            PriReference<Task> yy = b.put(xx, overflow);
+            if (yy!=xx && yy!=null) {
+                //if the tasks are different, merge the priorities to the linked one
+                Task y = yy.get();
+                if (y!=null && y!=x) {
+                    Param.taskMerge.merge(y, x);
+                }
+            }
+        } else {
+            b.putAsync(xx);
+        }
     }
 
     /**
@@ -63,12 +71,12 @@ public class Tasklinks {
 
         if (activate) {
 
-            float activation = priInput > Float.MIN_NORMAL ? priApplied / priInput : 0;
-
             //activation is the ratio between the effective priority and the input priority, a value between 0 and 1.0
             //it is a measure of the 'novelty' of a task as reduced by the priority of an equivalent existing tasklink
+            float activation = priInput > Float.MIN_NORMAL ? priApplied / priInput : 0;
 
-            if (activation >= Param.ACTIVATION_THRESHOLD)
+
+            if (/*activation*/ priApplied >= Param.TASK_ACTIVATION_THRESHOLD)
                 nar.eventTask.emit(t);
 
             if (activation > Float.MIN_NORMAL) {

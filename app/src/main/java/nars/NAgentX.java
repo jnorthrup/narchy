@@ -82,11 +82,12 @@ abstract public class NAgentX extends NAgent {
         ActionInfluencingSensorConcept joy = new ActionInfluencingSensorConcept(
                 id != null ?
                         //$.inh($.the("joy"), id)
-                        $.prop($.the(id), $.the("joy"))
+                        $.inh($.the(id), $.the("joy"))
+                        //$.prop($.the(id), $.the("joy"))
                         :
                         $.the("joy"),
                 new FloatPolarNormalized(new FloatFirstOrderDifference(nar::time,
-                        () -> reward)));
+                        () -> reward)).relax(0.95f));
         alwaysWant(joy, nar.confDefault(GOAL)*0.75f);
 
         if (Param.DEBUG) {
@@ -180,7 +181,7 @@ abstract public class NAgentX extends NAgent {
                 .deriverAdd(2, 5)
                 .deriverAdd(6, 8)
                 .deriverAdd("motivation.nal")
-                .deriverAdd("goal_analogy.nal")
+                //.deriverAdd("goal_analogy.nal")
                 //.deriverAdd(6,6) //extra NAL6
                 //.deriverAdd("list.nal")
 
@@ -228,7 +229,8 @@ abstract public class NAgentX extends NAgent {
 //        new RLBooster(a, HaiQAgent::new, 1);
 
         new Deriver(a.fire(), Derivers.deriver(1, 8,
-                "motivation.nal", "goal_analogy.nal"
+                "motivation.nal"
+                //, "goal_analogy.nal"
         ).apply(n).deriver, n) {
 //            @Override
 //            protected long matchTime(Task task) {

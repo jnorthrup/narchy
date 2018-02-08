@@ -1,8 +1,8 @@
 //goal search
-    (X-->Y), (X-->Y), task("!") |-          (?1 ==>+- (X-->Y)), (Punctuation:Question)
-    (X-->Y), (X-->Y), task("!") |-          ((X-->Y) ==>+- ?1), (Punctuation:Question)
-    (X-->Y), (X-->Y), task("!") |-        (--(X-->Y) ==>+- ?1), (Punctuation:Question)
-    (X-->Y), (X-->Y), task("!") |-         (?1 &&+- --(X-->Y)), (Punctuation:Question)
+    (X-->Y), X, task("!") |-          (?1 ==>+- (X-->Y)), (Punctuation:Question)
+    (X-->Y), X, task("!") |-          ((X-->Y) ==>+- ?1), (Punctuation:Question)
+    (X-->Y), X, task("!") |-        (--(X-->Y) ==>+- ?1), (Punctuation:Question)
+    (X-->Y), X, task("!") |-         (?1 &&+- --(X-->Y)), (Punctuation:Question)
     
     
 ////    X, X, task("!") |-           (?1 && X), (Punctuation:Question)

@@ -26,6 +26,9 @@ import static jcog.bag.Bag.BagSample.*;
  */
 public interface Bag<K, V> extends Table<K, V> {
 
+    /** >=0; multiplies with capacity to determine min pressure to pre-forget on a new insert.
+     * lower values promote more accuracy by applying buffered pressure to forgetting sooner than higher values */
+    float preCommitPressureFactor = 0.25f;
 
     /**
      * action returned from bag sampling visitor indicating what to do with the current
@@ -266,14 +269,17 @@ public interface Bag<K, V> extends Table<K, V> {
 
     }
 
+
+
     default void commitIfPressured() {
         //<anti-elitism pressure relief on insert>
         float ep0 = depressurize();
-        float BAG_ANTI_ELITISM_THRESHOLD = 0.5f;
-        if (ep0 >= capacity() * BAG_ANTI_ELITISM_THRESHOLD) {
+
+        if (ep0 >= capacity() * preCommitPressureFactor) {
             commit();
         } else {
-            pressurize(ep0); //repressurize
+            if (ep0 > 0)
+                pressurize(ep0); //repressurize
         }
         //</anti-elitism pressure relief on insert>
     }

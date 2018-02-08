@@ -36,6 +36,7 @@ public class NARTestOptimize {
                     return 1 + t.test.score; //+1 for successful completion
                 } catch (Throwable ee) {
                     return -1f;
+                    //return 0f;
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -55,11 +56,13 @@ public class NARTestOptimize {
             .exclude(NARLoop.class)
             .optimize(256, 2, (n)->{
                 return tests(n,
+
                         NAL1Test.class,
                         NAL2Test.class,
                         NAL3Test.class,
                         NAL5Test.class,
                         NAL6Test.class
+
                         //NAL7Test.class,
                         //NAL8Test.class
                 );

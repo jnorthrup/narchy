@@ -9,14 +9,16 @@ import nars.NAgent;
 import nars.Narsese;
 import nars.op.AtomicExec;
 import nars.op.Operator;
-import nars.op.java.Opjects;
 import nars.subterm.Subterms;
 import nars.term.atom.Atomic;
 import nars.time.Tense;
 import net.beadsproject.beads.ugens.Clock;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.concurrent.Semaphore;
 
 import static nars.Op.BELIEF;
 
@@ -92,23 +94,37 @@ public class NARSpeak {
 
 
     /** 'speechd' speech dispatcher - executes via command line */
-    public static class CmdlineSpeechDispatcher {
+    public static class NativeSpeechDispatcher {
 
-        public CmdlineSpeechDispatcher(NARSpeak s) {
+        static final Logger logger = LoggerFactory.getLogger(NativeSpeechDispatcher.class);
+
+        static final int MAX_POLYPHONY = 8;
+        final Semaphore polyphony = new Semaphore(MAX_POLYPHONY);
+
+        public NativeSpeechDispatcher(NARSpeak s) {
             s.spoken.on(this::speak);
         }
 
         private void speak(Object x) {
             String s = x.toString();
             try {
-                //TODO semaphore to limit # of simultaneous voices
-                Process p = new ProcessBuilder().command("/usr/bin/speak", "\"" + s +"\"").start();
-                p.onExit().handle((z,y)->{
-                    //System.out.println("done: " + z);
-                    return null;
-                });
+                if (polyphony.tryAcquire()) {
+                    //TODO semaphore to limit # of simultaneous voices
+                    Process p = new ProcessBuilder().command("/usr/bin/spd-say", "\"" + s + "\"").start();
+                    p.onExit().handle((z, y) -> {
+                        //System.out.println("done: " + z);
+                        polyphony.release();
+                        return null;
+                    }).exceptionally(t->{
+                        logger.warn("speech error: {} {}", s, t);
+                        polyphony.release();
+                        return null;
+                    });
+                } else {
+                    logger.warn("insufficient speech polyphony, ignored: {}", s);
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.warn("speech error: {} {}", s, e);
             }
 
         }

@@ -91,8 +91,6 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
     // selection strategy parameters
     /** Number of parents/points for recombination. */
     private int mu; //
-    /** log(mu + 0.5), stored for efficiency. */
-    private double logMu2;
     /** Array for weighted recombination. */
     private RealMatrix weights;
     /** Variance-effectiveness of sum w_i x_i. */
@@ -144,8 +142,6 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 
     /** History queue of best values. */
     private double[] fitnessHistory;
-    /** Size of history queue of best values. */
-    private int historySize;
 
     /** Random generator. */
     private final RandomGenerator random;
@@ -549,7 +545,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 
         // initialize selection strategy parameters
         mu = lambda / 2; // number of parents/points for recombination
-        logMu2 = Math.log(mu + 0.5);
+        /* log(mu + 0.5), stored for efficiency. */
+        double logMu2 = Math.log(mu + 0.5);
         weights = log(sequence(1, mu, 1)).scalarMultiply(-1).scalarAdd(logMu2);
         double sumw = 0;
         double sumwq = 0;
@@ -588,7 +585,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
         D = ones(dimension, 1); // diagonal D defines the scaling
         BD = times(B, repmat(diagD.transpose(), dimension, 1));
         C = B.multiply(diag(square(D)).multiply(B.transpose())); // covariance
-        historySize = 10 + (int) (3 * 10 * dimension / (double) lambda);
+        /* Size of history queue of best values. */
+        int historySize = 10 + (int) (3 * 10 * dimension / (double) lambda);
         fitnessHistory = new double[historySize]; // history of fitness values
         for (int i = 0; i < historySize; i++) {
             fitnessHistory[i] = Double.POSITIVE_INFINITY;
