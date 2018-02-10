@@ -157,7 +157,7 @@ public class NARTest {
         Termed a2 = $.$("a");
         assertNotNull(a2);
 
-        Concept ca = n.concept(a2, true);
+        Concept ca = n.conceptualize(a2);
         assertNotNull(ca);
 
 

@@ -11,6 +11,8 @@ import nars.exe.Causable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Random;
+
 
 /**
  * interface for controlled draining of a bag
@@ -40,6 +42,11 @@ public abstract class TaskLeak extends Causable {
     TaskLeak(@NotNull Bag<Task, PLink<Task>> bag, @NotNull FloatRange rate, @NotNull NAR n) {
         super(n);
         this.in = new DtLeak<>(bag, rate) {
+            @Override
+            protected Random random() {
+                return n.random();
+            }
+
             @Override
             protected float receive(PLink<Task> b) {
                 Task t = b.get();

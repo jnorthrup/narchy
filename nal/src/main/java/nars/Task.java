@@ -514,24 +514,20 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         long s = start();
 
 
-        if (s == ETERNAL)
-            return this.evi();
-        else if (when == ETERNAL)
-            return this.eviEternalized();
-        else {
+        if (s == ETERNAL) {
+            return evi();
+        } else if (when == ETERNAL) {
+            return eternalizability() * eviEternalized();
+        } else {
 
-            Truth t = truth();
-            float cw = t.evi();
-//            long z = end();
-            //assert (z >= a) : this + " has mismatched start/end times";
-
+            float cw = evi();
 
             long dist = minDistanceTo(when);
             if (dist > 0) {
-                assert (dur > 0) : "dur<=0 is invalid here";
+                assert (dur > 0) : "dur<=0 is invalid";
 
-                float ete = eternalizable();
-                float ecw = ete > 0 ? this.eviEternalized() * ete : 0;
+                float ete = eternalizability();
+                float ecw = ete > 0 ? eviEternalized() * ete : 0;
                 float dcw = cw - ecw; //delta to eternalization
                 cw = (float) (ecw + Param.evi(dcw, dist, dur)); //decay
             }
@@ -542,7 +538,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     }
 
 
-    default float eternalizable() {
+    default float eternalizability() {
 
         return 1f; //always
         //return punc()==BELIEF ? 1f: 0f; //always if belief
@@ -828,8 +824,13 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      */
     @Override
     default boolean isInput() {
-        long[] s = stamp();
-        return s.length <= 1;
+        if (!isCyclic()) {
+            long[] s = stamp();
+            return s.length <= 1;
+        } else {
+            return false;
+        }
+
         //return evidence().length <= 1;
         //return (getParentTask() == null);
         //return (evidence().length <= 1) && ;
@@ -1050,7 +1051,12 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
                     delete();
 
-                    return new TaskAdd(finalResult);
+                    if (finalResult!=null) {
+                        return new TaskAdd(finalResult);
+                    } else {
+                        //TODO maybe print error, at least in debug mode
+                        return null;
+                    }
 
                 } else {
                     if (y.op() == Op.BOOL)

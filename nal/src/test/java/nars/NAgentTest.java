@@ -23,7 +23,7 @@ public class NAgentTest {
         n.confResolution.set(0.04f);
         n.time.dur(1);
 
-//        n.emotion.deriveFailTemporal.why.on(new Meter.ReasonCollector());
+        //n.emotion.deriveFailTemporal.why.on(new Meter.ReasonCollector());
         //n.emotion.deriveFailEval.why.on(new Meter.ReasonCollector());
 
         //n.want(MetaGoal.Perceive, -0.1f);
@@ -44,27 +44,26 @@ public class NAgentTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings={/*"tt", "tf", */"ft", "ff"})
+    @ValueSource(strings={/*"tt", "tf", */"t", "f"})
     public void testSame(String x) {
 
         boolean posOrNeg = x.charAt(0) == 't';
-        boolean toggleOrPush = x.charAt(1) == 't';
+//        boolean toggleOrPush = x.charAt(1) == 't';
 
-        System.out.println((posOrNeg ? "positive" : " negative") + " and " + (toggleOrPush ? "toggle" : " push"));
+        System.out.println((posOrNeg ? "positive" : " negative"));// + " and " + (toggleOrPush ? "toggle" : " push"));
         MiniTest a = new ToggleSame(nar(), $.the("t"),
                 //$.$safe("t:y"),
                 $.$safe("(t,y)"),
-                posOrNeg, toggleOrPush);
+                posOrNeg);
 
-        a.runSynch(2000);
+        a.runSynch(4000);
 
-        assertTrue(a.avgReward() > 0.25f);
+        assertTrue(a.avgReward() > 0.2f);
         assertTrue(a.dex.getMean() > 0.02f);
     }
 
-    @ParameterizedTest
-    @ValueSource(strings={/*"t",*/ "f"})
-    public void testOscillate(String x) {
+    @Test
+    public void testOscillate() {
 
         NAR n = nar();
         assertOscillatesAction(n, (a)->{});
@@ -148,7 +147,7 @@ public class NAgentTest {
         private final boolean posOrNeg;
         private float y;
 
-        public ToggleSame(NAR n, Term env, Term action, boolean posOrNeg, boolean toggleOrPush) {
+        public ToggleSame(NAR n, Term env, Term action, boolean posOrNeg) {
             super(env, n);
             y = 0;
             this.posOrNeg = posOrNeg;
@@ -157,9 +156,9 @@ public class NAgentTest {
                 //System.err.println(n.time() + ": " + v);
                 this.y = v ? 1 : -1;
             };
-            if (toggleOrPush)
-                actionToggle(action, pushed);
-            else
+//            if (toggleOrPush)
+//                actionToggle(action, pushed);
+//            else
                 actionPushButton(action, pushed);
         }
 

@@ -12,6 +12,7 @@ import nars.link.TermLinks;
 import nars.term.Term;
 import nars.term.Termed;
 
+import java.util.Random;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
@@ -65,7 +66,9 @@ public class Activate extends PLink<Concept> implements Termed {
 
         int[] ttl = { tasklinks.size() *  termlinksPerTasklink };
 
-        tasklinks.sample((Predicate<PriReference<Task>>) tasklink -> {
+        Random rng = nar.random();
+
+        tasklinks.sample(rng, (Predicate<PriReference<Task>>) tasklink -> {
 
 
             Task task = tasklink.get();
@@ -74,7 +77,7 @@ public class Activate extends PLink<Concept> implements Termed {
                 //if (priApplied > Pri.EPSILON)
                 Tasklinks.linkTaskTemplates(id, task, /*pri *  */ task.priElseZero(), nar);
 
-                termlinks.sample(termlinksPerTasklink, (termlink) -> {
+                termlinks.sample(rng, termlinksPerTasklink, (termlink) -> {
                     if (!each.test(tasklink, termlink)) {
                         ttl[0] = 0;
                         return false;

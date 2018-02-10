@@ -206,6 +206,23 @@ public class TimeGraphTest {
         assertSolved("(a ==>+- b)", C, "(a ==>+1 b)");
     }
 
+    @Test
+    public void testImplMultipleSolutions() throws Narsese.NarseseException {
+        TimeGraph C = newTimeGraph(1);
+        C.know($.$("(_2,_1)"), 1590);
+        C.know($.$("(_2,_1)"), 2540);
+        C.know($.$("(_2,_1)"), 2567);
+
+        //several slutions
+        assertSolved("(((--,(#1,_1)) &&+220 (_2,_1)) ==>+- (_2,_1))", C,
+                "(((--,(#1,_1)) &&+220 (_2,_1)) ==>+" + (2540-1590) + " (_2,_1))",
+                "(((--,(#1,_1)) &&+220 (_2,_1)) ==>+" + (2567-1590) + " (_2,_1))"
+                //..
+        );
+    }
+
+
+
     final List<Runnable> afterEach = $.newArrayList();
 
     @AfterEach

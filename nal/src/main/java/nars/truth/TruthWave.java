@@ -70,59 +70,55 @@ public class TruthWave {
             return;
         }
 
-        ensureSize(s);
+        size(s);
 
         float[] t = this.truth;
 
         final int[] size = {0};
+
+        long[] st = new long[]{Long.MAX_VALUE}, en = new long[]{Long.MIN_VALUE};
         b.forEachTask(false, minT, maxT, x -> {
             int ss = size[0];
-            if (ss < s) { //HACK in case the table size changed since allocating above
-                int j = (size[0]++) * ENTRY_SIZE;
-                load(t, j, x.start(), x.end(), x);
+            if (ss >= s) { //HACK in case the table size changed since allocating above
+                return;
             }
+
+            long xs = x.start();
+            long xe = x.end();
+
+            int j = (size[0]++) * ENTRY_SIZE;
+            load(t, j, xs, xe, x);
+
+            if (xs < st[0]) st[0] = xs;
+            if (xe > en[0]) en[0] = xe;
+
         });
         this.size = size[0];
 
-        //compute time range
-        float start = Float.POSITIVE_INFINITY;
-        float end = Float.NEGATIVE_INFINITY;
-        for (int i = 0; i < size[0]; i++) {
-            int ii = i * ENTRY_SIZE + 0;
-            float starts = t[ii];
-            if (start == start) {
-                float ends = t[ii + 1];
-
-                //float oo = (starts + ends) / 2; //midpoint
-
-                if (ends > end) end = ends;
-                if (starts < start) start = starts;
-            }
-        }
-        this.start = (long) start;
-        this.end = (long) end;
+        this.start = st[0];
+        this.end = en[0];
     }
 
-    public static void load(float[] array, int index, long start, long end, @Nullable Truthed truth) {
+    static void load(float[] array, int index, long start, long end, @Nullable Truthed truth) {
         array[index++] = start == Tense.ETERNAL ? Float.NaN : start;
         array[index++] = end == Tense.ETERNAL ? Float.NaN : end;
         if (truth != null) {
             array[index++] = truth.freq();
-            array[index++] = truth.conf();
+            array[index/*++*/] = truth.conf();
         } else {
             array[index++] = Float.NaN;
-            array[index++] = 0f;
+            array[index/*++*/] = 0f;
         }
     }
 
-    public void ensureSize(int s) {
+    protected void size(int s) {
 
         int c = capacity();
 
         if (c < s)
             resize(s);
         else {
-            if (s < c) Arrays.fill(truth, 0); //TODO memfill only the necessary part of the array that won't be used
+            //if (s < c) Arrays.fill(truth, 0); //TODO memfill only the necessary part of the array that won't be used
         }
 
     }
@@ -137,9 +133,9 @@ public class TruthWave {
         if (minT == maxT) {
             return;
         }
-        ensureSize(points);
+        size(points);
 
-        float dt = (maxT - minT) / ((float)points);
+        float dt = (maxT - minT) / ((float) points);
         long t = minT;
         float[] data = this.truth;
         int j = 0;
@@ -147,12 +143,12 @@ public class TruthWave {
         byte punc = beliefOrGoal ? BELIEF : GOAL;
         for (int i = 0; i < points; i++) {
             long u = t + idt;
-            long mid = (t + u)/2;
+            long mid = (t + u) / 2;
             load(data, (j++) * ENTRY_SIZE, mid, mid,
                     nar.truth(c, punc, mid, mid) //point
                     //nar.truth(c, punc, t, u) //range
             );
-            t = (long)(t+dt);
+            t = (long) (t + dt);
         }
         this.current = null;
         this.size = j;

@@ -3,8 +3,6 @@ package jcog.bag;
 import jcog.Util;
 import jcog.bag.impl.CurveBag;
 import jcog.bag.impl.PLinkArrayBag;
-import jcog.math.random.XoRoShiRo128PlusRandom;
-import jcog.math.random.XorShift128PlusRandom;
 import jcog.pri.PLink;
 import jcog.pri.Pri;
 import jcog.pri.PriReference;
@@ -26,7 +24,6 @@ public class ArrayBagTest {
 
     CurveBag<PLink<String>> curveBag(int n, PriMerge mergeFunction) {
         return new CurveBag<>(mergeFunction, new HashMap<>(n),
-                new XoRoShiRo128PlusRandom(1),
                 //new XorShift128PlusRandom(1),
                 //new Random(1),
                 n);
@@ -138,7 +135,7 @@ public class ArrayBagTest {
     @Test
     public void testInsertOrBoostDoesntCauseSort() {
         final int[] sorts = {0};
-        @NotNull CurveBag<PLink<String>> x = new CurveBag(PriMerge.plus, new HashMap<>(), new XorShift128PlusRandom(1), 4) {
+        @NotNull CurveBag<PLink<String>> x = new CurveBag(PriMerge.plus, new HashMap<>(), 4) {
             @Override
             protected void sort() {
                 sorts[0]++;

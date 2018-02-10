@@ -19,6 +19,8 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import java.util.function.Supplier;
+
 import static nars.Op.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,7 +31,7 @@ public class LinkageTest extends NALTest {
     final int runCycles = 500;
 
 
-    public void ProperlyLinkedTest(@NotNull String premise1, @NotNull String premise2) throws Exception {
+    void ProperlyLinkedTest(@NotNull String premise1, @NotNull String premise2) throws Exception {
 
         test.requireConditions = false;
         TestNAR tester = test;
@@ -110,10 +112,10 @@ public class LinkageTest extends NALTest {
 
 
         boolean p12 = linksIndirectly(p1, p2, nar);
-        assertTrue(p12, premise1 + " no link to " + premise2);
+        assertTrue(p12, why(nar, premise1, premise2));
 
         boolean p21 = linksIndirectly(p2, p1, nar);
-        assertTrue(p21, premise1 + " no link to " + p2);
+        assertTrue(p21, why(nar, premise2, premise1));
 
 
         System.err.println(premise1 + " not linked with " + premise2);
@@ -147,6 +149,12 @@ public class LinkageTest extends NALTest {
 //        assertTrue(g.isConnected());
 
 
+    }
+
+    static Supplier<String> why(NAR nar, Termed premise1, Termed premise2) {
+        return ()->premise1 + " no link to " + premise2 + "\n" +
+                (((nar.concept(premise1)!=null) ? nar.concept(premise1).printToString() : (premise1 + " unconceptualized"))) + "\n" +
+                (((nar.concept(premise2)!=null) ? nar.concept(premise2).printToString() : (premise2 + " unconceptualized"))) + "\n";
     }
 
     String getTask(byte punc, Termed premise1) {
@@ -332,7 +340,9 @@ public class LinkageTest extends NALTest {
     @Test
     public void Indirect_Linkage_NAL6_second_level_variable_unification() throws Exception {
         //ProperlyLinkedIndirectlyTest("(&&, <#1 --> lock>, <<$2 --> key> ==> <#1 --> (/, open, $2, _)>>)", "<{key1} --> key>");
-        ProperlyLinkedIndirectlyTest("(&&, <#1 --> lock>, <<$2 --> key> ==> ($2, #1):open>)", "<{key1} --> key>");
+        ProperlyLinkedIndirectlyTest(
+                "(&&, <#1 --> lock>, <<$2 --> key> ==> ($2, #1):open>)",
+                "<{key1} --> key>");
     }
 
 //    @Test

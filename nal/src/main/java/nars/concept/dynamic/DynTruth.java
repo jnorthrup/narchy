@@ -8,8 +8,10 @@ import nars.*;
 import nars.control.Cause;
 import nars.task.NALTask;
 import nars.task.TimeFusion;
+import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
@@ -201,8 +203,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
         long[] stamp = ss.getOne();
 
-        NALTask dyn = new NALTask(c, beliefOrGoal ? Op.BELIEF : Op.GOAL,
-                tr, nar.time(), start, (start == ETERNAL || c.op().temporal) ? start : end, stamp);
+        NALTask dyn = new DynTruthTask(c, beliefOrGoal, tr, nar, start, end, stamp);
         if (ss.getTwo() > 0) dyn.setCyclic(true);
 
         dyn.cause = cause();
@@ -222,4 +223,22 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     public @Nullable Task task() {
         throw new TODO();
     }
+
+    private static class DynTruthTask extends NALTask {
+
+        DynTruthTask(Term c, boolean beliefOrGoal, Truth tr, NAR nar, long start, long end, long[] stamp) throws InvalidTaskException {
+            super(c, beliefOrGoal ? Op.BELIEF : Op.GOAL, tr, nar.time(), start, (start == Tense.ETERNAL || c.op().temporal) ? start : end, stamp);
+        }
+
+        @Override
+        public boolean isInput() {
+            return false;
+        }
+
+        @Override
+        public float eternalizability() {
+            return 0;
+        }
+    }
+
 }

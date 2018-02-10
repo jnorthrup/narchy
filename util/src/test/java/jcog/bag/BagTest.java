@@ -6,6 +6,7 @@ import jcog.bag.impl.CurveBag;
 import jcog.bag.impl.HijackBag;
 import jcog.bag.impl.hijack.DefaultHijackBag;
 import jcog.list.FasterList;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.math.random.XorShift128PlusRandom;
 import jcog.math.tensor.ArrayTensor;
 import jcog.math.tensor.Tensor;
@@ -112,8 +113,9 @@ public class BagTest {
         Frequency hits = new Frequency();
         ArrayTensor f = new ArrayTensor(bins);
         assertFalse(b.isEmpty());
+        Random rng = new XoRoShiRo128PlusRandom(1);
         for (int i = 0; i < batches; i++) {
-            b.sample(batchSize, x -> {
+            b.sample(rng, batchSize, x -> {
                 f.data[Util.bin(b.pri(x), bins)]++;
                 String s = x.get();
                 hits.addValue(s);
@@ -329,9 +331,11 @@ public class BagTest {
 
         int c = bag.capacity();
 
+        Random rng = new XoRoShiRo128PlusRandom(1);
+
         //insert biggest items first
         for (int i = c-1; i >= 0; i--) {
-            PLink inserted = bag.put(new PLink(i + "x", bag.random().nextFloat()));
+            PLink inserted = bag.put(new PLink(i + "x", rng.nextFloat()));
             if (inserted==null) {
                 fail("");
             }

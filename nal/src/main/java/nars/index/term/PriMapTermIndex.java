@@ -117,7 +117,7 @@ public class PriMapTermIndex extends MaplikeTermIndex {
                                 if (kill > 0) {
 
                                     System.err.println("evicting " + kill + " victims (" + bad.size() + " remain;\ttotal concepts=" + super.size());
-                                    bad.pop(kill, (t) -> {
+                                    bad.pop(nar.random(), kill, (t) -> {
                                         Concept x = t.get();
                                         if (x != null)
                                             removeGenocidally(x);

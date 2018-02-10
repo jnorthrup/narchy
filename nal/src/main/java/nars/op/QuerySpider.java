@@ -50,7 +50,7 @@ public class QuerySpider extends NARService {
         if (tt.op().conceptualizable && g.addIfNew(tt) && recurse > 0) {
 
 
-            Concept c = nar.concept(t, false);
+            Concept c = nar.conceptualize(t);
             if (c == null)
                 return g;
 

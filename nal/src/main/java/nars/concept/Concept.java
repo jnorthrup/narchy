@@ -71,6 +71,11 @@ public interface Concept extends Termed, MetaMap {
     default void print() {
         print(System.out);
     }
+    default String printToString() {
+        StringBuilder sb = new StringBuilder(1024);
+        print(sb);
+        return sb.toString();
+    }
 
     default <A extends Appendable> A print(@NotNull A out) {
         print(out, true, true, true, true);

@@ -87,7 +87,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
 
     public static LambdaFunctor f(@NotNull Atom termAtom, int arityRequired, @NotNull Function<Subterms, Term> ff) {
         return f(termAtom, (tt) ->
-                (tt.subs() != arityRequired) ? null : ff.apply(tt)
+                (tt.subs() != arityRequired) ? Null : ff.apply(tt)
         );
     }
 

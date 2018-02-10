@@ -11,7 +11,7 @@ import java.util.Random;
 
 public class TaskLinkCurveBag extends CurveBag<PriReference<Task>> {
     public TaskLinkCurveBag(Map sharedMap, Random rng) {
-        super(Param.tasklinkMerge, sharedMap, rng, 0);
+        super(Param.tasklinkMerge, sharedMap, 0);
     }
 
 

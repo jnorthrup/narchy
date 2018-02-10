@@ -9,7 +9,7 @@ import jcog.bag.util.Treadmill2;
 import jcog.data.array.Arrays;
 import jcog.decide.Roulette;
 import jcog.math.AtomicFloat;
-import jcog.math.random.XoRoShiRo128PlusRandom;
+import jcog.math.random.XorShift128PlusRandom;
 import jcog.pri.Pri;
 import jcog.pri.Prioritized;
 import org.apache.commons.lang3.ArrayUtils;
@@ -46,7 +46,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     private static final AtomicReferenceFieldUpdater<HijackBag, AtomicReferenceArray> mapUpdater =
             AtomicReferenceFieldUpdater.newUpdater(HijackBag.class, AtomicReferenceArray.class, "map");
 
-    final Random rng = new XoRoShiRo128PlusRandom(System.nanoTime());
+    /** internal random number generator, used for deciding hijacks but not sampling. */
+    final Random rng;
 
     /**
      * id unique to this bag instance, for use in treadmill
@@ -91,6 +92,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     protected HijackBag(int initialCapacity, int reprobes) {
         this.id = (serial.getAndIncrement());
+        this.rng =
+                new XorShift128PlusRandom(id); //lighter-weight, non-atomic
+                //new XoRoShiRo128PlusRandom(id);
         this.reprobes = reprobes;
         this.map = EMPTY_ARRAY;
 
@@ -103,11 +107,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     protected HijackBag(int reprobes) {
         this(0, reprobes);
     }
-
-    protected Random random() {
-        return rng;
-    }
-
 
     public static boolean hijackGreedy(float newPri, float weakestPri) {
         return weakestPri <= newPri;
@@ -486,9 +485,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
             float newPriSlice = temperature * newPri / reprobes;
             float thresh = newPriSlice / (newPriSlice + oldPri);
-            return random().nextFloat() < thresh;
+            return rng.nextFloat() < thresh;
         } else {
-            return (newPri >= priEpsilon) || (random().nextFloat() < (1f/reprobes));
+            return (newPri >= priEpsilon) || (rng.nextFloat() < (1f/reprobes));
         }
     }
 
@@ -546,7 +545,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     }
 
     @Override
-    public HijackBag<K, V> sample(/*@NotNull*/ Bag.BagCursor<? super V> each) {
+    public HijackBag<K, V> sample(/*@NotNull*/ Random random, BagCursor<? super V> each) {
         final int s = size;
         if (s <= 0)
             return this;
@@ -558,7 +557,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             if (c == 0)
                 return this;
 
-            final Random random = random();
             int i = random.nextInt(c);
 
 

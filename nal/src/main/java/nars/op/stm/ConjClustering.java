@@ -383,6 +383,11 @@ public class ConjClustering extends Causable {
         }
 
         @Override
+        public float eternalizability() {
+            return 0;
+        }
+
+        @Override
         public boolean isInput() {
             return false;
         }

@@ -337,11 +337,6 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
         return true;
     }
 
-    @Override
-    protected Random random() {
-        return rng;
-    }
-
     @NotNull
     @Override
     public X key(Computation<X, Y> value) {

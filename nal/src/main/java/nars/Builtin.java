@@ -2,6 +2,7 @@ package nars;
 
 import jcog.User;
 import jcog.list.FasterList;
+import jcog.pri.PriReference;
 import nars.concept.Concept;
 import nars.op.DepIndepVarIntroduction;
 import nars.op.Operator;
@@ -19,6 +20,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
+import org.jetbrains.annotations.Nullable;
 
 import javax.script.ScriptException;
 import java.io.*;
@@ -209,11 +211,21 @@ public class Builtin {
             nar.on(t);
         }
 
+
         nar.on(Functor.f1("varIntro", (x) -> {
             Pair<Term, Map<Term, Term>> result = DepIndepVarIntroduction.the.apply(x, nar.random());
             return result != null ? result.getOne() : Null;
         }));
 
+        nar.on(Functor.f1((Atom) $.the("termlinkRandom"), (Term t) -> {
+            @Nullable Concept c = nar.conceptualize(t);
+            if (c == null)
+                return Null;
+            @Nullable PriReference<Term> tl = c.termlinks().sample(nar.random());
+            if (tl == null)
+                return Null;
+            return tl.get();
+        }));
 //        nar.on(Functor.f("service", (TermContainer c) ->
 //                $.sete(
 //                        nar.services().map(
@@ -322,6 +334,7 @@ public class Builtin {
                     return oo.the(y);
             }
         }));
+
 
         /** depvar cleaning from commutive conj */
         nar.on(Functor.f1((Atom) $.the("ifConjCommNoDepVars"), (Term t) -> {

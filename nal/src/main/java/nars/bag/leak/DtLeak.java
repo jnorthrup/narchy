@@ -4,7 +4,7 @@ import jcog.bag.Bag;
 import jcog.math.FloatRange;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.time.Tense.ETERNAL;
@@ -77,7 +77,9 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
 
         final float[] budget = {nextBudget};
 
-        bag.sample((Bag.BagCursor<Y>)((v) -> {
+        Random rng = random();
+
+        bag.sample(rng, (Bag.BagCursor<Y>)((v) -> {
 
             float cost = receive(v);
             budget[0] -= cost;
@@ -85,7 +87,7 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
             float remain = budget[0];
 
             if (remain < 1) {
-                if (remain <= 0 || ThreadLocalRandom.current().nextFloat() > remain)
+                if (remain <= 0 || rng.nextFloat() > remain)
                     return Bag.BagSample.RemoveAndStop;
             }
 
@@ -98,12 +100,14 @@ public abstract class DtLeak<X, Y> extends Leak<X, Y> {
 
     }
 
+    abstract protected Random random();
+
     /**
      * returns a cost value, in relation to the bag sampling parameters, which is subtracted
      * from the rate each iteration. this can allow proportional consumption of
      * a finitely allocated resource.
      */
-    abstract protected float receive(@NotNull Y b);
+    abstract protected float receive(Y b);
 
     public void put(Y x) {
         bag.put(x);

@@ -45,7 +45,7 @@ public final class DefaultConceptState extends ConceptState {
                     //HACK
 
                     int maxLinks = 32;
-                    return Math.round((maxLinks) / (1f+vol/2f));
+                    return Math.round((maxLinks) / (1f+((float)Math.sqrt(vol))/2f));
 
                     //int l = Math.max(minLinks, (int) Math.round(maxLinks / (Math.pow(2, (vol - 1) / (Math.sqrt(maxVol))))));
                     //System.out.println(l + " <- " + vol);
@@ -55,7 +55,7 @@ public final class DefaultConceptState extends ConceptState {
 
                     //HACK
                     int maxLinks = 16;
-                    return Math.round((maxLinks) / (1f+vol/2f));
+                    return Math.round((maxLinks) / (1f+((float)Math.sqrt(vol))/2f));
 
 
 //                    int maxVol = 32;

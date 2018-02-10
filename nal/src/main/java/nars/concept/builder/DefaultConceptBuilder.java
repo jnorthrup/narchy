@@ -70,7 +70,7 @@ public class DefaultConceptBuilder implements ConceptBuilder {
 //        Map sharedMap = newBagMap(v);
         Random rng = nar.random();
         Bag<Term, PriReference<Term>> termbag =
-                new CurveBag<>(Param.termlinkMerge, newBagMap(v), rng, 0);
+                new CurveBag<>(Param.termlinkMerge, newBagMap(v), 0);
         CurveBag<PriReference<Task>> taskbag =
                 new TaskLinkCurveBag(newBagMap(v), rng);
 

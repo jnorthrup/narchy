@@ -70,7 +70,7 @@ public class Derivation extends ProtoDerivation {
 
     public final BatchActivation activator = new BatchActivation();
 
-    public final Anon anon;
+    public final Anon anon = new CachedAnon(ANON_CAPACITY, ANON_CACHE_SIZE);
 
     /**
      * temporary buffer for derivations before input so they can be merged in case of duplicates
@@ -256,9 +256,6 @@ public class Derivation extends ProtoDerivation {
 //            }
         };
 
-        anon =
-                new CachedAnon(ANON_CAPACITY, ANON_CACHE_SIZE);
-                //new Anon(16);
 
         //anon = new Anon();
 //            @Override
@@ -380,7 +377,8 @@ public class Derivation extends ProtoDerivation {
         Termed[] derivationFunctors = new Termed[]{
                 uniSubAny,
                 uniSub,
-                polarizeFunc
+                polarizeFunc,
+                termlinkRandomProxy
         };
         Map<Term, Termed> m = new HashMap<>(derivationFunctors.length + 2);
 
@@ -727,6 +725,15 @@ public class Derivation extends ProtoDerivation {
             return Null;
         else
             return compared.isNegative() ? subterm.neg() : subterm;
+    });
+    final Functor.LambdaFunctor termlinkRandomProxy = Functor.f1("termlinkRandom", (x) -> {
+        x = anon.get(x);
+        if (x == null)
+            return Null;
+        Term y = $.func("termlinkRandom", x).eval(nar.terms);
+        if (y!=null && y.op().conceptualizable)
+            return anon.put(y);
+        return Null;
     });
 
     //    /**

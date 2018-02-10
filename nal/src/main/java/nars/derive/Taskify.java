@@ -68,11 +68,11 @@ public class Taskify extends AbstractPred<Derivation> {
             long end = Tense.dither(occ[1], dither);
             assert (end >= start): "task has reversed occurrence: " + start + ".." + end;
 
-            long[] evi = d.single ? d.evidenceSingle() : d.evidenceDouble();
-            long now = d.time;
+
+
             return Param.DEBUG ?
-                            new DebugDerivedTask(C, punc, tr, now, start, end, evi, d._task, !d.single ? d._belief : null) :
-                            new DerivedTask(C, punc, tr, now, start, end, evi);
+                            new DebugDerivedTask(C, punc, tr, start, end, d) :
+                            new DerivedTask(C, punc, tr, start, end, d);
         });
 
         if (t == null) {

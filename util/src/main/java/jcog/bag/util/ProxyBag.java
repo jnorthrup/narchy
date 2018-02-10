@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
+import java.util.Random;
 import java.util.function.Consumer;
 
 /**
@@ -71,8 +72,8 @@ abstract public class ProxyBag<X,Y> implements Bag<X,Y> {
 
     @NotNull
     @Override
-    public Bag<X, Y> sample(@NotNull Bag.BagCursor<? super Y> each) {
-        bag.sample(each);
+    public Bag<X, Y> sample(Random rng, @NotNull Bag.BagCursor<? super Y> each) {
+        bag.sample(rng, each);
         return this;
     }
 

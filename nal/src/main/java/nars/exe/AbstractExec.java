@@ -50,7 +50,7 @@ abstract public class AbstractExec extends Exec {
     @Override
     public void fire(Predicate<Activate> each) {
 
-        active.sample(each);
+        active.sample(nar.random(), each);
 
 //        float forgetRate = nar.forgetRate.floatValue();
 //        active.sample(nar.random(), (l) -> {
@@ -84,11 +84,6 @@ abstract public class AbstractExec extends Exec {
                                 }
 
                                 @Override
-                                protected Random random() {
-                                    return nar.random();
-                                }
-
-                                @Override
                                 public void onAdd(Activate value) {
                                     value.id.state(nar.terms.conceptBuilder.awake());
                                 }
@@ -103,7 +98,7 @@ abstract public class AbstractExec extends Exec {
 
                             new CurveBag<>(
                                     Param.activateMerge, new HashMap<>(CAPACITY),
-                                    nar.random(), CAPACITY) {
+                                    CAPACITY) {
 
                                 @Override
                                 public void onAdd(Activate value) {

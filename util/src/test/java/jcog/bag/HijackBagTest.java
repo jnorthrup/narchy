@@ -133,10 +133,7 @@ public class HijackBagTest {
                     fail("");
                 }
 
-                @Override
-                protected Random random() {
-                    return rng;
-                }
+
             };
 
 

@@ -45,18 +45,19 @@ public class AIMATests {
     @Test
     public void testWeaponsDomain() throws Narsese.NarseseException {
 
-        n.freqResolution.set(0.05f);
+        n.freqResolution.set(0.1f);
         n.confResolution.set(0.02f);
-        n.confMin.set(0.02f);
-        n.priDefault(QUESTION, 0.75f);
-        n.priDefault(BELIEF, 0.4f);
-        n.termVolumeMax.set(32);
+//        n.confMin.set(0.02f);
+        n.priDefault(QUESTION, 0.9f);
+        n.priDefault(BELIEF, 0.7f);
+        n.termVolumeMax.set(40);
         //n.conceptActivation.set(0.5f);
 
         //new QuerySpider(n);
         //new PrologCore(n);
         //n.run(1);
 
+//        n.log();
         n.believe(
             //"((&&, American($x),Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))",
             "((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))",
@@ -87,22 +88,22 @@ public class AIMATests {
 //        n.input("Criminal(?x)?");
 //                n.input("Criminal(?x)?");
 
-        n.run(2500);
-//        n.clear();
-//        n.log();
+        n.run(3500);
+        //n.clear();
         n.question($.$(
-                "Criminal(?x)"
-                //"Criminal:?x"
+                //"Criminal(?x)"
+                "Criminal:?x"
 
         ), ETERNAL, (q,a)->{
             System.out.println(a);
         });
         n.run(1);
+
+
+
+        n.run(5500);
         n.concept($.$("Criminal")).print();
-
-
-        n.run(2500);
-
+        n.concept($.$("Criminal:?1")).print();
 //        if (!questions.isEmpty()) {
 //            System.out.println("Questions Generated:");
 //            questions.forEach(System.out::println);

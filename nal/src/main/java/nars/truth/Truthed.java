@@ -1,6 +1,5 @@
 package nars.truth;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.truth.TruthFunctions.w2cSafe;
@@ -40,17 +39,17 @@ public interface Truthed  {
         return freq() >= 0.5f;
     }
 
-    /**
-     * how expectation polarized (expectation distance from 0.5) a given truth value is:
-     *      expectation=0.5        -> polarization=0
-     *      expectation=0 or 1     -> polarization=1
-     */
-    default float expolarity() {
-        float exp = expectation();
-        if (exp < 0.5f)
-            exp = 1f - exp;
-        return (exp - 0.5f) * 2f;
-    }
+//    /**
+//     * how expectation polarized (expectation distance from 0.5) a given truth value is:
+//     *      expectation=0.5        -> polarization=0
+//     *      expectation=0 or 1     -> polarization=1
+//     */
+//    default float expolarity() {
+//        float exp = expectation();
+//        if (exp < 0.5f)
+//            exp = 1f - exp;
+//        return (exp - 0.5f) * 2f;
+//    }
 
 //    /** balanced form of expectation, where -1 = no, +1 = yes, and 0 = maybe */
 //    default float motivationUnweighted() {
@@ -87,17 +86,17 @@ public interface Truthed  {
 //        return t;
 //    }
 
-    static float freqMean(@NotNull Iterable<? extends Truthed> beliefs) {
-
-        float t = 0;
-        int count = 0;
-        for (Truthed s : beliefs) {
-            t += s.freq();
-            count++;
-        }
-
-        return count == 0 ? 0.5f : t / count;
-    }
+//    static float freqMean(@NotNull Iterable<? extends Truthed> beliefs) {
+//
+//        float t = 0;
+//        int count = 0;
+//        for (Truthed s : beliefs) {
+//            t += s.freq();
+//            count++;
+//        }
+//
+//        return count == 0 ? 0.5f : t / count;
+//    }
 
     /** weight of evidence ( confidence converted to weight, 'c2w()' )  */
     default float evi() {

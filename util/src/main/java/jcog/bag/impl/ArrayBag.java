@@ -357,12 +357,6 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 //        return this;
 //    }
 
-    @Deprecated
-    @Nullable
-    protected Random random() {
-        return null;
-    }
-
 
     /**
      * size > 0
@@ -383,11 +377,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
      */
     /*@NotNull*/
     @Override
-    public Bag<X, Y> sample(/*@NotNull*/ Bag.BagCursor<? super Y> each) {
-
-
-
-        Random rng = random();
+    public Bag<X, Y> sample(/*@NotNull*/ Random rng, BagCursor<? super Y> each) {
 
         newItemsArray:
         while (true) {

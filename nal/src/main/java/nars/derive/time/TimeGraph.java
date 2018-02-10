@@ -431,12 +431,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                     int bes = be.size();
                     if (bes > 0) {
                         //search only if one to N; there may be incorrect possibilities among N to N comparisons
-                        if (aes == 1 || bes == 1) {
+                        //if (aes == 1 || bes == 1) {
                             if (!ae.allSatisfy(ax ->
                                     be.allSatisfyWith((bx, axx) ->
                                             solveDT(x, each, axx, bx), ax)))
                                 return false;
-                        }
+                        //}
                     }
                 }
             }
@@ -450,7 +450,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             FasterList<Event> rels = new FasterList<>(4);
             int[] phase = new int[]{0};
             Consumer<Event> collect = z -> {
-                int p = phase[0];
+//                int p = phase[0];
 //                if (z instanceof Absolute) {
 //                    if (abs[p] == null) abs[p] = new UnifiedSet(2);
 //                    abs[p].add(z);

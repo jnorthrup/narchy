@@ -18,7 +18,7 @@ public class ConcurrentCurveBag<X extends Priority> extends CurveBag<X> {
     private final QueueLock<X> toPut;
 
     public ConcurrentCurveBag(@NotNull PriMerge mergeFunction, @NotNull Map<X, X> map, Random rng, int cap) {
-        super(mergeFunction, map, rng, cap);
+        super(mergeFunction, map, cap);
 
         IntConsumer afterBatch = null; //assumes the bag will be periodically / manually commit()'d
 //                (batchSize) -> {

@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.PrintStream;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -68,9 +69,9 @@ public interface Bag<K, V> extends Table<K, V> {
      * the bag is cycled so that subsequent elements are different.
      */
     @Nullable
-    default V sample() {
+    default V sample(Random rng) {
         Object[] result = new Object[1];
-        sample(((Predicate<? super V>)(x) -> {
+        sample(rng, ((Predicate<? super V>)(x) -> {
             result[0] = x;
             return false;
         }));
@@ -121,10 +122,10 @@ public interface Bag<K, V> extends Table<K, V> {
 
     /* sample the bag, optionally removing each visited element as decided by the visitor's
      * returned value */
-    /*@NotNull*/ Bag<K, V> sample(/*@NotNull */Bag.BagCursor<? super V> each);
+    /*@NotNull*/ Bag<K, V> sample(/*@NotNull */Random rng, BagCursor<? super V> each);
 
-    default Bag<K, V> sample(Predicate<? super V> each) {
-        return sample((BagCursor<? super V>)((x) -> each.test(x) ? BagSample.Next : BagSample.Stop));
+    default Bag<K, V> sample(Random rng, Predicate<? super V> each) {
+        return sample(rng, (BagCursor<? super V>)((x) -> each.test(x) ? BagSample.Next : BagSample.Stop));
     }
 
 
@@ -171,20 +172,20 @@ public interface Bag<K, V> extends Table<K, V> {
         return StreamSupport.stream(this::spliterator, 0, false);
     }
 
-    default Bag<K, V> sample(int max, Consumer<? super V> each) {
-        return sampleOrPop(false, max, each);
+    default Bag<K, V> sample(Random rng, int max, Consumer<? super V> each) {
+        return sampleOrPop(rng,false, max, each);
     }
 
-    default Bag<K, V> pop(int max, Consumer<? super V> each) {
-        return sampleOrPop(true, max, each);
+    default Bag<K, V> pop(Random rng, int max, Consumer<? super V> each) {
+        return sampleOrPop(rng, true, max, each);
     }
 
-    default Bag<K, V> sampleOrPop(boolean pop, int max, Consumer<? super V> each) {
+    default Bag<K, V> sampleOrPop(Random rng, boolean pop, int max, Consumer<? super V> each) {
         if (max == 0)
             return this;
 
         final int[] count = {max};
-        return sample((BagCursor<? super V>)(x -> {
+        return sample(rng, (BagCursor<? super V>)(x -> {
             each.accept(x);
             return ((--count[0]) > 0) ? (pop ? Remove : Next) : (pop ? RemoveAndStop : Stop);
         }));
@@ -194,12 +195,12 @@ public interface Bag<K, V> extends Table<K, V> {
      * continues while either the predicate hasn't returned false and
      * < max true's have been returned
      */
-    default Bag<K, V> sample(int max, Predicate<? super V> kontinue) {
+    default Bag<K, V> sample(Random rng, int max, Predicate<? super V> kontinue) {
         if (max == 0)
             return this;
 
         final int[] count = {max};
-        return sample((BagCursor<? super V>)((x) ->
+        return sample(rng, (BagCursor<? super V>)((x) ->
                 (kontinue.test(x) && ((--count[0]) > 0)) ?
                     Next : Stop));
     }
@@ -610,7 +611,7 @@ public interface Bag<K, V> extends Table<K, V> {
         }
 
         @Override
-        public Bag sample(Bag.BagCursor each) {
+        public Bag sample(Random rng, BagCursor each) {
             return this;
         }
 

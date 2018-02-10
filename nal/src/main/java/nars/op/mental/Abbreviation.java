@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -72,6 +73,11 @@ public class Abbreviation/*<S extends Term>*/ extends TaskService {
                 return l.get();
             }
         }, new FloatRange(selectionRate)) {
+
+            @Override
+            protected Random random() {
+                return nar.random();
+            }
 
             @Override
             protected float receive(PLink<Compound> b) {

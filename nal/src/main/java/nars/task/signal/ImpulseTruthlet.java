@@ -8,8 +8,8 @@ import nars.Param;
  */
 public class ImpulseTruthlet extends ProxyTruthlet {
 
-    public float freqInactive;
-    public float eviInactive;
+    float freqInactive;
+    float eviInactive;
 
     public ImpulseTruthlet(Truthlet active, float freqInactive, float eviInactive) {
         super(active);

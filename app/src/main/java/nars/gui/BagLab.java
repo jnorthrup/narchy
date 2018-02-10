@@ -28,7 +28,7 @@ import static spacegraph.layout.Gridding.row;
 /**
  * Created by me on 11/29/16.
  */
-public class BagLab  {
+public class BagLab {
 
     public static final int BINS = 64;
 
@@ -36,17 +36,17 @@ public class BagLab  {
     int iteration;
 
 
-    final Bag<Integer,PriReference<Integer>> bag;
+    final Bag<Integer, PriReference<Integer>> bag;
     private final List<FloatSlider> inputSliders;
     private final int uniques;
 
     float[] selectionHistogram = new float[BINS];
 
-    public BagLab(Bag<Integer,PriReference<Integer>> bag) {
+    public BagLab(Bag<Integer, PriReference<Integer>> bag) {
         super();
         this.bag = bag;
 
-        this.uniques = bag.capacity()*2;
+        this.uniques = bag.capacity() * 2;
 
         int inputs = 10;
         inputSliders = $.newArrayList(inputs);
@@ -61,10 +61,10 @@ public class BagLab  {
                 col(inputSliders),
                 //new GridSurface(VERTICAL,
                 col(
-                    Vis.pane("Bag Selection Distribution (0..1)", new HistogramChart(
-                            ()->selectionHistogram, new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f))),
-                    Vis.pane("Bag Content Distribution (0..1)", new HistogramChart(
-                            ()->bag.histogram(new float[10]), new Color3f(0f, 0.25f, 0.5f), new Color3f(0.1f, 0.5f, 1f)))
+                        Vis.pane("Bag Selection Distribution (0..1)", new HistogramChart(
+                                () -> selectionHistogram, new Color3f(0.5f, 0.25f, 0f), new Color3f(1f, 0.5f, 0.1f))),
+                        Vis.pane("Bag Content Distribution (0..1)", new HistogramChart(
+                                () -> bag.histogram(new float[10]), new Color3f(0f, 0.25f, 0.5f), new Color3f(0.1f, 0.5f, 1f)))
                 )
                 //,hijackVis((HijackBag)bag)
         );
@@ -74,7 +74,7 @@ public class BagLab  {
         int c = bag.capacity();
         int w = (int) Math.ceil(Math.sqrt(1 + c));
         int h = c / w;
-        return new MatrixView(w, h, (x,y, gl) -> {
+        return new MatrixView(w, h, (x, y, gl) -> {
             try {
                 Object m = bag.map;
                 float p = -1;
@@ -92,7 +92,7 @@ public class BagLab  {
 
             }
             return 0;
-        } );
+        });
 
     }
 
@@ -100,27 +100,26 @@ public class BagLab  {
     public static void main(String[] arg) {
 
         BagLab bagLab = new BagLab(
-                new CurveBag(plus,  new HashMap(), new XorShift128PlusRandom(1), 256)
+                new CurveBag(plus, new HashMap(), 256)
                 //new DefaultHijackBag<>(PriMerge.plus, 1024, 8)
                 //new BloomBag<>(32, (i) -> Shorts.toByteArray(i.shortValue()))
         );
 
 
         SpaceGraph.window(
-            bagLab.surface(), 1200, 800);
+                bagLab.surface(), 1200, 800);
 
         long delayMS = 30;
         //new Thread(()->{
-            while (true) {
-                bagLab.update();
-                Util.sleep(delayMS);
-            }
+        while (true) {
+            bagLab.update();
+            Util.sleep(delayMS);
+        }
         //}).start();
     }
 
 
     private synchronized void update() {
-
 
 
         int inputRate = 20;
@@ -147,12 +146,14 @@ public class BagLab  {
 
         //System.out.println(bag.size());
 
+        XorShift128PlusRandom rng = new XorShift128PlusRandom(1);
+
         List<PriReference<Integer>> sampled = $.newArrayList(1024);
-        for (int i = 0; i < (int)sampleBatches ; i++) {
+        for (int i = 0; i < (int) sampleBatches; i++) {
             sampled.clear();
 
             //System.out.println(h + " " + v);
-            bag.sample(batchSize, (Consumer<PriReference<Integer>>) sampled::add);
+            bag.sample(rng, batchSize, (Consumer<PriReference<Integer>>) sampled::add);
 
             //BLink<Integer> sample = bag.sample();
             for (PriReference<Integer> sample : sampled) {

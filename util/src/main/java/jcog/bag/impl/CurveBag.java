@@ -10,7 +10,6 @@ import jcog.pri.op.PriMerge;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Random;
@@ -22,19 +21,14 @@ public class CurveBag<X extends Priority> extends PriArrayBag<X> {
 
     public static final int SAMPLE_WINDOW_SIZE = 8;
 
-    /** TODO pass random as argument to sample(..) rather than store field here */
-    @Deprecated @Nullable
-    private final Random random;
-
-    public CurveBag(@NotNull PriMerge mergeFunction, @NotNull Map<X, X> map, Random rng, int cap) {
-        this(mergeFunction, map, rng);
+    public CurveBag(@NotNull PriMerge mergeFunction, @NotNull Map<X, X> map, int cap) {
+        this(mergeFunction, map);
         setCapacity(cap);
     }
 
 
-    public CurveBag(@NotNull PriMerge mergeFunction, @NotNull Map<X, X> map, Random rng) {
+    public CurveBag(@NotNull PriMerge mergeFunction, @NotNull Map<X, X> map) {
         super(mergeFunction, map);
-        this.random = rng;
     }
 
     @Override
@@ -61,13 +55,12 @@ public class CurveBag<X extends Priority> extends PriArrayBag<X> {
     }
 
     @Override
-    public Bag<X, X> sample(BagCursor<? super X> each) {
-        return sample(each, this::pri);
+    public Bag<X, X> sample(Random rng, BagCursor<? super X> each) {
+        return sample(rng, each, this::pri);
     }
 
-    public Bag<X, X> sample(BagCursor<? super X> each, FloatFunction<X> pri) {
+    public Bag<X, X> sample(Random random, BagCursor<? super X> each, FloatFunction<X> pri) {
 
-        final Random random = random();
 
         restart:
         while (true) {
@@ -178,12 +171,6 @@ public class CurveBag<X extends Priority> extends PriArrayBag<X> {
 
     }
 
-
-
-    @Override
-    public Random random() {
-        return random;
-    }
 
 
     //    /** optimized point sample impl */

@@ -303,7 +303,7 @@ public abstract class Unify extends Versioning implements Subst {
 
     @Override
     public String toString() {
-        return xy + "@" + ((Versioning<Term>) this).ttl;
+        return xy + "$" + ((Versioning<Term>) this).ttl;
     }
 
 

@@ -17,7 +17,7 @@ public class SignalTask extends NALTask {
     }
 
     @Override
-    public float eternalizable() {
+    public float eternalizability() {
         return 0;
         //return 0.5f;
         //return 0.1f;

@@ -243,7 +243,7 @@ public class UDPeer extends UDP {
             byte[] bytes = o.array();
 
             final int[] remain = {Math.round(them.size() * pri)};
-            them.sample((Bag.BagCursor<UDProfile>)((to) -> {
+            them.sample(rng, (Bag.BagCursor<UDProfile>)((to) -> {
                 if (o.id() != to.id /*&& (pri >= 1 || rng.nextFloat() <= pri)*/ ) {
                     outBytes(bytes, to.addr);
                 }
