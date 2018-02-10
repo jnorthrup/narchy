@@ -72,7 +72,7 @@ public class Tweaks<X>  {
         return pair(ready, unknowns);
     }
 
-    public Optimize<X> optimize(Supplier<X> subjects) {
+    Optimize<X> optimize(Supplier<X> subjects) {
         return new Optimize(subjects, this);
     }
 

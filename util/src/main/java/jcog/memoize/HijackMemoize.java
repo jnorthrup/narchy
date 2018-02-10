@@ -5,17 +5,14 @@ import jcog.Util;
 import jcog.bag.impl.HijackBag;
 import jcog.bag.impl.hijack.PriorityHijackBag;
 import jcog.data.LongCounter;
-import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.pri.PLink;
 import jcog.pri.Prioritized;
 import jcog.pri.Priority;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectLongProcedure;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.SoftReference;
-import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -30,7 +27,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
 
     protected float DEFAULT_VALUE;
     final boolean soft;
-    private final Random rng = new XoRoShiRo128PlusRandom(1);
+    //private final Random rng = new XoRoShiRo128PlusRandom(1);
 
     public interface Computation<X, Y> extends Priority, Supplier<Y> {
         /**
@@ -39,7 +36,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
         X x();
     }
 
-    final static class StrongPair<X, Y> extends PLink<Y> implements Computation<X, Y> {
+    public final static class StrongPair<X, Y> extends PLink<Y> implements Computation<X, Y> {
 
         public final X x;
         private final int hash;
@@ -337,7 +334,7 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
         return true;
     }
 
-    @NotNull
+    /*@NotNull*/
     @Override
     public X key(Computation<X, Y> value) {
         return value.x();

@@ -71,7 +71,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
      * action exploration rate; analogous to epsilon in QLearning
      */
     public final FloatRange curiosity;
-    public final FloatRange depress = new FloatRange(0.5f, 0f, 1f);
+    public final FloatRange depress = new FloatRange(0.25f, 0f, 1f);
 
 
     public final AtomicBoolean enabled = new AtomicBoolean(false);

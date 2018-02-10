@@ -343,9 +343,10 @@ class MyCMAESOptimizerTest {
 
     @Test
     public void testMath864() {
+        final double[] sigma = { 1e-1 };
         final MyCMAESOptimizer optimizer
                 = new MyCMAESOptimizer(30000, 0, true, 10,
-                0, rng(), false, null);
+                0, rng(), false, null, 5, sigma);
         final MultivariateFunction fitnessFunction = new MultivariateFunction() {
             @Override
             public double value(double[] parameters) {
@@ -358,12 +359,9 @@ class MyCMAESOptimizerTest {
         final double[] start = { 0 };
         final double[] lower = { -1e6 };
         final double[] upper = { 1.5 };
-        final double[] sigma = { 1e-1 };
         final double[] result = optimizer.optimize(new MaxEval(10000),
                 new ObjectiveFunction(fitnessFunction),
                 GoalType.MINIMIZE,
-                new MyCMAESOptimizer.PopulationSize(5),
-                new MyCMAESOptimizer.Sigma(sigma),
                 new InitialGuess(start),
                 new SimpleBounds(lower, upper)).getPoint();
         assertTrue(
@@ -375,9 +373,11 @@ class MyCMAESOptimizerTest {
      */
     @Test
     public void testFitAccuracyDependsOnBoundary() {
-        final MyCMAESOptimizer optimizer
+
+        double[] sigma1 = {1e-1};
+        MyCMAESOptimizer optimizer
                 = new MyCMAESOptimizer(30000, 0, true, 10,
-                0, rng(), false, null);
+                0, rng(), false, null, 5, sigma1);
         final MultivariateFunction fitnessFunction = new MultivariateFunction() {
             @Override
             public double value(double[] parameters) {
@@ -394,20 +394,20 @@ class MyCMAESOptimizerTest {
                 new ObjectiveFunction(fitnessFunction),
                 GoalType.MINIMIZE,
                 SimpleBounds.unbounded(1),
-                new MyCMAESOptimizer.PopulationSize(5),
-                new MyCMAESOptimizer.Sigma(new double[] { 1e-1 }),
                 new InitialGuess(start));
         final double resNoBound = result.getPoint()[0];
 
         // Optimum is near the lower bound.
         final double[] lower = { -20 };
         final double[] upper = { 5e16 };
-        final double[] sigma = { 10 };
+        final double[] sigma2 = { 10 };
+        optimizer
+                = new MyCMAESOptimizer(30000, 0, true, 10,
+                0, rng(), false, null, 5, sigma2);
+
         result = optimizer.optimize(new MaxEval(100000),
                 new ObjectiveFunction(fitnessFunction),
                 GoalType.MINIMIZE,
-                new MyCMAESOptimizer.PopulationSize(5),
-                new MyCMAESOptimizer.Sigma(sigma),
                 new InitialGuess(start),
                 new SimpleBounds(lower, upper));
         final double resNearLo = result.getPoint()[0];
@@ -418,8 +418,6 @@ class MyCMAESOptimizerTest {
         result = optimizer.optimize(new MaxEval(100000),
                 new ObjectiveFunction(fitnessFunction),
                 GoalType.MINIMIZE,
-                new MyCMAESOptimizer.PopulationSize(5),
-                new MyCMAESOptimizer.Sigma(sigma),
                 new InitialGuess(start),
                 new SimpleBounds(lower, upper));
         final double resNearHi = result.getPoint()[0];
@@ -465,23 +463,19 @@ class MyCMAESOptimizerTest {
         int dim = startPoint.length;
         // test diagonalOnly = 0 - slow but normally fewer feval#
         MyCMAESOptimizer optim = new MyCMAESOptimizer(30000, stopValue, isActive, diagonalOnly,
-                0, rng(), false, null);
+                0, rng(), false, null, lambda, inSigma);
         PointValuePair result = boundaries == null ?
                 optim.optimize(new MaxEval(maxEvaluations),
                         new ObjectiveFunction(func),
                         goal,
                         new InitialGuess(startPoint),
-                        SimpleBounds.unbounded(dim),
-                        new MyCMAESOptimizer.Sigma(inSigma),
-                        new MyCMAESOptimizer.PopulationSize(lambda)) :
+                        SimpleBounds.unbounded(dim)) :
                 optim.optimize(new MaxEval(maxEvaluations),
                         new ObjectiveFunction(func),
                         goal,
                         new SimpleBounds(boundaries[0],
                                 boundaries[1]),
-                        new InitialGuess(startPoint),
-                        new MyCMAESOptimizer.Sigma(inSigma),
-                        new MyCMAESOptimizer.PopulationSize(lambda));
+                        new InitialGuess(startPoint));
 
         // System.out.println("sol=" + Arrays.toString(result.getPoint()));
         assertEquals(expected.getValue(), result.getValue(), fTol);

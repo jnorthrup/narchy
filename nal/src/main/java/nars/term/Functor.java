@@ -183,28 +183,6 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         return f(termAtom, 3, (tt) -> ff.apply(tt.sub(0), tt.sub(1), tt.sub(2)));
     }
 
-    /** assumes the predicate of the inheritance is alreaady resolved to a Functor instance */
-    public static Term eval(Term u) {
-
-        //recursively compute contained subterm functors
-        //compute this without necessarily constructing the superterm, which happens after this if it doesnt recurse
-        if (u.op() == INH && u.hasAll(Op.funcBits)) {
-            Term pred, subj;
-            Subterms uu = u.subterms();
-            if ((pred=uu.sub(1)) instanceof Functor && (subj=uu.sub(0)).op() == PROD) {
-
-                Term v = ((Functor)pred).apply(subj.subterms());
-                if (v instanceof AbstractPred) {
-                    return $.the(((AbstractPred) v).test(null));
-                } else if (v == null) {
-                    return u; //null means to keep the same
-                } else  {
-                    return ((v != u) && u.equals(v)) ? u : v;
-                }
-            }
-        }
-        return u;
-    }
 
     /**
      * two argument non-variable integer functor (convenience method)
@@ -214,19 +192,33 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         int apply(int x, int y);
     }
 
-    public static Concept f2Int(String termAtom, boolean commutive, @Nullable IntPredicate identityComponent, IntIntToIntFunction ff) {
+    public static Concept f2Int(String termAtom, boolean commutive, @Nullable IntPredicate identityComponent, IntPredicate zeroIfArgIs, IntIntToIntFunction ff) {
         Atom f = fName(termAtom);
         return f2(f, (xt, yt) -> {
             boolean xi = xt.op() == INT;
             boolean yi = yt.op() == INT;
             if (xi && yi) {
-                return Int.the( ff.apply(((Int)xt).id, ((Int)yt).id ) );
+                int xid = ((Int)xt).id;
+                int yid = ((Int)yt).id;
+                return Int.the( ff.apply(xid, yid ) );
             } else {
                 if (identityComponent!=null) {
-                    if (xi && identityComponent.test(((Int) xt).id))
-                        return yt;
-                    if (yi && identityComponent.test(((Int) yt).id))
-                        return xt;
+                    if (xi) {
+                        int xid = ((Int) xt).id;
+                        if (zeroIfArgIs.test(xid))
+                            return Int.the(0);
+
+                        if (identityComponent.test(xid))
+                            return yt;
+                    }
+                    if (yi) {
+                        int yid = ((Int) yt).id;
+                        if (zeroIfArgIs.test(yid))
+                            return Int.the(0);
+
+                        if (identityComponent.test(yid))
+                            return xt;
+                    }
                 }
 
                 if (commutive && xt.compareTo(yt) > 0) {

@@ -123,25 +123,25 @@ public interface Atomic extends Term {
                 case Op.FalseSym:
                     return Op.False;
                 case '0':
-                    return Int.digits[0];
+                    return Int.pos[0];
                 case '1':
-                    return Int.digits[1];
+                    return Int.pos[1];
                 case '2':
-                    return Int.digits[2];
+                    return Int.pos[2];
                 case '3':
-                    return Int.digits[3];
+                    return Int.pos[3];
                 case '4':
-                    return Int.digits[4];
+                    return Int.pos[4];
                 case '5':
-                    return Int.digits[5];
+                    return Int.pos[5];
                 case '6':
-                    return Int.digits[6];
+                    return Int.pos[6];
                 case '7':
-                    return Int.digits[7];
+                    return Int.pos[7];
                 case '8':
-                    return Int.digits[8];
+                    return Int.pos[8];
                 case '9':
-                    return Int.digits[9];
+                    return Int.pos[9];
             }
         }
 

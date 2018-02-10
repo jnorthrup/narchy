@@ -19,6 +19,10 @@ public class Pri implements Priority {
         priSet(p);
     }
 
+    /** default: pri=0 */
+    public Pri() {
+
+    }
 
     @Override
     public final float pri() {

@@ -71,7 +71,7 @@ public class RTreeBeliefTableTest {
 
     @NotNull
     static Task add(RTreeBeliefTable r, Termed x, float freq, float conf, int start, int end, NAR n) {
-        Task a = $.belief(x.term(), freq, conf).time(start, start, end).apply(n);
+        Task a = $.task(x.term(), BELIEF, freq, conf).time(start, start, end).apply(n);
         a.pri(0.5f);
         r.add(a, (TaskConcept) n.concept(x), n);
         return a;

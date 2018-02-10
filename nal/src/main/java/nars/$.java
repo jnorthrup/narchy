@@ -19,6 +19,7 @@ import nars.task.TaskBuilder;
 import nars.term.Compound;
 import nars.term.CompoundLight;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
@@ -41,7 +42,6 @@ import javax.script.ScriptEngineManager;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static nars.Op.*;
@@ -324,7 +324,6 @@ public enum $ {
         return v(VAR_QUERY, s);
     }
 
-    @NotNull
     public static VarPattern varPattern(int i) {
         return (VarPattern) v(VAR_PATTERN, (byte) i);
     }
@@ -351,15 +350,10 @@ public enum $ {
         return (T) INH.the(subject, SETi.the(predicate));
     }
 
-    @NotNull
-    public static TaskBuilder belief(@NotNull Term term, float freq, float conf) {
-        return task(term, BELIEF, freq, conf);
-    }
-
-    @NotNull
-    public static TaskBuilder goal(@NotNull Term term, float freq, float conf) {
-        return task(term, GOAL, freq, conf);
-    }
+    //    @NotNull
+//    public static TaskBuilder goal(@NotNull Term term, float freq, float conf) {
+//        return task(term, GOAL, freq, conf);
+//    }
 
     @NotNull
     public static TaskBuilder task(@NotNull String term, byte punct, float freq, float conf) throws Narsese.NarseseException {
@@ -374,22 +368,22 @@ public enum $ {
         return new TaskBuilder(term, punct, truth);
     }
 
-    public static Term sete(@NotNull Collection<? extends Term> t) {
+    public static Term sete(Collection<? extends Term> t) {
         return SETe.the(DTERNAL, (Collection) t);
     }
 
-    /**
-     * construct set_ext of key,value pairs from a Map
-     */
-    public static Term seteMap(@NotNull Map<Term, Term> map) {
-        return $.sete(
-                map.entrySet().stream().map(
-                        e -> $.p(e.getKey(), e.getValue()))
-                        .collect(Collectors.toSet())
-        );
-    }
+//    /**
+//     * construct set_ext of key,value pairs from a Map
+//     */
+//    public static Term seteMap(@NotNull Map<Term, Term> map) {
+//        return $.sete(
+//                map.entrySet().stream().map(
+//                        e -> $.p(e.getKey(), e.getValue()))
+//                        .collect(Collectors.toSet())
+//        );
+//    }
 
-    public static Term p(@NotNull char[] c, @NotNull CharToObjectFunction<Term> f) {
+    public static Term p(char[] c, CharToObjectFunction<Term> f) {
         Term[] x = new Term[c.length];
         for (int i = 0; i < c.length; i++) {
             x[i] = f.valueOf(c[i]);
@@ -405,13 +399,13 @@ public enum $ {
         return Stream.of(map).map(toTerm).toArray(Term[]::new);
     }
 
-    public static <X> Term seteMap(@NotNull Map<Term, ? extends X> map, @NotNull Function<X, Term> toTerm) {
-        return $.sete(
-                map.entrySet().stream().map(
-                        e -> $.p(e.getKey(), toTerm.apply(e.getValue())))
-                        .collect(Collectors.toSet())
-        );
-    }
+//    public static <X> Term seteMap(@NotNull Map<Term, ? extends X> map, @NotNull Function<X, Term> toTerm) {
+//        return $.sete(
+//                map.entrySet().stream().map(
+//                        e -> $.p(e.getKey(), toTerm.apply(e.getValue())))
+//                        .collect(Collectors.toSet())
+//        );
+//    }
 
     private static Term[] array(@NotNull Collection<? extends Term> t) {
         return t.toArray(new Term[t.size()]);
@@ -875,6 +869,15 @@ public enum $ {
     public static Term pFast(Term... x) {
         return new CompoundLight(Op.PROD, $.vFast(x));
     }
+
+    public static Term sFast(Term... x) {
+        return new CompoundLight(Op.SETe, $.vFast(Terms.sorted(x)));
+    }
+
+    public static Term sFast(RoaringBitmap b) {
+        return sFast(ints(b)); //non-interned
+    }
+
     public static Term pFast(Collection<? extends Term> x) {
         return new CompoundLight(Op.PROD, $.vFast(x.toArray(new Term[x.size()])));
     }

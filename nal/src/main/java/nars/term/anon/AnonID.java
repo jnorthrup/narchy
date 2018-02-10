@@ -24,7 +24,6 @@ public interface AnonID extends Term, The {
 
 
     static short termToId(Op o, byte id) {
-        assert(id > 0);
 
         short mask;
         switch (o) {
@@ -46,6 +45,8 @@ public interface AnonID extends Term, The {
             default:
                 throw new UnsupportedOperationException();
         }
+
+        assert(id > 0);
         return (short) (mask | id);
     }
 
@@ -59,7 +60,7 @@ public interface AnonID extends Term, The {
             neg = false;
         }
         Term x = idToTerm(i);
-        return x.negIf(neg);
+        return neg ? x.neg() : x;
     }
 
     static Term idToTerm(short /* short */ i) {

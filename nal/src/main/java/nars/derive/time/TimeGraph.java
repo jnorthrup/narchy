@@ -185,7 +185,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         return addEdge(addNode(before), e, addNode(after));
     }
 
-    public void link(Event x, long dt, Event y) {
+    public void link(@NotNull Event x, long dt, @NotNull Event y) {
 
         if ((x == y || ((x.id.equals(y.id)) && (x.when() == y.when()))))
             return; //loop
@@ -361,12 +361,17 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                         //  eventTerm.subterms().forEach(this::know); //TODO can these be absolute if the event is?
                         boolean timed = et != ETERNAL;
                         for (Term s : eventTerm.subterms()) {
-                            link(event, (eventDT == 0 || timed) ? 0 : ETERNAL,
-                                    eventDT == 0 ?
-                                            knowComponent(et, 0, s) : //0
-                                            (timed ? know(s, et) :  //DTERNAL and TIMED
-                                                    know(s)) //DTERNAL and TIMELESS
-                            );
+                            Event t = eventDT == 0 ?
+                                    knowComponent(et, 0, s) : //0
+                                    (timed ? know(s, et) :  //DTERNAL and TIMED
+                                            know(s));
+                            if (t!=null) {
+                                link(event, (eventDT == 0 || timed) ? 0 : ETERNAL,
+                                        t //DTERNAL and TIMELESS
+                                );
+                            } else  {
+                                //WHY?
+                            }
                         }
                         break;
                     default:
@@ -657,6 +662,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
      * ex: dithering
      */
     protected Term dt(Term x, int dt) {
+
+        assert(dt!=XTERNAL);
+
         if (dt == DTERNAL) {
             return x.dt(DTERNAL);
         }
@@ -666,9 +674,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         if (xo == IMPL) {
             return x.dt(dt != XTERNAL ? dt - x.sub(0).dtRange() : dt);
         } else if (xo == CONJ) {
-            int early;
-
-            early = Op.conjEarlyLate(x, true);
+            int early = Op.conjEarlyLate(x, true);
             if (early == 1)
                 dt = -dt;
 
@@ -1085,7 +1091,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         public final Term id;
         private final int hash;
 
-        Event(Term id, long start) {
+        Event(@NotNull Term id, long start) {
             this.id = id;
             this.hash = Util.hashCombine(id.hashCode(), Long.hashCode(start));
         }

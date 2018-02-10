@@ -35,7 +35,18 @@ public class ArithmeticTest {
                 $.$("add(1,1)").eval(t.terms).toString());
         assertEquals("1",
                 $.$("add(2,-1)").eval(t.terms).toString());
+        assertEquals("#1",
+                $.$("add(#1,0)").eval(t.terms).toString());
     }
+    @Test
+    public void testMul() throws Narsese.NarseseException {
+        NAR t = NARS.shell();
+        assertEquals("0",
+                $.$("mul(x,0)").eval(t.terms).toString());
+        assertEquals("x",
+                $.$("mul(x,1)").eval(t.terms).toString());
+    }
+
     @Test
     public void testAddCommutive() throws Narsese.NarseseException {
         NAR t = NARS.shell();
@@ -69,6 +80,7 @@ public class ArithmeticTest {
         new ArithmeticIntroduction(16, n);
 
         TestNAR t = new TestNAR(n);
+        t.confTolerance(0.8f);
         t.log();
 //        t.believe("(x:1,x:2)");
 //        t.believe("(x:2,x:3)");
@@ -76,12 +88,13 @@ public class ArithmeticTest {
 //        t.believe("(x:4,x:5)");
 //            t.ask("(x:5,?1)");
 //        t.mustBelieve(1000, "(x:5,x:6)", 1f, 0.81f);
-        t.believe("a:1");
-        t.believe("a:2");
-        t.believe("a:3");
-        t.believe("a:4");
-        t.ask("#x:5");
-        t.mustBelieve(1000, "a:5", 1f, 0.81f);
+        t.believe("(a,1)");
+        t.believe("(a,2)");
+        t.believe("(a,3)");
+        t.believe("(a,4)");
+        t.ask("(a,#x)");
+        t.mustBelieve(1000, "((a,add(#1,1))&&(#1<->4))", 1f, 0.81f);
+        t.mustBelieve(1000, "(a,5)", 1f, 0.81f);
         t.test(true);
     }
 

@@ -13,7 +13,7 @@ public interface Priority extends Prioritized {
         float priSum = Math.min(maxPri, Prioritized.sum(src));
         float perSrc = priSum / src.length;
 
-        Priority u = new Pri(0f);
+        Priority u = new Pri();
         for (Priority t : src) {
             u.take(t, perSrc, true, copyOrTransfer);
         }

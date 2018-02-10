@@ -16,6 +16,7 @@ import nars.term.var.Variable;
 import java.util.HashMap;
 
 import static nars.Op.concurrent;
+import static nars.time.Tense.XTERNAL;
 
 /**
  * Index which specifically holds the term components of a deriver ruleset.
@@ -74,7 +75,7 @@ public class PatternIndex extends MapTermIndex {
         if (!changed && Ellipsis.firstEllipsis(s) == null)
             return x;
 
-        Subterms v = changed ? The.subterms(bb.length > 1 && x.op().commutative && (concurrent(x.dt())) ?
+        Subterms v = changed ? The.subtermsInterned(bb.length > 1 && x.op().commutative && (concurrent(x.dt())) ?
                 Terms.sorted(bb) :
                 bb) : s;
 
@@ -118,7 +119,10 @@ public class PatternIndex extends MapTermIndex {
 //            if (ellipsisTransform)
 //                throw new RuntimeException("commutative is mutually exclusive with ellipsisTransform");
 
-            return new PatternCompound.PatternCompoundWithEllipsisCommutive(seed.op(), seed.dt(), e, v);
+            return new PatternCompound.PatternCompoundWithEllipsisCommutive(seed.op(),
+                    //seed.dt(),
+                    XTERNAL,
+                    e, v);
         } else {
 //            if (ellipsisTransform) {
 //                if (op != Op.PROD)

@@ -91,22 +91,22 @@ public class ThermostatTest {
         final int DUR = 2;
 
         final int subTrainings = 1;
-        final int thinkDurs = 4;
+        final int thinkDurs = 2;
 
         NAR n = NARS.tmp();
 
         n.time.dur(DUR);
-        n.termVolumeMax.set(20);
-        n.freqResolution.set(0.05f);
+        n.termVolumeMax.set(32);
+        n.freqResolution.set(0.02f);
         n.confResolution.set(0.02f);
 
-        n.want(MetaGoal.Desire, 0.5f);
+        n.want(MetaGoal.Desire, 0.2f);
         n.want(MetaGoal.Believe, 0.1f);
         n.want(MetaGoal.Perceive, -0.01f);
 
         float exeThresh = 0.51f;
 
-        new ConjClustering(n, BELIEF, (t) -> true, 3, 8);
+        new ConjClustering(n, BELIEF, (t) -> true, 4, 16);
 
         //n.priDefault(BELIEF, 0.3f);
 

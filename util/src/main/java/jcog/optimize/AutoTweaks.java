@@ -252,7 +252,7 @@ public class AutoTweaks<X> extends Tweaks<X> {
         X sample = this.subjects.get();
         discover(sample);
         float sampleScore = eval.floatValueOf(subjects);
-        System.err.println("control score=" + sampleScore);
+        System.out.println("control score=" + sampleScore);
         return optimize(subjects).run(maxIterations, repeats, eval);
     }
 

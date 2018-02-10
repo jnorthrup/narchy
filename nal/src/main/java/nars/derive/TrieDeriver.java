@@ -408,7 +408,8 @@ public final class TrieDeriver {
         }
 
         static void bumpCond(Map<PrediTerm, SubCond> conds, PrediTerm p, int branch) {
-            if (p.cost() == Integer.MAX_VALUE)
+            float pc = p.cost();
+            if (pc == Float.POSITIVE_INFINITY)
                 return; //postcondition
 
             conds.compute(p, (xx, e) -> {

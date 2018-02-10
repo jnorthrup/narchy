@@ -261,7 +261,7 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
         if (!(b instanceof Compound))
             throw new Narsese.NarseseException("Right rule component must be compound: " + src);
 
-        return The.subterms(a, b);
+        return The.subtermsInterned(a, b);
     }
 
 //    public void permute(@NotNull PremiseRule preNormRule, String src, @NotNull PatternIndex index, @NotNull Collection<PremiseRule> ur) {

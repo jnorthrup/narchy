@@ -13,6 +13,7 @@ import java.util.function.Function;
 
 import static nars.Op.NEG;
 import static nars.Op.PROD;
+import static nars.Op.internable;
 
 /**
  * The the
@@ -24,20 +25,23 @@ public interface The {
 
     /* @NotNull */
     public static Subterms subterms(Collection<? extends Term> s) {
-        return The.subterms(s.toArray(new Term[s.size()]));
+        return The.subtermsInterned(s.toArray(new Term[s.size()]));
     }
 
 //    static nars.term.sub.Subterms _subterms(Collection<? extends Term> s) {
 //        return _subterms(s.toArray(new Term[s.size()]));
 //    }
 
-    public static Subterms subterms(Term... s) {
+    public static Subterms subtermsInterned(Term... s) {
         //return The.Subterms.the.apply(s);
         //return compound(PROD, s).subterms();
-        return PROD.the(s).subterms();
+        if (internable(s))
+            return PROD.the(s).subterms();
+        else
+            return subtermsInstance(s);
     }
 
-    static Subterms _subterms(Term... s) {
+    static Subterms subtermsInstance(Term... s) {
         return RawSubtermBuilder.apply(s);
     }
 

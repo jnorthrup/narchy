@@ -196,8 +196,8 @@ public class Builtin {
             }),
 
             //TODO add exceptions for identities: ex: add(#x,0) --> #x  etc
-            Functor.f2Int("add", true, (i)->i==0, (x, y) -> x + y),
-            Functor.f2Int("mul", true, (i)->i==1, (x, y) -> x * y),
+            Functor.f2Int("add", true, (i)->i==0, (n)->false, (x, y) -> x + y),
+            Functor.f2Int("mul", true, (i)->i==1, (n)->n==0, (x, y) -> x * y),
 
             //Functor.f2Int("sub", (x, y) -> x - y),
 

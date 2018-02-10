@@ -17,19 +17,9 @@ public class Fork<X> extends AbstractPred<X> {
     public final PrediTerm<X>[] branches;
 
     public Fork(PrediTerm<X>[] actions) {
-        super($.s((Term[]) actions));
+        super($.sFast((Term[]) actions));
         assert (actions.length > 0);
         this.branches = actions;
-    }
-
-    @Override
-    public float cost() {
-        return Integer.MAX_VALUE; //post-condition: must be the last element in any sequence
-    }
-
-    @Override
-    public PrediTerm<X> transform(Function<PrediTerm<X>, PrediTerm<X>> f) {
-        return fork(PrediTerm.transform(f, branches), x -> new Fork(x));
     }
 
     /**
@@ -38,14 +28,23 @@ public class Fork<X> extends AbstractPred<X> {
     @Override
     public boolean test(X x) {
 
-        for (PrediTerm c : branches) {
-
+        for (PrediTerm c : branches)
             c.test(x);
-
-        }
 
         return true;
     }
+
+
+    @Override
+    public float cost() {
+        return Integer.MAX_VALUE; //post-condition: must be the last element in any sequence
+    }
+
+    @Override
+    public PrediTerm<X> transform(Function<PrediTerm<X>, PrediTerm<X>> f) {
+        return fork(PrediTerm.transform(f, branches), Fork::new);
+    }
+
 
 
 //    public static class ShuffledFork extends Fork {

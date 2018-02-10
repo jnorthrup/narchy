@@ -38,9 +38,13 @@ public class Int implements Intlike, The {
 
     public static Int the(int i) {
         if (i >= 0 && i < Param.MAX_INTERNED_INTS) {
-            return digits[i];
+            return pos[i];
         } else {
-            return new Int(i);
+            if (i < 0 && i > -Param.MAX_INTERNED_INTS) {
+                return neg[-i];
+            } else {
+                return new Int(i);
+            }
         }
     }
 
@@ -54,11 +58,13 @@ public class Int implements Intlike, The {
 
     public final int id;
 
-    protected static final Int[] digits = new Int[Param.MAX_INTERNED_INTS];
+    protected static final Int[] pos = new Int[Param.MAX_INTERNED_INTS];
+    protected static final Int[] neg = new Int[Param.MAX_INTERNED_INTS];
 
     static {
         for (int i = 0; i < Param.MAX_INTERNED_INTS; i++) {
-            digits[i] = new Int(i);
+            pos[i] = new Int(i);
+            neg[i] = new Int(-i);
         }
     }
 
@@ -118,6 +124,7 @@ public class Int implements Intlike, The {
     @Override
     public int hashCode() {
         return (id + 1) * 31;
+        //return id ^ 89478485; //010101010...
     }
 
     @Override

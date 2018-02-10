@@ -69,7 +69,7 @@ public final class Anom extends Int implements AnonID {
         //return super.compareTo(yy);
     }
 
-    static Anom[] the = Util.map(0, MAX_ANOM, (i) -> new Anom((byte) i), Anom[]::new);
+    static final Anom[] the = Util.map(0, MAX_ANOM, (i) -> new Anom((byte) i), Anom[]::new);
     static {
         the[0] = null; //start at one and dont use 0th Anom, for negation symmetry
     }

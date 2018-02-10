@@ -405,8 +405,8 @@ public class TemporalTermTest {
         Term[] a = Terms.sorted(t0, t1);
         Term[] b = Terms.sorted(t1, t0);
         assertEquals(
-                The.subterms(a),
-                The.subterms(b)
+                The.subtermsInterned(a),
+                The.subtermsInterned(b)
         );
     }
 

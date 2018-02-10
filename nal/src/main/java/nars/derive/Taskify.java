@@ -29,7 +29,10 @@ public class Taskify extends AbstractPred<Derivation> {
     public final Conclude.RuleCause channel;
 
     protected Taskify(Conclude.RuleCause channel) {
-        super($.func("taskify", $.the(channel.id)));
+        super(
+                //$.func("taskify", $.the(channel.id))
+                $.the("taskify" + channel.id)
+        );
         this.channel = channel;
     }
 

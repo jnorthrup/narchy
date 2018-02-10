@@ -1066,6 +1066,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                            depending on whether the functor is purely static in which case
                            it would be the only one.
                          */
+                        //TODO see if a TaskProxy would work here
                     result = yy != null ? clone(this, yy.getOne().negIf(yy.getTwo())) : null;
                 }
 
@@ -1141,7 +1142,9 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
         int dur = n.dur();
 
-        Truth pt = t.truth(subStart, subEnd, dur, Float.MIN_NORMAL);
-        return pt != null ? new TaskProxy.WithTruthAndTime(t, subStart, subEnd, negated, () -> pt) : null;
+
+        return new TaskProxy.WithTruthAndTime(t, subStart, subEnd, negated, () ->
+            t.truth(subStart, subEnd, dur, Float.MIN_NORMAL)
+        );
     }
 }

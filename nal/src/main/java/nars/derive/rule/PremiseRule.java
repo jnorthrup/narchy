@@ -843,7 +843,7 @@ public class PremiseRule {
         }
 
         return PremiseRuleSet.normalize(
-                new PremiseRule(The.subterms(newPremise, newConclusion)), index, nar);
+                new PremiseRule(The.subtermsInterned(newPremise, newConclusion)), index, nar);
 
     }
 

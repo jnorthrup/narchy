@@ -22,6 +22,7 @@ package nars.term;
 
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
+import nars.$;
 import nars.IO;
 import nars.Op;
 import nars.derive.match.EllipsisMatch;
@@ -29,6 +30,7 @@ import nars.index.term.TermContext;
 import nars.subterm.Subterms;
 import nars.subterm.TermVector;
 import nars.term.anon.Anon;
+import nars.term.pred.AbstractPred;
 import nars.term.subst.Unify;
 import nars.term.transform.Retemporalize;
 import nars.term.transform.TermTransform;
@@ -642,13 +644,19 @@ public interface Compound extends Term, IPair, Subterms {
                 }
 
                 if (xi != yi) {
-                    if (!changed) {
-                        xy = arrayClone(); //begin clone copy
-                        changed = true;
-                    }
-                    xy[i] = yi;
+                    if ((!xi.equals(yi) || xi.getClass() != yi.getClass())) {
+                        if (!changed) {
+                            xy = arrayClone(); //begin clone copy
+                            changed = true;
+                        }
+                        xy[i] = yi;
 //                    if (!recurseIfChanged)
 //                        recurseIfChanged |= yi.hasAll(possiblyFunctional);
+                    } else {
+                        //why TEMPORARY FOR DEBUGGING
+                        //System.out.println(xi + " " + yi);
+                        //xi.evalSafe(context, remain - 1);
+                    }
                 }
             }
         }
@@ -662,7 +670,13 @@ public interface Compound extends Term, IPair, Subterms {
         Term u;
         if (changed) {
 
-            u = o.the(dt(), xy);
+            int dt = dt();
+            if (o == CONJ && xy.length ==2 && dt!=0 && dt!=DTERNAL && dt!=XTERNAL) {
+                //HACK this shouldnt be necessary
+                u = Op.conjMerge(xy[0],xy[1], dt);
+            } else {
+                u = o.the(dt, xy);
+            }
 
 //            if (recurseIfChanged)
 //                return u.evalSafe(context, remain);
@@ -671,7 +685,29 @@ public interface Compound extends Term, IPair, Subterms {
         }
 
 
-        return Functor.eval(u);
+        //recursively compute contained subterm functors
+        //compute this without necessarily constructing the superterm, which happens after this if it doesnt recurse
+        if (u.op() == INH && u.hasAll(Op.funcBits)) {
+            Term pred, subj;
+            Subterms uu = u.subterms();
+            if ((pred=uu.sub(1)) instanceof Functor && (subj=uu.sub(0)).op() == PROD) {
+
+                Term v = ((Functor)pred).apply(subj.subterms());
+                if (v instanceof AbstractPred) {
+                    u = $.the(((AbstractPred) v).test(null));
+                } else if (v == null) {
+                    //return u; //null means to keep the same
+                } else  {
+                    u = v;
+                }
+            }
+        }
+
+        if (u!=this && (u.equals(this) && u.getClass()==getClass()))
+            u = this; //return to this, undoing any substitutions necessary to reach this eval
+
+        return u;
+
 
         //it has been changed, so eval recursively until stable
         //return context.intern(subsModified ? op.the(dt(), xy).evalSafe(context, remain) : this);

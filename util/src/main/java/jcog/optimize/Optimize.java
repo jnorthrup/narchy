@@ -41,7 +41,7 @@ public class Optimize<X> {
      */
     static final float autoInc_default = 2f;
 
-    public final List<Tweak<X>> tweaks;
+    final List<Tweak<X>> tweaks;
     final Supplier<X> subject;
 
     private final boolean trace = false;
@@ -174,19 +174,19 @@ public class Optimize<X> {
             );
         } else {
 
-            int popSize = 8 * Math.round(Util.sqr(tweaks.size())); /* estimate */
+            int popSize = 4 * Math.round(Util.sqr(tweaks.size())); /* estimate */
+
+            double[] sigma = MathArrays.scale(1f, inc);
 
             new MyCMAESOptimizer(maxIterations, Double.NEGATIVE_INFINITY,
                     true, 0,
                     1, new MersenneTwister(System.nanoTime()),
-                    true, null).optimize(
+                    true, null, popSize, sigma).optimize(
                     new MaxEval(maxIterations), //<- ignored?
                     func,
                     GoalType.MAXIMIZE,
                     new SimpleBounds(min, max),
-                    new InitialGuess(mid),
-                    new MyCMAESOptimizer.Sigma(MathArrays.scale(1f, inc)),
-                    new MyCMAESOptimizer.PopulationSize(popSize)
+                    new InitialGuess(mid)
             );
 
 //            final int numIterpolationPoints = 3 * dim; //2 * dim + 1 + 1;

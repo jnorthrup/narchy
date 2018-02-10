@@ -7,13 +7,14 @@ import jcog.data.ArrayHashSet;
 import jcog.data.bit.MetalBitSet;
 import jcog.list.FasterList;
 import jcog.memoize.HijackMemoize;
-import jcog.memoize.Memoize;
+import jcog.pri.AbstractPLink;
 import nars.derive.match.Ellipsis;
 import nars.derive.match.EllipsisMatch;
 import nars.derive.match.Ellipsislike;
 import nars.op.mental.AliasConcept;
 import nars.subterm.Neg;
 import nars.subterm.Subterms;
+import nars.subterm.TermVector;
 import nars.term.*;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
@@ -369,9 +370,7 @@ public enum Op {
 
                     Term a = u[0];
                     Term b = u[1];
-                    ci = (dt >= 0) ?
-                            conjMerge(a, 0, b, +dt + a.dtRange()) :
-                            conjMerge(b, 0, a, -dt + b.dtRange());
+                    ci = conjMerge(a, b, dt);
                 }
             }
 
@@ -525,6 +524,7 @@ public enum Op {
      */
     //SUBTERMS("...", 1, OpType.Other)
     ;
+
 
 
     public static final String DISJstr = "||";
@@ -972,16 +972,25 @@ public enum Op {
     }
 
 
+    public static Term conjMerge(Term a, Term b, int dt) {
+        return (dt >= 0) ?
+                conjMerge(a, 0, b, +dt + a.dtRange()) :
+                conjMerge(b, 0, a, -dt + b.dtRange());
+    }
+
+
     /*@NotNull*/
     static public Term conjMerge(Term a, long aStart, Term b, long bStart) {
 
-        if (a.eventCount() == 1 && b.eventCount() == 1) {
+        int ae = a.eventCount();
+        int be = b.eventCount();
+        if (ae == 1 && be == 1) {
             long bo = bStart - aStart;
             assert (bo < Integer.MAX_VALUE);
             return conjSeqFinal((int) bo, a, b);
         }
 
-        LongObjectHashMap<Collection<Term>> eventSets = new LongObjectHashMap();
+        LongObjectHashMap<Collection<Term>> eventSets = new LongObjectHashMap(ae+be);
 
         LongObjectPredicate<Term> insert = (long w, Term xb) -> {
             Collection<Term> ab = eventSets.updateValue(w,
@@ -1522,8 +1531,7 @@ public enum Op {
 
         boolean hasEllipsis = false;
 
-        for (int i = 0, subtermsSize = u.length; i < subtermsSize; i++) {
-            Term x = u[i];
+        for (Term x : u) {
             if (!hasEllipsis && x instanceof Ellipsis)
                 hasEllipsis = true;
             if (x == Null)
@@ -1552,7 +1560,15 @@ public enum Op {
 
         }
 
-        return new CompoundCached(o, The._subterms(u));
+        Subterms ss;
+        if (o!=PROD) {
+            //cache.get ?
+            ss = The.subtermsInterned(u);
+        } else {
+            ss = The.subtermsInstance(u);
+        }
+
+        return new CompoundCached(o, ss);
     }
 
 
@@ -1797,7 +1813,7 @@ public enum Op {
                             if (pdt == DTERNAL || pdt == 0) {
                                 long at = pex.getOne();
 
-                                RoaringBitmap pextRemovals = new RoaringBitmap();
+                                RoaringBitmap pextRemovals = null;
                                 Subterms subPexts = pext.subterms();
                                 int subPextsN = subPexts.subs();
 
@@ -1818,6 +1834,8 @@ public enum Op {
                                                 return False;
                                             } else if (merge.equals(sset)) {
                                                 //unchanged, just drop it
+                                                if (pextRemovals==null)
+                                                    pextRemovals = new RoaringBitmap();
                                                 pextRemovals.add(i);
                                             } else {
                                                 //?? leave in predicate
@@ -1825,7 +1843,7 @@ public enum Op {
                                         }
                                     }
                                 }
-                                if (!pextRemovals.isEmpty()) {
+                                if (pextRemovals!=null) {
                                     if (pextRemovals.getCardinality() == subPextsN) {
                                         //completely absorbed
                                         pi.remove();
@@ -2226,6 +2244,13 @@ public enum Op {
         if (dt != DTERNAL)
             return false;
 
+        return internable(u);
+    }
+
+    static boolean internable(Term[] u) {
+        if (u.length == 0)
+            return false;
+
         boolean cache = true;
         for (Term x : u) {
             if (!(x instanceof The)) {
@@ -2237,16 +2262,23 @@ public enum Op {
         return cache;
     }
 
-    final static Memoize<InternedCompound, Term> cache = new HijackMemoize<>(
+    final static HijackMemoize<InternedCompound, Term> cache = new HijackMemoize<>(
             (nc) -> nc.op.compound(DTERNAL, nc.subs), 128 * 1024,
             4, false) {
 
         @Override
         public float value(InternedCompound x) {
-            return x.value(DEFAULT_VALUE);
+            return DEFAULT_VALUE * x.value();
         }
 
-//        @Override
+        @Override
+        public Computation<InternedCompound, Term> computation(InternedCompound xy, Term y) {
+            xy.set(y);
+            xy.priSet(value(xy));
+            return xy;
+        }
+
+        //        @Override
 //        protected void onIntern(InternedCompound x) {
 //            x.compact(this::getIfPresent);
 //        }
@@ -2587,12 +2619,17 @@ public enum Op {
 //        }
 
 
-    final static class InternedCompound {
+    final static class InternedCompound extends AbstractPLink<Term> implements HijackMemoize.Computation<InternedCompound,Term> {
+        //X
         public final Op op;
-        public final Term[] subs;
+        public Term[] subs;
         private final int hash;
 
+        //Y
+        public Term y = null;
+
         InternedCompound(Op o, Term... subs) {
+            super();
             this.op = o;
             this.subs = subs;
 
@@ -2603,7 +2640,12 @@ public enum Op {
             this.hash = h;
         }
 
-//        /**
+        @Override
+        public Term get() {
+            return y;
+        }
+
+        //        /**
 //         * if accepted into the interner, it can call this with a resolver function to fully intern this
 //         * by resolving the subterm values which are now present in the index
 //         */
@@ -2619,9 +2661,9 @@ public enum Op {
 ////            }
 //        }
 
-        private InternedCompound key(Term x) {
-            return new InternedCompound(x.op(), x.subterms().arrayShared());
-        }
+//        private InternedCompound key(Term x) {
+//            return new InternedCompound(x.op(), x.subterms().arrayShared());
+//        }
 
 
         @Override
@@ -2635,10 +2677,37 @@ public enum Op {
             return hash == p.hash && op == p.op && Arrays.equals(subs, p.subs);
         }
 
-        public float value(float base) {
-            return base / (1f + subs.length/3f); //simple policy: prefer shorter
+        public float value() {
+            return 1 / (1 + subs.length/3f); //simple policy: prefer shorter
         }
 
+        @Override
+        public InternedCompound x() {
+            return this;
+        }
+
+        public void set(Term y) {
+            this.y = y;
+
+            //HACK extended interning
+            int n = subs.length;
+            if (y!=null && y.subs()==n) {
+                if (n > 1) {
+                    Subterms ys = y.subterms();
+                    if (ys instanceof TermVector) {
+                        Term[] yy = ys.arrayShared();
+                        if (subs != yy && Arrays.equals(subs, yy)) {
+                            subs = yy;
+                        }
+                    }
+                } else if (n == 1) {
+                    Term y0 = y.sub(0);
+                    Term s0 = subs[0];
+                    if (s0!=y0 && s0.equals(y0))
+                        subs[0] = y0;
+                }
+            }
+        }
     }
 
 

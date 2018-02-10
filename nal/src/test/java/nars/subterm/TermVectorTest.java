@@ -77,11 +77,11 @@ public class TermVectorTest {
     @Test public void testSortedTermContainer() throws Narsese.NarseseException {
         Term aa = $.$("a");
         Term bb = $.$("b");
-        Subterms a = The.subterms(aa, bb);
+        Subterms a = The.subtermsInterned(aa, bb);
         assertTrue(a.isSorted());
-        Subterms b = The.subterms(bb, aa);
+        Subterms b = The.subtermsInterned(bb, aa);
         assertFalse(b.isSorted());
-        Subterms s = The.subterms(Terms.sorted(b.arrayClone()));
+        Subterms s = The.subtermsInterned(Terms.sorted(b.arrayClone()));
         assertTrue(s.isSorted());
         assertEquals(a, s);
         assertNotEquals(b, s);

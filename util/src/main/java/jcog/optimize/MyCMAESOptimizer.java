@@ -21,15 +21,15 @@ import java.util.List;
 public class MyCMAESOptimizer extends MultivariateOptimizer {
 
     //TODO optimize with... MyCMAESOptimizer
-    static final double dimensionDivisorWTF = 10.0;
-    static final double big_magic_number_WTF = 1.0e14;
-    static final double tENmILLION = 1.0e7;
-    static final double hUNDreDtHOUSAND = 1.0E5;
-    static final double oNEtHOUSAND = 1.0e3;
-    static final double epsilonWTF11 = 1.0e-11;
-    static final double EPSILON_WTF12 = 1.0e-12;
-    static final double epsilonwtf13 = 1.0e-13;
-    static final double epsilon6WTF = 1.0e-6;
+    private static final double dimensionDivisorWTF = 10.0;
+    private static final double big_magic_number_WTF = 1.0e14;
+    private static final double tENmILLION = 1.0e7;
+    private static final double hUNDreDtHOUSAND = 1.0E5;
+    private static final double oNEtHOUSAND = 1.0e3;
+    private static final double epsilonWTF11 = 1.0e-11;
+    private static final double EPSILON_WTF12 = 1.0e-12;
+    private static final double epsilonwtf13 = 1.0e-13;
+    private static final double epsilon6WTF = 1.0e-6;
 
 
     // global search parameters
@@ -39,8 +39,17 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
      * population size improves global search properties in exchange to speed.
      * Speed decreases, as a rule, at most linearly with increasing population
      * size. It is advisable to begin with the default small population size.
+     *
+     * Population size.
+     * The number of offspring is the primary strategy parameter.
+     * In the absence of better clues, a good default could be an
+     * integer close to {@code 4 + 3 ln(n)}, where {@code n} is the
+     * number of optimized parameters.
+     * Increasing the population size improves global search properties
+     * at the expense of speed (which in general decreases at most
+     * linearly with increasing population size).
      */
-    private int lambda; // population size
+    private final int lambda; // population size
     /**
      * Covariance update mechanism, default is active CMA. isActiveCMA = true
      * turns on "active CMA" with a negative update of the covariance matrix and
@@ -54,10 +63,20 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
      * not feasible / beyond the defined limits, default is 0.
      */
     private final int checkFeasableCount;
+
     /**
-     * @see MyCMAESOptimizer.Sigma
+     * Input sigma values.
+     * They define the initial coordinate-wise standard deviations for
+     * sampling new search points around the initial guess.
+     * It is suggested to set them to the estimated distance from the
+     * initial to the desired optimum.
+     * Small values induce the search to be more local (and very small
+     * values are more likely to find a local optimum close to the initial
+     * guess).
+     * Too small values might however lead to early termination.
      */
-    private double[] inputSigma;
+    private final double[] inputSigma;
+
     /** Number of objective variables/problem dimension */
     private int dimension;
     /**
@@ -168,16 +187,18 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
      * @param generateStatistics Whether statistic data is collected.
      * @param checker Convergence checker.
      *
+     * @param populationSize
+     * @param sigma
      * @since 3.1
      */
     public MyCMAESOptimizer(int maxIterations,
-                          double stopFitness,
-                          boolean isActiveCMA,
-                          int diagonalOnly,
-                          int checkFeasableCount,
-                          RandomGenerator random,
-                          boolean generateStatistics,
-                          ConvergenceChecker<PointValuePair> checker) {
+                            double stopFitness,
+                            boolean isActiveCMA,
+                            int diagonalOnly,
+                            int checkFeasableCount,
+                            RandomGenerator random,
+                            boolean generateStatistics,
+                            ConvergenceChecker<PointValuePair> checker, int populationSize, double[] sigma) {
         super(checker);
         this.maxIterations = maxIterations;
         this.stopFitness = stopFitness;
@@ -186,6 +207,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
         this.checkFeasableCount = checkFeasableCount;
         this.random = random;
         this.generateStatistics = generateStatistics;
+        lambda = populationSize;
+        inputSigma = sigma;
     }
 
     /**
@@ -216,102 +239,33 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
         return statisticsDHistory;
     }
 
-    /**
-     * Input sigma values.
-     * They define the initial coordinate-wise standard deviations for
-     * sampling new search points around the initial guess.
-     * It is suggested to set them to the estimated distance from the
-     * initial to the desired optimum.
-     * Small values induce the search to be more local (and very small
-     * values are more likely to find a local optimum close to the initial
-     * guess).
-     * Too small values might however lead to early termination.
-     */
-    public static class Sigma implements OptimizationData {
-        /** Sigma values. */
-        private final double[] sigma;
 
-        /**
-         * @param s Sigma values.
-         * @throws NotPositiveException if any of the array entries is smaller
-         * than zero.
-         */
-        public Sigma(double[] s)
-                throws NotPositiveException {
-            for (double value : s) {
-                if (value < 0) {
-                    throw new NotPositiveException(value);
-                }
-            }
 
-            sigma = s.clone();
-        }
 
-        /**
-         * @return the sigma values.
-         */
-        public double[] getSigma() {
-            return sigma.clone();
-        }
-    }
 
-    /**
-     * Population size.
-     * The number of offspring is the primary strategy parameter.
-     * In the absence of better clues, a good default could be an
-     * integer close to {@code 4 + 3 ln(n)}, where {@code n} is the
-     * number of optimized parameters.
-     * Increasing the population size improves global search properties
-     * at the expense of speed (which in general decreases at most
-     * linearly with increasing population size).
-     */
-    public static class PopulationSize implements OptimizationData {
-        /** Population size. */
-        private final int lambda;
-
-        /**
-         * @param size Population size.
-         * @throws NotStrictlyPositiveException if {@code size <= 0}.
-         */
-        public PopulationSize(int size)
-                throws NotStrictlyPositiveException {
-            if (size <= 0) {
-                throw new NotStrictlyPositiveException(size);
-            }
-            lambda = size;
-        }
-
-        /**
-         * @return the population size.
-         */
-        public int getPopulationSize() {
-            return lambda;
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     *
-     * @param optData Optimization data. In addition to those documented in
-     * {@link MultivariateOptimizer#parseOptimizationData(OptimizationData[])
-     * MultivariateOptimizer}, this method will register the following data:
-     * <ul>
-     *  <li>{@link MyCMAESOptimizer.Sigma}</li>
-     *  <li>{@link MyCMAESOptimizer.PopulationSize}</li>
-     * </ul>
-     * @return {@inheritDoc}
-     * @throws TooManyEvaluationsException if the maximal number of
-     * evaluations is exceeded.
-     * @throws DimensionMismatchException if the initial guess, target, and weight
-     * arguments have inconsistent dimensions.
-     */
-    @Override
-    public PointValuePair optimize(OptimizationData... optData)
-            throws TooManyEvaluationsException,
-            DimensionMismatchException {
-        // Set up base class and perform computation.
-        return super.optimize(optData);
-    }
+//    /**
+//     * {@inheritDoc}
+//     *
+//     * @param optData Optimization data. In addition to those documented in
+//     * {@link MultivariateOptimizer#parseOptimizationData(OptimizationData[])
+//     * MultivariateOptimizer}, this method will register the following data:
+//     * <ul>
+//     *  <li>{@link MyCMAESOptimizer.Sigma}</li>
+//     *  <li>{@link MyCMAESOptimizer.PopulationSize}</li>
+//     * </ul>
+//     * @return {@inheritDoc}
+//     * @throws TooManyEvaluationsException if the maximal number of
+//     * evaluations is exceeded.
+//     * @throws DimensionMismatchException if the initial guess, target, and weight
+//     * arguments have inconsistent dimensions.
+//     */
+//    @Override
+//    public PointValuePair optimize(OptimizationData... optData)
+//            throws TooManyEvaluationsException,
+//            DimensionMismatchException {
+//        // Set up base class and perform computation.
+//        return super.optimize(optData);
+//    }
 
     /** {@inheritDoc} */
     @Override
@@ -332,6 +286,9 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
                 isMinimize ? bestValue : -bestValue);
         PointValuePair lastResult = null;
 
+        final double[] lB = MyCMAESOptimizer.this.getLowerBound();
+        final double[] uB = MyCMAESOptimizer.this.getUpperBound();
+
         // -------------------- Generation Loop --------------------------------
 
         generationLoop:
@@ -345,17 +302,20 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
             final MyCMAESOptimizer.ValuePenaltyPair[] valuePenaltyPairs = new MyCMAESOptimizer.ValuePenaltyPair[lambda];
             // generate random offspring
             for (int k = 0; k < lambda; k++) {
+                RealMatrix arzK = arz.getColumnMatrix(k);
+
                 RealMatrix arxk = null;
                 for (int i = 0; i < checkFeasableCount + 1; i++) {
+
                     if (diagonalOnly <= 0) {
-                        arxk = xmean.add(BD.multiply(arz.getColumnMatrix(k))
+                        arxk = xmean.add(BD.multiply(arzK)
                                 .scalarMultiply(sigma)); // m + sig * Normal(0,C)
                     } else {
-                        arxk = xmean.add(times(diagD,arz.getColumnMatrix(k))
+                        arxk = xmean.add(times(diagD, arzK)
                                 .scalarMultiply(sigma));
                     }
                     if (i >= checkFeasableCount ||
-                            fitfun.isFeasible(arxk.getColumn(0))) {
+                            fitfun.isFeasible(arxk.getColumn(0), lB, uB)) {
                         break;
                     }
                     // regenerate random arguments for row
@@ -379,9 +339,11 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
             final int[] arindex = sortedIndices(fitness);
             // Calculate new xmean, this is selection and recombination
             final RealMatrix xold = xmean; // for speed up of Eq. (2) and (3)
-            final RealMatrix bestArx = selectColumns(arx, MathArrays.copyOf(arindex, mu));
+            int[] arMu = MathArrays.copyOf(arindex, mu);
+
+            final RealMatrix bestArx = selectColumns(arx, arMu);
             xmean = bestArx.multiply(weights);
-            final RealMatrix bestArz = selectColumns(arz, MathArrays.copyOf(arindex, mu));
+            final RealMatrix bestArz = selectColumns(arz, arMu);
             final RealMatrix zmean = bestArz.multiply(weights);
             final boolean hsig = updateEvolutionPaths(zmean, xold);
             if (diagonalOnly <= 0) {
@@ -484,18 +446,15 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
         // Allow base class to register its own data.
         super.parseOptimizationData(optData);
 
-        // The existing values (as set by the previous call) are reused if
-        // not provided in the argument list.
-        for (OptimizationData data : optData) {
-            if (data instanceof MyCMAESOptimizer.Sigma) {
-                inputSigma = ((MyCMAESOptimizer.Sigma) data).getSigma();
-                continue;
-            }
-            if (data instanceof MyCMAESOptimizer.PopulationSize) {
-                lambda = ((MyCMAESOptimizer.PopulationSize) data).getPopulationSize();
-                continue;
-            }
-        }
+//        // The existing values (as set by the previous call) are reused if
+//        // not provided in the argument list.
+//        for (OptimizationData data : optData) {
+//            if (data instanceof MyCMAESOptimizer.Sigma) {
+//                inputSigma = ((MyCMAESOptimizer.Sigma) data).getSigma();
+//            } else if (data instanceof MyCMAESOptimizer.PopulationSize) {
+//                lambda = ((PopulationSize) data).lambda;
+//            }
+//        }
 
         checkParameters();
     }
@@ -572,7 +531,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
         ccov1Sep = Math.min(1, ccov1 * (dimension + 1.5) / 3);
         ccovmuSep = Math.min(1 - ccov1, ccovmu * (dimension + 1.5) / 3);
         chiN = Math.sqrt(dimension) *
-                (1 - 1 / ((double) 4 * dimension) + 1 / ((double) 21 * dimension * dimension));
+                (1 - 1 / (4.0 * dimension) + 1 / (21.0 * dimension * dimension));
         // intialize CMA internal values - updated each generation
         xmean = MatrixUtils.createColumnRealMatrix(guess); // objective variables
         diagD = insigma.scalarMultiply(1 / sigma);
@@ -827,7 +786,10 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 
         /** {@inheritDoc} */
         public int compareTo(MyCMAESOptimizer.DoubleIndex o) {
-            return Double.compare(value, o.value);
+            if (this == o)
+                return 0;
+            else
+                return Double.compare(value, o.value);
         }
 
         /** {@inheritDoc} */
@@ -893,7 +855,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
          * @param point Normalized objective variables.
          * @return the objective value + penalty for violated bounds.
          */
-        public MyCMAESOptimizer.ValuePenaltyPair value(final double[] point) {
+        MyCMAESOptimizer.ValuePenaltyPair value(final double[] point) {
             double value;
             double penalty=0.0;
             if (isRepairMode) {
@@ -912,9 +874,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
          * @param x Normalized objective variables.
          * @return {@code true} if in bounds.
          */
-        public boolean isFeasible(final double[] x) {
-            final double[] lB = MyCMAESOptimizer.this.getLowerBound();
-            final double[] uB = MyCMAESOptimizer.this.getUpperBound();
+        boolean isFeasible(final double[] x, double[] lB, double[] uB) {
 
             for (int i = 0; i < x.length; i++) {
                 if (x[i] < lB[i]) {

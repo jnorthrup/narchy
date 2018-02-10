@@ -149,7 +149,7 @@ public class ValueFork extends ForkDerivation<Derivation> {
         private final RoaringBitmap downstream;
 
         protected ValueBranch(int id, RoaringBitmap downstream) {
-            super($.func("can", /*$.the(id),*/ $.sete(downstream)));
+            super($.func("can", /*$.the(id),*/ $.sFast(downstream)));
 
             this.id = id;
             this.downstream = downstream;
@@ -157,7 +157,7 @@ public class ValueFork extends ForkDerivation<Derivation> {
 
         @Override
         public float cost() {
-            return Integer.MAX_VALUE; //post-condition: must be the last element in any sequence
+            return Float.POSITIVE_INFINITY; //post-condition: must be the last element in any sequence
         }
 
         @Override

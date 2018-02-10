@@ -18,15 +18,10 @@ import java.util.stream.Stream;
  */
 public class Try implements Consumer<Derivation> {
 
-//    public final ValueCache cache;
     public final PrediTerm<Derivation>[] branches;
     public final Cause[] causes;
 
     Try(PrediTerm<Derivation>[] branches, Cause[] causes) {
-//        super($.func("try",
-//                branches.length < 127 ? branches :
-//                new Term[] {  $.the(Arrays.toString(branches)) } //HACK
-//        ));
         this.branches = branches;
         this.causes = causes;
     }

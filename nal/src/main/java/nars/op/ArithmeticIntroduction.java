@@ -112,10 +112,11 @@ public class ArithmeticIntroduction extends LeakBack {
 
         int ms = mkv.maxBy(e -> e.getTwo().size()).getTwo().size();
         mkv.reject(e->e.getTwo().size() < ms);
-        MutableList<IntObjectPair<List<Supplier<Term[]>>>> mmm = mkv.toList();
-        int mmms = mmm.size();
 
-        IntObjectPair<List<Supplier<Term[]>>> m = mmm.get(mmms <= 1 ? 0 : rng.nextInt(mmms));
+        //convention: choose lowest base
+        MutableList<IntObjectPair<List<Supplier<Term[]>>>> mmm = mkv.toSortedListBy(IntObjectPair::getOne);
+
+        IntObjectPair<List<Supplier<Term[]>>> m = mmm.get(0);
         int base = m.getOne();
         Term baseTerm = Int.the(base);
         if (anon!=null)

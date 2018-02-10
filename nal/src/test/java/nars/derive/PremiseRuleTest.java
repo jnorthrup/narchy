@@ -193,6 +193,14 @@ TODO - share unification state for different truth/conclusions
 
     }
 
+    @Test public void testConjWithEllipsisIsXternal() {
+
+            DeriverRoot d = TrieDeriver.the(NARS.shell(),
+                "X,Y |- (&&,X,%A..+), (Belief:Analogy)",
+                    "X,Y |- (&&,%A..+), (Belief:Analogy)"
+            );
+            d.printRecursive();
+    }
     @Test
     public void printTermRecursive() throws Narsese.NarseseException {
         //        PremiseRule r = (PremiseRule) p.term(onlyRule);
