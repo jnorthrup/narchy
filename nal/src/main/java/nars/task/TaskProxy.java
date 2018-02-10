@@ -5,6 +5,7 @@ import nars.Task;
 import nars.term.Term;
 import nars.truth.DiscreteTruth;
 import nars.truth.Truth;
+import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
@@ -123,6 +124,7 @@ public class TaskProxy implements Task {
         return task.punc();
     }
 
+
     public static class WithTerm extends TaskProxy {
 
         public final Term term;
@@ -136,6 +138,30 @@ public class TaskProxy implements Task {
         public Term term() {
             return term;
         }
+
+    }
+
+    /** adds a Truth cache */
+    public static class WithTermCachedTruth extends WithTerm {
+
+        private final int dur;
+
+        final LongObjectHashMap<Truth> truthCached = new LongObjectHashMap<>(0);
+
+        public WithTermCachedTruth(Term term, Task task, int dur) {
+            super(term, task);
+            this.dur = dur;
+        }
+
+        @Override
+        public @Nullable Truth truth(long when, long dur) {
+            if (dur == this.dur) {
+                return truthCached.getIfAbsentPutWithKey(when, w->super.truth(w, dur));
+            } else {
+                return super.truth(when, dur);
+            }
+        }
+
 
     }
 

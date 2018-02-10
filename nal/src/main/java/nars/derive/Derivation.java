@@ -46,6 +46,7 @@ import java.util.function.Consumer;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.TIMELESS;
 
 
 /**
@@ -163,6 +164,9 @@ public class Derivation extends ProtoDerivation {
     public Deriver deriver;
 
     public final TopNUniquePremises premises = new TopNUniquePremises();
+
+    /** precise time that the task and belief truth are sampled */
+    public long taskAt, beliefAt;
 
     protected class TopNUniquePremises extends TopNUnique<Premise> {
         private int premisesRemain;
@@ -430,32 +434,38 @@ public class Derivation extends ProtoDerivation {
 
     protected void setTruth() {
 
-        Truth taskTruth;
+        long tAt = _task.myNearestTimeTo(time);
+        this.taskAt = tAt;
         switch (this.taskPunc = _task.punc()) {
             case QUESTION:
             case QUEST:
-                taskTruth = null;
+                this.taskPolarity = 0;
+                assert(this.taskTruth == null);
                 break;
             default:
-                taskTruth = _task.truth(_task.myNearestTimeTo(time), dur);
+                this.taskTruth = _task.truth(tAt, dur);
+                assert(this.taskTruth!=null);
+                this.taskPolarity = polarity(taskTruth);
                 break;
         }
 
-        this.taskPolarity = (this.taskTruth = taskTruth) != null ? polarity(taskTruth) : 0;
-
         if (belief != null) {
-            long ts = _task.start();
-            long te = _task.end();
-
-            if ((this.beliefTruth = belief.truth(belief.theNearestTimeWithin(ts, te), dur))!=null) {
+            long bAt = belief.theNearestTimeWithin(_task.start(), _task.end());
+            if ((this.beliefTruth = belief.truth(bAt, dur))!=null) {
                 this.beliefPolarity = polarity(this.beliefTruth);
+                this.beliefAt =
+                    //bAt;
+                    belief.start();
             } else {
+                this.belief = null;
                 this.beliefPolarity = 0;
+                this.beliefAt = TIMELESS;
             }
 
         } else {
             this.beliefTruth = null;
             this.beliefPolarity = 0;
+            this.beliefAt = TIMELESS;
         }
 
     }
@@ -470,14 +480,14 @@ public class Derivation extends ProtoDerivation {
     public void proto(Task _task, final Task _belief, Term _beliefTerm) {
 
 
-        final Task task = this.task = anon.put(this._task = _task);
+        final Task task = this.task = anon.put(this._task = _task, dur);
         if (task == null)
             throw new NullPointerException(_task + " could not be anonymized: " +
-                    _task.term().anon() + " , " + anon.put(this._task = _task));
+                    _task.term().anon() + " , " + anon.put(this._task = _task, dur));
         final Term taskTerm = this.taskTerm = task.term();
         final Term beliefTerm;
         if (_belief != null) {
-            if ((this.belief = anon.put(this._belief = _belief)) == null)
+            if ((this.belief = anon.put(this._belief = _belief, dur)) == null)
                 throw new NullPointerException(_belief + " could not be anonymized");
             beliefTerm = this.beliefTerm = this.belief.term();
         } else {

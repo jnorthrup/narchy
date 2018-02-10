@@ -100,7 +100,7 @@ public class Anon {
         }
     }
 
-    public Task put(Task t) {
+    public Task put(Task t, int dur) {
         Term x = t.term();
         assert (x.isNormalized()) : t + " has non-normalized Term content";
         Term y = put(x);
@@ -113,7 +113,9 @@ public class Anon {
                 ((TermVector) yy).setNormalized();
         }
 
-        return new TaskProxy.WithTerm(y, t);
+        return (t.isBeliefOrGoal() && !t.isEternal()) ?
+                new TaskProxy.WithTermCachedTruth(y, t, dur) :
+                new TaskProxy.WithTerm(y, t);
     }
 
 

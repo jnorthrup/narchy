@@ -14,8 +14,10 @@ import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.term.var.VarPattern;
 import nars.time.Tense;
+import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.LongLongPair;
+import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.Nullable;
 
@@ -128,7 +130,7 @@ public class DeriveTime extends TimeGraph {
             }
 
             if (taskTime) {
-                know(task);
+                know(task, d.taskTruth, d.taskAt);
             } else {
                 know(tt);
             }
@@ -136,13 +138,13 @@ public class DeriveTime extends TimeGraph {
 
             if (!d.belief.equals(d.task)) {
                 if (beliefTime) {
-                    know(belief);
+                    know(belief, d.beliefTruth, d.beliefAt);
                 } else {
                     know(bb);
                 }
             }
         } else {
-            know(this.task = d.task);
+            know(this.task = d.task, d.taskTruth, d.taskAt);
             this.belief = null;
         }
 
@@ -305,27 +307,65 @@ public class DeriveTime extends TimeGraph {
 //        return null;
 //    }
 
-    public void know(Task t) {
-        Iterable<Event> ee = know(t, t.term());
-        //both positive and negative possibilities
-//        if (autoNegEvents && tt.op() != CONJ) {
-//            for (Event e : ee)
-//                link(know(tt.neg()), 0, e);
-//        }
-    }
+    public void know(Task t, Truth tr, long when) {
+        assert(when!=TIMELESS);
+        Term tt = t.term();
 
-    private Iterable<Event> know(Task task, Term term) {
-        long start = task.start();
-        long end = task.end();
-        if (end != start && (end - start) >= d.dur) {
-            //add each endpoint separately
-            return List.of(
-                    event(term, start, true),
-                    event(term, end, true));
-        } else {
-            return Collections.singleton(event(term, start == ETERNAL ? ETERNAL : (start + end) / 2 /* midpoint */, true));
+
+        int taken = 0;
+        if (when!=ETERNAL && t.range() > 0) {
+            LongHashSet sampled = new LongHashSet(3);
+
+            //HACK all points in time where the task's truth (used in the derivation's truth calculation) is constant are eligible to be sampled
+            //TODO parameter for max subsampling
+            long ts = t.start();
+            taken += knowIfSameTruth(t, tt, tr, ts, sampled);
+
+            long te = t.end();
+            taken += knowIfSameTruth(t, tt, tr, te, sampled);
+
+            long tm = t.mid();
+            taken += knowIfSameTruth(t, tt, tr, tm, sampled);
+        }
+
+        if (taken == 0) {
+            //use the direct point only
+            event(tt, when, true);
         }
     }
+
+    private int knowIfSameTruth(Task t, Term tt, Truth tr, long w, LongHashSet sampled) {
+        if (sampled.add(w)) {
+            if (t.isQuestOrQuestion() || tr.equals(t.truth(w, d.dur), d.nar)) {
+                event(tt, w, true);
+                return 1;
+            }
+        }
+        return 0;
+    }
+
+
+//    public void know(Task t) {
+//        Iterable<Event> ee = know(t, t.term());
+//        //both positive and negative possibilities
+////        if (autoNegEvents && tt.op() != CONJ) {
+////            for (Event e : ee)
+////                link(know(tt.neg()), 0, e);
+////        }
+//    }
+//
+//    private Iterable<Event> know(Task task, Term term) {
+//        long start = task.start();
+//        long end = task.end();
+//        if (end != start && (end - start) >= d.dur) {
+//            //add each endpoint separately
+//            return List.of(
+//                    event(term, start, true),
+//                    event(term, end, true));
+//        } else {
+//            return Collections.singleton(event(term, start == ETERNAL ? ETERNAL : (start + end) / 2 /* midpoint */, true));
+//        }
+//    }
 
     public Term solve(Term pattern) {
         assert (pattern.op().conceptualizable);
@@ -658,6 +698,7 @@ public class DeriveTime extends TimeGraph {
         if (ss == 0) {
             return () -> solveRaw(pattern);
         }
+
 
         int timed = ((FasterList)solutions.list).count(t -> t instanceof Absolute);
         if (timed > 0 && timed < ss) {

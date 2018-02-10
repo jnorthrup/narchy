@@ -303,7 +303,7 @@ public class ConjClustering extends Causable {
                             if (cp != null) {
 
 
-                                NALTask m = new STMClusterTask(cp, t, start, end, evidence.getOne(), punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
+                                NALTask m = new STMClusterTask(cp, t, start, start, evidence.getOne(), punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
                                 if (evidence.getTwo() > 0) m.setCyclic(true);
 
                                 m.cause = Cause.zip(nar.causeCapacity.intValue(), uu);
