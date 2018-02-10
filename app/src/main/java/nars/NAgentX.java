@@ -3,6 +3,7 @@ package nars;
 import jcog.exe.Loop;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatPolarNormalized;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Bitmap2D;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
@@ -130,9 +131,8 @@ abstract public class NAgentX extends NAgent {
 
 
         float durFPS =
-                agentFPS;
-        //agentFPS * 2f; //nyquist
-        //agentFPS * 3f;
+                //agentFPS;
+                narFPS;
 
         RealTime clock =
                 durFPS >= 10 / 2f ? /* nyquist threshold between decisecond (0.1) and centisecond (0.01) clock resolution */
@@ -171,9 +171,9 @@ abstract public class NAgentX extends NAgent {
 //                        //CoolNQuiet
 //                        (512, THREADS, 64, false))
                 .exe(new PoolMultiExec(
-                        new Focus.DefaultRevaluator(),
-                        //new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
-                        512, 128)
+                        //new Focus.DefaultRevaluator(),
+                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
+                        512, 512)
                 )
 
                 .time(clock)
@@ -187,7 +187,7 @@ abstract public class NAgentX extends NAgent {
 
                 .index(
                         new CaffeineIndex(
-                                200 * 1024
+                                300 * 1024
                                 //100 * 1024
                                 //50 * 1024
                                 //20 * 1024

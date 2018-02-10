@@ -177,6 +177,7 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
         return id.toString();
     }
 
+
     public ScalarConcepts(FloatSupplier input, @NotNull NAR nar, ScalarEncoder freqer, @NotNull Term... states) {
         super(null, $.func(ScalarConcepts.class.getSimpleName(),
                 $.sete(states),
@@ -210,6 +211,7 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
         nar.on(this);
 
     }
+
 
     @Override
     public void accept(NAR n) {

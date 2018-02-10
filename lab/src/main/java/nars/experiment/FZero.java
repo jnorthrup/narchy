@@ -1,12 +1,12 @@
 package nars.experiment;
 
+import com.google.common.collect.Iterables;
 import jcog.Util;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.Task;
 import nars.concept.ScalarConcepts;
-import nars.concept.SensorConcept;
 import nars.gui.Vis;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.Scale;
@@ -120,18 +120,19 @@ public class FZero extends NAgentX {
 //        });
 
 //        senseNumberDifference($.inh(the("joy"), id), happy).resolution.setValue(0.02f);
-        SensorConcept dAngVel = senseNumberDifference($.inh(id, $.the("angVel")), () -> (float) fz.playerAngle).resolution(0.02f);
-        SensorConcept dAccel = senseNumberDifference($.inh(id, $.the("accel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.02f);
-        @NotNull ScalarConcepts ang = senseNumber(level->$.inh($.p(id, $.the("ang")), $.the(level)), () ->
+        ScalarConcepts dAngVel = senseNumberDifferenceBi($.p(id, $.the("angVel")), () -> (float) fz.playerAngle).resolution(0.02f);
+        ScalarConcepts dAccel = senseNumberDifferenceBi($.p(id, $.the("accel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.02f);
+        @NotNull ScalarConcepts ang = senseNumber(level->$.inh($.p($.the("ang"), $.the(level)), id), () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
-                4,
-                ScalarConcepts.Needle
+                3,
+                ScalarConcepts.FuzzyNeedle
+                //ScalarConcepts.Needle
                 //ScalarConcepts.Fluid
-        ).resolution(0.2f);
+        ).resolution(0.04f);
         /*window(
                 Vis.conceptBeliefPlots(this, ang , 16), 300, 300);*/
 
-        window(Vis.beliefCharts(64, java.util.List.of(dAngVel, dAccel), nar), 300, 300);
+        window(Vis.beliefCharts(64, Iterables.concat(dAngVel, dAccel, ang), nar), 300, 300);
 
 //        new BeliefPredict(
 //                Iterables.concat(actions.keySet(), java.util.List.of(dAngVel, dAccel)),
@@ -320,7 +321,7 @@ public class FZero extends NAgentX {
 ////            }
 //            return a;
 //        });
-        actionUnipolar($.inh("fwd", id), (a) -> {
+        actionUnipolar($.inh(id,"fwd"), (a) -> {
             if (a > 0.5f)
                 fz.vehicleMetrics[0][6] = /*+=*/ (a - 0.5f) * 2f * (fwdSpeed); //gas
             else

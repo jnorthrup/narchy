@@ -196,6 +196,7 @@ public class TaskProxy implements Task {
 
         private final boolean negated;
 
+        /** either Truth, Supplier<Truth>, or null */
         Object truth;
 
         public WithTruthAndTime(Task task, long start, long end, boolean negated, Supplier<Truth> truth) {
@@ -243,6 +244,9 @@ public class TaskProxy implements Task {
                     }
                     this.truth = computed;
                     return computed;
+                } else {
+                    this.truth = null;
+                    return null;
                 }
             }
             return (Truth) tt;

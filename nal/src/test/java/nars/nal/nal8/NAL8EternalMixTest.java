@@ -19,7 +19,7 @@ import static nars.time.Tense.ETERNAL;
  */
 public class NAL8EternalMixTest extends NALTest {
 
-    final int cycles = 550;
+    final int cycles = 150;
 
     @BeforeEach
     public void setTolerance() {
@@ -165,11 +165,10 @@ public class NAL8EternalMixTest extends NALTest {
     public void goal_deduction_delayed_impl() {
 
         TestNAR tester = test;
-        tester.confTolerance(0.2f);
-
+        tester.log();
         tester.input("x:y!");
-        tester.inputAt(10, "(goto(z) ==>+5 x:y). :|:");
-        tester.mustGoal(cycles, "goto(z)", 1.0f, 0.45f, 10);
+        tester.inputAt(3, "(goto(z) ==>+5 x:y). :|:");
+        tester.mustGoal(cycles, "goto(z)", 1.0f, 0.45f, (t)->t>=3);
     }
 
 

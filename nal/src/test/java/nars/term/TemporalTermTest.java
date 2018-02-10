@@ -151,8 +151,8 @@ public class TemporalTermTest {
 
     @Test
     public void testStableConceptualization3() throws Narsese.NarseseException {
-        Term c1 = ceptualStable("((--,(P==>((--,L)&&(--,Q))))&&L)");
-        assertEquals("((--,(P==>((--,L)&&(--,Q))))&&L)", c1.toString());
+        Term c1 = ceptualStable("((--,(P==>((--,L)&&(--,Q)))) &&+1 L)");
+        assertEquals("((--,(P==>((--,L)&&(--,Q)))) &&+- L)", c1.toString());
     }
 
     @Test

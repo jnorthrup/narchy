@@ -719,8 +719,8 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(0, "(--(out) ==>-3 (happy)). :|:")
                 .inputAt(0, "((happy) ==>+3 --(out)). :|:")
-                .inputAt(13, "(happy)! :|:")
-                .mustGoal(cycles, "(out)", 0f, 0.81f, 16)
+                .inputAt(5, "(happy)! :|:")
+                .mustGoal(cycles, "(out)", 0f, 0.45f, 8)
                 .mustNotOutput(cycles, "(out)", GOAL, 3);
     }
 

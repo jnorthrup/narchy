@@ -1393,12 +1393,12 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testConjImplReductionNegConj() throws Narsese.NarseseException {
+    public void testConjImplNonReductionNegConj() throws Narsese.NarseseException {
         Term a = $("((a,b) ==>+1 (b,c))");
         Term b = $("(c,d)");
         Term x = Op.CONJ.the(-4, a, b);
 
-        assertEquals("(((c,d) &&+4 (a,b)) ==>+1 (b,c))", x.toString());
+        assertEquals("((c,d) &&+4 ((a,b) ==>+1 (b,c)))", x.toString());
     }
 
     @Test

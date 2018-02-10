@@ -90,7 +90,7 @@ public class RLBooster implements Consumer<NAR> {
 
                 /** TODO support other discretizations */
                 float value = actionDiscretization==1 ? 1f /* full */ :
-                        ((float)j) / (actionDiscretization-1);
+                        ((float)(j)) / (actionDiscretization-1);
 
                 output[i++] = () -> {
                     NAR nar = env.nar;

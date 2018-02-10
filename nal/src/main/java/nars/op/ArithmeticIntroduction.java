@@ -27,6 +27,9 @@ import static nars.Op.*;
 
 /**
  * introduces arithmetic relationships between differing numeric subterms
+ * TODO
+ *      greater/less than comparisons
+ *
  */
 public class ArithmeticIntroduction extends LeakBack {
 

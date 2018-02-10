@@ -1275,6 +1275,8 @@ public enum Op {
             return conj; //fall-through
 
         int conjDT = conj.dt();
+        if (conjDT!=0 && conjDT!=DTERNAL)
+            return conj; //dont merge temporal
         assert (conjDT != XTERNAL);
 
         //if there is only one implication subterm (first layer only), then fold into that.
@@ -1335,7 +1337,6 @@ public enum Op {
                 return conj;
             }
         }
-
         if (whichImpl == 0 && conjDT != DTERNAL) {
             conjDT = -conjDT; //reverse dt if impl is from the 0th subterm
         }

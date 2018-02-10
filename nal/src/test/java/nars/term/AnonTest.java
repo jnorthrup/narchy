@@ -69,15 +69,6 @@ public class AnonTest {
         assertAnon("(_0-->_1)", "((|,4,5,6)-->x)");
     }
 
-    @Test
-    public void testCompounds2() throws Narsese.NarseseException {
-        //TODO check that this is correct (includes a impl in conj reduction):
-        String xs = "(((($1-->tetris) ==>-1422 (happy-->$1)) &&+105 (--,(((isRow,(8,true),true)~(checkScore,()))-->tetris))) &&+7 ((--,(((isRow,(8,true),true)~(checkScore,()))-->tetris)) &&+74 ((act,0,true)-->#2)))";
-        String ys = "(((($2-->_5) &&+105 (--,(((_1,(_2,_3),_3)~(_4,()))-->_5))) &&+7 ((--,(((_1,(_2,_3),_3)~(_4,()))-->_5)) &&+81 ((_6,_7,_3)-->#1))) ==>-1832 (_8-->$2))";
-        Term x = $(xs);
-        Term y = x.anon();
-        assertEquals(ys, y.toString());
-    }
 
 
     @Test

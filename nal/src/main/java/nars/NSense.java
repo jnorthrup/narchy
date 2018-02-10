@@ -2,6 +2,7 @@ package nars;
 
 import jcog.Util;
 import jcog.math.FloatFirstOrderDifference;
+import jcog.math.FloatNormalized;
 import jcog.math.FloatPolarNormalized;
 import jcog.math.FloatSupplier;
 import nars.concept.ScalarConcepts;
@@ -187,6 +188,12 @@ public interface NSense {
         return senseNumber(id, new FloatPolarNormalized(
                 new FloatFirstOrderDifference(nar()::time, v)) );
     }
+    default ScalarConcepts senseNumberDifferenceBi(Term id, FloatSupplier v) {
+        FloatNormalized x = new FloatNormalized(
+                new FloatFirstOrderDifference(nar()::time, v));
+        //return senseNumberBi(id, x);
+        return senseNumber(x, ScalarConcepts.FuzzyNeedle, inh(id,LOW), inh(id,HIH));
+    }
 
     default SensorConcept senseNumber(Term id, FloatSupplier v) {
         SensorConcept c = new SensorConcept(id, nar(), v,
@@ -227,7 +234,7 @@ public interface NSense {
 
     @NotNull
     default ScalarConcepts senseNumberBi(Term id, FloatSupplier v)  {
-        return senseNumber(v, ScalarConcepts.Needle, inh(LOW, id), inh(HIH, id));
+        return senseNumber(v, ScalarConcepts.FuzzyNeedle, inh(LOW, id), inh(HIH, id));
     }
     @NotNull
     default ScalarConcepts senseNumberTri(Term id, FloatSupplier v)  {

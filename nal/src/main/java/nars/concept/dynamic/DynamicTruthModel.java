@@ -220,11 +220,25 @@ abstract public class DynamicTruthModel {
         @Override
         public Truth truth(DynTruth l, NAR nar) {
 
-
+            //compute the lazy computed truth, if possible
             int n = l.size();
+            int avail = 0;
+            for (int i = 0; i < n; i++) {
+                TaskRegion li = l.get(i);
+                if (li!=null) {
+                    if ((((Task) li)).truth() == null)
+                        l.set(i, null);
+                    else
+                        avail++;
+                }
+            }
+            if (avail == 0)
+                return null;
+
             int[] order = new int[n];
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < n; i++) {
                 order[i] = i;
+            }
 
             //sort by lowest expectation
             jcog.data.array.Arrays.sort(order, (i) -> l.get(i) != null ? (1f - f(l.get(i).expectation())) : Float.NEGATIVE_INFINITY);
@@ -333,7 +347,11 @@ abstract public class DynamicTruthModel {
         public Truth truth(DynTruth d, NAR n) {
             assert (d.size() == 2);
             TaskRegion a = d.get(0);
+            if (((Task)a).truth()==null)
+                return null;
             TaskRegion b = d.get(1);
+            if (((Task)b).truth()==null)
+                return null;
             float conf = a.confMin() * b.confMin();
             float evi = c2wSafe(conf);
             float freq = a.freqMean() * (1f - b.freqMean());

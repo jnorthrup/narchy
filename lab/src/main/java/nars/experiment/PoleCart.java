@@ -1,8 +1,13 @@
 package nars.experiment;
 
+import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.math.FloatPolarNormalized;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.NAgent;
+import nars.NAgentX;
+import nars.concept.ScalarConcepts;
 import nars.concept.SensorConcept;
 import nars.gui.ConceptSurface;
 import nars.gui.Vis;
@@ -11,22 +16,25 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static jcog.Texts.n2;
 import static spacegraph.SpaceGraph.window;
 
 /**
- * adapted from: https://github.com/B00075594/CI_Lab2_CartAndPole/blob/master/src/pole.java
+ * adapted from:
+ *  http://www.cs.colostate.edu/~anderson/code/
+ *  https://github.com/B00075594/CI_Lab2_CartAndPole/blob/master/src/pole.java
+ *
  * see also: https://github.com/rihasrdsk/continuous-action-cartpole-java/blob/master/src/org/rlcommunity/environments/cartpole/CartPole.java
  */
 public class PoleCart extends NAgentX {
 
 
-    private final SensorConcept xVel, x;
+    private final ScalarConcepts xVel;
+    private final ScalarConcepts x;
     private final AtomicBoolean drawFinished = new AtomicBoolean(true);
-    private final SensorConcept dAngVel;
+    private final ScalarConcepts dAngVel;
 
     public static void main(String[] arg) {
 
@@ -49,7 +57,7 @@ public class PoleCart extends NAgentX {
                 e.printStackTrace();
                 return null;
             }
-        }, 30);
+        }, 25);
     }
 
     private final JPanel panel;
@@ -67,13 +75,14 @@ public class PoleCart extends NAgentX {
     boolean manualOverride;
 
     // Constants used for physics
-    static final double cartMass = 1.;
-    static final double poleMass = 0.1;
-    static final double poleLength = 0.9f;
-    static final double forceMag = 30.;
+    static final double cartMass = 1.; //kg
+    static final double poleMass = 0.1; //kg
+    static final double poleLength = 1f; //m
+    static final double gravity = 9.8; //meters/(sec*sec)
+    static final double forceMag = 10.;
     static final double tau = 0.01;
-    static final double fricCart = 0.008;
-    static final double fricPole = 0.004;
+    static final double fricCart = 0.00005;
+    static final double fricPole = 0.005;
     static final double totalMass = cartMass + poleMass;
     static final double halfPole = 0.5 * poleLength;
     static final double poleMassLength = halfPole * poleMass;
@@ -82,16 +91,16 @@ public class PoleCart extends NAgentX {
 
     // Define the Engine
     // Define InputVariable1 Theta(t) {angle with perpendicular}
-    SensorConcept angX;
-    SensorConcept angY;
+    ScalarConcepts angX;
+    ScalarConcepts angY;
     // Define InputVariable1 x(t) {angular velocity}
-    SensorConcept angVel;
+    ScalarConcepts angVel;
     // OutputVariable {force to be applied}
 
     // Define the RuleBlock
     double action;
 
-    public PoleCart(NAR nar) throws Narsese.NarseseException {
+    public PoleCart(NAR nar) {
         //super(nar, HaiQAgent::new);
         super("cart", nar);
 
@@ -115,37 +124,37 @@ public class PoleCart extends NAgentX {
          */
         //TODO extract 'senseAngle()' for NSense interface
 
-        this.x = senseNumber($.inh("x", id),
+        this.x = senseNumberBi($.inh("x", id),
                 new FloatPolarNormalized(() -> (float) pos)).resolution(0.04f);
-        this.xVel = senseNumber($.inh("dx", id),
+        this.xVel = senseNumberBi($.inh("dx", id),
                 //() -> Util.sigmoid((float) posDot)
                 new FloatPolarNormalized(() -> (float) posDot)
         ).resolution(0.04f);
 
         //angle
 
-        this.angX = senseNumber($.inh("angX", id),
+        this.angX = senseNumberBi($.inh("angX", id),
                 () -> (float) (0.5f + 0.5f * (Math.sin(angle))))
                 .resolution(0.04f);
-        this.angY = senseNumber($.inh("angY", id),
+        this.angY = senseNumberBi($.inh("angY", id),
                 () -> (float) (0.5f + 0.5f * (Math.cos(angle))))
                 .resolution(0.04f);
 
         //angular velocity
-        this.angVel = senseNumber($.inh("angVel", id),
+        this.angVel = senseNumberBi($.inh("angVel", id),
                 //() -> Util.sigmoid(angleDot / 4f)
                 new FloatPolarNormalized(() -> (float) angleDot)
         ).resolution(0.04f);
 
-        this.dAngVel = senseNumberDifference($.inh("dAngVel", id),
+        this.dAngVel = senseNumberDifferenceBi($.inh("dAngVel", id),
                 ()->(float) angleDot
         ).resolution(0.04f);
 
         {
-            actionBipolar($.inh("move", id), (a) -> {
+            actionBipolar(id, (a) -> {
                 if (!manualOverride)
                     action = a;
-                return a;
+                return a*2;
             });
 //            //eternal bias to stop
 //            nar.goal(f[0].term, Tense.Eternal, 0f, 0.01f);
@@ -177,7 +186,7 @@ public class PoleCart extends NAgentX {
 //        );
 
 
-        List<SensorConcept> sensors = List.of(this.x, xVel,
+        Iterable<SensorConcept> sensors = Iterables.concat(this.x, xVel,
                 angX,
                 angY,
                 angVel, dAngVel);
@@ -196,11 +205,11 @@ public class PoleCart extends NAgentX {
 //        SpaceGraph.window(bmp,400,400);
 
 
-        window(Vis.beliefCharts(100,
+        window(Vis.beliefCharts(60,
                 sensors,
-                nar), 600, 600);
+                nar), 900, 900);
 
-        //new RLBooster(this, HaiQAgent::new, 3);
+        //new RLBooster(this, HaiQAgent::new, 2);
 
         this.panel = new JPanel(new BorderLayout()) {
             public Stroke stroke = new BasicStroke(4);
@@ -321,7 +330,8 @@ public class PoleCart extends NAgentX {
         double angleDotSq = angleDot * angleDot;
         double common = (force + poleMassLength * angleDotSq * sinangle
                 - fricCart * (posDot < 0 ? -1 : 0)) / totalMass;
-        double angleDDot = (9.8 * sinangle - cosangle * common
+
+        double angleDDot = (gravity * sinangle - cosangle * common
                 - fricPole * angleDot / poleMassLength) /
                 (halfPole * (fourthirds - poleMass * cosangle * cosangle /
                         totalMass));
@@ -377,11 +387,10 @@ public class PoleCart extends NAgentX {
         //float rewardLinear = (float) (2f - Math.abs(MathUtils.normalizeAngle(angle, 0))) / 2f;
 
         float rewardLinear = (float) (Math.cos(angle));
-        //return rewardLinear;
+        return rewardLinear;
 
-        float rewardCubed = (float) Math.pow(rewardLinear, 3);
-        float bias = 0; //-0.1f;
-        return rewardCubed + bias;
+        //float rewardCubed = (float) Math.pow(rewardLinear, 3);
+        //return rewardCubed;
 
 
 //        System.out.println(angle);

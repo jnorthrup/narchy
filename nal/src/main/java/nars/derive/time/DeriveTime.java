@@ -739,7 +739,7 @@ public class DeriveTime extends TimeGraph {
     private boolean eternalCheck(long l) {
         if (l == ETERNAL) {
             //if ((!d.task.isEternal()) && !(d.belief != null && !d.belief.isEternal()))
-            if (!d.task.isEternal() || (d.belief != null && !d.belief.isEternal())) {
+            if (!d.task.isEternal() && (d.belief == null || !d.belief.isEternal())) {
 
                 //throw new RuntimeException("ETERNAL leak");
                 return false;
