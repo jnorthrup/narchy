@@ -41,7 +41,6 @@ import java.util.function.BiFunction;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.TruthFunctions.w2c;
 import static nars.truth.TruthFunctions.w2cSafe;
 import static org.eclipse.collections.impl.tuple.Tuples.twin;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -895,7 +894,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     @Nullable
     default Truth truth(long when, long dur, float minConf) {
         float eve = evi(when, dur);
-        if (eve == eve && w2c(eve) >= minConf) {
+        if (eve == eve && w2cSafe(eve) >= minConf) {
 
             return new PreciseTruth(freq(), eve, false);
 
@@ -1141,7 +1140,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             return t;
 
         int dur = n.dur();
-        return new TaskProxy.WithTruthAndTime(t, subStart, subEnd, negated,
-                ()-> t.truth(subStart, subEnd, dur, 0f));
+
+        Truth pt = t.truth(subStart, subEnd, dur, Float.MIN_NORMAL);
+        return pt != null ? new TaskProxy.WithTruthAndTime(t, subStart, subEnd, negated, () -> pt) : null;
     }
 }

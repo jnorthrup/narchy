@@ -114,7 +114,7 @@ public class TimeGraphTest {
         cc1.know($.$("(a &&+5 b)"), 1);
         cc1.print();
         assertSolved("(a &&+- b)", cc1,
-                "(a &&+5 b)@1");
+                "(a &&+5 b)", "(a &&+5 b)@1");
     }
 
     @Test public void testLinkedTemporalConj() throws Narsese.NarseseException {

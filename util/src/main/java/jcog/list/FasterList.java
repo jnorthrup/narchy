@@ -108,10 +108,15 @@ public class FasterList<X> extends FastList<X> {
         return items[index];
         //}
     }
+
     public X get(Random random) {
-        //if (index < this.size) {
-        return items[random.nextInt(size)];
-        //}
+        int s = this.size;
+        switch (s) {
+            case 0: throw new UnsupportedOperationException();
+            case 1: return items[0];
+            default:
+                return items[random.nextInt(s)];
+        }
     }
 
     @Nullable

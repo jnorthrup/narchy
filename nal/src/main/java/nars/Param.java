@@ -56,8 +56,8 @@ public abstract class Param {
 
 
 
-    @Range(min=1, max=16)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 8;
+    @Range(min=1, max=32)
+    public static int TEMPORAL_SOLVER_ITERATIONS = 16;
 
 
     public static final boolean DEBUG_FILTER_DUPLICATE_MATCHES = false;

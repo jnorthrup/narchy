@@ -895,8 +895,10 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
                 //Term t = $.the((String) p);
                 tt.add(Atomic.the((String) p));
             } else if (p instanceof Term) {
-                if (p == Null)
-                    return null;
+                if (p == Null) {
+                    stack.clear();
+                    return new FasterList(1).addingAll(Null);
+                }
                 tt.add(p);
             } else if (p instanceof Op) {
 

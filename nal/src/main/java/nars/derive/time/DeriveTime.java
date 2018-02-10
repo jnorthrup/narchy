@@ -1,5 +1,7 @@
 package nars.derive.time;
 
+import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.SortedSetMultimap;
 import jcog.data.ArrayHashSet;
 import jcog.list.FasterList;
 import nars.Param;
@@ -12,14 +14,19 @@ import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.term.var.VarPattern;
 import nars.time.Tense;
+import org.eclipse.collections.api.tuple.Pair;
+import org.eclipse.collections.api.tuple.primitive.LongLongPair;
+import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
+import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 
 /**
@@ -354,13 +361,92 @@ public class DeriveTime extends TimeGraph {
     }
 
 
+
     @Nullable
-    static Term solveMerged(int dur, long[] occ, Event... events) {
-        return solveMerged(ArrayHashSet.of(events), dur, occ);
+    Function<long[],Term> solveMerged(ArrayHashSet<Event> solutions, int dur) {
+        int ss = solutions.size();
+        if (ss <=1) return null; //callee will use the only solution by default
+        SortedSetMultimap<Term, LongLongPair> m = MultimapBuilder.hashKeys(ss).treeSetValues().build();
+        solutions.forEach(x -> {
+            long w = x.when();
+            if (w != TIMELESS)
+                m.put(x.id, PrimitiveTuples.pair(w,w));
+        });
+        int ms = m.size();
+        switch (ms) {
+            case 0: return null;
+            case 1:
+                Map.Entry<Term, LongLongPair> ee = m.entries().iterator().next();
+                LongLongPair ww = ee.getValue();
+                long s = ww.getOne();
+                long e = ww.getTwo();
+                return (w)->{
+                    w[0] = s;
+                    w[1] = e;
+                    return ee.getKey();
+                };
+
+        }
+        FasterList<Pair<Term,long[]>> choices = new FasterList(ms);
+
+        //compact
+        m.asMap().forEach((t, cw)->{
+            int cws = cw.size();
+            if (cws > 1) {
+                long[][] ct = new long[cws][2];
+                int i = 0;
+                for (LongLongPair p : cw) {
+                    long[] cc = ct[i++];
+                    cc[0] = p.getOne();
+                    cc[1] = p.getTwo();
+                }
+                //TODO more complete comparison
+                long[] prev = ct[0];
+                for (int j = 1; j < cws; j++) {
+                    long[] next = ct[j];
+                    if (prev[0]==ETERNAL) {
+                        assert(j==1); assert(ct[0][0]==ETERNAL);
+                        ct[0] = null; //ignore eternal solution amongst other temporal solutions
+                    } else  if (Math.abs(prev[1]- next[0]) < dur) {
+                        prev[1] = next[1]; //stretch
+                        ct[j] = null;
+                        continue;
+                    }
+                    prev = next;
+                }
+                for (int j = 0; j < cws; j++) {
+                    long[] nn = ct[j];
+                    if (nn!=null)
+                        choices.add(pair(t, nn));
+                }
+            } else {
+                LongLongPair f = ((SortedSet<LongLongPair>) cw).first();
+                choices.add(pair(t, new long[] { f.getOne(), f.getTwo() }));
+            }
+        });
+
+        if (choices.size() > 1) {
+            return (w) -> {
+                Pair<Term, long[]> c = choices.get(d.random);
+                long[] cw = c.getTwo();
+                w[0] = cw[0];
+                w[1] = cw[1];
+                return c.getOne();
+            };
+        } else {
+            Pair<Term, long[]> c = choices.get(0);
+            long[] cw = c.getTwo();
+            Term cct = c.getOne();
+            return (w) -> {
+                w[0] = cw[0];
+                w[1] = cw[1];
+                return cct;
+            };
+        }
     }
 
     @Nullable
-    static Term solveMerged(ArrayHashSet<Event> solutions, int dur, long[] occ) {
+    static Term solveMerged0(ArrayHashSet<Event> solutions, int dur, long[] occ) {
 
 
         final TreeSet<Term> eternals = new TreeSet();
@@ -588,19 +674,19 @@ public class DeriveTime extends TimeGraph {
 
                 //return solveRandomOne(solutions);
                 //FasterList<Event> solutionsCopy = new FasterList(solutions.list);
-                long[] when = new long[]{TIMELESS, TIMELESS};
-                Term tt = solveMerged(solutions, d.dur, when);
-                if (tt == null || tt instanceof Bool || tt.volume() > d.termVolMax) {
-                    //HACK use a copy because solveMerged modifies the input
 
+                Function<long[],Term> tt = solveMerged(solutions, d.dur);
+                if (tt == null) {
                     return () -> solveThe(solutions.get(random())); //choose one at random
-                } else if (when[0] == TIMELESS) {
-                    return () -> solveRaw(tt);
                 } else {
+                    long[] when = new long[]{TIMELESS, TIMELESS};
+                    Term ttt = tt.apply(when);
+                    if (ttt==null || when[0]==TIMELESS)
+                        return null;
                     return () -> {
                         d.concOcc[0] = when[0];
                         d.concOcc[1] = when[1];
-                        return tt;
+                        return ttt;
                     };
                 }
         }

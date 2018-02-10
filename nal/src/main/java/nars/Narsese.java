@@ -8,12 +8,14 @@ import com.github.fge.grappa.run.context.MatcherContext;
 import com.github.fge.grappa.stack.ValueStack;
 import com.github.fge.grappa.transform.ParserTransformer;
 import com.github.fge.grappa.transform.base.ParserClassNode;
+import jcog.Util;
 import nars.task.TaskBuilder;
 import nars.task.util.InvalidTaskException;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.time.Tense;
 import nars.truth.Truth;
+import nars.util.SoftException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -402,6 +404,9 @@ public class Narsese {
                     return Atomic.the((String) x);
                 else if (x instanceof Term)
                     return (Term) x;
+            } else {
+                Object[] x = Util.map(0, stack.size(), i->stack.peek(i), Object[]::new);
+                ee = new SoftException("incomplete parse: " +  Arrays.toString(x) );
             }
 
 
@@ -442,7 +447,7 @@ public class Narsese {
         }
 
         public NarseseException(String input, ParsingResult result, Throwable cause) {
-            super(input + '\n' + result, cause);
+            super(input + '\n' + (result!=null ? result : cause), cause);
             this.result = result;
         }
     }
