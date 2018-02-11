@@ -24,9 +24,9 @@ package jcog.math.random;
 import org.apache.commons.math3.random.RandomGenerator;
 
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
+ *
  * A fast, high-quality {@linkplain Random pseudorandom number generator} that
  * returns the sum of consecutive outputs of a handcrafted linear generator with 128 bits of state. It improves
  * upon {@link XorShift128PlusRandom xorshift128+}
@@ -50,11 +50,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 
 @SuppressWarnings("javadoc")
-public class XoRoShiRo128PlusRandom extends Random {
+public class XoRoShiRo128PlusRandom extends AtomicRandom {
+
     /**
      * The internal state of the algorithm.
      */
-    private long s0, s1;
+    private volatile long s0, s1;
 
 //	/** Creates a new generator seeded using {@link Util#randomSeed()}. */
 //	public XoRoShiRo128PlusRandom() {
@@ -70,18 +71,9 @@ public class XoRoShiRo128PlusRandom extends Random {
         setSeed(seed);
     }
 
-    final AtomicBoolean busy = new AtomicBoolean(false);
 
-    @Override
-    public long nextLong() {
-        while (!busy.compareAndSet(false, true)) ;
 
-        long l = _nextLong();
-        busy.set(false);
-        return l;
-    }
-
-    private long _nextLong() {
+    @Override protected long _nextLong() {
         final long s0 = this.s0;
         long s1 = this.s1;
         final long result = s0 + s1;
@@ -91,9 +83,13 @@ public class XoRoShiRo128PlusRandom extends Random {
         return result;
     }
 
+//    @Override
+//    public int nextInt() {
+//        return (int) (nextLong() >>> 32);
+//    }
     @Override
     public int nextInt() {
-        return (int) (nextLong() >>> 32);
+        return (int)nextLong();
     }
 
     @Override
@@ -173,29 +169,29 @@ public class XoRoShiRo128PlusRandom extends Random {
         }
     }
 
-    private static final long JUMP[] = {0xbeac0467eba5facbL, 0xd86b048b86aa9922L};
-
-    /**
-     * The the jump function for this generator. It is equivalent to 2<sup>64</sup>
-     * calls to {@link #nextLong()}; it can be used to generate 2<sup>64</sup>
-     * non-overlapping subsequences for parallel computations.
-     */
-
-    public void jump() {
-        long s0 = 0;
-        long s1 = 0;
-        for (int i = 0; i < JUMP.length; i++)
-            for (int b = 0; b < 64; b++) {
-                if ((JUMP[i] & 1L << b) != 0) {
-                    s0 ^= this.s0;
-                    s1 ^= this.s1;
-                }
-                nextLong();
-            }
-
-        this.s0 = s0;
-        this.s1 = s1;
-    }
+//    private static final long JUMP[] = {0xbeac0467eba5facbL, 0xd86b048b86aa9922L};
+//
+//    /**
+//     * The the jump function for this generator. It is equivalent to 2<sup>64</sup>
+//     * calls to {@link #nextLong()}; it can be used to generate 2<sup>64</sup>
+//     * non-overlapping subsequences for parallel computations.
+//     */
+//
+//    public void jump() {
+//        long s0 = 0;
+//        long s1 = 0;
+//        for (int i = 0; i < JUMP.length; i++)
+//            for (int b = 0; b < 64; b++) {
+//                if ((JUMP[i] & 1L << b) != 0) {
+//                    s0 ^= this.s0;
+//                    s1 ^= this.s1;
+//                }
+//                nextLong();
+//            }
+//
+//        this.s0 = s0;
+//        this.s1 = s1;
+//    }
 
 //	/**
 //     * Returns a new instance that shares no mutable state
@@ -224,26 +220,26 @@ public class XoRoShiRo128PlusRandom extends Random {
      * @param seed a seed for this generator.
      */
     @Override
-    public synchronized void setSeed(final long seed) {
+    public void _setSeed(final long seed) {
         final XorShift1024StarRandom.SplitMix64RandomGenerator r = new XorShift1024StarRandom.SplitMix64RandomGenerator(seed);
         s0 = r.nextLong();
         s1 = r.nextLong();
     }
 
 
-    /**
-     * Sets the state of this generator.
-     * <p>
-     * <p>The internal state of the generator will be reset, and the state array filled with the provided array.
-     *
-     * @param state an array of 2 longs; at least one must be nonzero.
-     */
-    public void setState(final long[] state) {
-        if (state.length != 2)
-            throw new IllegalArgumentException("The argument array contains " + state.length + " longs instead of " + 2);
-        s0 = state[0];
-        s1 = state[1];
-    }
+//    /**
+//     * Sets the state of this generator.
+//     * <p>
+//     * <p>The internal state of the generator will be reset, and the state array filled with the provided array.
+//     *
+//     * @param state an array of 2 longs; at least one must be nonzero.
+//     */
+//    public void setState(final long[] state) {
+//        if (state.length != 2)
+//            throw new IllegalArgumentException("The argument array contains " + state.length + " longs instead of " + 2);
+//        s0 = state[0];
+//        s1 = state[1];
+//    }
 
 //	public static void main(String[] arg) {
 //		long n = Long.parseLong(arg[0]);

@@ -23,9 +23,9 @@ import static spacegraph.SpaceGraph.window;
 
 /**
  * adapted from:
- *  http://www.cs.colostate.edu/~anderson/code/
- *  https://github.com/B00075594/CI_Lab2_CartAndPole/blob/master/src/pole.java
- *
+ * http://www.cs.colostate.edu/~anderson/code/
+ * https://github.com/B00075594/CI_Lab2_CartAndPole/blob/master/src/pole.java
+ * <p>
  * see also: https://github.com/rihasrdsk/continuous-action-cartpole-java/blob/master/src/org/rlcommunity/environments/cartpole/CartPole.java
  */
 public class PoleCart extends NAgentX {
@@ -34,7 +34,7 @@ public class PoleCart extends NAgentX {
     private final ScalarConcepts xVel;
     private final ScalarConcepts x;
     private final AtomicBoolean drawFinished = new AtomicBoolean(true);
-    private final ScalarConcepts dAngVel;
+    //private final ScalarConcepts dAngVel;
 
     public static void main(String[] arg) {
 
@@ -124,43 +124,41 @@ public class PoleCart extends NAgentX {
          */
         //TODO extract 'senseAngle()' for NSense interface
 
-        this.x = senseNumberBi($.inh("x", id),
+        this.x = senseNumberBi($.the("x"),
                 new FloatPolarNormalized(() -> (float) pos)).resolution(0.04f);
-        this.xVel = senseNumberBi($.inh("dx", id),
+        this.xVel = senseNumberBi($.the("dx"),
                 //() -> Util.sigmoid((float) posDot)
                 new FloatPolarNormalized(() -> (float) posDot)
         ).resolution(0.04f);
 
         //angle
 
-        this.angX = senseNumberBi($.inh("angX", id),
+        this.angX = senseNumberBi($.the("angX"),
                 () -> (float) (0.5f + 0.5f * (Math.sin(angle))))
                 .resolution(0.04f);
-        this.angY = senseNumberBi($.inh("angY", id),
+        this.angY = senseNumberBi($.the("angY"),
                 () -> (float) (0.5f + 0.5f * (Math.cos(angle))))
                 .resolution(0.04f);
 
         //angular velocity
-        this.angVel = senseNumberBi($.inh("angVel", id),
+        this.angVel = senseNumberBi($.the("angVel"),
                 //() -> Util.sigmoid(angleDot / 4f)
                 new FloatPolarNormalized(() -> (float) angleDot)
-        ).resolution(0.04f);
+        ).resolution(0.1f);
 
-        this.dAngVel = senseNumberDifferenceBi($.inh("dAngVel", id),
-                ()->(float) angleDot
-        ).resolution(0.04f);
+//        this.dAngVel = senseNumberDifferenceBi($.the("dAngVel"),
+//                ()->(float) angleDot
+//        ).resolution(0.1f);
 
-        {
-            actionBipolar(id, (a) -> {
-                if (!manualOverride)
-                    action = a;
-                return a*2;
-            });
+
+        actionBipolar(id, (a) -> {
+            if (!manualOverride)
+                action = a;
+            return a * 4;
+        });
 //            //eternal bias to stop
 //            nar.goal(f[0].term, Tense.Eternal, 0f, 0.01f);
 //            nar.goal(f[1].term, Tense.Eternal, 0f, 0.01f);
-        }
-
 
 
 //        actionUnipolar($.p("left"), (a) -> {
@@ -186,10 +184,13 @@ public class PoleCart extends NAgentX {
 //        );
 
 
-        Iterable<SensorConcept> sensors = Iterables.concat(this.x, xVel,
+        Iterable<SensorConcept> sensors = Iterables.concat(
+                x, xVel,
                 angX,
                 angY,
-                angVel, dAngVel);
+                angVel
+                //,dAngVel
+        );
 
 
 //        AutoConceptualizer ae = new AutoConceptualizer(sensors, true, 8, nar) {
@@ -205,7 +206,7 @@ public class PoleCart extends NAgentX {
 //        SpaceGraph.window(bmp,400,400);
 
 
-        window(Vis.beliefCharts(60,
+        window(Vis.beliefCharts(512,
                 sensors,
                 nar), 900, 900);
 

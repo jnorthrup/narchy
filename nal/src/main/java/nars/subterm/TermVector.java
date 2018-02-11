@@ -43,7 +43,7 @@ public abstract class TermVector extends TermMetadata implements Subterms, The {
 //            else
 //                this.terms = y;
         boolean an, bn = that.normalized;
-        if (!(an = this.normalized))
+        if (!(an = this.normalized) && bn)
             this.normalized = true;
         else if (an && !bn)
             that.normalized = true;

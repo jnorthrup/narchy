@@ -6,6 +6,7 @@ import jcog.optimize.Result;
 import nars.NAR;
 import nars.NARLoop;
 import nars.NARS;
+import nars.control.MetaGoal;
 import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
@@ -86,20 +87,24 @@ public class NARTestOptimize {
             return n;
         })
             .exclude(NARLoop.class)
-            .optimize(256, 1, (n)->{
-                return tests(n,
+            .tweak("PERCEIVE", -1f, +1f, 0.1f, (NAR n, float p)->
+                MetaGoal.Perceive.set(n.want, p)
+            )
+            .tweak("BELIEVE", -1f, +1f, 0.1f, (NAR n, float p)->
+                MetaGoal.Believe.set(n.want, p)
+            )
+            .optimize(512, 1, (n)->
+                tests(n,
+                    NAL1Test.class,
+                    NAL1MultistepTest.class,
+                    NAL2Test.class,
+                    NAL3Test.class,
+                    NAL5Test.class,
+                    NAL6Test.class
 
-                        NAL1Test.class,
-                        NAL1MultistepTest.class,
-                        NAL2Test.class,
-                        NAL3Test.class,
-                        NAL5Test.class,
-                        NAL6Test.class
-
-                        //NAL7Test.class,
-                        //NAL8Test.class
-                );
-            });
+                    //NAL7Test.class,
+                    //NAL8Test.class
+            ));
 
         r.print();
         r.tree(2, 8).print();

@@ -71,24 +71,28 @@ public enum MetaGoal {
     /**
      * learn that the given effects have a given value
      */
-    public static void learn(MetaGoal p, short[] effects, float strength, FasterList<Cause> causes) {
+    public static void learn(MetaGoal p, short[] cause, float strength, FasterList<Cause> causes) {
+
+        int n = cause.length;
+        if (n == 0)
+            return;
 
         if (Math.abs(strength) < Float.MIN_NORMAL)
             return; //would have no effect
 
-        int n = effects.length;
         float s = strength/n;
 
-        for (int i = 0; i < n; i++) {
-            causes.get(effects[i]).learn(p, s);
+        int ordinal = p.ordinal();
+        for (short c : cause) {
+            MetaGoal.learn(causes.get(c).goal, ordinal, s);
         }
     }
 
     /**
      * contributes the value to a particular goal in a cause's goal vector
      */
-    public void learn(Traffic[] goalValue, float v) {
-        goalValue[ordinal()].addAndGet(v);
+    protected static void learn(Traffic[] goalValue, int ordinal, float v) {
+        goalValue[ordinal].addAndGet(v);
     }
 
     /**

@@ -2,6 +2,7 @@ package jcog.optimize;
 
 import jcog.list.FasterList;
 import jcog.util.ObjectFloatToFloatFunction;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
 import org.eclipse.collections.api.tuple.Pair;
@@ -15,7 +16,7 @@ import java.util.function.Supplier;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /** schema for optimization experimentation */
-public class Tweaks<X>  {
+abstract public class Tweaks<X>  {
 
     /** set of all partially or fully ready Tweaks */
     protected final List<Tweak<X>> all = new FasterList();
@@ -39,7 +40,7 @@ public class Tweaks<X>  {
         });
     }
 
-    public Tweaks tweak(String id, float min, float max, float inc, ObjectFloatProcedure<X> apply) {
+    public Tweaks<X> tweak(String id, float min, float max, float inc, ObjectFloatProcedure<X> apply) {
         all.add(new TweakFloat<>(id, min, max, inc, (X x, float v) -> {
             apply.value(x, v);
             return v;
@@ -47,11 +48,13 @@ public class Tweaks<X>  {
         return this;
     }
 
-    public Tweaks tweak(String id, float min, float max, float inc, ObjectFloatToFloatFunction<X> apply) {
+    public Tweaks<X> tweak(String id, float min, float max, float inc, ObjectFloatToFloatFunction<X> apply) {
         all.add(new TweakFloat<>(id, min, max, inc, apply));
         return this;
     }
 
+
+    abstract public Result<X> optimize(int maxIterations, int repeats, FloatFunction<Supplier<X>> eval);
 
     /** whether all parameters are specified and ready for experimentation
      * @param hints*/
@@ -72,8 +75,16 @@ public class Tweaks<X>  {
         return pair(ready, unknowns);
     }
 
-    Optimize<X> optimize(Supplier<X> subjects) {
-        return new Optimize(subjects, this);
+    public Optimize<X> optimize(Supplier<X> subjects) {
+        return new Optimize<>(subjects, this);
+    }
+
+    public Result<X> optimize(Supplier<X> subjects, int maxIterations, int repeats, FloatFunction<Supplier<X>> eval) {
+
+        float sampleScore = eval.floatValueOf(subjects);
+        System.out.println("control score=" + sampleScore); //TODO move to supereclass
+
+        return optimize(subjects).run(maxIterations, repeats, eval);
     }
 
 //    public int size() {

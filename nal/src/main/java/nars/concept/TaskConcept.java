@@ -3,6 +3,7 @@ package nars.concept;
 import jcog.bag.Bag;
 import jcog.list.FasterList;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.concept.builder.ConceptBuilder;
 import nars.control.MetaGoal;
@@ -136,10 +137,9 @@ public class TaskConcept extends NodeConcept implements Concept {
 
         byte punc = t.punc();
         if (punc == BELIEF || punc == GOAL) {
-            float str = (t.conf()) * activation;
             MetaGoal.learn(
                     punc == BELIEF ? MetaGoal.Believe : MetaGoal.Desire,
-                    t.cause(), str, n);
+                    t.cause(), Param.beliefValue(t) * activation, n);
         }
 
 
@@ -169,7 +169,6 @@ public class TaskConcept extends NodeConcept implements Concept {
 //        return 0;
 //    }
     }
-
 
 
     public void forEachTask(boolean includeConceptBeliefs, boolean includeConceptQuestions, boolean includeConceptGoals, boolean includeConceptQuests, @NotNull Consumer<Task> each) {

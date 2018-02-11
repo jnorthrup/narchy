@@ -251,9 +251,7 @@ public class AutoTweaks<X> extends Tweaks<X> {
     public Result<X> optimize(int maxIterations, int repeats, FloatFunction<Supplier<X>> eval) {
         X sample = this.subjects.get();
         discover(sample);
-        float sampleScore = eval.floatValueOf(subjects);
-        System.out.println("control score=" + sampleScore);
-        return optimize(subjects).run(maxIterations, repeats, eval);
+        return optimize(subjects, maxIterations, repeats, eval);
     }
 
 }

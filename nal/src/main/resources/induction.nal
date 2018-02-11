@@ -61,7 +61,7 @@
 
 
 //NAL3 difference
-    A, B, neq(A,B) |- (A ~ B), (Belief:Difference)
+    A, B, neq(A,B), notImplConj(A), notImplConj(B) |- (A ~ B), (Belief:Difference)
 
 
 

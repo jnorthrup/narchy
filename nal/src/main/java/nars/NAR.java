@@ -796,21 +796,21 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
             return; //already in cycle
 
         try {
+
+            emotion.cycle();
+
             time.cycle(this);
 
             if (exe.concurrent()) {
-                try {
-                    eventCycle.emitAsyncAndWait(this, exe );
-                } catch (InterruptedException e) {
-                    logger.error("eventCycle {}", Param.DEBUG ? e : e.getMessage());
-                }
+                eventCycle.emitAsync(this, exe, ()->busy.set(false) );
             } else {
                 eventCycle.emit(this);
+                busy.set(false);
             }
 
-            emotion.cycle();
-        } finally {
+        } catch (Throwable t) {
             busy.set(false);
+            throw t;
         }
     }
 

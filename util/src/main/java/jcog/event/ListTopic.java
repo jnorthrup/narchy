@@ -1,5 +1,7 @@
 package jcog.event;
 
+import jcog.util.CountDownThenRun;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
@@ -41,11 +43,9 @@ public class ListTopic<V> extends jcog.list.FastCoWList<Consumer<V>> implements 
             switch (n) {
                 case 0:
                     return;
-//                case 1:
-//                    cc[0].accept(x);
-//                    break;
                 default:
                     CountDownLatch l = new CountDownLatch(n);
+
                     for (Consumer c : cc) {
                         executorService.execute(() -> {
                             try {
@@ -62,6 +62,33 @@ public class ListTopic<V> extends jcog.list.FastCoWList<Consumer<V>> implements 
         }
     }
 
+    final CountDownThenRun busy = new CountDownThenRun();
+
+    @Override
+    public void emitAsync(V x, Executor executorService, Runnable onFinish) {
+        final Consumer[] cc = this.copy;
+        if (cc!=null) {
+            int n = cc.length;
+            switch (n) {
+                case 0:
+                    return;
+                default:
+                    busy.set(n, onFinish);
+
+                    for (Consumer c : cc) {
+                        executorService.execute(() -> {
+                            try {
+                                c.accept(x);
+                            } finally {
+                                busy.countDown();
+                            }
+
+                        });
+                    }
+                    break;
+            }
+        }
+    }
 // TODO
 //    public void emitAsync(V x, Consumer<Iterable<Consumer<V>>> executorService) {
 //        final Consumer[] cc = this.copy;

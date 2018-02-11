@@ -94,9 +94,7 @@ public class Emotion implements Meter {
 
     float _happy;
 
-
-
-
+    private float termVolMax = 1;
 
 
     /**
@@ -168,6 +166,8 @@ public class Emotion implements Meter {
      * new frame started
      */
     public void cycle() {
+
+        termVolMax = nar.termVolumeMax.floatValue();
 
         _happy = happy.getSum();
         happy.commit();
@@ -335,9 +335,13 @@ public class Emotion implements Meter {
         float pri = t.priElseZero();
         float vol = t.voluplexity();
 
-        float cost = (vol / nar.termVolumeMax.floatValue())
-                * pri;
-                ;
+        /** heuristic, 3 components:
+         *      base penalty for processing
+         *      complexity
+         *      priority
+         */
+        float cost = (1f + (vol / termVolMax) + pri)/3f;
+
         MetaGoal.learn(MetaGoal.Perceive, t.cause(), cost, nar);
 
         busy(pri, (int) Math.ceil(vol ));

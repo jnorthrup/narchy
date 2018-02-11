@@ -127,9 +127,9 @@ public interface TermTransform extends TermContext {
 //                        System.out.println();
 //                    }
 
-                    if (yi == null) {
-                        return null;
-                    }
+//                    if (yi == null) {
+//                        return null;
+//                    }
 
                     if (y == null) {
                         y = new TermList(s);

@@ -133,6 +133,8 @@ public interface Topic<V> {
 
     void emitAsyncAndWait(V inputted, Executor e) throws InterruptedException;
 
+    void emitAsync(V inputted, Executor e, Runnable onFinish);
+
 //    String name();
 
 

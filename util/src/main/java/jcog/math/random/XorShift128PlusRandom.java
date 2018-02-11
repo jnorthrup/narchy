@@ -44,7 +44,7 @@ import java.util.Random;
  * @see Random
  * @see XorShift128PlusRandomGenerator
  */
-public class XorShift128PlusRandom extends Random {
+public class XorShift128PlusRandom extends AtomicRandom {
 
     /**
      * 2<sup>-53</sup>.
@@ -58,7 +58,7 @@ public class XorShift128PlusRandom extends Random {
     /**
      * The internal state of the algorithm.
      */
-    private long s0, s1;
+    private volatile long s0, s1;
 
 
     /**
@@ -75,7 +75,7 @@ public class XorShift128PlusRandom extends Random {
     }
 
     @Override
-    public long nextLong() {
+    protected long _nextLong() {
         long s1 = s0;
         long s0 = this.s1;
         this.s0 = s0;
@@ -114,7 +114,8 @@ public class XorShift128PlusRandom extends Random {
         while (true) {
             long bits = nextLong() >>> 1;
             long value = bits % n;
-            if (bits - value + (n - 1) >= 0) return value;
+            if (bits - value + (n - 1) >= 0)
+                return value;
         }
     }
 
@@ -152,23 +153,23 @@ public class XorShift128PlusRandom extends Random {
      * @param seed a nonzero seed for this generator (if zero, the generator will be seeded with {@link Long#MIN_VALUE}).
      */
     @Override
-    public void setSeed(long seed) {
+    protected void _setSeed(long seed) {
         s0 = SplitMix64Random.murmurHash3(seed == 0 ? Long.MIN_VALUE : seed);
         s1 = SplitMix64Random.murmurHash3(s0);
     }
 
 
-    /**
-     * Sets the state of this generator.
-     * <p>
-     * <p>The internal state of the generator will be reset, and the state array filled with the provided array.
-     *
-     * @param state an array of 16 longs; at least one must be nonzero.
-     */
-    public void setState(long[] state) {
-        if (state.length != 2)
-            throw new IllegalArgumentException("The argument array contains " + state.length + " longs instead of " + 2);
-        s0 = state[0];
-        s1 = state[1];
-    }
+//    /**
+//     * Sets the state of this generator.
+//     * <p>
+//     * <p>The internal state of the generator will be reset, and the state array filled with the provided array.
+//     *
+//     * @param state an array of 16 longs; at least one must be nonzero.
+//     */
+//    public void setState(long[] state) {
+//        if (state.length != 2)
+//            throw new IllegalArgumentException("The argument array contains " + state.length + " longs instead of " + 2);
+//        s0 = state[0];
+//        s1 = state[1];
+//    }
 }

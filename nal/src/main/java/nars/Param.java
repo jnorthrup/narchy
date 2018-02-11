@@ -224,6 +224,7 @@ public abstract class Param {
      */
     private final MutableFloat dtDither = new MutableFloat(0.5f);
 
+
     public void dtDither(float durations) {
         dtDither.set(durations);
     }
@@ -580,5 +581,12 @@ public abstract class Param {
         //evi * (1f-overlap);
     }
 
+    public static float beliefValue(Task beliefOrGoal) {
+        /** herusistic 2 components
+         *      - base value
+         *      - confidence
+         * */
+        return (1f + beliefOrGoal.conf())/2f;
+    }
 
 }

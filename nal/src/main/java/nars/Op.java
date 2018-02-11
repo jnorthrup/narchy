@@ -312,9 +312,18 @@ public enum Op {
                     //TODO junctionFlat any embedded XTERNAL CONJ subterms?
 
 
-                    if (u.length>1 && u[0].compareTo(u[1]) > 0) {
-                        u = u.clone();
-                        Arrays.sort(u); //dont use Terms.sorted which will de-duplicate and remove (x &&+1 x) cases.
+                    if (u.length>1) {
+                        boolean unordered = false;
+                        for (int i = 0; i < u.length-1; i++) {
+                            if (u[i].compareTo(u[i+1]) > 0) {
+                                unordered = true;
+                                break;
+                            }
+                        }
+                        if (unordered) {
+                            u = u.clone();
+                            Arrays.sort(u); //dont use Terms.sorted which will de-duplicate and remove (x &&+1 x) cases.
+                        }
                     }
 
                     switch (u.length) {

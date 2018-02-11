@@ -342,9 +342,6 @@ public class PremiseRule {
                     termIs(pres, taskPattern, beliefPattern, constraints, X, Op.SECTi);
                     break;
 
-                case "notImpl":
-                    termIsNot(pres, taskPattern, beliefPattern, constraints, X, Op.IMPL.bit);
-                    break;
 
                 case "subOf": //non-recursive
                     //X subOf Y : X is subterm of Y
@@ -398,6 +395,14 @@ public class PremiseRule {
 
                 case "notSet":
                     termIsNot(pres, taskPattern, beliefPattern, constraints, X, Op.SetBits);
+                    break;
+
+                case "notImpl":
+                    termIsNot(pres, taskPattern, beliefPattern, constraints, X, Op.IMPL.bit);
+                    break;
+
+                case "notImplConj":
+                    termIsNot(pres, taskPattern, beliefPattern, constraints, X, Op.IMPL.bit | Op.CONJ.bit);
                     break;
 
                 case "isNot": {

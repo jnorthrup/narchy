@@ -257,7 +257,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
         return creationTimeMatches() && occurrenceTimeMatches(task);
     }
 
-    private boolean truthMatches(@NotNull Truthed task) {
+    private boolean truthMatches(Truthed task) {
         if ((punc == Op.BELIEF) || (punc == Op.GOAL)) {
             Truth tt = task.truth();
 //            if (tt == null)

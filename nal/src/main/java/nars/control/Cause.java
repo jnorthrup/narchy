@@ -213,7 +213,7 @@ public class Cause implements Comparable<Cause> {
      * learn the utility of this cause with regard to a goal.
      */
     public final void learn(MetaGoal p, float v) {
-        p.learn(goal, v);
+        MetaGoal.learn(goal, p.ordinal(), v);
     }
 
 

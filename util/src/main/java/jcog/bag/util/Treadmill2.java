@@ -1,7 +1,8 @@
 package jcog.bag.util;
 
 
-/** TODO make the bit which it checks adjustable for chaining these */
+/** contains 2 sub-treadmills
+ * TODO parameterize the bit which it checks adjustable so these can be chained arbitrarily */
 public class Treadmill2 implements SpinMutex {
 
     final SpinMutex a, b;
