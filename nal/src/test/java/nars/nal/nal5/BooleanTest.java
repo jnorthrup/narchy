@@ -7,6 +7,7 @@ import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
+import static nars.Op.CONJ;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -64,7 +65,7 @@ public class BooleanTest {
 
 //                d.believe(I);
 //                d.believe(J);
-        d.believe($.conj(I, J));
+        d.believe(CONJ.the(I, J));
 
 //                for (String s : outcomes) {
 //                    d.ask(s);

@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import static nars.Op.SETe;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 
@@ -175,7 +176,7 @@ public abstract class MatchConstraint extends AbstractPred<Derivation> {
         }
 
         private CompoundConstraint(MatchConstraint[] c) {
-            super($.func("unifyIf", c[0].target, $.sete(c)));
+            super($.func("unifyIf", c[0].target, SETe.the((Term[]) c)));
             this.cache = c;
             this.target = c[0].target;
             for (int i = 1; i < c.length; i++) {

@@ -14,6 +14,7 @@ import java.util.Iterator;
 
 import static nars.$.$;
 import static nars.Op.Null;
+import static nars.Op.SECTi;
 import static nars.term.atom.Int.range;
 import static nars.term.atom.Int.the;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -94,7 +95,7 @@ public class IntTest {
 
     @Test
     public void testMultidimUnroll() throws Narsese.NarseseException {
-        Term a = $.secti($("(1,1)"), $("(1,2)"));
+        Term a = SECTi.the($("(1,1)"), $("(1,2)"));
         assertEquals("(1,1..2)", a.toString());
         assertEquals("[(1,1), (1,2)]", unroll(a));
     }

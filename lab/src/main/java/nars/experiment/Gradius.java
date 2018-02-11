@@ -5,21 +5,15 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.concept.ScalarConcepts;
-import nars.gui.Vis;
 import nars.video.Scale;
 
 import static java4k.gradius4k.Gradius4K.*;
-import static spacegraph.SpaceGraph.window;
-import static spacegraph.layout.Gridding.col;
 
 /**
  * Created by me on 4/30/17.
  */
 public class Gradius extends NAgentX {
 
-    static {
-        //Param.STRONG_COMPOSITION = true;
-    }
 
     private final Gradius4K g;
 
@@ -59,18 +53,18 @@ public class Gradius extends NAgentX {
         float height = g.getHeight();
         ScalarConcepts yPos = senseNumber((level)->$.inh($.p($.the("Y"), $.the(level)), id),
                 ()->g.player[OBJ_Y] / height,
-                4, ScalarConcepts.FuzzyNeedle
-        ).resolution(0.1f);
+                2, ScalarConcepts.FuzzyNeedle
+        ).resolution(0.02f);
         ScalarConcepts xPos = senseNumber((level)->$.inh($.p($.the("X"), $.the(level)), id),
                 ()->g.player[OBJ_X] / width,
-                4, ScalarConcepts.FuzzyNeedle
-        ).resolution(0.1f);
-        window(
-                col(
-                        Vis.conceptBeliefPlots(this, xPos, 8),
-                        Vis.conceptBeliefPlots(this, yPos, 8)
-                ),
-                500, 500);
+                2, ScalarConcepts.FuzzyNeedle
+        ).resolution(0.02f);
+//        window(
+//                col(
+//                        Vis.conceptBeliefPlots(this, xPos, 8),
+//                        Vis.conceptBeliefPlots(this, yPos, 8)
+//                ),
+//                500, 500);
 
 
 //        PixelBag cc = PixelBag.of(() -> g.image, 64, 64);
@@ -159,27 +153,32 @@ public class Gradius extends NAgentX {
 
     void initBipolar() {
         //TODO use actionTriState
+        float thresh = 0.01f;
         actionBipolar($.p($.the("y"), id), (dy) -> {
-            float thresh = 0.1f;
             if (dy < -thresh) {
                 g.keys[VK_UP] = false; g.keys[VK_DOWN] = true;
+                return -1f;
             } else if (dy > +thresh) {
                 g.keys[VK_UP] = true; g.keys[VK_DOWN] = false;
+                return 1f;
             } else {
                 g.keys[VK_UP] = false; g.keys[VK_DOWN] = false;
+                return 0;
             }
-            return dy;
+            //return dy;
         });
         actionBipolar($.p($.the("x"), id), (dx) -> {
-           float thresh = 0.1f;
            if (dx < -thresh) {
                g.keys[VK_LEFT] = false; g.keys[VK_RIGHT] = true;
+               return -1f;
            } else if (dx > +thresh) {
                g.keys[VK_LEFT] = true; g.keys[VK_RIGHT] = false;
+               return 1f;
            } else {
                g.keys[VK_LEFT] = false; g.keys[VK_RIGHT] = false;
+               return 0f;
            }
-           return dx;
+           //return dx;
        });
     }
 

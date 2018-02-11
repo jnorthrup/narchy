@@ -14,6 +14,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.NotNull;
 
 import static nars.Op.BELIEF;
+import static nars.Op.SETe;
 
 public class RelationClustering extends ChainClustering {
 
@@ -67,7 +68,7 @@ public class RelationClustering extends ChainClustering {
                 Term t;
                 switch (relation) {
                     case "simul":
-                        t = $.inh($.sete(x, y), $.the("simul"));
+                        t = $.inh(SETe.the(x, y), $.the("simul"));
                         break;
                     case "seq":
                         t = $.func(relation, x, y);

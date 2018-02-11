@@ -32,14 +32,14 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     public void testIntersectExtReduction1() {
         // (&,R,(&,P,Q)) = (&,P,Q,R)
-        assertEquals("(&,P,Q,R)", secte(r, secte(p, q)).toString());
+        assertEquals("(&,P,Q,R)", SECTe.the(r, SECTe.the(p, q)).toString());
         assertReduction("(&,P,Q,R)", "(&,R,(&,P,Q))");
     }
 
     @Test
     public void testIntersectExtReduction2() {
         // (&,(&,P,Q),(&,R,S)) = (&,P,Q,R,S)
-        assertEquals("(&,P,Q,R,S)", secte(secte(p, q), secte(r, s)).toString());
+        assertEquals("(&,P,Q,R,S)", SECTe.the(SECTe.the(p, q), SECTe.the(r, s)).toString());
         assertReduction("(&,P,Q,R,S)", "(&,(&,P,Q),(&,R,S))");
     }
 
@@ -58,26 +58,26 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     public void testIntersectExtReduction4() {
         //UNION if (term1.op(Op.SET_INT) && term2.op(Op.SET_INT)) {
-        assertEquals("{P,Q,R,S}", secte(sete(p, q), sete(r, s)).toString());
+        assertEquals("{P,Q,R,S}", SECTe.the(SETe.the(p, q), SETe.the(r, s)).toString());
         assertReduction("{P,Q,R,S}", "(&,{P,Q},{R,S})");
     }
 
     @Test
     public void testIntersectExtReduction5() {
-        assertEquals(Null /* emptyset */, secte(seti(p, q), seti(r, s)));
+        assertEquals(Null /* emptyset */, SECTe.the(SETi.the(p, q), SETi.the(r, s)));
     }
 
     @Test
     public void testIntersectIntReduction1() {
         // (|,R,(|,P,Q)) = (|,P,Q,R)
-        assertEquals("(|,P,Q,R)", secti(r, secti(p, q)).toString());
+        assertEquals("(|,P,Q,R)", SECTi.the(r, SECTi.the(p, q)).toString());
         assertReduction("(|,P,Q,R)", "(|,R,(|,P,Q))");
     }
 
     @Test
     public void testIntersectIntReduction2() {
         // (|,(|,P,Q),(|,R,S)) = (|,P,Q,R,S)
-        assertEquals("(|,P,Q,R,S)", secti(secti(p, q), secti(r, s)).toString());
+        assertEquals("(|,P,Q,R,S)", SECTi.the(SECTi.the(p, q), SECTi.the(r, s)).toString());
         assertReduction("(|,P,Q,R,S)", "(|,(|,P,Q),(|,R,S))");
     }
 
@@ -90,7 +90,7 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     public void testIntersectIntReduction4() {
         //UNION if (term1.op(Op.SET_INT) || term2.op(Op.SET_INT)) {
-        assertEquals("[P,Q,R,S]", secti(seti(p, q), seti(r, s)).toString());
+        assertEquals("[P,Q,R,S]", SECTi.the(SETi.the(p, q), SETi.the(r, s)).toString());
         assertReduction("[P,Q,R,S]", "(|,[P,Q],[R,S])");
 
     }
@@ -535,7 +535,7 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     public void testConjunctionEqual() {
-        assertEquals(p, conj(p, p));
+        assertEquals(p, CONJ.the(p, p));
     }
 
     @Test
@@ -547,20 +547,20 @@ public class TermReductionsTest extends NarseseTest {
 
     @Test
     public void testIntExtEqual() {
-        assertEquals(p, secte(p, p));
-        assertEquals(p, secti(p, p));
+        assertEquals(p, SECTe.the(p, p));
+        assertEquals(p, SECTi.the(p, p));
     }
 
     @Test
     public void testDiffIntEqual() {
 
-        assertEquals(False, diffi(p, p));
+        assertEquals(False, DIFFi.the(p, p));
     }
 
     @Test
     public void testDiffExtEqual() {
 
-        assertEquals(False, diffe(p, p));
+        assertEquals(False, DIFFe.the(p, p));
     }
 
 
@@ -573,7 +573,7 @@ public class TermReductionsTest extends NarseseTest {
         //check consistency with differenceSorted
         assertArrayEquals(
                 new Term[]{r, s},
-                ((Compound) Op.difference(Op.SETe, sete(r, p, q, s), sete(p, q))).arrayClone()
+                ((Compound) Op.difference(Op.SETe, SETe.the(r, p, q, s), SETe.the(p, q))).arrayClone()
         );
     }
 
@@ -586,7 +586,7 @@ public class TermReductionsTest extends NarseseTest {
         //check consistency with differenceSorted
         assertEquals(
                 Null,
-                Op.difference(Op.SETe, sete(p, q), sete(p, q))
+                Op.difference(Op.SETe, SETe.the(p, q), SETe.the(p, q))
         );
     }
 
@@ -633,9 +633,7 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     public void testDifferenceImmediate() throws Narsese.NarseseException {
 
-        Term d = diffi(
-                seti($("a"), $("b"), $("c")),
-                seti($("d"), $("b")));
+        Term d = DIFFi.the(SETi.the($("a"), $("b"), $("c")), SETi.the($("d"), $("b")));
         assertEquals(Op.SETi, d.op());
         assertEquals(2, d.subs());
         assertEquals("[a,c]", d.toString());
@@ -645,9 +643,9 @@ public class TermReductionsTest extends NarseseTest {
     public void testDifferenceImmediate2() throws Narsese.NarseseException {
 
 
-        Term a = sete($("a"), $("b"), $("c"));
-        Term b = sete($("d"), $("b"));
-        Term d = diffe(a, b);
+        Term a = SETe.the($("a"), $("b"), $("c"));
+        Term b = SETe.the($("d"), $("b"));
+        Term d = DIFFe.the(a, b);
         assertEquals(Op.SETe, d.op());
         assertEquals(2, d.subs());
         assertEquals("{a,c}", d.toString());

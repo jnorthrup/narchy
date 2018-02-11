@@ -136,8 +136,8 @@ public class TermTest {
 
         assertEquals("{a,b}", $("{b,a}").toString());
         assertEquals("{a,b}", $("{a,b}").toString());
-        assertEquals("{a,b}", $.sete($.the("a"), $.the("b")).toString());
-        assertEquals("{a,b}", $.sete($.the("b"), $.the("a")).toString());
+        assertEquals("{a,b}", SETe.the($.the("a"), $.the("b")).toString());
+        assertEquals("{a,b}", SETe.the($.the("b"), $.the("a")).toString());
 
         assertEquivalentTerm("{b,a}", "{b,a}");
         assertEquivalentTerm("{a,b}", "{b,a}");
@@ -172,8 +172,8 @@ public class TermTest {
 
     @Test
     public void testCommutativivity()  {
-        assertFalse($.sete(Atomic.the("x")).isCommutative());
-        assertTrue($.sete(Atomic.the("x"), Atomic.the("y")).isCommutative());
+        assertFalse(SETe.the(Atomic.the("x")).isCommutative());
+        assertTrue(SETe.the(Atomic.the("x"), Atomic.the("y")).isCommutative());
     }
 
 

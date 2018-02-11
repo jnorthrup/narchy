@@ -422,26 +422,45 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
             if (!a.hasXternal() && !b.hasXternal()) {
                 UnifiedSet<Event> ae = new UnifiedSet(2);
-                UnifiedSet<Event> be = new UnifiedSet(2);
                 solveOccurrence(event(a, TIMELESS), ax -> {
                     if (ax instanceof Absolute) ae.add(ax);
                     return true;
                 });
                 int aes = ae.size();
                 if (aes > 0) {
-                    solveOccurrence(event(b, TIMELESS), bx -> {
-                        if (bx instanceof Absolute) be.add(bx);
-                        return true;
-                    });
-                    int bes = be.size();
-                    if (bes > 0) {
-                        //search only if one to N; there may be incorrect possibilities among N to N comparisons
-                        //if (aes == 1 || bes == 1) {
+                    if (a.equals(b)) {
+
+                        //same term, must have >1 absolute timepoints
+                        if (aes > 1) {
+
+                            Event[] ab = ae.toArray(new Event[aes]);
+                            //Arrays.sort(ab, Comparator.comparingLong(Event::when));
+                            for (int i = 0; i < ab.length; i++) {
+                                Event abi = ab[i];
+                                for (int j = 0; j < ab.length; j++) {
+                                    if (i==j) continue;
+                                    if (!solveDT(x, abi.when(), dt(x, abi, ab[j]), each))
+                                        return false;
+                                }
+                            }
+                        }
+
+                    } else {
+                        UnifiedSet<Event> be = new UnifiedSet(2);
+                        solveOccurrence(event(b, TIMELESS), bx -> {
+                            if (bx instanceof Absolute) be.add(bx);
+                            return true;
+                        });
+                        int bes = be.size();
+                        if (bes > 0) {
+                            //search only if one to N; there may be incorrect possibilities among N to N comparisons
+                            //if (aes == 1 || bes == 1) {
                             if (!ae.allSatisfy(ax ->
                                     be.allSatisfyWith((bx, axx) ->
-                                            solveDT(x, each, axx, bx), ax)))
+                                            solveDT(x, axx.when(), dt(x, axx, bx), each), ax)))
                                 return false;
-                        //}
+                            //}
+                        }
                     }
                 }
             }
@@ -588,28 +607,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 //        }
 
         return each.test(event(x, TIMELESS)); //last resort
-    }
-
-    private boolean solveDT(Term x, Predicate<Event> each, Event aa, Event bb) {
-//        if (x.op() == CONJ && bb.start() < aa.start()) {
-//            //earliest first for CONJ, since it will be constructed with conjMerge
-//            Event cc = aa;
-//            aa = bb;
-//            bb = cc;
-//        }
-//        long start;
-//        if (x.op() == CONJ) {
-//            //earliest first for CONJ, since it will be constructed with conjMerge
-//            long astart = aa.when();
-//            long bstart = bb.when();
-//            if (astart != TIMELESS && bstart != TIMELESS) {
-//                start = Math.min(astart, bstart);
-//            } else {
-//                start = astart;
-//            }
-//        } else {
-//        }
-        return solveDT(x, aa.when(), dt(x, aa, bb), each);
     }
 
     /**

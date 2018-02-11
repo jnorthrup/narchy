@@ -114,11 +114,11 @@ public class Arkancide extends NAgentX {
 //        };
 
 
-        paddleSpeed = 120 * noid.BALL_VELOCITY;
+        paddleSpeed = 250 * noid.BALL_VELOCITY;
 
         //initBipolarDirect();
-        //initBipolarRelative();
-        initUnipolar();
+        initBipolarRelative();
+        //initUnipolar();
         //initToggle();
 
         float resX = 0.01f; //Math.max(0.01f, 0.5f / visW); //dont need more resolution than 1/pixel_width
@@ -126,9 +126,9 @@ public class Arkancide extends NAgentX {
 
         if (cam) {
 
-            BufferedImageBitmap2D sw = new Scale(new SwingBitmap2D(noid), visW, visH);//.blur();
+            BufferedImageBitmap2D sw = new Scale(new SwingBitmap2D(noid), visW, visH).blur();
             Bitmap2DSensor cc = senseCamera(id.toString(), sw, visW, visH)
-                    .resolution(0.2f);
+                    .resolution(0.1f);
 //            CameraSensor ccAe = senseCameraReduced($.the("noidAE"), sw, 16)
 //                    .resolution(0.25f);
 
@@ -249,7 +249,7 @@ public class Arkancide extends NAgentX {
     }
 
     private void initBipolarRelative() {
-        actionBipolar($.inh("X", id), true, (dx) -> {
+        actionBipolar($.the("X"), false, (dx) -> {
             if (noid.paddle.move(dx * paddleSpeed))
                 return dx;
             else
@@ -257,7 +257,7 @@ public class Arkancide extends NAgentX {
         });
     }
     private void initBipolarDirect() {
-        actionBipolar($.inh("X", id), true, (dx) -> {
+        actionBipolar($.the("X"), true, (dx) -> {
             noid.paddle.set(dx/2f+0.5f);
             return dx;
         });

@@ -6,6 +6,8 @@ import nars.$;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 
+import static nars.Op.SETe;
+
 /**
  * Created by me on 4/2/17.
  */
@@ -41,7 +43,7 @@ public enum JsonTerm { ;
                         //$.p(k, v);
 
             });
-            return $.sete(s);
+            return SETe.the(s);
         } else {// if (j.isJsonObject()) {
             throw new UnsupportedOperationException("TODO");
         }

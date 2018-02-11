@@ -435,7 +435,7 @@ public abstract class NQuadsRDF {
             //System.out.println(subject + " " + predicate + " " + object);
 
             belief = $.inst($.varDep(1),
-                    $.secti(subject, object)
+                    SECTi.the(subject, object)
             ).neg();
 
             //disjoint classes have no common instances:

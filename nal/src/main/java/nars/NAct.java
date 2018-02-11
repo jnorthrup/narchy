@@ -509,7 +509,11 @@ public interface NAct {
                     :
                     //0f;
                     0.5f;
-            e[ip] = gg != null ? gg.evi() : 0f;
+            e[ip] = gg != null ?
+                    //gg.evi()
+                    gg.conf()
+                    :
+                    0f;
 
 
             float x; //-1..+1
@@ -589,28 +593,27 @@ public interface NAct {
 //                    } else {
 //                        yp = yn = 0;
 //                    }
-                    float yp = 0.5f + y/2f;
-                    float yn = 1f - yp; //y >= 0 ? 0.5f - y/2f : 0.5f + y/2f;
-//                    float yp = y > 0 ? 0.5f + y/2f : 0;
-//                    float yn = y < 0 ? 0.5f - y/2f : 0;
 
-                    //float yf = (y / 2f)+0.5f; //0..+1
+//                    float yp = 0.5f + y/2f;
+//                    float yn = 1f - yp;
+//                    float pbf = yp;
+//                    float nbf = yn;
+//                    Pb = $.t(pbf, feedbackConf);
+//                    Nb = $.t(nbf, feedbackConf);
+//                    float goalEvi =
+//                            eviMin;
+//                    //max(eviMin, max(e[0], e[1]));
+//                    Pg = curious || e[0] == 0 ? new PreciseTruth(yp, goalEvi, false) : null;
+//                    Ng = curious || e[1] == 0 ? new PreciseTruth(yn, goalEvi, false) : null;
 
-                    float pbf =
-                            yp;
-                            //yp > freqEps ? yp / 2f + 0.5f : 0;
-                    float nbf =
-                            //yn > freqEps ? yn / 2f + 0.5f : 0;
-                            yn;
-                    Pb = $.t(pbf, feedbackConf);
-                    Nb = $.t(nbf, feedbackConf);
+                    float confMin2 = confMin*2;
+                    float yp = y > +Float.MIN_NORMAL ? Util.lerp(+y, confMin2, feedbackConf) : confMin;
+                    float yn = y < -Float.MIN_NORMAL ? Util.lerp(-y, confMin2, feedbackConf) : confMin;
+                    Pb = $.t(y > 0 ? 1 : 0, yp);
+                    Nb = $.t(y < 0 ? 1 : 0, yn);
+                    Pg = curious || e[0] == 0 ? new PreciseTruth(1, Util.lerp(+y, confMin2, feedbackConf)) : null;
+                    Ng = curious || e[1] == 0 ? new PreciseTruth(1, Util.lerp(-y, confMin2, feedbackConf)) : null;
 
-                    float goalEvi =
-                            eviMin;
-                            //max(eviMin, max(e[0], e[1]));
-                    Pg = curious || e[0] == 0 ? new PreciseTruth(yp, goalEvi, false) : null;
-                    Ng = curious || e[1] == 0 ? new PreciseTruth(yn, goalEvi, false) : null;
-//
 //                    if (curious) {
 //                        e[0] = e[1] = 0; //reset to get full evidence override
 //                    }

@@ -9,6 +9,7 @@ import nars.test.TestNAR;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
 
+import static nars.Op.DIFFe;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -112,7 +113,7 @@ public class NAL3Test extends NALTest {
 
     @Test
     public void set_operations2_difference() throws Narsese.NarseseException {
-        assertEquals("{Mars,Venus}", $.diffe($.$("{Mars,Pluto,Venus}"), $.$("{Pluto,Saturn}")).toString());
+        assertEquals("{Mars,Venus}", DIFFe.the($.$("{Mars,Pluto,Venus}"), $.$("{Pluto,Saturn}")).toString());
 
         TestNAR tester = test;
         tester.believe("(planetX --> {Mars,Pluto,Venus})", 0.9f, 0.9f); //.en("PlanetX is Mars, Pluto, or Venus.");

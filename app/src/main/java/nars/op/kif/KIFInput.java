@@ -334,7 +334,8 @@ public class KIFInput implements Runnable {
             if (z != null) {
                 switch (z.toString()) {
                     case "and":
-                        y = $.conj(args.toArray(new Term[args.size()]));
+                        Term[] a = args.toArray(new Term[args.size()]);
+                        y = CONJ.the(a);
                         break;
                     case "or":
                         y = $.disj(args.toArray(new Term[args.size()]));

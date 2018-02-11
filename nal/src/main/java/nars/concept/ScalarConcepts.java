@@ -19,6 +19,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static nars.Op.BELIEF;
+import static nars.Op.SETe;
 
 /**
  * manages a set of N 'digit' concepts whose beliefs represent components of an
@@ -180,7 +181,7 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
 
     public ScalarConcepts(FloatSupplier input, @NotNull NAR nar, ScalarEncoder freqer, @NotNull Term... states) {
         super(null, $.func(ScalarConcepts.class.getSimpleName(),
-                $.sete(states),
+                SETe.the(states),
                 $.quote(Util.toString(input)), $.the(freqer.toString())
         ));
 

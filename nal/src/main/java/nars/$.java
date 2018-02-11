@@ -421,11 +421,7 @@ public enum $ {
     }
 
     public static Term seti(Collection<Term> t) {
-        return $.seti(array(t));
-    }
-
-    public static Term sete(Term... t) {
-        return SETe.the(t);
+        return SETi.the(array(t));
     }
 
     public static Term sete(RoaringBitmap b) {
@@ -447,22 +443,12 @@ public enum $ {
         return t;
     }
 
-    /**
-     * shorthand for extensional set
-     */
-    public static Term s(Term... t) {
-        return sete(t);
-    }
-
-    public static Term seti(Term... t) {
-        return SETi.the(DTERNAL, t);
-    }
 
 
     /**
      * unnormalized variable
      */
-    public static Variable v(char ch, @NotNull String name) {
+    public static Variable v(char ch, String name) {
         return v(NormalizedVariable.typeIndex(ch), name);
     }
 
@@ -471,10 +457,6 @@ public enum $ {
      */
     public static NormalizedVariable v(/*@NotNull*/ Op type, byte id) {
         return NormalizedVariable.the(type, id);
-    }
-
-    public static <T extends Term> T conj(Term... a) {
-        return (T) CONJ.the(DTERNAL, a);
     }
 
     public static Term conj(@NotNull Collection<Term> collection, @NotNull Term... append) {
@@ -509,34 +491,15 @@ public enum $ {
     }
 
 
-
-
-
-    public static Term diffi(Term a, Term b) {
-        return DIFFi.the(DTERNAL, a, b);
-    }
-
-    public static Term diffe(Term a, Term b) {
-        return DIFFe.the(DTERNAL, a, b);
-    }
-
-    public static Term secte(Term... x) {
-        return SECTe.the(x);
-    }
     public static Term secte(SortedSet<Term> x) {
         return SECTe.the(DTERNAL, x);
-    }
-
-    public static Term secti(Term... x) {
-        return SECTi.the(DTERNAL, x);
     }
 
 
     /**
      * create a literal atom from a class (it's name)
      */
-    @NotNull
-    public static Atom the(@NotNull Class c) {
+    public static Atom the(Class c) {
         return (Atom) Atomic.the(c.getName());
     }
 
@@ -762,7 +725,7 @@ public enum $ {
 
     public static @NotNull Term pRecurseIntersect(char prefix, @NotNull Term... t) {
         final int[] index = {0};
-        return $.secte($.terms(t, x -> Atomic.the(Strings.repeat(String.valueOf(prefix), ++index[0]) + x)));
+        return SECTe.the($.terms(t, x -> Atomic.the(Strings.repeat(String.valueOf(prefix), ++index[0]) + x)));
     }
 
     public static @NotNull Term pRecurse(@NotNull Term... t) {
@@ -834,7 +797,7 @@ public enum $ {
     }
 
     public static <X> PrediTerm<X> AND(PrediTerm<X> a, PrediTerm<X> b) {
-        return new LambdaPred<>($.conj(a, b), (X x) -> a.test(x) && b.test(x));
+        return new LambdaPred<>(CONJ.the(a, b), (X x) -> a.test(x) && b.test(x));
     }
 
     public static <X> PrediTerm<X> OR(PrediTerm<X> a, PrediTerm<X> b) {

@@ -18,6 +18,8 @@ import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.Map;
 
+import static nars.Op.CONJ;
+
 public class PrologToNAL {
 
     public static final Term QUESTION_GOAL = $.the("?-");
@@ -87,7 +89,7 @@ public class PrologToNAL {
 
                     return impl;
                 case ",":
-                    return $.conj(N(s.sub(0)), N(s.sub(1)));
+                    return CONJ.the(N(s.sub(0)), N(s.sub(1)));
                 default:
                     nars.term.Term atom = $.the(name);
                     int arity = s.subs();

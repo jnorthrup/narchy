@@ -131,8 +131,8 @@ abstract public class NAgentX extends NAgent {
 
 
         float durFPS =
-                //agentFPS;
-                narFPS;
+                agentFPS;
+                //narFPS;
 
         RealTime clock =
                 durFPS >= 10 / 2f ? /* nyquist threshold between decisecond (0.1) and centisecond (0.01) clock resolution */
