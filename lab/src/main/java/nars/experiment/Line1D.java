@@ -8,6 +8,7 @@ import nars.*;
 import nars.control.MetaGoal;
 import nars.gui.Vis;
 import nars.op.stm.ConjClustering;
+import nars.task.DerivedTask;
 import nars.test.agent.Line1DSimplest;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.layout.Gridding;
@@ -67,9 +68,9 @@ public class Line1D {
 //            } catch (Narsese.NarseseException e) {
 //                e.printStackTrace();
 //            }
-            n.freqResolution.set(0.05f);
+            n.freqResolution.set(0.02f);
             n.confResolution.set(0.02f);
-            n.termVolumeMax.set(32);
+            n.termVolumeMax.set(12);
 
             MetaGoal.Perceive.set(n.want, -0.01f);
             MetaGoal.Desire.set(n.want, 0.25f);
@@ -152,15 +153,15 @@ public class Line1D {
                                 , 900, 900);
 
                     }).start();
-//                    a.nar.onTask(t -> {
-//                        if (!t.isInput() && t instanceof DerivedTask
-//                                && t.isGoal()) {
-//
-//                            String s = t.term().toString();
-//                            if (s.equals("(y,())") || s.equals("((),y)"))
-//                                System.err.println(t.proof());
-//                        }
-//                    });
+                    a.nar.onTask(t -> {
+                        if (!t.isInput() && t instanceof DerivedTask
+                                && t.isGoal()) {
+
+                            //String s = t.term().toString();
+                            //if (s.equals("(y,())") || s.equals("((),y)"))
+                                System.err.println(t.proof());
+                        }
+                    });
 
 //                  Term[] c = Util.map((String s) -> $.$safe(s), Term[]::new,
 ////                            "((i)==>happy)",
@@ -184,9 +185,9 @@ public class Line1D {
 
             //new RelationClustering(n, (t)->1f, 4, 16);
 
-            n.time.dur(16);
+            n.time.dur(32);
             exp.agent.curiosity.set(0.1f);
-            exp.agent.runDur(1);
+            exp.agent.runDur(2);
 
             //n.truthResolution.setValue(0.25f);
 
@@ -199,8 +200,17 @@ public class Line1D {
 //                    0f,1f, 2f, 3f, 4f);
 
 
+            //n.goal("--(x~y)");
+            //n.goal("--(y~x)");
+//            Term xMinY = $.$safe("(x~y)");
+//            Term yMinX = $.$safe("(y~x)");
+//            n.onCycle(()->{
+//                   System.out.println(xMinY + ": " + n.belief(xMinY) + "\t" + yMinX + ": " + n.belief(yMinX));
+//            });
             //n.start();
             //n.run(10000);
+            //n.log();
+            n.run(15);
             n.startFPS(100f);
             //n.run();
 

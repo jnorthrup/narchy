@@ -139,7 +139,7 @@ public class NARS {
                 //new CaffeineIndex(new DefaultConceptBuilder(), 8*1024, 16*1024, null)
                 new MapTermIndex(
                         //new /*Linked*/HashMap(256, 0.9f)
-                        new MRUCache<>(8*1024) {
+                        new MRUCache<>(16*1024) {
                             @Override
                             protected void onEvict(Map.Entry<Term, Termed> entry) {
                                 Termed c = entry.getValue();
@@ -158,7 +158,6 @@ public class NARS {
 
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);
-        //new XorShift128PlusRandom(1);
 
         concepts = DefaultConceptBuilder::new;
 

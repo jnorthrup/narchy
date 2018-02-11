@@ -167,6 +167,7 @@ public class ImplicationNetworkTest {
         n.run(100);
 
         BeliefTable aBeliefs = n.concept(a).beliefs();
+        aBeliefs.print();
         assertEquals(1, aBeliefs.size());
 
         Truth bBelief = n.concept(b).beliefs().truth(ETERNAL, n);

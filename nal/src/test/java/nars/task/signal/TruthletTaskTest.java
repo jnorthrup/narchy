@@ -16,7 +16,7 @@ public class TruthletTaskTest {
 
     @Test
     public void testImpulseTruthlet() {
-        NAR n = NARS.tmp();
+        NAR n = NARS.shell();
         Term x = $.the("x");
         float conf = 0.9f;
         n.input(new TruthletTask(x, BELIEF,
@@ -44,7 +44,7 @@ public class TruthletTaskTest {
         RangeTruthlet s = Truthlet.slope(0, 1f, 3, 0f, c2w(conf));
         for (Truthlet t : new Truthlet[]{s, new SustainTruthlet(s, 1)}) {
 
-            NAR n = NARS.tmp();
+            NAR n = NARS.shell();
             Term x = $.the("x");
 
             System.out.println(t);

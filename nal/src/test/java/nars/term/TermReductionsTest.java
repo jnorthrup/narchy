@@ -181,7 +181,7 @@ public class TermReductionsTest extends NarseseTest {
     public void implSubjSimultaneousWithTemporalPred() {
         Term x = $safe("((--,(tetris-->happy))=|>(tetris(isRow,(2,true),true) &&+5 (tetris-->happy)))");
         assertEquals(
-                "((tetris(isRow,(2,true),true)&|(--,(tetris-->happy))) ==>+5 (tetris-->happy))",
+                "((--,(tetris-->happy))=|>(tetris(isRow,(2,true),true) &&+5 (tetris-->happy)))",
                 x.toString());
     }
 
@@ -1204,7 +1204,7 @@ public class TermReductionsTest extends NarseseTest {
     public void testReducibleImplFactored2() {
         assertReduction("((x&&y)==>z)", "((y && x) ==> (y && z))");
         assertReduction("((&&,a,x,y)==>z)", "((&&, x, y, a) ==> (y && z))");
-        assertReduction("((y &&+1 (x&|z)) ==>+1 y)", "((y &&+1 x)=|>(z &&+1 y))");
+        assertReduction("((y &&+1 x)=|>(z &&+1 y))", "((y &&+1 x)=|>(z &&+1 y))");
     }
 
     @Test
@@ -1212,7 +1212,7 @@ public class TermReductionsTest extends NarseseTest {
         //pred not be separated for && and &| and &&+-
         for (String cp : new String[]{"&&", "&|", " &&+- "}) {
             assertReduction("((x&&y) ==>+1 (y" + cp + "z))", "((y&&x) ==>+1 (y" + cp + "z))");
-            assertReduction("((a &&+1 b) ==>+1 (y" + cp + "z))", "(a ==>+1 (b &&+1 (y" + cp + "z)))");
+            assertReduction("(a ==>+1 (b &&+1 (y" + cp + "z)))", "(a ==>+1 (b &&+1 (y" + cp + "z)))");
         }
 
 
@@ -1398,7 +1398,10 @@ public class TermReductionsTest extends NarseseTest {
         Term b = $("(c,d)");
         Term x = Op.CONJ.the(-4, a, b);
 
-        assertEquals("((c,d) &&+4 ((a,b) ==>+1 (b,c)))", x.toString());
+        assertEquals(
+                //"((c,d) &&+4 ((a,b) ==>+1 (b,c)))",
+                "(((c,d) &&+4 (a,b)) ==>+1 (b,c))",
+                x.toString());
     }
 
     @Test
@@ -1408,6 +1411,26 @@ public class TermReductionsTest extends NarseseTest {
         Term x = Op.CONJ.the(4, b, a);
 
         assertEquals("(((c,d) &&+4 (a,b)) ==>+1 (b,c))", x.toString());
+    }
+    @Test
+    public void testConjImplNonReductionNegConj2() throws Narsese.NarseseException {
+        Term a = $("((a,b) ==>+1 (b,c))");
+        Term b = $("(c &&+1 d)");
+        Term x = Op.CONJ.the(-4, a, b);
+
+        assertEquals(
+                "(((c &&+1 d) &&+3 (a,b)) ==>+1 (b,c))",
+                x.toString());
+    }
+    @Test
+    public void testConjImplNonReductionNegConj3() throws Narsese.NarseseException {
+        Term a = $("((a,b) ==>+1 (b,c))");
+        Term b = $("(c &&+1 d)");
+        Term x = Op.CONJ.the(+4, a, b);
+
+        assertEquals(
+                "((((a,b) &&+4 c) &&+1 d) ==>-4 (b,c))",
+                x.toString());
     }
 
     @Test

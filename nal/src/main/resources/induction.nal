@@ -61,7 +61,7 @@
 
 
 //NAL3 difference
-//    A, B, task("."), neqRCom(A,B), time(dtEventsOrEternals) |- (A - B), (Belief:Difference)
+    A, B, neq(A,B) |- (A ~ B), (Belief:Difference)
 
 
 

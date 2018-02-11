@@ -61,7 +61,9 @@ public enum Op {
 
     NEG("--", 1, Args.One) {
         @Override
-        public Term the(int dt, Term[] u, boolean intern) { return compound(dt, u);        }
+        public Term the(int dt, Term[] u, boolean intern) {
+            return compound(dt, u);
+        }
 
         @Override
         public Term the(int dt, Term... u) {
@@ -155,8 +157,6 @@ public enum Op {
      * conjunction
      */
     CONJ("&&", true, 5, Args.GTETwo) {
-
-
         @Override
         public Term compound(int dt, Term[] u) {
             final int n = u.length;
@@ -364,7 +364,7 @@ public enum Op {
                     return u.length > 1 ? instance(CONJ, XTERNAL, u) : u[0];
 
                 default: {
-                    if (n!=2) {
+                    if (n != 2) {
                         return Null;
                     }
 
@@ -524,7 +524,6 @@ public enum Op {
      */
     //SUBTERMS("...", 1, OpType.Other)
     ;
-
 
 
     public static final String DISJstr = "||";
@@ -990,14 +989,12 @@ public enum Op {
             return conjSeqFinal((int) bo, a, b);
         }
 
-        LongObjectHashMap<Collection<Term>> eventSets = new LongObjectHashMap(ae+be);
+        LongObjectHashMap<Collection<Term>> eventSets = new LongObjectHashMap(ae + be);
 
         LongObjectPredicate<Term> insert = (long w, Term xb) -> {
             Collection<Term> ab = eventSets.updateValue(w,
                     () -> {
-                        Collection<Term> x =
-                                new UnifiedSet<>(1);
-                        //new TreeSet();
+                        Collection<Term> x = new UnifiedSet<>(1);
                         x.add(xb);
                         return x;
                     },
@@ -1130,7 +1127,7 @@ public enum Op {
                     } else {
                         if ((hasNext && prevtimeStart < at - 1) || (!hasNext && prevtime == now)) {
                             Term[] s = new Term[at - prevtimeStart + (!hasNext ? 1 : 0)];
-                            assert(s.length > 1);
+                            assert (s.length > 1);
                             int j = 0;
                             if (!hasNext) {
                                 s[j++] = xt; //include current
@@ -1250,7 +1247,6 @@ public enum Op {
         }
 
 
-
         return implInConjReduce(instance(CONJ, dt, left, right));
         //return CONJ.the(dt, left, right);
 
@@ -1275,9 +1271,9 @@ public enum Op {
             return conj; //fall-through
 
         int conjDT = conj.dt();
-        if (conjDT!=0 && conjDT!=DTERNAL)
-            return conj; //dont merge temporal
-        assert (conjDT != XTERNAL);
+//        if (conjDT!=0 && conjDT!=DTERNAL)
+//            return conj; //dont merge temporal
+//        assert (conjDT != XTERNAL);
 
         //if there is only one implication subterm (first layer only), then fold into that.
         int whichImpl = -1;
@@ -1288,7 +1284,7 @@ public enum Op {
         for (int i = 0; i < conjSize; i++) {
             Term conjSub = conj.sub(i);
             Op conjSubOp = conjSub.op();
-            if (conjSubOp ==IMPL) {
+            if (conjSubOp == IMPL) {
                 //only handle the first implication in this iteration
 //                if (implDT == XTERNAL) {
 //                    //dont proceed any further if XTERNAL
@@ -1297,7 +1293,7 @@ public enum Op {
                 whichImpl = i;
                 break;
             } else if (conjSubOp == NEG) {
-                if (conjSub.unneg().op()==IMPL) {
+                if (conjSub.unneg().op() == IMPL) {
                     whichImpl = i;
                     implIsNeg = true;
                     break;
@@ -1327,7 +1323,7 @@ public enum Op {
                 other = CONJ.the(conjDT, css /* assumes commutive since > 2 */);
         }
 
-        if (other.op()==IMPL) {
+        if (other.op() == IMPL) {
             //TODO if other is negated impl
             if ((other.dt() == DTERNAL) && other.sub(1).equals(implication.sub(1))) {
                 //same predicate
@@ -1337,26 +1333,36 @@ public enum Op {
                 return conj;
             }
         }
-        if (whichImpl == 0 && conjDT != DTERNAL) {
-            conjDT = -conjDT; //reverse dt if impl is from the 0th subterm
+        int implDT = implication.dt();
+
+        Term conjInner;
+        Term ours = implication.sub(0);
+        int cist;
+        if (conjDT == DTERNAL) {
+            conjInner = CONJ.the(other, ours);
+            cist = 0;
+        } else if ((conjDT < 0 ? (1 - whichImpl) : whichImpl) == 1) {
+            conjInner = conjMerge(other, 0, ours, -conjDT);
+            cist = -conjDT;
+        } else {
+            conjInner = conjMerge(ours, 0, other, conjDT);
+            cist = 0;
         }
 
-        Term conjInner =
-                CONJ.the(conjDT, other, implication.sub(0) /* impl precond */);
 
         if (conjInner instanceof Bool)
             return conjInner;
 
-        int preInInner = conjInner.subTimeSafe(implication.sub(0));
-        if (preInInner == DTERNAL || preInInner == XTERNAL)
-            preInInner = 0; //HACK
 
-        int implDT = implication.dt();
-        return IMPL.the(
-                (implDT != DTERNAL && implDT != XTERNAL) ?
-                        implDT + preInInner - conjInner.dtRange() :
-                        implDT,
-                conjInner, implication.sub(1)).negIf(implIsNeg);
+        if (implDT != DTERNAL) {
+//            int cist = conjInner.dt() == DTERNAL ? 0 : conjInner.subTimeSafe(ours); //HACK
+//            if (cist == DTERNAL)
+//                throw new TODO();
+
+            implDT -= (conjInner.dtRange() - cist) - (ours.dtRange());
+        }
+
+        return IMPL.the(implDT, conjInner, implication.sub(1)).negIf(implIsNeg);
 
     }
 
@@ -1422,7 +1428,7 @@ public enum Op {
                 if ((et0.op() == set && et1.op() == set))
                     return difference(set, et0, et1);
                 else
-                    return Op.instance(op,t);
+                    return Op.instance(op, t);
 
 
         }
@@ -1506,7 +1512,6 @@ public enum Op {
     }
 
 
-
     /**
      * direct constructor
      * no reductions or validatios applied
@@ -1562,7 +1567,7 @@ public enum Op {
         }
 
         Subterms ss;
-        if (o!=PROD) {
+        if (o != PROD) {
             //cache.get ?
             ss = The.subtermsInterned(u);
         } else {
@@ -1571,7 +1576,6 @@ public enum Op {
 
         return new CompoundCached(o, ss);
     }
-
 
 
 //        else
@@ -1835,7 +1839,7 @@ public enum Op {
                                                 return False;
                                             } else if (merge.equals(sset)) {
                                                 //unchanged, just drop it
-                                                if (pextRemovals==null)
+                                                if (pextRemovals == null)
                                                     pextRemovals = new RoaringBitmap();
                                                 pextRemovals.add(i);
                                             } else {
@@ -1844,7 +1848,7 @@ public enum Op {
                                         }
                                     }
                                 }
-                                if (pextRemovals!=null) {
+                                if (pextRemovals != null) {
                                     if (pextRemovals.getCardinality() == subPextsN) {
                                         //completely absorbed
                                         pi.remove();
@@ -1869,40 +1873,40 @@ public enum Op {
                             int ndt = dtNotDternal ? (int) pe.minBy(LongObjectPair::getOne).getOne() - pre : DTERNAL;
                             return IMPL.the(ndt,
                                     subject,
-                                    predicate.dt() != DTERNAL ?
-                                            Op.conjEvents(new FasterList<>(pe)) :
-                                            CONJ.the(DTERNAL, pe.collect(LongObjectPair::getTwo))
+                                    predicate.dt() == DTERNAL ?
+                                            CONJ.the(DTERNAL, pe.collect(LongObjectPair::getTwo)) :
+                                            Op.conjEvents(new FasterList<>(pe))
                             );
                         }
                         break;
                     default: {
                         //TODO if pred has >1 events, and dt is temporal, pull all the events except the last into a conj for the subj then impl the final event
 
-                        if (dt != DTERNAL) {
-                            long finalEventTime = pe.maxBy(LongObjectPair::getOne).getOne();
-                            Term finalEvent = null;
-                            int moved = 0;
-                            for (int i = 0; i < pes; i++) {
-                                LongObjectPair<Term> m = pe.get(i);
-                                if (m.getOne() != finalEventTime) {
-                                    se.add(m);
-                                    moved++;
-                                } else {
-                                    if (finalEvent == null) finalEvent = m.getTwo();
-                                    else finalEvent = CONJ.the(0, finalEvent, m.getTwo());
-                                }
-                            }
-                            if (moved > 0 || !finalEvent.equals(predicate)) {
-                                long ndt = dtNotDternal ?
-                                        finalEventTime - ((FasterList<LongObjectPair<Term>>) se.list).maxBy(LongObjectPair::getOne).getOne() :
-                                        DTERNAL;
-                                assert (ndt < Integer.MAX_VALUE);
-                                return IMPL.the((int) ndt,
-                                        Op.conjEvents(new FasterList(se)),
-                                        finalEvent
-                                );
-                            }
-                        }
+//                        if (dt != DTERNAL) {
+//                            long finalEventTime = pe.maxBy(LongObjectPair::getOne).getOne();
+//                            Term finalEvent = null;
+//                            int moved = 0;
+//                            for (int i = 0; i < pes; i++) {
+//                                LongObjectPair<Term> m = pe.get(i);
+//                                if (m.getOne() != finalEventTime) {
+//                                    se.add(m);
+//                                    moved++;
+//                                } else {
+//                                    if (finalEvent == null) finalEvent = m.getTwo();
+//                                    else finalEvent = CONJ.the(0, finalEvent, m.getTwo());
+//                                }
+//                            }
+//                            if (moved > 0 || !finalEvent.equals(predicate)) {
+//                                long ndt = dtNotDternal ?
+//                                        finalEventTime - ((FasterList<LongObjectPair<Term>>) se.list).maxBy(LongObjectPair::getOne).getOne() :
+//                                        DTERNAL;
+//                                assert (ndt < Integer.MAX_VALUE);
+//                                return IMPL.the((int) ndt,
+//                                        Op.conjEvents(new FasterList(se)),
+//                                        finalEvent
+//                                );
+//                            }
+//                        }
 
 
                     }
@@ -1990,13 +1994,12 @@ public enum Op {
 //    }
 
 
-    public static boolean equalsOrContainEachOther(Term x, Term y) {
-        return x.unneg().equals(y.unneg()) || containEachOther(x, y);
-    }
-
-    public static boolean containEachOther(Term x, Term y) {
-        return containEachOther(x, y, recursiveCommonalityDelimeterStrong);
-    }
+//    public static boolean equalsOrContainEachOther(Term x, Term y) {
+//        return x.unneg().equals(y.unneg()) || containEachOther(x, y);
+//    }
+//    public static boolean containEachOther(Term x, Term y) {
+//        return containEachOther(x, y, recursiveCommonalityDelimeterStrong);
+//    }
 
     public static boolean containEachOther(Term x, Term y, Predicate<Term> delim) {
         int xv = x.volume();
@@ -2214,7 +2217,9 @@ public enum Op {
         return compound(dt, commute(dt, u.length) ? sorted(u) : u, true);
     }
 
-    /** alternate method args order for 2-term w/ infix DT */
+    /**
+     * alternate method args order for 2-term w/ infix DT
+     */
     public final Term the(Term a, int dt, Term b) {
         return the(dt, a, b);
     }
@@ -2291,11 +2296,13 @@ public enum Op {
 
     protected Term compound(int dt, Term[] u, boolean intern) {
         return (intern && internable(dt, u)) ?
-            cache.apply(new InternedCompound(this, u)) :
-            compound(dt, u);
+                cache.apply(new InternedCompound(this, u)) :
+                compound(dt, u);
     }
 
-    /** entry point into the term construction process */
+    /**
+     * entry point into the term construction process
+     */
     protected Term compound(int dt, Term[] u) {
 
         if (statement) {
@@ -2620,7 +2627,7 @@ public enum Op {
 //        }
 
 
-    final static class InternedCompound extends AbstractPLink<Term> implements HijackMemoize.Computation<InternedCompound,Term> {
+    final static class InternedCompound extends AbstractPLink<Term> implements HijackMemoize.Computation<InternedCompound, Term> {
         //X
         public final Op op;
         public Term[] subs;
@@ -2679,7 +2686,7 @@ public enum Op {
         }
 
         public float value() {
-            return 1 / (1 + subs.length/3f); //simple policy: prefer shorter
+            return 1 / (1 + subs.length / 3f); //simple policy: prefer shorter
         }
 
         @Override
@@ -2692,7 +2699,7 @@ public enum Op {
 
             //HACK extended interning
             int n = subs.length;
-            if (y!=null && y.subs()==n) {
+            if (y != null && y.subs() == n) {
                 if (n > 1) {
                     Subterms ys = y.subterms();
                     if (ys instanceof TermVector) {
@@ -2704,7 +2711,7 @@ public enum Op {
                 } else if (n == 1) {
                     Term y0 = y.sub(0);
                     Term s0 = subs[0];
-                    if (s0!=y0 && s0.equals(y0))
+                    if (s0 != y0 && s0.equals(y0))
                         subs[0] = y0;
                 }
             }

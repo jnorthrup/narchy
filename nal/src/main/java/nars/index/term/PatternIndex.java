@@ -15,6 +15,7 @@ import nars.term.var.Variable;
 
 import java.util.HashMap;
 
+import static nars.Op.CONJ;
 import static nars.Op.concurrent;
 import static nars.time.Tense.XTERNAL;
 
@@ -121,7 +122,7 @@ public class PatternIndex extends MapTermIndex {
 
             return new PatternCompound.PatternCompoundWithEllipsisCommutive(seed.op(),
                     //seed.dt(),
-                    XTERNAL,
+                    seed.op() != CONJ ? seed.dt() : XTERNAL,
                     e, v);
         } else {
 //            if (ellipsisTransform) {

@@ -37,10 +37,14 @@ public class Line1DSimplest extends NAgent {
         super( n);
 
 
-        in = senseNumber($.$safe("y:i"),                //$.inh($.the("i"), id),                 //$.inh(Atomic.the("i"), id),
+        in = senseNumber(
+                $.the("x"),
+                //$.$safe("y:i"),                //$.inh($.the("i"), id),                 //$.inh(Atomic.the("i"), id),
                 this.i
         );
-        senseNumber($.$safe("y:o"),                //$.inh($.the("i"), id),                 //$.inh(Atomic.the("i"), id),
+        senseNumber(
+                $.the("y"),
+                //$.$safe("y:o"),                //$.inh($.the("i"), id),                 //$.inh(Atomic.the("i"), id),
                 this.o
         );
 

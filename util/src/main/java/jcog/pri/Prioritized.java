@@ -18,7 +18,7 @@ public interface Prioritized extends Deleteable {
     /**
      * default minimum difference necessary to indicate a significant modification in budget float number components
      */
-    float EPSILON =             0.0002f;
+    float EPSILON =             0.0005f;
 
     static float sum(Prioritized... src) {
         return Util.sum(Prioritized::priElseZero, src);

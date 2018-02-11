@@ -5,28 +5,22 @@
 //  corresponds to extensional union, and extensional intersection corresponds
 //  to intensional union.
 
-    (P --> M), (S --> M), task("."), notSet(S), notSet(P), neqRCom(S,P) |- ((P | S) --> M), (Belief:Intersection)
-    (P --> M), (S --> M), task("."), notSet(S), notSet(P), neqRCom(S,P) |- ((P & S) --> M), (Belief:Union)
+    (P --> M), (S --> M), notSet(S), notSet(P), neq(S,P) |- ((P | S) --> M), (Belief:Intersection)
+    (P --> M), (S --> M), notSet(S), notSet(P), neq(S,P) |- ((P & S) --> M), (Belief:Union)
 
-    (M --> P), (M --> S), task("."), notSet(S), notSet(P), neqRCom(S,P) |- (M --> (P & S)), (Belief:Intersection)
-    (M --> P), (M --> S), task("."), notSet(S), notSet(P), neqRCom(S,P) |- (M --> (P | S)), (Belief:Union)
+    (M --> P), (M --> S), notSet(S), notSet(P), neq(S,P) |- (M --> (P & S)), (Belief:Intersection)
+    (M --> P), (M --> S), notSet(S), notSet(P), neq(S,P) |- (M --> (P | S)), (Belief:Union)
 
-    (P --> M), (S --> M), task("."), notSet(S), notSet(P), neq(S,P) |- ((P ~ S) --> M), (Belief:Difference)
-    (P --> M), (S --> M), task("."), notSet(S), notSet(P), neq(S,P) |- ((S ~ P) --> M), (Belief:DifferenceReverse)
+    (P --> M), (S --> M), notSet(S), notSet(P), neq(S,P) |- ((P ~ S) --> M), (Belief:Difference)
+    (P --> M), (S --> M), notSet(S), notSet(P), neq(S,P) |- ((S ~ P) --> M), (Belief:DifferenceReverse)
 
-    (M --> P), (M --> S), task("."), notSet(S), notSet(P), neq(S,P) |- (M --> (P - S)), (Belief:Difference)
-    (M --> P), (M --> S), task("."), notSet(S), notSet(P), neq(S,P) |- (M --> (S - P)), (Belief:DifferenceReverse)
+    (M --> P), (M --> S), notSet(S), notSet(P), neq(S,P) |- (M --> (P - S)), (Belief:Difference)
+    (M --> P), (M --> S), notSet(S), notSet(P), neq(S,P) |- (M --> (S - P)), (Belief:DifferenceReverse)
 
         //(P --> M), (S --> M), is(P,"+"), is(S,"+") |- (differ(P,S) --> M), (Belief:Difference)
         //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((intersect(A,X),intersect(B,Y)) --> M), (Belief:Intersection)
         //((A,B) --> M), ((X,Y) --> M), is(A,"+"), is(B,"+"), is(X,"+"), is(Y,"+") |- ((union(A,X),union(B,Y)) --> M), (Belief:Union)
 
-//raw product composition, may be redundant because general induction via && does the equivalent
- //    A, B, task("*"), belief("*") |- (A | B), (Belief:Intersection)
- //   A, B, task("*"), belief("*") |- (A & B), (Belief:Union)
-    A, B, task("*"), belief("*"), neq(A,B) |- (A - B), (Belief:Difference)
-
-//raw product decomposition ?
 
 //// inheritance decomposition ////////////////////////////////////////////////////////////////////////////////////
 //if (S --> M) is the case, and ((|,S,A..+) --> M) is not the case, then ((|,A..+) --> M) is not the case, hence Belief:DecomposePositiveNegativeNegative
@@ -37,40 +31,42 @@
      (M --> X), (M --> S), is(S,"&"), subOf(X,S) |- (M --> without(S,X)), (Belief:DecomposePositiveNegativeNegative)
      (M --> X), (M --> S), is(S,"|"), subOf(X,S) |- (M --> without(S,X)), (Belief:DecomposeNegativePositivePositive)
 
-     (S --> M), ((S ~ P) --> M) |- (P --> M), (Belief:DecomposePositiveNegativePositive)
-     (S --> M), ((P ~ S) --> M) |- (P --> M), (Belief:DecomposeNegativeNegativeNegative)
-
+     //DIFFi
      (M --> S), (M --> (S - P)) |- (M --> P), (Belief:DecomposePositiveNegativePositive)
-         //S, (S - P) |- P, (Belief:DecomposePositiveNegativePositive)
-
      (M --> S), (M --> (P - S)) |- (M --> P), (Belief:DecomposeNegativeNegativeNegative)
-         //S, (P - S) |- P, (Belief:DecomposeNegativeNegativeNegative)
+
+     //DIFFe
+     (S --> M), ((S ~ P) --> M) |- (P --> M), (Belief:DecomposePositiveNegativePositive)
+     (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeNegativeNegativeNegative)
+
+        //Raw DIFFe
+        S, (S ~ P) |- P, (Belief:DecomposePositiveNegativePositive)
+        P, (S ~ P) |- S, (Belief:DecomposeNegativeNegativeNegative)
 
 
-//NAL3 single premise decompose
 
-    (M --> S), S, is(S,"&") |- (M --> dropAnySet(S)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    (S --> M), S, is(S,"|") |- (dropAnySet(S) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+//Difference Goal Decompose TODO review
+        //DIFFe
+        //(B-->S), ((B ~ G) --> S) |- (G --> S), (Goal:Difference)
+        //(G-->S), ((B ~ G) --> S) |- (--,(B --> S)), (Goal:Difference)
 
+            //Raw DIFFe
+            //B, (B ~ G) |- G, (Goal:Difference)
+            //G, (B ~ G) |- (--,B), (Goal:Difference)
 
-
-        //1D:
-        //(X --> C), (X --> C), is(X,"+") |- (dropAnySet(X) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-            //(Y --> M), (X --> M), is(Y,"+"), is(X,"+") |- (differ(Y,X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-
-        //2D:
-        //((X,Y) --> C), ((X,Y) --> C), is(X,"+") |- ((dropAnySet(X),Y) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-        //((X,Y) --> C), ((X,Y) --> C), is(Y,"+") |- ((X,dropAnySet(Y)) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-
-
-    ((B ~ G) --> S), (B ~ G) |- (B --> S), (Belief:StructuralDeduction)
-        ((B ~ G) --> S), (B --> S) |- (G --> S), (Goal:DifferenceReverse)
-        ((B ~ G) --> S), (G --> S) |- (--,(B --> S)), (Goal:DifferenceReverse)
-    (S --> (B - G)), (B - G) |- (S --> B), (Belief:StructuralDeduction)
-        (S --> (B - G)), (S --> B) |- (S --> G), (Goal:DifferenceReverse)
-        (S --> (B - G)), (S --> G) |- (--,(S --> B)), (Goal:DifferenceReverse)
+        //DIFFi
+        //(S-->B), (S --> (B - G)) |- (S --> G), (Goal:Difference)
+        //(S-->G), (S --> (B - G)) |- (--,(S --> B)), (Goal:Difference)
 
 
 //experiment
 //     (M --> (S - P)), (M --> S), task("!") |- (M --> P), (Goal:DecomposePositiveNegativeNegative)
 //     (M --> (S - P)), (M --> P), task("!") |- (M --> S), (Goal:DecomposeNegativeNegativeNegative)
+
+//raw product composition, may be redundant because general induction via && does the equivalent
+//  (already in induction.nal)
+ //    A, B, task("*"), belief("*") |- (A | B), (Belief:Intersection)
+ //   A, B, task("*"), belief("*") |- (A & B), (Belief:Union)
+//    A, B, task("*"), belief("*"), neq(A,B) |- (A - B), (Belief:Difference)
+//    A, B, task("*"), belief("*"), neq(A,B) |- (B - A), (Belief:DifferenceReverse)
+

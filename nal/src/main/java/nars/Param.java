@@ -1,7 +1,10 @@
 package nars;
 
 import jcog.Util;
-import jcog.math.*;
+import jcog.math.FloatRange;
+import jcog.math.FloatRangeRounded;
+import jcog.math.IntRange;
+import jcog.math.Range;
 import jcog.pri.Pri;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
@@ -15,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.Op.*;
-import static nars.control.MetaGoal.*;
+import static nars.control.MetaGoal.newWants;
 
 /**
  * NAR Parameters
@@ -42,7 +45,7 @@ public abstract class Param {
      * pri threshold for emitting task activation events
      */
     @Range(min=0, max=0.5f)
-    public static float TASK_ACTIVATION_THRESHOLD = Pri.EPSILON*1;
+    public static float TASK_ACTIVATION_THRESHOLD = Pri.EPSILON*2;
 
     public static final boolean ETERNALIZE_EVICTED_TEMPORAL_TASKS = false;
 
@@ -119,10 +122,10 @@ public abstract class Param {
      * max budget for derivations from the task and optional belief budget
      */
     public static final FloatFloatToFloatFunction TaskBeliefToDerivation =
-            //Math::max;
-            //Util::or;
             Util::and;
+    //        Util::or;
     //UtilityFunctions::aveAri;
+    //Math::max;
 
 
     public static final PriMerge taskMerge = PriMerge.max;

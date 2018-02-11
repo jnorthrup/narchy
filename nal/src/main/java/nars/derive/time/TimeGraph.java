@@ -609,7 +609,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 //            }
 //        } else {
 //        }
-        return solveDT(x, TIMELESS, dt(x, aa, bb), each);
+        return solveDT(x, aa.when(), dt(x, aa, bb), each);
     }
 
     /**

@@ -313,7 +313,8 @@ public class NAL6Test extends NALTest {
         tester.believe("({lock1} --> lock)"); //en("Lock-1 is a lock.");
         tester.mustBelieve(cycles, "(<#1 --> key> && open(#1,{lock1}))",
                 1.00f,
-                0.73f
+                0.81f
+                //0.73f
         ); //en("I guess there is a key that can open Lock-1.");
 
     }
@@ -423,7 +424,7 @@ public class NAL6Test extends NALTest {
         tester.believe("<lock1 --> lock>"); //en("Lock-1 is a lock.");
 
         tester.mustBelieve(cycles, "((<$1 --> key> && <$2 --> lock>) ==> open($1,$2))",
-                1.00f, 0.45f); //en("I guess every lock can be opened by every key.");
+                1.00f, 0.81f); //en("I guess every lock can be opened by every key.");
 
 //        //the difference here is subtle
 //        tester.mustBelieve(cycles, "(<#1 --> lock> && (<$2 --> key> ==> open($2,#1)))",
@@ -523,7 +524,7 @@ public class NAL6Test extends NALTest {
         tester.believe("open(lock,lock1)");
         tester.mustBelieve(cycles,
                 "((open(lock,#1) && open($2,#1)) ==> key:$2)",
-                1.00f, 0.45f); //en("there is a lock with the property that when opened by something, this something is a key (induction)");
+                1.00f, 0.81f); //en("there is a lock with the property that when opened by something, this something is a key (induction)");
 
     }
 
@@ -828,5 +829,14 @@ public class NAL6Test extends NALTest {
 //                "<p3 ==> p5>.", 0, 1, 0, 1).run();
 //
 //    }
+
+    @Test
+    public void testRawProductDifference() {
+        test
+                .believe("(x,0)", 1f, 0.9f)
+                .believe("(x,1)", 0.5f, 0.9f)
+                .mustBelieve(cycles, "((x,1)~(x,0))", 0.0f, 0.81f, ETERNAL)
+                .mustBelieve(cycles, "((x,0)~(x,1))", 0.5f, 0.81f, ETERNAL);
+    }
 
 }

@@ -336,9 +336,8 @@ public class Emotion implements Meter {
         float vol = t.voluplexity();
 
         float cost = (vol / nar.termVolumeMax.floatValue())
-                //* pri;
+                * pri;
                 ;
-
         MetaGoal.learn(MetaGoal.Perceive, t.cause(), cost, nar);
 
         busy(pri, (int) Math.ceil(vol ));
