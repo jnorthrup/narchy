@@ -168,8 +168,8 @@ public class ProxyTerm<T extends Term> implements Term, CompoundDT {
     }
 
     @Override
-    public Term evalSafe(TermContext context, int remain) {
-        return ref.evalSafe(context, remain);
+    public Term evalSafe(TermContext context, Op supertermOp, int subterm, int remain) {
+        return ref.evalSafe(context, supertermOp, subterm, remain);
     }
 
     @Override

@@ -17,7 +17,6 @@ import nars.term.Term;
 import nars.term.TermHashMap;
 import nars.term.Termlike;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,13 +48,13 @@ public abstract class Unify extends Versioning implements Subst {
     @Nullable
     public final Op type;
 
-    @NotNull
+
     public final Set<Termutator> termutes = new LinkedHashSet(8);
 
 //    @NotNull
 //    public final TermIndex terms;
 
-    @NotNull
+
     public final VersionMap<Term, Term> xy;
 
     /**

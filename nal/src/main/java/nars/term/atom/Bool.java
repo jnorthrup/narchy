@@ -62,7 +62,7 @@ abstract public class Bool extends AtomicConst implements The {
     }
 
     @Override
-    public final Term evalSafe(TermContext context, int remain) {
+    public final Term evalSafe(TermContext context, Op supertermOp, int subterm, int remain) {
         return this;
     }
 

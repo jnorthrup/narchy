@@ -736,11 +736,14 @@ public class Derivation extends ProtoDerivation {
         else
             return compared.isNegative() ? subterm.neg() : subterm;
     });
+
+    private static final Atomic _tlRandom = (Atomic) $.the("termlinkRandom");
     final Functor.LambdaFunctor termlinkRandomProxy = Functor.f1("termlinkRandom", (x) -> {
         x = anon.get(x);
         if (x == null)
             return Null;
-        Term y = $.func("termlinkRandom", x).eval(nar.terms);
+
+        Term y = $.func(_tlRandom, x).eval(nar.terms.resolveFunctors);
         if (y!=null && y.op().conceptualizable)
             return anon.put(y);
         return Null;

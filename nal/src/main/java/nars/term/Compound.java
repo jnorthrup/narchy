@@ -609,7 +609,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     /*@NotNull*/
     @Override
-    default Term evalSafe(TermContext context, int remain) {
+    default Term evalSafe(TermContext context, Op supertermOp, int subterm, int remain) {
 
         /*if (hasAll(opBits))*/
 
@@ -623,17 +623,17 @@ public interface Compound extends Term, IPair, Subterms {
 
         /*if (subterms().hasAll(opBits))*/
 
-        Term[] xy = arrayShared();
+        Subterms ss = subterms();
+        Term[] xy = null;
         //any contained evaluables
         Op o = op();
         //int possiblyFunctional = o == INH ? Op.funcInnerBits : Op.funcBits;
-        boolean changed = false;
         //boolean recurseIfChanged = false;
         int ellipsisAdds = 0, ellipsisRemoves = 0;
 
-        for (int i = 0, evalSubsLength = xy.length; i < evalSubsLength; i++) {
-            Term xi = xy[i];
-            Term yi = xi.evalSafe(context, remain - 1);
+        for (int i = 0, evalSubsLength = ss.subs(); i < evalSubsLength; i++) {
+            Term xi = xy!=null ? xy[i] : ss.sub(i);
+            Term yi = xi.evalSafe(context, o, i, remain - 1);
             if (yi == null) {
                 return Null;
             } else {
@@ -645,9 +645,8 @@ public interface Compound extends Term, IPair, Subterms {
 
                 if (xi != yi) {
                     if ((!xi.equals(yi) || xi.getClass() != yi.getClass())) {
-                        if (!changed) {
+                        if (xy == null) {
                             xy = arrayClone(); //begin clone copy
-                            changed = true;
                         }
                         xy[i] = yi;
 //                    if (!recurseIfChanged)
@@ -660,6 +659,8 @@ public interface Compound extends Term, IPair, Subterms {
                 }
             }
         }
+
+        boolean changed = xy!=null;
 
         if (ellipsisAdds > 0) {
             //flatten ellipsis
@@ -675,7 +676,7 @@ public interface Compound extends Term, IPair, Subterms {
                 //HACK this shouldnt be necessary
                 u = Op.conjMerge(xy[0],xy[1], dt);
             } else {
-                u = o.the(dt, xy);
+                u = o.a(dt, xy);
             }
 
 //            if (recurseIfChanged)
@@ -696,9 +697,9 @@ public interface Compound extends Term, IPair, Subterms {
                 if (v instanceof AbstractPred) {
                     u = $.the(((AbstractPred) v).test(null));
                 } else if (v == null) {
-                    //return u; //null means to keep the same
+                    //null means to keep 'u' unchanged same
                 } else  {
-                    u = v;
+                    u = v; //continue with the evaluation result
                 }
             }
         }

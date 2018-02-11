@@ -147,7 +147,7 @@ public class reflect {
         @Override
         protected float leak(Task next) {
             Term x = next.term().conceptual();
-            Term r = $.func(REFLECT_OP, x).eval(n.terms).normalize();
+            Term r = $.func(REFLECT_OP, x).eval(n.terms.resolveFunctors).normalize();
             if (x.equals(r)) //can happen
                 return 0f;
             if ((r != null && r.subs() > 0)) {
@@ -205,7 +205,7 @@ public class reflect {
 
 
             Term x = next.term().conceptual();
-            Term reflectionSim = $.sim($.func(REFLECT_OP, x), x).eval(n.terms).normalize();
+            Term reflectionSim = $.sim($.func(REFLECT_OP, x), x).eval(n.terms.resolveFunctors).normalize();
             if ((reflectionSim != null && reflectionSim.subs() > 0)) {
                 int rvol = reflectionSim.volume();
                 if (rvol <= n.termVolumeMax.intValue()) {

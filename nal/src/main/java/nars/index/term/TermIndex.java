@@ -6,6 +6,7 @@ import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.concept.builder.ConceptBuilder;
 import nars.concept.builder.DefaultConceptBuilder;
+import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.NotNull;
@@ -19,11 +20,20 @@ import java.util.stream.Stream;
 /**
  *
  */
-public abstract class TermIndex implements TermContext {
+public abstract class TermIndex {
 
 
+    /** TODO make this a property of NAR , not TermIndex */
     public final ConceptBuilder conceptBuilder = new DefaultConceptBuilder();
+
     public NAR nar;
+
+    public final TermContext resolveFunctors = new Functor.FunctorResolver() {
+        @Override
+        public final Termed apply(Term term) {
+            return get(term, false);
+        }
+    };
 
     /**
      * internal get procedure (synchronous)
@@ -35,10 +45,7 @@ public abstract class TermIndex implements TermContext {
         return CompletableFuture.completedFuture(get(key, createIfMissing));
     }
 
-    @Override
-    public final Termed apply(Term term) {
-        return get(term, false);
-    }
+
 
     /**
      * sets or replaces the existing value, unless the existing value is a PermanentConcept it must not

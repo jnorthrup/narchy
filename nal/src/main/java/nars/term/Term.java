@@ -631,12 +631,20 @@ public interface Term extends Termed, Comparable<Termed> {
      */
     /*@NotNull*/
     default Term eval(TermContext context) {
-        return evalSafe(context, Param.MAX_EVAL_RECURSION);
+        return evalSafe(context, null, 0, Param.MAX_EVAL_RECURSION);
     }
 
     /*@NotNull*/
-    default Term evalSafe(TermContext context, int remain) {
-        return remain <= 0 ? Null : context.applyTermIfPossible(this);
+
+    /**
+     *
+     * @param context
+     * @param subterm current subterm index being evaluated
+     * @param remain recursion limit (valid until decreases to zero)
+     * @return
+     */
+    default Term evalSafe(TermContext context, Op supertermOp, int subterm, int remain) {
+        return remain <= 0 ? Null : context.applyTermIfPossible(this, supertermOp, subterm);
     }
 
 

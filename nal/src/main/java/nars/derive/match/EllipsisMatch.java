@@ -1,6 +1,7 @@
 package nars.derive.match;
 
 import nars.$;
+import nars.Op;
 import nars.index.term.TermContext;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
@@ -62,7 +63,7 @@ public class EllipsisMatch extends CompoundLight {
     }
 
     @Override
-    public Term evalSafe(TermContext context, int remain) {
+    public Term evalSafe(TermContext context, Op supertermOp, int subterm, int remain) {
         //dont eval until it's unwrapped
         return this;
     }

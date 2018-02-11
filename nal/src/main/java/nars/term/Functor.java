@@ -9,6 +9,7 @@ import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.concept.PermanentConcept;
 import nars.concept.builder.ConceptBuilder;
+import nars.index.term.TermContext;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -305,4 +306,20 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, F
         public abstract Term apply(Term a, Term b);
     }
 
+    public abstract static class FunctorResolver implements TermContext {
+
+        @Override
+        public Term applyTermIfPossible(Term x, Op supertermOp, int subterm) {
+            //only need to resolve for the predicate subterm of an INH
+            if (subterm==1 && supertermOp==INH && x.op()==ATOM) {
+                Termed y = apply(x);
+                if (y == null)
+                    return x;
+                else
+                    return y.term();
+            } else {
+                return x;
+            }
+        }
+    }
 }

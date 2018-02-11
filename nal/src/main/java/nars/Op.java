@@ -312,6 +312,11 @@ public enum Op {
                     //TODO junctionFlat any embedded XTERNAL CONJ subterms?
 
 
+                    if (u.length>1 && u[0].compareTo(u[1]) > 0) {
+                        u = u.clone();
+                        Arrays.sort(u); //dont use Terms.sorted which will de-duplicate and remove (x &&+1 x) cases.
+                    }
+
                     switch (u.length) {
                         case 0:
                             return True;
@@ -321,8 +326,6 @@ public enum Op {
 
                         case 2: {
 
-                            u = u.clone();
-                            Arrays.sort(u); //dont use Terms.sorted which will de-duplicate and remove (x &&+1 x) cases.
 
                             Term a = u[0];
                             if (a.op() == CONJ && a.dt() == XTERNAL && a.subs() == 2) {
@@ -351,26 +354,21 @@ public enum Op {
                         }
 
                         default:
-                            u = Terms.sorted(u);
-
-                            //allow co-negations, etc.
-
-//                            Term x = junctionFlat(DTERNAL, u);
-//                            if (x instanceof Bool) return x;
-//                            return x.dt(XTERNAL);
                             break;
                     }
 
-                    return u.length > 1 ? instance(CONJ, XTERNAL, u) : u[0];
+                    if (u.length > 1) {
+                        return instance(CONJ, XTERNAL, u);
+                    } else {
+                        return u[0];
+                    }
 
                 default: {
                     if (n != 2) {
                         return Null;
                     }
 
-                    Term a = u[0];
-                    Term b = u[1];
-                    ci = conjMerge(a, b, dt);
+                    ci = conjMerge(u[0], u[1], dt);
                 }
             }
 
@@ -2564,27 +2562,12 @@ public enum Op {
                 outer.addAll(csa);
 
             Term[] scs = sorted(outer);
-            if (scs.length == 1)
+            if (scs.length == 1) {
                 return scs[0];
+            } else {
+                return instance(CONJ, dt, scs);
+            }
 
-//                boolean dtChange = false;
-
-            //promote DTERNAL to ZERO if any components are ZERO
-//                if (dt == DTERNAL) {
-//                    for (Term x : scs) {
-//                        if (x.op() == CONJ && x.dt() == 0) {
-//                            dt = 0;
-//                            dtChange = true;
-//                            break;
-//                        }
-//                    }
-//                }
-
-
-            return instance(CONJ, dt, scs);
-//            return (Arrays.equals(scs, u)) ?
-//                    compound(CONJ, dt, scs) :  //DONE
-//                    CONJ.the(dt, scs);  //retry?
         }
     }
 
