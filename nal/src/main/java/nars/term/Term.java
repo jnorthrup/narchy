@@ -787,7 +787,7 @@ public interface Term extends Termed, Comparable<Termed> {
      * unnegation and normalization steps. this is why conceptual() and root() are
      * different
      */
-    default Term conceptual() {
+    default Term concept() {
         //throw new UnsupportedOperationException();
         return this;
     }

@@ -39,7 +39,7 @@ public class FZero extends NAgentX {
         NAgentX.runRT((n) -> {
 
             FZero a = null;
-            n.freqResolution.set(0.04f);
+            n.freqResolution.set(0.02f);
             n.confResolution.set(0.02f);
             n.confMin.set(0.02f);
             a = new FZero(n);
@@ -60,8 +60,9 @@ public class FZero extends NAgentX {
 
         Bitmap2DSensor<Scale> c = senseCamera($.the("cam"), new Scale(() -> fz.image,
                 //32, 24
-                24, 16
-        )/*.blur()*/).resolution(0.04f);
+                //24, 16
+                10,4
+        )/*.blur()*/).resolution(0.1f);
 
 //        Bitmap2DSensor<Scale> cDelta = senseCamera($.the("camDelta"), new Scale(() -> fz.image,
 //                //32, 24
@@ -402,7 +403,7 @@ public class FZero extends NAgentX {
                 //-0.5f /* bias */ +
                 (float) (-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
                         //((float)fz.vehicleMetrics[0][6]/100f)+
-                        deltaDistance / (fps*5)), -1f, +1f);
+                        deltaDistance / (fps*2)), -1f, +1f);
 
         //lifesupport
         fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));

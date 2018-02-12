@@ -63,9 +63,9 @@ public class CompoundCached implements Compound, The {
     }
 
     @Override
-    public Term conceptual() {
+    public Term concept() {
         Term concepted = this.concepted;
-        return (concepted != null) ? concepted : (this.concepted = Compound.super.conceptual());
+        return (concepted != null) ? concepted : (this.concepted = Compound.super.concept());
     }
 
     @Override

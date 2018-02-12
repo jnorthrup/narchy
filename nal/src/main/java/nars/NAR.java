@@ -282,7 +282,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
         Util.toMap( clazz, "concept class", x::put);
 
-        x.put("term cache", Op.cache.summary());
+        x.put("term cache (eternal)", Op.cache.summary());
+        x.put("term cache (temporal)", Op.cacheTemporal.summary());
 
         return x;
 

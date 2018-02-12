@@ -95,8 +95,8 @@ public class ProxyTerm<T extends Term> implements Term, CompoundDT {
     }
 
     @Override
-    public Term conceptual() {
-        return ref.conceptual();
+    public Term concept() {
+        return ref.concept();
     }
     
     @Override

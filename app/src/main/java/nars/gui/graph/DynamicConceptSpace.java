@@ -354,7 +354,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
             Term term = ttt.term();
             if (term.op().conceptualizable) {
-                Term tt = term.conceptual();
+                Term tt = term.concept();
                 if (!tt.equals(src.id.term())) {
                     @Deprecated Concept cc = nar.concept(tt); //TODO generic key should be Term not Concept this would avoid a lookup in the main index
                     if (cc != null) {

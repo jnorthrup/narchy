@@ -744,9 +744,9 @@ public class NAL6Test extends NALTest {
     public void testDecomposeConjNeg3() {
         test
                 .believe("(&&, --y, --z, --w)")
-                .mustBelieve(cycles*2, "y", 0f, 0.73f)
-                .mustBelieve(cycles*2, "z", 0f, 0.73f)
-                .mustBelieve(cycles*2, "w", 0f, 0.73f)
+                .mustBelieve(cycles, "y", 0f, 0.73f)
+                .mustBelieve(cycles, "z", 0f, 0.73f)
+                .mustBelieve(cycles, "w", 0f, 0.73f)
         ;
     }
 

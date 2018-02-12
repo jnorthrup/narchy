@@ -238,6 +238,16 @@ public class ActivateTest {
         testTemplates("(c<->a)",
                 "[a, c]");
     }
+    @Test
+    public void testInheritSet() throws Narsese.NarseseException {
+        testTemplates("(x-->[y])",
+                "[[y], x]");
+    }
+    @Test
+    public void testImplicateInhSet() throws Narsese.NarseseException {
+        testTemplates("(($1-->[melted])=|>($1-->[pliable]))",
+                "[($1-->[pliable]), ($1-->[melted])]");
+    }
 
     @Test
     public void testTemplateSimProdCompound() throws Narsese.NarseseException {

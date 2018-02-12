@@ -282,7 +282,7 @@ public class TermReductionsTest extends NarseseTest {
                             $.$("a"),
                             $.$("b"),
                             $.$("c")
-                    ).conceptual().toString(), ()->"dt=" + dt);
+                    ).concept().toString(), ()->"dt=" + dt);
         }
 
         //"(&&,(--,(&&,(bx-->noid),(happy-->noid),#1)),(--,(&&,(bx-->noid),(happy-->noid),#1)),(--,(dx-->noid)))",
@@ -291,11 +291,11 @@ public class TermReductionsTest extends NarseseTest {
         assertEquals(
                 "(&&,(bx-->noid),(happy-->noid),#1)",
                 $("(--,(((bx-->noid) &| (happy-->noid)) &| #1))")
-                        .conceptual().toString());
+                        .concept().toString());
         assertEquals(
                 "(x,(--,(&&,a,b,c)))",
                 $("(x,(--,(( a &| b) &| c)))")
-                        .conceptual().toString());
+                        .concept().toString());
     }
 
 

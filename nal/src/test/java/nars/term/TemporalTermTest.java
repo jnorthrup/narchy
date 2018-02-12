@@ -130,17 +130,17 @@ public class TemporalTermTest {
     @Test public void testConceptualizationWithoutConjReduction() throws Narsese.NarseseException {
         String s ="((--,((happy-->#1) &&+345 (#1,zoom))) &&+1215 (--,((#1,zoom) &&+10 (happy-->#1))))";
         assertEquals("((--,((happy-->#1)&&(#1,zoom))) &&+- (--,((happy-->#1)&&(#1,zoom))))",
-                $(s).conceptual().toString());
+                $(s).concept().toString());
     }
     @Test public void testConceptualizationWithoutConjReduction2() throws Narsese.NarseseException {
         String s ="(((--,((--,(joy-->tetris))&|#1)) &&+30 #1) &&+60 (joy-->tetris))";
         assertEquals("(((--,((--,(joy-->tetris))&&#1)) &&+- #1)&&(joy-->tetris))",
-                $(s).conceptual().toString());
+                $(s).concept().toString());
     }
 
     @Test public void testStableConceptualization6a() throws Narsese.NarseseException {
         Term s = $.$("((tetris($1,#2) &&+290 tetris(isRow,(8,false),true))=|>(tetris(checkScore,#2)&|tetris($1,#2)))");
-        assertEquals("((tetris(isRow,(8,false),true)&&tetris($1,#2)) ==>+- (tetris(checkScore,#2)&&tetris($1,#2)))", s.conceptual().toString());
+        assertEquals("((tetris(isRow,(8,false),true)&&tetris($1,#2)) ==>+- (tetris(checkScore,#2)&&tetris($1,#2)))", s.concept().toString());
     }
 
     @Test
@@ -184,9 +184,9 @@ public class TemporalTermTest {
 
     static Term ceptualStable(String s) throws Narsese.NarseseException {
         Term c = $(s);
-        Term c1 = c.conceptual();
+        Term c1 = c.concept();
         //assertNotEquals(c, c1);
-        Term c2 = c1.conceptual();
+        Term c2 = c1.concept();
         assertEquals(c1, c2, ()->"unstable: irst " + c1 + "\n\t, then " + c2);
         return c1;
     }
@@ -1042,7 +1042,7 @@ public class TemporalTermTest {
         }
 
         {
-            Term c = t.conceptual();
+            Term c = t.concept();
             assertTrue(c instanceof Compound);
             assertEquals(r, c);
         }
@@ -1090,7 +1090,7 @@ public class TemporalTermTest {
         assertEquals(
                 //"(&&,(--,(happy &&+- vy)),happy,vy)",
                 "((--,(vy&&happy)) &&+- (vy&&happy))",
-                y.conceptual().toString());
+                y.concept().toString());
 
     }
 
@@ -1104,7 +1104,7 @@ public class TemporalTermTest {
 
     static void assertConceptual(String cexp, String c) throws Narsese.NarseseException {
         Term p = $(c);
-        assertEquals(cexp, p.conceptual().toString());
+        assertEquals(cexp, p.concept().toString());
     }
 
     @Test

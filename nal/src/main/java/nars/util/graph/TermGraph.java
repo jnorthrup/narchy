@@ -123,7 +123,7 @@ public enum TermGraph {
                             if (s.op().conceptualizable && p.op().conceptualizable) {
                                 g.addNode(s);
                                 g.addNode(p);
-                                g.setEdge(s, p, impl.conceptual());
+                                g.setEdge(s, p, impl.concept());
                             }
                         }
                     }, tc);
@@ -189,7 +189,7 @@ public enum TermGraph {
                 //if (!g.nodes().contains(s) || !done.contains(p)) {
 //                            if ((s.equals(t) || s.containsRecursively(t)) ||
 //                                    (p.equals(t) || p.containsRecursively(t))) {
-                next.accept(term.conceptual());
+                next.accept(term.concept());
                 // }
                 //}
             }

@@ -52,7 +52,7 @@ public class NodeConcept implements Concept {
         templates = buildTemplates(term);
         if (Param.DEBUG_EXTRA) {
             for (Termed target : templates) {
-                if (!target.term().equals(target.term().root())) {
+                if (!target.term().equals(target.term().concept())) {
                     throw new RuntimeException("attempted non-root linkage: " + target);
                 }
             }

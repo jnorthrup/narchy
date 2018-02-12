@@ -441,7 +441,7 @@ public class RevisionTest {
         NAR s = NARS.shell();
         s.dtMergeOrChoose.set(false);
 
-        assertEquals(a.conceptual(), b.conceptual());
+        assertEquals(a.concept(), b.concept());
 
         //@NotNull Set<Term> ut = ((Compound) a).recurseTermsToSet(ATOM);
 

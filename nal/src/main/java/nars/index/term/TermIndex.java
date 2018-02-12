@@ -120,7 +120,7 @@ public abstract class TermIndex {
         } else {
             Term xx = x.term();
             if (xx.op().conceptualizable) {
-                y = xx.conceptual();
+                y = xx.concept();
                 Op yop = y.op();
                 if (!yop.conceptualizable || yop != x.op()) {
                     //x.term().conceptual(); //HACK for debugging
@@ -147,7 +147,7 @@ public abstract class TermIndex {
             //otherwise if it is deleted, continue
             y = ct.term();
         } else {
-            y = x.term().conceptual();
+            y = x.term().concept();
             if (!y.op().conceptualizable)
                 return; //TODO error?
         }

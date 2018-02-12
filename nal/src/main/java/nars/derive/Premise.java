@@ -189,7 +189,7 @@ public class Premise extends Pri {
                     }
 
                     belief = beliefConcept.beliefs().match(focusStart, focusEnd, beliefTerm, n,
-                            beliefConcept.term().equals(task.term().conceptual()) ? (x) -> {
+                            beliefConcept.term().equals(task.term().concept()) ? (x) -> {
                                 return !x.equals(task);
                             } : null);
                 }

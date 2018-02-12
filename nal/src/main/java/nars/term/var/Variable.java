@@ -41,7 +41,7 @@ public interface Variable extends Atomic {
     }
 
     @Override
-    default Term conceptual() {
+    default Term concept() {
         throw new UnsupportedOperationException();
     }
 

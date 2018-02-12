@@ -812,11 +812,11 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     @Override
-    default Term conceptual() {
+    default Term concept() {
 
         Op op;
         if ((op = op()) == NEG)
-            return unneg().conceptual();
+            return unneg().concept();
 
         Term term = root().unneg(); //unneg just in case
 

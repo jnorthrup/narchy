@@ -52,7 +52,7 @@ abstract public class Bool extends AtomicConst implements The {
 
     @Override
     @NotNull
-    public final Term conceptual() {
+    public final Term concept() {
         return Null;
     }
 

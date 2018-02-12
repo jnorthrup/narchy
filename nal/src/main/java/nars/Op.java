@@ -632,6 +632,7 @@ public enum Op {
      * specifier for any NAL level
      */
     private static final int ANY_LEVEL = 0;
+    public static final int SectBits = or(Op.SECTe, Op.SECTi);
     public static final int SetBits = or(Op.SETe, Op.SETi);
     public static final int Temporal = or(Op.CONJ, Op.IMPL);
     public static final int VariableBits = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
@@ -2254,8 +2255,8 @@ public enum Op {
     }
 
     protected boolean internable(int dt, Term[] u) {
-        if (dt != DTERNAL)
-            return false;
+//        if (dt ... )
+//            return false;
 
         return internable(u);
     }
@@ -2275,35 +2276,12 @@ public enum Op {
         return cache;
     }
 
-    final static HijackMemoize<InternedCompound, Term> cache = new HijackMemoize<>(
-            (nc) -> nc.op.compound(DTERNAL, nc.subs), 128 * 1024,
-            4, false) {
-
-        @Override
-        public float value(InternedCompound x) {
-            return DEFAULT_VALUE * x.value();
-        }
-
-        @Override
-        public Computation<InternedCompound, Term> computation(InternedCompound xy, Term y) {
-            xy.set(y);
-            xy.priSet(value(xy));
-            return xy;
-        }
-
-        //        @Override
-//        protected void onIntern(InternedCompound x) {
-//            x.compact(this::getIfPresent);
-//        }
-
-//        @Override
-//        public void onRemove(Computation<InternedCompound, Term> x) {
-//        }
-    };
+    final static TermCache cache = new TermCache(192 * 1024, 4, false);
+    final static TermCache cacheTemporal = new TermCache(128 * 1024, 3, false);
 
     protected Term compound(int dt, Term[] u, boolean intern) {
         return (intern && internable(dt, u)) ?
-                cache.apply(new InternedCompound(this, u)) :
+                (dt==DTERNAL ? cache : cacheTemporal).apply(new InternedCompound(this, dt, u)) :
                 compound(dt, u);
     }
 
@@ -2622,18 +2600,21 @@ public enum Op {
     final static class InternedCompound extends AbstractPLink<Term> implements HijackMemoize.Computation<InternedCompound, Term> {
         //X
         public final Op op;
+        public final int dt;
         public Term[] subs;
+
         private final int hash;
 
         //Y
         public Term y = null;
 
-        InternedCompound(Op o, Term... subs) {
+        InternedCompound(Op o, int dt, Term... subs) {
             super();
             this.op = o;
+            this.dt = dt;
             this.subs = subs;
 
-            int h = o.bit;
+            int h = Util.hashCombine(o.bit, dt);
             for (Term x : subs)
                 h = Util.hashCombine(h, x.hashCode());
 
@@ -2674,11 +2655,26 @@ public enum Op {
         @Override
         public boolean equals(Object obj) {
             InternedCompound p = (InternedCompound) obj;
-            return hash == p.hash && op == p.op && Arrays.equals(subs, p.subs);
+            return hash == p.hash && op == p.op && dt == p.dt && Arrays.equals(subs, p.subs);
         }
 
         public float value() {
-            return 1 / (1 + subs.length / 3f); //simple policy: prefer shorter
+            return 0.5f;
+//            float f;
+//            switch (dt) {
+//                case DTERNAL:
+//                    f = 1f;
+//                    break;
+//                case XTERNAL:
+//                case 0:
+//                    f = 0.75f;
+//                    break;
+//                default:
+//                    f = 0.25f;
+//                    break;
+//            }
+//            return f;
+            //return f / (1 + subs.length / 10f); //simple policy: prefer shorter
         }
 
         @Override
@@ -2711,4 +2707,31 @@ public enum Op {
     }
 
 
+    public static class TermCache/*<I extends InternedCompound>*/ extends HijackMemoize<InternedCompound,Term> {
+
+        public TermCache(int capacity, int reprobes, boolean soft) {
+            super(x -> x.op.compound(x.dt, x.subs), capacity, reprobes, soft);
+        }
+
+        @Override
+        public float value(InternedCompound x) {
+            return DEFAULT_VALUE * x.value();
+        }
+
+        @Override
+        public Computation<InternedCompound, Term> computation(InternedCompound xy, Term y) {
+            xy.set(y);
+            xy.priSet(value(xy));
+            return xy;
+        }
+
+        //        @Override
+//        protected void onIntern(InternedCompound x) {
+//            x.compact(this::getIfPresent);
+//        }
+
+//        @Override
+//        public void onRemove(Computation<InternedCompound, Term> x) {
+//        }
+    }
 }

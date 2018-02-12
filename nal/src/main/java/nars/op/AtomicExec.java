@@ -158,7 +158,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
                 if (!tt.isDeleted()) {
                     exe.accept(tt, n);
                 }
-                boolean d = dispatched.remove(tt.term().conceptual());
+                boolean d = dispatched.remove(tt.term().concept());
                 assert (d);
             }
 
@@ -186,7 +186,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
             return null; //absorbed
         } else {
 
-            active.put(new PLink(x.term().conceptual() /* incase it contains temporal, we will dynamically match task anyway on invocation */,
+            active.put(new PLink(x.term().concept() /* incase it contains temporal, we will dynamically match task anyway on invocation */,
                     x.priElseZero()
             ));
 

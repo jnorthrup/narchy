@@ -51,7 +51,7 @@ public class LinkageTest extends NALTest {
     public boolean isPassed2(String premise1Str, @Nullable Concept ret2) {
         Term premise1 = null;
         try {
-            premise1 = $.$(premise1Str).conceptual();
+            premise1 = $.$(premise1Str).concept();
         } catch (Narsese.NarseseException e) {
             return false;
         }

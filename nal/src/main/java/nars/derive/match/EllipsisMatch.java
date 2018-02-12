@@ -81,7 +81,7 @@ public class EllipsisMatch extends CompoundLight {
 
 
     @Override
-    public /*@NotNull*/ Term conceptual() {
+    public /*@NotNull*/ Term concept() {
         throw new UnsupportedOperationException();
     }
 

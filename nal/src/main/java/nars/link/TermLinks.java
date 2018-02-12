@@ -40,8 +40,8 @@ public enum TermLinks {
                     new ArrayHashSet<>(term.volume());
 
             if (Param.DEBUG_EXTRA) {
-                if (!term.equals(term.conceptual())) {
-                    throw new RuntimeException("templates only should be generated for rooted terms:\n\t" + term + "\n\t" + term.conceptual());
+                if (!term.equals(term.concept())) {
+                    throw new RuntimeException("templates only should be generated for rooted terms:\n\t" + term + "\n\t" + term.concept());
                 }
             }
 
@@ -107,9 +107,33 @@ public enum TermLinks {
             return false;
 
 
+
+
         Op r = root.op();
-        if (depth >= 2 && (r == IMPL || r == CONJ)) {
-            return !s.isAny(PROD.bit | Op.SetBits | Op.SECTe.bit | Op.SECTi.bit);
+        if (r == INH || r == SIM) {
+            if (depth >= 2) {
+                if (s.isAny(Op.SetBits))
+                    return false;
+            }
+
+//            if (depth > 2) {
+//                if (s.isAny(Op.SectBits))
+//                    return false;
+//            }
+        }
+
+//        if (r == IMPL) {
+//            if (depth > 2) {
+//                if (s.isAny())
+//                    return false;
+//            }
+//        }
+
+        if ((r == IMPL || r == CONJ) ) {
+            if (depth >= 2)
+                if (s.isAny(PROD.bit | Op.SetBits | Op.SectBits ))
+                    return false;
+
         }
         if (depth > 2 && s == PROD)
             return false;
