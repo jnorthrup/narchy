@@ -29,7 +29,7 @@ public class FZero extends NAgentX {
 
     float fwdSpeed = 14;
     float rotSpeed = 0.45f/3f;
-    static float fps = 35f;
+    static float fps = 30f;
 
     public static void main(String[] args) {
 
@@ -61,13 +61,15 @@ public class FZero extends NAgentX {
         Bitmap2DSensor<Scale> c = senseCamera($.the("cam"), new Scale(() -> fz.image,
                 //32, 24
                 //24, 16
-                10,4
-        )/*.blur()*/).resolution(0.1f);
+                //10,4
+                16,8
+        )/*.blur()*/).resolution(0.05f);
 
-//        Bitmap2DSensor<Scale> cDelta = senseCamera($.the("camDelta"), new Scale(() -> fz.image,
-//                //32, 24
-//                6, 4
-//        )/*.blur()*/).modeDiffer().resolution(0.1f);
+        Bitmap2DSensor<Scale> cDelta = senseCamera($.the("camDelta"), new Scale(() -> fz.image,
+                //32, 24
+                //6, 4
+                16,8
+        )/*.blur()*/).modeDiffer().resolution(0.1f);
 
 
 //        new AutoConceptualizer(c.pixels, true, 10, nar) {

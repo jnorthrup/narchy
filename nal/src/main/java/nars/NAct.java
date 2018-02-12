@@ -504,8 +504,8 @@ public interface NAct {
             int ip = p ? 0 : 1;
             CC[ip] = action;
             g[ip] = gg != null ?
-                    gg.freq()
-                    //gg.expectation()
+                    //gg.freq()
+                    gg.expectation()
                     :
                     //0f;
                     0.5f;

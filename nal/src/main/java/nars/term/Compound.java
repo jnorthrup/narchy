@@ -614,7 +614,7 @@ public interface Compound extends Term, IPair, Subterms {
         /*if (hasAll(opBits))*/
 
 
-        if (remain <= 0)
+        if (remain-- <= 0)
             return Null;
 
 //        Termed ff = context.applyIfPossible(this);
@@ -633,7 +633,7 @@ public interface Compound extends Term, IPair, Subterms {
 
         for (int i = 0, evalSubsLength = ss.subs(); i < evalSubsLength; i++) {
             Term xi = xy!=null ? xy[i] : ss.sub(i);
-            Term yi = xi.evalSafe(context, o, i, remain - 1);
+            Term yi = xi.evalSafe(context, o, i, remain);
             if (yi == null) {
                 return Null;
             } else {
@@ -670,17 +670,7 @@ public interface Compound extends Term, IPair, Subterms {
 
         Term u;
         if (changed) {
-
-            int dt = dt();
-//            if (o == CONJ && xy.length ==2 && dt!=0 && dt!=DTERNAL && dt!=XTERNAL) {
-//                //HACK this shouldnt be necessary
-//                u = Op.conjMerge(xy[0],xy[1], dt);
-//            } else {
-                u = o.a(dt, xy);
-//            }
-
-//            if (recurseIfChanged)
-//                return u.evalSafe(context, remain);
+            u = o.a(dt(), xy);
         } else {
             u = this;
         }
