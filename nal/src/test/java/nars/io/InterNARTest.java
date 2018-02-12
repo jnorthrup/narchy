@@ -1,7 +1,10 @@
 package nars.io;
 
 import jcog.Util;
-import nars.*;
+import nars.InterNAR;
+import nars.NAR;
+import nars.NARS;
+import nars.Narsese;
 import nars.time.Tense;
 import org.junit.jupiter.api.Test;
 

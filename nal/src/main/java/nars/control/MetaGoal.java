@@ -8,6 +8,7 @@ import jcog.list.FasterList;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatPolarNormalized;
+import nars.Emotion;
 import nars.NAR;
 import nars.NAgent;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
@@ -106,12 +107,6 @@ public enum MetaGoal {
         wants[ordinal()] = v;
     }
 
-    /**
-     * creates a new goal vector
-     */
-    public static float[] newWants() {
-        return new float[MetaGoal.values().length];
-    }
 
 
     public static final Logger logger = LoggerFactory.getLogger(MetaGoal.class);
@@ -137,7 +132,8 @@ public enum MetaGoal {
     public static AgentBuilder newController(NAgent a) {
         NAR n = a.nar;
 
-        Arrays.fill(n.want, 0);
+        Emotion ne = n.emotion;
+        Arrays.fill(ne.want, 0);
 
         AgentBuilder b = new AgentBuilder(
                 //DQN::new,
@@ -169,18 +165,18 @@ public enum MetaGoal {
             final int gg = g.ordinal();
             float min = -2;
             float max = +2;
-            b.in(new FloatPolarNormalized(() -> n.want[gg], min, max));
+            b.in(new FloatPolarNormalized(() -> ne.want[gg], min, max));
 
             float step = 0.5f;
 
             b.out(2, (w) -> {
-                float str = 0.05f + step * Math.abs(n.want[gg] / 4f);
+                float str = 0.05f + step * Math.abs(ne.want[gg] / 4f);
                 switch (w) {
                     case 0:
-                        n.want[gg] = Math.min(max, n.want[gg] + str);
+                        ne.want[gg] = Math.min(max, ne.want[gg] + str);
                         break;
                     case 1:
-                        n.want[gg] = Math.max(min, n.want[gg] - str);
+                        ne.want[gg] = Math.max(min, ne.want[gg] - str);
                         break;
                 }
             });

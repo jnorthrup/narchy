@@ -62,8 +62,8 @@ public class WorkerMultiExecTest {
                 .get();
 
         //all -1 except goal production
-        Arrays.fill(n.want, -1);
-        n.want[MetaGoal.Desire.ordinal()] = 1;
+        Arrays.fill(n.emotion.want, -1);
+        n.emotion.want(MetaGoal.Desire, +1);
 
         Exec.Revaluator r = new Focus.DefaultRevaluator();
         int cycles = 100;

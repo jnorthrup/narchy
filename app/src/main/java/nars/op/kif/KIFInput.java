@@ -428,7 +428,8 @@ public class KIFInput implements Runnable {
         Param.DEBUG = true;
 
         NAR e = NARS.tmp();
-        MetaGoal.Perceive.set(e.want, -0.1f);
+        //MetaGoal.Perceive.set(e.emotion.want, -0.1f);
+        e.emotion.want(MetaGoal.Perceive, -0.1f);
 
         new PrologCore(e);
 

@@ -118,7 +118,7 @@ public final class AliasConcept extends TaskConcept {
         //unreference the target. this avoids creating a GC nightmare
         //((AliasAtom)term).target = ((AliasAtom)term);
         if (!abbr.isDeleted()) {
-            nar.terms.set(abbr.term(), abbr); //restore abbr's entry in the index
+            nar.concepts.set(abbr.term(), abbr); //restore abbr's entry in the index
 
             //dont delete the bags and tables as invoking the super method would,
             // since they may be held by the abbreviated concept if it still exists

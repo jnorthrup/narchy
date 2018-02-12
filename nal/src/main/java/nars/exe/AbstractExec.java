@@ -10,7 +10,6 @@ import nars.concept.Concept;
 import nars.control.Activate;
 
 import java.util.HashMap;
-import java.util.Random;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -85,12 +84,12 @@ abstract public class AbstractExec extends Exec {
 
                                 @Override
                                 public void onAdd(Activate value) {
-                                    value.id.state(nar.terms.conceptBuilder.awake());
+                                    value.id.state(nar.conceptBuilder.awake());
                                 }
 
                                 @Override
                                 public void onRemove(Activate value) {
-                                    value.id.state(nar.terms.conceptBuilder.sleep());
+                                    value.id.state(nar.conceptBuilder.sleep());
                                 }
                             }
 
@@ -102,12 +101,12 @@ abstract public class AbstractExec extends Exec {
 
                                 @Override
                                 public void onAdd(Activate value) {
-                                    value.id.state(nar.terms.conceptBuilder.awake());
+                                    value.id.state(nar.conceptBuilder.awake());
                                 }
 
                                 @Override
                                 public void onRemove(Activate value) {
-                                    value.id.state(nar.terms.conceptBuilder.sleep());
+                                    value.id.state(nar.conceptBuilder.sleep());
                                 }
                             }
             ;

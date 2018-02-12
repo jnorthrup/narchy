@@ -7,15 +7,11 @@ import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.The;
-import nars.derive.Derivation;
-import nars.derive.ProtoDerivation;
-import nars.derive.Conclude;
-import nars.derive.PostCondition;
-import nars.derive.Solve;
+import nars.derive.*;
 import nars.derive.constraint.*;
 import nars.derive.op.*;
 import nars.index.term.PatternIndex;
-import nars.index.term.TermIndex;
+import nars.index.term.ConceptIndex;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
@@ -218,7 +214,7 @@ public class PremiseRule {
     /**
      * deduplicate and generate match-optimized compounds for rules
      */
-    private void compile(TermIndex index) {
+    private void compile(ConceptIndex index) {
         Term[] premisePattern = ((Subterms) id.sub(0)).arrayClone();
         premisePattern[0] = index.get(premisePattern[0], true).term(); //task pattern
         premisePattern[1] = index.get(premisePattern[1], true).term(); //belief pattern

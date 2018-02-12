@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 
-public class CaffeineIndex extends MaplikeTermIndex implements CacheLoader<Term, Termed>, RemovalListener<Term, Termed>, Executor {
+public class CaffeineIndex extends MaplikeConceptIndex implements CacheLoader<Term, Termed>, RemovalListener<Term, Termed>, Executor {
 
     /**
      * holds compounds and subterm vectors
@@ -96,7 +96,7 @@ public class CaffeineIndex extends MaplikeTermIndex implements CacheLoader<Term,
     @Override
     public Termed get(Term x, boolean createIfMissing) {
         if (createIfMissing)
-            return concepts.get(x, conceptBuilder::apply);
+            return concepts.get(x, nar.conceptBuilder::apply);
         else
             return concepts.getIfPresent(x);
     }
@@ -148,11 +148,11 @@ public class CaffeineIndex extends MaplikeTermIndex implements CacheLoader<Term,
 
     @Override
     public Termed load(Term key) {
-        return conceptBuilder.apply(key, null);
+        return nar.conceptBuilder.apply(key, null);
     }
 
     @Override
     public Termed reload(Term key, Termed oldValue) {
-        return conceptBuilder.apply(key, oldValue);
+        return nar.conceptBuilder.apply(key, oldValue);
     }
 }

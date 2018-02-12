@@ -12,7 +12,7 @@ import nars.IO;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
-import nars.index.term.map.MaplikeTermIndex;
+import nars.index.term.map.MaplikeConceptIndex;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.var.Variable;
@@ -32,7 +32,7 @@ import static jcog.Texts.n2;
 import static jcog.pri.PriCache.Hold.SOFT;
 import static jcog.pri.PriCache.Hold.STRONG;
 
-public class PriMapTermIndex extends MaplikeTermIndex {
+public class PriMapConceptIndex extends MaplikeConceptIndex {
 
     //final IntCountsHistogram conceptScores = new IntCountsHistogram(1000, 2);
 
@@ -68,7 +68,7 @@ public class PriMapTermIndex extends MaplikeTermIndex {
     final EntryBag good = new EntryBag(PriMerge.max, activeGood);
     final EntryBag bad = new EntryBag(PriMerge.max, activeBad);
 
-    public PriMapTermIndex() {
+    public PriMapConceptIndex() {
         super();
         this.concepts = new PriCache<>() {
 
@@ -178,7 +178,7 @@ public class PriMapTermIndex extends MaplikeTermIndex {
             protected void onRemove(Term term, Concept termed) {
                 assert (!(termed instanceof PermanentConcept));
                 //System.err.println("remove: " + term);
-                PriMapTermIndex.this.onRemove(termed);
+                PriMapConceptIndex.this.onRemove(termed);
             }
 
             /** terrorize the neighborhood graph of a killed victim
@@ -243,7 +243,7 @@ public class PriMapTermIndex extends MaplikeTermIndex {
 
         if (createIfMissing) {
             //HACK when switching to Term,Concept use 'conceptBuilder' itself not this adapter
-            return concepts.compute(x, (term, u) -> (Concept) conceptBuilder.apply(term, u));
+            return concepts.compute(x, (term, u) -> (Concept) nar.conceptBuilder.apply(term, u));
         } else {
             return concepts.get(x);
         }

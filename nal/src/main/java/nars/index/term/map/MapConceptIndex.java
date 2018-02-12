@@ -10,11 +10,11 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /** additionally caches subterm vectors */
-public class MapTermIndex extends MaplikeTermIndex {
+public class MapConceptIndex extends MaplikeConceptIndex {
 
     protected final Map<Term,Termed> concepts;
 
-    public MapTermIndex(Map<Term, Termed> map) {
+    public MapConceptIndex(Map<Term, Termed> map) {
         super();
         this.concepts = map;
     }
@@ -28,7 +28,7 @@ public class MapTermIndex extends MaplikeTermIndex {
     @Override
     public Termed get(Term x, boolean createIfMissing) {
         if (createIfMissing) {
-            return concepts.compute(x, conceptBuilder);
+            return concepts.compute(x, nar.conceptBuilder);
         } else {
             return concepts.get(x);
         }

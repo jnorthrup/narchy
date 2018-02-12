@@ -35,7 +35,7 @@ public class NodeConcept implements Concept {
     protected final CompactArrayMap<String, Object> meta = new CompactArrayMap<>();
 
     public NodeConcept(Term term, NAR nar) {
-        this(term, nar.terms.conceptBuilder);
+        this(term, nar.conceptBuilder);
     }
 
     public NodeConcept(Term term, ConceptBuilder b) {

@@ -21,7 +21,7 @@ import nars.concept.builder.ConceptBuilder;
 import nars.concept.state.ConceptState;
 import nars.control.*;
 import nars.exe.Exec;
-import nars.index.term.TermIndex;
+import nars.index.term.ConceptIndex;
 import nars.op.Operator;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
@@ -98,7 +98,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
     public final Time time;
 
-    public final TermIndex terms;
+    public final ConceptIndex concepts;
     public final NARLoop loop = new NARLoop(this);
     /**
      * table of values influencing reasoner heuristics
@@ -111,11 +111,11 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     private final AtomicReference<Term> self;
 
 
-    public NAR(@NotNull TermIndex concepts, @NotNull Exec exe, @NotNull Time time, @NotNull Random rng, @NotNull ConceptBuilder conceptBuilder) {
+    public NAR(@NotNull ConceptIndex concepts, @NotNull Exec exe, @NotNull Time time, @NotNull Random rng, @NotNull ConceptBuilder conceptBuilder) {
 
         this.random = rng;
 
-        this.terms = concepts;
+        this.concepts = concepts;
 
         this.time = time;
         time.reset();
@@ -130,10 +130,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
         newCauseChannel("input"); //generic non-self source of input
 
-        if (concepts.nar == null) { //HACK dont reinitialize if already initialized, for sharing
+        //if (concepts.nar == null) { //HACK dont reinitialize if already initialized, for sharing
             concepts.start(this);
             Builtin.init(this);
-        }
+        //}
 
 
         exe.start(this);
@@ -162,12 +162,13 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
             v = Arrays.toString((Object[]) v);
         } else if (v instanceof Task) {
             Task tv = ((Task) v);
+            float tvp = tv.priElseZero();
             v = ansi()
                     //.a(tv.originality() >= 0.33f ?
-                    .a(tv.pri() >= 0.25f ?
+                    .a(tvp >= 0.25f ?
                             Ansi.Attribute.INTENSITY_BOLD :
                             Ansi.Attribute.INTENSITY_FAINT)
-                    .a(tv.pri() > 0.75f ? Ansi.Attribute.NEGATIVE_ON : Ansi.Attribute.NEGATIVE_OFF)
+                    .a(tvp > 0.75f ? Ansi.Attribute.NEGATIVE_ON : Ansi.Attribute.NEGATIVE_OFF)
                     .fg(Prioritized.budgetSummaryColor(tv))
                     .a(
                             tv.toString(true)
@@ -242,7 +243,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
             //x.put("term index", terms.summary());
 
-            x.put("concept count", terms.size());
+            x.put("concept count", concepts.size());
         }
 
         x.put("belief count", ((double) beliefs.getSum()));
@@ -695,7 +696,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      */
     public final Operator onOp(@NotNull Atom a, @NotNull BiFunction<Task, NAR, Task> exe) {
         Operator op;
-        terms.set(op = new Operator(a, exe, this));
+        concepts.set(op = new Operator(a, exe, this));
         return op;
     }
 
@@ -869,7 +870,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
      */
     @Override
     @NotNull
-    public NARLoop startPeriodMS(int initialDelayMS) {
+    public final NARLoop startPeriodMS(int initialDelayMS) {
         loop.setPeriodMS(initialDelayMS);
         return loop;
     }
@@ -1004,7 +1005,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
 
     @Nullable
     public final Concept concept(/*@NotNull */Termed x, boolean createIfMissing) {
-        return terms.concept(x, createIfMissing);
+        return concepts.concept(x, createIfMissing);
     }
 
 
@@ -1026,7 +1027,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     }
 
     public Stream<Concept> concepts() {
-        return terms.stream()/*.filter(Concept.class::isInstance)*/.map(Concept.class::cast);
+        return concepts.stream()/*.filter(Concept.class::isInstance)*/.map(Concept.class::cast);
     }
 
     /**
@@ -1114,8 +1115,8 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         if ((existing != null) && (existing != c))
             throw new RuntimeException("concept already indexed for term: " + c.term());
 
-        c.state(terms.conceptBuilder.awake());
-        terms.set(c);
+        c.state(conceptBuilder.awake());
+        concepts.set(c);
 
         return c;
     }
@@ -1279,7 +1280,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     }
 
     public final Termed get(Term x, boolean createIfAbsent) {
-        return terms.get(x, createIfAbsent);
+        return concepts.get(x, createIfAbsent);
     }
 
     /**
@@ -1540,7 +1541,5 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         eventTask.emit(Operator.log(time(), x));
     }
 
-    public void want(MetaGoal g, float v) {
-        g.set(want, v);
-    }
+
 }

@@ -14,9 +14,9 @@ import nars.derive.rule.PremiseRuleSet;
 import nars.exe.AbstractExec;
 import nars.exe.Exec;
 import nars.exe.UniExec;
-import nars.index.term.TermIndex;
+import nars.index.term.ConceptIndex;
 import nars.index.term.map.CaffeineIndex;
-import nars.index.term.map.MapTermIndex;
+import nars.index.term.map.MapConceptIndex;
 import nars.op.stm.STMLinkage;
 import nars.term.Term;
 import nars.term.Termed;
@@ -57,7 +57,7 @@ public class NARS {
 
     }
 
-    protected Supplier<TermIndex> index;
+    protected Supplier<ConceptIndex> index;
 
     protected Time time;
 
@@ -75,7 +75,7 @@ public class NARS {
     protected final List<Consumer<NAR>> postInit = new FasterList(0);
 
 
-    public NARS index(@NotNull TermIndex concepts) {
+    public NARS index(@NotNull ConceptIndex concepts) {
         this.index = () -> concepts;
         return this;
     }
@@ -137,7 +137,7 @@ public class NARS {
 
         index = () ->
                 //new CaffeineIndex(new DefaultConceptBuilder(), 8*1024, 16*1024, null)
-                new MapTermIndex(
+                new MapConceptIndex(
                         //new /*Linked*/HashMap(256, 0.9f)
                         new MRUCache<>(16*1024) {
                             @Override

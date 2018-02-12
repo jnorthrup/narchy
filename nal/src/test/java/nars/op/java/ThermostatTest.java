@@ -6,7 +6,6 @@ import nars.NAR;
 import nars.NARS;
 import nars.Task;
 import nars.control.DurService;
-import nars.control.MetaGoal;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
 import nars.time.Tense;
@@ -100,9 +99,9 @@ public class ThermostatTest {
         n.freqResolution.set(0.02f);
         n.confResolution.set(0.02f);
 
-        n.want(MetaGoal.Desire, 0.2f);
-        n.want(MetaGoal.Believe, 0.1f);
-        n.want(MetaGoal.Perceive, -0.01f);
+//        n.want(MetaGoal.Desire, 0.2f);
+//        n.want(MetaGoal.Believe, 0.1f);
+//        n.want(MetaGoal.Perceive, -0.01f);
 
         float exeThresh = 0.51f;
 

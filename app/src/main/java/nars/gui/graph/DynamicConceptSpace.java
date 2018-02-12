@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 
 import static jcog.Util.sqr;
-import static nars.gui.graph.DynamicConceptSpace.ColorNode.*;
+import static nars.gui.graph.DynamicConceptSpace.ColorNode.Hash;
 import static spacegraph.SpaceGraph.window;
 
 public class DynamicConceptSpace extends DynamicListSpace<Concept> {

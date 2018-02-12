@@ -8,7 +8,6 @@ import jake2.game.edict_t;
 import jake2.render.Base;
 import jake2.render.JoglGL2Renderer;
 import jake2.sys.IN;
-import jcog.learn.ql.HaiQAgent;
 import nars.NAR;
 import nars.NAgentX;
 import nars.Narsese;

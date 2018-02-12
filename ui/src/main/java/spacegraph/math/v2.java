@@ -31,8 +31,6 @@
 
 package spacegraph.math;
 
-import spacegraph.phys.BulletGlobals;
-
 /**
  * A 2-element vector that is represented by single-precision floating
  * point x,y coordinates.

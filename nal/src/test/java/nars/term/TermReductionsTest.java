@@ -176,6 +176,16 @@ public class TermReductionsTest extends NarseseTest {
         assertReduction("((a&&b)-->(a&&c))", "((a&&b)-->(a&&c))");
     }
 
+    @Test void testConjParallelsMixture() {
+        //the b and --b actually are specified to occur simultaneously
+        assertReduction(False, "(((b &&+4 a)&|(--,b))&|((--,c) &&+6 a))");
+
+        assertReduction("((&|,a,b2,b3) &&+1 (c&|b1))", "(((a &&+1 b1)&|b2)&|(b3 &&+1 c))");
+        assertReduction("((a &&+1 (b1&|b2)) &&+1 c)", "((a &&+1 (b1&|b2)) &&+1 c)");
+//        //2. test anon
+//        Term ax = x.anon();
+//        assertEquals("", ax.toString());
+    }
 
     @Test
     public void implSubjSimultaneousWithTemporalPred() {
@@ -315,7 +325,7 @@ public class TermReductionsTest extends NarseseTest {
     public void testConjEvents1a() throws Narsese.NarseseException {
         assertEquals(
                 "(a &&+16 ((--,a)&|b))",
-                Op.conjEvents(
+                Op.conj(
                         new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
                                 pair(298L, $.$("a")),
                                 pair(314L, $.$("b")),
@@ -327,7 +337,7 @@ public class TermReductionsTest extends NarseseTest {
     public void testConjEvents1b() throws Narsese.NarseseException {
         assertEquals(
                 "((a&|b) &&+1 (--,a))",
-                Op.conjEvents(
+                Op.conj(
                         new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
                                 pair(1L, $.$("a")),
                                 pair(1L, $.$("b")),
@@ -339,7 +349,7 @@ public class TermReductionsTest extends NarseseTest {
     public void testConjEvents2() throws Narsese.NarseseException {
         assertEquals(
                 "(((a &&+1 (&|,b1,b2,b3)) &&+1 c) &&+1 (d1&|d2))",
-                Op.conjEvents(
+                Op.conj(
                         new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
                                 pair(1L, $.$("a")),
                                 pair(2L, $.$("b1")),
@@ -356,7 +366,7 @@ public class TermReductionsTest extends NarseseTest {
     public void testConjEventsWithFalse() throws Narsese.NarseseException {
         assertEquals(
                 False,
-                Op.conjEvents(
+                Op.conj(
                         new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
                                 pair(1L, $.$("a")),
                                 pair(2L, $.$("b1")),
@@ -364,7 +374,7 @@ public class TermReductionsTest extends NarseseTest {
                         })));
         assertEquals(
                 False,
-                Op.conjEvents(
+                Op.conj(
                         new FasterList<LongObjectPair<Term>>(new LongObjectPair[]{
                                 pair(1L, $.$("a")),
                                 pair(1L, $.$("--a"))
@@ -1216,8 +1226,10 @@ public class TermReductionsTest extends NarseseTest {
 
     }
 
-    static void assertReduction(String exp, String is)  {
-        assertEquals(exp, $safe(is).toString(), () -> is + " reduces to " + exp);
+    static Term assertReduction(String exp, String is)  {
+        Term t = $safe(is);
+        assertEquals(exp, t.toString(), () -> is + " reduces to " + exp);
+        return t;
     }
 
     static void assertReduction(Term exp, String is)  {

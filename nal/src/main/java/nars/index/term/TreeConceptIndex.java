@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 /**
  * concurrent radix tree index
  */
-public class TreeTermIndex extends TermIndex implements Consumer<NAR> {
+public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
 
     float maxFractionThatCanBeRemovedAtATime = 0.05f;
     float descentRate = 0.5f;
@@ -29,7 +29,7 @@ public class TreeTermIndex extends TermIndex implements Consumer<NAR> {
 
     int sizeLimit;
 
-    public TreeTermIndex(int sizeLimit) {
+    public TreeConceptIndex(int sizeLimit) {
 
         this.concepts = new TermTree() {
 
@@ -183,32 +183,28 @@ public class TreeTermIndex extends TermIndex implements Consumer<NAR> {
 
 
     @Override
-    public @Nullable Termed get(@NotNull Term t, boolean createIfMissing) {
+    public @Nullable Termed get(Term t, boolean createIfMissing) {
         TermKey k = TermTree.key(t);
 
-        if (createIfMissing) {
-            return _get(k, t);
-        } else {
-            return _get(k);
-        }
+        return createIfMissing ? _get(k, t) : _get(k);
     }
 
-    protected @Nullable Termed _get(@NotNull TermKey k) {
+    protected @Nullable Termed _get(TermKey k) {
         return concepts.get(k);
     }
 
-    protected @NotNull Termed _get(@NotNull TermKey k, @NotNull Term finalT) {
-        return concepts.putIfAbsent(k, () -> conceptBuilder.apply(finalT, null));
+    protected @NotNull Termed _get(TermKey k, Term finalT) {
+        return concepts.putIfAbsent(k, () -> nar.conceptBuilder.apply(finalT, null));
     }
 
     @NotNull
-    public static TermKey key(@NotNull Term t) {
+    public static TermKey key(Term t) {
         return TermTree.key(t);
     }
 
 
     @Override
-    public void set(@NotNull Term src, Termed target) {
+    public void set(Term src, Termed target) {
 
         @NotNull TermKey k = key(src);
 

@@ -84,32 +84,35 @@ public class NARTestOptimize {
     public static void main(String[] args) {
 
 
-        Result<NAR> r = new AutoTweaks<>(()->{
-            NAR n = NARS.tmp();
-            return n;
-        })
-            .exclude(NARLoop.class)
-            .tweak("PERCEIVE", -1f, +1f, 0.1f, (NAR n, float p)->
-                MetaGoal.Perceive.set(n.want, p)
-            )
-            .tweak("BELIEVE", -1f, +1f, 0.1f, (NAR n, float p)->
-                MetaGoal.Believe.set(n.want, p)
-            )
-            .optimize(256, 1, (n)->
-                tests(n,
-                    NAL1Test.class,
-                    NAL1MultistepTest.class,
-                    NAL2Test.class,
-                    NAL3Test.class,
-                    NAL5Test.class,
-                    NAL6Test.class
+        while (true) {
+            Result<NAR> r = new AutoTweaks<>(() -> {
+                NAR n = NARS.tmp();
+                return n;
+            })
+                    .exclude(NARLoop.class)
+                    .tweak("PERCEIVE", -1f, +1f, 0.1f, (NAR n, float p) ->
+                            MetaGoal.Perceive.set(n.emotion.want, p)
+                    )
+                    .tweak("BELIEVE", -1f, +1f, 0.1f, (NAR n, float p) ->
+                            MetaGoal.Believe.set(n.emotion.want, p)
+                    )
+                    .optimize(32, 1, (n) ->
+                            tests(n,
+                                    NAL1Test.class,
+                                    NAL1MultistepTest.class,
+                                    NAL2Test.class,
+                                    NAL3Test.class,
+                                    NAL5Test.class,
+                                    NAL6Test.class
 
-                    //NAL7Test.class,
-                    //NAL8Test.class
-            ));
+                                    //NAL7Test.class,
+                                    //NAL8Test.class
+                            ));
 
-        r.print();
-        r.tree(2, 8).print();
+            r.print();
+            r.tree(2, 8).print();
+            System.out.println();
+        }
 
 
     }

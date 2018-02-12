@@ -52,7 +52,7 @@ public class NARBenchmark {
 
     @TearDown
     public void end() {
-        concepts = n.terms.size();
+        concepts = n.concepts.size();
     }
 
 

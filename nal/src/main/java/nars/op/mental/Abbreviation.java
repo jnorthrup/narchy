@@ -215,9 +215,9 @@ public class Abbreviation/*<S extends Term>*/ extends TaskService {
                 AliasConcept a1 = new AliasConcept(newSerialTerm(), abbrConcept, nar);
 
                 nar.on(a1);
-                nar.terms.set(abbreviated.term(), a1); //set the abbreviated term to resolve to the abbreviation
+                nar.concepts.set(abbreviated.term(), a1); //set the abbreviated term to resolve to the abbreviation
                 if (!abbreviatedTerm.equals(abbreviated.term()))
-                    nar.terms.set(abbreviatedTerm, a1); //set the abbreviated term to resolve to the abbreviation
+                    nar.concepts.set(abbreviatedTerm, a1); //set the abbreviated term to resolve to the abbreviation
 
 //                Compound abbreviation = newRelation(abbreviated, id);
 //                if (abbreviation == null)

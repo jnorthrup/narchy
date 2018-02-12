@@ -673,7 +673,8 @@ public interface Term extends Termed, Comparable<Termed> {
         events.trimToSize();
         return events;
     }
-    /** sorted by time */
+
+    /** sorted by time; decomposes inner parallel conj */
     default FasterList<LongObjectPair<Term>> eventList(long offset, int dtDither) {
         FasterList<LongObjectPair<Term>> events = new FasterList(1);
         eventsWhile((w, t) -> {
@@ -681,7 +682,7 @@ public interface Term extends Termed, Comparable<Termed> {
                     (dtDither > 1) ? Tense.dither(w, dtDither) : w,
                     t));
             return true; //continue
-        }, offset);
+        }, offset, true, false, false, 0);
         events.compact();
         if (events.size() > 1) {
             events.sortThisByLong(LongObjectPair::getOne);
@@ -702,6 +703,7 @@ public interface Term extends Termed, Comparable<Termed> {
 
     /**
      * event list, sorted by time
+     * sorted by time; decomposes inner parallel conj
      */
     default FasterList<LongObjectPair<Term>> eventList() {
         return eventList(0, 1);

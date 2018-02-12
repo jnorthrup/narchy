@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import jcog.Util;
 import jcog.math.FloatSupplier;
 import nars.*;
-import nars.control.MetaGoal;
 import nars.gui.Vis;
 import nars.op.stm.ConjClustering;
 import nars.task.DerivedTask;
@@ -72,9 +71,9 @@ public class Line1D {
             n.confResolution.set(0.02f);
             n.termVolumeMax.set(12);
 
-            MetaGoal.Perceive.set(n.want, -0.01f);
-            MetaGoal.Desire.set(n.want, 0.25f);
-            MetaGoal.Action.set(n.want, 2f);
+//            MetaGoal.Perceive.set(n.want, -0.01f);
+//            MetaGoal.Desire.set(n.want, 0.25f);
+//            MetaGoal.Action.set(n.want, 2f);
 
 
             ConjClustering conjClusterB = new ConjClustering(n,  BELIEF, t ->true, 16, 64);

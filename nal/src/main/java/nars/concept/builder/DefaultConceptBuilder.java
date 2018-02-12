@@ -4,7 +4,6 @@ import jcog.bag.Bag;
 import jcog.bag.impl.CurveBag;
 import jcog.list.FasterList;
 import jcog.pri.PriReference;
-import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
@@ -30,7 +29,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Random;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
@@ -61,18 +59,17 @@ public class DefaultConceptBuilder implements ConceptBuilder {
     private final ConceptState awake;
     
     private final ConceptState sleep;
-    private NAR nar;
 
     @Override
     public Bag[] newLinkBags(Term t) {
         int v = t.volume();
         //if (/*v > 3 && */v < 16) {
 //        Map sharedMap = newBagMap(v);
-        Random rng = nar.random();
+
         Bag<Term, PriReference<Term>> termbag =
                 new CurveBag<>(Param.termlinkMerge, newBagMap(v), 0);
         CurveBag<PriReference<Task>> taskbag =
-                new TaskLinkCurveBag(newBagMap(v), rng);
+                new TaskLinkCurveBag(newBagMap(v));
 
         return new Bag[] {  termbag, taskbag };
 //        } else {
@@ -323,10 +320,6 @@ public class DefaultConceptBuilder implements ConceptBuilder {
         return subterms.allSatisfy(DefaultConceptBuilder.validDynamicSubterm::test);
     }
 
-    @Override
-    public void start( NAR nar) {
-        this.nar = nar;
-    }
 
 
     @Override

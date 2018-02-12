@@ -3,11 +3,8 @@ package jcog.meter;
 import com.netflix.servo.monitor.Counter;
 import com.netflix.servo.monitor.Monitor;
 import com.netflix.servo.monitor.MonitorConfig;
-import jcog.event.ListTopic;
-import jcog.event.Topic;
 
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.Supplier;
 
 import static jcog.meter.Meter.meter;
 

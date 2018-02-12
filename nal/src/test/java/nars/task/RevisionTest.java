@@ -38,7 +38,7 @@ public class RevisionTest {
         */
 
         //}
-        DefaultConceptState cb = (DefaultConceptState) d.terms.conceptBuilder.awake();
+        DefaultConceptState cb = (DefaultConceptState) d.conceptBuilder.awake();
         cb.beliefsMaxEte = (fixedNumBeliefs);
         cb.beliefsMaxTemp = (fixedNumBeliefs);
         cb.beliefsMinTemp = (fixedNumBeliefs);

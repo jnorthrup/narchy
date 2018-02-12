@@ -7,10 +7,9 @@ import nars.Param;
 import nars.Task;
 
 import java.util.Map;
-import java.util.Random;
 
 public class TaskLinkCurveBag extends CurveBag<PriReference<Task>> {
-    public TaskLinkCurveBag(Map sharedMap, Random rng) {
+    public TaskLinkCurveBag(Map sharedMap) {
         super(Param.tasklinkMerge, sharedMap, 0);
     }
 

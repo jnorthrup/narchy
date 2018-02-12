@@ -29,10 +29,10 @@ public class WiredConcept extends TaskConcept implements PermanentConcept {
     public FloatRange resolution = new FloatRange(Param.TRUTH_EPSILON, 0f, 1f);
 
     protected WiredConcept(Term term, NAR n) {
-        this(term, null /* default by concept builder */, null /* default by concept builder */, n.terms.conceptBuilder);
+        this(term, null /* default by concept builder */, null /* default by concept builder */, n.conceptBuilder);
     }
     protected WiredConcept(Term term, BeliefTable beliefs, BeliefTable goals, NAR n) {
-        this(term, beliefs, goals, n.terms.conceptBuilder);
+        this(term, beliefs, goals, n.conceptBuilder);
     }
     protected WiredConcept(Term term, BeliefTable beliefs, BeliefTable goals, ConceptBuilder b) {
         super(term, beliefs, goals, b);

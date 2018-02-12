@@ -1,7 +1,6 @@
 package nars.concept.builder;
 
 import jcog.bag.Bag;
-import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.state.ConceptState;
 import nars.table.BeliefTable;
@@ -26,7 +25,6 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
     BeliefTable beliefTable(Term t, boolean beliefOrGoal);
     TemporalBeliefTable newTemporalBeliefTable(Term c);
 
-    void start(NAR nar);
 
 
     /** passes through terms without creating any concept anything */
@@ -51,11 +49,6 @@ public interface ConceptBuilder extends BiFunction<Term, Termed, Termed> {
         @Override
         public ConceptState sleep() {
             return ConceptState.Abstract;
-        }
-
-        @Override
-        public void start(NAR nar) {
-
         }
 
         @Override

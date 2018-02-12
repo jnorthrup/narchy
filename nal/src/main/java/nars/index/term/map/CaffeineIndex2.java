@@ -26,7 +26,7 @@ import static nars.Op.True;
  *          so that the lower subset starting at 0 are the kinds of operators being stored. this will
  *          slightly reduce the size that TermContainerToOpMap's need to be.
  */
-public class CaffeineIndex2 extends MaplikeTermIndex implements RemovalListener<Subterms, TermContainerToOpMap<Termed>> {
+public class CaffeineIndex2 extends MaplikeConceptIndex implements RemovalListener<Subterms, TermContainerToOpMap<Termed>> {
     private final long capacity;
 
 
@@ -216,7 +216,7 @@ public class CaffeineIndex2 extends MaplikeTermIndex implements RemovalListener<
 
                 TermContainerToOpMap<Termed> t = new TermContainerToOpMap<>(k);
 
-                Termed p = conceptBuilder.apply(x, null /* HACK */);
+                Termed p = nar.conceptBuilder.apply(x, null /* HACK */);
 
                 if (p != null)
                     t.compareAndSet(op.id, null, p);

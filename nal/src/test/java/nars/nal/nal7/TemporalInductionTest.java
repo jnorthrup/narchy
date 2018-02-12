@@ -186,7 +186,7 @@ public class TemporalInductionTest {
         d.run(200);
 
         //everything should be inducted by now:
-        int before = d.terms.size();
+        int before = d.concepts.size();
         int numBeliefs = getBeliefCount(d);
 
         //System.out.println(numConcepts + " " + numBeliefs);
@@ -194,7 +194,7 @@ public class TemporalInductionTest {
         d.run(60);
 
         //# unique concepts unchanged:
-        int after = d.terms.size();
+        int after = d.concepts.size();
         assertEquals(before, after);
         //assertEquals(numBeliefs, getBeliefCount(d));
 

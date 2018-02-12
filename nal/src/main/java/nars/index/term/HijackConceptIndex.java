@@ -8,7 +8,7 @@ import jcog.pri.PriReference;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
-import nars.index.term.map.MaplikeTermIndex;
+import nars.index.term.map.MaplikeConceptIndex;
 import nars.term.Term;
 import nars.term.Termed;
 import org.HdrHistogram.IntCountsHistogram;
@@ -25,7 +25,7 @@ import static nars.truth.TruthFunctions.w2c;
 /**
  * Created by me on 2/20/17.
  */
-public class HijackTermIndex extends MaplikeTermIndex {
+public class HijackConceptIndex extends MaplikeConceptIndex {
 
     private final PLinkHijackBag<Termed> table;
     //private final Map<Term,Termed> permanent = new ConcurrentHashMap<>(1024);
@@ -50,7 +50,7 @@ public class HijackTermIndex extends MaplikeTermIndex {
     private long now;
     private int dur;
 
-    public HijackTermIndex(int capacity, int reprobes) {
+    public HijackConceptIndex(int capacity, int reprobes) {
         super();
 
         updateBatchSize = 4096; //1 + (capacity / (reprobes * 2));
@@ -125,7 +125,7 @@ public class HijackTermIndex extends MaplikeTermIndex {
         }
 
         if (createIfMissing) {
-            Termed kc = conceptBuilder.apply(key, null);
+            Termed kc = nar.conceptBuilder.apply(key, null);
             if (kc != null) {
                 PriReference<Termed> inserted = table.put(new PLink<>(kc, initial));
                 if (inserted != null) {

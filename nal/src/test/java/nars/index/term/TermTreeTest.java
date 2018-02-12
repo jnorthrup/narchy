@@ -53,9 +53,9 @@ public class TermTreeTest {
     @Test
     public void testCompoundInsertion() throws Narsese.NarseseException {
 
-        TreeTermIndex index;
+        TreeConceptIndex index;
         NAR nar = new NARS().index(
-            index = new TreeTermIndex(1000)
+            index = new TreeConceptIndex(1000)
         ).get();
 
 

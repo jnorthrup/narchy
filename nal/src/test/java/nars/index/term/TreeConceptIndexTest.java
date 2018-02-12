@@ -13,11 +13,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by me on 10/21/16.
  */
-public class TreeTermIndexTest {
+public class TreeConceptIndexTest {
 
     @Test
     public void testVolumeSubTrees() throws Narsese.NarseseException {
-        TreeTermIndex t = new TreeTermIndex( 128);
+        TreeConceptIndex t = new TreeConceptIndex( 128);
         t.set($("a"));
         t.set($("(a)"));
         t.set($("(a-->b)"));

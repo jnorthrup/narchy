@@ -136,7 +136,7 @@ public class Optimize<X> {
 
             maxScore[0] = Math.max(maxScore[0], score);
             System.out.println(
-                n4(score) + "/" + n4(maxScore[0]) + "\t" + n4(point)
+                n4(score) + " / " + n4(maxScore[0]) + "\t" + n4(point)
             );
 
             experiments.add(pair(score, point));

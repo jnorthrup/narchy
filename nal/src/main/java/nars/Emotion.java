@@ -58,6 +58,14 @@ public class Emotion implements Meter {
 
     //public final Counter taskIgnored = new FastCounter(id("task ignored"));
 
+    /** the indices of this array correspond to the ordinal() value of the MetaGoal enum values
+     * TODO convert to AtomicFloatArray or something where each value is volatile
+     * */
+    public final float[] want = new float[MetaGoal.values().length];
+
+    public void want(MetaGoal g, float v) {
+        want[g.ordinal()] = v;
+    }
 
 //    /**
 //     * setup stage, where substitution is applied to generate a conclusion term from the pattern

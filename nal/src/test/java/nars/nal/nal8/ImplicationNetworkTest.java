@@ -11,9 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import static nars.Op.IMPL;
 import static nars.time.Tense.ETERNAL;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /** test propagation of belief and goal truth among nodes in
  * parameterically generated implication

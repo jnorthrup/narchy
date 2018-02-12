@@ -672,12 +672,12 @@ public interface Compound extends Term, IPair, Subterms {
         if (changed) {
 
             int dt = dt();
-            if (o == CONJ && xy.length ==2 && dt!=0 && dt!=DTERNAL && dt!=XTERNAL) {
-                //HACK this shouldnt be necessary
-                u = Op.conjMerge(xy[0],xy[1], dt);
-            } else {
+//            if (o == CONJ && xy.length ==2 && dt!=0 && dt!=DTERNAL && dt!=XTERNAL) {
+//                //HACK this shouldnt be necessary
+//                u = Op.conjMerge(xy[0],xy[1], dt);
+//            } else {
                 u = o.a(dt, xy);
-            }
+//            }
 
 //            if (recurseIfChanged)
 //                return u.evalSafe(context, remain);

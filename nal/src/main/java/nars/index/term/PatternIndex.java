@@ -4,7 +4,7 @@ import nars.Op;
 import nars.The;
 import nars.derive.PatternCompound;
 import nars.derive.match.Ellipsis;
-import nars.index.term.map.MapTermIndex;
+import nars.index.term.map.MapConceptIndex;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
@@ -22,7 +22,7 @@ import static nars.time.Tense.XTERNAL;
 /**
  * Index which specifically holds the term components of a deriver ruleset.
  */
-public class PatternIndex extends MapTermIndex {
+public class PatternIndex extends MapConceptIndex {
 
 
     public PatternIndex() {

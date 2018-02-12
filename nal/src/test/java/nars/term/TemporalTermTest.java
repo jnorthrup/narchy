@@ -635,8 +635,8 @@ public class TemporalTermTest {
 
         assertEquals(3, xImplY.beliefs().size());
 
-        int indexSize = n.terms.size();
-        n.terms.print(System.out);
+        int indexSize = n.concepts.size();
+        n.concepts.print(System.out);
 
         n.input("(x ==>+1 y). :|:"); //present
         n.run();
@@ -645,8 +645,8 @@ public class TemporalTermTest {
 
         assertEquals(4, xImplY.beliefs().size());
 
-        n.terms.print(System.out);
-        assertEquals(indexSize, n.terms.size()); //remains same amount
+        n.concepts.print(System.out);
+        assertEquals(indexSize, n.concepts.size()); //remains same amount
 
         n.conceptualize("(x==>y)").print();
     }

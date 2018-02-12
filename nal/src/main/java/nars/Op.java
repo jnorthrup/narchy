@@ -1,7 +1,6 @@
 package nars;
 
 
-import jcog.TODO;
 import jcog.Util;
 import jcog.data.ArrayHashSet;
 import jcog.data.bit.MetalBitSet;
@@ -30,9 +29,11 @@ import org.eclipse.collections.api.tuple.primitive.IntIntPair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.factory.Maps;
+import org.eclipse.collections.impl.map.mutable.primitive.LongByteHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
+import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.eclipse.collections.impl.tuple.Tuples;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +49,8 @@ import java.util.function.Predicate;
 import static java.util.Arrays.copyOfRange;
 import static nars.term.Terms.flatten;
 import static nars.term.Terms.sorted;
-import static nars.time.Tense.*;
+import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
@@ -712,7 +714,7 @@ public enum Op {
                     return Null; //emptied
 
                 events.remove(eMax);
-                return Op.conjEvents(events);
+                return Op.conj(events);
             } else {
                 return null;
             }
@@ -1052,7 +1054,7 @@ public enum Op {
 
         FasterList<LongObjectPair<Term>> events = new FasterList<>(eventSet.size());
         eventSet.forEachKeyValue((w, t) -> events.add(PrimitiveTuples.pair(w, t)));
-        return conjEvents(events);
+        return conj(events);
 
 //        //group all parallel clusters
 //        LongObjectPair<Term> e0 = events.get(0);
@@ -1094,8 +1096,9 @@ public enum Op {
 
     /**
      * constructs a correctly merged conjunction from a list of events
+     * note: this modifies the event list
      */
-    public static Term conjEvents(FasterList<LongObjectPair<Term>> events) {
+    public static Term conj(FasterList<LongObjectPair<Term>> events) {
 
         int ee = events.size();
         switch (ee) {
@@ -1106,64 +1109,112 @@ public enum Op {
             default:
                 events.sortThisByLong(LongObjectPair::getOne);
 
-                //TODO optimize this
-                ListIterator<LongObjectPair<Term>> ii = events.listIterator();
-                long prevtime = TIMELESS;
-                int prevtimeStart = 0;
-                while (ii.hasNext()) {
-                    LongObjectPair<Term> x = ii.next();
-                    Term xt = x.getTwo();
-                    if (xt == True) {
-                        ii.remove(); //skip
-                    } else if (xt == False) {
-                        return False;
-                    } else if (xt == Null) {
-                        return Null;
-                    }
+                LongHashSet times = new LongHashSet(events.size()); //TODO lazy alloc only after a duplicate sequence time has been detected
+                LongByteHashMap collides = null;
 
-                    long now = x.getOne();
+                for (int i = 0, eventsSize = events.size(); i < eventsSize; i++) {
+                    LongObjectPair<Term> p = events.get(i);
+                    long pt = p.getOne();
+                    if (!times.add(pt)) {
+                        if (collides==null)
+                            collides = new LongByteHashMap(2);
 
-                    if (now == ETERNAL)
-                        throw new TODO();
-                    else if (now == TIMELESS)
-                        throw new RuntimeException();
-                    int at = ii.previousIndex();
-
-                    boolean hasNext = ii.hasNext();
-                    if (prevtime == now && hasNext) {
-                        //continue, will be grouped when the # changes
-                    } else {
-                        if ((hasNext && prevtimeStart < at - 1) || (!hasNext && prevtime == now)) {
-                            Term[] s = new Term[at - prevtimeStart + (!hasNext ? 1 : 0)];
-                            assert (s.length > 1);
-                            int j = 0;
-                            if (!hasNext) {
-                                s[j++] = xt; //include current
-                                ii.remove();
-                            } else {
-                                ii.previous();
-                            }
-                            for (; j < s.length; ) {
-                                LongObjectPair<Term> e = ii.previous();
-                                ii.remove();
-                                s[j++] = e.getTwo();
-                            }
-                            Term xyt = CONJ.the(0, s);
-                            if (xyt == Null) return Null;
-                            if (xyt == False) return False;
-                            if (xyt != True) {
-                                LongObjectPair<Term> xy = pair(prevtime, xyt);
-                                ii.add(xy);
-                                if (hasNext)
-                                    ii.next();
-                            }
-                            prevtimeStart = ii.previousIndex();
-                        } else {
-                            prevtimeStart = at;
-                        }
-                        prevtime = now;
+                        byte n = collides.getIfAbsentPut(pt, (byte)1);
+                        collides.addToValue(pt, (byte)1);
                     }
                 }
+                if (collides!=null) {
+                    ListIterator<LongObjectPair<Term>> ii = events.listIterator();
+                    int batchRemain = 0;
+                    Term[] batch = null;
+                    while (ii.hasNext()) {
+                        LongObjectPair<Term> p = ii.next();
+
+                        if (batchRemain == 0) {
+                            long pt = p.getOne();
+                            batchRemain = collides.removeKeyIfAbsent(pt, (byte)0);
+                            assert(batchRemain == 0 || batchRemain > 1): "batchRemain=" + batchRemain;
+                            if (batchRemain > 0) {
+                                ii.remove();
+                                batch = new Term[batchRemain--];
+                                batch[0] = p.getTwo();
+                            }
+                        } else {
+                            ii.remove();
+                            batch[batch.length - batchRemain--] = p.getTwo();
+
+                            if (batchRemain == 0) {
+                                Term b = CONJ.the(0, batch);
+                                if (b == False)
+                                    return False;
+                                if (b == Null)
+                                    return Null;
+                                if (b != True)
+                                    ii.add(pair(p.getOne(), b));
+                                batch = null;
+                            }
+                        }
+
+                    }
+                }
+//                //TODO optimize this
+//                ListIterator<LongObjectPair<Term>> ii = events.listIterator();
+//                long prevtime = TIMELESS;
+//                int prevtimeStart = 0;
+//                while (ii.hasNext()) {
+//                    LongObjectPair<Term> x = ii.next();
+//                    Term xt = x.getTwo();
+//                    if (xt == True) {
+//                        ii.remove(); //skip
+//                    } else if (xt == False) {
+//                        return False;
+//                    } else if (xt == Null) {
+//                        return Null;
+//                    }
+//
+//                    long now = x.getOne();
+//
+//                    if (now == ETERNAL)
+//                        throw new TODO();
+//                    else if (now == TIMELESS)
+//                        throw new RuntimeException();
+//                    int at = ii.previousIndex();
+//
+//                    boolean hasNext = ii.hasNext();
+//                    if (prevtime == now && hasNext) {
+//                        //continue, will be grouped when the # changes
+//                    } else {
+//                        if ((hasNext && prevtimeStart < at - 1) || (!hasNext && prevtime == now)) {
+//                            Term[] s = new Term[at - prevtimeStart + (!hasNext ? 1 : 0)];
+//                            assert (s.length > 1);
+//                            int j = 0;
+//                            if (!hasNext) {
+//                                s[j++] = xt; //include current
+//                                ii.remove();
+//                            } else {
+//                                ii.previous();
+//                            }
+//                            for (; j < s.length; ) {
+//                                LongObjectPair<Term> e = ii.previous();
+//                                ii.remove();
+//                                s[j++] = e.getTwo();
+//                            }
+//                            Term xyt = CONJ.the(0, s);
+//                            if (xyt == Null) return Null;
+//                            if (xyt == False) return False;
+//                            if (xyt != True) {
+//                                LongObjectPair<Term> xy = pair(prevtime, xyt);
+//                                ii.add(xy);
+//                                if (hasNext)
+//                                    ii.next();
+//                            }
+//                            prevtimeStart = ii.previousIndex();
+//                        } else {
+//                            prevtimeStart = at;
+//                        }
+//                        prevtime = now;
+//                    }
+//                }
                 int e = events.size();
                 switch (e) {
                     case 0:
@@ -1179,7 +1230,7 @@ public enum Op {
 
     /**
      * constructs a correctly merged conjunction from a list of events, in the sublist specified by from..to (inclusive)
-     * all of the events should have distinct times before calling here.
+     * assumes that all of the event terms have distinct occurrence times
      */
     private static Term conjSeq(List<LongObjectPair<Term>> events, int start, int end) {
 
@@ -1883,7 +1934,7 @@ public enum Op {
                                     subject,
                                     predicate.dt() == DTERNAL ?
                                             CONJ.the(DTERNAL, pe.collect(LongObjectPair::getTwo)) :
-                                            Op.conjEvents(new FasterList<>(pe))
+                                            Op.conj(new FasterList<>(pe))
                             );
                         }
                         break;

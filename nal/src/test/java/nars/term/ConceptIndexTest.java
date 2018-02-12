@@ -3,9 +3,9 @@ package nars.term;
 import jcog.math.random.XorShift128PlusRandom;
 import nars.*;
 import nars.concept.builder.DefaultConceptBuilder;
-import nars.index.term.TermIndex;
-import nars.index.term.map.MapTermIndex;
-import nars.index.term.map.MaplikeTermIndex;
+import nars.index.term.ConceptIndex;
+import nars.index.term.map.MapConceptIndex;
+import nars.index.term.map.MaplikeConceptIndex;
 import nars.term.atom.Atomic;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
@@ -18,7 +18,7 @@ import java.util.TreeSet;
 import static org.junit.jupiter.api.Assertions.*;
 
 
-public class TermIndexTest {
+public class ConceptIndexTest {
 
     public static final XorShift128PlusRandom rng = new XorShift128PlusRandom(2);
     public static final DefaultConceptBuilder defaultConceptBuilder = new DefaultConceptBuilder(
@@ -39,7 +39,7 @@ public class TermIndexTest {
 
     }
 
-    static void testIndex(@NotNull TermIndex i) throws Narsese.NarseseException {
+    static void testIndex(@NotNull ConceptIndex i) throws Narsese.NarseseException {
         NAR t = NARS.shell();
         i.start(t);
 
@@ -76,7 +76,7 @@ public class TermIndexTest {
     @Disabled
     @Test public void testTermSharing5c() throws Narsese.NarseseException {
         testIndex(
-                new MapTermIndex(new HashMap(1024))
+                new MapConceptIndex(new HashMap(1024))
         );
         //testIndex(new MapIndex2(newHashMap(), conceptBuilder));
     }
@@ -93,7 +93,7 @@ public class TermIndexTest {
 //    }
 
 
-    static void testTermSharing(@NotNull TermIndex tt) throws Narsese.NarseseException {
+    static void testTermSharing(@NotNull ConceptIndex tt) throws Narsese.NarseseException {
 
         tt.start(NARS.shell());
         testShared(tt, "<<x-->w> --> <y-->z>>");
@@ -128,7 +128,7 @@ public class TermIndexTest {
         assertNotSame(t1, t2);
     }
 
-    private static void testShared(@NotNull TermIndex i, @NotNull String s) throws Narsese.NarseseException {
+    private static void testShared(@NotNull ConceptIndex i, @NotNull String s) throws Narsese.NarseseException {
 
         int t0 = i.size();
         //int s0 = i.subtermsCount();
@@ -188,7 +188,7 @@ public class TermIndexTest {
         //this.activeTasks = activeTasks;
         NAR d = NARS.shell();
         Set<Term> t = new TreeSet();
-        d.terms.forEach(x -> t.add(x.term()));
+        d.concepts.forEach(x -> t.add(x.term()));
 
         assertTrue(t.size() > 100); //approximate
 
@@ -231,7 +231,7 @@ public class TermIndexTest {
     }
 
     public static void testCommonPrefix(boolean direction) {
-        MaplikeTermIndex i = (MaplikeTermIndex)(NARS.shell().terms);
+        MaplikeConceptIndex i = (MaplikeConceptIndex)(NARS.shell().concepts);
         Atomic sui = Atomic.the("substituteIfUnifies");
         Atomic su = Atomic.the("substitute");
 

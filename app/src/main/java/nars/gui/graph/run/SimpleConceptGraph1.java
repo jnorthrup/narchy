@@ -70,7 +70,7 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
         nar.runLater(() -> {
 
             nar.clear();
-            nar.terms.clear();
+            nar.concepts.clear();
             //n.reset();
 
 

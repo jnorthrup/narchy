@@ -4,8 +4,6 @@ import nars.NAR;
 import nars.Op;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
-import nars.concept.builder.ConceptBuilder;
-import nars.concept.builder.DefaultConceptBuilder;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
@@ -20,11 +18,9 @@ import java.util.stream.Stream;
 /**
  *
  */
-public abstract class TermIndex {
+public abstract class ConceptIndex {
 
 
-    /** TODO make this a property of NAR , not TermIndex */
-    public final ConceptBuilder conceptBuilder = new DefaultConceptBuilder();
 
     public NAR nar;
 
@@ -69,9 +65,6 @@ public abstract class TermIndex {
 
     public void start(NAR nar) {
         this.nar = nar;
-
-        conceptBuilder.start(nar);
-
     }
 
     /**
@@ -82,7 +75,6 @@ public abstract class TermIndex {
     /**
      * a string containing statistics of the index's current state
      */
-    @NotNull
     public abstract String summary();
 
     public abstract void remove(@NotNull Term entry);

@@ -11,9 +11,7 @@ import nars.term.anon.AnonVector;
 import java.util.Collection;
 import java.util.function.Function;
 
-import static nars.Op.NEG;
-import static nars.Op.PROD;
-import static nars.Op.internable;
+import static nars.Op.*;
 
 /**
  * The the

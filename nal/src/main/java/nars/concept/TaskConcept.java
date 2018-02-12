@@ -61,7 +61,7 @@ public class TaskConcept extends NodeConcept implements Concept {
      * used for setting an explicit OperationConcept instance via java; activates it on initialization
      */
     public TaskConcept(Term term, NAR n) {
-        this(term, n.terms.conceptBuilder);
+        this(term, n.conceptBuilder);
     }
 
 

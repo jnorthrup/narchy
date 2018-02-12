@@ -512,6 +512,11 @@ public class FasterList<X> extends FastList<X> {
         return toArray(array);
     }
 
+    @Override
+    public FasterList<X> clone() {
+        return new FasterList<>(size, items.clone());
+    }
+
     /**
      * dangerous unless you know the array has enough capacity
      */

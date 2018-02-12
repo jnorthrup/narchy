@@ -5,8 +5,8 @@ import jcog.event.On;
 import jcog.exe.Loop;
 import jcog.list.FasterList;
 import jcog.math.FloatNormalized;
-import jcog.math.FloatRange;
 import jcog.math.FloatPolarNormalized;
+import jcog.math.FloatRange;
 import nars.concept.ActionConcept;
 import nars.concept.Concept;
 import nars.concept.SensorConcept;
@@ -215,7 +215,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         return id + " rwrd=" + n2(reward) +
                 " dex=" + /*n4*/(dexterity(now, now)) +
                 //"\t" + Op.cache.summary() +
-                /*" var=" + n4(varPct(nar)) + */ "\t" + nar.terms.summary() + " " +
+                /*" var=" + n4(varPct(nar)) + */ "\t" + nar.concepts.summary() + " " +
                 nar.emotion.summary();
     }
 

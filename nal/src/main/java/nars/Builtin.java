@@ -381,7 +381,7 @@ public class Builtin {
                 int toRemove = nar.random().nextInt(ee.size());
                 ee.remove(toRemove);
 
-                r = Op.conjEvents(ee);
+                r = Op.conj(ee);
 
             }
 
@@ -449,7 +449,7 @@ public class Builtin {
                         break;
                 }
                 events.remove(f);
-                return Op.conjEvents(events);
+                return Op.conj(events);
             } else {
                 return nullToNull(Op.without(conj, (x) -> event.equalsRoot(x), nar.random()));
             }
@@ -476,7 +476,7 @@ public class Builtin {
                     case "sys":
                         return $.p(
                                 $.quote(nar.emotion.summary()),
-                                $.quote(nar.terms.summary()),
+                                $.quote(nar.concepts.summary()),
                                 $.quote(nar.emotion.summary()),
                                 $.quote(nar.exe.toString())
                         );

@@ -70,16 +70,17 @@ public class ExecCharts {
         CheckBox auto = new CheckBox("Auto");
         auto.set(false);
 
+        float[] want = n.emotion.want;
         Gridding g = grid(
 //                Stream.concat(
 //                        Stream.of(auto),
-                        IntStream.range(0, n.want.length).mapToObj(
-                                w -> new FloatSlider(n.want[w], -2f, +2f) {
+                        IntStream.range(0, want.length).mapToObj(
+                                w -> new FloatSlider(want[w], -2f, +2f) {
 
                                     @Override
                                     protected void paintWidget(GL2 gl, RectFloat2D bounds) {
                                         if (auto.on()) {
-                                            value(n.want[w]);
+                                            value(want[w]);
                                         }
 
                                     }
@@ -88,7 +89,7 @@ public class ExecCharts {
                                         .type(BaseSlider.Knob)
                                         .on((s, v) -> {
                                             if (!auto.on())
-                                                n.want[w] = v;
+                                                want[w] = v;
                                         })
                         ).toArray(Surface[]::new));
 

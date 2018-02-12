@@ -37,7 +37,7 @@ public class SensorConcept extends WiredConcept implements FloatFunction<Term>, 
     }
 
     public SensorConcept(Term c, NAR n, FloatSupplier signal, FloatFloatToObjectFunction<Truth> truth) {
-        this(c, n.terms.conceptBuilder, signal, truth);
+        this(c, n.conceptBuilder, signal, truth);
         sensor.pri(() -> n.priDefault(BELIEF));
     }
 

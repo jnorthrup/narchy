@@ -8,6 +8,8 @@ import jcog.math.Range;
 import jcog.pri.Pri;
 import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
+import nars.concept.builder.ConceptBuilder;
+import nars.concept.builder.DefaultConceptBuilder;
 import nars.task.Tasked;
 import nars.task.TruthPolation;
 import nars.term.atom.Atom;
@@ -18,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.Op.*;
-import static nars.control.MetaGoal.newWants;
 
 /**
  * NAR Parameters
@@ -73,6 +74,9 @@ public abstract class Param {
      * hard limit to prevent infinite looping
      */
     public static final int MAX_TASK_FORWARD_HOPS = 4;
+
+
+    public final ConceptBuilder conceptBuilder = new DefaultConceptBuilder();
 
     /**
      * controls interpolation policy:
@@ -203,7 +207,6 @@ public abstract class Param {
 
     public final FloatRange conceptActivation = new FloatRange(1f, 0, 1f);
 
-    public final float[] want = newWants();
 
 //    protected void defaultWants() {
 //        float[] w = this.want;

@@ -4,6 +4,7 @@ import nars.NAR;
 import nars.control.DurService;
 import spacegraph.Scale;
 import spacegraph.Surface;
+import spacegraph.SurfaceBase;
 
 import java.util.function.Consumer;
 
@@ -13,19 +14,32 @@ import java.util.function.Consumer;
  * removes on stop (ex: removal from graph)
  */
 abstract public class DurSurface extends Scale {
-    final DurService on;
+    private final NAR nar;
+    DurService on;
 
     public DurSurface(Surface x, NAR nar) {
         super(x, 1f);
-        on = DurService.on(nar, this::update);
+        this.nar = nar;
     }
 
     abstract protected void update();
 
     @Override
+    public void start(SurfaceBase parent) {
+        synchronized (this) {
+            super.start(parent);
+            assert(on == null);
+            on = DurService.on(nar, this::update);
+        }
+    }
+
+    @Override
     public void stop() {
-        super.stop();
-        on.off();
+        synchronized (this) {
+            super.stop();
+            on.off();
+            on = null;
+        }
     }
 
     public static DurSurface get(Surface x, NAR n, Consumer<NAR> eachDur) {

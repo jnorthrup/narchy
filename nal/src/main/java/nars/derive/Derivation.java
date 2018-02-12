@@ -25,7 +25,6 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.anon.Anon;
-import nars.term.anon.CachedAnon;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
@@ -71,7 +70,9 @@ public class Derivation extends ProtoDerivation {
 
     public final BatchActivation activator = new BatchActivation();
 
-    public final Anon anon = new CachedAnon(ANON_CAPACITY, ANON_CACHE_SIZE);
+    public final Anon anon =
+            new Anon(ANON_CAPACITY);
+            //new CachedAnon(ANON_CAPACITY, ANON_CACHE_SIZE);
 
     /**
      * temporary buffer for derivations before input so they can be merged in case of duplicates
@@ -743,7 +744,7 @@ public class Derivation extends ProtoDerivation {
         if (x == null)
             return Null;
 
-        Term y = $.func(_tlRandom, x).eval(nar.terms.resolveFunctors);
+        Term y = $.func(_tlRandom, x).eval(nar.concepts.resolveFunctors);
         if (y!=null && y.op().conceptualizable)
             return anon.put(y);
         return Null;

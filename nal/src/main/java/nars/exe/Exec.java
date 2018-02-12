@@ -128,7 +128,7 @@ abstract public class Exec implements Executor {
         void update(long time, int dur, FasterList<Cause> causes, float[] goal);
 
         default void update(NAR nar) {
-            update(nar.time(), nar.dur(), nar.causes, nar.want);
+            update(nar.time(), nar.dur(), nar.causes, nar.emotion.want);
         }
     }
 

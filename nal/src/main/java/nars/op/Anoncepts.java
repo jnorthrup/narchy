@@ -66,7 +66,7 @@ public class Anoncepts extends LeakBack {
 
         Concept c = nar.concept(a); //HACK
         if (c == null) {
-            nar.terms.set(a, c = new AnonConcept(a, nar));
+            nar.concepts.set(a, c = new AnonConcept(a, nar));
         }
 
         float pri = task.priElseZero();
