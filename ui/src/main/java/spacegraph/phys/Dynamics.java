@@ -125,7 +125,7 @@ public class Dynamics<X> extends Collisions<X> {
 
 
     public final int update(float dt, int maxSubSteps) {
-        return update(dt, maxSubSteps, 1f / 60f);
+        return update(dt, maxSubSteps, dt);
     }
 
     protected void synchronizeMotionStates(boolean clear) {
@@ -185,7 +185,7 @@ public class Dynamics<X> extends Collisions<X> {
                 // fixed timestep with interpolation
                 localTime += timeStep;
                 if (localTime >= fixedTimeStep) {
-                    numSimulationSubSteps = (int) (localTime / fixedTimeStep);
+                    numSimulationSubSteps = Math.round(localTime / fixedTimeStep);
                     localTime -= numSimulationSubSteps * fixedTimeStep;
                 }
             } else {

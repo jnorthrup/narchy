@@ -57,7 +57,11 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
     private final float cameraRotateSpeed = 5f;
     private boolean simulating = true;
 
-    private final int maxSubsteps = 0; //set to zero for variable timing
+    /** 0 for variable timing */
+    private final int maxSubsteps =
+            0;
+            //4;
+
     protected float aspect;
 
 

@@ -40,7 +40,9 @@ public class GjkPairDetector extends DiscreteCollisionDetectorInterface {
 	//protected final BulletStack stack = BulletStack.get();
 
 	// must be above the machine epsilon
-	private static final float REL_ERROR2 = 1.0e-6f;
+	private static final float REL_ERROR2 =
+           1.0e-4f;
+            //1.0e-6f;
 
 	private final v3 cachedSeparatingAxis = new v3();
 	private ConvexPenetrationDepthSolver penetrationDepthSolver;
