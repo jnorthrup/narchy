@@ -362,6 +362,22 @@ public class TermReductionsTest extends NarseseTest {
                         })).toString());
     }
 
+    @Test public void testConjEvents234234() {
+
+        //test several ways of constructing the same False term
+        assertReduction(False,
+                "(((x-->happy) &&+20 (((--,(x-->joy)) &&+30 (--,x(#1,add(#1,2))))&&(#1<->6)))&|(--,(x-->happy)))");
+        assertEquals(False,
+                CONJ.the(0,
+                        $safe("((x-->happy) &&+20 (((--,(x-->joy)) &&+30 (--,x(#1,add(#1,2))))&&(#1<->6)))"),
+                        $safe("(--,(x-->happy))")));
+        assertEquals(False,
+                Op.conjMerge(
+                        $safe("((x-->happy) &&+20 (((--,(x-->joy)) &&+30 (--,x(#1,add(#1,2))))&&(#1<->6)))"),
+                        $safe("(--,(x-->happy))")));
+
+    }
+
     @Test
     public void testConjEventsWithFalse() throws Narsese.NarseseException {
         assertEquals(

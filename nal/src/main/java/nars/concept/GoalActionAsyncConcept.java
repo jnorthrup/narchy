@@ -62,11 +62,12 @@ public class GoalActionAsyncConcept extends ActionConcept {
     public Stream<ITask> update(long now, int dur, NAR nar) {
 
         long pStart =
-                //now;
-                now - dur/2;
+                now;
+                //now - dur/2;
         long pEnd =
                 //now;
-                now + dur/2;
+                //now + dur/2;
+                now + dur;
 
         Truth goal = this.goals().truth(pStart, pEnd, nar);
 

@@ -569,45 +569,35 @@ public enum Terms {
      *      null   -- ok
      */
     public static Term flatten(/*@NotNull*/ Op op, Term[] u, int dt, ObjectByteHashMap<Term> s) {
-
-        assert (u.length > 1);
-
-        //sort by volume, decreasing first. necessary for proper subsumption of events into sibling sequence compounds that may contain them
-        //may also provide some performance benefit for accelerated early termination in case of invalid construction attempts (ex: co-negation)
-
-        //u = u.clone(); //dont modify input, it will confuse callee's
-        //Arrays.sort(u, volumeComparator);
-
-        byte trues = 0, falses = 0;
         for (Term x : u) {
             Term xx = flatten(op, dt, x, s);
-            if (xx != null) {
-                if (xx == True) {
-                    if (falses > 0)
-                        return False;
-                    trues++;
-                }else if (xx == False) {
-                    if (trues > 0)
-                        return False;
-                    falses++;
-                } else if (xx == Null)
-                    return Null;
-            }
+            if (xx == null || xx == True)
+                continue; //ignore
+            else if (xx == False)
+                return False; //short-circuit
+            else if (xx == Null)
+                return Null; //short-circuit
         }
-        /*if (trues > 0 && falses > 0)
-            return Null;
-        else */if (trues > 0)
-            return True;
-        else if (falses > 0)
-            return False;
-        else
-            return null;
+        return null; //ok
+    }
+    public static Term flatten(/*@NotNull*/ Op op, Subterms u, int dt, ObjectByteHashMap<Term> s) {
+        //TODO use a reduction lambda
+        for (Term x : u) {
+            Term xx = flatten(op, dt, x, s);
+            if (xx == null || xx == True)
+                continue; //ignore
+            else if (xx == False)
+                return False; //short-circuit
+            else if (xx == Null)
+                return Null; //short-circuit
+        }
+        return null; //ok
     }
 
 
-
     public static boolean flattenMatchDT(int candidate, int target) {
-        return (candidate == target) || ((target == 0) && (candidate == DTERNAL));
+        return (candidate == target);
+                //|| ((target == 0) && (candidate == DTERNAL));
     }
 
     public static Term flatten(/*@NotNull*/ Op op, int dt, Term x, ObjectByteHashMap<Term> s) {
@@ -618,33 +608,33 @@ public enum Terms {
         Op xo = x.op();
 
         if ((xo == op) && (flattenMatchDT(x.dt(), dt))) {
-            return flatten(op, x.subterms().arrayShared(), dt, s);
+            return flatten(op, x.subterms(), dt, s);
 
         } else {
             if (!testCoNegate(x, s))
                 return False;
 
-            if (x.op() == CONJ) {
-                int xdt = x.dt();
-                if (xdt != 0) {
-                    //test for x's early subterm (left aligned t=0) in case it matches with a term in the superconjunction that x is a subterm of
-                    Term early = x.sub(xdt > 0 ? 0 : 1);
-
-                    //check if the early event is present, and if it is (with correct polarity) then include x without the early event
-                    Term earlyUnneg = early.unneg();
-                    byte earlyExisting = s.getIfAbsent(earlyUnneg, (byte) 0);
-                    if (earlyExisting != 0) {
-                        if (early.op() == NEG ^ (earlyExisting == -1))
-                            return False; //wrong polarity
-                        else {
-                            //subsume the existing term by removing it from the list, since it is part of 'x' which has been added in entirity already
-                            s.remove(earlyUnneg);
-                        }
-
-                    }
-
-                }
-            }
+//            if (x.op() == CONJ) {
+//                int xdt = x.dt();
+//                if (xdt != 0) {
+//                    //test for x's early subterm (left aligned t=0) in case it matches with a term in the superconjunction that x is a subterm of
+//                    Term early = x.sub(xdt > 0 ? 0 : 1);
+//
+//                    //check if the early event is present, and if it is (with correct polarity) then include x without the early event
+//                    Term earlyUnneg = early.unneg();
+//                    byte earlyExisting = s.getIfAbsent(earlyUnneg, (byte) 0);
+//                    if (earlyExisting != 0) {
+//                        if (early.op() == NEG ^ (earlyExisting == -1))
+//                            return False; //wrong polarity
+//                        else {
+//                            //subsume the existing term by removing it from the list, since it is part of 'x' which has been added in entirity already
+//                            s.remove(earlyUnneg);
+//                        }
+//
+//                    }
+//
+//                }
+            //}
 
             return null; //ok
         }

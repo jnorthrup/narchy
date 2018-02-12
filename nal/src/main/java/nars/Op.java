@@ -171,64 +171,60 @@ public enum Op {
                     Term only = u[0];
                     if (only instanceof EllipsisMatch) {
                         return a(dt, ((EllipsisMatch) only).arrayShared()); //unwrap
+                    } else {
+
+                        //preserve unitary ellipsis for patterns etc
+                        return only instanceof Ellipsislike ?
+                                new CachedUnitCompound(CONJ, only) //special; preserve the surrounding conjunction
+                                :
+                                only;
                     }
 
-                    //preserve unitary ellipsis for patterns etc
-                    return only instanceof Ellipsislike ?
-                            new CachedUnitCompound(CONJ, only) //special; preserve the surrounding conjunction
-                            :
-                            only;
-
             }
-
-
-            int absoluteness = 0, trues = 0;
-            for (Term t : u) {
-                if (t instanceof Bool) {
-                    if (t == Null)
-                        return Null;
-                    if (t == False) {
-                        absoluteness = -1;
-                    } else if (t == True) {
-                        trues++;
-                        if (absoluteness >= 0)
-                            absoluteness = +1; //only if not false, so false overrides
-                    }
-                }
-            }
-            if (absoluteness == -1) return False;
 
             boolean cdt = concurrent(dt);
-            if (absoluteness == +1) {
-                {
-                    //filter out all boolean terms
-                    int sizeAfterTrueRemoved = u.length - trues;
-                    switch (sizeAfterTrueRemoved) {
-                        case 0:
-                            return True;
-                        case 1: {
-                            for (int i = 0; i < u.length; i++) {
-                                Term uu = u[i];
-                                if (uu != True)
-                                    return uu;
-                            }
-                            throw new RuntimeException("should have found non-True term to return");
-                        }
-                        default: {
-                            Term[] y = new Term[sizeAfterTrueRemoved];
-                            int j = 0;
-                            for (int i = 0; j < y.length; i++) {
-                                Term uu = u[i];
-                                if (uu != True)
-                                    y[j++] = uu;
-                            }
-                            assert (j == y.length);
-                            return CONJ.the(dt, y);
-                        }
-                    }
 
+            int trues = 0; //# of trues to ignore
+            for (Term t : u) {
+                if (t == Op.Null || t == False)
+                    return t; //short-circuit
+                else if (t == Op.True)
+                    trues++;
+            }
+
+            if (trues > 0) {
+                //filter out all boolean terms
+                int sizeAfterTrueRemoved = u.length - trues;
+                switch (sizeAfterTrueRemoved) {
+                    case 0:
+                        //nothing remains, this term vaporizes to an innocuous True
+                        return True;
+                    case 1: {
+                        //find and return the only non-True term
+                        for (Term uu : u) {
+                            if (uu != True) {
+                                assert (!(uu instanceof Ellipsislike)) : "if this happens, TODO";
+                                return uu;
+                            }
+                        }
+                        throw new RuntimeException("should have found non-True term to return");
+                    }
+                    default: {
+                        Term[] y = new Term[sizeAfterTrueRemoved];
+                        int j = 0;
+                        for (int i = 0; j < y.length; i++) {
+                            Term uu = u[i];
+                            if (uu != True)
+                                y[j++] = uu;
+                        }
+                        assert (j == y.length);
+                        //return CONJ.the(dt, y);
+                        u = y;
+                    }
                 }
             }
+
+
 
             if (cdt && u.length == 2) {
                 if (conegated(u[0], u[1])) //fast conegation check, rather than the exhaustive multi-term one ahead
@@ -239,50 +235,62 @@ public enum Op {
             Term ci;
             switch (dt) {
                 case 0:
-                    ci = null;
-                    for (int i = 0; i < u.length; i++) {
-
-//                    //PROMOTE DTERNAL to ZERO
-//                    if (u[i].op() == CONJ && u[i].dt() == DTERNAL) {
-//                        u[i] = u[i].dt(0);
-//                    }
-
-                        //HACK cut to prevent infinite recursion due to impl conj reduction
-//                    if (u[0].op() == IMPL && u[0].containsRecursively(u[1].unneg())) {
-//                        Term ui = u[0];
-//                        int id = ui.dt();
-//
-//                        {
-//                            Term uis = ui.sub(0);
-//                            if (uis.equals(u[1]))
-//                                continue; //already absorbed into the subject
-//                            if (uis.op() == CONJ) {
-//                                LongObjectHashMap<Term> uism = uis.eventMap(0);
-//                                Term uismNOW = uism.get(0);
-//                                if (uismNOW.equals(u[1]))
-//                                    return True;
-//                                if (uismNOW.unneg().equals(u[1]))
-//                                    return Null; //co-negation
-//                            }
-//                        }
-//
-//                        if (id == DTERNAL || id == 0) { //simultaneous with now
-//                            Term uip = ui.sub(1);
-//                            if (uip.equals(u[1]))
-//                                return True;
-//                            if (uip.op() == CONJ) {
-//                                LongObjectHashMap<Term> uipm = uip.eventMap(0);
-//                                Term uipmNOW = uipm.get(0);
-//                                if (uipmNOW.equals(u[1]))
-//                                    return True;
-//                                if (uipmNOW.unneg().equals(u[1]))
-//                                    return Null; //co-negation
-//                            }
-//                        }
-//                    }
-
-                        ci = i > 0 ? conjMerge(ci, 0, u[i], 0) : u[0];
+                    boolean merge = false;
+                    for (Term v : u) {
+                        if (v.op() == CONJ && v.dtRange() > 0) {
+                            merge = true;
+                            break;
+                        }
                     }
+                    if (merge) {
+                        ci = conjMerge(u); //need to split into temporally separate components
+                    } else {
+                        ci = junctionFlat(0, u);
+                    }
+//                    ci = null;
+//                    for (int i = 0; i < u.length; i++) {
+//
+////                    //PROMOTE DTERNAL to ZERO
+////                    if (u[i].op() == CONJ && u[i].dt() == DTERNAL) {
+////                        u[i] = u[i].dt(0);
+////                    }
+//
+//                        //HACK cut to prevent infinite recursion due to impl conj reduction
+////                    if (u[0].op() == IMPL && u[0].containsRecursively(u[1].unneg())) {
+////                        Term ui = u[0];
+////                        int id = ui.dt();
+////
+////                        {
+////                            Term uis = ui.sub(0);
+////                            if (uis.equals(u[1]))
+////                                continue; //already absorbed into the subject
+////                            if (uis.op() == CONJ) {
+////                                LongObjectHashMap<Term> uism = uis.eventMap(0);
+////                                Term uismNOW = uism.get(0);
+////                                if (uismNOW.equals(u[1]))
+////                                    return True;
+////                                if (uismNOW.unneg().equals(u[1]))
+////                                    return Null; //co-negation
+////                            }
+////                        }
+////
+////                        if (id == DTERNAL || id == 0) { //simultaneous with now
+////                            Term uip = ui.sub(1);
+////                            if (uip.equals(u[1]))
+////                                return True;
+////                            if (uip.op() == CONJ) {
+////                                LongObjectHashMap<Term> uipm = uip.eventMap(0);
+////                                Term uipmNOW = uipm.get(0);
+////                                if (uipmNOW.equals(u[1]))
+////                                    return True;
+////                                if (uipmNOW.unneg().equals(u[1]))
+////                                    return Null; //co-negation
+////                            }
+////                        }
+////                    }
+//
+//                        ci = i > 0 ? conjMerge(ci, 0, u[i], 0) : u[0];
+//                    }
 
                     break;
                 case DTERNAL:
@@ -314,10 +322,10 @@ public enum Op {
                     //TODO junctionFlat any embedded XTERNAL CONJ subterms?
 
 
-                    if (u.length>1) {
+                    if (u.length > 1) {
                         boolean unordered = false;
-                        for (int i = 0; i < u.length-1; i++) {
-                            if (u[i].compareTo(u[i+1]) > 0) {
+                        for (int i = 0; i < u.length - 1; i++) {
+                            if (u[i].compareTo(u[i + 1]) > 0) {
                                 unordered = true;
                                 break;
                             }
@@ -384,12 +392,12 @@ public enum Op {
             }
 
 
+            //(NOT (x AND y)) AND (NOT x) == NOT X
             if (ci.op() == CONJ && ci.hasAny(NEG)) {
                 Subterms cci;
                 if ((cci = ci.subterms()).hasAny(CONJ)) {
                     int ciDT = ci.dt();
                     if (ciDT == 0 || ciDT == DTERNAL) {
-                        //(NOT (x AND y)) AND (NOT x) == NOT X
                         int s = cci.subs();
                         RoaringBitmap ni = null, nc = null;
                         for (int i = 0; i < s; i++) {
@@ -542,7 +550,9 @@ public enum Op {
     public final boolean depVarParent;
 
     private static boolean conegated(Term a, Term b) {
-        return (a.op() == NEG && a.unneg().equals(b)) ||
+        return Math.abs(a.volume() - b.volume()) == 1
+                &&
+                (a.op() == NEG && a.unneg().equals(b)) ||
                 (b.op() == NEG && b.unneg().equals(a));
     }
 
@@ -988,8 +998,29 @@ public enum Op {
     }
 
 
+    /**
+     * merge a set of terms with dt=0
+     */
+    static public Term conjMerge(Term... x) {
+        assert (x.length > 1);
+        //TODO ? ArrayHashSet<LongObjectPair<Term>>
+        FasterList<LongObjectPair<Term>> xx = x[0].eventList(0, 1);
+        for (int i = 1; i < x.length; i++) {
+            xx.addAll(x[i].eventList(0, 1));
+        }
+        return conj(xx);
+    }
+
+
+    static public Term conjMerge(Term a, @Deprecated long aStart, Term b, long bStart) {
+        FasterList<LongObjectPair<Term>> ae = a.eventList(aStart, 1);
+        FasterList<LongObjectPair<Term>> be = b.eventList(bStart, 1);
+        ae.addAll(be);
+        return conj(ae);
+    }
+
     /*@NotNull*/
-    static public Term conjMerge(Term a, long aStart, Term b, long bStart) {
+    static public Term conjMerge0(Term a, @Deprecated long aStart, Term b, long bStart) {
 
         int ae = a.eventCount();
         int be = b.eventCount();
@@ -1116,14 +1147,14 @@ public enum Op {
                     LongObjectPair<Term> p = events.get(i);
                     long pt = p.getOne();
                     if (!times.add(pt)) {
-                        if (collides==null)
+                        if (collides == null)
                             collides = new LongByteHashMap(2);
 
-                        byte n = collides.getIfAbsentPut(pt, (byte)1);
-                        collides.addToValue(pt, (byte)1);
+                        byte n = collides.getIfAbsentPut(pt, (byte) 1);
+                        collides.addToValue(pt, (byte) 1);
                     }
                 }
-                if (collides!=null) {
+                if (collides != null) {
                     ListIterator<LongObjectPair<Term>> ii = events.listIterator();
                     int batchRemain = 0;
                     Term[] batch = null;
@@ -1132,8 +1163,8 @@ public enum Op {
 
                         if (batchRemain == 0) {
                             long pt = p.getOne();
-                            batchRemain = collides.removeKeyIfAbsent(pt, (byte)0);
-                            assert(batchRemain == 0 || batchRemain > 1): "batchRemain=" + batchRemain;
+                            batchRemain = collides.removeKeyIfAbsent(pt, (byte) 0);
+                            assert (batchRemain == 0 || batchRemain > 1) : "batchRemain=" + batchRemain;
                             if (batchRemain > 0) {
                                 ii.remove();
                                 batch = new Term[batchRemain--];
@@ -2332,7 +2363,7 @@ public enum Op {
 
     protected Term compound(int dt, Term[] u, boolean intern) {
         return (intern && internable(dt, u)) ?
-                (dt==DTERNAL ? cache : cacheTemporal).apply(new InternedCompound(this, dt, u)) :
+                (dt == DTERNAL ? cache : cacheTemporal).apply(new InternedCompound(this, dt, u)) :
                 compound(dt, u);
     }
 
@@ -2758,7 +2789,7 @@ public enum Op {
     }
 
 
-    public static class TermCache/*<I extends InternedCompound>*/ extends HijackMemoize<InternedCompound,Term> {
+    public static class TermCache/*<I extends InternedCompound>*/ extends HijackMemoize<InternedCompound, Term> {
 
         public TermCache(int capacity, int reprobes, boolean soft) {
             super(x -> x.op.compound(x.dt, x.subs), capacity, reprobes, soft);

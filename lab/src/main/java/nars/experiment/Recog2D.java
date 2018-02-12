@@ -7,10 +7,8 @@ import jcog.Util;
 import jcog.learn.MLPMap;
 import nars.*;
 import nars.concept.Concept;
-import nars.concept.GoalActionConcept;
 import nars.concept.TaskConcept;
 import nars.gui.BeliefTableChart;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
@@ -18,9 +16,7 @@ import nars.truth.Truth;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.PixelBag;
 import nars.video.Scale;
-import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
-import org.jetbrains.annotations.NotNull;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.layout.Gridding;
@@ -31,7 +27,6 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.IntFunction;
@@ -52,7 +47,7 @@ public class Recog2D extends NAgentX {
     private final Graphics2D g;
     private final int h;
     private final int w;
-    private final Outputs outs;
+    private final BeliefVector outs;
 
     private final Training train;
 
@@ -64,17 +59,9 @@ public class Recog2D extends NAgentX {
 
 
     int image;
-    final int maxImages = 3;
+    final int maxImages = 5;
 
-    int imagePeriod = 24;
-
-    //goal -> belief transfer function
-    FloatToFloatFunction goalInfluence = (x) ->
-            x;
-            //x > 0.5f ? 1 : 0; //1f/(maxImages); //how much goal feedback will influence beliefs, <=1
-
-//    float theta;
-//    float dTheta = 0.25f;
+    int imagePeriod = 12;
 
     static {
         Param.DEBUG = false;
@@ -115,7 +102,7 @@ public class Recog2D extends NAgentX {
 
         //still
         Bitmap2DSensor sp = senseCamera(
-                id
+                $.the("x")
                 //$.p(id,
                 //$.the("zoom")
                 //)
@@ -124,7 +111,7 @@ public class Recog2D extends NAgentX {
 
         //nar.log();
 
-        outs = new Outputs(ii -> $.the("s" + ii), maxImages, this, goalInfluence);
+        outs = new BeliefVector(ii -> $.inst($.the( ii), $.the("x")), maxImages, this);
         train = new Training(
                 //sensors,
                 Lists.newArrayList(
@@ -139,9 +126,9 @@ public class Recog2D extends NAgentX {
 
     }
 
-    public Surface conceptTraining(Outputs tv, NAR nar) {
+    Surface conceptTraining(BeliefVector tv, NAR nar) {
 
-        LinkedHashMap<TaskConcept, Outputs.Neuron> out = tv.out;
+        //LinkedHashMap<TaskConcept, BeliefVector.Neuron> out = tv.out;
 
         Plot2D p;
 
@@ -149,7 +136,7 @@ public class Recog2D extends NAgentX {
 
         Gridding g = col(
 
-                row(beliefTableCharts(nar, out.keySet(), 256)),
+                row(beliefTableCharts(nar, List.of(tv.concepts), 256)),
 
                 row(p = new Plot2D(history, Plot2D.Line).add("Reward", () ->
                                 reward
@@ -157,11 +144,11 @@ public class Recog2D extends NAgentX {
                 )),
                 //row(s = new Plot2D(history, Plot2D.BarWave).add("Rward", () -> rewardValue)),
 
-                row(out.entrySet().stream().map(ccnn -> new Surface() {
+                row(IntStream.range(0, tv.concepts.length).mapToObj(i-> new Surface() {
                     @Override
                     protected void paint(GL2 gl, int dtMS) {
-                        Concept c = ccnn.getKey();
-                        Outputs.Neuron nn = ccnn.getValue();
+                        Concept c = tv.concepts[i];
+                        BeliefVector.Neuron nn = tv.neurons[i];
 
                         float freq, conf;
 
@@ -263,7 +250,7 @@ public class Recog2D extends NAgentX {
 
 
             long when = nar.time();
-            Truth g = nar.beliefTruth(outs.outVector[i], when);
+            Truth g = nar.beliefTruth(outs.concepts[i], when);
 
             if (g == null) {
                 error += 0.5;
@@ -312,16 +299,16 @@ public class Recog2D extends NAgentX {
         NAgentX.runRT((n) -> {
 
             Recog2D a = new Recog2D(n);
-            a.nar.freqResolution.set(0.07f);
-            a.nar.termVolumeMax.set(16);
+            //a.nar.freqResolution.set(0.07f);
+            //a.nar.termVolumeMax.set(16);
             return a;
 
-        }, 15);
+        }, 5);
     }
 
     public static class Training {
         private final List<Concept> ins;
-        private final Outputs outs;
+        private final BeliefVector outs;
         private final MLPMap trainer;
         private final NAR nar;
 
@@ -336,7 +323,7 @@ public class Recog2D extends NAgentX {
          */
         private final float momentum = 0.6f;
 
-        public Training(java.util.List<Concept> ins, Outputs outs, NAR nar) {
+        public Training(java.util.List<Concept> ins, BeliefVector outs, NAR nar) {
 
             this.nar = nar;
             this.ins = ins;
@@ -385,7 +372,7 @@ public class Recog2D extends NAgentX {
                     float c = nar.confDefault(BELIEF) * (1f - errSum);
                     if (c > 0) {
                         nar.believe(
-                                outs.outVector[j].term(),
+                                outs.concepts[j].term(),
                                 Tense.Present, y, c);
                     }
 
@@ -399,17 +386,17 @@ public class Recog2D extends NAgentX {
     /**
      * Created by me on 10/15/16.
      */
-    public static class Outputs {
+    public static class BeliefVector {
 
-        public double errorSum() {
-            return out.values().stream().mapToDouble(x -> x.error).map(x -> x == x ? x : 1f).sum();
-        }
+//        public double errorSum() {
+//            return out.values().stream().mapToDouble(x -> x.error).map(x -> x == x ? x : 1f).sum();
+//        }
 
         static class Neuron {
 
-            public float actual, actualConf;
+            public float predictedFreq, predictedConf;
 
-            public float expected;
+            public float expectedFreq;
 
             public float error;
 
@@ -418,46 +405,44 @@ public class Recog2D extends NAgentX {
             }
 
             public void clear() {
-                expected = Float.NaN;
+                expectedFreq = Float.NaN;
                 error = 0;
             }
 
             public void expect(float expected) {
-                this.expected = expected;
+                this.expectedFreq = expected;
                 update();
             }
 
             public void actual(float f, float c) {
-                this.actual = f;
-                this.actualConf = c;
+                this.predictedFreq = f;
+                this.predictedConf = c;
                 update();
             }
 
             protected void update() {
-                float a = this.actual;
-                float e = this.expected;
+                float a = this.predictedFreq;
+                float e = this.expectedFreq;
                 if (e != e) {
                     this.error = Float.NaN;
                 } else if (a != a) {
                     this.error = 1f;
                 } else {
-                    this.error = (Math.abs(a - e))
-                    //* ( this.actualConf )
-                    ;
+                    this.error = (Math.abs(a - e)) * ( this.predictedConf);
                 }
             }
         }
 
         public float[] expected(float[] output) {
             output = sized(output);
-            for (int i = 0; i < outVector.length; i++)
+            for (int i = 0; i < concepts.length; i++)
                 output[i] = expected(i);
             return output;
         }
 
         public float[] actual(float[] output) {
             output = sized(output);
-            for (int i = 0; i < outVector.length; i++)
+            for (int i = 0; i < concepts.length; i++)
                 output[i] = actual(i);
             return output;
         }
@@ -470,49 +455,77 @@ public class Recog2D extends NAgentX {
         }
 
 
-        final LinkedHashMap<TaskConcept, Neuron> out;
-        TaskConcept[] outVector;
+
+        Neuron[] neurons;
+        TaskConcept[] concepts;
 
         final int states;
 
-        private final NAR nar;
+
 
         boolean verify;
 
 
-        public Outputs(IntFunction<Term> namer, int maxStates, NAgent a, FloatToFloatFunction transferFunction) {
-            this.nar = a.nar;
+        public BeliefVector(IntFunction<Term> namer, int maxStates, NAgent a) {
+
             this.states = maxStates;
-            this.out = new LinkedHashMap<>(maxStates);
-            this.outVector = IntStream.range(0, maxStates).mapToObj((int i) -> {
+            this.neurons = new Neuron[maxStates];
+            this.concepts = IntStream.range(0, maxStates).mapToObj((int i) -> {
                         Term tt = namer.apply(i);
-                        @NotNull GoalActionConcept aa = a.action(tt, (b, d) -> {
-    //                        if (train) {
-    //                            float ee = expected(i);
-    //
-    //                            float thresh = 0.1f;
-    //                            if (d==null || Math.abs(ee-d.freq())>thresh) {
-    //                                //correction
-    //                                a.nar.goal(tt, Tense.Present, ee, a.gamma);
-    //                                //return null;
-    //                            }
-    //
-                            //return $.t(ee, a.alpha() );
-    //                            //return null;
-    //                        }
 
-    //                        if (b!=null && d!=null) {
-    //                            return d.confMult(0.5f + 0.5f * Math.abs(d.freq()-b.freq()));
-    //                        } else {
-                            //return d!=null ? d.confWeightMult(0.5f) : null;
-                            //}
+                        Neuron n = neurons[i] = new Neuron();
 
-                            return $.t(transferFunction.valueOf(d!=null ? d.freq() : 0), nar.confDefault(BELIEF));
+                        return a.action(tt, (bb, x)-> {
+                            //return a.react(tt, (b)->{
 
-                            //return d!=null ? new PreciseTruth(d.freq(), d.conf()goalInfluence.d.eviMult(goalInfluence, a.nar.dur()) : null;
+                            float predictedFreq = x!=null ? x.expectation() : 0.5f;
+
+                                //n.actual(x.freq(), x.conf());
+
+                            float curiosity = 0.02f; //HACK
+                            if (a.nar.random().nextFloat() < curiosity) {
+//                                a.nar.believe(concepts[i].term(), Tense.Present,
+//                                        a.nar.random().nextBoolean() ? 0 : 1f, a.nar.confDefault(BELIEF) / 4f);
+                                //return $.t(
+                                  //      a.nar.random().nextBoolean() ? 0 : 1f, a.nar.confDefault(BELIEF)/4f);
+                                predictedFreq = a.nar.random().nextBoolean() ? 0 : 1f;
+                            }
+//                            if (x == null)
+//                                return $.t(0, a.nar.confDefault(BELIEF));
+//                            else
+//                                return x;
+
+                            n.actual(predictedFreq, a.nar.confDefault(BELIEF));
+
+                            return $.t(n.predictedFreq, n.predictedConf);
                         });
-                        //aa.resolution.setValue(1f);
-                        return aa;
+//                        @NotNull GoalActionConcept aa = a.action(tt, (b, d) -> {
+//    //                        if (train) {
+//    //                            float ee = expected(i);
+//    //
+//    //                            float thresh = 0.1f;
+//    //                            if (d==null || Math.abs(ee-d.freq())>thresh) {
+//    //                                //correction
+//    //                                a.nar.goal(tt, Tense.Present, ee, a.gamma);
+//    //                                //return null;
+//    //                            }
+//    //
+//                            //return $.t(ee, a.alpha() );
+//    //                            //return null;
+//    //                        }
+//
+//    //                        if (b!=null && d!=null) {
+//    //                            return d.confMult(0.5f + 0.5f * Math.abs(d.freq()-b.freq()));
+//    //                        } else {
+//                            //return d!=null ? d.confWeightMult(0.5f) : null;
+//                            //}
+//
+//                            return $.t(transferFunction.valueOf(d!=null ? d.freq() : 0), nar.confDefault(BELIEF));
+//
+//                            //return d!=null ? new PreciseTruth(d.freq(), d.conf()goalInfluence.d.eviMult(goalInfluence, a.nar.dur()) : null;
+//                        });
+//                        //aa.resolution.setValue(1f);
+//                        return aa;
                     }
     //                        a.sense(namer.apply(i), () -> {
     //                            if (train) {
@@ -524,42 +537,39 @@ public class Recog2D extends NAgentX {
     //                            .pri(0.9f)
     //                            //.timing(0, 1) //synchronous feed
 
-            ).peek(c -> out.put(c, new Neuron()))
-                    .toArray(TaskConcept[]::new);
+            ).toArray(TaskConcept[]::new);
 
 
-            a.onFrame(() -> {
-                long now = nar.time();
-                int dur = nar.dur();
-                out.forEach((cc, nnn) -> {
-
-                    Truth t =
-                            //cc.belief(now, dur);
-                            nar.goalTruth(cc, now);
-
-                    float f, c;
-                    if (t == null) {
-                        f = Float.NaN;
-                        c = Float.NaN;
-                    } else {
-                        f = t.freq();
-                        c = t.conf();
-                    }
-                    nnn.actual(f, c);
-                });
-
-            });
+//            a.onFrame(() -> {
+//                long now = nar.time();
+//                int dur = nar.dur();
+//                out.forEach((cc, nnn) -> {
+//
+//                    Truth t =
+//                            //cc.belief(now, dur);
+//                            nar.goalTruth(cc, now);
+//
+//                    float f, c;
+//                    if (t == null) {
+//                        f = Float.NaN;
+//                        c = Float.NaN;
+//                    } else {
+//                        f = t.freq();
+//                        c = t.conf();
+//                    }
+//                    nnn.actual(f, c);
+//                });
+//
+//            });
         }
 
         public float expected(int i) {
-            return out.get(outVector[i]).expected;
+            return neurons[i].expectedFreq;
         }
 
 
         public float actual(int state) {
-
-            //return actual(outVector[state], when);
-            return out.get(outVector[state]).actual;
+            return neurons[state].predictedFreq;
         }
     //    public float actual(Termed<Compound> state, long when) {
     //        return nar.concept(state).beliefFreq(when);
@@ -568,7 +578,7 @@ public class Recog2D extends NAgentX {
         void expect(IntToFloatFunction stateValue) {
             //long now = nar.time();
             for (int i = 0; i < states; i++)
-                out.get(outVector[i]).expect(stateValue.valueOf(i));
+                neurons[i].expect(stateValue.valueOf(i));
         }
 
         public void expect(int onlyStateToBeOn) {
@@ -591,8 +601,8 @@ public class Recog2D extends NAgentX {
     //        train = false;
     //    }
 
-        public float error(Compound c) {
-            return out.get(c).error;
-        }
+//        public float error(Compound c) {
+//            return out.get(c).error;
+//        }
     }
 }

@@ -1,6 +1,7 @@
 package nars.concept;
 
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.control.MetaGoal;
 import nars.task.ITask;
@@ -9,13 +10,11 @@ import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 
 public abstract class ActionConcept extends WiredConcept {
-
-
-
 
     protected ActionConcept(@NotNull Term term, @NotNull NAR n) {
         super(term, n);
@@ -32,13 +31,45 @@ public abstract class ActionConcept extends WiredConcept {
         if (t.isGoal()) {
             long now = n.time();
             if (!t.isBefore(now - n.dur()/2)) { //present or future
-                float str = (1f + t.conf()) * activation; //at minimum 1, even for ~0 conf, same as super.value
                 MetaGoal.learn(MetaGoal.Action, t.cause(),
-                        str,
+                        Param.beliefValue(t) * activation,
                         n);
             }
         }
     }
+
+
+
+    /**
+     * determines the feedback belief when desire or belief has changed in a MotorConcept
+     * implementations may be used to trigger procedures based on these changes.
+     * normally the result of the feedback will be equal to the input desired value
+     * although this may be reduced to indicate that the motion has hit a limit or
+     * experienced resistence
+
+     * @param desired  current desire - null if no desire Truth can be determined
+     * @param believed current belief - null if no belief Truth can be determined
+     * @return truth of a new feedback belief, or null to disable the creation of any feedback this iteration
+     */
+    @FunctionalInterface
+    public interface MotorFunction extends BiFunction<Truth,Truth,Truth> {
+
+
+        @Nullable Truth apply(@Nullable Truth believed, @Nullable Truth desired);
+
+//        /**
+//         * all desire passes through to affect belief
+//         */
+//        MotorFunction Direct = (believed, desired) -> desired;
+//
+//        /**
+//         * absorbs all desire and doesnt affect belief
+//         */
+//        @Nullable MotorFunction Null = (believed, desired) -> null;
+    }
+
+}
+
 
 
 //    @Deprecated public static class CuriosityTask extends GeneratedTask {
@@ -65,34 +96,3 @@ public abstract class ActionConcept extends WiredConcept {
 
 //    /** produces a curiosity exploratoin task */
 //    @Nullable public abstract Task curiosity(float conf, long next, NAR nar);
-
-
-    /**
-     * determines the feedback belief when desire or belief has changed in a MotorConcept
-     * implementations may be used to trigger procedures based on these changes.
-     * normally the result of the feedback will be equal to the input desired value
-     * although this may be reduced to indicate that the motion has hit a limit or
-     * experienced resistence
-     */
-    @FunctionalInterface
-    public interface MotorFunction {
-
-        /**
-         * @param desired  current desire - null if no desire Truth can be determined
-         * @param believed current belief - null if no belief Truth can be determined
-         * @return truth of a new feedback belief, or null to disable the creation of any feedback this iteration
-         */
-        @Nullable Truth motor(@Nullable Truth believed, @Nullable Truth desired);
-
-//        /**
-//         * all desire passes through to affect belief
-//         */
-//        MotorFunction Direct = (believed, desired) -> desired;
-//
-//        /**
-//         * absorbs all desire and doesnt affect belief
-//         */
-//        @Nullable MotorFunction Null = (believed, desired) -> null;
-    }
-
-}

@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.util.FloatConsumer;
 import nars.concept.ActionConcept;
+import nars.concept.BeliefActionConcept;
 import nars.concept.GoalActionAsyncConcept;
 import nars.concept.GoalActionConcept;
 import nars.control.CauseChannel;
@@ -19,6 +20,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import java.util.function.IntPredicate;
 
@@ -414,9 +416,12 @@ public interface NAct {
         return action($.$(s), update);
     }
 
-    @NotNull
+
     default GoalActionConcept action(@NotNull Term s, @NotNull GoalActionConcept.MotorFunction update) {
         return addAction(new GoalActionConcept(s, this, update));
+    }
+    default BeliefActionConcept react(@NotNull Term s, @NotNull Consumer<Truth> update) {
+        return addAction(new BeliefActionConcept(s, nar(), update));
     }
 
     default GoalActionAsyncConcept[] actionBipolar(@NotNull Term s, @NotNull FloatToFloatFunction update) {

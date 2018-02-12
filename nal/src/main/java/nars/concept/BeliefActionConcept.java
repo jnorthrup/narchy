@@ -1,37 +1,30 @@
 package nars.concept;
 
-import nars.$;
 import nars.NAR;
-import nars.Task;
 import nars.task.ITask;
 import nars.term.Term;
-import nars.time.Tense;
 import nars.truth.Truth;
-import nars.util.signal.Signal;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-
-import static nars.Op.BELIEF;
 
 /**
  * Action Concept which acts on belief state directly (no separate feedback involved)
  */
 public class BeliefActionConcept extends ActionConcept {
 
-
-
     private final Consumer<Truth> action;
-    private final Signal feedback;
 
-    private final float curiosity = 0.1f;
+    //private final Signal feedback;
+
+    //private final float curiosity = 0.1f;
 
 
     public BeliefActionConcept(@NotNull Term term, @NotNull NAR n, Consumer<Truth> action) {
         super(term, n);
 
-        this.feedback = new Signal(BELIEF, resolution).pri(() -> n.priDefault(BELIEF));
+        //this.feedback = new Signal(BELIEF, resolution).pri(() -> n.priDefault(BELIEF));
 
         this.action = action;
     }
@@ -45,20 +38,19 @@ public class BeliefActionConcept extends ActionConcept {
     public Stream<ITask> update(long now, int dur, NAR nar) {
 
         long nowStart = now;
-        long nowEnd = now + dur;
+        long nowEnd   = now + dur;
+        Truth belief = this.beliefs().truth(nowStart, nowEnd, nar);
 
-        Truth belief;
-        if (nar.random().nextFloat() < curiosity) {
-            float f = nar.random().nextFloat();
-            float c = nar.confDefault(BELIEF);
-            nar.believe(term(), Tense.Present, f, c);
-            belief = $.t(f, c);
-        } else {
+//        if (nar.random().nextFloat() < curiosity) {
+//            float f = nar.random().nextFloat();
+//            float c = nar.confDefault(BELIEF);
+//            nar.believe(term(), Tense.Present, f, c);
+//            belief = $.t(f, c);
+//        } else {
 
-            belief =
-                    this.beliefs().truth(nowStart, nowEnd, nar);
+
             //beliefIntegrated.commitAverage();
-        }
+//        }
 
 //        Truth goal =
 //                this.goals().truth(nowStart, nowEnd, nar);
@@ -71,16 +63,16 @@ public class BeliefActionConcept extends ActionConcept {
 //
 //        }
 
-        Task x;
-        if (belief!=null) {
-            x = feedback.set(this, belief, nar.time::nextStamp, nowStart, dur, nar);
-        } else {
-            x = feedback.get();
-        }
+        //Task x;
+        //if (belief!=null) {
+            //x = feedback.set(this, belief, nar.time::nextStamp, nowStart, dur, nar);
+//        } else {
+//            x = feedback.get(); //latch
+//        }
 
-        action.accept(x == null ? null : x.truth());
+        action.accept(belief == null ? null : belief.truth());
 
-        return Stream.of(x);
+        return Stream.empty();
     }
 
 

@@ -3,9 +3,7 @@ package nars.concept;
 import jcog.math.FloatRange;
 import nars.NAR;
 import nars.NAct;
-import nars.Task;
 import nars.task.ITask;
-import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
@@ -16,7 +14,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 
 
 /**
@@ -24,15 +21,10 @@ import static nars.Op.GOAL;
  */
 public class GoalActionConcept extends ActionConcept {
 
-    public final Signal feedback;
-//    public final Signal action;
+    private final Signal feedback;
 
     private final FloatRange curiosity;
 
-//    /** shared curiosity stamp */
-//    final long curiosityStamp;
-
-    @NotNull
     private final MotorFunction motor;
 
     public GoalActionConcept(@NotNull Term c, @NotNull NAct act, @NotNull MotorFunction motor) {
@@ -63,18 +55,19 @@ public class GoalActionConcept extends ActionConcept {
 
 
         long pStart =
-                //now;
-                now - dur / 2;
+                now;
+                //now - dur / 2;
         long pEnd =
                 //now;
-                now + dur / 2;
+                //now + dur / 2;
+                now + dur;
 
 
         float cur = curiosity.floatValue();
 
 
         Truth goal;
-        ITask curiosityGoal;
+        @Deprecated ITask curiosityGoal;
 
         goal = this.goals().truth(pStart, pEnd, nar);
 
@@ -144,7 +137,7 @@ public class GoalActionConcept extends ActionConcept {
 
         Truth belief = this.beliefs().truth(pStart, pEnd, nar);
 
-        Truth feedback = this.motor.motor(belief, goal);
+        Truth feedback = this.motor.apply(belief, goal);
 
         ITask feedbackBelief = this.feedback.set(this, feedback, nar.time::nextStamp, now, dur, nar);
 
@@ -154,17 +147,17 @@ public class GoalActionConcept extends ActionConcept {
     }
 
 
-    static Task curiosity(NAR nar, Truth goal, Term term, long curiosityStamp) {
-        long now = nar.time();
-        int dur = nar.dur();
-
-        SignalTask curiosity = new SignalTask(term, GOAL, goal, now, now, now + dur, curiosityStamp);
-        //curiosity.setCyclic(true);
-        //curiosity.pri(nar.priDefault(GOAL));
-        curiosity.pri(0);
-
-        return curiosity;
-    }
+//    static Task curiosity(NAR nar, Truth goal, Term term, long curiosityStamp) {
+//        long now = nar.time();
+//        int dur = nar.dur();
+//
+//        SignalTask curiosity = new SignalTask(term, GOAL, goal, now, now, now + dur, curiosityStamp);
+//        //curiosity.setCyclic(true);
+//        //curiosity.pri(nar.priDefault(GOAL));
+//        curiosity.pri(0);
+//
+//        return curiosity;
+//    }
 
 
     //    Truth[] linkTruth(long when, long now, float minConf) {
