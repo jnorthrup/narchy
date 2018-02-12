@@ -6,6 +6,7 @@ import jcog.optimize.Result;
 import nars.NAR;
 import nars.NARLoop;
 import nars.NARS;
+import nars.Param;
 import nars.control.MetaGoal;
 import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
@@ -66,6 +67,7 @@ public class NARTestOptimize {
             t.nar.random().setSeed(System.nanoTime());
             m.invoke(t);
             try {
+                Param.DEBUG = false;
                 t.test.test(false);
                 //return t.test.score;
                 return 1 + t.test.score; //+1 for successful completion
@@ -93,7 +95,7 @@ public class NARTestOptimize {
             .tweak("BELIEVE", -1f, +1f, 0.1f, (NAR n, float p)->
                 MetaGoal.Believe.set(n.want, p)
             )
-            .optimize(512, 1, (n)->
+            .optimize(256, 1, (n)->
                 tests(n,
                     NAL1Test.class,
                     NAL1MultistepTest.class,

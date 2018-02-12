@@ -39,7 +39,7 @@ public class Optimize<X> {
      * if a tweak's 'inc' (increment) is not provided,
      * use the known max/min range divided by this value as 'inc'
      */
-    static final float autoInc_default = 2f;
+    static final float autoInc_default = 3f;
 
     final List<Tweak<X>> tweaks;
     final Supplier<X> subject;

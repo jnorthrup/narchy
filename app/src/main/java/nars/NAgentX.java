@@ -1,5 +1,6 @@
 package nars;
 
+import jcog.Util;
 import jcog.exe.Loop;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatPolarNormalized;
@@ -130,16 +131,16 @@ abstract public class NAgentX extends NAgent {
 //                    CaffeineCompoundBuilder.get();
 
 
-        float durFPS =
+        float clockFPS =
                 agentFPS;
                 //narFPS;
 
         RealTime clock =
-                durFPS >= 10 / 2f ? /* nyquist threshold between decisecond (0.1) and centisecond (0.01) clock resolution */
+                clockFPS >= 10 / 2f ? /* nyquist threshold between decisecond (0.1) and centisecond (0.01) clock resolution */
                         new RealTime.CS(true) :
                         new RealTime.DSHalf(true);
 
-        clock.durFPS(durFPS);
+        clock.durFPS(clockFPS);
 
 //        Function<NAR, PrediTerm<Derivation>> deriver = Deriver.deriver(8
 //                , "motivation.nal"
@@ -173,7 +174,7 @@ abstract public class NAgentX extends NAgent {
                 .exe(new PoolMultiExec(
                         //new Focus.DefaultRevaluator(),
                         new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
-                        512, 512)
+                        512, 128)
                 )
 
                 .time(clock)
@@ -187,7 +188,8 @@ abstract public class NAgentX extends NAgent {
 
                 .index(
                         new CaffeineIndex(
-                                250 * 1024
+                                //250 * 1024
+                                150 * 1024
                                 //200 * 1024
                                 //100 * 1024
                                 //50 * 1024
@@ -203,7 +205,7 @@ abstract public class NAgentX extends NAgent {
 
         //n.defaultWants();
 
-        n.conceptActivation.set(0.5f);
+        n.conceptActivation.set(0.25f);
 
         n.dtMergeOrChoose.set(true);
         n.dtDither(
@@ -219,7 +221,7 @@ abstract public class NAgentX extends NAgent {
         n.goalConfidence(0.9f);
 
 
-        float priFactor = 0.25f;
+        float priFactor = 0.5f;
         n.DEFAULT_BELIEF_PRIORITY = 1f * priFactor;
         n.DEFAULT_GOAL_PRIORITY = 1f * priFactor;
         n.DEFAULT_QUESTION_PRIORITY = 1f * priFactor;
@@ -231,15 +233,16 @@ abstract public class NAgentX extends NAgent {
 
         new Deriver(a.fire(), Derivers.deriver(1, 8,
                 "motivation.nal"
-                //, "goal_analogy.nal"
+                , "goal_analogy.nal"
         ).apply(n).deriver, n) {
-//            @Override
-//            protected long matchTime(Task task) {
+            @Override
+            protected long matchTime(Task task) {
 
-//                    return this.now +
-//                            Util.sqr(n.random().nextInt(4)) * n.dur(); //forward
-//
-//            }
+                //future lookahead to catalyze prediction
+                return n.time() +
+                        Util.sqr(n.random().nextInt(3)) * n.dur();
+
+            }
         };
 
 

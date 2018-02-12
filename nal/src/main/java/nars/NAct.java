@@ -606,13 +606,16 @@ public interface NAct {
 //                    Pg = curious || e[0] == 0 ? new PreciseTruth(yp, goalEvi, false) : null;
 //                    Ng = curious || e[1] == 0 ? new PreciseTruth(yn, goalEvi, false) : null;
 
-                    float confMin2 = confMin*2;
-                    float yp = y > +Float.MIN_NORMAL ? Util.lerp(+y, confMin2, feedbackConf) : confMin;
-                    float yn = y < -Float.MIN_NORMAL ? Util.lerp(-y, confMin2, feedbackConf) : confMin;
-                    Pb = $.t(y > 0 ? 1 : 0, yp);
-                    Nb = $.t(y < 0 ? 1 : 0, yn);
-                    Pg = curious || e[0] == 0 ? new PreciseTruth(1, Util.lerp(+y, confMin2, feedbackConf)) : null;
-                    Ng = curious || e[1] == 0 ? new PreciseTruth(1, Util.lerp(-y, confMin2, feedbackConf)) : null;
+                    float confBase = confMin*4; //~ alpha, learning rate
+                    float fThresh = Float.MIN_NORMAL;
+                    float yp = y > +fThresh ? Util.lerp(+y, confBase, feedbackConf) : confBase;
+                    float yn = y < -fThresh ? Util.lerp(-y, confBase, feedbackConf) : confBase;
+                    Pb = $.t(y > +fThresh ? 1 : 0, y > +fThresh ? yp : feedbackConf - yp);
+                    Nb = $.t(y < -fThresh ? 1 : 0, y < -fThresh ? yn : feedbackConf - yn);
+                    //Pg = curious || e[0] == 0 ? new PreciseTruth(1, Util.lerp(+y, confMin2, feedbackConf)) : null;
+                    Pg = null;
+                    //Ng = curious || e[1] == 0 ? new PreciseTruth(1, Util.lerp(-y, confMin2, feedbackConf)) : null;
+                    Ng = null;
 
 //                    if (curious) {
 //                        e[0] = e[1] = 0; //reset to get full evidence override

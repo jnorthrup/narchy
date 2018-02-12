@@ -29,12 +29,12 @@ public class FZero extends NAgentX {
 
     float fwdSpeed = 14;
     float rotSpeed = 0.45f/3f;
+    static float fps = 35f;
 
     public static void main(String[] args) {
 
         //Param.DEBUG = true;
 
-        float fps = 15f;
 
         NAgentX.runRT((n) -> {
 
@@ -386,7 +386,7 @@ public class FZero extends NAgentX {
         fz.update();
 
         double distance = fz.vehicleMetrics[0][1];
-        double deltaDistance = (distance - lastDistance) / 5f;
+        double deltaDistance = (distance - lastDistance);
         //deltaDistance = Math.min(deltaDistance, 0.1f);
 
         lastDistance = distance;
@@ -402,7 +402,7 @@ public class FZero extends NAgentX {
                 //-0.5f /* bias */ +
                 (float) (-(FZeroGame.FULL_POWER - ((float) fz.power)) / FZeroGame.FULL_POWER +
                         //((float)fz.vehicleMetrics[0][6]/100f)+
-                        deltaDistance), -1f, +1f);
+                        deltaDistance / (fps*5)), -1f, +1f);
 
         //lifesupport
         fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));

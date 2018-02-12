@@ -44,6 +44,25 @@
         P, (S ~ P) |- S, (Belief:DecomposeNegativeNegativeNegative)
 
 
+    //NAL3 single premise decompose
+    (M --> S), S, is(S,"&") |- (M --> dropAnySet(S)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (S --> M), S, is(S,"|") |- (dropAnySet(S) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+
+    (S --> (B - G)), (B - G) |- (S --> B), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    ((B ~ G) --> S), (B ~ G) |- (B --> S), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+
+        (B ~ G), B |- B, (Belief:StructuralDeduction, Goal:StructuralDeduction)
+            (B ~ G), G |- (--,G), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+
+        //1D:
+        //(X --> C), (X --> C), is(X,"+") |- (dropAnySet(X) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+            //(Y --> M), (X --> M), is(Y,"+"), is(X,"+") |- (differ(Y,X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+
+        //2D:
+        //((X,Y) --> C), ((X,Y) --> C), is(X,"+") |- ((dropAnySet(X),Y) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+        //((X,Y) --> C), ((X,Y) --> C), is(Y,"+") |- ((X,dropAnySet(Y)) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+
+
 
 //Difference Goal Decompose TODO review
         //DIFFe
