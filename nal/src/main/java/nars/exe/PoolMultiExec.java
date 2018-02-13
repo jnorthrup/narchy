@@ -222,29 +222,35 @@ public class PoolMultiExec extends AbstractExec {
                 }
 
                 /** temporarily withold priority */
-                int singleton = cx.singleton() ? focus.priGetAndSet(x, 0) : -1;
 
-                double donePrevMean = focus.doneMean[x];
-                if (!Double.isFinite(donePrevMean))
-                    donePrevMean = 0;
+                boolean singleton = cx.singleton();
+                int pri = singleton ? focus.priGetAndSet(x, 0) : focus.pri(x);
 
-                double timePrev = focus.timeMean[x];
+//                double donePrevMean = focus.doneMean[x];
+//                if (!Double.isFinite(donePrevMean))
+//                    donePrevMean = 0;
+
+                double timesliceS =
+                        //0.006; //6ms
+                        0.01; //10ms
+                double timesliceNS = timesliceS * 1.0E9;
+
+                double[] timeMean = focus.timeMean;
+                double timePrev = timeMean.length > x ? timeMean[x] : Double.POSITIVE_INFINITY;
                 if (!Double.isFinite(timePrev))
-                    timePrev = 1;
+                    timePrev = timesliceNS;
                 else
                     timePrev = Math.max(1, timePrev);
 
-                double timesliceS =
-                        0.006; //6ms
-                        //0.01; //10ms
 
                 //TODO this growth limit value should decrease throughout the cycle as each execution accumulates the total work it is being compared to
                 //this will require doneMax to be an atomic accmulator for accuracy
-                int itersNext = (int) Math.max(1,
-                        Math.round(Math.min(
-                                donePrevMean * (timesliceS * 1.0E9) / timePrev,
-                                focus.doneMax[x] * focus.IterGrowthRateLimit))
-                );
+                int itersNext = (int) Math.max(1, Math.round(
+                        Math.min(
+                                (timesliceNS / timePrev),
+                                (Util.mean(focus.doneMean[x], focus.doneMax[x]) * focus.IterGrowthRateLinear)+focus.IterGrowthRateConstant
+                        )
+                ));
 
                 //System.out.println(cx + " x " + iters + " @ " + n4(iterPerSecond[x]) + "iter/sec in " + Texts.timeStr(subTime*1E9));
 
@@ -254,11 +260,10 @@ public class PoolMultiExec extends AbstractExec {
                 try {
                     completed = cx.run(nar, itersNext);
                 } finally {
-                    if (singleton>=0) {
+                    if (singleton) {
 
                         if (completed >= 0) {
-                            int shouldBeZero = focus.priGetAndSet(x, singleton); //release for another usage
-                            assert(shouldBeZero == 0);
+                            focus.priGetAndSetIfEquals(x, 0, pri); //release for another usage unless it's already re-activated in a new cycle
                         } else {
                             //leave suspended until next commit in the next cycle
                         }

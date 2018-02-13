@@ -17,14 +17,14 @@ import java.util.stream.IntStream;
 
 public class AtomicRoulette<X> {
 
-    private static final int PRI_GRANULARITY = 127;
+    protected static final int PRI_GRANULARITY = 127;
 
     /**
      * TODO this can be smaller per cause, ex: byte
      */
     public final AtomicIntegerArray pri;
 
-    protected final FastCoWList<X> choice;
+    public final FastCoWList<X> choice;
 
     final BlockingQueue<X> onQueue = Util.blockingQueue(16);
     final BlockingQueue<X> offQueue = Util.blockingQueue(16);
@@ -115,14 +115,25 @@ public class AtomicRoulette<X> {
     /**
      * priGetAndSet..
      */
-    public int priGetAndSet(int i, float w) {
-        int y = Util.clampI(PRI_GRANULARITY * w, 0, PRI_GRANULARITY);
+    public int priGetAndSet(int i, int y) {
         int x = pri.getAndSet(i, y);
         if (y != x) {
             int t = priTotal.addAndGet(y - x);
             assert (t >= 0 && t <= PRI_GRANULARITY * pri.length());
         }
         return x;
+    }
+    public boolean priGetAndSetIfEquals(int i, int x0, int y) {
+        if (pri.compareAndSet(i, x0, y)) {
+            int t = priTotal.addAndGet(y - x0);
+            assert (t >= 0 && t <= PRI_GRANULARITY * pri.length());
+            return true;
+        }
+        return false;
+    }
+
+    public int pri(int i) {
+        return pri.get(i);
     }
 
     public void decide(Random rng, Predicate<X> kontinue) {
@@ -156,5 +167,6 @@ public class AtomicRoulette<X> {
         } while (kontinued);
 
     }
+
 
 }

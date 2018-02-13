@@ -573,6 +573,9 @@ public enum Util {
     public static float mean(float a, float b) {
         return (a + b) * 0.5f;
     }
+    public static double mean(double a, double b) {
+        return (a + b) * 0.5;
+    }
 
 
     public static short f2s(float conf) {
@@ -1182,7 +1185,17 @@ public enum Util {
         }
         return new float[]{min, max/*, sum */};
     }
-
+    public static double[] minmax(double[] x) {
+        //double sum = 0;
+        double min = Double.POSITIVE_INFINITY;
+        double max = Double.NEGATIVE_INFINITY;
+        for (double y : x) {
+            //sum += y;
+            if (y < min) min = y;
+            if (y > max) max = y;
+        }
+        return new double[]{min, max/*, sum */};
+    }
     public static void time(Logger logger, String procName, Runnable procedure) {
         long dt = time(procedure);
         logger.info("{} ({} ms)", procName, dt);

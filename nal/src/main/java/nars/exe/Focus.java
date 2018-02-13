@@ -32,7 +32,8 @@ public class Focus extends AtomicRoulette<Causable> {
     /**
      * how quickly the iteration demand can grow from previous (max) values
      */
-    static final double IterGrowthRateLimit = 1.5;
+    static final double IterGrowthRateConstant = 1;
+    static final double IterGrowthRateLinear = 1.1f;
 
 
     private final Exec.Revaluator revaluator;
@@ -97,7 +98,7 @@ public class Focus extends AtomicRoulette<Causable> {
         causable.id = slot;
     }
 
-    final static int WINDOW = 4;
+    final static int WINDOW = 8;
     private final long[] committed = new long[2];
     private final LongLongProcedure commiter = (timeNS, iter) -> {
         committed[0] = timeNS;
@@ -106,7 +107,8 @@ public class Focus extends AtomicRoulette<Causable> {
     /**
      * value samples
      */
-    private float[] value = ArrayUtils.EMPTY_FLOAT_ARRAY, weight = ArrayUtils.EMPTY_FLOAT_ARRAY;
+    protected float[] value = ArrayUtils.EMPTY_FLOAT_ARRAY;
+    //, weight = ArrayUtils.EMPTY_FLOAT_ARRAY;
 
     /**
      * short history of time (in nanoseconds) spent
@@ -134,8 +136,7 @@ public class Focus extends AtomicRoulette<Causable> {
 
         if (value.length != n) {
 
-            value = new float[n];
-            weight = new float[n];
+            //weight = new float[n];
 
             time = new DescriptiveStatistics[n];
             timeMean = new double[n];
@@ -149,6 +150,7 @@ public class Focus extends AtomicRoulette<Causable> {
             }
 
             assert (n < 32) : "TODO make atomic n>32 bitset";
+            value = new float[n];
         }
 
 
@@ -164,26 +166,39 @@ public class Focus extends AtomicRoulette<Causable> {
             if (timeNS > 0) {
                 DescriptiveStatistics t = this.time[i];
                 t.addValue(timeNS);
-                this.timeMean[i] = t.getMean();
+
                 DescriptiveStatistics d = this.done[i];
                 d.addValue(committed[1]);
                 this.doneMean[i] = d.getMean();
                 this.doneMax[i] = Math.round(d.getMax());
+                this.timeMean[i] = t.getMean();
+                value[i] = c.value();
+            } else {
+                //value[i] = unchanged
+                value[i] *= 0.99f; //slowly forget
             }
 
-            value[i] = c.value();
-            weight[i] = value[i]; //pre-normalized value
-
         }
+
+//        double[] tRange = Util.minmax(timeMean);
+//        double tMin = tRange[0];
+//        double tMax = tRange[1];
+//        for (int i = 0; i < n; i++) {
+//            double tNorm = normalize(timeMean[i], tMin, tMax);
+//            value[i] /= ((float)tNorm);
+//        }
 
         //weight[] = normalize(value[]) , with margin so the minimum value is non-zero some marginal amoutn (Margin-Max)
-        float[] minmax = Util.minmax(weight);
-        float min = minmax[0];
-        float max = minmax[1];
+        float[] vRange = Util.minmax(value);
+        float vMin = vRange[0];
+        float vMax = vRange[1];
         //float lowMargin = (minmax[1] - minmax[0]) / n;
         for (int i = 0; i < n; i++) {
-            priGetAndSet(i, Math.max(1,normalize(weight[i], min, max)));
+            float vNorm = normalize(value[i], vMin, vMax);
+            int pri = Util.clampI(PRI_GRANULARITY * vNorm, 1, AtomicRoulette.PRI_GRANULARITY);
+            priGetAndSet(i, pri);
         }
+
     }
 
 

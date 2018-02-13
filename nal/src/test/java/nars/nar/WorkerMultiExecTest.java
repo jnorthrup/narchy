@@ -10,32 +10,38 @@ import nars.control.MetaGoal;
 import nars.control.Traffic;
 import nars.exe.*;
 import nars.task.DerivedTask;
+import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
+import org.eclipse.collections.api.block.procedure.primitive.IntProcedure;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteIntHashMap;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.ToDoubleFunction;
 
+import static jcog.Texts.timeStr;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class WorkerMultiExecTest {
 
-    int threads = 4;
-    PoolMultiExec exe = new PoolMultiExec(new Focus.DefaultRevaluator(), threads, 16,3 /* TODO this shouldnt need to be > 1 */);
 
     @Test
     public void test1() {
 
+        int threads = 3;
+        Focus.DefaultRevaluator reval = new Focus.DefaultRevaluator();
+        PoolMultiExec exe = new PoolMultiExec(reval, threads, 16,3 /* TODO this shouldnt need to be > 1 */);
 
 
         NAR n = new NARS().exe(exe).get();
 
-        Loop l = n.startFPS(5f);
 
-        DummyCan a = new DummyCan(n,"a").value(1f).delay(1);
-        DummyCan b = new DummyCan(n,"b").value(2f).delay(1);
-        DummyCan c = new DummyCan(n,"c").value(1f).delay(2);
+        AtomicLong dutyTimeNS = new AtomicLong();
+        DummyCan a = new DummyCan("a", dutyTimeNS, n, (int j)->Util.sleep(1*j)).value(4f);
+        DummyCan b = new DummyCan("b", dutyTimeNS, n, (int j)->Util.sleep(1*j)).value(1f);
+        DummyCan c = new DummyCan("c", dutyTimeNS, n, (int j)->Util.sleep(2*j)).value(1f);
+
 
 //        n.onCycle(nn -> {
 //            Focus.Schedule s = exe.focus.schedule.read();
@@ -43,21 +49,34 @@ public class WorkerMultiExecTest {
 //                   Arrays.toString(s.active) + "->" + n4(s.weight));
 //        });
 
-        Util.sleep(1000);
+        long start = System.nanoTime();
+        Loop l = n.startFPS(5f /* this shouldnt matter to the degree the DummyCan are short-lived executions */);
+        Util.sleep(4000);
         l.stop();
+        long totalTimeNS = (System.nanoTime() - start) * threads;
+
+        System.out.println("dutyTime=" + timeStr(dutyTimeNS.get()) + " , totalTime=" + timeStr(totalTimeNS) +
+                ", efficiency=" + ((double)dutyTimeNS.get())/totalTimeNS );
 
         System.out.println(a.executed.get());
         System.out.println(b.executed.get());
         System.out.println(c.executed.get());
         System.out.println(exe.focus);
 
-        assertEquals(2, ((float)b.executed.get()) / a.executed.get(), 0.5f);
-        assertEquals(2, ((float)a.executed.get()) / c.executed.get(), 0.5f);
+        assertEquals(3+1, exe.focus.choice.size());
+
+        assertEquals(expectedDuty(a) / expectedDuty(b), ((float)a.executed.get()) / b.executed.get(), 0.5f);
+        assertEquals(expectedDuty(a) / expectedDuty(c)/2, ((float)a.executed.get()) / c.executed.get(), 0.5f);
 
     }
 
+    public static float expectedDuty(DummyCan a) {
+        //return a.value*a.dutyTimeNS.get()/a.executed.get();
+        return a.value;
+    }
+
     @Test public void testValueDerivationBranches() throws Narsese.NarseseException {
-        int threads = 1;
+//        int threads = 1;
 //        Exec exe = new MultiExec(32, threads, 2);
         Exec exe = new UniExec(32);
         NAR n = new NARS()
@@ -102,19 +121,21 @@ public class WorkerMultiExecTest {
 
     class DummyCan extends Causable {
 
+        private final AtomicLong dutyTimeNS;
         private float value;
-        private int delayMS;
-
+        final IntToIntFunction duty;
         final AtomicInteger executed = new AtomicInteger();
 
-        protected DummyCan(NAR nar, String id) {
-            super(nar, $.the(id));
+        protected DummyCan(String id, AtomicLong dutyTimeNS, NAR nar, IntProcedure duty) {
+            this(id, dutyTimeNS, nar, (i)->{ duty.accept(i); return i; });
         }
 
-        public DummyCan delay(int ms) {
-            this.delayMS = ms;
-            return this;
+        protected DummyCan(String id, AtomicLong dutyTimeNS, NAR nar, IntToIntFunction duty) {
+            super(nar, $.the(id));
+            this.dutyTimeNS = dutyTimeNS;
+            this.duty = duty;
         }
+
 
         public DummyCan value(float v) {
             this.value = v;
@@ -132,8 +153,13 @@ public class WorkerMultiExecTest {
 //            System.out.println(this + " x " + iterations
 //                    //+ " " + exe.focus
 //                    );
-            Util.sleep(iterations * delayMS);
-            return iterations;
+            long start = System.nanoTime();
+            try {
+                return duty.valueOf(iterations);
+                //Util.sleep(iterations * delayMS);
+            } finally {
+                dutyTimeNS.addAndGet( (System.nanoTime() - start ) );
+            }
         }
 
         @Override
