@@ -19,12 +19,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ZoomOrtho extends Ortho {
 
     float zoomRate = 0.2f;
+    float pressZoomOutRate = zoomRate;
 
 
     final static float minZoom = 0.25f;
     final static float maxZoom = 10f;
 
     final static short PAN_BUTTON = 2;
+    final static short ZOOM_OUT_TOUCHING_NEGATIVE_SPACE_BUTTON = 2;
     final static short MOVE_WINDOW_BUTTON = 1;
 
     private int[] panStart = null;
@@ -40,7 +42,6 @@ public class ZoomOrtho extends Ortho {
     final AtomicBoolean windowMoving = new AtomicBoolean(false);
 
 
-    private float pressZoomOutRate = 0.4f;
 
     public ZoomOrtho(Surface content) {
         super(content);
@@ -158,9 +159,6 @@ public class ZoomOrtho extends Ortho {
 
             boolean[] bd = finger.buttonDown; //e.getButtonsDown();
 
-            if (bd[1] && finger.touching==null && Math.max(scale.x,scale.y) > minZoom) {
-                scale.scaled(1f * (1f - pressZoomOutRate));
-            }
 
             if (bd[PAN_BUTTON] || bd[MOVE_WINDOW_BUTTON]) {
                 //int mx = e.getX();
@@ -246,8 +244,13 @@ public class ZoomOrtho extends Ortho {
                     }
                 }
             } else {
+
                 panStart = null;
                 hud.dragMode = null;
+            }
+            if (bd[ZOOM_OUT_TOUCHING_NEGATIVE_SPACE_BUTTON] && finger.touching==null && Math.max(scale.x,scale.y) > minZoom) {
+                scale.scaled(1f * (1f - pressZoomOutRate));
+                hud.dragMode = null; //HACK TODO properly integrate this with the above event handling
             }
         }
     }

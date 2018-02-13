@@ -178,15 +178,25 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 //                if (!zoomStack.getLast().contains(nextZoom)) {
 //                    zoomStack.clear();
             /*                } else */
-            if (zoomStack.size() > ZOOM_STACK_MAX) {
-                zoomStack.removeFirst();
-            }
-            //}
-            float s = scale.x;
-            RectFloat2D curZoom = new RectFloat2D(cam.x - s / 2, cam.y - s / 2, cam.x + s / 2, cam.y + s / 2);
-            zoomStack.addLast(()->curZoom);
+            RectFloat2D target;
+//            if (!zoomStack.isEmpty() && zoomStack.getLast().gfinger.touching==su) { //zoomStack.size()>1 && zoomStack.getLast().get().equals(su.bounds /* TODO maybe fuzzy equals */)) {
+//                zoomStack.removeLast();
+//                target = zoomStack.getLast().get();
+//            } else {
+            {
+                if (zoomStack.size() > ZOOM_STACK_MAX) {
+                    zoomStack.removeFirst();
+                }
+                //}
+                float s = scale.x;
+                RectFloat2D curZoom = new RectFloat2D(cam.x - s / 2, cam.y - s / 2, cam.x + s / 2, cam.y + s / 2);
+                zoomStack.addLast(() -> curZoom);
 
-            zoom(su.bounds);
+                target = su.bounds;
+            }
+
+            zoom(target);
+
 
         }
 

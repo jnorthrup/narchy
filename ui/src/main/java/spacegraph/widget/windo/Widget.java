@@ -3,11 +3,9 @@ package spacegraph.widget.windo;
 import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.Ortho;
 import spacegraph.Surface;
 import spacegraph.SurfaceRoot;
 import spacegraph.input.Finger;
-import spacegraph.input.FingerDragging;
 import spacegraph.layout.Stacking;
 import spacegraph.layout.Switching;
 import spacegraph.render.Draw;
@@ -218,39 +216,43 @@ abstract public class Widget extends Switching {
         touchedBy = finger;
         if (finger != null) {
 
-            if (finger.clickedNow(2)) { //released right button
+            if (finger.clickedNow(1)) { //released middle button
 
                 int curState = switched;
                 int nextState = nextState(curState);
                 state(nextState); //toggle
 
-//                SurfaceRoot r = root();
-//                if (r!=null) {
+            } else if (finger.pressedNow(2 /*right button*/)) {
+//                /** hold to zoom */
+//                finger.tryFingering(new FingerDragging(2) {
+//
+//                    SurfaceRoot r = root();
+//
+//                    @Override
+//                    public void start(Finger f) {
+//
+//                    }
+//
+//                    @Override
+//                    protected boolean drag(Finger f) {
+//                        ((Ortho)r).zoom(bounds, 0.5f);
+//                        return true;
+//                    }
+//                });
+
+                /** auto-zoom */
+                SurfaceRoot r = root();
+                if (r!=null) {
 //                    switch (curState) {
 //                        case STATE_META:
-//                            r.zoom(this);
+                            r.zoom(this);
 //                            break;
 //                        case STATE_ZOOM:
 //                            r.unzoom();
 //                            break;
 //                    }
-//                }
-            } else if (finger.pressedNow(1)) {
-                finger.tryFingering(new FingerDragging(1) {
+                }
 
-                    SurfaceRoot r = root();
-
-                    @Override
-                    public void start(Finger f) {
-
-                    }
-
-                    @Override
-                    protected boolean drag(Finger f) {
-                        ((Ortho)r).zoom(bounds, 0.5f);
-                        return true;
-                    }
-                });
             }
 
         } else {
