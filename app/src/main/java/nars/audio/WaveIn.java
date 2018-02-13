@@ -1,5 +1,6 @@
 package nars.audio;
 
+import jcog.learn.pid.MiniPID;
 import nars.NAR;
 import nars.control.NARService;
 import nars.term.Term;
@@ -27,8 +28,9 @@ public class WaveIn extends NARService {
     /**
      * target power level, as fraction of the sample depth
      */
-    float autogain = 0.5f;
+    //float autogain = 0.5f;
     private float fps = 20f;
+    final MiniPID autogain = new MiniPID(1, 0.1, 0.4);
 
     WaveIn(NAR nar, Term id, Supplier<WaveCapture> capture) {
         super(null, id);
@@ -51,26 +53,29 @@ public class WaveIn extends NARService {
     }
 
     private void update() {
-        float targetAmp = autogain;
+
         WaveCapture c = capturing;
-        if (targetAmp == targetAmp && c != null) {
+        if (autogain!=null && c != null) {
             //calculate signal peak
             float max = 0;
             for (float s : c.data) {
                 max = Math.max(max, Math.abs(s));
             }
-            float a = ((AudioSource) capturing.source).gain.floatValue();
-            if (max <= Float.MIN_NORMAL) {
-                //totally quiet
-                a = 1f;
-            } else {
-                //HACK this is very crude
-                if (max < targetAmp * 1f) {
-                    a = Math.min(1000f, a + 0.1f);
-                } else if (max > targetAmp * 1f) {
-                    a = Math.max(0, a - 0.1f);
-                }
-            }
+
+            float a = (float) autogain.out(max, 0.9f /* target */);
+
+            //float a = ((AudioSource) capturing.source).gain.floatValue();
+//            if (max <= Float.MIN_NORMAL) {
+//                //totally quiet
+//                a = 1f;
+//            } else {
+//                //HACK this is very crude
+//                if (max < targetAmp * 1f) {
+//                    a = Math.min(1000f, a + 0.1f);
+//                } else if (max > targetAmp * 1f) {
+//                    a = Math.max(0, a - 0.1f);
+//                }
+//            }
             ((AudioSource) capturing.source).gain.set(a);
         }
 

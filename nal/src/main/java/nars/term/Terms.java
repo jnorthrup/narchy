@@ -596,8 +596,8 @@ public enum Terms {
 
 
     public static boolean flattenMatchDT(int candidate, int target) {
-        return (candidate == target);
-                //|| ((target == 0) && (candidate == DTERNAL));
+        return (candidate == target)
+                || ((target == 0) && (candidate == DTERNAL)); //promotes DTERNAL to parallel as necessary
     }
 
     public static Term flatten(/*@NotNull*/ Op op, int dt, Term x, ObjectByteHashMap<Term> s) {

@@ -222,8 +222,9 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     public void testImplicationShouldBeValid() throws Narsese.NarseseException {
         String o = "(((--,tetris(isRow,2,true))&|tetris(isRowClear,8,true)) ==>-807 (((--,tetris(isRow,2,true))&&tetris(isRowClear,8,true))&|tetris(isRowClear,8,true)))";
+        String q = "(((--,tetris(isRow,2,true))&|tetris(isRowClear,8,true)) ==>-807 ((--,tetris(isRow,2,true))&|tetris(isRowClear,8,true)))";
         Term oo = $(o);
-        assertEquals(o, oo.toString());
+        assertEquals(q, oo.toString());
     }
 
     @Test
@@ -1396,7 +1397,11 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     public void testCoNegatedConjunctionParallelEternal() {
         //mix of parallel and eternal
-        assertReduction("(((--,(y&&z))&&x)&|(--,x))", "((--,x)&|((--,(z&&y))&&x))");
+        assertReduction(False,
+                "(((--,(z&&y))&&x)&|(--,x))");
+        assertReduction("",
+                "(((--,(y&&z))&|x)&&(--,x))");
+
     }
 
 

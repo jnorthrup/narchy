@@ -243,7 +243,12 @@ public enum Op {
                         }
                     }
                     if (merge) {
+                        //try {
                         ci = conjMerge(u); //need to split into temporally separate components
+//                        } catch (StackOverflowError e) {
+//                            System.out.println(Arrays.toString(u));
+//                            throw new RuntimeException(e);
+//                        }
                     } else {
                         ci = junctionFlat(0, u);
                     }
@@ -1003,12 +1008,11 @@ public enum Op {
      */
     static public Term conjMerge(Term... x) {
         assert (x.length > 1);
-        //TODO ? ArrayHashSet<LongObjectPair<Term>>
-        FasterList<LongObjectPair<Term>> xx = x[0].eventList(0, 1);
-        for (int i = 1; i < x.length; i++) {
-            xx.addAll(x[i].eventList(0, 1));
+        ArrayHashSet<LongObjectPair<Term>> xx = new ArrayHashSet();
+        for (int i = 0; i < x.length; i++) {
+            xx.addAll(x[i].eventList(0, 1, true, true));
         }
-        return conj(xx);
+        return conj((FasterList)xx.list);
     }
 
 

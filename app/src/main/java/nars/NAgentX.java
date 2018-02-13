@@ -1,6 +1,5 @@
 package nars;
 
-import jcog.Util;
 import jcog.exe.Loop;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatPolarNormalized;
@@ -233,16 +232,16 @@ abstract public class NAgentX extends NAgent {
 
         new Deriver(a.fire(), Derivers.deriver(1, 8,
                 "motivation.nal"
-                , "goal_analogy.nal"
+//                , "goal_analogy.nal"
         ).apply(n).deriver, n) {
-            @Override
-            protected long matchTime(Task task) {
-
-                //future lookahead to catalyze prediction
-                return n.time() +
-                        Util.sqr(n.random().nextInt(3)) * n.dur();
-
-            }
+//            @Override
+//            protected long matchTime(Task task) {
+//
+//                //future lookahead to catalyze prediction
+//                return n.time() +
+//                        Util.sqr(n.random().nextInt(3)) * n.dur();
+//
+//            }
         };
 
 

@@ -482,20 +482,21 @@ public class Recog2D extends NAgentX {
 
                                 //n.actual(x.freq(), x.conf());
 
-                            float curiosity = 0.02f; //HACK
-                            if (a.nar.random().nextFloat() < curiosity) {
-//                                a.nar.believe(concepts[i].term(), Tense.Present,
-//                                        a.nar.random().nextBoolean() ? 0 : 1f, a.nar.confDefault(BELIEF) / 4f);
-                                //return $.t(
-                                  //      a.nar.random().nextBoolean() ? 0 : 1f, a.nar.confDefault(BELIEF)/4f);
-                                predictedFreq = a.nar.random().nextBoolean() ? 0 : 1f;
-                            }
+//                            float curiosity = 0.02f; //HACK
+//                            if (a.nar.random().nextFloat() < curiosity) {
+////                                a.nar.believe(concepts[i].term(), Tense.Present,
+////                                        a.nar.random().nextBoolean() ? 0 : 1f, a.nar.confDefault(BELIEF) / 4f);
+//                                //return $.t(
+//                                  //      a.nar.random().nextBoolean() ? 0 : 1f, a.nar.confDefault(BELIEF)/4f);
+//                                predictedFreq = a.nar.random().nextBoolean() ? 0 : 1f;
+//                            }
 //                            if (x == null)
 //                                return $.t(0, a.nar.confDefault(BELIEF));
 //                            else
 //                                return x;
 
-                            n.actual(predictedFreq, a.nar.confDefault(BELIEF));
+                            float confMin = a.nar.confMin.floatValue() * 4;
+                            n.actual(predictedFreq, x!=null ? Math.max(confMin, x.conf()) : confMin);
 
                             return $.t(n.predictedFreq, n.predictedConf);
                         });
