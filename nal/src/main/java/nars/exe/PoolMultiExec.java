@@ -1,5 +1,6 @@
 package nars.exe;
 
+import jcog.Texts;
 import jcog.Util;
 import jcog.exe.BusyPool;
 import jcog.math.MutableInteger;
@@ -204,8 +205,10 @@ public class PoolMultiExec extends AbstractExec {
 
         protected void idle() {
             int done = 0;
-            while (pollNext())
+            while (pollNext()) {
                 done++;
+                this.idles = 0;
+            }
 
             if (done == 0)
                 Util.pauseNext(idles++);
@@ -232,25 +235,35 @@ public class PoolMultiExec extends AbstractExec {
 
                 double timesliceS =
                         //0.006; //6ms
-                        0.01; //10ms
+                        //0.01; //10ms
+                        nar.loop.jiffy.floatValue();
+
                 double timesliceNS = timesliceS * 1.0E9;
 
+                long[] doneMax = focus.doneMax;
+                long doneMost = doneMax.length > x ? /*Util.mean(doneMean[x], */doneMax[x]/*)*/ : 0;
+
                 double[] timeMean = focus.timeMean;
-                double timePrev = timeMean.length > x ? timeMean[x] : Double.POSITIVE_INFINITY;
-                if (!Double.isFinite(timePrev))
-                    timePrev = timesliceNS;
-                else
-                    timePrev = Math.max(1, timePrev);
+                double timePerIter = timeMean.length > x ? timeMean[x] : Double.POSITIVE_INFINITY;
+                if (doneMost < 1 || !Double.isFinite(timePerIter)) {
+                    //assume one iteration will consume entire timeslice
+                    doneMost = 1;
+                    timePerIter = timesliceNS;
+                }
 
 
                 //TODO this growth limit value should decrease throughout the cycle as each execution accumulates the total work it is being compared to
                 //this will require doneMax to be an atomic accmulator for accuracy
+
                 int itersNext = (int) Math.max(1, Math.round(
-                        Math.min(
-                                (timesliceNS / timePrev),
-                                (Util.mean(focus.doneMean[x], focus.doneMax[x]) * focus.IterGrowthRateLinear)+focus.IterGrowthRateConstant
+                        //Math.min
+                        (
+                                (timesliceNS / timePerIter)
+                                //,doneMost
                         )
+                        * focus.IterGrowthRateLinear +focus.IterGrowthRateConstant
                 ));
+                assert(itersNext * timePerIter <= timesliceNS ): itersNext + "x" + Texts.timeStr(timePerIter) + " > " + Texts.timeStr(timesliceNS);
 
                 //System.out.println(cx + " x " + iters + " @ " + n4(iterPerSecond[x]) + "iter/sec in " + Texts.timeStr(subTime*1E9));
 

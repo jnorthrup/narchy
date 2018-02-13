@@ -75,7 +75,7 @@ public class ExecCharts {
 //                Stream.concat(
 //                        Stream.of(auto),
                         IntStream.range(0, want.length).mapToObj(
-                                w -> new FloatSlider(want[w], -2f, +2f) {
+                                w -> new FloatSlider(want[w], -1f, +1f) {
 
                                     @Override
                                     protected void paintWidget(GL2 gl, RectFloat2D bounds) {

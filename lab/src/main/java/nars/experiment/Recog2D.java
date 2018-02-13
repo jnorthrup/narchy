@@ -9,6 +9,7 @@ import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.gui.BeliefTableChart;
+import nars.gui.Vis;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
@@ -299,11 +300,16 @@ public class Recog2D extends NAgentX {
         NAgentX.runRT((n) -> {
 
             Recog2D a = new Recog2D(n);
+
+
+            Vis.conceptWindow("(x(#x,#y) ==>+- ({#z}-->x))", n);
+            Vis.conceptWindow("(({#a}-->x) <-> ({#b}-->x))", n);
+
             //a.nar.freqResolution.set(0.07f);
             //a.nar.termVolumeMax.set(16);
             return a;
 
-        }, 5);
+        }, 20);
     }
 
     public static class Training {

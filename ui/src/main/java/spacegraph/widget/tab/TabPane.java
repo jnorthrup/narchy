@@ -9,6 +9,7 @@ import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.button.ToggleButton;
 import spacegraph.widget.sketch.Sketch2DBitmap;
+import spacegraph.widget.text.Label;
 
 import java.util.Map;
 import java.util.function.Supplier;
@@ -37,7 +38,17 @@ public class TabPane extends Splitting {
             return new CheckBox(label).on((cb, a) -> {
                 synchronized (content) {
                     if (a) {
-                        content.add(created[0] =  creator.get() );
+                        Surface cx;
+                        try {
+                            cx = creator.get();
+                        } catch (Throwable t) {
+                            String msg = t.getMessage();
+                            if (msg == null)
+                                msg = t.toString();
+                            cx = new Label(msg);
+                        }
+
+                        content.add(created[0] = cx);
                         split(CONTENT_VISIBLE_SPLIT); //hide empty content area
                     } else {
                          if (created[0] !=null) {

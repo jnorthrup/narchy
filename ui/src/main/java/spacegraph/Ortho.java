@@ -266,6 +266,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     @Override
     public void windowGainedFocus(WindowEvent e) {
         focused = true;
+        updateMouse(null);
+        fingerUpdateForce.set(true);
     }
 
     @Override

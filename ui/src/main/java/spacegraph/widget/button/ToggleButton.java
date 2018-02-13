@@ -36,6 +36,10 @@ public abstract class ToggleButton extends AbstractButton {
         return this;
     }
 
+    public boolean get() {
+        return on.get();
+    }
+
     public ToggleButton on(ObjectBooleanProcedure<ToggleButton> a) {
         this.action = a;
         return this;

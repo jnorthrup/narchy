@@ -58,7 +58,7 @@ public class Scale extends BufferedImageBitmap2D implements ImageObserver {
         if (in == null)
             return;
 
-        if (out == null || out.getWidth() != pw || out.getHeight() != ph) {
+        if (out == null || outgfx == null || out.getWidth() != pw || out.getHeight() != ph) {
 
             if (outgfx!=null)
                 outgfx.dispose();

@@ -1524,6 +1524,9 @@ public enum Util {
     public static int clampI(float i, int min, int max) {
         return clamp(Math.round(i), min, max);
     }
+    public static long clampI(double i, int min, int max) {
+        return clamp(Math.round(i), min, max);
+    }
 
     public static int clamp(int i, int min, int max) {
         if (i < min) i = min;
@@ -1604,15 +1607,15 @@ public enum Util {
      * adaptive spinlock behavior
      */
     public static void pauseNext(int previousContiguousPauses) {
-        if (previousContiguousPauses < 8) {
+        if (previousContiguousPauses < 16) {
             Thread.onSpinWait();
-        } else if (previousContiguousPauses < 16) {
-            Thread.yield();
         } else if (previousContiguousPauses < 32) {
-            Util.sleep(0);
+            Thread.yield();
         } else if (previousContiguousPauses < 64) {
+            Util.sleep(0);
+        } else {
             Util.sleep(1);
-        } else if (previousContiguousPauses < 128) {
+        } /*else if (previousContiguousPauses < 128) {
             Util.sleep(2);
         } else if (previousContiguousPauses < 256) {
             Util.sleep(4);
@@ -1620,7 +1623,7 @@ public enum Util {
             Util.sleep(16);
         } else {
             Util.sleep(32);
-        }
+        }*/
     }
 
 //* http://www.qat.com/using-waitnotify-instead-thread-sleep-java/

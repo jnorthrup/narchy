@@ -30,6 +30,8 @@ import java.util.function.Consumer;
 import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
+import static nars.$.$safe;
+import static spacegraph.SpaceGraph.window;
 import static spacegraph.layout.Gridding.col;
 
 /**
@@ -314,6 +316,13 @@ public class Vis {
                 "svc", () -> new AutoSurface<>(n.services),
                 "cpt", () -> bagHistogram((Iterable) () -> n.conceptsActive().iterator(), 8)
         ));
+    }
+
+    public static void conceptWindow(String t, NAR n) {
+        conceptWindow($safe(t), n);
+    }
+    public static void conceptWindow(Termed t, NAR n) {
+        window(new ConceptSurface(t, n), 500, 500);
     }
 
 

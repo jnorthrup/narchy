@@ -3,12 +3,15 @@ package nars.gui;
 import jcog.bag.Bag;
 import nars.$;
 import nars.NAR;
+import nars.concept.Concept;
 import nars.control.Activate;
 import nars.exe.AbstractExec;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
 import spacegraph.layout.Gridding;
+import spacegraph.layout.Splitting;
+import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.meter.Plot2D;
 import spacegraph.widget.tab.TabPane;
@@ -31,23 +34,31 @@ public class ConceptSurface extends TabPane {
 
                     Plot2D p = new Plot2D(64, Plot2D.Line)
                             .add("pri", () -> {
+
                                 Bag<Activate, Activate> bag = ((AbstractExec) n.exe).active;
                                 if (bag != null) {
-                                    Activate b = bag.get(n.concept(id));
-                                    if (b != null)
-                                        return b.priElseZero();
+                                    Concept ni = n.conceptualize(id);
+                                    if (ni!=null) {
+                                        Activate b = bag.get(ni);
+                                        if (b != null)
+                                            return b.priElseZero();
+                                    }
                                 }
 
                                 return 0f; // Float.NaN;
                             });
-                    return DurSurface.get(new Gridding(
-                            new PushButton("+ Boost").click((b) -> {
-                                n.activate(id, 1f);
-                            }),
-                            p
+                    CheckBox boost = new CheckBox("Boost");
+                    return DurSurface.get(new Splitting(
+//                            new PushButton("+ Boost").click((b) -> {
+//                                n.activate(id, 1f);
+//                            }),
+                            boost, p
                             //new PushButton("- Drain").click((b)->{})
-                    ), n, (nn) -> {
+                    , 0.8f), n, (nn) -> {
                         p.update();
+                        if (boost.get()) {
+                            n.activate(id, 1f); //activate once per duration if the boost
+                        }
                     });
                 },
                 "beliefs", () -> Vis.beliefCharts(64, n, n.concept(id)),

@@ -33,7 +33,7 @@ public class Focus extends AtomicRoulette<Causable> {
      * how quickly the iteration demand can grow from previous (max) values
      */
     static final double IterGrowthRateConstant = 1;
-    static final double IterGrowthRateLinear = 1.1f;
+    static final double IterGrowthRateLinear = 1.5f;
 
 
     private final Exec.Revaluator revaluator;
@@ -98,7 +98,7 @@ public class Focus extends AtomicRoulette<Causable> {
         causable.id = slot;
     }
 
-    final static int WINDOW = 8;
+    final static int WINDOW = 4;
     private final long[] committed = new long[2];
     private final LongLongProcedure commiter = (timeNS, iter) -> {
         committed[0] = timeNS;
@@ -194,8 +194,8 @@ public class Focus extends AtomicRoulette<Causable> {
         float vMax = vRange[1];
         //float lowMargin = (minmax[1] - minmax[0]) / n;
         for (int i = 0; i < n; i++) {
-            float vNorm = normalize(value[i], vMin, vMax);
-            int pri = Util.clampI(PRI_GRANULARITY * vNorm, 1, AtomicRoulette.PRI_GRANULARITY);
+            double vNorm = normalize(value[i], vMin, vMax) / Math.max(1E3 /* 1uS in nanos */, timeMean[i]);
+            int pri = (int) Util.clampI((PRI_GRANULARITY * vNorm), 1, AtomicRoulette.PRI_GRANULARITY);
             priGetAndSet(i, pri);
         }
 

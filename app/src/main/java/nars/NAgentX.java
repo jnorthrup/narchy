@@ -3,7 +3,6 @@ package nars;
 import jcog.exe.Loop;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatPolarNormalized;
-import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Bitmap2D;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
@@ -83,7 +82,7 @@ abstract public class NAgentX extends NAgent {
         ActionInfluencingSensorConcept joy = new ActionInfluencingSensorConcept(
                 id != null ?
                         //$.inh($.the("joy"), id)
-                        $.inh($.the(id), $.the("joy"))
+                        $.prop($.the(id), $.the("joy"))
                         //$.prop($.the(id), $.the("joy"))
                         :
                         $.the("joy"),
@@ -171,9 +170,9 @@ abstract public class NAgentX extends NAgent {
 //                        //CoolNQuiet
 //                        (512, THREADS, 64, false))
                 .exe(new PoolMultiExec(
-                        //new Focus.DefaultRevaluator(),
-                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
-                        512, 128)
+                        new Focus.DefaultRevaluator(),
+                        //new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
+                        1024, 128)
                 )
 
                 .time(clock)
@@ -204,12 +203,12 @@ abstract public class NAgentX extends NAgent {
 
         //n.defaultWants();
 
-        n.conceptActivation.set(0.25f);
+        n.conceptActivation.set(1f);
 
         n.dtMergeOrChoose.set(true);
         n.dtDither(
-                //1f
-                0.5f //nyquist
+                1f
+                //0.5f //nyquist
         );
 
         n.confMin.set(0.01f);
@@ -220,7 +219,7 @@ abstract public class NAgentX extends NAgent {
         n.goalConfidence(0.9f);
 
 
-        float priFactor = 0.5f;
+        float priFactor = 0.1f;
         n.DEFAULT_BELIEF_PRIORITY = 1f * priFactor;
         n.DEFAULT_GOAL_PRIORITY = 1f * priFactor;
         n.DEFAULT_QUESTION_PRIORITY = 1f * priFactor;
@@ -232,7 +231,7 @@ abstract public class NAgentX extends NAgent {
 
         new Deriver(a.fire(), Derivers.deriver(1, 8,
                 "motivation.nal"
-//                , "goal_analogy.nal"
+                , "goal_analogy.nal"
         ).apply(n).deriver, n) {
 //            @Override
 //            protected long matchTime(Task task) {

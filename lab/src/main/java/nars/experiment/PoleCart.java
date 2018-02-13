@@ -9,7 +9,6 @@ import nars.NAgent;
 import nars.NAgentX;
 import nars.concept.ScalarConcepts;
 import nars.concept.SensorConcept;
-import nars.gui.ConceptSurface;
 import nars.gui.Vis;
 
 import javax.swing.*;
@@ -46,7 +45,7 @@ public class PoleCart extends NAgentX {
                 a.nar.confResolution.set(0.02f);
 
 
-                window(new ConceptSurface(a.happy, n), 500, 500);
+                Vis.conceptWindow(a.happy, n);
 
 
                 //a.durations.setValue(1f);
