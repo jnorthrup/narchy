@@ -2,15 +2,14 @@ package nars.exe;
 
 import com.google.common.base.Joiner;
 import jcog.Services;
+import jcog.TODO;
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
-import jcog.decide.Roulette;
 import jcog.learn.Autoencoder;
 import jcog.learn.deep.RBM;
 import jcog.list.FastCoWList;
 import jcog.list.FasterList;
 import jcog.math.RecycledSummaryStatistics;
-import jcog.util.Flip;
 import nars.NAR;
 import nars.control.Cause;
 import nars.control.MetaGoal;
@@ -20,10 +19,8 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.api.block.procedure.primitive.LongLongProcedure;
 
 import java.util.Random;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BooleanSupplier;
-import java.util.function.IntPredicate;
-import java.util.function.LongSupplier;
 import java.util.stream.IntStream;
 
 import static jcog.Texts.n2;
@@ -33,164 +30,141 @@ import static nars.time.Tense.ETERNAL;
 
 /**
  * decides mental activity
+ * this first implementation is similiar to this
+ *      https://en.wikipedia.org/wiki/Lottery_scheduling
+ *          https://www.usenix.org/legacy/publications/library/proceedings/osdi/full_papers/waldspurger.pdf
+ *
+ *      https://lwn.net/Articles/720227/
  */
-public class Focus extends Flip<Focus.Schedule> {
+public class Focus  {
 
     //final static Logger logger = LoggerFactory.getLogger(Focus.class);
 
-    public final Exec.Revaluator revaluator;
-
-    private final FastCoWList<Causable> can;
-
     /** how quickly the iteration demand can grow from previous (max) values */
     static final double IterGrowthRateLimit = 1.5;
+    final AtomicBoolean busy = new AtomicBoolean(false);
+    private final Exec.Revaluator revaluator;
+    protected final FastCoWList<Causable> can;
 
-    /**
-     *
-     * @param startBatch - supplies the max amount of nanoseconds an execution can be calculated to
-     *                   expect to run for, determining the temporal granularity of the scheduling
-     *
-     * @param kontinue
-     * @param rng
-     * @param nar
-     */
-    public void run(LongSupplier startBatch, BooleanSupplier kontinue, Random rng, NAR nar) {
+    final Causable work = new Causable((NAR) null) {
 
-        long maxExeTimeNS = 0;
-        while ((maxExeTimeNS = startBatch.getAsLong()) >= 0) {
-
-            if (maxExeTimeNS <= 0) {
-                idle(kontinue); //empty batch
-            } else {
-
-                Focus.Schedule s = read();
-                float[] sw = s.weight;
-                int n = sw.length;
-
-                if (n == 0) {
-                    idle(kontinue); //empty batch
-                } else {
-//                    float[] iterPerSecond = s.time;
-//                    float[] weight= s.weight;
-
-                    final int[] safety = {n};
-                    Causable[] can = s.can;
-
-                    MetalBitSet active = s.active;
-
-                    long rt = maxExeTimeNS;
-
-                    int iterAtStart = intValue();
-                    Roulette.decideRouletteWhile(n, c -> sw[c], rng, (IntPredicate) x -> {
-
-                        if (!active.get(x)) {
-                            return !active.isAllOff();
-                        }
-
-                        Causable cx = can[x];
-                        AtomicBoolean cb = cx.busy;
-                        if (cb != null) {
-                            if (!cb.compareAndSet(false, true)) {
-                                return --safety[0] < 0;
-                            } else {
-                                active.clear(x); //acquire
-                                safety[0] = n; //reset safety count
-                            }
-                        }
-
-
-                        int itersNext = 1;
-                        double donePrevMean = s.doneMean[x];
-
-                        final double ITER_EPSILON = 0.001;
-                        if (donePrevMean == donePrevMean && donePrevMean > ITER_EPSILON) {
-
-                            double timePrev = s.timeMean[x];
-                            if (timePrev == timePrev && timePrev > 0) {
-                                long donePrevMax = s.doneMax[x];
-                                //TODO this growth limit value should decrease throughout the cycle as each execution accumulates the total work it is being compared to
-                                //this will require doneMax to be an atomic accmulator
-                                itersNext = (int) Math.max(1,
-                                        Math.round(Math.min(donePrevMean * rt/timePrev, donePrevMax * IterGrowthRateLimit ))
-                                );
-
-                            }
-
-                        }
-
-                        //System.out.println(cx + " x " + iters + " @ " + n4(iterPerSecond[x]) + "iter/sec in " + Texts.timeStr(subTime*1E9));
-
-                        int completed = -1;
-                        try {
-                            completed = cx.run(nar, itersNext);
-                        } finally {
-                            if (cb != null) {
-                                cb.set(false); //release
-                                if (completed >= 0) {
-                                    active.set(x);
-                                } else {
-                                    //leave inactive
-                                }
-                            } else {
-                                if (completed < 0) {
-                                    active.clear(x); //set inactive
-                                }
-                            }
-                        }
-
-                        return intValue()==iterAtStart && kontinue.getAsBoolean();
-                    });
-                }
-            }
+        @Override
+        protected int next(NAR n, int iterations) {
+            throw new UnsupportedOperationException("dont call this");
+            //callee should instead execute: "while (pollNext()) ;"
         }
 
+        @Override
+        public float value() {
+            return 0; //TODO adjust this proportionally to size of the queue?
+        }
+    };
 
+    public Focus(NAR n, Exec.Revaluator r) {
+        super();
+
+        this.can = new FastCoWList<>(32, Causable[]::new);
+        this.can.add(work);
+
+        this.revaluator = r;
+
+
+        n.services.change.on((xa) -> {
+            Services.Service<NAR> x = xa.getOne();
+            if (x instanceof Causable) {
+                Causable c = (Causable) x;
+                if (xa.getTwo())
+                    add(c);
+                else
+                    remove(c);
+            }
+        });
+
+        n.onCycle(this::onCycle);
     }
 
-    private void idle(BooleanSupplier kontinue) {
-        int atStart = intValue();
-        do { } while (kontinue.getAsBoolean() && intValue()==atStart);
+//    private void idle(BooleanSupplier kontinue) {
+//        int atStart = intValue();
+//        do { } while (kontinue.getAsBoolean() && intValue()==atStart);
+//    }
+
+    public void onCycle(NAR nar) {
+        if (!busy.compareAndSet(false, true))
+            return;
+
+        try {
+
+            if (!onQueue.isEmpty()) {
+                final int[] s = {can.size()};
+                onQueue.removeIf((adding)->{
+                    adding.id = s[0]++;
+                    can.add(adding);
+                    return true;
+                });
+            }
+            if (!offQueue.isEmpty()) {
+                throw new TODO(); //may need to reassign 'id' if the order changed
+            }
+
+            update();
+
+            revaluator.update(nar);
+
+
+        } finally {
+            busy.set(false);
+        }
+
+        //sched.
+//              try {
+//                sched.solve(can, dutyCycleTime);
+//
+//                //sched.estimatedTimeTotal(can);
+//            } catch (InternalSolverError e) {
+//                logger.error("{} {}", can, e);
+//            }
+    }
+
+    final BlockingQueue<Causable> onQueue = Util.blockingQueue(16);
+    final BlockingQueue<Causable> offQueue = Util.blockingQueue(16);
+    protected void add(Causable c) {
+        onQueue.add(c);
+    }
+
+    protected void remove(Causable c) {
+        offQueue.add(c);
     }
 
 
-    public static class Schedule {
 
+        final static int WINDOW = 4;
+        final MetalBitSet.AtomicIntBitSet active = new MetalBitSet.AtomicIntBitSet();
+        private final long[] committed = new long[2];
+        private final LongLongProcedure commiter = (timeNS, iter) -> {
+            committed[0] = timeNS;
+            committed[1] = iter;
+        };
         /** value samples */
         public float[] value= ArrayUtils.EMPTY_FLOAT_ARRAY;
-
         /** essentially the normalized value. directly determines the frequency
          *  of an entry being sampled by the scheduler, but does not determine
          *  its rqeuested iteration allocated if selected - instead,
          *  iter, time, and jiffy does.
          * */
         public float[] weight = ArrayUtils.EMPTY_FLOAT_ARRAY;
-
         /** short history of time (in nanoseconds) spent */
         public DescriptiveStatistics[] time = null;
-
         /** short history of iter spent in the corresponding times */
         public DescriptiveStatistics[] done = null;
-
         /** cache for iter.getMean() and time.getMean() */
         public double[] doneMean = null;
         public long[] doneMax = null;
         public double[] timeMean = null;
 
-        final static int WINDOW = 4;
-
-        final MetalBitSet active = new MetalBitSet.AtomicIntBitSet();
-
-        public Causable[] can = new Causable[0];
-
-        private final long[] committed = new long[2];
-        private final LongLongProcedure commiter = (timeNS, iter) -> {
-            committed[0] = timeNS;
-            committed[1] = iter;
-        };
 
         @Override
         public String toString() {
-
+            Causable[] can = this.can.toArrayRecycled(Causable[]::new);
             return Joiner.on("\n").join(IntStream.range(0, can.length).mapToObj(
                     x -> n4(weight[x]) + "=" + can[x] +
                             "@" + n2(value[x] * 1E3)
@@ -198,11 +172,13 @@ public class Focus extends Flip<Focus.Schedule> {
         }
 
 
-        public void update(FastCoWList<Causable> cans) {
-            final Causable[] can = this.can = cans.copy;
-            if (can == null)
-                return;
+        protected void update() {
+            Causable[] can = this.can.toArrayRecycled(Causable[]::new);
+
             int n = can.length;
+            if (n == 0)
+                return;
+
             if (value.length != n) {
 
                 value = new float[n];
@@ -221,15 +197,13 @@ public class Focus extends Flip<Focus.Schedule> {
                 }
 
                 assert (n < 32) : "TODO make atomic n>32 bitset";
-                this.active //= MetalBitSet.bits(n);
-                        .clearAll();
             }
 
-            active.setAll();
 
 
             for (int i = 0; i < n; i++) {
-                Causable c = cans.get(i);
+                Causable c = can[i];
+
 
                 c.can.commit(commiter);
 
@@ -246,16 +220,17 @@ public class Focus extends Flip<Focus.Schedule> {
 
                 value[i] = c.value();
                 weight[i] = value[i]; //pre-normalized value
+
             }
 
             //weight[] = normalize(value[]) , with margin so the minimum value is non-zero some marginal amoutn (Margin-Max)
             float[] minmax = Util.minmax(weight);
             float lowMargin = (minmax[1] - minmax[0]) / n;
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < n; i++) {
                 weight[i] = normalize(weight[i], minmax[0] - lowMargin, minmax[1]);
-
+                active.set(i); //ready //TODO leave zeros for any Causables in a 'paused' state that it chooses to enter
+            }
         }
-    }
 
 
     /**
@@ -276,13 +251,11 @@ public class Focus extends Flip<Focus.Schedule> {
 
         public double[] cur;
         public RBM rbm;
-
+        float rbmStrength = 0.25f;
         /**
          * hidden to visible neuron ratio
          */
         private float hiddenMultipler = 1f;
-
-        float rbmStrength = 0.25f;
 
         public RBMRevaluator(Random rng) {
             super();
@@ -335,11 +308,9 @@ public class Focus extends Flip<Focus.Schedule> {
 
 
         public float learning_rate = 0.1f;
-        float NOISE = 0.01f;
-
         public float[] next;
         public Autoencoder ae;
-
+        float NOISE = 0.01f;
         /**
          * hidden to visible neuron ratio
          */
@@ -386,28 +357,24 @@ public class Focus extends Flip<Focus.Schedule> {
 
     public static class DefaultRevaluator implements Exec.Revaluator {
 
+        final static double minUpdateDurs = 1f;
         final RecycledSummaryStatistics[] causeSummary = new RecycledSummaryStatistics[MetaGoal.values().length];
-
-        {
-            for (int i = 0; i < causeSummary.length; i++)
-                causeSummary[i] = new RecycledSummaryStatistics();
-        }
-
         float momentum =
 //                    0f;
                 //0.5f;
                 //0.75f;
                 0.9f;
         //0.95f;
-
-        final static double minUpdateDurs = 1f;
-
         long lastUpdate = ETERNAL;
-
         /**
          * intermediate calculation buffer
          */
         float[] val = ArrayUtils.EMPTY_FLOAT_ARRAY;
+
+        {
+            for (int i = 0; i < causeSummary.length; i++)
+                causeSummary[i] = new RecycledSummaryStatistics();
+        }
 
         @Override
         public void update(long time, int dur, FasterList<Cause> causes, float[] goal) {
@@ -487,70 +454,6 @@ public class Focus extends Flip<Focus.Schedule> {
 
         }
 
-    }
-
-
-    public Focus(NAR n, Exec.Revaluator r) {
-        super(Schedule::new);
-
-        this.can = new FastCoWList<>(32, Causable[]::new);
-
-        this.revaluator = r;
-
-        n.services.change.on((xa) -> {
-            Services.Service<NAR> x = xa.getOne();
-            if (x instanceof Causable) {
-                Causable c = (Causable) x;
-                if (xa.getTwo())
-                    add(c);
-                else
-                    remove(c);
-            }
-        });
-
-        n.onCycle(this::update);
-    }
-
-
-    final AtomicBoolean busy = new AtomicBoolean(false);
-
-    public void update(NAR nar) {
-        if (!busy.compareAndSet(false, true))
-            return;
-
-        try {
-
-
-            Schedule s = write();
-            s.update(can);
-
-            //System.out.println(schedule.read());
-
-            commit();
-
-            revaluator.update(nar);
-
-        } finally {
-            busy.set(false);
-        }
-
-        //sched.
-//              try {
-//                sched.solve(can, dutyCycleTime);
-//
-//                //sched.estimatedTimeTotal(can);
-//            } catch (InternalSolverError e) {
-//                logger.error("{} {}", can, e);
-//            }
-    }
-
-
-    protected void add(Causable c) {
-        this.can.add(c);
-    }
-
-    protected void remove(Causable c) {
-        this.can.remove(c);
     }
 
 }

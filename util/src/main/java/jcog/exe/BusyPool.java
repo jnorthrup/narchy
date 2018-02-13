@@ -15,24 +15,23 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by I330347 on 8/25/2016.
+ * Started by I330347 on 8/25/2016.
  * https://github.com/JasonChen86899/ThreadPool/blob/master/src/main/java/HPThreadPool.java
+ * TODO make # of worker threads growable/shrinkable dynamically
  */
 public abstract class BusyPool extends AbstractExecutorService {
 
     final private BlockingQueue q;
     public List<Thread> workers = new FasterList<>();
-    final Worker anonymous;
-
+    final WorkLoop anonymous;
+    static final Logger logger = LoggerFactory.getLogger(BusyPool.class);
 
     public BusyPool(int threads, BlockingQueue qq) {
 
-        this.q = qq;
-
-        anonymous = newWorker(q); //shared by callees when overflow occurrs
+        anonymous = newWorkLoop(this.q = qq); //shared by callees when overflow occurrs
 
         for (int i = 0; i < threads; i++) {
-            Thread newthread = new Thread(newWorker(q));
+            Thread newthread = new Thread(newWorkLoop(qq));
 
             //ProxyProduce proxyProduce = new ProxyProduce(newthread,recycleRunable);
             //Thread proxyThread =(Thread)proxyProduce.bind();
@@ -44,7 +43,7 @@ public abstract class BusyPool extends AbstractExecutorService {
 
     }
 
-    abstract protected Worker newWorker(Queue<Runnable> q);
+    abstract protected WorkLoop newWorkLoop(Queue<Runnable> q);
 
     @Override
     public void shutdown() {
@@ -82,7 +81,7 @@ public abstract class BusyPool extends AbstractExecutorService {
     }
 
     @Override
-    public boolean awaitTermination(long timeout, TimeUnit unit) throws InterruptedException {
+    public boolean awaitTermination(long timeout, TimeUnit unit) {
         throw new TODO();
     }
 
@@ -91,21 +90,21 @@ public abstract class BusyPool extends AbstractExecutorService {
         queue(command);
     }
 
-    static final Logger logger = LoggerFactory.getLogger(BusyPool.class);
+
 
     public void queue(Object x) {
         while (!q.offer(x)) {
             //logger.error("lag"); //TODO statistics
-            anonymous.poll();
+            anonymous.pollNext();
         }
     }
 
-    abstract protected static class Worker implements Runnable {
+    public abstract static class WorkLoop implements Runnable {
 
         final Queue q;
         final Queue localQ = new ArrayDeque();
 
-        protected Worker(Queue q) {
+        protected WorkLoop(Queue q) {
             this.q = q;
         }
 
@@ -122,7 +121,7 @@ public abstract class BusyPool extends AbstractExecutorService {
             }
         }
 
-        protected boolean poll() {
+        protected boolean pollNext() {
             Object next;
             if (null != (next = q.poll())) {
                 runSafe(next);
@@ -130,9 +129,8 @@ public abstract class BusyPool extends AbstractExecutorService {
             }
             return false;
         }
-        protected void pollWhileNotEmpty() {
-            while (poll()) ;
-        }
+
+
 
         protected void drain() {
             int drained = ((DisruptorBlockingQueue) q).drainTo(localQ);

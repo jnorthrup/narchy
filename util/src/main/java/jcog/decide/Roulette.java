@@ -11,6 +11,7 @@ import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import java.util.Random;
 import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
+import java.util.function.IntSupplier;
 
 import static java.lang.Float.NaN;
 import static java.lang.Math.exp;
@@ -41,23 +42,36 @@ public enum Roulette { ;
         return decideRoulette(weightCount, weight, Util.sumIfPositive(weightCount, weight), rng);
     }
 
-    public static void decideRouletteWhile(int choices, IntToFloatFunction choiceWeight, Random rng, IntPredicate each) {
+    public static void decideRouletteWhile(IntSupplier choices, IntToFloatFunction choiceWeight, Random rng, IntPredicate each) {
         decideRouletteWhile(choices, choiceWeight, rng, (IntFunction)((i)->each.test(i) ? RouletteControl.CONTINUE : RouletteControl.STOP));
     }
 
-    public static void decideRouletteWhile(int choices, IntToFloatFunction choiceWeight, Random rng, IntFunction<RouletteControl> each) {
+    public static void decideRouletteWhile(int _choices, IntToFloatFunction choiceWeight, Random rng, IntFunction<RouletteControl> each) {
+        decideRouletteWhile(()->_choices, choiceWeight, rng, each);
+    }
+
+    public static void decideRouletteWhile(IntSupplier _choices, IntToFloatFunction choiceWeight, Random rng, IntFunction<RouletteControl> each) {
         float weightSum = NaN;
         while (true) {
-            if (weightSum != weightSum) {
-                weightSum = Util.sumIfPositive(choices, choiceWeight);
+            RouletteControl result;
+            int choices = _choices.getAsInt();
+
+            if (choices > 0) {
+                if (weightSum != weightSum) {
+                    weightSum = Util.sumIfPositive(choices, choiceWeight);
+                }
+                if (weightSum < Float.MIN_NORMAL * choices) {
+                    //flat
+                    float perChoice = 1f / choices;
+                    choiceWeight = (i) -> perChoice;
+                    weightSum = 1f;
+                }
+                result = each.apply(decideRoulette(choices, choiceWeight, weightSum, rng));
+            } else {
+                result = each.apply(-1 /* signal for no choices */);
             }
-            if (weightSum < Float.MIN_NORMAL * choices) {
-                //flat
-                float perChoice = 1f/choices;
-                choiceWeight = (i) -> perChoice;
-                weightSum = 1f;
-            }
-            switch (each.apply(decideRoulette(choices, choiceWeight, weightSum, rng))) {
+
+            switch (result) {
                 case STOP:
                     return;
                 case CONTINUE:

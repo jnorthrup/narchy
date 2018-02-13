@@ -223,6 +223,22 @@ abstract public class MetalBitSet {
             return (x & (1 << i)) != 0;
         }
 
+        public boolean compareAndSet(int i, boolean expect, boolean set) {
+            final boolean[] got = {false};
+            _x.updateAndGet(this, v->{
+                int mask = 1 << i;
+                if (((v & mask) != 0)==expect) {
+                    //set
+                    got[0] = true;
+                    return set ? v|mask : v&(~mask);
+                } else {
+                    //no change
+                    return v;
+                }
+            });
+            return got[0];
+        }
+
         @Override
         public void set(int i) {
             int mask = i<<i;

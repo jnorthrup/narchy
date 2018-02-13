@@ -7,12 +7,10 @@ import jcog.learn.gng.impl.Centroid;
 import jcog.list.FasterList;
 import jcog.pri.VLink;
 import jcog.pri.op.PriMerge;
-import jcog.util.Flip;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
@@ -30,14 +28,14 @@ public class BagClustering<X> {
 
     public final NeuralGasNet net;
 
-    final AtomicBoolean busy = new AtomicBoolean(false);
-
 
     /**
      * TODO allow dynamic change
      */
     private final short clusters;
-    public Flip<FasterList<VLink<X>>> sorted = new Flip(FasterList::new);
+    protected /*Flip<*/ FasterList<VLink<X>> sorted =
+            new FasterList<>();
+    //new Flip(FasterList::new);
 
     public BagClustering(Dimensionalize<X> model, int centroids, int initialCap) {
 
@@ -125,10 +123,10 @@ public class BagClustering<X> {
             for (int i = 0; i < n; i++) {
                 VLink<X> x = sorted.get(i);
 
-                if (current != x.centroid || (i == n-1)) {
+                if (current != x.centroid || (i == n - 1)) {
                     current = x.centroid;
                     if (bs != -1 && i - bs > 1)
-                        each.accept(IntStream.range(bs, i+1).mapToObj(sorted::get), y);
+                        each.accept(IntStream.range(bs, i + 1).mapToObj(sorted::get), y);
                     bs = i;
                 }
             }
@@ -141,7 +139,7 @@ public class BagClustering<X> {
      */
     abstract public static class Dimensionalize<X> {
 
-        public final int dims;
+        final int dims;
 
         protected Dimensionalize(int dims) {
             this.dims = dims;
@@ -161,36 +159,35 @@ public class BagClustering<X> {
 
     public boolean commit(int iterations, Consumer<List<VLink<X>>> takeSortedClusters) {
 
-        if (!busy.compareAndSet(false, true))
-            return false;
+        FasterList<VLink<X>> x;
 
-        try {
-            synchronized (bag) {
+        synchronized (bag) {
 
-                int s = bag.size();
-                if (s == 0)
-                    return false;
+            int s = bag.size();
+            if (s == 0)
+                return false;
 
-                bag.commit(); //first, apply bag forgetting
+            bag.commit(); //first, apply bag forgetting
 
-                //                net.compact();
-                //int cc = bag.capacity();
+            //                net.compact();
+            //int cc = bag.capacity();
 
-                for (int i = 0; i < iterations; i++) {
-                    bag.forEach(this::learn);
-                }
+            for (int i = 0; i < iterations; i++)
+                bag.forEach(this::learn);
 
-                FasterList<VLink<X>> x = sorted.write();
-                x.clear();
-                bag.forEach(x::add);
-                x.sortThisByInt(xx -> xx.centroid);
-                //x.sort(Comparator.comparingInt(a -> a.centroid));
-                takeSortedClusters.accept(x);
-                sorted.commit();
-            }
-        } finally {
-            busy.set(false);
+            x = new FasterList();
+            bag.forEach(x::add);
+
+            //Collections.sort(x, Comparator.comparingInt(v->v.centroid));
+            x.sortThisByInt(xx -> xx.centroid);
+            //x.sortThis(Comparator.comparingInt(v->v.centroid));
+            //Arrays.sort(x.array(), )
+            takeSortedClusters.accept(x);
+
         }
+
+
+
 
         return true;
 
