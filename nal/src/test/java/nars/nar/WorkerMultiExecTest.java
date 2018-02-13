@@ -14,23 +14,28 @@ import org.eclipse.collections.impl.map.mutable.primitive.ByteIntHashMap;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.ToDoubleFunction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class WorkerMultiExecTest {
 
+    int threads = 4;
+    PoolMultiExec exe = new PoolMultiExec(new Focus.DefaultRevaluator(), threads, 16,3 /* TODO this shouldnt need to be > 1 */);
+
     @Test
     public void test1() {
 
-        int threads = 4;
-        Exec exe = new PoolMultiExec(new Focus.DefaultRevaluator(), threads, 16,3 /* TODO this shouldnt need to be > 1 */);
+
+
         NAR n = new NARS().exe(exe).get();
 
+        Loop l = n.startFPS(5f);
 
-        DummyCan a = new DummyCan(n,"a").value(1f).delay(10);
-        DummyCan b = new DummyCan(n,"b").value(2f).delay(10);
-        DummyCan c = new DummyCan(n,"c").value(1f).delay(20);
+        DummyCan a = new DummyCan(n,"a").value(1f).delay(1);
+        DummyCan b = new DummyCan(n,"b").value(2f).delay(1);
+        DummyCan c = new DummyCan(n,"c").value(1f).delay(2);
 
 //        n.onCycle(nn -> {
 //            Focus.Schedule s = exe.focus.schedule.read();
@@ -38,16 +43,16 @@ public class WorkerMultiExecTest {
 //                   Arrays.toString(s.active) + "->" + n4(s.weight));
 //        });
 
-        Loop l = n.startFPS(30f);
-        Util.sleep(1500);
+        Util.sleep(1000);
         l.stop();
 
-        System.out.println(a.executed);
-        System.out.println(b.executed);
-        System.out.println(c.executed);
+        System.out.println(a.executed.get());
+        System.out.println(b.executed.get());
+        System.out.println(c.executed.get());
+        System.out.println(exe.focus);
 
-        assertEquals(2, ((float)b.executed) / a.executed, 0.5f);
-        assertEquals(2, ((float)a.executed) / c.executed, 0.5f);
+        assertEquals(2, ((float)b.executed.get()) / a.executed.get(), 0.5f);
+        assertEquals(2, ((float)a.executed.get()) / c.executed.get(), 0.5f);
 
     }
 
@@ -95,12 +100,12 @@ public class WorkerMultiExecTest {
         });
     }
 
-    static class DummyCan extends Causable {
+    class DummyCan extends Causable {
 
         private float value;
         private int delayMS;
 
-        int executed = 0;
+        final AtomicInteger executed = new AtomicInteger();
 
         protected DummyCan(NAR nar, String id) {
             super(nar, $.the(id));
@@ -123,8 +128,11 @@ public class WorkerMultiExecTest {
 
         @Override
         protected int next(NAR n, int iterations) {
+            executed.addAndGet(iterations);
+//            System.out.println(this + " x " + iterations
+//                    //+ " " + exe.focus
+//                    );
             Util.sleep(iterations * delayMS);
-            executed += iterations;
             return iterations;
         }
 

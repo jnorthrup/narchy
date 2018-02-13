@@ -1,7 +1,6 @@
 package nars.exe;
 
 import jcog.Util;
-import jcog.decide.Roulette;
 import jcog.exe.BusyPool;
 import jcog.math.MutableInteger;
 import jcog.math.random.XoRoShiRo128PlusRandom;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.Random;
 import java.util.function.Consumer;
-import java.util.function.IntPredicate;
 import java.util.function.LongPredicate;
 import java.util.stream.Stream;
 
@@ -43,7 +41,7 @@ public class PoolMultiExec extends AbstractExec {
     LongPredicate isActiveThreadId = (x) -> false;
 
 
-    private Focus focus;
+    public Focus focus;
     private Consumer exe;
 
 
@@ -205,41 +203,26 @@ public class PoolMultiExec extends AbstractExec {
         int idles = 0;
 
         protected void idle() {
-            Util.pauseNext(idles++);
+            int done = 0;
+            while (pollNext())
+                done++;
+
+            if (done == 0)
+                Util.pauseNext(idles++);
         }
 
         @Override
         public void run() {
 
-            final float[][] W = {null};
-
-
-            Roulette.decideRouletteWhile(() -> (W[0] = focus.weight).length, c -> W[0][c], rng, (IntPredicate) x -> {
-                if (x<=1 /*-1 or 0 */ || focus.active.isAllOff()) {
-                    //idle(); //everything's off; gradually get bored and fall sleep
-                    while (pollNext()); //WORK: special 'kernel' process
+            focus.decide(rng, (Causable cx) -> {
+                int x;
+                if (cx == null || (x = cx.id) <= 0) {
+                    idle();
                     return true;
                 }
 
-                Causable cx = PoolMultiExec.this.focus.can.getSafe(x);
-                if (cx == null || cx.id!=x)
-                    return true; //the process at this position is not consistent with its id; may be in a changing state
-
-                boolean singleton = cx.singleton();
-                if (singleton) {
-                    if (focus.active.compareAndSet(x, true, false)) {
-                        //acquired the singleton access
-                    } else {
-                        return true; //try another
-                    }
-                } else {
-                    if (!focus.active.get(x)) {
-                        return true; //this is a busy singleton; try again
-                    } else {
-                        //its good
-                    }
-                }
-
+                /** temporarily withold priority */
+                int singleton = cx.singleton() ? focus.priGetAndSet(x, 0) : -1;
 
                 double donePrevMean = focus.doneMean[x];
                 if (!Double.isFinite(donePrevMean))
@@ -247,16 +230,20 @@ public class PoolMultiExec extends AbstractExec {
 
                 double timePrev = focus.timeMean[x];
                 if (!Double.isFinite(timePrev))
-                    timePrev = 0;
+                    timePrev = 1;
+                else
+                    timePrev = Math.max(1, timePrev);
 
-                double timeslice =
-                        //0.006; //6ms
-                        0.01; //10ms
+                double timesliceS =
+                        0.006; //6ms
+                        //0.01; //10ms
 
                 //TODO this growth limit value should decrease throughout the cycle as each execution accumulates the total work it is being compared to
                 //this will require doneMax to be an atomic accmulator for accuracy
                 int itersNext = (int) Math.max(1,
-                        Math.round(Math.min(donePrevMean * timeslice / timePrev, focus.doneMax[x] * focus.IterGrowthRateLimit))
+                        Math.round(Math.min(
+                                donePrevMean * (timesliceS * 1.0E9) / timePrev,
+                                focus.doneMax[x] * focus.IterGrowthRateLimit))
                 );
 
                 //System.out.println(cx + " x " + iters + " @ " + n4(iterPerSecond[x]) + "iter/sec in " + Texts.timeStr(subTime*1E9));
@@ -267,23 +254,23 @@ public class PoolMultiExec extends AbstractExec {
                 try {
                     completed = cx.run(nar, itersNext);
                 } finally {
-                    if (singleton) {
+                    if (singleton>=0) {
 
                         if (completed >= 0) {
-                            focus.active.set(x); //release for another usage
+                            int shouldBeZero = focus.priGetAndSet(x, singleton); //release for another usage
+                            assert(shouldBeZero == 0);
                         } else {
-                            //leave inactive
+                            //leave suspended until next commit in the next cycle
                         }
                     } else {
                         if (completed < 0) {
-                            focus.active.clear(x); //set inactive
+                            focus.priGetAndSet(x, 0); //suspend
                         }
                     }
                 }
 
                 return true;
             });
-
 
         }
 

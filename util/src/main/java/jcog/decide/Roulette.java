@@ -57,17 +57,23 @@ public enum Roulette { ;
             int choices = _choices.getAsInt();
 
             if (choices > 0) {
-                if (weightSum != weightSum) {
-                    weightSum = Util.sumIfPositive(choices, choiceWeight);
+                if (choices>1) {
+                    if (weightSum != weightSum) {
+                        weightSum = Util.sumIfPositive(choices, choiceWeight);
+                    }
+                    if (weightSum < Float.MIN_NORMAL * choices) {
+                        //flat
+                        float perChoice = 1f / choices;
+                        choiceWeight = (i) -> perChoice;
+                        weightSum = 1f;
+                    }
+                    result = each.apply(decideRoulette(choices, choiceWeight, weightSum, rng));
+                } else {
+                    weightSum = Float.NaN;
+                    result = each.apply(0); //only choice
                 }
-                if (weightSum < Float.MIN_NORMAL * choices) {
-                    //flat
-                    float perChoice = 1f / choices;
-                    choiceWeight = (i) -> perChoice;
-                    weightSum = 1f;
-                }
-                result = each.apply(decideRoulette(choices, choiceWeight, weightSum, rng));
             } else {
+                weightSum = Float.NaN;
                 result = each.apply(-1 /* signal for no choices */);
             }
 
@@ -120,7 +126,7 @@ public enum Roulette { ;
         return i;
     }
 
-    public static <X> void selectRouletteUnique(int choices, IntToFloatFunction choiceWeight, IntPredicate tgt, Random random) {
+    public static void selectRouletteUnique(int choices, IntToFloatFunction choiceWeight, IntPredicate tgt, Random random) {
         assert(choices > 0);
         if (choices == 1) {
             tgt.test(0);

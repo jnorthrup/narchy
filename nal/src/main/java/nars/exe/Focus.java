@@ -1,13 +1,9 @@
 package nars.exe;
 
-import com.google.common.base.Joiner;
 import jcog.Services;
-import jcog.TODO;
 import jcog.Util;
-import jcog.data.bit.MetalBitSet;
 import jcog.learn.Autoencoder;
 import jcog.learn.deep.RBM;
-import jcog.list.FastCoWList;
 import jcog.list.FasterList;
 import jcog.math.RecycledSummaryStatistics;
 import nars.NAR;
@@ -19,32 +15,28 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.api.block.procedure.primitive.LongLongProcedure;
 
 import java.util.Random;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.stream.IntStream;
 
-import static jcog.Texts.n2;
-import static jcog.Texts.n4;
 import static jcog.Util.normalize;
 import static nars.time.Tense.ETERNAL;
 
 /**
  * decides mental activity
  * this first implementation is similiar to this
- *      https://en.wikipedia.org/wiki/Lottery_scheduling
- *          https://www.usenix.org/legacy/publications/library/proceedings/osdi/full_papers/waldspurger.pdf
- *
- *      https://lwn.net/Articles/720227/
+ * https://en.wikipedia.org/wiki/Lottery_scheduling
+ * https://www.usenix.org/legacy/publications/library/proceedings/osdi/full_papers/waldspurger.pdf
+ * <p>
+ * https://lwn.net/Articles/720227/
  */
-public class Focus  {
+public class Focus extends AtomicRoulette<Causable> {
 
-    //final static Logger logger = LoggerFactory.getLogger(Focus.class);
-
-    /** how quickly the iteration demand can grow from previous (max) values */
+    /**
+     * how quickly the iteration demand can grow from previous (max) values
+     */
     static final double IterGrowthRateLimit = 1.5;
-    final AtomicBoolean busy = new AtomicBoolean(false);
+
+
     private final Exec.Revaluator revaluator;
-    protected final FastCoWList<Causable> can;
+
 
     final Causable work = new Causable((NAR) null) {
 
@@ -61,13 +53,11 @@ public class Focus  {
     };
 
     public Focus(NAR n, Exec.Revaluator r) {
-        super();
+        super(32, Causable[]::new);
 
-        this.can = new FastCoWList<>(32, Causable[]::new);
-        this.can.add(work);
+        this.add(work);
 
         this.revaluator = r;
-
 
         n.services.change.on((xa) -> {
             Services.Service<NAR> x = xa.getOne();
@@ -79,41 +69,18 @@ public class Focus  {
                     remove(c);
             }
         });
+        //add existing
+        n.services().filter(x -> x instanceof Causable).forEach(x -> {
+           add((Causable) x);
+        });
 
         n.onCycle(this::onCycle);
     }
 
-//    private void idle(BooleanSupplier kontinue) {
-//        int atStart = intValue();
-//        do { } while (kontinue.getAsBoolean() && intValue()==atStart);
-//    }
 
     public void onCycle(NAR nar) {
-        if (!busy.compareAndSet(false, true))
-            return;
 
-        try {
-
-            if (!onQueue.isEmpty()) {
-                final int[] s = {can.size()};
-                onQueue.removeIf((adding)->{
-                    adding.id = s[0]++;
-                    can.add(adding);
-                    return true;
-                });
-            }
-            if (!offQueue.isEmpty()) {
-                throw new TODO(); //may need to reassign 'id' if the order changed
-            }
-
-            update();
-
-            revaluator.update(nar);
-
-
-        } finally {
-            busy.set(false);
-        }
+        commit(() -> update(nar));
 
         //sched.
 //              try {
@@ -125,112 +92,99 @@ public class Focus  {
 //            }
     }
 
-    final BlockingQueue<Causable> onQueue = Util.blockingQueue(16);
-    final BlockingQueue<Causable> offQueue = Util.blockingQueue(16);
-    protected void add(Causable c) {
-        onQueue.add(c);
+    @Override
+    protected void onAdd(Causable causable, int slot) {
+        causable.id = slot;
     }
 
-    protected void remove(Causable c) {
-        offQueue.add(c);
-    }
+    final static int WINDOW = 4;
+    private final long[] committed = new long[2];
+    private final LongLongProcedure commiter = (timeNS, iter) -> {
+        committed[0] = timeNS;
+        committed[1] = iter;
+    };
+    /**
+     * value samples
+     */
+    private float[] value = ArrayUtils.EMPTY_FLOAT_ARRAY, weight = ArrayUtils.EMPTY_FLOAT_ARRAY;
+
+    /**
+     * short history of time (in nanoseconds) spent
+     */
+    public DescriptiveStatistics[] time = null;
+    /**
+     * short history of iter spent in the corresponding times
+     */
+    public DescriptiveStatistics[] done = null;
+    /**
+     * cache for iter.getMean() and time.getMean()
+     */
+    public double[] doneMean = null;
+    public long[] doneMax = null;
+    public double[] timeMean = null;
 
 
-
-        final static int WINDOW = 4;
-        final MetalBitSet.AtomicIntBitSet active = new MetalBitSet.AtomicIntBitSet();
-        private final long[] committed = new long[2];
-        private final LongLongProcedure commiter = (timeNS, iter) -> {
-            committed[0] = timeNS;
-            committed[1] = iter;
-        };
-        /** value samples */
-        public float[] value= ArrayUtils.EMPTY_FLOAT_ARRAY;
-        /** essentially the normalized value. directly determines the frequency
-         *  of an entry being sampled by the scheduler, but does not determine
-         *  its rqeuested iteration allocated if selected - instead,
-         *  iter, time, and jiffy does.
-         * */
-        public float[] weight = ArrayUtils.EMPTY_FLOAT_ARRAY;
-        /** short history of time (in nanoseconds) spent */
-        public DescriptiveStatistics[] time = null;
-        /** short history of iter spent in the corresponding times */
-        public DescriptiveStatistics[] done = null;
-        /** cache for iter.getMean() and time.getMean() */
-        public double[] doneMean = null;
-        public long[] doneMax = null;
-        public double[] timeMean = null;
+    protected void update(NAR nar) {
+        revaluator.update(nar);
 
 
-        @Override
-        public String toString() {
-            Causable[] can = this.can.toArrayRecycled(Causable[]::new);
-            return Joiner.on("\n").join(IntStream.range(0, can.length).mapToObj(
-                    x -> n4(weight[x]) + "=" + can[x] +
-                            "@" + n2(value[x] * 1E3)
-            ).iterator());
+        int n = choice.size();
+        if (n == 0)
+            return;
+
+        if (value.length != n) {
+
+            value = new float[n];
+            weight = new float[n];
+
+            time = new DescriptiveStatistics[n];
+            timeMean = new double[n];
+            done = new DescriptiveStatistics[n];
+            doneMean = new double[n];
+            doneMax = new long[n];
+
+            for (int i = 0; i < n; i++) {
+                time[i] = new DescriptiveStatistics(WINDOW);
+                done[i] = new DescriptiveStatistics(WINDOW);
+            }
+
+            assert (n < 32) : "TODO make atomic n>32 bitset";
         }
 
 
-        protected void update() {
-            Causable[] can = this.can.toArrayRecycled(Causable[]::new);
+        for (int i = 0; i < n; i++) {
+            Causable c = choice.getSafe(i);
+            if (c == null)
+                continue;
 
-            int n = can.length;
-            if (n == 0)
-                return;
 
-            if (value.length != n) {
+            c.can.commit(commiter);
 
-                value = new float[n];
-
-                weight = new float[n];
-
-                time = new DescriptiveStatistics[n];
-                timeMean = new double[n];
-                done = new DescriptiveStatistics[n];
-                doneMean = new double[n];
-                doneMax = new long[n];
-
-                for (int i = 0; i < n; i++) {
-                    time[i] = new DescriptiveStatistics(WINDOW);
-                    done[i] = new DescriptiveStatistics(WINDOW);
-                }
-
-                assert (n < 32) : "TODO make atomic n>32 bitset";
+            long timeNS = committed[0];
+            if (timeNS > 0) {
+                DescriptiveStatistics t = this.time[i];
+                t.addValue(timeNS);
+                this.timeMean[i] = t.getMean();
+                DescriptiveStatistics d = this.done[i];
+                d.addValue(committed[1]);
+                this.doneMean[i] = d.getMean();
+                this.doneMax[i] = Math.round(d.getMax());
             }
 
+            value[i] = c.value();
+            weight[i] = value[i]; //pre-normalized value
 
-
-            for (int i = 0; i < n; i++) {
-                Causable c = can[i];
-
-
-                c.can.commit(commiter);
-
-                long timeNS = committed[0];
-                if (timeNS > 0) {
-                    DescriptiveStatistics t = this.time[i];
-                    t.addValue(timeNS);
-                    this.timeMean[i] = t.getMean();
-                    DescriptiveStatistics d = this.done[i];
-                    d.addValue(committed[1]);
-                    this.doneMean[i] = d.getMean();
-                    this.doneMax[i] = Math.round(d.getMax());
-                }
-
-                value[i] = c.value();
-                weight[i] = value[i]; //pre-normalized value
-
-            }
-
-            //weight[] = normalize(value[]) , with margin so the minimum value is non-zero some marginal amoutn (Margin-Max)
-            float[] minmax = Util.minmax(weight);
-            float lowMargin = (minmax[1] - minmax[0]) / n;
-            for (int i = 0; i < n; i++) {
-                weight[i] = normalize(weight[i], minmax[0] - lowMargin, minmax[1]);
-                active.set(i); //ready //TODO leave zeros for any Causables in a 'paused' state that it chooses to enter
-            }
         }
+
+        //weight[] = normalize(value[]) , with margin so the minimum value is non-zero some marginal amoutn (Margin-Max)
+        float[] minmax = Util.minmax(weight);
+        float min = minmax[0];
+        float max = minmax[1];
+        //float lowMargin = (minmax[1] - minmax[0]) / n;
+        for (int i = 0; i < n; i++) {
+            priGetAndSet(i, Math.max(1,normalize(weight[i], min, max)));
+        }
+    }
 
 
     /**

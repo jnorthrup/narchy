@@ -62,13 +62,24 @@ public class FastCoWList<X> extends FasterList<X> {
     public X set(int index, X element) {
         X old;
         synchronized (this) {
-            old = get(index);
-            if (old!=element) {
-                super.setFast(index, element);
-                commit();
+            if (size <= index) {
+                ensureCapacity(index + 1);
+                if (element!=null) {
+                    super.setFast(index, element);
+                    size = index+1;
+                    commit();
+                }
+                return null;
+            } else {
+                old = get(index);
+                if (old!=element) {
+                    super.setFast(index, element);
+                    commit();
+                }
+                return old;
             }
+
         }
-        return old;
     }
 
     public void set(Collection<X> newContent) {
