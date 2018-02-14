@@ -641,16 +641,21 @@ public interface NAct {
                     float fThresh = nar().freqResolution.floatValue();
                     int sign = (y > fThresh ? +1 : (y < -fThresh ? -1 : 0));
 
-                    float feedConf = Math.max(confMin, goalConf * coherence);
+                    float feedConf = goalConf;
+                            //Math.max(confMin, goalConf * coherence);
                     switch (sign) {
                         case +1:
                             //Pb = $.t(1f, Util.lerp(+y, confBase, feedbackConf));
                             Pb = $.t(y/2f + 0.5f, feedConf);
-                            Nb = null;
+                            Nb =
+                                    null;
+                                    //$.t(0, feedConf);
                             break;
                         case -1:
-                            Pb = null;
-                            //Nb = $.t(1f, Util.lerp(-y, confBase, feedbackConf));
+                            Pb =
+                                    null;
+                                    //$.t(0, feedConf);
+
                             Nb = $.t(-y/2f + 0.5f, feedConf);
                             break;
                         case 0:

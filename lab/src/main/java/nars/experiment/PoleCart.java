@@ -39,7 +39,7 @@ public class PoleCart extends NAgentX {
 
             try {
                 NAgent a = new PoleCart(n);
-                a.nar.freqResolution.set(0.05f);
+                a.nar.freqResolution.set(0.02f);
                 a.nar.confResolution.set(0.02f);
 
 

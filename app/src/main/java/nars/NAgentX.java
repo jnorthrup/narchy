@@ -95,8 +95,10 @@ abstract public class NAgentX extends NAgent {
 //            nar.onTask(x -> {
 //                if (x.isBeliefOrGoal() && x.isEternal()) {
 //                    //if (x.isInput())
-//                    if (!always.contains(x))
+//                    if (!always.contains(x)) {
 //                        System.err.println(x.proof());
+//                        System.err.println();
+//                    }
 //                }
 //            });
 
@@ -188,10 +190,10 @@ abstract public class NAgentX extends NAgent {
                 .index(
                         new CaffeineIndex(
                                 //250 * 1024
-                                //150 * 1024
+                                150 * 1024
                                 //200 * 1024
                                 //100 * 1024
-                                50 * 1024
+                                //50 * 1024
                                 //20 * 1024
                                 //4096
                         )
@@ -233,7 +235,7 @@ abstract public class NAgentX extends NAgent {
 
         new Deriver(a.fire(), Derivers.deriver(1, 8,
                 "motivation.nal"
-                , "goal_analogy.nal"
+                //, "goal_analogy.nal"
         ).apply(n).deriver, n) {
 //            @Override
 //            protected long matchTime(Task task) {
