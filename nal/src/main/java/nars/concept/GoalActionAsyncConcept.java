@@ -30,7 +30,7 @@ public class GoalActionAsyncConcept extends ActionConcept {
     private final BiConsumer<GoalActionAsyncConcept, Truth /* goal */> motor;
     final CauseChannel<ITask> in;
 
-    private final long curiosityStamp;
+    //private final long curiosityStamp;
 
     public GoalActionAsyncConcept(@NotNull Term c, @NotNull NAct act, CauseChannel<ITask> cause, @NotNull BiConsumer<GoalActionAsyncConcept, Truth /* goal */> motor) {
         super(c, act.nar());
@@ -41,7 +41,7 @@ public class GoalActionAsyncConcept extends ActionConcept {
         //((SensorBeliefTable) goals).sensor = action;
 
         this.in = cause;
-        curiosityStamp = n.time.nextStamp();
+        //curiosityStamp = n.time.nextStamp();
 
         //for dynamic change
         final FloatSupplier myResolution = () -> this.resolution.asFloat();
@@ -62,12 +62,12 @@ public class GoalActionAsyncConcept extends ActionConcept {
     public Stream<ITask> update(long now, int dur, NAR nar) {
 
         long pStart =
-                now;
-                //now - dur/2;
+                //now;
+                now - dur/2;
         long pEnd =
                 //now;
-                //now + dur/2;
-                now + dur;
+                now + dur/2;
+                //now + dur;
 
         Truth goal = this.goals().truth(pStart, pEnd, nar);
 

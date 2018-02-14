@@ -109,22 +109,17 @@ public class ConjClustering extends Causable {
 
         bag.commitGroups(1, nar, this::conjoinCentroid);
 
-        if (!gen.isEmpty()) {
+        int gs = gen.size();
+
+        float forgetRate = 1f - ((float)gs)/bag.bag.capacity();
+        bag.bag.commit(t -> t.priMult(forgetRate));
+
+        if (gs > 0) {
 //            System.out.println(gen);
             in.input(gen);
         }
 
-        /* decrease cluster bag vlink priority by at least as much as the priority lost by the task during conjing
-           helps ensures fair induction of new items and replacement of processed items (which can remain indefinitely)*/
-        bag.bag.commit(t -> {
-            float pp = t.id.pri();
-            if (pp == pp)
-                t.priMin(pp);
-            else
-                t.delete();
-        });
-
-        return (int) Math.ceil(((float)gen.size())/bag.net.centroids.length);
+        return Math.round(((float)gen.size())/bag.net.centroids.length);
     }
 
 //    /**
@@ -285,7 +280,7 @@ public class ConjClustering extends Causable {
 
             ObjectFloatPair<long[]> evidence = Stamp.zip(actualTasks, Param.STAMP_CAPACITY);
             float overlap = evidence.getTwo();
-            float e = Param.overlapEvidence(c2wSafe(conf), overlap);
+            float e = c2wSafe(conf) * Param.overlapFactor(overlap);
             if (e > 0) {
                 final DiscreteTruth t = Truth.theDiscrete(freq, e, nar);
                 if (t != null) {

@@ -528,6 +528,13 @@ public class Revision {
 //                return null;
 //        }
 
+        //ObjectFloatPair<long[]> s = Stamp.zip(new FasterList(a, b), Param.STAMP_CAPACITY);
+        float overlap = Stamp.overlapFraction(a.stamp(), b.stamp());
+        float overlapFactor = Param.overlapFactor(overlap);
+        if (overlapFactor < Float.MIN_NORMAL)
+            return null;
+
+
         long as, bs;
         if ((as = a.start()) > (bs = b.start())) {
             //swap so that 'a' is left aligned
@@ -607,9 +614,8 @@ public class Revision {
         if (rawTruth == null)
             return null;
 
-        //ObjectFloatPair<long[]> s = Stamp.zip(new FasterList(a, b), Param.STAMP_CAPACITY);
-        float overlap = Stamp.overlapFraction(a.stamp(), b.stamp());
-        float e2 = Param.overlapEvidence(rawTruth.evi(), overlap);
+
+        float e2 = rawTruth.evi() * overlapFactor;
         if (e2 < minEvi)
             return null;
         rawTruth = rawTruth.withEvi(e2);

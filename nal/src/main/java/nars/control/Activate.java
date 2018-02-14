@@ -49,19 +49,18 @@ public class Activate extends PLink<Concept> implements Termed {
         if (ntasklinks == 0)
             return;
 
-
         termlinks.commit(termlinks.forget(linkForgetting));
 
-        activateTemplates(nar, ba);
+        if (!isDeleted())
+            activateTemplates(nar, ba);
 
         int ntermlinks = termlinks.size();
         if (ntermlinks == 0) {
             //if (termlinks.size()==0)
                 return; //TODO this happens with raw products, find other cases too
         }
+
         int termlinksPerTasklink = Math.min(ntermlinks, _termlinksPerTasklink);
-
-
 
 
         int[] ttl = { tasklinks.size() *  termlinksPerTasklink };
@@ -166,11 +165,6 @@ public class Activate extends PLink<Concept> implements Termed {
 //        }
 //    }
 
-
-    @Override
-    public boolean delete() {
-        throw new UnsupportedOperationException();
-    }
 
     @Override
     public Term term() {

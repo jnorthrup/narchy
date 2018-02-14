@@ -371,6 +371,22 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
         l[b] = l[a];
         l[a] = x;
     }
+//
+//    public int indexOfIdentity(E p) {
+//        int i = 0;
+//        for (Object x : list) {
+//
+//            if (x != null) {
+//                if (x == p)
+//                    return i;
+//            } else
+//                break; //first null element at the end of the array indicates the end
+//
+//            i++;
+//        }
+//
+//        return i;
+//    }
 
 
     static class ArrayIterator<E> implements ListIterator<E> {

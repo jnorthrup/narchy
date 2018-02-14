@@ -3,6 +3,7 @@ package nars;
 import jcog.exe.Loop;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatPolarNormalized;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Bitmap2D;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
@@ -170,8 +171,8 @@ abstract public class NAgentX extends NAgent {
 //                        //CoolNQuiet
 //                        (512, THREADS, 64, false))
                 .exe(new PoolMultiExec(
-                        new Focus.DefaultRevaluator(),
-                        //new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
+                        //new Focus.DefaultRevaluator(),
+                        new Focus.AERevaluator(new XoRoShiRo128PlusRandom(1)),
                         1024, 128)
                 )
 
@@ -232,7 +233,7 @@ abstract public class NAgentX extends NAgent {
 
         new Deriver(a.fire(), Derivers.deriver(1, 8,
                 "motivation.nal"
-                //, "goal_analogy.nal"
+                , "goal_analogy.nal"
         ).apply(n).deriver, n) {
 //            @Override
 //            protected long matchTime(Task task) {

@@ -213,7 +213,7 @@ public interface TaskRegion extends HyperRegion, Tasked {
 
         long e = end();
         if (s <= a && e >= b) {
-            return 0;
+            return 0; //contains that interval
         } else {
             long sa = Math.abs(s - a);
             if (a == b) {
@@ -444,9 +444,15 @@ public interface TaskRegion extends HyperRegion, Tasked {
     default boolean intersects(HyperRegion x) {
         if (x == this) return true;
         long start = start();
+
         if (x instanceof TimeRange) {
-            TimeRange t = (TimeRange) x;
-            return start <= t.end && end() >= t.start;
+            if (x instanceof TimeConfRange) {
+                TimeConfRange t = (TimeConfRange) x;
+                return start <= t.end && end() >= t.start;
+            } else {
+                TimeRange t = (TimeRange) x;
+                return start <= t.end && end() >= t.start;
+            }
         } else {
             TaskRegion t = (TaskRegion) x;
             return start <= t.end() &&
@@ -494,10 +500,16 @@ public interface TaskRegion extends HyperRegion, Tasked {
         long s = start();
         return (s == ETERNAL) || (start <= end() && end >= s);
     }
+    default boolean intersectsConf(float cMin, float cMax) {
+        return (cMin <= confMax() && cMax >= confMin());
+    }
 
     default boolean contains(long start, long end) {
         long s = start();
         return (s == ETERNAL) || (start <= s && end >= end());
+    }
+    default boolean containsConf(float cMin, float cMax) {
+        return (cMin <= confMin() && cMax >= confMax());
     }
 
     default float freqMin() {

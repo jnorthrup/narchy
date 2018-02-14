@@ -438,7 +438,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         if (capacity == 0)
             return null;
 
-        commitIfPressured();
+//        commitIfPressured();
 
 
         X key = key(incoming);

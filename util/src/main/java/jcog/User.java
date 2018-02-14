@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Topic;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StoredField;
@@ -13,6 +12,7 @@ import org.apache.lucene.index.*;
 import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.store.NRTCachingDirectory;
 import org.apache.lucene.store.RAMDirectory;
 import org.apache.lucene.util.BytesRef;
 import org.jetbrains.annotations.Nullable;
@@ -48,7 +48,7 @@ public class User {
     private final Directory d;
 
     private IndexWriter iw;
-    final StandardAnalyzer analyzer = new StandardAnalyzer();
+    //final StandardAnalyzer analyzer = new StandardAnalyzer();
 
     public synchronized static User the() {
         if (user == null)
@@ -61,7 +61,9 @@ public class User {
      */
     public User() {
 
-        d = new RAMDirectory();
+
+        RAMDirectory base = new RAMDirectory();
+        d = nrt(base);
 
         init();
     }
@@ -77,7 +79,7 @@ public class User {
                 logger.warn("load {}", dir);
             }
 
-            d = FSDirectory.open(Paths.get(dir.toAbsolutePath().toString()));
+            d = nrt(FSDirectory.open(Paths.get(dir.toAbsolutePath().toString())));
 
 
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -94,6 +96,19 @@ public class User {
 
         init();
     }
+
+    /**
+     * http://lucene.apache.org/core/7_2_1/core/org/apache/lucene/store/NRTCachingDirectory.html
+     * @param base
+     * @return
+     */
+    static NRTCachingDirectory nrt(Directory base) {
+        //This will cache all newly flushed segments, all merges whose expected segment size is <= 5 MB, unless the net cached bytes exceeds 60 MB
+        // at which point all writes will not be cached (until the net bytes falls below 60 MB).
+        return new NRTCachingDirectory(base, 5.0, 60.0);
+    }
+
+
 
     private void init() {
 

@@ -37,8 +37,13 @@ public class BeliefActionConcept extends ActionConcept {
     @Override
     public Stream<ITask> update(long now, int dur, NAR nar) {
 
-        long nowStart = now;
-        long nowEnd   = now + dur;
+        long nowStart =
+                //now;
+                now - dur/2;
+        long nowEnd =
+                //now + dur;
+                now + dur/2;
+
         Truth belief = this.beliefs().truth(nowStart, nowEnd, nar);
 
 //        if (nar.random().nextFloat() < curiosity) {

@@ -254,10 +254,10 @@ public class HijackMemoize<X, Y> extends PriorityHijackBag<X, HijackMemoize.Comp
         //pressurize disabled
     }
 
-    @Override
-    public void commitIfPressured() {
-        //disabled
-    }
+//    @Override
+//    public void commitIfPressured() {
+//        //disabled
+//    }
 
     @Override
     public float depressurize() {

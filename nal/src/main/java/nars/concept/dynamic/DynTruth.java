@@ -15,6 +15,7 @@ import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
+import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -95,9 +96,6 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         return s;
     }
 
-
-
-
     @Deprecated public static Stamp stamp(TaskRegion x) {
         if (x instanceof Task)
             return ((Task) x);
@@ -110,17 +108,22 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     @Nullable
     public Truth truth(Term superterm, DynamicTruthModel m, @Nullable Consumer<NALTask> withBuiltTask, boolean beliefOrGoal, NAR nar) {
 
+
         Truth t = m.truth(this, nar);
         if (t == null)
             return null;
 
-        float conf = t.conf();
 
-        float evi = c2wSafe(conf);
+        float evi = t.evi();
         float eviMin = c2wSafe(nar.confMin.floatValue());
         if (evi < eviMin)
             return null;
 
+        //TODO compute max valid overlap to terminate the zip early
+        ObjectFloatPair<long[]> ss = Stamp.zip(evidence(), Param.STAMP_CAPACITY);
+        evi = evi * Param.overlapFactor(ss.getTwo());
+        if (evi < eviMin)
+            return null;
 
         float freq = t.freq();
 
@@ -173,12 +176,6 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         }
 
 
-        //TODO compute max valid overlap to terminate the zip early
-        ObjectFloatPair<long[]> ss = Stamp.zip(evidence(), Param.STAMP_CAPACITY);
-        evi = Param.overlapEvidence(evi, ss.getTwo());
-        if (evi < eviMin)
-            return null;
-
         Truth tr = Truth.theDiscrete(f, evi, nar);
         if (tr == null)
             return null;
@@ -217,11 +214,31 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         return tr;
     }
 
+    @Override public @Nullable Task task() {
+        throw new TODO();
+    }
 
+
+    final LongHashSet evi = new LongHashSet();
 
     @Override
-    public @Nullable Task task() {
-        throw new TODO();
+    public boolean add(TaskRegion newItem) {
+        super.add(newItem);
+        if (newItem instanceof Task)
+            evi.addAll( ((Task)newItem).stamp() );
+        return true;
+    }
+
+    public boolean filterOverlap(Task task) {
+        if (!evi.isEmpty()) {
+
+            long[] s = task.stamp();
+            for (long x : s) {
+                if (evi.contains(x))
+                    return false; //overlap
+            }
+        }
+        return true;
     }
 
     private static class DynTruthTask extends NALTask {

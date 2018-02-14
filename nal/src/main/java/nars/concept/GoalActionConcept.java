@@ -55,12 +55,12 @@ public class GoalActionConcept extends ActionConcept {
 
 
         long pStart =
-                now;
-                //now - dur / 2;
+                //now;
+                now - dur / 2;
         long pEnd =
                 //now;
-                //now + dur / 2;
-                now + dur;
+                now + dur / 2;
+                //now + dur;
 
 
         float cur = curiosity.floatValue();

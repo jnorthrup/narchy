@@ -42,7 +42,7 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
     }
 
     @Override
-    public boolean add(Task input, TaskConcept concept, NAR nar) {
+    public boolean add(final Task input, TaskConcept concept, NAR nar) {
 
         if (Param.FILTER_DYNAMIC_MATCHES) {
             if (!input.isInput()) {
@@ -75,7 +75,7 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
         DynTruth yy = truth(start, end, template, nar);
         if (yy != null) {
             Task[] tt = new Task[1];
-            yy.truth(term, model, (t) -> tt[0] = t, beliefOrGoal, nar);
+            yy.truth(term, model, t -> tt[0] = t, beliefOrGoal, nar);
             return tt[0];
         } else {
             return null;
@@ -86,13 +86,14 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
     public Truth truth(long start, long end, NAR nar) {
         //DynTruth d = truth(start, end, null, nar);
         DynTruth d = model.eval(term, beliefOrGoal, start, end, nar);
-        if (d == null)
+        if (d == null) {
             return null;
+        } else {
+            Truth tr = d.truth(term, model, null, beliefOrGoal, nar);
 
-        Truth tr = d.truth(term, model, null, beliefOrGoal, nar);
-
-        Truth st = super.truth(start, end, nar);
-        return tr!=null ? Truth.maxConf(tr, st) : st;
+            Truth st = super.truth(start, end, nar);
+            return tr != null ? Truth.maxConf(tr, st) : st;
+        }
     }
 
 //    /** prepare a term, if necessary, for use as template  */

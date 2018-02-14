@@ -13,7 +13,7 @@ import nars.concept.builder.DefaultConceptBuilder;
 import nars.task.Tasked;
 import nars.task.TruthPolation;
 import nars.term.atom.Atom;
-import nars.truth.PreciseTruth;
+import nars.truth.Truth;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 
@@ -429,44 +429,11 @@ public abstract class Param {
     }
 
     @Nullable
-    public static PreciseTruth truth(@Nullable Task topEternal, long start, long end, int dur, Iterable<? extends Tasked> temporals) {
-
-        assert (dur > 0);
-
-        TruthPolation.TruthPolationBasic t =
-                //new TruthPolation.TruthPolationBasic(start, end, dur);
-                new TruthPolation.TruthPolationBasic(start, end, dur, temporals, topEternal != null);
-        //new TruthPolation.TruthPolationConf(start, end, dur);
-        //new TruthPolation.TruthPolationConf(start, end, dur);
-        //new TruthPolation.TruthPolationGreedy(start, end, dur, ThreadLocalRandom.current());
-        //..SoftMax..
-        //new TruthPolation.TruthPolationRoulette(start, end, dur, ThreadLocalRandom.current());
-        //new TruthPolationWithVariance(when, dur);
+    public static Truth truth(@Nullable Task topEternal, long start, long end, int dur, Iterable<? extends Tasked> temporals) {
 
 
-        // Contribution of each task's truth
-        // use forEach instance of the iterator(), since HijackBag forEach should be cheaper
-        temporals.forEach(t);
+        return new TruthPolation(start, end, dur, temporals).get(topEternal);
 
-        float tempEvi = t.eviSum;
-        boolean someEvi = tempEvi > 0f;
-        if (topEternal != null) {
-            if (!someEvi) {
-                return new PreciseTruth(topEternal.truth()); //eternal the only authority
-            } else {
-
-                //long totalSpan = Math.max(1, t.spanEnd - t.spanStart);
-                long totalCovered = Math.max(1, t.rangeSum); //estimate
-                float temporalDensity = ((float) totalCovered) / Math.max(1, end - start);
-                float eviDecay = 1 / ((1 + tempEvi * temporalDensity));
-
-                float eteEvi = topEternal.evi();
-
-                t.accept(topEternal.freq(), eteEvi * eviDecay);
-            }
-        }
-
-        return !someEvi ? null : t.truth();
     }
 
 
@@ -577,11 +544,11 @@ public abstract class Param {
     }
 
 
-    public static float overlapEvidence(float evi, float overlap) {
-        return
-                overlap == 0 ? evi : 0; //prevents any overlap
-        //evi * Util.sqr(1f-Util.unitize(overlap));
-        //evi * (1f-overlap);
+    /** returns evidence factor corresponding to the amount of overlap */
+    public static float overlapFactor(float overlap) {
+        return overlap > 0 ? 0 : 1; //prevents any overlap
+        //return Util.sqr(1f-Util.unitize(overlap));
+        //return (1f-overlap);
     }
 
     public static float beliefValue(Task beliefOrGoal) {

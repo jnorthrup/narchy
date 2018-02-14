@@ -179,8 +179,12 @@ public class Derivation extends ProtoDerivation {
         }
 
         @Override
-        protected void merge(Premise existing, Premise next) {
-            existing.priMax(next.pri());
+        protected void mergeInto(Premise existing, Premise next) {
+            float np = next.pri();
+            if (np > existing.pri()) {
+                existing.priMax(np);
+                sort();
+            }
         }
 
         /**

@@ -22,17 +22,6 @@ public class TimeRange implements HyperRegion {
         this.end = e;
         return this;
     }
-
-    @Override
-    public final HyperRegion mbr(HyperRegion r) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public final int dim() {
-        return 3;
-    }
-
     @Override
     public boolean intersects(HyperRegion x) {
         TaskRegion t = (TaskRegion)x;
@@ -47,6 +36,18 @@ public class TimeRange implements HyperRegion {
     }
 
     @Override
+    public final HyperRegion mbr(HyperRegion r) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public final int dim() {
+        return 3;
+    }
+
+
+
+    @Override
     public final double coord(boolean maxOrMin, int dimension) {
         throw new UnsupportedOperationException();
     }
@@ -55,4 +56,6 @@ public class TimeRange implements HyperRegion {
     public final float coordF(boolean maxOrMin, int dimension) {
         throw new UnsupportedOperationException();
     }
+
+
 }

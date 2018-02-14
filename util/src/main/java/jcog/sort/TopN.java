@@ -83,6 +83,10 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
         int r = add(e, rank);
         return r >= 0;
     }
+    
+    protected boolean add(E e, float elementRank) {
+        return add(e, elementRank, rank)!=-1;
+    }
 
     @Override
     protected boolean grows() {

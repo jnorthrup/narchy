@@ -12,7 +12,7 @@ import java.util.function.IntFunction;
  */
 public class TopNUnique<X> extends TopN<X> {
 
-    final Map<X, X> map = new HashMap();
+    final Map<X,X> seen = new HashMap();
 
     protected TopNUnique(FloatFunction<X> rank) {
         super(rank);
@@ -24,39 +24,37 @@ public class TopNUnique<X> extends TopN<X> {
 
     @Override
     public boolean add(X x) {
-        if (map.merge(x, x, (p, n) -> {
-            float rankBefore = rank.floatValueOf(p);
-            merge(p, n);
-            float rankAfter = rank.floatValueOf(p);
-            if (rankAfter != rankBefore) {
-                sort();
-            }
-            return p;
-        }) == x) {
-            return super.add(x);
+        X p = seen.put(x,x);
+        if (p == null) {
+            return addUnique(x);
+        } else if (p!=x) {
+            mergeInto(p, x);
+            return true; //keep
         } else {
-            return false;//duplicate
+            return true; //identical
         }
+    }
 
+    protected boolean addUnique(X x) {
+        return super.add(x);
     }
 
     @Override
     protected void rejectExisting(X x) {
         super.rejectExisting(x);
-        map.remove(x);
     }
 
     @Override
     public void clear() {
         if (size > 0) {
-            map.clear();
+            seen.clear();
             super.clear();
         }
     }
 
     @Override
     public void clear(int newCapacity, IntFunction<X[]> newArray) {
-        map.clear();
+        seen.clear();
         super.clear(newCapacity, newArray);
     }
 
@@ -65,7 +63,7 @@ public class TopNUnique<X> extends TopN<X> {
         Arrays.sort(list, 0, size, (a, b) -> Float.compare(-rank.floatValueOf(a), -rank.floatValueOf(b)));
     }
 
-    protected void merge(X existing, X next) {
-
+    protected void mergeInto(X existing, X next) {
+        //by default this does nothing
     }
 }
