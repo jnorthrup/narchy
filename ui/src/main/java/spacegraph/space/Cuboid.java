@@ -16,7 +16,7 @@ import spacegraph.phys.shape.SimpleBoxShape;
 import spacegraph.phys.shape.SphereShape;
 import spacegraph.render.Draw;
 import spacegraph.render.JoglPhysics;
-import spacegraph.render.JoglSpace;
+import spacegraph.render.JoglWindow;
 
 import java.util.function.Consumer;
 
@@ -211,7 +211,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
     }
 
     @Override
-    public On onUpdate(Consumer<JoglSpace> c) {
+    public On onUpdate(Consumer<JoglWindow> c) {
         //TODO ignored
         return On.Dummy;
     }

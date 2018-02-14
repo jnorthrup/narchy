@@ -12,7 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import static com.jogamp.opengl.GL2ES2.GL_FRAGMENT_SHADER;
-import static spacegraph.SpaceGraph.window;
+import static spacegraph.render.JoglPhysics.window;
 
 /** TODO */
 public class GLSL extends Surface {

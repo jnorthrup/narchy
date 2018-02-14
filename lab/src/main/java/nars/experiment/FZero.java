@@ -18,7 +18,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
-import static spacegraph.SpaceGraph.window;
+import static spacegraph.render.JoglPhysics.window;
 
 /**
  * Created by me on 3/21/17.

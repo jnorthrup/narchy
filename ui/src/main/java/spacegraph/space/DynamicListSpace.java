@@ -2,10 +2,10 @@ package spacegraph.space;
 
 import spacegraph.AbstractSpace;
 import spacegraph.Active;
-import spacegraph.SpaceGraph;
 import spacegraph.Spatial;
 import spacegraph.layout.EdgeDirected;
 import spacegraph.layout.Flatten;
+import spacegraph.render.JoglPhysics;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -17,12 +17,12 @@ import java.util.function.Consumer;
  */
 public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
 
-    private SpaceGraph<X> space;
+    private JoglPhysics<X> space;
     public List<? extends Spatial<X>> active = List.of();
 
 
     @Override
-    public void start(SpaceGraph<X> space) {
+    public void start(JoglPhysics<X> space) {
         this.space = space;
     }
 
@@ -44,7 +44,7 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
     }
 
     @Override
-    protected void update(SpaceGraph<X> s, long dtMS) {
+    public void update(JoglPhysics<X> s, long dtMS) {
 
         List<? extends Spatial<X>> prev = this.active;
 
@@ -72,7 +72,7 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
 
 
     /** displays in a window with default force-directed options */
-    @Deprecated public SpaceGraph show(int w, int h, boolean flat) {
+    @Deprecated public JoglPhysics show(int w, int h, boolean flat) {
 
 
 //                        new SpaceTransform<Term>() {
@@ -95,7 +95,7 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
 
 
         AbstractSpace ss = flat ? with(new Flatten(0.25f, 0.25f)) : this;
-        SpaceGraph s = new SpaceGraph<>(
+        JoglPhysics<X> s = new JoglPhysics<>(
                 ss
         );
 
@@ -107,10 +107,9 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
         //s.ortho(Vis.logConsole(nar, 90, 40, new FloatParam(0f)).opacity(0.25f));
 
         //Vis.conceptsWindow2D
-        s
+
                 //.ortho(logConsole( n, 90, 40, new FloatParam(0f)).opacity(0.25f))
-                .camPos(0, 0, 90)
-                .show(w, h);
+        s.camPos(0, 0, 90).show(w, h);
 
         return s;
 

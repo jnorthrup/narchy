@@ -1,6 +1,7 @@
 package spacegraph;
 
 import jcog.list.FasterList;
+import spacegraph.render.JoglPhysics;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,7 +25,7 @@ abstract public class AbstractSpace<X>  {
         return this;
     }
 
-    public void start(SpaceGraph<X> space) {
+    public void start(JoglPhysics<X> space) {
 
     }
 
@@ -59,7 +60,7 @@ abstract public class AbstractSpace<X>  {
 
 
     /** needs to call update(space) for each active item */
-    protected void update(SpaceGraph<X> s, long dtMS) {
+    public void update(JoglPhysics<X> s, long dtMS) {
 
         List<SpaceTransform<X>> ll = this.transforms;
         for (int i1 = 0, layoutSize = ll.size(); i1 < layoutSize; i1++)

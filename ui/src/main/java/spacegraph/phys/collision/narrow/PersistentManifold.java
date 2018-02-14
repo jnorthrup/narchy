@@ -161,11 +161,11 @@ public class PersistentManifold {
 
 	//private int findContactPoint(ManifoldPoint unUsed, int numUnused, ManifoldPoint pt);
 
-	public Object getBody0() {
+	public final Object getBody0() {
 		return body0;
 	}
 
-	public Object getBody1() {
+	public final Object getBody1() {
 		return body1;
 	}
 

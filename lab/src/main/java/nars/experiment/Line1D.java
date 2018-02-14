@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Math.PI;
 import static nars.Op.BELIEF;
-import static spacegraph.SpaceGraph.window;
+import static spacegraph.render.JoglPhysics.window;
 import static spacegraph.layout.Gridding.*;
 
 /**

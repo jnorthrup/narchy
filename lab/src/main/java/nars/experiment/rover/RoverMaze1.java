@@ -104,7 +104,7 @@ public class RoverMaze1 {
         new SpaceGraph<>(
                 new Maze("x", 20, 20),
                 r
-        ).setGravity(v(0, 0, -5)).show(1000, 1000);
+        );//.setGravity(v(0, 0, -5)).show(1000, 1000);
 
 
     }

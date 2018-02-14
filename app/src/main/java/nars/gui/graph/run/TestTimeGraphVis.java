@@ -3,8 +3,8 @@ package nars.gui.graph.run;
 import jcog.data.graph.MapNodeGraph;
 import nars.$;
 import nars.derive.time.TimeGraph;
-import spacegraph.SpaceGraph;
 import spacegraph.SubOrtho;
+import spacegraph.render.JoglPhysics;
 import spacegraph.space.SpaceWidget;
 import spacegraph.test.SimpleGraph1;
 import spacegraph.widget.meta.AutoSurface;
@@ -42,7 +42,7 @@ public class TestTimeGraphVis extends SimpleGraph1<TimeGraph.Event> {
         TestTimeGraphVis cs = new TestTimeGraphVis();
 
 
-        SpaceGraph sg = cs.show(1400, 1000, true);
+        JoglPhysics sg = cs.show(1400, 1000, true);
 
 
         sg.add(new SubOrtho(grid(

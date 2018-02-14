@@ -31,7 +31,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static nars.$.$safe;
-import static spacegraph.SpaceGraph.window;
+import static spacegraph.render.JoglPhysics.window;
 import static spacegraph.layout.Gridding.col;
 
 /**

@@ -15,7 +15,7 @@ import spacegraph.render.Draw;
 import java.util.List;
 import java.util.Queue;
 
-import static spacegraph.SpaceGraph.window;
+import static spacegraph.render.JoglPhysics.window;
 
 /**
  * a tool for realtime multidimensional data visualization

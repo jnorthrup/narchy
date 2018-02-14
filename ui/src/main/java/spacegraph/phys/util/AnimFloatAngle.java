@@ -1,15 +1,14 @@
 package spacegraph.phys.util;
 
 import org.apache.commons.math3.util.MathUtils;
-import spacegraph.phys.Dynamics;
 
 /**
  * Created by me on 6/25/16.
  */
 public class AnimFloatAngle extends AnimFloat {
 
-    public AnimFloatAngle(float current, Dynamics w, float speed) {
-        super(current, w, speed);
+    public AnimFloatAngle(float current, float speed) {
+        super(current, speed);
     }
 
     @Override

@@ -5,12 +5,12 @@ import nars.$;
 import nars.NAR;
 import nars.control.NARService;
 import nars.control.NARServiceSet;
-import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.layout.Gridding;
+import spacegraph.render.JoglSpace;
 import spacegraph.widget.meter.WebCam;
 
-import static spacegraph.SpaceGraph.window;
+import static spacegraph.render.JoglPhysics.window;
 
 public class NARVideo extends NARServiceSet<NARVideo.Video> {
 
@@ -25,7 +25,7 @@ public class NARVideo extends NARServiceSet<NARVideo.Video> {
         private WebCam c;
         public final Webcam cam;
         Surface surface;
-        private SpaceGraph surfaceWindow = null;
+        private JoglSpace surfaceWindow = null;
 
         Video(NAR nar, Webcam cam) {
             super(null, $.p($.the("video"), $.the(cam.getName())));

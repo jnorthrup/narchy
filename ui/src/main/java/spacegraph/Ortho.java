@@ -15,6 +15,7 @@ import spacegraph.phys.util.AnimVector2f;
 import spacegraph.phys.util.AnimVector3f;
 import spacegraph.phys.util.Animated;
 import spacegraph.render.JoglSpace;
+import spacegraph.render.JoglWindow;
 import spacegraph.widget.windo.Widget;
 
 import java.util.ArrayDeque;
@@ -43,7 +44,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 
 
     public Surface surface;
-    public SpaceGraph window;
+    public JoglSpace window;
     protected final v3 cam;
 
     private short[] buttonsDown;
@@ -100,9 +101,13 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     }
 
     @Override
-    public On onUpdate(Consumer<JoglSpace> c) {
-        return window.onUpdate.on(c);
+    public On onUpdate(Consumer<JoglWindow> c) {
+        return window.onUpdate(c);
     }
+    public On onUpdate(Animated c) {
+        return window.onUpdate(c);
+    }
+
 
     @Override
     public void the(String key, Object added, Runnable onRemove) {
@@ -139,7 +144,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     }
 
 
-    public void start(SpaceGraph s) {
+    public void start(JoglSpace s) {
         this.window = s;
         s.addWindowListener(this);
         this.focused = window.window.hasFocus();
@@ -148,9 +153,9 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 
         surface.start(this);
 
-        s.dyn.addAnimation(scale);
-        s.dyn.addAnimation((Animated) cam);
-        s.dyn.addAnimation(fingerUpdate);
+        onUpdate(scale);
+        onUpdate((Animated)cam);
+        onUpdate(fingerUpdate);
 
         windowResized(null);
     }

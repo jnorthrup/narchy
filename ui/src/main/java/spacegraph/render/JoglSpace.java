@@ -1,675 +1,446 @@
 package spacegraph.render;
 
-import com.jogamp.nativewindow.WindowClosingProtocol;
-import com.jogamp.newt.event.*;
+import com.jogamp.nativewindow.util.Point;
+import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
-import com.jogamp.opengl.*;
-import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
-import com.jogamp.opengl.util.AnimatorBase;
-import jcog.exe.Loop;
-import jcog.list.FastCoWList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLException;
+import com.jogamp.opengl.math.FloatUtil;
+import jcog.list.FasterList;
+import spacegraph.Ortho;
+import spacegraph.Spatial;
+import spacegraph.Surface;
+import spacegraph.ZoomOrtho;
+import spacegraph.input.KeyXYZ;
+import spacegraph.math.v3;
+import spacegraph.phys.util.AnimVector3f;
+import spacegraph.phys.util.Animated;
+import spacegraph.widget.meta.AutoSurface;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.jogamp.opengl.GL.*;
+import static com.jogamp.opengl.GL2ES1.GL_PERSPECTIVE_CORRECTION_HINT;
+import static com.jogamp.opengl.GL2GL3.GL_POLYGON_SMOOTH_HINT;
+import static com.jogamp.opengl.GLES2.GL_MAX;
+import static com.jogamp.opengl.fixedfunc.GLLightingFunc.GL_AMBIENT_AND_DIFFUSE;
+import static com.jogamp.opengl.fixedfunc.GLLightingFunc.GL_COLOR_MATERIAL;
+import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_MODELVIEW;
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
+import static spacegraph.math.v3.v;
+
+abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatial<X>> {
+
+    protected int debug;
 
 
-public abstract class JoglSpace implements GLEventListener, WindowListener {
+    final List<Ortho> orthos = new FasterList<>(1);
 
 
-    final static int RENDER_FPS_IDEAL = 30;
-    final static int UPDATE_FPS_IDEAL = 40;
+    final List<Ortho> preAdd = new FasterList();
 
-    //protected static final MyFPSAnimator a = new MyFPSAnimator(JoglSpace.FPS_IDEAL, FPS_MIN, FPS_IDEAL);
-    protected static final GameAnimatorControl a;
+    protected float aspect;
+    private final float cameraSpeed = 5f;
+    private final float cameraRotateSpeed = 5f;
+    public final v3 camPos;
+    public final v3 camFwd;
+    public final v3 camUp;
+    public float top;
+    public float bottom;
+    float tanFovV;
+    float left;
+    float right;
 
-    private static final Loop u;
-    private final AtomicBoolean ready = new AtomicBoolean(true);
+    public float zNear = 0.5f;
+    public float zFar = 1200;
 
-    static {
-//        GLCapabilitiesImmutable cfg = newDefaultConfig();
-//        sharedDrawable = GLDrawableFactory.getFactory(cfg.getGLProfile()).createDummyAutoDrawable(null, true, cfg, null);
-//        sharedDrawable.display(); // triggers GLContext object creation and native realization.
-//        Draw.init(sharedDrawable.getGL().getGL2());
-        a = new GameAnimatorControl(RENDER_FPS_IDEAL);
-        u = new Loop(UPDATE_FPS_IDEAL) {
-            @Override public boolean next() {
-
-                windows.forEach(JoglSpace::updateIfReady);
-//                windows.forEach(w->{
-//                    w.window.getScreen().getDisplay().getEDTUtil().invoke(true, w::update);
-//                });
-                return true;
-            }
-        };
-
-        //TODO other desktop handlers
-//        Desktop.getDesktop().addAppEventListener(new AppHiddenListener() {
-//            @Override
-//            public void appHidden(AppHiddenEvent e) {
-//                System.err.println("i see you hide the app");
-//            }
-//
-//            @Override
-//            public void appUnhidden(AppHiddenEvent e) {
-//                System.err.println("i see you unhide the app");
-//            }
-//        });
-
-
-    }
-
-    public GLWindow window;
-    protected GL2 gl;
-
-    protected JoglSpace() {
+    public JoglSpace() {
         super();
-        //frameTimeMS = new PeriodMeter(toString(), 8);
-    }
-
-    public void off() {
-        synchronized (this) {
-            if (window != null) {
-                window.destroy();
-                window = null;
-            }
-        }
-    }
-
-    static GLWindow window(JoglSpace j) {
-        return window(config(), j);
-    }
-
-    static GLWindow window(GLCapabilitiesImmutable config, JoglSpace j) {
-
-
-
-        GLWindow w = GLWindow.create(config);
-        w.addGLEventListener(j);
-        w.addWindowListener(j);
-
-        //w.setSharedContext(sharedDrawable.getContext());
-
-
-        return w;
-    }
-
-    static final Logger logger = LoggerFactory.getLogger(JoglSpace.class);
-
-    private static final FastCoWList<JoglSpace> windows = new FastCoWList<>(16, JoglSpace[]::new);
-
-    private static void start(JoglSpace j) {
-
-//        if (!windows.isEmpty()) {
-//        } else {
-//            //a.start();
-//
-//        }
-        GLWindow w = j.window;
-        windows.add(j);
-
-        w.addWindowListener(new WindowAdapter() {
-
-            @Override
-            public void windowDestroyed(WindowEvent e) {
-                if (windows.remove(j)) {
-                    //synchronized (a) {
-                    a.remove(w);
-                }
-//                        boolean nowEmpty = windows.isEmpty();
-//
-//                        if (nowEmpty) {
-//                            a.pause();
-//                            logger.info("PAUSE {}", a);
-//                        }
-//                    }
-//                }
-            }
-        });
-
-        a.add(w);
-    }
-
-
-
-    @Override
-    public final void init(GLAutoDrawable drawable) {
-        synchronized (this) {
-            assert(window == null);
-            this.window = ((GLWindow) drawable);
-        }
-
-        this.gl = drawable.getGL().getGL2();
-
-
-        if (gl.getGLProfile().isHardwareRasterizer()) {
-            gl.setSwapInterval(0); //0=disable vsync
-        } else {
-            gl.setSwapInterval(4); //reduce CPU strain
-        }
-
-        //printHardware();
-
-        Draw.init(gl);
-
-        init(gl);
-    }
-
-
-    abstract protected void init(GL2 gl);
-
-
-    public void printHardware() {
-        //System.err.print("GL Profile: ");
-        //System.err.println(GLProfile.getProfile());
-        System.err.print("GL:");
-        System.err.println(gl);
-        System.err.print("GL_VERSION=");
-        System.err.println(gl.glGetString(GL.GL_VERSION));
-        System.err.print("GL_EXTENSIONS: ");
-        System.err.println(gl.glGetString(GL.GL_EXTENSIONS));
-    }
-
-    static GLCapabilitiesImmutable config() {
-
-
-        GLCapabilities config = new GLCapabilities(
-
-                //GLProfile.getMinimum(true)
-                GLProfile.getDefault()
-                //GLProfile.getMaximum(true)
-
-
-        );
-
-
-
-//        config.setBackgroundOpaque(false);
-//        config.setTransparentRedValue(-1);
-//        config.setTransparentGreenValue(-1);
-//        config.setTransparentBlueValue(-1);
-//        config.setTransparentAlphaValue(-1);
-
-
-//        config.setHardwareAccelerated(true);
-
-
-//        config.setAlphaBits(8);
-//        config.setAccumAlphaBits(8);
-//        config.setAccumRedBits(8);
-//        config.setAccumGreenBits(8);
-//        config.setAccumBlueBits(8);
-        return config;
-    }
-
-
-//    protected World2D getWorld() {
-//        return model != null ? model.getCurrTest().getWorld() : world;
-//    }
-
-
-    public final int getWidth() {
-        return window.getSurfaceWidth();
-
-    }
-
-    public final int getHeight() {
-        return window.getSurfaceHeight();
-    }
-
-
-    @Override
-    public void dispose(GLAutoDrawable arg0) {
-    }
-
-    @Override
-    public void windowResized(WindowEvent windowEvent) {
-
-    }
-
-    @Override
-    public void windowMoved(WindowEvent windowEvent) {
-
-    }
-
-    @Override
-    public void windowDestroyNotify(WindowEvent windowEvent) {
-
+        onUpdate(((Animated) (camPos = new AnimVector3f(0, 0, 5, cameraSpeed))));
+        onUpdate(((Animated) (camFwd = new AnimVector3f(0, 0, -1, cameraRotateSpeed)))); //new AnimVector3f(0,0,1,dyn, 10f);
+        onUpdate(((Animated) (camUp = new AnimVector3f(0, 1, 0, cameraRotateSpeed)))); //new AnimVector3f(0f, 1f, 0f, dyn, 1f);
     }
 
     @Override
     public void windowDestroyed(WindowEvent windowEvent) {
+        super.windowDestroyed(windowEvent);
+        orthos.clear();
+        onUpdate.clear();
+        preAdd.clear();
+    }
+
+
+    public JoglSpace add(Ortho c) {
+        if (window == null) {
+            preAdd.add(c);
+        } else {
+            _add(c);
+        }
+        return this;
+    }
+
+    private void _add(Ortho c) {
+        this.orthos.add(c);
+        c.start(this);
+    }
+
+    @Override
+    protected void init(GL2 gl) {
+
+        initInput();
+        updateWindowInfo();
+
+        for (Ortho f : preAdd)
+            _add(f);
+
+        preAdd.clear();
+
+
+        //gl.glEnable(GL_POINT_SPRITE);
+        //gl.glEnable(GL_POINT_SMOOTH);
+        gl.glEnable(GL_LINE_SMOOTH);
+        //gl.glEnable(GL_POLYGON_SMOOTH); //[Polygon smooth] is not a recommended method for anti-aliasing. Use Multisampling instead.
+        gl.glEnable(GL2.GL_MULTISAMPLE);
+
+//        gl.glShadeModel(
+//            GL_SMOOTH
+//            //GL_FLAT
+//        );
+
+
+        gl.glHint(GL_POLYGON_SMOOTH_HINT,
+                GL_NICEST);
+        //GL_FASTEST);
+        gl.glHint(GL_LINE_SMOOTH_HINT,
+                GL_NICEST);
+        //GL_FASTEST);
+        gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT,
+                GL_NICEST);
+        //GL_FASTEST);
+
+        //https://www.sjbaker.org/steve/omniv/opengl_lighting.html
+        gl.glColorMaterial(GL_FRONT_AND_BACK,
+                GL_AMBIENT_AND_DIFFUSE
+                //GL_DIFFUSE
+        );
+        gl.glEnable(GL_COLOR_MATERIAL);
+        //gl.glEnable(GL_NORMALIZE);
+
+        //gl.glMaterialfv( GL2.GL_FRONT_AND_BACK, GL2.GL_SPECULAR, new float[] { 1, 1, 1, 1 }, 0);
+        //gl.glMaterialfv( GL2.GL_FRONT_AND_BACK, GL2.GL_EMISSION, new float[] { 0, 0, 0, 0 }, 0);
+
+        gl.glEnable(GL_DEPTH_TEST);
+        gl.glDepthFunc(GL_LEQUAL);
+
+        gl.glClearDepth(1.0f);  // Depth Buffer Setup
+        gl.glClearStencil(0);  // Clear The Stencil Buffer To 0
+
+//        gl.glEnable(GL2.GL_TEXTURE_2D); // Enable Texture Mapping
+
+        gl.glClearColor(0.0f, 0.0f, 0.0f, 0f);
+        gl.glClearDepth(1f); // Depth Buffer Setup
+
+        // Quick And Dirty Lighting (Assumes Light0 Is Set Up)
+        //gl.glEnable(GL2.GL_LIGHT0);
+
+        //gl.glEnable(GL2.GL_LIGHTING); // Enable Lighting
+
+
+        //gl.glDisable(GL2.GL_SCISSOR_TEST);
+
+        gl.glEnable(GL2.GL_BLEND);
+//        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//        gl.glBlendEquation(GL2.GL_FUNC_ADD);
+
+
+        gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+        gl.glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
+
+        //loadGLTexture(gl);
+
+//        gleem.start(Vec3f.Y_AXIS, window);
+//        gleem.attach(new DefaultHandleBoxManip(gleem).translate(0, 0, 0));
+        // JAU
+//        gl.glEnable(gl.GL_CULL_FACE);
+//        gl.glCullFace(gl.GL_BACK);
+
+        initLighting();
+
+    }
+
+    protected void initLighting() {
+
+
+    }
+
+    protected void initInput() {
+
+
+        addKeyListener(new KeyXYZ(this));
+
+    }
+
+
+    public void camera(v3 target, float radius) {
+        v3 fwd = v();
+
+        fwd.sub(target, camPos);
+        fwd.normalize();
+        camFwd.set(fwd);
+
+        fwd.scale(radius * 1.25f + zNear * 1.25f);
+        camPos.sub(target, fwd);
 
     }
 
     @Override
-    public void windowGainedFocus(WindowEvent windowEvent) {
+    protected void render(int dtMS) {
+
+        clear();
+
+        updateCamera(dtMS);
+
+        renderVolume(dtMS);
+
+        renderOrthos(dtMS);
+    }
+
+    protected void renderVolume(int dtMS) {
 
     }
 
-    @Override
-    public void windowLostFocus(WindowEvent windowEvent) {
+    protected void renderOrthos(int dtMS) {
+        int facialsSize = orthos.size();
+        if (facialsSize > 0) {
 
-    }
+            ortho();
 
-    @Override
-    public void windowRepaint(WindowUpdateEvent windowUpdateEvent) {
+            gl.glDisable(GL2.GL_DEPTH_TEST);
 
-    }
+            GL2 gl = this.gl;
+            for (int i = 0; i < facialsSize; i++) {
+                orthos.get(i).render(gl, dtMS);
+            }
 
-    abstract protected void update(long dtMS);
-
-    /** dtMS - time transpired since last call (millisecons)
-     * @param dtMS*/
-    abstract protected void render(int dtMS);
-
-    protected long frameLastRenderedMS = System.currentTimeMillis();
-    protected long frameLastUpdateMS = frameLastRenderedMS;
-
-    private void updateIfReady() {
-
-        if (ready.compareAndSet(true,false) && window.isVisible()) {
-
-            long nowMS = System.currentTimeMillis(), dtMS = nowMS - frameLastUpdateMS;
-            this.frameLastUpdateMS= nowMS;
-
-            update(dtMS);
+            gl.glEnable(GL2.GL_DEPTH_TEST);
         }
     }
 
 
-    @Override
-    public final void display(GLAutoDrawable drawable) {
-
-        long nowMS = System.currentTimeMillis(), dtMS = nowMS - frameLastRenderedMS;
-        if (dtMS > Integer.MAX_VALUE) dtMS = Integer.MAX_VALUE;
-        this.frameLastRenderedMS = nowMS;
-
-        render((int)dtMS);
-        ready.set(true);
-
-        //long now = System.currentTimeMillis();
-        //frameTimeMS.hit(now - start);
+    protected void clear() {
+        clearMotionBlur(0.5f);
+        //clearComplete();
 
     }
 
-
-    public GLWindow show(int w, int h) {
-        return show("", w, h);
+    protected void clearComplete() {
+        gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    public GLWindow show(String title, int w, int h, int x, int y) {
+    protected void clearMotionBlur(float rate /* TODO */) {
+//        gl.glClearAccum(0.5f, 0.5f, 0.5f, 1f);
+//        gl.glClearColor(0f, 0f, 0f, 1f);
+//        gl.glClear(GL.GL_DEPTH_BUFFER_BIT | GL.GL_COLOR_BUFFER_BIT);
 
-        if (window != null) {
-            //TODO apply w,h,x,y to the existing window
-            return window;
-        }
+        //if(i == 0)
+        gl.glAccum(GL2.GL_LOAD, 0.5f);
+        //else
+        gl.glAccum(GL2.GL_ACCUM, 0.5f);
 
-        GLWindow g = window(this);
-        g.setTitle(title);
-        g.setDefaultCloseOperation(WindowClosingProtocol.WindowClosingMode.DISPOSE_ON_CLOSE);
-        g.preserveGLStateAtDestroy(false);
-        g.setSize(w, h);
-        if (x != Integer.MIN_VALUE) {
-            g.setPosition(x, y);
-        }
-        g.setVisible(true);
-
-        start(this);
-
-        return this.window = g;
-    }
-
-    public GLWindow show(String title, int w, int h) {
-        return show(title, w, h, Integer.MIN_VALUE, Integer.MIN_VALUE);
-    }
-
-    public void addMouseListenerPost(MouseListener m) {
-        window.addMouseListener(m);
-    }
-    public void addMouseListenerPre(MouseListener m) {
-        window.addMouseListener(0, m);
-    }
-
-    public void addWindowListener(WindowListener m) {
-        window.addWindowListener(m);
-    }
-
-    public void addKeyListener(KeyListener m) {
-        window.addKeyListener(m);
-    }
-
-    public GL2 gl() {
-        return gl;
-    }
-
-
-    /* from: Jake2's */
-    public static class GameAnimatorControl extends AnimatorBase {
-//        final FPSCounterImpl fpsCounter;
-        private final Loop loop;
-
-        //private boolean pauseIssued;
-        //private boolean quitIssued;
-        public boolean isAnimating;
-        private boolean paused = false;
-
-        GameAnimatorControl(float initialFPS) {
-            super();
-
-            setIgnoreExceptions(false);
-            setPrintExceptions(false);
-
-//            fpsCounter = new FPSCounterImpl();
-//            final boolean isARM = Platform.CPUFamily.ARM == Platform.getCPUFamily();
-//            fpsCounter.setUpdateFPSFrames(isARM ? 60 : 4 * 60, System.err);
-            this.loop = new Loop(-1) {
-
-
-                {
-                    setExclusiveContext(animThread);
-                }
-
-                @Override
-                protected void onStart() {
-                    isAnimating = true;
-                }
-
-                @Override
-                public boolean next() {
-
-                    if (!drawablesEmpty && !paused) { // RUN
-                        try {
-                            display();
-                        } catch (final UncaughtAnimatorException dre) {
-                            //quitIssued = true;
-                            dre.printStackTrace();
-                        }
-                    }
-                    /*else if (pauseIssued && !quitIssued) { // PAUSE
-//                        if (DEBUG) {
-//                            System.err.println("FPSAnimator pausing: " + alreadyPaused + ", " + Thread.currentThread() + ": " + toString());
-//                        }
-                        //this.cancel();
-
-//                        if (!alreadyPaused) { // PAUSE
-//                            alreadyPaused = true;
-                        if (exclusiveContext && !drawablesEmpty) {
-                            setDrawablesExclCtxState(false);
-                            try {
-                                display(); // propagate exclusive context -> off!
-                            } catch (final UncaughtAnimatorException dre) {
-                                dre.printStackTrace();
-                                //quitIssued = true;
-//                                    stopIssued = true;
-                            }
-                        }
-//                        if (null == caughtException) {
-//                            synchronized (GameAnimatorControl.this) {
-//                                if (DEBUG) {
-//                                    System.err.println("FPSAnimator pause " + Thread.currentThread() + ": " + toString());
-//                                }
-//                                isAnimating = false;
-//                                GameAnimatorControl.this.notifyAll();
-//                            }
-//                        }
-                    }*/
-                    return true;
-
-                }
-            };
-
-
-//                    if (stopIssued) { // STOP incl. immediate exception handling of 'displayCaught'
-//                        if (DEBUG) {
-//                            System.err.println("FPSAnimator stopping: " + alreadyStopped + ", " + Thread.currentThread() + ": " + toString());
-//                        }
-//                        this.cancel();
+//        i++;
 //
-//                        if (!alreadyStopped) {
-//                            alreadyStopped = true;
-//                            if (exclusiveContext && !drawablesEmpty) {
-//                                setDrawablesExclCtxState(false);
-//                                try {
-//                                    display(); // propagate exclusive context -> off!
-//                                } catch (final UncaughtAnimatorException dre) {
-//                                    if (null == caughtException) {
-//                                        caughtException = dre;
-//                                    } else {
-//                                        System.err.println("FPSAnimator.setExclusiveContextThread: caught: " + dre.getMessage());
-//                                        dre.printStackTrace();
-//                                    }
-//                                }
-//                            }
-//                            boolean flushGLRunnables = false;
-//                            boolean throwCaughtException = false;
-//                            synchronized (FPSAnimator.this) {
-//                                if (DEBUG) {
-//                                    System.err.println("FPSAnimator stop " + Thread.currentThread() + ": " + toString());
-//                                    if (null != caughtException) {
-//                                        System.err.println("Animator caught: " + caughtException.getMessage());
-//                                        caughtException.printStackTrace();
-//                                    }
-//                                }
-//                                isAnimating = false;
-//                                if (null != caughtException) {
-//                                    flushGLRunnables = true;
-//                                    throwCaughtException = !handleUncaughtException(caughtException);
-//                                }
-//                                animThread = null;
-//                                GameAnimatorControl.this.notifyAll();
-//                            }
-//                            if (flushGLRunnables) {
-//                                flushGLRunnables();
-//                            }
-//                            if (throwCaughtException) {
-//                                throw caughtException;
-//                            }
-//                        }
-//
-//                        //if (impl!=null && !drawablesEmpty)
-//                        //  display();
-//                        return true;
-
-
-
-
-            loop.runFPS(initialFPS);
-            setDrawablesExclCtxState(exclusiveContext); // may re-enable exclusive context
-
-        }
-
-        @Override
-        protected String getBaseName(String prefix) {
-            return prefix;
-        }
-
-        @Override
-        public final boolean start() {
-            return false;
-        }
-
-        @Override
-        public final boolean stop() {
-            //quitIssued = true;
-            return true;
-        }
-
-
-        @Override
-        public final boolean pause() {
-//            if( DEBUG ) {
-//                System.err.println("GLCtx Pause Anim: "+Thread.currentThread().getName());
-//                Thread.dumpStack();
-//            }
-            paused = true;
-            return true;
-        }
-
-        @Override
-        public final boolean resume() {
-            paused = false;
-            return true;
-        }
-
-        @Override
-        public final synchronized boolean isStarted() {
-            //return null != window;
-            return true;
-        }
-
-        @Override
-        public final boolean isAnimating() {
-            return isAnimating;
-        }
-
-        @Override
-        public final boolean isPaused() {
-            return paused;
-        }
-
-
-    }
-
-//    private static class MyFPSAnimator extends FPSAnimator {
-//
-//        int idealFPS, minFPS;
-//        float lagTolerancePercentFPS = 0.05f;
-//
-//        public MyFPSAnimator(int idealFPS, int minFPS, int updateEveryNFrames) {
-//            super(idealFPS);
-//
-//            setIgnoreExceptions(true);
-//            setPrintExceptions(false);
-//
-//            this.idealFPS = idealFPS;
-//            this.minFPS = minFPS;
-//
-//            setUpdateFPSFrames(updateEveryNFrames, new PrintStream(new OutputStream() {
-//
-//                @Override
-//                public void write(int b) {
-//                }
-//
-//                long lastUpdate;
-//
-//                @Override
-//                public void flush() {
-//                    long l = getLastFPSUpdateTime();
-//                    if (lastUpdate == l)
-//                        return;
-//                    updateFPS();
-//                    lastUpdate = l;
-//                }
-//
-//            }, true));
-//
+//        if(i >= n) {
+//            i = 0;
+        gl.glAccum(GL2.GL_RETURN, rate);
+        gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
+        //gl.glSwapBuffers();
+//            wait_until_next(timestep);
 //        }
-//
-//
-//        protected void updateFPS() {
-//            //logger.info("{}", MyFPSAnimator.this);
-//
-//            int currentFPS = getFPS();
-//            float lastFPS = getLastFPS();
-//            float lag = currentFPS - lastFPS;
-//
-//            float error = lag / currentFPS;
-//
-//            float nextFPS = Float.NaN;
-//
-//            if (error > lagTolerancePercentFPS) {
-//                if (currentFPS > minFPS) {
-//                    //decrease fps
-//                    nextFPS = Util.lerp(0.1f, currentFPS, minFPS);
-//                }
-//            } else {
-//                if (currentFPS < idealFPS) {
-//                    //increase fps
-//                    nextFPS = Util.lerp(0.1f, currentFPS, idealFPS);
-//                }
-//            }
-//
-//            int inextFPS = Math.max(1, Math.round(nextFPS));
-//            if (nextFPS == nextFPS && inextFPS != currentFPS) {
-//                //stop();
-//                logger.debug("animator rate change from {} to {} fps because currentFPS={} and lastFPS={} ", currentFPS, inextFPS, currentFPS, lastFPS);
-//
-//                Thread x = animThread; //HACK to make it think it's stopped when we just want to change the FPS value ffs!
-//                animThread = null;
-//
-//                setFPS(inextFPS);
-//                animThread = x;
-//
-//                //start();
-//            }
-//
-////            if (logger.isDebugEnabled()) {
-////                if (!meters.isEmpty()) {
-////                    meters.forEach((m, x) -> {
-////                        logger.info("{} {}ms", m, ((JoglPhysics) m).frameTimeMS.mean());
-////                    });
-////                }
-////            }
-//        }
-//
-//
-//    }
+    }
 
-    // See http://www.lighthouse3d.com/opengl/glut/index.php?bmpfontortho
-    protected void ortho() {
-        int w = getWidth();
-        int h = getHeight();
-        gl.glViewport(0, 0, w, h);
+    protected void updateCamera(int dtMS) {
+        perspective();
+    }
+
+    public void perspective() {
+        //        stack.vectors.push();
+//        stack.matrices.push();
+//        stack.quats.push();
+
+        if (gl == null)
+            return;
+
         gl.glMatrixMode(GL_PROJECTION);
         gl.glLoadIdentity();
 
-        //gl.glOrtho(-2.0, 2.0, -2.0, 2.0, -1.5, 1.5);
-        gl.glOrtho(0, w, 0, h, -1.5, 1.5);
+//        System.out.println(camPos + " " + camUp + " " + camPosTarget);
+//        float rele = ele.floatValue() * 0.01745329251994329547f; // rads per deg
+//        float razi = azi.floatValue() * 0.01745329251994329547f; // rads per deg
 
-//        // switch to projection mode
-//        gl.glMatrixMode(gl.GL_PROJECTION);
-//        // save previous matrix which contains the
-//        //settings for the perspective projection
-//        // gl.glPushMatrix();
-//        // reset matrix
-//        gl.glLoadIdentity();
-//        // set a 2D orthographic projection
-//        glu.gluOrtho2D(0f, screenWidth, 0f, screenHeight);
-//        // invert the y axis, down is positive
-//        //gl.glScalef(1f, -1f, 1f);
-//        // mover the origin from the bottom left corner
-//        // to the upper left corner
-//        //gl.glTranslatef(0f, -screenHeight, 0f);
-        gl.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
-        //gl.glLoadIdentity();
+//        QuaternionUtil.setRotation(rot, camUp, razi);
+//        v3 eyePos = v();
+//        VectorUtil.setCoord(eyePos, forwardAxis, -cameraDistance.floatValue());
+//
+//        v3 forward = v(eyePos.x, eyePos.y, eyePos.z);
+//        if (forward.lengthSquared() < ExtraGlobals.FLT_EPSILON) {
+//            forward.set(1f, 0f, 0f);
+//        }
+//
+//        v3 camRight = v();
+//        camRight.cross(camUp, forward);
+//        camRight.normalize();
+//        QuaternionUtil.setRotation(roll, camRight, -rele);
+//
+//
+//        tmpMat1.set(rot);
+//        tmpMat2.set(roll);
+//        tmpMat1.mul(tmpMat2);
+//        tmpMat1.transform(eyePos);
+//
+//        camPos.set(eyePos);
+
+        //gl.glFrustumf(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 10000.0f);
+        //glu.gluPerspective(45, (float) screenWidth / screenHeight, 4, 2000);
+        float aspect = ((float) getWidth()) / getHeight();
+
+        perspective(0, true, 45 * FloatUtil.PI / 180.0f, aspect);
+
+
+//        final v3 camDir = new v3();
+//        camDir.sub(camPosTarget, camPos);
+//        camDir.normalize();
+
+        //System.out.println(camPos + " -> " + camFwd + " x " + camUp);
+
+//        glu.gluLookAt(camPos.x, camPos.y, camPos.z,
+//                camPosTarget.x, camPosTarget.y, camPosTarget.z,
+//                camUp.x, camUp.y, camUp.z);
+        Draw.glu.gluLookAt(camPos.x - camFwd.x, camPos.y - camFwd.y, camPos.z - camFwd.z,
+                camPos.x, camPos.y, camPos.z,
+                camUp.x, camUp.y, camUp.z);
+
+
+        gl.glMatrixMode(GL_MODELVIEW);
+        gl.glLoadIdentity();
+//        stack.vectors.pop();
+//        stack.matrices.pop();
+//        stack.quats.pop();
+    }
+
+
+    public final float[] mat4f = new float[16];
+
+    void perspective(final int m_off, final boolean initM,
+                     final float fovy_rad, final float aspect) throws GLException {
+
+        this.aspect = aspect;
+
+        tanFovV = (float) Math.tan(fovy_rad / 2f);
+
+        top = tanFovV * zNear; // use tangent of half-fov !
+        right = aspect * top;    // aspect * fovhvTan.top * zNear
+        bottom = -top;
+        left = -right;
+
+//        gl.glMultMatrixf(
+//                makeFrustum(matTmp, m_off, initM, left, right, bottom, top, zNear, zFar),
+//                0
+//        );
+
+        //glu.gluPerspective(45, aspect, zNear, zFar);
+        gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45 * FloatUtil.PI / 180.0f, aspect, zNear, zFar), 0);
 
 
     }
 
-//
-//    public void reshape2D(GLAutoDrawable arg0, int arg1, int arg2, int arg3, int arg4) {
-//        float width = getWidth();
-//        float height = getHeight();
-//
-//        GL2 gl2 = arg0.getGL().getGL2();
-//
-//        gl2.glMatrixMode(GL_PROJECTION);
-//        gl2.glLoadIdentity();
-//
-//        // coordinate system origin at lower left with width and height same as the window
-//        GLU glu = new GLU();
-//        glu.gluOrtho2D(0.0f, width, 0.0f, height);
-//
-//
-//        gl2.glMatrixMode(GL_MODELVIEW);
-//        gl2.glLoadIdentity();
-//
-//        gl2.glViewport(0, 0, getWidth(), getHeight());
-//
+    private final AtomicBoolean gettingScreenPointer = new AtomicBoolean(false);
+    public int windowX, windowY;
+
+//    @Override
+//    public void windowGainedFocus(WindowEvent windowEvent) {
+//        updateWindowInfo();
 //    }
+
+    @Override
+    public void windowResized(WindowEvent windowEvent) {
+        updateWindowInfo();
+    }
+
+
+    @Override
+    public void windowMoved(WindowEvent windowEvent) {
+        updateWindowInfo();
+    }
+
+
+    private void updateWindowInfo() {
+        GLWindow rww = window;
+        if (rww == null)
+            return;
+        if (!rww.isRealized() || !rww.isVisible() || !rww.isNativeValid()) {
+            return;
+        }
+
+        if (gettingScreenPointer.compareAndSet(false, true)) {
+
+            window.getScreen().getDisplay().getEDTUtil().invoke(false, () -> {
+                try {
+                    Point p = rww.getLocationOnScreen(new Point());
+                    windowX = p.getX();
+                    windowY = p.getY();
+                } finally {
+                    gettingScreenPointer.set(false);
+                }
+            });
+        }
+    }
+
+    public static JoglSpace window(Surface s, int w, int h) {
+        JoglSpace win = new SpaceGraphFlat(
+                new ZoomOrtho(s)
+        );
+        if (w > 0 && h > 0) {
+
+            win.show(w, h);
+        }
+        return win;
+    }
+
+    @Override
+    public final void reshape(GLAutoDrawable drawable,
+                              int xstart,
+                              int ystart,
+                              int width,
+                              int height) {
+
+        //height = (height == 0) ? 1 : height;
+
+        //updateCamera();
+    }
+
+    @Override
+    public final Iterator<Spatial<X>> iterator() {
+        throw new UnsupportedOperationException("use forEach");
+    }
+
+
+    public static JoglSpace window(Object o, int w, int h) {
+        if (o instanceof JoglSpace) {
+            JoglSpace s = (JoglSpace) o;
+            s.show(w, h);
+            return s;
+        } else if (o instanceof Spatial) {
+            return JoglPhysics.window(((Spatial) o), w, h);
+        } else if (o instanceof Surface) {
+            return JoglSpace.window(((Surface) o), w, h);
+        } else {
+            return JoglSpace.window(new AutoSurface(o), w, h);
+        }
+    }
 
 
 }

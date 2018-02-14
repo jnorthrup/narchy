@@ -2,11 +2,8 @@ package spacegraph.phys.util;
 
 import jcog.Util;
 import org.apache.commons.lang3.mutable.MutableFloat;
-import org.jetbrains.annotations.Nullable;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
-import spacegraph.math.v3;
-import spacegraph.phys.Dynamics;
 
 /**
  * Created by me on 12/3/16.
@@ -18,23 +15,14 @@ public class AnimVector2f extends v2 implements Animated {
     private boolean running = true;
 
     public AnimVector2f(float speed) {
-        this(Float.NaN, Float.NaN, null, speed);
-    }
-
-    public AnimVector2f(v3 current, Dynamics w, float speed) {
-        this(current.x, current.y, w, speed);
+        this(Float.NaN, Float.NaN, speed);
     }
 
     public AnimVector2f(float x, float y, float speed) {
-        this(x, y, null, speed);
-    }
-
-    public AnimVector2f(float x, float y, @Nullable Dynamics w, float speed) {
         super(x, y);
         target.set(this);
         this.speed = new MutableFloat(speed);
-        if (w!=null)
-            w.addAnimation(this);
+
     }
 
     public void stop() {

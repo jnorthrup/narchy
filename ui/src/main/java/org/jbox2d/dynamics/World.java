@@ -926,9 +926,6 @@ public class World {
         return m_allowSleep;
     }
 
-    public void setSleepingAllowed(boolean sleepingAllowed) {
-        m_allowSleep = sleepingAllowed;
-    }
 
     /**
      * Enable/disable warm starting. For testing.

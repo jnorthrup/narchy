@@ -6,9 +6,9 @@ import nars.Narsese;
 import nars.concept.Concept;
 import nars.control.Activate;
 import nars.gui.graph.DynamicConceptSpace;
-import spacegraph.SpaceGraph;
 import spacegraph.SubOrtho;
 import spacegraph.Surface;
+import spacegraph.render.JoglPhysics;
 import spacegraph.widget.console.TextEdit;
 import spacegraph.widget.meta.AutoSurface;
 
@@ -29,7 +29,7 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
     private SimpleConceptGraph1(NAR nar, Iterable<Activate> concepts, int maxNodes, int maxEdgesPerNodeMax) {
         super(nar, concepts, maxNodes, maxEdgesPerNodeMax);
 
-        SpaceGraph sg = show(1400, 1000, false);
+        JoglPhysics sg = show(1400, 1000, false);
 
 
         sg.add(new SubOrtho(grid(
@@ -57,7 +57,7 @@ public class SimpleConceptGraph1 extends DynamicConceptSpace {
     }
 
     @Override
-    protected void update(SpaceGraph<Concept> s, long dtMS) {
+    public void update(JoglPhysics<Concept> s, long dtMS) {
         if (reloadReady.getAndSet(false)) {
 //            active.clear();
             reload();

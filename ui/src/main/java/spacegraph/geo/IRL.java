@@ -5,9 +5,9 @@ import com.jogamp.newt.event.WindowEvent;
 import jcog.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spacegraph.SpaceGraph;
 import spacegraph.SubOrtho;
 import spacegraph.geo.osm.Osm;
+import spacegraph.render.JoglPhysics;
 import spacegraph.test.WidgetTest;
 
 import java.io.ByteArrayInputStream;
@@ -65,7 +65,7 @@ public class IRL {
         IRL i = new IRL(User.the());
         i.load(-80.65, 28.58, -80.60, 28.63);
 
-        SpaceGraph sg = new SpaceGraph(new OsmSpace(i.osm));
+        JoglPhysics sg = new JoglPhysics(new OsmSpace(i.osm));
         sg.show(800, 800);
         sg.addWindowListener(new WindowAdapter() {
             @Override

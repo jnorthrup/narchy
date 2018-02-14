@@ -8,7 +8,7 @@ import spacegraph.Surface;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 
-import static spacegraph.SpaceGraph.window;
+import static spacegraph.render.JoglPhysics.window;
 
 public class BmpFont {
 

@@ -1,14 +1,14 @@
 package spacegraph.input;
 
-import spacegraph.SpaceGraph;
 import spacegraph.math.v3;
+import spacegraph.render.JoglSpace;
 
 import static spacegraph.math.v3.v;
 
 /** simple XYZ control using keys (ex: numeric keypad) */
 public class KeyXYZ extends KeyXY {
 
-    public KeyXYZ(SpaceGraph g) {
+    public KeyXYZ(JoglSpace g) {
         super(g);
 
 

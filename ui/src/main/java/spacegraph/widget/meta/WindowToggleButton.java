@@ -7,6 +7,7 @@ import com.jogamp.newt.opengl.GLWindow;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import spacegraph.SpaceGraph;
 import spacegraph.input.Finger;
+import spacegraph.render.JoglSpace;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.ToggleButton;
 
@@ -22,7 +23,7 @@ public class WindowToggleButton extends CheckBox implements WindowListener, Obje
 
     int width = 600, height = 300;
 
-    SpaceGraph space;
+    JoglSpace space;
 
     public WindowToggleButton(String text, Object o) {
         this(text, () -> o);
@@ -43,7 +44,7 @@ public class WindowToggleButton extends CheckBox implements WindowListener, Obje
     @Override
     public void value(ToggleButton t, boolean enabled) {
         if (enabled) {
-            SpaceGraph space;
+            JoglSpace space;
             synchronized (spacer) {
                 space = this.space;
                 if (space == null) {

@@ -10,10 +10,6 @@ public class SpaceGraphFlat extends SpaceGraph {
         add(o);
     }
 
-    @Override
-    protected void initLighting() {
-
-    }
 
 //    @Override
 //    public void init(GL2 gl) {

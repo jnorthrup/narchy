@@ -29,12 +29,12 @@ import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.SpaceGraph;
 import spacegraph.SubOrtho;
 import spacegraph.Surface;
 import spacegraph.layout.AspectAlign;
 import spacegraph.layout.EdgeDirected;
 import spacegraph.layout.Splitting;
+import spacegraph.render.JoglPhysics;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.ConsoleTerminal;
 import spacegraph.widget.meta.AutoSurface;
@@ -53,9 +53,9 @@ import java.util.function.Supplier;
 import static nars.$.$;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
-import static spacegraph.SpaceGraph.window;
 import static spacegraph.layout.Gridding.col;
 import static spacegraph.layout.Gridding.grid;
+import static spacegraph.render.JoglPhysics.window;
 
 /**
  * Extensions to NAgent interface:
@@ -587,7 +587,7 @@ abstract public class NAgentX extends NAgent {
 
                     new WindowToggleButton("concept graph", () -> {
                         DynamicConceptSpace sg;
-                        SpaceGraph s = new SpaceGraph<>(
+                        JoglPhysics s = new JoglPhysics<>(
                                 sg = new DynamicConceptSpace(nar, ()->nar.exe.active().iterator(),
                                         128, 16)
                         );

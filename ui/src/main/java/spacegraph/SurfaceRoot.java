@@ -2,7 +2,7 @@ package spacegraph;
 
 import jcog.event.On;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.render.JoglSpace;
+import spacegraph.render.JoglWindow;
 
 import java.util.function.Consumer;
 
@@ -44,5 +44,5 @@ public interface SurfaceRoot extends SurfaceBase {
 
 
     /** attaches an event handler for updates (less frequent than render cycle) */
-    On onUpdate(Consumer<JoglSpace> c);
+    On onUpdate(Consumer<JoglWindow> c);
 }

@@ -23,15 +23,12 @@
 
 package spacegraph.render;
 
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.KeyListener;
-import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.GLException;
-import com.jogamp.opengl.math.FloatUtil;
+import com.jogamp.newt.event.WindowEvent;
+import jcog.list.FasterList;
+import spacegraph.AbstractSpace;
 import spacegraph.Spatial;
-import spacegraph.math.v3;
+import spacegraph.input.FPSLook;
+import spacegraph.input.OrbMouse;
 import spacegraph.phys.Dynamic;
 import spacegraph.phys.Dynamics;
 import spacegraph.phys.collision.DefaultCollisionConfiguration;
@@ -39,22 +36,25 @@ import spacegraph.phys.collision.DefaultIntersecter;
 import spacegraph.phys.collision.broad.Broadphase;
 import spacegraph.phys.collision.broad.DbvtBroadphase;
 import spacegraph.phys.collision.broad.Intersecter;
+import spacegraph.phys.constraint.BroadConstraint;
 import spacegraph.phys.math.DebugDrawModes;
 import spacegraph.phys.math.Transform;
 import spacegraph.phys.shape.CollisionShape;
-import spacegraph.phys.util.AnimVector3f;
+import spacegraph.space.DynamicListSpace;
+
+import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.function.Consumer;
 
 import static com.jogamp.opengl.GL2.*;
-import static spacegraph.math.v3.v;
 
 /**
  * @author jezek2
  */
 
-abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, Iterable<Spatial<X>> {
+public class JoglPhysics<X> extends JoglSpace<X> {
 
-    private final float cameraSpeed = 5f;
-    private final float cameraRotateSpeed = 5f;
     private boolean simulating = true;
 
     /** 0 for variable timing */
@@ -62,23 +62,10 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
             0;
             //4;
 
-    protected float aspect;
 
 
 
 
-
-    public void camera(v3 target, float radius) {
-        v3 fwd = v();
-
-        fwd.sub(target, camPos);
-        fwd.normalize();
-        camFwd.set(fwd);
-
-        fwd.scale(radius * 1.25f + zNear * 1.25f);
-        camPos.sub(target, fwd);
-
-    }
 
 
 
@@ -91,21 +78,27 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
     // this is the most important class
     public final Dynamics<X> dyn;
 
+    public static JoglPhysics window(Spatial s, int w, int h) {
+        return window(w, h, s);
+    }
 
-    protected int debug;
+    public static JoglPhysics window(int w, int h, Spatial... s) {
+        JoglPhysics win = new JoglPhysics(s);
+        win.show(w, h);
+        return win;
+    }
+
+    public JoglPhysics<X> camPos(float x, float y, float z) {
+        camPos.set(x, y, z);
+        return this;
+    }
 
 
-    public final v3 camPos;
-    public final v3 camFwd;
-    public final v3 camUp;
-    public float top;
-    public float bottom;
-    float tanFovV;
-    float left;
-    float right;
-
-    public float zNear = 0.5f;
-    public float zFar = 1200;
+    @Override
+    public void windowDestroyed(WindowEvent windowEvent) {
+        super.windowDestroyed(windowEvent);
+        inputs.clear();
+    }
 
     protected JoglPhysics() {
         super();
@@ -127,100 +120,33 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
 
         dyn = new Dynamics<>(dispatcher, broadphase, this);
 
-//        cameraDistance = new AnimFloat(55f, dyn, 4f);
-//        azi = new AnimFloatAngle(-180, dyn, 30f);
-//        ele = new AnimFloatAngle(20, dyn, 30f);
-
-        camPos = new AnimVector3f(0, 0, 5, dyn, cameraSpeed);
-        camFwd = new AnimVector3f(0, 0, -1, dyn, cameraRotateSpeed); //new AnimVector3f(0,0,1,dyn, 10f);
-        camUp = new AnimVector3f(0, 1, 0, dyn, cameraRotateSpeed); //new AnimVector3f(0f, 1f, 0f, dyn, 1f);
-
-
     }
 
+    public JoglPhysics(AbstractSpace<X>... cc) {
+        this();
+
+        for (AbstractSpace c : cc)
+            add(c);
+    }
+
+    public JoglPhysics(Spatial<X>... cc) {
+        this();
+
+        add(cc);
+    }
 
     @Override
-    protected void init(GL2 gl2) {
+    protected void initInput() {
 
-        window.addKeyListener(this);
+        //default 3D input controls
+        addMouseListenerPost(new FPSLook(this));
+        addMouseListenerPost(new OrbMouse(this));
 
-        //gl.glEnable(GL_POINT_SPRITE);
-        //gl.glEnable(GL_POINT_SMOOTH);
-        gl.glEnable(GL_LINE_SMOOTH);
-        //gl.glEnable(GL_POLYGON_SMOOTH); //[Polygon smooth] is not a recommended method for anti-aliasing. Use Multisampling instead.
-        gl.glEnable(GL2.GL_MULTISAMPLE);
-
-//        gl.glShadeModel(
-//            GL_SMOOTH
-//            //GL_FLAT
-//        );
-
-
-
-        gl.glHint(GL_POLYGON_SMOOTH_HINT,
-                GL_NICEST);
-                //GL_FASTEST);
-        gl.glHint(GL_LINE_SMOOTH_HINT,
-                GL_NICEST);
-                //GL_FASTEST);
-        gl.glHint(GL_PERSPECTIVE_CORRECTION_HINT,
-                GL_NICEST);
-                //GL_FASTEST);
-
-        //https://www.sjbaker.org/steve/omniv/opengl_lighting.html
-        gl.glColorMaterial(GL_FRONT_AND_BACK,
-                GL_AMBIENT_AND_DIFFUSE
-                //GL_DIFFUSE
-        );
-        gl.glEnable(GL_COLOR_MATERIAL);
-        //gl.glEnable(GL_NORMALIZE);
-
-        //gl.glMaterialfv( GL2.GL_FRONT_AND_BACK, GL2.GL_SPECULAR, new float[] { 1, 1, 1, 1 }, 0);
-        //gl.glMaterialfv( GL2.GL_FRONT_AND_BACK, GL2.GL_EMISSION, new float[] { 0, 0, 0, 0 }, 0);
-
-        gl.glEnable(GL_DEPTH_TEST);
-        gl.glDepthFunc(GL_LEQUAL);
-
-        gl.glClearDepth(1.0f);  // Depth Buffer Setup
-        gl.glClearStencil(0);  // Clear The Stencil Buffer To 0
-
-//        gl.glEnable(GL2.GL_TEXTURE_2D); // Enable Texture Mapping
-
-        gl.glClearColor(0.0f, 0.0f, 0.0f, 0f);
-        gl.glClearDepth(1f); // Depth Buffer Setup
-
-        // Quick And Dirty Lighting (Assumes Light0 Is Set Up)
-        //gl.glEnable(GL2.GL_LIGHT0);
-
-        //gl.glEnable(GL2.GL_LIGHTING); // Enable Lighting
-
-
-        //gl.glDisable(GL2.GL_SCISSOR_TEST);
-
-        gl.glEnable(GL2.GL_BLEND);
-//        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//        gl.glBlendEquation(GL2.GL_FUNC_ADD);
-
-
-        gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
-        gl.glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
-
-        //loadGLTexture(gl);
-
-//        gleem.start(Vec3f.Y_AXIS, window);
-//        gleem.attach(new DefaultHandleBoxManip(gleem).translate(0, 0, 0));
-        // JAU
-//        gl.glEnable(gl.GL_CULL_FACE);
-//        gl.glCullFace(gl.GL_BACK);
-
-
-
-
-
-        initLighting();
+        super.initInput();
     }
 
-    protected void initLighting() {
+
+    @Override protected void initLighting() {
         gl.glLightModelf(GL_LIGHT_MODEL_AMBIENT, 0.6f);
 
         final float a = 0.7f;
@@ -259,21 +185,22 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
     }
 
 
+
+
+
+    final Queue<Spatial> toRemove = new ArrayBlockingQueue(1024);
+    final List<AbstractSpace<X>> inputs = new FasterList<>(1);
     @Override
-    public final void reshape(GLAutoDrawable drawable,
-                              int xstart,
-                              int ystart,
-                              int width,
-                              int height) {
+    protected void update(long dtMS) {
 
-        //height = (height == 0) ? 1 : height;
+        toRemove.forEach(x -> x.delete(dyn));
+        toRemove.clear();
 
-        //updateCamera();
-    }
 
-    //final AtomicBoolean busy = new AtomicBoolean(false);
+        List<AbstractSpace<X>> ii = this.inputs;
+        for (int i = 0, inputs1Size = ii.size(); i < inputs1Size; i++)
+            ii.get(i).update(this, dtMS);
 
-    @Override protected void update(long dtMS) {
 
 
         if (simulating) {
@@ -288,14 +215,7 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
 
     }
 
-
-
-    @Override protected void render(int dtMS) {
-
-        clear();
-
-        updateCamera(dtMS);
-
+    protected void renderVolume(int dtMS) {
         forEach(s -> s.renderAbsolute(gl, dtMS));
 
         forEach(s -> s.forEachBody(body -> {
@@ -310,157 +230,38 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
 
         }));
     }
+    public DynamicListSpace<X> add(Spatial<X>... s) {
+        DynamicListSpace<X> l = new DynamicListSpace<X>() {
 
+            final List<Spatial<X>> ls = new FasterList().with(s);
 
-    protected void clear() {
-        clearMotionBlur(0.5f);
-        //clearComplete();
-
+            @Override
+            protected List<? extends Spatial<X>> get() {
+                return ls;
+            }
+        };
+        add(l);
+        return l;
     }
 
-    protected void clearComplete() {
-        gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    public JoglPhysics<X> add(AbstractSpace<X> c) {
+        if (inputs.add(c))
+            c.start(this);
+        return this;
     }
 
-    protected void clearMotionBlur(float rate /* TODO */) {
-//        gl.glClearAccum(0.5f, 0.5f, 0.5f, 1f);
-//        gl.glClearColor(0f, 0f, 0f, 1f);
-//        gl.glClear(GL.GL_DEPTH_BUFFER_BIT | GL.GL_COLOR_BUFFER_BIT);
-
-        //if(i == 0)
-        gl.glAccum(GL2.GL_LOAD, 0.5f);
-        //else
-        gl.glAccum(GL2.GL_ACCUM, 0.5f);
-
-//        i++;
-//
-//        if(i >= n) {
-//            i = 0;
-        gl.glAccum(GL2.GL_RETURN, rate);
-        gl.glClear(GL.GL_DEPTH_BUFFER_BIT);
-        //gl.glSwapBuffers();
-//            wait_until_next(timestep);
-//        }
+    public void removeSpace(AbstractSpace<X> c) {
+        if (inputs.remove(c)) {
+            c.stop();
+        }
     }
 
 
-
-    /**
-     * in seconds
-     */
-    public float getLastFrameTime() {
-        return System.currentTimeMillis() - frameLastUpdateMS;
+    public void remove(Spatial<X> y) {
+        toRemove.add(y);
     }
 
 
-    @Override
-    public void keyPressed(KeyEvent e) {
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-
-    }
-
-//    final Matrix3f tmpMat1 = new Matrix3f(); //stack.matrices.get();
-//    final Matrix3f tmpMat2 = new Matrix3f(); //stack.matrices.get();
-//    final Quat4f roll = new Quat4f(); //stack.quats.get();
-//    final Quat4f rot = new Quat4f(); //stack.quats.get();
-
-    protected void updateCamera(int dtMS) {
-        perspective();
-    }
-
-    public void perspective() {
-        //        stack.vectors.push();
-//        stack.matrices.push();
-//        stack.quats.push();
-
-        if(gl == null)
-            return;
-
-        gl.glMatrixMode(GL_PROJECTION);
-        gl.glLoadIdentity();
-
-//        System.out.println(camPos + " " + camUp + " " + camPosTarget);
-//        float rele = ele.floatValue() * 0.01745329251994329547f; // rads per deg
-//        float razi = azi.floatValue() * 0.01745329251994329547f; // rads per deg
-
-//        QuaternionUtil.setRotation(rot, camUp, razi);
-//        v3 eyePos = v();
-//        VectorUtil.setCoord(eyePos, forwardAxis, -cameraDistance.floatValue());
-//
-//        v3 forward = v(eyePos.x, eyePos.y, eyePos.z);
-//        if (forward.lengthSquared() < ExtraGlobals.FLT_EPSILON) {
-//            forward.set(1f, 0f, 0f);
-//        }
-//
-//        v3 camRight = v();
-//        camRight.cross(camUp, forward);
-//        camRight.normalize();
-//        QuaternionUtil.setRotation(roll, camRight, -rele);
-//
-//
-//        tmpMat1.set(rot);
-//        tmpMat2.set(roll);
-//        tmpMat1.mul(tmpMat2);
-//        tmpMat1.transform(eyePos);
-//
-//        camPos.set(eyePos);
-
-        //gl.glFrustumf(-1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 10000.0f);
-        //glu.gluPerspective(45, (float) screenWidth / screenHeight, 4, 2000);
-        float aspect = ((float) getWidth()) / getHeight();
-
-        perspective(0, true, 45 * FloatUtil.PI / 180.0f, aspect);
-
-
-//        final v3 camDir = new v3();
-//        camDir.sub(camPosTarget, camPos);
-//        camDir.normalize();
-
-        //System.out.println(camPos + " -> " + camFwd + " x " + camUp);
-
-//        glu.gluLookAt(camPos.x, camPos.y, camPos.z,
-//                camPosTarget.x, camPosTarget.y, camPosTarget.z,
-//                camUp.x, camUp.y, camUp.z);
-        Draw.glu.gluLookAt(camPos.x - camFwd.x, camPos.y - camFwd.y, camPos.z - camFwd.z,
-                camPos.x, camPos.y, camPos.z,
-                camUp.x, camUp.y, camUp.z);
-
-
-        gl.glMatrixMode(GL_MODELVIEW);
-        gl.glLoadIdentity();
-//        stack.vectors.pop();
-//        stack.matrices.pop();
-//        stack.quats.pop();
-    }
-
-
-    public final float[] mat4f = new float[16];
-
-    void perspective(final int m_off, final boolean initM,
-                     final float fovy_rad, final float aspect) throws GLException {
-
-        this.aspect = aspect;
-
-        tanFovV = (float) Math.tan(fovy_rad / 2f);
-
-        top = tanFovV * zNear; // use tangent of half-fov !
-        right = aspect * top;    // aspect * fovhvTan.top * zNear
-        bottom = -top;
-        left = -right;
-
-//        gl.glMultMatrixf(
-//                makeFrustum(matTmp, m_off, initM, left, right, bottom, top, zNear, zFar),
-//                0
-//        );
-
-        //glu.gluPerspective(45, aspect, zNear, zFar);
-        gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45 * FloatUtil.PI / 180.0f, aspect, zNear, zFar), 0);
-
-
-    }
 
 
 //    public void keyboardCallback(char key) {
@@ -598,6 +399,21 @@ abstract public class JoglPhysics<X> extends JoglSpace implements KeyListener, I
 //            getDyn().debugDrawer.setDebugMode(mode);
 //        }
     }
+
+    @Deprecated
+    public JoglPhysics<X> with(BroadConstraint b) {
+        dyn.addBroadConstraint(b);
+        return this;
+    }
+
+    @Override
+    final public void forEach(Consumer<? super Spatial<X>> each) {
+
+        for (int i = 0, inputsSize = inputs.size(); i < inputsSize; i++) {
+            inputs.get(i).forEach(each);
+        }
+    }
+
 
 //    public void specialKeyboard(int keycode) {
 //        switch (keycode) {

@@ -40,7 +40,6 @@ import spacegraph.phys.shape.SphereShape;
 import spacegraph.phys.solve.Constrainer;
 import spacegraph.phys.solve.ContactSolverInfo;
 import spacegraph.phys.solve.SequentialImpulseConstrainer;
-import spacegraph.phys.util.Animated;
 import spacegraph.phys.util.OArrayList;
 
 import java.util.Collection;
@@ -60,35 +59,28 @@ import static spacegraph.phys.Dynamic.ifDynamic;
  */
 public class Dynamics<X> extends Collisions<X> {
 
-    private static final Comparator<TypedConstraint> sortConstraintOnIslandPredicate = (lhs, rhs) -> {
-        return (lhs == rhs) ? 0
-                :
-                ((getConstraintIslandId(lhs) < getConstraintIslandId(rhs)) ? -1 : +1);
-    };
-
-    protected final Constrainer constrainer;
-    protected final Islands islands;
-    protected final List<TypedConstraint> constraints = new FasterList();
+    final Constrainer constrainer;
+    final Islands islands;
+    final List<TypedConstraint> constraints = new FasterList();
     @Nullable protected v3 gravity;
 
 
     final Flip<List<Collidable>> coll = new Flip(FasterList::new);
-    private List<Collidable> collidable = new FasterList();
+    private List<Collidable> collidable = coll.read();
 
     public final FasterList<BroadConstraint> broadConstraints = new FasterList<>(0);
     final FasterList<TypedConstraint> sortedConstraints = new FasterList<>(0);
     final InplaceSolverIslandCallback solverCallback = new InplaceSolverIslandCallback();
 
+    final ContactSolverInfo solverInfo = new ContactSolverInfo();
 
-    public final ContactSolverInfo solverInfo = new ContactSolverInfo();
     //for variable timesteps
-    protected float localTime = 1f / 60f;
+    @Deprecated protected float localTime = 1f / 60f;
     protected boolean ownsIslandManager;
     protected boolean ownsConstrainer;
-    //protected OArrayList<RaycastVehicle> vehicles = new OArrayList<RaycastVehicle>();
-    private final List<Animated> animations = new FasterList();
-//    protected int profileTimings;
-    private float dt;
+
+
+
     private final Iterable<Spatial<X>> spatials;
 
 
@@ -102,7 +94,7 @@ public class Dynamics<X> extends Collisions<X> {
         islands = new Islands();
         ownsIslandManager = true;
         if (constrainer == null) {
-            this.constrainer = new SequentialImpulseConstrainer(this);
+            this.constrainer = new SequentialImpulseConstrainer();
             this.ownsConstrainer = true;
         } else {
             this.constrainer = constrainer;
@@ -166,18 +158,10 @@ public class Dynamics<X> extends Collisions<X> {
     }
 
     private int update(float timeStep, int maxSubSteps, float fixedTimeStep) {
-        curDT = timeStep;
 
         BulletGlobals.the.set(this);
 
-        //long t0 = System.nanoTime();
-        updateAnimations();
 
-        //startProfiling(timeStep);
-
-
-
-        //BulletStats.pushProfile("stepSimulation");
         try {
             int numSimulationSubSteps = 0;
 
@@ -201,9 +185,8 @@ public class Dynamics<X> extends Collisions<X> {
                 }
             }
 
-            this.dt = fixedTimeStep;
 
-            updateObjects();
+            updateObjects(fixedTimeStep);
 
             if (numSimulationSubSteps != 0) {
 
@@ -233,7 +216,7 @@ public class Dynamics<X> extends Collisions<X> {
 
 
 
-    protected final void updateObjects() {
+    final void updateObjects(float dt) {
 
         List<Collidable> nextCollidables = coll.write();
         nextCollidables.clear();
@@ -410,11 +393,7 @@ public class Dynamics<X> extends Collisions<X> {
     }
 
 
-
-
-
-
-    protected void updateActivationState(float timeStep) {
+    void updateActivationState(float timeStep) {
 
         // disable deactivation
 		float deactivationTime = isDeactivationDisabled() ? 0 : getDeactivationTime();
@@ -447,6 +426,12 @@ public class Dynamics<X> extends Collisions<X> {
             }
         });
     }
+
+
+    private static final Comparator<TypedConstraint> sortConstraintOnIslandPredicate = (lhs, rhs) ->
+            (lhs == rhs) ? 0
+                    :
+                    ((getConstraintIslandId(lhs) < getConstraintIslandId(rhs)) ? -1 : +1);
 
     public void addConstraint(TypedConstraint constraint, boolean disableCollisionsBetweenLinkedBodies) {
         synchronized (constraints) {
@@ -891,33 +876,11 @@ public class Dynamics<X> extends Collisions<X> {
     }
 
 
-    public void addAnimation(Animated a) {
-        animations.add(a);
-    }
-
-    private float curDT;
-
-    public final void updateAnimations() {
-        animations.removeIf(this::updateAnimation);
-    }
-
-    private boolean updateAnimation(Animated animated) {
-        try {
-            return !animated.animate(curDT); //invert for the 'removeIf'
-        } catch (Throwable e) {
-            e.printStackTrace();
-            return true;
-        }
-    }
 
     public String summary() {
         return ("collidables=" + collidable.size() + " pairs=" + pairs().size());
     }
 
-
-    public void removeAnimation(Animated a) {
-        animations.remove(a);
-    }
 
     protected List<Collidable> getCollidable() {
         return collidable;

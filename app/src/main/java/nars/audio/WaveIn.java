@@ -4,15 +4,15 @@ import jcog.learn.pid.MiniPID;
 import nars.NAR;
 import nars.control.NARService;
 import nars.term.Term;
-import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;
+import spacegraph.render.JoglSpace;
 import spacegraph.widget.text.Label;
 
 import java.util.function.Supplier;
 
-import static spacegraph.SpaceGraph.window;
+import static spacegraph.render.JoglPhysics.window;
 
 /** time domain waveform input, sampled in buffers.
  * runs as a Loop at a specific FPS that fills the buffer.
@@ -23,7 +23,7 @@ public class WaveIn extends NARService {
 
     private WaveCapture capturing;
 
-    private SpaceGraph surfaceWindow = null;
+    private JoglSpace surfaceWindow = null;
 
     /**
      * target power level, as fraction of the sample depth

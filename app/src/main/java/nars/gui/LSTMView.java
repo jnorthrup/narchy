@@ -10,7 +10,7 @@ import spacegraph.widget.meter.MatrixView;
 
 import java.util.Random;
 
-import static spacegraph.SpaceGraph.window;
+import static spacegraph.render.JoglPhysics.window;
 
 /**
  * Created by me on 11/22/16.

@@ -7,11 +7,11 @@ import com.google.common.graph.MutableGraph;
 import jcog.data.graph.MapNodeGraph;
 import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
-import spacegraph.SpaceGraph;
 import spacegraph.Spatial;
 import spacegraph.SpatialCache;
 import spacegraph.phys.Dynamic;
 import spacegraph.render.Draw;
+import spacegraph.render.JoglPhysics;
 import spacegraph.space.DynamicListSpace;
 import spacegraph.space.EDraw;
 import spacegraph.space.SpaceWidget;
@@ -64,7 +64,7 @@ public class SimpleGraph1<X> extends DynamicListSpace<X> {
     }
 
     @Override
-    public void start(SpaceGraph space) {
+    public void start(JoglPhysics<X> space) {
         synchronized (this) {
             cache = new SpatialCache<>(space, 512);
         }
@@ -174,7 +174,7 @@ public class SimpleGraph1<X> extends DynamicListSpace<X> {
 
         SimpleGraph1 cs = new SimpleGraph1() {
             @Override
-            public void start(SpaceGraph space) {
+            public void start(JoglPhysics space) {
                 super.start(space);
                 commit(h);
             }

@@ -9,7 +9,7 @@ import spacegraph.phys.Collidable;
 import spacegraph.phys.collision.ClosestRay;
 import spacegraph.render.Draw;
 import spacegraph.render.JoglPhysics;
-import spacegraph.render.JoglSpace;
+import spacegraph.render.JoglWindow;
 import spacegraph.widget.button.PushButton;
 
 import java.util.List;
@@ -45,7 +45,7 @@ abstract public class SpaceWidget<T> extends Cuboid<T> {
 
 
     @Override
-    public void onUntouch(JoglSpace space) {
+    public void onUntouch(JoglWindow space) {
         touched = false;
     }
 

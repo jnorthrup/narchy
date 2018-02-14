@@ -14,7 +14,7 @@ import nars.video.PixelBag;
 import java.awt.image.BufferedImage;
 
 import static nars.$.$;
-import static spacegraph.SpaceGraph.window;
+import static spacegraph.render.JoglPhysics.window;
 
 /**
  * Created by me on 9/19/16.

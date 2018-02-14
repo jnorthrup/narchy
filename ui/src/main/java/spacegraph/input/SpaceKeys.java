@@ -8,17 +8,17 @@ import org.eclipse.collections.api.map.primitive.MutableIntObjectMap;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
-import spacegraph.SpaceGraph;
-import spacegraph.render.JoglPhysics;
+import spacegraph.render.JoglSpace;
+import spacegraph.render.JoglWindow;
 
 import java.util.function.Consumer;
 
 /**
  * Created by me on 11/20/16.
  */
-public abstract class SpaceKeys extends KeyAdapter implements Consumer<SpaceGraph> {
+public abstract class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
 
-    public final JoglPhysics space;
+    public final JoglSpace space;
 
     //TODO merge these into one Map
     RoaringBitmap queue = new RoaringBitmap();
@@ -29,19 +29,19 @@ public abstract class SpaceKeys extends KeyAdapter implements Consumer<SpaceGrap
     final MutableIntObjectMap<FloatProcedure> keyReleased = _keyReleased.asSynchronized();
     private final On on;
 
-    protected SpaceKeys(SpaceGraph g) {
+    protected SpaceKeys(JoglSpace g) {
         this.space = g;
 
 
-        on = g.onUpdate.on(this);
+        on = g.onUpdate(this);
     }
 
     @Override
-    public void accept(SpaceGraph j) {
-        float dt = j.getLastFrameTime();
+    public void accept(JoglWindow j) {
 
         RoaringBitmap queue = this.queue;
         if (!queue.isEmpty()) {
+            float dt = j.dtMS()/1000f;
             synchronized (on) {
                 this.queue = new RoaringBitmap();
             }

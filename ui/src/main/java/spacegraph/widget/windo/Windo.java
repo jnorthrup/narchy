@@ -15,8 +15,6 @@ import spacegraph.render.Draw;
 import spacegraph.test.WidgetTest;
 import spacegraph.widget.button.PushButton;
 
-import java.util.Map;
-
 import static spacegraph.layout.Gridding.grid;
 import static spacegraph.widget.windo.Windo.DragEdit.MOVE;
 
@@ -42,7 +40,7 @@ public class Windo extends Widget {
 
     protected boolean hover;
 
-    Map<Object, Port> ports = null;
+    //Map<Object, Port> ports = null;
 
     public Windo() {
         super();
@@ -306,9 +304,9 @@ public class Windo extends Widget {
             this.id = id;
             this.win = win;
 
-            Wall.CSurface content = win.wall().newCurface(id);
+            //Surface content = win.wall().newCurface(id);
+            //children(content);
 
-            children(content);
             //set(new Scale(new PushButton("?"), 0.9f));
             this.posRel = new v2(Float.NEGATIVE_INFINITY, 0);
             this.sizeRel = new v2(0.1f, 0.2f);
@@ -363,22 +361,22 @@ public class Windo extends Widget {
         }
     }
 
-    protected Wall wall() {
-        return ((Wall) parent);
-    }
+//    protected Wall wall() {
+//        return ((Wall) parent);
+//    }
 
-    public Port addPort(String x) {
-        Wall w = wall();
-        {
-//            if (ports == null)
-//                ports = new LinkedHashMap<>();
-//            return ports.computeIfAbsent(x, i -> {
-            Port p = new Port(x, this);
-            w.add(/*0, */ p);
-            return p;
-//            });
-        }
-    }
+//    public Port addPort(String x) {
+//        Wall w = wall();
+//        {
+////            if (ports == null)
+////                ports = new LinkedHashMap<>();
+////            return ports.computeIfAbsent(x, i -> {
+//            Port p = new Port(x, this);
+//            w.add(/*0, */ p);
+//            return p;
+////            });
+//        }
+//    }
 
 
     public static void main(String[] args) {
@@ -433,6 +431,7 @@ public class Windo extends Widget {
 //            }
 
         };
+        SpaceGraph.window(d, 800, 800);
 
         //d.children.add(new GridTex(16).pos(0,0,1000,1000));
 
@@ -449,7 +448,6 @@ public class Windo extends Widget {
 
         //d.newWindo(grid(new PushButton("x"), new PushButton("y"))).pos(-100, -100, 0, 0);
 
-        SpaceGraph.window(d, 800, 800);
     }
 
 }

@@ -3,7 +3,6 @@ package spacegraph.phys.util;
 import jcog.Util;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import spacegraph.math.v3;
-import spacegraph.phys.Dynamics;
 
 public class AnimVector3f extends v3 implements Animated {
 
@@ -15,19 +14,10 @@ public class AnimVector3f extends v3 implements Animated {
         this(0, 0, 0, speed);
     }
 
-    public AnimVector3f(v3 current, Dynamics w, float speed) {
-        this(current.x, current.y, current.z, w, speed);
-    }
-
     public AnimVector3f(float x, float y, float z, float speed) {
         super(x, y, z);
         target.set(this);
         this.speed = new MutableFloat(speed);
-    }
-
-    public AnimVector3f(float x, float y, float z, Dynamics w, float speed) {
-        this(x, y, z, speed);
-        w.addAnimation(this);
     }
 
     public void stop() {

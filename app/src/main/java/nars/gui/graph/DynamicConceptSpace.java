@@ -2,7 +2,7 @@ package nars.gui.graph;
 
 import jcog.Util;
 import jcog.bag.Bag;
-import jcog.bag.impl.ConcurrentArrayBag;
+import jcog.bag.impl.PLinkArrayBag;
 import jcog.bag.util.Bagregate;
 import jcog.event.Ons;
 import jcog.list.FasterList;
@@ -21,13 +21,14 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.SpaceGraph;
 import spacegraph.phys.shape.SphereShape;
 import spacegraph.render.Draw;
+import spacegraph.render.JoglPhysics;
 import spacegraph.space.DynamicListSpace;
 import spacegraph.space.SpaceWidget;
 import spacegraph.widget.button.PushButton;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -35,7 +36,7 @@ import java.util.function.BiConsumer;
 
 import static jcog.Util.sqr;
 import static nars.gui.graph.DynamicConceptSpace.ColorNode.Hash;
-import static spacegraph.SpaceGraph.window;
+import static spacegraph.render.JoglPhysics.window;
 
 public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
@@ -86,7 +87,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
     final AtomicBoolean updated = new AtomicBoolean(false);
 
     @Override
-    public void start(SpaceGraph<Concept> space) {
+    public void start(JoglPhysics<Concept> space) {
         synchronized (this) {
             super.start(space);
             onDur = DurService.on(nar, () -> {
@@ -223,15 +224,14 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         public final FloatRange minSize = new FloatRange(1f, 0.1f, 5f);
         public final FloatRange maxSizeMult = new FloatRange(2f, 1f, 5f);
         public final AtomicBoolean showLabel = new AtomicBoolean(true);
-        public final FloatRange termlinkOpacity = new FloatRange(1f, 0f, 1f);
-        public final FloatRange tasklinkOpacity = new FloatRange(1f, 0f, 1f);
+        public final FloatRange termlinkOpacity = new FloatRange(0.5f, 0f, 1f);
+        public final FloatRange tasklinkOpacity = new FloatRange(0.5f, 0f, 1f);
         public final FloatRange lineWidthMax = new FloatRange(1f, 0f, 4f);
         public final FloatRange lineWidthMin = new FloatRange(0.1f, 0f, 4f);
         public final FloatRange separation = new FloatRange(1f, 0f, 6f);
         public final FloatRange lineAlphaMin = new FloatRange(0.1f, 0f, 1f);
         public final FloatRange lineAlphaMax = new FloatRange(0.8f, 0f, 1f);
         public final EnumParam<ColorNode> colorNode = new EnumParam(Hash, ColorNode.class);
-
         public final FloatRange edgeBrightness = new FloatRange(1 / 16f, 0f, 2f);
 
         public ConceptVis2(int maxEdges) {
@@ -239,22 +239,23 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             this.maxEdges = maxEdges;
 
             this.edges =
-                    new ConcurrentArrayBag<>(
+                    //new ConcurrentArrayBag<>(
                             //new PLinkHijackBag(0, 2);
-                            //new PLinkArrayBag<>(maxEdges,
+                    new PLinkArrayBag(maxEdges,
                             //PriMerge.max,
                             //PriMerge.replace,
                             PriMerge.plus,
                             //new UnifiedMap()
                             //new LinkedHashMap()
                             //new LinkedHashMap() //maybe: edgeBagSharedMap
-                            maxEdges
+                            //maxEdges
+                            new HashMap()
                     ) {
-                        @Nullable
-                        @Override
-                        public ConceptWidget.EdgeComponent key(ConceptWidget.EdgeComponent x) {
-                            return x;
-                        }
+//                        @Nullable
+//                        @Override
+//                        public ConceptWidget.EdgeComponent key(ConceptWidget.EdgeComponent x) {
+//                            return x;
+//                        }
                     };
         }
 

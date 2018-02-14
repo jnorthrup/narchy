@@ -2,7 +2,6 @@ package spacegraph.phys.util;
 
 import jcog.Util;
 import org.apache.commons.lang3.mutable.MutableFloat;
-import spacegraph.phys.Dynamics;
 
 
 public class AnimFloat extends MutableFloat implements Animated {
@@ -11,16 +10,11 @@ public class AnimFloat extends MutableFloat implements Animated {
     final MutableFloat speed;
     private boolean running = true;
 
-    public AnimFloat(Dynamics w, float speed) {
-        this(Float.NaN, w, speed);
-    }
-
-    public AnimFloat(float current, Dynamics w, float speed) {
+    public AnimFloat(float current, float speed) {
         super(Float.NaN);
         set(current);
         target = current;
         this.speed = new MutableFloat(speed);
-        w.addAnimation(this);
     }
 
     public void stop() {

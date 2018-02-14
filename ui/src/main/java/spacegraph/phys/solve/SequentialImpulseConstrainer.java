@@ -30,7 +30,6 @@ import spacegraph.phys.BulletGlobals;
 import spacegraph.phys.BulletStats;
 import spacegraph.phys.Collidable;
 import spacegraph.phys.Dynamic;
-import spacegraph.phys.collision.ContactDestroyedCallback;
 import spacegraph.phys.collision.broad.Intersecter;
 import spacegraph.phys.collision.narrow.ManifoldPoint;
 import spacegraph.phys.collision.narrow.PersistentManifold;
@@ -62,7 +61,6 @@ public class SequentialImpulseConstrainer extends Constrainer {
     private static final int SEQUENTIAL_IMPULSE_MAX_SOLVER_POINTS = 16384;
     private final OrderIndex[] gOrder = new OrderIndex[SEQUENTIAL_IMPULSE_MAX_SOLVER_POINTS];
 
-    private int totalCpd;
 
     {
         for (int i = 0; i < gOrder.length; i++) {
@@ -84,18 +82,18 @@ public class SequentialImpulseConstrainer extends Constrainer {
     // btSeed2 is used for re-arranging the constraint rows. improves convergence/quality of friction
     protected long btSeed2;
 
-    public SequentialImpulseConstrainer(BulletGlobals globals) {
-        globals.setContactDestroyedCallback(new ContactDestroyedCallback() {
-            @Override
-            public boolean contactDestroyed(Object userPersistentData) {
-                assert (userPersistentData != null);
-                ConstraintPersistentData cpd = (ConstraintPersistentData) userPersistentData;
-                //btAlignedFree(cpd);
-                totalCpd--;
-                //printf("totalCpd = %i. DELETED Ptr %x\n",totalCpd,userPersistentData);
-                return true;
-            }
-        });
+    public SequentialImpulseConstrainer() {
+//        globals.setContactDestroyedCallback(new ContactDestroyedCallback() {
+//            @Override
+//            public boolean contactDestroyed(Object userPersistentData) {
+//                assert (userPersistentData != null);
+//                ConstraintPersistentData cpd = (ConstraintPersistentData) userPersistentData;
+//                //btAlignedFree(cpd);
+//                //totalCpd--;
+//                //printf("totalCpd = %i. DELETED Ptr %x\n",totalCpd,userPersistentData);
+//                return true;
+//            }
+//        });
 
         // initialize default friction/contact funcs
         for (int i = 0; i < MAX_CONTACT_SOLVER_TYPES; i++) {
@@ -108,13 +106,13 @@ public class SequentialImpulseConstrainer extends Constrainer {
         }
     }
 
-    public long rand2() {
+    long rand2() {
         btSeed2 = (1664525L * btSeed2 + 1013904223L) & 0xffffffff;
         return btSeed2;
     }
 
     // See ODE: adam's all-int straightforward(?) dRandInt (0..n-1)
-    public int randInt2(int n) {
+    int randInt2(int n) {
         // seems good; xor-fold and modulus
         long un = n;
         long r = rand2();
@@ -754,7 +752,7 @@ public class SequentialImpulseConstrainer extends Constrainer {
             return 0f;
     }
 
-    public float solveGroupCacheFriendlyIterations(Collection<Collidable> bodies, int numBodies, Collection<PersistentManifold> manifoldPtr, int manifold_offset, int numManifolds, FasterList<TypedConstraint> constraints, int constraints_offset, int numConstraints, ContactSolverInfo infoGlobal/*,btStackAlloc* stackAlloc*/) {
+    float solveGroupCacheFriendlyIterations(Collection<Collidable> bodies, int numBodies, Collection<PersistentManifold> manifoldPtr, int manifold_offset, int numManifolds, FasterList<TypedConstraint> constraints, int constraints_offset, int numConstraints, ContactSolverInfo infoGlobal/*,btStackAlloc* stackAlloc*/) {
             int numConstraintPool = tmpSolverConstraintPool.size();
             int numFrictionPool = tmpSolverFrictionConstraintPool.size();
 
@@ -853,7 +851,7 @@ public class SequentialImpulseConstrainer extends Constrainer {
             return 0f;
     }
 
-    public void orderPool(int j, IntArrayList pool) {
+    void orderPool(int j, IntArrayList pool) {
         int tmp = pool.get(j);
         int swapi = randInt2(j + 1);
 
@@ -861,7 +859,7 @@ public class SequentialImpulseConstrainer extends Constrainer {
         pool.set(swapi, tmp);
     }
 
-    public float solveGroupCacheFriendly(Collection<Collidable> bodies, int numBodies, FasterList<PersistentManifold> manifoldPtr, int manifold_offset, int numManifolds, FasterList<TypedConstraint> constraints, int constraints_offset, int numConstraints, ContactSolverInfo infoGlobal/*,btStackAlloc* stackAlloc*/) {
+    float solveGroupCacheFriendly(Collection<Collidable> bodies, int numBodies, FasterList<PersistentManifold> manifoldPtr, int manifold_offset, int numManifolds, FasterList<TypedConstraint> constraints, int constraints_offset, int numConstraints, ContactSolverInfo infoGlobal/*,btStackAlloc* stackAlloc*/) {
         solveGroupCacheFriendlySetup(bodies, numBodies, manifoldPtr, manifold_offset, numManifolds, constraints, constraints_offset, numConstraints, infoGlobal/*, stackAlloc*/);
         solveGroupCacheFriendlyIterations(bodies, numBodies, manifoldPtr, manifold_offset, numManifolds, constraints, constraints_offset, numConstraints, infoGlobal/*, stackAlloc*/);
 
@@ -1040,10 +1038,10 @@ public class SequentialImpulseConstrainer extends Constrainer {
                 rel_pos2.sub(pos2, body1.transform);
 
                 // this jacobian entry is re-used for all iterations
-                Matrix3f mat1 = body0.getCenterOfMassTransform(tt1).basis;
+                Matrix3f mat1 = body0.transform.basis;
                 mat1.transpose();
 
-                Matrix3f mat2 = body1.getCenterOfMassTransform(tt2).basis;
+                Matrix3f mat2 = body1.transform.basis;
                 mat2.transpose();
 
 
@@ -1074,7 +1072,7 @@ public class SequentialImpulseConstrainer extends Constrainer {
                     cpd = new ConstraintPersistentData();
                     //assert(cpd != null);
 
-                    totalCpd++;
+                    //totalCpd++;
                     //printf("totalCpd = %i Created Ptr %x\n",totalCpd,cpd);
                     cp.userPersistentData = cpd;
                     cpd.persistentLifeTime = cp.lifeTime;
@@ -1248,13 +1246,13 @@ public class SequentialImpulseConstrainer extends Constrainer {
         frictionDispatch[type0][type1] = func;
     }
 
-    public void setRandSeed(long seed) {
-        btSeed2 = seed;
-    }
-
-    public long getRandSeed() {
-        return btSeed2;
-    }
+//    public void setRandSeed(long seed) {
+//        btSeed2 = seed;
+//    }
+//
+//    public long getRandSeed() {
+//        return btSeed2;
+//    }
 
     ////////////////////////////////////////////////////////////////////////////
 
