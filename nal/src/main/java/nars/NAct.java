@@ -429,14 +429,14 @@ public interface NAct {
     }
 
     default GoalActionAsyncConcept[] actionBipolar(@NotNull Term s, boolean fair, @NotNull FloatToFloatFunction update) {
-        return actionBipolarFrequencyDifferential(s, fair, update);
+        return actionBipolarFrequencyDifferential(s, fair, false, update);
         //actionBipolarExpectation(s, update);
         //actionBipolarExpectationNormalized(s, update);
         //actionBipolarGreedy(s, update);
         //actionBipolarMutex3(s, update);
     }
 
-    default void actionBipolarSteering(@NotNull Term s, boolean fair, FloatConsumer act) {
+    default void actionBipolarSteering(@NotNull Term s, FloatConsumer act) {
         final float[] amp = new float[1];
         float dt = 0.1f;
         float max = 1f;
@@ -463,7 +463,7 @@ public interface NAct {
 //        });
     }
 
-    default GoalActionAsyncConcept[] actionBipolarFrequencyDifferential(@NotNull Term s, boolean fair, @NotNull FloatToFloatFunction update) {
+    default GoalActionAsyncConcept[] actionBipolarFrequencyDifferential(@NotNull Term s, boolean fair, boolean latchPreviousIfUndecided, @NotNull FloatToFloatFunction update) {
 
         Term pt =
                 $.p(s, PLUS);
@@ -479,8 +479,10 @@ public interface NAct {
                 //$.p(s,$.the("\"-\""));
 
         final float g[] = new float[2];
-        final float e[] = new float[2];
+        final float c[] = new float[2];
         final long[] lastUpdate = {ETERNAL};
+
+        final float[] lastX = {0};
 
         GoalActionAsyncConcept[] CC = new GoalActionAsyncConcept[2]; //hack
 
@@ -497,9 +499,9 @@ public interface NAct {
 
 
 //            float freqEps = n.freqResolution.floatValue();
-            float confMin = n.confMin.floatValue();
+            float confMin = n.confMin.floatValue()*2;
             float eviMin = c2wSafe(confMin);
-            float feedbackConf =
+            float goalConf =
                     n.confDefault(GOAL);
                     //confMin * 4;
                     //w2c(c2w(n.confDefault(GOAL))/2f);
@@ -509,12 +511,12 @@ public interface NAct {
             int ip = p ? 0 : 1;
             CC[ip] = action;
             g[ip] = gg != null ?
-                    //gg.freq()
-                    gg.expectation()
+                    gg.freq()
+                    //gg.expectation()
                     :
                     //0f;
                     0.5f;
-            e[ip] = gg != null ?
+            c[ip] = gg != null ?
                     //gg.evi()
                     gg.conf()
                     :
@@ -526,6 +528,10 @@ public interface NAct {
             boolean curious;
             if (CC[0]!=null && CC[1]!=null /* both ready */) {
 
+                float cMax = Math.max(c[0], c[1]);
+                float cMin = Math.min(c[0], c[1]);
+                float coherence = cMin / cMax;
+
                 Random rng = n.random();
                 float cur = curiosity().floatValue();
                 if (cur > 0 && rng.nextFloat() <= cur) {
@@ -533,21 +539,23 @@ public interface NAct {
                     float curiEvi =
                             //c2w(n.confDefault(BELIEF));
                             //eviMin*2;
-                            Math.max(c2wSafe(w2cSafe(eviMin)*2), Util.mean(e[0], e[1])); //match desire conf, min=2*minConf
+                            Math.max(c2wSafe(w2cSafe(eviMin)*2), Util.mean(c[0], c[1])); //match desire conf, min=2*minConf
 
-                    e[0] = e[1] = curiEvi;
+                    c[0] = c[1] = curiEvi;
+                    coherence = 1f;
                     curious = true;
                 } else {
                     curious = false;
 
 
-                    float eMax = Math.max(e[0], e[1]);
-                    float eMin = Math.min(e[0], e[1]);
-                    if (eMax < Float.MIN_NORMAL) {
-                        x = 0;
+                    if (cMax < confMin) {
+                        if (latchPreviousIfUndecided) {
+                            x = lastX[0];
+                        } else {
+                            x = 0;
+                        }
                     } else {
 
-                        float df;
 
 //                        //expectation
 //                        float g0 = g[0]-0.5f;
@@ -558,7 +566,7 @@ public interface NAct {
                         //frequency -======================
 
                         //A. subtraction
-                        df = 2 * ((g[0]) - (g[1])); //subtract
+                        x = 2 * ((g[0] - g[1]) - 0.5f); //subtract
 
                         //B. difference, like the truth func
                         //df =  g[0] >= g[1] ?  (g[0] * (1f-g[1])) : -(g[1] * (1f-g[0]));
@@ -567,20 +575,22 @@ public interface NAct {
                         //experimental: lessen by a factor of how equally confident each goal is
                         if (fair) {
                             //fully fair
-                                df *= eMin / eMax;
+                                x *= coherence;
+                            //x *= Math.sqrt(coherence); //less sharp than linear
                             //semi-fair
                                 //df *= 0.5f + 0.5f * (eMin / eMax); //reduction by at most half
                         }
                         //df *= 1f - Math.abs(e[0] - e[1]) / eMax;
                         //df *= Util.sqr(eMin / eMax); //more cautious
                         //df *= Math.min(w2cSafe(e[0]), w2cSafe(e[1])) / w2cSafe(eMax);
-                        x = df;
                     }
 
 
                 }
 
                 x = Util.clamp(x, -1f, +1f);
+
+                lastX[0] = x;
 
                 float y = update.valueOf(x); //-1..+1
                 //System.out.println(x + " " + y);
@@ -611,16 +621,48 @@ public interface NAct {
 //                    Pg = curious || e[0] == 0 ? new PreciseTruth(yp, goalEvi, false) : null;
 //                    Ng = curious || e[1] == 0 ? new PreciseTruth(yn, goalEvi, false) : null;
 
-                    float confBase = confMin*4; //~ alpha, learning rate
-                    float fThresh = Float.MIN_NORMAL;
-                    float yp = y > +fThresh ? Util.lerp(+y, confBase, feedbackConf) : confBase;
-                    float yn = y < -fThresh ? Util.lerp(-y, confBase, feedbackConf) : confBase;
-                    Pb = $.t(y > +fThresh ? 1 : 0, y > +fThresh ? yp : feedbackConf - yp);
-                    Nb = $.t(y < -fThresh ? 1 : 0, y < -fThresh ? yn : feedbackConf - yn);
-                    //Pg = curious || e[0] == 0 ? new PreciseTruth(1, Util.lerp(+y, confMin2, feedbackConf)) : null;
+
+
+//                    float confBase = confMin*4; //~ alpha, learning rate
+//                    float fThresh = Float.MIN_NORMAL;
+//                    float yp = y > +fThresh ? Util.lerp(+y, confBase, feedbackConf) : confBase;
+//                    float yn = y < -fThresh ? Util.lerp(-y, confBase, feedbackConf) : confBase;
+//                    Pb = $.t(y > +fThresh ? 1 : 0, y > +fThresh ? yp : feedbackConf - yp);
+//                    Nb = $.t(y < -fThresh ? 1 : 0, y < -fThresh ? yn : feedbackConf - yn);
+//                    //Pg = curious || e[0] == 0 ? new PreciseTruth(1, Util.lerp(+y, confMin2, feedbackConf)) : null;
+//                    Pg = null;
+//                    //Ng = curious || e[1] == 0 ? new PreciseTruth(1, Util.lerp(-y, confMin2, feedbackConf)) : null;
+//                    Ng = null;
+
+
+
+
+
+                    float fThresh = nar().freqResolution.floatValue();
+                    int sign = (y > fThresh ? +1 : (y < -fThresh ? -1 : 0));
+
+                    float feedConf = Math.max(confMin, goalConf * coherence);
+                    switch (sign) {
+                        case +1:
+                            //Pb = $.t(1f, Util.lerp(+y, confBase, feedbackConf));
+                            Pb = $.t(y/2f + 0.5f, feedConf);
+                            Nb = null;
+                            break;
+                        case -1:
+                            Pb = null;
+                            //Nb = $.t(1f, Util.lerp(-y, confBase, feedbackConf));
+                            Nb = $.t(-y/2f + 0.5f, feedConf);
+                            break;
+                        case 0:
+                            //Pb = Nb = null; //no signal
+                            Pb = Nb = $.t(0, Math.max(confMin, w2cSafe(c2wSafe(feedConf)/2f))); //zero
+                            break;
+                        default:
+                            throw new UnsupportedOperationException();
+                    }
                     Pg = null;
-                    //Ng = curious || e[1] == 0 ? new PreciseTruth(1, Util.lerp(-y, confMin2, feedbackConf)) : null;
                     Ng = null;
+
 
 //                    if (curious) {
 //                        e[0] = e[1] = 0; //reset to get full evidence override
@@ -654,22 +696,25 @@ public interface NAct {
         return CC;
     }
 
+    default GoalActionConcept actionUnipolar(@NotNull Term s, @NotNull FloatToFloatFunction update) {
+        return actionUnipolar(s, false, update);
+    }
+
     /**
      * update function receives a value in 0..1.0 corresponding directly to the present goal frequency
      */
-    default GoalActionConcept actionUnipolar(@NotNull Term s, @NotNull FloatToFloatFunction update) {
+    default GoalActionConcept actionUnipolar(@NotNull Term s, boolean latch, @NotNull FloatToFloatFunction update) {
 
 
-
+        final float[] lastF = {0.5f};
         return action(s, (b, g) -> {
             float gFreq = (g != null) ?
                     //d.expectation()
-                    g.freq() : Float.NaN;
+                    g.freq() : (latch ? lastF[0] : Float.NaN);
 
-            //feedback belief
-            float bFreq;
+            lastF[0] = gFreq;
 
-            bFreq = (gFreq == gFreq) ? update.valueOf(gFreq) : Float.NaN;
+            float bFreq = (gFreq == gFreq) ? update.valueOf(gFreq) : Float.NaN;
             if (bFreq == bFreq) {
                 float confFeedback =
                         nar().confDefault(BELIEF);

@@ -1,14 +1,12 @@
 package nars.experiment;
 
-import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.math.FloatPolarNormalized;
 import nars.$;
 import nars.NAR;
 import nars.NAgent;
 import nars.NAgentX;
-import nars.concept.ScalarConcepts;
-import nars.concept.SensorConcept;
+import nars.concept.Concept;
 import nars.gui.Vis;
 
 import javax.swing.*;
@@ -30,8 +28,8 @@ import static spacegraph.render.JoglPhysics.window;
 public class PoleCart extends NAgentX {
 
 
-    private final ScalarConcepts xVel;
-    private final ScalarConcepts x;
+    private final Concept xVel;
+    private final Concept x;
     private final AtomicBoolean drawFinished = new AtomicBoolean(true);
     //private final ScalarConcepts dAngVel;
 
@@ -90,10 +88,10 @@ public class PoleCart extends NAgentX {
 
     // Define the Engine
     // Define InputVariable1 Theta(t) {angle with perpendicular}
-    ScalarConcepts angX;
-    ScalarConcepts angY;
+    Concept angX;
+    Concept angY;
     // Define InputVariable1 x(t) {angular velocity}
-    ScalarConcepts angVel;
+    Concept angVel;
     // OutputVariable {force to be applied}
 
     // Define the RuleBlock
@@ -123,24 +121,24 @@ public class PoleCart extends NAgentX {
          */
         //TODO extract 'senseAngle()' for NSense interface
 
-        this.x = senseNumberBi($.the("x"),
+        this.x = senseNumber($.the("x"),
                 new FloatPolarNormalized(() -> (float) pos)).resolution(0.04f);
-        this.xVel = senseNumberBi($.the("dx"),
+        this.xVel = senseNumber($.the("dx"),
                 //() -> Util.sigmoid((float) posDot)
                 new FloatPolarNormalized(() -> (float) posDot)
         ).resolution(0.04f);
 
         //angle
 
-        this.angX = senseNumberBi($.the("angX"),
+        this.angX = senseNumber($.the("angX"),
                 () -> (float) (0.5f + 0.5f * (Math.sin(angle))))
                 .resolution(0.04f);
-        this.angY = senseNumberBi($.the("angY"),
+        this.angY = senseNumber($.the("angY"),
                 () -> (float) (0.5f + 0.5f * (Math.cos(angle))))
                 .resolution(0.04f);
 
         //angular velocity
-        this.angVel = senseNumberBi($.the("angVel"),
+        this.angVel = senseNumber($.the("angVel"),
                 //() -> Util.sigmoid(angleDot / 4f)
                 new FloatPolarNormalized(() -> (float) angleDot)
         ).resolution(0.1f);
@@ -150,7 +148,7 @@ public class PoleCart extends NAgentX {
 //        ).resolution(0.1f);
 
 
-        actionBipolar(id, (a) -> {
+        actionBipolarFrequencyDifferential(id, false, true, (a) -> {
             if (!manualOverride)
                 action = a;
             return a;
@@ -183,7 +181,7 @@ public class PoleCart extends NAgentX {
 //        );
 
 
-        Iterable<SensorConcept> sensors = Iterables.concat(
+        Iterable<Concept> sensors = java.util.List.of(
                 x, xVel,
                 angX,
                 angY,

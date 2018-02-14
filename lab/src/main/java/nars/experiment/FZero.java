@@ -2,6 +2,7 @@ package nars.experiment;
 
 import com.google.common.collect.Iterables;
 import jcog.Util;
+import jcog.learn.pid.MiniPID;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
@@ -28,8 +29,11 @@ public class FZero extends NAgentX {
     private final FZeroGame fz;
 
     float fwdSpeed = 14;
-    float rotSpeed = 0.45f/3f;
+    float rotSpeed = 0.25f/3f;
     static float fps = 30f;
+    final MiniPID rewardFilter = new MiniPID(0.1f, 0.1, 0.1f);
+    final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
+    final MiniPID rotFilter = new MiniPID(0.5f, 0.3, 0.2f);
 
     public static void main(String[] args) {
 
@@ -92,7 +96,8 @@ public class FZero extends NAgentX {
 
 
         //initToggle();
-        initBipolar(true);
+        //initBipolar(true);
+        initBipolar(false);
 
         //new Implier(1, this, new float[] { 0, 1 });
 
@@ -324,32 +329,29 @@ public class FZero extends NAgentX {
 ////            }
 //            return a;
 //        });
-        actionUnipolar($.inh(id,"fwd"), (a) -> {
-            if (a > 0.5f)
-                fz.vehicleMetrics[0][6] = /*+=*/ (a - 0.5f) * 2f * (fwdSpeed); //gas
-            else
-                fz.vehicleMetrics[0][6] *= (1f - (0.5f - a) * 2f); //brake
-            return a;
-        }).resolution.set(0.1f);
+        final float[] _a = {0}, _r = {0};
+        actionUnipolar($.inh(id,"fwd"), true, (a0) -> {
+            float a = _a[0] = (float) fwdFilter.out(_a[0], a0);
+            if (a > 0.5f) {
+                float thrust = /*+=*/ (a - 0.5f) * 2f * (fwdSpeed); //gas
+                fz.vehicleMetrics[0][6] = thrust;
+            } else
+                fz.vehicleMetrics[0][6] *= Math.min(1f, Math.max(0.5f, (1f - (0.5f - a) * 2f))); //brake
+            return a0;
+        });
+
 //        //eternal bias to stop
 //        nar.goal(f[0].term, Tense.Eternal, 0f, 0.01f);
 //        nar.goal(f[1].term, Tense.Eternal, 0f, 0.01f);
-        actionBipolar(/*$.p($.the("x"), */(id), fair, (a) -> {
-            float deadZone =
-                    //0;
-                    1 / 20f;
-            float aa = a;
-            if (Math.abs(a) > deadZone) {
-                if (a > 0) a -= deadZone;
-                else a += deadZone;
-                fz.playerAngle +=
-                        //(a*a*a) *
-                        a *
-                        rotSpeed;
-                return aa;
-            }
+        actionBipolarFrequencyDifferential(/*$.p($.the("x"), */(id), fair, true, (r0) -> {
 
-            return 0;
+            float r = _r[0] = (float) rotFilter.out(_r[0], r0);
+
+            fz.playerAngle +=
+                    //(a*a*a) *
+                    r *
+                    rotSpeed;
+            return r0;
         });
 //        actionBipolarSteering($.the("x"), (a) -> {
 //            float deadZone =
@@ -410,7 +412,8 @@ public class FZero extends NAgentX {
         //lifesupport
         fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));
 
-        return r;
+        //return r;
+        return (float) rewardFilter.out(this.reward, r);
     }
 
 

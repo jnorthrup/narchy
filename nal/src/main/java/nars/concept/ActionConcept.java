@@ -31,9 +31,7 @@ public abstract class ActionConcept extends WiredConcept {
         if (t.isGoal()) {
             long now = n.time();
             if (!t.isBefore(now - n.dur()/2)) { //present or future
-                MetaGoal.learn(MetaGoal.Action, t.cause(),
-                        Param.beliefValue(t) * activation,
-                        n);
+                MetaGoal.Action.learn(t.cause(), Param.beliefValue(t) * activation, n.causes);
             }
         }
     }

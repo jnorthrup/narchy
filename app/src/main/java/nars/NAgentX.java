@@ -187,11 +187,12 @@ abstract public class NAgentX extends NAgent {
                 .index(
                         new CaffeineIndex(
                                 //250 * 1024
-                                150 * 1024
+                                //150 * 1024
                                 //200 * 1024
                                 //100 * 1024
-                                //50 * 1024
+                                50 * 1024
                                 //20 * 1024
+                                //4096
                         )
                         // new PriMapTermIndex()
                         //new CaffeineIndex2(64 * 1024)
@@ -231,7 +232,7 @@ abstract public class NAgentX extends NAgent {
 
         new Deriver(a.fire(), Derivers.deriver(1, 8,
                 "motivation.nal"
-                , "goal_analogy.nal"
+                //, "goal_analogy.nal"
         ).apply(n).deriver, n) {
 //            @Override
 //            protected long matchTime(Task task) {

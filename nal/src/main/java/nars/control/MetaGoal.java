@@ -64,15 +64,10 @@ public enum MetaGoal {
     Accurate;
 
 
-    public static void learn(MetaGoal p, short[] effects, float strength, NAR nar) {
-        learn(p, effects, strength, nar.causes);
-    }
-
-
     /**
      * learn that the given effects have a given value
      */
-    public static void learn(MetaGoal p, short[] cause, float strength, FasterList<Cause> causes) {
+    public void learn(short[] cause, float strength, FasterList<Cause> causes) {
 
         int n = cause.length;
         if (n == 0)
@@ -83,7 +78,7 @@ public enum MetaGoal {
 
         float s = strength/n;
 
-        int ordinal = p.ordinal();
+        int ordinal = ordinal();
         for (short c : cause) {
             MetaGoal.learn(causes.get(c).goal, ordinal, s);
         }

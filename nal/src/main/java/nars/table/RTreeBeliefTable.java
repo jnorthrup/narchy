@@ -226,6 +226,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         }
     }
 
+
+
     /**
      * TODO add a Random argument so it can decide randomly whether to scan the left or right zone first.
      * order matters because the quality limit may terminate it.

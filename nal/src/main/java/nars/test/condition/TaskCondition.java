@@ -299,7 +299,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
             succeeded = true;
 
             if (feedback)
-                MetaGoal.learn(MetaGoal.Accurate, t.cause(), 1, nar);
+                MetaGoal.Accurate.learn(t.cause(), (float) 1, nar.causes);
 
             return true;
         } else {

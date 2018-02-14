@@ -143,7 +143,7 @@ public class PredictionFeedback {
         float coherence = 2f * ((1f - Math.abs(x.freq() - y.freq())) - 0.5f);
         float value = coherence * yEvi/(yEvi + xEvi) * (1f-overlap) * strength;
         if (Math.abs(value) > Float.MIN_NORMAL) {
-            MetaGoal.learn(MetaGoal.Accurate, y.cause(), value, nar);
+            MetaGoal.Accurate.learn(y.cause(), value, nar.causes);
         }
 
         if (delete)

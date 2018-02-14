@@ -2,8 +2,11 @@ package nars.index.term;
 
 import nars.NAR;
 import nars.Op;
+import nars.Param;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
+import nars.concept.TaskConcept;
+import nars.control.MetaGoal;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
@@ -15,11 +18,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import static nars.Op.*;
+
 /**
  *
  */
 public abstract class ConceptIndex {
-
 
 
     public NAR nar;
@@ -40,7 +44,6 @@ public abstract class ConceptIndex {
     public CompletableFuture<Termed> getAsync(Term key, boolean createIfMissing) {
         return CompletableFuture.completedFuture(get(key, createIfMissing));
     }
-
 
 
     /**
@@ -124,7 +127,7 @@ public abstract class ConceptIndex {
             }
         }
 
-        return (Concept)get(y, createIfMissing);
+        return (Concept) get(y, createIfMissing);
     }
 
     public final void conceptAsync(Termed x, boolean createIfMissing, Consumer<Concept> with) {
@@ -146,34 +149,54 @@ public abstract class ConceptIndex {
 
 
         getAsync(y, createIfMissing).handle((t, e) -> {
-                    if (e!=null) {
-                        e.printStackTrace();
-                    } else {
-                        with.accept((Concept) t);
-                    }
-                    return this;
-                });
+            if (e != null) {
+                e.printStackTrace();
+            } else {
+                with.accept((Concept) t);
+            }
+            return this;
+        });
     }
 
     protected final void onRemove(Termed value) {
         if (value instanceof Concept) {
             if (value instanceof PermanentConcept) {
                 //refuse deletion
-                nar.runLater(()->{
+                nar.runLater(() -> {
                     set(value);
                 });
 
             } else {
 
                 Concept c = (Concept) value;
-                onBeforeRemove(c);
+                if (c instanceof TaskConcept)
+                    forget((TaskConcept) c);
                 c.delete(nar);
             }
         }
     }
 
-    protected void onBeforeRemove(Concept c) {
+    protected void forget(TaskConcept tc) {
+        tc.tasks().forEach(t -> {
+            short[] c = t.cause();
+            if (c.length > 0) {
+                switch (t.punc()) {
+                    case BELIEF:
+                        MetaGoal.Believe.learn(c, -Param.beliefValue(t), nar.causes);
+                        break;
+                    case GOAL:
+                        MetaGoal.Desire.learn(c, -Param.beliefValue(t), nar.causes);
+                        break;
+                    case QUESTION:
+                    case QUEST:
+                        //TODO
+                        break;
+                }
+            }
 
+            //TODO harvest anything else important from the tasks before deletion?
+            t.delete();
+        });
     }
 
 

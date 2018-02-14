@@ -40,11 +40,15 @@ public final class TimeFusion {
         this.unionStart = uu.a;
         this.unionEnd = uu.b;
 
-        long uLen = uu.length();
-
-        long lenSum = Util.sum(Interval::length, x);
-        int n = x.length;
-        this.factor = ((float) (n + lenSum)) / (n + uLen * n); //ratio of how much the union is filled with respect to the number of tasks being overlapped
+        long unionLength = Math.max(1,uu.length());
+        long componentLengths = Util.sum((Interval xx) -> Math.max(1,xx.length()), x);
+        if (unionLength > (1+componentLengths)) {
+            //int n = x.length;
+            //this.factor = ((float) (n + lenSum)) / (n + uLen * n); //ratio of how much the union is filled with respect to the number of tasks being overlapped
+            this.factor = ((float)componentLengths)/unionLength;
+        } else {
+            this.factor = 1;
+        }
 
 
     }

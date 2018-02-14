@@ -2,14 +2,13 @@ package nars.gui.graph;
 
 import jcog.Util;
 import jcog.bag.Bag;
-import jcog.bag.impl.PLinkArrayBag;
+import jcog.bag.impl.hijack.PLinkHijackBag;
 import jcog.bag.util.Bagregate;
 import jcog.event.Ons;
 import jcog.list.FasterList;
 import jcog.math.EnumParam;
 import jcog.math.FloatRange;
 import jcog.pri.PriReference;
-import jcog.pri.op.PriMerge;
 import jcog.util.Flip;
 import nars.NAR;
 import nars.Task;
@@ -28,7 +27,6 @@ import spacegraph.space.DynamicListSpace;
 import spacegraph.space.SpaceWidget;
 import spacegraph.widget.button.PushButton;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -239,24 +237,26 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             this.maxEdges = maxEdges;
 
             this.edges =
-                    //new ConcurrentArrayBag<>(
-                            //new PLinkHijackBag(0, 2);
-                    new PLinkArrayBag(maxEdges,
-                            //PriMerge.max,
-                            //PriMerge.replace,
-                            PriMerge.plus,
-                            //new UnifiedMap()
-                            //new LinkedHashMap()
-                            //new LinkedHashMap() //maybe: edgeBagSharedMap
-                            //maxEdges
-                            new HashMap()
-                    ) {
+
+                    new PLinkHijackBag(0, 2);
+                    edges.setCapacity(maxEdges);
+//                    new ConcurrentArrayBag<>(
+//                    //new PLinkArrayBag(maxEdges,
+//                            //PriMerge.max,
+//                            //PriMerge.replace,
+//                            PriMerge.plus,
+//                            //new UnifiedMap()
+//                            //new LinkedHashMap()
+//                            //new LinkedHashMap() //maybe: edgeBagSharedMap
+//                            //maxEdges
+//                            new HashMap()
+//                    ) {
 //                        @Nullable
 //                        @Override
 //                        public ConceptWidget.EdgeComponent key(ConceptWidget.EdgeComponent x) {
 //                            return x;
 //                        }
-                    };
+//                    };
         }
 
 

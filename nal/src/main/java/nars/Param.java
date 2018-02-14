@@ -585,11 +585,9 @@ public abstract class Param {
     }
 
     public static float beliefValue(Task beliefOrGoal) {
-        /** herusistic 2 components
-         *      - base value
-         *      - confidence
-         * */
-        return (1f + beliefOrGoal.conf())/2f;
+        //return (1f + beliefOrGoal.conf())/2f;
+        return beliefOrGoal.conf();
+        //return beliefOrGoal.conf() * (1 + (1f-beliefOrGoal.originality())); //input tasks are 'forced' into the system. derived tasks should seem more valuable, being the result of reasoning effort
     }
 
 }

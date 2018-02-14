@@ -350,7 +350,7 @@ public class Emotion implements Meter {
          */
         float cost = (1f + (vol / termVolMax) + pri)/3f;
 
-        MetaGoal.learn(MetaGoal.Perceive, t.cause(), cost, nar);
+        MetaGoal.Perceive.learn(t.cause(), cost, nar.causes);
 
         busy(pri, (int) Math.ceil(vol ));
     }
@@ -380,7 +380,7 @@ public class Emotion implements Meter {
 
         //reward answer for answering the question
         float str = ansConf * qOrig;
-        MetaGoal.learn(MetaGoal.Answer, answer.cause(), str, nar);
+        MetaGoal.Answer.learn(answer.cause(), str, nar.causes);
     }
 
 
