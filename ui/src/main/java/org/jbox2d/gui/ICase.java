@@ -1,6 +1,6 @@
 package org.jbox2d.gui;
 
-import org.jbox2d.dynamics.World;
+import org.jbox2d.dynamics.Dynamics2D;
 
 /**
  * Interface pre testovacie scenare
@@ -13,5 +13,5 @@ public interface ICase {
      *
      * @param w Svet
      */
-    void init(World w);
+    void init(Dynamics2D w);
 }

@@ -1,5 +1,6 @@
 package org.jbox2d.fracture.voronoi;
 
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import org.jbox2d.common.Vec2;
 import spacegraph.math.Tuple2f;
 
@@ -71,9 +72,10 @@ public class SingletonVD {
      */
     public Hull hull;
 
-    private static final double RND = new Random().nextDouble() + 0.5;
-    private static final double SIN = Math.sin(RND);
-    private static final double COS = Math.cos(RND);
+    final Random rng = new XoRoShiRo128PlusRandom(1);
+
+    private final double RND() { return rng.nextDouble() + 0.5; };
+
 
     private final Edge[] edges = new Edge[0x10000]; //2D pole hran
     private final int[] boundaries = new int[0x200];
@@ -310,7 +312,7 @@ public class SingletonVD {
      *
      * @param ar Pole ohnisk
      */
-    public void calculateDelaunay(Tuple2f[] ar) {
+    void calculateDelaunay(Tuple2f[] ar) {
         this.ar = ar;
         triangC = 0;
         hull = null;
@@ -321,6 +323,8 @@ public class SingletonVD {
             return;
         }
 
+        double SIN = Math.sin(RND());
+        double COS = Math.cos(RND());
         for (int i = 0; i != size; ++i) {
             Tuple2f v = this.ar[i];
             comparer[i] = SIN * v.x + COS * v.y;

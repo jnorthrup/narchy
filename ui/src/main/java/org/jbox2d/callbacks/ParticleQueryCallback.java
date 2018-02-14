@@ -1,10 +1,10 @@
 package org.jbox2d.callbacks;
 
-import org.jbox2d.dynamics.World;
+import org.jbox2d.dynamics.Dynamics2D;
 
 /**
  * Callback class for AABB queries. See
- * {@link World#queryAABB(QueryCallback, org.jbox2d.collision.AABB)}.
+ * {@link Dynamics2D#queryAABB(QueryCallback, org.jbox2d.collision.AABB)}.
  *
  * @author dmurph
  */

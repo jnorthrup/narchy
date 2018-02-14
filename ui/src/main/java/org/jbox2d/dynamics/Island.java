@@ -177,9 +177,9 @@ public class Island {
     public int m_contactCapacity;
     public int m_jointCapacity;
 
-    public final World m_world;
+    public final Dynamics2D m_world;
 
-    public Island(World m_world) {
+    public Island(Dynamics2D m_world) {
         this.m_world = m_world;
     }
 
@@ -237,7 +237,7 @@ public class Island {
     private final SolverData solverData = new SolverData();
     private final ContactSolverDef solverDef = new ContactSolverDef();
 
-    public void solve(Profile profile, TimeStep step, Tuple2f gravity, boolean allowSleep) {
+    public void solve(Dynamics2D.Profile profile, TimeStep step, Tuple2f gravity, boolean allowSleep) {
 
         // System.out.println("Solving Island");
         float h = step.dt;
@@ -310,7 +310,7 @@ public class Island {
             m_joints[i].initVelocityConstraints(solverData);
         }
 
-        profile.solveInit.accum(timer.getMilliseconds());
+        profile.solveInit.accum(timer::getMilliseconds);
 
         // Solve velocity constraints
         timer.reset();
@@ -325,7 +325,7 @@ public class Island {
 
         // Store impulses for warm starting
         contactSolver.storeImpulses();
-        profile.solveVelocity.accum(timer.getMilliseconds());
+        profile.solveVelocity.accum(timer::getMilliseconds);
 
         // Integrate positions
         for (int i = 0; i < m_bodyCount; ++i) {
@@ -391,7 +391,7 @@ public class Island {
             body.synchronizeTransform();
         }
 
-        profile.solvePosition.accum(timer.getMilliseconds());
+        profile.solvePosition.accum(timer::getMilliseconds);
 
         report(contactSolver.m_velocityConstraints);
 

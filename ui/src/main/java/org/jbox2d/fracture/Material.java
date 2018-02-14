@@ -1,6 +1,6 @@
 package org.jbox2d.fracture;
 
-import org.jbox2d.fracture.fragmentation.Singleton;
+import org.jbox2d.fracture.fragmentation.Smasher;
 import org.jbox2d.fracture.materials.Diffusion;
 import org.jbox2d.fracture.materials.Glass;
 import org.jbox2d.fracture.materials.Uniform;
@@ -12,10 +12,7 @@ import spacegraph.math.Tuple2f;
  * @author Marek Benovic
  */
 public abstract class Material {
-    /**
-     * Singleton sluziaci na fragmentaciu.
-     */
-    protected static final Singleton geom = new Singleton();
+
 
     /**
      * Najmensi ulomok, ktory je mozne triestit - aby sa zabranilo rekurzivnemu triesteniu.
@@ -91,7 +88,7 @@ public abstract class Material {
      * @param normalImpulse Intenzita kolizie
      * @return Vrati pole Polygonov, na ktore bude dany polygon rozdeleny
      */
-    protected Polygon[] split(Polygon p, Tuple2f bodNarazu, Tuple2f vektor, float normalImpulse) {
+    protected Polygon[] split(Smasher geom, Polygon p, Tuple2f bodNarazu, Tuple2f vektor, float normalImpulse) {
         Tuple2f[] foceeArray = focee(bodNarazu, vektor);
 
         geom.calculate(p, foceeArray, bodNarazu, point -> {

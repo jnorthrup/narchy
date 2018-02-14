@@ -154,16 +154,16 @@ public class Polygon {
         while (i < _ncontours) {
             for (; j + 1 <= _nVertices[i]; ++j) {
                 edge = new Linebase((Pointbase) _points.get(j), (Pointbase) _points.get(j + 1), Poly2TriUtils.INPUT);
-                _edges.put(Poly2TriUtils.l_id, edge);
+                _edges.put(Poly2TriUtils.l_id.get(), edge);
             }
             edge = new Linebase((Pointbase) _points.get(j), (Pointbase) _points.get(first), Poly2TriUtils.INPUT);
-            _edges.put(Poly2TriUtils.l_id, edge);
+            _edges.put(Poly2TriUtils.l_id.get(), edge);
 
             j = _nVertices[i] + 1;
             first = _nVertices[i] + 1;
             ++i;
         }
-        Poly2TriUtils.p_id = _nVertices[_ncontours - 1];
+        Poly2TriUtils.p_id.set(_nVertices[_ncontours - 1]);
     }
 
     /**
@@ -184,7 +184,8 @@ public class Polygon {
      * @param vertices              array of vertices, each item of array contains doubl[2] ~ {x,y}
      */
     Polygon(int numContures, int[] numVerticesInContures, Tuple2f[] vertices) {
-        Poly2TriUtils.initPoly2TriUtils();
+        Poly2TriUtils.l_id.set(0);
+        Poly2TriUtils.p_id.set(0);
         initPolygon(numContures, numVerticesInContures, vertices);
         initializate();
         _debug = false;
@@ -282,6 +283,7 @@ public class Polygon {
         Object[] temp = s.toArray();
         int[] result = new int[temp.length];
         for (int i = 0; i < temp.length; ++i) {
+            assert(temp[i] instanceof Integer): temp[i] + " is " + temp[i].getClass();
             result[i] = (Integer) temp[i];
         }
         Arrays.sort(result);
@@ -386,10 +388,12 @@ public class Polygon {
         _edgebst.inOrder(updateKey, y); // ya ... some special things happens ... see Linebase.setKeyValue()
 
         Linebase edge = getEdge(i);
-        edge.setHelper(i);
-        edge.setKeyValue(y);
+        if (edge!=null) {
+            edge.setHelper(i);
+            edge.setKeyValue(y);
 
-        _edgebst.insert(edge);
+            _edgebst.insert(edge);
+        }
 
         if (_debug) {
             writeToLog("set e" + i + " helper to " + i + '\n');
@@ -411,15 +415,17 @@ public class Polygon {
 
         int previ = prev(i);
         Linebase edge = getEdge(previ);
-        int helper = edge.helper();
+        if (edge!=null) {
+            int helper = edge.helper();
 
-        if (getPoint(helper).type == Poly2TriUtils.MERGE)
-            addDiagonal(i, helper);
-        _edgebst.delete(edge.keyValue());
+            if (getPoint(helper).type == Poly2TriUtils.MERGE)
+                addDiagonal(i, helper);
+            _edgebst.delete(edge.keyValue());
 
-        if (_debug) {
-            writeToLog("Remove e" + previ + " from splay tree\n");
-            writeToLog("key:" + edge.keyValue() + '\n');
+            if (_debug) {
+                writeToLog("Remove e" + previ + " from splay tree\n");
+                writeToLog("key:" + edge.keyValue() + '\n');
+            }
         }
     }
 
@@ -435,25 +441,28 @@ public class Polygon {
         _edgebst.inOrder(updateKey, y);
 
         BTreeNode leftnode = _edgebst.findMaxSmallerThan(x);
-        Linebase leftedge = (Linebase) leftnode.data();
+        if (leftnode!=null) {
+            Linebase leftedge = (Linebase) leftnode.data();
 
-        int helper = leftedge.helper();
-        addDiagonal(i, helper);
+            int helper = leftedge.helper();
+            addDiagonal(i, helper);
 
-        if (_debug) {
-            writeToLog("Search key:" + x + " edge key:" + leftedge.keyValue() + '\n');
-            writeToLog("e" + leftedge.id() + " is directly left to v" + i + '\n');
-            writeToLog("Set e" + leftedge.id() + " helper to " + i + '\n');
-            writeToLog("set e" + i + " helper to " + i + '\n');
-            writeToLog("Insert e" + i + " to splay tree\n");
-            writeToLog("Insert key:" + getEdge(i).keyValue() + '\n');
+            if (_debug) {
+                writeToLog("Search key:" + x + " edge key:" + leftedge.keyValue() + '\n');
+                writeToLog("e" + leftedge.id() + " is directly left to v" + i + '\n');
+                writeToLog("Set e" + leftedge.id() + " helper to " + i + '\n');
+                writeToLog("set e" + i + " helper to " + i + '\n');
+                writeToLog("Insert e" + i + " to splay tree\n");
+                writeToLog("Insert key:" + getEdge(i).keyValue() + '\n');
+            }
+
+            leftedge.setHelper(i);
+
+            Linebase edge = getEdge(i);
+            edge.setHelper(i);
+            edge.setKeyValue(y);
+            _edgebst.insert(edge);
         }
-
-        leftedge.setHelper(i);
-        Linebase edge = getEdge(i);
-        edge.setHelper(i);
-        edge.setKeyValue(y);
-        _edgebst.insert(edge);
     }
 
     /**
@@ -469,34 +478,36 @@ public class Polygon {
 
         int previ = prev(i);
         Linebase previEdge = getEdge(previ);
-        int helper = previEdge.helper();
+        if (previEdge!=null) {
+            int helper = previEdge.helper();
 
-        Pointbase helperPoint = getPoint(helper);
+            Pointbase helperPoint = getPoint(helper);
 
-        if (helperPoint.type == Poly2TriUtils.MERGE)
-            addDiagonal(i, helper);
+            if (helperPoint.type == Poly2TriUtils.MERGE)
+                addDiagonal(i, helper);
 
-        _edgebst.delete(previEdge.keyValue());
+            _edgebst.delete(previEdge.keyValue());
 
-        if (_debug) {
-            writeToLog("e" + previ + " helper is " + helper + '\n');
-            writeToLog("Remove e" + previ + " from splay tree.\n");
-        }
+            if (_debug) {
+                writeToLog("e" + previ + " helper is " + helper + '\n');
+                writeToLog("Remove e" + previ + " from splay tree.\n");
+            }
 
-        BTreeNode leftnode = _edgebst.findMaxSmallerThan(x);
-        Linebase leftedge = (Linebase) leftnode.data();
+            BTreeNode leftnode = _edgebst.findMaxSmallerThan(x);
+            Linebase leftedge = (Linebase) leftnode.data();
 
-        helper = leftedge.helper();
-        helperPoint = getPoint(helper);
-        if (helperPoint.type == Poly2TriUtils.MERGE)
-            addDiagonal(i, helper);
+            helper = leftedge.helper();
+            helperPoint = getPoint(helper);
+            if (helperPoint.type == Poly2TriUtils.MERGE)
+                addDiagonal(i, helper);
 
-        leftedge.setHelper(i);
+            leftedge.setHelper(i);
 
-        if (_debug) {
-            writeToLog("Search key:" + x + " found:" + leftedge.keyValue() + '\n');
-            writeToLog("e" + leftedge.id() + " is directly left to v" + i + '\n');
-            writeToLog("Set e" + leftedge.id() + " helper to " + i + '\n');
+            if (_debug) {
+                writeToLog("Search key:" + x + " found:" + leftedge.keyValue() + '\n');
+                writeToLog("e" + leftedge.id() + " is directly left to v" + i + '\n');
+                writeToLog("Set e" + leftedge.id() + " helper to " + i + '\n');
+            }
         }
     }
 
@@ -515,27 +526,29 @@ public class Polygon {
         int previ = prev(i);
 
         Linebase previEdge = getEdge(previ);
+        if (previEdge!=null) {
 
-        int helper = previEdge.helper();
+            int helper = previEdge.helper();
 
-        Pointbase helperPoint = getPoint(helper);
+            Pointbase helperPoint = getPoint(helper);
 
-        if (helperPoint.type == Poly2TriUtils.MERGE)
-            addDiagonal(i, helper);
+            if (helperPoint.type == Poly2TriUtils.MERGE)
+                addDiagonal(i, helper);
 
-        _edgebst.delete(previEdge.keyValue());
+            _edgebst.delete(previEdge.keyValue());
 
-        Linebase edge = getEdge(i);
-        edge.setHelper(i);
-        edge.setKeyValue(y);
-        _edgebst.insert(edge);
+            Linebase edge = getEdge(i);
+            edge.setHelper(i);
+            edge.setKeyValue(y);
+            _edgebst.insert(edge);
 
-        if (_debug) {
-            writeToLog("e" + previ + " helper is " + helper + '\n');
-            writeToLog("Remove e" + previ + " from splay tree.\n");
-            writeToLog("Set e" + i + " helper to " + i + '\n');
-            writeToLog("Insert e" + i + " to splay tree\n");
-            writeToLog("Insert key:" + edge.keyValue() + '\n');
+            if (_debug) {
+                writeToLog("e" + previ + " helper is " + helper + '\n');
+                writeToLog("Remove e" + previ + " from splay tree.\n");
+                writeToLog("Set e" + i + " helper to " + i + '\n');
+                writeToLog("Insert e" + i + " to splay tree\n");
+                writeToLog("Insert key:" + edge.keyValue() + '\n');
+            }
         }
     }
 
@@ -552,19 +565,23 @@ public class Polygon {
         _edgebst.inOrder(updateKey, y);
 
         BTreeNode leftnode = _edgebst.findMaxSmallerThan(x);
+        if (leftnode!=null) {
 
-        Linebase leftedge = (Linebase) leftnode.data();
+            Linebase leftedge = (Linebase) leftnode.data();
 
-        int helper = leftedge.helper();
-        Pointbase helperPoint = getPoint(helper);
-        if (helperPoint.type == Poly2TriUtils.MERGE) addDiagonal(i, helper);
-        leftedge.setHelper(i);
+            int helper = leftedge.helper();
+            Pointbase helperPoint = getPoint(helper);
+            if (helperPoint.type == Poly2TriUtils.MERGE) addDiagonal(i, helper);
+            leftedge.setHelper(i);
 
-        if (_debug) {
-            writeToLog("Search key:" + x + " found:" + leftedge.keyValue() + '\n');
-            writeToLog("e" + leftedge.id() + " is directly left to v" + i + " and its helper is:" + helper + '\n');
-            writeToLog("Set e" + leftedge.id() + " helper to " + i + '\n');
+            if (_debug) {
+                writeToLog("Search key:" + x + " found:" + leftedge.keyValue() + '\n');
+                writeToLog("e" + leftedge.id() + " is directly left to v" + i + " and its helper is:" + helper + '\n');
+                writeToLog("Set e" + leftedge.id() + " helper to " + i + '\n');
+            }
+
         }
+
     }
 
     /**
@@ -762,7 +779,6 @@ public class Polygon {
 
             // Pointbase* startp=startp=it.second.endPoint(0); // ??? startp=startp :-O
             startp = itEdge.endPoint(0);
-            endp = null;
             next = itEdge;
 
             poly.add(startp.id);

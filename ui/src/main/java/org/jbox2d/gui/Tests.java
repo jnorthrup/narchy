@@ -37,7 +37,7 @@ public class Tests extends JComponent implements Runnable {
     private final Dimension screenSize = new Dimension(1024, 540);
     private final Tuple2f center = new Vec2();
     private float zoom = 1;
-    private volatile World w;
+    private volatile Dynamics2D w;
 
     private volatile Tuple2f startCenter = new Vec2();
     private volatile Point clickedPoint = null;
@@ -190,7 +190,7 @@ public class Tests extends JComponent implements Runnable {
     }
 
     private void initWorld() {
-        w = new World(new v2((float) 0, -9.81f));
+        w = new Dynamics2D(new v2((float) 0, -9.81f));
         w.setParticleRadius(0.2f);
         w.setParticleDensity(1.0f);
         w.setContinuousPhysics(true);

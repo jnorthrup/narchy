@@ -79,7 +79,7 @@ public class Body {
     public final Tuple2f m_force = new v2();
     public float m_torque = 0;
 
-    public World m_world;
+    public Dynamics2D m_world;
     public Body m_prev;
     public Body m_next;
 
@@ -103,7 +103,7 @@ public class Body {
 
     public Object m_userData;
 
-    public Body(final BodyDef bd, World world) {
+    public Body(final BodyDef bd, Dynamics2D world) {
         assert (bd.position.isValid());
         assert (bd.linearVelocity.isValid());
         assert (bd.gravityScale >= 0.0f);
@@ -212,7 +212,7 @@ public class Body {
 
         // Let the world know we have a new fixture. This will cause new contacts
         // to be created at the beginning of the next time step.
-        m_world.m_flags |= World.NEW_FIXTURE;
+        m_world.m_flags |= Dynamics2D.NEW_FIXTURE;
 
         return fixture;
     }
@@ -1169,7 +1169,7 @@ public class Body {
     /**
      * Get the parent world of this body.
      */
-    public final World getWorld() {
+    public final Dynamics2D getWorld() {
         return m_world;
     }
 

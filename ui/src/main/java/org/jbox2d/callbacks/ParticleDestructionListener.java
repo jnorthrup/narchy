@@ -1,6 +1,6 @@
 package org.jbox2d.callbacks;
 
-import org.jbox2d.dynamics.World;
+import org.jbox2d.dynamics.Dynamics2D;
 import org.jbox2d.particle.ParticleGroup;
 
 public interface ParticleDestructionListener {
@@ -11,7 +11,7 @@ public interface ParticleDestructionListener {
 
     /**
      * Called when a particle is about to be destroyed. The index can be used in conjunction with
-     * {@link World#getParticleUserDataBuffer} to determine which particle has been destroyed.
+     * {@link Dynamics2D#getParticleUserDataBuffer} to determine which particle has been destroyed.
      *
      * @param index
      */

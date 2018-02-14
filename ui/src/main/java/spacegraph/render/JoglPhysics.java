@@ -30,7 +30,7 @@ import spacegraph.Spatial;
 import spacegraph.input.FPSLook;
 import spacegraph.input.OrbMouse;
 import spacegraph.phys.Dynamic;
-import spacegraph.phys.Dynamics;
+import spacegraph.phys.Dynamics3D;
 import spacegraph.phys.collision.DefaultCollisionConfiguration;
 import spacegraph.phys.collision.DefaultIntersecter;
 import spacegraph.phys.collision.broad.Broadphase;
@@ -76,7 +76,7 @@ public class JoglPhysics<X> extends JoglSpace<X> {
     //protected final Clock clock = new Clock();
 
     // this is the most important class
-    public final Dynamics<X> dyn;
+    public final Dynamics3D<X> dyn;
 
     public static JoglPhysics window(Spatial s, int w, int h) {
         return window(w, h, s);
@@ -118,7 +118,7 @@ public class JoglPhysics<X> extends JoglSpace<X> {
 //                //new SimpleBroadphase();
                 new DbvtBroadphase();
 
-        dyn = new Dynamics<>(dispatcher, broadphase, this);
+        dyn = new Dynamics3D<>(dispatcher, broadphase, this);
 
     }
 
@@ -575,7 +575,7 @@ public class JoglPhysics<X> extends JoglSpace<X> {
         int collisionFilterGroup = isDynamic ? 1 : 2;
         int collisionFilterMask = isDynamic ? -1 : -3;
 
-        return Dynamics.newBody(mass, shape, startTransform, collisionFilterGroup, collisionFilterMask);
+        return Dynamics3D.newBody(mass, shape, startTransform, collisionFilterGroup, collisionFilterMask);
     }
 
 

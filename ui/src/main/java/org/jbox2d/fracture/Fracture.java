@@ -9,6 +9,7 @@ import org.jbox2d.common.Transform;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.contacts.Contact;
+import org.jbox2d.fracture.fragmentation.Smasher;
 import org.jbox2d.fracture.util.MyList;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
@@ -57,13 +58,13 @@ public class Fracture {
      *
      * @param dt casova dlzka framu
      */
-    public void smash(float dt) {
+    public void smash(Smasher smasher, float dt) {
         if (contact == null) { //riesi sa staticky prvok, ktory ma priliz maly obsah
             b1.setType(BodyType.DYNAMIC);
             return;
         }
 
-        World w = b1.m_world;
+        Dynamics2D w = b1.m_world;
         Shape s = f1.m_shape;
         Polygon p = f1.m_polygon;
 
@@ -121,14 +122,9 @@ public class Fracture {
         Tuple2f localVector = b2Vec.subbed(b1Vec);
 
         localVector.scaled(dt);
-        Polygon[] fragment;
-        try {
-            fragment = m.split(p, localPoint, localVector, normalImpulse); //rodeli to
-        } catch (RuntimeException ex) {
-            return;
-        }
 
-        if (fragment.length == 1) { //nerozbilo to na ziadne fragmenty
+        Polygon[] fragment = m.split(smasher, p, localPoint, localVector, normalImpulse); //rodeli to
+        if (fragment.length <= 1) { //nerozbilo to na ziadne fragmenty
             return;
         }
 
@@ -216,7 +212,7 @@ public class Fracture {
      * @param impulse
      * @param w
      */
-    public static void init(Contact contact, ContactImpulse impulse, World w) {
+    public static void init(Contact contact, ContactImpulse impulse, Dynamics2D w) {
         Fixture f1 = contact.m_fixtureA;
         Fixture f2 = contact.m_fixtureB;
         float[] impulses = impulse.normalImpulses;
@@ -234,7 +230,7 @@ public class Fracture {
      */
     private static final MyList<Material> materials = new MyList<>();
 
-    private static void fractureCheck(final Fixture f1, final Fixture f2, final float iml, World w, Contact contact, int i) {
+    private static void fractureCheck(final Fixture f1, final Fixture f2, final float iml, Dynamics2D w, Contact contact, int i) {
         materials.clear();
         for (Material m = f1.m_material; m != null; m = m.m_fragments) {
             if (materials.contains(m)) {

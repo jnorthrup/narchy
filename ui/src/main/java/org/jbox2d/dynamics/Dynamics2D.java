@@ -23,6 +23,7 @@
  ******************************************************************************/
 package org.jbox2d.dynamics;
 
+import jcog.math.FloatSupplier;
 import org.jbox2d.callbacks.*;
 import org.jbox2d.collision.AABB;
 import org.jbox2d.collision.RayCastInput;
@@ -34,28 +35,28 @@ import org.jbox2d.collision.broadphase.BroadPhase;
 import org.jbox2d.collision.broadphase.BroadPhaseStrategy;
 import org.jbox2d.collision.broadphase.DefaultBroadPhaseBuffer;
 import org.jbox2d.collision.broadphase.DynamicTree;
-import org.jbox2d.collision.shapes.*;
+import org.jbox2d.collision.shapes.Shape;
 import org.jbox2d.common.*;
 import org.jbox2d.dynamics.contacts.Contact;
 import org.jbox2d.dynamics.contacts.ContactEdge;
-import org.jbox2d.dynamics.contacts.ContactRegister;
 import org.jbox2d.dynamics.joints.Joint;
 import org.jbox2d.dynamics.joints.JointDef;
 import org.jbox2d.dynamics.joints.JointEdge;
-import org.jbox2d.dynamics.joints.PulleyJoint;
 import org.jbox2d.fracture.Fracture;
 import org.jbox2d.fracture.FractureListener;
-import org.jbox2d.fracture.util.HashTable;
+import org.jbox2d.fracture.fragmentation.Smasher;
+import org.jbox2d.fracture.util.HashTabulka;
 import org.jbox2d.particle.*;
-import org.jbox2d.pooling.IDynamicStack;
 import org.jbox2d.pooling.IWorldPool;
 import org.jbox2d.pooling.Vec2Array;
 import org.jbox2d.pooling.normal.DefaultWorldPool;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * The world class manages all physics entities, dynamic simulation, and asynchronous queries. The
@@ -63,12 +64,12 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  *
  * @author Daniel Murphy
  */
-public class World {
-    public static final int WORLD_POOL_SIZE = 100;
-    public static final int WORLD_POOL_CONTAINER_SIZE = 10;
+public class Dynamics2D {
+    public static final int WORLD_POOL_SIZE = 256;
+    public static final int WORLD_POOL_CONTAINER_SIZE = 16;
 
     public static final int NEW_FIXTURE = 0x0001;
-    public static final int LOCKED = 0x0002;
+//    public static final int LOCKED = 0x0002;
     public static final int CLEAR_FORCES = 0x0004;
 
     // statistics gathering
@@ -92,7 +93,7 @@ public class World {
 
     private DestructionListener m_destructionListener;
     private ParticleDestructionListener m_particleDestructionListener;
-    private DebugDraw m_debugDraw;
+    //private DebugDraw m_debugDraw;
 
     public final IWorldPool pool;
 
@@ -112,19 +113,23 @@ public class World {
 
     private final ParticleSystem m_particleSystem;
 
-    private final HashTable<Fracture> fractures = new HashTable<>();
 
-    private final ContactRegister[][] contactStacks =
-            new ContactRegister[ShapeType.values().length][ShapeType.values().length];
+    private Smasher smasher = new Smasher();
+    @Deprecated private final HashTabulka<Fracture> fractures = new HashTabulka<>(); //TODO move into Smasher
+
 
     final Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
+
+    final AtomicBoolean LOCKED = new AtomicBoolean(false);
+
+
 
     /**
      * Construct a world object.
      *
      * @param gravity the world gravity vector.
      */
-    public World(Tuple2f gravity) {
+    public Dynamics2D(Tuple2f gravity) {
         this(gravity, new DefaultWorldPool(WORLD_POOL_SIZE, WORLD_POOL_CONTAINER_SIZE));
     }
 
@@ -133,18 +138,17 @@ public class World {
      *
      * @param gravity the world gravity vector.
      */
-    public World(Tuple2f gravity, IWorldPool pool) {
+    public Dynamics2D(Tuple2f gravity, IWorldPool pool) {
         this(gravity, pool, new DynamicTree());
     }
 
-    public World(Tuple2f gravity, IWorldPool pool, BroadPhaseStrategy strategy) {
+    public Dynamics2D(Tuple2f gravity, IWorldPool pool, BroadPhaseStrategy strategy) {
         this(gravity, pool, new DefaultBroadPhaseBuffer(strategy));
     }
 
-    public World(Tuple2f gravity, IWorldPool pool, BroadPhase broadPhase) {
+    public Dynamics2D(Tuple2f gravity, IWorldPool pool, BroadPhase broadPhase) {
         this.pool = pool;
         m_destructionListener = null;
-        m_debugDraw = null;
 
         m_bodyList = null;
         m_jointList = null;
@@ -169,7 +173,6 @@ public class World {
 
         m_particleSystem = new ParticleSystem(this);
 
-        initializeRegisters();
     }
 
     public void setAllowSleep(boolean flag) {
@@ -200,7 +203,7 @@ public class World {
     public void addFracture(Fracture fracture) {
         //prida frakturu do hashovacej tabulky fraktur
         //ak na dany fixture tam uz existuje fraktura tak sa pozrie, ci je nova fraktura silnejsia a ak ano, tak ju vymeni
-        Fracture f = fractures.getObject(fracture);
+        Fracture f = fractures.get(fracture);
         if (f != null) {
             if (f.normalImpulse < fracture.normalImpulse) {
                 fractures.remove(f);
@@ -215,29 +218,6 @@ public class World {
         return fractures.contains(fx);
     }
 
-    private void addType(IDynamicStack<Contact> creator, ShapeType type1, ShapeType type2) {
-        ContactRegister register = new ContactRegister();
-        register.creator = creator;
-        register.primary = true;
-        contactStacks[type1.ordinal()][type2.ordinal()] = register;
-
-        if (type1 != type2) {
-            ContactRegister register2 = new ContactRegister();
-            register2.creator = creator;
-            register2.primary = false;
-            contactStacks[type2.ordinal()][type1.ordinal()] = register2;
-        }
-    }
-
-    private void initializeRegisters() {
-        addType(pool.getCircleContactStack(), ShapeType.CIRCLE, ShapeType.CIRCLE);
-        addType(pool.getPolyCircleContactStack(), ShapeType.POLYGON, ShapeType.CIRCLE);
-        addType(pool.getPolyContactStack(), ShapeType.POLYGON, ShapeType.POLYGON);
-        addType(pool.getEdgeCircleContactStack(), ShapeType.EDGE, ShapeType.CIRCLE);
-        addType(pool.getEdgePolyContactStack(), ShapeType.EDGE, ShapeType.POLYGON);
-        addType(pool.getChainCircleContactStack(), ShapeType.CHAIN, ShapeType.CIRCLE);
-        addType(pool.getChainPolyContactStack(), ShapeType.CHAIN, ShapeType.POLYGON);
-    }
 
     public DestructionListener getDestructionListener() {
         return m_destructionListener;
@@ -251,41 +231,6 @@ public class World {
         m_particleDestructionListener = listener;
     }
 
-    public Contact popContact(Fixture fixtureA, int indexA, Fixture fixtureB, int indexB) {
-        final ShapeType type1 = fixtureA.getType();
-        final ShapeType type2 = fixtureB.getType();
-
-        final ContactRegister reg = contactStacks[type1.ordinal()][type2.ordinal()];
-        if (reg != null) {
-            if (reg.primary) {
-                Contact c = reg.creator.pop();
-                c.init(fixtureA, indexA, fixtureB, indexB);
-                return c;
-            } else {
-                Contact c = reg.creator.pop();
-                c.init(fixtureB, indexB, fixtureA, indexA);
-                return c;
-            }
-        } else {
-            return null;
-        }
-    }
-
-    public void pushContact(Contact contact) {
-        Fixture fixtureA = contact.getFixtureA();
-        Fixture fixtureB = contact.getFixtureB();
-
-        if (contact.m_manifold.pointCount > 0 && !fixtureA.isSensor() && !fixtureB.isSensor()) {
-            fixtureA.getBody().setAwake(true);
-            fixtureB.getBody().setAwake(true);
-        }
-
-        ShapeType type1 = fixtureA.getType();
-        ShapeType type2 = fixtureB.getType();
-
-        IDynamicStack<Contact> creator = contactStacks[type1.ordinal()][type2.ordinal()].creator;
-        creator.push(contact);
-    }
 
     /**
      * Register a destruction listener. The listener is owned by you and must remain in scope.
@@ -324,15 +269,15 @@ public class World {
         m_contactManager.m_fractureListener = listener;
     }
 
-    /**
-     * Register a routine for debug drawing. The debug draw functions are called inside with
-     * World.DrawDebugData method. The debug draw object is owned by you and must remain in scope.
-     *
-     * @param debugDraw
-     */
-    public void setDebugDraw(DebugDraw debugDraw) {
-        m_debugDraw = debugDraw;
-    }
+//    /**
+//     * Register a routine for debug drawing. The debug draw functions are called inside with
+//     * World.DrawDebugData method. The debug draw object is owned by you and must remain in scope.
+//     *
+//     * @param debugDraw
+//     */
+//    public void setDebugDraw(DebugDraw debugDraw) {
+//        m_debugDraw = debugDraw;
+//    }
 
     /**
      * create a rigid body given a definition. No reference to the definition is retained.
@@ -342,21 +287,20 @@ public class World {
      * @warning This function is locked during callbacks.
      */
     public Body createBody(BodyDef def) {
-        assert (isLocked() == false);
-        if (isLocked()) {
-            return null;
-        }
+
         // TODO djm pooling
         Body b = new Body(def, this);
 
-        // add to world doubly linked list
-        b.m_prev = null;
-        b.m_next = m_bodyList;
-        if (m_bodyList != null) {
-            m_bodyList.m_prev = b;
-        }
-        m_bodyList = b;
-        ++m_bodyCount;
+        invokeLater(() -> {
+            // add to world doubly linked list
+            b.m_prev = null;
+            b.m_next = m_bodyList;
+            if (m_bodyList != null) {
+                m_bodyList.m_prev = b;
+            }
+            m_bodyList = b;
+            ++m_bodyCount;
+        });
 
         return b;
     }
@@ -371,68 +315,67 @@ public class World {
      */
     public void destroyBody(Body body) {
         assert (m_bodyCount > 0);
-        assert (isLocked() == false);
-        if (isLocked()) {
-            return;
-        }
 
-        // Delete the attached joints.
-        JointEdge je = body.m_jointList;
-        while (je != null) {
-            JointEdge je0 = je;
-            je = je.next;
-            if (m_destructionListener != null) {
-                m_destructionListener.sayGoodbye(je0.joint);
+        invokeLater(() -> {
+
+            // Delete the attached joints.
+            JointEdge je = body.m_jointList;
+            while (je != null) {
+                JointEdge je0 = je;
+                je = je.next;
+                if (m_destructionListener != null) {
+                    m_destructionListener.sayGoodbye(je0.joint);
+                }
+
+                destroyJoint(je0.joint);
+
+                body.m_jointList = je;
+            }
+            body.m_jointList = null;
+
+            // Delete the attached contacts.
+            ContactEdge ce = body.m_contactList;
+            while (ce != null) {
+                ContactEdge ce0 = ce;
+                ce = ce.next;
+                m_contactManager.destroy(ce0.contact);
+            }
+            body.m_contactList = null;
+
+            Fixture f = body.m_fixtureList;
+            while (f != null) {
+                Fixture f0 = f;
+                f = f.m_next;
+
+                if (m_destructionListener != null) {
+                    m_destructionListener.sayGoodbye(f0);
+                }
+
+                f0.destroyProxies(m_contactManager.m_broadPhase);
+                f0.destroy();
+                // TODO djm recycle fixtures (here or in that destroy method)
+                body.m_fixtureList = f;
+                body.m_fixtureCount -= 1;
+            }
+            body.m_fixtureList = null;
+            body.m_fixtureCount = 0;
+
+            // Remove world body list.
+            if (body.m_prev != null) {
+                body.m_prev.m_next = body.m_next;
             }
 
-            destroyJoint(je0.joint);
-
-            body.m_jointList = je;
-        }
-        body.m_jointList = null;
-
-        // Delete the attached contacts.
-        ContactEdge ce = body.m_contactList;
-        while (ce != null) {
-            ContactEdge ce0 = ce;
-            ce = ce.next;
-            m_contactManager.destroy(ce0.contact);
-        }
-        body.m_contactList = null;
-
-        Fixture f = body.m_fixtureList;
-        while (f != null) {
-            Fixture f0 = f;
-            f = f.m_next;
-
-            if (m_destructionListener != null) {
-                m_destructionListener.sayGoodbye(f0);
+            if (body.m_next != null) {
+                body.m_next.m_prev = body.m_prev;
             }
 
-            f0.destroyProxies(m_contactManager.m_broadPhase);
-            f0.destroy();
-            // TODO djm recycle fixtures (here or in that destroy method)
-            body.m_fixtureList = f;
-            body.m_fixtureCount -= 1;
-        }
-        body.m_fixtureList = null;
-        body.m_fixtureCount = 0;
+            if (body == m_bodyList) {
+                m_bodyList = body.m_next;
+            }
 
-        // Remove world body list.
-        if (body.m_prev != null) {
-            body.m_prev.m_next = body.m_next;
-        }
-
-        if (body.m_next != null) {
-            body.m_next.m_prev = body.m_prev;
-        }
-
-        if (body == m_bodyList) {
-            m_bodyList = body.m_next;
-        }
-
-        --m_bodyCount;
-        // TODO djm recycle body
+            --m_bodyCount;
+            // TODO djm recycle body
+        });
     }
 
     /**
@@ -444,59 +387,60 @@ public class World {
      * @warning This function is locked during callbacks.
      */
     public Joint createJoint(JointDef def) {
-        assert (isLocked() == false);
-        if (isLocked()) {
-            return null;
-        }
+
 
         Joint j = Joint.create(this, def);
 
-        // Connect to the world list.
-        j.m_prev = null;
-        j.m_next = m_jointList;
-        if (m_jointList != null) {
-            m_jointList.m_prev = j;
-        }
-        m_jointList = j;
-        ++m_jointCount;
+        invokeLater(() -> {
 
-        // Connect to the bodies' doubly linked lists.
-        j.m_edgeA.joint = j;
-        j.m_edgeA.other = j.getBodyB();
-        j.m_edgeA.prev = null;
-        j.m_edgeA.next = j.getBodyA().m_jointList;
-        if (j.getBodyA().m_jointList != null) {
-            j.getBodyA().m_jointList.prev = j.m_edgeA;
-        }
-        j.getBodyA().m_jointList = j.m_edgeA;
-
-        j.m_edgeB.joint = j;
-        j.m_edgeB.other = j.getBodyA();
-        j.m_edgeB.prev = null;
-        j.m_edgeB.next = j.getBodyB().m_jointList;
-        if (j.getBodyB().m_jointList != null) {
-            j.getBodyB().m_jointList.prev = j.m_edgeB;
-        }
-        j.getBodyB().m_jointList = j.m_edgeB;
-
-        Body bodyA = def.bodyA;
-        Body bodyB = def.bodyB;
-
-        // If the joint prevents collisions, then flag any contacts for filtering.
-        if (def.collideConnected == false) {
-            ContactEdge edge = bodyB.getContactList();
-            while (edge != null) {
-                if (edge.other == bodyA) {
-                    // Flag the contact for filtering at the next time step (where either
-                    // body is awake).
-                    edge.contact.flagForFiltering();
-                }
-
-                edge = edge.next;
+            // Connect to the world list.
+            j.m_prev = null;
+            j.m_next = m_jointList;
+            if (m_jointList != null) {
+                m_jointList.m_prev = j;
             }
-        }
+            m_jointList = j;
+            ++m_jointCount;
 
-        // Note: creating a joint doesn't wake the bodies.
+            // Connect to the bodies' doubly linked lists.
+            j.m_edgeA.joint = j;
+            j.m_edgeA.other = j.getBodyB();
+            j.m_edgeA.prev = null;
+            j.m_edgeA.next = j.getBodyA().m_jointList;
+            if (j.getBodyA().m_jointList != null) {
+                j.getBodyA().m_jointList.prev = j.m_edgeA;
+            }
+            j.getBodyA().m_jointList = j.m_edgeA;
+
+            j.m_edgeB.joint = j;
+            j.m_edgeB.other = j.getBodyA();
+            j.m_edgeB.prev = null;
+            j.m_edgeB.next = j.getBodyB().m_jointList;
+            if (j.getBodyB().m_jointList != null) {
+                j.getBodyB().m_jointList.prev = j.m_edgeB;
+            }
+            j.getBodyB().m_jointList = j.m_edgeB;
+
+            Body bodyA = def.bodyA;
+            Body bodyB = def.bodyB;
+
+            // If the joint prevents collisions, then flag any contacts for filtering.
+            if (!def.collideConnected) {
+                ContactEdge edge = bodyB.getContactList();
+                while (edge != null) {
+                    if (edge.other == bodyA) {
+                        // Flag the contact for filtering at the next time step (where either
+                        // body is awake).
+                        edge.contact.flagForFiltering();
+                    }
+
+                    edge = edge.next;
+                }
+            }
+
+            // Note: creating a joint doesn't wake the bodies.
+
+        });
 
         return j;
     }
@@ -508,84 +452,83 @@ public class World {
      * @warning This function is locked during callbacks.
      */
     public void destroyJoint(Joint j) {
-        assert (isLocked() == false);
-        if (isLocked()) {
-            return;
-        }
 
-        boolean collideConnected = j.getCollideConnected();
+        invokeLater(() -> {
 
-        // Remove from the doubly linked list.
-        if (j.m_prev != null) {
-            j.m_prev.m_next = j.m_next;
-        }
+            boolean collideConnected = j.getCollideConnected();
 
-        if (j.m_next != null) {
-            j.m_next.m_prev = j.m_prev;
-        }
-
-        if (j == m_jointList) {
-            m_jointList = j.m_next;
-        }
-
-        // Disconnect from island graph.
-        Body bodyA = j.getBodyA();
-        Body bodyB = j.getBodyB();
-
-        // Wake up connected bodies.
-        bodyA.setAwake(true);
-        bodyB.setAwake(true);
-
-        // Remove from body 1.
-        if (j.m_edgeA.prev != null) {
-            j.m_edgeA.prev.next = j.m_edgeA.next;
-        }
-
-        if (j.m_edgeA.next != null) {
-            j.m_edgeA.next.prev = j.m_edgeA.prev;
-        }
-
-        if (j.m_edgeA == bodyA.m_jointList) {
-            bodyA.m_jointList = j.m_edgeA.next;
-        }
-
-        j.m_edgeA.prev = null;
-        j.m_edgeA.next = null;
-
-        // Remove from body 2
-        if (j.m_edgeB.prev != null) {
-            j.m_edgeB.prev.next = j.m_edgeB.next;
-        }
-
-        if (j.m_edgeB.next != null) {
-            j.m_edgeB.next.prev = j.m_edgeB.prev;
-        }
-
-        if (j.m_edgeB == bodyB.m_jointList) {
-            bodyB.m_jointList = j.m_edgeB.next;
-        }
-
-        j.m_edgeB.prev = null;
-        j.m_edgeB.next = null;
-
-        Joint.destroy(j);
-
-        assert (m_jointCount > 0);
-        --m_jointCount;
-
-        // If the joint prevents collisions, then flag any contacts for filtering.
-        if (collideConnected == false) {
-            ContactEdge edge = bodyB.getContactList();
-            while (edge != null) {
-                if (edge.other == bodyA) {
-                    // Flag the contact for filtering at the next time step (where either
-                    // body is awake).
-                    edge.contact.flagForFiltering();
-                }
-
-                edge = edge.next;
+            // Remove from the doubly linked list.
+            if (j.m_prev != null) {
+                j.m_prev.m_next = j.m_next;
             }
-        }
+
+            if (j.m_next != null) {
+                j.m_next.m_prev = j.m_prev;
+            }
+
+            if (j == m_jointList) {
+                m_jointList = j.m_next;
+            }
+
+            // Disconnect from island graph.
+            Body bodyA = j.getBodyA();
+            Body bodyB = j.getBodyB();
+
+            // Wake up connected bodies.
+            bodyA.setAwake(true);
+            bodyB.setAwake(true);
+
+            // Remove from body 1.
+            if (j.m_edgeA.prev != null) {
+                j.m_edgeA.prev.next = j.m_edgeA.next;
+            }
+
+            if (j.m_edgeA.next != null) {
+                j.m_edgeA.next.prev = j.m_edgeA.prev;
+            }
+
+            if (j.m_edgeA == bodyA.m_jointList) {
+                bodyA.m_jointList = j.m_edgeA.next;
+            }
+
+            j.m_edgeA.prev = null;
+            j.m_edgeA.next = null;
+
+            // Remove from body 2
+            if (j.m_edgeB.prev != null) {
+                j.m_edgeB.prev.next = j.m_edgeB.next;
+            }
+
+            if (j.m_edgeB.next != null) {
+                j.m_edgeB.next.prev = j.m_edgeB.prev;
+            }
+
+            if (j.m_edgeB == bodyB.m_jointList) {
+                bodyB.m_jointList = j.m_edgeB.next;
+            }
+
+            j.m_edgeB.prev = null;
+            j.m_edgeB.next = null;
+
+            Joint.destroy(j);
+
+            assert (m_jointCount > 0);
+            --m_jointCount;
+
+            // If the joint prevents collisions, then flag any contacts for filtering.
+            if (collideConnected == false) {
+                ContactEdge edge = bodyB.getContactList();
+                while (edge != null) {
+                    if (edge.other == bodyA) {
+                        // Flag the contact for filtering at the next time step (where either
+                        // body is awake).
+                        edge.contact.flagForFiltering();
+                    }
+
+                    edge = edge.next;
+                }
+            }
+        });
     }
 
     // djm pooling
@@ -610,13 +553,16 @@ public class World {
      */
     public void step(float dt, int velocityIterations, int positionIterations) {
 
-        Runnable r;
-        while ((r = queue.poll()) != null)
-            r.run();
+
+        LOCKED.set(true);
 
         stepTimer.reset();
         tempTimer.reset();
         fractures.clear();
+
+        Runnable r;
+        while ((r = queue.poll()) != null)
+            r.run();
 
         // log.debug("Starting step");
         // If new fixtures were added, we need to find the new contacts.
@@ -625,9 +571,6 @@ public class World {
             m_contactManager.findNewContacts();
             m_flags &= ~NEW_FIXTURE;
         }
-
-
-        m_flags |= LOCKED;
 
         step.dt = dt;
         step.velocityIterations = velocityIterations;
@@ -641,28 +584,28 @@ public class World {
         step.dtRatio = m_inv_dt0 * dt;
 
         step.warmStarting = m_warmStarting;
-        m_profile.stepInit.record(tempTimer.getMilliseconds());
+        m_profile.stepInit.record(tempTimer::getMilliseconds);
 
         // Update contacts. This is where some contacts are destroyed.
         tempTimer.reset();
         m_contactManager.collide();
-        m_profile.collide.record(tempTimer.getMilliseconds());
+        m_profile.collide.record(tempTimer::getMilliseconds);
 
         // Integrate velocities, solve velocity constraints, and integrate positions.
         if (m_stepComplete && step.dt > 0.0f) {
             tempTimer.reset();
             m_particleSystem.solve(step); // Particle Simulation
-            m_profile.solveParticleSystem.record(tempTimer.getMilliseconds());
+            m_profile.solveParticleSystem.record(tempTimer::getMilliseconds);
             tempTimer.reset();
             solve(step);
-            m_profile.solve.record(tempTimer.getMilliseconds());
+            m_profile.solve.record(tempTimer::getMilliseconds);
         }
 
         // Handle TOI events.
         if (m_continuousPhysics && step.dt > 0.0f) {
             tempTimer.reset();
             solveTOI(step);
-            m_profile.solveTOI.record(tempTimer.getMilliseconds());
+            m_profile.solveTOI.record(tempTimer::getMilliseconds);
         }
 
         if (step.dt > 0.0f) {
@@ -673,13 +616,19 @@ public class World {
             clearForces();
         }
 
-        m_flags &= ~LOCKED;
-        // log.debug("ending step");
+        LOCKED.set(false);
 
-        Fracture[] array = fractures.toArray(new Fracture[fractures.size()]);
-        for (Fracture fracture : array) {
-            fracture.smash(dt);
+        {
+
+//            Fracture[] array = fractures.toArray(new Fracture[fractures.size()]);
+//            for (Fracture f : array)
+//                f.smash(smasher, dt);
+            fractures.forEach(f -> {
+               f.smash(smasher, dt);
+            });
         }
+
+
 
         m_profile.step.record(stepTimer.getMilliseconds());
     }
@@ -704,99 +653,6 @@ public class World {
     private final Tuple2f cB = new Vec2();
     private final Vec2Array avs = new Vec2Array();
 
-    /**
-     * Call this to draw shapes and other debug draw data.
-     */
-    public void drawDebugData() {
-        if (m_debugDraw == null) {
-            return;
-        }
-
-
-        int flags = m_debugDraw.getFlags();
-        boolean wireframe = (flags & DebugDraw.e_wireframeDrawingBit) != 0;
-
-        if ((flags & DebugDraw.e_shapeBit) != 0) {
-            for (Body b = m_bodyList; b != null; b = b.getNext()) {
-                xf.set(b.getTransform());
-                for (Fixture f = b.getFixtureList(); f != null; f = f.getNext()) {
-                    if (b.isActive() == false) {
-                        color.set(0.5f, 0.5f, 0.3f);
-                        drawShape(f, xf, color, wireframe);
-                    } else if (b.getType() == BodyType.STATIC) {
-                        color.set(0.5f, 0.9f, 0.3f);
-                        drawShape(f, xf, color, wireframe);
-                    } else if (b.getType() == BodyType.KINEMATIC) {
-                        color.set(0.5f, 0.5f, 0.9f);
-                        drawShape(f, xf, color, wireframe);
-                    } else if (b.isAwake() == false) {
-                        color.set(0.5f, 0.5f, 0.5f);
-                        drawShape(f, xf, color, wireframe);
-                    } else {
-                        color.set(0.9f, 0.7f, 0.7f);
-                        drawShape(f, xf, color, wireframe);
-                    }
-                }
-            }
-            drawParticleSystem(m_particleSystem);
-        }
-
-        if ((flags & DebugDraw.e_jointBit) != 0) {
-            for (Joint j = m_jointList; j != null; j = j.getNext()) {
-                drawJoint(j);
-            }
-        }
-
-        if ((flags & DebugDraw.e_pairBit) != 0) {
-            color.set(0.3f, 0.9f, 0.9f);
-            for (Contact c = m_contactManager.m_contactList; c != null; c = c.getNext()) {
-                Fixture fixtureA = c.getFixtureA();
-                Fixture fixtureB = c.getFixtureB();
-                fixtureA.getAABB(c.getChildIndexA()).getCenterToOut(cA);
-                fixtureB.getAABB(c.getChildIndexB()).getCenterToOut(cB);
-                m_debugDraw.drawSegment(cA, cB, color);
-            }
-        }
-
-        if ((flags & DebugDraw.e_aabbBit) != 0) {
-            color.set(0.9f, 0.3f, 0.9f);
-
-            for (Body b = m_bodyList; b != null; b = b.getNext()) {
-                if (b.isActive() == false) {
-                    continue;
-                }
-
-                for (Fixture f = b.getFixtureList(); f != null; f = f.getNext()) {
-                    for (int i = 0; i < f.m_proxyCount; ++i) {
-                        FixtureProxy proxy = f.m_proxies[i];
-                        AABB aabb = m_contactManager.m_broadPhase.getFatAABB(proxy.proxyId);
-                        if (aabb != null) {
-                            Tuple2f[] vs = avs.get(4);
-                            vs[0].set(aabb.lowerBound.x, aabb.lowerBound.y);
-                            vs[1].set(aabb.upperBound.x, aabb.lowerBound.y);
-                            vs[2].set(aabb.upperBound.x, aabb.upperBound.y);
-                            vs[3].set(aabb.lowerBound.x, aabb.upperBound.y);
-                            m_debugDraw.drawPolygon(vs, 4, color);
-                        }
-                    }
-                }
-            }
-        }
-
-        if ((flags & DebugDraw.e_centerOfMassBit) != 0) {
-            for (Body b = m_bodyList; b != null; b = b.getNext()) {
-                xf.set(b.getTransform());
-                xf.p.set(b.getWorldCenter());
-                m_debugDraw.drawTransform(xf);
-            }
-        }
-
-        if ((flags & DebugDraw.e_dynamicTreeBit) != 0) {
-            m_contactManager.m_broadPhase.drawTree(m_debugDraw);
-        }
-
-        m_debugDraw.flush();
-    }
 
     private final WorldQueryWrapper wqwrapper = new WorldQueryWrapper();
 
@@ -1041,7 +897,7 @@ public class World {
      * @return
      */
     public boolean isLocked() {
-        return (m_flags & LOCKED) == LOCKED;
+        return LOCKED.get();
     }
 
     /**
@@ -1535,46 +1391,6 @@ public class World {
         }
     }
 
-    private void drawJoint(Joint joint) {
-        Body bodyA = joint.getBodyA();
-        Body bodyB = joint.getBodyB();
-        Transform xf1 = bodyA.getTransform();
-        Transform xf2 = bodyB.getTransform();
-        Tuple2f x1 = xf1.p;
-        Tuple2f x2 = xf2.p;
-        Tuple2f p1 = pool.popVec2();
-        Tuple2f p2 = pool.popVec2();
-        joint.getAnchorA(p1);
-        joint.getAnchorB(p2);
-
-        color.set(0.5f, 0.8f, 0.8f);
-
-        switch (joint.getType()) {
-            // TODO djm write after writing joints
-            case DISTANCE:
-                m_debugDraw.drawSegment(p1, p2, color);
-                break;
-
-            case PULLEY: {
-                PulleyJoint pulley = (PulleyJoint) joint;
-                Tuple2f s1 = pulley.getGroundAnchorA();
-                Tuple2f s2 = pulley.getGroundAnchorB();
-                m_debugDraw.drawSegment(s1, p1, color);
-                m_debugDraw.drawSegment(s2, p2, color);
-                m_debugDraw.drawSegment(s1, s2, color);
-            }
-            break;
-            case CONSTANT_VOLUME:
-            case MOUSE:
-                // don't draw this
-                break;
-            default:
-                m_debugDraw.drawSegment(x1, p1, color);
-                m_debugDraw.drawSegment(p1, p2, color);
-                m_debugDraw.drawSegment(x2, p2, color);
-        }
-        pool.pushVec2(2);
-    }
 
     // NOTE this corresponds to the liquid test, so the debugdraw can draw
     // the liquid particles correctly. They should be the same.
@@ -1591,100 +1407,6 @@ public class World {
     private final Tuple2f W = new v2();
     private final Vec2Array tlvertices = new Vec2Array();
 
-    private void drawShape(Fixture fixture, Transform xf, Color3f color, boolean wireframe) {
-        switch (fixture.getType()) {
-            case CIRCLE: {
-                CircleShape circle = (CircleShape) fixture.getShape();
-
-                // Vec2 center = Mul(xf, circle.m_p);
-                Transform.mulToOutUnsafe(xf, circle.m_p, center);
-                float radius = circle.m_radius;
-                xf.q.getXAxis(axis);
-
-                if (fixture.getUserData() != null && fixture.getUserData().equals(LIQUID_INT)) {
-                    Body b = fixture.getBody();
-                    liquidOffset.set(b.m_linearVelocity);
-                    float linVelLength = b.m_linearVelocity.length();
-                    if (averageLinearVel == -1) {
-                        averageLinearVel = linVelLength;
-                    } else {
-                        averageLinearVel = .98f * averageLinearVel + .02f * linVelLength;
-                    }
-                    liquidOffset.scaled(liquidLength / averageLinearVel / 2);
-                    circCenterMoved.set(center).added(liquidOffset);
-                    center.subbed(liquidOffset);
-                    m_debugDraw.drawSegment(center, circCenterMoved, liquidColor);
-                    return;
-                }
-                if (wireframe) {
-                    m_debugDraw.drawCircle(center, radius, axis, color);
-                } else {
-                    m_debugDraw.drawSolidCircle(center, radius, axis, color);
-                }
-            }
-            break;
-
-            case POLYGON: {
-                PolygonShape poly = (PolygonShape) fixture.getShape();
-                int vertexCount = poly.m_count;
-                assert (vertexCount <= Settings.maxPolygonVertices);
-                Tuple2f[] vertices = tlvertices.get(Settings.maxPolygonVertices);
-
-                for (int i = 0; i < vertexCount; ++i) {
-                    // vertices[i] = Mul(xf, poly.m_vertices[i]);
-                    Transform.mulToOutUnsafe(xf, poly.m_vertices[i], vertices[i]);
-                }
-                if (wireframe) {
-                    m_debugDraw.drawPolygon(vertices, vertexCount, color);
-                } else {
-                    m_debugDraw.drawSolidPolygon(vertices, vertexCount, color);
-                }
-            }
-            break;
-            case EDGE: {
-                EdgeShape edge = (EdgeShape) fixture.getShape();
-                Transform.mulToOutUnsafe(xf, edge.m_vertex1, V);
-                Transform.mulToOutUnsafe(xf, edge.m_vertex2, W);
-                m_debugDraw.drawSegment(V, W, color);
-            }
-            break;
-            case CHAIN: {
-                ChainShape chain = (ChainShape) fixture.getShape();
-                int count = chain.m_count;
-                Tuple2f[] vertices = chain.m_vertices;
-
-                Transform.mulToOutUnsafe(xf, vertices[0], V);
-                for (int i = 1; i < count; ++i) {
-                    Transform.mulToOutUnsafe(xf, vertices[i], W);
-                    m_debugDraw.drawSegment(V, W, color);
-                    m_debugDraw.drawCircle(V, 0.05f, color);
-                    V.set(W);
-                }
-            }
-            break;
-            default:
-                break;
-        }
-    }
-
-    private void drawParticleSystem(ParticleSystem system) {
-        boolean wireframe = (m_debugDraw.getFlags() & DebugDraw.e_wireframeDrawingBit) != 0;
-        int particleCount = system.getParticleCount();
-        if (particleCount != 0) {
-            float particleRadius = system.getParticleRadius();
-            Tuple2f[] positionBuffer = system.getParticlePositionBuffer();
-            ParticleColor[] colorBuffer = null;
-            if (system.m_colorBuffer.data != null) {
-                colorBuffer = system.getParticleColorBuffer();
-            }
-            if (wireframe) {
-                m_debugDraw.drawParticlesWireframe(positionBuffer, particleRadius, colorBuffer,
-                        particleCount);
-            } else {
-                m_debugDraw.drawParticles(positionBuffer, particleRadius, colorBuffer, particleCount);
-            }
-        }
-    }
 
     /**
      * Create a particle whose properties have been defined. No reference to the definition is
@@ -2027,6 +1749,88 @@ public class World {
     public float computeParticleCollisionEnergy() {
         return m_particleSystem.computeParticleCollisionEnergy();
     }
+
+    public static class Profile {
+
+        public boolean active = false;
+
+        private static final int LONG_AVG_NUMS = 20;
+        private static final float LONG_FRACTION = 1f / LONG_AVG_NUMS;
+        private static final int SHORT_AVG_NUMS = 5;
+        private static final float SHORT_FRACTION = 1f / SHORT_AVG_NUMS;
+
+        public class ProfileEntry {
+            float longAvg;
+            float shortAvg;
+            float min;
+            float max;
+            float accum;
+
+            ProfileEntry() {
+                min = Float.MAX_VALUE;
+                max = -Float.MAX_VALUE;
+            }
+
+            public void record(FloatSupplier value) {
+                if (active)
+                    record(value.asFloat());
+            }
+
+            public void record(float value) {
+                longAvg = longAvg * (1 - LONG_FRACTION) + value * LONG_FRACTION;
+                shortAvg = shortAvg * (1 - SHORT_FRACTION) + value * SHORT_FRACTION;
+                min = MathUtils.min(value, min);
+                max = MathUtils.max(value, max);
+            }
+
+            public void startAccum() {
+                accum = 0;
+            }
+
+            public void accum(FloatSupplier value) {
+                if (active)
+                    accum(value.asFloat());
+            }
+
+            public void accum(float value) {
+                accum += value;
+            }
+
+            public void endAccum() {
+                record(accum);
+            }
+
+            @Override
+            public String toString() {
+                return String.format("%.2f (%.2f) [%.2f,%.2f]", shortAvg, longAvg, min, max);
+            }
+        }
+
+        public final ProfileEntry step = new ProfileEntry();
+        public final ProfileEntry stepInit = new ProfileEntry();
+        public final ProfileEntry collide = new ProfileEntry();
+        public final ProfileEntry solveParticleSystem = new ProfileEntry();
+        public final ProfileEntry solve = new ProfileEntry();
+        public final ProfileEntry solveInit = new ProfileEntry();
+        public final ProfileEntry solveVelocity = new ProfileEntry();
+        public final ProfileEntry solvePosition = new ProfileEntry();
+        public final ProfileEntry broadphase = new ProfileEntry();
+        public final ProfileEntry solveTOI = new ProfileEntry();
+
+        public void toDebugStrings(List<String> strings) {
+            strings.add("Profile:");
+            strings.add(" step: " + step);
+            strings.add("  init: " + stepInit);
+            strings.add("  collide: " + collide);
+            strings.add("  particles: " + solveParticleSystem);
+            strings.add("  solve: " + solve);
+            strings.add("   solveInit: " + solveInit);
+            strings.add("   solveVelocity: " + solveVelocity);
+            strings.add("   solvePosition: " + solvePosition);
+            strings.add("   broadphase: " + broadphase);
+            strings.add("  solveTOI: " + solveTOI);
+        }
+    }
 }
 
 
@@ -2069,3 +1873,232 @@ class WorldRayCastWrapper implements TreeRayCastCallback {
     BroadPhase broadPhase;
     RayCastCallback callback;
 }
+
+//    private void drawJoint(Joint joint) {
+//        Body bodyA = joint.getBodyA();
+//        Body bodyB = joint.getBodyB();
+//        Transform xf1 = bodyA.getTransform();
+//        Transform xf2 = bodyB.getTransform();
+//        Tuple2f x1 = xf1.p;
+//        Tuple2f x2 = xf2.p;
+//        Tuple2f p1 = pool.popVec2();
+//        Tuple2f p2 = pool.popVec2();
+//        joint.getAnchorA(p1);
+//        joint.getAnchorB(p2);
+//
+//        color.set(0.5f, 0.8f, 0.8f);
+//
+//        switch (joint.getType()) {
+//            // TODO djm write after writing joints
+//            case DISTANCE:
+//                m_debugDraw.drawSegment(p1, p2, color);
+//                break;
+//
+//            case PULLEY: {
+//                PulleyJoint pulley = (PulleyJoint) joint;
+//                Tuple2f s1 = pulley.getGroundAnchorA();
+//                Tuple2f s2 = pulley.getGroundAnchorB();
+//                m_debugDraw.drawSegment(s1, p1, color);
+//                m_debugDraw.drawSegment(s2, p2, color);
+//                m_debugDraw.drawSegment(s1, s2, color);
+//            }
+//            break;
+//            case CONSTANT_VOLUME:
+//            case MOUSE:
+//                // don't draw this
+//                break;
+//            default:
+//                m_debugDraw.drawSegment(x1, p1, color);
+//                m_debugDraw.drawSegment(p1, p2, color);
+//                m_debugDraw.drawSegment(x2, p2, color);
+//        }
+//        pool.pushVec2(2);
+//    }
+//
+//    private void drawShape(Fixture fixture, Transform xf, Color3f color, boolean wireframe) {
+//        switch (fixture.getType()) {
+//            case CIRCLE: {
+//                CircleShape circle = (CircleShape) fixture.getShape();
+//
+//                // Vec2 center = Mul(xf, circle.m_p);
+//                Transform.mulToOutUnsafe(xf, circle.m_p, center);
+//                float radius = circle.m_radius;
+//                xf.q.getXAxis(axis);
+//
+//                if (fixture.getUserData() != null && fixture.getUserData().equals(LIQUID_INT)) {
+//                    Body b = fixture.getBody();
+//                    liquidOffset.set(b.m_linearVelocity);
+//                    float linVelLength = b.m_linearVelocity.length();
+//                    if (averageLinearVel == -1) {
+//                        averageLinearVel = linVelLength;
+//                    } else {
+//                        averageLinearVel = .98f * averageLinearVel + .02f * linVelLength;
+//                    }
+//                    liquidOffset.scaled(liquidLength / averageLinearVel / 2);
+//                    circCenterMoved.set(center).added(liquidOffset);
+//                    center.subbed(liquidOffset);
+//                    m_debugDraw.drawSegment(center, circCenterMoved, liquidColor);
+//                    return;
+//                }
+//                if (wireframe) {
+//                    m_debugDraw.drawCircle(center, radius, axis, color);
+//                } else {
+//                    m_debugDraw.drawSolidCircle(center, radius, axis, color);
+//                }
+//            }
+//            break;
+//
+//            case POLYGON: {
+//                PolygonShape poly = (PolygonShape) fixture.getShape();
+//                int vertexCount = poly.m_count;
+//                assert (vertexCount <= Settings.maxPolygonVertices);
+//                Tuple2f[] vertices = tlvertices.get(Settings.maxPolygonVertices);
+//
+//                for (int i = 0; i < vertexCount; ++i) {
+//                    // vertices[i] = Mul(xf, poly.m_vertices[i]);
+//                    Transform.mulToOutUnsafe(xf, poly.m_vertices[i], vertices[i]);
+//                }
+//                if (wireframe) {
+//                    m_debugDraw.drawPolygon(vertices, vertexCount, color);
+//                } else {
+//                    m_debugDraw.drawSolidPolygon(vertices, vertexCount, color);
+//                }
+//            }
+//            break;
+//            case EDGE: {
+//                EdgeShape edge = (EdgeShape) fixture.getShape();
+//                Transform.mulToOutUnsafe(xf, edge.m_vertex1, V);
+//                Transform.mulToOutUnsafe(xf, edge.m_vertex2, W);
+//                m_debugDraw.drawSegment(V, W, color);
+//            }
+//            break;
+//            case CHAIN: {
+//                ChainShape chain = (ChainShape) fixture.getShape();
+//                int count = chain.m_count;
+//                Tuple2f[] vertices = chain.m_vertices;
+//
+//                Transform.mulToOutUnsafe(xf, vertices[0], V);
+//                for (int i = 1; i < count; ++i) {
+//                    Transform.mulToOutUnsafe(xf, vertices[i], W);
+//                    m_debugDraw.drawSegment(V, W, color);
+//                    m_debugDraw.drawCircle(V, 0.05f, color);
+//                    V.set(W);
+//                }
+//            }
+//            break;
+//            default:
+//                break;
+//        }
+//    }
+//
+//    private void drawParticleSystem(ParticleSystem system) {
+//        boolean wireframe = (m_debugDraw.getFlags() & DebugDraw.e_wireframeDrawingBit) != 0;
+//        int particleCount = system.getParticleCount();
+//        if (particleCount != 0) {
+//            float particleRadius = system.getParticleRadius();
+//            Tuple2f[] positionBuffer = system.getParticlePositionBuffer();
+//            ParticleColor[] colorBuffer = null;
+//            if (system.m_colorBuffer.data != null) {
+//                colorBuffer = system.getParticleColorBuffer();
+//            }
+//            if (wireframe) {
+//                m_debugDraw.drawParticlesWireframe(positionBuffer, particleRadius, colorBuffer,
+//                        particleCount);
+//            } else {
+//                m_debugDraw.drawParticles(positionBuffer, particleRadius, colorBuffer, particleCount);
+//            }
+//        }
+//    }
+//    /**
+//     * Call this to draw shapes and other debug draw data.
+//     */
+//    public void drawDebugData() {
+//        if (m_debugDraw == null) {
+//            return;
+//        }
+//
+//
+//        int flags = m_debugDraw.getFlags();
+//        boolean wireframe = (flags & DebugDraw.e_wireframeDrawingBit) != 0;
+//
+//        if ((flags & DebugDraw.e_shapeBit) != 0) {
+//            for (Body b = m_bodyList; b != null; b = b.getNext()) {
+//                xf.set(b.getTransform());
+//                for (Fixture f = b.getFixtureList(); f != null; f = f.getNext()) {
+//                    if (b.isActive() == false) {
+//                        color.set(0.5f, 0.5f, 0.3f);
+//                        drawShape(f, xf, color, wireframe);
+//                    } else if (b.getType() == BodyType.STATIC) {
+//                        color.set(0.5f, 0.9f, 0.3f);
+//                        drawShape(f, xf, color, wireframe);
+//                    } else if (b.getType() == BodyType.KINEMATIC) {
+//                        color.set(0.5f, 0.5f, 0.9f);
+//                        drawShape(f, xf, color, wireframe);
+//                    } else if (b.isAwake() == false) {
+//                        color.set(0.5f, 0.5f, 0.5f);
+//                        drawShape(f, xf, color, wireframe);
+//                    } else {
+//                        color.set(0.9f, 0.7f, 0.7f);
+//                        drawShape(f, xf, color, wireframe);
+//                    }
+//                }
+//            }
+//            drawParticleSystem(m_particleSystem);
+//        }
+//
+//        if ((flags & DebugDraw.e_jointBit) != 0) {
+//            for (Joint j = m_jointList; j != null; j = j.getNext()) {
+//                drawJoint(j);
+//            }
+//        }
+//
+//        if ((flags & DebugDraw.e_pairBit) != 0) {
+//            color.set(0.3f, 0.9f, 0.9f);
+//            for (Contact c = m_contactManager.m_contactList; c != null; c = c.getNext()) {
+//                Fixture fixtureA = c.getFixtureA();
+//                Fixture fixtureB = c.getFixtureB();
+//                fixtureA.getAABB(c.getChildIndexA()).getCenterToOut(cA);
+//                fixtureB.getAABB(c.getChildIndexB()).getCenterToOut(cB);
+//                m_debugDraw.drawSegment(cA, cB, color);
+//            }
+//        }
+//
+//        if ((flags & DebugDraw.e_aabbBit) != 0) {
+//            color.set(0.9f, 0.3f, 0.9f);
+//
+//            for (Body b = m_bodyList; b != null; b = b.getNext()) {
+//                if (b.isActive() == false) {
+//                    continue;
+//                }
+//
+//                for (Fixture f = b.getFixtureList(); f != null; f = f.getNext()) {
+//                    for (int i = 0; i < f.m_proxyCount; ++i) {
+//                        FixtureProxy proxy = f.m_proxies[i];
+//                        AABB aabb = m_contactManager.m_broadPhase.getFatAABB(proxy.proxyId);
+//                        if (aabb != null) {
+//                            Tuple2f[] vs = avs.get(4);
+//                            vs[0].set(aabb.lowerBound.x, aabb.lowerBound.y);
+//                            vs[1].set(aabb.upperBound.x, aabb.lowerBound.y);
+//                            vs[2].set(aabb.upperBound.x, aabb.upperBound.y);
+//                            vs[3].set(aabb.lowerBound.x, aabb.upperBound.y);
+//                            m_debugDraw.drawPolygon(vs, 4, color);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        if ((flags & DebugDraw.e_centerOfMassBit) != 0) {
+//            for (Body b = m_bodyList; b != null; b = b.getNext()) {
+//                xf.set(b.getTransform());
+//                xf.p.set(b.getWorldCenter());
+//                m_debugDraw.drawTransform(xf);
+//            }
+//        }
+//
+//        if ((flags & DebugDraw.e_dynamicTreeBit) != 0) {
+//            m_contactManager.m_broadPhase.drawTree(m_debugDraw);
+//        }
+//
+//        m_debugDraw.flush();
+//    }

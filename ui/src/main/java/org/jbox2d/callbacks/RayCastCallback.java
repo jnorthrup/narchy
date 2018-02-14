@@ -29,12 +29,12 @@
 package org.jbox2d.callbacks;
 
 import org.jbox2d.dynamics.Fixture;
-import org.jbox2d.dynamics.World;
+import org.jbox2d.dynamics.Dynamics2D;
 import spacegraph.math.Tuple2f;
 
 /**
  * Callback class for ray casts.
- * See {@link World#raycast(RayCastCallback, Tuple2f, Tuple2f)}
+ * See {@link Dynamics2D#raycast(RayCastCallback, Tuple2f, Tuple2f)}
  * @author Daniel Murphy
  */
 public interface RayCastCallback {

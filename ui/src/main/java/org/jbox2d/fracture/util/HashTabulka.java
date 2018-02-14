@@ -1,10 +1,14 @@
 package org.jbox2d.fracture.util;
 
+import jcog.TODO;
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.reflect.Array;
 import java.util.AbstractSet;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Genericka optimalizovana hashovacia tabulka. Implementuje abstraktnu triedu
@@ -16,7 +20,7 @@ import java.util.Set;
  * @author Marek Benovic
  */
 
-public class HashTable<T> extends AbstractSet<T> implements Set<T> {
+public class HashTabulka<T> extends AbstractSet<T> implements Set<T> {
     /**
      * Pocet vlozenych vrcholov
      */
@@ -36,7 +40,7 @@ public class HashTable<T> extends AbstractSet<T> implements Set<T> {
     /**
      * Inicializuje hashovaciu tabulku.
      */
-    public HashTable() {
+    public HashTabulka() {
         alocate();
     }
 
@@ -45,7 +49,7 @@ public class HashTable<T> extends AbstractSet<T> implements Set<T> {
      *
      * @param array Vkladane hodnoty
      */
-    public HashTable(T[] array) {
+    public HashTabulka(T[] array) {
         this();
         addAll(Arrays.asList(array));
     }
@@ -70,13 +74,15 @@ public class HashTable<T> extends AbstractSet<T> implements Set<T> {
      */
     @Override
     public final boolean add(T value) {
-        if (count > n) { //ak je v tabulke prilis vela prvkov, tabulku rozsirim (podobny princip ako v ArrayListe) - aby sa minimalizoval pocet kolizii
+//        if (contains(value))
+//            return false;
+        if (count >= n) { //ak je v tabulke prilis vela prvkov, tabulku rozsirim (podobny princip ako v ArrayListe) - aby sa minimalizoval pocet kolizii
             realocate();
         }
-        Node<T> zaznam = new Node<>(value); //novy prvok
-        int code = value.hashCode() & n;
-        zaznam.next = hashtable[code];
-        hashtable[code] = zaznam; //prvok vlozim do tabulky a spojak, ktory tam existoval prilepim zan
+        Node<T> node = new Node<>(value); //novy prvok
+        int code = node.hash & this.n;
+        node.next = hashtable[code];
+        hashtable[code] = node; //prvok vlozim do tabulky a spojak, ktory tam existoval prilepim zan
         count++; //zvysim pocet prvkov struktury
         return true;
     }
@@ -91,7 +97,7 @@ public class HashTable<T> extends AbstractSet<T> implements Set<T> {
      * sa v strukture nenachadzal.
      */
     @Override
-    public boolean remove(Object value) {
+    public boolean remove(@NotNull Object value) {
         int code = value.hashCode() & n;
         Node<T> zaznam = hashtable[code];
         if (zaznam != null) {
@@ -116,10 +122,13 @@ public class HashTable<T> extends AbstractSet<T> implements Set<T> {
      * @param o Porovnavany objekt
      * @return Vrati objekt, ktory vracia pri porovnavani funkciou equals true
      */
-    public T getObject(Object o) {
-        for (Node<T> chain = hashtable[o.hashCode() & n]; chain != null; chain = chain.next) {
-            if (chain.value.equals(o)) {
-                return chain.value;
+    public T get(Object o) {
+        int oh = o.hashCode();
+        for (Node<T> chain = hashtable[oh & n]; chain != null; chain = chain.next) {
+            if (chain.hash == oh) {
+                T v = chain.value;
+                if (v.equals(o))
+                    return v;
             }
         }
         return null;
@@ -132,7 +141,7 @@ public class HashTable<T> extends AbstractSet<T> implements Set<T> {
      */
     @Override
     public boolean contains(Object o) {
-        return getObject(o) != null;
+        return get(o) != null;
     }
 
     /**
@@ -162,16 +171,25 @@ public class HashTable<T> extends AbstractSet<T> implements Set<T> {
             a = (U[]) Array.newInstance(a.getClass().getComponentType(), count);
         }
         int index = 0;
-        for (Node<T> zaznam : hashtable) {
-            while (zaznam != null) {
-                a[index++] = (U) zaznam.value;
-                zaznam = zaznam.next;
+        for (Node<T> n : hashtable) {
+            while (n != null) {
+                a[index++] = (U) n.value;
+                n = n.next;
             }
         }
         if (ln > count) {
             a[count] = null;
         }
         return a;
+    }
+
+    @Override public void forEach(Consumer<? super T> action) {
+        for (Node<T> n : hashtable) {
+            while (n!=null) {
+                action.accept(n.value);
+                n = n.next;
+            }
+        }
     }
 
     /**
@@ -183,7 +201,7 @@ public class HashTable<T> extends AbstractSet<T> implements Set<T> {
         for (Node<T> chain : hashtable) { //prejdem prvky tabulky
             while (chain != null) { //prejdem prvky jednotlivych spojovych zoznamov a prehodim prvky do novej tabulky
                 Node<T> next = chain.next;
-                int code = chain.value.hashCode() & n;
+                int code = chain.hash & n;
                 chain.next = newTable[code];
                 newTable[code] = chain;
                 chain = next;
@@ -200,6 +218,6 @@ public class HashTable<T> extends AbstractSet<T> implements Set<T> {
 
     @Override
     public Iterator<T> iterator() {
-        throw new UnsupportedOperationException("Not supported yet."); //Nieje naimplementovane
+        throw new TODO();
     }
 }

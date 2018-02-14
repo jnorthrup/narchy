@@ -27,7 +27,7 @@ public class Materials implements ICase {
     }
 
     @Override
-    public void init(World w) {
+    public void init(Dynamics2D w) {
         {
             BodyDef bodyDef2 = new BodyDef();
             bodyDef2.type = BodyType.DYNAMIC;

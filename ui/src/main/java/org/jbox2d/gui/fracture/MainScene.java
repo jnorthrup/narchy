@@ -14,7 +14,7 @@ import spacegraph.math.v2;
  */
 public class MainScene implements ICase {
     @Override
-    public void init(World w) {
+    public void init(Dynamics2D w) {
         {
             BodyDef bodyDef2 = new BodyDef();
             bodyDef2.type = BodyType.DYNAMIC;

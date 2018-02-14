@@ -25,7 +25,7 @@ package org.jbox2d.dynamics.joints;
 
 import org.jbox2d.dynamics.Body;
 import org.jbox2d.dynamics.SolverData;
-import org.jbox2d.dynamics.World;
+import org.jbox2d.dynamics.Dynamics2D;
 import org.jbox2d.pooling.IWorldPool;
 import spacegraph.math.Tuple2f;
 
@@ -39,7 +39,7 @@ import spacegraph.math.Tuple2f;
  */
 public abstract class Joint {
 
-    public static Joint create(World world, JointDef def) {
+    public static Joint create(Dynamics2D world, JointDef def) {
         // Joint joint = null;
         switch (def.type) {
             case MOUSE:

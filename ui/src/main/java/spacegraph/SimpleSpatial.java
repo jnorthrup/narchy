@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.math.v3;
 import spacegraph.phys.Collidable;
 import spacegraph.phys.Dynamic;
-import spacegraph.phys.Dynamics;
+import spacegraph.phys.Dynamics3D;
 import spacegraph.phys.constraint.TypedConstraint;
 import spacegraph.phys.math.Transform;
 import spacegraph.phys.shape.CollisionShape;
@@ -55,7 +55,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
     }
 
     @Override
-    public void delete(Dynamics dyn) {
+    public void delete(Dynamics3D dyn) {
 //        if (shape!=null) {
 //            shape.setUserPointer(null);
 //            shape = null;
@@ -253,7 +253,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
     }
 
     public Dynamic newBody(boolean collidesWithOthersLikeThis) {
-        Dynamic b = Dynamics.newBody(
+        Dynamic b = Dynamics3D.newBody(
                 mass(), //mass
                 shape, transform,//motion,
                 +1, //group
@@ -314,7 +314,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
 //    }
 
     @Override
-    public void update(Dynamics world) {
+    public void update(Dynamics3D world) {
         if (body == null) {
             this.body = create(world);
         } else {
@@ -324,7 +324,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
 
 
 
-    protected Dynamic create(Dynamics world) {
+    protected Dynamic create(Dynamics3D world) {
         Dynamic b = newBody(collidable());
         b.setData(this);
         return b;

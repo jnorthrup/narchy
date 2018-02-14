@@ -1,6 +1,6 @@
 package spacegraph.widget.windo;
 
-import org.jbox2d.dynamics.World;
+import org.jbox2d.dynamics.Dynamics2D;
 import spacegraph.Ortho;
 import spacegraph.Scale;
 import spacegraph.Surface;
@@ -17,7 +17,7 @@ import spacegraph.phys.util.Animated;
  */
 public class Wall extends Stacking implements Animated {
 
-    private final World w;
+    private final Dynamics2D w;
 
     //final ContinuousConstraintSolver model = new ContinuousConstraintSolver();
 
@@ -25,7 +25,7 @@ public class Wall extends Stacking implements Animated {
 
         clipTouchBounds = false;
 
-        w = new World(new v2(0,0));
+        w = new Dynamics2D(new v2(0,0));
         w.setParticleRadius(0.2f);
         w.setParticleDensity(1.0f);
         w.setContinuousPhysics(true);

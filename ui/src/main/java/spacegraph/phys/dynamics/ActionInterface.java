@@ -24,12 +24,12 @@
 package spacegraph.phys.dynamics;
 
 import spacegraph.phys.Collisions;
-import spacegraph.phys.Dynamics;
+import spacegraph.phys.Dynamics3D;
 import spacegraph.phys.math.IDebugDraw;
 
 /**
  * Basic interface to allow actions such as vehicles and characters to be
- * updated inside a {@link Dynamics}.
+ * updated inside a {@link Dynamics3D}.
  *
  * @author tomrbryn
  */

@@ -4,7 +4,7 @@ import jcog.list.FasterList;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.fracture.Fragment;
 import org.jbox2d.fracture.Polygon;
-import org.jbox2d.fracture.util.HashTable;
+import org.jbox2d.fracture.util.HashTabulka;
 import org.jbox2d.fracture.util.MyList;
 import org.jbox2d.fracture.voronoi.SingletonVD;
 import spacegraph.math.Tuple2f;
@@ -21,8 +21,9 @@ import java.util.List;
  *
  * @author Marek Benovic
  */
-public class Singleton {
-    private static final SingletonVD factory = new SingletonVD();
+public class Smasher {
+
+    private final SingletonVD factory = new SingletonVD();
 
     /**
      * Mnozina vyslednych fragmentov.
@@ -34,6 +35,8 @@ public class Singleton {
 
     float constant[]; //storage for precalculated constants (same size as polyX)
     float multiple[]; //storage for precalculated multipliers (same size as polyX)
+
+    private final HashTabulka<EdgeDiagram> table = new HashTabulka<>();
 
 
     /**
@@ -52,8 +55,8 @@ public class Singleton {
         List<Fragment> list = getVoronoi();
 
         List<EdgePolygon> polygonEdgesList = new ArrayList<>();
-        HashTable<EdgeDiagram> diagramEdges = new HashTable<>();
-        HashTable<EdgePolygon> polygonEdges = new HashTable<>();
+        HashTabulka<EdgeDiagram> diagramEdges = new HashTabulka<>();
+        HashTabulka<EdgePolygon> polygonEdges = new HashTabulka<>();
 
         //vlozim hrany polygonu do hashovacej tabulky hran polygonu
         int count = p.size();
@@ -71,8 +74,9 @@ public class Singleton {
             for (int i = 1; i <= count; i++) {
                 Tuple2f p1 = pp.get(i - 1);
                 Tuple2f p2 = pp.get(i == count ? 0 : i);
+
                 EdgeDiagram e = new EdgeDiagram(p1, p2);
-                EdgeDiagram alternative = diagramEdges.getObject(e);
+                EdgeDiagram alternative = diagramEdges.get(e);
                 if (alternative == null) {
                     diagramEdges.add(e);
                     e.d1 = pp;
@@ -86,6 +90,9 @@ public class Singleton {
                 diagramEdges.toArray(new AEdge[diagramEdges.size()]),
                 polygonEdges.toArray(new AEdge[polygonEdges.size()])
         };
+
+        diagramEdges.clear();
+        polygonEdges.clear();
 
         ArrayList<EVec2> vectorList = new ArrayList<>();
 
@@ -109,8 +116,6 @@ public class Singleton {
 
         Arrays.sort(vectors); //zotriedim body
 
-        diagramEdges.clear();
-        polygonEdges.clear();
 
         for (EVec2 e : vectors) {
             if (e.e instanceof EdgeDiagram) {
@@ -118,10 +123,10 @@ public class Singleton {
                     EdgeDiagram ex = (EdgeDiagram) e.e;
                     diagramEdges.add(ex);
 
-                    EdgePolygon[] hranyPolygonu = polygonEdges.toArray(new EdgePolygon[polygonEdges.size()]);
-                    for (EdgePolygon px : hranyPolygonu) {
-                        process(px, ex);
-                    }
+//                    for (EdgePolygon px : polygonEdges.toArray(new EdgePolygon[polygonEdges.size()])) {
+//                        process(px, ex);
+//                    }
+                    polygonEdges.forEach(px -> process(px, ex));
 
                 } else {
                     diagramEdges.remove(e.e);
@@ -131,11 +136,10 @@ public class Singleton {
                     EdgePolygon px = (EdgePolygon) e.e;
                     polygonEdges.add(px);
 
-                    EdgeDiagram[] hranyPolygonu = diagramEdges.toArray(new EdgeDiagram[diagramEdges.size()]);
+                    diagramEdges.forEach(ex -> process(px, ex));
+//                    for (EdgeDiagram ex : diagramEdges.toArray(new EdgeDiagram[diagramEdges.size()]))
+//                        process(px, ex);
 
-                    for (EdgeDiagram ex : hranyPolygonu) {
-                        process(px, ex);
-                    }
 
                 } else {
                     polygonEdges.remove(e.e);
@@ -145,7 +149,8 @@ public class Singleton {
 
         for (Fragment pol : list) {
             pol.resort();
-            for (int i = 0; i < pol.size(); i++) {
+            int pn = pol.size();
+            for (int i = 0; i < pn; i++) {
                 Tuple2f v = pol.get(i);
                 if (v instanceof Vec2Intersect) {
                     Vec2Intersect vi = (Vec2Intersect) v;
@@ -160,11 +165,6 @@ public class Singleton {
 
         Polygon polygonAll = new Polygon();
 
-        Comparator<Vec2Intersect> c = (o1, o2) -> {
-            Vec2Intersect v1 = o1;
-            Vec2Intersect v2 = o2;
-            return Double.compare(v1.k, v2.k);
-        };
 
         for (EdgePolygon ex : polygonEdgesList) {
             polygonAll.add(ex.p1);
@@ -194,15 +194,16 @@ public class Singleton {
             allIntersections.addAll(intsc);
         }
 
+        table.clear();
+
         //vytvoria sa hrany a nastane prehladavanie do sirky
         //vytvorim hashovaciu tabulku hran
-        HashTable<EdgeDiagram> table = new HashTable<>();
         for (Fragment f : allIntersections) {
             for (int i = 0; i < f.size(); ++i) {
                 Tuple2f v1 = f.get(i);
                 Tuple2f v2 = f.cycleGet(i + 1);
                 EdgeDiagram e = new EdgeDiagram(v1, v2);
-                EdgeDiagram e2 = table.getObject(e);
+                EdgeDiagram e2 = table.get(e);
                 if (e2 != null) {
                     e = e2;
                     e.d2 = f;
@@ -213,34 +214,33 @@ public class Singleton {
             }
         }
 
-        EdgeDiagram[] ee = table.toArray(new EdgeDiagram[table.size()]);
-
         //rozdelim polygony na 2 mnoziny - na tie, ktore budu ulomky a tie, ktore budu spojene a drzat spolu
-        double distance = Double.MAX_VALUE;
-        Fragment startPolygon = null;
-        Tuple2f kolmicovyBod = null;
+        final double[] distance = {Double.MAX_VALUE};
+        final Fragment[] startPolygon = {null};
+        final Tuple2f[] kolmicovyBod = {null};
         MyList<EdgeDiagram> allEdgesPolygon = new MyList<>();
 
-        for (EdgeDiagram ep : ee) {
+        //EdgeDiagram[] ee = table.toArray(new EdgeDiagram[table.size()]);
+        table.forEach(ep->{
             if (ep.d2 == null) {
 
                 //toto sa nahradi vzorcom na vypocet vzdialenosti body od usecky
                 Tuple2f vv = ep.kolmicovyBod(contactPoint);
                 double newDistance = Arithmetic.distanceSq(contactPoint, vv);
-                if (newDistance <= distance) {
-                    distance = newDistance;
-                    kolmicovyBod = vv;
-                    startPolygon = ep.d1;
+                if (newDistance <= distance[0]) {
+                    distance[0] = newDistance;
+                    kolmicovyBod[0] = vv;
+                    startPolygon[0] = ep.d1;
                 }
                 allEdgesPolygon.add(ep);
             }
-        }
+        });
 
         MyList<Fragment> ppx = new MyList<>();
-        ppx.add(startPolygon);
+        ppx.add(startPolygon[0]);
         EdgeDiagram epx = new EdgeDiagram(null, null);
-        HashTable<Fragment> vysledneFragmenty = new HashTable<>();
-        startPolygon.visited = true;
+        HashTabulka<Fragment> vysledneFragmenty = new HashTabulka<>();
+        startPolygon[0].visited = true;
 
         while (!ppx.isEmpty()) {
             Fragment px = ppx.get(0);
@@ -251,7 +251,7 @@ public class Singleton {
                 Tuple2f v2 = px.cycleGet(i + 1);
                 epx.p1 = v1;
                 epx.p2 = v2;
-                EdgeDiagram ep = table.getObject(epx);
+                EdgeDiagram ep = table.get(epx);
                 Fragment opposite = ep.d1 == px ? ep.d2 : ep.d1;
 
                 if (opposite != null && !opposite.visited) {
@@ -261,7 +261,7 @@ public class Singleton {
                         boolean intersection = false;
                         for (EdgeDiagram edge : allEdgesPolygon) {
                             //neberie do uvahy hrany polygonu
-                            if (edge.d1 != startPolygon && edge.d2 != startPolygon && edge.intersectAre(centroid, kolmicovyBod)) {
+                            if (edge.d1 != startPolygon[0] && edge.d2 != startPolygon[0] && edge.intersectAre(centroid, kolmicovyBod[0])) {
                                 intersection = true;
                                 break;
                             }
@@ -293,6 +293,12 @@ public class Singleton {
         fragments = new Polygon[result.size()];
         result.addToArray(fragments);
     }
+
+    static final Comparator<Vec2Intersect> c = (o1, o2) -> {
+        Vec2Intersect v1 = o1;
+        Vec2Intersect v2 = o2;
+        return Double.compare(v1.k, v2.k);
+    };
 
     /**
      * @param p1 Fragment 1
@@ -439,11 +445,11 @@ public class Singleton {
      * @return Vrati List zjednotenych polygonov.
      */
     private static MyList<Polygon> zjednotenie(MyList<Fragment> polygony) {
-        HashTable<GraphVertex> graf = new HashTable<>();
+        HashTabulka<GraphVertex> graf = new HashTabulka<>();
         for (Polygon p : polygony) {
             for (int i = 1; i <= p.size(); ++i) {
                 Tuple2f v = p.cycleGet(i);
-                GraphVertex vertex = graf.getObject(v);
+                GraphVertex vertex = graf.get(v);
                 if (vertex == null) {
                     vertex = new GraphVertex(v);
                     graf.add(vertex);
@@ -457,8 +463,8 @@ public class Singleton {
 
         for (Polygon p : polygony) {
             for (int i = 0; i < p.size(); ++i) {
-                GraphVertex v1 = graf.getObject(p.get(i));
-                GraphVertex v2 = graf.getObject(p.cycleGet(i + 1));
+                GraphVertex v1 = graf.get(p.get(i));
+                GraphVertex v2 = graf.get(p.cycleGet(i + 1));
                 if (v1.polygonCount == 1 || v2.polygonCount == 1 || (v1.polygonCount <= 2 && v2.polygonCount <= 2 && !((v1.first == v2.first && v1.second == v2.second) || (v1.first == v2.second && v1.second == v2.first)))) {
                     v1.next = v2;
                     v2.prev = v1;

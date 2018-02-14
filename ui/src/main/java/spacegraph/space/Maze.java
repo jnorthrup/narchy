@@ -2,7 +2,7 @@ package spacegraph.space;
 
 import spacegraph.math.v3;
 import spacegraph.phys.Dynamic;
-import spacegraph.phys.Dynamics;
+import spacegraph.phys.Dynamics3D;
 import spacegraph.phys.math.Transform;
 import spacegraph.phys.shape.*;
 
@@ -25,7 +25,7 @@ public class Maze extends CompoundSpatial {
     }
 
     @Override
-    protected void create(Dynamics world) {
+    protected void create(Dynamics3D world) {
 
         float dx = 1, dy = 1;
         float y = 0;
@@ -37,7 +37,7 @@ public class Maze extends CompoundSpatial {
                 if (cc) {
 
 
-                    Dynamic b = Dynamics.newBody(
+                    Dynamic b = Dynamics3D.newBody(
                             1f, //mass
                             new BoxShape(0.9f, 0.9f, 0.9f), new Transform(x, y, 0),
                             +1, //group
@@ -63,7 +63,7 @@ public class Maze extends CompoundSpatial {
 
 
         CollisionShape groundShape = new BoxShape(v(20f, 20f, 10f));
-        Dynamic ground = Dynamics.newBody(0f, groundShape, new Transform(0,0,-15), +1, -1);
+        Dynamic ground = Dynamics3D.newBody(0f, groundShape, new Transform(0,0,-15), +1, -1);
         ground.setData(this);
         add(ground);
 

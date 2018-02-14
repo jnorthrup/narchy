@@ -4,7 +4,7 @@ import jcog.list.FasterList;
 import spacegraph.AbstractSpatial;
 import spacegraph.Spatial;
 import spacegraph.phys.Collidable;
-import spacegraph.phys.Dynamics;
+import spacegraph.phys.Dynamics3D;
 import spacegraph.phys.constraint.TypedConstraint;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public abstract class CompoundSpatial<X> extends AbstractSpatial<X> {
     }
 
     @Override
-    public final void update(Dynamics world) {
+    public final void update(Dynamics3D world) {
 
         if (bodies.isEmpty() && spatials.isEmpty()) { //HACK TODO use a boolean flag
             create(world);
@@ -38,7 +38,7 @@ public abstract class CompoundSpatial<X> extends AbstractSpatial<X> {
 
     }
 
-    protected void next(Dynamics world) {
+    protected void next(Dynamics3D world) {
 
     }
 
@@ -65,7 +65,7 @@ public abstract class CompoundSpatial<X> extends AbstractSpatial<X> {
         bodies.remove(c);
     }
 
-    protected void create(Dynamics world) {
+    protected void create(Dynamics3D world) {
 
     }
 

@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.input.Finger;
 import spacegraph.math.v3;
 import spacegraph.phys.Collidable;
-import spacegraph.phys.Dynamics;
+import spacegraph.phys.Dynamics3D;
 import spacegraph.phys.collision.ClosestRay;
 import spacegraph.phys.constraint.TypedConstraint;
 import spacegraph.render.JoglPhysics;
@@ -69,7 +69,7 @@ public abstract class Spatial<X> implements Active {
 
 
 
-    public void update(Dynamics world) {
+    public void update(Dynamics3D world) {
         //create and update any bodies and constraints
     }
 
@@ -119,7 +119,7 @@ public abstract class Spatial<X> implements Active {
 
     public abstract void renderRelative(GL2 gl, Collidable body, int dtMS);
 
-    public void delete(Dynamics dyn) {
+    public void delete(Dynamics3D dyn) {
         order = -1;
         preactive = false;
     }

@@ -28,7 +28,7 @@ package spacegraph.space;
 
 import spacegraph.math.v3;
 import spacegraph.phys.Dynamic;
-import spacegraph.phys.Dynamics;
+import spacegraph.phys.Dynamics3D;
 import spacegraph.phys.constraint.TypedConstraint;
 import spacegraph.phys.constraint.generic.Generic6DofConstraint;
 import spacegraph.phys.math.MatrixUtil;
@@ -128,7 +128,7 @@ public class RagDoll  {
     private final TypedConstraint[] joints = new TypedConstraint[JointType.JOINT_COUNT.ordinal()];
 
 
-    public Dynamic[] build(Dynamics world, v3 positionOffset, float scale_ragdoll) {
+    public Dynamic[] build(Dynamics3D world, v3 positionOffset, float scale_ragdoll) {
 
 
         stack.pushCommonMath();
@@ -479,7 +479,7 @@ public class RagDoll  {
         //stack.vectors.push();
         //try {
 
-            Dynamic body = Dynamics.newBody(mass, shape, startTransform, +1, -1);
+            Dynamic body = Dynamics3D.newBody(mass, shape, startTransform, +1, -1);
 
             body.setCenterOfMassTransform(startTransform);
 

@@ -25,14 +25,14 @@ package spacegraph.phys.math;
 
 import spacegraph.math.v3;
 import spacegraph.phys.Collisions;
-import spacegraph.phys.Dynamics;
+import spacegraph.phys.Dynamics3D;
 
 /**
  * IDebugDraw interface class allows hooking up a debug renderer to visually debug
  * simulations.<p>
  * 
  * Typical use case: create a debug drawer object, and assign it to a {@link Collisions}
- * or {@link Dynamics} using setDebugDrawer and call debugDrawWorld.<p>
+ * or {@link Dynamics3D} using setDebugDrawer and call debugDrawWorld.<p>
  * 
  * A class that implements the IDebugDraw interface has to implement the drawLine
  * method at a minimum.

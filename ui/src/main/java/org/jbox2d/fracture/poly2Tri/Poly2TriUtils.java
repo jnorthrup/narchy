@@ -1,5 +1,7 @@
 package org.jbox2d.fracture.poly2Tri;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class Poly2TriUtils {
 
     // const double PI=3.141592653589793238462643383279502884197169399375105820974944592308;
@@ -73,12 +75,7 @@ public class Poly2TriUtils {
         return detleft - detright;
     }
 
-    public static int l_id = 0; // changed to INT ... because of hash maps
-    public static int p_id = 0; // changed to INT ... because of hash maps
-
-    public static void initPoly2TriUtils() {
-        l_id = 0;
-        p_id = 0;
-    }
+    public static final AtomicInteger l_id = new AtomicInteger(); // changed to INT ... because of hash maps
+    public static final AtomicInteger p_id = new AtomicInteger(); // changed to INT ... because of hash maps
 
 }

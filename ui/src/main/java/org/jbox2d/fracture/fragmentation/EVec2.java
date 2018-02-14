@@ -35,6 +35,7 @@ class EVec2 implements Comparable<EVec2> {
 
     @Override
     public int compareTo(EVec2 o) {
+        if (this == o) return 0;
         Tuple2f l = o.p;
         return p.y > l.y ? 1 : p.y == l.y ? (o.start == start ? 0 : (!start ? 1 : -1)) : -1;
     }

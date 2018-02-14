@@ -15,7 +15,7 @@ import spacegraph.math.v2;
  */
 public class StaticBody implements ICase {
     @Override
-    public void init(World w) {
+    public void init(Dynamics2D w) {
         {
             BodyDef bodyDef2 = new BodyDef();
             bodyDef2.type = BodyType.STATIC;

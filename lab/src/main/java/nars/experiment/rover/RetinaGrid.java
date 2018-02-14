@@ -3,7 +3,7 @@ package nars.experiment.rover;
 import com.jogamp.opengl.GL2;
 import spacegraph.SimpleSpatial;
 import spacegraph.math.v3;
-import spacegraph.phys.Dynamics;
+import spacegraph.phys.Dynamics3D;
 import spacegraph.phys.shape.CollisionShape;
 import spacegraph.phys.shape.SphereShape;
 
@@ -44,7 +44,7 @@ public class RetinaGrid extends SimpleSpatial {
     }
 
     @Override
-    public void update(Dynamics world) {
+    public void update(Dynamics3D world) {
         for (RetinaPixel[] rr : retinas)
             for (RetinaPixel r : rr)
                 r.update(world);

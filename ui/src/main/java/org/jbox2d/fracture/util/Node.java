@@ -11,6 +11,7 @@ public class Node<T> {
      * Hodnota.
      */
     public final T value;
+    public final int hash;
 
     /**
      * Susedne prvky spojoveho zoznamu.
@@ -24,6 +25,7 @@ public class Node<T> {
      */
     public Node(T value) {
         this.value = value;
+        this.hash = value.hashCode();
     }
 
     /**

@@ -14,7 +14,7 @@ import spacegraph.math.v2;
 public class Chain implements ICase {
 
     @Override
-    public void init(World w) {
+    public void init(Dynamics2D w) {
 
 
         Body ground = null;

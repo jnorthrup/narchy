@@ -1,6 +1,6 @@
 package org.jbox2d.fracture.hertelmehlhorn;
 
-import org.jbox2d.fracture.util.HashTable;
+import org.jbox2d.fracture.util.HashTabulka;
 import org.jbox2d.fracture.util.Node;
 
 /**
@@ -8,7 +8,7 @@ import org.jbox2d.fracture.util.Node;
  *
  * @author Marek Benovic
  */
-class EdgeTable extends HashTable<Diagonal> {
+class EdgeTable extends HashTabulka<Diagonal> {
     public Diagonal get(int i1, int i2) {
         for (Node<Diagonal> chain = super.hashtable[Diagonal.hashCode(i1, i2) & super.n]; chain != null; chain = chain.next) {
             Diagonal e = chain.value;

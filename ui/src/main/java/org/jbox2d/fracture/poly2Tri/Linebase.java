@@ -44,7 +44,7 @@ public class Linebase implements SplayTreeItem {
     public Linebase(Pointbase ep1, Pointbase ep2, int iType) {
         _endp[0] = ep1;
         _endp[1] = ep2;
-        _id = ++Poly2TriUtils.l_id;
+        _id = (Poly2TriUtils.l_id.incrementAndGet());
         _type = iType;
     }
 

@@ -2,14 +2,12 @@ package nars.experiment.rover;
 
 import nars.NARS;
 import spacegraph.SimpleSpatial;
-import spacegraph.SpaceGraph;
 import spacegraph.phys.Dynamic;
-import spacegraph.phys.Dynamics;
+import spacegraph.phys.Dynamics3D;
 import spacegraph.phys.constraint.HingeConstraint;
 import spacegraph.phys.shape.BoxShape;
 import spacegraph.phys.shape.CollisionShape;
 import spacegraph.phys.shape.CylinderShape;
-import spacegraph.space.Maze;
 
 import static spacegraph.math.v3.v;
 
@@ -22,7 +20,7 @@ public class RoverMaze1 {
     public static void main(String[] args) {
         Rover r = new Rover(new NARS().get()) {
 
-            @Override protected void create(Dynamics world) {
+            @Override protected void create(Dynamics3D world) {
 
                 SimpleSpatial torso;
                 add(torso = new SimpleSpatial("torso") {
@@ -50,7 +48,7 @@ public class RoverMaze1 {
                     }
 
                     @Override
-                    protected Dynamic create(Dynamics world) {
+                    protected Dynamic create(Dynamics3D world) {
                         torso.body.clearForces();
 
                         Dynamic n = super.create(world);
@@ -72,7 +70,7 @@ public class RoverMaze1 {
 
                 RetinaGrid rg = new RetinaGrid("cam1", v(), v(0, 0, 1), v(0.1f, 0, 0), v(0, 0.1f, 0), 6, 6, 4f) {
                     @Override
-                    protected Dynamic create(Dynamics world) {
+                    protected Dynamic create(Dynamics3D world) {
 
                         Dynamic l = super.create(world);
 
@@ -101,10 +99,10 @@ public class RoverMaze1 {
 
 
 
-        new SpaceGraph<>(
-                new Maze("x", 20, 20),
-                r
-        );//.setGravity(v(0, 0, -5)).show(1000, 1000);
+//        new SpaceGraph<>(
+//                new Maze("x", 20, 20),
+//                r
+//        );//.setGravity(v(0, 0, -5)).show(1000, 1000);
 
 
     }

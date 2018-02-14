@@ -5,7 +5,7 @@ import jcog.Util;
 import spacegraph.SimpleSpatial;
 import spacegraph.math.v3;
 import spacegraph.phys.Collisions;
-import spacegraph.phys.Dynamics;
+import spacegraph.phys.Dynamics3D;
 import spacegraph.phys.collision.narrow.VoronoiSimplexSolver;
 import spacegraph.phys.math.Transform;
 import spacegraph.render.Draw;
@@ -25,7 +25,7 @@ public class RetinaPixel extends Collisions.RayResultCallback {
         this.parent = parent;
     }
 
-    public void update(Dynamics d) {
+    public void update(Dynamics3D d) {
         Transform x = parent.transform();
 
         worldPosition = x.transform(v(localPosition));

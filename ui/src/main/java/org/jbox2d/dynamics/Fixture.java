@@ -168,7 +168,7 @@ public class Fixture {
             edge = edge.next;
         }
 
-        World world = m_body.getWorld();
+        Dynamics2D world = m_body.getWorld();
 
         if (world == null) {
             return;

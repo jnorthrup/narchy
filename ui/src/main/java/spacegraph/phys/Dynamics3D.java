@@ -57,7 +57,7 @@ import static spacegraph.phys.Dynamic.ifDynamic;
  *
  * @author jezek2
  */
-public class Dynamics<X> extends Collisions<X> {
+public class Dynamics3D<X> extends Collisions<X> {
 
     final Constrainer constrainer;
     final Islands islands;
@@ -84,11 +84,11 @@ public class Dynamics<X> extends Collisions<X> {
     private final Iterable<Spatial<X>> spatials;
 
 
-    public Dynamics(Intersecter intersecter, Broadphase broadphase, Iterable<Spatial<X>> spatials) {
+    public Dynamics3D(Intersecter intersecter, Broadphase broadphase, Iterable<Spatial<X>> spatials) {
         this(intersecter, broadphase, spatials, null);
     }
 
-    public Dynamics(Intersecter intersecter, Broadphase broadphase, Iterable<Spatial<X>> spatials, Constrainer constrainer) {
+    public Dynamics3D(Intersecter intersecter, Broadphase broadphase, Iterable<Spatial<X>> spatials, Constrainer constrainer) {
         super(intersecter, broadphase);
         this.spatials = spatials;
         islands = new Islands();
