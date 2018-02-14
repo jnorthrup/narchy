@@ -23,7 +23,7 @@ public class Fluid implements ICase {
             bodyDef2.type = BodyType.DYNAMIC;
             bodyDef2.position.set(0.0f, 0.0f); //pozicia
             bodyDef2.angle = 0.0f; //otocenie
-            Body newBody = w.createBody(bodyDef2);
+            Body newBody = w.addBody(bodyDef2);
 
             FixtureDef fd = new FixtureDef();
             fd.friction = 0.5f; // trenie
@@ -69,7 +69,7 @@ public class Fluid implements ICase {
             bodyDefBullet.linearVelocity = new v2(-30.0f, 0.0f); // smer pohybu
             bodyDefBullet.angularVelocity = 0.0f; //rotacia (rychlost rotacie)
             bodyDefBullet.bullet = true;
-            Body bodyBullet = w.createBody(bodyDefBullet);
+            Body bodyBullet = w.addBody(bodyDefBullet);
             CircleShape circleShape = new CircleShape();
             circleShape.m_radius = 0.5f;
             Fixture fixtureBullet = bodyBullet.createFixture(circleShape, 10.0f);

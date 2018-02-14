@@ -200,4 +200,8 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
     public float cy() {
         return y + h/2;
     }
+
+    public static RectFloat2D XYWH(float cx, float cy, float w, float h) {
+        return new RectFloat2D(cx - w/2 , cy -h/2, cx + w/2, cy + h/2);
+    }
 }

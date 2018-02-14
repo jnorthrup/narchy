@@ -81,7 +81,7 @@ public class Collision {
 
         pool.getDistance().distance(output, cache, input);
         // djm note: anything significant about 10.0f?
-        return output.distance < 10.0f * Settings.EPSILON;
+        return output.distance < Settings.EPSILON;
     }
 
     /**
@@ -270,10 +270,10 @@ public class Collision {
         int normalIndex = 0;
         float separation = -Float.MAX_VALUE;
         final float radius = polygon.m_radius + circle.m_radius;
-        final int vertexCount = polygon.m_count;
+        final int vertexCount = polygon.vertices;
         float s;
-        final Tuple2f[] vertices = polygon.m_vertices;
-        final Tuple2f[] normals = polygon.m_normals;
+        final Tuple2f[] vertices = polygon.vertex;
+        final Tuple2f[] normals = polygon.normals;
 
         for (int i = 0; i < vertexCount; i++) {
             // before inline
@@ -441,11 +441,11 @@ public class Collision {
      */
     public final void findMaxSeparation(EdgeResults results, final PolygonShape poly1,
                                         final Transform xf1, final PolygonShape poly2, final Transform xf2) {
-        int count1 = poly1.m_count;
-        int count2 = poly2.m_count;
-        Tuple2f[] n1s = poly1.m_normals;
-        Tuple2f[] v1s = poly1.m_vertices;
-        Tuple2f[] v2s = poly2.m_vertices;
+        int count1 = poly1.vertices;
+        int count2 = poly2.vertices;
+        Tuple2f[] n1s = poly1.normals;
+        Tuple2f[] v1s = poly1.vertex;
+        Tuple2f[] v2s = poly2.vertex;
 
         Transform.mulTransToOutUnsafe(xf2, xf1, xf);
         final Rot xfq = xf.q;
@@ -479,12 +479,12 @@ public class Collision {
 
     public static void findIncidentEdge(final ClipVertex[] c, final PolygonShape poly1,
                                         final Transform xf1, int edge1, final PolygonShape poly2, final Transform xf2) {
-        int count1 = poly1.m_count;
-        final Tuple2f[] normals1 = poly1.m_normals;
+        int count1 = poly1.vertices;
+        final Tuple2f[] normals1 = poly1.normals;
 
-        int count2 = poly2.m_count;
-        final Tuple2f[] vertices2 = poly2.m_vertices;
-        final Tuple2f[] normals2 = poly2.m_normals;
+        int count2 = poly2.vertices;
+        final Tuple2f[] vertices2 = poly2.vertex;
+        final Tuple2f[] normals2 = poly2.normals;
 
         assert (0 <= edge1 && edge1 < count1);
 
@@ -616,8 +616,8 @@ public class Collision {
 
         findIncidentEdge(incidentEdge, poly1, xf1, edge1, poly2, xf2);
 
-        int count1 = poly1.m_count;
-        final Tuple2f[] vertices1 = poly1.m_vertices;
+        int count1 = poly1.vertices;
+        final Tuple2f[] vertices1 = poly1.vertex;
 
         final int iv1 = edge1;
         final int iv2 = edge1 + 1 < count1 ? edge1 + 1 : 0;
@@ -1002,7 +1002,7 @@ public class Collision {
                             final PolygonShape polygonB, final Transform xfB) {
 
             Transform.mulTransToOutUnsafe(xfA, xfB, m_xf);
-            Transform.mulToOutUnsafe(m_xf, polygonB.m_centroid, m_centroidB);
+            Transform.mulToOutUnsafe(m_xf, polygonB.centroid, m_centroidB);
 
             m_v0 = edgeA.m_vertex0;
             m_v1 = edgeA.m_vertex1;
@@ -1200,10 +1200,10 @@ public class Collision {
             }
 
             // Get polygonB in frameA
-            m_polygonB.count = polygonB.m_count;
-            for (int i = 0; i < polygonB.m_count; ++i) {
-                Transform.mulToOutUnsafe(m_xf, polygonB.m_vertices[i], m_polygonB.vertices[i]);
-                Rot.mulToOutUnsafe(m_xf.q, polygonB.m_normals[i], m_polygonB.normals[i]);
+            m_polygonB.count = polygonB.vertices;
+            for (int i = 0; i < polygonB.vertices; ++i) {
+                Transform.mulToOutUnsafe(m_xf, polygonB.vertex[i], m_polygonB.vertices[i]);
+                Rot.mulToOutUnsafe(m_xf.q, polygonB.normals[i], m_polygonB.normals[i]);
             }
 
             m_radius = 2.0f * Settings.polygonRadius;
@@ -1333,8 +1333,8 @@ public class Collision {
                 manifold.localNormal.set(rf.normal);
                 manifold.localPoint.set(rf.v1);
             } else {
-                manifold.localNormal.set(polygonB.m_normals[rf.i1]);
-                manifold.localPoint.set(polygonB.m_vertices[rf.i1]);
+                manifold.localNormal.set(polygonB.normals[rf.i1]);
+                manifold.localPoint.set(polygonB.vertex[rf.i1]);
             }
 
             int pointCount = 0;

@@ -20,7 +20,7 @@ public class RotatedBody implements ICase {
             bodyDef2.position.set(10.0f, 20.0f); //pozicia
             bodyDef2.linearVelocity = new v2(0.0f, 0.0f); // smer pohybu
             bodyDef2.angularVelocity = 10.0f; //rotacia (rychlost rotacie)
-            Body newBody = w.createBody(bodyDef2);
+            Body newBody = w.addBody(bodyDef2);
             PolygonShape shape3 = new PolygonShape();
             shape3.setAsBox(1.0f, 10.0f);
 

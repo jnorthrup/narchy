@@ -21,7 +21,7 @@ public class Circle implements ICase {
             bodyDef2.angle = -0.6f; // otocenie
             bodyDef2.linearVelocity = new v2(0.0f, 0.0f); // smer pohybu
             bodyDef2.angularVelocity = 0.0f; //rotacia (rychlost rotacie)
-            Body newBody = w.createBody(bodyDef2);
+            Body newBody = w.addBody(bodyDef2);
             CircleShape shape2 = new CircleShape();
             shape2.m_radius = 2.5f;
             Fixture f = newBody.createFixture(shape2, 1.0f);

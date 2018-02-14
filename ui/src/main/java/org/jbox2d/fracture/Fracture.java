@@ -43,8 +43,8 @@ public class Fracture {
     private Fracture(Fixture f1, Fixture f2, Material m, Contact contact, float normalImpulse, Tuple2f point) {
         this.f1 = f1;
         this.f2 = f2;
-        this.b1 = f1.m_body;
-        this.b2 = f2.m_body;
+        this.b1 = f1.body;
+        this.b2 = f2.body;
         this.m = m;
         this.point = point;
         this.contact = contact;
@@ -64,7 +64,7 @@ public class Fracture {
             return;
         }
 
-        Dynamics2D w = b1.m_world;
+        Dynamics2D w = b1.W;
         Shape s = f1.m_shape;
         Polygon p = f1.m_polygon;
 
@@ -72,10 +72,10 @@ public class Fracture {
             switch (s.m_type) {
                 case POLYGON:
                     PolygonShape ps = (PolygonShape) s;
-                    Tuple2f[] vertices = ps.m_vertices;
+                    Tuple2f[] vertices = ps.vertex;
                     p = new Polygon();
-                    for (int i = 0; i < ps.m_count; ++i) {
-                        p.add(vertices[ps.m_count - i - 1]);
+                    for (int i = 0; i < ps.vertices; ++i) {
+                        p.add(vertices[ps.vertices - i - 1]);
                     }
                     break;
                 case CIRCLE:
@@ -140,7 +140,7 @@ public class Fracture {
         fd.friction = f1.m_friction; // trenie
         fd.restitution = f1.m_restitution; //odrazivost
         fd.isSensor = f1.m_isSensor;
-        fd.density = f1.m_density;
+        fd.density = f1.density;
 
         //odstrani fragmentacne predmety/cele teleso
         ArrayList<Fixture> fixtures = new ArrayList<>();
@@ -170,7 +170,7 @@ public class Fracture {
                     Polygon[] convex = pg.convexDecomposition();
                     bodyDef.type = BodyType.DYNAMIC;
                     for (Polygon pgx : convex) {
-                        Body f_body = w.createBody(bodyDef);
+                        Body f_body = w.addBody(bodyDef);
                         pgx.flip();
                         PolygonShape ps = new PolygonShape();
                         ps.set(pgx.getArray(), pgx.size());
@@ -187,7 +187,7 @@ public class Fracture {
                 } else {
                     fd.material = f1.m_material.m_fragments; //rekurzivne stiepenie
                     bodyDef.type = b1.getType();
-                    Body f_body = w.createBody(bodyDef);
+                    Body f_body = w.addBody(bodyDef);
                     PolygonFixture pf = new PolygonFixture(pg);
 
                     f_body.createFixture(pf, fd);
@@ -237,12 +237,12 @@ public class Fracture {
                 return;
             }
             if (m.m_rigidity < iml) {
-                f1.m_body.m_fractureTransformUpdate = f2.m_body.m_fractureTransformUpdate = false;
-                if (f1.m_body.m_massArea > Material.MINMASSDESCTRUCTION) {
+                f1.body.m_fractureTransformUpdate = f2.body.m_fractureTransformUpdate = false;
+                if (f1.body.m_massArea > Material.MINMASSDESCTRUCTION) {
                     WorldManifold wm = new WorldManifold();
                     contact.getWorldManifold(wm); //vola sa iba raz
                     w.addFracture(new Fracture(f1, f2, m, contact, iml, new Vec2(wm.points[i])));
-                } else if (f1.m_body.m_type != BodyType.DYNAMIC) {
+                } else if (f1.body.m_type != BodyType.DYNAMIC) {
                     w.addFracture(new Fracture(f1, f2, m, null, 0, null));
                 }
             }

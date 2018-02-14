@@ -18,6 +18,9 @@ import java.util.List;
 /** SpaceGraph surface for displaying and interacting with a TextGUI system */
 public class ConsoleGUI extends ConsoleTerminal {
 
+    private static final int MAX_ROWS = 80;
+    private static final int MAX_COLS = 120;
+
     MultiWindowTextGUI gui;
     TerminalScreen screen = null;
     On updates = null;
@@ -167,6 +170,8 @@ public class ConsoleGUI extends ConsoleTerminal {
 
     @Override
     public void resize(int cols, int rows) {
+        cols = Math.min(cols, MAX_COLS);
+        rows = Math.min(rows, MAX_ROWS);
         super.resize(cols, rows);
 
         if (screen!=null) {

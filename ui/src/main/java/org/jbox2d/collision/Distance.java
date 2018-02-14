@@ -505,10 +505,10 @@ public class Distance {
                     break;
                 case POLYGON:
                     final PolygonShape poly = (PolygonShape) shape;
-                    m_count = poly.m_count;
+                    m_count = poly.vertices;
                     m_radius = poly.m_radius;
                     for (int i = 0; i < m_count; i++) {
-                        m_vertices[i].set(poly.m_vertices[i]);
+                        m_vertices[i].set(poly.vertex[i]);
                     }
                     break;
                 case CHAIN:

@@ -33,7 +33,7 @@ import java.awt.image.BufferedImage;
  *
  * @author Marek Benovic
  */
-public class Tests extends JComponent implements Runnable {
+public class Dynamic2DTests extends JComponent implements Runnable {
     private final Dimension screenSize = new Dimension(1024, 540);
     private final Tuple2f center = new Vec2();
     private float zoom = 1;
@@ -70,7 +70,7 @@ public class Tests extends JComponent implements Runnable {
     };
 
 
-    private Tests() {
+    private Dynamic2DTests() {
         initWorld();
 
         addMouseWheelListener((MouseWheelEvent e) -> {
@@ -206,9 +206,9 @@ public class Tests extends JComponent implements Runnable {
         {
             BodyDef bd = new BodyDef();
             bd.setType(BodyType.STATIC);
-            ground = w.createBody(bd);
-            Body wallRight = w.createBody(bd);
-            Body wallLeft = w.createBody(bd);
+            ground = w.addBody(bd);
+            Body wallRight = w.addBody(bd);
+            Body wallLeft = w.addBody(bd);
 
             PolygonShape shape1 = new PolygonShape();
             shape1.setAsBox(40, 5);
@@ -371,13 +371,13 @@ public class Tests extends JComponent implements Runnable {
                 switch (shape.m_type) {
                     case POLYGON:
                         PolygonShape poly = (PolygonShape) shape;
-                        for (int i = 0; i < poly.m_count; ++i) {
-                            body.getWorldPointToOut(poly.m_vertices[i], v);
+                        for (int i = 0; i < poly.vertices; ++i) {
+                            body.getWorldPointToOut(poly.vertex[i], v);
                             Point p = getPoint(v);
                             x[i] = p.x;
                             y[i] = p.y;
                         }
-                        g.fillPolygon(x, y, poly.m_count);
+                        g.fillPolygon(x, y, poly.vertices);
                         break;
                     case CIRCLE:
                         CircleShape circle = (CircleShape) shape;
@@ -520,7 +520,7 @@ public class Tests extends JComponent implements Runnable {
             Dimension dimMax = petList.getMaximumSize();
             petList.setMaximumSize(new Dimension(dimMax.width, 30));
 
-            Tests canvas = new Tests();
+            Dynamic2DTests canvas = new Dynamic2DTests();
 
             petList.addActionListener(e -> {
 

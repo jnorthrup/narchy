@@ -23,14 +23,12 @@
  ******************************************************************************/
 package org.jbox2d.dynamics;
 
+import jcog.Util;
 import org.jbox2d.collision.broadphase.BroadPhase;
 import org.jbox2d.collision.shapes.MassData;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.collision.shapes.Shape;
-import org.jbox2d.common.Rot;
-import org.jbox2d.common.Sweep;
-import org.jbox2d.common.Transform;
-import org.jbox2d.common.Vec2;
+import org.jbox2d.common.*;
 import org.jbox2d.dynamics.contacts.Contact;
 import org.jbox2d.dynamics.contacts.ContactEdge;
 import org.jbox2d.dynamics.joints.JointEdge;
@@ -79,7 +77,7 @@ public class Body {
     public final Tuple2f m_force = new v2();
     public float m_torque = 0;
 
-    public Dynamics2D m_world;
+    public final Dynamics2D W;
     public Body m_prev;
     public Body m_next;
 
@@ -128,7 +126,7 @@ public class Body {
             m_flags |= e_activeFlag;
         }
 
-        m_world = world;
+        W = world;
 
         m_xf.p.set(bd.position);
         m_xf.q.set(bd.angle);
@@ -186,33 +184,33 @@ public class Body {
      * @warning This function is locked during callbacks.
      */
     public final Fixture createFixture(FixtureDef def) {
-        assert (m_world.isLocked() == false);
-        if (m_world.isLocked() == true) {
-            return null;
-        }
 
         Fixture fixture = new Fixture();
         fixture.create(this, def);
+        fixture.body = this;
 
-        if ((m_flags & e_activeFlag) == e_activeFlag) {
-            BroadPhase broadPhase = m_world.m_contactManager.m_broadPhase;
-            fixture.createProxies(broadPhase, m_xf);
-        }
 
-        fixture.m_next = m_fixtureList;
-        m_fixtureList = fixture;
-        ++m_fixtureCount;
+        W.invokeLater(() -> {
+            if ((m_flags & e_activeFlag) == e_activeFlag) {
+                BroadPhase broadPhase = W.m_contactManager.m_broadPhase;
+                fixture.createProxies(broadPhase, m_xf);
+            }
 
-        fixture.m_body = this;
+            fixture.m_next = m_fixtureList;
+            m_fixtureList = fixture;
+            ++m_fixtureCount;
 
-        // Adjust mass properties if needed.
-        if (fixture.m_density > 0.0f) {
-            resetMassData();
-        }
 
-        // Let the world know we have a new fixture. This will cause new contacts
-        // to be created at the beginning of the next time step.
-        m_world.m_flags |= Dynamics2D.NEW_FIXTURE;
+            // Let the world know we have a new fixture. This will cause new contacts
+            // to be created at the beginning of the next time step.
+            W.flags |= Dynamics2D.NEW_FIXTURE;
+
+
+            // Adjust mass properties if needed.
+            if (fixture.density > 0.0f) {
+                resetMassData();
+            }
+        });
 
         return fixture;
     }
@@ -247,9 +245,7 @@ public class Body {
      * @param def
      */
     public final void createFixture(PolygonFixture polygon, FixtureDef def) {
-        if (m_world.isLocked() == true) {
-            return;
-        }
+
 
         Polygon[] convex = polygon.convexDecomposition();
 
@@ -262,8 +258,7 @@ public class Body {
             PolygonShape ps = new PolygonShape();
             ps.set(p.getArray(), p.size());
             def.shape = ps;
-            Fixture f = createFixture(def);
-            polygon.fixtureList.add(f);
+            polygon.fixtureList.add(createFixture(def));
         }
     }
 
@@ -277,68 +272,67 @@ public class Body {
      * @warning This function is locked during callbacks.
      */
     public final void destroyFixture(Fixture fixture) {
-        assert (m_world.isLocked() == false);
-        if (m_world.isLocked() == true) {
-            return;
-        }
 
-        assert (fixture.m_body == this);
+        assert (fixture.body == this);
 
         // Remove the fixture from this body's singly linked list.
         assert (m_fixtureCount > 0);
-        Fixture node = m_fixtureList;
-        Fixture last = null; // java change
-        boolean found = false;
-        while (node != null) {
-            if (node == fixture) {
-                node = fixture.m_next;
-                found = true;
-                break;
+
+        W.invokeLater(() -> {
+            Fixture node = m_fixtureList;
+            Fixture last = null; // java change
+            boolean found = false;
+            while (node != null) {
+                if (node == fixture) {
+                    node = fixture.m_next;
+                    found = true;
+                    break;
+                }
+                last = node;
+                node = node.m_next;
             }
-            last = node;
-            node = node.m_next;
-        }
 
-        // You tried to remove a shape that is not attached to this body.
-        assert (found);
+            // You tried to remove a shape that is not attached to this body.
+            assert (found);
 
-        // java change, remove it from the list
-        if (last == null) {
-            m_fixtureList = fixture.m_next;
-        } else {
-            last.m_next = fixture.m_next;
-        }
-
-        // Destroy any contacts associated with the fixture.
-        ContactEdge edge = m_contactList;
-        while (edge != null) {
-            Contact c = edge.contact;
-            edge = edge.next;
-
-            Fixture fixtureA = c.getFixtureA();
-            Fixture fixtureB = c.getFixtureB();
-
-            if (fixture == fixtureA || fixture == fixtureB) {
-                // This destroys the contact and removes it from
-                // this body's contact list.
-                m_world.m_contactManager.destroy(c);
+            // java change, remove it from the list
+            if (last == null) {
+                m_fixtureList = fixture.m_next;
+            } else {
+                last.m_next = fixture.m_next;
             }
-        }
 
-        if ((m_flags & e_activeFlag) == e_activeFlag) {
-            BroadPhase broadPhase = m_world.m_contactManager.m_broadPhase;
-            fixture.destroyProxies(broadPhase);
-        }
+            // Destroy any contacts associated with the fixture.
+            ContactEdge edge = m_contactList;
+            while (edge != null) {
+                Contact c = edge.contact;
+                edge = edge.next;
 
-        fixture.destroy();
-        fixture.m_body = null;
-        fixture.m_next = null;
-        fixture = null;
+                Fixture fixtureA = c.getFixtureA();
+                Fixture fixtureB = c.getFixtureB();
 
-        --m_fixtureCount;
+                if (fixture == fixtureA || fixture == fixtureB) {
+                    // This destroys the contact and removes it from
+                    // this body's contact list.
+                    W.m_contactManager.destroy(c);
+                }
+            }
 
-        // Reset the mass data.
-        resetMassData();
+            if ((m_flags & e_activeFlag) == e_activeFlag) {
+                BroadPhase broadPhase = W.m_contactManager.m_broadPhase;
+                fixture.destroyProxies(broadPhase);
+            }
+
+            fixture.destroy();
+            fixture.body = null;
+            fixture.m_next = null;
+
+            --m_fixtureCount;
+
+            // Reset the mass data.
+            resetMassData();
+        });
+
     }
 
     /**
@@ -349,26 +343,29 @@ public class Body {
      * @param position the world position of the body's local origin.
      * @param angle    the world rotation in radians.
      */
-    public final void setTransform(Tuple2f position, float angle) {
-        assert (m_world.isLocked() == false);
-        if (m_world.isLocked() == true) {
-            return;
-        }
+    public final boolean setTransform(Tuple2f position, float angle) {
 
-        m_xf.q.set(angle);
-        m_xf.p.set(position);
+        if (getPosition().equals(position) && Util.equals(angle, getAngle(), Settings.EPSILON))
+            return false; //no change
 
-        // m_sweep.c0 = m_sweep.c = Mul(m_xf, m_sweep.localCenter);
-        Transform.mulToOutUnsafe(m_xf, m_sweep.localCenter, m_sweep.c);
-        m_sweep.a = angle;
+       // W.invokeLater(() -> {
+            m_xf.q.set(angle);
+            m_xf.p.set(position);
 
-        m_sweep.c0.set(m_sweep.c);
-        m_sweep.a0 = m_sweep.a;
+            // m_sweep.c0 = m_sweep.c = Mul(m_xf, m_sweep.localCenter);
+            Transform.mulToOutUnsafe(m_xf, m_sweep.localCenter, m_sweep.c);
+            m_sweep.a = angle;
 
-        BroadPhase broadPhase = m_world.m_contactManager.m_broadPhase;
-        for (Fixture f = m_fixtureList; f != null; f = f.m_next) {
-            f.synchronize(broadPhase, m_xf, m_xf);
-        }
+            m_sweep.c0.set(m_sweep.c);
+            m_sweep.a0 = m_sweep.a;
+
+            BroadPhase broadPhase = W.m_contactManager.m_broadPhase;
+            for (Fixture f = m_fixtureList; f != null; f = f.m_next) {
+                f.synchronize(broadPhase, m_xf, m_xf);
+            }
+       // });
+
+        return true;
     }
 
     /**
@@ -642,8 +639,8 @@ public class Body {
      */
     public final void setMassData(MassData massData) {
         // TODO_ERIN adjust linear velocity and torque to account for movement of center.
-        assert (m_world.isLocked() == false);
-        if (m_world.isLocked() == true) {
+        assert (W.isLocked() == false);
+        if (W.isLocked() == true) {
             return;
         }
 
@@ -668,7 +665,7 @@ public class Body {
             m_invI = 1.0f / m_I;
         }
 
-        final Tuple2f oldCenter = m_world.pool.popVec2();
+        final Tuple2f oldCenter = W.pool.popVec2();
         // Move center of mass.
         oldCenter.set(m_sweep.c);
         m_sweep.localCenter.set(massData.center);
@@ -678,12 +675,12 @@ public class Body {
 
         // Update center of mass velocity.
         // m_linearVelocity += Cross(m_angularVelocity, m_sweep.c - oldCenter);
-        final Tuple2f temp = m_world.pool.popVec2();
+        final Tuple2f temp = W.pool.popVec2();
         temp.set(m_sweep.c).subbed(oldCenter);
         Tuple2f.crossToOut(m_angularVelocity, temp, temp);
         m_linearVelocity.added(temp);
 
-        m_world.pool.pushVec2(2);
+        W.pool.pushVec2(2);
     }
 
     private final MassData pmd = new MassData();
@@ -704,7 +701,7 @@ public class Body {
 
         final MassData massData = pmd;
         for (Fixture f = m_fixtureList; f != null; f = f.m_next) {
-            if (f.m_density != 0.0f) {
+            if (f.density != 0.0f) {
                 f.getMassData(massData);
                 m_massArea += massData.mass;
             }
@@ -722,11 +719,11 @@ public class Body {
         assert (m_type == BodyType.DYNAMIC);
 
         // Accumulate mass over all fixtures.
-        final Tuple2f localCenter = m_world.pool.popVec2();
+        final Tuple2f localCenter = W.pool.popVec2();
         localCenter.set(0, 0);
-        final Tuple2f temp = m_world.pool.popVec2();
+        final Tuple2f temp = W.pool.popVec2();
         for (Fixture f = m_fixtureList; f != null; f = f.m_next) {
-            if (f.m_density == 0.0f) {
+            if (f.density == 0.0f) {
                 continue;
             }
             f.getMassData(massData);
@@ -757,7 +754,7 @@ public class Body {
             m_invI = 0.0f;
         }
 
-        Tuple2f oldCenter = m_world.pool.popVec2();
+        Tuple2f oldCenter = W.pool.popVec2();
         // Move center of mass.
         oldCenter.set(m_sweep.c);
         m_sweep.localCenter.set(localCenter);
@@ -773,7 +770,7 @@ public class Body {
         Tuple2f.crossToOutUnsafe(m_angularVelocity, temp, temp2);
         m_linearVelocity.added(temp2);
 
-        m_world.pool.pushVec2(3);
+        W.pool.pushVec2(3);
     }
 
     /**
@@ -922,8 +919,8 @@ public class Body {
      * @param type
      */
     public void setType(BodyType type) {
-        assert (m_world.isLocked() == false);
-        if (m_world.isLocked() == true) {
+        assert (W.isLocked() == false);
+        if (W.isLocked() == true) {
             return;
         }
 
@@ -953,12 +950,12 @@ public class Body {
         while (ce != null) {
             ContactEdge ce0 = ce;
             ce = ce.next;
-            m_world.m_contactManager.destroy(ce0.contact);
+            W.m_contactManager.destroy(ce0.contact);
         }
         m_contactList = null;
 
         // Touch the proxies so that new contacts will be created (when appropriate)
-        BroadPhase broadPhase = m_world.m_contactManager.m_broadPhase;
+        BroadPhase broadPhase = W.m_contactManager.m_broadPhase;
         for (Fixture f = m_fixtureList; f != null; f = f.m_next) {
             int proxyCount = f.m_proxyCount;
             for (int i = 0; i < proxyCount; ++i) {
@@ -1052,7 +1049,7 @@ public class Body {
      * @param flag
      */
     public void setActive(boolean flag) {
-        assert (m_world.isLocked() == false);
+        assert (W.isLocked() == false);
 
         if (flag == isActive()) {
             return;
@@ -1062,7 +1059,7 @@ public class Body {
             m_flags |= e_activeFlag;
 
             // Create all proxies.
-            BroadPhase broadPhase = m_world.m_contactManager.m_broadPhase;
+            BroadPhase broadPhase = W.m_contactManager.m_broadPhase;
             for (Fixture f = m_fixtureList; f != null; f = f.m_next) {
                 f.createProxies(broadPhase, m_xf);
             }
@@ -1072,7 +1069,7 @@ public class Body {
             m_flags &= ~e_activeFlag;
 
             // Destroy all proxies.
-            BroadPhase broadPhase = m_world.m_contactManager.m_broadPhase;
+            BroadPhase broadPhase = W.m_contactManager.m_broadPhase;
             for (Fixture f = m_fixtureList; f != null; f = f.m_next) {
                 f.destroyProxies(broadPhase);
             }
@@ -1082,7 +1079,7 @@ public class Body {
             while (ce != null) {
                 ContactEdge ce0 = ce;
                 ce = ce.next;
-                m_world.m_contactManager.destroy(ce0.contact);
+                W.m_contactManager.destroy(ce0.contact);
             }
             m_contactList = null;
         }
@@ -1170,13 +1167,13 @@ public class Body {
      * Get the parent world of this body.
      */
     public final Dynamics2D getWorld() {
-        return m_world;
+        return W;
     }
 
     // djm pooling
     private final Transform pxf = new Transform();
 
-    protected final void synchronizeFixtures() {
+    protected void synchronizeFixtures() {
         final Transform xf1 = pxf;
         // xf1.position = m_sweep.c0 - Mul(xf1.R, m_sweep.localCenter);
 
@@ -1192,7 +1189,7 @@ public class Body {
         // end inline
 
         for (Fixture f = m_fixtureList; f != null; f = f.m_next) {
-            f.synchronize(m_world.m_contactManager.m_broadPhase, xf1, m_xf);
+            f.synchronize(W.m_contactManager.m_broadPhase, xf1, m_xf);
         }
     }
 
@@ -1246,5 +1243,13 @@ public class Body {
         // m_xf.position = m_sweep.c - Mul(m_xf.R, m_sweep.localCenter);
         Rot.mulToOutUnsafe(m_xf.q, m_sweep.localCenter, m_xf.p);
         m_xf.p.scaled(-1).added(m_sweep.c);
+    }
+
+    public void preUpdate() {
+
+    }
+
+    public void postUpdate() {
+
     }
 }

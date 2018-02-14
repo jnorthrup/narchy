@@ -20,7 +20,7 @@ public class Chain implements ICase {
         Body ground = null;
         {
             BodyDef bd = new BodyDef();
-            ground = w.createBody(bd);
+            ground = w.addBody(bd);
 
             EdgeShape shape = new EdgeShape();
             shape.set(new v2(-40.0f, 0.0f), new v2(40.0f, 0.0f));
@@ -41,7 +41,7 @@ public class Chain implements ICase {
                 BodyDef bd = new BodyDef();
                 bd.type = BodyType.DYNAMIC;
                 bd.position.set(0.5f + i, y);
-                Body body = w.createBody(bd);
+                Body body = w.addBody(bd);
                 body.createFixture(fd);
 
                 Tuple2f anchor = new v2((float) i, y);

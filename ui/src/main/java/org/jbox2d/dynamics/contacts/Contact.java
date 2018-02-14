@@ -332,11 +332,11 @@ public abstract class Contact {
         }
 
         if (!sensor && touching) {
-            m_angularVelocity_bodyA = m_fixtureA.m_body.m_angularVelocity;
-            m_linearVelocity_bodyA.set(m_fixtureA.m_body.m_linearVelocity);
+            m_angularVelocity_bodyA = m_fixtureA.body.m_angularVelocity;
+            m_linearVelocity_bodyA.set(m_fixtureA.body.m_linearVelocity);
 
-            m_angularVelocity_bodyB = m_fixtureB.m_body.m_angularVelocity;
-            m_linearVelocity_bodyB.set(m_fixtureB.m_body.m_linearVelocity);
+            m_angularVelocity_bodyB = m_fixtureB.body.m_angularVelocity;
+            m_linearVelocity_bodyB.set(m_fixtureB.body.m_linearVelocity);
         }
 
         if (listener == null) {

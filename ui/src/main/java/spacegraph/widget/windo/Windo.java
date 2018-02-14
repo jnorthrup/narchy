@@ -380,7 +380,10 @@ public class Windo extends Widget {
 
 
     public static void main(String[] args) {
-        Wall d = new Wall() {
+        Wall d =
+                //new Wall();
+                new PhyWall();
+        {
 //            boolean init = true;
 //            int shaderprogram;
 //            String vsrc;

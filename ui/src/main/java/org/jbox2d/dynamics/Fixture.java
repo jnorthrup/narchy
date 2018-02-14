@@ -50,10 +50,10 @@ import spacegraph.math.v2;
  */
 public class Fixture {
 
-    public float m_density;
+    public float density;
 
     public Fixture m_next;
-    public Body m_body;
+    public Body body;
 
     public Shape m_shape;
 
@@ -75,7 +75,7 @@ public class Fixture {
 
     public Fixture() {
         m_userData = null;
-        m_body = null;
+        body = null;
         m_next = null;
         m_proxies = null;
         m_proxyCount = 0;
@@ -120,7 +120,7 @@ public class Fixture {
      */
     public void setSensor(boolean sensor) {
         if (sensor != m_isSensor) {
-            m_body.setAwake(true);
+            body.setAwake(true);
             m_isSensor = sensor;
         }
     }
@@ -152,12 +152,12 @@ public class Fixture {
      * ContactFilter::ShouldCollide.
      */
     public void refilter() {
-        if (m_body == null) {
+        if (body == null) {
             return;
         }
 
         // Flag associated contacts for filtering.
-        ContactEdge edge = m_body.getContactList();
+        ContactEdge edge = body.getContactList();
         while (edge != null) {
             Contact contact = edge.contact;
             Fixture fixtureA = contact.getFixtureA();
@@ -168,7 +168,7 @@ public class Fixture {
             edge = edge.next;
         }
 
-        Dynamics2D world = m_body.getWorld();
+        Dynamics2D world = body.getWorld();
 
         if (world == null) {
             return;
@@ -187,7 +187,7 @@ public class Fixture {
      * @return
      */
     public Body getBody() {
-        return m_body;
+        return body;
     }
 
     /**
@@ -201,11 +201,11 @@ public class Fixture {
 
     public void setDensity(float density) {
         assert (density >= 0f);
-        m_density = density;
+        this.density = density;
     }
 
     public float getDensity() {
-        return m_density;
+        return density;
     }
 
     /**
@@ -234,7 +234,7 @@ public class Fixture {
      * @return
      */
     public boolean testPoint(final Tuple2f p) {
-        return m_shape.testPoint(m_body.m_xf, p);
+        return m_shape.testPoint(body.m_xf, p);
     }
 
     /**
@@ -246,7 +246,7 @@ public class Fixture {
      * @param input
      */
     public boolean raycast(RayCastOutput output, RayCastInput input, int childIndex) {
-        return m_shape.raycast(output, input, m_body.m_xf, childIndex);
+        return m_shape.raycast(output, input, body.m_xf, childIndex);
     }
 
     /**
@@ -256,7 +256,7 @@ public class Fixture {
      * @return
      */
     public void getMassData(MassData massData) {
-        m_shape.computeMass(massData, m_density);
+        m_shape.computeMass(massData, density);
     }
 
     /**
@@ -314,7 +314,7 @@ public class Fixture {
      * @return distance
      */
     public float computeDistance(Tuple2f p, int childIndex, v2 normalOut) {
-        return m_shape.computeDistanceToOut(m_body.getTransform(), p, childIndex, normalOut);
+        return m_shape.computeDistanceToOut(body.getTransform(), p, childIndex, normalOut);
     }
 
     // We need separation create/destroy functions from the constructor/destructor because
@@ -325,7 +325,7 @@ public class Fixture {
         m_friction = def.friction;
         m_restitution = def.restitution;
 
-        m_body = body;
+        this.body = body;
         m_next = null;
 
 
@@ -333,15 +333,24 @@ public class Fixture {
 
         m_isSensor = def.isSensor;
 
-        m_shape = def.shape.clone();
 
         //moj doplneny kod
         m_material = def.material;
         m_polygon = def.polygon;
+        density = def.density;
+
+        Shape shape = def.shape.clone();
+        setShape(shape);
+
+
+    }
+
+    public void setShape(Shape shape) {
+        m_shape = shape;
 
         // Reserve proxy space
         int childCount = m_shape.getChildCount();
-        if (m_proxies == null) {
+        if (m_proxies == null || m_proxies.length!=childCount) {
             m_proxies = new FixtureProxy[childCount];
             for (int i = 0; i < childCount; i++) {
                 m_proxies[i] = new FixtureProxy();
@@ -364,8 +373,6 @@ public class Fixture {
             }
         }
         m_proxyCount = 0;
-
-        m_density = def.density;
     }
 
     public void destroy() {

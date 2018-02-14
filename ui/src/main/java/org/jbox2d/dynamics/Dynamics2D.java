@@ -76,7 +76,7 @@ public class Dynamics2D {
     public int activeContacts = 0;
     public int contactPoolCount = 0;
 
-    protected int m_flags;
+    protected int flags;
 
     protected final ContactManager m_contactManager;
 
@@ -122,6 +122,13 @@ public class Dynamics2D {
 
     final AtomicBoolean LOCKED = new AtomicBoolean(false);
 
+    private final Island toiIsland = new Island(this);
+    private final TOIInput toiInput = new TOIInput();
+    private final TOIOutput toiOutput = new TOIOutput();
+    private final TimeStep subStep = new TimeStep();
+    private final Body[] tempBodies = new Body[2];
+    private final Sweep backup1 = new Sweep();
+    private final Sweep backup2 = new Sweep();
 
 
     /**
@@ -164,7 +171,7 @@ public class Dynamics2D {
         m_allowSleep = true;
         m_gravity.set(gravity);
 
-        m_flags = CLEAR_FORCES;
+        flags = CLEAR_FORCES;
 
         m_inv_dt0 = 0f;
 
@@ -181,7 +188,7 @@ public class Dynamics2D {
         }
 
         m_allowSleep = flag;
-        if (m_allowSleep == false) {
+        if (!m_allowSleep) {
             for (Body b = m_bodyList; b != null; b = b.m_next) {
                 b.setAwake(true);
             }
@@ -286,11 +293,12 @@ public class Dynamics2D {
      * @return
      * @warning This function is locked during callbacks.
      */
-    public Body createBody(BodyDef def) {
-
-        // TODO djm pooling
+    public Body addBody(BodyDef def) {
         Body b = new Body(def, this);
+        return addBody(b);
+    }
 
+    public Body addBody(Body b) {
         invokeLater(() -> {
             // add to world doubly linked list
             b.m_prev = null;
@@ -516,7 +524,7 @@ public class Dynamics2D {
             --m_jointCount;
 
             // If the joint prevents collisions, then flag any contacts for filtering.
-            if (collideConnected == false) {
+            if (!collideConnected) {
                 ContactEdge edge = bodyB.getContactList();
                 while (edge != null) {
                     if (edge.other == bodyA) {
@@ -566,10 +574,10 @@ public class Dynamics2D {
 
         // log.debug("Starting step");
         // If new fixtures were added, we need to find the new contacts.
-        if ((m_flags & NEW_FIXTURE) == NEW_FIXTURE) {
+        if ((flags & NEW_FIXTURE) == NEW_FIXTURE) {
             // log.debug("There's a new fixture, lets look for new contacts");
             m_contactManager.findNewContacts();
-            m_flags &= ~NEW_FIXTURE;
+            flags &= ~NEW_FIXTURE;
         }
 
         step.dt = dt;
@@ -612,7 +620,7 @@ public class Dynamics2D {
             m_inv_dt0 = step.inv_dt;
         }
 
-        if ((m_flags & CLEAR_FORCES) == CLEAR_FORCES) {
+        if ((flags & CLEAR_FORCES) == CLEAR_FORCES) {
             clearForces();
         }
 
@@ -907,9 +915,9 @@ public class Dynamics2D {
      */
     public void setAutoClearForces(boolean flag) {
         if (flag) {
-            m_flags |= CLEAR_FORCES;
+            flags |= CLEAR_FORCES;
         } else {
-            m_flags &= ~CLEAR_FORCES;
+            flags &= ~CLEAR_FORCES;
         }
     }
 
@@ -919,7 +927,7 @@ public class Dynamics2D {
      * @return
      */
     public boolean getAutoClearForces() {
-        return (m_flags & CLEAR_FORCES) == CLEAR_FORCES;
+        return (flags & CLEAR_FORCES) == CLEAR_FORCES;
     }
 
     /**
@@ -947,6 +955,7 @@ public class Dynamics2D {
         // update previous transforms
         for (Body b = m_bodyList; b != null; b = b.m_next) {
             b.m_xf0.set(b.m_xf);
+            b.preUpdate();
         }
 
         // Size the island for the worst case.
@@ -974,7 +983,7 @@ public class Dynamics2D {
                 continue;
             }
 
-            if (seed.isAwake() == false || seed.isActive() == false) {
+            if (!seed.isAwake() || !seed.isActive()) {
                 continue;
             }
 
@@ -993,7 +1002,7 @@ public class Dynamics2D {
             while (stackCount > 0) {
                 // Grab the next body off the stack and add it to the island.
                 Body b = stack[--stackCount];
-                assert (b.isActive() == true);
+                assert (b.isActive());
                 island.add(b);
 
                 // Make sure the body is awake.
@@ -1015,7 +1024,7 @@ public class Dynamics2D {
                     }
 
                     // Is this contact solid and touching?
-                    if (contact.isEnabled() == false || contact.isTouching() == false) {
+                    if (!contact.isEnabled() || !contact.isTouching()) {
                         continue;
                     }
 
@@ -1043,14 +1052,14 @@ public class Dynamics2D {
 
                 // Search all joints connect to this body.
                 for (JointEdge je = b.m_jointList; je != null; je = je.next) {
-                    if (je.joint.m_islandFlag == true) {
+                    if (je.joint.m_islandFlag) {
                         continue;
                     }
 
                     Body other = je.other;
 
                     // Don't simulate joints connected to inactive bodies.
-                    if (other.isActive() == false) {
+                    if (!other.isActive()) {
                         continue;
                     }
 
@@ -1095,6 +1104,7 @@ public class Dynamics2D {
 
             // Update fixtures (for broad-phase).
             b.synchronizeFixtures();
+            b.postUpdate();
         }
 
         // Look for new contacts.
@@ -1102,13 +1112,6 @@ public class Dynamics2D {
         m_profile.broadphase.record(broadphaseTimer.getMilliseconds());
     }
 
-    private final Island toiIsland = new Island(this);
-    private final TOIInput toiInput = new TOIInput();
-    private final TOIOutput toiOutput = new TOIOutput();
-    private final TimeStep subStep = new TimeStep();
-    private final Body[] tempBodies = new Body[2];
-    private final Sweep backup1 = new Sweep();
-    private final Sweep backup2 = new Sweep();
 
     private void solveTOI(final TimeStep step) {
 
@@ -1137,7 +1140,7 @@ public class Dynamics2D {
 
             for (Contact c = m_contactManager.m_contactList; c != null; c = c.m_next) {
                 // Is this contact disabled?
-                if (c.isEnabled() == false) {
+                if (!c.isEnabled()) {
                     continue;
                 }
 
@@ -1170,7 +1173,7 @@ public class Dynamics2D {
                     boolean activeB = bB.isAwake() && typeB != BodyType.STATIC;
 
                     // Is at least one body active (awake and dynamic or kinematic)?
-                    if (activeA == false && activeB == false) {
+                    if (!activeA && !activeB) {
                         continue;
                     }
 
@@ -1178,7 +1181,7 @@ public class Dynamics2D {
                     boolean collideB = bB.isBullet() || typeB != BodyType.DYNAMIC;
 
                     // Are these two non-bullet dynamic bodies?
-                    if (collideA == false && collideB == false) {
+                    if (!collideA && !collideB) {
                         continue;
                     }
 
@@ -1299,8 +1302,8 @@ public class Dynamics2D {
 
                         // Only add static, kinematic, or bullet bodies.
                         Body other = ce.other;
-                        if (other.m_type == BodyType.DYNAMIC && body.isBullet() == false
-                                && other.isBullet() == false) {
+                        if (other.m_type == BodyType.DYNAMIC && !body.isBullet()
+                                && !other.isBullet()) {
                             continue;
                         }
 
@@ -1321,14 +1324,14 @@ public class Dynamics2D {
                         contact.update(m_contactManager.m_contactListener);
 
                         // Was the contact disabled by the user?
-                        if (contact.isEnabled() == false) {
+                        if (!contact.isEnabled()) {
                             other.m_sweep.set(backup1);
                             other.synchronizeTransform();
                             continue;
                         }
 
                         // Are there contact points?
-                        if (contact.isTouching() == false) {
+                        if (!contact.isTouching()) {
                             other.m_sweep.set(backup1);
                             other.synchronizeTransform();
                             continue;
@@ -1418,7 +1421,7 @@ public class Dynamics2D {
      * @warning This function is locked during callbacks.
      */
     public int createParticle(ParticleDef def) {
-        assert (isLocked() == false);
+        assert (!isLocked());
         if (isLocked()) {
             return 0;
         }
@@ -1471,7 +1474,7 @@ public class Dynamics2D {
      * @warning This function is locked during callbacks.
      */
     public int destroyParticlesInShape(Shape shape, Transform xf, boolean callDestructionListener) {
-        assert (isLocked() == false);
+        assert (!isLocked());
         if (isLocked()) {
             return 0;
         }
@@ -1485,7 +1488,7 @@ public class Dynamics2D {
      * @warning This function is locked during callbacks.
      */
     public ParticleGroup createParticleGroup(ParticleGroupDef def) {
-        assert (isLocked() == false);
+        assert (!isLocked());
         if (isLocked()) {
             return null;
         }
@@ -1501,7 +1504,7 @@ public class Dynamics2D {
      * @warning This function is locked during callbacks.
      */
     public void joinParticleGroups(ParticleGroup groupA, ParticleGroup groupB) {
-        assert (isLocked() == false);
+        assert (!isLocked());
         if (isLocked()) {
             return;
         }
@@ -1516,7 +1519,7 @@ public class Dynamics2D {
      * @warning This function is locked during callbacks.
      */
     public void destroyParticlesInGroup(ParticleGroup group, boolean callDestructionListener) {
-        assert (isLocked() == false);
+        assert (!isLocked());
         if (isLocked()) {
             return;
         }

@@ -758,4 +758,12 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
     public Tuple2f scale(float s) {
         return new v2(x * s, y * s);
     }
+
+    public boolean setIfChanged(float x, float y, float epsilon) {
+        if (!Util.equals(this.x, x, epsilon) || !Util.equals(this.y, y, epsilon)) {
+            set(x, y);
+            return true;
+        }
+        return false;
+    }
 }

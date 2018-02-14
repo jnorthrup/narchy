@@ -28,11 +28,16 @@ public class FingerMove extends FingerDragging {
         float pmx = before.x;
         float pmy = before.y;
         v2 fh = finger.hit;
-        v2 fhd = finger.hitOnDown[0];
-        float tx = pmx + (x ? (fh.x - fhd.x) : 0);
-        float ty = pmy + (y ? (fh.y - fhd.y) : 0);
-        moved(tx, ty, moving.w() + tx, moving.h() + ty);
-        return true;
+        //if (fh!=null) {
+            v2 fhd = finger.hitOnDown[0];
+            if (fhd!=null) {
+                float tx = pmx + (x ? (fh.x - fhd.x) : 0);
+                float ty = pmy + (y ? (fh.y - fhd.y) : 0);
+                moved(tx, ty, moving.w() + tx, moving.h() + ty);
+                return true;
+            }
+        //}
+        return false;
     }
 
     protected void moved(float x1, float y1, float x2, float y2) {

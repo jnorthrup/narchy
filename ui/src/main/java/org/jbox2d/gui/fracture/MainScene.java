@@ -19,7 +19,7 @@ public class MainScene implements ICase {
             BodyDef bodyDef2 = new BodyDef();
             bodyDef2.type = BodyType.DYNAMIC;
             bodyDef2.position.set(0.0f, 5.0f); //pozicia
-            Body newBody = w.createBody(bodyDef2);
+            Body newBody = w.addBody(bodyDef2);
             PolygonShape shape3 = new PolygonShape();
             shape3.setAsBox(5.0f, 5.0f);
             Fixture f = newBody.createFixture(shape3, 1.0f);
@@ -36,7 +36,7 @@ public class MainScene implements ICase {
             bodyDefBullet.type = BodyType.DYNAMIC;
             bodyDefBullet.position.set(-30.0f, 5.3f); //pozicia
             bodyDefBullet.linearVelocity = new v2(100.0f, 0.0f); // smer pohybu
-            Body bodyBullet = w.createBody(bodyDefBullet);
+            Body bodyBullet = w.addBody(bodyDefBullet);
             CircleShape circleShape = new CircleShape();
             circleShape.m_radius = 1.0f;
             Fixture fixtureBullet = bodyBullet.createFixture(circleShape, 5.0f);

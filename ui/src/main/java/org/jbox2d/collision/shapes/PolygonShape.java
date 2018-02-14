@@ -46,24 +46,24 @@ public class PolygonShape extends Shape {
     /**
      * Local position of the shape centroid in parent body frame.
      */
-    public final Vec2 m_centroid = new Vec2();
+    public final Vec2 centroid = new Vec2();
 
     /**
      * The vertices of the shape. Note: use getVertexCount(), not m_vertices.length, to get number of
      * active vertices.
      */
-    public final Tuple2f m_vertices[];
+    public final Tuple2f vertex[];
 
     /**
      * The normals of the shape. Note: use getVertexCount(), not m_normals.length, to get number of
      * active normals.
      */
-    public final v2 m_normals[];
+    public final v2 normals[];
 
     /**
      * Number of active vertices in the shape.
      */
-    public int m_count;
+    public int vertices;
 
     // pooling
     private final Tuple2f pool1 = new Vec2();
@@ -73,30 +73,34 @@ public class PolygonShape extends Shape {
     private final Transform poolt1 = new Transform();
 
     public PolygonShape() {
+        this(Settings.maxPolygonVertices);
+    }
+
+    public PolygonShape(int maxVertices) {
         super(ShapeType.POLYGON);
 
-        m_count = 0;
-        m_vertices = new Tuple2f[Settings.maxPolygonVertices];
-        for (int i = 0; i < m_vertices.length; i++) {
-            m_vertices[i] = new Vec2();
+        vertices = 0;
+        vertex = new Tuple2f[maxVertices];
+        for (int i = 0; i < vertex.length; i++) {
+            vertex[i] = new v2(0,0);
         }
-        m_normals = new v2[Settings.maxPolygonVertices];
-        for (int i = 0; i < m_normals.length; i++) {
-            m_normals[i] = new Vec2();
+        normals = new v2[maxVertices];
+        for (int i = 0; i < normals.length; i++) {
+            normals[i] = new v2(0,0);
         }
         setRadius(Settings.polygonRadius);
-        m_centroid.setZero();
+        centroid.setZero();
     }
 
     public final Shape clone() {
-        PolygonShape shape = new PolygonShape();
-        shape.m_centroid.set(this.m_centroid);
-        for (int i = 0; i < shape.m_normals.length; i++) {
-            shape.m_normals[i].set(m_normals[i]);
-            shape.m_vertices[i].set(m_vertices[i]);
+        PolygonShape shape = new PolygonShape(vertex.length);
+        shape.centroid.set(this.centroid);
+        for (int i = 0; i < shape.normals.length; i++) {
+            shape.normals[i].set(normals[i]);
+            shape.vertex[i].set(vertex[i]);
         }
         shape.setRadius(this.getRadius());
-        shape.m_count = this.m_count;
+        shape.vertices = this.vertices;
         return shape;
     }
 
@@ -161,33 +165,33 @@ public class PolygonShape extends Shape {
             }
         }
 
-        this.m_count = m;
+        this.vertices = m;
 
         // Copy vertices.
-        for (int i = 0; i < m_count; ++i) {
-            if (m_vertices[i] == null) {
-                m_vertices[i] = new Vec2();
+        for (int i = 0; i < vertices; ++i) {
+            if (vertex[i] == null) {
+                vertex[i] = new Vec2();
             }
-            m_vertices[i].set(verts[hull[i]]);
+            vertex[i].set(verts[hull[i]]);
         }
 
         Tuple2f edge = pool1;
-        for (int i = 0; i < m_count; ++i) {
+        for (int i = 0; i < vertices; ++i) {
             final int i1 = i;
-            final int i2 = i + 1 < m_count ? i + 1 : 0;
-            edge.set(m_vertices[i2]).subbed(m_vertices[i1]);
+            final int i2 = i + 1 < vertices ? i + 1 : 0;
+            edge.set(vertex[i2]).subbed(vertex[i1]);
 
             assert (edge.lengthSquared() > Settings.EPSILON * Settings.EPSILON);
-            Tuple2f.crossToOutUnsafe(edge, 1f, m_normals[i]);
-            m_normals[i].normalize();
+            Tuple2f.crossToOutUnsafe(edge, 1f, normals[i]);
+            normals[i].normalize();
         }
 
         // Compute the polygon centroid.
-        computeCentroidToOut(m_vertices, m_count, m_centroid);
+        computeCentroidToOut(vertex, vertices, centroid);
     }
 
     public static PolygonShape box(final float hx, final float hy) {
-        return new PolygonShape().setAsBox(hx, hy);
+        return new PolygonShape(4).setAsBox(hx, hy);
     }
 
     /**
@@ -197,16 +201,16 @@ public class PolygonShape extends Shape {
      * @param hy the half-height.
      */
     public final org.jbox2d.collision.shapes.PolygonShape setAsBox(final float hx, final float hy) {
-        m_count = 4;
-        m_vertices[0].set(-hx, -hy);
-        m_vertices[1].set(hx, -hy);
-        m_vertices[2].set(hx, hy);
-        m_vertices[3].set(-hx, hy);
-        m_normals[0].set(0.0f, -1.0f);
-        m_normals[1].set(1.0f, 0.0f);
-        m_normals[2].set(0.0f, 1.0f);
-        m_normals[3].set(-1.0f, 0.0f);
-        m_centroid.setZero();
+        vertices = 4;
+        vertex[0].set(-hx, -hy);
+        vertex[1].set(hx, -hy);
+        vertex[2].set(hx, hy);
+        vertex[3].set(-hx, hy);
+        normals[0].set(0.0f, -1.0f);
+        normals[1].set(1.0f, 0.0f);
+        normals[2].set(0.0f, 1.0f);
+        normals[3].set(-1.0f, 0.0f);
+        centroid.setZero();
         return this;
     }
 
@@ -219,25 +223,25 @@ public class PolygonShape extends Shape {
      * @param angle  the rotation of the box in local coordinates.
      */
     public final void setAsBox(final float hx, final float hy, final Tuple2f center, final float angle) {
-        m_count = 4;
-        m_vertices[0].set(-hx, -hy);
-        m_vertices[1].set(hx, -hy);
-        m_vertices[2].set(hx, hy);
-        m_vertices[3].set(-hx, hy);
-        m_normals[0].set(0.0f, -1.0f);
-        m_normals[1].set(1.0f, 0.0f);
-        m_normals[2].set(0.0f, 1.0f);
-        m_normals[3].set(-1.0f, 0.0f);
-        m_centroid.set(center);
+        vertices = 4;
+        vertex[0].set(-hx, -hy);
+        vertex[1].set(hx, -hy);
+        vertex[2].set(hx, hy);
+        vertex[3].set(-hx, hy);
+        normals[0].set(0.0f, -1.0f);
+        normals[1].set(1.0f, 0.0f);
+        normals[2].set(0.0f, 1.0f);
+        normals[3].set(-1.0f, 0.0f);
+        centroid.set(center);
 
         final Transform xf = poolt1;
         xf.p.set(center);
         xf.q.set(angle);
 
         // Transform vertices and normals.
-        for (int i = 0; i < m_count; ++i) {
-            Transform.mulToOut(xf, m_vertices[i], m_vertices[i]);
-            Rot.mulToOut(xf.q, m_normals[i], m_normals[i]);
+        for (int i = 0; i < vertices; ++i) {
+            Transform.mulToOut(xf, vertex[i], vertex[i]);
+            Rot.mulToOut(xf.q, normals[i], normals[i]);
         }
     }
 
@@ -258,15 +262,15 @@ public class PolygonShape extends Shape {
         if (m_debug) {
             System.out.println("--testPoint debug--");
             System.out.println("Vertices: ");
-            for (int i = 0; i < m_count; ++i) {
-                System.out.println(m_vertices[i]);
+            for (int i = 0; i < vertices; ++i) {
+                System.out.println(vertex[i]);
             }
             System.out.println("pLocal: " + pLocalx + ", " + pLocaly);
         }
 
-        for (int i = 0; i < m_count; ++i) {
-            Tuple2f vertex = m_vertices[i];
-            Tuple2f normal = m_normals[i];
+        for (int i = 0; i < vertices; ++i) {
+            Tuple2f vertex = this.vertex[i];
+            Tuple2f normal = normals[i];
             tempx = pLocalx - vertex.x;
             tempy = pLocaly - vertex.y;
             final float dot = normal.x * tempx + normal.y * tempy;
@@ -282,7 +286,7 @@ public class PolygonShape extends Shape {
     public final void computeAABB(final AABB aabb, final Transform xf, int childIndex) {
         final Tuple2f lower = aabb.lowerBound;
         final Tuple2f upper = aabb.upperBound;
-        final Tuple2f v1 = m_vertices[0];
+        final Tuple2f v1 = vertex[0];
         final float xfqc = xf.q.c;
         final float xfqs = xf.q.s;
         final float xfpx = xf.p.x;
@@ -292,8 +296,8 @@ public class PolygonShape extends Shape {
         upper.x = lower.x;
         upper.y = lower.y;
 
-        for (int i = 1; i < m_count; ++i) {
-            Tuple2f v2 = m_vertices[i];
+        for (int i = 1; i < vertices; ++i) {
+            Tuple2f v2 = vertex[i];
             // Vec2 v = Mul(xf, m_vertices[i]);
             float vx = (xfqc * v2.x - xfqs * v2.y) + xfpx;
             float vy = (xfqs * v2.x + xfqc * v2.y) + xfpy;
@@ -315,7 +319,7 @@ public class PolygonShape extends Shape {
      * @return
      */
     public final int getVertexCount() {
-        return m_count;
+        return vertices;
     }
 
     /**
@@ -325,8 +329,8 @@ public class PolygonShape extends Shape {
      * @return
      */
     public final Tuple2f getVertex(final int index) {
-        assert (0 <= index && index < m_count);
-        return m_vertices[index];
+        assert (0 <= index && index < vertices);
+        return vertex[index];
     }
 
     @Override
@@ -342,9 +346,9 @@ public class PolygonShape extends Shape {
         float normalForMaxDistanceX = pLocalx;
         float normalForMaxDistanceY = pLocaly;
 
-        for (int i = 0; i < m_count; ++i) {
-            Tuple2f vertex = m_vertices[i];
-            Tuple2f normal = m_normals[i];
+        for (int i = 0; i < vertices; ++i) {
+            Tuple2f vertex = this.vertex[i];
+            Tuple2f normal = normals[i];
             tx = pLocalx - vertex.x;
             ty = pLocaly - vertex.y;
             float dot = normal.x * tx + normal.y * ty;
@@ -360,8 +364,8 @@ public class PolygonShape extends Shape {
             float minDistanceX = normalForMaxDistanceX;
             float minDistanceY = normalForMaxDistanceY;
             float minDistance2 = maxDistance * maxDistance;
-            for (int i = 0; i < m_count; ++i) {
-                Tuple2f vertex = m_vertices[i];
+            for (int i = 0; i < vertices; ++i) {
+                Tuple2f vertex = this.vertex[i];
                 float distanceVecX = pLocalx - vertex.x;
                 float distanceVecY = pLocaly - vertex.y;
                 float distance2 = (distanceVecX * distanceVecX + distanceVecY * distanceVecY);
@@ -410,9 +414,9 @@ public class PolygonShape extends Shape {
 
         int index = -1;
 
-        for (int i = 0; i < m_count; ++i) {
-            Tuple2f normal = m_normals[i];
-            Tuple2f vertex = m_vertices[i];
+        for (int i = 0; i < vertices; ++i) {
+            Tuple2f normal = normals[i];
+            Tuple2f vertex = this.vertex[i];
             // p = p1 + a * d
             // dot(normal, p - v) = 0
             // dot(normal, p1 - v) + a * dot(normal, d) = 0
@@ -453,7 +457,7 @@ public class PolygonShape extends Shape {
         if (index >= 0) {
             output.fraction = lower;
             // normal = Mul(xf.R, m_normals[index]);
-            Tuple2f normal = m_normals[index];
+            Tuple2f normal = normals[index];
             Tuple2f out = output.normal;
             out.x = xfqc * normal.x - xfqs * normal.y;
             out.y = xfqs * normal.x + xfqc * normal.y;
@@ -527,7 +531,7 @@ public class PolygonShape extends Shape {
         //
         // The rest of the derivation is handled by computer algebra.
 
-        assert (m_count >= 3);
+        assert (vertices >= 3);
 
         final Tuple2f center = pool1;
         center.setZero();
@@ -539,20 +543,20 @@ public class PolygonShape extends Shape {
         final Vec2 s = pool2;
         s.setZero();
         // This code would put the reference point inside the polygon.
-        for (int i = 0; i < m_count; ++i) {
-            s.addLocal(m_vertices[i]);
+        for (int i = 0; i < vertices; ++i) {
+            s.addLocal(vertex[i]);
         }
-        s.scaled(1.0f / m_count);
+        s.scaled(1.0f / vertices);
 
         final float k_inv3 = 1.0f / 3.0f;
 
         final Tuple2f e1 = pool3;
         final Tuple2f e2 = pool4;
 
-        for (int i = 0; i < m_count; ++i) {
+        for (int i = 0; i < vertices; ++i) {
             // Triangle vertices.
-            e1.set(m_vertices[i]).subbed(s);
-            e2.set(s).negated().added(i + 1 < m_count ? m_vertices[i + 1] : m_vertices[0]);
+            e1.set(vertex[i]).subbed(s);
+            e2.set(s).negated().added(i + 1 < vertices ? vertex[i + 1] : vertex[0]);
 
             final float D = Tuple2f.cross(e1, e2);
 
@@ -593,18 +597,18 @@ public class PolygonShape extends Shape {
      * @return
      */
     public boolean validate() {
-        for (int i = 0; i < m_count; ++i) {
+        for (int i = 0; i < vertices; ++i) {
             int i1 = i;
-            int i2 = i < m_count - 1 ? i1 + 1 : 0;
-            Tuple2f p = m_vertices[i1];
-            Tuple2f e = pool1.set(m_vertices[i2]).subbed(p);
+            int i2 = i < vertices - 1 ? i1 + 1 : 0;
+            Tuple2f p = vertex[i1];
+            Tuple2f e = pool1.set(vertex[i2]).subbed(p);
 
-            for (int j = 0; j < m_count; ++j) {
+            for (int j = 0; j < vertices; ++j) {
                 if (j == i1 || j == i2) {
                     continue;
                 }
 
-                Tuple2f v = pool2.set(m_vertices[j]).subbed(p);
+                Tuple2f v = pool2.set(vertex[j]).subbed(p);
                 float c = Tuple2f.cross(e, v);
                 if (c < 0.0f) {
                     return false;
@@ -618,29 +622,29 @@ public class PolygonShape extends Shape {
     /**
      * Get the vertices in local coordinates.
      */
-    public Tuple2f[] getVertices() {
-        return m_vertices;
+    public Tuple2f[] getVertex() {
+        return vertex;
     }
 
     /**
      * Get the edge normal vectors. There is one for each vertex.
      */
     public Tuple2f[] getNormals() {
-        return m_normals;
+        return normals;
     }
 
     /**
      * Get the centroid and apply the supplied transform.
      */
     public Tuple2f centroid(final Transform xf) {
-        return Transform.mul(xf, m_centroid);
+        return Transform.mul(xf, centroid);
     }
 
     /**
      * Get the centroid and apply the supplied transform.
      */
     public Tuple2f centroidToOut(final Transform xf, final Tuple2f out) {
-        Transform.mulToOutUnsafe(xf, m_centroid, out);
+        Transform.mulToOutUnsafe(xf, centroid, out);
         return out;
     }
 }

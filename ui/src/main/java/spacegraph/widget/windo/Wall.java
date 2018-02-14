@@ -1,13 +1,8 @@
 package spacegraph.widget.windo;
 
-import org.jbox2d.dynamics.Dynamics2D;
-import spacegraph.Ortho;
 import spacegraph.Scale;
 import spacegraph.Surface;
-import spacegraph.SurfaceBase;
 import spacegraph.layout.Stacking;
-import spacegraph.math.v2;
-import spacegraph.phys.util.Animated;
 
 /**
  * a wall (virtual surface) contains zero or more windows;
@@ -15,43 +10,17 @@ import spacegraph.phys.util.Animated;
  * <p>
  * TODO move active window to top of child stack
  */
-public class Wall extends Stacking implements Animated {
+public class Wall extends Stacking  {
 
-    private final Dynamics2D w;
 
     //final ContinuousConstraintSolver model = new ContinuousConstraintSolver();
 
     public Wall() {
 
         clipTouchBounds = false;
-
-        w = new Dynamics2D(new v2(0,0));
-        w.setParticleRadius(0.2f);
-        w.setParticleDensity(1.0f);
-        w.setContinuousPhysics(true);
-        w.setAllowSleep(true);
     }
 
-    @Override
-    public void start(SurfaceBase parent) {
-        synchronized (this) {
-            super.start(parent);
-            ((Ortho)root()).onUpdate(this);
-        }
-    }
 
-    @Override
-    public boolean animate(float dt) {
-        w.step(dt, 2, 2);
-        return true;
-    }
-
-    @Override
-    public void stop() {
-        synchronized (this) {
-            super.stop();
-        }
-    }
 
     //    public static class P2 {
 //        final DoubleVar x, y;
