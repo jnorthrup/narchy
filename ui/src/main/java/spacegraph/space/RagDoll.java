@@ -33,11 +33,9 @@ import spacegraph.phys.constraint.TypedConstraint;
 import spacegraph.phys.constraint.generic.Generic6DofConstraint;
 import spacegraph.phys.math.MatrixUtil;
 import spacegraph.phys.math.Transform;
-import spacegraph.phys.shape.BoxShape;
 import spacegraph.phys.shape.CapsuleShape;
 import spacegraph.phys.shape.CollisionShape;
 import spacegraph.phys.util.BulletStack;
-import spacegraph.render.JoglPhysics;
 import spacegraph.render.JoglPhysics.ExtraGlobals;
 
 
@@ -71,14 +69,14 @@ public class RagDoll  {
 //        return newRagDoll(graphSpace.dyn, v(), 10f);
 //    }
 
-    public static void spawnGround(JoglPhysics d) {
-        // Setup a big ground box
-        CollisionShape groundShape = new BoxShape(new v3(200f, 10f, 200f));
-        Transform groundTransform = new Transform();
-        groundTransform.setIdentity();
-        groundTransform.set(0f, -15f, 0f);
-        JoglPhysics.newBody(0f, groundTransform, groundShape);
-    }
+//    public static void spawnGround(JoglPhysics d) {
+//        // Setup a big ground box
+//        CollisionShape groundShape = new BoxShape(new v3(200f, 10f, 200f));
+//        Transform groundTransform = new Transform();
+//        groundTransform.setIdentity();
+//        groundTransform.set(0f, -15f, 0f);
+//        JoglPhysics.newBody(0f, groundTransform, groundShape);
+//    }
 
 
     protected final BulletStack stack = BulletStack.get();

@@ -50,7 +50,8 @@ public class Finger {
     /**
      * TODO scale this to pixel coordinates, this spatial coordinate is tricky and resolution dependent anyway
      */
-    final static float DRAG_THRESHOLD = 2f;
+    final static float DRAG_THRESHOLD = 3f;
+
 
     public Finger(Ortho root) {
         this.root = root;
@@ -124,8 +125,10 @@ public class Finger {
     }
 
     public boolean dragging(int button) {
-        return (hitOnDownGlobal[button] != null && hitOnDownGlobal[button].distanceSq(hitGlobal) >= DRAG_THRESHOLD * DRAG_THRESHOLD);
+        return (hitOnDownGlobal[button] != null && hitOnDownGlobal[button].distanceSq(hitGlobal) > DRAG_THRESHOLD * DRAG_THRESHOLD);
     }
+
+
 
     private boolean on(@Nullable Widget touched) {
 

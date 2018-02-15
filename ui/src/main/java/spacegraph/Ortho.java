@@ -50,24 +50,43 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     private short[] buttonsDown;
 
     private Animated fingerUpdate;
-    private final AtomicBoolean fingerUpdateForce = new AtomicBoolean(true);
 
-    private boolean focused = false;
+
+    private volatile boolean focused = false;
 
     final Map<String, Pair<Object, Runnable>> singletons = new HashMap();
     final Topic logs = new ListTopic();
 
-
+    private final AtomicBoolean fingerUpdated = new AtomicBoolean(true);
 
     public Ortho(Surface content) {
         super();
         this.finger = new Finger(this);
-        this.scale = new AnimVector2f(1, 1, 6f);
-        this.cam = new AnimVector3f(8f);
+
+        this.scale = new AnimVector2f(1, 1, 5f) {
+          //TODO add animation ifChanged -> fingerUpdated
+        };
+
+        this.cam = new AnimVector3f(12f) {
+            @Override
+            protected float interp(float dt) {
+                float W = window.getWidth();
+                float H = window.getHeight();
+
+                dt *= scale.x / Math.max(W,H);
+
+                float dist = super.interp(dt);
+                if (dist > 0.001f) {
+                    fingerUpdated.set(true);
+                }
+                return dist;
+            }
+        };
+
         this.surface = content;
 
         this.fingerUpdate = dt -> {
-            if (hasFocus() || fingerUpdateForce.compareAndSet(true, false)) {
+            if (/*hasFocus() ||*/ fingerUpdated.compareAndSet(true, false)) {
                 updateMouse(wmx, wmy, buttonsDown);
             }
             return true;
@@ -84,6 +103,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         scale(1, 1);
 
         surface.pos(bounds);
+
+        fingerUpdated.set(true);
     }
 
     public GL2 gl() {
@@ -158,6 +179,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         onUpdate(fingerUpdate);
 
         windowResized(null);
+
     }
 
     @Override
@@ -245,6 +267,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     }
 
 
+
     @Override
     public void windowMoved(WindowEvent e) {
 
@@ -282,13 +305,14 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     public void windowGainedFocus(WindowEvent e) {
         focused = true;
         updateMouse(null);
-        fingerUpdateForce.set(true);
+        fingerUpdated.set(true);
+        
     }
 
     @Override
     public void windowLostFocus(WindowEvent e) {
         updateMouse(null);
-        fingerUpdateForce.set(true);
+        fingerUpdated.set(true);
         focused = false;
     }
 
@@ -328,13 +352,13 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     public void mouseEntered(MouseEvent e) {
         focused = true;
         updateMouse(e);
-        fingerUpdateForce.set(true);
+        fingerUpdated.set(true);
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
         updateMouse(null);
-        fingerUpdateForce.set(true);
+        fingerUpdated.set(true);
         focused = false;
     }
 
@@ -383,19 +407,19 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
             wmx = +cam.x + (-0.5f * W + sx) / scale.x;
             wmy = +cam.y + (-0.5f * H + sy) / scale.x;
 
-            if (window != null) {
-                if (window.window != null) {
-                    Finger.pointer.set(window.windowX + e.getX(), window.windowY + e.getY());
-                }
+            if (window.window != null) {
+                Finger.pointer.set(window.windowX + e.getX(), window.windowY + e.getY());
             }
 
             this.buttonsDown = buttonsDown;
+            fingerUpdated.set(true);
             //updateMouse(sx, sy, buttonsDown);
             return true;
 
         } else {
 
             this.buttonsDown = null;
+            fingerUpdated.set(true);
             //updateMouse(wmx, wmy, null);
 
             return false;
@@ -415,7 +439,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         //System.out.println(lx + " " + ly);
         //if (lx >= 0 && ly >= 0 && lx <= 1f && ly <= 1f) {
         if ((s = finger.on(sx, sy, wmx, wmy, buttonsDown)) != null) {
-            log("on", s);
+            //log("on", s);
 //            if (e != null)
 //                e.setConsumed(true);
             return s;

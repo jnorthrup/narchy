@@ -37,12 +37,17 @@ public class AnimVector3f extends v3 implements Animated {
             super.set(target);
         } else {
             //interpLinear(dt);
-            interpLERP(dt);
+            interp(dt);
         }
 
         return running;
     }
 
+    protected float interp(float dt) {
+        return interpLinear(dt);
+    }
+
+    /** looks bad */
     public void interpLERP(float dt) {
         float rate = speed.floatValue() * dt;
         if (rate >= 1) {
@@ -57,29 +62,36 @@ public class AnimVector3f extends v3 implements Animated {
         }
     }
 
-    public void interpLinear(float dt) {
+    public float interpLinear(float dt) {
         //HACK use constant velocity
         float dx = target.x - x;
         float dy = target.y - y;
         float dz = target.z - z;
 
-        float rate = speed.floatValue() * dt;
-        float lenSq = dx * dx + dy * dy + dz * dz;
-        float len = (float) Math.sqrt(lenSq);
+        float rate = Math.max(0,speed.floatValue() * dt);
+        if (rate < Float.MIN_NORMAL)
+            return 0;
 
-        if (len < rate) {
-            //within one distance
-            //System.out.println(dt + " " + "target==" + target);
-            super.set(target);
-        } else {
-            float v = rate / len;
-            //System.out.println(dt + " " + "target.." + target + " " + len + " " + v);
+        float lenSq = dx * dx + dy * dy + dz * dz;
+
+
+//        if (lenSq < closeEnoughSq) {
+//            //within one distance
+//            //System.out.println(dt + " " + "target==" + target);
+//            return super.setIfChange(target.x, target.y, target.z, BulletGlobals.SIMD_EPSILON);
+//
+//        } else {
+            //float v = (float) (rate / Math.sqrt(lenSq)); //constant speed
+            float v = Math.min(1, (float) (rate * Math.sqrt(lenSq))); //proportional speed
 
             super.set(
+            //return super.setIfChange(
                     x + dx * v,
                     y + dy * v,
                     z + dz * v);
-        }
+            return v;
+                    //, v);
+//        }
     }
 
     @Override

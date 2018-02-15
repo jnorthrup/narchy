@@ -31,6 +31,8 @@ import static nars.truth.TruthFunctions.c2wSafe;
  */
 public final class DynTruth extends FasterList<TaskRegion> implements Prioritized, TaskRegion {
 
+    final LongHashSet evi = new LongHashSet();
+
     public DynTruth() {
         super();
     }
@@ -218,8 +220,11 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         throw new TODO();
     }
 
-
-    final LongHashSet evi = new LongHashSet();
+    @Override
+    public void clear() {
+        super.clear();
+        evi.clear();
+    }
 
     @Override
     public boolean add(TaskRegion newItem) {

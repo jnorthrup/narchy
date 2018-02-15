@@ -280,4 +280,18 @@ public class v3 extends Tuple3f {
         return Util.max(x,y,z);
     }
 
+    protected boolean setIfChange(float xx, float yy, float zz, float epsilon) {
+
+        if (!Util.equals(x, xx, epsilon) ||
+                !Util.equals(y, yy, epsilon) ||
+                    !Util.equals(z, zz, epsilon)) {
+
+            this.x = xx;
+            this.y = yy;
+            this.z = zz;
+            return true;
+        }
+
+        return false;
+    }
 }

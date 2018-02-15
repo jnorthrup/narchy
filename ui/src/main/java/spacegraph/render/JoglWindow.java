@@ -24,8 +24,8 @@ import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 public abstract class JoglWindow implements GLEventListener, WindowListener {
 
 
-    final static int RENDER_FPS_IDEAL = 30;
-    final static int UPDATE_FPS_IDEAL = 40;
+    final static float RENDER_FPS_IDEAL = 30f;
+    final static float UPDATE_FPS_IDEAL = 60f;
 
     //protected static final MyFPSAnimator a = new MyFPSAnimator(JoglSpace.FPS_IDEAL, FPS_MIN, FPS_IDEAL);
     protected static final GameAnimatorControl a;
@@ -185,8 +185,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         GLCapabilities config = new GLCapabilities(
 
                 //GLProfile.getMinimum(true)
-                GLProfile.getDefault()
-                //GLProfile.getMaximum(true)
+                //GLProfile.getDefault()
+                GLProfile.getMaximum(true)
 
 
         );

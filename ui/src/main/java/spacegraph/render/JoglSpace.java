@@ -27,8 +27,7 @@ import static com.jogamp.opengl.GL.*;
 import static com.jogamp.opengl.GL2ES1.GL_PERSPECTIVE_CORRECTION_HINT;
 import static com.jogamp.opengl.GL2GL3.GL_POLYGON_SMOOTH_HINT;
 import static com.jogamp.opengl.GLES2.GL_MAX;
-import static com.jogamp.opengl.fixedfunc.GLLightingFunc.GL_AMBIENT_AND_DIFFUSE;
-import static com.jogamp.opengl.fixedfunc.GLLightingFunc.GL_COLOR_MATERIAL;
+import static com.jogamp.opengl.fixedfunc.GLLightingFunc.*;
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_MODELVIEW;
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 import static spacegraph.math.v3.v;
@@ -61,8 +60,20 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     public JoglSpace() {
         super();
         onUpdate(((Animated) (camPos = new AnimVector3f(0, 0, 5, cameraSpeed))));
-        onUpdate(((Animated) (camFwd = new AnimVector3f(0, 0, -1, cameraRotateSpeed)))); //new AnimVector3f(0,0,1,dyn, 10f);
-        onUpdate(((Animated) (camUp = new AnimVector3f(0, 1, 0, cameraRotateSpeed)))); //new AnimVector3f(0f, 1f, 0f, dyn, 1f);
+        onUpdate(((Animated) (camFwd = new AnimVector3f(0, 0, -1, cameraRotateSpeed) {
+            @Override
+            protected float interp(float dt) {
+                interpLERP(dt);
+                return 0;
+            }
+        }))); //new AnimVector3f(0,0,1,dyn, 10f);
+        onUpdate(((Animated) (camUp = new AnimVector3f(0, 1, 0, cameraRotateSpeed) {
+            @Override
+            protected float interp(float dt) {
+                interpLERP(dt);
+                return 0;
+            }
+        }))); //new AnimVector3f(0f, 1f, 0f, dyn, 1f);
     }
 
     @Override
@@ -128,7 +139,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
                 //GL_DIFFUSE
         );
         gl.glEnable(GL_COLOR_MATERIAL);
-        //gl.glEnable(GL_NORMALIZE);
+        gl.glEnable(GL_NORMALIZE);
 
         //gl.glMaterialfv( GL2.GL_FRONT_AND_BACK, GL2.GL_SPECULAR, new float[] { 1, 1, 1, 1 }, 0);
         //gl.glMaterialfv( GL2.GL_FRONT_AND_BACK, GL2.GL_EMISSION, new float[] { 0, 0, 0, 0 }, 0);
@@ -138,8 +149,6 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
         gl.glClearDepth(1.0f);  // Depth Buffer Setup
         gl.glClearStencil(0);  // Clear The Stencil Buffer To 0
-
-//        gl.glEnable(GL2.GL_TEXTURE_2D); // Enable Texture Mapping
 
         gl.glClearColor(0.0f, 0.0f, 0.0f, 0f);
         gl.glClearDepth(1f); // Depth Buffer Setup
@@ -153,12 +162,13 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         //gl.glDisable(GL2.GL_SCISSOR_TEST);
 
         gl.glEnable(GL2.GL_BLEND);
+        gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+        gl.glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
+
 //        gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //        gl.glBlendEquation(GL2.GL_FUNC_ADD);
 
 
-        gl.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
-        gl.glBlendEquationSeparate(GL_FUNC_ADD, GL_MAX);
 
         //loadGLTexture(gl);
 

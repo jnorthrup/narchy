@@ -29,7 +29,6 @@ import spacegraph.AbstractSpace;
 import spacegraph.Spatial;
 import spacegraph.input.FPSLook;
 import spacegraph.input.OrbMouse;
-import spacegraph.phys.Dynamic;
 import spacegraph.phys.Dynamics3D;
 import spacegraph.phys.collision.DefaultCollisionConfiguration;
 import spacegraph.phys.collision.DefaultIntersecter;
@@ -38,8 +37,6 @@ import spacegraph.phys.collision.broad.DbvtBroadphase;
 import spacegraph.phys.collision.broad.Intersecter;
 import spacegraph.phys.constraint.BroadConstraint;
 import spacegraph.phys.math.DebugDrawModes;
-import spacegraph.phys.math.Transform;
-import spacegraph.phys.shape.CollisionShape;
 import spacegraph.space.DynamicListSpace;
 
 import java.util.List;
@@ -61,13 +58,6 @@ public class JoglPhysics<X> extends JoglSpace<X> {
     private final int maxSubsteps =
             0;
             //4;
-
-
-
-
-
-
-
 
 
     //protected final BulletStack stack = BulletStack.get();
@@ -230,6 +220,7 @@ public class JoglPhysics<X> extends JoglSpace<X> {
 
         }));
     }
+
     public DynamicListSpace<X> add(Spatial<X>... s) {
         DynamicListSpace<X> l = new DynamicListSpace<X>() {
 
@@ -569,14 +560,14 @@ public class JoglPhysics<X> extends JoglSpace<X> {
 
     }
 
-    public static Dynamic newBody(float mass, Transform startTransform, CollisionShape shape) {
-
-        boolean isDynamic = (mass != 0f);
-        int collisionFilterGroup = isDynamic ? 1 : 2;
-        int collisionFilterMask = isDynamic ? -1 : -3;
-
-        return Dynamics3D.newBody(mass, shape, startTransform, collisionFilterGroup, collisionFilterMask);
-    }
+//    public static Dynamic newBody(float mass, Transform startTransform, CollisionShape shape) {
+//
+//        boolean isDynamic = (mass != 0f);
+//        int collisionFilterGroup = isDynamic ? 1 : 2;
+//        int collisionFilterMask = isDynamic ? -1 : -3;
+//
+//        return Dynamics3D.newBody(mass, shape, startTransform, collisionFilterGroup, collisionFilterMask);
+//    }
 
 
 
