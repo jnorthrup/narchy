@@ -155,6 +155,39 @@ public class TimeGraphTest {
                 //"(one ==>+1 (two &&+1 three))@19"
         });
     }
+    @Test
+    public void testImplWithTwoConjPredicates() throws Narsese.NarseseException {
+
+        //wrong:
+        //    $.05 ((a &&+5 b) ==>+3 (b &&+5 c)). -2 %1.0;.41% {4: 1;2} ((%1,%2,belief(positive),notImpl(%2),notImpl(%1)),((%2 ==>+- %1),((Induction-->Belief))))
+        //    $.50 (b &&+5 c). 3 %1.0;.90% {3: 2} Narsese
+        //    $.50 (a &&+5 b). 1 %1.0;.90% {1: 1} Narsese
+        TimeGraph C = newTimeGraph(1);
+        C.know($.$("(a &&+5 b)"), 1);
+        C.know($.$("(b &&+5 c)"), 3);
+        C.print();
+        System.out.println();
+        assertSolved("((a &&+5 b) ==>+- (b &&+5 c))", C,
+                "((a &&+5 b) ==>-3 (b &&+5 c))@1");
+        C.print();
+    }
+    @Test
+    public void testImplWithConjSubjDecomposeProperly() throws Narsese.NarseseException {
+
+        //wrong:
+//        $.13 (a &&+1 a2)! 6 %1.0;.62% {7: 1;2} ((%1,(%2==>%3),notImpl(%1)),(subIfUnifiesAny(%2,%3,%1,"$"),((Abduction-->Belief),(Deduction-->Goal))))
+//        $.50 b! 6 %1.0;.90% {6: 2} Narsese
+//        $.50 ((a &&+1 a2)=|>b). 1 %1.0;.90% {1: 1} Narsese
+        TimeGraph C = newTimeGraph(1);
+        C.know($.$("b"), 6);
+        C.know($.$("((a &&+1 a2)=|>b)"), 1);
+        C.print();
+        System.out.println();
+        assertSolved("(a &&+1 a2)", C,
+                "(a &&+1 a2)@5");
+        C.print();
+    }
+
     @Test public void testNobrainerNegation() throws Narsese.NarseseException {
 
         TimeGraph C = newTimeGraph(1);

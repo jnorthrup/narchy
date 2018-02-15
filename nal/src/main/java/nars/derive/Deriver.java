@@ -23,6 +23,7 @@ import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static jcog.Util.unitize;
+import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -266,16 +267,26 @@ public class Deriver extends Causable {
         assert (now != ETERNAL);
 
         if (task.isEternal()) {
-            return
-                    //ETERNAL;
-                    now;
+            return task.punc()!=GOAL ? ETERNAL : now;
+                    //ETERNAL
+                    //now;
         } else {
 
             //return now;
 
-            //return task.nearestTimeTo(now);
+            //return task.myNearestTimeTo(now);
 
-            return task.myNearestTimeTo(now);
+            switch (task.punc()) {
+                case BELIEF:
+                case GOAL:
+                case QUEST:
+                    return now;
+                case QUESTION:
+                    return task.myNearestTimeTo(now);
+                default:
+                    throw new UnsupportedOperationException();
+            }
+
 
 //            return nar.random().nextBoolean() ?
 //                    now : task.myNearestTimeTo(now);

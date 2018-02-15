@@ -42,6 +42,8 @@ import java.util.function.Supplier;
  *      - discover and report private/final/static fields separately as potentially tweakable
  *
  *      - objenome dep inject
+ *
+ *      - probes for runtime optimization
  * */
 public class AutoTweaks<X> extends Tweaks<X> {
 

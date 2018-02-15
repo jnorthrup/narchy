@@ -33,12 +33,10 @@ public class TruthletTask extends SignalTask {
     }
 
 
-
-
     /**
      * should be called only from the stretch procedure
      */
-    public void updateTime(Concept c, long nextStart, long nextEnd) {
+    void updateTime(Concept c, long nextStart, long nextEnd) {
         if (nextStart == start() && nextEnd == end())
             return; //no change
         else

@@ -107,8 +107,8 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
         //  if no active remain, disable update service
 
         int dur = n.dur();
-        long start = now;
-        long end = now + dur;
+        long start = now - dur/2;
+        long end = now + dur/2;
         List<Task> evoke = $.newArrayList(0);
 
         float exeThresh = this.exeThresh.floatValue();
@@ -122,6 +122,9 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
                 return; //skip, already in progress
 
             Concept c = n.concept(xx);
+            if (c == null)
+                return;
+
             Truth goalTruth = c.goals().truth(start, end, n);
 
             float g;

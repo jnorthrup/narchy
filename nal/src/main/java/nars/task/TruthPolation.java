@@ -105,6 +105,7 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
             if (s == 0) return null;
             if (s > 1) {
                 sortThisByFloat(tc -> -tc.evi); //descending by strength
+                //TODO maybe factor in originality to reduce overlap so evidence can be combined better
 
                 //remove the weaker holder of any overlapping evidence
                 LongHashSet e = new LongHashSet(s * 2);

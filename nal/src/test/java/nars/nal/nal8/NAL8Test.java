@@ -582,9 +582,10 @@ public class NAL8Test extends NALTest {
 
     }
 
-    @Test
+    @Test @Disabled
     public void disjunctionBackwardsQuestionEternal() {
 
+        //requires a non-standard rule that form a belief from question
         test
                 .inputAt(0, "(||, (x), (y))?")
                 .believe("(x)")
@@ -779,7 +780,10 @@ public class NAL8Test extends NALTest {
 
         int start = 1;
         int when = 6;
-        int goalAt = when - dt - $.$safe(sj).dtRange();
+
+        int goalAt = Math.max(when,
+                when - dt - $.$safe(sj).dtRange()); //immediate
+
         String[] subjPred = sj.split("\\/");
         assertEquals(2, subjPred.length);
 
@@ -799,7 +803,7 @@ public class NAL8Test extends NALTest {
                 .confTolerance(0.15f)
                 .inputAt(3, "(--(a) ==>+2 (b)). :|:")
                 .inputAt(5, "(b)! :|:")
-                .mustGoal(cycles, "(a)", 0f, 0.81f, 3);
+                .mustGoal(cycles, "(a)", 0f, 0.81f, 5 /* desired at same time as b since it precedes it */);
                 //.mustNotOutput(cycles, "(a)", GOAL, t -> t == ETERNAL || t == 5);
     }
 

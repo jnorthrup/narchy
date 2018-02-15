@@ -67,11 +67,10 @@ public class NAL7Test extends NALTest {
                 .input("x:before. :|:")
                 .inputAt(1, "(--,x:after). :|:")
                 .mustBelieve(cycles, "(x:before ==>+1 x:after)", 0.00f, 0.45f /*abductionConf*/, 0)
-                .mustBelieve(cycles, "((--,x:after) ==>-1 x:before)", 1.00f, 0.45f /*inductionConf*/, 10)
+                .mustBelieve(cycles, "((--,x:after) ==>-1 x:before)", 1.00f, 0.45f /*inductionConf*/, 1)
                 .mustBelieve(cycles, "(x:before &&+1 (--,x:after))", 1.00f, 0.81f /*intersectionConf*/, 0)
                 .mustNotOutput(cycles, "(x:before &&-1 (--,x:after))", BELIEF,
                         (t -> t == 0 || t == 1));
-//                .mustBelieve(cycles, "(x:after <=>-10 x:before)", 0.00f, 0.45f /*comparisonConf*/, 0, 10)
     }
 
     @Test

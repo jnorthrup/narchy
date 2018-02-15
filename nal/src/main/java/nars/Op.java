@@ -19,7 +19,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.compound.CachedUnitCompound;
-import nars.term.compound.CompoundCached;
+import nars.term.compound.CachedCompound;
 import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -561,7 +561,7 @@ public enum Op {
                 (b.op() == NEG && b.unneg().equals(a));
     }
 
-    public static final Compound ZeroProduct = new CompoundCached(Op.PROD, Subterms.Empty);
+    public static final Compound ZeroProduct = CachedCompound.the(Op.PROD, Subterms.Empty);
 
     public static final int StatementBits = Op.or(Op.INH, Op.SIM, Op.IMPL);
 
@@ -1668,7 +1668,7 @@ public enum Op {
             ss = The.subtermsInstance(u);
         }
 
-        return new CompoundCached(o, ss);
+        return CachedCompound.the(o, ss);
     }
 
 

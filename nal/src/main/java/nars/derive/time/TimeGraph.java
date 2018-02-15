@@ -175,6 +175,15 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         }
     }
 
+    protected int absoluteCount(Term t) {
+        int c = 0;
+        for (Event tx : byTerm.get(t)) {
+            if (tx instanceof Absolute)
+                c++;
+        }
+        return c;
+    }
+
     public Event event(Event e) {
         Node<nars.derive.time.TimeGraph.Event,nars.derive.time.TimeGraph.TimeSpan> existing = node(e);
         return existing != null ? existing.id : e;
@@ -419,8 +428,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
             Term a = xx.sub(0);
             Term b = xx.sub(1);
 
+            boolean aEqB = a.equals(b);
 
-            if (!a.hasXternal() && !b.hasXternal()) {
+            if (!a.hasXternal() && !b.hasXternal() && (aEqB || !commonSubEventsWithMultipleOccurrences(a, b))) {
                 UnifiedSet<Event> ae = new UnifiedSet(2);
                 solveOccurrence(event(a, TIMELESS), ax -> {
                     if (ax instanceof Absolute) ae.add(ax);
@@ -428,7 +438,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                 });
                 int aes = ae.size();
                 if (aes > 0) {
-                    if (a.equals(b)) {
+                    if (aEqB) {
 
                         //same term, must have >1 absolute timepoints
                         if (aes > 1) {
@@ -467,8 +477,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
 
 //            UnifiedSet<Event>[] abs = new UnifiedSet[2]; //exact occurrences of each subterm
-
-            boolean aEqB = b.equals(a);
 
 
             FasterList<Event> rels = new FasterList<>(4);
@@ -609,6 +617,32 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         return each.test(event(x, TIMELESS)); //last resort
     }
 
+    /** tests whether the two terms refer to the same sub-events,
+     *  which have known multiple occurrences
+     *  which would cause incorrect results if interpreted literally
+     *  this prevents separate instances of events from being welded together or arranged in the incorrect temporal order
+     *  across time when there should be some non-zero dt */
+    boolean commonSubEventsWithMultipleOccurrences(Term a, Term b) {
+        UnifiedSet<Term> eventTerms = new UnifiedSet();
+        a.eventsWhile((w,aa)->{
+            eventTerms.add(aa);
+           return true;
+        }, 0, true, true, true, 0);
+
+        final boolean[] ambiguous = {false};
+        b.eventsWhile((w,bb)->{
+            if (eventTerms.remove(bb)) {
+                if (absoluteCount(bb) > 1) {
+                    ambiguous[0] = true;
+                    return false;
+                }
+            }
+            return true;
+        }, 0, true, true, true, 0);
+
+        return ambiguous[0];
+    }
+
     /**
      * since CONJ will be constructed with conjMerge, if x is conj the dt between events must be calculated from start-start. otherwise it is implication and this is measured internally
      */
@@ -696,16 +730,24 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 //        solve(x, true, each);
 //    }
 
-    public void solve(Term x, boolean filterTimeless, Predicate<Event> target) {
+    /** main entry point to the solver */
+    public final void solve(Term x, boolean filterTimeless, Predicate<Event> target) {
+        solve(x, filterTimeless, new HashSet<>(), target);
+    }
 
-        Set<Event> seen = new HashSet<>();
+    /** main entry point to the solver
+     * @seen callee may need to clear the provided seen if it is being re-used
+     * */
+    public void solve(Term x, boolean filterTimeless, HashSet<Event> seen, Predicate<Event> target) {
 
         Predicate<Event> each = y -> {
             if (seen.add(y)) {
+//                if (!x.equalsRoot(y.id))
+//                    return true; //potentially degenerate solution
                 if (y.when() == TIMELESS && (filterTimeless || x.equals(y.id)))
                     return true;
-                else
-                    return target.test(y);
+
+                return target.test(y);
             } else {
                 return true; //filtered
             }

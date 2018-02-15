@@ -648,13 +648,13 @@ public interface NAct {
                             //Pb = $.t(1f, Util.lerp(+y, confBase, feedbackConf));
                             Pb = $.t(y/2f + 0.5f, feedConf);
                             Nb =
-                                    null;
-                                    //$.t(0, feedConf);
+                                    //null;
+                                    $.t(0, feedConf);
                             break;
                         case -1:
                             Pb =
-                                    null;
-                                    //$.t(0, feedConf);
+                                    //null;
+                                    $.t(0, feedConf);
 
                             Nb = $.t(-y/2f + 0.5f, feedConf);
                             break;

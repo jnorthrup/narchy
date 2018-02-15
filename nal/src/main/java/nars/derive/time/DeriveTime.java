@@ -52,6 +52,10 @@ public class DeriveTime extends TimeGraph {
 
     private final Derivation d;
 
+    /** temporary set for filtering duplicates */
+    private final HashSet<Event> seen;
+
+
     /**
      * on .get(), also sets the occurrence time and any other derivation state
      */
@@ -71,6 +75,7 @@ public class DeriveTime extends TimeGraph {
         this.d = copy.d;
         this.task = copy.task;
         this.belief = copy.belief;
+        this.seen = copy.seen;
 
         //TODO optimized clone of the copy's graph
         //this.byTerm.putAll(copy.byTerm);
@@ -108,6 +113,7 @@ public class DeriveTime extends TimeGraph {
     public DeriveTime(Derivation d, boolean single) {
         this.d = d;
         this.cache = new HashMap(0);
+        this.seen = new HashSet<>();
 
         if (!single) {
             Term tt = (this.task=d.task).term();
@@ -674,7 +680,9 @@ public class DeriveTime extends TimeGraph {
 
             return triesRemain[0]-- > 0;
         };
-        solve(pattern, false /* take everything */, each);
+
+        seen.clear();
+        solve(pattern, false /* take everything */, seen, each);
 
 //        boolean neg = false;
 //        if (solutions.isEmpty() && pattern.op()==NEG) {

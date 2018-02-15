@@ -7,6 +7,7 @@ import nars.subterm.UnitSubterm;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
+import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Consumer;
@@ -123,5 +124,20 @@ public abstract class UnitCompound implements Compound {
     @Override
     public final int dt() {
         return DTERNAL;
+    }
+
+    @Override
+    public int eventCount() {
+        return 1;
+    }
+
+    @Override
+    public boolean eventsWhile(LongObjectPredicate<Term> events, long offset, boolean decomposeConjParallel, boolean decomposeConjDTernal, boolean decomposeXternal, int level) {
+        return events.accept(offset, this);
+    }
+
+    @Override
+    public int dtRange() {
+        return 0;
     }
 }

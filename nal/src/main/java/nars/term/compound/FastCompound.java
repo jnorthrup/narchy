@@ -375,7 +375,7 @@ abstract public class FastCompound implements Compound /* The */ {
         } else {
             //TODO sub view
             //return opAtSub.the(DTERNAL, subs(subOffset));
-            return new CompoundCached(opAtSub,
+            return CachedCompound.the(opAtSub,
                     The.subterms(new SubtermView(this, offset))
                     //new SubtermView(this, offset)
             );
@@ -525,7 +525,7 @@ abstract public class FastCompound implements Compound /* The */ {
      */
     public static final BiFunction<Op, List<Term>, Term> FAST_COMPOUND_BUILDER = (op, terms) -> {
         //HACK creating an intermediate GenericCompound should not be necessary
-        CompoundCached g = new CompoundCached(op, The.subterms(terms));
+        CachedCompound g = CachedCompound.the(op, The.subterms(terms));
         try {
 
             if (!g.isTemporal())

@@ -34,6 +34,8 @@ public class Premise extends Pri {
     public final Term term;
     private final int hash;
 
+    //TODO make global param
+    static private float temporalFocusRadiusDurs = 4;
 
 
     Premise(Task task, Term term, float taskLinkPri) {
@@ -179,11 +181,11 @@ public class Premise extends Pri {
                         focusStart = focusEnd = ETERNAL;
                     } else {
                         focusStart =
-                                focus - dur / 2;
+                                Math.round(focus - Math.max(1,dur * temporalFocusRadiusDurs));
                         //focus - dur;
                         //focus;
                         focusEnd =
-                                focus + dur / 2;
+                                Math.round(focus + Math.max(1,dur * temporalFocusRadiusDurs));
                         //focus + dur;
                         //focus;
                     }

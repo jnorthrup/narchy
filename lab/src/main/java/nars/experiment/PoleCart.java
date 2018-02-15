@@ -126,29 +126,27 @@ public class PoleCart extends NAgentX {
         this.xVel = senseNumber($.the("dx"),
                 //() -> Util.sigmoid((float) posDot)
                 new FloatPolarNormalized(() -> (float) posDot)
-        ).resolution(0.04f);
+        );
 
         //angle
 
         this.angX = senseNumber($.the("angX"),
-                () -> (float) (0.5f + 0.5f * (Math.sin(angle))))
-                .resolution(0.04f);
+                () -> (float) (0.5f + 0.5f * (Math.sin(angle))));
         this.angY = senseNumber($.the("angY"),
-                () -> (float) (0.5f + 0.5f * (Math.cos(angle))))
-                .resolution(0.04f);
+                () -> (float) (0.5f + 0.5f * (Math.cos(angle))));
 
         //angular velocity
         this.angVel = senseNumber($.the("angVel"),
                 //() -> Util.sigmoid(angleDot / 4f)
                 new FloatPolarNormalized(() -> (float) angleDot)
-        ).resolution(0.1f);
+        );
 
 //        this.dAngVel = senseNumberDifferenceBi($.the("dAngVel"),
 //                ()->(float) angleDot
 //        ).resolution(0.1f);
 
 
-        actionBipolarFrequencyDifferential(id, false, true, (a) -> {
+        actionBipolarFrequencyDifferential(id, false, false, (a) -> {
             if (!manualOverride)
                 action = a;
             return a;

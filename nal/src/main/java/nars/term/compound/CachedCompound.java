@@ -14,32 +14,110 @@ import static nars.time.Tense.DTERNAL;
 /**
  * on-heap, caches many commonly used methods for fast repeat access while it survives
  */
-public class CompoundCached implements Compound, The {
+abstract public class CachedCompound implements Compound, The {
 
     /**
      * subterm vector
      */
-    public final Subterms subterms;
+    private final Subterms subterms;
 
 
     /**
      * content hash
      */
-    public final int hash;
+    private final int hash;
 
-    public final Op op;
+    protected final Op op;
 
-    final int _volume;
-    final int _structure;
+    private final int _volume;
+    private final int _structure;
+
+    public static CachedCompound the(/*@NotNull*/ Op op, Subterms subterms) {
+        //HACK predict if compound will differ from its root
+        if (!op.temporal && !subterms.isTemporal()) { //TODO there are more cases
+            return new CachedNontemporalCompound(op, subterms);
+        } else {
+            return new CachedUnrootedCompound(op, subterms);
+        }
+    }
 
 //    private static final AtomicInteger SERIAL = new AtomicInteger();
 //    public final int serial = SERIAL.getAndIncrement();
 
-    private transient Term rooted = null;
-    private transient Term concepted = null;
+    private static class CachedNontemporalCompound extends CachedCompound {
+        CachedNontemporalCompound(Op op, Subterms subterms) {
+            super(op, subterms);
+        }
+
+        @Override
+        public boolean equalsRoot(Term x) {
+            return equals(x);
+        }
+
+        @Override
+        public Term root() {
+            return this;
+        }
+
+        @Override
+        public Term concept() {
+            return this;
+        }
+
+        @Override
+        public boolean isTemporal() {
+            return op.temporal;
+        }
+
+        @Override
+        public int eventCount() {
+            return 1;
+        }
+
+        @Override
+        public int dtRange() {
+            return 0;
+        }
+
+        //TODO other assumptions
+    }
+
+    /** caches a reference to the root for use in terms that are inequal to their root */
+    private static class CachedUnrootedCompound extends CachedCompound {
+        private transient Term rooted = null;
+        private transient Term concepted = null;
+
+        CachedUnrootedCompound(Op op, Subterms subterms) {
+            super(op, subterms);
+        }
+
+//        @Override
+//        protected void equivalent(CachedUnrootedCompound them) {
+//
+//            if (them.rooted != null && this.rooted != this) this.rooted = them.rooted;
+//            if (this.rooted != null && them.rooted != them) them.rooted = this.rooted;
+//
+//            if (them.concepted != null && this.concepted != this) this.concepted = them.concepted;
+//            if (this.concepted != null && them.concepted != them) them.concepted = this.concepted;
+//
+//        }
+
+        @Override
+        public Term root() {
+            Term rooted = this.rooted;
+            return (rooted != null) ? rooted : (this.rooted = super.root());
+        }
+
+        @Override
+        public Term concept() {
+            Term concepted = this.concepted;
+            return (concepted != null) ? concepted : (this.concepted = super.concept());
+        }
+
+    }
 
 
-    public CompoundCached(/*@NotNull*/ Op op, Subterms subterms) {
+    private CachedCompound(/*@NotNull*/ Op op, Subterms subterms) {
 
         assert(op!=NEG); //makes certain assumptions that it's not NEG op, use Neg.java for that
 
@@ -56,17 +134,11 @@ public class CompoundCached implements Compound, The {
         return this;
     }
 
-    @Override
-    public Term root() {
-        Term rooted = this.rooted;
-        return (rooted != null) ? rooted : (this.rooted = Compound.super.root());
-    }
-
-    @Override
-    public Term concept() {
-        Term concepted = this.concepted;
-        return (concepted != null) ? concepted : (this.concepted = Compound.super.concept());
-    }
+//    @Override
+//    abstract public Term root();
+//
+//    @Override
+//    abstract public Term concept();
 
     @Override
     public final int volume() {
@@ -153,19 +225,12 @@ public class CompoundCached implements Compound, The {
 //        }
     }
 
-    /**
-     * data sharing: call if another instance is known to be equivalent to share some clues
-     */
-    protected void equivalent(CompoundCached them) {
-
-
-        if (them.rooted != null && this.rooted != this) this.rooted = them.rooted;
-        if (this.rooted != null && them.rooted != them) them.rooted = this.rooted;
-
-        if (them.concepted != null && this.concepted != this) this.concepted = them.concepted;
-        if (this.concepted != null && them.concepted != them) them.concepted = this.concepted;
-
-    }
+//    /**
+//     * data sharing: call if another instance is known to be equivalent to share some clues
+//     */
+//    protected void equivalent(CachedUnrootedCompound them) {
+//
+//    }
 
 
 }

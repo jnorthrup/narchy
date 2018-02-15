@@ -34,7 +34,7 @@ public class UnitCompoundTest {
     }
 
     static void assertEqual(Op o, Atomic x, Compound u) {
-        Compound g = new CompoundCached(o, new TermVector1(x));
+        Compound g = CachedCompound.the(o, new TermVector1(x));
         assertEquals(g.hashCode(), u.hashCode());
         assertEquals(g.hashCodeSubterms(), u.hashCodeSubterms());
         assertEquals(u, g);

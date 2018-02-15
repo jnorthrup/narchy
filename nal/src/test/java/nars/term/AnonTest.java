@@ -11,7 +11,7 @@ import nars.subterm.TermVector2;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.anon.AnonVector;
-import nars.term.compound.CompoundCached;
+import nars.term.compound.CachedCompound;
 import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -137,7 +137,7 @@ public class AnonTest {
         assertEquals(v.hashCode(), a.hashCode());
         assertEquals(v.hashCodeSubterms(), a.hashCodeSubterms());
         assertTrue(Iterators.elementsEqual(v.iterator(), a.iterator()));
-        assertEquals(new CompoundCached(PROD, v), new CompoundCached(PROD, a));
+        assertEquals(CachedCompound.the(PROD, v), CachedCompound.the(PROD, a));
     }
 
 }

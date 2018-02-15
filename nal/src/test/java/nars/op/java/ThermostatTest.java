@@ -87,10 +87,10 @@ public class ThermostatTest {
     @Disabled
     public void test1() {
         //Param.DEBUG = true;
-        final int DUR = 2;
+        final int DUR = 1;
 
         final int subTrainings = 1;
-        final int thinkDurs = 2;
+        final int thinkDurs = 5;
 
         NAR n = NARS.tmp();
 
@@ -103,7 +103,7 @@ public class ThermostatTest {
 //        n.want(MetaGoal.Believe, 0.1f);
 //        n.want(MetaGoal.Perceive, -0.01f);
 
-        float exeThresh = 0.51f;
+        float exeThresh = 0.55f;
 
         new ConjClustering(n, BELIEF, (t) -> true, 4, 16);
 
@@ -179,7 +179,7 @@ public class ThermostatTest {
             op.executionThreshold.set(1f);
             for (int i = 0; i < subTrainings; i++) {
                 for (Consumer<Thermostat> condition : new Consumer[]{hotToCold, coldToCold}) {
-                    env.teach("cold", condition, x -> {
+                    env.teach("down", condition, x -> {
                         x.up(); //demonstrate no change
                         x.report();
                         while (x.is() > Thermostat.cold) x.down();
@@ -190,7 +190,7 @@ public class ThermostatTest {
                 }
 
                 for (Consumer<Thermostat> condition : new Consumer[]{coldToHot, hotToHot}) {
-                    env.teach("hot", condition, x -> {
+                    env.teach("up", condition, x -> {
                         x.down(); //demonstrate no change
                         x.report();
                         while (!isHot.test(x)) x.up();
@@ -240,9 +240,9 @@ public class ThermostatTest {
                 t.should(0);
                 n.run(thinkDurs*n.dur());
 
-                Term cold = $.$safe("a_Thermostat(is,(),0)");
+                Term cold = $.$safe("is(a_Thermostat,0)");
                 //Term cold = $.$safe("(a_Thermostat(is,(),0) &| --a_Thermostat(is,(),3))");
-                Term hot = $.$safe("a_Thermostat(is,(),3)");
+                Term hot = $.$safe("is(a_Thermostat,3)");
                 Truth goalTruth = $.t(1f, 0.9f);
 
                 final int[] maxTries = {8};

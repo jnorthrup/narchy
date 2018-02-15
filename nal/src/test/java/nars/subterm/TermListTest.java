@@ -3,7 +3,7 @@ package nars.subterm;
 import nars.$;
 import nars.term.CompoundLight;
 import nars.term.TermTest;
-import nars.term.compound.CompoundCached;
+import nars.term.compound.CachedCompound;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -60,9 +60,9 @@ public class TermListTest {
         Subterms[] ab = {mutable, immutable};
         for (Subterms a : ab) {
             for (Subterms b : ab) {
-                TermTest.assertReallyEquals(new CompoundCached(PROD, a), new CompoundLight(PROD, b));
-                TermTest.assertReallyEquals(new CompoundCached(SETe, a), new CompoundLight(SETe, b));
-                assertNotEquals(new CompoundCached(PROD, a), new CompoundLight(SETi, b));
+                TermTest.assertReallyEquals(CachedCompound.the(PROD, a), new CompoundLight(PROD, b));
+                TermTest.assertReallyEquals(CachedCompound.the(SETe, a), new CompoundLight(SETe, b));
+                assertNotEquals(CachedCompound.the(PROD, a), new CompoundLight(SETi, b));
 
             }
         }

@@ -263,7 +263,8 @@ public class PoolMultiExec extends AbstractExec {
                         )
                         * focus.IterGrowthRateLinear +focus.IterGrowthRateConstant
                 ));
-                assert(itersNext * timePerIter <= timesliceNS ): itersNext + "x" + Texts.timeStr(timePerIter) + " > " + Texts.timeStr(timesliceNS);
+                assert(itersNext * timePerIter <= timesliceNS+1 ):
+                        itersNext + "x" + Texts.timeStr(timePerIter) + " > " + Texts.timeStr(timesliceNS);
 
                 //System.out.println(cx + " x " + iters + " @ " + n4(iterPerSecond[x]) + "iter/sec in " + Texts.timeStr(subTime*1E9));
 
