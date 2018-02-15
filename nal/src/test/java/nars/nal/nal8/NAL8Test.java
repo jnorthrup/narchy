@@ -696,7 +696,7 @@ public class NAL8Test extends NALTest {
         test
                 .inputAt(0, "((happy) ==>-3 (out)). :|:")
                 .inputAt(13, "(happy)! :|:")
-                .mustGoal(cycles, "(out)", 1f, 0.81f, 13)
+                .mustGoal(cycles, "(out)", 1f, 0.45f, 13)
                 .mustNotOutput(cycles, "(out)", GOAL,
                         t -> t == 10
                 );

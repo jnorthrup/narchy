@@ -1,10 +1,11 @@
     //strong unification
     //      should these be restricted to "$" var subst
-    (Y ==> X), Z, task(positive), notImpl(Z)     |- subIfUnifiesAny(X,Y,Z), (Belief:Deduction)
-    (Y ==> X), Z, task(negative), notImpl(Z)     |- subIfUnifiesAny(--X,Y,Z), (Belief:DeductionN)
-    (--Y ==> X), Z, task(positive), notImpl(Z)   |- subIfUnifiesAny(X,Y,Z), (Belief:DeductionPN)
-    (--Y ==> X), Z, task(negative), notImpl(Z)   |- subIfUnifiesAny(--X,Y,Z), (Belief:DeductionNN)
-    (X ==> Y), Z, notImpl(Z)                     |- subIfUnifiesAny(X,Y,Z), (Belief:AbductionPB)
+    (Y ==> X), Z, notImpl(Z)     |- subIfUnifiesAny(X,Y,Z,"$"), (Belief:Deduction)
+    (Y ==> X), Z, notImpl(Z)     |- subIfUnifiesAny((--,X),Y,Z,"$"), (Belief:DeductionN)
+    (--Y ==> X), Z, notImpl(Z)   |- subIfUnifiesAny(X,Y,Z,"$"), (Belief:DeductionPN)
+    (--Y ==> X), Z, notImpl(Z)   |- subIfUnifiesAny((--,X),Y,Z,"$"), (Belief:DeductionNN)
+
+    (X ==> Y), Z, notImpl(Z)     |- subIfUnifiesAny(X,Y,Z,"$"), (Belief:AbductionPB)
 
 // Conditional syllogism && Independent Variable Elimination
 //      If after M, P usually happens, and M happens, it means P is expected to happen
@@ -12,21 +13,14 @@
 //    M, (M ==> P), shift_occurrence_forward(M,"==>")  |- P, (Truth:Deduction, Desire:Induction, Order:ForAllSame)
 //    M, (P ==> M), shift_occurrence_backward(P,"==>") |- P, (Truth:Abduction, Desire:Deduction, Order:ForAllSame)
 
-    B, (A ==> C), task(positive),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Deduction, Goal:DeciInduction)
-    B, (A ==> C), task(positive),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionPN, Goal:DeciInductionPN)
-        //B, (A ==> C),  notImpl(B), task(".") |- subIfUnifiesAny(C,A,B,"$",strict), (Belief:DeductionRecursivePB)
-        //B, (B ==> C),  notImpl(B), task("!") |- C, (Goal:DeciInduction)
+    B, (A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B,"$"), (Belief:Deduction, Goal:Induction)
+    B, (A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B,"$")), (Belief:DeductionPN, Goal:InductionPN)
 
-    B, (--A ==> C), task(negative),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionN, Goal:DeciInductionN)
-    B, (--A ==> C), task(negative),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionNN, Goal:DeciInductionNN)
-        //B, (--A ==> C),  notImpl(B), task(".") |- subIfUnifiesAny(C,A,B,"$",strict), (Belief:DeductionRecursivePBN)
-        //B, (--B ==> C),  notImpl(B), task("!") |- C, (Goal:DeciInductionN)
+    B, (--A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B,"$"), (Belief:DeductionN, Goal:DeciInductionN)
+    B, (--A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B,"$")), (Belief:DeductionNN, Goal:InductionNN)
 
-    B, (C ==> A), task(positive), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Deduction)
-    B, (C ==> A), task(negative), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DeductionNN)
-    //B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionPB, Goal:DeciDeduction)
-    //B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionPB, Goal:DeciDeduction)
-        //B, (C ==> B), notImpl(B), task("!") |- C (Goal:DeciDeduction)
+    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B,"$"), (Belief:Abduction, Goal:Deduction)
+    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B,"$"), (Belief:AbductionNN, Goal:DeductionNN)
 
     //Y, (B ==> (&&,X,A..+)) |- subIfUnifiesAny((B ==>+- (&&,A..+)),X,Y), (Belief:Deduction)
     //Y, (B ==> (&&,--X,A..+)) |- subIfUnifiesAny((B ==>+- (&&,A..+)),X,Y), (Belief:DeductionN)
@@ -108,16 +102,16 @@
 
 
 //// implication-based composition ////////////////////////////////////////////////////////////////////////////////////
-//Same as for inheritance
+    //Same as for inheritance
 
 
-    (P ==> M), (S ==> M), neq(P,S) |- ((P &&+- S) ==>+- M), (Belief:IntersectionSym)
-    (P ==> M), (S ==> M), neq(P,S) |- (--(--P &&+- --S) ==>+- M), (Belief:UnionSym)
+    //impl subjects are not truth symmetric
+    (P ==> M), (S ==> M), neq(P,S) |- ((polarize(P,task) &&+- polarize(S,belief)) ==>+- M), (Belief:IntersectionDepolarized)
+    (P ==> M), (S ==> M), neq(P,S) |- (--((--,polarize(P,task)) &&+- (--,polarize(S,belief))) ==>+- M), (Belief:UnionDepolarized)
 
-
-    (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- (P &&+- S)), (Belief:IntersectionSym)
-        //(M ==> P), (M ==> S), belief(negative), neq(P,S) |- (M ==>+- (P &&+- --S)), (Belief:IntersectionPN)
-    (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- --(--P &&+- --S)), (Belief:UnionSym)
+    //impl predicates are truth symmetric
+    (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- (P &&+- S)), (Belief:Intersection)
+    (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- --(--P &&+- --S)), (Belief:Union)
 
 
 //// implication-based decomposition ////////////////////////////////////////////////////////////////////////////////////

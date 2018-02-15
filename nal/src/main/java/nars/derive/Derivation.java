@@ -553,8 +553,9 @@ public class Derivation extends ProtoDerivation {
 //                            Stamp.overlapFraction(taskStamp, beliefStamp),
 //                            Stamp.cyclicity(beliefStamp)
 //                    );
-                    (task.isCyclic() /* || belief.isCyclic()*/) ?
-                            1 :
+
+//                    (task.isCyclic() /* || belief.isCyclic()*/) ?
+//                            1 :
                             Stamp.overlapFraction(taskStamp, beliefStamp);
 
         } else {
@@ -571,15 +572,9 @@ public class Derivation extends ProtoDerivation {
 
         float taskPri = _task.priElseZero();
         this.pri =
-                //p.priElseZero(); //use the premise pri directly
-                _belief == null ? taskPri : Param.TaskBeliefToDerivation.apply(taskPri, _belief.priElseZero());
-
-//        float parentValue =
-//                //nar.evaluate(parentCause); /* value of the parent cause as a multiplier above and below 1.0x */
-//                0.5f * nar.evaluate(parentCause); /* can decrease only (0..1.0) */
-//                //Pri.EPSILON + 0.5f * nar.evaluate(parentCause); //bounded 0..1.0
-//        this.premisePri *= parentValue;
-
+                _belief == null ?
+                        Param.TaskToDerivation.valueOf(taskPri) :
+                        Param.TaskBeliefToDerivation.apply(taskPri, _belief.priElseZero());
 
         this.premiseEviSingle = taskTruth != null ? taskTruth.evi() : 0;
         this.premiseEviDouble = beliefTruth != null ?

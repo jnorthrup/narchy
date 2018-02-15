@@ -15,6 +15,7 @@ import nars.task.TruthPolation;
 import nars.term.atom.Atom;
 import nars.truth.Truth;
 import org.apache.commons.lang3.mutable.MutableFloat;
+import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -46,7 +47,9 @@ public abstract class Param {
      * pri threshold for emitting task activation events
      */
     @Range(min=0, max=0.5f)
-    public static float TASK_ACTIVATION_THRESHOLD = Pri.EPSILON*2;
+    public static float TASK_ACTIVATION_THRESHOLD =
+            //0;
+            Pri.EPSILON*2;
 
     public static final boolean ETERNALIZE_EVICTED_TEMPORAL_TASKS = false;
 
@@ -61,7 +64,7 @@ public abstract class Param {
 
 
     @Range(min=1, max=32)
-    public static int TEMPORAL_SOLVER_ITERATIONS = 16;
+    public static int TEMPORAL_SOLVER_ITERATIONS = 20;
 
 
     public static final boolean DEBUG_FILTER_DUPLICATE_MATCHES = false;
@@ -123,14 +126,18 @@ public abstract class Param {
 
 
     /**
-     * max budget for derivations from the task and optional belief budget
+     * budget factor for double-premise derivations: depends on the task and belief budget
      */
     public static final FloatFloatToFloatFunction TaskBeliefToDerivation =
-            Util::and;
-    //        Util::or;
+    //        Util::and;
+            Util::or;
     //UtilityFunctions::aveAri;
     //Math::max;
 
+    /**
+     * budget factor for single-premise derivations: depends only on the task budget
+     */
+    public static final FloatToFloatFunction TaskToDerivation = (t) -> t/2;
 
     public static final PriMerge taskMerge = PriMerge.max;
 

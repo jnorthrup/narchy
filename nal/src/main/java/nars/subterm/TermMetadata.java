@@ -93,6 +93,21 @@ abstract public class TermMetadata implements Termlike {
         return varPattern;
     }
 
+    @Override
+    public final boolean hasVarQuery() {
+        return varQuery > 0;
+    }
+
+    @Override
+    public final boolean hasVarIndep() {
+        return varIndep > 0;
+    }
+
+    @Override
+    public final boolean hasVarDep() {
+        return varDep > 0;
+    }
+
     public final int structure() {
         return structure;
     }

@@ -101,8 +101,8 @@ public class NARio extends NAgentX {
 //        nar.believe("nario:{narioLocal, narioGlobal}");
 
 
-        //initBipolar();
-        initToggle();
+        initBipolar();
+        //initToggle();
 
 
         SensorConcept dvx = senseNumberDifference($safe("nario:vx"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
@@ -194,10 +194,12 @@ public class NARio extends NAgentX {
     }
 
     public void initBipolar() {
+        float thresh = 0.33f;
+
         //actionBipolar($.inh($.the("x"), id), (x) -> {
-        actionBipolar($.the("x"), (x) -> {
-            float thresh = 0.2f;
-            float boostThresh = 0.9f;
+        actionBipolarFrequencyDifferential($.the("x"), false, true, (x) -> {
+
+            float boostThresh = 0.66f;
             if (x <= -thresh) {
                 mario.scene.key(Mario.KEY_LEFT, true);
                 mario.scene.key(Mario.KEY_RIGHT, false);
@@ -221,9 +223,8 @@ public class NARio extends NAgentX {
                 //return Float.NaN;
             }
         });
-        //actionBipolar($.inh($.the("y"), id), (y) -> {
-        actionBipolar($.the("y"), (y) -> {
-            float thresh = 0.2f;
+        actionBipolarFrequencyDifferential($.the("y"), false, true, (y) -> {
+
             if (y <= -thresh) {
                 mario.scene.key(Mario.KEY_DOWN, true);
                 mario.scene.key(Mario.KEY_JUMP, false);

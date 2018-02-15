@@ -76,7 +76,8 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         throw new TODO();
     }
 
-    @Override @Nullable
+    @Override
+    @Nullable
     public short[] cause() {
         return Cause.zip(Param.causeCapacity.intValue(),
                 Util.map(0, size(), x -> get(x).cause(), short[][]::new));
@@ -98,7 +99,8 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         return s;
     }
 
-    @Deprecated public static Stamp stamp(TaskRegion x) {
+    @Deprecated
+    public static Stamp stamp(TaskRegion x) {
         if (x instanceof Task)
             return ((Task) x);
 //        } else if (x instanceof DynTruth) {
@@ -132,8 +134,28 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         float f;
         long start, end;
         if (withBuiltTask != null) {
-            if (!superterm.op().temporal) {
-                if (size() > 1) {
+
+            if (size() > 1) {
+                if (superterm.op() == CONJ) {
+                    long min = Long.MAX_VALUE;
+                    long maxRange = Long.MIN_VALUE;
+                    for (int i = 0, thisSize = size(); i < thisSize; i++) {
+                        TaskRegion ii = get(i);
+                        long iis = ii.start();
+                        if (iis != ETERNAL) {
+                            min = Math.min(min, iis);
+                            maxRange = Math.max(maxRange, ii.end() - iis);
+                        }
+                    }
+
+                    if (min == Long.MAX_VALUE)
+                        start = end = ETERNAL; //all eternal
+                    else {
+                        start = min;
+                        end = min + maxRange;
+                    }
+
+                } else {
                     //dilute the evidence in proportion to temporal sparseness for non-temporal results
                     TimeFusion se = TimeFusion.the(this);
                     if (se != null) {
@@ -145,25 +167,12 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
                     } else {
                         start = end = ETERNAL;
                     }
-                } else {
-                    TaskRegion only = get(0);
-                    start = only.start();
-                    end = only.end();
                 }
             } else {
-                long min = Long.MAX_VALUE;
-                for (int i = 0, thisSize = size(); i < thisSize; i++) {
-                    long y = get(i).start();
-                    if (y != ETERNAL) {
-                        if (y < min)
-                            min = y;
-                    }
-                }
-
-                if (min == Long.MAX_VALUE)
-                    min = ETERNAL; //all eternal
-
-                start = end = min;
+                //only one task
+                TaskRegion only = get(0);
+                start = only.start();
+                end = only.end();
             }
 
             if (superterm.op() == NEG) {
@@ -172,6 +181,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
             } else {
                 f = freq;
             }
+
         } else {
             start = end = XTERNAL; //not used
             f = freq;
@@ -190,7 +200,9 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         if (c == null)
             return null;
 
-        if (c.op()==NEG) {
+        if (c.op() == NEG)
+
+        {
             c = c.unneg();
             tr = tr.neg();
         }
@@ -216,7 +228,8 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         return tr;
     }
 
-    @Override public @Nullable Task task() {
+    @Override
+    public @Nullable Task task() {
         throw new TODO();
     }
 
@@ -230,7 +243,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     public boolean add(TaskRegion newItem) {
         super.add(newItem);
         if (newItem instanceof Task)
-            evi.addAll( ((Task)newItem).stamp() );
+            evi.addAll(((Task) newItem).stamp());
         return true;
     }
 

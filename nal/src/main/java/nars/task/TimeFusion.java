@@ -65,7 +65,6 @@ public final class TimeFusion {
             if (s == ETERNAL) {
                 eternals++;
                 //leave a blank spot we will fill it in after
-                continue;
             } else {
                 //TODO see if s == ETERNAL
                 ii[j] = new Interval(s, ee.end());
