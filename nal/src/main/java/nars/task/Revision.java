@@ -2,6 +2,7 @@ package nars.task;
 
 import jcog.Util;
 import jcog.list.FasterList;
+import jcog.pri.Priority;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -14,9 +15,11 @@ import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectLongHashMap;
+import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -518,7 +521,7 @@ public class Revision {
 
 
     @Nullable
-    public static Task merge(/*@NotNull*/ Task a, /*@NotNull*/ Task b, long now, float minEvi, NAR nar) {
+    @Deprecated public static Task merge(/*@NotNull*/ Task a, /*@NotNull*/ Task b, long now, float minEvi, NAR nar) {
         assert (!a.isEternal() && !b.isEternal()) : "can not merge eternal tasks";
 
 //        if (a.op() == CONJ) {
@@ -598,7 +601,7 @@ public class Revision {
         float confMin =
                 Param.TRUTH_EPSILON;
 
-        TimeFusion joint = new TimeFusion(as, a.end(), bs, b.end());
+        TimeFusion joint = new TimeFusion(a, b);
         long start = joint.unionStart;
         long end = joint.unionEnd;
 
@@ -610,7 +613,10 @@ public class Revision {
         if (bn == null)
             return null;
 
-        Truth rawTruth = revise(an, bn, joint.factor(Math.abs( an.freq() - bn.freq() )), c2wSafe(confMin));
+        Truth rawTruth = revise(an, bn,
+                //joint.factor(Math.abs( an.freq() - bn.freq() ))
+                joint.factor
+                , c2wSafe(confMin));
         if (rawTruth == null)
             return null;
 
@@ -730,10 +736,104 @@ public class Revision {
 
         //t.setPri(a.priElseZero() + b.priElseZero());
 
-        t.cause = Cause.zip(nar.causeCapacity.intValue(), a, b);
+        t.cause = Cause.sample(nar.causeCapacity.intValue(), a, b);
 
         if (Param.DEBUG)
             t.log("Revection Merge");
+
+        return t;
+    }
+
+    /** assumes:
+     *          the tasks to be sorted in descending strength
+     *          each task's term is the same (no intermpolation is performed)
+     * */
+    @Nullable public static Task mergeTemporal(float minEvi, NAR nar, Task... tt) {
+        assert(tt.length > 1);
+
+        Task first = tt[0];
+        minEvi = Math.max(first.evi(), minEvi); //dont settle for anything worse than the first (strongest) task by un-revised
+
+        LongHashSet evidence = new LongHashSet();
+        int overlap = 0, totalEv = 0;
+        int included = 0;
+        boolean hasNulls = false;
+        for (int i = 0; i < tt.length; i++) {
+            Task t = tt[i];
+            if (t == null) {
+                hasNulls = true;
+                continue;
+            }
+            assert (!t.isEternal());
+            long[] ts = t.stamp();
+            totalEv += ts.length;
+            int moreOverlaps = Stamp.overlapsAdding(evidence, ts);
+            overlap += moreOverlaps;
+            if (moreOverlaps > 0) {
+                if (totalEv > 0 && Param.overlapFactor(overlap) < Float.MIN_NORMAL) {/* current amount so far */
+                    //would cause zero evidence, regardless of whatever truth is calculated later
+                    tt[i] = null;
+                    if (included > 2)
+                        return mergeTemporal(minEvi, nar, tt); //recurse without this one
+                    else {
+                        break;
+                    }
+                }
+            } else {
+                included++;
+            }
+        }
+
+        if (included == 1) {
+            assert(first !=null);
+            return first; //return the top one, nothing could be merged
+        }
+
+
+        float overlapFactor = Param.overlapFactor(((float)overlap)/totalEv);
+        if (overlapFactor < Float.MIN_NORMAL)
+            return first;
+
+
+        int dur = nar.dur();
+
+        if (hasNulls)
+            tt = ArrayUtils.removeNulls(tt, Task[]::new);
+
+        TimeFusion joint = new TimeFusion(tt);
+        if (joint.factor * overlapFactor < Float.MIN_NORMAL)
+            return first;
+
+        long start = joint.unionStart;
+        long end = joint.unionEnd;
+
+        Truth truth = new TruthPolation(start, end, dur, tt).get();
+        if (truth == null) return null;
+        truth = truth.withEvi(truth.evi() * joint.factor * overlapFactor);
+        if (truth == null || truth.evi() < minEvi)
+            return first;
+
+        @Nullable PreciseTruth cTruth = truth.dither(nar);
+        if (cTruth == null)
+            return first;
+
+
+
+        NALTask t = new NALTask(tt[0].term(), tt[0].punc(),
+                cTruth,
+                nar.time(), start, end,
+                Stamp.sample(Param.STAMP_CAPACITY, evidence /* TODO account for relative evidence contributions */, nar.random())
+        );
+//        if (overlap > 0 || a.isCyclic() || b.isCyclic())
+//            t.setCyclic(true);
+
+        float pri = Priority.fund(1f, false, tt).priElseZero();
+        t.priSet(pri);
+
+        t.cause = Cause.sample(nar.causeCapacity.intValue(), tt);
+
+        if (Param.DEBUG)
+            t.log("Temporal Merge");
 
         return t;
     }

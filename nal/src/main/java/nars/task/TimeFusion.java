@@ -1,14 +1,8 @@
 package nars.task;
 
-import jcog.Util;
 import jcog.math.Interval;
+import nars.Task;
 import nars.task.util.TaskRegion;
-import nars.truth.Truth;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
-
-import static nars.time.Tense.ETERNAL;
 
 public final class TimeFusion {
 
@@ -17,87 +11,93 @@ public final class TimeFusion {
     public final long unionEnd;
 
 
-    public TimeFusion(long as, long ae, long bs, long be) {
-        this(new Interval(as, ae), new Interval(bs, be));
-        assert (as <= ae);
-        assert (bs <= be);
-    }
 
-    /** HACK TODO more accurate - call after union fusion calculated  */
-    public float factor(float freqDifference) {
-        factor *= (1f - freqDifference);
-        return factor;
-    }
+//    /** HACK TODO more accurate - call after union fusion calculated  */
+//    public float factor(float freqDifference) {
+//        factor *= (1f - freqDifference);
+//        return factor;
+//    }
 
-    TimeFusion(Interval... x) {
+    public TimeFusion(TaskRegion... x) {
 
         assert (x.length > 1);
 
-        Interval uu = x[0];
+        Interval uu = new Interval(x[0].start(), x[0].end());
         for (int n = 1, xLength = x.length; n < xLength; n++) {
-            uu = uu.union(x[n]);
+            TaskRegion xn = x[n];
+            uu = uu.union(xn.start(), xn.end());
         }
+
         this.unionStart = uu.a;
         this.unionEnd = uu.b;
 
-        long unionLength = Math.max(1,uu.length());
-        long componentLengths = Util.sum((Interval xx) -> Math.max(1,xx.length()), x);
-        if (unionLength > (1+componentLengths)) {
-            //int n = x.length;
-            //this.factor = ((float) (n + lenSum)) / (n + uLen * n); //ratio of how much the union is filled with respect to the number of tasks being overlapped
-            this.factor = ((float)componentLengths)/unionLength;
-        } else {
-            this.factor = 1;
+        long unionRange = Math.max(1,uu.length());
+
+        /** integrate the evidence*time curve of each task component to calculate the effective
+         * evidence volume, and evidence density (which becomes an evidence reduction factor if < 1) */
+        float v = 0, totalEvi = 0;
+        for (int i = 0; i < x.length; i++) {
+            Task xx = x[i].task();
+
+
+
+            //TODO use a better approximation
+            float xe = xx.evi();
+            totalEvi += xe;
+            v += xe * Math.max(xx.range(), 1);
         }
+        float density = v / unionRange;
+
+        this.factor = density / totalEvi;
 
 
     }
 
-    @Nullable
-    public static TimeFusion the(List<? extends TaskRegion> e) {
-        int n = e.size();
-        assert (n > 1);
-        Interval[] ii = new Interval[n];
-        int eternals = 0;
-        for (int j = 0; j < n; j++) {
-            TaskRegion ee = e.get(j);
-            long s = ee.start();
-            if (s == ETERNAL) {
-                eternals++;
-                //leave a blank spot we will fill it in after
-            } else {
-                //TODO see if s == ETERNAL
-                ii[j] = new Interval(s, ee.end());
-            }
-        }
-        if (eternals == n) {
-            return null; //all eternal, no discount need apply
-        } else if (eternals > 0) {
-            long max = Long.MIN_VALUE, min = Long.MAX_VALUE;
-            for (Interval i : ii) {
-                if (i != null) {
-                    if (i.a < min) min = i.a;
-                    if (i.b > max) max = i.b;
-                }
-            }
-            Interval entire = new Interval(min, max);
-            for (int j = 0, iiLength = ii.length; j < iiLength; j++) {
-                Interval i = ii[j];
-                if (i == null)
-                    ii[j] = entire;
-            }
-        }
+//    @Nullable
+//    public static TimeFusion the(List<? extends TaskRegion> e) {
+//        int n = e.size();
+//        assert (n > 1);
+//        Interval[] ii = new Interval[n];
+//        int eternals = 0;
+//        for (int j = 0; j < n; j++) {
+//            TaskRegion ee = e.get(j);
+//            long s = ee.start();
+//            if (s == ETERNAL) {
+//                eternals++;
+//                //leave a blank spot we will fill it in after
+//            } else {
+//                //TODO see if s == ETERNAL
+//                ii[j] = new Interval(s, ee.end());
+//            }
+//        }
+//        if (eternals == n) {
+//            return null; //all eternal, no discount need apply
+//        } else if (eternals > 0) {
+//            long max = Long.MIN_VALUE, min = Long.MAX_VALUE;
+//            for (Interval i : ii) {
+//                if (i != null) {
+//                    if (i.a < min) min = i.a;
+//                    if (i.b > max) max = i.b;
+//                }
+//            }
+//            Interval entire = new Interval(min, max);
+//            for (int j = 0, iiLength = ii.length; j < iiLength; j++) {
+//                Interval i = ii[j];
+//                if (i == null)
+//                    ii[j] = entire;
+//            }
+//        }
+//
+//        return new TimeFusion(ii);
+//    }
 
-        return new TimeFusion(ii);
-    }
-
-    public static float eviEternalize(float evi, float concEviFactor) {
-        if (concEviFactor != 1) {
-            float eviEternal = Truth.eternalize(evi);
-            evi = eviEternal + Util.lerp(concEviFactor, 0, evi - eviEternal);
-        }
-        return evi;
-    }
+//    public static float eviEternalize(float evi, float concEviFactor) {
+//        if (concEviFactor != 1) {
+//            float eviEternal = Truth.eternalize(evi);
+//            evi = eviEternal + Util.lerp(concEviFactor, 0, evi - eviEternal);
+//        }
+//        return evi;
+//    }
 
 
 //        Interval ii = x[0];

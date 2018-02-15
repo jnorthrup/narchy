@@ -49,6 +49,7 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
         tasks.forEach(this::add);
     }
 
+
     public TruthPolation(long start, long end, int dur) {
         this.start = start;
         this.end = end;
@@ -80,7 +81,7 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
         return this;
     }
 
-    public Truth get() {
+    public Truth get(/*float eviFactor, float eviMin*/) {
 
         if (isEmpty()) return null;
 

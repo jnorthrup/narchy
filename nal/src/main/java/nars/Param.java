@@ -437,10 +437,7 @@ public abstract class Param {
 
     @Nullable
     public static Truth truth(@Nullable Task topEternal, long start, long end, int dur, Iterable<? extends Tasked> temporals) {
-
-
         return new TruthPolation(start, end, dur, temporals).get(topEternal);
-
     }
 
 

@@ -236,7 +236,7 @@ public interface BeliefTable extends TaskTable {
                 float confFrac = Util.unitize(aProj.evi() / answer.evi());
                 a.priSet(answer.priElseZero() * confFrac);
                 if (question != null)
-                    ((NALTask)a).cause = Cause.zip(nar.causeCapacity.intValue(), question, answer);
+                    ((NALTask)a).cause = Cause.sample(nar.causeCapacity.intValue(), question, answer);
 
 
                 //            if (Param.DEBUG)

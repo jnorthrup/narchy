@@ -808,7 +808,7 @@ public class DeriveTime extends TimeGraph {
                     //                if (taskEvent && beliefEvent) {
                     //two events: fuse time
                     //assert (!belief.isEternal());
-                    TimeFusion joint = new TimeFusion(task.start(), task.end(), belief.start(), belief.end());
+                    TimeFusion joint = new TimeFusion(task, belief);
                     //                    if (joint.factor <= Pri.EPSILON) //allow for questions/quests, if this ever happens
                     //                        return null;
 

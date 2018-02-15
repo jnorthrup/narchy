@@ -108,6 +108,9 @@ public class Interval {
 	public Interval union(Interval other) {
 		return new Interval(min(a, other.a), max(b, other.b));
 	}
+	public Interval union(long oa, long ob) {
+		return new Interval(min(a, oa), max(b, ob));
+	}
 
 	/** Return the longerval in common between this and o */
 	@Nullable

@@ -24,6 +24,7 @@ import jcog.Util;
 import jcog.io.BinTxt;
 import nars.Op;
 import nars.Param;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.iterator.MutableLongIterator;
 import org.eclipse.collections.api.set.primitive.LongSet;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
@@ -32,6 +33,7 @@ import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 import static nars.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -352,29 +354,35 @@ public interface Stamp {
             b = ab;
         }
 
-        return overlapFraction(LongSets.immutable.of(a), al, b);
+        int common = overlaps(LongSets.immutable.of(a), b);
+        if (common == 0)
+            return 0f;
+
+        int denom = Math.min(al, bl);
+        assert (denom != 0);
+
+        return Util.unitize(((float) common) / denom); //max: +1
     }
 
 
-    /**
-     * ignores any cyclic element
-     */
-    static float overlapFraction(/*@NotNull*/ LongSet aa, int aSize, /*@NotNull*/ long[] b) {
+
+    static int overlaps(/*@NotNull*/ LongSet aa,  /*@NotNull*/ long[] b) {
         int common = 0;
-        int bSize = b.length;
         for (long x : b) {
             if (aa.contains(x)) {
                 common++;
             }
-
         }
-        if (common == 0)
-            return 0f;
-
-        int denom = Math.min(aSize, bSize);
-        assert (denom != 0);
-
-        return Util.unitize(((float) common) / denom); //max: +1
+        return common;
+    }
+    static int overlapsAdding(/*@NotNull*/ LongHashSet aa,  /*@NotNull*/ long[] b) {
+        int common = 0;
+        for (long x : b) {
+            if (!aa.add(x)) {
+                common++;
+            }
+        }
+        return common;
     }
 
     long creation();
@@ -520,6 +528,17 @@ public interface Stamp {
 //        }
 
         return pair(e, Util.unitize(overlap));
+    }
+
+    static long[] sample(int max, LongHashSet evidence, Random rng) {
+        long[] e = evidence.toArray();
+        if (evidence.size() > max) {
+            ArrayUtils.shuffle(e, rng);
+            e = ArrayUtils.subarray(e, 0, max);
+        }
+
+        Arrays.sort(e);
+        return e;
     }
 
 

@@ -103,7 +103,7 @@ public class Cause implements Comparable<Cause> {
         return Short.compare(id, o.id);
     }
 
-    public static short[] zip(int causeCapacity, @Nullable Task... e) {
+    public static short[] sample(int causeCapacity, @Nullable Task... e) {
         short[] a = e[0].cause();
         switch (e.length) {
             case 0:
@@ -124,9 +124,9 @@ public class Cause implements Comparable<Cause> {
 //                if (Util.equals(a,b))
 //                    return a;
 
-                return zip(causeCapacity, a, b);
+                return sample(causeCapacity, a, b);
             default:
-                return zip(causeCapacity, Util.map(Task::cause, short[][]::new, e)); //HACK
+                return sample(causeCapacity, Util.map(Task::cause, short[][]::new, e)); //HACK
         }
     }
 
@@ -157,7 +157,7 @@ public class Cause implements Comparable<Cause> {
 //        return zip(maxLen, Util.map(Supplier::get, short[][]::new, s));
 //    }
 
-    public static short[] zip(int maxLen, short[]... s) {
+    public static short[] sample(int maxLen, short[]... s) {
 
         int ss = s.length;
 
@@ -177,7 +177,7 @@ public class Cause implements Comparable<Cause> {
         if (totalItems == 0)
             return ArrayUtils.EMPTY_SHORT_ARRAY;
 
-        boolean enough = (totalItems < maxLen);
+        //boolean enough = (totalItems < maxLen);
         ShortIterable l;
         ShortPredicate adder;
         AwesomeShortArrayList ll = new AwesomeShortArrayList(totalItems);

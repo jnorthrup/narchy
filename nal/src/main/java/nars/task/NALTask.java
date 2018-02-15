@@ -131,7 +131,7 @@ public class NALTask extends Pri implements Task {
         }
 
         int causeCap = Math.min(Param.CAUSE_LIMIT, incoming.cause().length + cause().length); //TODO use NAR's?
-        this.cause = Cause.zip(causeCap, this, incoming);
+        this.cause = Cause.sample(causeCap, this, incoming);
         Param.taskMerge.merge(this, incoming);
     }
 

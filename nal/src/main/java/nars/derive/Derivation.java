@@ -567,7 +567,7 @@ public class Derivation extends ProtoDerivation {
         this.temporal = !eternal || (taskTerm.isTemporal() || (_belief != null && beliefTerm.isTemporal()));
 
         this.parentCause = _belief != null ?
-                Cause.zip(nar.causeCapacity.intValue(), _task, _belief) :
+                Cause.sample(nar.causeCapacity.intValue(), _task, _belief) :
                 _task.cause();
 
         float taskPri = _task.priElseZero();

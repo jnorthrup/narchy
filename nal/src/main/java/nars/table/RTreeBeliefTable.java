@@ -1,5 +1,6 @@
 package nars.table;
 
+import jcog.Util;
 import jcog.list.FasterList;
 import jcog.math.CachedFloatFunction;
 import jcog.pri.Deleteable;
@@ -54,11 +55,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     private static final int TRUTHPOLATION_LIMIT = 8;
 
     /** max tasks which can be merged (if they have equal occurrence and term) in a match's generated Task */
-    private static final int EVENT_MATCH_LIMIT = 3;
+    private static final int EVENT_MATCH_LIMIT = 8;
 
     private static final float PRESENT_AND_FUTURE_BOOST = 1f;
 
-    private static final int SCAN_CONF_DIVISIONS = 4;
+    private static final int SCAN_CONF_DIVISIONS = 3;
     private static final int SCAN_TIME_DIVISIONS = 4;
 
     private static final int MIN_TASKS_PER_LEAF = 3;
@@ -141,7 +142,10 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             maxTries = Math.min(s * 2 /* in case the same task is encountered twice HACK*/,
                     maxTries);
 
-            ScanFilter tt = new ScanFilter(maxTruths, maxTruths, task(taskRelevance(start, end)), maxTries)
+            ScanFilter tt = new ScanFilter(maxTruths, maxTruths, task(
+                    //taskRelevance(start, end)
+                    taskStrength(start, end, dur)
+            ), maxTries)
                     .scan(this, start - dur, end + dur, SCAN_CONF_DIVISIONS);
 
             if (!tt.isEmpty()) {
@@ -207,6 +211,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
         return a;
     }
+
 
 
     @Deprecated private static FloatFunction<TaskRegion> task(FloatFunction<Task> ts) {
@@ -718,34 +723,9 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
                 default:
 
-
-                    Task a = tt.first().task();
-
-                    if (results > 2) {
-                        //TODO merge N-ways using TruthPolation as
-                        //for now, this is a HACK of trying a few combinations
-                        Task b = tt.list[1].task();
-                        Task ab = merge2(a, b, start, end, dur, null, nar);
-
-                        Task c = tt.list[2].task();
-                        Task ac = merge2(a, c, start, end, dur, null, nar);
-
-                        if (ac == null || (ac == ab)) return ab;
-                        else {
-                            if (ac!=null && (taskStrength.floatValueOf(ac) > taskStrength.floatValueOf(ab)))
-                                return ac;
-                            else
-                                return ab;
-                        }
-
-//                    if (ab != null) return ab;
-//
-//                    if (ac!=null) return ac;
-
-                        //return null;
-                    }
-
-                    return merge2(a, tt.last().task(), start, end, dur, null, nar);
+                    return Revision.mergeTemporal(c2wSafe(nar.confMin.floatValue()),
+                            nar, Util.map(tr -> (Task)tr, new Task[tt.size()], tt.list)
+                    );
 
             }
         }
