@@ -1,0 +1,219 @@
+package org.boon.bugs;
+
+import org.boon.IO;
+import org.boon.json.JsonFactory;
+import org.boon.json.ObjectMapper;
+import org.boon.json.implementation.ObjectMapperImpl;
+import org.junit.jupiter.api.Test;
+import java.io.File;
+import java.io.Serializable;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.util.Date;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicLongFieldUpdater;
+import static org.boon.Boon.puts;
+import static org.boon.Exceptions.die;
+import static org.boon.json.JsonFactory.fromJson;
+import static org.boon.json.JsonFactory.toJson;
+
+/**
+ * Created by Richard on 4/23/14.
+ */
+public class BugReport165AndIssue169 {
+
+    static boolean ok;
+
+    public static class Employee {
+
+        String name;
+
+        long birthDate;
+    }
+
+    /**
+     *
+     * @author l man
+     */
+    public static class Sample implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        private URL url;
+
+        private URI uri;
+
+        private File file;
+
+        private Date date;
+
+        private final UUID persistId;
+
+        private Path path;
+
+        private Locale locale;
+
+        private TimeZone timeZone;
+
+        private Class clz;
+
+        private static final AtomicLongFieldUpdater<Sample> EFFECTIVEDATE_UPDATER = AtomicLongFieldUpdater.newUpdater(Sample.class, "effectiveDate");
+
+        public Sample() {
+            this.persistId = UUID.randomUUID();
+            this.effectiveDate = System.currentTimeMillis();
+            try {
+                url = new URL("http://www.google.com");
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            try {
+                uri = new URI("http://www.google.com");
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+            try {
+                clz = Class.forName("java.lang.Object");
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            file = new File("/usr/local/bin/vertx");
+            date = new Date();
+            path = file.toPath();
+            locale = Locale.CANADA;
+            timeZone = TimeZone.getTimeZone("PST");
+        }
+
+        public UUID getPersistId() {
+            return persistId;
+        }
+
+        private volatile long effectiveDate;
+
+        public final long getEffectiveDate() {
+            return effectiveDate;
+        }
+
+        public final void setEffectiveDate(long effectiveDate) {
+            EFFECTIVEDATE_UPDATER.compareAndSet(this, this.effectiveDate, effectiveDate);
+        }
+
+        @Override
+        public String toString() {
+            return "Sample{" + "url=" + url + ", uri=" + uri + ", file=" + file + ", date=" + date + ", persistId=" + persistId + ", path=" + path + ", effectiveDate=" + effectiveDate + '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o)
+                return true;
+            if (!(o instanceof Sample))
+                return false;
+            Sample sample = (Sample) o;
+            if (effectiveDate != sample.effectiveDate)
+                return false;
+            if (clz != null ? !clz.equals(sample.clz) : sample.clz != null)
+                return false;
+            if (date != null ? !date.equals(sample.date) : sample.date != null)
+                return false;
+            if (file != null ? !file.equals(sample.file) : sample.file != null)
+                return false;
+            if (locale != null ? !locale.equals(sample.locale) : sample.locale != null)
+                return false;
+            if (path != null ? !path.equals(sample.path) : sample.path != null)
+                return false;
+            if (persistId != null ? !persistId.equals(sample.persistId) : sample.persistId != null)
+                return false;
+            if (timeZone != null ? !timeZone.equals(sample.timeZone) : sample.timeZone != null)
+                return false;
+            if (uri != null ? !uri.equals(sample.uri) : sample.uri != null)
+                return false;
+            if (url != null ? !url.equals(sample.url) : sample.url != null)
+                return false;
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = url != null ? url.hashCode() : 0;
+            result = 31 * result + (uri != null ? uri.hashCode() : 0);
+            result = 31 * result + (file != null ? file.hashCode() : 0);
+            result = 31 * result + (date != null ? date.hashCode() : 0);
+            result = 31 * result + (persistId != null ? persistId.hashCode() : 0);
+            result = 31 * result + (path != null ? path.hashCode() : 0);
+            result = 31 * result + (locale != null ? locale.hashCode() : 0);
+            result = 31 * result + (timeZone != null ? timeZone.hashCode() : 0);
+            result = 31 * result + (clz != null ? clz.hashCode() : 0);
+            result = 31 * result + (int) (effectiveDate ^ (effectiveDate >>> 32));
+            return result;
+        }
+    }
+
+    @Test
+    public void test4() {
+        Sample sample1 = new Sample();
+        String json = JsonFactory.toJson(sample1);
+        puts(json);
+        puts(sample1);
+        ok = json.contains("\"effectiveDate\"") || die();
+        Sample sample2 = JsonFactory.fromJson(json, Sample.class);
+        puts("sample2", sample2);
+        puts("sample2", JsonFactory.toJson(sample2));
+        ok = sample1.equals(sample2);
+    }
+
+    @Test
+    public void test2() {
+        Employee employee = new Employee();
+        ObjectMapper mapper = JsonFactory.create();
+        String json = mapper.toJson(employee);
+        puts(json);
+        employee.name = "Rick Hightower";
+        json = mapper.toJson(employee);
+        puts(json);
+        employee.birthDate = System.currentTimeMillis() - 60 * 1000 * 24 * 7 * 52 * 29;
+        json = mapper.toJson(employee);
+        puts(json);
+        Employee newEmployee = mapper.fromJson(json, Employee.class);
+        puts("New Employee", newEmployee.birthDate, newEmployee.name);
+        ok = newEmployee.name.equals("Rick Hightower") && newEmployee.birthDate > 0 || die();
+    }
+
+    @Test
+    public void test1() {
+        Employee employee = new Employee();
+        String json = toJson(employee);
+        puts(json);
+        employee.name = "Rick Hightower";
+        json = toJson(employee);
+        puts(json);
+        employee.birthDate = System.currentTimeMillis() - 60 * 1000 * 24 * 7 * 52 * 29;
+        json = toJson(employee);
+        puts(json);
+        Employee newEmployee = fromJson(json, Employee.class);
+        puts("New Employee", newEmployee.birthDate, newEmployee.name);
+        ok = newEmployee.name.equals("Rick Hightower") && newEmployee.birthDate > 0 || die();
+    }
+
+    @Test
+    public void test3() {
+        Employee employee = new Employee();
+        ObjectMapper mapper = new ObjectMapperImpl();
+        String json = mapper.toJson(employee);
+        puts(json);
+        employee.name = "Rick Hightower";
+        json = mapper.toJson(employee);
+        puts(json);
+        employee.birthDate = System.currentTimeMillis() - 60 * 1000 * 24 * 7 * 52 * 29;
+        json = mapper.toJson(employee);
+        puts(json);
+        Employee newEmployee = mapper.fromJson(json, Employee.class);
+        puts("New Employee", newEmployee.birthDate, newEmployee.name);
+        ok = newEmployee.name.equals("Rick Hightower") && newEmployee.birthDate > 0;
+    }
+}
