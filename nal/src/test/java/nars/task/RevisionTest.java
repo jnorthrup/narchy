@@ -235,7 +235,7 @@ public class RevisionTest {
 
         TaskConcept c = (TaskConcept) n.conceptualize("(x ==> y)");
         c.print();
-        Task t = n.answer(c.term(), BELIEF, ETERNAL);
+        Task t = n.match(c.term(), BELIEF, ETERNAL);
         assertEquals(0.5f, t.freq(), 0.01f);
         assertEquals(0.947f, t.conf(), 0.01f);
     }
@@ -247,7 +247,7 @@ public class RevisionTest {
                        "(x ==> y). :|: %0.0;0.9%" );
 
         n.run(1);
-        Truth t = n.beliefTruth("(x ==> y)", 0);
+        Truth t = n.belief($.$("(x ==> y)"), 0).truth();
         assertEquals(0.5f, t.freq(), 0.01f);
         assertEquals(0.947f, t.conf(), 0.01f);
     }

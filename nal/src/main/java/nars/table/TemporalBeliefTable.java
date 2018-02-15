@@ -2,6 +2,7 @@ package nars.table;
 
 import jcog.Skill;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.concept.TaskConcept;
 import nars.task.signal.SignalTask;
@@ -34,16 +35,28 @@ public interface TemporalBeliefTable extends TaskTable {
 //
 //        //float fdur = dur;
 //        //float range = t.range();
-        return
+        long dt = t.minDistanceTo(start, end);
+        float ee = t.eviInteg();
+        if (dt == 0) return ee; //full integral
+        else {
+            //reduce the full integration by a factor relating to the distance (ex: isoceles triangle below)
+            /*
+            -----------+
+                       |   .      .
+                       |                 .     .
+                       ^  - - - -  - - - - - - -
+                      end                      ? <- time point being sampled
+             */
+            return (float) Param.evi(ee, dt, dur);
+        }
 
-                t.evi(start, end, dur)
                 //t.evi() * (1/(1+t.minDistanceTo(start, end)/dur))
                 //t.evi() * (1+Interval.intersectLength(start, end, t.start(), t.end()))
 
 ////                //t.conf(now, dur) *
 ////                //t.evi(now, dur) *
 ////                //* range == 0 ? 1f : (float) (1f + Math.sqrt(t.range()) / dur); ///(1+t.distanceTo(start, end)))); ///fdur
-        ;
+
 //        float fdur = dur;
 //        return
 //                //(1f + t.evi()) *

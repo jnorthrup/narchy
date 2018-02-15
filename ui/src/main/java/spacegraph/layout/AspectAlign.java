@@ -36,7 +36,7 @@ public class AspectAlign extends UnitContainer {
 
 
     public AspectAlign(Surface the, Align a, float w, float h) {
-        this(the, h / w, a, 1f);
+        this(the, w / h, a, 1f);
     }
 
     public AspectAlign(Surface the, float aspect) {

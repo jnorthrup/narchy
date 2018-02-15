@@ -9,6 +9,7 @@ import nars.Param;
 import nars.Task;
 import nars.control.Cause;
 import nars.subterm.Subterms;
+import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
@@ -741,31 +742,38 @@ public class Revision {
         if (Param.DEBUG)
             t.log("Revection Merge");
 
+
+
+        ((NALTask)a).meta("@", (k)->t); //forward to the revision
+        ((NALTask)b).meta("@", (k)->t); //forward to the revision
+
         return t;
     }
 
     /** assumes:
      *          the tasks to be sorted in descending strength
      *          each task's term is the same (no intermpolation is performed)
+     * the input minEvi corresponds to the absolute minimum accepted
+     * evidence integral (evidence * time) for a point-like result (dtRange == 0)
      * */
-    @Nullable public static Task mergeTemporal(float minEvi, NAR nar, Task... tt) {
+    @Nullable public static Task mergeTemporal(float minEviInteg, NAR nar, TaskRegion... tt) {
         assert(tt.length > 1);
 
-        Task first = tt[0];
-        minEvi = Math.max(first.evi(), minEvi); //dont settle for anything worse than the first (strongest) task by un-revised
+        Task first = tt[0].task();
+        minEviInteg = Math.max(first.eviInteg(), minEviInteg ); //dont settle for anything worse than the first (strongest) task by un-revised
 
         LongHashSet evidence = new LongHashSet();
         int overlap = 0, totalEv = 0;
         int included = 0;
         boolean hasNulls = false;
         for (int i = 0; i < tt.length; i++) {
-            Task t = tt[i];
+            TaskRegion t = tt[i];
             if (t == null) {
                 hasNulls = true;
                 continue;
             }
-            assert (!t.isEternal());
-            long[] ts = t.stamp();
+            //assert (!t.isEternal());
+            long[] ts = t.task().stamp();
             totalEv += ts.length;
             int moreOverlaps = Stamp.overlapsAdding(evidence, ts);
             overlap += moreOverlaps;
@@ -774,7 +782,7 @@ public class Revision {
                     //would cause zero evidence, regardless of whatever truth is calculated later
                     tt[i] = null;
                     if (included > 2)
-                        return mergeTemporal(minEvi, nar, tt); //recurse without this one
+                        return mergeTemporal(minEviInteg, nar, tt); //recurse without this one
                     else {
                         break;
                     }
@@ -785,7 +793,7 @@ public class Revision {
         }
 
         if (included == 1) {
-            assert(first !=null);
+            //assert(first !=null);
             return first; //return the top one, nothing could be merged
         }
 
@@ -806,34 +814,36 @@ public class Revision {
 
         long start = joint.unionStart;
         long end = joint.unionEnd;
+        long range = end - start;
 
         Truth truth = new TruthPolation(start, end, dur, tt).get();
-        if (truth == null) return null;
-        truth = truth.withEvi(truth.evi() * joint.factor * overlapFactor);
-        if (truth == null || truth.evi() < minEvi)
+        if (truth == null) return first;
+        float factor = joint.factor * overlapFactor;
+        float eAdjusted = truth.evi() * factor;
+        if ((eAdjusted * range) < minEviInteg)
             return first;
 
-        @Nullable PreciseTruth cTruth = truth.dither(nar);
+        @Nullable PreciseTruth cTruth = truth.dither(nar, factor);
         if (cTruth == null)
             return first;
 
-
-
-        NALTask t = new NALTask(tt[0].term(), tt[0].punc(),
+        NALTask t = new NALTask(first.term(), first.punc(),
                 cTruth,
                 nar.time(), start, end,
                 Stamp.sample(Param.STAMP_CAPACITY, evidence /* TODO account for relative evidence contributions */, nar.random())
         );
-//        if (overlap > 0 || a.isCyclic() || b.isCyclic())
-//            t.setCyclic(true);
 
-        float pri = Priority.fund(1f, false, tt).priElseZero();
-        t.priSet(pri);
+        t.priSet(Priority.fund(Util.sum((TaskRegion p)->p.task().priElseZero(),tt),
+                false,
+                Tasked::task, tt));
 
         t.cause = Cause.sample(nar.causeCapacity.intValue(), tt);
 
         if (Param.DEBUG)
             t.log("Temporal Merge");
+
+        for (TaskRegion x : tt)
+            x.task().meta("@", (k)->t); //forward to the revision
 
         return t;
     }

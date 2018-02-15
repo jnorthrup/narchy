@@ -1147,4 +1147,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             t.truth(subStart, subEnd, dur, Float.MIN_NORMAL)
         );
     }
+
+    default float eviInteg() {
+        return isEternal() ? Float.POSITIVE_INFINITY : Math.max(1, range()) * evi();
+    }
 }

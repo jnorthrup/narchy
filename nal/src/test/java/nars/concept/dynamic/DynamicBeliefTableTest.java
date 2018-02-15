@@ -273,16 +273,11 @@ public class DynamicBeliefTableTest {
         //n.believe("y", ...); //Y unknown
         n.believe("z", 0f, 0.81f);
         n.run(1);
-        assertEquals(
-                "%0.0;.81%", n.beliefTruth(
-                        n.conceptualize($("(&&,x,y,z)")
-                        ), n.time()).toString()
-        );
-        assertEquals(
-                1, n.belief(
-                        $("(&&,x,y,z)")
-                        , n.time()).stamp().length
-        );
+        {
+            Task belief = n.belief( n.conceptualize( $("(&&,x,y,z)") ), n.time());
+            assertEquals("%0.0;.81%", belief.truth().toString() );
+            assertEquals(1, belief.stamp().length);
+        }
     }
 
     @Test

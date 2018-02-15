@@ -30,7 +30,7 @@ public class FZero extends NAgentX {
 
     float fwdSpeed = 14;
     float rotSpeed = 0.25f/3f;
-    static float fps = 30f;
+    static float fps = 20f;
     final MiniPID rewardFilter = new MiniPID(0.1f, 0.1, 0.1f);
     final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
     final MiniPID rotFilter = new MiniPID(0.5f, 0.3, 0.2f);
@@ -43,9 +43,9 @@ public class FZero extends NAgentX {
         NAgentX.runRT((n) -> {
 
             FZero a = null;
-            n.freqResolution.set(0.02f);
+            n.freqResolution.set(0.1f);
             n.confResolution.set(0.02f);
-            n.confMin.set(0.02f);
+
             a = new FZero(n);
 
             a.trace = true;
@@ -96,8 +96,8 @@ public class FZero extends NAgentX {
 
 
         //initToggle();
-        initBipolar(true);
-        //initBipolar(false);
+        //initBipolar(true);
+        initBipolar(false);
 
         //new Implier(1, this, new float[] { 0, 1 });
 
@@ -330,7 +330,7 @@ public class FZero extends NAgentX {
 //            return a;
 //        });
         final float[] _a = {0}, _r = {0};
-        actionUnipolar($.inh(id,"fwd"), true, (a0) -> {
+        actionUnipolar($.inh(id,"fwd"), false, (a0) -> {
             float a = _a[0] = (float) fwdFilter.out(_a[0], a0);
             if (a > 0.5f) {
                 float thrust = /*+=*/ (a - 0.5f) * 2f * (fwdSpeed); //gas
@@ -412,8 +412,8 @@ public class FZero extends NAgentX {
         //lifesupport
         fz.power = Math.max(FZeroGame.FULL_POWER * 0.5f, Math.min(FZeroGame.FULL_POWER, fz.power * 1.15f));
 
-        //return r;
-        return (float) rewardFilter.out(this.reward, r);
+        return r;
+        //return (float) rewardFilter.out(this.reward, r);
     }
 
 

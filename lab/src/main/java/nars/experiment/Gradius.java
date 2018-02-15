@@ -108,8 +108,8 @@ public class Gradius extends NAgentX {
         actionPushButton($.inh("fire", id),
                 (b) -> g.keys[VK_SHOOT] = b);
 
-        initBipolar();
-        //initToggle();
+        //initBipolar();
+        initToggle();
 
 //        actionTriState($.p(Atomic.the("dx")), (dh) -> {
 //            g.keys[Gradius4K.VK_LEFT] = false;
@@ -153,7 +153,7 @@ public class Gradius extends NAgentX {
 
     void initBipolar() {
         //TODO use actionTriState
-        float thresh = 0.01f;
+        float thresh = 0.25f;
         actionBipolar($.p($.the("y"), id), (dy) -> {
             if (dy < -thresh) {
                 g.keys[VK_UP] = false; g.keys[VK_DOWN] = true;

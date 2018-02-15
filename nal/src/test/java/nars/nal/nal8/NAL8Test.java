@@ -800,7 +800,6 @@ public class NAL8Test extends NALTest {
     public void implDecomposeGoalAfterPosNeg() {
 
         test
-                .confTolerance(0.15f)
                 .inputAt(3, "(--(a) ==>+2 (b)). :|:")
                 .inputAt(5, "(b)! :|:")
                 .mustGoal(cycles, "(a)", 0f, 0.81f, 5 /* desired at same time as b since it precedes it */);

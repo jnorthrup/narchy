@@ -1,6 +1,8 @@
 package jcog.pri;
 
+import com.google.common.base.Function;
 import jcog.Texts;
+import jcog.Util;
 import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.lerp;
@@ -9,13 +11,18 @@ import static jcog.Util.lerp;
  * Mutable Prioritized
  */
 public interface Priority extends Prioritized {
-    static Prioritized fund(float maxPri, boolean copyOrTransfer, Priority... src) {
-        float priSum = Math.min(maxPri, Prioritized.sum(src));
-        float perSrc = priSum / src.length;
+
+    static <X> Prioritized fund(float maxPri, boolean copyOrTransfer, Priority... src) {
+        return fund(maxPri, copyOrTransfer, (x->x), src);
+    }
+
+    static <X> Prioritized fund(float maxPri, boolean copyOrTransfer, Function<X,Priority> getPri, X... src) {
+        float priTarget = Math.min(maxPri, Util.sum((X s)->getPri.apply(s).priElseZero(), src));
+        float perSrc = priTarget / src.length;
 
         Priority u = new Pri();
-        for (Priority t : src) {
-            u.take(t, perSrc, true, copyOrTransfer);
+        for (X t : src) {
+            u.take(getPri.apply(t), perSrc, true, copyOrTransfer);
         }
         return u;
     }

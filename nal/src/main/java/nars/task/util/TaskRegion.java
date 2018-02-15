@@ -11,6 +11,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import java.util.List;
 
 import static nars.time.Tense.ETERNAL;
+import static nars.truth.TruthFunctions.c2wSafe;
 
 public interface TaskRegion extends HyperRegion, Tasked {
 
@@ -531,5 +532,10 @@ public interface TaskRegion extends HyperRegion, Tasked {
     default float confMax() {
         return coordF(true, 2);
     }
+
+    default float eviInteg() {
+        return Math.max(1, range()) * (c2wSafe(confMin()) + c2wSafe(confMax()))/2f;
+    }
+
 
 }

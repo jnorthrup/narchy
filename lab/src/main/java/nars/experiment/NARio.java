@@ -57,7 +57,8 @@ public class NARio extends NAgentX {
         cc.addActions(id, this, false, false, true);
         cc.actions.forEach(a -> a.resolution.set(0.25f));
         //cc.setClarity(0.8f, 0.95f);
-        Bitmap2DSensor<PixelBag> sc = addCamera(new Bitmap2DSensor<>(id, cc, this));
+        Bitmap2DSensor<PixelBag> sc = addCamera(new Bitmap2DSensor<>(id, cc, this))
+                .resolution(0.05f);
 
         //new ShapeSensor($.the("shape"), new BufferedImageBitmap2D(()->mario.image),this);
 
@@ -101,14 +102,14 @@ public class NARio extends NAgentX {
 //        nar.believe("nario:{narioLocal, narioGlobal}");
 
 
-        initBipolar();
-        //initToggle();
+        //initBipolar();
+        initToggle();
 
 
         SensorConcept dvx = senseNumberDifference($safe("nario:vx"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
-                mario.x : 0).resolution(0.04f);
+                mario.x : 0).resolution(0.02f);
         SensorConcept dvy = senseNumberDifference($safe("nario:vy"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
-                mario.y : 0).resolution(0.04f);
+                mario.y : 0).resolution(0.02f);
 
 //        window(Vis.beliefCharts(64, concat(dvx,dvy), nar), 300, 300);
 //

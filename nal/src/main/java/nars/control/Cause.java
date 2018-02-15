@@ -2,7 +2,7 @@ package nars.control;
 
 import jcog.Util;
 import jcog.math.RecycledSummaryStatistics;
-import nars.Task;
+import nars.task.util.TaskRegion;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.ShortIterable;
 import org.eclipse.collections.api.block.predicate.primitive.ShortPredicate;
@@ -103,7 +103,7 @@ public class Cause implements Comparable<Cause> {
         return Short.compare(id, o.id);
     }
 
-    public static short[] sample(int causeCapacity, @Nullable Task... e) {
+    public static short[] sample(int causeCapacity, @Nullable TaskRegion... e) {
         short[] a = e[0].cause();
         switch (e.length) {
             case 0:
@@ -126,7 +126,7 @@ public class Cause implements Comparable<Cause> {
 
                 return sample(causeCapacity, a, b);
             default:
-                return sample(causeCapacity, Util.map(Task::cause, short[][]::new, e)); //HACK
+                return sample(causeCapacity, Util.map(TaskRegion::cause, short[][]::new, e)); //HACK
         }
     }
 

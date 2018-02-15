@@ -44,7 +44,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
      */
     private static final float SCAN_QUALITY =
             1f;
-    //0.5f;
+            //0.5f;
 
     /** if the size is less than equal to this value, the entire table is scanned in one sweep (no time or conf sub-sweeps) */
     private static final int COMPLETE_SCAN_SIZE_THRESHOLD = 4;
@@ -55,9 +55,12 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     private static final int TRUTHPOLATION_LIMIT = 8;
 
     /** max tasks which can be merged (if they have equal occurrence and term) in a match's generated Task */
-    private static final int EVENT_MATCH_LIMIT = 8;
+    private static final int EVENT_MATCH_LIMIT = TRUTHPOLATION_LIMIT;
 
-    private static final float PRESENT_AND_FUTURE_BOOST = 1f;
+    private static final float PRESENT_AND_FUTURE_BOOST =
+            //1f;
+            1.5f;
+
 
     private static final int SCAN_CONF_DIVISIONS = 3;
     private static final int SCAN_TIME_DIVISIONS = 4;
@@ -205,7 +208,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             if (c == b) //c.equals(b))
                 return b;
 
-            if (c.evi(start, end, dur) > a.evi(start, end, dur))
+            if (c.eviInteg() > a.eviInteg())
                 return c;
         }
 
@@ -573,13 +576,13 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         };
     }
 
-    /**
-     * measures only temporal proximity to the given range
-     */
-    private FloatFunction<Task> taskRelevance(long start, long end) {
-        double dur = 1 + tableDur();
-        return (Task x) -> (float) (dur / (1 + x.minDistanceTo(start, end)));
-    }
+//    /**
+//     * measures only temporal proximity to the given range
+//     */
+//    private FloatFunction<Task> taskRelevance(long start, long end) {
+//        double dur = 1 + tableDur();
+//        return (Task x) -> (float) (dur / (1 + x.minDistanceTo(start, end))); // * .range() ?
+//    }
 
     private static FloatFunction<Task> taskStrength(long start, long end, int dur) {
         return (Task x) -> temporalTaskPriority(x, start, end, dur);
@@ -600,7 +603,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 return Float.NEGATIVE_INFINITY;
 
             //boost for present and future
-            return (!x.isBefore(now - perceptDur) ? presentAndFutureBoost : 1f) * temporalTaskPriority(x, when, when, perceptDur);
+            return (!x.isBefore(now - perceptDur) ? presentAndFutureBoost : 1f) *
+                    temporalTaskPriority(x, when, when, perceptDur);
         };
     }
 
@@ -611,18 +615,18 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         return taskStrength(start, end, dur);
     }
 
-    /**
-     * dtDiff needs work
-     */
-    static FloatFunction<Task> taskStrengthComparingTemplates(@Nullable Term template, long start, long end, int dur) {
-        if (template == null || !template.isTemporal() || template.equals(template.root())) { //TODO this result can be cached for the entire table once knowing what term it stores
-            return taskStrength(start, end, dur);
-        } else {
-            //int tableDur = 1 + (int) (tableDur());
-            return (Task x) ->
-                    temporalTaskPriority(x, start, end, dur) / (1f + Revision.dtDiff(template, x.term()));
-        }
-    }
+//    /**
+//     * dtDiff needs work
+//     */
+//    static FloatFunction<Task> taskStrengthComparingTemplates(@Nullable Term template, long start, long end, int dur) {
+//        if (template == null || !template.isTemporal() || template.equals(template.root())) { //TODO this result can be cached for the entire table once knowing what term it stores
+//            return taskStrength(start, end, dur);
+//        } else {
+//            //int tableDur = 1 + (int) (tableDur());
+//            return (Task x) ->
+//                    temporalTaskPriority(x, start, end, dur) / (1f + Revision.dtDiff(template, x.term()));
+//        }
+//    }
 
 
 //    protected Task find(/*@NotNull*/ TaskRegion t) {

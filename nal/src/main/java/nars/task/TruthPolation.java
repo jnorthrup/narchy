@@ -3,6 +3,7 @@ package nars.task;
 import jcog.list.FasterList;
 import nars.Param;
 import nars.Task;
+import nars.task.util.TaskRegion;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
@@ -36,11 +37,17 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
     private final long start, end;
     private int dur;
 
-    long spanStart = Long.MAX_VALUE, spanEnd = Long.MIN_VALUE, rangeSum = 0;
+    //long spanStart = Long.MAX_VALUE, spanEnd = Long.MIN_VALUE, rangeSum = 0;
 
     public TruthPolation(long start, long end, int dur, Task... tasks) {
         this(start, end, dur);
         for (Task t : tasks)
+            add(t);
+    }
+
+    public TruthPolation(long start, long end, int dur, TaskRegion... tasks) {
+        this(start, end, dur);
+        for (TaskRegion t : tasks)
             add(t);
     }
 

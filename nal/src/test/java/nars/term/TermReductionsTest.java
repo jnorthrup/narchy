@@ -1024,7 +1024,9 @@ public class TermReductionsTest extends NarseseTest {
     public void testConjNearIdentity() {
         assertReduction(True, "( (a&&b) ==> (a&|b) )");
 
-        assertReduction("(&|,(a&&b),a,b)", "( (a&&b) &| (a&|b) )");
+        assertReduction(//"(&|,(a&&b),a,b)",
+            "(a&|b)",
+                "( (a&&b) &| (a&|b) )");
 
         assertReduction("(&|,((X,x)&&#1),(X,x),#1)", "( ((X,x)&&#1) &| ((X,x)&|#1) )");
 
@@ -1369,9 +1371,12 @@ public class TermReductionsTest extends NarseseTest {
 //    }
 
     @Test
-    public void testDontPromoteEternalToParallel() {
+    public void testPromoteEternalToParallel() {
         String s = "(a&|(b && c))";
-        assertReduction("((b&&c)&|a)", s);
+        assertReduction(
+                //"((b&&c)&|a)", // <- dont promote
+                "(&|,a,b,c)", // <- promote
+                s);
     }
 
     @Test
@@ -1399,7 +1404,7 @@ public class TermReductionsTest extends NarseseTest {
         //mix of parallel and eternal
         assertReduction(False,
                 "(((--,(z&&y))&&x)&|(--,x))");
-        assertReduction("",
+        assertReduction(False,
                 "(((--,(y&&z))&|x)&&(--,x))");
 
     }

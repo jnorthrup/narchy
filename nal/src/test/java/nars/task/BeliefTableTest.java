@@ -277,14 +277,14 @@ public class BeliefTableTest {
 
             long when = t == Present ? 0 : ETERNAL;
 
-            Task fwd = n.answer($.impl($.$("a"), +5, $.$("b")), BELIEF, when);
+            Task fwd = n.match($.impl($.$("a"), +5, $.$("b")), BELIEF, when);
             assertEquals("(a ==>+5 b)", fwd.term().toString());
 
-            Task bwd = n.answer($.impl($.$("a"), -5, $.$("b")), BELIEF, when);
+            Task bwd = n.match($.impl($.$("a"), -5, $.$("b")), BELIEF, when);
             assertEquals("(a ==>-5 b)", bwd.term().toString());
 
 
-            Task x = n.answer($.impl($.$("a"), DTERNAL, $.$("b")), BELIEF, when);
+            Task x = n.match($.impl($.$("a"), DTERNAL, $.$("b")), BELIEF, when);
             System.out.println(x);
 
 

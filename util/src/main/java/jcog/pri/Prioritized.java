@@ -23,6 +23,9 @@ public interface Prioritized extends Deleteable {
     static float sum(Prioritized... src) {
         return Util.sum(Prioritized::priElseZero, src);
     }
+    static float max(Prioritized... src) {
+        return Util.max(Prioritized::priElseZero, src);
+    }
 
 
     /**
