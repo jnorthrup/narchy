@@ -106,12 +106,12 @@
 
 
     //impl subjects are not truth symmetric
-    (P ==> M), (S ==> M), neq(P,S) |- ((polarize(P,task) &&+- polarize(S,belief)) ==>+- M), (Belief:IntersectionDepolarized)
-    (P ==> M), (S ==> M), neq(P,S) |- (--((--,polarize(P,task)) &&+- (--,polarize(S,belief))) ==>+- M), (Belief:UnionDepolarized)
+    (P ==> M), (S ==> M), neq(P,S) |- ((P &&+- S) ==>+- M), (Belief:IntersectionSym)
+    (P ==> M), (S ==> M), neq(P,S) |- (--(--P &&+- --S) ==>+- M), (Belief:UnionSym)
 
     //impl predicates are truth symmetric
-    (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- (P &&+- S)), (Belief:Intersection)
-    (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- --(--P &&+- --S)), (Belief:Union)
+    (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- (polarize(P,task) &&+- polarize(S,belief))), (Belief:IntersectionDepolarized)
+    (M ==> P), (M ==> S), neq(P,S) |- (M ==>+- --((--,polarize(P,task)) &&+- (--,polarize(S,belief)))), (Belief:UnionDepolarized)
 
 
 //// implication-based decomposition ////////////////////////////////////////////////////////////////////////////////////

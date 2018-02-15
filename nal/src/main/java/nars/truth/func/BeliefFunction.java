@@ -239,11 +239,13 @@ public enum BeliefFunction implements TruthOperator {
     IntersectionSym() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            if (T.isPositive()) {
+            if (T.isPositive() && B.isPositive()) {
                 return TruthFunctions.intersection(T, B, minConf);
-            } else {
+            } else if (T.isNegative() && B.isNegative()) {
                 Truth C = TruthFunctions.intersection(T.neg(), B.neg(), minConf);
-                return C!=null ? C.neg() : C;
+                return C!=null ? C.neg() : null;
+            } else {
+                return null;
             }
         }
     },
@@ -257,11 +259,13 @@ public enum BeliefFunction implements TruthOperator {
     UnionSym() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-            if (T.isPositive()) {
+            if (T.isPositive() && B.isPositive()) {
                 return TruthFunctions.union(T, B, minConf);
-            } else {
+            } else if (T.isNegative() && B.isNegative()) {
                 Truth C = TruthFunctions.union(T.neg(), B.neg(), minConf);
-                return C!=null ? C.neg() : C;
+                return C!=null ? C.neg() : null;
+            } else {
+                return null;
             }
         }
     },

@@ -98,6 +98,9 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     ));
 
     static final Map<Class, Class> proxyCache = new CustomConcurrentHashMap(STRONG, EQUALS, SOFT, IDENTITY, 64);
+
+    static final Map<Class, Boolean> clCache = new CustomConcurrentHashMap(STRONG, EQUALS, STRONG, IDENTITY, 64);
+    static final Map<String, MethodExec> opCache = new CustomConcurrentHashMap(STRONG, EQUALS, STRONG, IDENTITY, 64);
     //static final Map<Term, Method> methodCache = new CustomConcurrentHashMap(STRONG, EQUALS, SOFT, IDENTITY, 64); //cache: (class,method) -> Method
 
 
@@ -127,7 +130,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     private final SoftMemoize<Pair<Pair<Class, Term>, Pair<List<Class<?>>, Term /* func */>>, MethodHandle> methodArgCache = new SoftMemoize<>((xx) -> {
 
         Class c = xx.getOne().getOne();
-        String mName = xx.getOne().getTwo().toString();
+        String mName = xx.getTwo().getTwo().toString();
         List<Class<?>> types = xx.getTwo().getOne();
         Class<?>[] cc = types.isEmpty() ? ArrayUtils.EMPTY_CLASS_ARRAY : ((FasterList<Class<?>>) types).array();
         Method m = findMethod(c, mName, cc);
@@ -139,7 +142,8 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
 //        MethodType methodType = MethodType.methodType(m.getReturnType(), types);
 
-        Object inst = termToObj.get(xx.getTwo().getTwo());
+        Object inst = termToObj.get(xx.getOne().getTwo());
+        assert(inst!=null); //checked in pre-check
 
         try {
             return MethodHandles.lookup().unreflect(m).bindTo(inst);
@@ -327,7 +331,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
                 if (cause != null) {
                     next.causeMerge(cause);
-                    next.priMax(cause.priElseZero());
+                    next.priMax(Math.max(cause.priElseZero(), pri));
                     //cause.pri(0); //drain
                     cause.meta("@", next);
                 } else {
@@ -381,8 +385,6 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
             super(id);
             this.object = object;
             this.belief = valueModel.apply(id);
-
-            nar.onOp(this, new MethodExec(object));
         }
 
         public Object update(Object obj, Method method, Object[] args, Object nextValue) {
@@ -419,20 +421,32 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
             Class<?> returnType = method.getReturnType();
             boolean isVoid = result == null && returnType == void.class;
-            Term[] x = new Term[isVoid ? 2 : 3];
-            x[0] = $.the(method.getName());
-            switch (args.length) {
-                case 0:
-                    x[1] = Op.ZeroProduct;
-                    break;
-                case 1:
-                    x[1] = Opjects.this.term(args[0]);
-                    break; /* unwrapped singleton */
-                default:
-                    x[1] = $.p(terms(args));
-                    break;
+            int xn = 3;
+            if (args.length == 0) {
+                xn--;
             }
-            assert (x[1] != null) : "could not termize: " + Arrays.toString(args);
+            if (isVoid) {
+                xn--;
+            }
+
+            Term[] x = new Term[xn];
+            int resultTerm = xn-1;
+
+            x[0] = this;
+
+            if (args.length > 0) {
+                switch (args.length) {
+                    case 0:
+                        break;
+                    case 1:
+                        x[1] = Opjects.this.term(args[0]);
+                        break; /* unwrapped singleton */
+                    default:
+                        x[1] = $.p(terms(args));
+                        break;
+                }
+                assert (x[1] != null) : "could not termize: " + Arrays.toString(args);
+            }
 
             boolean negate = false;
 
@@ -442,7 +456,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                     tr = tr.unneg();
                     negate = true;
                 }
-                x[2] = tr;
+                x[resultTerm] = tr;
             } else {
                 boolean isBoolean = returnType == boolean.class || returnType == Boolean.class;
                 if (isBoolean) {
@@ -455,19 +469,21 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                 }
 
                 if (!isVoid) {
-                    x[2] = Opjects.this.term(result);
-                    assert (x[2] != null) : "could not termize: " + result;
+                    x[resultTerm] = Opjects.this.term(result);
+                    assert (x[resultTerm] != null) : "could not termize: " + result;
                 }
             }
 
-            return $.func(toString(), x).negIf(negate).normalize();
+            return $.func(method.getName(), x).negIf(negate).normalize();
         }
 
     }
 
     private class MethodExec extends AtomicExec {
-        public MethodExec(Object object) {
-            super(operator(object.getClass()), executionThreshold);
+        public Operator operator;
+
+        public MethodExec(String methodName) {
+            super(operator($.the(methodName)), executionThreshold);
         }
 
         @Override
@@ -481,6 +497,15 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                 return null; //filter instructive tasks (would cause feedback loop)
 
             boolean input = x.isInput();
+
+            Term xt = x.term();
+            if (null == validMethod(xt.sub(1))) {
+                if (input)
+                    return Operator.log(x.creation(),"Unknown opject method: " + x.term());
+                else
+                    return null;
+            }
+
             Subterms args = validArgs(Operator.args(x));
             if (args == null) {
                 if (input)
@@ -489,12 +514,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                     return null;
             }
 
-            if (null == validMethod(args.sub(0))) {
-                if (input)
-                    return Operator.log(x.creation(),"Unknown opject method: " + x.term());
-                else
-                    return null;
-            }
+
 
             //TODO other prefilter conditions
 
@@ -515,6 +535,8 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
      * wraps a provided instance in an intercepting proxy class
      */
     public <T> T the(String id, T instance) {
+
+        reflect(instance.getClass());
 
         ProxyFactory f = new ProxyFactory();
         f.setSuperclass(instance.getClass());
@@ -540,6 +562,31 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
     }
 
+    private void reflect(Class<?> cl) {
+
+        clCache.computeIfAbsent(cl, (clazz)->{
+
+            for (Method m : clazz.getMethods()) {
+                reflect(m);
+            }
+
+            return true;
+        });
+    }
+
+    private MethodExec reflect(Method m) {
+        if (!validMethod(m))
+            return null;
+
+        String n = m.getName();
+        return opCache.computeIfAbsent(n, (mn)->{
+            MethodExec methodExec = new MethodExec(mn);
+            Operator op = nar.onOp(mn, methodExec);
+            methodExec.operator = op;
+            return methodExec;
+        });
+    }
+
     /**
      * creates a new instance to be managed by this
      */
@@ -547,6 +594,9 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     public <T> T a(String id, Class<? extends T> instance, Object... args) {
 
         Class clazz = proxyCache.computeIfAbsent(instance, (c) -> {
+
+            reflect(instance);
+
             ProxyFactory p = new ProxyFactory();
             p.setSuperclass(c);
             return p.createClass();
@@ -574,19 +624,24 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     }
 
 
-    private BiConsumer<Task, NAR> operator(Class c) {
+    /** dispatcher for all methods with the given name, regardless of class (this is specified by the class of the instance parameter) */
+    private BiConsumer<Task, NAR> operator(Term method) {
+
         return (task, n) -> {
 
             Term taskTerm = task.term();
+
             Subterms args = validArgs(Operator.args(taskTerm));
             if (args == null)
                 return;
 
-            Term method = validMethod(args.sub(0));
-            if (method == null)
+            Term instanceTerm = args.sub(0);
+            Object instance = termToObj.get(instanceTerm);
+            if (instance == null)
                 return;
 
-            Term methodArgs = args.subs() > 1 ? args.sub(1) : Op.ZeroProduct;
+            int as = args.subs();
+            Term methodArgs = as > 1 && (as > 2 || !args.sub(as-1).op().var) ? args.sub(1) : Op.ZeroProduct;
 
             boolean maWrapped = methodArgs.op() == PROD;
 
@@ -605,7 +660,9 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
             if (evoked(task, objArgs)) {
 
-                Pair<Pair<Class, Term>, Pair<List<Class<?>>, Term>> methodKey = pair(pair(c, method), pair(types, Operator.func(taskTerm)));
+                Class c = instance.getClass();
+
+                Pair<Pair<Class, Term>, Pair<List<Class<?>>, Term>> methodKey = pair(pair(c, instanceTerm), pair(types, method));
                 final MethodHandle mm = methodArgCache.apply(methodKey);
                 if (mm == null) {
                     if (task.isInput())
@@ -644,16 +701,42 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     }
 
     protected Subterms validArgs(Subterms args) {
+        if (args.sub(0).op()!=ATOM) //instance id
+            return null; //TODO support static method calls
+
+        //f(a,...)
         int a = args.subs();
         switch (a) {
-            case 1: //1 argument could be a void invocation
-            case 2:
-                return args.sub(0).op() == ATOM ? args : null;
-            case 3:
-                return args.sub(0).op() == ATOM && args.sub(2).op() == VAR_DEP ? args : null;
-            default:
-                return null;
+            case 1:
+                return args; //f(a) = a.f() -> void
+            case 2: {
+                Op o1 = args.sub(1).op();
+                if (validParamTerm(o1)) {
+                    //f(a,#y) = a.f() -> #y
+                    //f(a,x) = a.f(x) -> void
+                    //f(a,1) = a.f(1) -> void
+                    //f(a,(x)) = a.f(x) -> void
+                    //f(a,(x,y,z)) = a.f(x,y,z) -> void
+                    return args;
+                }
+                break;
+            }
+
+            case 3: {
+                //f(a,x,#y)
+                Op o1 = args.sub(1).op();
+                Op o2 = args.sub(2).op();
+                if (validParamTerm(o1) && o2 == VAR_DEP)
+                    return args;
+                break;
+            }
         }
+
+        return null;
+    }
+
+    private boolean validParamTerm(Op o1) {
+        return o1 == Op.VAR_DEP || o1 == PROD || (o1.atomic && !o1.var);
     }
 
     protected Term validMethod(Term method) {
@@ -665,6 +748,19 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         //TODO check a cached list of the reflected methods of the target class
 
         return method;
+    }
+
+    protected boolean validMethod(Method m) {
+        if (methodExclusions.contains(m.getName()))
+            return false;
+
+        int mm = m.getModifiers();
+        if (!Modifier.isPublic(mm))
+            return false;
+        if (Modifier.isStatic(mm))
+            return false;
+
+        return true;
     }
 
 

@@ -27,8 +27,8 @@ public class OpjectsTest {
     }
 
 
-    @Test
-    public void testSelfInvocation() throws Narsese.NarseseException {
+    /** self invocation */
+    @Test public void testEvoke() throws Narsese.NarseseException {
         final NAR n = NARS.tmp();
         n.time.dur(3);
 
@@ -48,20 +48,23 @@ public class OpjectsTest {
         n.onTask(sb::append);
         n.log();
 
-        n.input("x(set,1)! :|:");
+        n.input("set(x,1)! :|:");
         n.run(1);
         n.run(1);
 
-        n.input("x(get,(),#y)! :|:");
-        n.run(1);
-        n.run(1);
+        n.input("get(x,#y)! :|:");
+        n.run(4);
 
         assertEquals(2, evokes.size());
+
+        n.run(1);
     }
 
    @Test
     public void testObjectMethods() throws Narsese.NarseseException {
         final NAR n = NARS.tmp();
+
+        Param.DEBUG = true;
 
         n.log();
         final Opjects objs = new Opjects(n);
@@ -71,15 +74,17 @@ public class OpjectsTest {
         n.onTask(sb::append);
 
         //n.input("x(getClass,(),#y)! :|:");
-        n.input("x(hashCode,())! :|:");
+        n.input("hashCode(x,#h)! :|:");
         n.run(1);
         n.run(1);
+        assert(!sb.toString().contains("voke"));
     }
 
-    @Test
-    public void testInvocationExternal() {
+    /** invoked externally (ex: by user) */
+    @Test public void testInvoke() {
         final NAR n = NARS.tmp();
 
+        n.log();
         final Opjects objs = new Opjects(n);
 
         final SimpleClass x = objs.a("x", SimpleClass.class);
@@ -95,8 +100,8 @@ public class OpjectsTest {
         }
         n.run(1);
         String s = sb.toString();
-        assertTrue(s.contains("$.50 x(get,(),0)."));
-        assertTrue(s.contains("$.50 x(set,1)."));
+        assertTrue(s.contains("$.50 get(x,0)."));
+        assertTrue(s.contains("$.50 set(x,1)."));
     }
 
     @Disabled

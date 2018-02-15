@@ -96,8 +96,8 @@ public class FZero extends NAgentX {
 
 
         //initToggle();
-        //initBipolar(true);
-        initBipolar(false);
+        initBipolar(true);
+        //initBipolar(false);
 
         //new Implier(1, this, new float[] { 0, 1 });
 
