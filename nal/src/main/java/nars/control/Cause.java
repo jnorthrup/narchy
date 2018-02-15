@@ -126,7 +126,8 @@ public class Cause implements Comparable<Cause> {
 
                 return sample(causeCapacity, a, b);
             default:
-                return sample(causeCapacity, Util.map(TaskRegion::cause, short[][]::new, e)); //HACK
+                return sample(causeCapacity, Util.map(TaskRegion::cause, short[][]::new,
+                        ArrayUtils.removeNulls(e, TaskRegion[]::new))); //HACK
         }
     }
 

@@ -1,6 +1,5 @@
 package nars.table;
 
-import jcog.Util;
 import jcog.list.FasterList;
 import jcog.math.CachedFloatFunction;
 import jcog.pri.Deleteable;
@@ -55,7 +54,10 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     private static final int TRUTHPOLATION_LIMIT = 8;
 
     /** max tasks which can be merged (if they have equal occurrence and term) in a match's generated Task */
-    private static final int EVENT_MATCH_LIMIT = TRUTHPOLATION_LIMIT;
+    private static final int SIMPLE_EVENT_MATCH_LIMIT = TRUTHPOLATION_LIMIT;
+    private static final int COMPLEX_EVENT_MATCH_LIMIT =
+            2;
+            //Math.max(1, SIMPLE_EVENT_MATCH_LIMIT/2);
 
     private static final float PRESENT_AND_FUTURE_BOOST =
             //1f;
@@ -707,7 +709,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
             FloatFunction<Task> taskStrength = taskStrength(start, end, dur);
 
-            ScanFilter tt = new ScanFilter(2, EVENT_MATCH_LIMIT,
+            ScanFilter tt = new ScanFilter(SIMPLE_EVENT_MATCH_LIMIT, SIMPLE_EVENT_MATCH_LIMIT,
                     task(taskStrength),
                     (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)), //maxTries
                     filter)
@@ -716,25 +718,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                             SCAN_CONF_DIVISIONS
                     );
 
-            //merge up to the top 2
-            int results = tt.size();
-            switch (results) {
-                case 0:
-                    return null;
-
-                case 1:
-                    return tt.first().task();
-
-                default:
-
-                    return Revision.mergeTemporal(c2wSafe(nar.confMin.floatValue()),
-                            nar, Util.map(tr -> (Task)tr, new Task[tt.size()], tt.list)
-                    );
-
-            }
+            return Revision.mergeTemporal(nar, tt.list, tt.size());
         }
-
-
     }
 
     private static class Complex extends RTreeBeliefTable {
@@ -748,13 +733,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         @Override
         protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur) {
 
-            ScanFilter tt = new ScanFilter(2, 2,
+            ScanFilter tt = new ScanFilter(COMPLEX_EVENT_MATCH_LIMIT, COMPLEX_EVENT_MATCH_LIMIT,
                     task(taskStrength(template, start, end, dur)),
                     (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)), //maxTries
-                    filter).scan(this,
-                    start, end,
-                    1 //if compound event, dont assume higher confidence is better. so only one conf sweep
-            );
+                    filter)
+                .scan(this, start, end, SCAN_CONF_DIVISIONS);
 
             //merge up to the top 2
             switch (tt.size()) {

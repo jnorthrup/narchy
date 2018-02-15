@@ -602,7 +602,7 @@ public class Revision {
         float confMin =
                 Param.TRUTH_EPSILON;
 
-        TimeFusion joint = new TimeFusion(a, b);
+        EviDensity joint = new EviDensity(a, b);
         long start = joint.unionStart;
         long end = joint.unionEnd;
 
@@ -750,23 +750,43 @@ public class Revision {
         return t;
     }
 
+    @Nullable public static Task mergeTemporal(NAR nar, TaskRegion[] tt, int results) {
+        switch (results) {
+            case 0:
+                return null;
+
+            case 1:
+                return tt[0].task();
+
+            default:
+                return Revision.mergeTemporal(
+                        c2wSafe(nar.confMin.floatValue()),
+                        nar, results, tt
+                );
+
+        }
+
+    }
     /** assumes:
      *          the tasks to be sorted in descending strength
      *          each task's term is the same (no intermpolation is performed)
      * the input minEvi corresponds to the absolute minimum accepted
      * evidence integral (evidence * time) for a point-like result (dtRange == 0)
      * */
-    @Nullable public static Task mergeTemporal(float minEviInteg, NAR nar, TaskRegion... tt) {
+    @Nullable public static Task mergeTemporal(float minEviInteg, NAR nar, int results, TaskRegion... tt) {
         assert(tt.length > 1);
 
         Task first = tt[0].task();
         minEviInteg = Math.max(first.eviInteg(), minEviInteg ); //dont settle for anything worse than the first (strongest) task by un-revised
 
+        //TODO calculate the temporal density at the same time as this first part to avoid naively generating a sparse result afterward
+        //TODO combine evidensity with the stamp calculation
+        //TODO allow evidensity to skip a task in the array and proceed to the next without recurse
         LongHashSet evidence = new LongHashSet();
         int overlap = 0, totalEv = 0;
         int included = 0;
         boolean hasNulls = false;
-        for (int i = 0; i < tt.length; i++) {
+        for (int i = 0; i < results; i++) {
             TaskRegion t = tt[i];
             if (t == null) {
                 hasNulls = true;
@@ -782,7 +802,7 @@ public class Revision {
                     //would cause zero evidence, regardless of whatever truth is calculated later
                     tt[i] = null;
                     if (included > 2)
-                        return mergeTemporal(minEviInteg, nar, tt); //recurse without this one
+                        return mergeTemporal(minEviInteg, nar, results, tt); //recurse without this one
                     else {
                         break;
                     }
@@ -808,7 +828,7 @@ public class Revision {
         if (hasNulls)
             tt = ArrayUtils.removeNulls(tt, Task[]::new);
 
-        TimeFusion joint = new TimeFusion(tt);
+        EviDensity joint = new EviDensity(tt);
         if (joint.factor * overlapFactor < Float.MIN_NORMAL)
             return first;
 
@@ -833,7 +853,7 @@ public class Revision {
                 Stamp.sample(Param.STAMP_CAPACITY, evidence /* TODO account for relative evidence contributions */, nar.random())
         );
 
-        t.priSet(Priority.fund(Util.sum((TaskRegion p)->p.task().priElseZero(),tt),
+        t.priSet(Priority.fund(Util.max((TaskRegion p)->p!=null ? p.task().priElseZero() : 0,tt),
                 false,
                 Tasked::task, tt));
 
@@ -842,8 +862,10 @@ public class Revision {
         if (Param.DEBUG)
             t.log("Temporal Merge");
 
-        for (TaskRegion x : tt)
-            x.task().meta("@", (k)->t); //forward to the revision
+        for (TaskRegion x : tt) {
+            if (x!=null)
+                x.task().meta("@", (k) -> t); //forward to the revision
+        }
 
         return t;
     }

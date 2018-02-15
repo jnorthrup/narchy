@@ -16,13 +16,27 @@ public interface Priority extends Prioritized {
         return fund(maxPri, copyOrTransfer, (x->x), src);
     }
 
+    /** X[] may contain nulls */
     static <X> Prioritized fund(float maxPri, boolean copyOrTransfer, Function<X,Priority> getPri, X... src) {
-        float priTarget = Math.min(maxPri, Util.sum((X s)->getPri.apply(s).priElseZero(), src));
-        float perSrc = priTarget / src.length;
+
+        assert(src.length > 0);
+
+        float priSum = Util.sum((X s) -> {
+            if (s==null) return 0;
+            Priority p = getPri.apply(s);
+            return p.priElseZero();
+        }, src);
+
+        float priTarget = Math.min(maxPri, priSum);
 
         Priority u = new Pri();
-        for (X t : src) {
-            u.take(getPri.apply(t), perSrc, true, copyOrTransfer);
+
+        if (priTarget > Pri.EPSILON) {
+            float perSrc = priTarget / src.length;
+            for (X t : src) {
+                if (t!=null)
+                    u.take(getPri.apply(t), perSrc, true, copyOrTransfer);
+            }
         }
         return u;
     }

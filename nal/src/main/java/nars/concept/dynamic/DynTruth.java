@@ -7,7 +7,7 @@ import jcog.pri.Prioritized;
 import nars.*;
 import nars.control.Cause;
 import nars.task.NALTask;
-import nars.task.TimeFusion;
+import nars.task.EviDensity;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
@@ -157,7 +157,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
                 } else {
                     //dilute the evidence in proportion to temporal sparseness for non-temporal results
-                    TimeFusion se = new TimeFusion(this.toArrayRecycled(TaskRegion[]::new));
+                    EviDensity se = new EviDensity(this.toArrayRecycled(TaskRegion[]::new));
                     if (se != null) {
                         evi *= se.factor;
                         if (evi < eviMin)

@@ -47,8 +47,10 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
     public TruthPolation(long start, long end, int dur, TaskRegion... tasks) {
         this(start, end, dur);
-        for (TaskRegion t : tasks)
-            add(t);
+        for (TaskRegion t : tasks) {
+            if (t!=null)
+                add(t);
+        }
     }
 
     public TruthPolation(long start, long end, int dur, Iterable<? extends Tasked> tasks) {

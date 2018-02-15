@@ -4,13 +4,14 @@ import jcog.math.Interval;
 import nars.Task;
 import nars.task.util.TaskRegion;
 
-public final class TimeFusion {
+/** iterative calculator of evidential density
+ *      evidensity: average evidence of a set of evidential components integrated through their unioned time-span
+ */
+public final class EviDensity {
 
     public float factor;
-    public final long unionStart;
-    public final long unionEnd;
-
-
+    public long unionStart;
+    public long unionEnd;
 
 //    /** HACK TODO more accurate - call after union fusion calculated  */
 //    public float factor(float freqDifference) {
@@ -18,14 +19,15 @@ public final class TimeFusion {
 //        return factor;
 //    }
 
-    public TimeFusion(TaskRegion... x) {
+    public EviDensity(TaskRegion... x) {
 
         assert (x.length > 1);
 
         Interval uu = new Interval(x[0].start(), x[0].end());
-        for (int n = 1, xLength = x.length; n < xLength; n++) {
-            TaskRegion xn = x[n];
-            uu = uu.union(xn.start(), xn.end());
+        for (int i = 1, xLength = x.length; i < xLength; i++) {
+            TaskRegion xi = x[i];
+            if (xi == null) continue;
+            uu = uu.union(xi.start(), xi.end());
         }
 
         this.unionStart = uu.a;
@@ -37,14 +39,16 @@ public final class TimeFusion {
          * evidence volume, and evidence density (which becomes an evidence reduction factor if < 1) */
         float v = 0, totalEvi = 0;
         for (int i = 0; i < x.length; i++) {
-            Task xx = x[i].task();
+            TaskRegion xxi = x[i];
+            if (xxi == null) continue;
 
+            Task xi = xxi.task();
 
 
             //TODO use a better approximation
-            float xe = xx.evi();
+            float xe = xi.evi();
             totalEvi += xe;
-            v += xe * Math.max(xx.range(), 1);
+            v += xe * Math.max(xi.range(), 1);
         }
         float density = v / unionRange;
 

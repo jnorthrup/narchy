@@ -425,7 +425,7 @@ public class RevectionTest {
 
     static void assertTimeFusion(long start, long end, float factor, Interval... ii) {
         Task[] tt = null; //TODO convert the intervals to dummy tasks with equal confidence for the below test to work again
-        TimeFusion a = new TimeFusion(tt);
+        EviDensity a = new EviDensity(tt);
         assertEquals(start, a.unionStart);
         assertEquals(end, a.unionEnd);
         assertEquals(factor, a.factor, 0.001f);

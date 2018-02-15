@@ -8,7 +8,7 @@ import nars.Param;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.match.EllipsisMatch;
-import nars.task.TimeFusion;
+import nars.task.EviDensity;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
@@ -808,7 +808,7 @@ public class DeriveTime extends TimeGraph {
                     //                if (taskEvent && beliefEvent) {
                     //two events: fuse time
                     //assert (!belief.isEternal());
-                    TimeFusion joint = new TimeFusion(task, belief);
+                    EviDensity joint = new EviDensity(task, belief);
                     //                    if (joint.factor <= Pri.EPSILON) //allow for questions/quests, if this ever happens
                     //                        return null;
 
