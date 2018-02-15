@@ -6,6 +6,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Task;
 import nars.control.DurService;
+import nars.op.ArithmeticIntroduction;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
 import nars.time.Tense;
@@ -87,24 +88,26 @@ public class ThermostatTest {
     @Disabled
     public void test1() {
         //Param.DEBUG = true;
-        final int DUR = 1;
+        final int DUR = 2;
 
         final int subTrainings = 1;
-        final int thinkDurs = 5;
+        final int thinkDurs = 2;
 
         NAR n = NARS.tmp();
 
         n.time.dur(DUR);
         n.termVolumeMax.set(32);
-        n.freqResolution.set(0.02f);
+        n.freqResolution.set(0.05f);
         n.confResolution.set(0.02f);
+        n.deep.set(0.9);
 
 //        n.want(MetaGoal.Desire, 0.2f);
 //        n.want(MetaGoal.Believe, 0.1f);
 //        n.want(MetaGoal.Perceive, -0.01f);
 
-        float exeThresh = 0.55f;
+        float exeThresh = 0.6f;
 
+        new ArithmeticIntroduction(8, n);
         new ConjClustering(n, BELIEF, (t) -> true, 4, 16);
 
         //n.priDefault(BELIEF, 0.3f);
@@ -247,16 +250,16 @@ public class ThermostatTest {
 
                 final int[] maxTries = {8};
                 DurService xPos = n.wantWhile(cold, goalTruth, new TaskConceptLogger(n, (w) ->
-                        (--maxTries[0] >= 0) && (t.is() != t.should())
+                        /*(--maxTries[0] >= 0) && */(t.current != t.target)
                 ));
                 DurService xNeg = n.wantWhile(hot, goalTruth.neg(), new TaskConceptLogger(n, (w) ->
-                        t.is() != t.should()
+                        t.current != t.target
                 ));
 
                 n.run(1);
 
-                while (xPos.isOn()) {
-                    int period = 1000;
+                for (int i = 0; i < 8 && xPos.isOn(); i++) {
+                    int period = 100;
                     //t.report();
                     n.run(period);
                 }

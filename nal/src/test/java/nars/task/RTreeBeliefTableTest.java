@@ -24,8 +24,9 @@ public class RTreeBeliefTableTest {
     @Test
     public void testBasicOperations() throws Narsese.NarseseException {
         NAR n = NARS.shell();
-        TaskConcept X = (TaskConcept) n.conceptualize($.$("a:b"));
-        RTreeBeliefTable r = new RTreeBeliefTable();
+        Term ab = nars.$.$("a:b");
+        TaskConcept X = (TaskConcept) n.conceptualize(ab);
+        RTreeBeliefTable r = RTreeBeliefTable.build(ab);
         r.setCapacity(4);
 
         assertEquals(0, r.size());
@@ -80,12 +81,13 @@ public class RTreeBeliefTableTest {
     @Test
     public void testProjection() throws Narsese.NarseseException {
         NAR n = NARS.shell();
-        TaskConcept x = (TaskConcept) n.conceptualize($.$("a:b"));
-        RTreeBeliefTable r = new RTreeBeliefTable();
+        Term ab = nars.$.$("a:b");
+        TaskConcept X = (TaskConcept) n.conceptualize(ab);
+        RTreeBeliefTable r = RTreeBeliefTable.build(ab);
         r.setCapacity(4);
 
-        add(r, x, 1f, 0.9f, 0, 1, n);
-        add(r, x, 0f, 0.9f, 2, 3, n);
+        add(r, X, 1f, 0.9f, 0, 1, n);
+        add(r, X, 0f, 0.9f, 2, 3, n);
 
         assertEquals(1f, r.truth(0, 0, null, 1).freq());
         assertEquals("%.65;.93%", r.truth(0, 1, null, 1).toString());

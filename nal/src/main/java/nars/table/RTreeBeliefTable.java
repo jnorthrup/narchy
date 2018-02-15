@@ -8,6 +8,7 @@ import jcog.sort.Top2;
 import jcog.sort.TopNUnique;
 import jcog.tree.rtree.*;
 import nars.NAR;
+import nars.Op;
 import nars.Param;
 import nars.Task;
 import nars.concept.TaskConcept;
@@ -35,7 +36,7 @@ import static nars.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.c2wSafe;
 import static nars.truth.TruthFunctions.w2cSafe;
 
-public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
+public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
     /**
      * max fraction of the fully capacity table to compute in a single truthpolation
@@ -66,8 +67,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             Spatialization.DefaultSplits.AXIAL.get(); //Spatialization.DefaultSplits.LINEAR; //<- probably doesnt work here
 
 
-
-    private int capacity;
+    protected int capacity;
 
 
     @Override
@@ -86,7 +86,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         });
     }
 
-    public RTreeBeliefTable() {
+    private RTreeBeliefTable() {
         super(new RTree<>(RTreeBeliefModel.the));
     }
 
@@ -116,7 +116,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     @Override
     public Truth truth(long start, long end, EternalTable eternal, int dur) {
 
-        //TODO disallow computing point truth values on temporal concepts (compound events can not be compared directly)
 
         assert (end >= start);
 
@@ -171,99 +170,18 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         assert (end >= start);
 
 
-        boolean compoundEvent = template != null && template.isTemporal();
-        if (!compoundEvent)
-            return matchEvent(start, end, dur, nar, filter);
-        else
-            return matchTemporal(start, end, dur, template, nar, filter);
+        return match(start, end, template, nar, filter, dur);
     }
 
-
-    private Task matchEvent(long start, long end, int dur, NAR nar, Predicate<Task> filter) {
-
-        FloatFunction<Task> taskStrength = taskStrength(start, end, dur);
-
-        ScanFilter tt = new ScanFilter(2, EVENT_MATCH_LIMIT,
-                task(taskStrength),
-                (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)), //maxTries
-                filter)
-            .scan(this,
-                start, end,
-                SCAN_CONF_DIVISIONS
-        );
-
-        //merge up to the top 2
-        int results = tt.size();
-        switch (results) {
-            case 0:
-                return null;
-
-            case 1:
-                return tt.first().task();
-
-            default:
+    abstract protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur);
 
 
-                Task a = tt.first().task();
 
-                if (results > 2) {
-                    //TODO merge N-ways using TruthPolation as
-                    //for now, this is a HACK of trying a few combinations
-                    Task b = tt.list[1].task();
-                    Task ab = merge2(a, b, start, end, dur, null, nar);
-
-                    Task c = tt.list[2].task();
-                    Task ac = merge2(a, c, start, end, dur, null, nar);
-
-                    if (ac == null || (ac == ab)) return ab;
-                    else {
-                        if (ac!=null && (taskStrength.floatValueOf(ac) > taskStrength.floatValueOf(ab)))
-                            return ac;
-                        else
-                            return ab;
-                    }
-
-//                    if (ab != null) return ab;
-//
-//                    if (ac!=null) return ac;
-
-                    //return null;
-                }
-
-                return merge2(a, tt.last().task(), start, end, dur, null, nar);
-
-        }
-    }
-
-    private Task matchTemporal(long start, long end, int dur, Term template, NAR nar, Predicate<Task> filter) {
-
-        ScanFilter tt = new ScanFilter(2, 2,
-                task(taskStrength(template, start, end, dur)),
-                (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)), //maxTries
-                filter).scan(this,
-                    start, end,
-                    1 //if compound event, dont assume higher confidence is better. so only one conf sweep
-                );
-
-        //merge up to the top 2
-        switch (tt.size()) {
-            case 0:
-                return null;
-
-            case 1:
-                return tt.first().task();
-
-            default:
-                return merge2(tt.first(), tt.last(), start, end, dur, template, nar);
-        }
-    }
-
-
-    private static Task merge2(Tasked a, Tasked b, long start, long end, int dur, Term template, NAR nar) {
+    protected static Task merge2(Tasked a, Tasked b, long start, long end, int dur, Term template, NAR nar) {
         return merge2(a.task(), b.task(), start, end, dur, template, nar);
     }
 
-    private static Task merge2(Task a, Task b, long start, long end, int dur, Term template, NAR nar) {
+    protected static Task merge2(Task a, Task b, long start, long end, int dur, Term template, NAR nar) {
         if (template != null) {
             //choose if either one (but not both or neither) matches template's time
             boolean at = (a.term().equals(template));
@@ -763,6 +681,111 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     public void print(PrintStream out) {
         forEachTask(t -> out.println(t.toString(true)));
         stats().print(out);
+    }
+
+    public static RTreeBeliefTable build(Term concept) {
+        if (!concept.hasAny(Op.Temporal)) {
+            return new RTreeBeliefTable.Simple();
+        } else {
+            return new RTreeBeliefTable.Complex();
+        }
+    }
+
+    private static class Simple extends RTreeBeliefTable {
+
+        @Override
+        protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur) {
+
+            FloatFunction<Task> taskStrength = taskStrength(start, end, dur);
+
+            ScanFilter tt = new ScanFilter(2, EVENT_MATCH_LIMIT,
+                    task(taskStrength),
+                    (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)), //maxTries
+                    filter)
+                    .scan(this,
+                            start, end,
+                            SCAN_CONF_DIVISIONS
+                    );
+
+            //merge up to the top 2
+            int results = tt.size();
+            switch (results) {
+                case 0:
+                    return null;
+
+                case 1:
+                    return tt.first().task();
+
+                default:
+
+
+                    Task a = tt.first().task();
+
+                    if (results > 2) {
+                        //TODO merge N-ways using TruthPolation as
+                        //for now, this is a HACK of trying a few combinations
+                        Task b = tt.list[1].task();
+                        Task ab = merge2(a, b, start, end, dur, null, nar);
+
+                        Task c = tt.list[2].task();
+                        Task ac = merge2(a, c, start, end, dur, null, nar);
+
+                        if (ac == null || (ac == ab)) return ab;
+                        else {
+                            if (ac!=null && (taskStrength.floatValueOf(ac) > taskStrength.floatValueOf(ab)))
+                                return ac;
+                            else
+                                return ab;
+                        }
+
+//                    if (ab != null) return ab;
+//
+//                    if (ac!=null) return ac;
+
+                        //return null;
+                    }
+
+                    return merge2(a, tt.last().task(), start, end, dur, null, nar);
+
+            }
+        }
+
+
+    }
+
+    private static class Complex extends RTreeBeliefTable {
+
+        @Override
+        public Truth truth(long start, long end, EternalTable eternal, int dur) {
+            //disallows computing point truth values on temporal concepts (compound events can not be compared directly)
+            return null;
+        }
+
+        @Override
+        protected Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> filter, int dur) {
+
+            ScanFilter tt = new ScanFilter(2, 2,
+                    task(taskStrength(template, start, end, dur)),
+                    (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)), //maxTries
+                    filter).scan(this,
+                    start, end,
+                    1 //if compound event, dont assume higher confidence is better. so only one conf sweep
+            );
+
+            //merge up to the top 2
+            switch (tt.size()) {
+                case 0:
+                    return null;
+
+                case 1:
+                    return tt.first().task();
+
+                default:
+                    return merge2(tt.first(), tt.last(), start, end, dur, template, nar);
+            }
+        }
+
+
     }
 
 

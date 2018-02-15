@@ -9,17 +9,18 @@ import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.gui.BeliefTableChart;
-import nars.gui.Vis;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.util.signal.Bitmap2DSensor;
+import nars.video.CameraSensorView;
 import nars.video.PixelBag;
 import nars.video.Scale;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
+import spacegraph.layout.AspectAlign;
 import spacegraph.layout.Gridding;
 import spacegraph.render.Draw;
 import spacegraph.widget.meter.Plot2D;
@@ -34,10 +35,7 @@ import java.util.function.IntFunction;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
-import static jcog.Texts.n2;
 import static nars.Op.BELIEF;
-import static spacegraph.layout.Gridding.col;
-import static spacegraph.layout.Gridding.row;
 
 /**
  * Created by me on 10/8/16.
@@ -51,6 +49,7 @@ public class Recog2D extends NAgentX {
     private final BeliefVector outs;
 
     private final Training train;
+    private final Bitmap2DSensor<?> sp;
 
     boolean mlpLearn = true, mlpSupport = true;
 
@@ -62,7 +61,7 @@ public class Recog2D extends NAgentX {
     int image;
     final int maxImages = 5;
 
-    int imagePeriod = 12;
+    int imagePeriod = 24;
 
     static {
         Param.DEBUG = false;
@@ -102,7 +101,7 @@ public class Recog2D extends NAgentX {
 //                () -> canvas, w, h, v -> $.t(v, nar.confDefault(BELIEF)));
 
         //still
-        Bitmap2DSensor sp = senseCamera(
+        sp = senseCamera(
                 $.the("x")
                 //$.p(id,
                 //$.the("zoom")
@@ -135,19 +134,21 @@ public class Recog2D extends NAgentX {
 
         int history = 256;
 
-        Gridding g = col(
+        Gridding g = new Gridding(
 
-                row(beliefTableCharts(nar, List.of(tv.concepts), 256)),
-
-                row(p = new Plot2D(history, Plot2D.Line).add("Reward", () ->
+                p = new Plot2D(history, Plot2D.Line).add("Reward", () ->
                                 reward
                         //tv.errorSum()
-                )),
+                ),
                 //row(s = new Plot2D(history, Plot2D.BarWave).add("Rward", () -> rewardValue)),
 
-                row(IntStream.range(0, tv.concepts.length).mapToObj(i-> new Surface() {
+                new AspectAlign(new CameraSensorView(sp, this), AspectAlign.Align.Center, sp.width(), sp.height()),
+
+                new Gridding(beliefTableCharts(nar, List.of(tv.concepts), 16)),
+
+                new Gridding(IntStream.range(0, tv.concepts.length).mapToObj(i-> new spacegraph.widget.text.Label(String.valueOf(i)) {
                     @Override
-                    protected void paint(GL2 gl, int dtMS) {
+                    protected void paintBelow(GL2 gl) {
                         Concept c = tv.concepts[i];
                         BeliefVector.Neuron nn = tv.neurons[i];
 
@@ -174,7 +175,7 @@ public class Recog2D extends NAgentX {
 
                         float m = 0.5f * conf;
 
-                        Draw.rect(gl, 0, 0, 1f, 1f);
+                        Draw.rect(gl, bounds);
 
                         if (tv.verify) {
                             float error = nn.error;
@@ -188,11 +189,11 @@ public class Recog2D extends NAgentX {
 
                                 //draw backgroudn/border
                                 //gl.glColor3f(error, 1f - error, 0f);
-
-                                float fontSize = 0.08f;
-                                gl.glColor3f(1f, 1f, 1f);
-                                Draw.text(gl, c.term().toString(), fontSize, m / 2, 1f - m / 2, 0);
-                                Draw.text(gl, "err=" + n2(error), fontSize, m / 2, m / 2, 0);
+//
+//                                float fontSize = 0.08f;
+//                                gl.glColor3f(1f, 1f, 1f);
+//                                Draw.text(gl, c.term().toString(), fontSize, m / 2, 1f - m / 2, 0);
+//                                Draw.text(gl, "err=" + n2(error), fontSize, m / 2, m / 2, 0);
                             }
                         }
 
@@ -209,10 +210,10 @@ public class Recog2D extends NAgentX {
 
             redraw();
 
-            if (neural.get()) {
+            //if (neural.get()) {
                 //if (nar.time() < trainFrames) {
                 outs.expect(image);
-            }
+            //}
             //} else {
             //  outs.expect(-1);
             //  outs.verify();
@@ -246,23 +247,26 @@ public class Recog2D extends NAgentX {
     protected float act() {
 
         float error = 0;
-
         for (int i = 0; i < maxImages; i++) {
 
-
-            long when = nar.time();
-            Truth g = nar.beliefTruth(outs.concepts[i], when);
-
-            if (g == null) {
-                error += 0.5;
-            } else {
-                error += Math.abs(g.freq() - ((image == i) ? 1f : 0f)); //smooth
-                //error += ((image == i) ? g.freq() > 0.5f : g.freq() < 0.5f) ? 1f : 0f; //discrete
-            }
+            this.outs.neurons[i].update();
+            error += this.outs.neurons[i].error;
+//
+//            long when = nar.time();
+//            Truth g = nar.beliefTruth(outs.concepts[i], when);
+//
+//            if (g == null) {
+//                error += 0.5;
+//            } else {
+//                error += Math.abs(g.freq() - ((image == i) ? 1f : 0f)); //smooth
+//                //error += ((image == i) ? g.freq() > 0.5f : g.freq() < 0.5f) ? 1f : 0f; //discrete
+//            }
         }
 
-        float sharp = 1;
-        return (float) (1f - 2 * Math.pow((error / maxImages), sharp));
+        return Util.clamp( 2 * -(error/maxImages - 0.5f), -1, +1);
+
+//        float sharp = 1;
+//        return (float) (1f - 2 * Math.pow((error / maxImages), sharp));
 
 //            r = 0.5f - (float) outs.errorSum()
 //                    / outs.states;
@@ -301,15 +305,15 @@ public class Recog2D extends NAgentX {
 
             Recog2D a = new Recog2D(n);
 
-
-            Vis.conceptWindow("(x(#x,#y) ==>+- ({#z}-->x))", n);
-            Vis.conceptWindow("(({#a}-->x) <-> ({#b}-->x))", n);
+            //Vis.conceptWindow("(x(#x,#y) ==>+- ({#z}-->x))", n);
+            //Vis.conceptWindow("(({#a}-->x) <-> ({#b}-->x))", n);
 
             //a.nar.freqResolution.set(0.07f);
             //a.nar.termVolumeMax.set(16);
+
             return a;
 
-        }, 20);
+        }, 15);
     }
 
     public static class Training {
@@ -400,17 +404,13 @@ public class Recog2D extends NAgentX {
 
         static class Neuron {
 
-            public float predictedFreq, predictedConf;
+            public float predictedFreq = 0.5f, predictedConf = 0;
 
-            public float expectedFreq;
+            public float expectedFreq = 0.5f;
 
             public float error;
 
             public Neuron() {
-                clear();
-            }
-
-            public void clear() {
                 expectedFreq = Float.NaN;
                 error = 0;
             }
@@ -430,11 +430,11 @@ public class Recog2D extends NAgentX {
                 float a = this.predictedFreq;
                 float e = this.expectedFreq;
                 if (e != e) {
-                    this.error = Float.NaN;
+                    this.error = 0;
                 } else if (a != a) {
-                    this.error = 1f;
+                    this.error = 0.5f;
                 } else {
-                    this.error = (Math.abs(a - e)) * ( this.predictedConf);
+                    this.error = (Math.abs(a - e));
                 }
             }
         }
@@ -501,10 +501,11 @@ public class Recog2D extends NAgentX {
 //                            else
 //                                return x;
 
-                            float confMin = a.nar.confMin.floatValue() * 4;
-                            n.actual(predictedFreq, x!=null ? Math.max(confMin, x.conf()) : confMin);
+                            //float confMin = a.nar.confMin.floatValue() * 4;
+                            n.actual(predictedFreq, x!=null ? x.conf() : 0);
 
-                            return $.t(n.predictedFreq, n.predictedConf);
+                            //return $.t(n.predictedFreq, n.predictedConf);
+                            return x;
                         });
 //                        @NotNull GoalActionConcept aa = a.action(tt, (b, d) -> {
 //    //                        if (train) {

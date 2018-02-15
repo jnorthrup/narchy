@@ -514,8 +514,8 @@ public interface NAct {
                     gg.freq()
                     //gg.expectation()
                     :
-                    //0f;
-                    0.5f;
+                    0f;
+                    //0.5f;
             c[ip] = gg != null ?
                     //gg.evi()
                     gg.conf()

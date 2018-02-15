@@ -628,7 +628,7 @@ abstract public class NAgentX extends NAgent {
 
                     a instanceof NAgentX ?
                             new WindowToggleButton("vision", () -> grid(((NAgentX) a).cam.stream().map(cs ->
-                                    new AspectAlign(new CameraSensorView(cs, a), AspectAlign.Align.Center, cs.height(), cs.width()))
+                                    new AspectAlign(new CameraSensorView(cs, a), AspectAlign.Align.Center, cs.width(), cs.height()))
                                     .toArray(Surface[]::new))
                             ) : grid()
 

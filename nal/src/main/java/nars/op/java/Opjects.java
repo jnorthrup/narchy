@@ -294,18 +294,17 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 //        }
 //    }
 
-    final InstanceMethodValueModel pointTasks = new PointMethodValueModel();
+    final InstanceMethodValueModel pointTasks = new ImpulseMethodValueModel();
     final Function<String, InstanceMethodValueModel> valueModel = (x) -> pointTasks /* memoryless */;
 
-    public class PointMethodValueModel implements InstanceMethodValueModel {
+    public class ImpulseMethodValueModel implements InstanceMethodValueModel {
 
-        private final float invocationBeliefFreq = 1.0f;
+        private final static float invocationBeliefFreq = 1.0f;
 
         @Override
         public Consumer<NAR> update(Instance instance, Task cause, Object obj, Method method, Object[] args, Object nextValue) {
             return (nar) -> {
-                long now = nar.time();
-                //int dur = nar.dur();
+
 
                 float f = invocationBeliefFreq;
                 Term nextTerm = instance.opTerm(method, args, nextValue);
@@ -314,8 +313,11 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                     nt = nt.unneg();
                     f = 1 - f;
                 }
-                long start = now;
-                long end = now;
+
+                long now = nar.time();
+                int dur = nar.dur();
+                long start = now - dur/2;
+                long end = now + dur/2;
 
                 SignalTask next = new TruthletTask(nt, BELIEF,
                         Truthlet.impulse(start, end, f,1-f,

@@ -34,7 +34,7 @@ abstract public class CachedCompound implements Compound, The {
 
     public static CachedCompound the(/*@NotNull*/ Op op, Subterms subterms) {
         //HACK predict if compound will differ from its root
-        if (!op.temporal && !subterms.isTemporal()) { //TODO there are more cases
+        if (!op.temporal && !subterms.hasAny(Op.Temporal)) { //TODO there are more cases
             return new CachedNontemporalCompound(op, subterms);
         } else {
             return new CachedUnrootedCompound(op, subterms);
@@ -66,7 +66,7 @@ abstract public class CachedCompound implements Compound, The {
 
         @Override
         public boolean isTemporal() {
-            return op.temporal;
+            return false;
         }
 
         @Override
