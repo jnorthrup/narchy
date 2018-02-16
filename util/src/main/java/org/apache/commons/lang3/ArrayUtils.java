@@ -7657,7 +7657,8 @@ public enum ArrayUtils { ;
         int nulls = 0;
         for (Object x : array)
             if (x == null) nulls++;
-        if (nulls == 0) return array;
+        if (nulls == 0)
+            return array; // no change
         else {
             int s = array.length - nulls;
             if (s == 0)

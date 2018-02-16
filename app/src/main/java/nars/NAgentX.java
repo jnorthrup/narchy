@@ -209,7 +209,7 @@ abstract public class NAgentX extends NAgent {
 
         n.conceptActivation.set(1f);
 
-        n.dtMergeOrChoose.set(true);
+        //n.dtMergeOrChoose.set(true);
         n.dtDither(
                 1f
                 //0.5f //nyquist

@@ -55,9 +55,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     /** max tasks which can be merged (if they have equal occurrence and term) in a match's generated Task */
     private static final int SIMPLE_EVENT_MATCH_LIMIT = TRUTHPOLATION_LIMIT;
-    private static final int COMPLEX_EVENT_MATCH_LIMIT =
-            2;
-            //Math.max(1, SIMPLE_EVENT_MATCH_LIMIT/2);
+    private static final int COMPLEX_EVENT_MATCH_LIMIT = Math.max(1, SIMPLE_EVENT_MATCH_LIMIT/2);
 
     private static final float PRESENT_AND_FUTURE_BOOST =
             //1f;
@@ -713,10 +711,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     task(taskStrength),
                     (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)), //maxTries
                     filter)
-                    .scan(this,
-                            start, end,
-                            SCAN_CONF_DIVISIONS
-                    );
+                    .scan(this, start, end, SCAN_CONF_DIVISIONS );
 
             return Revision.mergeTemporal(nar, tt.list, tt.size());
         }
@@ -739,17 +734,19 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     filter)
                 .scan(this, start, end, SCAN_CONF_DIVISIONS);
 
-            //merge up to the top 2
-            switch (tt.size()) {
-                case 0:
-                    return null;
+//            //merge up to the top 2
+//            switch (tt.size()) {
+//                case 0:
+//                    return null;
+//
+//                case 1:
+//                    return tt.first().task();
+//
+//                default:
+//                    return merge2(tt.first(), tt.last(), start, end, dur, template, nar);
+//            }
 
-                case 1:
-                    return tt.first().task();
-
-                default:
-                    return merge2(tt.first(), tt.last(), start, end, dur, template, nar);
-            }
+            return Revision.mergeTemporal(nar, tt.list, tt.size());
         }
 
 

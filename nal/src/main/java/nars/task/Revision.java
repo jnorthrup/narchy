@@ -516,7 +516,7 @@ public class Revision {
     /**
      * a is left aligned, dt is any temporal shift between where the terms exist in the callee's context
      */
-    public static Term intermpolate(/*@NotNull*/ Term a, long dt, /*@NotNull*/ Term b, float aProp, NAR nar) {
+    static Term intermpolate(/*@NotNull*/ Term a, long dt, /*@NotNull*/ Term b, float aProp, NAR nar) {
         return intermpolate(a, dt, b, aProp, 1, nar);
     }
 
@@ -769,7 +769,6 @@ public class Revision {
     }
     /** assumes:
      *          the tasks to be sorted in descending strength
-     *          each task's term is the same (no intermpolation is performed)
      * the input minEvi corresponds to the absolute minimum accepted
      * evidence integral (evidence * time) for a point-like result (dtRange == 0)
      * */
@@ -785,29 +784,47 @@ public class Revision {
         LongHashSet evidence = new LongHashSet();
         int overlap = 0, totalEv = 0;
         int included = 0;
-        boolean hasNulls = false;
+        boolean termSame = true;
         for (int i = 0; i < results; i++) {
-            TaskRegion t = tt[i];
-            if (t == null) {
-                hasNulls = true;
+            TaskRegion ti = tt[i];
+            if (ti == null)
                 continue;
-            }
+
+            Task ttt = ti.task();
+
             //assert (!t.isEternal());
-            long[] ts = t.task().stamp();
+
+            long[] ts = ttt.stamp();
             totalEv += ts.length;
-            int moreOverlaps = Stamp.overlapsAdding(evidence, ts);
+            int moreOverlaps = Stamp.overlaps(evidence, ts);
             overlap += moreOverlaps;
             if (moreOverlaps > 0) {
                 if (totalEv > 0 && Param.overlapFactor(overlap) < Float.MIN_NORMAL) {/* current amount so far */
                     //would cause zero evidence, regardless of whatever truth is calculated later
                     tt[i] = null;
-                    if (included > 2)
-                        return mergeTemporal(minEviInteg, nar, results, tt); //recurse without this one
-                    else {
-                        break;
-                    }
+                    continue; //skip this one
                 }
             } else {
+
+                if (termSame) {
+                    Term termI = ttt.term();
+                    if ((i > 0) && !termI.equals(first.term())) {
+                        if (included == 1 && termI.op()!=CONJ /* dont do CONJ now because it might produce an occurrence shift which isnt tracked yet */) {
+                            //limit termpolation to max 2 tasks for now
+                            termSame = false; //difference in terms
+                            //TODO loop dont recurse, just buffer the accumulated evidence changes to the end of the loop
+                            tt = new TaskRegion[]{first, ti};
+                            evidence.addAll(ts);
+                            included++;
+                            break;
+                        } else {
+                            //skip this term, it would conflict with the other 2+ terms which are already known to be the same
+                            tt[i] = null;
+                            continue; //skip this one
+                        }
+                    }
+                }
+                evidence.addAll(ts);
                 included++;
             }
         }
@@ -817,20 +834,32 @@ public class Revision {
             return first; //return the top one, nothing could be merged
         }
 
-
         float overlapFactor = Param.overlapFactor(((float)overlap)/totalEv);
         if (overlapFactor < Float.MIN_NORMAL)
             return first;
 
-
-        int dur = nar.dur();
-
-        if (hasNulls)
-            tt = ArrayUtils.removeNulls(tt, Task[]::new);
-
         EviDensity joint = new EviDensity(tt);
         if (joint.factor * overlapFactor < Float.MIN_NORMAL)
             return first;
+
+        if (included!=tt.length)
+            tt = ArrayUtils.removeNulls(tt, Task[]::new);
+
+        Term content;
+        if (!termSame) {
+            Task second = tt[1].task();
+            float e1 = first.eviInteg();
+            float e2 = second.eviInteg();
+            float firstProp = e1/(e1+e2);
+            content = intermpolate(first.term(), second.term(), firstProp, nar);
+            //TODO apply a discount factor for the relative difference of the two intermpolated terms
+            if (content == null || !content.op().conceptualizable)
+                return first;
+        } else {
+            content = first.term();
+        }
+
+        int dur = nar.dur();
 
         long start = joint.unionStart;
         long end = joint.unionEnd;
@@ -847,7 +876,7 @@ public class Revision {
         if (cTruth == null)
             return first;
 
-        NALTask t = new NALTask(first.term(), first.punc(),
+        NALTask t = new NALTask(content, first.punc(),
                 cTruth,
                 nar.time(), start, end,
                 Stamp.sample(Param.STAMP_CAPACITY, evidence /* TODO account for relative evidence contributions */, nar.random())
