@@ -5,8 +5,6 @@ import nars.task.NALTask;
 import nars.term.Term;
 import nars.truth.Truth;
 
-import static nars.Op.GOAL;
-
 
 public class SignalTask extends NALTask {
 
@@ -20,8 +18,8 @@ public class SignalTask extends NALTask {
 
     @Override
     public float eternalizability() {
-        return punc == GOAL ? 0 : 1f; //dont eternalize goal
-        //return 1f;
+        //return punc == GOAL ? 0 : 1f; //dont eternalize goal
+        return 1f;
         //return 0.5f;
         //return 0.1f;
     }

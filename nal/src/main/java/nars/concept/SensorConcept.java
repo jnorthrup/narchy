@@ -4,6 +4,7 @@ import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.Task;
 import nars.concept.builder.ConceptBuilder;
+import nars.task.DerivedTask;
 import nars.task.signal.SignalTask;
 import nars.task.util.PredictionFeedback;
 import nars.term.Term;
@@ -88,14 +89,18 @@ public class SensorConcept extends WiredConcept implements FloatFunction<Term>, 
     public boolean add(Task t, NAR n) {
 
         //feedback prefilter non-signal beliefs
-        if (!(t instanceof SignalTask) && cause >= 0) {
-            if (t.isBelief()) {
-                PredictionFeedback.feedbackNewBelief(cause, t, beliefs, n);
-                if (t.isDeleted())
-                    return false;
+
+        if (cause >= 0) { //HACK wait for the cause id to come from a task
+            if (t instanceof DerivedTask) { //TODO should not apply to: SignalTask, RevisionTask for now just apply to Derived
+                if (t.isBelief()) {
+                    PredictionFeedback.feedbackNewBelief(cause, t, beliefs, n);
+                    if (t.isDeleted())
+                        return false;
+                }
             }
         } else {
-            this.cause = ((SignalTask) t).cause[0];
+            if (t instanceof SignalTask)
+                this.cause = ((SignalTask) t).cause[0];
         }
 
         return super.add(t, n);

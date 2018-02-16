@@ -19,13 +19,16 @@ import nars.time.Tense;
 import nars.truth.DiscreteTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
+import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
+import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -91,7 +94,6 @@ public class ConjClustering extends Causable {
 
     private int taskLimitPerCentroid;
 
-    private FasterList<Task> gen = null;
 
     @Override
     protected int next(NAR nar, int work /* max tasks generated per centroid, >=1 */) {
@@ -105,9 +107,9 @@ public class ConjClustering extends Causable {
         this.volMax = Math.round(nar.termVolumeMax.intValue() * termVolumeMaxFactor);
         this.taskLimitPerCentroid = Math.max(1, Math.round(((float) work) / bag.net.centroids.length));
 
-        gen = new FasterList();
+        FasterList gen = new FasterList();
 
-        bag.commitGroups(1, nar, this::conjoinCentroid);
+        bag.commitGroups(1, Tuples.pair(nar, gen), this::conjoinCentroid);
 
         int gs = gen.size();
 
@@ -163,8 +165,9 @@ public class ConjClustering extends Causable {
 //    static final BiFunction<Task, Task, Task> termPointMerger = (prevZ, newZ) -> ((prevZ == null) || (newZ.conf() >= prevZ.conf())) ?
 //            newZ : prevZ;
 
-    private void conjoinCentroid(Stream<VLink<Task>> group, NAR nar) {
+    private List<Task> conjoinCentroid(Stream<VLink<Task>> group, Pair<NAR,List<Task>> narAndTarget) {
 
+        NAR nar = narAndTarget.getOne();
         //get only the maximum confidence task for each term at its given starting time
 
         //in.input(
@@ -182,6 +185,8 @@ public class ConjClustering extends Causable {
 
 
         int centroidGen = 0;
+
+        List<Task> gen = narAndTarget.getTwo();
 
         main:
         while (gg.hasNext() && centroidGen < taskLimitPerCentroid) {
@@ -333,7 +338,7 @@ public class ConjClustering extends Causable {
         }
 
 
-
+        return gen.isEmpty() ? null : gen;
     }
 
     @Override
@@ -379,7 +384,7 @@ public class ConjClustering extends Causable {
 
         @Override
         public float eternalizability() {
-            return 0;
+            return 1;
         }
 
         @Override

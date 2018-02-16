@@ -1,41 +1,39 @@
 package nars.op;
 
-import com.google.common.collect.Sets;
 import jcog.bag.impl.ArrayBag;
+import jcog.list.FasterList;
+import jcog.math.FloatRange;
 import jcog.pri.PLink;
 import jcog.pri.op.PriMerge;
-import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.control.DurService;
-import nars.task.signal.Truthlet;
-import nars.task.signal.TruthletTask;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-
-import static jcog.Texts.n4;
-import static nars.Op.GOAL;
-import static nars.time.Tense.ETERNAL;
-import static nars.truth.TruthFunctions.c2w;
 
 /**
  * debounced and atomically/asynchronously executable operation
  */
 public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
-    //    private final float minPeriod;
-    public final MutableFloat exeThresh;
+    /**
+     * expectation threhold (in range 0.5..1.0 indicating the minimum expectation minimum
+     * for desire, and the 1-exp expectation maximum of belief necessary to invoke the action.
+     *
+     *      1.00 - impossible
+     *      0.75 - mid-range
+     *      0.50 - hair-trigger hysterisis
+     */
+    public final FloatRange exeThresh;
 
 //    /**
 //     * time of the current rising edge, or ETERNAL if not activated
@@ -50,7 +48,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
     static final Logger logger = LoggerFactory.getLogger(AtomicExec.class);
 
-    final BiConsumer<Task, NAR> exe;
+    final BiConsumer<Term, NAR> exe;
 
     final static int ACTIVE_CAPACITY = 16;
     final ArrayBag<Term, PLink<Term>> active = new ArrayBag<Term, PLink<Term>>(PriMerge.max, new HashMap()) {
@@ -61,23 +59,19 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
         }
     };
 
-    /**
-     * prevents repeated invocations while one is already in progress
-     */
-    final Set<Term> dispatched = Sets.newConcurrentHashSet();
 
     private DurService onCycle;
-    private long lastUpdated = ETERNAL;
 
 
-    public AtomicExec(BiConsumer<Task, NAR> exe, float dThresh) {
-        this(exe, new MutableFloat(dThresh));
+
+    public AtomicExec(@Nullable BiConsumer<Term, NAR> exe, float exeThresh) {
+        this(exe, new FloatRange(exeThresh, 0.5f, 1f));
     }
 
-    public AtomicExec(BiConsumer<Task, NAR> exe, MutableFloat dThresh) {
-        this.exe = exe;
+    public AtomicExec(@Nullable BiConsumer<Term, NAR> exe, FloatRange exeThresh) {
+        this.exe = exe == null ? ((BiConsumer) this) : exe;
         active.setCapacity(ACTIVE_CAPACITY);
-        this.exeThresh = dThresh;
+        this.exeThresh = exeThresh;
     }
 
     /**
@@ -90,7 +84,6 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
     protected void update(NAR n) {
 
-        long now = n.time();
 //        if (now!=lastUpdated) {
 //            busy.set(false); //force reset if new clock time occurrs.  the runLater may have been lost
 //        }
@@ -98,54 +91,49 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 //        if (!busy.compareAndSet(false, true))
 //            return; //in-progress
 
-        lastUpdated = now;
-
 
         //probe all active concepts.
         //  remove any below desire threshold
         //  execute any above desire-belief threshold
         //  if no active remain, disable update service
 
-        int dur = n.dur();
-        long start = now - dur/2;
-        long end = now + dur/2;
-        List<Task> evoke = $.newArrayList(0);
+
+        long[] focus = n.timeFocus();
+        //List<Task> evoke = $.newArrayList(0);
 
         float exeThresh = this.exeThresh.floatValue();
-        assert (exeThresh >= 0.5f);
-        float goalDeltaThresh = exeThresh - 0.5f;
+
+        List<Term> dispatch = new FasterList();
 
         active.forEach(x -> {
             Term xx = x.get();
 
-            if (dispatched.contains(xx))
-                return; //skip, already in progress
-
             Concept c = n.concept(xx);
-            if (c == null)
-                return;
-
-            Truth goalTruth = c.goals().truth(start, end, n);
-
-            float g;
-            if (goalTruth == null || (g = goalTruth.expectation()) < exeThresh) {
-                x.delete(); //delete the link
+            if (c == null) {
+                //concept disappeared
+                x.delete();
                 return;
             }
-            Truth belief = c.beliefs().truth(start, end, n);
-            float b = belief == null ? 0 /* assume false with no evidence */ :
-                    belief.expectation();
 
-            float delta = g - b;
-            if (delta >= goalDeltaThresh) {
-                logger.info("{} EVOKE (b={},g={}) {}", n.time(),
-                        n4(b), n4(g), xx);
-                evoke.add(new TruthletTask(xx, GOAL, Truthlet
-                        .impulse(now, now + dur, 1f, 0f, c2w(n.confDefault(GOAL))), n));
-                dispatched.add(xx);
-                //MetaGoal.learn(MetaGoal.Action, goal.cause(), g, n);
+            Truth goalTruth = c.goals().truth(focus, n);
+            if (goalTruth == null || goalTruth.expectation() < exeThresh) {
+                return; //undesired
             }
+
+            Truth beliefTruth = c.beliefs().truth(focus, n); /* assume false with no evidence */;
+            if (beliefTruth != null && beliefTruth.expectation() > (1-exeThresh)) {
+                return; //satisfied
+            }
+
+            logger.info("{} EVOKE (b={},g={}) {}", n.time(), beliefTruth, goalTruth, xx);
+            dispatch.add(xx);
+            //MetaGoal.learn(MetaGoal.Action, goal.cause(), g, n);
         });
+
+        dispatch.forEach(tt -> {
+            exe.accept(tt, n);
+        });
+
         active.commit();
         if (active.isEmpty()) {
             if (onCycle != null) {
@@ -153,21 +141,6 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
                 onCycle = null;
             }
         }
-        if (!evoke.isEmpty()) {
-            //n.run(() -> {
-
-            for (int i = 0, toInvokeSize = evoke.size(); i < toInvokeSize; i++) {
-                Task tt = evoke.get(i);
-                if (!tt.isDeleted()) {
-                    exe.accept(tt, n);
-                }
-                boolean d = dispatched.remove(tt.term().concept());
-                assert (d);
-            }
-
-            //});
-        }
-
     }
 
     @Override
@@ -176,16 +149,16 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
         //TODO handle CMD's
 
         Task y = exePrefilter(x);
-        if (y != x)
-            return y; //transformed
         if (y == null)
             return x; //pass-through to reasoner
+        if (y != x)
+            return y; //transformed
 
         x = y;
 
         if (x.isCommand()) {
             //immediately execute
-            exe.accept(x, n);
+            exe.accept(x.term(), n);
             return null; //absorbed
         } else {
 
@@ -193,13 +166,13 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
                     x.priElseZero()
             ));
 
-            if (onCycle == null) {
-                synchronized (active) {
-                    if (onCycle == null) {
-                        onCycle = DurService.on(n, this::update);
-                    }
+
+            synchronized (active) {
+                if (onCycle == null) {
+                    onCycle = DurService.on(n, this::update);
                 }
             }
+
 
             return x;
         }

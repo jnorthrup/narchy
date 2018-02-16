@@ -30,6 +30,7 @@ public enum Tense {
      * a dt placeholder value for preventing premature flattening during derivation term construction
      */
     public static final int XTERNAL = Integer.MAX_VALUE;
+    public static final long[] ETERNAL_FOCUS = new long[]{ETERNAL, ETERNAL};
 
 
     public final String symbol;

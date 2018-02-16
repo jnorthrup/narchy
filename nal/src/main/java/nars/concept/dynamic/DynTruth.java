@@ -256,10 +256,15 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         return true;
     }
 
-    private static class DynTruthTask extends NALTask {
+    public static class DynTruthTask extends NALTask {
 
         DynTruthTask(Term c, boolean beliefOrGoal, Truth tr, NAR nar, long start, long end, long[] stamp) throws InvalidTaskException {
             super(c, beliefOrGoal ? Op.BELIEF : Op.GOAL, tr, nar.time(), start, (start == Tense.ETERNAL || c.op().temporal) ? start : end, stamp);
+        }
+
+        @Override
+        public void meta(String key, Object value) {
+            //dont store meta since these are temporary
         }
 
         @Override
@@ -269,7 +274,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
         @Override
         public float eternalizability() {
-            return 0;
+            return 1;
         }
     }
 

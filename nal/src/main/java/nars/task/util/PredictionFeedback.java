@@ -8,7 +8,6 @@ import nars.table.BeliefTable;
 import nars.table.DefaultBeliefTable;
 import nars.task.NALTask;
 import nars.task.signal.SignalTask;
-import nars.truth.Stamp;
 
 import java.util.List;
 
@@ -18,7 +17,6 @@ public class PredictionFeedback {
 
 
     static final boolean delete = true;
-    static final float strength = 1;
 
     /*public PredictionFeedback(BeliefTable table) {
         this.table = table;
@@ -37,13 +35,16 @@ public class PredictionFeedback {
         long start = x.start();
         long end = x.end();
 
+        int dur = nar.dur();
+        float fThresh = nar.freqResolution.floatValue();
+
         List<Task> trash = new FasterList(0);
         ((DefaultBeliefTable) table).temporal.whileEach(start, end, (y) -> {
 
             if (y instanceof SignalTask)
                 return true; //ignore previous signaltask
 
-            if (absorb(x, y, start, end, nar)) {
+            if (absorb(x, y, start, end, dur, fThresh, nar)) {
                 trash.add(y);
             }
 
@@ -64,32 +65,22 @@ public class PredictionFeedback {
         long end = y.end();
         int dur = nar.dur();
 
-        final Task[] strongestSignal = new Task[1];
-        float[] strongest = new float[] { y.evi(start, end, dur) };
+        List<Task> signals = new FasterList(0);
         ((DefaultBeliefTable) table).temporal.whileEach(start, end, (existing) -> {
             //TODO or if the cause is purely this Cause id (to include pure revisions of signal tasks)
-
-
-            if (signalOrRevisedSignal(cause, existing) && !existing.isDeleted()) {
-                float nextStrength = strength(existing, start, end, dur);
-                if (nextStrength > strongest[0]) {
-                    strongestSignal[0] = existing;
-                    strongest[0] = nextStrength;
-                }
+            if (signalOrRevisedSignal(cause, existing)) {
+                signals.add(existing);
             }
             return true;
         });
-        Task signal = strongestSignal[0];
-        if (signal == null)
+        if (signals.isEmpty())
             return;
-
-//        long when = y.nearestTimeTo(nar.time());
-//        int dur = nar.dur();
-//        Truth x = signal.truth(when, dur);
-//        if (x == null)
-//            return; //nothing to compare it with
-
-        absorb(signal, y, start, end, nar);
+        else {
+            //TODO combine into one batch absorb function
+            float fThresh = nar.freqResolution.floatValue();
+            for (int i = 0, signalsSize = signals.size(); i < signalsSize; i++)
+                absorb(signals.get(i), y, start, end, dur, fThresh, nar);
+        }
     }
 
     private static boolean signalOrRevisedSignal(short cause, Task existing) {
@@ -112,12 +103,12 @@ public class PredictionFeedback {
         }
     }
 
-    /** true if next is stronger than current */
-    private static float strength(Task x, long start, long end, int dur) {
-        return
-                (x.evi(start,dur)+x.evi(end,dur)) //sampled at start & end
-        ;
-    }
+//    /** true if next is stronger than current */
+//    private static float strength(Task x, long start, long end, int dur) {
+//        return
+//                (x.evi(start,dur)+x.evi(end,dur)) //sampled at start & end
+//        ;
+//    }
 
 
 
@@ -128,27 +119,42 @@ public class PredictionFeedback {
      * then removes it in favor of a stronger sensor signal
      * returns whether the 'y' task was absorbed into 'x'
      */
-    public static boolean absorb(Task x, Task y, long start, long end, NAR nar) {
+    public static boolean absorb(Task x, Task y, long start, long end, int dur, float fThresh, NAR nar) {
         if (x == y)
             return false;
 
         //maybe also factor originality to prefer input even if conf is lower but has more originality thus less chance for overlap
-        int dur = nar.dur();
         float yEvi = y.evi(start, end, dur);
         float xEvi = x.evi(start, end, dur);
-        if (yEvi > xEvi)
-            return false;
 
-        float overlap = Stamp.overlapFraction(x.stamp(), y.stamp());
-        float coherence = 2f * ((1f - Math.abs(x.freq() - y.freq())) - 0.5f);
-        float value = coherence * yEvi/(yEvi + xEvi) * (1f-overlap) * strength;
+
+        float error = Math.abs(x.freq() - y.freq());
+        float coherence;
+        if (error <= fThresh) {
+            coherence = +1;
+        } else {
+            coherence = -error;
+        }
+        float value = coherence * yEvi/(yEvi + xEvi);
         if (Math.abs(value) > Float.MIN_NORMAL) {
             MetaGoal.Accurate.learn(y.cause(), value, nar.causes);
         }
 
-        if (delete)
+        if (delete) {
             ((NALTask) y).delete(x); //forward to the actual sensor reading
-        return true;
+            return true;
+        } else {
+            return false; //keep if correct and stronger
+        }
     }
 
+    private static float error(Task x, Task y, long start, long end, int dur) {
+        //maybe also factor originality to prefer input even if conf is lower but has more originality thus less chance for overlap
+
+        float yEvi = y.evi(start, end, dur);
+        float xEvi = x.evi(start, end, dur);
+
+
+        return Math.abs(x.freq() - y.freq());
+    }
 }

@@ -93,6 +93,10 @@ public class Operator extends NodeConcept implements PermanentConcept, Atomic {
         return Operator.command($.func(func, args), now);
     }
 
+    public static Term[] argsArray(Term x) {
+        return args(x).arrayShared();
+    }
+
 //    public static void log(NAR nar, @NotNull String... msg) {
 //        nar.input( Operator.log(nar, $.the(msg)) );
 //    }

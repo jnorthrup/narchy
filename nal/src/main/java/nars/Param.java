@@ -164,6 +164,18 @@ public abstract class Param {
      */
     public final IntRange matchTTLmean = new IntRange(620, 0, 1024);
 
+
+    /** temporal radius (in durations) around the present moment to scan for truth */
+    public final FloatRange timeFocus = new FloatRange(0.5f, 0, 10);
+
+    /** provides a start,end pair of time points for the current focus given the current time and duration */
+    public long[] timeFocus() {
+        int dur = dur();
+        int f = Math.round(dur * timeFocus.floatValue());
+        long now = time();
+        return new long[] { now - f, now + f };
+    }
+
     public static final int TTL_MIN() {
             return Param.TTL_UNIFY * 2 +
                     Param.TTL_DERIVE_TASK_SUCCESS; }
@@ -244,6 +256,7 @@ public abstract class Param {
     }
 
     abstract int dur();
+    abstract long time();
 
 
     /**
@@ -560,5 +573,6 @@ public abstract class Param {
         return beliefOrGoal.conf();
         //return beliefOrGoal.conf() * (1 + (1f-beliefOrGoal.originality())); //input tasks are 'forced' into the system. derived tasks should seem more valuable, being the result of reasoning effort
     }
+
 
 }

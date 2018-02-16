@@ -51,10 +51,10 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     /**
      * max allowed truths to be truthpolated in one test
      */
-    private static final int TRUTHPOLATION_LIMIT = 4;
+    private static final int TRUTHPOLATION_LIMIT = 8;
 
     /** max tasks which can be merged (if they have equal occurrence and term) in a match's generated Task */
-    private static final int SIMPLE_EVENT_MATCH_LIMIT = TRUTHPOLATION_LIMIT;
+    private static final int SIMPLE_EVENT_MATCH_LIMIT = 6;
     private static final int COMPLEX_EVENT_MATCH_LIMIT = Math.max(1, SIMPLE_EVENT_MATCH_LIMIT/2);
 
     private static final float PRESENT_AND_FUTURE_BOOST =
@@ -629,10 +629,19 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         return stream().map(TaskRegion::task);
     }
 
-    private static Predicate<TaskRegion> scanWhile(Predicate<? super Task> each) {
+    private Predicate<TaskRegion> scanWhile(Predicate<? super Task> each) {
+        //Set<TaskRegion> seen = new HashSet(size());
         return (t) -> {
-            Task tt = t.task();
-            return tt == null || each.test(tt);
+            //if (seen.add(t)) {
+                Task tt = t.task();
+                if (!tt.isDeleted())
+                    if (!each.test(tt))
+                        return false;
+//            }
+//            else {
+//                System.out.println("aha");
+//            }
+            return true;
         };
     }
 

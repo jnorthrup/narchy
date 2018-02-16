@@ -2,7 +2,6 @@ package nars.op;
 
 import nars.*;
 import nars.concept.Concept;
-import nars.term.Compound;
 import nars.term.Term;
 import nars.test.TestNAR;
 import nars.time.Tense;
@@ -12,16 +11,13 @@ import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static nars.Op.BELIEF;
 import static nars.Op.COMMAND;
+import static nars.op.Operator.argsArray;
 import static org.junit.jupiter.api.Assertions.*;
 
 
 public class OperatorTest {
 
-    static Term[] args(Task t) {
-        return ((Compound) (t.sub(0)/*subject*/)).arrayClone();
-    }
 
     @Test
     public void testEcho() throws Narsese.NarseseException {
@@ -68,7 +64,7 @@ public class OperatorTest {
         n.onOp("x", new AtomicExec((x, nar) -> {
             System.err.println("INVOKE " + x);
             count[0]++;
-            n.input(Task.clone(x, BELIEF)); //quench
+            n.believe(x); //quench feedback
         }, 0.66f));
         n.run(1);
         n.input("x(1)! :|:");
@@ -86,7 +82,7 @@ public class OperatorTest {
         NAR n = NARS.tmp();
         n.time.dur(10);
         n.onOp("x", new AtomicExec((x, nar) -> {
-            Term[] args = args(x);
+            Term[] args = argsArray(x);
             if (args.length > 0) {
                 Term r;
                 if ($.the(1).equals(args[0])) {
@@ -115,7 +111,7 @@ public class OperatorTest {
         NAR n = NARS.tmp();
         n.onOp("x", new AtomicExec((t, nar) -> {
             Term x = t.term();
-            Term[] args = args(t);
+            Term[] args = argsArray(t);
             Term y = $.func("args", args);
             Term xy = $.impl(x, y);
             n.believe(xy, Tense.Present);

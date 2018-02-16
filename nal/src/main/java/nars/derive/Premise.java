@@ -35,7 +35,7 @@ public class Premise extends Pri {
     private final int hash;
 
     //TODO make global param
-    static private float temporalFocusRadiusDurs = 4;
+
 
 
     Premise(Task task, Term term) {
@@ -138,6 +138,9 @@ public class Premise extends Pri {
         //QUESTION ANSWERING and TERMLINK -> TEMPORALIZED BELIEF TERM projection
         Task belief = null;
 
+        float timeFocus = n.timeFocus.floatValue();
+        int fRad = Math.round(Math.max(1,dur * timeFocus));
+
         final Concept beliefConcept = beliefTerm.op().conceptualizable ? n.concept(beliefTerm) : null;
         if (beliefConcept != null) {
 
@@ -181,19 +184,18 @@ public class Premise extends Pri {
                         focusStart = focusEnd = ETERNAL;
                     } else {
                         focusStart =
-                                Math.round(focus - Math.max(1,dur * temporalFocusRadiusDurs));
+                                focus - fRad;
                         //focus - dur;
                         //focus;
                         focusEnd =
-                                Math.round(focus + Math.max(1,dur * temporalFocusRadiusDurs));
+                                focus + fRad;
                         //focus + dur;
                         //focus;
                     }
 
                     belief = beliefConcept.beliefs().match(focusStart, focusEnd, beliefTerm, n,
-                            beliefConcept.term().equals(task.term().concept()) ? (x) -> {
-                                return !x.equals(task);
-                            } : null);
+                            beliefConcept.term().equals(task.term().concept()) ? x ->
+                                !x.equals(task) : null);
                 }
             }
 

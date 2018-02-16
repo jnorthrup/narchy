@@ -227,9 +227,7 @@ public class Leaf<T> extends AbstractNode<T, T> {
         short s = this.size;
         if (s > 0) {
             HyperRegion r = this.bounds;
-            if (r == null) return true;
-
-            if (rect.intersects(r)) {
+            if (r!=null && rect.intersects(r)) {
                 boolean fullyContained = s > 1 && rect.contains(r); //if it contains this node, then we dont need to test intersection for each child. but only do the test if s > 1
                 T[] data = this.data;
                 for (int i = 0; i < s; i++) {

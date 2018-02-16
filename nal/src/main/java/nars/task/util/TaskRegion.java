@@ -1,7 +1,6 @@
 package nars.task.util;
 
 import jcog.Util;
-import jcog.math.Interval;
 import jcog.tree.rtree.HyperRegion;
 import nars.Task;
 import nars.task.Tasked;
@@ -54,12 +53,16 @@ public interface TaskRegion extends HyperRegion, Tasked {
         if (a == b || a == ETERNAL)
             return a;
 
-        long m = mid();
-        if (m == ETERNAL)
+        long s = start();
+        if (s == ETERNAL)
             return (a + b) / 2L;
+        long e = end();
 
+        //test if inside
+        if (s >= a && s <= b)
+            return (s+e)/2; //the mid-point of this task directly
 
-        if (Math.abs(m - a) <= Math.abs(m - b))
+        if (Math.abs(s - a) <= Math.abs(e - b))
             return a;
         else
             return b;
@@ -203,6 +206,8 @@ public interface TaskRegion extends HyperRegion, Tasked {
             return Math.min(d, Math.abs(e - when));
     }
 
+    /** if the task intersects (ex: occurrs during) the specified interval,
+     *  returned distance is zero, regardless of how far it may extend before or after it */
     default long minDistanceTo(long a, long b) {
 
 
@@ -213,7 +218,7 @@ public interface TaskRegion extends HyperRegion, Tasked {
             return 0;
 
         long e = end();
-        if (s <= a && e >= b) {
+        if (intersects(a, b)) {
             return 0; //contains that interval
         } else {
             long sa = Math.abs(s - a);
@@ -449,7 +454,7 @@ public interface TaskRegion extends HyperRegion, Tasked {
         if (x instanceof TimeRange) {
             if (x instanceof TimeConfRange) {
                 TimeConfRange t = (TimeConfRange) x;
-                return start <= t.end && end() >= t.start;
+                return start <= t.end && end() >= t.start && confMin() <= t.cMax && confMax() >= t.cMin;
             } else {
                 TimeRange t = (TimeRange) x;
                 return start <= t.end && end() >= t.start;
@@ -471,8 +476,13 @@ public interface TaskRegion extends HyperRegion, Tasked {
 
         long start = start();
         if (x instanceof TimeRange) {
-            TimeRange t = (TimeRange) x;
-            return start <= t.start && end() >= t.end;
+            if (x instanceof TimeConfRange) {
+                TimeConfRange t = (TimeConfRange) x;
+                return start <= t.start && end() >= t.end && confMin() <= t.cMin && confMax() >= t.cMax;
+            } else {
+                TimeRange t = (TimeRange) x;
+                return start <= t.start && end() >= t.end;
+            }
         } else {
             TaskRegion t = (TaskRegion) x;
             return
@@ -493,24 +503,22 @@ public interface TaskRegion extends HyperRegion, Tasked {
     @Override
     float coordF(boolean maxOrMin, int dimension);
 
-    default boolean isDuring(long start, long end) {
-        return Interval.intersect(start, end, start(), end()) != null;
+    default boolean intersects(long rangeStart, long rangeEnd) {
+        long start = start();
+        return (start == ETERNAL) || (rangeStart <= end() && rangeEnd >= start);
     }
 
-    default boolean intersects(long start, long end) {
-        long s = start();
-        return (s == ETERNAL) || (start <= end() && end >= s);
-    }
     default boolean intersectsConf(float cMin, float cMax) {
         return (cMin <= confMax() && cMax >= confMin());
     }
 
-    default boolean contains(long start, long end) {
-        long s = start();
-        return (s == ETERNAL) || (start <= s && end >= end());
+    default boolean contains(long rangeStart, long rangeEnd) {
+        long start = start();
+        return (start == ETERNAL) || (rangeStart >= start && rangeEnd <= end());
     }
+
     default boolean containsConf(float cMin, float cMax) {
-        return (cMin <= confMin() && cMax >= confMax());
+        return (confMin() <= cMin && confMax() >= cMax);
     }
 
     default float freqMin() {
@@ -534,7 +542,7 @@ public interface TaskRegion extends HyperRegion, Tasked {
     }
 
     default float eviInteg() {
-        return Math.max(1, range()) * (c2wSafe(confMin()) + c2wSafe(confMax()))/2f;
+        return Math.max(1, range()) * (c2wSafe(confMin()) + c2wSafe(confMax())) / 2f;
     }
 
 

@@ -187,6 +187,11 @@ public interface BeliefTable extends TaskTable {
         return truth(when, when, nar);
     }
 
+    default Truth truth(long[] focus, NAR nar) {
+        assert(focus.length == 2);
+        return truth(focus[0], focus[1], nar);
+    }
+
     Task match(long start, long end, @Nullable Term template, NAR nar, Predicate<Task> accept);
 
     default Task match(long start, long end, @Nullable Term template, NAR nar) {
@@ -215,7 +220,7 @@ public interface BeliefTable extends TaskTable {
 
         //project if different occurrence
 
-        boolean relevantTime = answer.isEternal() || start==ETERNAL || !answer.isDuring(start,end);
+        boolean relevantTime = answer.isEternal() || start==ETERNAL || !answer.intersects(start, end);
 
         if (/*!answer.isEternal() && */!relevantTime) {
 

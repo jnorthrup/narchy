@@ -1,11 +1,15 @@
 package nars.op.java;
 
-import nars.*;
+import jcog.list.FasterList;
+import nars.NAR;
+import nars.NARS;
+import nars.Narsese;
+import nars.Param;
+import nars.term.Term;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import static nars.Op.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -30,16 +34,23 @@ public class OpjectsTest {
     /** self invocation */
     @Test public void testEvoke() throws Narsese.NarseseException {
         final NAR n = NARS.tmp();
-        n.time.dur(3);
+
+        int dur = 1;
+        int focus = 4;
+
+        n.timeFocus.set(focus);
+        n.time.dur(dur);
 
         Param.DEBUG = true;
 
-        Set<Task> evokes = new HashSet();
+        List<Term> evokes = new FasterList();
         final Opjects objs = new Opjects(n) {
+
+
             @Override
-            protected boolean evoked(Task task, Object[] args) {
-                evokes.add(task);
-                return super.evoked(task, args);
+            protected boolean evoked(Term method, Object instance, Object[] params) {
+                evokes.add(method);
+                return super.evoked(method, instance, params);
             }
         };
 
@@ -49,15 +60,20 @@ public class OpjectsTest {
         n.log();
 
         n.input("set(x,1)! :|:");
-        n.run(1);
-        n.run(1);
+
+        n.run(dur);
+
+        assertEquals(1, evokes.size());
 
         n.input("get(x,#y)! :|:");
-        n.run(4);
+
+        n.run(dur);
 
         assertEquals(2, evokes.size());
 
-        n.run(1);
+        n.run(dur);
+
+        assertEquals(2, evokes.size());
     }
 
    @Test

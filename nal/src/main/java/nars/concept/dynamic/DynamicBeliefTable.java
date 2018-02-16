@@ -50,6 +50,9 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
                 long start, end;
                 Task matched = match(start = input.start(), end = input.end(), input.term(), nar);
 
+                if (matched == input)
+                    return true; //duplicate
+
                 //must be _during_ the same time and same term, same stamp, then compare Truth
                 if (matched != null) {
 
@@ -57,7 +60,8 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
                             matched.term().equals(input.term()) &&
                             Arrays.equals(matched.stamp(), input.stamp())) {
 
-                        if (PredictionFeedback.absorb(matched, input, start, end, nar)) {
+                        if (matched instanceof DynTruth.DynTruthTask &&
+                                PredictionFeedback.absorb(matched, input, start, end, nar.dur(), nar.freqResolution.floatValue(), nar)) {
                             Tasklinks.linkTask(matched, matched.priElseZero(), concept, nar);
                             return false;
                         }

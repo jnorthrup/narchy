@@ -125,8 +125,9 @@ public class BagClustering<X> {
 
                 if (current != x.centroid || (i == n - 1)) {
                     current = x.centroid;
-                    if (bs != -1 && i - bs > 1)
+                    if (bs != -1 && i - bs > 1) {
                         each.accept(IntStream.range(bs, i + 1).mapToObj(sorted::get), y);
+                    }
                     bs = i;
                 }
             }

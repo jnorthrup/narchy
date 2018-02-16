@@ -1246,12 +1246,15 @@ public enum Util {
      * TODO make a version of this which can return the input array if no modifications occurr either by .equals() or identity
      */
     public static <X, Y> Y[] map(Function<X, Y> f, Y[] target, X... src) {
-        for (int i = 0; i < target.length; i++) {
-            target[i] = f.apply(src[i]);
+        return map(f, target, 0, src, 0, src.length);
+    }
+
+    public static <X, Y> Y[] map(Function<X, Y> f, Y[] target, int targetOffset, X[] src, int srcFrom, int srcTo) {
+        for (int i = srcFrom; i < srcTo; i++) {
+            target[targetOffset++] = f.apply(src[i]);
         }
         return target;
     }
-
 
     /**
      * TODO make a version of this which can return the input array if no modifications occurr either by .equals() or identity

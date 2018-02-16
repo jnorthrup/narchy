@@ -7,10 +7,10 @@ import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
 import jcog.Paper;
 import jcog.Skill;
-import jcog.TODO;
 import jcog.Util;
 import jcog.data.map.CustomConcurrentHashMap;
 import jcog.list.FasterList;
+import jcog.math.FloatRange;
 import jcog.memoize.SoftMemoize;
 import nars.*;
 import nars.control.CauseChannel;
@@ -18,14 +18,12 @@ import nars.op.AtomicExec;
 import nars.op.Operator;
 import nars.subterm.Subterms;
 import nars.task.ITask;
-import nars.task.NALTask;
 import nars.task.signal.SignalTask;
 import nars.task.signal.Truthlet;
 import nars.task.signal.TruthletTask;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +35,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -77,10 +74,12 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
     final static org.slf4j.Logger logger = LoggerFactory.getLogger(Opjects.class);
 
-    public final MutableFloat executionThreshold = new MutableFloat(0.51f);
+    public final FloatRange executionThreshold = new FloatRange(0.75f, 0.5f, 1f);
 
-    /** when true, forms its own puppet goals when invoked externally, as a learning method */
-    boolean pretend = false;
+//    /**
+//     * when true, forms its own puppet goals when invoked externally, as a learning method
+//     */
+//    boolean pretend = false;
 
     @NotNull
     public final Set<String> methodExclusions = Sets.newConcurrentHashSet(Set.of(
@@ -123,56 +122,30 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 //    private final float metadataBeliefConf = 0.99f;
 //    private final float metadataPriority = 0.1f;
 
-    final static ThreadLocal<Task> invokingGoal = new ThreadLocal<>();
+    //final static ThreadLocal<Task> invokingGoal = new ThreadLocal<>();
     protected final CauseChannel<ITask> in;
 
-    //TODO use Triple<> not Pair<Pair<>>
-    private final SoftMemoize<Pair<Pair<Class, Term>, Pair<List<Class<?>>, Term /* func */>>, MethodHandle> methodArgCache = new SoftMemoize<>((xx) -> {
+    private final SoftMemoize<Pair<Pair<Class, Term>, List<Class<?>>>, MethodHandle> methodCache = new SoftMemoize<>((x) -> {
 
-        Class c = xx.getOne().getOne();
-        String mName = xx.getTwo().getTwo().toString();
-        List<Class<?>> types = xx.getTwo().getOne();
+        Class c = x.getOne().getOne();
+        Term methodTerm = x.getOne().getTwo();
+        List<Class<?>> types = x.getTwo();
+
+        String mName = methodTerm.toString();
         Class<?>[] cc = types.isEmpty() ? ArrayUtils.EMPTY_CLASS_ARRAY : ((FasterList<Class<?>>) types).array();
         Method m = findMethod(c, mName, cc);
         if (m == null)
             return null;
-//
-        m.trySetAccessible();
-//        return m;
-
-//        MethodType methodType = MethodType.methodType(m.getReturnType(), types);
-
-        Object inst = termToObj.get(xx.getOne().getTwo());
-        assert(inst!=null); //checked in pre-check
-
+        m.setAccessible(true);
         try {
-            return MethodHandles.lookup().unreflect(m).bindTo(inst);
-        } catch (Exception e) {
+            MethodHandle mh = MethodHandles.lookup().unreflect(m);
+            return mh;
+
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
-            return null;
         }
-
-//
-//        try {
-//            MethodHandle y = MethodHandles.lookup().unreflect(m);
-//            return y;
-//            //return y.asSpreader(Object[].class, types.size());
-//
-////            Class<?>[] arguments = m.getParameterTypes();
-////            MethodType invocationType = MethodType.genericMethodType(arguments == null ? 0 : arguments.length);
-////
-////            return y.asSpreader(invocationType.returnType(), invocationType.parameterCount());
-//            //return y;
-//            //return invocationType.invokers().spreadInvoker(0).invokeExact(this.asType(invocationType), arguments);
-//
-//
-//        } catch (IllegalAccessException e) {
-//            logger.warn("{} {} {} {}", m, e);
-//            return null;
-//        }
-
-    }, 512, true /* soft */);
-
+        return null;
+    }, 512, true);
 
     public Opjects(NAR n) {
         nar = n;
@@ -212,7 +185,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
     interface InstanceMethodValueModel {
 
-        @Nullable Consumer<NAR> update(Instance instance, Task cause, Object obj, Method method, Object[] args, Object nextValue);
+        @Nullable void update(Instance instance, Object obj, Method method, Object[] args, Object nextValue, NAR nar);
     }
 //
 //    /**
@@ -294,19 +267,28 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 //        }
 //    }
 
-    final InstanceMethodValueModel pointTasks = new ImpulseMethodValueModel();
+    final InstanceMethodValueModel pointTasks = new PointMethodValueModel();
     final Function<String, InstanceMethodValueModel> valueModel = (x) -> pointTasks /* memoryless */;
 
-    public class ImpulseMethodValueModel implements InstanceMethodValueModel {
+    public class PointMethodValueModel implements InstanceMethodValueModel {
 
         private final static float invocationBeliefFreq = 1.0f;
 
         @Override
-        public Consumer<NAR> update(Instance instance, Task cause, Object obj, Method method, Object[] args, Object nextValue) {
-            return (nar) -> {
+        public void update(Instance instance, Object obj, Method method, Object[] args, Object nextValue, NAR nar) {
 
+            float pri = nar.priDefault(BELIEF);
+            SignalTask value;
 
-                float f = invocationBeliefFreq;
+            long now = nar.time();
+            int dur = nar.dur();
+            long start = now - dur / 2;
+            long end = now + dur / 2;
+
+            float f = invocationBeliefFreq;
+
+            boolean isVoid = method.getReturnType() == void.class;
+            if (!isVoid) {
                 Term nextTerm = instance.opTerm(method, args, nextValue);
                 Term nt = nextTerm;
                 if (nt.op() == NEG) {
@@ -314,39 +296,51 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                     f = 1 - f;
                 }
 
-                long now = nar.time();
-                int dur = nar.dur();
-                long start = now - dur/2;
-                long end = now + dur/2;
-
-                SignalTask next = new TruthletTask(nt, BELIEF,
-                        Truthlet.impulse(start, end, f,1-f,
-                            c2w(nar.confDefault(BELIEF))
+                value = new TruthletTask(nt, BELIEF,
+                        Truthlet.flat(start, end, f,
+                                //Truthlet.impulse(start, end, f, 0.5f,
+                                //Truthlet.impulse(start, end, f, 1 - f,
+                                c2w(nar.confDefault(BELIEF))
                         ),
                         nar);
 
-                if (Param.DEBUG)
-                    next.log("Invoked");
+                if (Param.DEBUG) value.log("Invoke Result");
 
-                float pri = nar.priDefault(BELIEF);
+                value.priMax(pri);
+            } else {
+                value = null;
+            }
+
+            SignalTask feedback = new TruthletTask(instance.opTerm(method, args, isVoid ? null : $.varDep(1)), BELIEF,
+                    Truthlet.flat(start, end, f,
+                            //Truthlet.impulse(start, end, f, 0.5f,
+                            //Truthlet.impulse(start, end, f, 1 - f,
+                            c2w(nar.confDefault(BELIEF))
+                    ),
+                    nar);
+            if (Param.DEBUG) feedback.log("Invoked");
+            feedback.priMax(pri);
 
 
-                if (cause != null) {
-                    next.causeMerge(cause);
-                    next.priMax(Math.max(cause.priElseZero(), pri));
-                    //cause.pri(0); //drain
-                    cause.meta("@", next);
-                } else {
-                    next.priMax(pri);
-                }
 
-                List<Task> i = new FasterList(3);
+//                if (cause != null) {
+//                    next.causeMerge(cause);
+//                    next.priMax(Math.max(cause.priElseZero(), pri));
+//                    //cause.pri(0); //drain
+//                    cause.meta("@", next);
+//                } else {
+//                }
 
-                if (cause!=null && cause.meta("pretend")!=null)
-                    i.add(cause);
+            Opjects.this.in.input(feedback, value);
 
-                i.add(next);
-                Opjects.this.in.input(i);
+//                List<Task> i = new FasterList(3);
+
+//                if (cause!=null && cause.meta("pretend")!=null)
+//                    i.add(cause);
+
+//                i.add(next);
+//                Opjects.this.in.input(i);
+
 
 //                if (cause != null && !next.term().equals(cause.term())) {
 //                    //input quenching invocation belief term corresponding to the goal
@@ -364,8 +358,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 //                }
 
 
-
-            };
+            ;
         }
     }
 
@@ -390,32 +383,30 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         }
 
         public Object update(Object obj, Method method, Object[] args, Object nextValue) {
-            Task cause = invokingGoal.get();
+            //Task cause = invokingGoal.get();
 
-            if (cause == null && pretend) {
-                Task pretend = pretend(obj, method, args);
-                cause = pretend;
-            }
+//            if (cause == null && pretend) {
+//                Task pretend = pretend(obj, method, args);
+//                cause = pretend;
+//            }
 
-            Consumer<NAR> update = belief.update(this, cause, obj, method, args, nextValue);
-            if (update!=null) {
-                nar.run/*Later*/(update);
-            }
+            belief.update(this, obj, method, args, nextValue, nar);
 
             return nextValue;
         }
 
-        private Task pretend(Object obj, Method method, Object[] args) {
-            long now = nar.time();
-            NALTask g = new NALTask(opTerm(method, args,
-                    method.getReturnType() == void.class ? null : $.varDep(1)), GOAL,
-                    $.t(1f, nar.confDefault(GOAL)), now, now, now, nar.time.nextInputStamp());
-            g.priMax(nar.priDefault(GOAL));
-            g.meta("pretend", "");
-            if (Param.DEBUG)
-                g.log("Pretend");
-            return g;
-        }
+//      for training:
+//        private Task pretend(Object obj, Method method, Object[] args) {
+//            long now = nar.time();
+//            NALTask g = new NALTask(opTerm(method, args,
+//                    method.getReturnType() == void.class ? null : $.varDep(1)), GOAL,
+//                    $.t(1f, nar.confDefault(GOAL)), now, now, now, nar.time.nextInputStamp());
+//            g.priMax(nar.priDefault(GOAL));
+//            g.meta("pretend", "");
+//            if (Param.DEBUG)
+//                g.log("Pretend");
+//            return g;
+//        }
 
         private Term opTerm(Method method, Object[] args, Object result) {
 
@@ -432,7 +423,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
             }
 
             Term[] x = new Term[xn];
-            int resultTerm = xn-1;
+            int resultTerm = xn - 1;
 
             x[0] = this;
 
@@ -481,11 +472,14 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
     }
 
-    private class MethodExec extends AtomicExec {
+    private class MethodExec extends AtomicExec implements BiConsumer<Term, NAR> {
+        private final Term methodName;
         public Operator operator;
 
         public MethodExec(String methodName) {
-            super(operator($.the(methodName)), executionThreshold);
+            super(null, executionThreshold);
+
+            this.methodName = $.the(methodName);
         }
 
         @Override
@@ -495,32 +489,84 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                 return null; //dont even think about executing it, but pass thru to reasoner
 
 
-            if (x.meta("pretend") != null)
-                return null; //filter instructive tasks (would cause feedback loop)
+//            if (x.meta("pretend") != null)
+//                return null; //filter instructive tasks (would cause feedback loop)
 
-            boolean input = x.isInput();
+//            boolean input = x.isInput();
 
-            Term xt = x.term();
-            if (null == validMethod(xt.sub(1))) {
-                if (input)
-                    return Operator.log(x.creation(),"Unknown opject method: " + x.term());
-                else
-                    return null;
-            }
+            //TODO cache the entire decode operation and its success or failure
 
-            Subterms args = validArgs(Operator.args(x));
+            Subterms args = Operator.args(x);
+            if (args.subs() == 0)
+                return null;
+
+            Term instanceTerm = args.sub(0);
+            if (!termToObj.containsKey(instanceTerm))
+                return null; //unknown instance
+
+            args = validArgs(args);
             if (args == null) {
-                if (input)
-                    return Operator.log(x.creation(),"Invalid opject argument pattern: " + x.term());
-                else
+//                if (input)
+//                    return Operator.log(x.creation(), "Invalid opject argument pattern: " + x.term());
+//                else
                     return null;
             }
-
 
 
             //TODO other prefilter conditions
 
             return x;
+        }
+
+        @Override
+        public void accept(Term term, NAR nar) {
+
+            Subterms args = validArgs(Operator.args(term));
+            if (args == null)
+                return;
+
+            Term instanceTerm = args.sub(0);
+            Object instance = termToObj.get(instanceTerm);
+            if (instance == null)
+                return;
+
+            int as = args.subs();
+            Term methodArgs = as > 1 && (as > 2 || !args.sub(as - 1).op().var) ? args.sub(1) : Op.ZeroProduct;
+
+            boolean maWrapped = methodArgs.op() == PROD;
+
+            int aa = maWrapped ? methodArgs.subs() : 1;
+
+            Object[] instanceAndArgs;
+            List<Class<?>> types;
+            if (aa == 0) {
+                instanceAndArgs = new Object[] { instance };
+                types = Collections.emptyList();
+            } else {
+                instanceAndArgs = object(instance, maWrapped ? methodArgs.subterms().arrayShared() : new Term[]{methodArgs});
+                types = typesOf(instanceAndArgs, 1 /* skip leading instance value */, instanceAndArgs.length);
+            }
+
+
+            if (evoked(methodName, instance, instanceAndArgs)) {
+
+                Class c = instance.getClass();
+
+                Pair<Pair<Class, Term>, List<Class<?>>> key = pair(pair(c, methodName), types);
+                MethodHandle mh = methodCache.apply(key);
+                if (mh == null) {
+                    logger.warn("method unresolved: {}", term);
+                    return;
+                }
+
+                try {
+                    mh.invokeWithArguments(instanceAndArgs);
+                } catch (Throwable throwable) {
+                    logger.error("{} execution {}", term, throwable);
+                }
+
+            }
+
         }
     }
 
@@ -566,7 +612,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
     private void reflect(Class<?> cl) {
 
-        clCache.computeIfAbsent(cl, (clazz)->{
+        clCache.computeIfAbsent(cl, (clazz) -> {
 
             for (Method m : clazz.getMethods()) {
                 reflect(m);
@@ -581,7 +627,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
             return null;
 
         String n = m.getName();
-        return opCache.computeIfAbsent(n, (mn)->{
+        return opCache.computeIfAbsent(n, (mn) -> {
             MethodExec methodExec = new MethodExec(mn);
             Operator op = nar.onOp(mn, methodExec);
             methodExec.operator = op;
@@ -626,84 +672,23 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     }
 
 
-    /** dispatcher for all methods with the given name, regardless of class (this is specified by the class of the instance parameter) */
-    private BiConsumer<Task, NAR> operator(Term method) {
+    /**
+     * dispatcher for all methods with the given name, regardless of class (this is specified by the class of the instance parameter)
+     */
+    private BiConsumer<Term, NAR> operator(Term method) {
 
-        return (task, n) -> {
+        return (term, n) -> {
 
-            Term taskTerm = task.term();
-
-            Subterms args = validArgs(Operator.args(taskTerm));
-            if (args == null)
-                return;
-
-            Term instanceTerm = args.sub(0);
-            Object instance = termToObj.get(instanceTerm);
-            if (instance == null)
-                return;
-
-            int as = args.subs();
-            Term methodArgs = as > 1 && (as > 2 || !args.sub(as-1).op().var) ? args.sub(1) : Op.ZeroProduct;
-
-            boolean maWrapped = methodArgs.op() == PROD;
-
-            int aa = maWrapped ? methodArgs.subs() : 1;
-
-            Object[] objArgs;
-            List<Class<?>> types;
-            if (aa == 0) {
-                objArgs = ArrayUtils.EMPTY_OBJECT_ARRAY;
-                types = Collections.emptyList();
-            } else {
-                objArgs = object(maWrapped ? methodArgs.subterms().arrayShared() : new Term[]{methodArgs});
-                types = typesOf(objArgs);
-            }
-
-
-            if (evoked(task, objArgs)) {
-
-                Class c = instance.getClass();
-
-                Pair<Pair<Class, Term>, Pair<List<Class<?>>, Term>> methodKey = pair(pair(c, instanceTerm), pair(types, method));
-                final MethodHandle mm = methodArgCache.apply(methodKey);
-                if (mm == null) {
-                    if (task.isInput())
-                        n.input(Operator.log(n.time(), methodKey + " unresolved"));
-                    return;
-                }
-
-                //nar.runLater(() -> {
-
-                    if (invokingGoal.get() != null)
-                        throw new TODO("we need a stack: " + invokingGoal.get() + " -> " + task);
-
-                    invokingGoal.set(task);
-                    try {
-
-                        mm.invokeWithArguments(objArgs);
-
-                    } catch (Throwable throwable) {
-                        logger.error("{} {}", task, args);
-                        throwable.printStackTrace();
-                    } finally {
-                        invokingGoal.set(null);
-                    }
-
-                //});
-            }
 
         };
     }
 
-    protected boolean evoked(Task task, Object[] args) {
-        if (!task.isInput() && task.meta("pretend") == null)
-            logger.info("evoke: {} {}", this, Param.DEBUG ? task.proof() : task);
-
+    protected boolean evoked(Term method, Object instance, Object[] params) {
         return true;
     }
 
     protected Subterms validArgs(Subterms args) {
-        if (args.sub(0).op()!=ATOM) //instance id
+        if (args.sub(0).op() != ATOM) //instance id
             return null; //TODO support static method calls
 
         //f(a,...)
@@ -766,17 +751,23 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     }
 
 
-    protected Class[] typesOfArray(Object[] orgs) {
+
+
+    public Class[] typesOfArray(Object[] orgs) {
+        return typesOfArray(orgs, 0, orgs.length);
+    }
+
+    public Class[] typesOfArray(Object[] orgs, int from, int to) {
         if (orgs.length == 0)
             return ArrayUtils.EMPTY_CLASS_ARRAY;
         else {
             return Util.map(x -> Primitives.unwrap(x.getClass()),
-                    new Class[orgs.length], orgs);
+                    new Class[to-from], 0, orgs, from, to);
         }
     }
 
-    protected FasterList<Class<?>> typesOf(Object[] orgs) {
-        return new FasterList<>(typesOfArray(orgs));
+    protected FasterList<Class<?>> typesOf(Object[] orgs, int from, int to) {
+        return new FasterList<>(typesOfArray(orgs, from, to));
     }
 
 

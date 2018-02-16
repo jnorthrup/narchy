@@ -16,14 +16,14 @@ public class TimeConfRange extends TimeRange {
     @Override
     public boolean intersects(HyperRegion x) {
         TaskRegion t = (TaskRegion)x;
-        return t.intersectsConf(cMin, cMax) && t.intersects(start, end);
+        return t.intersects(start, end) && t.intersectsConf(cMin, cMax);
     }
 
 
     @Override
     public boolean contains(HyperRegion x) {
         TaskRegion t = (TaskRegion)x;
-        return t.containsConf(cMin,cMax) && t.contains(start, end);
+        return t.contains(start, end) && t.containsConf(cMin,cMax);
     }
 
 }

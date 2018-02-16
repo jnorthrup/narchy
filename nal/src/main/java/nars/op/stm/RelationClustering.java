@@ -32,7 +32,7 @@ public class RelationClustering extends ChainClustering {
 
         //TODO Allen interval
         String relation;
-        if (tx.isDuring(ty.start(), ty.end()) && ty.isDuring(tx.start(), tx.end())) {
+        if (tx.intersects(ty.start(), ty.end()) && ty.intersects(tx.start(), tx.end())) {
             relation = "simul";
         } else if (ty.isAfter(tx.end(), dur / 2)) {
             relation = "seq";
