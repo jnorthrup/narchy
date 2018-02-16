@@ -28,16 +28,17 @@
 
 package org.boon;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.List;
+import org.boon.core.Function;
 import org.boon.core.reflection.FastStringUtils;
 import org.boon.primitive.CharBuf;
 import org.boon.primitive.CharScanner;
 import org.boon.primitive.Chr;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
+import java.util.List;
 
 import static org.boon.Exceptions.die;
 
@@ -48,6 +49,12 @@ public class Str {
      * Empty string
      */
     public final static String EMPTY_STRING = "";
+    public static final Function<String, String> underBarCase = in -> underBarCase(in);
+    public static final Function<String, String> camelCase = in -> camelCase(in);
+    public static final Function<String, String> upperCase = in -> in.toUpperCase();
+    public static final Function<String, String> lowerCase = in -> in.toLowerCase();
+    public static Function<String, String> camelCaseUpper = in -> camelCaseUpper(in);
+    public static Function<String, String> camelCaseLower = in -> camelCaseLower(in);
 
 
     /**

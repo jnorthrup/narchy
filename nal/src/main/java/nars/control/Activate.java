@@ -33,11 +33,6 @@ public class Activate extends PLink<Concept> implements Termed {
     /*@NotNull*/
     public void premises(NAR nar, BatchActivation ba, BiPredicate<PriReference<Task>, PriReference<Term>> each, int _termlinksPerTasklink) {
 
-
-
-
-
-
         final Bag<Term, PriReference<Term>> termlinks = id.termlinks();
 
 

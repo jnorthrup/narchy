@@ -29,7 +29,7 @@
 package org.boon.config;
 
 
-import org.boon.di.Context;
+import org.boon.di.That;
 import org.boon.di.Inject;
 import org.boon.core.Predicate;
 
@@ -70,7 +70,7 @@ public class ContextConfigReader {
     @Inject
     private Predicate rules;
 
-    public Context read() {
+    public That read() {
 
         if (resources.size() == 0 ) {
             resources.add( MODULE_CONFIG_DIR );

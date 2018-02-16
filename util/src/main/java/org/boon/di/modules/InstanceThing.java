@@ -34,22 +34,22 @@ import org.boon.collections.MultiMapImpl;
 import org.boon.core.Supplier;
 import org.boon.core.reflection.ClassMeta;
 import org.boon.core.reflection.MethodAccess;
-import org.boon.di.ProviderInfo;
+import org.boon.di.Supply;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 
-public class InstanceModule extends BaseModule {
+public class InstanceThing extends BaseThing {
 
-    private final Map<Class, ProviderInfo> supplierTypeMap = new ConcurrentHashMap<>();
-    private final MultiMapImpl<String, ProviderInfo> supplierNameMap = new MultiMapImpl<>();
+    private final Map<Class, Supply> supplierTypeMap = new ConcurrentHashMap<>();
+    private final MultiMapImpl<String, Supply> supplierNameMap = new MultiMapImpl<>();
 
     private final Object module;
 
 
-    public InstanceModule( Object object ) {
+    public InstanceThing(Object object ) {
         module = object;
 
         ClassMeta classMeta = ClassMeta.classMeta(object.getClass());
@@ -94,10 +94,10 @@ public class InstanceModule extends BaseModule {
     }
 
     @Override
-    public <T> T get( Class<T> type ) {
+    public <T> T a(Class<T> type ) {
 
 
-        ProviderInfo pi = supplierTypeMap.get(type);
+        Supply pi = supplierTypeMap.get(type);
         if (pi!=null) {
             return (T)pi.supplier().get();
         }
@@ -107,10 +107,10 @@ public class InstanceModule extends BaseModule {
     }
 
     @Override
-    public Object get( String name ) {
+    public Object a(String name ) {
 
 
-        ProviderInfo pi = supplierNameMap.get(name);
+        Supply pi = supplierNameMap.get(name);
         if (pi!=null) {
             return pi.supplier().get();
         }
@@ -120,37 +120,37 @@ public class InstanceModule extends BaseModule {
 
 
     @Override
-    public <T> T get( Class<T> type, String name ) {
+    public <T> T a(Class<T> type, String name ) {
 
-        return getSupplier( type, name ).get();
+        return supplying( type, name ).get();
     }
 
     @Override
-    public ProviderInfo getProviderInfo(Class<?> type) {
+    public Supply supply(Class<?> type) {
         return this.supplierTypeMap.get(type);
     }
 
     @Override
-    public ProviderInfo getProviderInfo(String name) {
+    public Supply supply(String name) {
         return this.supplierNameMap.get(name);
     }
 
     @Override
-    public ProviderInfo getProviderInfo(Class<?> type, String name) {
+    public Supply supply(Class<?> type, String name) {
         return doGetProvider(type, name);
     }
 
 
 
-    private  ProviderInfo doGetProvider( final Class<?> type, final String name ) {
+    private Supply doGetProvider(final Class<?> type, final String name ) {
 
 
-        Set<ProviderInfo> set = Sets.set( supplierNameMap.getAll( name ) );
+        Set<Supply> set = Sets.set( supplierNameMap.getAll( name ) );
 
 
-        ProviderInfo nullTypeInfo = null;
+        Supply nullTypeInfo = null;
 
-        for ( ProviderInfo info : set ) {
+        for ( Supply info : set ) {
 
             if ( info.type() == null ) {
                 nullTypeInfo = info;
@@ -166,11 +166,11 @@ public class InstanceModule extends BaseModule {
 
 
     @Override
-    public <T> Supplier<T> getSupplier( final Class<T> type, final String name ) {
+    public <T> Supplier<T> supplying(final Class<T> type, final String name ) {
 
         try {
-            Set<ProviderInfo> set = Sets.set(supplierNameMap.getAll(name));
-            for ( ProviderInfo s : set ) {
+            Set<Supply> set = Sets.set(supplierNameMap.getAll(name));
+            for ( Supply s : set ) {
                 InternalSupplier supplier = ( InternalSupplier ) s.supplier();
                 if ( type.isAssignableFrom( supplier.method.returnType() ) ) {
                     return (Supplier<T>)supplier;
@@ -187,7 +187,7 @@ public class InstanceModule extends BaseModule {
     }
 
     @Override
-    public <T> Supplier<T> getSupplier( Class<T> type ) {
+    public <T> Supplier<T> supplying(Class<T> type ) {
         Supplier<T> supplier = ( Supplier<T> ) supplierTypeMap.get( type );
         if (supplier == null ) {
             supplier = () -> null;
@@ -241,7 +241,7 @@ public class InstanceModule extends BaseModule {
         }
 
         Supplier<Object> supplier = createSupplier( method );
-        this.supplierTypeMap.put(cls, new ProviderInfo(named, cls, supplier, providerInfo));
+        this.supplierTypeMap.put(cls, new Supply(named, cls, supplier, providerInfo));
 
         Class superClass = cls.getSuperclass();
 
@@ -249,12 +249,12 @@ public class InstanceModule extends BaseModule {
         Class[] superTypes = cls.getInterfaces();
 
         for ( Class superType : superTypes ) {
-            this.supplierTypeMap.put(superType, new ProviderInfo(named, cls, supplier, providerInfo));
+            this.supplierTypeMap.put(superType, new Supply(named, cls, supplier, providerInfo));
         }
 
         if ( superClass != null ) {
             while ( superClass != Object.class ) {
-                this.supplierTypeMap.put(superClass, new ProviderInfo(named, cls, supplier, providerInfo));
+                this.supplierTypeMap.put(superClass, new Supply(named, cls, supplier, providerInfo));
 
                   /* Next see if named is in the super if not found. */
                 if ( !foundName ) {
@@ -263,7 +263,7 @@ public class InstanceModule extends BaseModule {
                 }
                 superTypes = cls.getInterfaces();
                 for ( Class superType : superTypes ) {
-                    this.supplierTypeMap.put(superType, new ProviderInfo(named, cls, supplier, providerInfo));
+                    this.supplierTypeMap.put(superType, new Supply(named, cls, supplier, providerInfo));
                 }
                 superClass = superClass.getSuperclass();
             }
@@ -271,7 +271,7 @@ public class InstanceModule extends BaseModule {
 
 
         if ( foundName ) {
-            this.supplierNameMap.put(named, new ProviderInfo(named, cls, supplier, providerInfo));
+            this.supplierNameMap.put(named, new Supply(named, cls, supplier, providerInfo));
         }
 
     }

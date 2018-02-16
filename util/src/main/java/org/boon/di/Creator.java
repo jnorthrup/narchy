@@ -38,22 +38,22 @@ import java.util.Map;
 public class Creator {
 
     public static <T> T create(Class<T> type, Map<?, ?> map) {
-      Context context = DependencyInjection.fromMap(map);
-      context.add( DependencyInjection.classes(type) );
-      return context.get( type );
+      That context = My.fromMap(map);
+      context.add( My.classes(type) );
+      return context.a( type );
     }
 
 
-    public static <T> T create(Class<T> type, Context context) {
-        context.add( DependencyInjection.classes(type) );
-        return context.get( type );
+    public static <T> T create(Class<T> type, That context) {
+        context.add( My.classes(type) );
+        return context.a( type );
     }
 
 
     public static <T> T newOf( Class<T> type, Object... args ) {
         Map<?, ?> map = Maps.mapFromArray( args );
-        Context context = DependencyInjection.fromMap(map);
-        context.add( DependencyInjection.classes(type) );
-        return context.get( type );
+        That context = My.fromMap(map);
+        context.add( My.classes(type) );
+        return context.a( type );
     }  
 }

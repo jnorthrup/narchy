@@ -2,10 +2,10 @@ package nars.derive.mutate;
 
 import jcog.math.Combinations;
 import nars.$;
-import nars.The;
 import nars.derive.match.Ellipsis;
 import nars.derive.match.EllipsisMatch;
 import nars.subterm.ShuffledSubterms;
+import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.subst.Unify;
 import org.apache.commons.lang3.ArrayUtils;
@@ -37,7 +37,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
 
         int yFreeSize = yFree.size();
 
-        this.yy = new ShuffledSubterms(The.subterms(yFree), f.random  /*new ArrayTermVector(yFree)*/);
+        this.yy = new ShuffledSubterms(Subterms.subterms(yFree), f.random  /*new ArrayTermVector(yFree)*/);
 
         this.comb = new Combinations(yFreeSize, 2);
     }

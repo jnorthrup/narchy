@@ -7,12 +7,14 @@ import jcog.data.bit.MetalBitSet;
 import jcog.list.FasterList;
 import nars.$;
 import nars.Op;
-import nars.The;
+import nars.derive.match.EllipsisMatch;
 import nars.derive.mutate.CommutivePermutations;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Terms;
+import nars.term.anon.AnonID;
+import nars.term.anon.AnonVector;
 import nars.term.subst.Unify;
 import nars.term.var.Variable;
 import org.apache.commons.lang3.ArrayUtils;
@@ -28,7 +30,12 @@ import org.roaringbitmap.RoaringBitmap;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
+
+import static nars.Op.NEG;
+import static nars.Op.PROD;
+import static nars.Op.internable;
 
 
 /**
@@ -37,7 +44,42 @@ import java.util.function.Predicate;
  */
 public interface Subterms extends Termlike, Iterable<Term> {
 
-    /*@NotNull*/ TermVector Empty = new ArrayTermVector(Term.EmptyArray);
+    /*@NotNull*/ TermVector Empty = new ArrayTermVector(Term.EmptyArray);Function<Term[], Subterms> RawSubtermBuilder = (t) -> {
+            if (t.length == 0)
+                return Empty;
+
+            boolean purelyAnon = true;
+            for (Term x : t) {
+                if (x instanceof EllipsisMatch)
+                    throw new RuntimeException("ellipsis match should not be a subterm of ANYTHING");
+                if (purelyAnon) {
+                    if (!(x instanceof AnonID)) {
+                        if (/*t.length == 1 && */x.op()==NEG && x.unneg() instanceof AnonID) {
+                            //allow anon here, but not t.length > 1 there is still some problem probably with commutives
+                            //purelyAnon = true
+                        } else {
+                          purelyAnon = false;
+                        }
+                    }
+                }
+            }
+
+            if (!purelyAnon) {
+                switch (t.length) {
+                    case 0:
+                    case 1:
+                        //return new TermVector1(t[0]);
+                        return new UnitSubterm(t[0]);
+                    //case 2:
+                    //return new TermVector2(t);
+                    default:
+                        return new ArrayTermVector(t);
+                }
+            } else {
+                return new AnonVector(t);
+            }
+
+        };
 
     static int hash(List<Term> term) {
         int n = term.size();
@@ -56,6 +98,24 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        return h;
 //
         return container.intifyShallow((h, x) -> Util.hashCombine(h, x.hashCode()), 1);
+    }
+
+    /* @NotNull */
+    static Subterms subterms(Collection<? extends Term> s) {
+        return subtermsInterned(s.toArray(new Term[s.size()]));
+    }
+
+    static Subterms subtermsInterned(Term... s) {
+        //return The.Subterms.the.apply(s);
+        //return compound(PROD, s).subterms();
+        if (internable(s))
+            return PROD.the(s).subterms();
+        else
+            return subtermsInstance(s);
+    }
+
+    static Subterms subtermsInstance(Term... s) {
+        return RawSubtermBuilder.apply(s);
     }
 
 
@@ -1096,7 +1156,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default Subterms sorted() {
-        return isSorted() ? this : The.subtermsInterned(Terms.sorted(arrayClone()));
+        return isSorted() ? this : subtermsInterned(Terms.sorted(arrayClone()));
     }
 
     default Term[] termsExcept(int i) {

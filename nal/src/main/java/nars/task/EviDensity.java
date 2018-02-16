@@ -4,13 +4,15 @@ import jcog.math.Interval;
 import nars.Task;
 import nars.task.util.TaskRegion;
 
+import static nars.time.Tense.TIMELESS;
+
 /** iterative calculator of evidential density
  *      evidensity: average evidence of a set of evidential components integrated through their unioned time-span
  */
 public final class EviDensity {
 
-    public long unionStart;
-    public long unionEnd;
+    public long unionStart = TIMELESS;
+    public long unionEnd = TIMELESS;
 
     float sumEviIntegrals = Float.NaN, sumEviAvg = Float.NaN;
 
@@ -18,12 +20,42 @@ public final class EviDensity {
     public EviDensity() {
     }
 
+
     public EviDensity(TaskRegion... x) {
         this();
         assert (x.length > 1);
         for (TaskRegion xx : x) {
             if (xx!=null)
                 add(xx);
+        }
+    }
+
+    /** has special handling for eternals */
+    public EviDensity(Iterable<TaskRegion> x) {
+        this();
+        boolean hasEternals = false;
+        for (TaskRegion xx : x) {
+            if (xx!=null) {
+                Task xxx = xx.task();
+                if (!xxx.isEternal()) {
+                    add(xx);
+                } else {
+                    hasEternals = true;
+                }
+            }
+        }
+        if (hasEternals) {
+            if (unionStart!=TIMELESS) {
+                //process eternals with the learned interval
+                for (TaskRegion xx : x) {
+                    if (xx != null) {
+                        Task xxx = xx.task();
+                        if (xxx.isEternal()) {
+                            add(xxx, unionStart, unionEnd); //fill
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -38,7 +70,15 @@ public final class EviDensity {
 
     public void add(TaskRegion x) {
         Task xt = x.task();
-        add(x.start(), x.end(), xt.evi(), xt.eviInteg());
+        add(xt);
+    }
+
+    public void add(Task xt) {
+        add(xt, xt.start(), xt.end());
+    }
+
+    public void add(Task xt, long start, long end) {
+        add(start, end, xt.evi(), xt.eviInteg());
     }
 
     public void add(long xStart, long xEnd, float evi) {
@@ -61,14 +101,17 @@ public final class EviDensity {
         sumEviIntegrals += eviInteg;
     }
 
-    /** compute the evidence averaged across the union */
-    public float density() {
-        long unionRange = 1 + (unionEnd - unionStart);
-        return sumEviIntegrals / unionRange;
-    }
+//    /** compute the evidence averaged across the union */
+//    public float density() {
+//        long unionRange = 1 + (unionEnd - unionStart);
+//        return sumEviIntegrals / unionRange;
+//    }
 
     /** ratio of density to sum of averages */
     public float factor() {
+        if (unionStart == TIMELESS)
+            return 1;
+
         long unionRange = 1 + (unionEnd - unionStart);
         return sumEviIntegrals / (unionRange * sumEviAvg);
     }

@@ -29,8 +29,8 @@
 package org.boon.config;
 
 import org.boon.IO;
-import org.boon.di.Context;
-import org.boon.di.DependencyInjection;
+import org.boon.di.That;
+import org.boon.di.My;
 import org.boon.json.JsonParserAndMapper;
 import org.boon.json.JsonParserFactory;
 
@@ -45,32 +45,32 @@ public enum ContextConfig {
 
 
         @Override
-        public Context createContext( String configNamespace, boolean startsWith, MetaConfigEvents events, List<String> resources ) {
+        public That createContext(String configNamespace, boolean startsWith, MetaConfigEvents events, List<String> resources ) {
             return createContext( configNamespace, startsWith, events, resources.toArray( new String[resources.size()] ) );
         }
 
-        public Context createContext( String... resources ) {
+        public That createContext(String... resources ) {
             return createContext( null, false, null, resources );
         }
 
 
-        public Context createContext( List<String> resources ) {
+        public That createContext(List<String> resources ) {
             return createContext( null, false, null, resources.toArray( new String[resources.size()] ) );
         }
 
 
 
-        public Context createContext(  String namespace, boolean startsWith,  String... resources ) {
+        public That createContext(String namespace, boolean startsWith, String... resources ) {
             return createContext( namespace, startsWith, null, resources );
         }
 
         @Override
-        public Context createContext( MetaConfigEvents events,  String... resources ) {
+        public That createContext(MetaConfigEvents events, String... resources ) {
             return createContext( null, false, events, resources );
         }
 
-        public Context createContext( String namespace, boolean startsWith, MetaConfigEvents events, String... resources ) {
-            return DependencyInjection.fromMap(createConfigMap(namespace, startsWith, events, resources));
+        public That createContext(String namespace, boolean startsWith, MetaConfigEvents events, String... resources ) {
+            return My.fromMap(createConfigMap(namespace, startsWith, events, resources));
         }
 
 
@@ -149,19 +149,19 @@ public enum ContextConfig {
     };
 
 
-    public abstract Context createContext( String... resources );
+    public abstract That createContext(String... resources );
 
 
-    public abstract Context createContext( List<String> resources );
+    public abstract That createContext(List<String> resources );
 
 
 
-    public abstract Context createContext( String configNamespace, boolean startsWith, String... resources );
+    public abstract That createContext(String configNamespace, boolean startsWith, String... resources );
 
-    public abstract Context createContext(  MetaConfigEvents events,  String... resources );
+    public abstract That createContext(MetaConfigEvents events, String... resources );
 
-    public abstract Context createContext(  String configNamespace,  boolean startsWith, MetaConfigEvents events, String... resources );
+    public abstract That createContext(String configNamespace, boolean startsWith, MetaConfigEvents events, String... resources );
 
-    public abstract Context createContext(  String configNamespace,  boolean startsWith, MetaConfigEvents events, List<String> resources );
+    public abstract That createContext(String configNamespace, boolean startsWith, MetaConfigEvents events, List<String> resources );
 
 }

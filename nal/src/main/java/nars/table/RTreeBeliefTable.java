@@ -51,7 +51,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     /**
      * max allowed truths to be truthpolated in one test
      */
-    private static final int TRUTHPOLATION_LIMIT = 8;
+    private static final int TRUTHPOLATION_LIMIT = 4;
 
     /** max tasks which can be merged (if they have equal occurrence and term) in a match's generated Task */
     private static final int SIMPLE_EVENT_MATCH_LIMIT = TRUTHPOLATION_LIMIT;
@@ -395,7 +395,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 return true;
 
             Task c =
-                    this instanceof Simple ?  //HACK
+                    (this instanceof Simple || (at.term().equals(bt.term()))) ?  //HACK
                         Revision.mergeTemporal(nar, at, bt) :
                         Revision.merge(at, bt, nar.time(), c2wSafe(nar.confMin.floatValue()), nar); //TODO remove this when the mergeTemporal fully supports CONJ and Temporal
 
@@ -425,6 +425,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     return true;
                 } else {
                     //merge result is not strong enough
+                    c.delete();
                 }
 
             }

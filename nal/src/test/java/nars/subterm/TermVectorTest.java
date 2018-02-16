@@ -2,7 +2,6 @@ package nars.subterm;
 
 import nars.$;
 import nars.Narsese;
-import nars.The;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
@@ -77,11 +76,11 @@ public class TermVectorTest {
     @Test public void testSortedTermContainer() throws Narsese.NarseseException {
         Term aa = $.$("a");
         Term bb = $.$("b");
-        Subterms a = The.subtermsInterned(aa, bb);
+        Subterms a = Subterms.subtermsInterned(aa, bb);
         assertTrue(a.isSorted());
-        Subterms b = The.subtermsInterned(bb, aa);
+        Subterms b = Subterms.subtermsInterned(bb, aa);
         assertFalse(b.isSorted());
-        Subterms s = The.subtermsInterned(Terms.sorted(b.arrayClone()));
+        Subterms s = Subterms.subtermsInterned(Terms.sorted(b.arrayClone()));
         assertTrue(s.isSorted());
         assertEquals(a, s);
         assertNotEquals(b, s);

@@ -38,8 +38,8 @@ public class Premise extends Pri {
     static private float temporalFocusRadiusDurs = 4;
 
 
-    Premise(Task task, Term term, float taskLinkPri) {
-        super(taskLinkPri);
+    Premise(Task task, Term term) {
+        super();
         this.task = task;
         this.term = term;
         this.hash = Util.hashCombine(task.hashCode(), term.hashCode());

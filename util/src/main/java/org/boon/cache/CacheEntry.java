@@ -106,11 +106,13 @@ class CacheEntry<KEY, VALUE> implements Comparable<CacheEntry> {
      */
     private int compareReadCount(CacheEntry other ) {
 
-        if ( readCount.get() > other.readCount.get() ) {  //this read count is greater so it has higher priority
+        int mine = readCount.get();
+        int others = other.readCount.get();
+        if ( mine > others) {  //this read count is greater so it has higher priority
             return 1;
-        } else if ( readCount.get() < other.readCount.get() ) {//this read count is lower so it has lower priority
+        } else if ( mine < others) {//this read count is lower so it has lower priority
             return -1;
-        } else if ( readCount.get() == other.readCount.get() ) {
+        } else if ( mine == others) {
             return 0;
         }
         die();

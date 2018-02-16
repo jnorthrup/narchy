@@ -25,53 +25,11 @@
  * \________(____  /\_/  (____  / /_______  /\____|__  /_______  / / ______|
  *               \/           \/          \/         \/        \/  \/
  */
-
 package org.boon.di;
 
-import org.boon.core.Supplier;
+public class Electricity extends FoodImpl implements Food {
 
-public interface Module {
+    boolean ACorDC;
 
-    <T> T get(Class<T> type);
-
-
-    Object get(String name);
-
-
-    <T> T get(Class<T> type, String name);
-
-
-
-    ProviderInfo getProviderInfo(Class<?> type);
-
-
-    ProviderInfo getProviderInfo(String name);
-
-
-    ProviderInfo getProviderInfo(Class<?> type, String name);
-
-
-
-    boolean has(Class type);
-
-    boolean has(String name);
-
-
-
-    <T> Supplier<T>  getSupplier(Class<T> type, String name);
-
-
-    <T> Supplier<T>  getSupplier(Class<T> type);
-
-    void parent(Context context);
-
-
-
-    Iterable<Object> values();
-
-    Iterable<String> names();
-
-
-    Iterable<Class<?>> types();
-
+    String tag;
 }

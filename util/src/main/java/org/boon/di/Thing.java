@@ -28,38 +28,50 @@
 
 package org.boon.di;
 
+import org.boon.core.Supplier;
 
-public interface Context extends Module {
+public interface Thing {
 
-
-    Object invoke( String objectName, String methodName, Object args);
-
-
-    Object invokeOverload( String objectName, String methodName, Object args);
+    <T> T a(Class<T> type);
 
 
+    Object a(String name);
 
-    Object invokeFromJson( String objectName, String methodName, String args);
+
+    <T> T a(Class<T> type, String name);
 
 
-    Object invokeOverloadFromJson( String objectName, String methodName, String args);
 
-    Context add( Module module );
+    Supply supply(Class<?> type);
 
-    Context remove( Module module );
 
-    Context addFirst( Module module );
+    Supply supply(String name);
 
-    Iterable<Module> children();
 
-    void resolveProperties( Object o );
+    Supply supply(Class<?> type, String name);
 
-    void resolvePropertiesIgnoreRequired( Object o );
 
-    void debug(  );
 
-    Context combine( Context newContext );
-    Context combineFirst( Context newContext );
+    boolean has(Class type);
 
+    boolean has(String name);
+
+
+
+    <T> Supplier<T> supplying(Class<T> type, String name);
+
+
+    <T> Supplier<T> supplying(Class<T> type);
+
+    void inside(That context);
+
+
+
+    Iterable<Object> values();
+
+    Iterable<String> names();
+
+
+    Iterable<Class<?>> types();
 
 }

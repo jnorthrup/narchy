@@ -157,7 +157,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
                 } else {
                     //dilute the evidence in proportion to temporal sparseness for non-temporal results
-                    EviDensity se = new EviDensity(this.toArrayRecycled(TaskRegion[]::new));
+                    EviDensity se = new EviDensity(this);
                     evi *= se.factor();
                     if (evi < eviMin)
                         return null;

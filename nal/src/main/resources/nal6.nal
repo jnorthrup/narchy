@@ -1,11 +1,11 @@
     //strong unification
     //      should these be restricted to "$" var subst
-    (Y ==> X), Z, notImpl(Z)     |- subIfUnifiesAny(X,Y,Z,"$"), (Belief:Deduction)
-    (Y ==> X), Z, notImpl(Z)     |- subIfUnifiesAny((--,X),Y,Z,"$"), (Belief:DeductionN)
-    (--Y ==> X), Z, notImpl(Z)   |- subIfUnifiesAny(X,Y,Z,"$"), (Belief:DeductionPN)
-    (--Y ==> X), Z, notImpl(Z)   |- subIfUnifiesAny((--,X),Y,Z,"$"), (Belief:DeductionNN)
+    (Y ==> X), Z, notImpl(Z)     |- subIfUnifiesAny(X,Y,Z), (Belief:Deduction)
+    (Y ==> X), Z, notImpl(Z)     |- subIfUnifiesAny((--,X),Y,Z), (Belief:DeductionN)
+    (--Y ==> X), Z, notImpl(Z)   |- subIfUnifiesAny(X,Y,Z), (Belief:DeductionPN)
+    (--Y ==> X), Z, notImpl(Z)   |- subIfUnifiesAny((--,X),Y,Z), (Belief:DeductionNN)
 
-    (X ==> Y), Z, notImpl(Z)     |- subIfUnifiesAny(X,Y,Z,"$"), (Belief:AbductionPB)
+    (X ==> Y), Z, notImpl(Z)     |- subIfUnifiesAny(X,Y,Z), (Belief:AbductionPB)
 
 // Conditional syllogism && Independent Variable Elimination
 //      If after M, P usually happens, and M happens, it means P is expected to happen
@@ -13,14 +13,14 @@
 //    M, (M ==> P), shift_occurrence_forward(M,"==>")  |- P, (Truth:Deduction, Desire:Induction, Order:ForAllSame)
 //    M, (P ==> M), shift_occurrence_backward(P,"==>") |- P, (Truth:Abduction, Desire:Deduction, Order:ForAllSame)
 
-    B, (A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B,"$"), (Belief:Deduction, Goal:Induction)
-    B, (A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B,"$")), (Belief:DeductionPN, Goal:InductionPN)
+    B, (A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Deduction, Goal:Induction)
+    B, (A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionPN, Goal:InductionPN)
 
-    B, (--A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B,"$"), (Belief:DeductionN, Goal:DeciInductionN)
-    B, (--A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B,"$")), (Belief:DeductionNN, Goal:InductionNN)
+    B, (--A ==> C),  notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:DeductionN, Goal:DeciInductionN)
+    B, (--A ==> C),  notImpl(B) |- (--,subIfUnifiesAny(C,A,B)), (Belief:DeductionNN, Goal:InductionNN)
 
-    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B,"$"), (Belief:Abduction, Goal:Deduction)
-    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B,"$"), (Belief:AbductionNN, Goal:DeductionNN)
+    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:Abduction, Goal:Deduction)
+    B, (C ==> A), notImpl(B) |- subIfUnifiesAny(C,A,B), (Belief:AbductionNN, Goal:DeductionNN)
 
     //Y, (B ==> (&&,X,A..+)) |- subIfUnifiesAny((B ==>+- (&&,A..+)),X,Y), (Belief:Deduction)
     //Y, (B ==> (&&,--X,A..+)) |- subIfUnifiesAny((B ==>+- (&&,A..+)),X,Y), (Belief:DeductionN)

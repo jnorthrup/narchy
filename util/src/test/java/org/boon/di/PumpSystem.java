@@ -27,9 +27,14 @@
  */
 package org.boon.di;
 
-public class Bacon extends FoodImpl implements Food {
+public class PumpSystem {
 
-    boolean crispy;
+    Pump providesPump() {
+        return new Pump() {
 
-    String tag;
+            @Override
+            public void pump() {
+            }
+        };
+    }
 }

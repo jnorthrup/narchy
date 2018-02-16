@@ -1663,9 +1663,9 @@ public enum Op {
         Subterms ss;
         if (o != PROD) {
             //cache.get ?
-            ss = The.subtermsInterned(u);
+            ss = Subterms.subtermsInterned(u);
         } else {
-            ss = The.subtermsInstance(u);
+            ss = Subterms.subtermsInstance(u);
         }
 
         return CachedCompound.the(o, ss);
@@ -2347,7 +2347,7 @@ public enum Op {
         return internable(u);
     }
 
-    static boolean internable(Term[] u) {
+    public static boolean internable(Term[] u) {
         if (u.length == 0)
             return false;
 

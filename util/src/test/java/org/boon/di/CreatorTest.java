@@ -27,19 +27,23 @@
  */
 package org.boon.di;
 
+import org.boon.config.ContextConfig;
+import org.boon.config.ContextConfigReader;
+import org.boon.core.Supplier;
+import org.junit.jupiter.api.Test;
+
+import java.util.Map;
+
 import static org.boon.Exceptions.die;
 import static org.boon.Maps.map;
+import static org.boon.config.ContextConfigReader.config;
 import static org.boon.criteria.ObjectFilter.*;
 import static org.boon.di.Creator.create;
 import static org.boon.di.Creator.newOf;
-import static org.boon.json.JsonCreator.*;
-import static org.boon.di.DependencyInjection.*;
-import org.boon.config.ContextConfig;
-import org.boon.config.ContextConfigReader;
-import static org.boon.config.ContextConfigReader.config;
-import org.boon.core.Supplier;
-import org.junit.jupiter.api.Test;
-import java.util.Map;
+import static org.boon.di.My.classes;
+import static org.boon.di.My.of;
+import static org.boon.json.JsonCreator.createFromJsonMap;
+import static org.boon.json.JsonCreator.createFromJsonMapResource;
 
 /**
  * Created by Richard on 2/4/14.
@@ -178,8 +182,8 @@ public class CreatorTest {
 
     @Test
     public void testCreateWithInstance9() {
-        Context context = ContextConfig.JSON.createContext("classpath://config/", "classpath://fooConfig/");
-        Foo foo = (Foo) context.get("foo");
+        That context = ContextConfig.JSON.createContext("classpath://config/", "classpath://fooConfig/");
+        Foo foo = (Foo) context.a("foo");
         boolean ok = foo != null || die();
         ok = foo.bar != null || die();
         ok = foo.bar.name.equals("barFromJsonResource") || die();
@@ -213,7 +217,7 @@ public class CreatorTest {
 
     @Test
     public void testCreateWithContext() {
-        Context context = context(classes(Foo2.class, Bar.class));
+        That context = of(classes(Foo2.class, Bar.class));
         Foo2 foo = create(fooType2, context);
         boolean ok = foo != null || die();
         ok = foo.bar != null || die();
@@ -245,53 +249,53 @@ public class CreatorTest {
 
     @Test
     public void namedConfig() {
-        Context context = ContextConfig.JSON.createContext("dev", false, "classpath://config_files/");
-        Bar bar = context.get(Bar.class);
+        That context = ContextConfig.JSON.createContext("dev", false, "classpath://config_files/");
+        Bar bar = context.a(Bar.class);
         boolean ok = bar != null || die();
         ok = bar.name.toString().equals("DEV Bar") || die("$" + bar.name + "$");
         context = ContextConfig.JSON.createContext("prod", false, "classpath://config_files/");
-        bar = context.get(Bar.class);
+        bar = context.a(Bar.class);
         ok = bar != null || die();
         ok = bar.name.toString().equals("Prod Bar") || die("$" + bar.name + "$");
         context = ContextConfig.JSON.createContext("qa", false, "classpath://config_files/");
-        bar = context.get(Bar.class);
+        bar = context.a(Bar.class);
         ok = bar != null || die();
         ok = bar.name.toString().equals("QA Bar") || die("$" + bar.name + "$");
     }
 
     @Test
     public void includeConfig() {
-        Context context;
+        That context;
         Bar bar;
         boolean ok;
         context = ContextConfig.JSON.createContext("qa", false, "classpath://config_files/");
-        Foo foo = context.get(Foo.class);
+        Foo foo = context.a(Foo.class);
         ok = foo != null || die();
         ok = foo.bar != null || die();
         ok = foo.bar.name.toString().equals("QA Bar") || die("$" + foo.bar.name + "$");
-        bar = context.get(Bar.class);
+        bar = context.a(Bar.class);
         ok = bar != null || die();
         ok = bar.name.toString().equals("QA Bar") || die("$" + bar.name + "$");
     }
 
     @Test
     public void includeConfigWithRule() {
-        Context context;
+        That context;
         Bar bar;
         boolean ok;
         context = ContextConfigReader.config().namespace("qa").resource("classpath://config_files/").rule(gte("version", 1.0)).read();
-        Foo foo = context.get(Foo.class);
+        Foo foo = context.a(Foo.class);
         ok = foo != null || die();
         ok = foo.bar != null || die();
         ok = foo.bar.name.toString().equals("QA Bar") || die("$" + foo.bar.name + "$");
-        bar = context.get(Bar.class);
+        bar = context.a(Bar.class);
         ok = bar != null || die();
         ok = bar.name.toString().equals("QA Bar") || die("$" + bar.name + "$");
     }
 
     @Test
     public void includeConfigWithRules() {
-        Context context;
+        That context;
         Bar bar;
         boolean ok;
         context = config().namespace("qa").resource("classpath://config_files/").rule(and(gte("version", 1.0), lt("version", 3.3), eq("developer", "John Fryar"))).read();

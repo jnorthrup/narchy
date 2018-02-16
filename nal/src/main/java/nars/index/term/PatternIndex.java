@@ -1,7 +1,6 @@
 package nars.index.term;
 
 import nars.Op;
-import nars.The;
 import nars.derive.PatternCompound;
 import nars.derive.match.Ellipsis;
 import nars.index.term.map.MapConceptIndex;
@@ -76,7 +75,7 @@ public class PatternIndex extends MapConceptIndex {
         if (!changed && Ellipsis.firstEllipsis(s) == null)
             return x;
 
-        Subterms v = changed ? The.subtermsInterned(bb.length > 1 && x.op().commutative && (concurrent(x.dt())) ?
+        Subterms v = changed ? Subterms.subtermsInterned(bb.length > 1 && x.op().commutative && (concurrent(x.dt())) ?
                 Terms.sorted(bb) :
                 bb) : s;
 

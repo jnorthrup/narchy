@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.data.byt.DynBytes;
 import nars.IO;
 import nars.Op;
-import nars.The;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
@@ -376,7 +375,7 @@ abstract public class FastCompound implements Compound /* The */ {
             //TODO sub view
             //return opAtSub.the(DTERNAL, subs(subOffset));
             return CachedCompound.the(opAtSub,
-                    The.subterms(new SubtermView(this, offset))
+                    Subterms.subterms(new SubtermView(this, offset))
                     //new SubtermView(this, offset)
             );
         }
@@ -525,7 +524,7 @@ abstract public class FastCompound implements Compound /* The */ {
      */
     public static final BiFunction<Op, List<Term>, Term> FAST_COMPOUND_BUILDER = (op, terms) -> {
         //HACK creating an intermediate GenericCompound should not be necessary
-        CachedCompound g = CachedCompound.the(op, The.subterms(terms));
+        CachedCompound g = CachedCompound.the(op, Subterms.subterms(terms));
         try {
 
             if (!g.isTemporal())

@@ -25,26 +25,8 @@
  * \________(____  /\_/  (____  / /_______  /\____|__  /_______  / / ______|
  *               \/           \/          \/         \/        \/  \/
  */
+package org.boon.di;
 
-package org.boon.functions;
-
-import org.boon.Str;
-import org.boon.core.Function;
-
-public class PropertyNameUtils {
-
-
-    public static final Function<String, String> underBarCase = in -> Str.underBarCase(in);
-    public static final Function<String, String> camelCase = in -> Str.camelCase(in);
-
-
-    public static Function<String, String> camelCaseUpper = in -> Str.camelCaseUpper(in);
-
-
-    public static Function<String, String> camelCaseLower = in -> Str.camelCaseLower(in);
-
-    public static final Function<String, String> upperCase = in -> in.toUpperCase();
-
-    public static final Function<String, String> lowerCase = in -> in.toLowerCase();
-
+@Named("soft")
+public class Noodles extends FoodImpl implements Food {
 }

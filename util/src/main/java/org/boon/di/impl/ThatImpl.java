@@ -39,9 +39,9 @@ import org.boon.core.reflection.Invoker;
 import org.boon.core.reflection.MapObjectConversion;
 import org.boon.core.reflection.Reflection;
 import org.boon.core.reflection.fields.FieldAccess;
-import org.boon.di.Context;
-import org.boon.di.Module;
-import org.boon.di.ProviderInfo;
+import org.boon.di.That;
+import org.boon.di.Thing;
+import org.boon.di.Supply;
 import org.boon.logging.LogLevel;
 import org.boon.logging.TerminalLogger;
 
@@ -55,13 +55,13 @@ import static org.boon.Exceptions.die;
 import static org.boon.core.reflection.BeanUtils.idxBoolean;
 import static org.boon.json.JsonFactory.fromJson;
 
-public class ContextImpl implements Context, Module {
+public class ThatImpl implements That, Thing {
 
-    protected final ConcurrentLinkedHashSet<Module> modules = new ConcurrentLinkedHashSet<>();
+    protected final ConcurrentLinkedHashSet<Thing> modules = new ConcurrentLinkedHashSet<>();
     private String name;
-    private final AtomicReference<Context> parent = new AtomicReference<>();
+    private final AtomicReference<That> parent = new AtomicReference<>();
 
-    private final Class<ContextImpl> contextImpl = ContextImpl.class;
+    private final Class<ThatImpl> contextImpl = ThatImpl.class;
     private final BoonLogger logger = configurableLogger(contextImpl);
 
     private boolean debug;
@@ -79,45 +79,45 @@ public class ContextImpl implements Context, Module {
         }
     }
 
-    public ContextImpl() {
+    public ThatImpl() {
         initDebug();
     }
 
 
-    public ContextImpl(Module... modules) {
+    public ThatImpl(Thing... modules) {
         initDebug();
-        for (Module module : modules) {
-            module.parent(this);
+        for (Thing module : modules) {
+            module.inside(this);
             this.modules.add(module);
         }
     }
 
 
-    public Context combine(Context newContext) {
+    public That combine(That newContext) {
 
-        ContextImpl newContextImpl = (ContextImpl) newContext;
+        ThatImpl newContextImpl = (ThatImpl) newContext;
 
-        for (Module module : newContextImpl.modules) {
-            module.parent(this);
+        for (Thing module : newContextImpl.modules) {
+            module.inside(this);
             this.modules.add(module);
         }
         return this;
     }
 
 
-    public Context combineFirst(Context newContext) {
+    public That combineFirst(That newContext) {
 
-        ContextImpl newContextImpl = (ContextImpl) newContext;
+        ThatImpl newContextImpl = (ThatImpl) newContext;
 
-        for (Module module : newContextImpl.modules) {
-            module.parent(this);
+        for (Thing module : newContextImpl.modules) {
+            module.inside(this);
             this.modules.addFirst(module);
         }
         return this;
     }
 
     @Override
-    public void parent(Context context) {
+    public void inside(That context) {
         if (debug) logger.debug(contextImpl, "parent");
         this.parent.set(context);
     }
@@ -129,7 +129,7 @@ public class ContextImpl implements Context, Module {
         if (debug) logger.debug(contextImpl, "values()", "IN");
 
         List list = new ArrayList();
-        for (Module m : modules) {
+        for (Thing m : modules) {
 
             for (Object o : m.values()) {
                 list.add(o);
@@ -147,7 +147,7 @@ public class ContextImpl implements Context, Module {
 
 
         List list = new ArrayList();
-        for (Module m : modules) {
+        for (Thing m : modules) {
 
             for (String n : m.names()) {
                 list.add(n);
@@ -163,7 +163,7 @@ public class ContextImpl implements Context, Module {
 
         if (debug) logger.debug(contextImpl, "types()", "IN");
         List list = new ArrayList();
-        for (Module m : modules) {
+        for (Thing m : modules) {
 
             for (Class<?> c : m.types()) {
                 list.add(c);
@@ -176,7 +176,7 @@ public class ContextImpl implements Context, Module {
 
 
     @Override
-    public Iterable<Module> children() {
+    public Iterable<Thing> has() {
         return modules;
     }
 
@@ -186,7 +186,7 @@ public class ContextImpl implements Context, Module {
 
 
     @Override
-    public <T> T get(Class<T> type) {
+    public <T> T a(Class<T> type) {
 
         try {
 
@@ -194,15 +194,15 @@ public class ContextImpl implements Context, Module {
             if (debug) logger.debug(contextImpl, "get(type)", "IN", type);
 
             Object object = null;
-            for (Module module : modules) {
+            for (Thing module : modules) {
 
                 if (module.has(type)) {
-                    object = module.get(type);
+                    object = module.a(type);
                     break;
                 }
             }
 
-            resolveProperties(true, object, getProviderInfo(type));
+            resolveProperties(true, object, supply(type));
 
 
             if (debug) logger.debug(contextImpl, "get(type)", "OUT", object);
@@ -214,7 +214,7 @@ public class ContextImpl implements Context, Module {
 
 
     @Override
-    public <T> T get(Class<T> type, String name) {
+    public <T> T a(Class<T> type, String name) {
 
         if (debug) logger.debug(contextImpl, "get(type, name)", "IN", type, name);
 
@@ -223,15 +223,15 @@ public class ContextImpl implements Context, Module {
 
 
             T object = null;
-            for (Module module : modules) {
+            for (Thing module : modules) {
 
                 if (module.has(name)) {
-                    object = module.get(type, name);
+                    object = module.a(type, name);
                     break;
                 }
             }
 
-            resolveProperties(true, object, getProviderInfo(type, name));
+            resolveProperties(true, object, supply(type, name));
 
 
             if (debug) logger.debug(contextImpl, "get(type, name)", "IN", type, name, "OUT", object);
@@ -244,16 +244,16 @@ public class ContextImpl implements Context, Module {
     }
 
     @Override
-    public ProviderInfo getProviderInfo(Class<?> type) {
+    public Supply supply(Class<?> type) {
 
         if (debug) logger.debug(contextImpl, "getProviderInfo(type)", "IN", type);
         try {
 
-            ProviderInfo pi = null;
-            for (Module module : modules) {
+            Supply pi = null;
+            for (Thing module : modules) {
 
                 if (module.has(type)) {
-                    pi = module.getProviderInfo(type);
+                    pi = module.supply(type);
                     break;
                 }
             }
@@ -262,24 +262,24 @@ public class ContextImpl implements Context, Module {
             if (debug) logger.debug(contextImpl, "getProviderInfo(type)", "IN", type, "OUT", pi);
             return pi;
         } catch (Exception ex) {
-            return Exceptions.handle(ProviderInfo.class, ex, "Unable to get type", type);
+            return Exceptions.handle(Supply.class, ex, "Unable to get type", type);
         }
 
 
 }
 
     @Override
-    public ProviderInfo getProviderInfo(String name) {
+    public Supply supply(String name) {
 
 
         try {
             if (debug) logger.debug(contextImpl, "getProviderInfo(name)", "IN", name);
 
-            ProviderInfo pi = null;
-            for (Module module : modules) {
+            Supply pi = null;
+            for (Thing module : modules) {
 
                 if (module.has(name)) {
-                    pi = module.getProviderInfo(name);
+                    pi = module.supply(name);
                     break;
                 }
             }
@@ -288,24 +288,24 @@ public class ContextImpl implements Context, Module {
             if (debug) logger.debug(contextImpl, "getProviderInfo(name)", "IN", name, "OUT", pi);
             return pi;
         }catch (Exception ex) {
-            return Exceptions.handle(ProviderInfo.class, ex, "Unable to get name", name);
+            return Exceptions.handle(Supply.class, ex, "Unable to get name", name);
         }
 
 
     }
 
     @Override
-    public ProviderInfo getProviderInfo(Class<?> type, String name) {
+    public Supply supply(Class<?> type, String name) {
 
 
         if (debug) logger.debug(contextImpl, "getProviderInfo( type, name )", "IN", type, name);
 
         try {
-            ProviderInfo pi = null;
-            for (Module module : modules) {
+            Supply pi = null;
+            for (Thing module : modules) {
 
                 if (module.has(name)) {
-                    pi = module.getProviderInfo(type, name);
+                    pi = module.supply(type, name);
                     break;
                 }
             }
@@ -314,7 +314,7 @@ public class ContextImpl implements Context, Module {
             if (debug) logger.debug(contextImpl, "getProviderInfo( type, name )", "IN", type, name, "OUT", pi);
             return pi;
         } catch (Exception ex) {
-            return Exceptions.handle(ProviderInfo.class, ex, "Unable to get type/name", type, name);
+            return Exceptions.handle(Supply.class, ex, "Unable to get type/name", type, name);
         }
 
     }
@@ -328,7 +328,7 @@ public class ContextImpl implements Context, Module {
 
         if (debug) logger.debug(contextImpl, "has( type )", "IN", type);
 
-        for (Module module : modules) {
+        for (Thing module : modules) {
 
             if (module.has(type)) {
 
@@ -345,7 +345,7 @@ public class ContextImpl implements Context, Module {
     @Override
     public boolean has(String name) {
 
-        for (Module module : modules) {
+        for (Thing module : modules) {
 
             if (module.has(name)) {
 
@@ -360,23 +360,36 @@ public class ContextImpl implements Context, Module {
     }
 
     @Override
-    public <T> Supplier<T> getSupplier(final Class<T> type, final String name) {
+    public <T> Supplier<T> supplying(final Class<T> type, final String name) {
 
 
         try {
 
 
             Supplier<T> supplier = null;
-            for (Module module : modules) {
+            if (name!=null) {
+                for (Thing module : modules) {
 
-                if (module.has(name)) {
-                    supplier = module.getSupplier(type, name);
-                    break;
+                    if (module.has(name)) {
+                        supplier = module.supplying(type, name);
+                        break;
+                    }
+                }
+            } else {
+                for (Thing module : modules) {
+
+                    if (module.has(type)) {
+                        supplier = module.supplying(type);
+                        break;
+                    }
                 }
             }
 
+            if (supplier == null)
+                return null;
+
             final Supplier<T> s = supplier;
-            final Context resolver = this;
+            final That resolver = this;
 
 
             return new Supplier<>() {
@@ -399,39 +412,12 @@ public class ContextImpl implements Context, Module {
     }
 
     @Override
-    public <T> Supplier<T> getSupplier(Class<T> type) {
-
-        try {
-
-
-            Supplier<T> supplier = null;
-            for (Module module : modules) {
-
-                if (module.has(type)) {
-                    supplier = module.getSupplier(type);
-                    break;
-                }
-            }
-
-            final Supplier<T> s = supplier;
-
-
-            final Context resolver = this;
-
-            return () -> {
-                T o = s.get();
-                resolveProperties(o);
-                return o;
-            };
-
-
-        }  catch (Exception ex) {
-            return Exceptions.handle(Supplier.class, ex, "Unable to get type", type);
-        }
+    public final <T> Supplier<T> supplying(Class<T> type) {
+        return supplying(type, null);
     }
 
 
-    private void resolveProperties(boolean enforce, Object object, ProviderInfo info) {
+    private void resolveProperties(boolean enforce, Object object, Supply info) {
 
         if (debug) logger.debug(contextImpl, "resolveProperties(enforce, object, info )", "IN",
                 enforce, object, info);
@@ -516,15 +502,15 @@ public class ContextImpl implements Context, Module {
 
             boolean fieldNamed = field.isNamed();
             if (fieldNamed && field.type() != Supplier.class) {
-                value = this.get(field.type(), field.named());
+                value = this.a(field.type(), field.named());
             } else if (fieldNamed && field.type() == Supplier.class) {
-                value = this.getSupplier(field.getComponentClass(), field.named());
+                value = this.supplying(field.getComponentClass(), field.named());
             } else {
-                value = this.get(field.type());
+                value = this.a(field.type());
             }
 
             if (value == null && field.isNamed()) {
-                value = get(field.named());
+                value = a(field.named());
                 if (value != null) {
                     field.type().isAssignableFrom(value.getClass());
                 }
@@ -579,7 +565,7 @@ public class ContextImpl implements Context, Module {
 
             }
 
-            Object value = this.get(name);
+            Object value = this.a(name);
 
             if (value == null) {
                 if (debug)
@@ -588,7 +574,7 @@ public class ContextImpl implements Context, Module {
                 name = Boon.add(field.declaringParent().getName(), ".", field.alias());
             }
 
-            value = this.get(name);
+            value = this.a(name);
 
             if (value == null) {
                 if (debug)
@@ -598,7 +584,7 @@ public class ContextImpl implements Context, Module {
             }
 
 
-            value = this.get(name);
+            value = this.a(name);
 
             if (debug && value == null) {
                 logger.debug(contextImpl, "handleInjectionOfBasicField", "NAME NOT FOUND IN CONTEXT", "name", name);
@@ -648,10 +634,10 @@ public class ContextImpl implements Context, Module {
 
         int index = 0;
 
-        for (Module module : modules) {
+        for (Thing module : modules) {
 
-            if (module instanceof ContextImpl) {
-                ContextImpl context = (ContextImpl) module;
+            if (module instanceof ThatImpl) {
+                ThatImpl context = (ThatImpl) module;
                 context.displayModuleInfo();
             } else {
                 puts(index, module);
@@ -680,15 +666,15 @@ public class ContextImpl implements Context, Module {
 
 
     @Override
-    public Object get(String name) {
+    public Object a(String name) {
 
         try {
 
             Object object = null;
-            for (Module module : modules) {
+            for (Thing module : modules) {
 
                 if (module.has(name)) {
-                    object = module.get(name);
+                    object = module.a(name);
                     break;
                 }
             }
@@ -700,7 +686,7 @@ public class ContextImpl implements Context, Module {
                 }
             }
 
-            resolveProperties(true, object, getProviderInfo(name));
+            resolveProperties(true, object, supply(name));
 
             return object;
         } catch (Exception ex) {
@@ -710,13 +696,13 @@ public class ContextImpl implements Context, Module {
 
     @Override
     public Object invoke(String objectName, String methodName, Object args) {
-        Object object = this.get(objectName);
+        Object object = this.a(objectName);
         return Invoker.invokeFromObject(object, methodName, args);
     }
 
     @Override
     public Object invokeOverload(String objectName, String methodName, Object args) {
-        Object object = this.get(objectName);
+        Object object = this.a(objectName);
         return Invoker.invokeOverloadedFromObject(object, methodName, args);
     }
 
@@ -731,22 +717,22 @@ public class ContextImpl implements Context, Module {
     }
 
     @Override
-    public Context add(Module module) {
-        module.parent(this);
+    public That add(Thing module) {
+        module.inside(this);
         this.modules.add(module);
         return this;
     }
 
     @Override
-    public Context remove(Module module) {
-        module.parent(null);
+    public That remove(Thing module) {
+        module.inside(null);
         this.modules.remove(module);
         return this;
     }
 
     @Override
-    public Context addFirst(Module module) {
-        module.parent(this);
+    public That addFirst(Thing module) {
+        module.inside(this);
         this.modules.addFirst(module);
         return this;
     }

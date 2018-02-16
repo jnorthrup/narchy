@@ -44,23 +44,23 @@ public class CoffeeApp implements Runnable {
     Sugar sugar;
 
     @Inject
-    Bacon bacon;
+    Electricity ac;
 
     @Inject
-    @Named("brown")
-    Bacon brownBacon;
+    @Named("cellphoneFood")
+    Electricity dc;
 
     @Inject
-    @Named("french")
-    Food frenchFood;
+    @Named("cat")
+    Food catFood;
 
     @Inject
     @Named("american")
     Food americanFood;
 
     @Inject
-    @Named("new york")
-    Food newYorkFood;
+    @Named("soft")
+    Food softFood;
 
     //    @Inject
     //    @Named( "rick's habit" )
@@ -77,8 +77,8 @@ public class CoffeeApp implements Runnable {
     Coffee blackCoffee;
 
     @Inject
-    @Named("blue")
-    Supplier<Bacon> blueBaconSupplier;
+    @Named("hallwaySocket")
+    Supplier<Electricity> wallOutlet;
 
     //Todo this works but I need a real unit test.
     //    @Inject
@@ -108,80 +108,70 @@ public class CoffeeApp implements Runnable {
     static Sugar staticSugar = new Sugar();
 
     //prototype
-    static Bacon prototypeBacon = new Bacon();
+    static Electricity prorotypeElectricity = new Electricity();
 
     static {
-        prototypeBacon.crispy = true;
+        prorotypeElectricity.ACorDC = true;
     }
 
-    static Module m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12;
+    static Thing m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12;
 
     public static void createModules() {
-        m1 = DependencyInjection.classes(CoffeeApp.class, CoffeeMaker.class, FoodImpl.class);
-        m2 = DependencyInjection.module(new DripCoffeeModule());
-        m3 = DependencyInjection.module(new PumpModule());
-        m4 = DependencyInjection.suppliers(ProviderInfo.providerOf(Coffee.class, new Supplier<Coffee>() {
-
-            @Override
-            public Coffee get() {
-                return new Coffee();
-            }
-        }));
-        m5 = DependencyInjection.objects(staticSugar);
-        m6 = DependencyInjection.prototypes(prototypeBacon);
-        m7 = DependencyInjection.suppliers(ProviderInfo.providerOf(Bacon.class), ProviderInfo.providerOf("orange", Bacon.class), ProviderInfo.providerOf("red", new Bacon()), ProviderInfo.providerOf("brown", Bacon.class, new Supplier<Bacon>() {
-
-            @Override
-            public Bacon get() {
-                Bacon bacon = new Bacon();
-                bacon.tag = "m7";
-                return bacon;
-            }
-        }));
-        m0 = DependencyInjection.suppliers(ProviderInfo.providerOf("blue", new Supplier<Bacon>() {
-
-            @Override
-            public Bacon get() {
-                Bacon bacon = new Bacon();
-                bacon.tag = "m7";
-                return bacon;
-            }
-        }));
-        m8 = DependencyInjection.classes(Cheese.class);
-        m9 = DependencyInjection.objects(new FrenchFries());
-        m10 = DependencyInjection.suppliers(ProviderInfo.providerOf("new york", new Hotdogs()));
-        m11 = DependencyInjection.suppliers(ProviderInfo.providerOf("rick's habit", Coffee.class));
+        m1 = My.classes(CoffeeApp.class, CoffeeMaker.class, FoodImpl.class);
+        m2 = My.thing(new DripCoffee());
+        m3 = My.thing(new PumpSystem());
+        m4 = My.supply(Coffee.class, Coffee::new);
+        m5 = My.object(staticSugar);
+        m6 = My.prototype(prorotypeElectricity);
+        m7 = My.supply(
+                Supply.of(Electricity.class),
+                Supply.of("hallwaySocket", Electricity.class),
+                Supply.of("red", new Electricity()),
+                Supply.of("brown", Electricity.class, () -> {
+                    Electricity ece = new Electricity();
+                    ece.tag = "m7";
+                    return ece;
+                }));
+        m0 = My.supply("cellphoneFood", () -> {
+            Electricity ece = new Electricity();
+            ece.tag = "m7";
+            return ece;
+        });
+        m8 = My.clazz(CatFood.class);
+        m9 = My.object(new SoylentGreen());
+        m10 = My.supply(Supply.of("soft", new Noodles())); //TODO add shortcut method in My
+        m11 = My.supply(Supply.of("rick's habit", Coffee.class)); //TODO add shortcut method in My
     }
 
     public static void main(String... args) {
         createModules();
-        Context context = DependencyInjection.context(m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m0);
-        Heater heater = context.get(Heater.class);
+        That stuff = My.of(m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m0);
+        Heater heater = stuff.a(Heater.class);
         boolean ok = heater instanceof ElectricHeater || die();
-        CoffeeApp coffeeApp = context.get(CoffeeApp.class);
+        CoffeeApp coffeeApp = stuff.a(CoffeeApp.class);
         coffeeApp.run();
         validateApp(coffeeApp);
         createModules();
-        context = DependencyInjection.context(m0, m8, m9, m10, m11, m1, m2, m3, m4, m5, m6, m7);
-        coffeeApp = context.get(CoffeeApp.class);
+        stuff = My.of(m0, m8, m9, m10, m11, m1, m2, m3, m4, m5, m6, m7);
+        coffeeApp = stuff.a(CoffeeApp.class);
         validateApp(coffeeApp);
-        Bacon blueBacon = context.get(Bacon.class, "blue");
-        ok = blueBacon != null || die();
-        ok = context.has(Coffee.class) || die();
-        ok = context.has("black") || die();
-        ok = context.get("black") != null || die();
-        ok = context.get("electricHeater") != null || die();
-        ok = context.get("foodImpl") != null || die();
-        context.remove(m0);
-        context.add(m11);
-        context.addFirst(m0);
-        coffeeApp = context.get(CoffeeApp.class);
+        Electricity ece = stuff.a(Electricity.class, "cellphoneFood");
+        ok = ece != null || die();
+        ok = stuff.has(Coffee.class) || die();
+        ok = stuff.has("black") || die();
+        ok = stuff.a("black") != null || die();
+        ok = stuff.a("electricHeater") != null || die();
+        ok = stuff.a("foodImpl") != null || die();
+        stuff.remove(m0);
+        stuff.add(m11);
+        stuff.addFirst(m0);
+        coffeeApp = stuff.a(CoffeeApp.class);
         validateApp(coffeeApp);
-        context.get(FrenchFries.class);
-        context.get(FrenchFries.class);
-        context.get(FrenchFries.class);
-        context.get(FrenchFries.class);
-        context.get(FrenchFries.class, "american");
+        stuff.a(SoylentGreen.class);
+        stuff.a(SoylentGreen.class);
+        stuff.a(SoylentGreen.class);
+        stuff.a(SoylentGreen.class);
+        stuff.a(SoylentGreen.class, "american");
     }
 
     private static void validateApp(CoffeeApp coffeeApp) {
@@ -189,15 +179,15 @@ public class CoffeeApp implements Runnable {
         ok = coffeeApp.started || die();
         ok = coffeeApp.coffee != null || die();
         ok = coffeeApp.sugar == staticSugar || die();
-        ok = coffeeApp.bacon != prototypeBacon || die();
-        ok = coffeeApp.bacon.crispy || die();
-        ok = coffeeApp.brownBacon != null || die();
-        ok = coffeeApp.frenchFood != null || die();
-        ok = coffeeApp.frenchFood instanceof Cheese || die(coffeeApp.frenchFood.toString());
+        ok = coffeeApp.ac != prorotypeElectricity || die();
+        ok = coffeeApp.ac.ACorDC || die();
+        ok = coffeeApp.dc != null || die();
+        ok = coffeeApp.catFood != null || die();
+        ok = coffeeApp.catFood instanceof CatFood || die(coffeeApp.catFood.toString());
         ok = coffeeApp.americanFood != null || die();
-        ok = coffeeApp.americanFood instanceof FrenchFries || die(coffeeApp.americanFood.toString());
-        ok = coffeeApp.newYorkFood != null || die();
-        ok = coffeeApp.newYorkFood instanceof Hotdogs || die(coffeeApp.newYorkFood.toString());
+        ok = coffeeApp.americanFood instanceof SoylentGreen || die(coffeeApp.americanFood.toString());
+        ok = coffeeApp.softFood != null || die();
+        ok = coffeeApp.softFood instanceof Noodles || die(coffeeApp.softFood.toString());
         //
         //        ok = coffeeApp.rickDrinks != null || die();
         //
@@ -212,7 +202,7 @@ public class CoffeeApp implements Runnable {
         ok = (coffeeApp.rickCoffee instanceof Coffee) || die(coffeeApp.rickCoffee.toString());
         ok = coffeeApp.blackCoffee != null || die();
         ok = (coffeeApp.blackCoffee instanceof Coffee) || die(coffeeApp.blackCoffee.toString());
-        ok = coffeeApp.blueBaconSupplier != null || die();
-        ok = (coffeeApp.blueBaconSupplier.get() instanceof Bacon) || die(coffeeApp.blueBaconSupplier.get().toString());
+        ok = coffeeApp.wallOutlet != null || die();
+        ok = (coffeeApp.wallOutlet.get() instanceof Electricity) || die(coffeeApp.wallOutlet.get().toString());
     }
 }

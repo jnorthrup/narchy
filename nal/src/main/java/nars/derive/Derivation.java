@@ -1,10 +1,6 @@
 package nars.derive;
 
 import jcog.pri.Pri;
-import jcog.pri.PriReference;
-import jcog.pri.Prioritized;
-import jcog.sort.TopNUnique;
-import jcog.util.FloatFloatToFloatFunction;
 import jcog.version.Versioned;
 import nars.$;
 import nars.NAR;
@@ -36,10 +32,7 @@ import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.impl.factory.Maps;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -164,61 +157,114 @@ public class Derivation extends ProtoDerivation {
     public int ditherTime;
     public Deriver deriver;
 
-    public final TopNUniquePremises premises = new TopNUniquePremises();
-
     /** precise time that the task and belief truth are sampled */
     public long taskAt, beliefAt;
 
-    protected class TopNUniquePremises extends TopNUnique<Premise> {
-        private int premisesRemain;
+    /** temporary buffer for storing unique premises */
+    public Set<Premise> premiseBurst = new LinkedHashSet();;
 
-        final FloatFloatToFloatFunction merge = Param.taskTermLinksToPremise;
+////    public final TopNUniquePremises premises = new TopNUniquePremises();
+//
+//    protected class TopNUniquePremises extends TopNUnique<Premise> {
+//        private int premisesRemain;
+//
+//        final FloatFloatToFloatFunction merge = Param.taskTermLinksToPremise;
+//
+//        TopNUniquePremises() {
+//            super(Prioritized::pri);
+//        }
+//
+//        @Override
+//        protected void mergeInto(Premise existing, Premise next) {
+//            float np = next.pri();
+//            if (np > existing.pri()) {
+//                existing.priMax(np);
+//                sort();
+//            }
+//        }
+//
+//        /**
+//         * call before generating a concept's premises
+//         */
+//        public void setTTL(int hypotheticalPremisePerConcept) {
+//            this.premisesRemain = hypotheticalPremisePerConcept;
+//        }
+//
+//        /**
+//         * returns whether to continue
+//         */
+//        public boolean tryAdd(PriReference<Task> tasklink, PriReference<Term> termlink) {
+//            float pri = tasklink.pri();
+//            if (pri == pri) {
+//
+//                Task t = tasklink.get();
+//                if (t != null) {
+//
+//                    float p = merge.apply(pri,
+//                            termlink.priElseZero())
+//                            * nar.amp(t);
+//                    if (p > minAdmission()) {
+//                        add(new Premise(t, termlink.get(), p));
+//                    } else {
+//                        //System.out.println("rejected early");
+//                    }
+//                }
+//
+//            }
+//            return --premisesRemain > 0;
+//        }
+//    }
 
-        TopNUniquePremises() {
-            super(Prioritized::pri);
-        }
-
-        @Override
-        protected void mergeInto(Premise existing, Premise next) {
-            float np = next.pri();
-            if (np > existing.pri()) {
-                existing.priMax(np);
-                sort();
-            }
-        }
-
-        /**
-         * call before generating a concept's premises
-         */
-        public void setTTL(int hypotheticalPremisePerConcept) {
-            this.premisesRemain = hypotheticalPremisePerConcept;
-        }
-
-        /**
-         * returns whether to continue
-         */
-        public boolean tryAdd(PriReference<Task> tasklink, PriReference<Term> termlink) {
-            float pri = tasklink.pri();
-            if (pri == pri) {
-
-                Task t = tasklink.get();
-                if (t != null) {
-
-                    float p = merge.apply(pri,
-                            termlink.priElseZero())
-                            * nar.amp(t);
-                    if (p > minAdmission()) {
-                        add(new Premise(t, termlink.get(), p));
-                    } else {
-                        //System.out.println("rejected early");
-                    }
-                }
-
-            }
-            return --premisesRemain > 0;
-        }
-    }
-
+//    protected class TopNUniquePremises extends TopNUnique<Premise> {
+//        private int premisesRemain;
+//
+//        final FloatFloatToFloatFunction merge = Param.taskTermLinksToPremise;
+//
+//        TopNUniquePremises() {
+//            super(Prioritized::pri);
+//        }
+//
+//        @Override
+//        protected void mergeInto(Premise existing, Premise next) {
+//            float np = next.pri();
+//            if (np > existing.pri()) {
+//                existing.priMax(np);
+//                sort();
+//            }
+//        }
+//
+//        /**
+//         * call before generating a concept's premises
+//         */
+//        public void setTTL(int hypotheticalPremisePerConcept) {
+//            this.premisesRemain = hypotheticalPremisePerConcept;
+//        }
+//
+//        /**
+//         * returns whether to continue
+//         */
+//        public boolean tryAdd(PriReference<Task> tasklink, PriReference<Term> termlink) {
+//            float pri = tasklink.pri();
+//            if (pri == pri) {
+//
+//                Task t = tasklink.get();
+//                if (t != null) {
+//
+//                    float p = merge.apply(pri,
+//                            termlink.priElseZero())
+//                            * nar.amp(t);
+//                    if (p > minAdmission()) {
+//                        add(new Premise(t, termlink.get(), p));
+//                    } else {
+//                        //System.out.println("rejected early");
+//                    }
+//                }
+//
+//            }
+//            return --premisesRemain > 0;
+//        }
+//    }
+//
 
     //public Map<Term, Term> xyDyn = new HashMap();
 

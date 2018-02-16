@@ -27,6 +27,9 @@
  */
 package org.boon.di;
 
-@Named("chicago")
-public class Hotdogs extends FoodImpl implements Food {
+/**
+ * Created by Richard on 2/3/14.
+ */
+@Named("cat")
+public class CatFood extends FoodImpl implements Food {
 }

@@ -35,7 +35,7 @@ import org.boon.core.Supplier;
 import org.boon.core.reflection.BeanUtils;
 import org.boon.core.reflection.MapObjectConversion;
 import org.boon.core.reflection.Reflection;
-import org.boon.di.ProviderInfo;
+import org.boon.di.Supply;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,19 +48,19 @@ import static org.boon.di.modules.NamedUtils.namedValueForClass;
 /**
  * Created by Richard on 2/3/14.
  */
-public class SupplierModule extends BaseModule {
+public class SupplierThing extends BaseThing {
 
-    private final Map<Class, ProviderInfo> supplierTypeMap = new ConcurrentHashMap<>();
+    private final Map<Class, Supply> supplierTypeMap = new ConcurrentHashMap<>();
 
-    private final MultiMapImpl<String, ProviderInfo> supplierNameMap = new MultiMapImpl<>();
+    private final MultiMapImpl<String, Supply> supplierNameMap = new MultiMapImpl<>();
 
-    public SupplierModule( ProviderInfo... suppliers ) {
+    public SupplierThing(Supply... suppliers ) {
         supplierExtraction( suppliers );
     }
 
 
-    public SupplierModule( List<ProviderInfo> suppliers ) {
-        supplierExtraction( suppliers.toArray(new ProviderInfo[suppliers.size()]) );
+    public SupplierThing(List<Supply> suppliers ) {
+        supplierExtraction( suppliers.toArray(new Supply[suppliers.size()]) );
     }
 
 
@@ -80,25 +80,25 @@ public class SupplierModule extends BaseModule {
         return supplierTypeMap.keySet();
     }
 
-    public SupplierModule( Map<?, ?> map ) {
-        List<ProviderInfo> list = new ArrayList<>(  );
+    public SupplierThing(Map<?, ?> map ) {
+        List<Supply> list = new ArrayList<>(  );
 
         for (Map.Entry<?,?> entry : map.entrySet()) {
             Object key = entry.getKey();
             Object value = entry.getValue();
             if (value instanceof Map) {
                 Map <String, Object> valueMap = (Map <String, Object>) value;
-                ProviderInfo pi = addProviderFromMapToList(key, valueMap);
+                Supply pi = addProviderFromMapToList(key, valueMap);
                 list.add( pi );
 
             } else {
-                list.add( ProviderInfo.provider( key, value ));
+                list.add( Supply.provider( key, value ));
             }
         }
-        supplierExtraction( list.toArray( new ProviderInfo[list.size()] ) );
+        supplierExtraction( list.toArray( new Supply[list.size()] ) );
     }
 
-    private static ProviderInfo addProviderFromMapToList(final Object key, final Map<String, Object> valueMap) {
+    private static Supply addProviderFromMapToList(final Object key, final Map<String, Object> valueMap) {
         if (valueMap.containsKey( "class" )) {
             CharSequence className = (CharSequence) valueMap.get("class");
             if (className!=null) {
@@ -107,22 +107,22 @@ public class SupplierModule extends BaseModule {
                     final Class<Object> type = (Class<Object>) Class.forName( className.toString());
 
                     final Supplier<Object> supplier = () -> MapObjectConversion.fromMap(valueMap);
-                    return ProviderInfo.providerOf( key.toString(),  type, supplier );
+                    return Supply.of( key.toString(),  type, supplier );
                 } catch ( ClassNotFoundException e ) {
-                    return ProviderInfo.provider( key, valueMap ) ;
+                    return Supply.provider( key, valueMap ) ;
                 }
 
             }
 
         }
-        return ProviderInfo.provider( key, valueMap ) ;
+        return Supply.provider( key, valueMap ) ;
 
     }
 
 
     @Override
-    public <T> T get( Class<T> type ) {
-        ProviderInfo pi = supplierTypeMap.get(type);
+    public <T> T a(Class<T> type ) {
+        Supply pi = supplierTypeMap.get(type);
         if (pi!=null) {
             return (T) pi.supplier().get();
         }
@@ -131,9 +131,9 @@ public class SupplierModule extends BaseModule {
     }
 
     @Override
-    public Object get( String name ) {
+    public Object a(String name ) {
 
-        ProviderInfo pi = supplierNameMap.get(name);
+        Supply pi = supplierNameMap.get(name);
         if (pi!=null) {
             return pi.supplier().get();
         }
@@ -143,8 +143,8 @@ public class SupplierModule extends BaseModule {
     }
 
     @Override
-    public <T> T get( Class<T> type, String name ) {
-        ProviderInfo providerInfo = getProviderInfo(type, name);
+    public <T> T a(Class<T> type, String name ) {
+        Supply providerInfo = supply(type, name);
         if (providerInfo!=null) {
             return (T)providerInfo.supplier().get();
         }
@@ -152,31 +152,31 @@ public class SupplierModule extends BaseModule {
     }
 
     @Override
-    public ProviderInfo getProviderInfo(Class<?> type) {
+    public Supply supply(Class<?> type) {
         return supplierTypeMap.get(type);
     }
 
     @Override
-    public ProviderInfo getProviderInfo(String name) {
+    public Supply supply(String name) {
         return supplierNameMap.get(name);
     }
 
     @Override
-    public ProviderInfo getProviderInfo(Class<?> type, String name) {
+    public Supply supply(Class<?> type, String name) {
         return doGetProvider(type, name);
     }
 
 
     @Override
-    public <T> Supplier<T> getSupplier( final Class<T> type, final String name ) {
+    public <T> Supplier<T> supplying(final Class<T> type, final String name ) {
 
 
-        ProviderInfo nullInfo = null;
+        Supply nullInfo = null;
 
         try {
-            Set<ProviderInfo> set = Sets.set( supplierNameMap.getAll( name ) );
+            Set<Supply> set = Sets.set( supplierNameMap.getAll( name ) );
 
-            for ( ProviderInfo info : set ) {
+            for ( Supply info : set ) {
 
                 if ( info.type() == null ) {
                     nullInfo = info;
@@ -196,15 +196,15 @@ public class SupplierModule extends BaseModule {
     }
 
 
-    private  ProviderInfo doGetProvider( final Class<?> type, final String name ) {
+    private Supply doGetProvider(final Class<?> type, final String name ) {
 
 
-        Set<ProviderInfo> set = Sets.set( supplierNameMap.getAll( name ) );
+        Set<Supply> set = Sets.set( supplierNameMap.getAll( name ) );
 
 
-        ProviderInfo nullTypeInfo = null;
+        Supply nullTypeInfo = null;
 
-        for ( ProviderInfo info : set ) {
+        for ( Supply info : set ) {
 
                 if ( info.type() == null ) {
                     nullTypeInfo = info;
@@ -220,7 +220,7 @@ public class SupplierModule extends BaseModule {
 
 
     @Override
-    public <T> Supplier<T> getSupplier( Class<T> type ) {
+    public <T> Supplier<T> supplying(Class<T> type ) {
         Supplier<T> supplier = ( Supplier<T> ) supplierTypeMap.get( type );
         if (supplier == null ) {
             supplier = () -> null;
@@ -241,7 +241,7 @@ public class SupplierModule extends BaseModule {
     }
 
 
-    private void extractClassIntoMaps( ProviderInfo info, Class type, boolean foundName, Supplier supplier ) {
+    private void extractClassIntoMaps(Supply info, Class type, boolean foundName, Supplier supplier ) {
 
         if ( type == null ) {
             return;
@@ -264,7 +264,7 @@ public class SupplierModule extends BaseModule {
             if ( !foundName ) {
                 named = NamedUtils.namedValueForClass( superClass );
                 if ( named != null ) {
-                    supplierNameMap.put( named, new ProviderInfo( named, type, supplier, null ) );
+                    supplierNameMap.put( named, new Supply( named, type, supplier, null ) );
                     foundName = true;
                 }
             }
@@ -280,8 +280,8 @@ public class SupplierModule extends BaseModule {
     }
 
 
-    private void supplierExtraction( ProviderInfo[] suppliers ) {
-        for ( ProviderInfo providerInfo : suppliers ) {
+    private void supplierExtraction( Supply[] suppliers ) {
+        for ( Supply providerInfo : suppliers ) {
 
             Class<?> type = providerInfo.type();
             /* Get type from value. */
@@ -294,7 +294,7 @@ public class SupplierModule extends BaseModule {
 
             if ( supplier == null ) {
                 supplier = createSupplier( providerInfo.prototype(), type, providerInfo.value() );
-                providerInfo = new ProviderInfo(named, type, supplier, providerInfo.value());
+                providerInfo = new Supply(named, type, supplier, providerInfo.value());
             }
 
             if ( type != null ) {
@@ -311,7 +311,7 @@ public class SupplierModule extends BaseModule {
 
             extractClassIntoMaps( providerInfo, type, named != null, supplier );
             if ( named != null ) {
-                supplierNameMap.put( named, new ProviderInfo( named, type, supplier, providerInfo.value() ) );
+                supplierNameMap.put( named, new Supply( named, type, supplier, providerInfo.value() ) );
             }
         }
     }

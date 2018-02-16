@@ -3,6 +3,7 @@ package nars.term;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.subterm.Subterms;
 import nars.term.transform.Retemporalize;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -438,8 +439,8 @@ public class TemporalTermTest {
         Term[] a = Terms.sorted(t0, t1);
         Term[] b = Terms.sorted(t1, t0);
         assertEquals(
-                The.subtermsInterned(a),
-                The.subtermsInterned(b)
+                Subterms.subtermsInterned(a),
+                Subterms.subtermsInterned(b)
         );
     }
 

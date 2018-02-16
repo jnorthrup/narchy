@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.math.Range;
 import jcog.memoize.HijackMemoize;
 import jcog.memoize.Memoize;
-import jcog.pri.Pri;
+import jcog.pri.PriReference;
 import nars.$;
 import nars.NAR;
 import nars.Param;
@@ -13,10 +13,13 @@ import nars.control.Activate;
 import nars.control.Cause;
 import nars.derive.rule.PremiseRuleSet;
 import nars.exe.Causable;
+import nars.term.Term;
 import nars.truth.Truth;
 
 import java.io.PrintStream;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -34,18 +37,9 @@ import static nars.time.Tense.ETERNAL;
  */
 public class Deriver extends Causable {
 
-    /** source of concepts supplied to this for this deriver */
-    private final Consumer<Predicate<Activate>> concepts;
 
-    /** list of conclusions that in which this deriver can result */
-    private final Cause[] subCauses;
+    int conceptsPerIteration = 1;
 
-
-    /**
-     * how many premises to generate per concept in pre-derivation
-     */
-    @Range(min=1, max=16)
-    public int HypotheticalPremisePerConcept = 4;
 
     /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks
@@ -58,14 +52,18 @@ public class Deriver extends Causable {
      * how many premises to keep per concept; should be <= Hypothetical count
      */
     @Range(min=1, max=16)
-    public int premisesPerConcept = 2;
+    public int premisesPerConcept = 5;
 
     @Range(min=1, max=1024)
-    public int burstMax = 16;
+    public int burstMax = 512;
 
 
-    int conceptsPerIteration = 1;
 
+    /** source of concepts supplied to this for this deriver */
+    private final Consumer<Predicate<Activate>> concepts;
+
+    /** list of conclusions that in which this deriver can result */
+    private final Cause[] subCauses;
 
     /**
      * TODO move this to a 'CachingDeriver' subclass
@@ -183,52 +181,56 @@ public class Deriver extends Causable {
         int matchTTL = Param.TTL_MIN() * 2;
         int deriveTTL = n.matchTTLmean.intValue();
 
+        Set<Premise> premiseBurst = d.premiseBurst;
 
-        Derivation.TopNUniquePremises premises = d.premises;
-
-        int ammo = iterations * conceptsPerIteration;
+        int totalPremisesRemain = iterations * conceptsPerIteration;
         final int[] fired = {0};
-        while (ammo > 0) {
+        while (totalPremisesRemain > 0) {
 
-            int burstSize = Math.min(burstMax, ammo);
-            ammo -= burstSize;
+            int burstSize = Math.min(burstMax, totalPremisesRemain);
+            totalPremisesRemain -= burstSize;
 
-            int burst[] = new int[]{burstSize};
-
-            int premiseLimit = burstSize * premisesPerConcept;
-            premises.clear(premiseLimit, Premise[]::new);
-
-            //fire a burst of concepts to generate hypothetical premises.  collect a fraction of these (ex: 50%), ranked by priority
-            concepts.accept(a -> {
-                fired[0]++;
-                premises.setTTL(HypotheticalPremisePerConcept);
-                a.premises(n, d.activator, premises::tryAdd, termLinksPerTaskLink);
-                return (--burst[0]) > 0;
-            });
-
-            int ps = premises.size();
-
-            int totalTTL = deriveTTL * ps;
-            Premise[] pp = premises.list;
-            float totalPremiesPri = Math.max(Pri.EPSILON, Util.sum(ps, (p)->pp[p].pri()));
+            premiseBurst.clear();
 
             this.now = nar.time();
 
-            //derive the premises
-            for (Premise premise : pp) {
+            //SELECT
 
-                if (premise == null) break; //end
+            selectPremises(burstSize, d, (tasklink, termlink)->{
+                Task t = tasklink.get();
+                if (t != null) {
+                    Premise premise = new Premise(t, termlink.get());
+                    if (!premiseBurst.add(premise)) {
+                        n.emotion.premiseBurstDuplicate.increment();
+                    }
+                }
+                return true;
+
+//                premise.priSet(Param.taskTermLinksToPremise.apply(
+//                        premise.task.priElseZero(),
+//                        termlink.priElseZero()
+//                ) * nar.amp(t));
+            });
+
+            //--- FIRE
+
+            this.now = nar.time();
+
+            premiseBurst.removeIf(premise -> {
 
                 if (premise.match(d, this::matchTime, matchTTL) != null) {
-                    n.emotion.premiseFire.increment();
 
                     boolean derivable = proto(d);
+
                     if (derivable) {
                         //specific ttl as fraction of the total TTL allocated to the burst, proportional to its priority contribution
-                        int ttl = Math.round(Util.lerp(
-                                premise.priElseZero()/totalPremiesPri, Param.TTL_MIN(), totalTTL));
+//                        int ttl = Math.round(Util.lerp(
+//                                premise.priElseZero(), Param.TTL_MIN(), deriveTTL));
 
-                        d.derive(ttl);
+                        d.derive(deriveTTL);
+
+                        n.emotion.premiseFire.increment();
+
                     } else {
                         n.emotion.premiseUnderivable.increment();
                     }
@@ -237,14 +239,58 @@ public class Deriver extends Causable {
                 } else {
                     n.emotion.premiseFailMatch.increment();
                 }
-            }
 
+                return true;
+            });
         }
+
+
+
 
         int derived = d.commit(n::input);
 
         return fired[0];
     }
+
+    private void selectPremises(int premises, Derivation d, BiPredicate<PriReference<Task>, PriReference<Term>> each) {
+
+        int premisesRemain[] = new int[]{premises};
+
+        this.concepts.accept(a -> {
+
+            int[] perConceptRemain = new int[] {premisesPerConcept};
+
+            a.premises(nar, d.activator, (tasklink, termlink) ->
+
+                    //can return false to stop the current concept but not the entire chain
+                    (--perConceptRemain[0] > 0) && each.test(tasklink, termlink) && (--premisesRemain[0]>0), termLinksPerTaskLink);
+
+            return (--premisesRemain[0]) > 0;
+
+        });
+
+    }
+
+//    private Iterable<? extends Premise> premises(int burstSize) {
+//        int burst[] = new int[]{burstSize};
+//
+//        int premiseLimit = burstSize * premisesPerConcept;
+//        premises.clear(premiseLimit, Premise[]::new);
+//
+//        //fire a burst of concepts to generate hypothetical premises.  collect a fraction of these (ex: 50%), ranked by priority
+//        concepts.accept(a -> {
+//            fired[0]++;
+//            premises.setTTL(HypotheticalPremisePerConcept);
+//            a.premises(n, d.activator, premises::tryAdd, termLinksPerTaskLink);
+//            return (--burst[0]) > 0;
+//        });
+//
+//        int ps = premises.size();
+//
+//        int totalTTL = deriveTTL * ps;
+//        Premise[] pp = premises.list;
+//        float totalPremiesPri = Math.max(Pri.EPSILON, Util.sum(ps, (p)->pp[p].pri()));
+//    }
 
     /**
      * 1. CAN (proto) stage

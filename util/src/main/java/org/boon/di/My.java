@@ -29,54 +29,76 @@
 package org.boon.di;
 
 import org.boon.Lists;
-import org.boon.di.impl.ContextImpl;
-import org.boon.di.modules.InstanceModule;
-import org.boon.di.modules.SupplierModule;
+import org.boon.core.Supplier;
+import org.boon.di.impl.ThatImpl;
+import org.boon.di.modules.InstanceThing;
+import org.boon.di.modules.SupplierThing;
 
 import java.util.List;
 import java.util.Map;
 
-public class DependencyInjection {
+public class My {
 
 
-    public static Context context( final Module... modules ) {
-        return new ContextImpl( modules );
-    }
-
-    public static Module classes( Class... classes ) {
-        List<ProviderInfo> wrap = Lists.wrap(ProviderInfo.class, classes);
-        return new SupplierModule(wrap);
+    public static That of(final Thing... things ) {
+        return new ThatImpl( things );
     }
 
 
+    public static Thing clazz(Class c) {
+        return classes(c);
+    }
 
-    public static Module objects( Object... objects ) {
-
-
-        List<ProviderInfo> wrap = (List<ProviderInfo>) Lists.mapBy(objects, ProviderInfo.class, "objectProviderOf");
-
-        return new SupplierModule( wrap );
+    public static Thing classes(Class... classes ) {
+        List<Supply> wrap = Lists.wrap(Supply.class, classes);
+        return new SupplierThing(wrap);
     }
 
 
-    public static Module prototypes( Object... objects ) {
 
-        List<ProviderInfo> wrap = (List<ProviderInfo>) Lists.mapBy(objects, ProviderInfo.class, "prototypeProviderOf");
-
-        return new SupplierModule( wrap );
+    public static Thing object(Object objects ) {
+        return objects(objects);
     }
 
-    public static Module module( Object module ) {
+    public static Thing objects(Object... objects ) {
 
-        return new InstanceModule( module );
+
+        List<Supply> wrap = (List<Supply>) Lists.mapBy(objects, Supply.class, "objectProviderOf");
+
+        return new SupplierThing( wrap );
     }
 
-    public static Module suppliers( ProviderInfo... suppliers ) {
 
-        return new SupplierModule( suppliers );
+    public static Thing prototype(Object o) {
+        return prototypes(o);
     }
 
-    public static Context fromMap( Map<?, ?> map ) {
-        return new ContextImpl(new SupplierModule( map ));
+    public static Thing prototypes(Object... objects ) {
+
+        List<Supply> wrap = (List<Supply>) Lists.mapBy(objects, Supply.class, "prototypeProviderOf");
+
+        return new SupplierThing( wrap );
     }
+
+    public static Thing thing(Object module ) {
+
+        return new InstanceThing( module );
+    }
+
+    public static <T> Thing supply(Class<T> type, Supplier<T> supplier) {
+        return supply(Supply.of(type, supplier));
+    }
+    public static <T> Thing supply(String name, Supplier<T> supplier) {
+        return supply(Supply.of(name, supplier));
+    }
+
+    public static Thing supply(Supply... suppliers ) {
+        return new SupplierThing( suppliers );
+    }
+
+    public static That fromMap(Map<?, ?> map ) {
+        return new ThatImpl(new SupplierThing( map ));
+    }
+
+
 }

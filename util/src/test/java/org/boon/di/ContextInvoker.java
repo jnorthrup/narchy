@@ -112,7 +112,7 @@ public class ContextInvoker {
     @Test
     public void test() {
         HelloWorld hw = new HelloWorld();
-        Context context = DependencyInjection.fromMap(Maps.map("hw", hw));
+        That context = My.fromMap(Maps.map("hw", hw));
         context.invoke("hw", "invokeMe", null);
         if (!hw.invokeMe) {
             die();
@@ -122,7 +122,7 @@ public class ContextInvoker {
     @Test
     public void test2() {
         HelloWorld hw = new HelloWorld();
-        Context context = DependencyInjection.fromMap(Maps.map("hw", hw));
+        That context = My.fromMap(Maps.map("hw", hw));
         context.invoke("hw", "invokeMe2", Lists.list("hi", 5));
         if (!hw.invokeMe2) {
             die();
@@ -132,7 +132,7 @@ public class ContextInvoker {
     @Test
     public void test3() {
         HelloWorld hw = new HelloWorld();
-        Context context = DependencyInjection.fromMap(Maps.map("hw", hw));
+        That context = My.fromMap(Maps.map("hw", hw));
         HelloWorldArg hwa = (HelloWorldArg) context.invoke("hw", "invokeMe3", Lists.list(Lists.list("hi", 5), 6));
         if (!hwa.equals(new HelloWorldArg("hi", 5, 6))) {
             die();
@@ -142,7 +142,7 @@ public class ContextInvoker {
     @Test
     public void test4() {
         HelloWorld hw = new HelloWorld();
-        Context context = DependencyInjection.fromMap(Maps.map("hw", hw));
+        That context = My.fromMap(Maps.map("hw", hw));
         HelloWorldArg hwa = (HelloWorldArg) context.invoke("hw", "invokeMe4", Lists.list("hi", 5));
         if (!hwa.equals(new HelloWorldArg("hi", 5, 4))) {
             die();
@@ -152,7 +152,7 @@ public class ContextInvoker {
     @Test
     public void test5() {
         HelloWorld hw = new HelloWorld();
-        Context context = DependencyInjection.fromMap(Maps.map("hw", hw));
+        That context = My.fromMap(Maps.map("hw", hw));
         HelloWorldArg hwa = (HelloWorldArg) context.invoke("hw", "invokeMe4", Lists.list((Object) Lists.list("hi", 5)));
         if (!hwa.equals(new HelloWorldArg("hi", 5, 4))) {
             die();
@@ -162,7 +162,7 @@ public class ContextInvoker {
     @Test
     public void test6() {
         HelloWorld hw = new HelloWorld();
-        Context context = DependencyInjection.fromMap(Maps.map("hw", hw));
+        That context = My.fromMap(Maps.map("hw", hw));
         HelloWorldArg hwa = (HelloWorldArg) context.invoke("hw", "invokeMe4", Maps.map("hi", "hello", "i", 6, "i2", "6"));
         if (!hwa.equals(new HelloWorldArg("hello", 6, 4))) {
             die();
@@ -172,7 +172,7 @@ public class ContextInvoker {
     @Test
     public void test7() {
         HelloWorld hw = new HelloWorld();
-        Context context = DependencyInjection.fromMap(Maps.map("hw", hw));
+        That context = My.fromMap(Maps.map("hw", hw));
         HelloWorldArg hwa = (HelloWorldArg) context.invoke("hw", "invokeMe4", Lists.list(Maps.map("hi", "hello", "i", 7, "i2", "6")));
         if (!hwa.equals(new HelloWorldArg("hello", 7, 4))) {
             die();
@@ -182,7 +182,7 @@ public class ContextInvoker {
     @Test
     public void test8() {
         HelloWorld hw = new HelloWorld();
-        Context context = DependencyInjection.fromMap(Maps.map("hw", hw));
+        That context = My.fromMap(Maps.map("hw", hw));
         HelloWorldArg hwa = (HelloWorldArg) context.invokeFromJson("hw", "invokeMe4", toJson(Lists.list(Maps.map("hi", "hello", "i", 8, "i2", "6"))));
         if (!hwa.equals(new HelloWorldArg("hello", 8, 4))) {
             die();
@@ -192,7 +192,7 @@ public class ContextInvoker {
     @Test
     public void test9() {
         HelloWorld hw = new HelloWorld();
-        Context context = DependencyInjection.fromMap(Maps.map("hw", hw));
+        That context = My.fromMap(Maps.map("hw", hw));
         HelloWorldArg hwa = (HelloWorldArg) context.invokeOverloadFromJson("hw", "invokeMe4", toJson(Lists.list(Maps.map("hi", "hello", "i", 9, "i2", "6"))));
         if (!hwa.equals(new HelloWorldArg("hello", 9, 4))) {
             die();

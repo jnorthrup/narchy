@@ -33,11 +33,11 @@ import org.boon.core.Supplier;
 /**
  * Created by Richard on 2/3/14.
  */
-public class ProviderInfo<T> {
+public class Supply<T> {
 
     private String name;
     private final Class<T> type;
-    private Supplier<T> supplier;
+    private Supplier<T> source;
     private T object;
 
 
@@ -47,7 +47,7 @@ public class ProviderInfo<T> {
     boolean prototype;
 
 
-    public ProviderInfo( Class<T> type) {
+    public Supply(Class<T> type) {
         this.type = type;
     }
 
@@ -55,82 +55,82 @@ public class ProviderInfo<T> {
 //        this.object = object;
 //    }
 
-    public ProviderInfo( String name, Class<T> type, Supplier<T> supplier, T object ) {
+    public Supply(String name, Class<T> type, Supplier<T> source, T object ) {
         this.name = name;
         this.type = type;
-        this.supplier = supplier;
+        this.source = source;
         this.object = object;
     }
 
 
-    public ProviderInfo( String name, Class<T> type, Supplier<T> supplier, T object, boolean prototype ) {
+    public Supply(String name, Class<T> type, Supplier<T> source, T object, boolean prototype ) {
         this.name = name;
         this.type = type;
-        this.supplier = supplier;
+        this.source = source;
         this.object = object;
         this.prototype = prototype;
     }
 
-    public static <T> ProviderInfo<T> providerOf( Class<T> type, Supplier<T> supplier ) {
-        return new ProviderInfo<>( null, type, supplier, null );
+    public static <T> Supply<T> of(Class<T> type, Supplier<T> supplier ) {
+        return new Supply<>( null, type, supplier, null );
     }
 
 
-    public static <T> ProviderInfo<T> providerOf( String name, Class<T> type, Supplier<T> supplier ) {
-        return new ProviderInfo<>( name, type, supplier, null );
+    public static <T> Supply<T> of(String name, Class<T> type, Supplier<T> supplier ) {
+        return new Supply<>( name, type, supplier, null );
     }
 
 
-    public static <T> ProviderInfo<T> providerOf( String name, Supplier<T> supplier ) {
-        return new ProviderInfo<>( name, null, supplier, null );
+    public static <T> Supply<T> of(String name, Supplier<T> supplier ) {
+        return new Supply<>( name, null, supplier, null );
     }
 
 
-    public static <T> ProviderInfo<T> providerOf( String name, Class<T> type ) {
-        return new ProviderInfo<>( name, type, null, null );
+    public static <T> Supply<T> of(String name, Class<T> type ) {
+        return new Supply<>( name, type, null, null );
     }
 
 
-    public static <T> ProviderInfo<T> providerOf( Class<T> type ) {
-        return new ProviderInfo<>( null, type, null, null );
+    public static <T> Supply<T> of(Class<T> type ) {
+        return new Supply<>( null, type, null, null );
     }
 
 
-    public static <T> ProviderInfo<T> providerOf( String name, T object ) {
-        return new ProviderInfo<>( name, null, null, object );
+    public static <T> Supply<T> of(String name, T object ) {
+        return new Supply<>( name, null, null, object );
     }
 
 
-    public static <T> ProviderInfo<T> providerOf( T object ) {
-        return new ProviderInfo<>( null, null, null, object );
+    public static <T> Supply<T> of(T object ) {
+        return new Supply<>( null, null, null, object );
     }
 
 
-    public static <T> ProviderInfo<T> objectProviderOf( T object ) {
-        return new ProviderInfo<>( null, null, null, object );
+    public static <T> Supply<T> objectProviderOf(T object ) {
+        return new Supply<>( null, null, null, object );
     }
 
 
-    public static <T> ProviderInfo<T> prototypeProviderOf( T object ) {
-        return new ProviderInfo<>( null, null, null, object, true );
+    public static <T> Supply<T> prototypeProviderOf(T object ) {
+        return new Supply<>( null, null, null, object, true );
     }
 
-    public static <T> ProviderInfo<T> provider( Object name, Object value ) {
+    public static <T> Supply<T> provider(Object name, Object value ) {
 
-        ProviderInfo info;
+        Supply info;
 
-        if (value instanceof ProviderInfo ) {
-            ProviderInfo valueInfo = ( ProviderInfo ) value;
-            info  = new ProviderInfo( name.toString(), valueInfo.type(), valueInfo.supplier(), valueInfo.value()  );
+        if (value instanceof Supply) {
+            Supply valueInfo = (Supply) value;
+            info  = new Supply( name.toString(), valueInfo.type(), valueInfo.supplier(), valueInfo.value()  );
         } else if (value instanceof Class) {
-            info = new ProviderInfo( name.toString(), (Class) value, null, null  );
+            info = new Supply( name.toString(), (Class) value, null, null  );
         } else if (value instanceof Supplier) {
-            info = new ProviderInfo( name.toString(), null, (Supplier) value, null  );
+            info = new Supply( name.toString(), null, (Supplier) value, null  );
         } else  {
             if (value == null) {
-                info = new ProviderInfo( name.toString(), null, null, value  );
+                info = new Supply( name.toString(), null, null, value  );
             }  else {
-                info = new ProviderInfo( name.toString(), value.getClass(), null, value  );
+                info = new Supply( name.toString(), value.getClass(), null, value  );
             }
         }
         return info;
@@ -141,7 +141,7 @@ public class ProviderInfo<T> {
     }
 
     public Supplier<T> supplier() {
-        return supplier;
+        return source;
     }
 
     public String name() {

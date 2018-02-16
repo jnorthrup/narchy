@@ -41,7 +41,7 @@ public abstract class Group extends Criteria {
     protected final List<Criteria> expressions;
 
 
-    private Grouping grouping = Grouping.AND;
+    private Grouping grouping;
 
 
 

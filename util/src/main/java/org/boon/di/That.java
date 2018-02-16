@@ -26,59 +26,40 @@
  *               \/           \/          \/         \/        \/  \/
  */
 
-package org.boon.di.modules;
+package org.boon.di;
 
-import org.boon.core.Supplier;
-import org.boon.di.Context;
-import org.boon.di.Module;
 
-import java.util.concurrent.atomic.AtomicReference;
+public interface That extends Thing {
 
-/**
- * Created by Richard on 2/5/14.
- */
-public abstract class BaseModule implements Module{
 
-    private final AtomicReference<Context> parent = new AtomicReference<>(  );
+    Object invoke( String objectName, String methodName, Object args);
 
-    @Override
-    public void parent(Context context) {
-        this.parent.set( context );
-    }
 
-    @Override
-    public <T> T get( Class<T> type ) {
-        return null;
-    }
+    Object invokeOverload( String objectName, String methodName, Object args);
 
-    @Override
-    public Object get( String name ) {
-        return null;
-    }
 
-    @Override
-    public <T> T get( Class<T> type, String name ) {
-        return null;
-    }
 
-    @Override
-    public boolean has( Class type ) {
-        return false;
-    }
+    Object invokeFromJson( String objectName, String methodName, String args);
 
-    @Override
-    public boolean has( String name ) {
-        return false;
-    }
 
-    @Override
-    public <T> Supplier<T> getSupplier( Class<T> type, String name ) {
-        return null;
-    }
+    Object invokeOverloadFromJson( String objectName, String methodName, String args);
 
-    @Override
-    public <T> Supplier<T> getSupplier( Class<T> type ) {
-        return null;
-    }
+    That add(Thing module );
+
+    That remove(Thing module );
+
+    That addFirst(Thing module );
+
+    Iterable<Thing> has();
+
+    void resolveProperties( Object o );
+
+    void resolvePropertiesIgnoreRequired( Object o );
+
+    void debug(  );
+
+    That combine(That newContext );
+    That combineFirst(That newContext );
+
 
 }

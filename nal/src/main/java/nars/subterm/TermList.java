@@ -1,7 +1,6 @@
 package nars.subterm;
 
 import jcog.list.FasterList;
-import nars.The;
 import nars.term.Term;
 
 import java.util.Collection;
@@ -51,7 +50,7 @@ public class TermList extends FasterList<Term> implements Subterms {
 
     /** creates an immutable instance of this */
     public Subterms the() {
-        return The.subterms(this);
+        return Subterms.subterms(this);
     }
 
     @Override

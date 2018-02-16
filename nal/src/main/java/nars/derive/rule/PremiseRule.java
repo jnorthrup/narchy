@@ -6,7 +6,6 @@ import jcog.list.FasterList;
 import nars.$;
 import nars.NAR;
 import nars.Op;
-import nars.The;
 import nars.derive.*;
 import nars.derive.constraint.*;
 import nars.derive.op.*;
@@ -844,7 +843,7 @@ public class PremiseRule {
         }
 
         return PremiseRuleSet.normalize(
-                new PremiseRule(The.subtermsInterned(newPremise, newConclusion)), index, nar);
+                new PremiseRule(Subterms.subtermsInterned(newPremise, newConclusion)), index, nar);
 
     }
 

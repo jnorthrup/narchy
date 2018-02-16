@@ -142,7 +142,7 @@ public class DynamicBeliefTableTest {
         //test change after a component's revision:
         n.believe("a:y", 0, 0.95f);
         n.run(1);
-        Truth now2 = n.beliefTruth(n.conceptualize($("(&&, a:x, a:y, a:z)")), n.time());
+        Truth now2 = n.belief(n.conceptualize($("(&&, a:x, a:y, a:z)")), n.time()).truth();
         assertTrue(now2.freq() < 0.4f);
 
     }

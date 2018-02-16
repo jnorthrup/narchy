@@ -6,7 +6,6 @@ import jcog.memoize.LinkedMRUMemoize;
 import jcog.memoize.Memoize;
 import nars.NAR;
 import nars.Narsese;
-import nars.The;
 import nars.index.term.PatternIndex;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -261,7 +260,7 @@ public class PremiseRuleSet extends HashSet<PremiseRule> {
         if (!(b instanceof Compound))
             throw new Narsese.NarseseException("Right rule component must be compound: " + src);
 
-        return The.subtermsInterned(a, b);
+        return Subterms.subtermsInterned(a, b);
     }
 
 //    public void permute(@NotNull PremiseRule preNormRule, String src, @NotNull PatternIndex index, @NotNull Collection<PremiseRule> ur) {

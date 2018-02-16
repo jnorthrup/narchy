@@ -12,7 +12,7 @@ import static org.boon.Boon.equalsOrDie;
 /**
  * Created by Richard on 9/19/14.
  */
-public class ExpressionContextTest {
+public class ExpressionThatTest {
 
     BoonExpressionContext context;
 

@@ -25,16 +25,60 @@
  * \________(____  /\_/  (____  / /_______  /\____|__  /_______  / / ______|
  *               \/           \/          \/         \/        \/  \/
  */
-package org.boon.di;
 
-public class PumpModule {
+package org.boon.di.modules;
 
-    Pump providesPump() {
-        return new Pump() {
+import org.boon.core.Supplier;
+import org.boon.di.That;
+import org.boon.di.Thing;
 
-            @Override
-            public void pump() {
-            }
-        };
+import java.util.concurrent.atomic.AtomicReference;
+
+/**
+ * Created by Richard on 2/5/14.
+ */
+public abstract class BaseThing implements Thing {
+
+    private final AtomicReference<That> parent = new AtomicReference<>(  );
+
+    @Override
+    public void inside(That context) {
+        this.parent.set( context );
     }
+
+    @Override
+    public <T> T a(Class<T> type ) {
+        return null;
+    }
+
+    @Override
+    public Object a(String name ) {
+        return null;
+    }
+
+    @Override
+    public <T> T a(Class<T> type, String name ) {
+        return null;
+    }
+
+    @Override
+    public boolean has( Class type ) {
+        return false;
+    }
+
+    @Override
+    public boolean has( String name ) {
+        return false;
+    }
+
+    @Override
+    public <T> Supplier<T> supplying(Class<T> type, String name ) {
+        return null;
+    }
+
+    @Override
+    public <T> Supplier<T> supplying(Class<T> type ) {
+        return null;
+    }
+
 }

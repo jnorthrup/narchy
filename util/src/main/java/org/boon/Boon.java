@@ -35,7 +35,7 @@ import org.boon.core.Sys;
 import org.boon.core.Typ;
 import org.boon.core.reflection.*;
 import org.boon.core.reflection.fields.FieldAccessMode;
-import org.boon.di.Context;
+import org.boon.di.That;
 import org.boon.json.JsonFactory;
 import org.boon.logging.LogLevel;
 import org.boon.logging.BoonLogging;
@@ -631,7 +631,7 @@ public class Boon {
      * @param path      path to find config files.
      * @return returns a DependencyInjection/Config context
      */
-    public static Context readConfig(String namespace, String path) {
+    public static That readConfig(String namespace, String path) {
         String localConfigDir =
                 add(System.getProperty("user.home"), "/.",
                         camelCaseLower(underBarCase(namespace)));
@@ -654,7 +654,7 @@ public class Boon {
      * @param roots     roots to find paths.
      * @return context
      */
-    public static Context readConfig(String namespace, String path, String... roots) {
+    public static That readConfig(String namespace, String path, String... roots) {
 
         trace("readConfig(namespace, path, roots)", "IN", namespace, path, roots);
 
@@ -750,7 +750,7 @@ public class Boon {
      *
      * @return returns a DependencyInjection/Config context
      */
-    public static Context readConfig() {
+    public static That readConfig() {
         return readConfig(
                 sysProp("BOON.APP.NAMESPACE", "boon.app"),
                 sysProp("BOON.APP.CONFIG.PATH", "boon/app"));

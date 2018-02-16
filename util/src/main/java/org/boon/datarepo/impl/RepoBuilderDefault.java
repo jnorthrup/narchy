@@ -43,7 +43,6 @@ import org.boon.datarepo.impl.indexes.TypeHierarchyIndex;
 import org.boon.datarepo.modification.ModificationListener;
 import org.boon.datarepo.spi.*;
 import org.boon.core.Function;
-import org.boon.functions.PropertyNameUtils;
 import org.boon.core.Supplier;
 
 import java.math.BigDecimal;
@@ -799,27 +798,27 @@ public class RepoBuilderDefault implements RepoBuilder {
 
     @Override
     public RepoBuilder upperCaseIndex( String property ) {
-        this.keyTransformers.put( property, PropertyNameUtils.upperCase );
+        this.keyTransformers.put( property, Str.upperCase );
         return this;
     }
 
     @Override
     public RepoBuilder lowerCaseIndex( String property ) {
-        this.keyTransformers.put( property, PropertyNameUtils.lowerCase );
+        this.keyTransformers.put( property, Str.lowerCase );
         return this;
 
     }
 
     @Override
     public RepoBuilder camelCaseIndex( String property ) {
-        this.keyTransformers.put( property, PropertyNameUtils.camelCase );
+        this.keyTransformers.put( property, Str.camelCase );
         return this;
 
     }
 
     @Override
     public RepoBuilder underBarCaseIndex( String property ) {
-        this.keyTransformers.put( property, PropertyNameUtils.underBarCase );
+        this.keyTransformers.put( property, Str.underBarCase );
         return this;
     }
 

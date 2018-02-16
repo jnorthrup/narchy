@@ -1,7 +1,6 @@
 package nars.derive;
 
 import nars.Op;
-import nars.The;
 import nars.derive.match.Ellipsis;
 import nars.derive.match.EllipsisMatch;
 import nars.derive.mutate.Choose1;
@@ -334,7 +333,7 @@ abstract public class PatternCompound extends CompoundDTLight {
                         //permute may be necessary to unify the correct dep/indep terms for 2nd layer
                         if (xFixed.size()==match.subs())
                             return u.termutes.add(new CommutivePermutations(
-                                    The.subterms(xFixed),
+                                    Subterms.subterms(xFixed),
                                     match.subterms().sorted()));
                         else
                             return false; //?
