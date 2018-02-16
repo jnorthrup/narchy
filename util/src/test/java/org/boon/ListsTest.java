@@ -27,22 +27,34 @@
  */
 package org.boon;
 
+import jcog.list.FasterList;
 import org.boon.core.Fn;
 import org.boon.core.Function;
 import org.boon.core.Predicate;
 import org.boon.core.Reducer;
 import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.CopyOnWriteArrayList;
-import static org.boon.Lists.reduceBy;
-import static org.boon.primitive.Arry.reduceBy;
-import static org.boon.primitive.Int.reduceBy;
+
 import static org.boon.Boon.puts;
 import static org.boon.Exceptions.die;
-import static org.boon.Lists.*;
+import static org.boon.Lists.add;
+import static org.boon.Lists.copy;
+import static org.boon.Lists.enumeration;
+import static org.boon.Lists.idx;
+import static org.boon.Lists.in;
+import static org.boon.Lists.len;
+import static org.boon.Lists.linkedList;
+import static org.boon.Lists.list;
+import static org.boon.Lists.reduceBy;
+import static org.boon.Lists.safeList;
+import static org.boon.Lists.slc;
+import static org.boon.Lists.slcEnd;
+import static org.boon.primitive.Arry.reduceBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -210,7 +222,7 @@ public class ListsTest {
             fakeCall(wrap);
         }
         for (int index = 0; index < 100; index++) {
-            wrap = (List<HRObject>) Lists.mapBy(list, ListsTest.class, "createHRO");
+            wrap = (List<HRObject>) (List<?>) new FasterList(ListsTest.class, "createHRO", list);
             fakeCall(wrap);
         }
         for (int index = 0; index < 100; index++) {
@@ -223,7 +235,7 @@ public class ListsTest {
         }
         start = System.currentTimeMillis();
         for (int index = 0; index < 100; index++) {
-            wrap = (List<HRObject>) Lists.mapBy(list, ListsTest.class, "createHRO");
+            wrap = (List<HRObject>) (List<?>) new FasterList(ListsTest.class, "createHRO", list);
             fakeCall(wrap);
         }
         stop = System.currentTimeMillis();
@@ -311,7 +323,7 @@ public class ListsTest {
     @Test
     public void testMapByStaticFunc() {
         List<Employee> list = Lists.list(new Employee("Bob"), new Employee("Sally"));
-        List<HRObject> wrap = (List<HRObject>) Lists.mapBy(list, ListsTest.class, "createHRO");
+        List<HRObject> wrap = (List<HRObject>) (List<?>) new FasterList(ListsTest.class, "createHRO", list);
         boolean ok = wrap.get(0).name().equals("Bob") || die();
         ok &= wrap.get(1).name().equals("Sally") || die();
     }
@@ -475,7 +487,7 @@ public class ListsTest {
         assertEquals(3, len(list2));
         assertTrue(in("apple", list2));
         assertEquals("pear", idx(list2, 1));
-        list2 = copy((ArrayList<String>) list);
+        list2 = copy(list);
         assertEquals(3, len(list2));
         assertTrue(in("apple", list2));
         assertEquals("pear", idx(list2, 1));

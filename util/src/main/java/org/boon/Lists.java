@@ -29,11 +29,15 @@
 package org.boon;
 
 
+import jcog.list.FasterList;
 import org.boon.collections.DoubleList;
 import org.boon.collections.FloatList;
 import org.boon.collections.IntList;
 import org.boon.collections.LongList;
-import org.boon.core.*;
+import org.boon.core.Conversions;
+import org.boon.core.Function;
+import org.boon.core.Predicate;
+import org.boon.core.Reducer;
 import org.boon.core.reflection.*;
 import org.boon.primitive.CharBuf;
 
@@ -99,13 +103,11 @@ public class Lists {
     }
 
     public static <V> List<V> list( Class<V> clazz ) {
-        return new ArrayList<>();
+        return new FasterList<>();
     }
 
 
-    public static <V> List<V> copy( Collection<V> collection ) {
-        return new ArrayList<>( collection );
-    }
+
 
 
     public static <V> List<V> deepCopy( Collection<V> collection ) {
@@ -174,17 +176,13 @@ public class Lists {
 
 
     public static <V> List<V> list( Iterable<V> iterable ) {
-        List<V> list = new ArrayList<>();
-        for ( V o : iterable ) {
-            list.add( o );
-        }
-        return list;
+        return new FasterList<>(iterable);
     }
 
 
 
     public static <V> List<V> list( Collection<V> collection ) {
-        return new ArrayList<>(collection);
+        return new FasterList<>(collection);
     }
 
     public static <V> List<V> linkedList( Iterable<V> iterable ) {
@@ -221,15 +219,15 @@ public class Lists {
     }
 
 
-    public static <PROP> List<PROP> toList( List<?> inputList, Class<PROP> cls, String propertyPath ) {
-        List<PROP> outputList = new ArrayList<>();
-
-        for (Object o : inputList) {
-            outputList.add((PROP) BeanUtils.idx(o, propertyPath));
-        }
-
-        return outputList;
-    }
+//    public static <PROP> List<PROP> toList( List<?> inputList, Class<PROP> cls, String propertyPath ) {
+//        List<PROP> outputList = new ArrayList<>();
+//
+//        for (Object o : inputList) {
+//            outputList.add((PROP) BeanUtils.idx(o, propertyPath));
+//        }
+//
+//        return outputList;
+//    }
 
     public static IntList toIntList( List<?> inputList, String propertyPath ) {
 
@@ -387,23 +385,14 @@ public class Lists {
 
 
     public static <V> List<V> list( Iterator<V> iterator ) {
-        List<V> list = new ArrayList<>();
-        while ( iterator.hasNext() ) {
-            list.add( iterator.next() );
-        }
-        return list;
+        return new FasterList<>(iterator);
     }
 
 
 
     @SafeVarargs
     public static <V> List<V> list( final V... array ) {
-        if ( array == null ) {
-            return new ArrayList<>();
-        }
-        List<V> list = new ArrayList<>( array.length );
-        Collections.addAll( list, array );
-        return list;
+        return array == null ? new FasterList(0) : new FasterList(array.length, array);
     }
 
     public static <V> List<V> safeList(Class<V> cls) {
@@ -478,8 +467,9 @@ public class Lists {
     @Universal
     public static <T> T idx( List<T> list, final int index ) {
         int i = calculateIndex( list, index );
-        if ( i > list.size() - 1 ) {
-            i = list.size() - 1;
+        int ls = list.size();
+        if ( i > ls - 1 ) {
+            i = ls - 1;
         }
         return list.get( i );
 
@@ -641,57 +631,15 @@ public class Lists {
 
 
     public static List<?> mapBy( Object[] objects, Object instance, String methodName) {
+        return new FasterList(instance, methodName, objects);
 
-        List list = new ArrayList(objects.length);
-        for (Object o : objects) {
-            list.add( Invoker.invoke(instance, methodName, o ));
-        }
-        return list;
-    }
-
-
-    public static List<?> mapBy(Object[] objects, Class<?> cls, String methodName) {
-
-        List list = new ArrayList(objects.length);
-        for (Object o : objects) {
-            list.add( Invoker.invoke(cls,methodName, o ));
-        }
-        return list;
-    }
-
-
-
-    public static List<?> mapBy(Iterable<?> objects, Class<?> cls, String methodName) {
-
-        List list = new ArrayList();
-        for (Object o : objects) {
-            list.add( Invoker.invoke(cls, methodName, o ));
-        }
-        return list;
     }
 
 
     public static List<?> mapBy(Iterable<?> objects, Object instance, String methodName) {
-
-        List list = new ArrayList();
-        for (Object o : objects) {
-            list.add( Invoker.invoke(instance, methodName, o ));
-        }
-        return list;
+        return new FasterList(instance, methodName, objects);
     }
 
-
-    public static List<?> mapBy(Collection<?> objects, Class<?> cls, String methodName) {
-
-        List list = new ArrayList(objects.size());
-
-        MethodAccess methodAccess = Invoker.invokeMethodAccess(cls, methodName);
-
-        for (Object o : objects) {
-            list.add( methodAccess.invokeStatic(o));
-        }
-        return list;
-    }
 
     public static List<?> mapBy(Collection<?> objects, Object function) {
 

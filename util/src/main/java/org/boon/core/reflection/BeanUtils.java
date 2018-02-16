@@ -1270,17 +1270,9 @@ public class BeanUtils {
      * @param properties
      * @return
      */
-    public static FieldAccess getPropertyPathField( final Object root,
-                                                final String... properties ) {
-
-
-        Object object = baseForGetProperty( root, properties );
-
-        Map<String, FieldAccess> fields = getFieldsFromObject( object );
-        final String lastProperty = properties[ properties.length - 1 ];
-        FieldAccess field = fields.get( lastProperty );
-
-        return field;
+    public static FieldAccess getPropertyPathField( final Object root, final String... properties ) {
+        return getFieldsFromObject(baseForGetProperty( root, properties ))
+                .get(properties[ properties.length - 1 ]);
     }
 
 
@@ -1290,17 +1282,9 @@ public class BeanUtils {
      * @param properties
      * @return
      */
-    public static FieldAccess getPropertyPathField( final Class root,
-                                                    final String... properties ) {
-
-
-        Class cls = baseForGetProperty( root, properties );
-
-        Map<String, FieldAccess> fields = getFieldsFromObject( cls );
-        final String lastProperty = properties[ properties.length - 1 ];
-        FieldAccess field = fields.get( lastProperty );
-
-        return field;
+    public static FieldAccess getPropertyPathField( final Class root, final String... properties ) {
+        return getFieldsFromObject(baseForGetProperty( root, properties ))
+                .get(properties[ properties.length - 1 ]);
     }
 
     /**
@@ -1309,11 +1293,7 @@ public class BeanUtils {
      * @return
      */
     public static short idxShort( Object object, String path ) {
-
-
-        String[] properties = propertyPathAsStringArray(path);
-
-        return getPropertyShort( object, properties );
+        return getPropertyShort( object, propertyPathAsStringArray(path));
     }
 
     /**

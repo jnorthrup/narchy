@@ -28,6 +28,7 @@
 
 package org.boon.core.reflection;
 
+import jcog.list.FasterList;
 import org.boon.Exceptions;
 import org.boon.core.Sys;
 
@@ -115,18 +116,11 @@ public class Annotations {
 
         Map<String, List<AnnotationData>> classMap = cacheProperty.computeIfAbsent(clazz, k -> new ConcurrentHashMap<>());
 
-        List<AnnotationData> annotationDataList = classMap.get ( propertyName );
-        if (annotationDataList == null ) {
+        return classMap.computeIfAbsent(propertyName, (pn)->{
+            List<AnnotationData> adl = extractValidationAnnotationData(extractAllAnnotationsForProperty(clazz, propertyName, useReadMethod), allowedPackages);
+            return adl == null ? Collections.emptyList() : adl;
+        });
 
-            annotationDataList = extractValidationAnnotationData ( extractAllAnnotationsForProperty ( clazz, propertyName, useReadMethod ), allowedPackages );
-            if (annotationDataList == null) {
-                annotationDataList = Collections.emptyList();
-            }
-            classMap.put (propertyName,  annotationDataList );
-
-        }
-
-        return annotationDataList;
 
     }
 
@@ -160,8 +154,7 @@ public class Annotations {
 
 
     public static List<AnnotationData> getAnnotationDataForMethod( Method method ) {
-        List<AnnotationData> list = extractValidationAnnotationData( method.getDeclaredAnnotations(), Collections.emptySet());
-        return list;
+        return extractValidationAnnotationData( method.getDeclaredAnnotations(), Collections.emptySet());
     }
 
 
@@ -182,8 +175,7 @@ public class Annotations {
     }
 
     public static List<AnnotationData> getAnnotationDataForMethod( Constructor method ) {
-        List<AnnotationData> list = extractValidationAnnotationData( method.getDeclaredAnnotations(), Collections.emptySet());
-        return list;
+        return extractValidationAnnotationData( method.getDeclaredAnnotations(), Collections.emptySet());
     }
 
 
@@ -216,8 +208,7 @@ public class Annotations {
 
         final Map<Class<?>,  List<AnnotationData>> cache = context ().annotationDataCacheClass;
 
-        List<AnnotationData> annotationDataList = cache.computeIfAbsent(clazz, k -> extractValidationAnnotationData(findClassAnnotations(clazz), allowedPackages));
-        return annotationDataList;
+        return cache.computeIfAbsent(clazz, k -> extractValidationAnnotationData(findClassAnnotations(clazz), allowedPackages));
     }
 
     private static Annotation[] findClassAnnotations( Class<?> clazz ) {
@@ -257,14 +248,14 @@ public class Annotations {
      */
     public static List<AnnotationData> extractValidationAnnotationData(
             Annotation[] annotations, Set<String> allowedPackages ) {
-        List<AnnotationData> annotationsList = new ArrayList<>();
+        FasterList<AnnotationData> annotationsList = new FasterList<>(annotations.length);
         for ( Annotation annotation : annotations ) {
             AnnotationData annotationData = new AnnotationData( annotation, allowedPackages );
             if ( annotationData.isAllowed() ) {
                 annotationsList.add( annotationData );
             }
         }
-        return annotationsList;
+        return annotationsList.compact();
     }
 
     /**
@@ -286,7 +277,9 @@ public class Annotations {
              * this class could be a proxy. This seems like a bug
              * waiting to happen. So far it has worked... */
             if ( annotations.length == 0 ) {
-                annotations = findPropertyAnnotations( clazz.getSuperclass(), propertyName, useRead );
+                Class<?> superClazz = clazz.getSuperclass();
+                if (superClazz!=null)
+                    annotations = findPropertyAnnotations(superClazz, propertyName, useRead );
             }
             return annotations;
         } catch ( Exception ex ) {
@@ -310,11 +303,14 @@ public class Annotations {
      * @throws java.beans.IntrospectionException
      *
      */
+
+    final static Annotation[] EMPTY_ANNOTATIONS = new Annotation[0];
+
     private static Annotation[] findPropertyAnnotations( Class<?> clazz, String propertyName, boolean useRead ) {
 
         PropertyDescriptor propertyDescriptor = getPropertyDescriptor( clazz, propertyName );
         if ( propertyDescriptor == null ) {
-            return new Annotation[]{ };
+            return EMPTY_ANNOTATIONS;
         }
         Method accessMethod = null;
 
@@ -325,10 +321,9 @@ public class Annotations {
         }
 
         if ( accessMethod != null ) {
-            Annotation[] annotations = accessMethod.getAnnotations();
-            return annotations;
+            return accessMethod.getAnnotations();
         } else {
-            return new Annotation[]{ };
+            return EMPTY_ANNOTATIONS;
         }
     }
 
@@ -365,8 +360,7 @@ public class Annotations {
         if ( field == null ) {
             return new Annotation[]{ };
         }
-        Annotation[] annotations = field.getAnnotations();
-        return annotations;
+        return field.getAnnotations();
     }
 
 

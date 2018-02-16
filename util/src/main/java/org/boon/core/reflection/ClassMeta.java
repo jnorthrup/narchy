@@ -236,14 +236,12 @@ public class ClassMeta <T> implements Annotated{
     }
 
     public static <T> ClassMeta<T> classMeta( Class<T> aClass ) {
-        ClassMeta meta = Reflection.context()._classMetaMap.computeIfAbsent(aClass, k -> new ClassMeta(aClass));
-        return meta;
+        return (ClassMeta) Reflection.context()._classMetaMap.computeIfAbsent(aClass, ClassMeta::new);
     }
 
 
     public static  ClassMeta<?> classMetaUnTyped( Class<?> aClass ) {
-        ClassMeta meta = Reflection.context()._classMetaMap.computeIfAbsent(aClass, k -> new ClassMeta(aClass));
-        return meta;
+        return Reflection.context()._classMetaMap.computeIfAbsent(aClass, ClassMeta::new);
     }
 
 
@@ -501,15 +499,13 @@ public class ClassMeta <T> implements Annotated{
         } else  {
             methodAccess = methodMap.get("reduce");
         }
-        ConstantCallSite methodHandle = methodAccess.invokeReducerLongIntReturnLongMethodHandle(object);
-        return methodHandle;
+        return methodAccess.invokeReducerLongIntReturnLongMethodHandle(object);
     }
 
     public ConstantCallSite invokeReducerLongIntReturnLongMethodHandle(Object object, String methodName) {
         MethodAccess methodAccess;
         methodAccess = methodMap.get(methodName);
-        ConstantCallSite methodHandle = methodAccess.invokeReducerLongIntReturnLongMethodHandle(object);
-        return methodHandle;
+        return methodAccess.invokeReducerLongIntReturnLongMethodHandle(object);
     }
 
 

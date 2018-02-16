@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import static org.boon.Exceptions.die;
-import static org.boon.Lists.copy;
 import static org.boon.Lists.list;
 import static org.boon.criteria.ObjectFilter.eq;
 
@@ -119,7 +118,7 @@ public class BenchMark {
 
             @Override
             protected void init() {
-                results = copy(employees);
+                results = list(employees);
             }
 
             @Override

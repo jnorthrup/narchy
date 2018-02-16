@@ -28,6 +28,7 @@
 
 package org.boon.di;
 
+import jcog.list.FasterList;
 import org.boon.Lists;
 import org.boon.core.Supplier;
 import org.boon.di.impl.ThatImpl;
@@ -63,7 +64,7 @@ public class My {
     public static Thing objects(Object... objects ) {
 
 
-        List<Supply> wrap = (List<Supply>) Lists.mapBy(objects, Supply.class, "objectProviderOf");
+        List<Supply> wrap = (List<Supply>) new FasterList(Supply.class, "objectProviderOf", objects);
 
         return new SupplierThing( wrap );
     }
@@ -75,7 +76,7 @@ public class My {
 
     public static Thing prototypes(Object... objects ) {
 
-        List<Supply> wrap = (List<Supply>) Lists.mapBy(objects, Supply.class, "prototypeProviderOf");
+        List<Supply> wrap = (List<Supply>) new FasterList(Supply.class, "prototypeProviderOf", objects);
 
         return new SupplierThing( wrap );
     }
