@@ -1159,7 +1159,7 @@ public class Boon {
         List<?> list = (List) jsonResourceFromTemplate(path, context);
 
         return MapObjectConversion.convertListOfMapsToObjects(true, null,
-                FieldAccessMode.FIELD_THEN_PROPERTY.create(true), listOf, (List<Map>) list, Collections.<String>emptySet());
+                FieldAccessMode.FIELD_THEN_PROPERTY.create(true), listOf, (List<Map>) list, Collections.emptySet());
     }
 
 

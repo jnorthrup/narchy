@@ -31,7 +31,6 @@ package org.boon.sort;
 import org.boon.Exceptions;
 import org.boon.core.reflection.fields.FieldAccess;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 

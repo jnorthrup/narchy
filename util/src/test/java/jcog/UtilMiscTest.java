@@ -1,6 +1,5 @@
-package nars.budget;
+package jcog;
 
-import jcog.Util;
 import jcog.io.SparkLine;
 import org.junit.jupiter.api.Test;
 

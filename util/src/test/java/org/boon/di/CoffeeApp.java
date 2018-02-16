@@ -31,53 +31,47 @@ import org.boon.core.Supplier;
 import org.junit.jupiter.api.Test;
 import static org.boon.Exceptions.die;
 
-//@Named ("/coffeeApp")
+//@the("/coffeeApp")
 public class CoffeeApp implements Runnable {
 
-    @Inject
+    @need
     CoffeeMaker coffeeMaker;
 
-    @Inject
+    @need
     Coffee coffee;
 
-    @Inject
+    @need
     Sugar sugar;
 
-    @Inject
+    @need
     Electricity ac;
 
-    @Inject
-    @Named("cellphoneFood")
+    @need
+    @the("cellphoneFood")
     Electricity dc;
 
-    @Inject
-    @Named("cat")
+    @need
+    @the("cat")
     Food catFood;
 
-    @Inject
-    @Named("american")
+    @need
+    @the("american")
     Food americanFood;
 
-    @Inject
-    @Named("soft")
+    @need
+    @the("soft")
     Food softFood;
 
-    //    @Inject
-    //    @Named( "rick's habit" )
-    //    Food rickDrinks;
-    //
-    //    @In( "rick's habit")
-    //    Food rickDrinks2;
-    @Inject
-    @Named("rick's habit")
+
+    @the("rick's habit") @need
     Coffee rickCoffee;
 
-    @Inject
-    @Named("black")
+
+    @the("black") @need
     Coffee blackCoffee;
 
-    @Inject
-    @Named("hallwaySocket")
+
+    @the("hallwaySocket") @need
     Supplier<Electricity> wallOutlet;
 
     //Todo this works but I need a real unit test.
@@ -89,7 +83,7 @@ public class CoffeeApp implements Runnable {
     //    Coffee notFound2;
     boolean started = false;
 
-    @PostConstruct
+    @start
     void init() {
         started = true;
     }
@@ -116,7 +110,7 @@ public class CoffeeApp implements Runnable {
 
     static Thing m0, m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12;
 
-    public static void createModules() {
+    static void createModules() {
         m1 = My.classes(CoffeeApp.class, CoffeeMaker.class, FoodImpl.class);
         m2 = My.thing(new DripCoffee());
         m3 = My.thing(new PumpSystem());

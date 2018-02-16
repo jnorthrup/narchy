@@ -153,14 +153,14 @@ public class Annotations {
     }
 
     public static List<AnnotationData> getAnnotationDataForClass( Class<?> clazz  ) {
-        return getAnnotationDataForClass ( clazz, Collections.<String>emptySet());
+        return getAnnotationDataForClass ( clazz, Collections.emptySet());
 
     }
 
 
 
     public static List<AnnotationData> getAnnotationDataForMethod( Method method ) {
-        List<AnnotationData> list = extractValidationAnnotationData( method.getDeclaredAnnotations(), Collections.<String>emptySet());
+        List<AnnotationData> list = extractValidationAnnotationData( method.getDeclaredAnnotations(), Collections.emptySet());
         return list;
     }
 
@@ -173,7 +173,7 @@ public class Annotations {
         final List<List<AnnotationData>> parameterAnnotationsList = new ArrayList<>(parameterAnnotations.length);
 
         for (Annotation[] paramAnnotaions : parameterAnnotations) {
-            List<AnnotationData> list = extractValidationAnnotationData( paramAnnotaions, Collections.<String>emptySet());
+            List<AnnotationData> list = extractValidationAnnotationData( paramAnnotaions, Collections.emptySet());
             parameterAnnotationsList.add(list);
 
         }
@@ -182,7 +182,7 @@ public class Annotations {
     }
 
     public static List<AnnotationData> getAnnotationDataForMethod( Constructor method ) {
-        List<AnnotationData> list = extractValidationAnnotationData( method.getDeclaredAnnotations(), Collections.<String>emptySet());
+        List<AnnotationData> list = extractValidationAnnotationData( method.getDeclaredAnnotations(), Collections.emptySet());
         return list;
     }
 

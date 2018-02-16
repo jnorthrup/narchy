@@ -518,11 +518,12 @@ public class Conversions {
             case COLLECTION:
                 return toCollection(clz, value);
 
-            case INSTANCE:
+            case INSTANCE: {
 
                 if (value instanceof Value) {
-                    value = ((Value)value).toValue();
+                    value = ((Value) value).toValue();
                 }
+
                 if (value instanceof Map) {
                     return MapObjectConversion.fromMap((Map<String, Object>) value, clz);
                 } else if (value instanceof List) {
@@ -532,7 +533,7 @@ public class Conversions {
                 } else {
                     return createFromArg(clz, value);
                 }
-
+            }
             case ENUM:
                 return (T) toEnum((Class<? extends Enum>) clz, value);
 
@@ -692,7 +693,7 @@ public class Conversions {
             case COLLECTION:
                 return toCollection(clz, value);
 
-            case INSTANCE:
+            case INSTANCE: {
                 if (value instanceof Map) {
                     return MapObjectConversion.fromMap((Map<String, Object>) value, clz);
                 } else if (value instanceof List) {
@@ -725,19 +726,20 @@ public class Conversions {
                         }
 
 
-                            for (ConstructorAccess c : constructors) {
-                                Class<?> arg1Type = c.parameterTypes()[0];
-                                if (arg1Type.isAssignableFrom(value.getClass())) {
-                                    return (T) c.create(value);
-                                }
+                        for (ConstructorAccess c : constructors) {
+                            Class<?> arg1Type = c.parameterTypes()[0];
+                            if (arg1Type.isAssignableFrom(value.getClass())) {
+                                return (T) c.create(value);
                             }
+                        }
 
-                            flag[0] = false;
-                            break label;
+                        flag[0] = false;
+                        break label;
 
                     }
                 }
 
+            }
 
             case ENUM:
                 return (T) toEnum((Class<? extends Enum>) clz, value);
@@ -1181,7 +1183,7 @@ public class Conversions {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static SortedSet toSortedSet(Object value) {
-        if (value instanceof Set) {
+        if (value instanceof SortedSet) {
             return (SortedSet) value;
         } else if (value instanceof Collection) {
             return new TreeSet((Collection) value);

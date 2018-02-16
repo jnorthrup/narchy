@@ -14,7 +14,6 @@ import org.boon.template.support.LoopTagStatus;
 import org.boon.template.support.Token;
 import org.boon.template.support.TokenTypes;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import static org.boon.Boon.puts;

@@ -50,7 +50,7 @@ import static org.boon.json.JsonCreator.createFromJsonMapResource;
  */
 public class CreatorTest {
 
-    @Named
+    @the
     public static class SomeClass {
 
         String someField = "someclass";
@@ -70,28 +70,28 @@ public class CreatorTest {
         /*Works with Boon @Id, @Named also can use @Named form CDI
         or Guice or use @Qualifer from Spring works with all
          */
-        @Inject
-        @Named("someClass")
+        @need
+        @the("someClass")
         SomeClass object;
 
-        @Inject
+        @need
         SomeClass object2;
     }
 
     public static class Foo2 {
 
         /* Works with standard @Inject or boon @Inject or Guice/Dagger Inject or Spring @Autowire*/
-        @Inject
+        @need
         Bar bar;
 
         /*Works with Boon @Id, @Named also can use @Named form CDI
         or Guice or use @Qualifer from Spring works with all
          */
-        @Inject
-        @Named("someClass")
+        @need
+        @the("someClass")
         SomeClass object;
 
-        @Inject
+        @need
         SomeClass object2;
     }
 

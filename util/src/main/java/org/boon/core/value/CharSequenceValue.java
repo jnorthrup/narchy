@@ -164,7 +164,7 @@ public class CharSequenceValue implements Value, CharSequence {
     @Override
     public boolean equals ( Object o ) {
         if ( this == o ) return true;
-        if ( !( o instanceof Value ) ) return false;
+        if ( !( o instanceof CharSequenceValue ) ) return false;
 
         CharSequenceValue value1 = ( CharSequenceValue ) o;
 

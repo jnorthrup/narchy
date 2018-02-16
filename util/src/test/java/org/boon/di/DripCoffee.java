@@ -33,7 +33,7 @@ public class DripCoffee {
         return new ElectricHeater();
     }
 
-    @Named("black")
+    @the("black")
     Coffee providesBlackCoffee() {
         return new Coffee();
     }

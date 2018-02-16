@@ -36,7 +36,6 @@ import org.boon.validation.ValidationContext;
 import org.boon.validation.ValidatorMessage;
 import org.boon.validation.ValidatorMessageHolder;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.List;

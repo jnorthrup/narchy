@@ -161,7 +161,7 @@ public class NumberValue extends Number implements Value {
             return longValue()==i;
         }
         if ( this == o ) return true;
-        if ( !( o instanceof Value ) ) return false;
+        if ( !( o instanceof NumberValue ) ) return false;
 
         NumberValue value1 = ( NumberValue ) o;
 

@@ -71,19 +71,19 @@ public class Dates {
     }
 
 
-    public static long timeZoneNow(TimeZone timeZone) {
-        Calendar calendar = Calendar.getInstance();
-        return timeZoneNow(timeZone);
-    }
-
-
-    public static long timeZoneNow(TimeZone timeZone, Calendar calendar) {
-        long now = System.currentTimeMillis();
-        calendar.setTimeInMillis( now );
-        calendar.setTimeZone( timeZone );
-        long timeZoneNow = calendar.getTime().getTime();
-        return timeZoneNow;
-    }
+//    public static long timeZoneNow(TimeZone timeZone) {
+//        Calendar calendar = Calendar.getInstance();
+//        return timeZoneNow(timeZone);
+//    }
+//
+//
+//    public static long timeZoneNow(TimeZone timeZone, Calendar calendar) {
+//        long now = System.currentTimeMillis();
+//        calendar.setTimeInMillis( now );
+//        calendar.setTimeZone( timeZone );
+//        long timeZoneNow = calendar.getTime().getTime();
+//        return timeZoneNow;
+//    }
 
 
 

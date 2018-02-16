@@ -33,12 +33,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+
 /**
  * @author Rick Hightower
+ *
+ * renamed from: @Inject like from JSR-???
  */
-@Target( {ElementType.METHOD, ElementType.FIELD, ElementType.TYPE} )
-@Retention( RetentionPolicy.RUNTIME )
-public @interface Named {
-    String value() default "";
-
+@Target({ElementType.METHOD, ElementType.FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface need {
 }

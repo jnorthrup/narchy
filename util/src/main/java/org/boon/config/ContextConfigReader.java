@@ -30,7 +30,7 @@ package org.boon.config;
 
 
 import org.boon.di.That;
-import org.boon.di.Inject;
+import org.boon.di.need;
 import org.boon.core.Predicate;
 
 import java.util.ArrayList;
@@ -51,23 +51,23 @@ public class ContextConfigReader {
 
 
 
-    @Inject
+    @need
     private boolean useNameSpacePrefix = false;
 
 
-    @Inject
+    @need
     private final ContextConfig contextConfig = ContextConfig.JSON;
 
 
-    @Inject
+    @need
     private String namespace;
 
 
-    @Inject
+    @need
     private final List<String> resources = new ArrayList<>(  );
 
 
-    @Inject
+    @need
     private Predicate rules;
 
     public That read() {

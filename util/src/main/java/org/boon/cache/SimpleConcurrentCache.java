@@ -32,6 +32,7 @@ package org.boon.cache;
 import org.boon.core.reflection.ClassMeta;
 import org.boon.core.reflection.MethodAccess;
 
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -134,12 +135,14 @@ public class SimpleConcurrentCache<K, V> implements Cache<K, V> {
         }
 
         public int size() {
-            readWriteLock.readLock().lock();
+            Lock readLock = readWriteLock.readLock();
+
             int size = -1;
+            readLock.lock();
             try {
                 size = super.size();
             } finally {
-                readWriteLock.readLock().unlock();
+                readLock.unlock();
             }
             return size;
         }

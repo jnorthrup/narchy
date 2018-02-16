@@ -77,14 +77,15 @@ public abstract class BaseField implements FieldAccess {
     private  HashSet<String> includedViews;
     private  HashSet<String> ignoreWithViews;
     private final String alias;
-    private static final Set<String> annotationsThatHaveAliases = Sets.set("JsonProperty","SerializedName", "Named", "id", "In", "Qualifier" );
+    private static final Set<String> annotationsThatHaveAliases = Sets.set(
+            "JsonProperty","SerializedName", "Named", "id", "In", "Qualifier", "the" );
 
 
 
     private void initAnnotationData(Class clazz ) {
 
         final Collection<AnnotationData> annotationDataForFieldAndProperty =
-                Annotations.getAnnotationDataForFieldAndProperty ( clazz, name, Collections.<String>emptySet());
+                Annotations.getAnnotationDataForFieldAndProperty ( clazz, name, Collections.emptySet());
 
         for (AnnotationData data : annotationDataForFieldAndProperty) {
             annotationMap.put ( data.getSimpleClassName (), data.getValues () );
@@ -132,7 +133,7 @@ public abstract class BaseField implements FieldAccess {
             bits.set( IGNORE, !serialize);
         }
 
-        if (hasAnnotation ( "Inject" ) || hasAnnotation( "Autowired" ) || hasAnnotation( "In" ))  {
+        if ((hasAnnotation("need") || hasAnnotation( "Inject" )) || hasAnnotation( "Autowired" ) || hasAnnotation( "In" ))  {
             bits.set( HAS_INJECT );
         }
 

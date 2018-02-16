@@ -32,7 +32,6 @@ package org.boon.logging;
 import org.boon.core.Sys;
 
 import java.lang.ref.WeakReference;
-import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 

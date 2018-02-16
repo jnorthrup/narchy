@@ -280,7 +280,7 @@ public class Exceptions {
         public void printStackTrace( CharBuf charBuf) {
 
 
-            charBuf.puts("MESSAGE:", this.getMessage());
+            charBuf.puts(/*"MESSAGE:", */this.getMessage());
             if (this.getRootCause() !=null) {
                 charBuf.puts("ROOT CAUSE MESSAGE:", this.getRootCause().getMessage());
             } else if (this.getCause()!=null) {
@@ -291,7 +291,6 @@ public class Exceptions {
             StackTraceElement[] stackTrace = this.getFilteredStackTrace();
 
             if (stackTrace.length > 0) {
-                charBuf.indent(5).addLine("This happens around this area in your code.");
                 Exceptions.printStackTrace(charBuf, stackTrace);
             }
 

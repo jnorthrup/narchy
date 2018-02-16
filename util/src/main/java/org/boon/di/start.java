@@ -35,9 +35,11 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * post-construction activity
+ *
  * @author Rick Hightower
  */
 @Target( {ElementType.METHOD} )
 @Retention( RetentionPolicy.RUNTIME )
-public @interface PostConstruct {
+public @interface start {
 }

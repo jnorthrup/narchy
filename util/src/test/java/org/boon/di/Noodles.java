@@ -27,6 +27,6 @@
  */
 package org.boon.di;
 
-@Named("soft")
+@the("soft")
 public class Noodles extends FoodImpl implements Food {
 }

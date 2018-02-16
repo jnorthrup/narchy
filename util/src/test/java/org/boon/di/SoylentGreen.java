@@ -29,10 +29,10 @@ package org.boon.di;
 
 import static org.boon.Boon.puts;
 
-@Named("american")
+@the("american")
 public class SoylentGreen extends FoodImpl implements Food {
 
-    @PostConstruct
+    @start
     private void init() {
         puts("SOYLENT GREEN IS PEOPLE");
     }

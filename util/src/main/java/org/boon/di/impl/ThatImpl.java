@@ -455,7 +455,7 @@ public class ThatImpl implements That, Thing {
 
 
             if (debug) logger.debug(contextImpl, "Invoking post construct start...", object);
-            Invoker.invokeMethodWithAnnotationNoReturn(object, "postConstruct");
+            Invoker.invokeMethodWithAnnotationNoReturn(object, "start");
             if (debug) logger.debug(contextImpl, "Invoking post construct done...", object);
 
             if (info != null && info.value() != null && !info.prototype()) {

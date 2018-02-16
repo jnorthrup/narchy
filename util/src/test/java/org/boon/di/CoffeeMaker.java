@@ -29,11 +29,11 @@ package org.boon.di;
 
 public class CoffeeMaker extends BaseObject {
 
-    @Inject
+    @need
     Heater // Don't want to create a possibly costly heater until we need it.
     heater;
 
-    @Inject
+    @need
     Pump pump;
 
     public void brew() {

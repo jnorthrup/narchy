@@ -28,9 +28,10 @@
 
 package org.boon.di.modules;
 
-import org.boon.Sets;
 import org.boon.Str;
-import org.boon.core.reflection.*;
+import org.boon.core.reflection.Annotated;
+import org.boon.core.reflection.ClassMeta;
+import org.boon.core.reflection.MethodAccess;
 
 import java.util.Set;
 
@@ -41,17 +42,13 @@ import static org.boon.Str.uncapitalize;
  */
 public class NamedUtils {
 
-    private static final Set<String> annotationsThatHaveNamed = Sets.set( "jsonProperty", "serializedName", "named", "id", "in", "qualifier" );
+    private static final Set<String> annotationsThatHaveNamed = Set.of(
+        "jsonProperty", "serializedName", "named", "id", "in", "qualifier", "the"
+    );
 
 
     public static String namedValueForClass( Class<?> type ) {
-
-        ClassMeta cls = ClassMeta.classMeta(type);
-
-
-        String named = findNamed(  cls, type );
-
-        return named;
+        return findNamed(ClassMeta.classMeta(type), type );
     }
 
 
@@ -61,9 +58,9 @@ public class NamedUtils {
         String named = findNamed(  method, method.returnType() );
 
         /** If named is null for this method, then check the name of the return class type class. */
-        if (named == null) {
+        if (named == null)
             named = namedValueForClass(method.returnType());
-        }
+
         return named;
     }
 

@@ -81,10 +81,7 @@ public class FilterDefault implements Filter, FilterComposer {
      */
     @Override
     public ResultSet filter( Criteria... expressions ) {
-        try {
-            return mainQueryPlan( expressions );
-        } finally {
-        }
+        return mainQueryPlan( expressions );
     }
 
 
