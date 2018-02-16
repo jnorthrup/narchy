@@ -9,52 +9,68 @@ import nars.task.util.TaskRegion;
  */
 public final class EviDensity {
 
-    public float factor;
     public long unionStart;
     public long unionEnd;
 
-//    /** HACK TODO more accurate - call after union fusion calculated  */
-//    public float factor(float freqDifference) {
-//        factor *= (1f - freqDifference);
-//        return factor;
-//    }
+    float sumEviIntegrals = Float.NaN, sumEviAvg = Float.NaN;
+
+
+    public EviDensity() {
+    }
 
     public EviDensity(TaskRegion... x) {
-
+        this();
         assert (x.length > 1);
+        for (TaskRegion xx : x) {
+            if (xx!=null)
+                add(xx);
+        }
+    }
 
-        Interval uu = new Interval(x[0].start(), x[0].end());
-        for (int i = 1, xLength = x.length; i < xLength; i++) {
-            TaskRegion xi = x[i];
-            if (xi == null) continue;
-            uu = uu.union(xi.start(), xi.end());
+    public EviDensity clone() {
+        EviDensity clone = new EviDensity();
+        clone.unionStart = unionStart;
+        clone.unionEnd = unionEnd;
+        clone.sumEviAvg = sumEviAvg;
+        clone.sumEviIntegrals = sumEviIntegrals;
+        return clone;
+    }
+
+    public void add(TaskRegion x) {
+        Task xt = x.task();
+        add(x.start(), x.end(), xt.evi(), xt.eviInteg());
+    }
+
+    public void add(long xStart, long xEnd, float evi) {
+        add(xStart, xEnd, evi, evi * (1 + (xEnd - xStart)));
+    }
+
+    public void add(long xStart, long xEnd, float evi, float eviInteg) {
+        if (sumEviIntegrals != sumEviIntegrals) {
+            //first add
+            unionStart = xStart;
+            unionEnd = xEnd;
+            sumEviAvg = sumEviIntegrals = 0;
+        } else {
+            Interval uu = new Interval(unionStart, unionEnd).union(xStart, xEnd);
+            this.unionStart = uu.a;
+            this.unionEnd = uu.b;
         }
 
-        this.unionStart = uu.a;
-        this.unionEnd = uu.b;
+        sumEviAvg += evi;
+        sumEviIntegrals += eviInteg;
+    }
 
-        long unionRange = Math.max(1,uu.length());
+    /** compute the evidence averaged across the union */
+    public float density() {
+        long unionRange = 1 + (unionEnd - unionStart);
+        return sumEviIntegrals / unionRange;
+    }
 
-        /** integrate the evidence*time curve of each task component to calculate the effective
-         * evidence volume, and evidence density (which becomes an evidence reduction factor if < 1) */
-        float v = 0, totalEvi = 0;
-        for (int i = 0; i < x.length; i++) {
-            TaskRegion xxi = x[i];
-            if (xxi == null) continue;
-
-            Task xi = xxi.task();
-
-
-            //TODO use a better approximation
-            float xe = xi.evi();
-            totalEvi += xe;
-            v += xe * Math.max(xi.range(), 1);
-        }
-        float density = v / unionRange;
-
-        this.factor = density / totalEvi;
-
-
+    /** ratio of density to sum of averages */
+    public float factor() {
+        long unionRange = 1 + (unionEnd - unionStart);
+        return sumEviIntegrals / (unionRange * sumEviAvg);
     }
 
 //    @Nullable

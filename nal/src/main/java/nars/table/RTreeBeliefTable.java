@@ -184,37 +184,6 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
 
 
-    protected static Task merge2(Tasked a, Tasked b, long start, long end, int dur, Term template, NAR nar) {
-        return merge2(a.task(), b.task(), start, end, dur, template, nar);
-    }
-
-    protected static Task merge2(Task a, Task b, long start, long end, int dur, Term template, NAR nar) {
-        if (template != null) {
-            //choose if either one (but not both or neither) matches template's time
-            boolean at = (a.term().equals(template));
-            boolean bt = (b.term().equals(template));
-            if (at && !bt)
-                return a;
-            else if (bt && !at)
-                return b;
-        }
-
-        //otherwise interpolate
-        Task c = Revision.merge(a, b, start, c2wSafe(nar.confMin.floatValue()) /* TODO */, nar);
-        if (c != null) {
-
-            if (c == a) //c.equals(a))
-                return a;
-            if (c == b) //c.equals(b))
-                return b;
-
-            if (c.eviInteg() > a.eviInteg())
-                return c;
-        }
-
-        return a;
-    }
-
 
 
     @Deprecated private static FloatFunction<TaskRegion> task(FloatFunction<Task> ts) {
@@ -425,7 +394,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             if (aPri != aPri) //already deleted
                 return true;
 
-            Task c = Revision.merge(at, bt, nar.time(), c2wSafe(nar.confMin.floatValue()), nar);
+            Task c =
+                    this instanceof Simple ?  //HACK
+                        Revision.mergeTemporal(nar, at, bt) :
+                        Revision.merge(at, bt, nar.time(), c2wSafe(nar.confMin.floatValue()), nar); //TODO remove this when the mergeTemporal fully supports CONJ and Temporal
+
             if (c != null && !c.equals(a) && !c.equals(b)) {
 
                 boolean allowMerge;
@@ -822,9 +795,13 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         @Override
         protected boolean addUnique(TaskRegion x) {
             --attemptsRemain;
-            return (filter == null || (!(x instanceof Task)) || filter.test((Task) x))
+            return  (filter == null || (!(x instanceof Task)) || validTask((Task)x))
                     &&
                     super.addUnique(x);
+        }
+
+        private boolean validTask(Task x) {
+            return !x.isDeleted() && filter.test(x);
         }
 
         boolean continueScan(TimeRange t) {
@@ -1004,3 +981,34 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 //    }
 
 }
+//    protected static Task merge2(Tasked a, Tasked b, long start, long end, int dur, Term template, NAR nar) {
+//        return merge2(a.task(), b.task(), start, end, dur, template, nar);
+//    }
+//
+//    protected static Task merge2(Task a, Task b, long start, long end, int dur, Term template, NAR nar) {
+//        if (template != null) {
+//            //choose if either one (but not both or neither) matches template's time
+//            boolean at = (a.term().equals(template));
+//            boolean bt = (b.term().equals(template));
+//            if (at && !bt)
+//                return a;
+//            else if (bt && !at)
+//                return b;
+//        }
+//
+//        //otherwise interpolate
+//        Task c = Revision.merge(a, b, start, c2wSafe(nar.confMin.floatValue()) /* TODO */, nar);
+//        if (c != null) {
+//
+//            if (c == a) //c.equals(a))
+//                return a;
+//            if (c == b) //c.equals(b))
+//                return b;
+//
+//            if (c.eviInteg() > a.eviInteg())
+//                return c;
+//        }
+//
+//        return a;
+//    }
+//

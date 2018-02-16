@@ -801,33 +801,10 @@ public class DeriveTime extends TimeGraph {
 //                    }
 //                }
             } else {
-                /*if (x.op().temporal) {
-                    return null; //ambiguous, unsolution
-                } else */
-                {
-                    //                if (taskEvent && beliefEvent) {
-                    //two events: fuse time
-                    //assert (!belief.isEternal());
-                    EviDensity joint = new EviDensity(task, belief);
-                    //                    if (joint.factor <= Pri.EPSILON) //allow for questions/quests, if this ever happens
-                    //                        return null;
-
-                    s = joint.unionStart;
-                    assert (s != ETERNAL);
-
-
-                    //                if (x.op()==IMPL) {
-                    //                    e = s; //point-like left-aligned
-                    //                } else {
-                    e = joint.unionEnd;
-                    //                }
-
-                    d.concEviFactor *= joint.factor;
-                    //                } else {
-                    //                    //either task or belief were temporal, so should have been solved
-                    //                    return null;
-                    //                }
-                }
+                EviDensity density = new EviDensity(task, belief);
+                s = density.unionStart;
+                e = density.unionEnd;
+                d.concEviFactor *= density.factor();
             }
         }
 

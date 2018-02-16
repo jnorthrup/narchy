@@ -424,10 +424,12 @@ public class RevectionTest {
     }
 
     static void assertTimeFusion(long start, long end, float factor, Interval... ii) {
-        Task[] tt = null; //TODO convert the intervals to dummy tasks with equal confidence for the below test to work again
-        EviDensity a = new EviDensity(tt);
+        EviDensity a = new EviDensity();
+        for (Interval i : ii) {
+            a.add(i.a, i.b, 1);
+        }
         assertEquals(start, a.unionStart);
         assertEquals(end, a.unionEnd);
-        assertEquals(factor, a.factor, 0.001f);
+        assertEquals(factor, a.factor(), 0.001f);
     }
 }

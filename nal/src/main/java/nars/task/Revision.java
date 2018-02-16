@@ -602,9 +602,9 @@ public class Revision {
         float confMin =
                 Param.TRUTH_EPSILON;
 
-        EviDensity joint = new EviDensity(a, b);
-        long start = joint.unionStart;
-        long end = joint.unionEnd;
+        EviDensity density = new EviDensity(a, b);
+        long start = density.unionStart;
+        long end = density.unionEnd;
 
 
         Truth an = a.truth(start, end, dur, confMin);
@@ -616,7 +616,7 @@ public class Revision {
 
         Truth rawTruth = revise(an, bn,
                 //joint.factor(Math.abs( an.freq() - bn.freq() ))
-                joint.factor
+                density.factor()
                 , c2wSafe(confMin));
         if (rawTruth == null)
             return null;
@@ -750,6 +750,10 @@ public class Revision {
         return t;
     }
 
+    @Nullable public static Task mergeTemporal(NAR nar, TaskRegion... tt) {
+        return mergeTemporal(nar, tt, tt.length);
+    }
+
     @Nullable public static Task mergeTemporal(NAR nar, TaskRegion[] tt, int results) {
         switch (results) {
             case 0:
@@ -776,98 +780,117 @@ public class Revision {
         assert(tt.length > 1);
 
         Task first = tt[0].task();
-        minEviInteg = Math.max(first.eviInteg(), minEviInteg ); //dont settle for anything worse than the first (strongest) task by un-revised
 
         //TODO calculate the temporal density at the same time as this first part to avoid naively generating a sparse result afterward
         //TODO combine evidensity with the stamp calculation
         //TODO allow evidensity to skip a task in the array and proceed to the next without recurse
         LongHashSet evidence = new LongHashSet();
         int overlap = 0, totalEv = 0;
-        int included = 0;
+        int tasks = 0;
         boolean termSame = true;
+        EviDensity density = new EviDensity();
+
         for (int i = 0; i < results; i++) {
-            TaskRegion ti = tt[i];
-            if (ti == null)
+            TaskRegion ri = tt[i];
+            if (ri == null)
                 continue;
 
-            Task ttt = ti.task();
-
+            Task ti = ri.task();
             //assert (!t.isEternal());
 
-            long[] ts = ttt.stamp();
+            long[] ts = ti.stamp();
             totalEv += ts.length;
-            int moreOverlaps = Stamp.overlaps(evidence, ts);
-            overlap += moreOverlaps;
-            if (moreOverlaps > 0) {
-                if (totalEv > 0 && Param.overlapFactor(overlap) < Float.MIN_NORMAL) {/* current amount so far */
-                    //would cause zero evidence, regardless of whatever truth is calculated later
-                    tt[i] = null;
-                    continue; //skip this one
-                }
-            } else {
 
-                if (termSame) {
-                    Term termI = ttt.term();
-                    if ((i > 0) && !termI.equals(first.term())) {
-                        if (included == 1 && termI.op()!=CONJ /* dont do CONJ now because it might produce an occurrence shift which isnt tracked yet */) {
-                            //limit termpolation to max 2 tasks for now
-                            termSame = false; //difference in terms
-                            //TODO loop dont recurse, just buffer the accumulated evidence changes to the end of the loop
-                            tt = new TaskRegion[]{first, ti};
-                            evidence.addAll(ts);
-                            included++;
-                            break;
-                        } else {
-                            //skip this term, it would conflict with the other 2+ terms which are already known to be the same
-                            tt[i] = null;
-                            continue; //skip this one
+            int overlapsToAdd;
+            if (tasks == 0) {
+                overlapsToAdd = 0;
+            } else {
+                overlapsToAdd = Stamp.overlaps(evidence, ts);
+                if (overlapsToAdd > 0) {
+                    if (totalEv > 0 && Param.overlapFactor(overlap+overlapsToAdd) < Float.MIN_NORMAL) {/* current amount so far */
+                        //would cause zero evidence, regardless of whatever truth is calculated later
+                        tt[i] = null;
+                        continue; //skip this one
+                    }
+                } else {
+
+                    if (termSame) {
+                        Term termI = ti.term();
+                        if ((i > 0) && !termI.equals(first.term())) {
+                            if (tasks == 1 && termI.op() != CONJ /* dont do CONJ now because it might produce an occurrence shift which isnt tracked yet */) {
+                                //limit termpolation to max 2 tasks for now
+                                termSame = false; //difference in terms
+                                //TODO loop dont recurse, just buffer the accumulated evidence changes to the end of the loop
+                                tt = new TaskRegion[]{first, ri};
+                                i = results; //cause the for-loop to end after this iteration
+                                //continue
+                            } else {
+                                //skip this term, it would conflict with the other 2+ terms which are already known to be the same
+                                tt[i] = null;
+                                continue; //skip this one
+                            }
                         }
                     }
                 }
-                evidence.addAll(ts);
-                included++;
             }
+
+            density.add(ri);
+
+            evidence.addAll(ts);
+            overlap += overlapsToAdd;
+            tasks++;
         }
 
-        if (included == 1) {
+        if (tasks == 1) {
             //assert(first !=null);
             return first; //return the top one, nothing could be merged
         }
+
+        minEviInteg = Math.max(first.eviInteg(), minEviInteg ); //dont settle for anything worse than the first (strongest) task by un-revised
 
         float overlapFactor = Param.overlapFactor(((float)overlap)/totalEv);
         if (overlapFactor < Float.MIN_NORMAL)
             return first;
 
-        EviDensity joint = new EviDensity(tt);
-        if (joint.factor * overlapFactor < Float.MIN_NORMAL)
+
+        float densityFactor = density.factor();
+        if (densityFactor * overlapFactor < Float.MIN_NORMAL)
             return first;
 
-        if (included!=tt.length)
+        if (tasks!=tt.length)
             tt = ArrayUtils.removeNulls(tt, Task[]::new);
+
+        long start = density.unionStart;
+        long end = density.unionEnd;
+        long range = end - start;
 
         Term content;
         if (!termSame) {
             Task second = tt[1].task();
             float e1 = first.eviInteg();
             float e2 = second.eviInteg();
+
+            float diff = dtDiff(first.term(),second.term());
+            if (diff > 0)
+                densityFactor *= Param.evi(1f, diff, Math.max(1,range)); //proport
+
             float firstProp = e1/(e1+e2);
             content = intermpolate(first.term(), second.term(), firstProp, nar);
             //TODO apply a discount factor for the relative difference of the two intermpolated terms
             if (content == null || !content.op().conceptualizable)
                 return first;
+
+
         } else {
             content = first.term();
         }
 
         int dur = nar.dur();
 
-        long start = joint.unionStart;
-        long end = joint.unionEnd;
-        long range = end - start;
 
         Truth truth = new TruthPolation(start, end, dur, tt).get();
         if (truth == null) return first;
-        float factor = joint.factor * overlapFactor;
+        float factor = densityFactor * overlapFactor;
         float eAdjusted = truth.evi() * factor;
         if ((eAdjusted * range) < minEviInteg)
             return first;
@@ -882,7 +905,7 @@ public class Revision {
                 Stamp.sample(Param.STAMP_CAPACITY, evidence /* TODO account for relative evidence contributions */, nar.random())
         );
 
-        t.priSet(Priority.fund(Util.max((TaskRegion p)->p!=null ? p.task().priElseZero() : 0,tt),
+        t.priSet(Priority.fund(Util.max((TaskRegion p)->p.task().priElseZero(),tt),
                 false,
                 Tasked::task, tt));
 
@@ -892,8 +915,7 @@ public class Revision {
             t.log("Temporal Merge");
 
         for (TaskRegion x : tt) {
-            if (x!=null)
-                x.task().meta("@", (k) -> t); //forward to the revision
+            x.task().meta("@", (k) -> t); //forward to the revision
         }
 
         return t;

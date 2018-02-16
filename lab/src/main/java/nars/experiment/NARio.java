@@ -58,7 +58,7 @@ public class NARio extends NAgentX {
         cc.actions.forEach(a -> a.resolution.set(0.25f));
         //cc.setClarity(0.8f, 0.95f);
         Bitmap2DSensor<PixelBag> sc = addCamera(new Bitmap2DSensor<>(id, cc, this))
-                .resolution(0.05f);
+                .resolution(0.02f);
 
         //new ShapeSensor($.the("shape"), new BufferedImageBitmap2D(()->mario.image),this);
 

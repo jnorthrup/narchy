@@ -407,9 +407,9 @@ public abstract class Param {
      * with a perceptual duration used as a time constant
      * dt >= 0
      */
-    public static double evi(double evi, long dt, long dur) {
+    public static double evi(double evi, double dt, long dur) {
 
-        return evi / (1.0 + (((double) dt) / dur)); //inverse linear
+        return evi / (1.0 + (dt / dur)); //inverse linear
 
         //double ddt = dt;
         //return (float) (evi / (1.0 + ddt * ddt / dur)); //inverse square

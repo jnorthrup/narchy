@@ -37,7 +37,8 @@ public interface TemporalBeliefTable extends TaskTable {
 //        //float range = t.range();
         long dt = t.minDistanceTo(start, end);
         float ee = t.eviInteg();
-        if (dt == 0) return ee; //full integral
+        if (dt == 0)
+            return ee; //full integral
         else {
             //reduce the full integration by a factor relating to the distance (ex: isoceles triangle below)
             /*
