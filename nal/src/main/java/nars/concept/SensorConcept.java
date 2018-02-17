@@ -92,8 +92,12 @@ public class SensorConcept extends WiredConcept implements FloatFunction<Term>, 
                 }
             }
         } else {
-            if (t instanceof SignalTask)
-                this.cause = ((SignalTask) t).cause[0];
+            //HACK snoop this concept's cause channel from a signal task inserted to it
+            if (t instanceof SignalTask) {
+                short[] c = ((SignalTask) t).cause;
+                if (c.length > 0)
+                    this.cause = c[0];
+            }
         }
 
         return super.add(t, n);

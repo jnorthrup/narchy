@@ -30,12 +30,14 @@ public class AutoConceptualizerTest {
             }
         }, n);
 
-        AutoConceptualizer ac = new AutoConceptualizer(c.bmp.iter.order /* HACK */, true, 2, n);
+        AutoConceptualizer ac = new AutoConceptualizer(
+                c.iter.order /* HACK */, true, 2, n);
+
 
 
         for (int i =0; i< 155; i++) {
-            c.run(n, c.bmp.area());
-            c.bmp.print(System.out);
+            c.input();
+            c.print(System.out);
             n.run(1);
 
             System.out.println();

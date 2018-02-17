@@ -23,6 +23,7 @@ import nars.truth.DiscreteTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.apache.commons.lang3.ArrayUtils;
+import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -250,14 +251,17 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         Set<SensorConcept> sensorSet = sensors.keySet();
         sensorUpdates = new Runnable[sensorSet.size()];
         {
-//            int j = 0;
-//            for (Map.Entry<SensorConcept, CauseChannel<ITask>> sc : sensors.entrySet()) {
-//                SensorConcept s = sc.getKey();
-//                CauseChannel c = sc.getValue();
-//                sensorUpdates[j++] = ()-> {
-//                    c.input(s.update(now, dur, NAgent.this.nar));
-//                };
-//            }
+            int j = 0;
+            FloatFloatToObjectFunction<Truth> truther = (prev, next) -> $.t(next, nar.confDefault(BELIEF));
+            for (Map.Entry<SensorConcept, CauseChannel<ITask>> sc : sensors.entrySet()) {
+                SensorConcept s = sc.getKey();
+                CauseChannel c = sc.getValue();
+
+
+                sensorUpdates[j++] = ()-> {
+                    c.input(s.update(truther, now, dur, nar));
+                };
+            }
         }
 
 

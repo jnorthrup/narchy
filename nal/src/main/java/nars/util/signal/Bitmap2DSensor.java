@@ -1,14 +1,13 @@
 package nars.util.signal;
 
-import jcog.math.FloatSupplier;
 import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
 import nars.$;
 import nars.NAR;
-import nars.NAgent;
 import nars.Task;
 import nars.concept.SensorConcept;
 import nars.control.CauseChannel;
+import nars.control.DurService;
 import nars.exe.Causable;
 import nars.task.ITask;
 import nars.term.Compound;
@@ -19,9 +18,6 @@ import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFu
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
-import java.util.Objects;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static nars.Op.BELIEF;
@@ -30,184 +26,57 @@ import static nars.Op.BELIEF;
  * manages reading a camera to a pixel grid of SensorConcepts
  * monochrome
  */
-public class Bitmap2DSensor<P extends Bitmap2D> implements Iterable<SensorConcept> {
+public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> implements Iterable<SensorConcept> {
 
+    private final NAR nar;
 
-
-    private final int numPixels;
-    public final Bitmap2DConcepts<P> bmp;
-
-    static final int minUpdateDurs = 1;
-
-    private float pixelPriCurrent = 0;
-    private final FloatSupplier pixelPri = () -> pixelPriCurrent;
-
-
-
-    /** to calculate avg number pixels processed per duration */
-    private final DescriptiveStatistics pixelsProcessed = new DescriptiveStatistics(8);
-
-    public Bitmap2DSensor(@Nullable Term root, P src, NAgent a) {
-        this(root, src, a.nar);
-    }
-
-    public Bitmap2DSensor(Term root, P src, NAR n) {
+    public Bitmap2DSensor(@Nullable Term root, P src, NAR n) {
         this(RadixProduct(root, src.width(), src.height(), /*RADIX*/1), src, n);
     }
 
     public Bitmap2DSensor(@Nullable Int2Function<Term> pixelTerm, P src, NAR n) {
+        super(src, pixelTerm, n);
+        this.nar = n;
 
+        /** modes */
+        SET = (p, v) ->
+                Signal.SET.apply(() ->
+                        nar.confDefault(BELIEF)).value(p, v);
 
-        this.bmp = new Bitmap2DConcepts(src, pixelTerm,
-                src.width(), src.height(),
-                pixelPri, n);
-        this.numPixels = bmp.area();
-
-        //modeUpdate(); //default
-
-
-//        this.pixels = encode(
-//                //RadixRecurse(root, w, h, RADIX)
-//                //InhRecurse(root, w, h, RADIX)
-//                n);
+        DIFF = (p, v) ->
+                Signal.DIFF.apply(() ->
+                        nar.confDefault(BELIEF)).value(p, v);
 
     }
 
-    public Causable cause(NAR n) {
-        return new Causable(n) {
 
-            private int lastPixel;
-            private long lastUpdate = n.time();
-
-            private int pixelsRemainPerUpdate = numPixels; //initial value
-
-            final CauseChannel<ITask> in = n.newCauseChannel(Bitmap2DSensor.this);
-
-
-            //        /** sets difference mode */
-//        public Bitmap2DSensor modeDiffer() {
-//            brightnessTruth = Signal.DIFF.apply(()->conf);
-//            return this;
-//        }
-//
-//        public Bitmap2DSensor modeUpdate() {
-//            brightnessTruth = Signal.SET.apply(()->conf);
-//            return this;
-//        }
-
-            float conf = n.confDefault(BELIEF);
-
-            FloatFloatToObjectFunction<Truth> brightnessTruth =
-                    (p, v) -> Signal.SET.apply(()->conf).value(p, v);
-
-            @Override
-            public float value() {
-                return in.value();
-            }
-
-
-            @Override
-            protected int next(NAR nar, int work) {
-
-                conf = n.confDefault(BELIEF);
-
-                int totalPixels = numPixels;
-
-                long now = nar.time();
-                if (now - this.lastUpdate >= nar.dur() * minUpdateDurs) {
-                    int pixelsProcessedInLastDur = totalPixels - pixelsRemainPerUpdate;
-                    pixelsProcessed.addValue(pixelsProcessedInLastDur);
-                    bmp.update(1);
-                    pixelsRemainPerUpdate = totalPixels;
-                    this.lastUpdate = now;
-                } else {
-                    if (pixelsRemainPerUpdate <= 0)
-                        return -1; //done for this cycle
-                }
-
-
-                //stamp = nar.time.nextStamp();
-
-
-
-                //adjust resolution based on value - but can cause more noise in doing so
-                //resolution(Util.round(Math.min(0.01f, 0.5f * (1f - this.in.amp())), 0.01f));
-
-                //frame-rate timeslicing
-                int pixelsToProcess = Math.min(pixelsRemainPerUpdate, workToPixels(work));
-
-                //confidence proportional to the amount of the frame processed per duration, calculated in aggregate because
-                //each call will only proceed some of the image potentially but multiple times per duration
-//                float meanPixelsProcessedPerDuration = (float) pixelsProcessed.getMean();
-//                if (meanPixelsProcessedPerDuration!=meanPixelsProcessedPerDuration)
-//                    meanPixelsProcessedPerDuration = 0;
-
-//                this.conf =
-//                        nar.confDefault(BELIEF)
-                //w2c(Util.lerp( (meanPixelsProcessedPerDuration) / numPixels, c2w(nar.confMin.floatValue()), c2w(nar.confDefault(BELIEF))))
-                ;
-
-                //System.out.println(meanPixelsProcessedPerDuration + "/" + numPixels + " -> " + conf + "%");
-
-                if (pixelsToProcess == 0)
-                    return 0;
-
-                pixelsRemainPerUpdate -= pixelsToProcess;
-
-                int start, end;
-
-//        float pixelPri =
-
-//                (float) (nar.priDefault(BELIEF) / (Math.sqrt(numPixels)));
-//                ///((float)Math.sqrt(end-start));
-
-                pixelPriCurrent =
-                        nar.priDefault(BELIEF) * pri();
-//                (float) (nar.priDefault(BELIEF) / pixelsToProcess);
-
-                start = this.lastPixel;
-                end = (start + pixelsToProcess);
-                Stream<Task> s;
-
-
-                if (end > totalPixels) {
-                    //wrap around
-                    int extra = end - totalPixels;
-                    s = Stream.concat(
-                            Bitmap2DSensor.this.get(brightnessTruth, start, totalPixels, nar), //last 'half'
-                            Bitmap2DSensor.this.get(brightnessTruth, 0, extra, nar) //first half after wrap around
-                    );
-                    this.lastPixel = extra;
-                } else {
-                    s = Bitmap2DSensor.this.get(brightnessTruth, start, end, nar);
-                    this.lastPixel = end;
-                }
-
-                in.input(s);
-
-                //System.out.println(value + " " + fraction + " "+ start + " " + end);
-
-
-                return pixelsToProcess;
-            }
-
-            /**
-             * how many pixels to process for the given work amount
-             * can be 1:1 or some other amount
-             */
-            protected int workToPixels(int work) {
-                return work;
-            }
-
-
-        };
+    public void input() {
+        input(SET);
     }
 
-    @Override
-    public Iterator<SensorConcept> iterator() {
-        return bmp.iterator();
+    /** manually inputs the contents of the current frame */
+    public void input(FloatFloatToObjectFunction<Truth> mode) {
+        nar.input( stream(mode, nar) );
     }
 
+    /** attaches a reading service to the NAR */
+    public Bitmap2DReader readAdaptively() {
+        return new Bitmap2DReader(nar);
+    }
+
+
+    public DurService readDirectEachDuration() {
+        return readDirectEachDuration(SET);
+    }
+
+    public DurService readDirectEachDuration(FloatFloatToObjectFunction<Truth> mode) {
+        return DurService.on(nar, (nn)->{
+            input(mode);
+        });
+    }
+
+    final FloatFloatToObjectFunction<Truth> SET;
+    final FloatFloatToObjectFunction<Truth> DIFF;
 
 
     public static Int2Function<Compound> XY(Term root, int width, int height) {
@@ -290,6 +159,152 @@ public class Bitmap2DSensor<P extends Bitmap2D> implements Iterable<SensorConcep
 
 
 
+    /** service for progressively (AIKR) reading this sensor */
+    private class Bitmap2DReader extends Causable {
+
+        private final NAR n;
+        private int lastPixel;
+        private long lastUpdate;
+
+        private int pixelsRemainPerUpdate; //initial value
+
+        final CauseChannel<ITask> in;
+
+        static final int minUpdateDurs = 1;
+
+
+        /** to calculate avg number pixels processed per duration */
+        private final DescriptiveStatistics pixelsProcessed;
+
+        //        /** sets difference mode */
+//        public Bitmap2DSensor modeDiffer() {
+//            brightnessTruth = Signal.DIFF.apply(()->conf);
+//            return this;
+//        }
+//
+//        public Bitmap2DSensor modeUpdate() {
+//            brightnessTruth = Signal.SET.apply(()->conf);
+//            return this;
+//        }
+
+        float conf;
+
+        FloatFloatToObjectFunction<Truth> mode;
+
+        public Bitmap2DReader(NAR n) {
+            super(n);
+            this.n = n;
+            lastUpdate = n.time();
+            pixelsRemainPerUpdate = area;
+            in = n.newCauseChannel(Bitmap2DSensor.this);
+            pixelsProcessed = new DescriptiveStatistics(8);
+            conf = n.confDefault(BELIEF);
+            mode = (p, v) -> Signal.SET.apply(() -> conf).value(p, v);
+        }
+
+        @Override
+        public float value() {
+            return in.value();
+        }
+
+
+        @Override
+        protected int next(NAR nar, int work) {
+
+            conf = n.confDefault(BELIEF);
+
+            int totalPixels = area;
+
+            long now = nar.time();
+            if (now - this.lastUpdate >= nar.dur() * minUpdateDurs) {
+                int pixelsProcessedInLastDur = totalPixels - pixelsRemainPerUpdate;
+                pixelsProcessed.addValue(pixelsProcessedInLastDur);
+                Bitmap2DSensor.this.update(1);
+                pixelsRemainPerUpdate = totalPixels;
+                this.lastUpdate = now;
+            } else {
+                if (pixelsRemainPerUpdate <= 0)
+                    return -1; //done for this cycle
+            }
+
+
+            //stamp = nar.time.nextStamp();
+
+
+
+            //adjust resolution based on value - but can cause more noise in doing so
+            //resolution(Util.round(Math.min(0.01f, 0.5f * (1f - this.in.amp())), 0.01f));
+
+            //frame-rate timeslicing
+            int pixelsToProcess = Math.min(pixelsRemainPerUpdate, workToPixels(work));
+
+            //confidence proportional to the amount of the frame processed per duration, calculated in aggregate because
+            //each call will only proceed some of the image potentially but multiple times per duration
+//                float meanPixelsProcessedPerDuration = (float) pixelsProcessed.getMean();
+//                if (meanPixelsProcessedPerDuration!=meanPixelsProcessedPerDuration)
+//                    meanPixelsProcessedPerDuration = 0;
+
+//                this.conf =
+//                        nar.confDefault(BELIEF)
+            //w2c(Util.lerp( (meanPixelsProcessedPerDuration) / numPixels, c2w(nar.confMin.floatValue()), c2w(nar.confDefault(BELIEF))))
+            ;
+
+            //System.out.println(meanPixelsProcessedPerDuration + "/" + numPixels + " -> " + conf + "%");
+
+            if (pixelsToProcess == 0)
+                return 0;
+
+            pixelsRemainPerUpdate -= pixelsToProcess;
+
+            int start, end;
+
+//        float pixelPri =
+
+//                (float) (nar.priDefault(BELIEF) / (Math.sqrt(numPixels)));
+//                ///((float)Math.sqrt(end-start));
+
+            pixelPri =
+                    nar.priDefault(BELIEF) * pri();
+//                (float) (nar.priDefault(BELIEF) / pixelsToProcess);
+
+            start = this.lastPixel;
+            end = (start + pixelsToProcess);
+            Stream<Task> s;
+
+
+            if (end > totalPixels) {
+                //wrap around
+                int extra = end - totalPixels;
+                s = Stream.concat(
+                        Bitmap2DSensor.this.stream(mode, start, totalPixels, nar), //last 'half'
+                        Bitmap2DSensor.this.stream(mode, 0, extra, nar) //first half after wrap around
+                );
+                this.lastPixel = extra;
+            } else {
+                s = Bitmap2DSensor.this.stream(mode, start, end, nar);
+                this.lastPixel = end;
+            }
+
+            in.input(s);
+
+            //System.out.println(value + " " + fraction + " "+ start + " " + end);
+
+
+            return pixelsToProcess;
+        }
+
+        /**
+         * how many pixels to process for the given work amount
+         * can be 1:1 or some other amount
+         */
+        protected int workToPixels(int work) {
+            return work;
+        }
+
+
+    }
+
+
 //    private float distToResolution(float dist) {
 //
 //        float r = Util.lerp(minResolution, maxResolution, dist);
@@ -297,10 +312,6 @@ public class Bitmap2DSensor<P extends Bitmap2D> implements Iterable<SensorConcep
 //        return r;
 //    }
 
-    public Bitmap2DSensor resolution(float resolution) {
-        bmp.forEach(p -> p.resolution.set(resolution));
-        return this;
-    }
 
 //    public PixelConcept concept(int x, int y) {
 //        if (x < 0)
@@ -318,17 +329,6 @@ public class Bitmap2DSensor<P extends Bitmap2D> implements Iterable<SensorConcep
 
 
 
-    public Stream<Task> get(FloatFloatToObjectFunction<Truth> truther, int start, int end, NAR nar) {
-        long now = nar.time();
-        int dur = nar.dur();
-
-
-        return IntStream.range(start, end)
-                    .mapToObj(i -> bmp.get(i).update(truther, now, dur, nar))
-                    .filter(Objects::nonNull);
-    }
-
-
     //    private long nextStamp;
 //    private void frameStamp() {
 //        nextStamp = nar.time.nextStamp();
@@ -336,16 +336,6 @@ public class Bitmap2DSensor<P extends Bitmap2D> implements Iterable<SensorConcep
 
 
 
-    public SensorConcept get(int i, int j) {
-        return bmp.matrix[i][j];
-    }
-
-    public int width() {
-        return bmp.width;
-    }
-    public int height() {
-        return bmp.height;
-    }
 
 
 //    static public class PixelConcept extends SensorConcept {

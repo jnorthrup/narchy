@@ -1,6 +1,6 @@
 package nars.util.signal;
 
-import jcog.signal.Bitmap2D;
+import jcog.signal.ArrayBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
@@ -20,23 +20,10 @@ public class CameraSensorTest {
 
         NAR n = NARS.tmp();
         float[][] f = new float[w][h];
-        Bitmap2DSensor c = new Bitmap2DSensor($.the("x"), new Bitmap2D.ArrayBitmap2D(f), n) {
 
-            @Override
-            protected int next(NAR nar, int work) {
-                System.out.println("cam update @ t=" + nar.time());
-                return super.next(nar, work);
-            }
+        Bitmap2DSensor c = new Bitmap2DSensor($.the("x"),
+                new ArrayBitmap2D(f), n);
 
-            @Override
-            protected int workToPixels(int work) {
-                return bmp.area(); //all
-            }
-            //            @Override
-//            public float value() {
-//                return 100f;//super.value();
-//            }
-        };
 
         n.log();
 
@@ -46,18 +33,23 @@ public class CameraSensorTest {
 
         System.out.println("all 0");
         for (int i = 0; i < w; i++) for (int j = 0; j < h; j++) f[i][j] = 0f;
-        n.run(1);
-        assertEquals(c, f, n.time(),n);
-
-        System.out.println("all 1");
-        for (int i = 0; i < w; i++) for (int j = 0; j < h; j++) f[i][j] = 1f;
+        c.input();
         n.run(1);
         assertEquals(c, f, n.time(),n);
 
         n.run(3); //delay
 
+
+        System.out.println("all 1");
+        for (int i = 0; i < w; i++) for (int j = 0; j < h; j++) f[i][j] = 1f;
+        c.input();
+        n.run(3);  //delay
+        assertEquals(c, f, n.time(),n);
+
+
         System.out.println("all 0");
         for (int i = 0; i < w; i++) for (int j = 0; j < h; j++) f[i][j] = 0f;
+        c.input();
         n.run(1);
         assertEquals(c, f, n.time(), n);
 
@@ -65,6 +57,7 @@ public class CameraSensorTest {
 
         System.out.println("all 1");
         for (int i = 0; i < w; i++) for (int j = 0; j < h; j++) f[i][j] = 1f;
+        c.input();
         n.run(1);
         assertEquals(c, f, n.time(), n);
 
@@ -73,8 +66,8 @@ public class CameraSensorTest {
 
     static void assertEquals(Bitmap2DSensor c, float[][] f, long when, NAR n) {
         final float tolerance = 0.35f;
-        for (int i = 0; i < c.bmp.width; i++) {
-            for (int j = 0; j < c.bmp.height; j++) {
+        for (int i = 0; i < c.width; i++) {
+            for (int j = 0; j < c.height; j++) {
                 SensorConcept p = c.get(i, j);
                 Truth t = n.beliefTruth(p, when);
                 if (t == null || Math.abs(f[i][j] - t.freq()) > tolerance) {

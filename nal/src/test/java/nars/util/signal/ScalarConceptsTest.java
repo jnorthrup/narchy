@@ -16,6 +16,7 @@ import org.eclipse.collections.api.block.predicate.primitive.FloatPredicate;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
+import static nars.Op.BELIEF;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -89,7 +90,8 @@ public class ScalarConceptsTest {
 
 
             double freqSum = f.sensors.stream()
-                    .peek(x -> n.input(x.update(n.time(), n.dur(), n)))
+                    .peek(x -> n.input(x.update((prev,next) -> $.t(next, n.confDefault(BELIEF)),
+                            n.time(), n.dur(), n)))
                     .map(x -> n.beliefTruth(x, n.time()))
                     .mapToDouble(x -> x != null ? x.freq() : 0f).sum();
 

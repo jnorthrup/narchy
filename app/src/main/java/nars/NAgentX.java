@@ -628,8 +628,7 @@ abstract public class NAgentX extends NAgent {
                     //"agentPredict",
 
                     a instanceof NAgentX ?
-                            new WindowToggleButton("vision", () -> grid(((NAgentX) a).cam.stream().map(cs ->
-                                    new AspectAlign(new CameraSensorView(cs, a), AspectAlign.Align.Center, cs.width(), cs.height()))
+                            new WindowToggleButton("vision", () -> grid(((NAgentX) a).cam.stream().map(cs -> new AspectAlign(new CameraSensorView(cs, a), AspectAlign.Align.Center, cs.width, cs.height))
                                     .toArray(Surface[]::new))
                             ) : grid()
 
@@ -760,17 +759,17 @@ abstract public class NAgentX extends NAgent {
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable Term id, C bc) {
-        return addCamera(new Bitmap2DSensor(id, bc, this));
+        return addCamera(new Bitmap2DSensor(id, bc, nar()));
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCameraReduced(@Nullable Term
                                                                               id, Supplier<BufferedImage> bc, int sx, int sy, int ox, int oy) {
-        return addCamera(new Bitmap2DSensor(id, new AutoencodedBitmap(new BufferedImageBitmap2D(bc), sx, sy, ox, oy), this));
+        return addCamera(new Bitmap2DSensor(id, new AutoencodedBitmap(new BufferedImageBitmap2D(bc), sx, sy, ox, oy), nar()));
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCameraReduced(@Nullable Term id, C bc, int sx, int sy,
                                                                         int ox, int oy) {
-        return addCamera(new Bitmap2DSensor(id, new AutoencodedBitmap(bc, sx, sy, ox, oy), this));
+        return addCamera(new Bitmap2DSensor(id, new AutoencodedBitmap(bc, sx, sy, ox, oy), nar()));
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> addCamera(Bitmap2DSensor<C> c) {

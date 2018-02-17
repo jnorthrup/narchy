@@ -13,6 +13,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
 import nars.truth.Truth;
+import nars.util.signal.Bitmap2DConcepts;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.CameraSensorView;
 import nars.video.PixelBag;
@@ -115,7 +116,7 @@ public class Recog2D extends NAgentX {
         train = new Training(
                 //sensors,
                 Lists.newArrayList(
-                        sp.bmp.src instanceof PixelBag ? Iterables.concat(sensors.keySet(), ((PixelBag) sp.bmp.src).actions ) :
+                        ((Bitmap2DConcepts<P>) sp).src instanceof PixelBag ? Iterables.concat(sensors.keySet(), ((PixelBag) ((Bitmap2DConcepts<P>) sp).src).actions ) :
                                 sensors.keySet()
                 ),
                 outs, nar);
@@ -142,7 +143,7 @@ public class Recog2D extends NAgentX {
                 ),
                 //row(s = new Plot2D(history, Plot2D.BarWave).add("Rward", () -> rewardValue)),
 
-                new AspectAlign(new CameraSensorView(sp, this), AspectAlign.Align.Center, sp.width(), sp.height()),
+                new AspectAlign(new CameraSensorView(sp, this), AspectAlign.Align.Center, sp.width, sp.height),
 
                 new Gridding(beliefTableCharts(nar, List.of(tv.concepts), 16)),
 

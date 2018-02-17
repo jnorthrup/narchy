@@ -11,6 +11,7 @@ import jake2.sys.IN;
 import nars.NAR;
 import nars.NAgentX;
 import nars.Narsese;
+import nars.util.signal.Bitmap2DConcepts;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.PixelBag;
 
@@ -105,10 +106,10 @@ public class Jake2Agent extends NAgentX implements Runnable {
 
         Bitmap2DSensor<PixelBag> qcam =
                 senseCameraRetina("q", screenshotter, 32, 24);
-        qcam.bmp.src.setMinZoomOut(0.5f);
-        qcam.bmp.src.setMaxZoomOut(1f);
+        ((Bitmap2DConcepts<P>) qcam).src.setMinZoomOut(0.5f);
+        ((Bitmap2DConcepts<P>) qcam).src.setMaxZoomOut(1f);
         qcam.resolution(0.01f);
-        qcam.bmp.src.vflip = true;
+        ((Bitmap2DConcepts<P>) qcam).src.vflip = true;
 
 //        new ShapeSensor(p(id, the("shape")), new Scale(screenshotter, 128, 96) {
 //            @Override
