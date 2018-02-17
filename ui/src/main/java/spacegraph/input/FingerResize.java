@@ -35,6 +35,8 @@ public class FingerResize extends FingerDragging {
         float fy = finger.hit.y;
 
         v2 hitOnDown = finger.hitOnDown[button];
+        if (hitOnDown == null)
+            return false; //unknown hit
 
         switch (mode) {
 

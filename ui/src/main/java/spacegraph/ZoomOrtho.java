@@ -25,11 +25,10 @@ public class ZoomOrtho extends Ortho {
     final static float minZoom = 0.25f;
     final static float maxZoom = 10f;
 
-    final static short PAN_BUTTON = 2;
+    public final static short PAN_BUTTON = 0;
     final static short ZOOM_OUT_TOUCHING_NEGATIVE_SPACE_BUTTON = 2;
     final static short MOVE_WINDOW_BUTTON = 1;
 
-    private int[] panStart = null;
     private final int[] moveTarget = new int[2];
     @Deprecated
 //    private final int[] resizeTarget = new int[2];
@@ -41,6 +40,10 @@ public class ZoomOrtho extends Ortho {
 
     final AtomicBoolean windowMoving = new AtomicBoolean(false);
 
+    private int[] panStart = null;
+
+    private boolean zoomingOut = false;
+    private boolean panning;
 
 
     public ZoomOrtho(Surface content) {
@@ -147,7 +150,9 @@ public class ZoomOrtho extends Ortho {
     Surface updateMouse(float sx, float sy, short[] buttonsDown) {
         Surface s = super.updateMouse(sx, sy, buttonsDown);
 
-        updatePan();
+        if (s == null) {
+            updatePan();
+        }
 
         return s;
     }
@@ -159,13 +164,14 @@ public class ZoomOrtho extends Ortho {
 
             boolean[] bd = finger.buttonDown; //e.getButtonsDown();
 
+            panning = false;
 
-            if (bd[PAN_BUTTON] || bd[MOVE_WINDOW_BUTTON]) {
+            if (!zoomingOut && (bd[PAN_BUTTON] || bd[MOVE_WINDOW_BUTTON])) {
                 //int mx = e.getX();
                 //int my = window.getHeight() - e.getY();
                 int mx = Finger.pointer.getX();
                 int my = Finger.pointer.getY();
-                if (panStart == null) {
+                if (panStart == null && !finger.prevButtonDown[PAN_BUTTON] /* rising edge */) {
 
                     panStart = new int[2];
                     panStart[0] = mx;
@@ -185,18 +191,20 @@ public class ZoomOrtho extends Ortho {
                         //System.out.println("window drag mode: " + dragMode);
                     }
 
-                } else {
+                } else if (panStart!=null) {
 
                     int dx = mx - panStart[0];
                     int dy = my - panStart[1];
                     if (dx == 0 && dy == 0) {
 
                     } else {
+
                         if (bd[PAN_BUTTON]) {
 
                             cam.add(-dx / scale.x, +dy / scale.x);
                             panStart[0] = mx;
                             panStart[1] = my;
+                            panning = true;
 
                         } else if (bd[MOVE_WINDOW_BUTTON]) {
 
@@ -247,10 +255,21 @@ public class ZoomOrtho extends Ortho {
 
                 panStart = null;
                 hud.dragMode = null;
+
             }
-            if (bd[ZOOM_OUT_TOUCHING_NEGATIVE_SPACE_BUTTON] && finger.touching==null && Math.max(scale.x,scale.y) > minZoom) {
-                scale.scaled(1f * (1f - pressZoomOutRate));
-                hud.dragMode = null; //HACK TODO properly integrate this with the above event handling
+
+            if (bd[ZOOM_OUT_TOUCHING_NEGATIVE_SPACE_BUTTON] && Math.max(scale.x,scale.y) > minZoom) {
+                if (finger.touching==null) {
+
+                    panStart = null;
+                    scale.scaled(1f * (1f - pressZoomOutRate));
+
+                    zoomingOut = true;
+                    hud.dragMode = null; //HACK TODO properly integrate this with the above event handling
+                }
+
+            } else {
+                zoomingOut = false;
             }
         }
     }

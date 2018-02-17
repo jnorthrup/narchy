@@ -5,6 +5,7 @@ import jcog.Util;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
+import spacegraph.ZoomOrtho;
 import spacegraph.input.Finger;
 import spacegraph.input.FingerMove;
 import spacegraph.input.FingerResize;
@@ -97,7 +98,7 @@ public class Windo extends Widget {
                 hover = true;
 
 
-                if (dragMode == null/* && hitPoint.x >= 0 && hitPoint.y >= 0 && hitPoint.x <= 1f && hitPoint.y <= 1f*/) {
+                if (dragMode == null && !finger.prevButtonDown[ZoomOrtho.PAN_BUTTON] /* && hitPoint.x >= 0 && hitPoint.y >= 0 && hitPoint.x <= 1f && hitPoint.y <= 1f*/) {
 
                     potentialDragMode = null;
 
@@ -144,7 +145,7 @@ public class Windo extends Widget {
                 }
 
 
-                boolean bDrag = buttons != null && buttons.length > 0 && buttons[0] == 1;
+                boolean bDrag = buttons != null && buttons.length > 0 && buttons[ZoomOrtho.PAN_BUTTON] == 1;
                 if (bDrag) {
                     if (dragMode == null && potentialDragMode != null) {
 
@@ -269,7 +270,7 @@ public class Windo extends Widget {
     }
 
     protected void paintBack(GL2 gl) {
-        if (hover && opaque()) {
+        if (hover && opaque() && potentialDragMode!=null) {
             switch (potentialDragMode) {
                 case RESIZE_N:
                 case RESIZE_S:

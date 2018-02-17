@@ -108,4 +108,10 @@ public class AnimVector3f extends v3 implements Animated {
         //super.add(dx, dy, dz);
         target.add( dx,  dy,  dz);
     }
+
+    @Override
+    public void add(float dx, float dy) {
+        //super.add(dx, dy, dz);
+        target.add( dx,  dy,  0);
+    }
 }

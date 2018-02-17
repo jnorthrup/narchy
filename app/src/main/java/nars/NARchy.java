@@ -7,6 +7,7 @@ import nars.exe.Focus;
 import nars.exe.PoolMultiExec;
 import nars.op.language.NARHear;
 import nars.op.language.NARSpeak;
+import spacegraph.audio.NativeSpeechDispatcher;
 import nars.op.stm.ConjClustering;
 import nars.time.RealTime;
 import nars.video.NARVideo;
@@ -61,7 +62,7 @@ public class NARchy extends NARS {
 
             {
                 NARSpeak s = new NARSpeak(nar);
-                new NARSpeak.NativeSpeechDispatcher(s);
+                new NativeSpeechDispatcher(s);
             }
 
 //            //new NoteFS("/tmp/nal", nar);

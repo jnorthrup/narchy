@@ -6,15 +6,12 @@ import jcog.event.Topic;
 import nars.*;
 import nars.op.java.Opjects;
 import nars.time.Tense;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
+import spacegraph.audio.NativeSpeechDispatcher;
 
 /** TODO make extend NARService and support start/re-start */
 public class NARSpeak {
     private final NAR nar;
-    //private final AtomicExec sayer;
+
     private final Opjects op;
 
     /** emitted on each utterance */
@@ -98,72 +95,20 @@ public class NARSpeak {
 //            }
 
 
-    /** 'speechd' speech dispatcher - executes via command line */
-    public static class NativeSpeechDispatcher {
-
-        static final Logger logger = LoggerFactory.getLogger(NativeSpeechDispatcher.class);
-
-        //static final int MAX_POLYPHONY = 8;
-        //final Semaphore polyphony = new Semaphore(MAX_POLYPHONY, true);
-        //final BlockingQueue<Object> q = new ArrayBlockingQueue(MAX_POLYPHONY);
-
-        public NativeSpeechDispatcher(NARSpeak s) {
-            s.spoken.on(this::speak);
-        }
-
-        public String[] command(String s) {
-            return new String[]{
-                //"/usr/bin/spd-say", "\"" + s + "\"" //speech-dispatcher -- buffers messages and does not allow multiple voices
-                "/usr/bin/espeak-ng", "\"" + s + "\"" //espeak-ng (next generation) -- directly synthesize on command
-            };
-        }
-
-        private void speak(Object x) {
-            String s = x.toString();
-            try {
-//                try {
-//                    if (q.offer)
-//                    if (polyphony.tryAcquire(1, TimeUnit.SECONDS)) {
-
-                        //TODO semaphore to limit # of simultaneous voices
-                        Process p = new ProcessBuilder()
-                                .command(command(s))
-                                .start();
-                        p.onExit().handle((z, y) -> {
-                            //System.out.println("done: " + z);
-                            //polyphony.release();
-                            return null;
-                        }).exceptionally(t->{
-                            logger.warn("speech error: {} {}", s, t);
-                            //polyphony.release();
-                            return null;
-                        });
-//                    } else {
-//                        logger.warn("insufficient speech polyphony, ignored: {}", s);
-//                    }
-
-            } catch (IOException e) {
-                logger.warn("speech error: {} {}", s, e);
-            }
-
-        }
-
-    }
-
     public static class VocalCommentary {
         public VocalCommentary(NAgent a) {
 
             new NARSpeak(a.nar);
 
             try {
-                a.nar.goal($.$("speak(ready)"), Tense.Present, 1f, 0.9f);
-//                a.nar.believe($("(" + a.sad + " =|> speak(sad))."));
-//                a.nar.goal($("(" + a.sad + " &| speak(sad))"));
-                a.nar.believe($.$("(" + a.happy + " =|> speak(happy))"));
-                a.nar.goal($.$("(" + a.happy + " &| speak(happy))"));
-                a.nar.believe($.$("(" + a.happy.neg() + " =|> speak(sad))"));
-                a.nar.goal($.$("(" + a.happy.neg() + " &| speak(sad))"));
-                a.nar.goal($.$("speak(#1)"));
+                a.nar.goal($.$("say(ready)"), Tense.Present, 1f, 0.9f);
+//                a.nar.believe($("(" + a.sad + " =|> say(sad))."));
+//                a.nar.goal($("(" + a.sad + " &| say(sad))"));
+                a.nar.believe($.$("(" + a.happy + " =|> say(happy))"));
+                a.nar.goal($.$("(" + a.happy + " &| say(happy))"));
+                a.nar.believe($.$("(" + a.happy.neg() + " =|> say(sad))"));
+                a.nar.goal($.$("(" + a.happy.neg() + " &| say(sad))"));
+                a.nar.goal($.$("say(#1)"));
             } catch (Narsese.NarseseException e) {
                 e.printStackTrace();
             }
@@ -175,7 +120,7 @@ public class NARSpeak {
         NAR n = NARS.realtime(10f).get();
 
         NARSpeak speak = new NARSpeak(n);
-        new NARSpeak.NativeSpeechDispatcher(speak);
+        speak.spoken.on(new NativeSpeechDispatcher()::speak);
 
         //new NARSpeak.VocalCommentary(tc);
         n.startFPS(2f);
