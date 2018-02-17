@@ -95,9 +95,9 @@ public class FZero extends NAgentX {
 //                .resolution(0.05f);
 
 
-        //initToggle();
+        initToggle();
         //initBipolar(true);
-        initBipolar(false);
+        //initBipolar(true);
 
         //new Implier(1, this, new float[] { 0, 1 });
 
@@ -291,18 +291,12 @@ public class FZero extends NAgentX {
     private void initToggle() {
 
         actionToggle($.inh($.the("left"), id), (b) -> {
-            if (b && fz.right) {
-                fz.left = fz.right = false;
-            } else {
-                fz.left = b;
-            }
+            fz.left = b;
+            fz.right = false;
         });
         actionToggle($.inh($.the("right"), id), (b) -> {
-            if (b && fz.left) {
-                fz.left = fz.right = false;
-            } else {
-                fz.right = b;
-            }
+            fz.right = b;
+            fz.left = false;
         });
         actionToggle($.inh($.the("fwd"), id), (b) -> {
             fz.thrust = b;

@@ -82,7 +82,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
     }
 
 
-    protected void update(NAR n) {
+    public void update(NAR n) {
 
 //        if (now!=lastUpdated) {
 //            busy.set(false); //force reset if new clock time occurrs.  the runLater may have been lost
@@ -117,6 +117,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
             Truth goalTruth = c.goals().truth(focus, n);
             if (goalTruth == null || goalTruth.expectation() < exeThresh) {
+                x.delete();
                 return; //undesired
             }
 
@@ -136,10 +137,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
         active.commit();
         if (active.isEmpty()) {
-            if (onCycle != null) {
-                onCycle.off();
-                onCycle = null;
-            }
+            disable();
         }
     }
 
@@ -167,14 +165,28 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
             ));
 
 
-            synchronized (active) {
-                if (onCycle == null) {
-                    onCycle = DurService.on(n, this::update);
-                }
-            }
+            enable(n);
 
 
             return x;
+        }
+    }
+
+    /** operator goes into active probing mode */
+    protected void enable(NAR n) {
+        synchronized (this) {
+            if (onCycle == null) {
+                onCycle = DurService.on(n, this::update);
+            }
+        }
+    }
+    /** operator leaves active probing mode */
+    protected void disable() {
+        synchronized (this) {
+            if (onCycle != null) {
+                onCycle.off();
+                onCycle = null;
+            }
         }
     }
 

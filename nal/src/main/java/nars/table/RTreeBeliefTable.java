@@ -16,6 +16,7 @@ import nars.link.Tasklinks;
 import nars.task.NALTask;
 import nars.task.Revision;
 import nars.task.Tasked;
+import nars.task.TruthPolation;
 import nars.task.signal.SignalTask;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeConfRange;
@@ -152,7 +153,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     .scan(this, start - dur, end + dur, SCAN_CONF_DIVISIONS);
 
             if (!tt.isEmpty()) {
-                return Param.truth(ete, start, end, dur, tt);
+                return new TruthPolation(start, end, dur, tt).get(ete);
 //                PreciseTruth pt = Param.truth(null, start, end, dur, tt);
 //                if (pt!=null && (ete == null || (pt.evi() >= ete.evi())))
 //                    return pt;

@@ -90,7 +90,7 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
         return this;
     }
 
-    public Truth get(/*float eviFactor, float eviMin*/) {
+    public Truth get(boolean filterCyclic/*float eviFactor, float eviMin*/) {
 
         if (isEmpty()) return null;
 
@@ -110,10 +110,11 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
         }
 
         //remove overlapping evidence, preferring the strongest contributors of each
-        {
+        if (filterCyclic) {
             int s = size();
-            if (s == 0) return null;
-            if (s > 1) {
+            if (s == 0)
+                return null;
+            else if (s > 1) {
                 sortThisByFloat(tc -> -tc.evi); //descending by strength
                 //TODO maybe factor in originality to reduce overlap so evidence can be combined better
 
@@ -164,10 +165,10 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
     }
 
     /** blends any result with an eternal "background" contribution */
-    public Truth get(@Nullable Task e) {
+    public Truth get(@Nullable Task eternalTask) {
 
-        Truth temporal = get();
-        Truth eternal = e!=null ? e.truth() : null;
+        Truth temporal = get(true);
+        Truth eternal = eternalTask!=null ? eternalTask.truth() : null;
         if (eternal == null)
             return temporal;
         else if (temporal == null)

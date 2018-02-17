@@ -15,7 +15,7 @@ public class NARLoop extends Loop {
     public final FloatRange throttle = new FloatRange(1f, 0f, 1f);
 
     /** scheduler temporal granularity (in sec) */
-    public final FloatRange jiffy = new FloatRange(0.01f, 0.001f, 0.5f);
+    public final FloatRange jiffy = new FloatRange(0.05f, 0.001f, 0.5f);
 
     /**
      * starts paused; thread is not automatically created

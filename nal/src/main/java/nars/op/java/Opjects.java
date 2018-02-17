@@ -14,6 +14,7 @@ import jcog.math.FloatRange;
 import jcog.memoize.SoftMemoize;
 import nars.*;
 import nars.control.CauseChannel;
+import nars.control.DurService;
 import nars.op.AtomicExec;
 import nars.op.Operator;
 import nars.subterm.Subterms;
@@ -24,6 +25,7 @@ import nars.task.signal.TruthletTask;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import org.apache.commons.lang3.ArrayUtils;
+import org.boon.collections.ConcurrentLinkedHashSet;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -34,6 +36,7 @@ import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -76,6 +79,20 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
     public final FloatRange executionThreshold = new FloatRange(0.75f, 0.5f, 1f);
 
+    /** determines evidence weighting for reporting specific feedback values */
+    float belief = 1f;
+
+    /** determines evidence weighting for reporting assumed feedback assumptions */
+    float doubt = 0.1f;
+
+    /** cached; updated at most each duration */
+    private float beliefEvi = 0, doubtEvi = 0, beliefPri = 0;
+
+    /** set of operators in probing mode which are kept here for batched execution */
+    final ConcurrentLinkedHashSet<MethodExec> probing = new ConcurrentLinkedHashSet<>();
+
+
+
 //    /**
 //     * when true, forms its own puppet goals when invoked externally, as a learning method
 //     */
@@ -101,6 +118,9 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     static final Map<Class, Boolean> clCache = new CustomConcurrentHashMap(STRONG, EQUALS, STRONG, IDENTITY, 64);
     static final Map<String, MethodExec> opCache = new CustomConcurrentHashMap(STRONG, EQUALS, STRONG, IDENTITY, 64);
     //static final Map<Term, Method> methodCache = new CustomConcurrentHashMap(STRONG, EQUALS, SOFT, IDENTITY, 64); //cache: (class,method) -> Method
+
+    /** TODO maybe use a stack to track invocations inside of evocations inside of invokations etc */
+    final static ThreadLocal<AtomicBoolean> evoking = ThreadLocal.withInitial(AtomicBoolean::new);
 
 
     //public static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
@@ -134,8 +154,9 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         String mName = methodTerm.toString();
         Class<?>[] cc = types.isEmpty() ? ArrayUtils.EMPTY_CLASS_ARRAY : ((FasterList<Class<?>>) types).array();
         Method m = findMethod(c, mName, cc);
-        if (m == null)
+        if (m == null || !methodEvokable(m))
             return null;
+
         m.setAccessible(true);
         try {
             MethodHandle mh = MethodHandles.lookup().unreflect(m);
@@ -147,9 +168,37 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         return null;
     }, 512, true);
 
+
+    /** whether NAR can envoke the method internally */
+    public boolean methodEvokable(Method m) {
+        return isPublic(m);
+    }
+
+    /** whether NAR sees method activity when invoked extrenally */
+    public boolean methodInvokeObservable(Method wrapped) {
+        return isPublic(wrapped);
+    }
+
+
+    static boolean isPublic(Method m) {
+        int mm = m.getModifiers();
+        return Modifier.isPublic(mm);
+    }
+
     public Opjects(NAR n) {
         nar = n;
         in = n.newCauseChannel(this);
+        DurService.on(n, this::update);
+    }
+
+    /** called every duration to update all the operators in one batch, so they dont register events individually */
+    protected void update(NAR nar) {
+        float cMin = nar.confMin.floatValue();
+        float cMax = c2w(nar.confDefault(BELIEF));
+        beliefEvi = Util.lerp(belief, cMin, cMax);
+        doubtEvi = Util.lerp(doubt, cMin, cMax);
+        beliefPri = nar.priDefault(BELIEF) * in.amp();
+        probing.forEach(p -> p.update(nar));
     }
 
     @Override
@@ -165,7 +214,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     @Override
     protected void onInstanceChange(Term oterm, Term prevOterm) {
 
-        Term s = $.sim(oterm, prevOterm);
+//        Term s = $.sim(oterm, prevOterm);
 //        if (s instanceof Compound)
 //            nar.believe(metadataPriority, s,
 //                    Tense.ETERNAL,
@@ -185,7 +234,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
     interface InstanceMethodValueModel {
 
-        @Nullable void update(Instance instance, Object obj, Method method, Object[] args, Object nextValue, NAR nar);
+        void update(Instance instance, Object obj, Method method, Object[] args, Object nextValue, NAR nar);
     }
 //
 //    /**
@@ -277,7 +326,8 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         @Override
         public void update(Instance instance, Object obj, Method method, Object[] args, Object nextValue, NAR nar) {
 
-            float pri = nar.priDefault(BELIEF);
+
+
             SignalTask value;
 
             long now = nar.time();
@@ -288,6 +338,8 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
             float f = invocationBeliefFreq;
 
             boolean isVoid = method.getReturnType() == void.class;
+
+
             if (!isVoid) {
                 Term nextTerm = instance.opTerm(method, args, nextValue);
                 Term nt = nextTerm;
@@ -297,30 +349,44 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                 }
 
                 value = new TruthletTask(nt, BELIEF,
-                        Truthlet.flat(start, end, f,
-                                //Truthlet.impulse(start, end, f, 0.5f,
-                                //Truthlet.impulse(start, end, f, 1 - f,
-                                c2w(nar.confDefault(BELIEF))
+                        //dont assume the value is any different before or after invocation
+                        Truthlet.step(
+                                0.5f, start, //before
+                                f, beliefEvi,          //on
+                                end, 0.5f, //after
+                                doubtEvi  //off
                         ),
                         nar);
 
                 if (Param.DEBUG) value.log("Invoke Result");
 
-                value.priMax(pri);
+                value.priMax(beliefPri);
             } else {
                 value = null;
             }
 
-            SignalTask feedback = new TruthletTask(instance.opTerm(method, args, isVoid ? null : $.varDep(1)), BELIEF,
-                    Truthlet.flat(start, end, f,
-                            //Truthlet.impulse(start, end, f, 0.5f,
-                            //Truthlet.impulse(start, end, f, 1 - f,
-                            c2w(nar.confDefault(BELIEF))
-                    ),
-                    nar);
-            if (Param.DEBUG) feedback.log("Invoked");
-            feedback.priMax(pri);
+            boolean evokedOrInvoked = evoking.get().get();
 
+            SignalTask feedback;
+            if (isVoid || evokedOrInvoked) {
+                feedback = new TruthletTask(instance.opTerm(method, args, isVoid ? null : $.varDep(1)), BELIEF,
+                        //step(float freqBefore, long start, float freqOn, float eviOn, long end, float freqAfter, float eviOff) {
+                        //assume the invocation itself ends here
+                        Truthlet.step(
+                                0f, start, //before
+                                f, beliefEvi,          //on
+                                end, 0f, //after
+                                doubtEvi  //off
+                        ),
+                        //Truthlet.flat(start, end, f,
+                        //Truthlet.impulse(start, end, f, 1 - f,
+                        nar);
+                if (Param.DEBUG) feedback.log("Invoked");
+                feedback.priMax(beliefPri);
+
+            } else {
+                feedback = null;
+            }
 
 
 //                if (cause != null) {
@@ -358,7 +424,6 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 //                }
 
 
-            ;
         }
     }
 
@@ -476,10 +541,92 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         private final Term methodName;
         public Operator operator;
 
-        public MethodExec(String methodName) {
+        /** TODO invalidate any entries from here if an instance is registered after it has
+         * been running which may cause it to be ignored once it becomes available.
+         * maybe use a central runCache to make this easier
+         */
+        final SoftMemoize<Term,Runnable> runCache;
+
+
+        public MethodExec(String _methodName) {
             super(null, executionThreshold);
 
-            this.methodName = $.the(methodName);
+            this.methodName = $.the(_methodName);
+
+            runCache = new SoftMemoize<Term,Runnable>((term)->{
+                Subterms args = validArgs(Operator.args(term));
+                if (args == null)
+                    return null;
+
+                Term instanceTerm = args.sub(0);
+                Object instance = termToObj.get(instanceTerm);
+                if (instance == null)
+                    return null;
+
+                int as = args.subs();
+                Term methodArgs = as > 1 && (as > 2 || !args.sub(as - 1).op().var) ? args.sub(1) : Op.ZeroProduct;
+
+                boolean maWrapped = methodArgs.op() == PROD;
+
+                int aa = maWrapped ? methodArgs.subs() : 1;
+
+                Object[] instanceAndArgs;
+                List<Class<?>> types;
+                if (aa == 0) {
+                    instanceAndArgs = new Object[] { instance };
+                    types = Collections.emptyList();
+                } else {
+                    instanceAndArgs = object(instance, maWrapped ? methodArgs.subterms().arrayShared() : new Term[]{methodArgs});
+                    types = typesOf(instanceAndArgs, 1 /* skip leading instance value */, instanceAndArgs.length);
+                }
+
+
+                Class c = instance.getClass();
+
+                Pair<Pair<Class, Term>, List<Class<?>>> key = pair(pair(c, methodName), types);
+                MethodHandle mh = methodCache.apply(key);
+                if (mh == null) {
+                    //logger.warn("method unresolved: {}", term);
+                    return null;
+                }
+
+                return ()-> {
+
+                    AtomicBoolean flag = evoking.get();
+                    flag.set(true);
+
+                    try {
+                        mh.invokeWithArguments(instanceAndArgs);
+                        evoked(methodName, instance, instanceAndArgs);
+                    } catch (Throwable throwable) {
+                        logger.error("{} execution {}", term, throwable);
+                    } finally {
+                        flag.set(false);
+                    }
+
+                };
+
+            }, 512, true);
+        }
+
+        @Override
+        public int hashCode() {
+            return methodName.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            return this==obj;
+        }
+
+        @Override
+        protected void enable(NAR n) {
+            probing.add(this);
+        }
+
+        @Override
+        protected void disable() {
+            probing.remove(this);
         }
 
         @Override
@@ -488,87 +635,49 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
             if (!x.isCommand() && x.freq() <= 0.5f + Param.TRUTH_EPSILON)
                 return null; //dont even think about executing it, but pass thru to reasoner
 
-
-//            if (x.meta("pretend") != null)
-//                return null; //filter instructive tasks (would cause feedback loop)
-
-//            boolean input = x.isInput();
-
-            //TODO cache the entire decode operation and its success or failure
-
-            Subterms args = Operator.args(x);
-            if (args.subs() == 0)
+            if (runCache.apply(x.term()) == null)
                 return null;
 
-            Term instanceTerm = args.sub(0);
-            if (!termToObj.containsKey(instanceTerm))
-                return null; //unknown instance
-
-            args = validArgs(args);
-            if (args == null) {
-//                if (input)
-//                    return Operator.log(x.creation(), "Invalid opject argument pattern: " + x.term());
-//                else
-                    return null;
-            }
-
-
-            //TODO other prefilter conditions
-
             return x;
+////            if (x.meta("pretend") != null)
+////                return null; //filter instructive tasks (would cause feedback loop)
+//
+////            boolean input = x.isInput();
+//
+//            //TODO cache the entire decode operation and its success or failure
+//
+//            Subterms args = Operator.args(x);
+//            if (args.subs() == 0)
+//                return null;
+//
+//            Term instanceTerm = args.sub(0);
+//            if (!termToObj.containsKey(instanceTerm))
+//                return null; //unknown instance
+//
+//            args = validArgs(args);
+//            if (args == null) {
+////                if (input)
+////                    return Operator.log(x.creation(), "Invalid opject argument pattern: " + x.term());
+////                else
+//                    return null;
+//            }
+//
+//
+//            //TODO other prefilter conditions
+//
+//            return x;
         }
+
 
         @Override
         public void accept(Term term, NAR nar) {
 
-            Subterms args = validArgs(Operator.args(term));
-            if (args == null)
-                return;
-
-            Term instanceTerm = args.sub(0);
-            Object instance = termToObj.get(instanceTerm);
-            if (instance == null)
-                return;
-
-            int as = args.subs();
-            Term methodArgs = as > 1 && (as > 2 || !args.sub(as - 1).op().var) ? args.sub(1) : Op.ZeroProduct;
-
-            boolean maWrapped = methodArgs.op() == PROD;
-
-            int aa = maWrapped ? methodArgs.subs() : 1;
-
-            Object[] instanceAndArgs;
-            List<Class<?>> types;
-            if (aa == 0) {
-                instanceAndArgs = new Object[] { instance };
-                types = Collections.emptyList();
-            } else {
-                instanceAndArgs = object(instance, maWrapped ? methodArgs.subterms().arrayShared() : new Term[]{methodArgs});
-                types = typesOf(instanceAndArgs, 1 /* skip leading instance value */, instanceAndArgs.length);
-            }
-
-
-            if (evoked(methodName, instance, instanceAndArgs)) {
-
-                Class c = instance.getClass();
-
-                Pair<Pair<Class, Term>, List<Class<?>>> key = pair(pair(c, methodName), types);
-                MethodHandle mh = methodCache.apply(key);
-                if (mh == null) {
-                    logger.warn("method unresolved: {}", term);
-                    return;
-                }
-
-                try {
-                    mh.invokeWithArguments(instanceAndArgs);
-                } catch (Throwable throwable) {
-                    logger.error("{} execution {}", term, throwable);
-                }
-
-            }
+            runCache.apply(term).run();
 
         }
     }
+
+
 
     private Term[] terms(Object[] args) {
         return Util.map(this::term, Term[]::new, args);
@@ -744,10 +853,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         int mm = m.getModifiers();
         if (!Modifier.isPublic(mm))
             return false;
-        if (Modifier.isStatic(mm))
-            return false;
-
-        return true;
+        return !Modifier.isStatic(mm);
     }
 
 
@@ -825,10 +931,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
             }
         }
         // lower is sub-signature of upper: check for generics in upper method
-        if (isGeneric(candidate)) {
-            return true;
-        }
-        return false;
+        return isGeneric(candidate);
     }
 
     private static boolean isGeneric(Method method) {
@@ -861,8 +964,13 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         if (methodExclusions.contains(wrapped.getName()))
             return result;
 
-        return invoked(obj, wrapped, args, result);
+        if (methodInvokeObservable(wrapped))
+            return invoked(obj, wrapped, args, result);
+        else
+            return result; //bypass
     }
+
+
 
     protected Object invoked(Object obj, Method wrapped, Object[] args, Object result) {
         Instance in = (Instance) objToTerm.get(obj);

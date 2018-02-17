@@ -31,7 +31,7 @@ import static nars.truth.TruthFunctions.c2wSafe;
  */
 public final class DynTruth extends FasterList<TaskRegion> implements Prioritized, TaskRegion {
 
-    final LongHashSet evi = new LongHashSet();
+    LongHashSet evi = null;
 
     public DynTruth() {
         super();
@@ -159,7 +159,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
                     //dilute the evidence in proportion to temporal sparseness for non-temporal results
                     EviDensity se = new EviDensity(this);
                     evi *= se.factor();
-                    if (evi < eviMin)
+                    if (evi!=evi || evi < eviMin)
                         return null;
                     start = se.unionStart;
                     end = se.unionEnd;
@@ -239,13 +239,22 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     @Override
     public boolean add(TaskRegion newItem) {
         super.add(newItem);
-        if (newItem instanceof Task)
-            evi.addAll(((Task) newItem).stamp());
+
+        if (newItem!=null) {
+            long[] stamp = newItem.task().stamp();
+
+            if (evi == null)
+                evi = new LongHashSet(stamp.length * 2 /* estimate */);
+
+            evi.addAll(stamp);
+            evi.compact(); //because it may be compared against frequently
+        }
+
         return true;
     }
 
     public boolean filterOverlap(Task task) {
-        if (!evi.isEmpty()) {
+        if (evi != null) {
 
             long[] s = task.stamp();
             for (long x : s) {

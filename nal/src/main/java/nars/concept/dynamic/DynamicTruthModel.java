@@ -78,8 +78,8 @@ abstract public class DynamicTruthModel {
                 it = it.unneg();
 
             Concept subConcept =
-                    n.concept(it);
-                    //n.conceptualize(it); //force creation of concept, which if dynamic, could provide data for use here
+                    //n.concept(it);
+                    n.conceptualize(it); //force creation of concept, which if dynamic, could provide data for use here
 
             @Nullable Task bt;
             if (!(subConcept instanceof TaskConcept)) {

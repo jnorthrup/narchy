@@ -123,6 +123,7 @@ public class AtomicRoulette<X> {
         }
         return x;
     }
+
     public boolean priGetAndSetIfEquals(int i, int x0, int y) {
         if (pri.compareAndSet(i, x0, y)) {
             int t = priTotal.addAndGet(y - x0);
@@ -149,17 +150,23 @@ public class AtomicRoulette<X> {
                 int i = rng.nextInt(count); //random start location
 
                 int distance = (int) (rng.nextFloat() * priTotal);
-                if (distance > 0) {
-                    boolean dir = rng.nextBoolean(); //randomize the direction
 
-                    while ((distance = distance - pri.get(i)) > 0) {
-                        if (dir) { //TODO unroll this to two outer loops, not decide this inside
-                            if (++i == count) i = 0;
-                        } else {
-                            if (--i == -1) i = count - 1;
-                        }
+                boolean dir = rng.nextBoolean(); //randomize the direction
+
+                int pp;
+                int start = i;
+                while (((distance = distance - (pp = pri.get(i))) > 0) && (pp == 0)) {
+                    if (dir) { //TODO unroll this to two outer loops, not decide this inside
+                        if (++i == count) i = 0;
+                    } else {
+                        if (--i == -1) i = count - 1;
+                    }
+                    if (i == start) {
+                        i = -1; //idle signal that nothing was selected
+                        break;
                     }
                 }
+
 
                 kontinued = kontinue.test(choice.getSafe(i));
             }

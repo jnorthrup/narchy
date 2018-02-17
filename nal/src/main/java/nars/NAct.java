@@ -332,13 +332,21 @@ public interface NAct {
 
     }
 
-    default void actionPushButton(@NotNull Term s, @NotNull BooleanProcedure onChange) {
-        float thresh =
-                //0.5f + Param.TRUTH_EPSILON;
-                0.6f;
-                //0.75f;
-                //0.6f;
-        actionToggle(s, thresh, 0, 0f, () -> onChange.value(true), () -> onChange.value(false));
+    default void actionPushButton(@NotNull Term t, @NotNull BooleanProcedure on) {
+
+
+        actionUnipolar(t, (f) -> {
+            boolean positive = f > 0.5f;
+            on.value(positive);
+            return positive ? 1f : 0f;
+        });
+
+//        float thresh =
+//                //0.5f + Param.TRUTH_EPSILON;
+//                0.6f;
+//                //0.75f;
+//                //0.6f;
+//        actionToggle(s, thresh, 0, 0f, () -> onChange.value(true), () -> onChange.value(false));
     }
 //
 //    @Nullable
@@ -511,8 +519,8 @@ public interface NAct {
             int ip = p ? 0 : 1;
             CC[ip] = action;
             g[ip] = gg != null ?
-                    gg.freq()
-                    //gg.expectation()
+                    //gg.freq()
+                    gg.expectation()
                     :
                     0f;
                     //0.5f;

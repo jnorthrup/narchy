@@ -737,15 +737,15 @@ public class Revision {
 
         //t.setPri(a.priElseZero() + b.priElseZero());
 
-        t.cause = Cause.sample(nar.causeCapacity.intValue(), a, b);
+        t.cause = Cause.sample(Param.causeCapacity.intValue(), a, b);
 
         if (Param.DEBUG)
             t.log("Revection Merge");
 
 
 
-        ((NALTask)a).meta("@", (k)->t); //forward to the revision
-        ((NALTask)b).meta("@", (k)->t); //forward to the revision
+        a.meta("@", (k)->t); //forward to the revision
+        b.meta("@", (k)->t); //forward to the revision
 
         return t;
     }
@@ -837,6 +837,10 @@ public class Revision {
             density.add(ri);
 
             evidence.addAll(ts);
+
+            if (tasks > 1)
+                evidence.compact(); //because it may be compared against frequently
+
             overlap += overlapsToAdd;
             tasks++;
         }
@@ -888,7 +892,7 @@ public class Revision {
         int dur = nar.dur();
 
 
-        Truth truth = new TruthPolation(start, end, dur, tt).get();
+        Truth truth = new TruthPolation(start, end, dur, tt).get(true);
         if (truth == null) return first;
         float factor = densityFactor * overlapFactor;
         float eAdjusted = truth.evi() * factor;
@@ -909,7 +913,7 @@ public class Revision {
                 false,
                 Tasked::task, tt));
 
-        t.cause = Cause.sample(nar.causeCapacity.intValue(), tt);
+        t.cause = Cause.sample(Param.causeCapacity.intValue(), tt);
 
         if (Param.DEBUG)
             t.log("Temporal Merge");

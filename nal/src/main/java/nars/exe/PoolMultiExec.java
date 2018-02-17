@@ -1,6 +1,5 @@
 package nars.exe;
 
-import jcog.Texts;
 import jcog.Util;
 import jcog.exe.BusyPool;
 import jcog.math.MutableInteger;
@@ -224,47 +223,28 @@ public class PoolMultiExec extends AbstractExec {
                     return true;
                 }
 
+                int sliceIters[] = focus.sliceIters;
+                if (sliceIters.length <= x)
+                    return true;
+
                 /** temporarily withold priority */
 
                 boolean singleton = cx.singleton();
-                int pri = singleton ? focus.priGetAndSet(x, 0) : focus.pri(x);
+                int pri;
+                if (singleton) {
+                    if (!cx.busy.compareAndSet(false, true))
+                        return true; //someone else got this singleton
 
-//                double donePrevMean = focus.doneMean[x];
-//                if (!Double.isFinite(donePrevMean))
-//                    donePrevMean = 0;
-
-                double timesliceS =
-                        //0.006; //6ms
-                        //0.01; //10ms
-                        nar.loop.jiffy.floatValue();
-
-                double timesliceNS = timesliceS * 1.0E9;
-
-                long[] doneMax = focus.doneMax;
-                long doneMost = doneMax.length > x ? /*Util.mean(doneMean[x], */doneMax[x]/*)*/ : 0;
-
-                double[] timeMean = focus.timeMean;
-                double timePerIter = timeMean.length > x ? timeMean[x] : Double.POSITIVE_INFINITY;
-                if (doneMost < 1 || !Double.isFinite(timePerIter)) {
-                    //assume one iteration will consume entire timeslice
-                    doneMost = 1;
-                    timePerIter = timesliceNS;
+                    pri = focus.priGetAndSet(x, 0);
+                } else {
+                    pri = focus.pri(x);
                 }
 
-
                 //TODO this growth limit value should decrease throughout the cycle as each execution accumulates the total work it is being compared to
-                //this will require doneMax to be an atomic accmulator for accuracy
+                //this will require doneMax to be an atomic accmulator for accurac
 
-                int itersNext = (int) Math.max(1, Math.round(
-                        //Math.min
-                        (
-                                (timesliceNS / timePerIter)
-                                //,doneMost
-                        )
-                        * focus.IterGrowthRateLinear +focus.IterGrowthRateConstant
-                ));
-                assert(itersNext * timePerIter <= timesliceNS+1 ):
-                        itersNext + "x" + Texts.timeStr(timePerIter) + " > " + Texts.timeStr(timesliceNS);
+
+                int itersNext = sliceIters[x];
 
                 //System.out.println(cx + " x " + iters + " @ " + n4(iterPerSecond[x]) + "iter/sec in " + Texts.timeStr(subTime*1E9));
 
@@ -276,11 +256,14 @@ public class PoolMultiExec extends AbstractExec {
                 } finally {
                     if (singleton) {
 
+                        cx.busy.set(false);
+
                         if (completed >= 0) {
                             focus.priGetAndSetIfEquals(x, 0, pri); //release for another usage unless it's already re-activated in a new cycle
                         } else {
                             //leave suspended until next commit in the next cycle
                         }
+
                     } else {
                         if (completed < 0) {
                             focus.priGetAndSet(x, 0); //suspend

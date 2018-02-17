@@ -137,7 +137,6 @@ public class TruthletTask extends SignalTask {
         return new PreciseTruth(f, e /* evi */, false);
     }
 
-
     @Override
     public float evi(long when, long dur) {
         return truthlet.truth(when)[1];

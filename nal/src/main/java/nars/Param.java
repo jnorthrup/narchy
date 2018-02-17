@@ -10,13 +10,9 @@ import jcog.pri.op.PriMerge;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.concept.builder.ConceptBuilder;
 import nars.concept.builder.DefaultConceptBuilder;
-import nars.task.Tasked;
-import nars.task.TruthPolation;
 import nars.term.atom.Atom;
-import nars.truth.Truth;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -446,11 +442,6 @@ public abstract class Param {
         //return evi / (1f + dt / dur ); //first order decay
         //return evi / (1f + (dt*dt) / (dur*dur) ); //2nd order decay
 
-    }
-
-    @Nullable
-    public static Truth truth(@Nullable Task topEternal, long start, long end, int dur, Iterable<? extends Tasked> temporals) {
-        return new TruthPolation(start, end, dur, temporals).get(topEternal);
     }
 
 

@@ -15,12 +15,13 @@ public class StepTruthlet extends ProxyTruthlet {
 
     @Override
     public void truth(long when, float[] freqEvi) {
-        if (ref.during(when)) {
-            super.truth(when, freqEvi);
+        long s = start();
+        long e = end();
+
+        if (s <= when && when <= e) {
+            super.truth(when, freqEvi); //during the duty cycle
         } else {
 
-            long s = start();
-            long e = end();
             long sd = Math.abs(s - when);
             long ed = Math.abs(e - when);
             long dist; float f;
