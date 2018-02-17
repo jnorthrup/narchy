@@ -13,6 +13,7 @@ import jcog.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.memoize.SoftMemoize;
 import nars.*;
+import nars.concept.Concept;
 import nars.control.CauseChannel;
 import nars.control.DurService;
 import nars.op.AtomicExec;
@@ -84,7 +85,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     float belief = 1f;
 
     /** determines evidence weighting for reporting assumed feedback assumptions */
-    float doubt = 0.1f;
+    float doubt = 1f;
 
     /** cached; updated at most each duration */
     private float beliefEvi = 0, doubtEvi = 0, beliefPri = 0;
@@ -223,6 +224,13 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
     }
 
+    /** registers an alias/binding shortcut term rewrite macro */
+    public Concept alias(String op, Term instance, String method) {
+        return nar.on(op, (s)->
+                $.func(method, instance, s.subs()==1 ? s.sub(0) : PROD.the(s))
+        );
+    }
+
 //    static class ValueSignalTask extends LatchingSignalTask {
 //
 //        final Object value;
@@ -235,7 +243,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
     interface InstanceMethodValueModel {
 
-        void update(Instance instance, Object obj, Method method, Object[] args, Object nextValue, NAR nar);
+        void update(Term instance, Object obj, Method method, Object[] args, Object nextValue, NAR nar);
     }
 //
 //    /**
@@ -325,7 +333,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         private final static float invocationBeliefFreq = 1.0f;
 
         @Override
-        public void update(Instance instance, Object obj, Method method, Object[] args, Object nextValue, NAR nar) {
+        public void update(Term instance, Object obj, Method method, Object[] args, Object nextValue, NAR nar) {
 
 
 
@@ -342,7 +350,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
 
             if (!isVoid) {
-                Term nextTerm = instance.opTerm(method, args, nextValue);
+                Term nextTerm = opTerm(instance, method, args, nextValue);
                 Term nt = nextTerm;
                 if (nt.op() == NEG) {
                     nt = nt.unneg();
@@ -370,7 +378,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
             SignalTask feedback;
             if (isVoid || evokedOrInvoked) {
-                feedback = new TruthletTask(instance.opTerm(method, args, isVoid ? null : $.varDep(1)), BELIEF,
+                feedback = new TruthletTask(opTerm(instance, method, args, isVoid ? null : $.varDep(1)), BELIEF,
                         //step(float freqBefore, long start, float freqOn, float eviOn, long end, float freqAfter, float eviOff) {
                         //assume the invocation itself ends here
                         Truthlet.step(
@@ -460,7 +468,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 //                cause = pretend;
 //            }
 
-            belief.update(this, obj, method, args, nextValue, nar);
+            belief.update(ref, obj, method, args, nextValue, nar);
 
             return nextValue;
         }
@@ -478,68 +486,69 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 //            return g;
 //        }
 
-        private Term opTerm(Method method, Object[] args, Object result) {
 
-            //TODO handle static methods
+    }
 
-            Class<?> returnType = method.getReturnType();
-            boolean isVoid = result == null && returnType == void.class;
-            int xn = 3;
-            if (args.length == 0) {
-                xn--;
-            }
-            if (isVoid) {
-                xn--;
-            }
+    Term opTerm(Term instance, Method method, Object[] args, Object result) {
 
-            Term[] x = new Term[xn];
-            int resultTerm = xn - 1;
+        //TODO handle static methods
 
-            x[0] = this;
-
-            if (args.length > 0) {
-                switch (args.length) {
-                    case 0:
-                        break;
-                    case 1:
-                        x[1] = Opjects.this.term(args[0]);
-                        break; /* unwrapped singleton */
-                    default:
-                        x[1] = PROD.the(Opjects.this.terms(args));
-                        break;
-                }
-                assert (x[1] != null) : "could not termize: " + Arrays.toString(args);
-            }
-
-            boolean negate = false;
-
-            if (result instanceof Term) {
-                Term tr = (Term) result;
-                if (tr.op() == NEG) {
-                    tr = tr.unneg();
-                    negate = true;
-                }
-                x[resultTerm] = tr;
-            } else {
-                boolean isBoolean = returnType == boolean.class || returnType == Boolean.class;
-                if (isBoolean) {
-
-                    boolean b = (Boolean) result;
-                    if (!b) {
-                        result = true;
-                        negate = true;
-                    }
-                }
-
-                if (!isVoid) {
-                    x[resultTerm] = Opjects.this.term(result);
-                    assert (x[resultTerm] != null) : "could not termize: " + result;
-                }
-            }
-
-            return $.func(method.getName(), x).negIf(negate).normalize();
+        Class<?> returnType = method.getReturnType();
+        boolean isVoid = result == null && returnType == void.class;
+        int xn = 3;
+        if (args.length == 0) {
+            xn--;
+        }
+        if (isVoid) {
+            xn--;
         }
 
+        Term[] x = new Term[xn];
+        int resultTerm = xn - 1;
+
+        x[0] = instance;
+
+        if (args.length > 0) {
+            switch (args.length) {
+                case 0:
+                    break;
+                case 1:
+                    x[1] = term(args[0]);
+                    break; /* unwrapped singleton */
+                default:
+                    x[1] = PROD.the(terms(args));
+                    break;
+            }
+            assert (x[1] != null) : "could not termize: " + Arrays.toString(args);
+        }
+
+        boolean negate = false;
+
+        if (result instanceof Term) {
+            Term tr = (Term) result;
+            if (tr.op() == NEG) {
+                tr = tr.unneg();
+                negate = true;
+            }
+            x[resultTerm] = tr;
+        } else {
+            boolean isBoolean = returnType == boolean.class || returnType == Boolean.class;
+            if (isBoolean) {
+
+                boolean b = (Boolean) result;
+                if (!b) {
+                    result = true;
+                    negate = true;
+                }
+            }
+
+            if (!isVoid) {
+                x[resultTerm] = Opjects.this.term(result);
+                assert (x[resultTerm] != null) : "could not termize: " + result;
+            }
+        }
+
+        return $.func(method.getName(), x).negIf(negate).normalize();
     }
 
     private class MethodExec extends AtomicExec implements BiConsumer<Term, NAR> {

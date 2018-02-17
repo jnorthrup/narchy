@@ -5,14 +5,11 @@ import jcog.event.ListTopic;
 import jcog.event.Topic;
 import nars.*;
 import nars.op.java.Opjects;
-import nars.term.Term;
 import nars.time.Tense;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-
-import static nars.Op.PROD;
 
 /** TODO make extend NARService and support start/re-start */
 public class NARSpeak {
@@ -54,16 +51,10 @@ public class NARSpeak {
 
         this.op = new Opjects(nar);
 
-        Term SPEECH = nar.self(); //$.p(nar.self(), $.the("speech"));
+        speech = op.the(nar.self(), new SpeechControl(), this);
 
-        speech = op.the(SPEECH, new SpeechControl(), this);
-        speech.chatty();
+        op.alias("say", nar.self(), "speak");
 
-
-        //op.alias("say", "speak", speech)
-        nar.on("say", (s)->
-            $.func("speak", SPEECH, s.subs()==1 ? s.sub(0) : PROD.the(s))
-        );
     }
 
     public class SpeechControl {
@@ -193,8 +184,15 @@ public class NARSpeak {
 
         n.input("say(abc)! :|:");
         while (true) {
-            Util.sleep(500);
-            n.input("say(abc)! :|:");
+            Util.sleep(2500);
+            String word;
+            switch (n.random().nextInt(3)) {
+                default:
+                case 0: word = "x"; break;
+                case 1: word = "y"; break;
+                case 2: word = "z"; break;
+            }
+            n.input("say(" + word + ")! :|:");
         }
     }
 }

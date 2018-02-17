@@ -24,6 +24,7 @@ import java.util.function.BiFunction;
 
 /**
  * debounced and atomically/asynchronously executable operation
+ * TODO support asych executions that delay or stretch feedback until they complete
  */
 public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
@@ -126,7 +127,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
             }
 
             Truth beliefTruth = c.beliefs().truth(focus, n); /* assume false with no evidence */;
-            if (beliefTruth != null && beliefTruth.expectation() > (1-exeThresh)) {
+            if (beliefTruth != null && (1-beliefTruth.expectation()) > exeThresh) {
                 return; //satisfied
             }
 
