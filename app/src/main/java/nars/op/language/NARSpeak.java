@@ -1,82 +1,96 @@
 package nars.op.language;
 
-import com.google.common.base.Joiner;
+import jcog.Util;
 import jcog.event.ListTopic;
 import jcog.event.Topic;
-import nars.$;
-import nars.NAR;
-import nars.NAgent;
-import nars.Narsese;
-import nars.op.AtomicExec;
-import nars.op.Operator;
-import nars.subterm.Subterms;
-import nars.term.atom.Atomic;
+import nars.*;
+import nars.op.java.Opjects;
+import nars.term.Term;
 import nars.time.Tense;
-import net.beadsproject.beads.ugens.Clock;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.concurrent.Semaphore;
 
-import static nars.Op.BELIEF;
+import static nars.Op.PROD;
 
 /** TODO make extend NARService and support start/re-start */
 public class NARSpeak {
     private final NAR nar;
-    private final AtomicExec sayer;
-//    private final Opjects op;
+    //private final AtomicExec sayer;
+    private final Opjects op;
 
     /** emitted on each utterance */
     public final Topic<Object> spoken = new ListTopic();
+    private final SpeechControl speech;
 
     public NARSpeak(NAR nar) {
         this.nar = nar;
 
-        nar.onOp("say", sayer = new AtomicExec((t, n) -> {
-            @Nullable Subterms args = Operator.args(t);
-            if (args.AND(x -> !x.op().var)) {
-                String text = Joiner.on(", ").join(args);
-                if (text.isEmpty())
-                    return;
 
-//                    Term tokens = $.conj(Twokenize.twokenize(text).stream()
-//                            .map(x -> $.func("say", $.the(x.toString())))
-//                            .toArray(Term[]::new));
+//        nar.onOp("say", sayer = new AtomicExec((t, n) -> {
+//            @Nullable Subterms args = Operator.args(t);
+//            if (args.AND(x -> !x.op().var)) {
+//                String text = Joiner.on(", ").join(args);
+//                if (text.isEmpty())
+//                    return;
+//
+////                    Term tokens = $.conj(Twokenize.twokenize(text).stream()
+////                            .map(x -> $.func("say", $.the(x.toString())))
+////                            .toArray(Term[]::new));
+//
+//                spoken.emitAsync(text, nar.exe);
+//
+//                //System.err.println(text);
+//                //MaryTTSpeech.speak(text);
+//
+//                n.believe(t, Tense.Present);
+//
+//                Atomic qt = $.quote(text);
+//                NARHear.hearText(n, $.unquote(qt), n.self().toString(), 200, this.nar.priDefault(BELIEF));
+//            }
+//        }, 0.51f));
 
-                spoken.emit(text);
-                //System.err.println(text);
-                //MaryTTSpeech.speak(text);
 
-                Atomic qt = $.quote(text);
-                n.believe($.func("say", qt), Tense.Present);
-                NARHear.hearText(n, $.unquote(qt), n.self().toString(), 200, this.nar.priDefault(BELIEF));
-            }
-        }, 0.51f));
+        this.op = new Opjects(nar);
+
+        Term SPEECH = nar.self(); //$.p(nar.self(), $.the("speech"));
+
+        speech = op.the(SPEECH, new SpeechControl(), this);
+        speech.chatty();
 
 
-//        this.op = new Opjects(nar);
-        //SpeechControl speechControl = new SpeechControl();
-//        op.the("speech", SpeechControl.class);
-
-        //speechControl.chatty();
+        //op.alias("say", "speak", speech)
+        nar.on("say", (s)->
+            $.func("speak", SPEECH, s.subs()==1 ? s.sub(0) : PROD.the(s))
+        );
     }
 
     public class SpeechControl {
 
         public SpeechControl() { }
 
+        public void speak(Object text) {
+
+            spoken.emitAsync(text, nar.exe);
+
+            //System.err.println(text);
+            //MaryTTSpeech.speak(text);
+
+            //Atomic qt = $.quote(text);
+            //NARHear.hearText(n, $.unquote(qt), n.self().toString(), 200, this.nar.priDefault(BELIEF));
+        }
+
         public void quiet() {
-            sayer.exeThresh.set(1f);
+            op.exeThresh.set(1f);
         }
 
         public void normal() {
-            sayer.exeThresh.set(0.75f);
+            op.exeThresh.set(0.75f);
         }
 
         public void chatty() {
-            sayer.exeThresh.set(0.51f);
+            op.exeThresh.set(0.51f);
         }
     }
 
@@ -98,31 +112,45 @@ public class NARSpeak {
 
         static final Logger logger = LoggerFactory.getLogger(NativeSpeechDispatcher.class);
 
-        static final int MAX_POLYPHONY = 8;
-        final Semaphore polyphony = new Semaphore(MAX_POLYPHONY);
+        //static final int MAX_POLYPHONY = 8;
+        //final Semaphore polyphony = new Semaphore(MAX_POLYPHONY, true);
+        //final BlockingQueue<Object> q = new ArrayBlockingQueue(MAX_POLYPHONY);
 
         public NativeSpeechDispatcher(NARSpeak s) {
             s.spoken.on(this::speak);
         }
 
+        public String[] command(String s) {
+            return new String[]{
+                //"/usr/bin/spd-say", "\"" + s + "\"" //speech-dispatcher -- buffers messages and does not allow multiple voices
+                "/usr/bin/espeak-ng", "\"" + s + "\"" //espeak-ng (next generation) -- directly synthesize on command
+            };
+        }
+
         private void speak(Object x) {
             String s = x.toString();
             try {
-                if (polyphony.tryAcquire()) {
-                    //TODO semaphore to limit # of simultaneous voices
-                    Process p = new ProcessBuilder().command("/usr/bin/spd-say", "\"" + s + "\"").start();
-                    p.onExit().handle((z, y) -> {
-                        //System.out.println("done: " + z);
-                        polyphony.release();
-                        return null;
-                    }).exceptionally(t->{
-                        logger.warn("speech error: {} {}", s, t);
-                        polyphony.release();
-                        return null;
-                    });
-                } else {
-                    logger.warn("insufficient speech polyphony, ignored: {}", s);
-                }
+//                try {
+//                    if (q.offer)
+//                    if (polyphony.tryAcquire(1, TimeUnit.SECONDS)) {
+
+                        //TODO semaphore to limit # of simultaneous voices
+                        Process p = new ProcessBuilder()
+                                .command(command(s))
+                                .start();
+                        p.onExit().handle((z, y) -> {
+                            //System.out.println("done: " + z);
+                            //polyphony.release();
+                            return null;
+                        }).exceptionally(t->{
+                            logger.warn("speech error: {} {}", s, t);
+                            //polyphony.release();
+                            return null;
+                        });
+//                    } else {
+//                        logger.warn("insufficient speech polyphony, ignored: {}", s);
+//                    }
+
             } catch (IOException e) {
                 logger.warn("speech error: {} {}", s, e);
             }
@@ -131,8 +159,8 @@ public class NARSpeak {
 
     }
 
-    private static class VocalCommentary {
-        public VocalCommentary(Clock ac, NAgent a) {
+    public static class VocalCommentary {
+        public VocalCommentary(NAgent a) {
 
             new NARSpeak(a.nar);
 
@@ -140,12 +168,33 @@ public class NARSpeak {
                 a.nar.goal($.$("speak(ready)"), Tense.Present, 1f, 0.9f);
 //                a.nar.believe($("(" + a.sad + " =|> speak(sad))."));
 //                a.nar.goal($("(" + a.sad + " &| speak(sad))"));
-                a.nar.believe($.$("(" + a.happy + " =|> speak(happy))."));
+                a.nar.believe($.$("(" + a.happy + " =|> speak(happy))"));
                 a.nar.goal($.$("(" + a.happy + " &| speak(happy))"));
+                a.nar.believe($.$("(" + a.happy.neg() + " =|> speak(sad))"));
+                a.nar.goal($.$("(" + a.happy.neg() + " &| speak(sad))"));
+                a.nar.goal($.$("speak(#1)"));
             } catch (Narsese.NarseseException e) {
                 e.printStackTrace();
             }
 
+        }
+    }
+
+    public static void main(String[] args) throws Narsese.NarseseException {
+        NAR n = NARS.realtime(10f).get();
+
+        NARSpeak speak = new NARSpeak(n);
+        new NARSpeak.NativeSpeechDispatcher(speak);
+
+        //new NARSpeak.VocalCommentary(tc);
+        n.startFPS(2f);
+
+        n.log();
+
+        n.input("say(abc)! :|:");
+        while (true) {
+            Util.sleep(500);
+            n.input("say(abc)! :|:");
         }
     }
 }

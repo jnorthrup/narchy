@@ -827,6 +827,10 @@ public enum Op {
 //    }
 
 
+    public final Term the(Subterms s) {
+        return the(s.arrayShared());
+    }
+
     public final Term the(/*@NotNull*/ Term... u) {
         return the(DTERNAL, u);
     }

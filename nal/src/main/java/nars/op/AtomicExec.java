@@ -6,9 +6,11 @@ import jcog.math.FloatRange;
 import jcog.pri.PLink;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
+import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.control.DurService;
+import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -78,7 +80,9 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
      * implementations can override this to prefilter invalid operation patterns
      */
     protected Task exePrefilter(Task x) {
-        return x;
+
+        Subterms a = Operator.args(x);
+        return a.hasAny(Op.ConstantAtomics) ? x : null; //avoid purely variable args
     }
 
 

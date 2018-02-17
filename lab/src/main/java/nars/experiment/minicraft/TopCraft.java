@@ -6,6 +6,7 @@ import nars.NAgentX;
 import nars.Narsese;
 import nars.experiment.minicraft.top.InputHandler;
 import nars.experiment.minicraft.top.TopDownMinicraft;
+import nars.op.language.NARSpeak;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.AutoclassifiedBitmap;
 import nars.video.PixelBag;
@@ -37,9 +38,13 @@ public class TopCraft extends NAgentX {
     private AutoclassifiedBitmap camAE;
 
     public static void main(String[] args) {
-        runRT(nar1 -> {
+        runRT(n -> {
             try {
-                return new TopCraft(nar1);
+                TopCraft tc = new TopCraft(n);
+
+
+
+                return tc;
             } catch (Narsese.NarseseException e) {
                 e.printStackTrace();
                 return null;

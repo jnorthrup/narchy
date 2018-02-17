@@ -1195,8 +1195,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                             int i = hash & (tab.length - 1);
                             r = factory.newNode(hash, key, v, this, tab[i]);
                             // Fences.preStoreFence(r);
-                            // tab[i] = r;
-                            storeNode(tab, i, r);
+                            storeNode(tab, i, r); // tab[i] = r;
                             seg.incrementCount();
                         }
                     }

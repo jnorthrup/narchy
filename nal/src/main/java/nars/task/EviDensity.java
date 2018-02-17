@@ -51,7 +51,9 @@ public final class EviDensity {
                     if (xx != null) {
                         Task xxx = xx.task();
                         if (xxx.isEternal()) {
-                            add(xxx, unionStart, unionEnd); //fill
+                            float xev = xxx.evi();
+                            //fill as if it were temporal for the range defined by the non-eternal tasks
+                            add(unionStart, unionEnd, xev, (1 + xxx.range()) * xev);
                         }
                     }
                 }

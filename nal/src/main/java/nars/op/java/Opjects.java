@@ -22,8 +22,8 @@ import nars.task.ITask;
 import nars.task.signal.SignalTask;
 import nars.task.signal.Truthlet;
 import nars.task.signal.TruthletTask;
+import nars.term.ProxyTerm;
 import nars.term.Term;
-import nars.term.atom.Atom;
 import org.apache.commons.lang3.ArrayUtils;
 import org.boon.collections.ConcurrentLinkedHashSet;
 import org.eclipse.collections.api.tuple.Pair;
@@ -42,6 +42,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
+
 import static nars.Op.*;
 import static nars.truth.TruthFunctions.c2w;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -77,7 +78,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
     final static org.slf4j.Logger logger = LoggerFactory.getLogger(Opjects.class);
 
-    public final FloatRange executionThreshold = new FloatRange(0.75f, 0.5f, 1f);
+    public final FloatRange exeThresh = new FloatRange(0.75f, 0.5f, 1f);
 
     /** determines evidence weighting for reporting specific feedback values */
     float belief = 1f;
@@ -171,12 +172,12 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
     /** whether NAR can envoke the method internally */
     public boolean methodEvokable(Method m) {
-        return isPublic(m);
+        return isPublic(m); //disallows invoking protected
     }
 
     /** whether NAR sees method activity when invoked extrenally */
     public boolean methodInvokeObservable(Method wrapped) {
-        return isPublic(wrapped);
+        return !Modifier.isPrivate(wrapped.getModifiers()); //allows seeing protected
     }
 
 
@@ -317,7 +318,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 //    }
 
     final InstanceMethodValueModel pointTasks = new PointMethodValueModel();
-    final Function<String, InstanceMethodValueModel> valueModel = (x) -> pointTasks /* memoryless */;
+    final Function<Term, InstanceMethodValueModel> valueModel = (x) -> pointTasks /* memoryless */;
 
     public class PointMethodValueModel implements InstanceMethodValueModel {
 
@@ -428,7 +429,11 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     }
 
 
-    class Instance extends Atom {
+    /** this term should not be used in constructing terms that will leave this class.
+     *  this is so it wont pollute the NAR's index and possibly interfere with other
+     *  identifiers that it may be equal to (ex: NAR.self())
+     */
+    private class Instance extends ProxyTerm {
 
         /**
          * reference to the actual object
@@ -441,7 +446,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
          * for VM-caused invocations: if true, inputs a goal task since none was involved. assists learning the interface
          */
 
-        public Instance(String id, Object object) {
+        public Instance(Term id, Object object) {
             super(id);
             this.object = object;
             this.belief = valueModel.apply(id);
@@ -500,7 +505,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                         x[1] = Opjects.this.term(args[0]);
                         break; /* unwrapped singleton */
                     default:
-                        x[1] = $.p(terms(args));
+                        x[1] = PROD.the(Opjects.this.terms(args));
                         break;
                 }
                 assert (x[1] != null) : "could not termize: " + Arrays.toString(args);
@@ -549,7 +554,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
 
         public MethodExec(String _methodName) {
-            super(null, executionThreshold);
+            super(null, Opjects.this.exeThresh);
 
             this.methodName = $.the(_methodName);
 
@@ -687,27 +692,45 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 //        return terms(args.arrayShared());
 //    }
 
+    public <T> T the(String id, T instance, Object... args) {
+        return the($.the(id), instance, args);
+    }
 
     /**
      * wraps a provided instance in an intercepting proxy class
      */
-    public <T> T the(String id, T instance) {
+    public <T> T the(Term id, T instance, Object... args) {
 
-        reflect(instance.getClass());
+//        Class clazz = proxyCache.computeIfAbsent(cl, (c) -> {
+//
+//            reflect(c);
+//
+//            ProxyFactory p = new ProxyFactory();
+//            p.setSuperclass(c);
+//
+//            return p.createClass();
+//        });
 
         ProxyFactory f = new ProxyFactory();
         f.setSuperclass(instance.getClass());
+
+        reflect(instance.getClass());
+
         try {
-            register(id, instance);
-            return (T) f.create(ArrayUtils.EMPTY_CLASS_ARRAY, ArrayUtils.EMPTY_OBJECT_ARRAY,
-                    (self, thisMethod, proceed, args) ->
-                            tryInvoked(instance, thisMethod, args, thisMethod.invoke(instance, args))
+
+            T wrapped = (T) f.create(typesOfArray(args), args,
+                    (self, thisMethod, proceed, aa) ->
+                            tryInvoked(self, thisMethod, aa, thisMethod.invoke(instance, aa))
             );
+
+            register(id, wrapped);
+
+            return wrapped;
         } catch (Throwable e) {
             throw new RuntimeException(e);
         }
 
-//        T newInstance = (T)Proxy.newProxyInstance(instance.getClass().getClassLoader(),
+//        return (T)Proxy.newProxyInstance(instance.getClass().getClassLoader(),
 //                new Class[] { instance.getClass() }, new AbstractInvocationHandler() {
 //            @Override
 //            protected Object handleInvocation(Object proxy, Method method, Object[] args) throws Throwable {
@@ -744,18 +767,23 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         });
     }
 
+    public <T> T a(String id, Class<? extends T> cl, Object... args) {
+        return a($.the(id), cl, args);
+    }
+
     /**
      * creates a new instance to be managed by this
      */
     @NotNull
-    public <T> T a(String id, Class<? extends T> instance, Object... args) {
+    public <T> T a(Term id, Class<? extends T> cl, Object... args) {
 
-        Class clazz = proxyCache.computeIfAbsent(instance, (c) -> {
+        Class clazz = proxyCache.computeIfAbsent(cl, (c) -> {
 
-            reflect(instance);
+            reflect(c);
 
             ProxyFactory p = new ProxyFactory();
             p.setSuperclass(c);
+
             return p.createClass();
         });
 
@@ -772,10 +800,9 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         }
     }
 
-    private <T> T register(String id, T wrappedInstance) {
+    private <T> T register(Term id, T wrappedInstance) {
 
-        Instance ii = new Instance(id, wrappedInstance);
-        put(ii, wrappedInstance);
+        put(new Instance(id, wrappedInstance), wrappedInstance);
 
         return wrappedInstance;
     }
@@ -832,7 +859,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     }
 
     private boolean validParamTerm(Op o1) {
-        return o1 == Op.VAR_DEP || o1 == PROD || (o1.atomic && !o1.var);
+        return o1 == VAR_DEP || o1 == PROD || (o1.atomic && !o1.var);
     }
 
     protected Term validMethod(Term method) {
@@ -930,8 +957,11 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                 return false;
             }
         }
+
+        return true;
+
         // lower is sub-signature of upper: check for generics in upper method
-        return isGeneric(candidate);
+        //return isGeneric(candidate);
     }
 
     private static boolean isGeneric(Method method) {

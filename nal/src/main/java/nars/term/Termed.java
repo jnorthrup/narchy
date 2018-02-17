@@ -83,6 +83,9 @@ public interface Termed extends Termlike {
     default Term unneg() {
         return term().unneg();
     }
+    default Term neg() {
+        return term().neg();
+    }
 
     @Override
     default boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {

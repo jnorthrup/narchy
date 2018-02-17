@@ -28,8 +28,10 @@ public class DynamicBeliefTableTest {
         n.believe("b:x", 0f, 0.9f);
         n.run(1);
         long now = n.time();
-        Concept axANDay = n.conceptualize($("(a:x && a:y)"));
-        assertEquals($.t(1f, 0.81f), n.beliefTruth(axANDay, now));
+
+        assertEquals($.t(1f, 0.81f), n.beliefTruth($("(a:x && a:y)"), now)); //truth only
+        assertEquals($.t(1f, 0.81f), n.belief($("(a:x && a:y)"), now).truth()); //matched task
+
         assertEquals($.t(0f, 0.90f), n.beliefTruth(($("(b:x && a:y)")), now));
         assertEquals($.t(0f, 0.90f), n.beliefTruth(($("(a:x && (--,a:y))")), now));
         assertEquals($.t(1f, 0.81f), n.beliefTruth(($("((--,b:x) && a:y)")), now));

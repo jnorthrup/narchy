@@ -184,7 +184,6 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
             f = freq;
         }
 
-
         Truth tr = Truth.theDiscrete(f, evi, nar);
         if (tr == null)
             return null;

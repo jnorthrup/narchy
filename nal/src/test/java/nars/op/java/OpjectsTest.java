@@ -116,8 +116,8 @@ public class OpjectsTest {
         }
         n.run(1);
         String s = sb.toString();
-        assertTrue(s.contains("$.50 get(x,0)."));
-        assertTrue(s.contains("$.50 set(x,1)."));
+        assertTrue(s.contains("get(x,0)."));
+        assertTrue(s.contains("set(x,1)."));
     }
 
     @Disabled

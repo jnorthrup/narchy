@@ -150,7 +150,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
     @Override
     public final float floatValueOf(/*@NotNull*/ Task w) {
         //return rankEternalByConfAndOriginality(w);
-        return -w.eviInteg(); //conf();
+        return -w.evi();
     }
 
 

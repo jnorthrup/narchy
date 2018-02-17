@@ -65,7 +65,7 @@ public class ThermostatTest {
             return msg;
         }
 
-        private void should(int x) {
+        protected void should(int x) {
             System.err.println("temperature should " + x);
             this.target = x;
         }
@@ -179,7 +179,7 @@ public class ThermostatTest {
 
             training[0] = true;
 
-            op.executionThreshold.set(1f);
+            op.exeThresh.set(1f);
             for (int i = 0; i < subTrainings; i++) {
                 for (Consumer<Thermostat> condition : new Consumer[]{hotToCold, coldToCold}) {
                     env.teach("down", condition, x -> {
@@ -210,7 +210,7 @@ public class ThermostatTest {
             System.out.println("VALIDATING");
             System.out.println();
             training[0] = false;
-            op.executionThreshold.set(exeThresh);
+            op.exeThresh.set(exeThresh);
 
 
 
