@@ -12,7 +12,6 @@ import nars.truth.Truth;
 import nars.util.signal.ScalarSignal;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.LongSupplier;
@@ -31,24 +30,18 @@ public class SensorConcept extends WiredConcept implements FloatFunction<Term>, 
 
     private transient short cause = -1;
 
-    //static final Logger logger = LoggerFactory.getLogger(SensorConcept.class);
-
-    public SensorConcept(Term c, NAR n, FloatSupplier signal, FloatToObjectFunction<Truth> truth) {
-        this(c, n, signal, (prev,next)->truth.valueOf(next));
-    }
-
-    public SensorConcept(Term c, NAR n, FloatSupplier signal, FloatFloatToObjectFunction<Truth> truth) {
-        this(c, n.conceptBuilder, signal, truth);
+    public SensorConcept(Term c, NAR n, FloatSupplier signal) {
+        this(c, n.conceptBuilder, signal);
         sensor.pri(() -> n.priDefault(BELIEF));
     }
 
-    public SensorConcept(Term c, ConceptBuilder b, FloatSupplier signal, FloatFloatToObjectFunction<Truth> truth) {
+    public SensorConcept(Term c, ConceptBuilder b, FloatSupplier signal) {
         super(c,
                 //new SensorBeliefTable(n.conceptBuilder.newTemporalBeliefTable(c)),
                 null,
                 null, b);
 
-        this.sensor = new ScalarSignal(c, this, truth, ()->SensorConcept.this.resolution.asFloat()) {
+        this.sensor = new ScalarSignal(c, this, ()->SensorConcept.this.resolution.asFloat()) {
             @Override
             protected LongSupplier stamp(Truth currentBelief,  NAR nar) {
                 return SensorConcept.this.nextStamp(nar);
@@ -107,8 +100,8 @@ public class SensorConcept extends WiredConcept implements FloatFunction<Term>, 
     }
 
     @Nullable
-    public Task update(long time, int dur, NAR n) {
-        Task x = sensor.update(this, n, time, dur);
+    public Task update(FloatFloatToObjectFunction<Truth> truther, long time, int dur, NAR n) {
+        Task x = sensor.update(this, truther, n, time, dur);
 
         PredictionFeedback.feedbackNewSignal(sensor.get() /* get() again in case x is stretched it will be null */, beliefs, n);
 

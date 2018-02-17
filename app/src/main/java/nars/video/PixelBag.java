@@ -3,11 +3,11 @@ package nars.video;
 import jcog.Util;
 import jcog.math.random.XorShift128PlusRandom;
 import jcog.signal.Bitmap2D;
-import nars.$;
-import nars.NAgent;
+import nars.*;
 import nars.concept.ActionConcept;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.util.signal.Bitmap2DSensor;
 
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -300,6 +300,24 @@ public abstract class PixelBag implements Bitmap2D {
         return true;
     }
 
+
+    public static class Eye extends SubNAR {
+
+        public Eye(NAR superNAR, Bitmap2D source) {
+            super(superNAR, (superr)->{
+                NAR n = NARS.realtime(10 /* durFPS */).deriverAdd(1, 8).get();
+                n.startFPS(10f);
+                Bitmap2DSensor retina = new Bitmap2DSensor($.the("eye"), source, n) {
+//                    @Override
+//                    protected int next(NAR nar, int work) {
+//                        System.out.println("SEE " + work);
+//                        return super.next(nar, work);
+//                    }
+                };
+                return n;
+            });
+        }
+    }
 
     public PixelBag addActions(Term termRoot, NAgent a) {
         return addActions(termRoot, a, true, true, true);

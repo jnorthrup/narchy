@@ -32,7 +32,6 @@ public class ScalarSignal extends Signal {
 
 
     private final FloatFunction<Term> value;
-    private final FloatFloatToObjectFunction<Truth> truthFloatFunction;
 
 
     public float currentValue = Float.NaN;
@@ -41,11 +40,10 @@ public class ScalarSignal extends Signal {
     public final static FloatToFloatFunction direct = n -> n;
 
 
-    public ScalarSignal(Term t, FloatFunction<Term> value, FloatFloatToObjectFunction<Truth> truthFloatFunction, FloatSupplier resolution) {
+    public ScalarSignal(Term t, FloatFunction<Term> value, FloatSupplier resolution) {
         super(BELIEF, resolution);
         this.term = t;
         this.value = value;
-        this.truthFloatFunction = truthFloatFunction;
     }
 
 
@@ -59,7 +57,7 @@ public class ScalarSignal extends Signal {
      * the time is specified instead of obtained from NAR so that
      * all sensor readings can be timed with perfect consistency within the same cycle
      */
-    public Task update(SensorConcept c, NAR nar, long now, int dur) {
+    public Task update(SensorConcept c, FloatFloatToObjectFunction<Truth> truthFloatFunction, NAR nar, long now, int dur) {
 
         float next = Util.unitize(Util.round(value.floatValueOf(term), resolution.asFloat()));
 

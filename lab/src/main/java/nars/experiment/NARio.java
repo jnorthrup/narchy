@@ -10,7 +10,6 @@ import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
 import nars.experiment.mario.Scene;
 import nars.experiment.mario.sprites.Mario;
-import nars.util.signal.Bitmap2DSensor;
 import nars.video.PixelBag;
 
 import javax.swing.*;
@@ -57,8 +56,11 @@ public class NARio extends NAgentX {
         cc.addActions(id, this, false, false, true);
         cc.actions.forEach(a -> a.resolution.set(0.25f));
         //cc.setClarity(0.8f, 0.95f);
-        Bitmap2DSensor<PixelBag> sc = addCamera(new Bitmap2DSensor<>(id, cc, this))
-                .resolution(0.02f);
+
+        PixelBag.Eye eye = new PixelBag.Eye(nar, cc);
+
+        /*Bitmap2DSensor<PixelBag> sc = addCamera(new Bitmap2DSensor<>(id, cc, this))
+                .resolution(0.02f);*/
 
         //new ShapeSensor($.the("shape"), new BufferedImageBitmap2D(()->mario.image),this);
 

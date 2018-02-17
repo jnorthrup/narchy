@@ -47,14 +47,14 @@ public class Line1DContinuous extends NAgent {
             addSensor(new SensorConcept(
                     $.func("h", Atomic.the("x"), $.the( i)),
                     //$.p($.the("h"), $.the(i)),
-                    n, ()-> ins[ii], (v) -> $.t(v, alpha())));
+                    n, ()-> ins[ii]));
 
             //estimated
             addSensor(new SensorConcept(
                     $.func("e", Atomic.the("x"), $.the( i)),
                     //$.func("e", $.the(i)),
                     //$.p($.the("e"), $.the(i)),
-                    n, ()-> ins[size + ii], (v) -> $.t(v, alpha())));
+                    n, ()-> ins[size + ii]));
         }
 
         ActionConcept a;

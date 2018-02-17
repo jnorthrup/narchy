@@ -51,13 +51,13 @@ public interface NSense {
 
     @NotNull
     default SensorConcept sense(@NotNull Term term, FloatSupplier value, FloatToObjectFunction<Truth> truthFunc) {
-        SensorConcept s = new SensorConcept(term, nar(), value, truthFunc);
+        SensorConcept s = new SensorConcept(term, nar(), value);
         addSensor(s);
         return s;
     }
     @NotNull
     default SensorConcept sense(CauseChannel c, Term term, FloatSupplier value, FloatToObjectFunction<Truth> truthFunc) {
-        SensorConcept s = new SensorConcept(term, nar(), value, truthFunc);
+        SensorConcept s = new SensorConcept(term, nar(), value);
         addSensor(s, c);
         return s;
     }
@@ -196,8 +196,7 @@ public interface NSense {
     }
 
     default SensorConcept senseNumber(Term id, FloatSupplier v) {
-        SensorConcept c = new SensorConcept(id, nar(), v,
-                (x) -> t(Util.unitize(x), nar().confDefault(Op.BELIEF))
+        SensorConcept c = new SensorConcept(id, nar(), v
         );
         addSensor(c);
         return c;

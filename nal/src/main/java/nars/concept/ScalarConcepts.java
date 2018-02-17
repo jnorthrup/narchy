@@ -10,7 +10,7 @@ import nars.control.NARService;
 import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
+import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -35,6 +35,7 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
 
     final AtomicFloat value = new AtomicFloat();
     public final CauseChannel<ITask> in;
+    final FloatFloatToObjectFunction<Truth> truther;
 
     @Override
     public final float asFloat() {
@@ -196,14 +197,13 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
 
         this.sensors = $.newArrayList(numStates);
 
-        final FloatToObjectFunction<Truth> truther = (x) -> $.t(x, nar.confDefault(BELIEF));
+        truther = (prev,next) -> $.t(next, nar.confDefault(BELIEF));
 
         int i = 0;
         for (Term s : states) {
             final int ii = i++;
             SensorConcept sc = new SensorConcept(s, nar,
-                    () -> freqer.truth(asFloat(), ii, numStates),
-                    truther
+                    () -> freqer.truth(asFloat(), ii, numStates)
             );
             nar.on(sc);
             sensors.add(sc);
@@ -223,7 +223,7 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
 
         value.set(input.asFloat());
 
-        in.input(sensors.stream().map(x -> x.update(now, dur, n)));
+        in.input(sensors.stream().map(x -> x.update(truther, now, dur, n)));
     }
 
 

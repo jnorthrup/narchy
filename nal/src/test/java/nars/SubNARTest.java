@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SubNARTest {
 
     @Test
-    public void test2() {
+    public void testSuperAndSubIsolation() {
         NAR a = NARS.tmp();
 
         SubNAR ab = new SubNAR(a, (superNAR)-> {
@@ -42,7 +42,9 @@ class SubNARTest {
         a.tasks().forEach(System.out::println);
         assertTrue(a.beliefTruth($safe("(a-->c)"), ETERNAL).expectation() > 0.6f);
 
+    }
 
+    @Test public void testCamera() {
 
     }
 }

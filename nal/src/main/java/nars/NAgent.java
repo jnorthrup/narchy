@@ -1,6 +1,5 @@
 package nars;
 
-import jcog.Util;
 import jcog.event.On;
 import jcog.exe.Loop;
 import jcog.list.FasterList;
@@ -251,14 +250,14 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         Set<SensorConcept> sensorSet = sensors.keySet();
         sensorUpdates = new Runnable[sensorSet.size()];
         {
-            int j = 0;
-            for (Map.Entry<SensorConcept, CauseChannel<ITask>> sc : sensors.entrySet()) {
-                SensorConcept s = sc.getKey();
-                CauseChannel c = sc.getValue();
-                sensorUpdates[j++] = ()-> {
-                    c.input(s.update(now, dur, NAgent.this.nar));
-                };
-            }
+//            int j = 0;
+//            for (Map.Entry<SensorConcept, CauseChannel<ITask>> sc : sensors.entrySet()) {
+//                SensorConcept s = sc.getKey();
+//                CauseChannel c = sc.getValue();
+//                sensorUpdates[j++] = ()-> {
+//                    c.input(s.update(now, dur, NAgent.this.nar));
+//                };
+//            }
         }
 
 
@@ -715,9 +714,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         List<Termed> templatesPlusActions;
 
         public ActionInfluencingSensorConcept(Term id, FloatNormalized value) {
-            super(id, NAgent.this.nar(), value,
-                    (x) -> $.t(Util.unitize(x),
-                    NAgent.this.nar().confDefault(Op.BELIEF)));
+            super(id, NAgent.this.nar(), value
+            );
             templatesPlusActions = null;
 
 
