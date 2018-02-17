@@ -38,6 +38,7 @@ import org.boon.json.annotations.JsonViews;
 import org.boon.json.test.Dog;
 import org.boon.json.test.Person;
 import org.junit.jupiter.api.Test;
+
 import java.io.File;
 import java.io.InputStream;
 import java.io.Reader;
@@ -46,9 +47,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import static org.boon.Boon.atIndex;
-import static org.boon.Boon.fromJson;
-import static org.boon.Boon.puts;
+
+import static org.boon.Boon.*;
 import static org.boon.Exceptions.die;
 
 /**

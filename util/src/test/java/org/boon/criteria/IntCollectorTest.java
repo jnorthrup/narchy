@@ -32,12 +32,12 @@ import org.boon.collections.IntList;
 import org.boon.core.reflection.BeanUtils;
 import org.boon.primitive.Int;
 import org.junit.jupiter.api.Test;
+
 import java.util.Collections;
 import java.util.List;
+
 import static org.boon.Boon.puts;
-import static org.boon.Lists.lazyAdd;
-import static org.boon.Lists.list;
-import static org.boon.Lists.toIntList;
+import static org.boon.Lists.*;
 import static org.boon.Maps.map;
 import static org.boon.core.reflection.BeanUtils.atIndex;
 import static org.boon.criteria.Selector.collectFrom;

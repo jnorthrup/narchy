@@ -28,6 +28,7 @@
 package org.boon.bugs;
 
 import org.junit.jupiter.api.Test;
+
 import static org.boon.Boon.puts;
 import static org.boon.Exceptions.die;
 import static org.boon.json.JsonFactory.fromJson;

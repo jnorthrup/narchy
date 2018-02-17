@@ -481,15 +481,13 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
 
             FasterList<Event> rels = new FasterList<>(4);
             int[] phase = new int[]{0};
-            Consumer<Event> collect = z -> {
-//                int p = phase[0];
+            //                int p = phase[0];
 //                if (z instanceof Absolute) {
 //                    if (abs[p] == null) abs[p] = new UnifiedSet(2);
 //                    abs[p].add(z);
 //                    //}
 //                }
-                    rels.add(z);
-            };
+            Consumer<Event> collect = rels::add;
 
             byTerm.get(a).forEach(collect);
 //            if (abs[0] == null)
@@ -822,8 +820,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
                         } else {
                             //term didnt change...
                             if (v.when() != TIMELESS) {
-                                if (!each.test(v)) //but atleast it somehow solved an occurrence time
-                                    return false;
+                                return each.test(v);
                             }
                         }
 

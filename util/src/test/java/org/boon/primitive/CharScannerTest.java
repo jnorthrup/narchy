@@ -29,7 +29,9 @@ package org.boon.primitive;
 
 import org.boon.Lists;
 import org.junit.jupiter.api.Test;
+
 import java.util.List;
+
 import static org.boon.Boon.puts;
 import static org.boon.Exceptions.die;
 import static org.boon.primitive.Chr.chars;

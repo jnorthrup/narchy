@@ -135,10 +135,7 @@ public enum TermLinks {
                     return false;
 
         }
-        if (depth > 2 && s == PROD)
-            return false;
-
-        return true;
+        return depth <= 2 || s != PROD;
     }
 
 

@@ -28,12 +28,15 @@
 package org.boon.primitive;
 
 import org.junit.jupiter.api.Test;
+
 import java.nio.charset.StandardCharsets;
-//import static junit.framework.Assertions.assertTrue;
+
 import static org.boon.Exceptions.die;
 import static org.boon.primitive.Chr.chars;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+//import static junit.framework.Assertions.assertTrue;
 
 public class CharBufTest {
 

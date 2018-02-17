@@ -47,7 +47,7 @@ public class ConjClustering extends Causable {
     private float confMin;
     private int volMax;
     private int ditherTime;
-    private float termVolumeMaxFactor = 0.5f;
+    private final float termVolumeMaxFactor = 0.5f;
 
     public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {
         super(nar);
@@ -65,7 +65,7 @@ public class ConjClustering extends Causable {
 
             @Override
             public double distanceSq(double[] a, double[] b) {
-                return (1 + ((double)Math.abs(a[0] - b[0]))/nar.dur())    //d(time)/dur
+                return (1 + Math.abs(a[0] - b[0]) /nar.dur())    //d(time)/dur
                         *
                         (
                           Math.abs(a[1] - b[1])  //d(freq_polarity)
@@ -306,7 +306,7 @@ public class ConjClustering extends Causable {
                                 NALTask m = new STMClusterTask(cp, t, start, start, evidence.getOne(), punc, now); //TODO use a truth calculated specific to this fixed-size batch, not all the tasks combined
                                 if (evidence.getTwo() > 0) m.setCyclic(true);
 
-                                m.cause = Cause.sample(nar.causeCapacity.intValue(), uu);
+                                m.cause = Cause.sample(Param.causeCapacity.intValue(), uu);
 
                                 float priAvg =
                                         //priMax;

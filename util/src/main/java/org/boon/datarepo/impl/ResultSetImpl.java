@@ -28,17 +28,17 @@
 
 package org.boon.datarepo.impl;
 
-import org.boon.core.reflection.BeanUtils;
 import org.boon.core.Conversions;
+import org.boon.core.reflection.BeanUtils;
 import org.boon.core.reflection.fields.FieldAccess;
+import org.boon.criteria.Selector;
 import org.boon.criteria.internal.Criteria;
 import org.boon.criteria.internal.QueryFactory;
-import org.boon.criteria.Selector;
-import org.boon.sort.Sort;
 import org.boon.datarepo.DataRepoException;
 import org.boon.datarepo.PlanStep;
 import org.boon.datarepo.ResultSet;
 import org.boon.datarepo.spi.ResultSetInternal;
+import org.boon.sort.Sort;
 
 import java.lang.reflect.Array;
 import java.util.*;

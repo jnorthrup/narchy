@@ -3,7 +3,9 @@ package org.boon.bugs;
 import org.boon.Maps;
 import org.boon.datarepo.Repo;
 import org.boon.datarepo.Repos;
-import java.util.*;
+
+import java.util.Map;
+
 import static org.boon.Boon.equalsOrDie;
 import static org.boon.Boon.puts;
 import static org.boon.criteria.ObjectFilter.eq;

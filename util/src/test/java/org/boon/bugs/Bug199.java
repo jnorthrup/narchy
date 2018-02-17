@@ -4,8 +4,10 @@ import org.boon.json.JsonFactory;
 import org.boon.json.JsonSerializerFactory;
 import org.boon.json.ObjectMapper;
 import org.junit.jupiter.api.Test;
+
 import java.util.EnumMap;
 import java.util.Map;
+
 import static org.boon.Boon.puts;
 
 /**

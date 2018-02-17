@@ -27,6 +27,7 @@
  */
 package org.boon.tests;
 
+import org.boon.core.Function;
 import org.boon.datarepo.Repo;
 import org.boon.datarepo.RepoBuilder;
 import org.boon.datarepo.Repos;
@@ -34,7 +35,7 @@ import org.boon.datarepo.modification.ModificationEvent;
 import org.boon.datarepo.modification.ModificationListener;
 import org.boon.tests.model.Employee;
 import org.boon.tests.model.SalesEmployee;
-import org.boon.core.Function;
+
 import java.util.List;
 import java.util.logging.Level;
 

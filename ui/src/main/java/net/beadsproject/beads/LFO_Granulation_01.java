@@ -2,8 +2,8 @@ package net.beadsproject.beads;
 
 import jcog.Util;
 import net.beadsproject.beads.core.AudioContext;
-import net.beadsproject.beads.data.WaveFactory;
 import net.beadsproject.beads.data.Sample;
+import net.beadsproject.beads.data.WaveFactory;
 import net.beadsproject.beads.ugens.*;
 
 public class LFO_Granulation_01 {

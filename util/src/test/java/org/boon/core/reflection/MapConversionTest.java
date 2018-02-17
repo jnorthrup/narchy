@@ -27,20 +27,26 @@
  */
 package org.boon.core.reflection;
 
-import java.math.BigDecimal;
-import java.util.*;
 import org.boon.Lists;
 import org.boon.Maps;
+import org.boon.core.Dates;
 import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
+import java.util.*;
+
 import static org.boon.Boon.puts;
-import static org.boon.Lists.*;
-import static org.boon.Lists.list;
-import static org.boon.Maps.*;
-import static org.boon.json.JsonFactory.*;
 import static org.boon.Exceptions.die;
+import static org.boon.Lists.*;
+import static org.boon.Lists.idx;
+import static org.boon.Lists.idxList;
+import static org.boon.Maps.*;
+import static org.boon.Maps.idx;
+import static org.boon.Maps.idxMap;
 import static org.boon.Str.lpad;
 import static org.boon.Str.rpad;
-import org.boon.core.Dates;
+import static org.boon.json.JsonFactory.fromJson;
+import static org.boon.json.JsonFactory.toJson;
 
 /**
  * Created by Richard on 2/12/14.

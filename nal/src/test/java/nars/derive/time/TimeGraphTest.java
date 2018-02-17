@@ -147,13 +147,12 @@ public class TimeGraphTest {
 
     @Test
     public void testImplWithConjPredicate2() {
-        assertSolved("(one ==>+- (two &&+- three))", A, new String[]{
-                //using one@1
+        assertSolved("(one ==>+- (two &&+- three))", A, //using one@1
 
                 "((one &&+1 two) ==>+1 three)", "(one ==>+- (two &&+1 three))" //@ETE ?
                 //using two@20
                 //"(one ==>+1 (two &&+1 three))@19"
-        });
+        );
     }
     @Test
     public void testImplWithTwoConjPredicates() throws Narsese.NarseseException {
@@ -290,7 +289,7 @@ public class TimeGraphTest {
         public ExpectSolutions(String... solutions) {
             this.solutions = solutions;
             errorMsg = () ->
-                    "expect: " + Arrays.toString(solutions) + "\n   got: " + toString();
+                    "expect: " + Arrays.toString(solutions) + "\n   got: " + this;
 
             afterEach.add(() -> {
                 assertEquals(Sets.newTreeSet(List.of(solutions)), this, errorMsg);

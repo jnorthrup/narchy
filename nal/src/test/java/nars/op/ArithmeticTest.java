@@ -54,10 +54,10 @@ public class ArithmeticTest {
         String rev = $.$("add(1,#x)").eval(t.concepts.resolveFunctors).toString();
         assertEquals(
                 "add(#1,1)",
-                fwd.toString());
+                fwd);
         assertEquals(
-                fwd.toString(),
-                rev.toString());
+                fwd,
+                rev);
 
     }
 

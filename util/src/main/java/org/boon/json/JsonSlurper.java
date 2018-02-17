@@ -28,7 +28,6 @@
 package org.boon.json;
 
 import org.boon.IO;
-
 import org.boon.json.implementation.JsonParserUsingCharacterSource;
 
 import java.io.File;
@@ -39,7 +38,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.*;
+import java.util.Map;
 
 /**
  * JSON slurper which parses text or reader content into a data structure of lists and maps.

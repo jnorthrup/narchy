@@ -27,20 +27,23 @@
  */
 package org.boon.criteria;
 
-import static org.boon.Boon.*;
-import static org.boon.Exceptions.die;
-import static org.boon.Maps.*;
-import static org.boon.Lists.*;
-import static org.boon.criteria.ObjectFilter.*;
-import static org.boon.criteria.ObjectFilter.matches;
 import org.boon.Lists;
 import org.boon.core.TypeType;
 import org.boon.core.reflection.Invoker;
 import org.boon.criteria.internal.Group;
 import org.boon.criteria.internal.Operator;
 import org.junit.jupiter.api.Test;
+
 import java.util.List;
 import java.util.Map;
+
+import static org.boon.Boon.*;
+import static org.boon.Exceptions.die;
+import static org.boon.Lists.add;
+import static org.boon.Lists.list;
+import static org.boon.Maps.copy;
+import static org.boon.Maps.map;
+import static org.boon.criteria.ObjectFilter.*;
 
 public class ObjectFilterTest {
 

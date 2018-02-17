@@ -9,14 +9,14 @@ import org.boon.json.serializers.CustomObjectSerializer;
 import org.boon.json.serializers.JsonSerializerInternal;
 import org.boon.primitive.CharBuf;
 import org.junit.jupiter.api.Test;
+
 import java.nio.charset.Charset;
 import java.util.Map;
+
 import static com.google.common.hash.Hashing.md5;
 import static org.boon.Boon.puts;
 import static org.boon.Exceptions.die;
-import static org.boon.Maps.fromMap;
-import static org.boon.Maps.idx;
-import static org.boon.Maps.idxStr;
+import static org.boon.Maps.*;
 import static org.boon.json.JsonFactory.fromJson;
 
 /**

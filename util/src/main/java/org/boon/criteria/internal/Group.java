@@ -32,7 +32,9 @@ import org.boon.Lists;
 import org.boon.core.reflection.Invoker;
 import org.boon.criteria.ObjectFilter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static org.boon.Lists.atIndex;
 

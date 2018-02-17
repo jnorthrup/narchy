@@ -30,7 +30,9 @@ package org.boon.primitive;
 
 import org.boon.Exceptions;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.util.Arrays;
 
 import static org.boon.Exceptions.die;

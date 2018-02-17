@@ -157,6 +157,47 @@ public class Signal {
         }
 
         TruthletTask s = new TruthletTask(c.term(), punc,
+                new SustainTruthlet(
+                        new LinearTruthlet(start, fNext, end, fNext, t.evi())
+                , 1)
+                ,start,stamp
+        );
+
+
+        s.priMax(pri.asFloat());
+        return s;
+    }
+
+    /** experimental */
+    public TruthletTask taskStartTruthlet(Concept c, SignalTask last, Truth t, long start, long end, long stamp, int dur) {
+
+        boolean smooth = false;
+
+        float fNext = t.freq();
+        if (last != null) {
+            //use a sloped connector to the previous task if it happens soon enough again (no temporal gap between them) and if its range is right
+            long gap = Math.abs(last.end() - start);
+            if ((smooth || gap > 0) && (gap <= dur / 2f)) {
+                float lastTruth = last.truth(last.end(), dur).freq();
+                long r = last.range();
+                float fPrevEnd;
+                if (smooth && (r > dur && r < dur*2))
+                    fPrevEnd = fNext; //smoothing
+                else
+                    fPrevEnd = lastTruth;
+
+                if (gap > 0 || Math.abs(lastTruth-fPrevEnd) >= Param.TRUTH_EPSILON) {
+                    ((TruthletTask) last).update(c, (tt) -> {
+                        //((LinearTruthlet)tt.truthlet).freqEnd = fNext;
+                        LinearTruthlet l = (LinearTruthlet) ((((ProxyTruthlet) tt.truthlet)).ref);
+                        l.freqEnd = fPrevEnd;
+                        l.end = start;
+                    });
+                }
+            }
+        }
+
+        TruthletTask s = new TruthletTask(c.term(), punc,
                     new SustainTruthlet(
                             new LinearTruthlet(start, fNext, end, fNext, t.evi()
                             ), 1)

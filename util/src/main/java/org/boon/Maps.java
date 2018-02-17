@@ -29,9 +29,9 @@
 package org.boon;
 
 
+import org.boon.core.Conversions;
 import org.boon.core.Typ;
 import org.boon.core.reflection.BeanUtils;
-import org.boon.core.Conversions;
 import org.boon.core.reflection.MapObjectConversion;
 import org.boon.primitive.CharBuf;
 

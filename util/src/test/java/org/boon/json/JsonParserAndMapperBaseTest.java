@@ -52,9 +52,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 
-import static org.boon.Boon.putl;
-import static org.boon.Boon.puts;
-import static org.boon.Boon.sputs;
+import static org.boon.Boon.*;
 import static org.boon.Exceptions.die;
 import static org.boon.Lists.list;
 import static org.boon.Maps.idx;

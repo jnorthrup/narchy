@@ -27,10 +27,9 @@
  */
 package org.boon.primitive;
 
-import org.boon.core.Fn;
 import org.junit.jupiter.api.Test;
+
 import static org.boon.Boon.sputs;
-import static org.boon.Exceptions.die;
 import static org.boon.Ok.okOrDie;
 import static org.boon.primitive.Int.reduceBy;
 

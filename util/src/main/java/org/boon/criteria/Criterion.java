@@ -30,8 +30,8 @@ package org.boon.criteria;
 
 import org.boon.Exceptions;
 import org.boon.Str;
-import org.boon.core.Typ;
 import org.boon.core.Conversions;
+import org.boon.core.Typ;
 import org.boon.core.TypeType;
 import org.boon.core.Value;
 import org.boon.core.reflection.BeanUtils;
@@ -46,7 +46,7 @@ import java.util.*;
 
 import static org.boon.Boon.sputl;
 import static org.boon.Boon.sputs;
-import static org.boon.Exceptions.*;
+import static org.boon.Exceptions.requireNonNull;
 
 
 

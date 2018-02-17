@@ -35,12 +35,16 @@ import org.boon.core.Value;
 import org.boon.core.reflection.MapObjectConversion;
 import org.boon.core.reflection.Mapper;
 import org.boon.core.value.ValueContainer;
-import org.boon.json.implementation.*;
+import org.boon.json.implementation.BaseJsonParserAndMapper;
+import org.boon.json.implementation.JsonFastParser;
+import org.boon.json.implementation.JsonParserLax;
 import org.boon.primitive.CharBuf;
 import org.boon.primitive.InMemoryInputStream;
 
-
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.Charset;

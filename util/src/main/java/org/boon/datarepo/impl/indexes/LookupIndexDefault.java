@@ -29,11 +29,14 @@
 package org.boon.datarepo.impl.indexes;
 
 import org.boon.Exceptions;
+import org.boon.core.Function;
 import org.boon.datarepo.LookupIndex;
 import org.boon.datarepo.spi.SPIFactory;
-import org.boon.core.Function;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

@@ -29,6 +29,7 @@ package org.boon.di;
 
 import org.boon.core.Supplier;
 import org.junit.jupiter.api.Test;
+
 import static org.boon.Exceptions.die;
 
 //@the("/coffeeApp")

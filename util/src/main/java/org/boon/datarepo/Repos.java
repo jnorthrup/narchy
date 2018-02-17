@@ -27,11 +27,11 @@
  */
 package org.boon.datarepo;
 
+import org.boon.core.Function;
+import org.boon.core.Supplier;
 import org.boon.datarepo.spi.RepoComposer;
 import org.boon.datarepo.spi.SPIFactory;
 import org.boon.datarepo.spi.SearchIndex;
-import org.boon.core.Function;
-import org.boon.core.Supplier;
 
 public class Repos {
 

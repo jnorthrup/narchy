@@ -3,9 +3,10 @@ package org.boon.json;
 import org.boon.json.implementation.ObjectMapperImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.boon.Boon.puts;
-import static org.hamcrest.core.Is.is;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.core.Is.is;
 
 /**
  * Created by mstipanov on 28.05.2014..

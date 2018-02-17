@@ -79,15 +79,13 @@ abstract class TemporalStabilityTest {
             return false;
         return t.term().eventsWhile((r, xt)->{
 
-            if (!validOccurrence(s + r))
-                return true;
+            return !validOccurrence(s + r);
 
             //cant be determined unless analyzing the relative time only
 //            if (xt.op()==IMPL && xt.dt()!=DTERNAL) {
 //                if (!validOccurrence(s + xt.sub(0).dtRange() + x.getTwo() + xt.dt()))
 //                    return true;
 //            }
-            return false;
         }, 0);
     }
 

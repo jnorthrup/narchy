@@ -35,12 +35,12 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.*;
 
-import static org.boon.Maps.map;
-import static org.boon.primitive.Arry.add;
-import static org.boon.primitive.Arry.array;
 import static org.boon.Boon.sputs;
+import static org.boon.Maps.map;
 import static org.boon.Sets.set;
 import static org.boon.Str.startsWithItemInCollection;
+import static org.boon.primitive.Arry.add;
+import static org.boon.primitive.Arry.array;
 
 public class Exceptions {
 

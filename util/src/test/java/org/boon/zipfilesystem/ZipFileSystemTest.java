@@ -27,16 +27,17 @@
  */
 package org.boon.zipfilesystem;
 
-import org.boon.*;
+import org.boon.Classpaths;
+import org.boon.IO;
+
 import java.io.File;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.util.List;
+
 import static org.boon.Boon.puts;
-import static org.boon.Lists.add;
-import static org.boon.Maps.idx;
 
 public class ZipFileSystemTest {
 

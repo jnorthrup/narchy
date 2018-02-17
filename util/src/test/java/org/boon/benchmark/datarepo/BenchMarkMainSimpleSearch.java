@@ -28,16 +28,18 @@
 package org.boon.benchmark.datarepo;
 
 import org.boon.Lists;
-import org.boon.benchmark.datarepo.utils.MeasuredRun;
-import org.boon.datarepo.Repo;
-import org.boon.datarepo.Repos;
 import org.boon.benchmark.datarepo.model.Employee;
 import org.boon.benchmark.datarepo.utils.BenchmarkHelper;
+import org.boon.benchmark.datarepo.utils.MeasuredRun;
 import org.boon.criteria.internal.Criteria;
+import org.boon.datarepo.Repo;
+import org.boon.datarepo.Repos;
 import org.junit.jupiter.api.Test;
+
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
 import static org.boon.Boon.println;
 import static org.boon.Exceptions.die;
 import static org.boon.criteria.ObjectFilter.eq;

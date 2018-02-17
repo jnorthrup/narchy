@@ -29,14 +29,14 @@
 package org.boon.examples.model.test.movies.wathcer;
 
 
+import org.boon.Lists;
 import org.boon.examples.model.test.movies.entitlement.Rights;
 import org.boon.examples.model.test.movies.likeable.Like;
 import org.boon.examples.model.test.movies.likeable.LikeFactor;
-import org.boon.examples.model.test.movies.likeable.VendorCategory;
 import org.boon.examples.model.test.movies.likeable.LikeabilityUpdate;
+import org.boon.examples.model.test.movies.likeable.VendorCategory;
 import org.boon.examples.model.test.movies.media.Movie;
 import org.boon.examples.model.test.time.TimeZoneHolder;
-import org.boon.Lists;
 
 import java.util.*;
 

@@ -51,13 +51,13 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
             //return e.maxValue(Task::priElseZero); //use the maximum of their truths
 
             //TODO sum weighted by evidence
-            return meanValue(this::pri); //average value
+            return meanValue(DynTruth::pri); //average value
         } else {
             return pri(get(0));
         }
     }
 
-    private float pri(LongInterval x) {
+    private static float pri(LongInterval x) {
         if (x instanceof Prioritized)
             return ((Prioritized) x).priElseZero();
 

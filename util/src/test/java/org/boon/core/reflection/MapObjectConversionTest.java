@@ -27,16 +27,18 @@
  */
 package org.boon.core.reflection;
 
+import org.boon.Lists;
+import org.boon.core.Dates;
+import org.junit.jupiter.api.Test;
+
 import java.math.BigDecimal;
 import java.util.Currency;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import org.boon.Lists;
-import org.junit.jupiter.api.Test;
+
 import static org.boon.Exceptions.die;
 import static org.boon.core.reflection.MapObjectConversion.*;
-import org.boon.core.Dates;
-import java.util.LinkedHashMap;
 
 /**
  * Created by Richard on 4/25/14.

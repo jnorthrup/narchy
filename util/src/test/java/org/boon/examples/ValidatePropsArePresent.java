@@ -28,13 +28,9 @@
 
 package org.boon.examples;
 
-import org.boon.Maps;
 import org.boon.Sets;
 import org.boon.core.reflection.ClassMeta;
 import org.boon.core.reflection.fields.FieldAccess;
-import org.boon.criteria.ObjectFilter;
-import org.boon.criteria.internal.Criteria;
-import org.boon.di.Required;
 import org.boon.json.JsonParserAndMapper;
 import org.boon.json.JsonParserFactory;
 

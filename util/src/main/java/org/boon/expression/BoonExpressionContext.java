@@ -28,7 +28,10 @@
 
 package org.boon.expression;
 
-import org.boon.*;
+import org.boon.Boon;
+import org.boon.Pair;
+import org.boon.Str;
+import org.boon.StringScanner;
 import org.boon.core.Conversions;
 import org.boon.core.reflection.BeanUtils;
 import org.boon.core.reflection.ClassMeta;

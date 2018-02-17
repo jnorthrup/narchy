@@ -2,6 +2,7 @@ package org.boon.bugs;
 
 import org.boon.Boon;
 import org.junit.jupiter.api.Test;
+
 import static org.boon.Boon.puts;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

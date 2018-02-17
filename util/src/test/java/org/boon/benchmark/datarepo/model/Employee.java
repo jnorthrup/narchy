@@ -28,6 +28,7 @@
 package org.boon.benchmark.datarepo.model;
 
 import org.boon.core.Conversions;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

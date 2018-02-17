@@ -28,6 +28,7 @@
 package org.boon;
 
 import org.junit.jupiter.api.Test;
+
 import javax.management.DynamicMBean;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
@@ -35,9 +36,9 @@ import java.lang.management.ManagementFactory;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
+
 import static org.boon.Boon.puts;
 import static org.boon.Boon.toJson;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MBeansTest {
 

@@ -64,7 +64,7 @@ public abstract class ProtoDerivation extends Unify {
 
     public final static class PremiseKey {
 
-        byte[] key;
+        final byte[] key;
         private final int hash;
 
 

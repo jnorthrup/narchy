@@ -4,6 +4,7 @@ import org.boon.Maps;
 import org.boon.json.JsonSerializer;
 import org.boon.json.JsonSerializerFactory;
 import org.junit.jupiter.api.Test;
+
 import static org.boon.Exceptions.die;
 
 /**

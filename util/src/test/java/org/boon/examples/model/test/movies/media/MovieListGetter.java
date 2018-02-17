@@ -32,7 +32,6 @@ import org.boon.examples.model.test.movies.wathcer.DeviceConnectionSpeed;
 import org.boon.examples.model.test.movies.wathcer.ScreenDevice;
 import org.boon.examples.model.test.time.TimeZoneHolder;
 
-
 import java.util.List;
 
 

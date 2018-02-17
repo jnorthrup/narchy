@@ -28,12 +28,15 @@
 
 package org.boon.core.reflection;
 
-import org.boon.*;
+import org.boon.Sets;
 import org.boon.core.Value;
 import org.boon.core.reflection.fields.FieldAccessMode;
 import org.boon.core.reflection.fields.FieldsAccessor;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 
 /**

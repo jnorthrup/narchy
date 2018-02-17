@@ -1,24 +1,23 @@
 package org.boon.bugs;
 
-import org.boon.examples.model.test.movies.crud.BatchResults;
-import org.boon.examples.model.test.movies.crud.RecordReadResponse;
-import org.boon.examples.model.test.movies.likeable.Like;
-import org.boon.examples.model.test.movies.likeable.LikeabilityUpdate;
-import org.boon.examples.model.test.movies.likeable.LikesBulkUpdate;
-import org.boon.examples.model.test.movies.likeable.LikingService;
-import org.boon.examples.model.test.movies.wathcer.Watcher;
 import org.boon.Lists;
 import org.boon.Maps;
 import org.boon.core.reflection.ClassMeta;
 import org.boon.core.reflection.Invoker;
 import org.boon.core.reflection.MethodAccess;
+import org.boon.examples.model.test.movies.crud.BatchResults;
+import org.boon.examples.model.test.movies.crud.RecordReadResponse;
+import org.boon.examples.model.test.movies.likeable.LikeabilityUpdate;
+import org.boon.examples.model.test.movies.likeable.LikesBulkUpdate;
+import org.boon.examples.model.test.movies.likeable.LikingService;
+import org.boon.examples.model.test.movies.wathcer.Watcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.io.Serializable;
 import java.util.Map;
-import static org.boon.Boon.fromJson;
-import static org.boon.Boon.puts;
-import static org.boon.Boon.toJson;
+
+import static org.boon.Boon.*;
 import static org.boon.Exceptions.die;
 
 /**

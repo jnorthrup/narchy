@@ -274,10 +274,7 @@ public class PriMapConceptIndex extends MaplikeConceptIndex {
      * victim pre-filter
      */
     private boolean victimizable(Concept x) {
-        if (x instanceof PermanentConcept)
-            return false;
-
-        return true;
+        return !(x instanceof PermanentConcept);
     }
 
     final YesNoMaybe<Concept> seenRecently = new YesNoMaybe<>((c) -> {

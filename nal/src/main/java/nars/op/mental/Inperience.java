@@ -138,13 +138,10 @@ public class Inperience extends LeakBack {
             float fm = freqMax.floatValue();
             return f <= fm || f >= (1f - fm);
         } else {
-            if (next.term().hasXternal())
-                return false;
+            return !next.term().hasXternal();
 
             //belief = false;
         }
-
-        return true;
 
         // if(OLD_BELIEVE_WANT_EVALUATE_WONDER_STRATEGY ||
         //         (!OLD_BELIEVE_WANT_EVALUATE_WONDER_STRATEGY && (task.sentence.punctuation==Symbols.QUESTION || task.sentence.punctuation==Symbols.QUEST))) {

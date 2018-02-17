@@ -28,16 +28,15 @@
 
 package org.boon.examples.model.test.movies.wathcer;
 
+import org.boon.BoonLogger;
 import org.boon.examples.model.test.movies.likeable.LikeabilityUpdate;
 import org.boon.examples.model.test.movies.media.Movie;
-import org.boon.BoonLogger;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.boon.Boon.configurableLogger;
 import static org.boon.Boon.puts;
-import static org.boon.core.reflection.BeanUtils.idx;
 
 
 /**

@@ -33,10 +33,11 @@ import org.boon.core.reflection.FastStringUtils;
 import org.boon.json.JsonParser;
 import org.boon.primitive.CharBuf;
 
-import java.io.*;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-
 import java.util.concurrent.ConcurrentHashMap;
 
 /**

@@ -6,6 +6,7 @@ import org.boon.core.reflection.ClassMeta;
 import org.boon.core.reflection.MethodAccess;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.boon.Boon.equalsOrDie;
 import static org.boon.Boon.puts;
 

@@ -28,7 +28,8 @@
 
 package org.boon.core.reflection;
 
-import org.boon.*;
+import org.boon.Boon;
+import org.boon.Lists;
 import org.boon.core.Conversions;
 import org.boon.core.Typ;
 import org.boon.core.TypeType;
@@ -49,9 +50,7 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
 
-import static org.boon.Boon.className;
-import static org.boon.Boon.puts;
-import static org.boon.Boon.sputs;
+import static org.boon.Boon.*;
 import static org.boon.Exceptions.die;
 import static org.boon.Exceptions.handle;
 import static org.boon.core.Conversions.coerce;

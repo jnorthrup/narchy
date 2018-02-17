@@ -182,12 +182,12 @@ public class IntTest {
     @Test public void testNonRangeableIntersection() throws Narsese.NarseseException {
         Term[] r = Int.intersect(
                 $("(isRow,(6,true),true)"), $("(isRow,(7,true),true)"));
-        String rangeable = Arrays.toString(r).toString();
+        String rangeable = Arrays.toString(r);
         assertEquals("[(isRow,(6..7,true),true)]", rangeable);
         assertEquals("(isRow,(6,true),true),(isRow,(7,true),true)", Joiner.on(',').join(Int.unroll(r[0])));
 
         String nonrangeable = Arrays.toString(Int.intersect(
-                $("(isRow,(6,true),true)"), $("(isRow,(7,false),true)"))).toString();
+                $("(isRow,(6,true),true)"), $("(isRow,(7,false),true)")));
         assertEquals("[(isRow,(6,true),true), (isRow,(7,false),true)]", nonrangeable);
 
     }

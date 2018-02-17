@@ -73,12 +73,12 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
                 float W = window.getWidth();
                 float H = window.getHeight();
 
-                dt *= scale.x / Math.max(W,H);
+                dt *= scale.x / Math.min(W,H);
 
                 float dist = super.interp(dt);
-                if (dist > 0.001f) {
-                    fingerUpdated.set(true);
-                }
+//                if (dist > 0.001f) {
+//                    fingerUpdated.set(true);
+//                }
                 return dist;
             }
         };

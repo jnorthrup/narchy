@@ -137,8 +137,7 @@ public class reflect {
                 Term tt = next.term();
                 if (tt.subs() > 1 && !tt.hasAny(VAR_QUERY)) {
                     if (tt.volume() <= n.termVolumeMax.intValue() * 0.75f)
-                        if (filter.addIfMissing(next))
-                            return true;
+                        return filter.addIfMissing(next);
                 }
             }
             return false;
@@ -190,8 +189,7 @@ public class reflect {
                 Term tt = next.term();
                 if (tt.subs() > 1 && !tt.hasAny(VAR_QUERY))
                     if (tt.volume() <= n.termVolumeMax.intValue() * VOL_RATIO_MAX)
-                        if (filter.addIfMissing(tt.term().concept()))
-                            return true;
+                        return filter.addIfMissing(tt.term().concept());
 
             }
 

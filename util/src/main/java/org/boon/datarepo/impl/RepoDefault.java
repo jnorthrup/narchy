@@ -30,7 +30,8 @@ package org.boon.datarepo.impl;
 
 import org.boon.criteria.Selector;
 import org.boon.criteria.Update;
-import org.boon.criteria.internal.*;
+import org.boon.criteria.internal.Criteria;
+import org.boon.criteria.internal.Visitor;
 import org.boon.datarepo.*;
 import org.boon.datarepo.spi.RepoComposer;
 import org.boon.datarepo.spi.SearchIndex;

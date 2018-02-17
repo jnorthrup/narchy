@@ -29,8 +29,8 @@
 package org.boon.di.impl;
 
 import org.boon.Boon;
-import org.boon.Exceptions;
 import org.boon.BoonLogger;
+import org.boon.Exceptions;
 import org.boon.collections.ConcurrentLinkedHashSet;
 import org.boon.core.Supplier;
 import org.boon.core.Typ;
@@ -39,9 +39,9 @@ import org.boon.core.reflection.Invoker;
 import org.boon.core.reflection.MapObjectConversion;
 import org.boon.core.reflection.Reflection;
 import org.boon.core.reflection.fields.FieldAccess;
+import org.boon.di.Supply;
 import org.boon.di.That;
 import org.boon.di.Thing;
-import org.boon.di.Supply;
 import org.boon.logging.LogLevel;
 import org.boon.logging.TerminalLogger;
 

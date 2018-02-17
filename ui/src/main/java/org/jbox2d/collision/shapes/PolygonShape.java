@@ -211,6 +211,7 @@ public class PolygonShape extends Shape {
         normals[2].set(0.0f, 1.0f);
         normals[3].set(-1.0f, 0.0f);
         centroid.setZero();
+
         return this;
     }
 

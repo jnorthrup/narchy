@@ -28,9 +28,9 @@
 
 package org.boon.validation.validators;
 
+import org.boon.Maps;
 import org.boon.core.reflection.AnnotationData;
 import org.boon.core.reflection.Annotations;
-import org.boon.Maps;
 import org.boon.core.reflection.BeanUtils;
 import org.boon.validation.ValidationContext;
 import org.boon.validation.ValidatorMessage;

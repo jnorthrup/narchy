@@ -432,7 +432,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
 
     @Override
     public void log(@NotNull Logger logger) {
-        String msg = succeeded ? " OK" : "ERR" + '\t' + toString();
+        String msg = succeeded ? " OK" : "ERR" + '\t' + this;
         if (succeeded) {
             logger.info(msg);
 

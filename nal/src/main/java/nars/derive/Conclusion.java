@@ -51,7 +51,7 @@ public final class Conclusion extends AbstractPred<Derivation> {
         if (!valid(c1)) {
             Term c1e = c1;
             d.nar.emotion.deriveFailEval.increment(()->{
-                return rule + " |\n\t" + d.xy.toString() + "\n\t -> " + c1e;
+                return rule + " |\n\t" + d.xy + "\n\t -> " + c1e;
             });
             return false;
         }

@@ -31,8 +31,8 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static nars.$.$safe;
-import static spacegraph.render.JoglPhysics.window;
 import static spacegraph.layout.Gridding.col;
+import static spacegraph.render.JoglPhysics.window;
 
 /**
  * SpaceGraph-based visualization utilities for NAR analysis

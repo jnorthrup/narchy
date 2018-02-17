@@ -121,7 +121,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
                 return; //undesired
             }
 
-            Truth beliefTruth = c.beliefs().truth(focus, n); /* assume false with no evidence */;
+            Truth beliefTruth = c.beliefs().truth(focus, n); /* assume false with no evidence */
             if (beliefTruth != null && beliefTruth.expectation() > exeThresh) {
                 return; //satisfied
             }

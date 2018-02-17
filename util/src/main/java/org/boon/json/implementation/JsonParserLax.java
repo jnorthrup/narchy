@@ -37,11 +37,11 @@ import org.boon.core.value.*;
 import org.boon.json.JsonException;
 import org.boon.json.JsonParserEvents;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import static org.boon.primitive.CharScanner.isDecimalChar;
-import static org.boon.primitive.CharScanner.isDelimiter;
-import static org.boon.primitive.CharScanner.isNumberDigit;
+import static org.boon.primitive.CharScanner.*;
 
 /**
  * Created by rick on 12/12/13.

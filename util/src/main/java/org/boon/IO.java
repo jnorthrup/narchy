@@ -28,9 +28,9 @@
 
 package org.boon;
 
+import org.boon.core.Function;
 import org.boon.core.Sys;
 import org.boon.core.Typ;
-import org.boon.core.Function;
 import org.boon.primitive.ByteBuf;
 import org.boon.primitive.CharBuf;
 

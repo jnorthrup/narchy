@@ -34,14 +34,18 @@ import org.boon.core.Sys;
 import org.boon.primitive.InMemoryInputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Pattern;
+
 import static org.boon.Exceptions.die;
 import static org.boon.Lists.idx;
 import static org.boon.Lists.len;

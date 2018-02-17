@@ -29,7 +29,6 @@
 package org.boon.examples.security.model;
 
 
-import org.boon.Boon;
 import org.boon.Str;
 
 public class User extends Subject {

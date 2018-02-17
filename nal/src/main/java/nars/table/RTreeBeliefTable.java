@@ -638,8 +638,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             //if (seen.add(t)) {
                 Task tt = t.task();
                 if (!tt.isDeleted())
-                    if (!each.test(tt))
-                        return false;
+                    return each.test(tt);
 //            }
 //            else {
 //                System.out.println("aha");

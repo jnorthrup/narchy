@@ -31,11 +31,11 @@ package org.boon.datarepo.impl;
 import org.boon.Boon;
 import org.boon.Exceptions;
 import org.boon.core.Conversions;
+import org.boon.core.Function;
 import org.boon.core.reflection.Reflection;
 import org.boon.core.reflection.fields.FieldAccess;
-import org.boon.criteria.internal.Criteria;
 import org.boon.criteria.Selector;
-import org.boon.sort.Sort;
+import org.boon.criteria.internal.Criteria;
 import org.boon.criteria.internal.Visitor;
 import org.boon.datarepo.Filter;
 import org.boon.datarepo.LookupIndex;
@@ -45,13 +45,13 @@ import org.boon.datarepo.impl.indexes.UniqueLookupIndex;
 import org.boon.datarepo.spi.FilterComposer;
 import org.boon.datarepo.spi.SearchIndex;
 import org.boon.datarepo.spi.SearchableCollectionComposer;
-import org.boon.core.Function;
+import org.boon.sort.Sort;
 
 import java.util.*;
 import java.util.logging.Logger;
 
-import static org.boon.Lists.list;
 import static org.boon.Boon.isArray;
+import static org.boon.Lists.list;
 import static org.boon.core.reflection.MapObjectConversion.toMap;
 
 public class SearchableCollectionDefault<KEY, ITEM> implements SearchableCollection<KEY, ITEM>, SearchableCollectionComposer {

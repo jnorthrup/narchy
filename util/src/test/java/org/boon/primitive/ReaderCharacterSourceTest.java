@@ -30,13 +30,13 @@ package org.boon.primitive;
 import org.boon.Str;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
-import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
+
 import static org.boon.Boon.puts;
 import static org.boon.Exceptions.die;
-import static org.boon.Ok.okOrDie;
 
 public class ReaderCharacterSourceTest {
 

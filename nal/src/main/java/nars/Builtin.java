@@ -451,7 +451,7 @@ public class Builtin {
                 events.remove(f);
                 return Op.conj(events);
             } else {
-                return nullToNull(Op.without(conj, (x) -> event.equalsRoot(x), nar.random()));
+                return nullToNull(Op.without(conj, event::equalsRoot, nar.random()));
             }
         }));
         /** extracts only the events preceding the specified events */

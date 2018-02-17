@@ -28,8 +28,8 @@
 
 package org.boon.datarepo;
 
-import org.boon.criteria.internal.Criteria;
 import org.boon.criteria.Selector;
+import org.boon.criteria.internal.Criteria;
 import org.boon.sort.Sort;
 
 import java.util.Collection;

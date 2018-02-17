@@ -28,6 +28,7 @@
 package org.boon.primitive;
 
 import org.junit.jupiter.api.Test;
+
 import static org.boon.primitive.Byt.bytes;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;

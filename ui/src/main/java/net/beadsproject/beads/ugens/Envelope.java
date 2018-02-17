@@ -10,7 +10,6 @@ import net.beadsproject.beads.core.UGen;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * An Envelope generates a sequence of timed transitions (segments) between

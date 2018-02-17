@@ -1,8 +1,6 @@
 package spacegraph;
 
-import spacegraph.render.JoglPhysics;
 import spacegraph.render.JoglSpace;
-import spacegraph.render.JoglWindow;
 
 /**
  * Created by me on 6/20/16.

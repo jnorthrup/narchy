@@ -28,6 +28,7 @@
 package org.boon.tests.model;
 
 import org.boon.core.Conversions;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

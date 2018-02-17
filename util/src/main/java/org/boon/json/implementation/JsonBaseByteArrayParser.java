@@ -29,10 +29,10 @@
 package org.boon.json.implementation;
 
 import org.boon.IO;
+import org.boon.collections.LazyMap;
 import org.boon.core.Typ;
 import org.boon.core.reflection.MapObjectConversion;
 import org.boon.json.JsonException;
-import org.boon.collections.LazyMap;
 import org.boon.primitive.Byt;
 import org.boon.primitive.ByteScanner;
 import org.boon.primitive.CharBuf;
@@ -40,7 +40,10 @@ import org.boon.primitive.InMemoryInputStream;
 
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import static org.boon.primitive.ByteScanner.skipWhiteSpaceFast;
 

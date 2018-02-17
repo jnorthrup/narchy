@@ -30,6 +30,7 @@ package org.boon.di;
 import org.boon.Lists;
 import org.boon.Maps;
 import org.junit.jupiter.api.Test;
+
 import static org.boon.Exceptions.die;
 import static org.boon.json.JsonFactory.toJson;
 

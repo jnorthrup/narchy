@@ -36,8 +36,8 @@ import org.boon.template.Template;
 
 import java.util.*;
 
-import static org.boon.Lists.list;
 import static org.boon.Boon.joinBy;
+import static org.boon.Lists.list;
 
 public abstract class Selector {
 

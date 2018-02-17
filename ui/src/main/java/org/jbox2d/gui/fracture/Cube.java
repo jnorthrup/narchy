@@ -24,7 +24,7 @@ public class Cube implements ICase {
             Body newBody = w.addBody(bodyDef2);
             PolygonShape shape2 = new PolygonShape();
             shape2.setAsBox(2.5f, 2.5f);
-            Fixture f = newBody.createFixture(shape2, 1.0f);
+            Fixture f = newBody.addFixture(shape2, 1.0f);
             f.m_friction = 0.5f; // trenie
             f.m_restitution = 0.0f; //odrazivost
             f.m_material = new Diffusion();

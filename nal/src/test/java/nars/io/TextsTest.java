@@ -11,14 +11,14 @@ public class TextsTest {
     @Test
     public void testN2() {
         
-        assertEquals("1.0", Texts.n2(1.00f).toString());
-        assertEquals(".50", Texts.n2(0.5f).toString());
-        assertEquals(".09", Texts.n2(0.09f).toString());
-        assertEquals(".10", Texts.n2(0.1f).toString());
-        assertEquals(".01", Texts.n2(0.009f).toString());
-        assertEquals("0.0", Texts.n2(0.001f).toString());
-        assertEquals(".01", Texts.n2(0.01f).toString());
-        assertEquals("0.0", Texts.n2(0.0f).toString());
+        assertEquals("1.0", Texts.n2(1.00f));
+        assertEquals(".50", Texts.n2(0.5f));
+        assertEquals(".09", Texts.n2(0.09f));
+        assertEquals(".10", Texts.n2(0.1f));
+        assertEquals(".01", Texts.n2(0.009f));
+        assertEquals("0.0", Texts.n2(0.001f));
+        assertEquals(".01", Texts.n2(0.01f));
+        assertEquals("0.0", Texts.n2(0.0f));
         
         
     }

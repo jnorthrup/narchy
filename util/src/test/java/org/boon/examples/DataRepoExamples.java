@@ -29,27 +29,27 @@
 package org.boon.examples;
 
 
-import org.boon.examples.model.test.Email;
-import org.boon.examples.model.test.UserEmail;
-import org.boon.examples.security.model.User;
 import org.boon.Lists;
 import org.boon.core.Typ;
 import org.boon.datarepo.DataRepoException;
 import org.boon.datarepo.Repo;
 import org.boon.datarepo.RepoBuilder;
 import org.boon.datarepo.Repos;
+import org.boon.examples.model.test.Email;
+import org.boon.examples.model.test.UserEmail;
+import org.boon.examples.security.model.User;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.Objects;
 
-import static org.boon.examples.security.model.User.user;
 import static org.boon.Boon.putl;
 import static org.boon.Boon.puts;
 import static org.boon.Exceptions.die;
 import static org.boon.Lists.idx;
 import static org.boon.criteria.ObjectFilter.eq;
 import static org.boon.criteria.ObjectFilter.notEq;
+import static org.boon.examples.security.model.User.user;
 
 
 public class DataRepoExamples {

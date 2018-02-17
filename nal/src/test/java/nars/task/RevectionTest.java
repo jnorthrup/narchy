@@ -359,7 +359,7 @@ public class RevectionTest {
         s.log();
         StringBuilder out = new StringBuilder();
         s.onTask(t -> {
-            out.append(t.toString()).append('\n');
+            out.append(t).append('\n');
         });
 
         Task at = s.believe(a, Tense.Present, 1f);

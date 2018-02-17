@@ -22,7 +22,7 @@ public class MainScene implements ICase {
             Body newBody = w.addBody(bodyDef2);
             PolygonShape shape3 = new PolygonShape();
             shape3.setAsBox(5.0f, 5.0f);
-            Fixture f = newBody.createFixture(shape3, 1.0f);
+            Fixture f = newBody.addFixture(shape3, 1.0f);
             f.m_friction = 0.2f; // trenie
             f.m_restitution = 0.0f; //odrazivost
 
@@ -39,7 +39,7 @@ public class MainScene implements ICase {
             Body bodyBullet = w.addBody(bodyDefBullet);
             CircleShape circleShape = new CircleShape();
             circleShape.m_radius = 1.0f;
-            Fixture fixtureBullet = bodyBullet.createFixture(circleShape, 5.0f);
+            Fixture fixtureBullet = bodyBullet.addFixture(circleShape, 5.0f);
             fixtureBullet.m_friction = 0.4f; // trenie
             fixtureBullet.m_restitution = 0.1f; //odrazivost
         }

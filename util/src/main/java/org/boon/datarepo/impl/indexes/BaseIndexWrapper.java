@@ -28,8 +28,8 @@
 
 package org.boon.datarepo.impl.indexes;
 
-import org.boon.datarepo.spi.SearchIndex;
 import org.boon.core.Function;
+import org.boon.datarepo.spi.SearchIndex;
 
 import java.util.Collection;
 import java.util.Comparator;

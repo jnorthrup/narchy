@@ -28,7 +28,6 @@
 package org.boon.primitive;
 
 import org.junit.jupiter.api.Test;
-import static org.boon.Boon.puts;
 
 /**
  * Created by Richard on 3/16/14.

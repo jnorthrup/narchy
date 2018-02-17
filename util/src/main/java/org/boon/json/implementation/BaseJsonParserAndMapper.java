@@ -41,7 +41,9 @@ import org.boon.json.JsonParserAndMapper;
 import org.boon.primitive.CharBuf;
 import org.boon.primitive.InMemoryInputStream;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.Charset;

@@ -31,7 +31,9 @@ import org.boon.Maps;
 import org.boon.json.JsonParserAndMapper;
 import org.boon.json.JsonParserFactory;
 import org.junit.jupiter.api.Test;
+
 import java.util.Map;
+
 import static org.boon.Boon.puts;
 import static org.boon.Boon.toJson;
 import static org.boon.Exceptions.die;

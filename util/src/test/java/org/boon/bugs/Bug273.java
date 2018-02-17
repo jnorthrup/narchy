@@ -1,9 +1,9 @@
 package org.boon.bugs;
 
-import org.boon.Maps;
 import org.boon.json.JsonFactory;
 import org.boon.json.JsonParserFactory;
 import org.junit.jupiter.api.Test;
+
 import java.util.Map;
 
 public class Bug273 {

@@ -32,17 +32,24 @@ import org.junit.jupiter.api.Test;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-//import static junit.framework.Assertions.assertTrue;
+
 import static org.boon.Exceptions.die;
-import static org.boon.primitive.Byt.*;
-import static org.boon.primitive.Shrt.*;
-import static org.boon.primitive.Int.*;
-import static org.boon.primitive.Lng.*;
-import static org.boon.primitive.Flt.*;
-import static org.boon.primitive.Dbl.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.boon.primitive.Byt.bytes;
+import static org.boon.primitive.Byt.idx;
+import static org.boon.primitive.Byt.idxChar;
+import static org.boon.primitive.Byt.idxDouble;
+import static org.boon.primitive.Byt.idxFloat;
+import static org.boon.primitive.Byt.idxInt;
+import static org.boon.primitive.Byt.idxLong;
+import static org.boon.primitive.Byt.idxShort;
+import static org.boon.primitive.Dbl.idx;
+import static org.boon.primitive.Flt.idx;
+import static org.boon.primitive.Int.idx;
+import static org.boon.primitive.Lng.idx;
+import static org.boon.primitive.Shrt.idx;
+import static org.junit.jupiter.api.Assertions.*;
+
+//import static junit.framework.Assertions.assertTrue;
 
 public class BytBufTest {
 

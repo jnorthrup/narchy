@@ -3,6 +3,7 @@ package org.boon.bugs;
 import org.boon.json.JsonFactory;
 import org.boon.json.JsonSerializerFactory;
 import org.boon.json.ObjectMapper;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;

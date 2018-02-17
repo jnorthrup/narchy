@@ -13,7 +13,7 @@ public class ForkDerivation<D extends ProtoDerivation> extends Fork<D> {
 
    @Override
     public PrediTerm<D> transform(Function<PrediTerm<D>, PrediTerm<D>> f) {
-        return fork(PrediTerm.transform(f, branches), x -> new ForkDerivation(x));
+        return fork(PrediTerm.transform(f, branches), ForkDerivation::new);
     }
 
     /**

@@ -196,14 +196,16 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
 
 
             //same conf, same stamp, both non-cyclic; interpolate to avoid one being preferred over another arbitrarily
-            if (Util.equals(x.conf(), y.conf(), nar.confResolution.floatValue()) &&
-                    (!x.isCyclic() && !y.isCyclic()) && x.stamp().equals(y.stamp())) {
+            float xconf = x.conf();
+            if (Util.equals(xconf, y.conf(), nar.confResolution.floatValue()) &&
+                    (!x.isCyclic() && !y.isCyclic()) &&
+                    Arrays.equals(x.stamp(), y.stamp())) {
 
-                conclusion = new PreciseTruth(0.5f * (x.freq() + y.freq()), x.conf());
+                conclusion = new PreciseTruth(0.5f * (x.freq() + y.freq()), xconf);
 
             } else if (Stamp.overlapping(y, x)) {
                 boolean FILTER_WEAKER_BUT_EQUAL = false;
-                if (FILTER_WEAKER_BUT_EQUAL && !y.isInput() && x.conf() >= y.conf() &&
+                if (FILTER_WEAKER_BUT_EQUAL && !y.isInput() && xconf >= y.conf() &&
                     Util.equals(x.freq(), y.freq(), nar.freqResolution.floatValue()) &&
                     Arrays.equals(y.stamp(), x.stamp())) {
                     y.delete();
@@ -274,7 +276,7 @@ public class EternalTable extends SortedArray<Task> implements TaskTable, FloatF
         );
         if (x != null) {
             x.priSet(Priority.fund(Math.max(prevBelief.priElseZero(), y.priElseZero()), false, prevBelief, y));
-            ((NALTask) x).cause = Cause.sample(nar.causeCapacity.intValue(), y, prevBelief);
+            ((NALTask) x).cause = Cause.sample(Param.causeCapacity.intValue(), y, prevBelief);
 
             if (Param.DEBUG)
                 x.log("Insertion Revision");

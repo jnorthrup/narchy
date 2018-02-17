@@ -32,7 +32,7 @@ import org.boon.Str;
 import org.boon.core.reflection.Mapper;
 import org.boon.core.reflection.MapperComplex;
 import org.boon.core.reflection.MapperSimple;
-import org.boon.core.reflection.fields.*;
+import org.boon.core.reflection.fields.FieldAccessMode;
 import org.boon.json.implementation.*;
 
 import java.nio.charset.Charset;

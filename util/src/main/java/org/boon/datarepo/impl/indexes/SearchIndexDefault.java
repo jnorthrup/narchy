@@ -28,10 +28,10 @@
 
 package org.boon.datarepo.impl.indexes;
 
+import org.boon.core.Function;
 import org.boon.core.Typ;
 import org.boon.datarepo.spi.SPIFactory;
 import org.boon.datarepo.spi.SearchIndex;
-import org.boon.core.Function;
 import org.boon.primitive.CharBuf;
 
 import java.math.BigDecimal;

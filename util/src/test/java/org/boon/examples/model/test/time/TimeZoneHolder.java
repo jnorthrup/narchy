@@ -34,8 +34,6 @@ import org.boon.Lists;
 import java.util.List;
 import java.util.TimeZone;
 
-import static org.boon.Exceptions.die;
-
 /**
  */
 public class TimeZoneHolder {

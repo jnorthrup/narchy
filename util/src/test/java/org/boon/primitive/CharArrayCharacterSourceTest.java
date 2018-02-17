@@ -29,6 +29,7 @@ package org.boon.primitive;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.boon.Exceptions.die;
 
 public class CharArrayCharacterSourceTest {

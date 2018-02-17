@@ -33,9 +33,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static nars.Op.NEG;
-import static nars.Op.PROD;
-import static nars.Op.internable;
+import static nars.Op.*;
 
 
 /**
@@ -236,15 +234,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default boolean isNormalized() {
         //int totalVars = vars() + varPattern();
         //if (totalVars == 0) {
-        if (!hasVars() && !hasAny(Op.VAR_PATTERN)) {
-            //assume normalized if no variable appears
-            return true;
-        } else {
-            //assume it's unnormalized if contains a variable
-            //throw new TODO("unsure if normalized");
-            //TODO a quick test if there is only one variable and it is the #1,$1, etc of its type
-            return false;
-        }
+        //assume normalized if no variable appears
+//assume it's unnormalized if contains a variable
+//throw new TODO("unsure if normalized");
+//TODO a quick test if there is only one variable and it is the #1,$1, etc of its type
+        return !hasVars() && !hasAny(Op.VAR_PATTERN);
     }
 
     /**

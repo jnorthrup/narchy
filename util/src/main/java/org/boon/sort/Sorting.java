@@ -28,10 +28,12 @@
 
 package org.boon.sort;
 
-import org.boon.*;
+import org.boon.Boon;
+import org.boon.BoonLogger;
+import org.boon.Lists;
+import org.boon.core.Conversions;
 import org.boon.core.Typ;
 import org.boon.core.reflection.BeanUtils;
-import org.boon.core.Conversions;
 import org.boon.core.reflection.Fields;
 import org.boon.core.reflection.fields.FieldAccess;
 

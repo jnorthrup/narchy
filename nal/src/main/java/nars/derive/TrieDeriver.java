@@ -355,7 +355,7 @@ public final class TrieDeriver {
         List<PrediTerm<D>> bb = compile(trie.root);
         PrediTerm<D>[] roots = bb.toArray(new PrediTerm[bb.size()]);
 
-        PrediTerm tf = Fork.fork(roots, x -> new Fork(x));
+        PrediTerm tf = Fork.fork(roots, Fork::new);
         if (each != null)
             tf = tf.transform(each);
 
@@ -379,7 +379,7 @@ public final class TrieDeriver {
             PrediTerm<D> branch = PrediTerm.compileAnd(
                     n.seq().stream().skip(nStart).limit(nEnd - nStart),
                     !branches.isEmpty() ?
-                            factorFork(branches, (PrediTerm<D>[] ff) -> new Fork(ff))
+                            factorFork(branches, Fork::new)
 //                            Fork.fork(branches.toArray(new PrediTerm[branches.size()]),
 //                                    x -> new Fork(x))
                             : null
@@ -463,7 +463,7 @@ public final class TrieDeriver {
             }
         }
 
-        SubCond fx = conds.maxBy(xx -> xx.costIfBranch());
+        SubCond fx = conds.maxBy(SubCond::costIfBranch);
         if (fx.size() < 2) {
             //nothing to factor
         } else {

@@ -52,7 +52,7 @@ public enum TermGraph {
     }
 
 
-    public static enum Statements {
+    public enum Statements {
         ;
 
         //final static String VERTEX = "V";

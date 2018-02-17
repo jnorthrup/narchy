@@ -1,6 +1,5 @@
 package nars.util.signal;
 
-import jcog.Util;
 import jcog.math.FloatSupplier;
 import jcog.signal.Bitmap2D;
 import jcog.util.Int2Function;
@@ -24,8 +23,6 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static nars.Op.BELIEF;
-import static nars.truth.TruthFunctions.c2w;
-import static nars.truth.TruthFunctions.w2c;
 
 /**
  * manages reading a camera to a pixel grid of SensorConcepts
@@ -238,7 +235,10 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Causable implements Iter
         if (meanPixelsProcessedPerDuration!=meanPixelsProcessedPerDuration)
             meanPixelsProcessedPerDuration = 0;
 
-        this.conf = w2c(Util.lerp( (meanPixelsProcessedPerDuration) / numPixels, c2w(nar.confMin.floatValue()), c2w(nar.confDefault(BELIEF))));
+        this.conf =
+                nar.confDefault(BELIEF)
+                //w2c(Util.lerp( (meanPixelsProcessedPerDuration) / numPixels, c2w(nar.confMin.floatValue()), c2w(nar.confDefault(BELIEF))))
+        ;
 
         //System.out.println(meanPixelsProcessedPerDuration + "/" + numPixels + " -> " + conf + "%");
 

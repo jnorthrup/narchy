@@ -32,6 +32,11 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
         TaskComponent(Task task) {
             this.task = task;
         }
+
+        @Override
+        public String toString() {
+            return evi + "," + freq + "=" + task;
+        }
     }
 
     private final long start, end;

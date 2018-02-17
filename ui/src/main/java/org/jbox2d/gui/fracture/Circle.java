@@ -24,7 +24,7 @@ public class Circle implements ICase {
             Body newBody = w.addBody(bodyDef2);
             CircleShape shape2 = new CircleShape();
             shape2.m_radius = 2.5f;
-            Fixture f = newBody.createFixture(shape2, 1.0f);
+            Fixture f = newBody.addFixture(shape2, 1.0f);
             f.m_friction = 0.5f; // trenie
             f.m_restitution = 0.0f; //odrazivost
             f.m_material = new Diffusion();

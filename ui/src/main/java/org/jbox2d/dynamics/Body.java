@@ -37,6 +37,8 @@ import org.jbox2d.fracture.PolygonFixture;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 
+import java.util.function.Consumer;
+
 /**
  * A rigid body. These are created via World.createBody.
  *
@@ -183,7 +185,7 @@ public class Body {
      * @param def the fixture definition.
      * @warning This function is locked during callbacks.
      */
-    public final Fixture createFixture(FixtureDef def) {
+    public final Fixture addFixture(FixtureDef def) {
 
         Fixture fixture = new Fixture();
         fixture.create(this, def);
@@ -215,6 +217,29 @@ public class Body {
         return fixture;
     }
 
+    /** call this if shape changes */
+    public final void updateFixtures(Consumer<Fixture> tx) {
+        for (Fixture f = m_fixtureList; f != null; f = f.m_next) {
+
+            //destroy and re-create proxies
+            //if ((m_flags & e_activeFlag) == e_activeFlag) {
+                BroadPhase broadPhase = W.m_contactManager.m_broadPhase;
+                f.destroyProxies(broadPhase);
+
+                tx.accept(f);
+
+                f.createProxies(broadPhase, m_xf);
+            //}
+
+            // Adjust mass properties if needed.
+            if (f.density > 0.0f) {
+                resetMassData();
+            }
+        }
+        synchronizeFixtures();
+        synchronizeTransform();
+    }
+
     private final FixtureDef fixDef = new FixtureDef();
 
     /**
@@ -226,11 +251,11 @@ public class Body {
      * @param density the shape density (set to zero for static bodies).
      * @warning This function is locked during callbacks.
      */
-    public final Fixture createFixture(Shape shape, float density) {
+    public final Fixture addFixture(Shape shape, float density) {
         fixDef.shape = shape;
         fixDef.density = density;
 
-        return createFixture(fixDef);
+        return addFixture(fixDef);
     }
 
     /**
@@ -244,7 +269,7 @@ public class Body {
      * @param polygon
      * @param def
      */
-    public final void createFixture(PolygonFixture polygon, FixtureDef def) {
+    public final void addFixture(PolygonFixture polygon, FixtureDef def) {
 
 
         Polygon[] convex = polygon.convexDecomposition();
@@ -258,7 +283,7 @@ public class Body {
             PolygonShape ps = new PolygonShape();
             ps.set(p.getArray(), p.size());
             def.shape = ps;
-            polygon.fixtureList.add(createFixture(def));
+            polygon.fixtureList.add(addFixture(def));
         }
     }
 
@@ -271,14 +296,14 @@ public class Body {
      * @param fixture the fixture to be removed.
      * @warning This function is locked during callbacks.
      */
-    public final void destroyFixture(Fixture fixture) {
+    public final void removeFixture(Fixture fixture) {
 
         assert (fixture.body == this);
 
         // Remove the fixture from this body's singly linked list.
         assert (m_fixtureCount > 0);
 
-        W.invokeLater(() -> {
+        //W.invokeLater(() -> {
             Fixture node = m_fixtureList;
             Fixture last = null; // java change
             boolean found = false;
@@ -331,7 +356,7 @@ public class Body {
 
             // Reset the mass data.
             resetMassData();
-        });
+        //});
 
     }
 

@@ -29,12 +29,12 @@
 package org.boon.examples.model.test.movies.media;
 
 
-import java.util.*;
-
+import org.boon.Lists;
 import org.boon.examples.model.test.movies.likeable.VendorCategory;
 import org.boon.examples.model.test.time.TimeZoneHolder;
 import org.boon.examples.model.test.time.TimeZoneType;
-import org.boon.*;
+
+import java.util.*;
 
 import static org.boon.Boon.puts;
 

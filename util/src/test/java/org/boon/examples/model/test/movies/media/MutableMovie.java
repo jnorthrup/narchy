@@ -28,9 +28,9 @@
 
 package org.boon.examples.model.test.movies.media;
 
+import org.boon.core.reflection.BeanUtils;
 import org.boon.examples.model.test.movies.likeable.VendorCategory;
 import org.boon.examples.model.test.time.TimeZoneHolder;
-import org.boon.core.reflection.BeanUtils;
 
 import java.util.List;
 

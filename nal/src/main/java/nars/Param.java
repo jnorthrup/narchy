@@ -144,8 +144,8 @@ public abstract class Param {
     public final static int SIGNAL_LATCH_TIME_MAX =
             //0;
             //2;
-            4;
-            //8;
+            //4;
+            8;
             //16;
             //Integer.MAX_VALUE;
 

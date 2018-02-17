@@ -47,36 +47,36 @@ public class CameraSensorTest {
         System.out.println("all 0");
         for (int i = 0; i < w; i++) for (int j = 0; j < h; j++) f[i][j] = 0f;
         n.run(1);
-        assertEquals(c, f, n);
+        assertEquals(c, f, n.time(),n);
 
         System.out.println("all 1");
         for (int i = 0; i < w; i++) for (int j = 0; j < h; j++) f[i][j] = 1f;
         n.run(1);
-        assertEquals(c, f, n);
+        assertEquals(c, f, n.time(),n);
 
         n.run(3); //delay
 
         System.out.println("all 0");
         for (int i = 0; i < w; i++) for (int j = 0; j < h; j++) f[i][j] = 0f;
         n.run(1);
-        assertEquals(c, f, n);
+        assertEquals(c, f, n.time(), n);
 
         n.run(3); //delay
 
         System.out.println("all 1");
         for (int i = 0; i < w; i++) for (int j = 0; j < h; j++) f[i][j] = 1f;
         n.run(1);
-        assertEquals(c, f, n);
+        assertEquals(c, f, n.time(), n);
 
         //TODO test individual pixel motion
     }
 
-    static void assertEquals(Bitmap2DSensor c, float[][] f, NAR n) {
+    static void assertEquals(Bitmap2DSensor c, float[][] f, long when, NAR n) {
         final float tolerance = 0.35f;
         for (int i = 0; i < c.bmp.width; i++) {
             for (int j = 0; j < c.bmp.height; j++) {
                 SensorConcept p = c.get(i, j);
-                Truth t = n.beliefTruth(p, n.time());
+                Truth t = n.beliefTruth(p, when);
                 if (t == null || Math.abs(f[i][j] - t.freq()) > tolerance) {
                     System.err.println("pixel " + p + " incorrect @ t=" + n.time());
                     n.beliefTruth(p, n.time());

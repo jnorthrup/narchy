@@ -30,9 +30,10 @@ package org.boon.bugs;
 import org.boon.Lists;
 import org.boon.core.reflection.MapObjectConversion;
 import org.junit.jupiter.api.Test;
+
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Map;
+
 import static org.boon.Boon.puts;
 
 /**

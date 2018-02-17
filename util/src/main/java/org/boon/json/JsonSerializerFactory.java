@@ -32,7 +32,8 @@ import org.boon.core.reflection.fields.*;
 import org.boon.json.serializers.*;
 import org.boon.json.serializers.impl.*;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 

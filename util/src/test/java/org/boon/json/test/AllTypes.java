@@ -29,6 +29,7 @@ package org.boon.json.test;
 
 import org.boon.json.annotations.JsonIgnore;
 import org.boon.json.annotations.JsonIgnoreProperties;
+
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;

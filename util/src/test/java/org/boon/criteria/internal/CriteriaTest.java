@@ -29,6 +29,7 @@ package org.boon.criteria.internal;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.boon.Exceptions.die;
 import static org.boon.criteria.ObjectFilter.*;
 

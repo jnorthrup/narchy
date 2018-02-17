@@ -31,7 +31,7 @@ public class TensorGlow extends PhyWall {
         super.start(parent);
 
 
-        addWindo(rngView = BitmapMatrixView.get(
+        window(rngView = BitmapMatrixView.get(
             randomVector, 16, Draw::colorBipolar
         ), RectFloat2D.XYWH(250, 250, 400, 400));
 

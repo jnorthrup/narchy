@@ -27,10 +27,11 @@
  */
 package org.boon.criteria.internal;
 
-import org.boon.criteria.ObjectFilter;
 import org.boon.criteria.Criterion;
+import org.boon.criteria.ObjectFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.boon.Exceptions.die;
 
 public class CriterionTest {

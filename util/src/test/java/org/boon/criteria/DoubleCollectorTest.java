@@ -29,11 +29,12 @@ package org.boon.criteria;
 
 import org.boon.Lists;
 import org.boon.collections.DoubleList;
-import org.boon.collections.FloatList;
 import org.boon.core.reflection.BeanUtils;
 import org.junit.jupiter.api.Test;
+
 import java.util.Collections;
 import java.util.List;
+
 import static org.boon.Boon.puts;
 import static org.boon.Lists.*;
 import static org.boon.Maps.map;

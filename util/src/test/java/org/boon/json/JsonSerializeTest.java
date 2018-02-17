@@ -27,15 +27,6 @@
  */
 package org.boon.json;
 
-import java.math.BigDecimal;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Currency;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import org.boon.Boon;
 import org.boon.Lists;
 import org.boon.core.Dates;
@@ -45,6 +36,11 @@ import org.boon.json.test.AllTypes;
 import org.boon.json.test.FooEnum;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.math.BigDecimal;
+import java.net.URL;
+import java.util.*;
+
 import static org.boon.Boon.puts;
 import static org.boon.Exceptions.die;
 

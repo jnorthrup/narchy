@@ -27,15 +27,14 @@
  */
 package org.boon.bugs;
 
-import org.boon.examples.model.test.FrequentPrimitives;
 import org.boon.bugs.data.media.Image;
 import org.boon.bugs.data.media.MediaContent;
+import org.boon.examples.model.test.FrequentPrimitives;
 import org.boon.json.*;
 import org.junit.jupiter.api.Test;
+
 import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.util.Random;
+
 import static org.boon.Boon.puts;
 import static org.boon.Exceptions.die;
 

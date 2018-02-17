@@ -29,14 +29,14 @@ package org.boon;
 
 import org.boon.primitive.Arry;
 import org.junit.jupiter.api.Test;
+
 import java.util.Collection;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.SortedSet;
+
 import static org.boon.Boon.puts;
 import static org.boon.Sets.*;
-import static org.boon.Sets.safeSet;
-import static org.boon.Sets.safeSortedSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 

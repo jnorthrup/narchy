@@ -29,12 +29,14 @@ package org.boon;
 
 import org.boon.concurrent.Timer;
 import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.boon.Boon.puts;
+import static org.boon.Exceptions.die;
 import static org.boon.primitive.Arry.idx;
 import static org.boon.primitive.Arry.len;
-import static org.boon.Exceptions.die;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**

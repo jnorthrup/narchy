@@ -27,11 +27,11 @@
  */
 package org.boon.datarepo;
 
+import org.boon.core.Function;
+import org.boon.core.Supplier;
 import org.boon.datarepo.modification.ModificationListener;
 import org.boon.datarepo.spi.RepoComposer;
 import org.boon.datarepo.spi.SearchIndex;
-import org.boon.core.Function;
-import org.boon.core.Supplier;
 
 import java.util.Comparator;
 import java.util.Locale;

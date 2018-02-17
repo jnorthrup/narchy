@@ -28,9 +28,9 @@
 
 package org.boon.datarepo.impl.indexes;
 
+import org.boon.core.Function;
 import org.boon.datarepo.LookupIndex;
 import org.boon.datarepo.spi.SPIFactory;
-import org.boon.core.Function;
 
 import java.util.*;
 import java.util.logging.Level;

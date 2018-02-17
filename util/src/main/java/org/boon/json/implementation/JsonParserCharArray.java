@@ -28,17 +28,19 @@
 
 package org.boon.json.implementation;
 
+import org.boon.collections.LazyMap;
 import org.boon.core.reflection.FastStringUtils;
 import org.boon.json.JsonException;
-import org.boon.collections.LazyMap;
 import org.boon.primitive.CharBuf;
 import org.boon.primitive.CharScanner;
 import org.boon.primitive.Chr;
 
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import static org.boon.primitive.CharScanner.*;
+import static org.boon.primitive.CharScanner.skipWhiteSpaceFast;
 
 /**
  * Converts an input JSON String into Java objects works with String or char array

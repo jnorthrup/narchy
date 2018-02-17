@@ -27,7 +27,6 @@
  */
 package org.boon.validation;
 
-import static org.boon.Maps.map;
 import org.boon.Lists;
 import org.boon.validation.annotations.Length;
 import org.boon.validation.annotations.ProperNoun;
@@ -37,12 +36,16 @@ import org.boon.validation.validators.RequiredValidator;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import static org.boon.validation.Validators.*;
-import static org.boon.validation.ValidatorMetaData.*;
+
 import static org.boon.Exceptions.die;
+import static org.boon.Maps.map;
+import static org.boon.validation.ValidatorMetaData.validatorMeta;
+import static org.boon.validation.Validators.length;
+import static org.boon.validation.Validators.required;
 
 public class SimpleValidationTest {
 

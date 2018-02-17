@@ -7,7 +7,6 @@ import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
@@ -54,11 +53,7 @@ public interface PrediTerm<X> extends Term, Predicate<X> {
             default:
                 //PrediTerm[] pp = p.clone();
                 FasterList<PrediTerm> pp = new FasterList(p);
-                Iterator<PrediTerm> ppp = pp.iterator();
-                while (ppp.hasNext()) {
-                    if (!ppp.next().remainInAND(p))
-                        ppp.remove();
-                }
+                pp.removeIf(prediTerm -> !prediTerm.remainInAND(p));
                 if (pp.size() > 1)
                     pp.sort(sortByCost);
 

@@ -685,14 +685,6 @@ public enum $ {
 //    }
 
 
-    @NotNull
-    public static <X> List<X> newArrayList(@NotNull X... x) {
-        return new FasterList(x);
-//        FasterList<X> l = (FasterList) $.newArrayList(x.length);
-//        l.addAll(x);
-//        return l;
-    }
-
     public static Term pRadix(int x, int radix, int maxX) {
         Term[] tt = radixArray(x, radix, maxX);
         return $.p(tt);

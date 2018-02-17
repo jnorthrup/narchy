@@ -1,7 +1,7 @@
 package nars.task.util;
 
-import jcog.tree.rtree.HyperRegion;
 import jcog.math.LongInterval;
+import jcog.tree.rtree.HyperRegion;
 
 /**
  * only valid for comparison during rtree iteration

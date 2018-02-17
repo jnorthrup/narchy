@@ -30,27 +30,29 @@ package org.boon.tests;
 import org.boon.Lists;
 import org.boon.core.Typ;
 import org.boon.criteria.ObjectFilter;
+import org.boon.criteria.ProjectedSelector;
 import org.boon.criteria.internal.Criteria;
 import org.boon.datarepo.DataRepoException;
 import org.boon.datarepo.Repo;
 import org.boon.datarepo.RepoBuilder;
 import org.boon.datarepo.Repos;
-import org.boon.criteria.ProjectedSelector;
 import org.boon.datarepo.impl.RepoBuilderDefault;
-import org.boon.tests.model.Department;
 import org.boon.tests.model.Employee;
 import org.boon.tests.model.HourlyEmployee;
 import org.boon.tests.model.SalesEmployee;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.boon.Exceptions.die;
-import static org.boon.criteria.ObjectFilter.*;
+import static org.boon.core.Conversions.toDate;
+import static org.boon.core.reflection.BeanUtils.copy;
+import static org.boon.criteria.ObjectFilter.empty;
+import static org.boon.criteria.ObjectFilter.eq;
 import static org.boon.datarepo.Collections.$q;
 import static org.boon.datarepo.Collections.sortedQuery;
-import static org.boon.core.reflection.BeanUtils.copy;
-import static org.boon.core.Conversions.toDate;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MoreTests {

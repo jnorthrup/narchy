@@ -27,7 +27,6 @@
  */
 package org.boon.benchmark.datarepo.model;
 
-import org.boon.benchmark.datarepo.model.Meta;
 import java.util.ArrayList;
 import java.util.List;
 

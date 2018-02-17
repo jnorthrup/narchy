@@ -28,6 +28,7 @@
 package org.boon.core.reflection;
 
 import org.junit.jupiter.api.Test;
+
 import static org.boon.primitive.Int.equalsOrDie;
 
 /**

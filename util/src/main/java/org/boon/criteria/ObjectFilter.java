@@ -37,7 +37,10 @@ import org.boon.core.TypeType;
 import org.boon.core.reflection.BeanUtils;
 import org.boon.core.reflection.Invoker;
 import org.boon.core.reflection.fields.FieldAccess;
-import org.boon.criteria.internal.*;
+import org.boon.criteria.internal.Criteria;
+import org.boon.criteria.internal.Group;
+import org.boon.criteria.internal.Not;
+import org.boon.criteria.internal.Operator;
 
 import java.util.*;
 

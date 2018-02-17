@@ -28,10 +28,9 @@
 package org.boon;
 
 import org.junit.jupiter.api.Test;
+
 import static org.boon.primitive.Arry.*;
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ArryTest {
 

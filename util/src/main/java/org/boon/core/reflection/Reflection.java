@@ -30,8 +30,8 @@ package org.boon.core.reflection;
 
 import org.boon.Exceptions;
 import org.boon.Lists;
-import org.boon.core.Function;
 import org.boon.Pair;
+import org.boon.core.Function;
 import org.boon.core.Sys;
 import org.boon.core.Typ;
 import org.boon.core.reflection.fields.FieldAccess;

@@ -155,7 +155,7 @@ public class Fracture {
         }
 
         for (Fixture f : fixtures) {
-            b1.destroyFixture(f);
+            b1.removeFixture(f);
         }
 
         if (b1.m_fixtureCount == 0) {
@@ -178,7 +178,7 @@ public class Fracture {
                         fd.polygon = null;
                         fd.material = f1.m_material.m_fragments; //rekurzivne stiepenie
 
-                        f_body.createFixture(fd);
+                        f_body.addFixture(fd);
                         f_body.setAngularVelocity(b1.m_angularVelocity);
                         f_body.setLinearVelocity(b1.getLinearVelocityFromLocalPoint(f_body.getLocalCenter()));
                         newbodies.add(f_body);
@@ -190,7 +190,7 @@ public class Fracture {
                     Body f_body = w.addBody(bodyDef);
                     PolygonFixture pf = new PolygonFixture(pg);
 
-                    f_body.createFixture(pf, fd);
+                    f_body.addFixture(pf, fd);
                     f_body.setLinearVelocity(b1.getLinearVelocityFromLocalPoint(f_body.getLocalCenter()));
                     f_body.setAngularVelocity(b1.m_angularVelocity);
                     newbodies.add(f_body);

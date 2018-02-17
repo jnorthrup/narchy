@@ -5,13 +5,16 @@ import org.boon.json.JsonParserFactory;
 import org.boon.json.JsonSerializerFactory;
 import org.boon.json.ObjectMapper;
 import org.junit.jupiter.api.Test;
+
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
-//import static junit.framework.Assertions.assertEquals;
+
 import static org.boon.Boon.puts;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+
+//import static junit.framework.Assertions.assertEquals;
 
 /**
  * Created by rhightower on 4/18/15.

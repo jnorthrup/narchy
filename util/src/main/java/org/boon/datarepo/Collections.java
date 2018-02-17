@@ -27,6 +27,7 @@
  */
 package org.boon.datarepo;
 
+import org.boon.core.Function;
 import org.boon.core.Typ;
 import org.boon.core.reflection.BeanUtils;
 import org.boon.core.reflection.Fields;
@@ -36,7 +37,6 @@ import org.boon.datarepo.impl.decorators.FilterWithSimpleCache;
 import org.boon.datarepo.spi.SPIFactory;
 import org.boon.datarepo.spi.SearchIndex;
 import org.boon.datarepo.spi.SearchableCollectionComposer;
-import org.boon.core.Function;
 
 import java.util.*;
 

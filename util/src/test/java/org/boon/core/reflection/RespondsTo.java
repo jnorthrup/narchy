@@ -28,17 +28,17 @@
 package org.boon.core.reflection;
 
 import org.junit.jupiter.api.Test;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
+
 import static org.boon.Boon.puts;
 import static org.boon.Exceptions.die;
 import static org.boon.Lists.list;
 import static org.boon.Str.lines;
-import static org.boon.core.reflection.Reflection.handles;
-import static org.boon.core.reflection.Reflection.invoke;
-import static org.boon.core.reflection.Reflection.respondsTo;
+import static org.boon.core.reflection.Reflection.*;
 
 public class RespondsTo {
 

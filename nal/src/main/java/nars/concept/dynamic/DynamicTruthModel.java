@@ -2,6 +2,7 @@ package nars.concept.dynamic;
 
 import jcog.Util;
 import jcog.list.FasterList;
+import jcog.math.LongInterval;
 import nars.NAR;
 import nars.Op;
 import nars.Param;
@@ -12,7 +13,6 @@ import nars.table.BeliefTable;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.truth.Truth;
-import jcog.math.LongInterval;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.jetbrains.annotations.Nullable;
 

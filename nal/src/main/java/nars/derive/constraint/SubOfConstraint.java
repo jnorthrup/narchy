@@ -14,7 +14,7 @@ public class SubOfConstraint extends MatchConstraint {
     private final boolean canEqual;
     private final boolean recursive;
     private final boolean negatedAsSubterm;
-    private float cost;
+    private final float cost;
 
     public SubOfConstraint(Term x, Term y, boolean reverse, boolean canEqual, boolean recursive) {
         this(x, y, reverse,canEqual, recursive, false);

@@ -28,6 +28,7 @@
 package org.boon.bugs;
 
 import org.boon.json.annotations.JsonIgnore;
+
 import java.math.BigDecimal;
 import java.util.List;
 

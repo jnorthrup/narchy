@@ -49,7 +49,7 @@ import java.util.*;
 
 import static org.boon.Exceptions.die;
 import static org.boon.Lists.toListOrSingletonList;
-import static org.boon.primitive.CharScanner.*;
+import static org.boon.primitive.CharScanner.isInteger;
 
 /**
  * This class is like a StringBuilder but it also pretends to be a PrintWriter.

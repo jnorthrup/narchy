@@ -212,17 +212,17 @@ public class Dynamic2DTests extends JComponent implements Runnable {
 
             PolygonShape shape1 = new PolygonShape();
             shape1.setAsBox(40, 5);
-            ground.createFixture(shape1, 0.0f);
+            ground.addFixture(shape1, 0.0f);
             ground.setTransform(new v2((float) 0, -5.0f), 0);
 
             PolygonShape shape2r = new PolygonShape();
             shape2r.setAsBox(2, 40);
-            wallRight.createFixture(shape2r, 0.0f);
+            wallRight.addFixture(shape2r, 0.0f);
             wallRight.setTransform(new v2((float) -41, 30.0f), 0);
 
             PolygonShape shape2l = new PolygonShape();
             shape2l.setAsBox(2, 40);
-            wallLeft.createFixture(shape2l, 0.0f);
+            wallLeft.addFixture(shape2l, 0.0f);
             wallLeft.setTransform(new v2((float) 41, 30.0f), 0);
         }
     }

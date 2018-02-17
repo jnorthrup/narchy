@@ -6,9 +6,7 @@ import org.boon.json.ObjectMapper;
 import java.io.File;
 import java.util.Arrays;
 
-import static org.boon.Boon.fromJson;
-import static org.boon.Boon.puts;
-import static org.boon.Boon.toJson;
+import static org.boon.Boon.*;
 
 /**
  * Created by rhightower on 2/17/15.

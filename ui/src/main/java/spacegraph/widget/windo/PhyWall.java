@@ -1,8 +1,10 @@
 package spacegraph.widget.windo;
 
+import jcog.Util;
 import jcog.event.On;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jbox2d.collision.shapes.PolygonShape;
+import org.jbox2d.common.Transform;
 import org.jbox2d.dynamics.*;
 import spacegraph.*;
 import spacegraph.input.Fingering;
@@ -20,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * wall which organizes its sub-surfaces according to 2D phys dynamics
  */
 public class PhyWall extends Wall implements Animated {
+    public static final float SHAPE_SIZE_EPSILON = 0.001f;
     final Dynamics2D W;
 
 
@@ -32,7 +35,7 @@ public class PhyWall extends Wall implements Animated {
         W.setParticleDensity(1.0f);
 
         W.setAllowSleep(true);
-        W.setSubStepping(true);
+        //W.setSubStepping(true);
     }
 
     @Override
@@ -47,7 +50,7 @@ public class PhyWall extends Wall implements Animated {
     @Override
     public boolean animate(float dt) {
 
-        W.step(dt, 8, 8);
+        W.step(dt*8, 8, 8);
 
 
         return true;
@@ -66,7 +69,7 @@ public class PhyWall extends Wall implements Animated {
     final AtomicInteger i = new AtomicInteger(0);
 
 
-    public SpatialWindo addWindo(Surface content, RectFloat2D initialBounds) {
+    public SpatialWindo window(Surface content, RectFloat2D initialBounds) {
         SpatialWindo s = new SpatialWindo("w" + i.getAndIncrement(), initialBounds);
 //        objects.put(s.spatial.id, s.spatial);
         add(s);
@@ -85,118 +88,24 @@ public class PhyWall extends Wall implements Animated {
 
             pos(initialBounds);
 
-            this.shape = PolygonShape.box(initialBounds.w, initialBounds.h);
+            this.shape = PolygonShape.box(initialBounds.w/2, initialBounds.h/2);
 
-            FixtureDef fd = new FixtureDef(shape, 1f, 0.2f);
-            fd.setRestitution(0.4f);
+            FixtureDef fd = new FixtureDef(shape, 0.1f, 0f);
+            fd.setRestitution(0f);
 
             BodyDef bd = new BodyDef();
             bd.type = BodyType.DYNAMIC;
             //bd.position.set(0,0);
             Body body = new MyBody(bd);
             W.addBody(body);
-            body.createFixture(fd);
+            body.addFixture(fd);
 
             this.body = body;
 
             spatials.put(id, this);
 
-//            this.spatial = new Cuboid(id, w(), h()) {
-//
-//                @Override
-//                public Dynamic newBody(boolean collidesWithOthersLikeThis) {
-//                    return new FlatDynamic(mass(), shape, transform, (short) +1, (short) -1);
-//                }
-//
-//                @Override
-//                public void update(Dynamics world) {
-//
-//                    boolean newly = body == null; //HACK
-//
-//                    super.update(world);
-//
-//                    if (newly) //HACK
-//                        commitPhysics();
-//
-//                    updated = true;
-//                }
-//
-//            };
         }
 
-//        boolean updated = false;
-
-//        @Override
-//        protected void paintWidget(GL2 gl, RectFloat2D bounds) {
-//            if (updated && busy.compareAndSet(false, true)) {
-//                SimpleBoxShape bs = (SimpleBoxShape) spatial.shape;
-//                float w = bs.x();
-//                float h = bs.y();
-//                float d = bs.z();
-//
-//                Transform transform = spatial.transform;
-//                float px = transform.x;
-//                float py = transform.y;
-//                transform.x = Util.clamp(px, -spaceBoundsXY / 2 + w / 2, spaceBoundsXY / 2 - w / 2);
-//                transform.y = Util.clamp(py, -spaceBoundsXY / 2 + h / 2, spaceBoundsXY / 2 - h / 2);
-//                //transform.z = Util.clamp(transform.z, -spaceBoundsZ/2+d/2, spaceBoundsZ/2-d/2);
-//
-//                Dynamic body = spatial.body;
-//                if (!Util.equals(px, transform.x, Surface.EPSILON) || !Util.equals(py, transform.y, Surface.EPSILON)) {
-//                    //body.linearVelocity.zero(); //HACK emulates infinite absorption on collision with outer bounds
-//                    body.angularVelocity.zero();
-//                    body.totalTorque.zero();
-//
-//                    body.linearVelocity.scale(-0.5f); //bounce but diminish
-//                    body.totalForce.scale(-0.5f);
-//                    //body.clearForces();
-//                }
-//                if (hover) {
-//                    body.linearVelocity.zero();
-//                    body.angularVelocity.zero();
-//                    body.clearForces();
-//                }
-//
-//                float x = transform.x;
-//                float y = transform.y;
-//                //float z = transform.z;
-//
-//                SpatialWindo.this.pos(x - w / 2, y - h / 2, x + w / 2, y + h / 2);
-//                updated = false;
-//                busy.set(false);
-//            }
-//
-//            super.paintIt(gl);
-//        }
-
-//            spatial.transform.x = cx();
-//            spatial.transform.y = cy();
-//            float H = h();
-//            float W = w();
-//            float D = Math.max(W, H);
-//            spatial.scale(W, H, D);
-//            //(D/ spaceBoundsXY) * spaceBoundsZ * 0.5f);
-//
-//            if (spatial.body != null) {
-//                spatial.body.setDamping(0.8f, 0.9f);
-//                spatial.body.setFriction(0.5f);
-//                spatial.body.setRestitution(0.5f);
-//                float density = 0.1f;
-//                spatial.body.setMass(W * H * D * density);
-//
-//            }
-
-
-//        @Override
-//        public Surface pos(RectFloat2D r) {
-//            RectFloat2D b = this.bounds;
-//            super.pos(r);
-//            if (bounds != b) { //if different
-//                layout();
-//                commitPhysics();
-//            }
-//            return null;
-//        }
 
         @Override
         protected Fingering fingering(DragEdit mode) {
@@ -229,22 +138,44 @@ public class PhyWall extends Wall implements Animated {
                 if (physBounds == null || bounds!=physBounds) {
 
                     //boolean change = false;
-                    if (physBounds == null || (r.w != physBounds.w) || (r.h != physBounds.h)) {
-                        shape.setAsBox(r.w/2, r.h/2);
+                    if (physBounds == null)
                         physBounds = bounds;
-                        setAwake(true);
+                    if ((r.w != physBounds.w) || (r.h != physBounds.h)) {
+
+                        if (!Util.equals(r.w, physBounds.w, SHAPE_SIZE_EPSILON) ||
+                            !Util.equals(r.h, physBounds.h, SHAPE_SIZE_EPSILON)) {
+                            updateFixtures((f) -> {
+                                //HACK assumes the first is the only one
+                                //if (f.m_shape == shape) {
+                                    f.setShape(shape.setAsBox(r.w / 2, r.h / 2));
+                                //}
+
+
+                            });
+                        }
+
+
                     }
 
 //                    Tuple2f p = getWorldCenter();
 //                    float px = p.x;
 //                    float py = p.y;
                     //setLinearVelocity(new v2(r.x - px, r.y - py));
-                    if (setTransform(new v2(r.cx(), r.cy()), 0))
-                        setAwake(true);
-//                    if (m_sweep.c.setIfChanged(r.cx(), r.cy(), Settings.EPSILON)) {
-//                        //setLinearVelocity(new v2(0,0));
-//                        setAwake(true);
-//                    }
+                    v2 target = new v2(r.cx(), r.cy());
+//                    target.sub(p.x, p.y);
+//                    target.normalize();
+//
+//                    float updateSpeed = 10f;
+//                    target.scale(updateSpeed);
+//
+//                    applyLinearImpulse(target, p, true);
+
+                    if (setTransform(target, 0))
+                       setAwake(true);
+////                    if (m_sweep.c.setIfChanged(r.cx(), r.cy(), Settings.EPSILON)) {
+////                        //setLinearVelocity(new v2(0,0));
+////                        setAwake(true);
+////                    }
 
                 }
 
@@ -254,9 +185,10 @@ public class PhyWall extends Wall implements Animated {
             @Override
             public void postUpdate() {
 
-                Tuple2f p =
-                    getWorldCenter();
-                    //getPosition();
+
+                Transform t = getTransform();
+                Tuple2f p = t.p;
+                //float rot = t.q.getAngle();
 
                 float w = w(), h = h(); //HACK re-use the known width/height assumes that the physics engine cant change the shape's size
 
@@ -274,8 +206,8 @@ public class PhyWall extends Wall implements Animated {
         //d.children.add(new GridTex(16).pos(0,0,1000,1000));
 
         {
-            d.addWindo(WidgetTest.widgetDemo(), RectFloat2D.XYWH(-50, 0, 150, 120));
-            d.addWindo(WidgetTest.widgetDemo(), RectFloat2D.XYWH(+100, 0, 100, 100));
+            d.window(WidgetTest.widgetDemo(), RectFloat2D.XYWH(-250, 0, 150, 320));
+            d.window(WidgetTest.widgetDemo(), RectFloat2D.XYWH(+400, 0, 300, 100));
 //            Windo.Port p = w.addPort("X");
         }
 
@@ -286,7 +218,7 @@ public class PhyWall extends Wall implements Animated {
             float ry = (float) (Math.random() * 1000f / 2);
             float rw = 55 + 150 * (float) Math.random();
             float rh = 50 + 150 * (float) Math.random();
-            d.addWindo(new PushButton("w" + i), RectFloat2D.XYWH(rx, ry, rw, rh));
+            d.window(new PushButton( String.valueOf((char)('w' + i)) ), RectFloat2D.XYWH(rx, ry, rw, rh));
         }
 
         //d.newWindo(grid(new PushButton("x"), new PushButton("y"))).pos(-100, -100, 0, 0);

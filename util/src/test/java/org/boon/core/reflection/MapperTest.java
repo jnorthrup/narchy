@@ -33,13 +33,14 @@ import org.boon.core.TypeType;
 import org.boon.core.Value;
 import org.boon.core.value.*;
 import org.junit.jupiter.api.Test;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import static org.boon.Boon.puts;
 import static org.boon.Exceptions.die;
 import static org.boon.Lists.*;
-import static org.boon.Lists.list;
 import static org.boon.Maps.idxMap;
 import static org.boon.Maps.map;
 import static org.boon.Str.lpad;

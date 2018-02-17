@@ -40,7 +40,7 @@ public class StaticBody implements ICase {
             fd.density = 1.0f;
             fd.material = new Diffusion();
             fd.material.m_rigidity = 32.0f;
-            newBody.createFixture(pf, fd);
+            newBody.addFixture(pf, fd);
         }
 
         {
@@ -53,7 +53,7 @@ public class StaticBody implements ICase {
 
             CircleShape circleShape = new CircleShape();
             circleShape.m_radius = 1.0f;
-            Fixture fixtureBullet = bodyBullet.createFixture(circleShape, 2.0f);
+            Fixture fixtureBullet = bodyBullet.addFixture(circleShape, 2.0f);
             fixtureBullet.m_friction = 0.4f; // trenie
             fixtureBullet.m_restitution = 0.1f; //odrazivost
         }

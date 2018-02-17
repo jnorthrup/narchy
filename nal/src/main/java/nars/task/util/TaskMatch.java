@@ -83,9 +83,7 @@ abstract public class TaskMatch  implements Consumer<Task>, Predicate<Task> {
 
     @Override
     public boolean test(Task t) {
-        if (term!=null && !term.test(t.term())) return false;
-        //..
-        return true;
+        return term == null || term.test(t.term());
     }
 
     @Override

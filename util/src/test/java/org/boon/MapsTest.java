@@ -29,14 +29,13 @@ package org.boon;
 
 import org.boon.core.reflection.BeanUtils;
 import org.junit.jupiter.api.Test;
-import java.util.Arrays;
+
 import java.util.*;
+
 import static org.boon.Boon.puts;
 import static org.boon.Exceptions.die;
 import static org.boon.Lists.list;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SuppressWarnings("unchecked")
 public class MapsTest {

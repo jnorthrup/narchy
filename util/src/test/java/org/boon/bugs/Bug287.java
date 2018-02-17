@@ -3,6 +3,7 @@ package org.boon.bugs;
 import org.boon.json.JsonFactory;
 import org.boon.json.ObjectMapper;
 import org.junit.jupiter.api.Test;
+
 import static org.boon.Boon.puts;
 
 /**

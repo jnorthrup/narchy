@@ -30,14 +30,11 @@ package org.boon.primitive;
 
 import org.boon.Exceptions;
 
-
 import java.util.Arrays;
 
 import static org.boon.Exceptions.die;
 import static org.boon.Exceptions.handle;
-import static org.boon.primitive.CharScanner.isDigit;
-import static org.boon.primitive.CharScanner.isDoubleQuote;
-import static org.boon.primitive.CharScanner.isEscape;
+import static org.boon.primitive.CharScanner.*;
 
 public class ByteScanner {
 

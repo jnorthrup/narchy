@@ -30,6 +30,8 @@ package org.boon.datarepo.impl;
 
 import org.boon.Exceptions;
 import org.boon.Str;
+import org.boon.core.Function;
+import org.boon.core.Supplier;
 import org.boon.core.Typ;
 import org.boon.core.reflection.BeanUtils;
 import org.boon.core.reflection.fields.FieldAccess;
@@ -42,8 +44,6 @@ import org.boon.datarepo.impl.indexes.NestedKeySearchIndex;
 import org.boon.datarepo.impl.indexes.TypeHierarchyIndex;
 import org.boon.datarepo.modification.ModificationListener;
 import org.boon.datarepo.spi.*;
-import org.boon.core.Function;
-import org.boon.core.Supplier;
 
 import java.math.BigDecimal;
 import java.text.Collator;

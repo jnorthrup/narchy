@@ -264,8 +264,8 @@ public class EllipsisTest {
             Set<Term> s = super.test(arity, repeats);
             Term the = s.isEmpty() ? null : s.iterator().next();
             assertNotNull(the);
-            assertTrue(!the.toString().substring(1).isEmpty(), () -> the.toString() + " is empty");
-            assertTrue(the.toString().substring(1).charAt(0) == 'Z', () -> the.toString() + " does not begin with Z");
+            assertTrue(!the.toString().substring(1).isEmpty(), () -> the + " is empty");
+            assertTrue(the.toString().substring(1).charAt(0) == 'Z', () -> the + " does not begin with Z");
             return s;
         }
 

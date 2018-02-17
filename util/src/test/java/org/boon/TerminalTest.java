@@ -1,6 +1,7 @@
 package org.boon;
 
 import org.junit.jupiter.api.Test;
+
 import static org.boon.Boon.puts;
 import static org.boon.Terminal.Escape.*;
 

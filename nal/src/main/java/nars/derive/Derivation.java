@@ -161,7 +161,7 @@ public class Derivation extends ProtoDerivation {
     public long taskAt, beliefAt;
 
     /** temporary buffer for storing unique premises */
-    public Set<Premise> premiseBurst = new LinkedHashSet();;
+    public Set<Premise> premiseBurst = new LinkedHashSet();
 
 ////    public final TopNUniquePremises premises = new TopNUniquePremises();
 //
@@ -616,7 +616,7 @@ public class Derivation extends ProtoDerivation {
         this.temporal = !eternal || (taskTerm.isTemporal() || (_belief != null && beliefTerm.isTemporal()));
 
         this.parentCause = _belief != null ?
-                Cause.sample(nar.causeCapacity.intValue(), _task, _belief) :
+                Cause.sample(Param.causeCapacity.intValue(), _task, _belief) :
                 _task.cause();
 
         float taskPri = _task.priElseZero();
@@ -754,7 +754,7 @@ public class Derivation extends ProtoDerivation {
     };
 
 
-    private static Subst uniSub = new Subst() {
+    private static final Subst uniSub = new Subst() {
 
         @Override
         public @Nullable Term apply(Subterms xx) {

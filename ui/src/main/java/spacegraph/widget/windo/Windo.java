@@ -285,7 +285,7 @@ public class Windo extends Widget {
                     gl.glColor3f(0.15f, 0.2f, 0f);
                     break;
                 default:
-                    gl.glColor3f(0.1f, 0.1f, 0.1f);
+                    gl.glColor3f(0.3f, 0.3f, 0.3f);
                     break;
             }
             Draw.rect(gl, x(), y(), w(), h());

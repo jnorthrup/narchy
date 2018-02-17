@@ -28,6 +28,8 @@
 
 package org.boon.datarepo.spi;
 
+import org.boon.core.Function;
+import org.boon.core.Supplier;
 import org.boon.core.Typ;
 import org.boon.datarepo.Filter;
 import org.boon.datarepo.LookupIndex;
@@ -38,8 +40,6 @@ import org.boon.datarepo.impl.indexes.SearchIndexDefault;
 import org.boon.datarepo.impl.indexes.UniqueLookupIndex;
 import org.boon.datarepo.impl.indexes.UniqueSearchIndex;
 import org.boon.datarepo.impl.maps.MapCreatorImpl;
-import org.boon.core.Function;
-import org.boon.core.Supplier;
 
 
 /**

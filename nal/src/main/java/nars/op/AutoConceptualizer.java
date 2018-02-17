@@ -22,7 +22,7 @@ public class AutoConceptualizer {
     public final List<? extends Concept> in;
     private final DurService on;
     private final boolean beliefOrGoal;
-    private float[] x;
+    private final float[] x;
     float learningRate = 0.01f;
     float noiseLevel = 0.001f;
 

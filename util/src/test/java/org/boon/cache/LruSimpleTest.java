@@ -28,6 +28,7 @@
 package org.boon.cache;
 
 import org.junit.jupiter.api.Test;
+
 import static org.boon.Exceptions.die;
 
 public class LruSimpleTest {

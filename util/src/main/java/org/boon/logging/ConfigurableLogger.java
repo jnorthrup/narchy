@@ -30,9 +30,9 @@ package org.boon.logging;
 
 import org.boon.core.Handler;
 
-import static org.boon.primitive.Arry.array;
 import static org.boon.logging.LogRecord.after;
 import static org.boon.logging.LogRecord.before;
+import static org.boon.primitive.Arry.array;
 
 /**
  * Created by Richard on 3/5/14.

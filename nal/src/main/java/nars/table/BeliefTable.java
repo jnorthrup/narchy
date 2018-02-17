@@ -3,6 +3,7 @@ package nars.table;
 import jcog.Util;
 import jcog.pri.Prioritized;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.concept.TaskConcept;
 import nars.control.Cause;
@@ -241,7 +242,7 @@ public interface BeliefTable extends TaskTable {
                 float confFrac = Util.unitize(aProj.evi() / answer.evi());
                 a.priSet(answer.priElseZero() * confFrac);
                 if (question != null)
-                    ((NALTask)a).cause = Cause.sample(nar.causeCapacity.intValue(), question, answer);
+                    ((NALTask)a).cause = Cause.sample(Param.causeCapacity.intValue(), question, answer);
 
 
                 //            if (Param.DEBUG)

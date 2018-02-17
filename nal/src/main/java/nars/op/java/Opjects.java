@@ -43,7 +43,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
-
 import static nars.Op.*;
 import static nars.truth.TruthFunctions.c2w;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;

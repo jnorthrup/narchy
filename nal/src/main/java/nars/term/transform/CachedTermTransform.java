@@ -17,7 +17,7 @@ public class CachedTermTransform implements TermTransform {
 
     final TermTransform proxy;
     final BiFunction<Term,Function<Term,Term>,Term> cache;
-    private Logger logger = LoggerFactory.getLogger(CachedTermTransform.class);
+    private final Logger logger = LoggerFactory.getLogger(CachedTermTransform.class);
 
     public CachedTermTransform(TermTransform proxy, Map<Term, Term> cache) {
         this(proxy, cache::computeIfAbsent);

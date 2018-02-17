@@ -262,7 +262,7 @@ public class Focus extends AtomicRoulette<Causable> {
         /**
          * hidden to visible neuron ratio
          */
-        private float hiddenMultipler = 1f;
+        private final float hiddenMultipler = 1f;
 
         public RBMRevaluator(Random rng) {
             super();
@@ -321,7 +321,7 @@ public class Focus extends AtomicRoulette<Causable> {
         /**
          * hidden to visible neuron ratio
          */
-        private float hiddenMultipler = 0.05f;
+        private final float hiddenMultipler = 0.05f;
 
         private float[] tmp;
 

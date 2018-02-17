@@ -27,9 +27,6 @@
  */
 package org.boon.json;
 
-import org.boon.core.reflection.fields.FieldAccessMode;
-import org.boon.json.implementation.JsonFastParser;
-
 /**
  * Created by rick on 12/12/13.
  */

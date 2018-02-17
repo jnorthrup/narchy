@@ -29,9 +29,9 @@
 package org.boon.config;
 
 
+import org.boon.core.Predicate;
 import org.boon.di.That;
 import org.boon.di.need;
-import org.boon.core.Predicate;
 
 import java.util.ArrayList;
 import java.util.Arrays;

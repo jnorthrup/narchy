@@ -52,7 +52,8 @@ import static org.boon.Exceptions.die;
 import static org.boon.Exceptions.handle;
 import static org.boon.core.Conversions.coerce;
 import static org.boon.core.TypeType.gatherTypes;
-import static org.boon.core.reflection.MapObjectConversion.*;
+import static org.boon.core.reflection.MapObjectConversion.fromList;
+import static org.boon.core.reflection.MapObjectConversion.fromMap;
 
 /**
  *

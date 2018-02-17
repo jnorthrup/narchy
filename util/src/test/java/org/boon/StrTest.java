@@ -28,6 +28,7 @@
 package org.boon;
 
 import org.junit.jupiter.api.Test;
+
 import static org.boon.Exceptions.die;
 import static org.boon.Str.*;
 import static org.junit.jupiter.api.Assertions.*;

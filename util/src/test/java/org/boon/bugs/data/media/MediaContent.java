@@ -28,6 +28,7 @@
 package org.boon.bugs.data.media;
 
 import org.boon.Lists;
+
 import java.util.ArrayList;
 import java.util.List;
 

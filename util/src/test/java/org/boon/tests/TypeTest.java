@@ -35,6 +35,7 @@ import org.boon.datarepo.modification.ModificationListener;
 import org.boon.tests.model.ClassForTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TypeTest {

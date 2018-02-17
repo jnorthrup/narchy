@@ -29,6 +29,7 @@
 package org.boon.logging;
 
 import org.boon.primitive.CharBuf;
+
 import static org.boon.logging.LogLevel.*;
 
 /**

@@ -19,7 +19,6 @@ import java.util.function.Function;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
-import static nars.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.c2wSafe;
 
 

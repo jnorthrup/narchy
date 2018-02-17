@@ -44,7 +44,7 @@ public class Fluid implements ICase {
                             new v2(0.0f, 0.0f)
                     }
             );
-            newBody.createFixture(polygon, fd);
+            newBody.addFixture(polygon, fd);
         }
 
         {
@@ -72,7 +72,7 @@ public class Fluid implements ICase {
             Body bodyBullet = w.addBody(bodyDefBullet);
             CircleShape circleShape = new CircleShape();
             circleShape.m_radius = 0.5f;
-            Fixture fixtureBullet = bodyBullet.createFixture(circleShape, 10.0f);
+            Fixture fixtureBullet = bodyBullet.addFixture(circleShape, 10.0f);
             fixtureBullet.m_friction = 0.4f; // trenie
             fixtureBullet.m_restitution = 0.1f; //odrazivost
         }

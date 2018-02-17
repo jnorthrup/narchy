@@ -31,6 +31,7 @@ import org.boon.Lists;
 import org.boon.benchmark.datarepo.model.Department;
 import org.boon.benchmark.datarepo.model.Employee;
 import org.boon.benchmark.datarepo.model.SalesEmployee;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;

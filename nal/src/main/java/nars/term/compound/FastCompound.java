@@ -32,7 +32,7 @@ abstract public class FastCompound implements Compound /* The */ {
 
     private static final int MAX_LAYERS = 8;
 
-    private int MAX_LAYER_LEN = 8;
+    private final int MAX_LAYER_LEN = 8;
 
     /** TODO */
     abstract public static class FastCompoundSerializedAtoms extends FastCompound {
@@ -418,12 +418,7 @@ abstract public class FastCompound implements Compound /* The */ {
                 }
             }
         } else {
-            if (Compound.equals(this, (Term) that)) {
-                //            if (that instanceof GenericCompound) {
-                //                equivalent((GenericCompound)that);
-                //            }
-                return true;
-            }
+            return Compound.equals(this, (Term) that);
         }
         return false;
     }

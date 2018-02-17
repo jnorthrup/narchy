@@ -24,8 +24,8 @@
 package org.jbox2d.dynamics.joints;
 
 import org.jbox2d.dynamics.Body;
-import org.jbox2d.dynamics.SolverData;
 import org.jbox2d.dynamics.Dynamics2D;
+import org.jbox2d.dynamics.SolverData;
 import org.jbox2d.pooling.IWorldPool;
 import spacegraph.math.Tuple2f;
 
