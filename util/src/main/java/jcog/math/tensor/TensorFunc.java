@@ -1,15 +1,16 @@
 package jcog.math.tensor;
 
+import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 
 /** view applying a specified function to each element */
-public class FuncTensor implements Tensor {
+public class TensorFunc implements Tensor {
 
     public final FloatToFloatFunction func;
     private final Tensor from;
 
-    public FuncTensor(Tensor from, FloatToFloatFunction func) {
+    public TensorFunc(Tensor from, FloatToFloatFunction func) {
         this.from = from;
         this.func = func;
     }

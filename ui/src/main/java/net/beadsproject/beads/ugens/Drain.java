@@ -14,67 +14,70 @@ import java.util.LinkedList;
  * will then be in use for a while as the audio data gets accessed and spat out.
  */
 public class Drain extends UGen {
-	
-	/**
-	 * The Class Grain.
-	 */
-	private static class Grain {
-		
-		/** The audio data. */
-		float[][] audioData;	//assumes audio data has already been windowed
-		
-		/** The position. */
-		int position;
-	}
-	
-	/** The grains. */
-	LinkedList<Grain> grains;
 
-	/**
-	 * Instantiates a new Drain.
-	 *
-	 * @param context the AudioContext.
-	 * @param outs the number of output channels.
-	 */
-	public Drain(AudioContext context, int outs) {
-		super(context, outs);
-		grains = new LinkedList<>();
-	}
-	
-	/**
-	 * Adds a new grain of audio data.
-	 *
-	 * @param audioData the audio data.
-	 */
-	public synchronized void add(float[][] audioData) {
-		Grain g = new Grain();
-		g.audioData = audioData;
-		g.position = 0;
-		grains.add(g);
-	}
+    /**
+     * The Class Grain.
+     */
+    private static class Grain {
 
-	/* (non-Javadoc)
-	 * @see net.beadsproject.beads.core.UGen#calculateBuffer()
-	 */
-	@Override
-	public void calculateBuffer() {
-		for(int i = 0; i < bufferSize; i++) {
-			Iterator<Grain> grainIterator = grains.iterator();
-			while(grainIterator.hasNext()) {
-				Grain g = grainIterator.next();
-				for(int j = 0; j < outs; j++) {
-					bufOut[j][i] += g.audioData[j % g.audioData.length][g.position];
-				}
-				g.position++;
-				if(g.position > g.audioData[0].length) {
-					grainIterator.remove();
-				}
-			}
-		}
-	}
-	
-	
-	
-	
-	
+        /**
+         * The audio data.
+         */
+        float[][] audioData;    //assumes audio data has already been windowed
+
+        /**
+         * The position.
+         */
+        int position;
+    }
+
+    /**
+     * The grains.
+     */
+    final LinkedList<Grain> grains;
+
+    /**
+     * Instantiates a new Drain.
+     *
+     * @param context the AudioContext.
+     * @param outs    the number of output channels.
+     */
+    public Drain(AudioContext context, int outs) {
+        super(context, outs);
+        grains = new LinkedList<>();
+    }
+
+    /**
+     * Adds a new grain of audio data.
+     *
+     * @param audioData the audio data.
+     */
+    public synchronized void add(float[][] audioData) {
+        Grain g = new Grain();
+        g.audioData = audioData;
+        g.position = 0;
+        grains.add(g);
+    }
+
+    /* (non-Javadoc)
+     * @see net.beadsproject.beads.core.UGen#calculateBuffer()
+     */
+    @Override
+    public void calculateBuffer() {
+        for (int i = 0; i < bufferSize; i++) {
+            Iterator<Grain> grainIterator = grains.iterator();
+            while (grainIterator.hasNext()) {
+                Grain g = grainIterator.next();
+                for (int j = 0; j < outs; j++) {
+                    bufOut[j][i] += g.audioData[j % g.audioData.length][g.position];
+                }
+                g.position++;
+                if (g.position > g.audioData[0].length) {
+                    grainIterator.remove();
+                }
+            }
+        }
+    }
+
+
 }

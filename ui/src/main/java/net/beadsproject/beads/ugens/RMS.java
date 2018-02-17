@@ -11,76 +11,73 @@ import net.beadsproject.beads.core.UGen;
  * over a given time frame. The algorithm accounts for multi-channel input by
  * summing the squares of each channel and dividing by the square root of the
  * number of channels.
- * 
- * @beads.category lowlevel
+ *
  * @author Benito Crawford
  * @version 0.9.5
+ * @beads.category lowlevel
  */
 public class RMS extends UGen {
 
-	private final float[] rmsMem;
-	private float sum;
+    private final float[] rmsMem;
+    private float sum;
     private final float channelScale;
     private final float memScale;
-	private final int channels;
+    private final int channels;
     private int index;
     private final int memorySize;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param context
-	 *            The audio context.
-	 * @param channels
-	 *            The number of channels.
-	 * @param memorySize
-	 *            The number of samples over which to compute the RMS.
-	 */
-	public RMS(AudioContext context, int channels, int memorySize) {
-		super(context, channels, 1);
-		this.channels = channels;
-		channelScale = 1f / channels;
-		rmsMem = new float[memorySize];
-		this.memorySize = memorySize;
-		memScale = 1f / memorySize;
-	}
+    /**
+     * Constructor.
+     *
+     * @param context    The audio context.
+     * @param channels   The number of channels.
+     * @param memorySize The number of samples over which to compute the RMS.
+     */
+    public RMS(AudioContext context, int channels, int memorySize) {
+        super(context, channels, 1);
+        this.channels = channels;
+        channelScale = 1f / channels;
+        rmsMem = new float[memorySize];
+        this.memorySize = memorySize;
+        memScale = 1f / memorySize;
+    }
 
-	@Override
-	public void calculateBuffer() {
-		float[] bo = bufOut[0];
-		for (int i = 0; i < bufferSize; i++) {
-			float x, newMem = 0;
-			for (int j = 0; j < channels; j++) {
-				x = bufIn[j][i];
-				newMem += x * x;
-			}
-			sum -= rmsMem[index];
-			rmsMem[index] = newMem * channelScale;
-			sum += rmsMem[index];
-			if (sum < 0)
-				sum = 0;
-			index = (index + 1) % memorySize;
-			bo[i] = (float) Math.sqrt(sum * memScale);
-		}
-		// System.out.println("cb: " + sum);
-	}
+    @Override
+    public void calculateBuffer() {
+        float[] bo = bufOut[0];
+        for (int i = 0; i < bufferSize; i++) {
+            float x, newMem = 0;
+            for (int j = 0; j < channels; j++) {
+                x = bufIn[j][i];
+                newMem += x * x;
+            }
+            sum -= rmsMem[index];
+            rmsMem[index] = newMem * channelScale;
+            sum += rmsMem[index];
+            if (sum < 0)
+                sum = 0;
+            index = (index + 1) % memorySize;
+            bo[i] = (float) Math.sqrt(sum * memScale);
+        }
+        // System.out.println("cb: " + sum);
+    }
 
-	/**
-	 * Gets the number of channels.
-	 * 
-	 * @return The number of channels.
-	 */
-	public int getChannels() {
-		return channels;
-	}
+    /**
+     * Gets the number of channels.
+     *
+     * @return The number of channels.
+     */
+    public int getChannels() {
+        return channels;
+    }
 
-	/**
-	 * Gets the number of samples over which the RMS is calculated.
-	 * 
-	 * @return The number of samples.
-	 */
-	public int getMemorySize() {
-		return memorySize;
-	}
+    /**
+     * Gets the number of samples over which the RMS is calculated.
+     *
+     * @return The number of samples.
+     */
+    public int getMemorySize() {
+        return memorySize;
+    }
 
 }

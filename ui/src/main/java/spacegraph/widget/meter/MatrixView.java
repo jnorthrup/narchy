@@ -13,7 +13,7 @@ import java.util.function.Supplier;
 /**
  * Created by me on 7/29/16.
  */
-public class MatrixView extends Widget {
+@Deprecated public class MatrixView extends Widget {
 
 
     private final int w;

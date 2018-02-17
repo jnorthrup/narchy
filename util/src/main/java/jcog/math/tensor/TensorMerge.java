@@ -2,6 +2,7 @@ package jcog.math.tensor;
 
 import jcog.util.FloatFloatToFloatFunction;
 
+/** tensor computed by applying a function to its previous value */
 public class TensorMerge extends BatchArrayTensor {
 
     private final FloatFloatToFloatFunction func;

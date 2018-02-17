@@ -42,7 +42,7 @@ public interface Tensor extends Supplier<float[]> {
     }
 
     static Tensor forEach(Tensor vector, FloatToFloatFunction operator) {
-        return new FuncTensor(vector, operator);
+        return new TensorFunc(vector, operator);
     }
 
     static Tensor logEach(Tensor vector) {
@@ -57,19 +57,35 @@ public interface Tensor extends Supplier<float[]> {
         return forEach(vector, d -> (float)Math.pow(d, power));
     }
 
-    static float[] copyVectorValues(Tensor vector) {
+    /*static float[] copyVectorValues(Tensor vector) {
         return vector.snapshot();
+    }*/
+
+    /** element-wise addition */
+    default TensorFunc add(float v) {
+        return apply((x) -> x + v);
     }
 
-    static Tensor scale(Tensor vector, Tensor scale) {
-
-        float[] values = copyVectorValues(vector);
-
-        for (int i = 0; i < values.length; i++)
-            values[i] *= scale.get(i);
-
-        return new ArrayTensor(values);
+    /** element-wise multiplication */
+    default TensorFunc scale(float v) {
+        return apply((x) -> x * v);
     }
+
+    default TensorTensorFunc func(Tensor x, FloatFloatToFloatFunction f)  {
+        return new TensorTensorFunc(this, x, f);
+    }
+
+    /** element-wise addition */
+    default Tensor add(Tensor vector) {
+        return func(vector, (a,b)->a+b);
+    }
+
+    /** element-wise multiplication */
+    default Tensor scale(Tensor vector) {
+        return func(vector, (a,b)->a*b);
+    }
+
+
 
     static Tensor normalize(Tensor vector) {
         return vector.scale(1f / sum(vector));
@@ -85,8 +101,7 @@ public interface Tensor extends Supplier<float[]> {
                         d -> (float)random.nextDouble() * (max - min) + min);
     }
 
-    static Tensor randomVectorGauss(int dimension, float mean, float standardDeviation) {
-        final Random random = new Random();
+    static Tensor randomVectorGauss(int dimension, float mean, float standardDeviation, Random random) {
         return forEach(new ArrayTensor(dimension),
                         d -> (float)random.nextGaussian() * standardDeviation + mean);
     }
@@ -179,17 +194,10 @@ public interface Tensor extends Supplier<float[]> {
         });
     }
 
-    default FuncTensor apply(FloatToFloatFunction f) {
-        return new FuncTensor(this, f);
+    default TensorFunc apply(FloatToFloatFunction f) {
+        return new TensorFunc(this, f);
     }
 
-    default FuncTensor add(float v) {
-        return apply((x) -> x + v);
-    }
-
-    default FuncTensor scale(float v) {
-        return apply((x) -> x * v);
-    }
 
     default float max() {
         final float[] max = {Float.MIN_VALUE};
@@ -217,13 +225,6 @@ public interface Tensor extends Supplier<float[]> {
         return sum[0];
     }
 
-    default void add(Tensor pc) {
-        int v = pc.volume();
-        assert(v == volume());
-        for (int i = 0; i < v; i++) {
-            this.set( get(i) + pc.get(i), i );
-        }
-    }
 
     /** produces a string which is separated by tab characters (for .TSV) and each
      * value is rounded to 4 digits of decimal precision
@@ -251,6 +252,40 @@ public interface Tensor extends Supplier<float[]> {
         };
     }
 
+    default boolean equalShape(Tensor b) {
+        return this == b || Arrays.equals(shape(), b.shape());
+    }
+
+    default BufferedTensor buffered() {
+        return new BufferedTensor(this);
+    }
+
+    /**
+     * Returns the value of the buffer at the given fraction along its length (0 = start, 1 = end). Uses linear interpolation.
+     *
+     * @param fraction the point along the buffer to inspect.
+     * @return the value at that point.
+     */
+    default float getFractInterp(float fraction) {
+        int v = volume();
+        float posInBuf = fraction * v;
+        int lowerIndex = (int) posInBuf;
+        float offset = posInBuf - lowerIndex;
+        int upperIndex = (lowerIndex + 1) % v; //?what % for
+
+        return (1 - offset) * get(lowerIndex) + offset * get(upperIndex);
+    }
+
+    /**
+     * Returns the value of the buffer at the given fraction along its length (0 = start, 1 = end). No interpolation.
+     *
+     * @param fraction the point along the buffer to inspect.
+     * @return the value at that point.
+     */
+
+    default float getFractRaw(float fraction) {
+        return get((int) (fraction * volume()));
+    }
 
 
 //    int[] coord(int index, int[] coord);

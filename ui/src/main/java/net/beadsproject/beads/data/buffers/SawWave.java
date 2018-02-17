@@ -3,27 +3,28 @@
  */
 package net.beadsproject.beads.data.buffers;
 
-import net.beadsproject.beads.data.Buffer;
-import net.beadsproject.beads.data.BufferFactory;
+import jcog.math.tensor.ArrayTensor;
+import net.beadsproject.beads.data.WaveFactory;
 
 /**
  * Creates a {@link Buffer} consisting of a sawtooth wave in the range [-1,1].
- * 
- * @see Buffer BufferFactory
+ *
  * @author ollie
+ * @see Buffer BufferFactory
  */
-public class SawBuffer extends BufferFactory {
+public class SawWave extends WaveFactory {
 
     /* (non-Javadoc)
      * @see net.beadsproject.beads.data.BufferFactory#generateBuffer(int)
      */
     @Override
-    public Buffer generateBuffer(int bufferSize) {
-    	Buffer b = new Buffer(bufferSize);
-        for(int i = 0; i < bufferSize; i++) {
-            b.buf[i] = (float)i / (float)bufferSize * 2.0f - 1.0f;
+    public ArrayTensor get(int bufferSize) {
+        int size = bufferSize;
+        ArrayTensor b = new ArrayTensor(size);
+        for (int i = 0; i < bufferSize; i++) {
+            b.data[i] = (float) i / bufferSize * 2.0f - 1.0f;
         }
-    	return b;
+        return b;
     }
 
     /* (non-Javadoc)
@@ -31,8 +32,8 @@ public class SawBuffer extends BufferFactory {
      */
     @Override
     public String getName() {
-    	return "Saw";
+        return "Saw";
     }
 
-    
+
 }

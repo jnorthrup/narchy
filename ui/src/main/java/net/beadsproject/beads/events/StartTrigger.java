@@ -3,33 +3,35 @@
  */
 package net.beadsproject.beads.events;
 
-import net.beadsproject.beads.core.Bead;
+import net.beadsproject.beads.core.Auvent;
 
 /**
- * Use StartTrigger to cause a specific {@link Bead} to start (unpause) in response to a specific event.
+ * Use StartTrigger to cause a specific {@link Auvent} to start (unpause) in response to a specific event.
  */
-public class StartTrigger extends Bead {
+public class StartTrigger extends Auvent {
 
-	/** The Bead that will be started. */
-	Bead receiver;
-	
-	/**
-	 * Instantiates a new StartTrigger which will start the given {@link Bead} when triggered.
-	 * 
-	 * @param receiver
-	 *            the receiver.
-	 */
-	public StartTrigger(Bead receiver) {
-		this.receiver = receiver;
-	}
-	
-	/**
-	 * Any incoming message will cause the specified {@link Bead} to start.
-	 * @see #message(Bead)
-	 */
-	@Override
-    public void messageReceived(Bead message) {
-		receiver.start();
-		
-	}
+    /**
+     * The Bead that will be started.
+     */
+	final Auvent receiver;
+
+    /**
+     * Instantiates a new StartTrigger which will start the given {@link Auvent} when triggered.
+     *
+     * @param receiver the receiver.
+     */
+    public StartTrigger(Auvent receiver) {
+        this.receiver = receiver;
+    }
+
+    /**
+     * Any incoming message will cause the specified {@link Auvent} to start.
+     *
+     * @see #accept(Auvent)
+     */
+    @Override
+    public void on(Auvent message) {
+        receiver.start();
+
+    }
 }

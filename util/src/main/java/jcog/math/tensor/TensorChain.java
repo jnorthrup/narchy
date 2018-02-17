@@ -50,7 +50,7 @@ public class TensorChain extends BatchArrayTensor {
     }
 
     @Override
-    protected void update() {
+    public void update() {
         int[] p = { 0 };
 
         for (Tensor x : sub) {

@@ -3,28 +3,29 @@
  */
 package net.beadsproject.beads.data.buffers;
 
-import net.beadsproject.beads.data.Buffer;
-import net.beadsproject.beads.data.BufferFactory;
+import jcog.math.tensor.ArrayTensor;
+import net.beadsproject.beads.data.WaveFactory;
 
 /**
  * Creates a {@link Buffer} consisting of a sine wave in the range [-1,1].
- * 
- * @see Buffer BufferFactory
+ *
  * @author ollie
+ * @see Buffer BufferFactory
  */
-public class SineBuffer extends BufferFactory {
+public class SineWave extends WaveFactory {
 
 
     /* (non-Javadoc)
      * @see net.beadsproject.beads.data.BufferFactory#generateBuffer(int)
      */
     @Override
-    public Buffer generateBuffer(int bufferSize) {
-    	Buffer b = new Buffer(bufferSize);
-        for(int i = 0; i < bufferSize; i++) {
-            b.buf[i] = (float) Math.sin(2.0 * Math.PI * (double)i / (double)bufferSize);
+    public ArrayTensor get(int bufferSize) {
+        int size = bufferSize;
+        ArrayTensor b = new ArrayTensor(size);
+        for (int i = 0; i < bufferSize; i++) {
+            b.data[i] = (float) Math.sin(2.0 * Math.PI * i / bufferSize);
         }
-    	return b;
+        return b;
     }
 
     /* (non-Javadoc)
@@ -32,6 +33,6 @@ public class SineBuffer extends BufferFactory {
      */
     @Override
     public String getName() {
-    	return "Sine";
+        return "Sine";
     }
 }

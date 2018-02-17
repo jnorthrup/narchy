@@ -5,6 +5,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.procedure.primitive.IntFloatProcedure;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import static java.lang.System.arraycopy;
@@ -15,11 +16,12 @@ import static java.lang.System.arraycopy;
 public class ArrayTensor implements
         Tensor,
         TensorFrom/* source, getters, suppliers */,
-        TensorTo /* target, setters, consumers */  {
+        TensorTo /* target, setters, consumers */,
+        Serializable {
 
     public final float[] data;
-    private final int[] shape;
-    private final int[] stride;
+    public final int[] shape;
+    transient private final int[] stride;
 
     public ArrayTensor(float... oneD) {
         this.shape = new int[] { oneD.length };

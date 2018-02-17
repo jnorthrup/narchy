@@ -21,9 +21,9 @@ import nars.time.Tense;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.*;
 import net.beadsproject.beads.core.AudioContext;
-import net.beadsproject.beads.core.Bead;
+import net.beadsproject.beads.core.Auvent;
 import net.beadsproject.beads.core.UGen;
-import net.beadsproject.beads.data.Buffer;
+import net.beadsproject.beads.data.WaveFactory;
 import net.beadsproject.beads.ugens.*;
 import org.HdrHistogram.DoubleHistogram;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
@@ -805,7 +805,7 @@ abstract public class NAgentX extends NAgent {
 
     private static class Metronome {
         public Metronome(Clock cc, NAR n) {
-            cc.on(new Bead<Clock>() {
+            cc.on(new Auvent<Clock>() {
 
                 AudioContext ac = cc.getContext();
                 public final Envelope kickEnv, snareEnv;
@@ -815,7 +815,7 @@ abstract public class NAgentX extends NAgent {
 
                     UGen kickGain = new Gain(ac, 1, kickEnv).in(
                             new BiquadFilter(ac, BiquadFilter.BESSEL_LP, 500.0f, 1.0f).in(
-                                    new WavePlayer(ac, 100.0f, Buffer.SINE)));
+                                    new WavePlayer(ac, 100.0f, WaveFactory.SINE)));
 
                     ac.out.in(kickGain);
 
@@ -824,8 +824,8 @@ abstract public class NAgentX extends NAgent {
                 {
                     snareEnv = new Envelope(ac, 0.0f);
                     // set up the snare WavePlayers
-                    WavePlayer snareNoise = new WavePlayer(ac, 1.0f, Buffer.NOISE);
-                    WavePlayer snareTone = new WavePlayer(ac, 200.0f, Buffer.SINE);
+                    WavePlayer snareNoise = new WavePlayer(ac, 1.0f, WaveFactory.NOISE);
+                    WavePlayer snareTone = new WavePlayer(ac, 200.0f, WaveFactory.SINE);
                     // set up the filters
                     IIRFilter snareFilter = new BiquadFilter(ac, BiquadFilter.BP_SKIRT, 2500.0f, 1.0f);
                     snareFilter.in(snareNoise);
@@ -839,7 +839,7 @@ abstract public class NAgentX extends NAgent {
                 }
 
                 @Override
-                protected void messageReceived(Clock c) {
+                protected void on(Clock c) {
                     if (c.isBeat(16)) {
                         snareEnv.add(0.5f, 2.00f);
                         snareEnv.add(0.2f, 8.0f);

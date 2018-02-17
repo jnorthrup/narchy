@@ -2,8 +2,8 @@ package net.beadsproject.beads;
 
 import jcog.Util;
 import net.beadsproject.beads.core.AudioContext;
-import net.beadsproject.beads.core.Bead;
-import net.beadsproject.beads.data.Buffer;
+import net.beadsproject.beads.core.Auvent;
+import net.beadsproject.beads.data.WaveFactory;
 import net.beadsproject.beads.data.Pitch;
 import net.beadsproject.beads.ugens.*;
 
@@ -28,19 +28,19 @@ public class Lesson07_Music {
             Clock clock = new Clock(ac, 700);
             clock.on(
                     //this is the on-the-fly bead
-                    new Bead() {
+                    new Auvent() {
                         //this is the method that we override to make the Bead do something
                         int pitch;
 
                         @Override
-                        public void messageReceived(Bead message) {
+                        public void on(Auvent message) {
                             Clock c = (Clock) message;
                             if (c.isBeat()) {
                                 //choose some nice frequencies
                                 if (random(1) < 0.5) return;
                                 pitch = Pitch.forceToScale((int) random(12), Pitch.dorian);
                                 float freq = Pitch.mtof(pitch + (int) random(5) * 12 + 32);
-                                WavePlayer wp = new WavePlayer(ac, freq, Buffer.SINE);
+                                WavePlayer wp = new WavePlayer(ac, freq, WaveFactory.SINE);
                                 Gain g = new Gain(ac, 1, new Envelope(ac, 0));
                                 g.in(wp);
                                 ac.out.in(g);
@@ -53,7 +53,7 @@ public class Lesson07_Music {
                                 if (random(1) < 0.2)
                                     pitchAlt = Pitch.forceToScale((int) random(12), Pitch.dorian) + (int) random(2) * 12;
                                 float freq = Pitch.mtof(pitchAlt + 32);
-                                WavePlayer wp = new WavePlayer(ac, freq, Buffer.SQUARE);
+                                WavePlayer wp = new WavePlayer(ac, freq, WaveFactory.SQUARE);
                                 Gain g = new Gain(ac, 1, new Envelope(ac, 0));
                                 g.in(wp);
                                 Panner p = new Panner(ac, random(1));
@@ -78,9 +78,10 @@ public class Lesson07_Music {
             ac.out.dependsOn(clock);
 
             ac.start();
-            Util.sleep((long) 1000000);
+            Util.sleep(1000000L);
         }
     }
+
     public static class Music2 {
         public static void main(String[] args) {
 
@@ -100,12 +101,12 @@ public class Lesson07_Music {
             Clock clock = new Clock(ac, 255);
             clock.on(
                     //this is the on-the-fly bead
-                    new Bead() {
+                    new Auvent() {
                         //this is the method that we override to make the Bead do something
                         int pitch;
 
                         @Override
-                        public void messageReceived(Bead message) {
+                        public void on(Auvent message) {
                             Clock c = (Clock) message;
                             if (c.isBeat()) {
                                 //choose some nice frequencies
@@ -117,7 +118,7 @@ public class Lesson07_Music {
                                 Gain g = new Gain(ac, 1, e)
                                         .in(new WavePlayer(ac,
                                                 Pitch.mtof(pitch + (int) random(5) * 12 + 24),
-                                                Buffer.SINE));
+                                                WaveFactory.SINE));
 
                                 e.add(0.1f, random(200));
                                 e.add(0, random(7000), g.die());
@@ -156,7 +157,7 @@ public class Lesson07_Music {
             ac.out.dependsOn(clock);
 
             ac.start();
-            Util.sleep((long) 1000000);
+            Util.sleep(1000000L);
         }
 
     }

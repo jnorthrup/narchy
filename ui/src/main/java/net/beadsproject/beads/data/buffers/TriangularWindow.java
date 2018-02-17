@@ -3,35 +3,34 @@
  */
 package net.beadsproject.beads.data.buffers;
 
-import net.beadsproject.beads.data.Buffer;
-import net.beadsproject.beads.data.BufferFactory;
+import jcog.math.tensor.ArrayTensor;
+import net.beadsproject.beads.data.WaveFactory;
 
 /**
  * A filter used for smoothing data.
- * 
- * @author ben
  *
+ * @author ben
  */
-public class TriangularWindow extends BufferFactory {
+public class TriangularWindow extends WaveFactory {
 
-	@Override
-	public Buffer generateBuffer(int bufferSize) {
-		Buffer b = new Buffer(bufferSize);
-		
-		for (int i=0;i<bufferSize;i++) {
-			b.buf[i] = tri((i + 0.5f) / bufferSize) / bufferSize; 
-		}
-		return b;
-	}
-	
-	protected static float tri(float x)
-	{
-		return x < .5 ? 4 * x : 4 * (1 - x);
-	}
+    @Override
+    public ArrayTensor get(int bufferSize) {
+        int size = bufferSize;
+        ArrayTensor b = new ArrayTensor(size);
 
-	@Override
-	public String getName() {
-		return "TriangularBuffer";
-	}
+        for (int i = 0; i < bufferSize; i++) {
+            b.data[i] = tri((i + 0.5f) / bufferSize) / bufferSize;
+        }
+        return b;
+    }
+
+    protected static float tri(float x) {
+        return x < .5 ? 4 * x : 4 * (1 - x);
+    }
+
+    @Override
+    public String getName() {
+        return "TriangularBuffer";
+    }
 
 }
