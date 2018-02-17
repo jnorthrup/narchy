@@ -313,9 +313,10 @@ public class Deriver extends Causable {
         assert (now != ETERNAL);
 
         if (task.isEternal()) {
-            return task.punc()!=GOAL ? ETERNAL : now;
+            return
+                    //task.punc()!=GOAL ? ETERNAL : now;
                     //ETERNAL
-                    //now;
+                    now;
         } else {
 
             //return now;
@@ -323,10 +324,10 @@ public class Deriver extends Causable {
             //return task.myNearestTimeTo(now);
 
             switch (task.punc()) {
-                case BELIEF:
                 case GOAL:
                 case QUEST:
                     return now;
+                case BELIEF:
                 case QUESTION:
                     return task.nearestPointInternal(now);
                 default:

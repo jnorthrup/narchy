@@ -29,7 +29,7 @@ public class FZero extends NAgentX {
     private final FZeroGame fz;
 
     float fwdSpeed = 14;
-    float rotSpeed = 0.25f/3f;
+    float rotSpeed = 0.35f/3f;
     static float fps = 20f;
     final MiniPID rewardFilter = new MiniPID(0.1f, 0.1, 0.1f);
     final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
@@ -95,7 +95,9 @@ public class FZero extends NAgentX {
 //                .resolution(0.05f);
 
 
-        initToggle();
+        //initTankDiscrete();
+        initTankContinuous();
+        //initToggle();
         //initBipolar(true);
         //initBipolar(true);
 
@@ -292,11 +294,9 @@ public class FZero extends NAgentX {
 
         actionToggle($.inh($.the("left"), id), (b) -> {
             fz.left = b;
-            fz.right = false;
         });
         actionToggle($.inh($.the("right"), id), (b) -> {
             fz.right = b;
-            fz.left = false;
         });
         actionToggle($.inh($.the("fwd"), id), (b) -> {
             fz.thrust = b;
@@ -304,6 +304,46 @@ public class FZero extends NAgentX {
         actionToggle($.inh($.the("brake"), id), () -> {
             //fz.left = fz.right = false;
             fz.vehicleMetrics[0][6] *= 0.9f;
+        });
+
+    }
+    private void initTankDiscrete() {
+
+        actionToggle($.inh($.the("left"), id), (b) -> {
+            fz.left = b;
+            fz.thrust = fz.left && fz.right;
+        });
+        actionToggle($.inh($.the("right"), id), (b) -> {
+            fz.right = b;
+            fz.thrust = fz.left && fz.right;
+        });
+
+    }
+    private void initTankContinuous() {
+
+        final float[] left = new float[1];
+        final float[] right = new float[1];
+        actionUnipolar($.inh($.the("left"), id), (x) -> {
+            float power = (Math.max(x, 0.5f) - 0.5f)*2f;
+            left[0] = power;
+            fz.playerAngle += power * rotSpeed;
+            fz.vehicleMetrics[0][6] +=
+                    //Util.mean(left[0], right[0])
+                    Util.and(left[0], right[0])
+                    //Util.or(left[0], right[0])
+                            * fwdSpeed/2f;
+            return x;
+        });
+        actionUnipolar($.inh($.the("right"), id), (x) -> {
+            float power = (Math.max(x, 0.5f) - 0.5f)*2f;
+            right[0] = power;
+            fz.playerAngle -= power * rotSpeed;
+            fz.vehicleMetrics[0][6] +=
+                    //Util.mean(left[0], right[0])
+                    Util.and(left[0], right[0])
+                    //Util.or(left[0], right[0])
+                            * fwdSpeed/2f;
+            return x;
         });
 
     }
@@ -324,7 +364,7 @@ public class FZero extends NAgentX {
 //            return a;
 //        });
         final float[] _a = {0}, _r = {0};
-        actionUnipolar($.inh(id,"fwd"), false, (a0) -> {
+        actionUnipolar($.inh(id,"fwd"), true, false, (a0) -> {
             float a = _a[0] = (float) fwdFilter.out(_a[0], a0);
             if (a > 0.5f) {
                 float thrust = /*+=*/ (a - 0.5f) * 2f * (fwdSpeed); //gas
@@ -426,7 +466,8 @@ public class FZero extends NAgentX {
         boolean[] K = new boolean[65535]; // pressed keys
         public double power;
         public int rank;
-        double rotVel = 0.03;
+        double rotVel = 0.07;
+        float fwdVel = 0.8f;
         final double VIEWER_X = 159.5;
         final double VIEWER_Y = 32;
         final double VIEWER_Z = -128;
@@ -720,9 +761,11 @@ public class FZero extends NAgentX {
 
                 // process player input
                 if (playing) {
-                    if (left || K[KeyEvent.VK_LEFT]) {
+                    boolean L = left || K[KeyEvent.VK_LEFT];
+                    boolean R = right || K[KeyEvent.VK_RIGHT];
+                    if (L && !R) {
                         playerAngle += rotVel;
-                    } else if (right || K[KeyEvent.VK_RIGHT]) {
+                    } if (R && !L) {
                         playerAngle -= rotVel;
                     }
                 }
@@ -733,7 +776,7 @@ public class FZero extends NAgentX {
                 if (thrust || K[KeyEvent.VK_D]) {
 
                     if (vehicleMetrics[0][6] < MAX_VEL) {
-                        vehicleMetrics[0][6] += 0.2;
+                        vehicleMetrics[0][6] += fwdVel;
                     }
                 } else {
                     vehicleMetrics[0][6] *= 0.99;

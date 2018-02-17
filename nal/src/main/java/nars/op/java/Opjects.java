@@ -82,13 +82,22 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     public final FloatRange exeThresh = new FloatRange(0.75f, 0.5f, 1f);
 
     /** determines evidence weighting for reporting specific feedback values */
-    float belief = 1f;
+    float beliefEviFactor = 1f;
+    float invokeEviFactor = beliefEviFactor;
+    float beliefFreq = 1f;
+    float invokeFreq = 1f;
+
 
     /** determines evidence weighting for reporting assumed feedback assumptions */
-    float doubt = 0.5f;
+    float doubtEviFactor = 0.75f;
+    float uninvokeEviFactor = 1;
+    float doubtFreq =
+            //0.5f
+            1f - beliefFreq;
+    float uninvokeFreq = 1f - invokeFreq;
 
     /** cached; updated at most each duration */
-    private float beliefEvi = 0, doubtEvi = 0, beliefPri = 0;
+    private float beliefEvi = 0, doubtEvi = 0, beliefPri = 0, invokeEvi, uninvokeEvi, invokePri;
 
     /** set of operators in probing mode which are kept here for batched execution */
     final ConcurrentLinkedHashSet<MethodExec> probing = new ConcurrentLinkedHashSet<>();
@@ -197,9 +206,11 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     protected void update(NAR nar) {
         float cMin = c2w(nar.confMin.floatValue());
         float cMax = c2w(nar.confDefault(BELIEF));
-        beliefEvi = Util.lerp(belief, cMin, cMax);
-        doubtEvi = Util.lerp(doubt, cMin, cMax);
-        beliefPri = nar.priDefault(BELIEF) * in.amp();
+        beliefEvi = Util.lerp(beliefEviFactor, cMin, cMax);
+        doubtEvi = Util.lerp(doubtEviFactor, cMin, cMax);
+        invokeEvi = Util.lerp(invokeEviFactor, cMin, cMax);
+        uninvokeEvi = Util.lerp(uninvokeEviFactor, cMin, cMax);
+        invokePri = beliefPri = nar.priDefault(BELIEF) * in.amp();
         probing.forEach(p -> p.update(nar));
     }
 
@@ -330,7 +341,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
     public class PointMethodValueModel implements InstanceMethodValueModel {
 
-        private final static float invocationBeliefFreq = 1.0f;
+
 
         @Override
         public void update(Term instance, Object obj, Method method, Object[] args, Object nextValue, NAR nar) {
@@ -344,7 +355,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
             long start = now - dur / 2;
             long end = now + dur / 2;
 
-            float f = invocationBeliefFreq;
+            float f = beliefFreq;
 
             boolean isVoid = method.getReturnType() == void.class;
 
@@ -358,11 +369,11 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                 }
 
                 value = new TruthletTask(nt, BELIEF,
-                        //dont assume the value is any different before or after invocation
+                        //dont necessarily assume the value is any different before or after invocation
                         Truthlet.step(
-                                0.5f, start, //before
+                                doubtFreq, start, //before
                                 f, beliefEvi,          //on
-                                end, 0.5f, //after
+                                end, doubtFreq, //after
                                 doubtEvi  //off
                         ),
                         nar);
@@ -382,10 +393,10 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                         //step(float freqBefore, long start, float freqOn, float eviOn, long end, float freqAfter, float eviOff) {
                         //assume the invocation itself ends here
                         Truthlet.step(
-                                0f, start, //before
-                                f, beliefEvi,          //on
-                                end, 0f, //after
-                                doubtEvi  //off
+                                uninvokeFreq, start, //before
+                                invokeFreq, invokeEvi,          //on
+                                end, uninvokeFreq, //after
+                                uninvokeEvi //off
                         ),
                         //Truthlet.flat(start, end, f,
                         //Truthlet.impulse(start, end, f, 1 - f,

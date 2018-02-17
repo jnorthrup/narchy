@@ -6,6 +6,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Task;
 import nars.control.DurService;
+import nars.control.MetaGoal;
 import nars.op.ArithmeticIntroduction;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
@@ -84,28 +85,33 @@ public class ThermostatTest {
     }
 
 
+    final Runnable pause = () -> {
+        Util.sleep(500);
+    };
     @Test
     @Disabled
     public void test1() {
         //Param.DEBUG = true;
         final int DUR = 2;
 
-        final int subTrainings = 1;
-        final int thinkDurs = 2;
+        final int subTrainings = 2;
+        final int thinkDurs = 1;
 
         NAR n = NARS.tmp();
 
         n.time.dur(DUR);
-        n.termVolumeMax.set(30);
+        //n.timeFocus.set(4);
+        n.termVolumeMax.set(36);
         n.freqResolution.set(0.02f);
         n.confResolution.set(0.02f);
-        //n.deep.set(0.9);
+        n.deep.set(0.8);
 
-//        n.want(MetaGoal.Desire, 0.2f);
+
+        n.emotion.want(MetaGoal.Desire, 0.2f);
 //        n.want(MetaGoal.Believe, 0.1f);
 //        n.want(MetaGoal.Perceive, -0.01f);
 
-        float exeThresh = 0.51f;
+        float exeThresh = 0.55f;
 
         new ArithmeticIntroduction(8, n);
         new ConjClustering(n, BELIEF, (t) -> true, 4, 16);
@@ -128,8 +134,10 @@ public class ThermostatTest {
             @Nullable
             protected synchronized Object invoked(Object obj, Method wrapped, Object[] args, Object result) {
 
-                //n.time.synch(n);
-                //n.runLater(nn -> nn.run(DUR)); //queue some thinking cycles
+                if (training[0]) {
+                    n.time.synch(n);
+                    //n.runLater(nn -> nn.run(DUR)); //queue some thinking cycles
+                }
 
                 Object y = super.invoked(obj, wrapped, args, result);
 
@@ -171,7 +179,7 @@ public class ThermostatTest {
                 hotToHot = Thermostat.change(true, true);
         Predicate<Thermostat> isCold = x -> x.is() == Thermostat.cold;
         Predicate<Thermostat> isHot = x -> x.is() == Thermostat.hot;
-        n.logWhen(System.out, false, true, true);
+        n.logWhen(System.out, true, true, true);
 
         boolean stupid = true;
         training:
@@ -241,14 +249,13 @@ public class ThermostatTest {
 
                 t.is(3);
                 t.should(0);
-                n.run(thinkDurs*n.dur());
+                n.run(thinkDurs * n.dur());
 
                 Term cold = $.$safe("is(a_Thermostat,0)");
                 //Term cold = $.$safe("(a_Thermostat(is,(),0) &| --a_Thermostat(is,(),3))");
                 Term hot = $.$safe("is(a_Thermostat,3)");
                 Truth goalTruth = $.t(1f, 0.9f);
 
-                final int[] maxTries = {8};
                 DurService xPos = n.wantWhile(cold, goalTruth, new TaskConceptLogger(n, (w) ->
                         /*(--maxTries[0] >= 0) && */(t.current != t.target)
                 ));
@@ -258,10 +265,10 @@ public class ThermostatTest {
 
                 n.run(1);
 
-                for (int i = 0; i < 8 && xPos.isOn(); i++) {
+                for (int i = 0; i < 16 && xPos.isOn(); i++) {
                     int period = 100;
                     //t.report();
-                    n.run(period);
+                    n.run(period, pause);
                 }
 
                 xPos.off();
@@ -271,13 +278,12 @@ public class ThermostatTest {
 
                 if (t.is() == t.should()) {
                     System.out.println("good job nars!");
-                    n.believe($.the("good"), Tense.Present);
+                    n.believe($.$safe("(learn(up) && learn(down))"), Tense.Present);
                     stupid = false;
                 } else {
                     System.out.println("bad job nars! try again");
-                    n.believe($.the("bad"), Tense.Present);
+                    n.believe($.$safe("(--learn(up) && --learn(down))"), Tense.Present);
                 }
-                n.run(thinkDurs * n.dur());
 
 
 //            n.input(new NALTask($.$safe("a_Thermostat(is,(),0)"),
@@ -291,6 +297,9 @@ public class ThermostatTest {
 
             }
         } while (stupid);
+
+        n.run(thinkDurs * n.dur());
+
         {
 //            n.input(new NALTask($.$safe("a_Thermostat(is,(),3)"),
 //                    GOAL, $.t(0f, 0.99f),

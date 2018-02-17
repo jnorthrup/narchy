@@ -710,20 +710,23 @@ public interface NAct {
     }
 
     default GoalActionConcept actionUnipolar(@NotNull Term s, @NotNull FloatToFloatFunction update) {
-        return actionUnipolar(s, false, update);
+        return actionUnipolar(s, false, false, update);
+    }
+
+    default GoalActionConcept actionUnipolarfreq(@NotNull Term s, @NotNull FloatToFloatFunction update) {
+        return actionUnipolar(s, true, false, update);
     }
 
     /**
      * update function receives a value in 0..1.0 corresponding directly to the present goal frequency
      */
-    default GoalActionConcept actionUnipolar(@NotNull Term s, boolean latch, @NotNull FloatToFloatFunction update) {
+    default GoalActionConcept actionUnipolar(@NotNull Term s, boolean freqOrExp, boolean latch, @NotNull FloatToFloatFunction update) {
 
 
         final float[] lastF = {0.5f};
         return action(s, (b, g) -> {
             float gFreq = (g != null) ?
-                    //d.expectation()
-                    g.freq() : (latch ? lastF[0] : Float.NaN);
+                    (freqOrExp ? g.freq() : g.expectation()) : (latch ? lastF[0] : Float.NaN);
 
             lastF[0] = gFreq;
 

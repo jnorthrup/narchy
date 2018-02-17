@@ -34,6 +34,13 @@ public interface Cycler extends Runnable {
             run();
     }
 
+    default void run(int cycles, Runnable afterEachCycle) {
+        for (; cycles > 0; cycles--) {
+            run();
+            afterEachCycle.run();
+        }
+    }
+
     /**
      * run while the supplied predicate returns true
      */

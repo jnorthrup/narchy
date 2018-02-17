@@ -130,21 +130,18 @@ public class NARio extends NAgentX {
     }
 
     private void initToggle() {
+
         actionPushButton($safe("nario:left"),
-                (n) -> {
-                    mario.scene.key(Mario.KEY_LEFT, n);
-                    if (n)
-                        mario.scene.key(Mario.KEY_RIGHT, false);
-                });
+                n -> mario.scene.key(Mario.KEY_LEFT, n));
         actionPushButton($safe("nario:right"),
-                (n) -> {
-                    mario.scene.key(Mario.KEY_RIGHT, n);
-                    if (n)
-                        mario.scene.key(Mario.KEY_LEFT, false);
-                });
-        actionPushButton($safe("nario:jump"), (n) -> mario.scene.key(Mario.KEY_JUMP, n));
-        actionPushButton($safe("nario:down"), (n) -> mario.scene.key(Mario.KEY_DOWN, n));
-        actionPushButton($safe("nario:speed"), (b) -> mario.scene.key(Mario.KEY_SPEED, b));
+                n -> mario.scene.key(Mario.KEY_RIGHT, n));
+        actionPushButton($safe("nario:jump"),
+                n -> mario.scene.key(Mario.KEY_JUMP, n));
+        actionPushButton($safe("nario:down"),
+                n -> mario.scene.key(Mario.KEY_DOWN, n));
+        actionPushButton($safe("nario:speed"),
+                n -> mario.scene.key(Mario.KEY_SPEED, n));
+
 //        actionTriState($("x"), i -> {
 //            boolean n, p;
 //            switch (i) {

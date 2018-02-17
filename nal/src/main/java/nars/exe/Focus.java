@@ -33,7 +33,7 @@ public class Focus extends AtomicRoulette<Causable> {
      * how quickly the iteration demand can grow from previous (max) values
      */
     static final double IterGrowthIncrement = 1;
-    static final double IterGrowthRateMin = 1.1f;
+    static final double IterGrowthRateMin = 0.75f;
     static final double IterGrowthRateMax = 2.0f;
 
 

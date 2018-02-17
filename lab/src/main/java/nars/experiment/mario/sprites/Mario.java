@@ -188,7 +188,7 @@ public class Mario extends Sprite
 
         if (onGround)
         {
-            ducking = keys[KEY_DOWN] && large;
+            ducking = keys[KEY_DOWN] && large && !keys[KEY_JUMP];
         }
 
         if (xa > 2)
@@ -200,7 +200,7 @@ public class Mario extends Sprite
             facing = -1;
         }
 
-        if (keys[KEY_JUMP] || (jumpTime < 0 && !onGround && !sliding))
+        if (keys[KEY_JUMP] && !keys[KEY_DOWN] || (jumpTime < 0 && !onGround && !sliding))
         {
             if (jumpTime < 0)
             {
@@ -242,14 +242,14 @@ public class Mario extends Sprite
             jumpTime = 0;
         }
 
-        if (keys[KEY_LEFT] && !ducking)
+        if (keys[KEY_LEFT] && !ducking && !keys[KEY_RIGHT])
         {
             if (facing == 1) sliding = false;
             xa -= sideWaysSpeed;
             if (jumpTime >= 0) facing = -1;
         }
 
-        if (keys[KEY_RIGHT] && !ducking)
+        if (keys[KEY_RIGHT] && !ducking && !keys[KEY_LEFT])
         {
             if (facing == -1) sliding = false;
             xa += sideWaysSpeed;

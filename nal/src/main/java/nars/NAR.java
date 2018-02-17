@@ -592,14 +592,18 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     }
 
     public NAR logWhen(Appendable out, boolean past, boolean present, boolean future) {
+
+        if (past == true && present == true && future == true)
+            return log(out);
+
         return log(out, v -> {
             if (v instanceof Task) {
                 Task t = (Task) v;
                 long now = time();
                 return
-                    (past == t.isBefore(now)) &&
-                    (future == t.isAfter(now)) &&
-                    (present == t.isDuring(now));
+                    (past && t.isBefore(now)) ||
+                    (present && t.isAfter(now)) ||
+                    (future && t.isDuring(now));
             }
             return false;
         });
