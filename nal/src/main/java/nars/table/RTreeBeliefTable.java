@@ -1,11 +1,11 @@
 package nars.table;
 
 import jcog.list.FasterList;
-import jcog.math.CachedFloatFunction;
+import jcog.math.LongInterval;
 import jcog.pri.Deleteable;
+import jcog.sort.CachedTopN;
 import jcog.sort.Top;
 import jcog.sort.Top2;
-import jcog.sort.TopNUnique;
 import jcog.tree.rtree.*;
 import nars.NAR;
 import nars.Op;
@@ -23,7 +23,6 @@ import nars.task.util.TimeConfRange;
 import nars.task.util.TimeRange;
 import nars.term.Term;
 import nars.truth.Truth;
-import jcog.math.LongInterval;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -254,11 +253,11 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         long now = nar.time();
         int perceptDur = nar.dur();
         FloatFunction<Task> taskStrength =
-                new CachedFloatFunction<>(
-                        s,
+                //new CachedFloatFunction<>(
+                        //s,
                         //taskStrength(now-dur/2, now+dur/2, dur);
-                        taskStrengthWithFutureBoost(now, PRESENT_AND_FUTURE_BOOST, now, perceptDur)
-                );
+                        taskStrengthWithFutureBoost(now, PRESENT_AND_FUTURE_BOOST, now, perceptDur);
+                //);
 
         int e = 0;
         while (treeRW.size() > cap) {
@@ -491,7 +490,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             Leaf l = (Leaf) next;
             for (Object _x : l.data) {
                 if (_x == null)
-                    break;
+                    break; //end of list
+
                 TaskRegion x = (TaskRegion) _x;
                 if (((Deleteable) x).isDeleted()) {
                     //found a deleted task in the leaf, we need look no further
@@ -509,11 +509,12 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         } else { //if (next instanceof Branch)
 
             Branch b = (Branch) next;
-            int size = b.size();
-            Node<TaskRegion, ?>[] ww = b.data;
-            for (int i = 0; i < size; i++) {
-                if (!findEvictable(tree, ww[i], mergeVictims))
-                    return false; //done
+
+            for (Node ww : b.data) {
+                if (ww == null)
+                    break; //end of list
+                else if (!findEvictable(tree, ww, mergeVictims))
+                    return false;
             }
         }
 
@@ -775,7 +776,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
     }
 
-    private final static class ScanFilter extends TopNUnique<TaskRegion> implements Predicate<TaskRegion> {
+    private final static class ScanFilter extends CachedTopN<TaskRegion> implements Predicate<TaskRegion> {
 
         private final Predicate<Task> filter;
         private final int minResults;

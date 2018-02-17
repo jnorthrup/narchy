@@ -68,7 +68,7 @@ public class PredictionFeedback {
         List<Task> signals = new FasterList(0);
         ((DefaultBeliefTable) table).temporal.whileEach(start, end, (existing) -> {
             //TODO or if the cause is purely this Cause id (to include pure revisions of signal tasks)
-            if (signalOrRevisedSignal(cause, existing)) {
+            if (signalOrRevisedSignalAbsorbs(cause, existing, y)) {
                 signals.add(existing);
             }
             return true;
@@ -83,10 +83,12 @@ public class PredictionFeedback {
         }
     }
 
-    private static boolean signalOrRevisedSignal(short cause, Task existing) {
+    private static boolean signalOrRevisedSignalAbsorbs(short cause, Task existing, Task y) {
         if (existing instanceof SignalTask)
             return true;
         if (existing.isCyclic())
+            return false;
+        if (existing.confMax() < y.confMin() || existing.originality() < y.originality())
             return false;
 
         short[] cc = existing.cause();

@@ -9,17 +9,18 @@ import java.util.function.IntFunction;
 
 public class TopN<E> extends SortedArray<E> implements Consumer<E> {
 
-    public final FloatFunction<E> rank;
+    private final FloatFunction<E> rank;
 
     E min = null;
     float admitThresh = Float.POSITIVE_INFINITY;
 
-    protected TopN(FloatFunction<E> rank) {
-        this(null, rank);
-    }
     public TopN(E[] target, FloatFunction<E> rank) {
         this.list = target;
-        this.rank = (x) -> -rank.floatValueOf(x); //descending
+        this.rank = rank; //(x) -> -rank.floatValueOf(x); //descending
+    }
+
+    public float rank(E x) {
+        return -rank.floatValueOf(x); //negative for descending
     }
 
 
@@ -80,12 +81,12 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
 
     @Override
     public boolean add(E e) {
-        int r = add(e, rank);
+        int r = add(e, this::rank);
         return r >= 0;
     }
     
     protected boolean add(E e, float elementRank) {
-        return add(e, elementRank, rank)!=-1;
+        return add(e, elementRank, this::rank)!=-1;
     }
 
     @Override
@@ -122,7 +123,7 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
         if (min != nextMin) {
             this.min = nextMin;
             admitThresh = ((size < capacity()) || nextMin == null) ? Float.POSITIVE_INFINITY :
-                    rank.floatValueOf(last());
+                    rank(last());
         }
     }
 
@@ -161,7 +162,7 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
     public float maxValue() {
         E f = first();
         if (f != null)
-            return rank.floatValueOf(f);
+            return rank(f);
         else
             return Float.NaN;
     }
@@ -169,7 +170,7 @@ public class TopN<E> extends SortedArray<E> implements Consumer<E> {
     public float minValue() {
         E f = last();
         if (f != null)
-            return rank.floatValueOf(f);
+            return rank(f);
         else
             return Float.NaN;
     }
