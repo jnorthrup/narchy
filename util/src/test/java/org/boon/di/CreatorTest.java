@@ -29,7 +29,6 @@ package org.boon.di;
 
 import org.boon.config.ContextConfig;
 import org.boon.config.ContextConfigReader;
-import org.boon.core.Supplier;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
@@ -197,7 +196,7 @@ public class CreatorTest {
         ok = foo.bar.name.equals("bar") || die();
     }
 
-    public static class BarProvider implements Supplier<Bar> {
+    public static class BarProvider implements java.util.function.Supplier<Bar> {
 
         @Override
         public Bar get() {

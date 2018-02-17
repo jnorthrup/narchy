@@ -28,7 +28,6 @@
 
 package org.boon.di.modules;
 
-import org.boon.core.Supplier;
 import org.boon.di.That;
 import org.boon.di.Thing;
 
@@ -72,12 +71,12 @@ public abstract class BaseThing implements Thing {
     }
 
     @Override
-    public <T> Supplier<T> supplying(Class<T> type, String name ) {
+    public <T> java.util.function.Supplier<T> supplying(Class<T> type, String name ) {
         return null;
     }
 
     @Override
-    public <T> Supplier<T> supplying(Class<T> type ) {
+    public <T> java.util.function.Supplier<T> supplying(Class<T> type ) {
         return null;
     }
 

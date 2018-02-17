@@ -32,7 +32,6 @@ import org.boon.Boon;
 import org.boon.BoonLogger;
 import org.boon.Exceptions;
 import org.boon.collections.ConcurrentLinkedHashSet;
-import org.boon.core.Supplier;
 import org.boon.core.Typ;
 import org.boon.core.reflection.Fields;
 import org.boon.core.reflection.Invoker;
@@ -49,6 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 import static org.boon.Boon.*;
 import static org.boon.Exceptions.die;
@@ -360,13 +360,13 @@ public class ThatImpl implements That, Thing {
     }
 
     @Override
-    public <T> Supplier<T> supplying(final Class<T> type, final String name) {
+    public <T> java.util.function.Supplier<T> supplying(final Class<T> type, final String name) {
 
 
         try {
 
 
-            Supplier<T> supplier = null;
+            java.util.function.Supplier<T> supplier = null;
             if (name!=null) {
                 for (Thing module : modules) {
 
@@ -388,11 +388,11 @@ public class ThatImpl implements That, Thing {
             if (supplier == null)
                 return null;
 
-            final Supplier<T> s = supplier;
+            final java.util.function.Supplier<T> s = supplier;
             final That resolver = this;
 
 
-            return new Supplier<>() {
+            return new java.util.function.Supplier<>() {
                 String supplierName = name;
                 Class<T> supplierType = type;
 
@@ -412,7 +412,7 @@ public class ThatImpl implements That, Thing {
     }
 
     @Override
-    public final <T> Supplier<T> supplying(Class<T> type) {
+    public final <T> java.util.function.Supplier<T> supplying(Class<T> type) {
         return supplying(type, null);
     }
 

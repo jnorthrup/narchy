@@ -28,8 +28,6 @@
 
 package org.boon.di;
 
-import org.boon.core.Supplier;
-
 /**
  * Created by Richard on 2/3/14.
  */
@@ -37,7 +35,7 @@ public class Supply<T> {
 
     private String name;
     private final Class<T> type;
-    private Supplier<T> source;
+    private java.util.function.Supplier<T> source;
     private T object;
 
 
@@ -55,7 +53,7 @@ public class Supply<T> {
 //        this.object = object;
 //    }
 
-    public Supply(String name, Class<T> type, Supplier<T> source, T object ) {
+    public Supply(String name, Class<T> type, java.util.function.Supplier<T> source, T object ) {
         this.name = name;
         this.type = type;
         this.source = source;
@@ -63,7 +61,7 @@ public class Supply<T> {
     }
 
 
-    public Supply(String name, Class<T> type, Supplier<T> source, T object, boolean prototype ) {
+    public Supply(String name, Class<T> type, java.util.function.Supplier<T> source, T object, boolean prototype ) {
         this.name = name;
         this.type = type;
         this.source = source;
@@ -71,17 +69,17 @@ public class Supply<T> {
         this.prototype = prototype;
     }
 
-    public static <T> Supply<T> of(Class<T> type, Supplier<T> supplier ) {
+    public static <T> Supply<T> of(Class<T> type, java.util.function.Supplier<T> supplier ) {
         return new Supply<>( null, type, supplier, null );
     }
 
 
-    public static <T> Supply<T> of(String name, Class<T> type, Supplier<T> supplier ) {
+    public static <T> Supply<T> of(String name, Class<T> type, java.util.function.Supplier<T> supplier ) {
         return new Supply<>( name, type, supplier, null );
     }
 
 
-    public static <T> Supply<T> of(String name, Supplier<T> supplier ) {
+    public static <T> Supply<T> of(String name, java.util.function.Supplier<T> supplier ) {
         return new Supply<>( name, null, supplier, null );
     }
 
@@ -124,8 +122,8 @@ public class Supply<T> {
             info  = new Supply( name.toString(), valueInfo.type(), valueInfo.supplier(), valueInfo.value()  );
         } else if (value instanceof Class) {
             info = new Supply( name.toString(), (Class) value, null, null  );
-        } else if (value instanceof Supplier) {
-            info = new Supply( name.toString(), null, (Supplier) value, null  );
+        } else if (value instanceof java.util.function.Supplier) {
+            info = new Supply( name.toString(), null, (java.util.function.Supplier) value, null  );
         } else  {
             if (value == null) {
                 info = new Supply( name.toString(), null, null, value  );
@@ -140,7 +138,7 @@ public class Supply<T> {
         return type;
     }
 
-    public Supplier<T> supplier() {
+    public java.util.function.Supplier<T> supplier() {
         return source;
     }
 

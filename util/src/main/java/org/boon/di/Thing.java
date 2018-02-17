@@ -28,8 +28,6 @@
 
 package org.boon.di;
 
-import org.boon.core.Supplier;
-
 public interface Thing {
 
     <T> T a(Class<T> type);
@@ -58,10 +56,10 @@ public interface Thing {
 
 
 
-    <T> Supplier<T> supplying(Class<T> type, String name);
+    <T> java.util.function.Supplier<T> supplying(Class<T> type, String name);
 
 
-    <T> Supplier<T> supplying(Class<T> type);
+    <T> java.util.function.Supplier<T> supplying(Class<T> type);
 
     void inside(That context);
 

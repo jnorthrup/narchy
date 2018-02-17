@@ -31,7 +31,6 @@ package org.boon.di.modules;
 import org.boon.Exceptions;
 import org.boon.Sets;
 import org.boon.collections.MultiMapImpl;
-import org.boon.core.Supplier;
 import org.boon.core.reflection.BeanUtils;
 import org.boon.core.reflection.MapObjectConversion;
 import org.boon.core.reflection.Reflection;
@@ -106,7 +105,7 @@ public class SupplierThing extends BaseThing {
 
                     final Class<Object> type = (Class<Object>) Class.forName( className.toString());
 
-                    final Supplier<Object> supplier = () -> MapObjectConversion.fromMap(valueMap);
+                    final java.util.function.Supplier<Object> supplier = () -> MapObjectConversion.fromMap(valueMap);
                     return Supply.of( key.toString(),  type, supplier );
                 } catch ( ClassNotFoundException e ) {
                     return Supply.provider( key, valueMap ) ;
@@ -168,7 +167,7 @@ public class SupplierThing extends BaseThing {
 
 
     @Override
-    public <T> Supplier<T> supplying(final Class<T> type, final String name ) {
+    public <T> java.util.function.Supplier<T> supplying(final Class<T> type, final String name ) {
 
 
         Supply nullInfo = null;
@@ -183,11 +182,11 @@ public class SupplierThing extends BaseThing {
                     continue;
                 }
                 if ( type.isAssignableFrom( info.type() ) ) {
-                    return (  Supplier<T> ) info.supplier();
+                    return info.supplier();
                 }
             }
 
-            return (  Supplier<T> ) ( nullInfo != null ? nullInfo.supplier() : (Supplier<T>) () -> null);
+            return ( nullInfo != null ? nullInfo.supplier() : () -> null);
 
         } catch ( Exception e ) {
             Exceptions.handle( e );
@@ -220,8 +219,8 @@ public class SupplierThing extends BaseThing {
 
 
     @Override
-    public <T> Supplier<T> supplying(Class<T> type ) {
-        Supplier<T> supplier = ( Supplier<T> ) supplierTypeMap.get( type );
+    public <T> java.util.function.Supplier<T> supplying(Class<T> type ) {
+        java.util.function.Supplier<T> supplier = (java.util.function.Supplier<T>) supplierTypeMap.get( type );
         if (supplier == null ) {
             supplier = () -> null;
         }
@@ -241,7 +240,7 @@ public class SupplierThing extends BaseThing {
     }
 
 
-    private void extractClassIntoMaps(Supply info, Class type, boolean foundName, Supplier supplier ) {
+    private void extractClassIntoMaps(Supply info, Class type, boolean foundName, java.util.function.Supplier supplier ) {
 
         if ( type == null ) {
             return;
@@ -290,7 +289,7 @@ public class SupplierThing extends BaseThing {
 
             }
             String named = providerInfo.name();
-            Supplier supplier = providerInfo.supplier();
+            java.util.function.Supplier supplier = providerInfo.supplier();
 
             if ( supplier == null ) {
                 supplier = createSupplier( providerInfo.prototype(), type, providerInfo.value() );
@@ -317,7 +316,7 @@ public class SupplierThing extends BaseThing {
     }
 
 
-    private static Supplier createSupplier(final boolean prototype, final Class<?> type, final Object value) {
+    private static java.util.function.Supplier createSupplier(final boolean prototype, final Class<?> type, final Object value) {
         if ( value != null && !prototype) {
             return () -> value;
         } else if (value!=null && prototype) {

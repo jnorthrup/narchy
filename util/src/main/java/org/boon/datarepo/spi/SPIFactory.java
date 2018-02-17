@@ -29,7 +29,6 @@
 package org.boon.datarepo.spi;
 
 import org.boon.core.Function;
-import org.boon.core.Supplier;
 import org.boon.core.Typ;
 import org.boon.datarepo.Filter;
 import org.boon.datarepo.LookupIndex;
@@ -47,26 +46,26 @@ import org.boon.datarepo.impl.maps.MapCreatorImpl;
  */
 public class SPIFactory {
 
-    static Supplier<MapCreator> mapCreatorFactory = null;
-    static Supplier<RepoBuilder> repoBuilderFactory = null;
+    static java.util.function.Supplier<MapCreator> mapCreatorFactory = null;
+    static java.util.function.Supplier<RepoBuilder> repoBuilderFactory = null;
     static Function<Class, SearchIndex> searchIndexFactory = null;
     static Function<Class, LookupIndex> uniqueLookupIndexFactory = null;
     static Function<Class, SearchIndex> uniqueSearchIndexFactory = null;
     static Function<Class, LookupIndex> lookupIndexFactory = null;
-    static Supplier<RepoComposer> repoFactory = null;
-    static Supplier<Filter> filterFactory = null;
-    static Supplier<SearchableCollectionComposer> searchableCollectionFactory = null;
-    static Supplier<ObjectEditorComposer> objectEditorFactory;
+    static java.util.function.Supplier<RepoComposer> repoFactory = null;
+    static java.util.function.Supplier<Filter> filterFactory = null;
+    static java.util.function.Supplier<SearchableCollectionComposer> searchableCollectionFactory = null;
+    static java.util.function.Supplier<ObjectEditorComposer> objectEditorFactory;
 
-    public static Supplier<MapCreator> getMapCreatorFactory() {
+    public static java.util.function.Supplier<MapCreator> getMapCreatorFactory() {
         return mapCreatorFactory;
     }
 
-    public static Supplier<SearchableCollectionComposer> getSearchableCollectionFactory() {
+    public static java.util.function.Supplier<SearchableCollectionComposer> getSearchableCollectionFactory() {
         return searchableCollectionFactory;
     }
 
-    public static Supplier<RepoBuilder> getRepoBuilderFactory() {
+    public static java.util.function.Supplier<RepoBuilder> getRepoBuilderFactory() {
         return repoBuilderFactory;
     }
 
@@ -86,11 +85,11 @@ public class SPIFactory {
         return uniqueLookupIndexFactory;
     }
 
-    public static Supplier<RepoComposer> getRepoFactory() {
+    public static java.util.function.Supplier<RepoComposer> getRepoFactory() {
         return repoFactory;
     }
 
-    public static Supplier<Filter> getFilterFactory() {
+    public static java.util.function.Supplier<Filter> getFilterFactory() {
         return filterFactory;
     }
 
@@ -144,11 +143,11 @@ public class SPIFactory {
     }
 
 
-    public static void setMapCreatorFactory( Supplier<MapCreator> mapCreatorFactory ) {
+    public static void setMapCreatorFactory( java.util.function.Supplier<MapCreator> mapCreatorFactory ) {
         SPIFactory.mapCreatorFactory = mapCreatorFactory;
     }
 
-    public static void setRepoBuilderFactory( Supplier<RepoBuilder> repoBuilderFactory ) {
+    public static void setRepoBuilderFactory( java.util.function.Supplier<RepoBuilder> repoBuilderFactory ) {
         SPIFactory.repoBuilderFactory = repoBuilderFactory;
     }
 
@@ -169,15 +168,15 @@ public class SPIFactory {
         SPIFactory.uniqueSearchIndexFactory = factory;
     }
 
-    public static void setRepoFactory( Supplier<RepoComposer> repoFactory ) {
+    public static void setRepoFactory( java.util.function.Supplier<RepoComposer> repoFactory ) {
         SPIFactory.repoFactory = repoFactory;
     }
 
-    public static void setFilterFactory( Supplier<Filter> filterFactory ) {
+    public static void setFilterFactory( java.util.function.Supplier<Filter> filterFactory ) {
         SPIFactory.filterFactory = filterFactory;
     }
 
-    public static Supplier<ObjectEditorComposer> getObjectEditorFactory() {
+    public static java.util.function.Supplier<ObjectEditorComposer> getObjectEditorFactory() {
         return objectEditorFactory;
     }
 }

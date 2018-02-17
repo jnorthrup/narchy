@@ -28,14 +28,13 @@
 package org.boon.datarepo;
 
 import org.boon.core.Function;
-import org.boon.core.Supplier;
 import org.boon.datarepo.spi.RepoComposer;
 import org.boon.datarepo.spi.SPIFactory;
 import org.boon.datarepo.spi.SearchIndex;
 
 public class Repos {
 
-    public static void setRepoBuilder( Supplier<RepoBuilder> factory ) {
+    public static void setRepoBuilder( java.util.function.Supplier<RepoBuilder> factory ) {
         SPIFactory.setRepoBuilderFactory( factory );
     }
 
@@ -55,11 +54,11 @@ public class Repos {
         SPIFactory.setUniqueSearchIndexFactory( factory );
     }
 
-    public static void setRepoFactory( Supplier<RepoComposer> factory ) {
+    public static void setRepoFactory( java.util.function.Supplier<RepoComposer> factory ) {
         SPIFactory.setRepoFactory( factory );
     }
 
-    public static void setFilterFactory( Supplier<Filter> factory ) {
+    public static void setFilterFactory( java.util.function.Supplier<Filter> factory ) {
         SPIFactory.setFilterFactory( factory );
     }
 

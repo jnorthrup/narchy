@@ -30,7 +30,6 @@ package org.boon.di;
 
 import jcog.list.FasterList;
 import org.boon.Lists;
-import org.boon.core.Supplier;
 import org.boon.di.impl.ThatImpl;
 import org.boon.di.modules.InstanceThing;
 import org.boon.di.modules.SupplierThing;
@@ -86,10 +85,10 @@ public class My {
         return new InstanceThing( module );
     }
 
-    public static <T> Thing supply(Class<T> type, Supplier<T> supplier) {
+    public static <T> Thing supply(Class<T> type, java.util.function.Supplier<T> supplier) {
         return supply(Supply.of(type, supplier));
     }
-    public static <T> Thing supply(String name, Supplier<T> supplier) {
+    public static <T> Thing supply(String name, java.util.function.Supplier<T> supplier) {
         return supply(Supply.of(name, supplier));
     }
 

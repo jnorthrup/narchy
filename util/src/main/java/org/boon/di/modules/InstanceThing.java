@@ -31,7 +31,6 @@ package org.boon.di.modules;
 import org.boon.Exceptions;
 import org.boon.Sets;
 import org.boon.collections.MultiMapImpl;
-import org.boon.core.Supplier;
 import org.boon.core.reflection.ClassMeta;
 import org.boon.core.reflection.MethodAccess;
 import org.boon.di.Supply;
@@ -39,6 +38,7 @@ import org.boon.di.Supply;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
 
 
 public class InstanceThing extends BaseThing {
@@ -68,7 +68,7 @@ public class InstanceThing extends BaseThing {
 
     }
 
-    private static class InternalSupplier implements Supplier<Object> {
+    private static class InternalSupplier implements java.util.function.Supplier<Object> {
 
         private final Object module;
 
@@ -89,7 +89,7 @@ public class InstanceThing extends BaseThing {
         }
     }
 
-    private Supplier<Object> createSupplier( final MethodAccess method ) {
+    private java.util.function.Supplier<Object> createSupplier(final MethodAccess method ) {
         return new InternalSupplier( method, module );
     }
 
@@ -166,14 +166,14 @@ public class InstanceThing extends BaseThing {
 
 
     @Override
-    public <T> Supplier<T> supplying(final Class<T> type, final String name ) {
+    public <T> java.util.function.Supplier<T> supplying(final Class<T> type, final String name ) {
 
         try {
             Set<Supply> set = Sets.set(supplierNameMap.getAll(name));
             for ( Supply s : set ) {
                 InternalSupplier supplier = ( InternalSupplier ) s.supplier();
                 if ( type.isAssignableFrom( supplier.method.returnType() ) ) {
-                    return (Supplier<T>)supplier;
+                    return (Supplier<T>) supplier;
                 }
             }
 
@@ -187,8 +187,8 @@ public class InstanceThing extends BaseThing {
     }
 
     @Override
-    public <T> Supplier<T> supplying(Class<T> type ) {
-        Supplier<T> supplier = ( Supplier<T> ) supplierTypeMap.get( type );
+    public <T> java.util.function.Supplier<T> supplying(Class<T> type ) {
+        java.util.function.Supplier<T> supplier = (java.util.function.Supplier<T>) supplierTypeMap.get( type );
         if (supplier == null ) {
             supplier = () -> null;
         }
@@ -240,7 +240,7 @@ public class InstanceThing extends BaseThing {
             foundName = named != null;
         }
 
-        Supplier<Object> supplier = createSupplier( method );
+        java.util.function.Supplier<Object> supplier = createSupplier( method );
         this.supplierTypeMap.put(cls, new Supply(named, cls, supplier, providerInfo));
 
         Class superClass = cls.getSuperclass();

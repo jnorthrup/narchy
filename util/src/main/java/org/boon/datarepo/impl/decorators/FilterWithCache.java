@@ -29,7 +29,6 @@
 package org.boon.datarepo.impl.decorators;
 
 import org.boon.cache.Cache;
-import org.boon.core.Supplier;
 import org.boon.criteria.ObjectFilter;
 import org.boon.criteria.internal.Criteria;
 import org.boon.criteria.internal.Group;
@@ -38,11 +37,11 @@ import org.boon.datarepo.ResultSet;
 
 public class FilterWithCache extends FilterDecoratorBase {
 
-    private final Supplier<Cache<Group, ResultSet>> cacheFactory;
+    private final java.util.function.Supplier<Cache<Group,ResultSet>> cacheFactory;
 
     private Cache<Group, ResultSet> cache;
 
-    public FilterWithCache( final Filter delegate, final Supplier<Cache<Group, ResultSet>> cacheFactory ) {
+    public FilterWithCache( final Filter delegate, final java.util.function.Supplier<Cache<Group,ResultSet>> cacheFactory ) {
         super( delegate );
         this.cacheFactory = cacheFactory;
         this.cache = cacheFactory.get();

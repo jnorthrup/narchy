@@ -31,7 +31,6 @@ package org.boon.datarepo.impl;
 import org.boon.Exceptions;
 import org.boon.Str;
 import org.boon.core.Function;
-import org.boon.core.Supplier;
 import org.boon.core.Typ;
 import org.boon.core.reflection.BeanUtils;
 import org.boon.core.reflection.fields.FieldAccess;
@@ -90,26 +89,26 @@ public class RepoBuilderDefault implements RepoBuilder {
      *
      * @see ObjectEditor
      */
-    Supplier<ObjectEditorComposer> objectEditorFactory;
+    java.util.function.Supplier<ObjectEditorComposer> objectEditorFactory;
 
     /**
      * Sets the searchableCollectionFactory.
      *
      * @see SearchableCollectionComposer
      */
-    Supplier<SearchableCollectionComposer> searchableCollectionFactory;
+    java.util.function.Supplier<SearchableCollectionComposer> searchableCollectionFactory;
 
     /**
      * Repo composer factory
      *
      * @see RepoComposer
      */
-    Supplier<RepoComposer> repoComposerFactory;
+    java.util.function.Supplier<RepoComposer> repoComposerFactory;
 
     /**
      * @see Filter
      */
-    Supplier<Filter> filterFactory;
+    java.util.function.Supplier<Filter> filterFactory;
 
     /**
      * Primary key for this object.
@@ -463,7 +462,7 @@ public class RepoBuilderDefault implements RepoBuilder {
      * @return
      */
     @Override
-    public RepoBuilder repoFactory( Supplier<RepoComposer> factory ) {
+    public RepoBuilder repoFactory( java.util.function.Supplier<RepoComposer> factory ) {
         this.repoComposerFactory = factory;
         return this;
     }
@@ -473,7 +472,7 @@ public class RepoBuilderDefault implements RepoBuilder {
      * @return
      */
     @Override
-    public RepoBuilder filterFactory( Supplier<Filter> factory ) {
+    public RepoBuilder filterFactory( java.util.function.Supplier<Filter> factory ) {
         this.filterFactory = factory;
         return this;
     }

@@ -28,7 +28,6 @@
 package org.boon.datarepo;
 
 import org.boon.core.Function;
-import org.boon.core.Supplier;
 import org.boon.datarepo.modification.ModificationListener;
 import org.boon.datarepo.spi.RepoComposer;
 import org.boon.datarepo.spi.SearchIndex;
@@ -51,7 +50,7 @@ public interface RepoBuilder {
 
     RepoBuilder uniqueSearchIndexFactory(Function<Class, SearchIndex> factory);
 
-    RepoBuilder repoFactory(Supplier<RepoComposer> factory);
+    RepoBuilder repoFactory(java.util.function.Supplier<RepoComposer> factory);
 
     RepoBuilder primaryKey(String propertyName);
 
@@ -71,7 +70,7 @@ public interface RepoBuilder {
 
     RepoBuilder keyGetter(String propertyName, Function<?, ?> key);
 
-    RepoBuilder filterFactory(Supplier<Filter> factory);
+    RepoBuilder filterFactory(java.util.function.Supplier<Filter> factory);
 
 
     RepoBuilder usePropertyForAccess(boolean useProperty);

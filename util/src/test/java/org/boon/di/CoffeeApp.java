@@ -27,7 +27,6 @@
  */
 package org.boon.di;
 
-import org.boon.core.Supplier;
 import org.junit.jupiter.api.Test;
 
 import static org.boon.Exceptions.die;
@@ -73,7 +72,7 @@ public class CoffeeApp implements Runnable {
 
 
     @the("hallwaySocket") @need
-    Supplier<Electricity> wallOutlet;
+    java.util.function.Supplier<org.boon.di.Electricity> wallOutlet;
 
     //Todo this works but I need a real unit test.
     //    @Inject
