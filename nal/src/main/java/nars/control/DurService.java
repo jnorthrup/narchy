@@ -38,7 +38,7 @@ abstract public class DurService extends NARService implements Runnable {
     protected DurService(NAR n, MutableFloat durations) {
         super(n);
         this.durations = durations;
-        this.now = n.time() - 1;
+        this.now = n.time() - n.dur();
         this.nar = n;
     }
 
@@ -83,11 +83,13 @@ abstract public class DurService extends NARService implements Runnable {
     }
 
     @Override
-    protected synchronized void start(NAR nar) {
+    protected void start(NAR nar) {
+        synchronized (this) {
 
-        super.start(nar);
-        busy.set(false);
-        nar.run(this); //initial
+            super.start(nar);
+            busy.set(false);
+            nar.run(this); //initial
+        }
     }
 
     @Override
@@ -103,6 +105,7 @@ abstract public class DurService extends NARService implements Runnable {
         //long now = nar.time();
         //if (now - lastNow >= durations.floatValue() * nar.dur()) {
         if (busy.compareAndSet(false, true)) {
+
 
             long last = this.now;
             long now = nar.time();

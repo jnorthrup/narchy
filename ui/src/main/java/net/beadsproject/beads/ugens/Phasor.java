@@ -51,7 +51,7 @@ public class Phasor extends UGen {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         float[] bo = bufOut[0];
 
         if (frequencyUGen == null) {

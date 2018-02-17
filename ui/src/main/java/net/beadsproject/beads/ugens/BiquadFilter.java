@@ -308,7 +308,7 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
 
         float[] bi, bo;
 

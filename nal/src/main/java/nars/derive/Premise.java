@@ -225,7 +225,9 @@ public class Premise extends Pri {
 
         //assert (!(beliefTerm instanceof Bool)): "beliefTerm boolean; termLink=" + termLink + ", belief=" + belief;
 
-        d.reset().proto(task, belief, beliefTerm);
+        if (!d.reset().proto(task, belief, beliefTerm))
+            return null;
+
         return d;
     }
 

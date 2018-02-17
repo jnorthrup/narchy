@@ -46,7 +46,7 @@ public class TapIn extends UGen {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         float[] bi = bufIn[0];
         for (int i = 0; i < bufferSize; i++) {
             mem[counter] = bi[i];

@@ -30,7 +30,7 @@ public class MonoPlug extends UGen {
      * @see net.beadsproject.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         bufOut[0] = bufIn[0];
     }
 

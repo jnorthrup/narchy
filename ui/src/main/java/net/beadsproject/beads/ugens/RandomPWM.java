@@ -76,7 +76,7 @@ public class RandomPWM extends UGen implements DataBeadReceiver {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         float[] bo = bufOut[0];
 
         if (mode == PULSING) {

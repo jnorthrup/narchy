@@ -196,7 +196,7 @@ public class Clock extends UGen implements IntegerBead {
      * @see com.olliebown.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         intervalEnvelope.update();
         for (int i = 0; i < bufferSize; i++) {
             subticks[i] = point;
@@ -206,13 +206,14 @@ public class Clock extends UGen implements IntegerBead {
             if (backwards) value *= -1;
             point += 1.0 / context.msToSamples(value); //OLLIE - TODO We don't get a BEAT on the first TICK
             //what happens if we start going backwards?
+            double sign = Math.signum(interval);
             while (!backwards && point >= count + 1) {// || point < -count) {
                 tick();
-                count += Math.signum(interval);
+                count += sign;
             }
             while (backwards && point <= count) {
                 tick();
-                count += Math.signum(interval);
+                count += sign;
             }
         }
     }

@@ -23,6 +23,7 @@ import nars.task.util.TimeConfRange;
 import nars.task.util.TimeRange;
 import nars.term.Term;
 import nars.truth.Truth;
+import jcog.math.LongInterval;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -131,7 +132,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         if (s > 0) {
 
             if (start == ETERNAL) {
-                TaskRegion r = ((TaskRegion) root().bounds());
+                LongInterval r = ((LongInterval) root().bounds());
                 if (r == null)
                     break x;
                 //return ete != null ? ete.truth() : null;
@@ -529,7 +530,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
             long regionTime =
                     //r.furthestTimeTo(when);
-                    r.myNearestTimeTo(when);
+                    r.nearestPointInternal(when);
 
             float timeDist = (Math.abs(when - regionTime)) / ((float) perceptDur);
 

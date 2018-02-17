@@ -52,7 +52,7 @@ public class ZMap extends UGen implements DataBeadReceiver {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         for (int j = 0; j < channels; j++) {
             float[] bi = bufIn[j];
             float[] bo = bufOut[j];

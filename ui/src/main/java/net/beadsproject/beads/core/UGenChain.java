@@ -7,7 +7,7 @@ package net.beadsproject.beads.core;
 /**
  * Organizes a series of connected UGens into one unit. It allows for users to
  * define a custom UGen purely from other UGens, without programming the
- * {@link UGen#calculateBuffer()} routine.
+ * {@link UGen#gen()} routine.
  *
  * @author Benito Crawford
  * @version 0.9.5
@@ -24,7 +24,7 @@ public class UGenChain extends UGen {
         // by UGens in the chain.
         chainIn = new UGen(context, 0, ins) {
             @Override
-            public void calculateBuffer() {
+            public void gen() {
             }
         };
         chainIn.bufOut = bufIn;
@@ -34,7 +34,7 @@ public class UGenChain extends UGen {
         // grab the data.
         chainOut = new UGen(context, outs, 0) {
             @Override
-            public void calculateBuffer() {
+            public void gen() {
             }
         };
         this.bufOut = chainOut.bufIn;
@@ -109,7 +109,7 @@ public class UGenChain extends UGen {
     }
 
     @Override
-    public final void calculateBuffer() {
+    public final void gen() {
         preFrame();
         chainOut.update();
         postFrame();

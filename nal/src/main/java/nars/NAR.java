@@ -596,9 +596,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
             if (v instanceof Task) {
                 Task t = (Task) v;
                 long now = time();
-                int dur = dur();
-                return (past && t.isBefore(now - dur)) || (future && t.isAfter(now + dur)) ||
-                        (present && !t.isBefore(now - dur) && !t.isAfter(now + dur));
+                return
+                    (past == t.isBefore(now)) &&
+                    (future == t.isAfter(now)) &&
+                    (present == t.isDuring(now));
             }
             return false;
         });
@@ -658,6 +659,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
             return null;
         });
     }
+
     public final void onOp2(@NotNull String atom, @NotNull TriConsumer<Term, Term, NAR> exe) {
         onOp(atom, (task, nar) -> {
             Subterms ss = task.term().sub(0).subterms();
@@ -1128,7 +1130,10 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
     public final Concept on(@NotNull String termAtom, @NotNull Function<Subterms, Term> f) {
         return on(f(termAtom, f));
     }
-
+    @NotNull
+    public final Concept on1(@NotNull String termAtom, @NotNull Function<Term, Term> f) {
+        return on(termAtom, (Subterms s)->s.subs()==1 ? f.apply(s.sub(0)) : null);
+    }
 
     public final long time() {
         return time.now();

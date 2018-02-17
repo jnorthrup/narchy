@@ -33,7 +33,7 @@ public class Clicker extends UGen {
      * @see com.olliebown.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         if (done) stop();
         else {
             bufOut[0][0] = strength;

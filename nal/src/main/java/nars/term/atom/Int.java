@@ -5,7 +5,7 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.data.SimpleIntSet;
 import jcog.list.FasterList;
-import jcog.math.Interval;
+import jcog.math.Longerval;
 import nars.$;
 import nars.Op;
 import nars.Param;
@@ -237,7 +237,7 @@ public class Int implements Intlike, The {
         }
 
         public boolean connects(IntRange y) {
-            return Interval.intersectLength(min, max, y.min, y.max) >= 0;
+            return Longerval.intersectLength(min, max, y.min, y.max) >= 0;
         }
 
         public boolean contains(IntRange y) {

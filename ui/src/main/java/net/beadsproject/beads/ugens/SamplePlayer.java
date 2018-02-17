@@ -654,7 +654,7 @@ public class SamplePlayer extends UGen {
      * @see com.olliebown.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         if (sample != null) {
             if (positionEnvelope != null) {
                 positionEnvelope.update();

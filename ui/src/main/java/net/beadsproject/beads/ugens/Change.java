@@ -42,7 +42,7 @@ public class Change extends UGen {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
 
         float[] bi = bufIn[0];
         float[] bo = bufOut[0];

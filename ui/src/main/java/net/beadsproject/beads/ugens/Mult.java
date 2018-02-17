@@ -64,7 +64,7 @@ public class Mult extends UGen {
      * @see com.olliebown.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         if (multiplierUGen == null) {
             for (int j = 0; j < outs; j++) {
                 float[] bi = bufIn[j];

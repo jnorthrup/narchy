@@ -63,7 +63,7 @@ public class Drain extends UGen {
      * @see net.beadsproject.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         for (int i = 0; i < bufferSize; i++) {
             Iterator<Grain> grainIterator = grains.iterator();
             while (grainIterator.hasNext()) {

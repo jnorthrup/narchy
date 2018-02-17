@@ -73,7 +73,7 @@ public abstract class DelayEvent extends UGen {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         if (sampleDelay - count > threshold) {
             count += bufferSize;
         } else {

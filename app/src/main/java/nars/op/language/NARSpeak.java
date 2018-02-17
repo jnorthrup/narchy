@@ -5,6 +5,7 @@ import jcog.event.ListTopic;
 import jcog.event.Topic;
 import nars.*;
 import nars.op.java.Opjects;
+import nars.term.Term;
 import nars.time.Tense;
 import spacegraph.audio.NativeSpeechDispatcher;
 
@@ -16,7 +17,7 @@ public class NARSpeak {
 
     /** emitted on each utterance */
     public final Topic<Object> spoken = new ListTopic();
-    private final SpeechControl speech;
+    public final SpeechControl speech;
 
     public NARSpeak(NAR nar) {
         this.nar = nar;
@@ -58,7 +59,7 @@ public class NARSpeak {
 
         public SpeechControl() { }
 
-        public void speak(Object text) {
+        public void speak(Object... text) {
 
             spoken.emitAsync(text, nar.exe);
 
@@ -98,16 +99,16 @@ public class NARSpeak {
     public static class VocalCommentary {
         public VocalCommentary(NAgent a) {
 
-            new NARSpeak(a.nar);
+            a.nar.on1("str", (Term t)->$.quote(t.toString()));
 
             try {
                 a.nar.goal($.$("say(ready)"), Tense.Present, 1f, 0.9f);
-//                a.nar.believe($("(" + a.sad + " =|> say(sad))."));
-//                a.nar.goal($("(" + a.sad + " &| say(sad))"));
                 a.nar.believe($.$("(" + a.happy + " =|> say(happy))"));
                 a.nar.goal($.$("(" + a.happy + " &| say(happy))"));
                 a.nar.believe($.$("(" + a.happy.neg() + " =|> say(sad))"));
                 a.nar.goal($.$("(" + a.happy.neg() + " &| say(sad))"));
+                a.nar.goal($.$("(#x &| say(#x))"));
+                a.nar.believe($.$("($x =|> say($x))"));
                 a.nar.goal($.$("say(#1)"));
             } catch (Narsese.NarseseException e) {
                 e.printStackTrace();

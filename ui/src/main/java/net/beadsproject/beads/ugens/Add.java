@@ -65,7 +65,7 @@ public class Add extends UGen {
      * @see com.olliebown.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         if (adderUGen == null) {
             for (int j = 0; j < outs; j++) {
                 float[] bi = bufIn[j];

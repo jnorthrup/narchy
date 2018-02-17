@@ -28,7 +28,11 @@ public class ArrayTensor implements
         this.stride = ArrayUtils.EMPTY_INT_ARRAY;
         this.data = oneD;
     }
-
+    public ArrayTensor(int dim, float... data) {
+        this.shape = new int[] { dim };
+        this.stride = ArrayUtils.EMPTY_INT_ARRAY;
+        this.data = data;
+    }
     public ArrayTensor(int... shape) {
         int size = shape[0];
         if (shape.length > 1) {
@@ -142,6 +146,10 @@ public class ArrayTensor implements
 
     public void fill(float v) {
         Arrays.fill(data, v);
+    }
+
+    public static ArrayTensor vector(float... data) {
+        return new ArrayTensor(data.length, data);
     }
 
 //

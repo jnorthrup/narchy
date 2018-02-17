@@ -1,6 +1,7 @@
 package nars.op.java;
 
 import com.google.common.collect.ImmutableSet;
+import jcog.Util;
 import jcog.data.map.CustomConcurrentHashMap;
 import nars.$;
 import nars.term.Term;
@@ -19,6 +20,7 @@ import java.util.stream.Collectors;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.Op.INT;
+import static nars.Op.PROD;
 
 
 /**
@@ -351,6 +353,10 @@ public class DefaultTermizer implements Termizer {
         return null;
     }
 
+    public Term[] terms(Object[] args) {
+        return Util.map(this::term, Term[]::new, args);
+    }
+
     @Override
     @Nullable
     public Term term(@Nullable Object o) {
@@ -366,7 +372,19 @@ public class DefaultTermizer implements Termizer {
 //        int slice = cname.length();
 //
 
-        return obj2termCached(o);
+        Term y = obj2termCached(o);
+        if (y != null) {
+            return y;
+        }
+
+        if (o instanceof Term) {
+            return (Term)o;
+        }
+        if (o instanceof Object[]) {
+            return PROD.the(terms((Object[])o));
+        }
+
+        return null;
 
 
         //TODO decide to use toString or System object id

@@ -224,7 +224,7 @@ public interface BeliefTable extends TaskTable {
 
         if (/*!answer.isEternal() && */!relevantTime) {
 
-            long t = answer.theNearestTimeWithin(start, end);
+            long t = answer.nearestPointExternal(start, end);
             Truth aProj = answer.truth(t, dur, nar);
             if (aProj != null) {
 

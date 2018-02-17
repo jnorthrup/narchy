@@ -121,7 +121,7 @@ public class Compressor extends UGen implements DataBeadReceiver {
             }
 
             @Override
-            public void calculateBuffer() {
+            public void gen() {
             }
         }
 
@@ -132,7 +132,7 @@ public class Compressor extends UGen implements DataBeadReceiver {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
 
         pf.update();
 

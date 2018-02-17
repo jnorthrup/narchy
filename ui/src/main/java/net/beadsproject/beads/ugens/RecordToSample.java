@@ -162,7 +162,7 @@ public class RecordToSample extends UGen {
      * @see com.olliebown.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         if (sample != null) {
             long nFrames = sample.getNumFrames();
             if ((position + bufferSize) >= nFrames) {

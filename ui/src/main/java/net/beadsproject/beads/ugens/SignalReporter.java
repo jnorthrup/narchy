@@ -59,7 +59,7 @@ public class SignalReporter extends UGen {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         if (index >= interval) {
             notify(count, bufIn[0][0]);
             count++;

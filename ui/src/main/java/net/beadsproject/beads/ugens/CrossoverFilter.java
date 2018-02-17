@@ -105,7 +105,7 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
 
         float[] bi, lo, hi;
 

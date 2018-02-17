@@ -1,6 +1,6 @@
 package nars.task;
 
-import jcog.math.Interval;
+import jcog.math.Longerval;
 import nars.Task;
 import nars.task.util.TaskRegion;
 
@@ -47,18 +47,24 @@ public final class EviDensity {
         if (hasEternals) {
             if (unionStart!=TIMELESS) {
                 //process eternals with the learned interval
+                float range = range();
                 for (TaskRegion xx : x) {
                     if (xx != null) {
                         Task xxx = xx.task();
                         if (xxx.isEternal()) {
                             float xev = xxx.evi();
                             //fill as if it were temporal for the range defined by the non-eternal tasks
-                            add(unionStart, unionEnd, xev, (1 + xxx.range()) * xev);
+                            add(unionStart, unionEnd, xev, range * xev);
                         }
                     }
                 }
             }
         }
+    }
+
+    public long range() {
+        if (unionStart==TIMELESS) throw new ArithmeticException();
+        return 1 + (unionEnd - unionStart);
     }
 
     public EviDensity clone() {
@@ -94,7 +100,7 @@ public final class EviDensity {
             unionEnd = xEnd;
             sumEviAvg = sumEviIntegrals = 0;
         } else {
-            Interval uu = new Interval(unionStart, unionEnd).union(xStart, xEnd);
+            Longerval uu = new Longerval(unionStart, unionEnd).union(xStart, xEnd);
             this.unionStart = uu.a;
             this.unionEnd = uu.b;
         }

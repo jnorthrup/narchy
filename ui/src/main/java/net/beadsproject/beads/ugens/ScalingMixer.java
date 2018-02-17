@@ -37,7 +37,7 @@ public class ScalingMixer extends UGen {
      * @see com.olliebown.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         for (int i = 0; i < ins; i++) {
             int numInputs = connectedCount(i);
             if (numInputs > 0) numInputs = 1;

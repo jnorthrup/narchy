@@ -40,7 +40,7 @@ public class Noise extends UGen {
      * @see net.beadsproject.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         for (int i = 0; i < bufferSize; i++) {
             bufOut[0][i] = noiseTensor.get(index);
             index++;

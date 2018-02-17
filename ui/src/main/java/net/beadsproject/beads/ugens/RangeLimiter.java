@@ -33,7 +33,7 @@ public class RangeLimiter extends UGen {
      * @see com.olliebown.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         float y;
 
         for (int j = 0; j < ins; j++) {

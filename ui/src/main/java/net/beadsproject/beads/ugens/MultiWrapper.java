@@ -131,7 +131,7 @@ public class MultiWrapper extends UGenChain implements DataBeadReceiver {
         // just do nothing.
         return new UGen(context, 1, 0) {
             @Override
-            public void calculateBuffer() {
+            public void gen() {
             }
         };
     }

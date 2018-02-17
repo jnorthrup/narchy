@@ -470,7 +470,7 @@ public class Spatial extends UGen {
      * @see net.beadsproject.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         synchronized (sources) {
             for (Map.Entry<UGen, Location> uGenLocationEntry : sources.entrySet()) {
                 Location location = uGenLocationEntry.getValue();

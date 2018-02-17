@@ -169,7 +169,7 @@ public class WaveShaper extends UGen implements DataBeadReceiver {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         preGainUGen.update();
         postGainUGen.update();
         limitUGen.update();

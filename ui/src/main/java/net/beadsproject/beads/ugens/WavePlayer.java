@@ -109,7 +109,7 @@ public class WavePlayer extends UGen {
      * @see com.olliebown.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         frequencyEnvelope.update();
         float[] bo = bufOut[0];
         if (phaseEnvelope == null) {

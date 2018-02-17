@@ -1,6 +1,7 @@
 package nars.time;
 
 import jcog.Util;
+import jcog.math.LongInterval;
 import nars.NAR;
 
 
@@ -18,8 +19,8 @@ public enum Tense {
      * default for atemporal events
      * means "always" in Judgment/Question, but "current" in Goal/Quest
      */
-    public static final long ETERNAL = Long.MIN_VALUE;
-    public static final long TIMELESS = Long.MAX_VALUE;
+    public static final long ETERNAL = LongInterval.ETERNAL;
+    public static final long TIMELESS = LongInterval.TIMELESS;
 
     /**
      * integer version of long ETERNAL

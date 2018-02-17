@@ -483,9 +483,10 @@ public class Derivation extends ProtoDerivation {
     }
 
 
-    protected void setTruth() {
+    /** returns false if there was a critical truth deficit */
+    protected boolean setTruth() {
 
-        long tAt = _task.myNearestTimeTo(time);
+        long tAt = _task.nearestPointInternal(time);
         this.taskAt = tAt;
         switch (this.taskPunc = _task.punc()) {
             case QUESTION:
@@ -494,14 +495,15 @@ public class Derivation extends ProtoDerivation {
                 assert(this.taskTruth == null);
                 break;
             default:
-                this.taskTruth = _task.truth(tAt, dur);
+                if ((this.taskTruth = _task.truth(tAt, dur)) == null)
+                    return false;
                 assert(this.taskTruth!=null);
                 this.taskPolarity = polarity(taskTruth);
                 break;
         }
 
         if (belief != null) {
-            long bAt = belief.theNearestTimeWithin(_task.start(), _task.end());
+            long bAt = belief.nearestPointExternal(_task.start(), _task.end());
             if ((this.beliefTruth = belief.truth(bAt, dur))!=null) {
                 this.beliefPolarity = polarity(this.beliefTruth);
                 this.beliefAt =
@@ -519,6 +521,7 @@ public class Derivation extends ProtoDerivation {
             this.beliefAt = TIMELESS;
         }
 
+        return true;
     }
 
     /**
@@ -528,7 +531,7 @@ public class Derivation extends ProtoDerivation {
      *
      * TODO move some of these to a superclass method which sets the variables in its scope
      */
-    public void proto(Task _task, final Task _belief, Term _beliefTerm) {
+    public boolean proto(Task _task, final Task _belief, Term _beliefTerm) {
 
 
         final Task task = this.task = anon.put(this._task = _task, dur);
@@ -554,7 +557,7 @@ public class Derivation extends ProtoDerivation {
         this._beliefStruct = beliefTerm.structure();
         this._beliefOp = beliefTerm.op().id;
 
-        setTruth();
+        return setTruth();
     }
 
     /** called after protoderivation has returned some possible Try's */

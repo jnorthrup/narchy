@@ -133,8 +133,10 @@ public class TruthletTask extends SignalTask {
         if (f!=f)
             return null;
         float e = tl[1];
-        assert(e > 0);
-        return new PreciseTruth(f, e /* evi */, false);
+        if (e > 0)
+            return new PreciseTruth(f, e /* evi */, false);
+        else
+            return null;
     }
 
     @Override

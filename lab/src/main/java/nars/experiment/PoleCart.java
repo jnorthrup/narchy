@@ -8,6 +8,8 @@ import nars.NAgent;
 import nars.NAgentX;
 import nars.concept.Concept;
 import nars.gui.Vis;
+import nars.op.language.NARSpeak;
+import spacegraph.audio.NativeSpeechDispatcher;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,6 +47,10 @@ public class PoleCart extends NAgentX {
 
                 Vis.conceptWindow(a.happy, n);
 
+                NARSpeak s = new NARSpeak(n);
+                s.speech.chatty();;
+                s.spoken.on(new NativeSpeechDispatcher()::speak);
+                new NARSpeak.VocalCommentary(a);
 
                 //a.durations.setValue(1f);
                 //n.goalConfidence(0.75f);

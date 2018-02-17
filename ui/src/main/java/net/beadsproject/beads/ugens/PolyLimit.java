@@ -132,7 +132,7 @@ public class PolyLimit extends UGen {
      * @see net.beadsproject.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         System.arraycopy(bufIn, 0, bufOut, 0, ins);
     }
 

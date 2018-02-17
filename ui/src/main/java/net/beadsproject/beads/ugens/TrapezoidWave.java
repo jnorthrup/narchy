@@ -45,7 +45,7 @@ public class TrapezoidWave extends UGen {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         float[] bo = bufOut[0];
 
         if (freqUGen != null) {

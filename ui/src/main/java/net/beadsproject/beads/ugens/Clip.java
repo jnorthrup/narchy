@@ -44,7 +44,7 @@ public class Clip extends UGen implements DataBeadReceiver {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         if (isMinStatic && isMaxStatic) {
             for (int j = 0; j < ins; j++) {
                 float[] bi = bufIn[j];

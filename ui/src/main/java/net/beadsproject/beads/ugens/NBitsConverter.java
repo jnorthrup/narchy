@@ -32,7 +32,7 @@ public class NBitsConverter extends UGen {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         // for each float value (-1,1)
         // map it to -toRange,toRange
         // and truncate

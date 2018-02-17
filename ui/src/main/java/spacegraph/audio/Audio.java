@@ -193,7 +193,7 @@ public class Audio implements Runnable {
         listenerMixer.update(alpha);
     }
 
-    static final int max16 = 32767;
+    static final int max16 = Short.MAX_VALUE;
 
     void tick() {
         //soundBuffer.clear();

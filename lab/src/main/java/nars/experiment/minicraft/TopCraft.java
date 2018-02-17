@@ -6,7 +6,6 @@ import nars.NAgentX;
 import nars.Narsese;
 import nars.experiment.minicraft.top.InputHandler;
 import nars.experiment.minicraft.top.TopDownMinicraft;
-import nars.op.language.NARSpeak;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.AutoclassifiedBitmap;
 import nars.video.PixelBag;

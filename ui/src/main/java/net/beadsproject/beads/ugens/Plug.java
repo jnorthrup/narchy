@@ -65,7 +65,7 @@ public class Plug extends UGen {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
     }
 
 }

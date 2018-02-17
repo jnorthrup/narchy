@@ -37,7 +37,7 @@ public class Static extends UGen {
      * @see com.olliebown.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         // Do nothing
     }
 

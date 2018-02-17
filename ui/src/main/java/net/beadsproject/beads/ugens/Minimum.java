@@ -52,7 +52,7 @@ public class Minimum extends UGen {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         float[] bi1 = bufIn[0];
         float[] bi2 = bufIn[1];
         float[] bo = bufOut[0];

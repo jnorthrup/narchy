@@ -39,7 +39,7 @@ public class Throughput extends UGen {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
     }
 
 }

@@ -109,7 +109,7 @@ public class TapOut extends UGen {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
 
         if (delayUGen == null) {
 

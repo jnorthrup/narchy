@@ -181,7 +181,7 @@ public class LPRezFilter extends IIRFilter implements DataBeadReceiver {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
 
         if (channels == 1) {
 

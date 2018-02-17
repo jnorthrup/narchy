@@ -12,6 +12,7 @@ import nars.table.BeliefTable;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.truth.Truth;
+import jcog.math.LongInterval;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.jetbrains.annotations.Nullable;
 
@@ -224,7 +225,7 @@ abstract public class DynamicTruthModel {
             int n = l.size();
             int avail = 0;
             for (int i = 0; i < n; i++) {
-                TaskRegion li = l.get(i);
+                LongInterval li = l.get(i);
                 if (li!=null) {
                     if ((((Task) li)).truth() == null)
                         l.set(i, null);

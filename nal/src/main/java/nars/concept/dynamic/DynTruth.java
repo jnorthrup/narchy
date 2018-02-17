@@ -3,11 +3,12 @@ package nars.concept.dynamic;
 import jcog.TODO;
 import jcog.Util;
 import jcog.list.FasterList;
+import jcog.math.LongInterval;
 import jcog.pri.Prioritized;
 import nars.*;
 import nars.control.Cause;
-import nars.task.NALTask;
 import nars.task.EviDensity;
+import nars.task.NALTask;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
@@ -22,7 +23,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static nars.Op.*;
-import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.XTERNAL;
 import static nars.truth.TruthFunctions.c2wSafe;
 
@@ -57,7 +57,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         }
     }
 
-    private float pri(TaskRegion x) {
+    private float pri(LongInterval x) {
         if (x instanceof Prioritized)
             return ((Prioritized) x).priElseZero();
 
@@ -91,7 +91,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
     List<Stamp> evidence() {
         List<Stamp> s = $.newArrayList();
-        for (TaskRegion x : this) {
+        for (LongInterval x : this) {
             Stamp ss = stamp(x);
             if (ss != null)
                 s.add(ss);
@@ -100,7 +100,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     }
 
     @Deprecated
-    public static Stamp stamp(TaskRegion x) {
+    public static Stamp stamp(LongInterval x) {
         if (x instanceof Task)
             return ((Task) x);
 //        } else if (x instanceof DynTruth) {
@@ -140,7 +140,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
                     long min = Long.MAX_VALUE;
                     long maxRange = Long.MIN_VALUE;
                     for (int i = 0, thisSize = size(); i < thisSize; i++) {
-                        TaskRegion ii = get(i);
+                        LongInterval ii = get(i);
                         long iis = ii.start();
                         if (iis != ETERNAL) {
                             min = Math.min(min, iis);
@@ -167,7 +167,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
                 }
             } else {
                 //only one task
-                TaskRegion only = get(0);
+                LongInterval only = get(0);
                 start = only.start();
                 end = only.end();
             }

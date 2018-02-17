@@ -44,7 +44,7 @@ public class ADSR extends UGen {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         env.update();
         gain.update();
         /*

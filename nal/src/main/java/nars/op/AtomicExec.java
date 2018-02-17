@@ -81,7 +81,6 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
      * implementations can override this to prefilter invalid operation patterns
      */
     protected Task exePrefilter(Task x) {
-
         Subterms a = Operator.args(x);
         return a.hasAny(Op.ConstantAtomics) ? x : null; //avoid purely variable args
     }
@@ -89,10 +88,6 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
     public void update(NAR n) {
 
-//        if (now!=lastUpdated) {
-//            busy.set(false); //force reset if new clock time occurrs.  the runLater may have been lost
-//        }
-//
 //        if (!busy.compareAndSet(false, true))
 //            return; //in-progress
 
@@ -108,7 +103,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
 
         float exeThresh = this.exeThresh.floatValue();
 
-        List<Term> dispatch = new FasterList();
+        List<Term> dispatch = new FasterList(active.size());
 
         active.forEach(x -> {
             Term xx = x.get();
@@ -127,12 +122,13 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
             }
 
             Truth beliefTruth = c.beliefs().truth(focus, n); /* assume false with no evidence */;
-            if (beliefTruth != null && (1-beliefTruth.expectation()) > exeThresh) {
+            if (beliefTruth != null && beliefTruth.expectation() > exeThresh) {
                 return; //satisfied
             }
 
             logger.info("{} EVOKE (b={},g={}) {}", n.time(), beliefTruth, goalTruth, xx);
             dispatch.add(xx);
+            x.delete();
             //MetaGoal.learn(MetaGoal.Action, goal.cause(), g, n);
         });
 

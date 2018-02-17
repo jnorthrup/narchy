@@ -1,5 +1,6 @@
 package spacegraph.audio;
 
+import com.google.common.base.Joiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,8 +25,16 @@ public class NativeSpeechDispatcher {
         };
     }
 
+    public String stringify(Object x) {
+        if (x instanceof Object[]) {
+            return Joiner.on(" ").join((Object[])x);
+        } else {
+            return x.toString();
+        }
+    }
+
     public void speak(Object x) {
-        String s = x.toString();
+        String s = stringify(x);
         try {
 //                try {
 //                    if (q.offer)

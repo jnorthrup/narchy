@@ -1,7 +1,7 @@
 package nars.task;
 
 import com.google.common.collect.Lists;
-import jcog.math.Interval;
+import jcog.math.Longerval;
 import nars.*;
 import nars.term.Term;
 import nars.test.analyze.BeliefAnalysis;
@@ -383,49 +383,49 @@ public class RevectionTest {
 
     @Test public void testTimeFusion_Pairs() {
         //point overlap
-        assertTimeFusion(1, 1, 1f, new Interval(1), new Interval(1));
+        assertTimeFusion(1, 1, 1f, new Longerval(1), new Longerval(1));
 
         //range overlap
-        assertTimeFusion(1, 2, 1f, new Interval(1,2), new Interval(1,2));
+        assertTimeFusion(1, 2, 1f, new Longerval(1,2), new Longerval(1,2));
 
         //partial range overlap
-        assertTimeFusion(1, 2, 0.75f, new Interval(1,1), new Interval(1,2));
+        assertTimeFusion(1, 2, 0.75f, new Longerval(1,1), new Longerval(1,2));
 
         //end-to-end point joint
-        assertTimeFusion(1, 2, 0.5f, new Interval(1), new Interval(2));
+        assertTimeFusion(1, 2, 0.5f, new Longerval(1), new Longerval(2));
 
         //end-to-end range joint
-        assertTimeFusion(1, 4, 0.5f, new Interval(1,2), new Interval(3, 4));
+        assertTimeFusion(1, 4, 0.5f, new Longerval(1,2), new Longerval(3, 4));
 
         //gap
-        assertTimeFusion(1, 3, 1/3f, new Interval(1,1), new Interval(3,3));
+        assertTimeFusion(1, 3, 1/3f, new Longerval(1,1), new Longerval(3,3));
     }
 
     @Test public void testTimeFusion_Triples() {
         //point overlap
-        assertTimeFusion(1, 1, 1f, new Interval(1), new Interval(1), new Interval(1));
+        assertTimeFusion(1, 1, 1f, new Longerval(1), new Longerval(1), new Longerval(1));
 
         //range overlap
-        assertTimeFusion(1, 2, 1f, new Interval(1,2), new Interval(1,2), new Interval(1,2));
+        assertTimeFusion(1, 2, 1f, new Longerval(1,2), new Longerval(1,2), new Longerval(1,2));
 
         //partial range overlap
-        assertTimeFusion(1, 2, 0.833f, new Interval(1,1), new Interval(1,2), new Interval(1,2));
-        assertTimeFusion(1, 2, 2/3f, new Interval(1,1), new Interval(1,1), new Interval(1,2));
+        assertTimeFusion(1, 2, 0.833f, new Longerval(1,1), new Longerval(1,2), new Longerval(1,2));
+        assertTimeFusion(1, 2, 2/3f, new Longerval(1,1), new Longerval(1,1), new Longerval(1,2));
 
         //end-to-end point joint
-        assertTimeFusion(1, 3, 1/3f, new Interval(1), new Interval(2), new Interval(3));
+        assertTimeFusion(1, 3, 1/3f, new Longerval(1), new Longerval(2), new Longerval(3));
 
         //end-to-end range joint
-        assertTimeFusion(1, 6, 1/3f, new Interval(1,2), new Interval(3, 4), new Interval(5, 6));
+        assertTimeFusion(1, 6, 1/3f, new Longerval(1,2), new Longerval(3, 4), new Longerval(5, 6));
 
         //gap
-        assertTimeFusion(1, 5, 1/5f, new Interval(1), new Interval(3), new Interval(5));
+        assertTimeFusion(1, 5, 1/5f, new Longerval(1), new Longerval(3), new Longerval(5));
 
     }
 
-    static void assertTimeFusion(long start, long end, float factor, Interval... ii) {
+    static void assertTimeFusion(long start, long end, float factor, Longerval... ii) {
         EviDensity a = new EviDensity();
-        for (Interval i : ii) {
+        for (Longerval i : ii) {
             a.add(i.a, i.b, 1);
         }
         assertEquals(start, a.unionStart);

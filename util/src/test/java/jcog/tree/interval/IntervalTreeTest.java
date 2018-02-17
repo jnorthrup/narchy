@@ -1,6 +1,6 @@
 package jcog.tree.interval;
 
-import jcog.math.Interval;
+import jcog.math.Longerval;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
@@ -15,9 +15,9 @@ public class IntervalTreeTest {
 
     @Test public void testIntersectionAdjacent() {
         //two adjacent but non-overlapping intervals create a zero
-        Interval x = Interval.intersect(1, 2, 2, 3);
+        Longerval x = Longerval.intersect(1, 2, 2, 3);
         assertNotNull(x);
-        assertEquals(0,x.length());
+        assertEquals(1,x.range());
     }
 
         @Test

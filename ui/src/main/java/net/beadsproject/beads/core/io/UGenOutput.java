@@ -1,5 +1,6 @@
 package net.beadsproject.beads.core.io;
 
+import jcog.TODO;
 import net.beadsproject.beads.core.*;
 import spacegraph.audio.SoundProducer;
 
@@ -84,9 +85,6 @@ public class UGenOutput extends AudioIO implements SoundProducer {
         AudioFormat audioFormat =
                 new AudioFormat(ioAudioFormat.sampleRate, ioAudioFormat.bitDepth, ioAudioFormat.outputs, ioAudioFormat.signed, ioAudioFormat.bigEndian);
 
-        IOAudioFormat ioAudioFormat1 = getContext().getAudioFormat();
-        AudioFormat audioFormat1 =
-                new AudioFormat(ioAudioFormat1.sampleRate, ioAudioFormat1.bitDepth, ioAudioFormat1.outputs, ioAudioFormat1.signed, ioAudioFormat1.bigEndian);
         this.channels = audioFormat.getChannels();
 //		getDefaultMixerIfNotAlreadyChosen();
 //		if (mixer == null) {
@@ -122,16 +120,17 @@ public class UGenOutput extends AudioIO implements SoundProducer {
     @Override
     public float read(float[] buf, int readRate) {
 
-        context.setBufferSize(buf.length);
+        int samples = buf.length;
+        context.setBufferSize(samples);
 
         update(); // this propagates update call to context
 
-        int samples = buf.length;
         int c = 0;
         for (int i = 0; i < samples; i++) {
-            //for (int j = 0; j < channels; j++) {
+            //for (int j = 0; j < channels; j++)
             int j = 0;
-            buf[c++] = context.out.getValue(j, i);
+            float vi = context.out.getValue(j, i);
+            buf[c++] = vi;
         }
 
         return 1f;
@@ -143,7 +142,7 @@ public class UGenOutput extends AudioIO implements SoundProducer {
 
     @Override
     public void skip(int samplesToSkip, int readRate) {
-        //TODO
+        throw new TODO();
     }
 
     @Override
@@ -219,7 +218,7 @@ public class UGenOutput extends AudioIO implements SoundProducer {
          * @see com.olliebown.beads.core.UGen#calculateBuffer()
          */
         @Override
-        public void calculateBuffer() {
+        public void gen() {
             if (!javaSoundInitialized) {
                 initJavaSound();
             }

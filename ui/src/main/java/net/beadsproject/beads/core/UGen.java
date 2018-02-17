@@ -27,7 +27,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * {@link Auvent#start()}, {@link Auvent#stop()} and {@link Auvent#pause(boolean)} behaviour, and messaging system from
  * {@link Auvent}. Importantly, when UGens are paused, they cease audio processing, and when they are killed, they are automatically removed from any audio chains. This allows for very easy removal of elements from the call chain.
  * <p>
- * </p>The method {@link #calculateBuffer()} must be implemented by subclasses of UGen that actually do something. Each UGen has two 2D arrays of floats, {@link #bufIn}, {@link #bufOut}, holding the current input and output audio buffers (this is stored in the form float[numChannels][bufferSize]). The goal of a {@link UGen#calculateBuffer()} method, therefore, is to fill {@link #bufOut} with appropriate data for the current audio frame. Examples can be found in the source code of classes in the {@link net.beadsproject.beads.ugens} package.
+ * </p>The method {@link #gen()} must be implemented by subclasses of UGen that actually do something. Each UGen has two 2D arrays of floats, {@link #bufIn}, {@link #bufOut}, holding the current input and output audio buffers (this is stored in the form float[numChannels][bufferSize]). The goal of a {@link UGen#gen()} method, therefore, is to fill {@link #bufOut} with appropriate data for the current audio frame. Examples can be found in the source code of classes in the {@link net.beadsproject.beads.ugens} package.
  *
  * @author ollie
  */
@@ -100,15 +100,15 @@ public abstract class UGen extends Auvent {
 
     protected OutputPauseRegime outputPauseRegime;
 
-    /**
-     * Create a new UGen from the given AudioContext but with no inputs or
-     * outputs.
-     *
-     * @param context AudioContext to use.
-     */
-    public UGen(AudioContext context) {
-        this(context, 0, 0);
-    }
+//    /**
+//     * Create a new UGen from the given AudioContext but with no inputs or
+//     * outputs.
+//     *
+//     * @param context AudioContext to use.
+//     */
+//    public UGen(AudioContext context) {
+//        this(context, 0, 0);
+//    }
 
     /**
      * Create a new UGen from the given AudioContext with no inputs and the
@@ -360,7 +360,7 @@ public abstract class UGen extends Auvent {
     /**
      * Updates the UGen. If the UGen is paused or has already been updated at
      * this time step (according to the {@link AudioContext}) then this method does nothing. If the UGen does update, it
-     * will firstly propagate the {@link #update()} call up the call chain using {@link #pullInputs()}, and secondly, call its own {@link #calculateBuffer()} method.
+     * will firstly propagate the {@link #update()} call up the call chain using {@link #pullInputs()}, and secondly, call its own {@link #gen()} method.
      */
     public void update() {
         if (!isPaused()) {
@@ -373,7 +373,7 @@ public abstract class UGen extends Auvent {
                 //this sets up the output buffers - default behaviour is to use dirty buffers from the AudioContexts
                 //buffer reserve. Override this function to get another behaviour.
                 initializeOuts();
-                calculateBuffer();
+                gen();
                 if (timerMode) {
                     timeTakenLastUpdate = System.nanoTime() - timeTemp;
                 }
@@ -729,7 +729,7 @@ public abstract class UGen extends Auvent {
      * into {@link #bufOut} in some way. {@link #bufIn} and {@link #bufOut} are 2D arrays of floats of the form float[numChannels][bufferSize]. The length of the buffers is given by
      * {@link #bufferSize}, and the number of channels of the input and output buffers are given by {@link #ins} and {@link #outs} respectively.
      */
-    public abstract void calculateBuffer(); /* Must be implemented by subclasses.*/
+    public abstract void gen(); /* Must be implemented by subclasses.*/
 
     /**
      * Gets a specific specified value from the output buffer, with indices i (channel)

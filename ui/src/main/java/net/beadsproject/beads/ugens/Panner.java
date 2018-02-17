@@ -61,7 +61,7 @@ public class Panner extends UGen implements DataBeadReceiver {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
 
         float[] bi = bufIn[0];
         float[] bo1 = bufOut[0];

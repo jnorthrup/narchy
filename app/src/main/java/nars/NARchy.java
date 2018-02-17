@@ -7,12 +7,12 @@ import nars.exe.Focus;
 import nars.exe.PoolMultiExec;
 import nars.op.language.NARHear;
 import nars.op.language.NARSpeak;
-import spacegraph.audio.NativeSpeechDispatcher;
 import nars.op.stm.ConjClustering;
 import nars.time.RealTime;
 import nars.video.NARVideo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spacegraph.audio.NativeSpeechDispatcher;
 
 import static nars.Op.BELIEF;
 
@@ -62,7 +62,8 @@ public class NARchy extends NARS {
 
             {
                 NARSpeak s = new NARSpeak(nar);
-                new NativeSpeechDispatcher(s);
+                s.spoken.on(new NativeSpeechDispatcher()::speak);
+                //new NativeSpeechDispatcher(s);
             }
 
 //            //new NoteFS("/tmp/nal", nar);

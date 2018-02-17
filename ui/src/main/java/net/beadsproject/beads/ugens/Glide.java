@@ -108,7 +108,7 @@ public class Glide extends UGen {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         if (!nothingChanged) {
             nothingChanged = true;
             for (int i = 0; i < bufferSize; i++) {

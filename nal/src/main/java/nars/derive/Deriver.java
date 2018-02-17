@@ -328,7 +328,7 @@ public class Deriver extends Causable {
                 case QUEST:
                     return now;
                 case QUESTION:
-                    return task.myNearestTimeTo(now);
+                    return task.nearestPointInternal(now);
                 default:
                     throw new UnsupportedOperationException();
             }

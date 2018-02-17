@@ -295,7 +295,7 @@ public class Envelope extends UGen {
      * @see com.olliebown.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public synchronized void calculateBuffer() {
+    public synchronized void gen() {
         if (!unchanged) {
             boolean iChanged = false;
             for (int i = 0; i < bufferSize; ++i) {

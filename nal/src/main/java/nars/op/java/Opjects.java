@@ -85,7 +85,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     float belief = 1f;
 
     /** determines evidence weighting for reporting assumed feedback assumptions */
-    float doubt = 1f;
+    float doubt = 0.5f;
 
     /** cached; updated at most each duration */
     private float beliefEvi = 0, doubtEvi = 0, beliefPri = 0;
@@ -195,7 +195,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
     /** called every duration to update all the operators in one batch, so they dont register events individually */
     protected void update(NAR nar) {
-        float cMin = nar.confMin.floatValue();
+        float cMin = c2w(nar.confMin.floatValue());
         float cMax = c2w(nar.confDefault(BELIEF));
         beliefEvi = Util.lerp(belief, cMin, cMax);
         doubtEvi = Util.lerp(doubt, cMin, cMax);
@@ -508,6 +508,9 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
         x[0] = instance;
 
+        if (method.isVarArgs() && args.length==1) {
+            args = (Object[])args[0]; //HACK
+        }
         if (args.length > 0) {
             switch (args.length) {
                 case 0:
@@ -548,7 +551,8 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
             }
         }
 
-        return $.func(method.getName(), x).negIf(negate).normalize();
+            return $.func(method.getName(), x).negIf(negate).normalize();
+
     }
 
     private class MethodExec extends AtomicExec implements BiConsumer<Term, NAR> {
@@ -693,9 +697,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 
 
 
-    private Term[] terms(Object[] args) {
-        return Util.map(this::term, Term[]::new, args);
-    }
+
 
 //    private Term[] terms(Subterms args) {
 //        return terms(args.arrayShared());
@@ -918,6 +920,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
 //		Preconditions.notNull(predicate, "Predicate must not be null");
 
         for (Class<?> current = clazz; current != null; current = current.getSuperclass()) {
+
             // Search for match in current type
             Method[] methods = current.isInterface() ? current.getMethods() : current.getDeclaredMethods();
             for (Method method : methods) {
@@ -945,10 +948,15 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
      */
     private static boolean hasCompatibleSignature(Method candidate, String method, Class<?>[] parameterTypes) {
 
-        if (parameterTypes.length != candidate.getParameterCount()) {
+        if (!method.equals(candidate.getName())) {
             return false;
         }
-        if (!method.equals(candidate.getName())) {
+
+        //check if all of the arguments will fit inside var args etc
+        if (parameterTypes.length > 0 && candidate.isVarArgs()) {
+            return true;
+        }
+        if (parameterTypes.length != candidate.getParameterCount()) {
             return false;
         }
 
@@ -966,6 +974,9 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
                 return false;
             }
         }
+
+
+
 
         return true;
 

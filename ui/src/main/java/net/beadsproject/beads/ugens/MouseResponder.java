@@ -69,7 +69,7 @@ public class MouseResponder extends UGen {
      * @see com.olliebown.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         point = MouseInfo.getPointerInfo().getLocation();
         x = (float) point.x / width;
         y = (float) point.y / height;

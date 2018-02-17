@@ -1,10 +1,11 @@
 package net.beadsproject.beads;
 
 import jcog.Util;
+import jcog.math.tensor.ArrayTensor;
 import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.core.Auvent;
-import net.beadsproject.beads.data.WaveFactory;
 import net.beadsproject.beads.data.Pitch;
+import net.beadsproject.beads.data.WaveFactory;
 import net.beadsproject.beads.ugens.*;
 
 public class Lesson07_Music {
@@ -110,18 +111,25 @@ public class Lesson07_Music {
                             Clock c = (Clock) message;
                             if (c.isBeat()) {
                                 //choose some nice frequencies
-                                if (random(1) < 0.5) return;
+//                                if (random(1) < 0.5) return;
                                 pitch = Pitch.forceToScale((int) random(12), Pitch.minor);
 
                                 Envelope e = new Envelope(ac, 0);
 
-                                Gain g = new Gain(ac, 1, e)
-                                        .in(new WavePlayer(ac,
-                                                Pitch.mtof(pitch + (int) random(5) * 12 + 24),
-                                                WaveFactory.SINE));
+//                                Gain g = new Gain(ac, 1, e).in(
+//                                        new WavePlayer(ac,
+//                                                Pitch.mtof(pitch + (int) random(5) * 12 + 24),
+//                                                WaveFactory.SINE));
+//                                e.add(0.1f, random(200));
+//                                e.add(0, random(4000), g.die());
 
-                                e.add(0.1f, random(200));
-                                e.add(0, random(7000), g.die());
+                                Gain g = new Gain(ac, 1).in(
+                                    new OscillatorBank(ac,
+                                        WaveFactory.SINE,
+                                            ArrayTensor.vector(256),//, 200, 400),
+                                            ArrayTensor.vector(0.75f)//, 0.5f, 0.75f)
+                                            ));
+
 
                                 ac.out.in(g);
 

@@ -40,7 +40,6 @@ import java.util.Random;
 import java.util.function.BiFunction;
 
 import static nars.Op.*;
-import static nars.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.w2cSafe;
 import static org.eclipse.collections.impl.tuple.Tuples.twin;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -884,11 +883,11 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
     @Nullable
     default Truth truth(long targetStart, long targetEnd, long dur, float minConf) {
-        return truth(theNearestTimeWithin(targetStart, targetEnd), dur, minConf);
+        return truth(nearestPointExternal(targetStart, targetEnd), dur, minConf);
     }
 
     default float evi(long targetStart, long targetEnd, final long dur) {
-        return evi(theNearestTimeWithin(targetStart, targetEnd), dur);
+        return evi(nearestPointExternal(targetStart, targetEnd), dur);
     }
 
     @Nullable
@@ -1149,6 +1148,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     }
 
     default float eviInteg() {
-        return isEternal() ? Float.POSITIVE_INFINITY : (1 + range()) * evi();
+        return isEternal() ? Float.POSITIVE_INFINITY : range() * evi();
     }
 }

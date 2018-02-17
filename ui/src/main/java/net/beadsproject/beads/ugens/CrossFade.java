@@ -88,7 +88,7 @@ public class CrossFade extends UGen {
      * @see net.beadsproject.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         incoming.update();
         if (outgoing != null) outgoing.update();
         for (int j = 0; j < bufferSize; j++) {

@@ -96,16 +96,16 @@ public class ThermostatTest {
         NAR n = NARS.tmp();
 
         n.time.dur(DUR);
-        n.termVolumeMax.set(32);
-        n.freqResolution.set(0.05f);
+        n.termVolumeMax.set(30);
+        n.freqResolution.set(0.02f);
         n.confResolution.set(0.02f);
-        n.deep.set(0.9);
+        //n.deep.set(0.9);
 
 //        n.want(MetaGoal.Desire, 0.2f);
 //        n.want(MetaGoal.Believe, 0.1f);
 //        n.want(MetaGoal.Perceive, -0.01f);
 
-        float exeThresh = 0.6f;
+        float exeThresh = 0.51f;
 
         new ArithmeticIntroduction(8, n);
         new ConjClustering(n, BELIEF, (t) -> true, 4, 16);
@@ -128,7 +128,7 @@ public class ThermostatTest {
             @Nullable
             protected synchronized Object invoked(Object obj, Method wrapped, Object[] args, Object result) {
 
-                n.time.synch(n);
+                //n.time.synch(n);
                 //n.runLater(nn -> nn.run(DUR)); //queue some thinking cycles
 
                 Object y = super.invoked(obj, wrapped, args, result);

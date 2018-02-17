@@ -48,7 +48,7 @@ public abstract class FuncGen extends UGen implements FloatFunction<float[]> {
      * @see net.beadsproject.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public final void calculateBuffer() {
+    public final void gen() {
         for (int i = 0; i < inputs.length; i++) {
             inputs[i].update();
         }

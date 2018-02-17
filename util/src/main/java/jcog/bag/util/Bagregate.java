@@ -50,7 +50,7 @@ public class Bagregate<X extends Prioritized> extends ConcurrentArrayBag<X, PriR
                 if (include(x)) {
                     float pri = x.pri();
                     if (pri==pri)
-                        putAsync(new PLink(x, pri * scale));
+                        putAsync(new PLink<>(x, pri * scale));
                 }
             });
 

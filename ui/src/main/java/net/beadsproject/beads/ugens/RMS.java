@@ -43,7 +43,7 @@ public class RMS extends UGen {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         float[] bo = bufOut[0];
         for (int i = 0; i < bufferSize; i++) {
             float x, newMem = 0;

@@ -440,7 +440,7 @@ public class GranularSamplePlayer extends SamplePlayer {
      * @see com.olliebown.beads.ugens.SamplePlayer#calculateBuffer()
      */
     @Override
-    public synchronized void calculateBuffer() {
+    public synchronized void gen() {
         //special condition for first grain
         //update the various envelopes
         if (sample != null) {

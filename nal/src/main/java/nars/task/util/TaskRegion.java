@@ -1,6 +1,7 @@
 package nars.task.util;
 
 import jcog.Util;
+import jcog.math.LongInterval;
 import jcog.tree.rtree.HyperRegion;
 import nars.Task;
 import nars.task.Tasked;
@@ -9,20 +10,25 @@ import org.apache.commons.lang3.ArrayUtils;
 
 import java.util.List;
 
-import static nars.time.Tense.ETERNAL;
 import static nars.truth.TruthFunctions.c2wSafe;
 
-public interface TaskRegion extends HyperRegion, Tasked {
-
+/** 3d cuboid region:
+ *      time            start..end              64-bit signed long
+ *      frequency:      min..max in [0..1]      32-bit float
+ *      confidence:     min..max in [0..1)      32-bit float
+ */
+public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 
     /**
      * cost of stretching a node by time
      */
     float TIME_COST = 1f;
+
     /**
      * cost of stretching a node by freq
      */
     float FREQ_COST = 1f;
+
     /**
      * cost of stretching a node by conf
      */
@@ -35,211 +41,18 @@ public interface TaskRegion extends HyperRegion, Tasked {
     @Override
     int hashCode();
 
-    long start();
-
-    long end();
-
-    default long mid() {
-        long s = start();
-        return s == ETERNAL ? ETERNAL : (s + end()) / 2L;
-    }
-
 
     default float expectation() {
         return TruthFunctions.expectation(freqMean(), confMin());
-    }
-
-    default long theNearestTimeWithin(long a, long b) {
-        if (a == b || a == ETERNAL)
-            return a;
-
-        long s = start();
-        if (s == ETERNAL)
-            return (a + b) / 2L;
-        long e = end();
-
-        //test if inside
-        if (s >= a && s <= b)
-            return (s+e)/2; //the mid-point of this task directly
-
-        if (Math.abs(s - a) <= Math.abs(e - b))
-            return a;
-        else
-            return b;
     }
 
     default short[] cause() {
         return ArrayUtils.EMPTY_SHORT_ARRAY;
     }
 
-    /**
-     * amount of time this spans for
-     */
-    default long range() {
-        long s = start();
-        return s != ETERNAL ? end() - s : 0;
-    }
-
-    /**
-     * if ends after the given time
-     */
-    default boolean isAfter(long when) {
-        return isAfter(when, 0);
-    }
-
-    default boolean isAfter(long when, int minCycles) {
-        long e = end();
-        return e == ETERNAL || e - minCycles > when;
-    }
-
-    /**
-     * if starts before the given time
-     */
-    default boolean isBefore(long when) {
-        return isBefore(when, 0);
-    }
-
-    default boolean isBefore(long when, int minCycles) {
-        long e = end();
-        return e == ETERNAL || e + minCycles < when;
-    }
-
-    default boolean isDuringAny(long... when) {
-        if (when.length == 2 && when[0] == when[1]) return isDuring(when[0]); //quick
-        for (long x : when) {
-            if (isDuring(x)) return true;
-        }
-        return false;
-    }
-
-    default boolean isDuringAll(long... when) {
-        if (when.length == 2 && when[0] == when[1]) return isDuring(when[0]); //quick
-        for (long x : when) {
-            if (!isDuring(x)) return false;
-        }
-        return true;
-    }
-
-    default boolean isDuring(long when) {
-        if (when == ETERNAL)
-            return true;
-        long start = start();
-        if (start != ETERNAL) {
-            if (start == when)
-                return true;
-            if (when >= start) {
-                if (when <= end())
-                    return true;
-            }
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    default long myNearestTimeTo(final long x) {
-        long s = start();
-        if (s == ETERNAL)
-            return ETERNAL;
-        long e = end();
-        if (s <= x && e >= x)
-            return x;
-        else {
-            long m = (s + e) / 2L;
-            if (Math.abs(m - x) <= Math.abs(m - x))
-                return s; //closer to start
-            else
-                return e; //closer to end
-        }
-    }
-
-    /**
-     * to the interval [x,y]
-     * <p>
-     * TODO verify if these semantics make sense any more
-     */
-    default long myNearestTimeTo(final long a, final long b) {
-
-        assert (b >= a && (a != ETERNAL || a == b));
-
-        if (a == ETERNAL)
-            return mid();
-
-        long s = this.start();
-        if (s == ETERNAL)
-            return ETERNAL;
-
-        long e = this.end();
-        if (s == e)
-            return s;
-
-        if ((a >= s) && (b <= e)) {
-            return (a + b) / 2L; //midpoint of the contained range surrounded by this
-        } else if (a < s && b > e) {
-            return (s + e) / 2L; //midpoint of this within the range surrounding this
-        } else {
-            long se = (s + e) / 2L;
-            long ab = (a + b) / 2L;
-            if (se <= ab) {
-                return e;
-            } else {
-                return s;
-            }
-        }
-    }
 
 
-    default long minDistanceTo(long when) {
-
-        long s = start();
-        if (s == ETERNAL)
-            return 0;
-
-        assert (when != ETERNAL);
-        long e = end();
-        if (s <= when && e >= when)
-            return 0;
-        long d = Math.abs(s - when);
-        if (s == e)
-            return d;
-        else
-            return Math.min(d, Math.abs(e - when));
-    }
-
-    /** if the task intersects (ex: occurrs during) the specified interval,
-     *  returned distance is zero, regardless of how far it may extend before or after it */
-    default long minDistanceTo(long a, long b) {
-
-
-        assert (a != ETERNAL && b != ETERNAL && b >= a);
-
-        long s = start();
-        if (s == ETERNAL)
-            return 0;
-
-        long e = end();
-        if (intersects(a, b)) {
-            return 0; //contains that interval
-        } else {
-            long sa = Math.abs(s - a);
-            if (a == b) {
-                if (s == e) {
-                    return sa;
-                } else {
-                    return Math.min(sa, Math.abs(e - b));
-                }
-            } else {
-                long sab = Math.min(sa, Math.abs(s - b));
-                if (s == e) {
-                    return sab;
-                } else {
-                    return Math.min(sab, Math.min(Math.abs(e - a), Math.abs(e - b)));
-                }
-            }
-        }
-    }
-
-//    /**
+    //    /**
 //     * TODO see if this can be made faster
 //     */
 //    default long distanceTo(long start, long end) {
@@ -262,11 +75,11 @@ public interface TaskRegion extends HyperRegion, Tasked {
 //        }
 //    }
 
-    static long[] range(List<? extends TaskRegion> ie) {
+    static long[] range(List<? extends LongInterval> ie) {
         long start = Long.MAX_VALUE, end = Long.MIN_VALUE;
         int n = ie.size();
         for (int i = 0; i < n; i++) {
-            TaskRegion x = ie.get(i);
+            LongInterval x = ie.get(i);
             long s = x.start();
             if (s != ETERNAL) {
                 if (s < start) start = s;
@@ -503,18 +316,8 @@ public interface TaskRegion extends HyperRegion, Tasked {
     @Override
     float coordF(boolean maxOrMin, int dimension);
 
-    default boolean intersects(long rangeStart, long rangeEnd) {
-        long start = start();
-        return (start == ETERNAL) || (rangeStart <= end() && rangeEnd >= start);
-    }
-
     default boolean intersectsConf(float cMin, float cMax) {
         return (cMin <= confMax() && cMax >= confMin());
-    }
-
-    default boolean contains(long rangeStart, long rangeEnd) {
-        long start = start();
-        return (start == ETERNAL) || (rangeStart >= start && rangeEnd <= end());
     }
 
     default boolean containsConf(float cMin, float cMax) {
@@ -542,7 +345,7 @@ public interface TaskRegion extends HyperRegion, Tasked {
     }
 
     default float eviInteg() {
-        return Math.max(1, range()) * (c2wSafe(confMin()) + c2wSafe(confMax())) / 2f;
+        return range() * (c2wSafe(confMin()) + c2wSafe(confMax())) / 2f;
     }
 
 

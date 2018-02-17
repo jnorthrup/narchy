@@ -267,13 +267,17 @@ public interface Tensor extends Supplier<float[]> {
      * @return the value at that point.
      */
     default float getFractInterp(float fraction) {
-        int v = volume();
+        int v = volume()-1;
         float posInBuf = fraction * v;
-        int lowerIndex = (int) posInBuf;
+        int lowerIndex = Math.max(0, Math.round(posInBuf - 0.5f));
+        int upperIndex = Math.min(v, Math.round(posInBuf + 0.5f));
         float offset = posInBuf - lowerIndex;
-        int upperIndex = (lowerIndex + 1) % v; //?what % for
+        float l = get(lowerIndex);
+//        if (upperIndex == lowerIndex)
+//            return l;
 
-        return (1 - offset) * get(lowerIndex) + offset * get(upperIndex);
+        float u = get(upperIndex);
+        return (1 - offset) * l + offset * u;
     }
 
     /**

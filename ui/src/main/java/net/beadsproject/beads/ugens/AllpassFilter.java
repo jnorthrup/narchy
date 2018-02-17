@@ -93,7 +93,7 @@ public class AllpassFilter extends IIRFilter implements DataBeadReceiver {
     }
 
     @Override
-    public void calculateBuffer() {
+    public void gen() {
 
         float[] bi = bufIn[0];
         float[] bo = bufOut[0];

@@ -56,7 +56,7 @@ public class NonrealtimeIO extends AudioIO {
          * @see net.beadsproject.beads.core.UGen#calculateBuffer()
          */
         @Override
-        public void calculateBuffer() {
+        public void gen() {
         }
 
     }

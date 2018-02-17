@@ -35,6 +35,10 @@ public class Gain extends UGen implements DataBeadReceiver {
         setGain(gainEnvelope);
     }
 
+//    public Gain(AudioContext context, UGen gainEnvelope) {
+//        this(context, 1, gainEnvelope);
+//    }
+
     /**
      * Instantiates a new Gain with a {@link Static} gain envelop with the given
      * value.
@@ -133,7 +137,7 @@ public class Gain extends UGen implements DataBeadReceiver {
      * @see com.olliebown.beads.core.UGen#calculateBuffer()
      */
     @Override
-    public void calculateBuffer() {
+    public void gen() {
         if (gainUGen == null) {
             for (int channel = 0; channel < ins; channel++) {
                 float[] bi = bufIn[channel];
