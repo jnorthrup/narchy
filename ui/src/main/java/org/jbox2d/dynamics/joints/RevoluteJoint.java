@@ -102,14 +102,14 @@ public class RevoluteJoint extends Joint {
 
     @Override
     public void initVelocityConstraints(final SolverData data) {
-        m_indexA = m_bodyA.island;
-        m_indexB = m_bodyB.island;
-        m_localCenterA.set(m_bodyA.sweep.localCenter);
-        m_localCenterB.set(m_bodyB.sweep.localCenter);
-        m_invMassA = m_bodyA.m_invMass;
-        m_invMassB = m_bodyB.m_invMass;
-        m_invIA = m_bodyA.m_invI;
-        m_invIB = m_bodyB.m_invI;
+        m_indexA = A.island;
+        m_indexB = B.island;
+        m_localCenterA.set(A.sweep.localCenter);
+        m_localCenterB.set(B.sweep.localCenter);
+        m_invMassA = A.m_invMass;
+        m_invMassB = B.m_invMass;
+        m_invIA = A.m_invI;
+        m_invIB = B.m_invI;
 
         // Vec2 cA = data.positions[m_indexA].c;
         float aA = data.positions[m_indexA].a;
@@ -464,12 +464,12 @@ public class RevoluteJoint extends Joint {
 
     @Override
     public void getAnchorA(Tuple2f argOut) {
-        m_bodyA.getWorldPointToOut(m_localAnchorA, argOut);
+        A.getWorldPointToOut(m_localAnchorA, argOut);
     }
 
     @Override
     public void getAnchorB(Tuple2f argOut) {
-        m_bodyB.getWorldPointToOut(m_localAnchorB, argOut);
+        B.getWorldPointToOut(m_localAnchorB, argOut);
     }
 
     @Override
@@ -483,14 +483,14 @@ public class RevoluteJoint extends Joint {
     }
 
     public float getJointAngle() {
-        final Body2D b1 = m_bodyA;
-        final Body2D b2 = m_bodyB;
+        final Body2D b1 = A;
+        final Body2D b2 = B;
         return b2.sweep.a - b1.sweep.a - m_referenceAngle;
     }
 
     public float getJointSpeed() {
-        final Body2D b1 = m_bodyA;
-        final Body2D b2 = m_bodyB;
+        final Body2D b1 = A;
+        final Body2D b2 = B;
         return b2.velAngular - b1.velAngular;
     }
 
@@ -499,8 +499,8 @@ public class RevoluteJoint extends Joint {
     }
 
     public void enableMotor(boolean flag) {
-        m_bodyA.setAwake(true);
-        m_bodyB.setAwake(true);
+        A.setAwake(true);
+        B.setAwake(true);
         m_enableMotor = flag;
     }
 
@@ -509,14 +509,14 @@ public class RevoluteJoint extends Joint {
     }
 
     public void setMotorSpeed(final float speed) {
-        m_bodyA.setAwake(true);
-        m_bodyB.setAwake(true);
+        A.setAwake(true);
+        B.setAwake(true);
         m_motorSpeed = speed;
     }
 
     public void setMaxMotorTorque(final float torque) {
-        m_bodyA.setAwake(true);
-        m_bodyB.setAwake(true);
+        A.setAwake(true);
+        B.setAwake(true);
         m_maxMotorTorque = torque;
     }
 
@@ -534,8 +534,8 @@ public class RevoluteJoint extends Joint {
 
     public void enableLimit(final boolean flag) {
         if (flag != m_enableLimit) {
-            m_bodyA.setAwake(true);
-            m_bodyB.setAwake(true);
+            A.setAwake(true);
+            B.setAwake(true);
             m_enableLimit = flag;
             m_impulse.z = 0.0f;
         }
@@ -552,8 +552,8 @@ public class RevoluteJoint extends Joint {
     public void setLimits(final float lower, final float upper) {
         assert (lower <= upper);
         if (lower != m_lowerAngle || upper != m_upperAngle) {
-            m_bodyA.setAwake(true);
-            m_bodyB.setAwake(true);
+            A.setAwake(true);
+            B.setAwake(true);
             m_impulse.z = 0.0f;
             m_lowerAngle = lower;
             m_upperAngle = upper;

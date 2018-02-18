@@ -3,7 +3,6 @@ package spacegraph.widget.windo;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.tree.rtree.rect.RectFloat2D;
-import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.ZoomOrtho;
 import spacegraph.input.Finger;
@@ -13,11 +12,7 @@ import spacegraph.input.Fingering;
 import spacegraph.layout.UnitContainer;
 import spacegraph.math.v2;
 import spacegraph.render.Draw;
-import spacegraph.render.JoglSpace;
-import spacegraph.test.WidgetTest;
-import spacegraph.widget.button.PushButton;
 
-import static spacegraph.layout.Gridding.grid;
 import static spacegraph.widget.windo.Windo.DragEdit.MOVE;
 
 /**
@@ -382,9 +377,9 @@ public class Windo extends Widget {
 
 
     public static void main(String[] args) {
-        Wall d =
-                //new Wall();
-                new PhyWall();
+//        Wall d =
+//                //new Wall();
+//                new PhyWall();
         {
 //            boolean init = true;
 //            int shaderprogram;
@@ -436,23 +431,23 @@ public class Windo extends Widget {
 //            }
 
         }
-        JoglSpace.window(d, 800, 800);
-
-        //d.children.add(new GridTex(16).pos(0,0,1000,1000));
-
-        {
-            Windo w = d.addWindo(WidgetTest.widgetDemo());
-            w.pos(80, 80, 550, 450);
-
-//            Port p = w.addPort("X");
-        }
-
-        d.addWindo(grid(new PushButton("x"), new PushButton("y"))).pos(10, 10, 50, 50);
-
-        d.addWindo(new PushButton("w")).pos(-50, -50, 10, 10);
-
-        //d.newWindo(grid(new PushButton("x"), new PushButton("y"))).pos(-100, -100, 0, 0);
-
+//        JoglSpace.window(d, 800, 800);
+//
+//        //d.children.add(new GridTex(16).pos(0,0,1000,1000));
+//
+//        {
+//            Windo w = d.addWindo(WidgetTest.widgetDemo());
+//            w.pos(80, 80, 550, 450);
+//
+////            Port p = w.addPort("X");
+//        }
+//
+//        d.addWindo(grid(new PushButton("x"), new PushButton("y"))).pos(10, 10, 50, 50);
+//
+//        d.addWindo(new PushButton("w")).pos(-50, -50, 10, 10);
+//
+//        //d.newWindo(grid(new PushButton("x"), new PushButton("y"))).pos(-100, -100, 0, 0);
+//
     }
 
 }

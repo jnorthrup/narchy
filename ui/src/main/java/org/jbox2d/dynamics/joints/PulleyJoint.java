@@ -102,7 +102,7 @@ public class PulleyJoint extends Joint {
 
     public float getCurrentLengthA() {
         final Tuple2f p = pool.popVec2();
-        m_bodyA.getWorldPointToOut(m_localAnchorA, p);
+        A.getWorldPointToOut(m_localAnchorA, p);
         p.subbed(m_groundAnchorA);
         float length = p.length();
         pool.pushVec2(1);
@@ -111,7 +111,7 @@ public class PulleyJoint extends Joint {
 
     public float getCurrentLengthB() {
         final Tuple2f p = pool.popVec2();
-        m_bodyB.getWorldPointToOut(m_localAnchorB, p);
+        B.getWorldPointToOut(m_localAnchorB, p);
         p.subbed(m_groundAnchorB);
         float length = p.length();
         pool.pushVec2(1);
@@ -130,12 +130,12 @@ public class PulleyJoint extends Joint {
 
     @Override
     public void getAnchorA(Tuple2f argOut) {
-        m_bodyA.getWorldPointToOut(m_localAnchorA, argOut);
+        A.getWorldPointToOut(m_localAnchorA, argOut);
     }
 
     @Override
     public void getAnchorB(Tuple2f argOut) {
-        m_bodyB.getWorldPointToOut(m_localAnchorB, argOut);
+        B.getWorldPointToOut(m_localAnchorB, argOut);
     }
 
     @Override
@@ -158,7 +158,7 @@ public class PulleyJoint extends Joint {
 
     public float getLength1() {
         final Tuple2f p = pool.popVec2();
-        m_bodyA.getWorldPointToOut(m_localAnchorA, p);
+        A.getWorldPointToOut(m_localAnchorA, p);
         p.subbed(m_groundAnchorA);
 
         float len = p.length();
@@ -168,7 +168,7 @@ public class PulleyJoint extends Joint {
 
     public float getLength2() {
         final Tuple2f p = pool.popVec2();
-        m_bodyB.getWorldPointToOut(m_localAnchorB, p);
+        B.getWorldPointToOut(m_localAnchorB, p);
         p.subbed(m_groundAnchorB);
 
         float len = p.length();
@@ -182,14 +182,14 @@ public class PulleyJoint extends Joint {
 
     @Override
     public void initVelocityConstraints(final SolverData data) {
-        m_indexA = m_bodyA.island;
-        m_indexB = m_bodyB.island;
-        m_localCenterA.set(m_bodyA.sweep.localCenter);
-        m_localCenterB.set(m_bodyB.sweep.localCenter);
-        m_invMassA = m_bodyA.m_invMass;
-        m_invMassB = m_bodyB.m_invMass;
-        m_invIA = m_bodyA.m_invI;
-        m_invIB = m_bodyB.m_invI;
+        m_indexA = A.island;
+        m_indexB = B.island;
+        m_localCenterA.set(A.sweep.localCenter);
+        m_localCenterB.set(B.sweep.localCenter);
+        m_invMassA = A.m_invMass;
+        m_invMassB = B.m_invMass;
+        m_invIA = A.m_invI;
+        m_invIB = B.m_invI;
 
         Tuple2f cA = data.positions[m_indexA].c;
         float aA = data.positions[m_indexA].a;

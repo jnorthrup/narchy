@@ -2,9 +2,11 @@ package spacegraph.widget.windo;
 
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jbox2d.collision.shapes.PolygonShape;
+import spacegraph.ZoomOrtho;
 import spacegraph.render.JoglSpace;
+import spacegraph.render.SpaceGraphFlat;
 import spacegraph.test.WidgetTest;
-import spacegraph.widget.button.PushButton;
+import spacegraph.widget.text.Label;
 
 public class Box2DTest {
 
@@ -13,12 +15,21 @@ public class Box2DTest {
 
         public static void main(String[] args) {
             PhyWall s = new PhyWall();
+            new SpaceGraphFlat(
+                new ZoomOrtho(s) {
 
-            JoglSpace.window(s, 800, 800);
+                    @Override
+                    public boolean autoresize() {
+                        return false;
+                    }
 
+                }
+            ).show(1000, 1000);
+
+            s.root().zoom(s);
 
             {
-                PhyWall.PhyWindow w = s.newWindow(WidgetTest.widgetDemo(), RectFloat2D.XYWH(0, 0, 550, 520));
+                PhyWall.PhyWindow w = s.newWindow(WidgetTest.widgetDemo(), RectFloat2D.XYWH(0, 0, 1f, 1f));
                 //s.newWindow(WidgetTest.widgetDemo(), RectFloat2D.XYWH(+400, 0, 300, 100));
 
                 for (int i = 0; i < 10; i++)
@@ -28,11 +39,12 @@ public class Box2DTest {
 //        d.addWindo(grid(new PushButton("x"), new PushButton("y"))).pos(10, 10, 50, 50);
 
             for (int i = 0; i < 8; i++) {
-                float rx = (float) (Math.random() * 1000f / 2);
-                float ry = (float) (Math.random() * 1000f / 2);
-                float rw = 55 + 150 * (float) Math.random();
-                float rh = 50 + 150 * (float) Math.random();
-                s.newWindow(new PushButton(String.valueOf((char) ('w' + i))), RectFloat2D.XYWH(rx, ry, rw, rh));
+                float rx = s.rngPolar(2);
+                float ry = s.rngPolar(2);
+                float rw = 0.1f + s.rngNormal(0.5f);
+                float rh = 0.1f + s.rngNormal(0.5f);
+                s.newWindow(new Label(String.valueOf((char) ('w' + i))),
+                        RectFloat2D.XYWH(rx, ry, rw, rh));
             }
 
             //d.newWindo(grid(new PushButton("x"), new PushButton("y"))).pos(-100, -100, 0, 0);
@@ -45,11 +57,7 @@ public class Box2DTest {
     public static class Box2DTest2_Joints {
         public static void main(String[] args) {
 
-            PhyWall s = new PhyWall() {
-
-
-
-                };
+            PhyWall s = new PhyWall();
             JoglSpace.window(s, 800, 800);
 
             s.W.invokeLater(()->{

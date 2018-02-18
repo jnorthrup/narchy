@@ -66,7 +66,7 @@ public class MouseJoint extends Joint {
         assert (def.dampingRatio >= 0);
 
         m_targetA.set(def.target);
-        Transform.mulTransToOutUnsafe(m_bodyB.getXform(), m_targetA, m_localAnchorB);
+        Transform.mulTransToOutUnsafe(B.getXform(), m_targetA, m_localAnchorB);
 
         m_maxForce = def.maxForce;
         m_impulse.setZero();
@@ -85,7 +85,7 @@ public class MouseJoint extends Joint {
 
     @Override
     public void getAnchorB(Tuple2f argOut) {
-        m_bodyB.getWorldPointToOut(m_localAnchorB, argOut);
+        B.getWorldPointToOut(m_localAnchorB, argOut);
     }
 
     @Override
@@ -100,8 +100,8 @@ public class MouseJoint extends Joint {
 
 
     public void setTarget(Tuple2f target) {
-        if (m_bodyB.isAwake() == false) {
-            m_bodyB.setAwake(true);
+        if (B.isAwake() == false) {
+            B.setAwake(true);
         }
         m_targetA.set(target);
     }
@@ -139,10 +139,10 @@ public class MouseJoint extends Joint {
 
     @Override
     public void initVelocityConstraints(final SolverData data) {
-        m_indexB = m_bodyB.island;
-        m_localCenterB.set(m_bodyB.sweep.localCenter);
-        m_invMassB = m_bodyB.m_invMass;
-        m_invIB = m_bodyB.m_invI;
+        m_indexB = B.island;
+        m_localCenterB.set(B.sweep.localCenter);
+        m_invMassB = B.m_invMass;
+        m_invIB = B.m_invI;
 
         Tuple2f cB = data.positions[m_indexB].c;
         float aB = data.positions[m_indexB].a;
@@ -153,7 +153,7 @@ public class MouseJoint extends Joint {
 
         qB.set(aB);
 
-        float mass = m_bodyB.getMass();
+        float mass = B.getMass();
 
         // Frequency
         float omega = 2.0f * MathUtils.PI * m_frequencyHz;

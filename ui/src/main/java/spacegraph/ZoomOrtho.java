@@ -22,8 +22,8 @@ public class ZoomOrtho extends Ortho {
     float pressZoomOutRate = zoomRate*2;
 
 
-    final static float minZoom = 0.25f;
-    final static float maxZoom = 10f;
+    final float minZoom = 0.25f;
+    final float maxZoom = 1000f;
 
     public final static short PAN_BUTTON = 0;
     final static short ZOOM_OUT_TOUCHING_NEGATIVE_SPACE_BUTTON = 2;
@@ -76,7 +76,9 @@ public class ZoomOrtho extends Ortho {
 
     @Override
     public void windowResized(WindowEvent e) {
-        pos(0, 0, window.getWidth(), window.getHeight()); //re-maximize
+        int ww = window.getWidth();
+        int hh = window.getHeight();
+        pos(0, 0, ww, hh); //re-maximize
     }
 
 //    @Override
@@ -295,7 +297,7 @@ public class ZoomOrtho extends Ortho {
 
         AnimVector2f s = this.scale;
         float psx = s.targetX();
-        float psy = psx;
+        //float psy = psx;
         float sx = psx * zoomMult;
 
         sx = Math.max(sx, minZoom);
@@ -303,6 +305,8 @@ public class ZoomOrtho extends Ortho {
         scale.set(sx, sx);
 
     }
+
+
 
     private class HUD extends Windo {
 

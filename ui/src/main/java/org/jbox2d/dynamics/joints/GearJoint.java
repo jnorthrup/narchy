@@ -124,11 +124,11 @@ public class GearJoint extends Joint {
         // TODO_ERIN there might be some problem with the joint edges in Joint.
 
         m_bodyC = m_joint1.getBodyA();
-        m_bodyA = m_joint1.getBodyB();
+        A = m_joint1.getBodyB();
 
         // Get geometry of joint1
-        Transform xfA = m_bodyA;
-        float aA = m_bodyA.sweep.a;
+        Transform xfA = A;
+        float aA = A.sweep.a;
         Transform xfC = m_bodyC;
         float aC = m_bodyC.sweep.a;
 
@@ -158,11 +158,11 @@ public class GearJoint extends Joint {
         }
 
         m_bodyD = m_joint2.getBodyA();
-        m_bodyB = m_joint2.getBodyB();
+        B = m_joint2.getBodyB();
 
         // Get geometry of joint2
-        Transform xfB = m_bodyB;
-        float aB = m_bodyB.sweep.a;
+        Transform xfB = B;
+        float aB = B.sweep.a;
         Transform xfD = m_bodyD;
         float aD = m_bodyD.sweep.a;
 
@@ -200,12 +200,12 @@ public class GearJoint extends Joint {
 
     @Override
     public void getAnchorA(Tuple2f argOut) {
-        m_bodyA.getWorldPointToOut(m_localAnchorA, argOut);
+        A.getWorldPointToOut(m_localAnchorA, argOut);
     }
 
     @Override
     public void getAnchorB(Tuple2f argOut) {
-        m_bodyB.getWorldPointToOut(m_localAnchorB, argOut);
+        B.getWorldPointToOut(m_localAnchorB, argOut);
     }
 
     @Override
@@ -230,20 +230,20 @@ public class GearJoint extends Joint {
 
     @Override
     public void initVelocityConstraints(SolverData data) {
-        m_indexA = m_bodyA.island;
-        m_indexB = m_bodyB.island;
+        m_indexA = A.island;
+        m_indexB = B.island;
         m_indexC = m_bodyC.island;
         m_indexD = m_bodyD.island;
-        m_lcA.set(m_bodyA.sweep.localCenter);
-        m_lcB.set(m_bodyB.sweep.localCenter);
+        m_lcA.set(A.sweep.localCenter);
+        m_lcB.set(B.sweep.localCenter);
         m_lcC.set(m_bodyC.sweep.localCenter);
         m_lcD.set(m_bodyD.sweep.localCenter);
-        m_mA = m_bodyA.m_invMass;
-        m_mB = m_bodyB.m_invMass;
+        m_mA = A.m_invMass;
+        m_mB = B.m_invMass;
         m_mC = m_bodyC.m_invMass;
         m_mD = m_bodyD.m_invMass;
-        m_iA = m_bodyA.m_invI;
-        m_iB = m_bodyB.m_invI;
+        m_iA = A.m_invI;
+        m_iB = B.m_invI;
         m_iC = m_bodyC.m_invI;
         m_iD = m_bodyD.m_invI;
 

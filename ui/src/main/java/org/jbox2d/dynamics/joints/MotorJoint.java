@@ -67,12 +67,12 @@ public class MotorJoint extends Joint {
 
     @Override
     public void getAnchorA(Tuple2f out) {
-        out.set(m_bodyA.getPosition());
+        out.set(A.getPosition());
     }
 
     @Override
     public void getAnchorB(Tuple2f out) {
-        out.set(m_bodyB.getPosition());
+        out.set(B.getPosition());
     }
 
     public void getReactionForce(float inv_dt, Tuple2f out) {
@@ -96,8 +96,8 @@ public class MotorJoint extends Joint {
      */
     public void setLinearOffset(Tuple2f linearOffset) {
         if (linearOffset.x != m_linearOffset.x || linearOffset.y != m_linearOffset.y) {
-            m_bodyA.setAwake(true);
-            m_bodyB.setAwake(true);
+            A.setAwake(true);
+            B.setAwake(true);
             m_linearOffset.set(linearOffset);
         }
     }
@@ -123,8 +123,8 @@ public class MotorJoint extends Joint {
      */
     public void setAngularOffset(float angularOffset) {
         if (angularOffset != m_angularOffset) {
-            m_bodyA.setAwake(true);
-            m_bodyB.setAwake(true);
+            A.setAwake(true);
+            B.setAwake(true);
             m_angularOffset = angularOffset;
         }
     }
@@ -167,14 +167,14 @@ public class MotorJoint extends Joint {
 
     @Override
     public void initVelocityConstraints(SolverData data) {
-        m_indexA = m_bodyA.island;
-        m_indexB = m_bodyB.island;
-        m_localCenterA.set(m_bodyA.sweep.localCenter);
-        m_localCenterB.set(m_bodyB.sweep.localCenter);
-        m_invMassA = m_bodyA.m_invMass;
-        m_invMassB = m_bodyB.m_invMass;
-        m_invIA = m_bodyA.m_invI;
-        m_invIB = m_bodyB.m_invI;
+        m_indexA = A.island;
+        m_indexB = B.island;
+        m_localCenterA.set(A.sweep.localCenter);
+        m_localCenterB.set(B.sweep.localCenter);
+        m_invMassA = A.m_invMass;
+        m_invMassB = B.m_invMass;
+        m_invIA = A.m_invI;
+        m_invIB = B.m_invI;
 
         final Tuple2f cA = data.positions[m_indexA].c;
         float aA = data.positions[m_indexA].a;

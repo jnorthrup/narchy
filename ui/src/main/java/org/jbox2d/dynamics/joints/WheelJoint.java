@@ -126,12 +126,12 @@ public class WheelJoint extends Joint {
 
     @Override
     public void getAnchorA(Tuple2f argOut) {
-        m_bodyA.getWorldPointToOut(m_localAnchorA, argOut);
+        A.getWorldPointToOut(m_localAnchorA, argOut);
     }
 
     @Override
     public void getAnchorB(Tuple2f argOut) {
-        m_bodyB.getWorldPointToOut(m_localAnchorB, argOut);
+        B.getWorldPointToOut(m_localAnchorB, argOut);
     }
 
     @Override
@@ -148,8 +148,8 @@ public class WheelJoint extends Joint {
     }
 
     public float getJointTranslation() {
-        Body2D b1 = m_bodyA;
-        Body2D b2 = m_bodyB;
+        Body2D b1 = A;
+        Body2D b2 = B;
 
         Tuple2f p1 = pool.popVec2();
         Tuple2f p2 = pool.popVec2();
@@ -172,7 +172,7 @@ public class WheelJoint extends Joint {
     }
 
     public float getJointSpeed() {
-        return m_bodyA.velAngular - m_bodyB.velAngular;
+        return A.velAngular - B.velAngular;
     }
 
     public boolean isMotorEnabled() {
@@ -180,14 +180,14 @@ public class WheelJoint extends Joint {
     }
 
     public void enableMotor(boolean flag) {
-        m_bodyA.setAwake(true);
-        m_bodyB.setAwake(true);
+        A.setAwake(true);
+        B.setAwake(true);
         m_enableMotor = flag;
     }
 
     public void setMotorSpeed(float speed) {
-        m_bodyA.setAwake(true);
-        m_bodyB.setAwake(true);
+        A.setAwake(true);
+        B.setAwake(true);
         m_motorSpeed = speed;
     }
 
@@ -200,8 +200,8 @@ public class WheelJoint extends Joint {
     }
 
     public void setMaxMotorTorque(float torque) {
-        m_bodyA.setAwake(true);
-        m_bodyB.setAwake(true);
+        A.setAwake(true);
+        B.setAwake(true);
         m_maxMotorTorque = torque;
     }
 
@@ -232,14 +232,14 @@ public class WheelJoint extends Joint {
 
     @Override
     public void initVelocityConstraints(SolverData data) {
-        m_indexA = m_bodyA.island;
-        m_indexB = m_bodyB.island;
-        m_localCenterA.set(m_bodyA.sweep.localCenter);
-        m_localCenterB.set(m_bodyB.sweep.localCenter);
-        m_invMassA = m_bodyA.m_invMass;
-        m_invMassB = m_bodyB.m_invMass;
-        m_invIA = m_bodyA.m_invI;
-        m_invIB = m_bodyB.m_invI;
+        m_indexA = A.island;
+        m_indexB = B.island;
+        m_localCenterA.set(A.sweep.localCenter);
+        m_localCenterB.set(B.sweep.localCenter);
+        m_invMassA = A.m_invMass;
+        m_invMassB = B.m_invMass;
+        m_invIA = A.m_invI;
+        m_invIB = B.m_invI;
 
         float mA = m_invMassA, mB = m_invMassB;
         float iA = m_invIA, iB = m_invIB;

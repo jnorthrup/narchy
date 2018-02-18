@@ -174,12 +174,12 @@ public class PrismaticJoint extends Joint {
 
     @Override
     public void getAnchorA(Tuple2f argOut) {
-        m_bodyA.getWorldPointToOut(m_localAnchorA, argOut);
+        A.getWorldPointToOut(m_localAnchorA, argOut);
     }
 
     @Override
     public void getAnchorB(Tuple2f argOut) {
-        m_bodyB.getWorldPointToOut(m_localAnchorB, argOut);
+        B.getWorldPointToOut(m_localAnchorB, argOut);
     }
 
     @Override
@@ -199,8 +199,8 @@ public class PrismaticJoint extends Joint {
      * Get the current joint translation, usually in meters.
      */
     public float getJointSpeed() {
-        Body2D bA = m_bodyA;
-        Body2D bB = m_bodyB;
+        Body2D bA = A;
+        Body2D bB = B;
 
         Tuple2f temp = pool.popVec2();
         Tuple2f rA = pool.popVec2();
@@ -244,9 +244,9 @@ public class PrismaticJoint extends Joint {
 
     public float getJointTranslation() {
         Tuple2f pA = pool.popVec2(), pB = pool.popVec2(), axis = pool.popVec2();
-        m_bodyA.getWorldPointToOut(m_localAnchorA, pA);
-        m_bodyB.getWorldPointToOut(m_localAnchorB, pB);
-        m_bodyA.getWorldVectorToOutUnsafe(m_localXAxisA, axis);
+        A.getWorldPointToOut(m_localAnchorA, pA);
+        B.getWorldPointToOut(m_localAnchorB, pB);
+        A.getWorldVectorToOutUnsafe(m_localXAxisA, axis);
         pB.subbed(pA);
         float translation = Tuple2f.dot(pB, axis);
         pool.pushVec2(3);
@@ -269,8 +269,8 @@ public class PrismaticJoint extends Joint {
      */
     public void enableLimit(boolean flag) {
         if (flag != m_enableLimit) {
-            m_bodyA.setAwake(true);
-            m_bodyB.setAwake(true);
+            A.setAwake(true);
+            B.setAwake(true);
             m_enableLimit = flag;
             m_impulse.z = 0.0f;
         }
@@ -303,8 +303,8 @@ public class PrismaticJoint extends Joint {
     public void setLimits(float lower, float upper) {
         assert (lower <= upper);
         if (lower != m_lowerTranslation || upper != m_upperTranslation) {
-            m_bodyA.setAwake(true);
-            m_bodyB.setAwake(true);
+            A.setAwake(true);
+            B.setAwake(true);
             m_lowerTranslation = lower;
             m_upperTranslation = upper;
             m_impulse.z = 0.0f;
@@ -326,8 +326,8 @@ public class PrismaticJoint extends Joint {
      * @param flag
      */
     public void enableMotor(boolean flag) {
-        m_bodyA.setAwake(true);
-        m_bodyB.setAwake(true);
+        A.setAwake(true);
+        B.setAwake(true);
         m_enableMotor = flag;
     }
 
@@ -337,8 +337,8 @@ public class PrismaticJoint extends Joint {
      * @param speed
      */
     public void setMotorSpeed(float speed) {
-        m_bodyA.setAwake(true);
-        m_bodyB.setAwake(true);
+        A.setAwake(true);
+        B.setAwake(true);
         m_motorSpeed = speed;
     }
 
@@ -357,8 +357,8 @@ public class PrismaticJoint extends Joint {
      * @param force
      */
     public void setMaxMotorForce(float force) {
-        m_bodyA.setAwake(true);
-        m_bodyB.setAwake(true);
+        A.setAwake(true);
+        B.setAwake(true);
         m_maxMotorForce = force;
     }
 
@@ -386,14 +386,14 @@ public class PrismaticJoint extends Joint {
 
     @Override
     public void initVelocityConstraints(final SolverData data) {
-        m_indexA = m_bodyA.island;
-        m_indexB = m_bodyB.island;
-        m_localCenterA.set(m_bodyA.sweep.localCenter);
-        m_localCenterB.set(m_bodyB.sweep.localCenter);
-        m_invMassA = m_bodyA.m_invMass;
-        m_invMassB = m_bodyB.m_invMass;
-        m_invIA = m_bodyA.m_invI;
-        m_invIB = m_bodyB.m_invI;
+        m_indexA = A.island;
+        m_indexB = B.island;
+        m_localCenterA.set(A.sweep.localCenter);
+        m_localCenterB.set(B.sweep.localCenter);
+        m_invMassA = A.m_invMass;
+        m_invMassB = B.m_invMass;
+        m_invIA = A.m_invI;
+        m_invIB = B.m_invI;
 
         Tuple2f cA = data.positions[m_indexA].c;
         float aA = data.positions[m_indexA].a;

@@ -441,13 +441,18 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
      * Returns true if all of the data members of Tuple2f t1 are
      * equal to the corresponding data members in this Tuple2f.
      *
-     * @param t1 the vector with which the comparison is made
+     * @param t the vector with which the comparison is made
      * @return true or false
      */
+    public boolean equals(@NotNull Tuple2f t, float epsilon) {
+        return (this == t) ||
+               (
+               Util.equals(this.x, t.x, epsilon) && Util.equals(this.y, t.y, epsilon)
+               );
+    }
+
     public boolean equals(@NotNull Tuple2f t1) {
-        return (this == t1) || (
-                Util.equals(this.x, t1.x, BulletGlobals.SIMD_EPSILON) &&
-                Util.equals(this.y, t1.y, BulletGlobals.SIMD_EPSILON));
+        return equals(t1, BulletGlobals.SIMD_EPSILON);
     }
 
     /**

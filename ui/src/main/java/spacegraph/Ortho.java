@@ -93,6 +93,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         };
     }
 
+
+
     public boolean hasFocus() {
         return focused;
     }
@@ -100,11 +102,16 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     @Override
     protected void doLayout(int dtMS) {
         cam.set(bounds.w / 2f, bounds.h / 2f);
-        scale(1, 1);
+        //scale(1, 1);
 
-        surface.pos(bounds);
+        if (autoresize())
+            surface.pos(bounds);
 
         fingerUpdated.set(true);
+    }
+
+    public boolean autoresize() {
+        return true;
     }
 
     public GL2 gl() {
@@ -240,7 +247,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     public void zoom(float x, float y, float sx, float sy, float margin, float speed) {
         float s0 = (1 + margin);
         cam.set(x, y);
-        cam.setLerp(x, y, 0, speed);
+        //cam.setLerp(x, y, 0, speed);
         scale(w() / (sx * s0), h() / (sy * s0));
     }
 

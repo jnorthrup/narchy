@@ -23,6 +23,7 @@
  ******************************************************************************/
 package org.jbox2d.dynamics;
 
+import com.jogamp.opengl.GL2;
 import jcog.Util;
 import org.jbox2d.collision.broadphase.BroadPhase;
 import org.jbox2d.collision.shapes.MassData;
@@ -129,12 +130,12 @@ public class Body2D extends Transform {
 
         W = world;
 
-        ((Transform) this).pos.set(bd.position);
+        pos.set(bd.position);
         this.set(bd.angle);
 
         sweep.localCenter.set(0, 0);
-        sweep.c0.set(((Transform) this).pos);
-        sweep.c.set(((Transform) this).pos);
+        sweep.c0.set(pos);
+        sweep.c.set(pos);
         sweep.a0 = bd.angle;
         sweep.a = bd.angle;
         sweep.alpha0 = 0.0f;
@@ -193,7 +194,7 @@ public class Body2D extends Transform {
 
         //W.invokeLater(() -> {
             if ((flags & e_activeFlag) == e_activeFlag) {
-                BroadPhase broadPhase = W.m_contactManager.m_broadPhase;
+                BroadPhase broadPhase = W.contactManager.m_broadPhase;
                 fixture.createProxies(broadPhase, this);
             }
 
@@ -222,7 +223,7 @@ public class Body2D extends Transform {
 
             //destroy and re-create proxies
             //if ((m_flags & e_activeFlag) == e_activeFlag) {
-                BroadPhase broadPhase = W.m_contactManager.m_broadPhase;
+                BroadPhase broadPhase = W.contactManager.m_broadPhase;
                 f.destroyProxies(broadPhase);
 
                 tx.accept(f);
@@ -338,12 +339,12 @@ public class Body2D extends Transform {
                 if (fixture == fixtureA || fixture == fixtureB) {
                     // This destroys the contact and removes it from
                     // this body's contact list.
-                    W.m_contactManager.destroy(c);
+                    W.contactManager.destroy(c);
                 }
             }
 
             if ((flags & e_activeFlag) == e_activeFlag) {
-                BroadPhase broadPhase = W.m_contactManager.m_broadPhase;
+                BroadPhase broadPhase = W.contactManager.m_broadPhase;
                 fixture.destroyProxies(broadPhase);
             }
 
@@ -359,6 +360,10 @@ public class Body2D extends Transform {
 
     }
 
+    public final boolean setTransform(Tuple2f position, float angle) {
+        return setTransform(position, angle, Settings.EPSILON);
+    }
+
     /**
      * Set the position of the body's origin and rotation. This breaks any contacts and wakes the
      * other bodies. Manipulating a body's transform may cause non-physical behavior. Note: contacts
@@ -367,14 +372,14 @@ public class Body2D extends Transform {
      * @param position the world position of the body's local origin.
      * @param angle    the world rotation in radians.
      */
-    public final boolean setTransform(Tuple2f position, float angle) {
+    public final boolean setTransform(Tuple2f position, float angle, float epsilon) {
 
-        if (getPosition().equals(position) && Util.equals(angle, getAngle(), Settings.EPSILON))
+        if (getPosition().equals(position, epsilon) && Util.equals(angle, getAngle(), epsilon))
             return false; //no change
 
-       // W.invokeLater(() -> {
+        W.invokeLater(() -> {
             this.set(angle);
-            ((Transform) this).pos.set(position);
+            pos.set(position);
 
             // m_sweep.c0 = m_sweep.c = Mul(m_xf, m_sweep.localCenter);
             Transform.mulToOutUnsafe(this, sweep.localCenter, sweep.c);
@@ -383,11 +388,11 @@ public class Body2D extends Transform {
             sweep.c0.set(sweep.c);
             sweep.a0 = sweep.a;
 
-            BroadPhase broadPhase = W.m_contactManager.m_broadPhase;
+            BroadPhase broadPhase = W.contactManager.m_broadPhase;
             for (Fixture f = fixtures; f != null; f = f.next) {
                 f.synchronize(broadPhase, this, this);
             }
-       // });
+        });
 
         return true;
     }
@@ -407,7 +412,7 @@ public class Body2D extends Transform {
      * @return the world position of the body's origin.
      */
     public final Tuple2f getPosition() {
-        return ((Transform) this).pos;
+        return pos;
     }
 
     /**
@@ -734,8 +739,8 @@ public class Body2D extends Transform {
         // Static and kinematic bodies have zero mass.
         if (type == BodyType.STATIC || type == BodyType.KINEMATIC) {
             // m_sweep.c0 = m_sweep.c = m_xf.position;
-            sweep.c0.set(((Transform) this).pos);
-            sweep.c.set(((Transform) this).pos);
+            sweep.c0.set(pos);
+            sweep.c.set(pos);
             sweep.a0 = sweep.a;
             return;
         }
@@ -810,7 +815,10 @@ public class Body2D extends Transform {
     }
 
     public final void getWorldPointToOut(Tuple2f localPoint, Tuple2f out) {
-        Transform.mulToOut(this, localPoint, out);
+        Transform.mulToOutUnsafe(this, localPoint, out);
+    }
+    public final void getWorldPointToOut(Tuple2f localPoint, float preScale, Tuple2f out) {
+        Transform.mulToOutUnsafe(this, localPoint, preScale, out);
     }
 
     /**
@@ -974,12 +982,12 @@ public class Body2D extends Transform {
         while (ce != null) {
             ContactEdge ce0 = ce;
             ce = ce.next;
-            W.m_contactManager.destroy(ce0.contact);
+            W.contactManager.destroy(ce0.contact);
         }
         contacts = null;
 
         // Touch the proxies so that new contacts will be created (when appropriate)
-        BroadPhase broadPhase = W.m_contactManager.m_broadPhase;
+        BroadPhase broadPhase = W.contactManager.m_broadPhase;
         for (Fixture f = fixtures; f != null; f = f.next) {
             int proxyCount = f.m_proxyCount;
             for (int i = 0; i < proxyCount; ++i) {
@@ -1083,7 +1091,7 @@ public class Body2D extends Transform {
             flags |= e_activeFlag;
 
             // Create all proxies.
-            BroadPhase broadPhase = W.m_contactManager.m_broadPhase;
+            BroadPhase broadPhase = W.contactManager.m_broadPhase;
             for (Fixture f = fixtures; f != null; f = f.next) {
                 f.createProxies(broadPhase, this);
             }
@@ -1093,7 +1101,7 @@ public class Body2D extends Transform {
             flags &= ~e_activeFlag;
 
             // Destroy all proxies.
-            BroadPhase broadPhase = W.m_contactManager.m_broadPhase;
+            BroadPhase broadPhase = W.contactManager.m_broadPhase;
             for (Fixture f = fixtures; f != null; f = f.next) {
                 f.destroyProxies(broadPhase);
             }
@@ -1103,7 +1111,7 @@ public class Body2D extends Transform {
             while (ce != null) {
                 ContactEdge ce0 = ce;
                 ce = ce.next;
-                W.m_contactManager.destroy(ce0.contact);
+                W.contactManager.destroy(ce0.contact);
             }
             contacts = null;
         }
@@ -1213,7 +1221,7 @@ public class Body2D extends Transform {
         // end inline
 
         for (Fixture f = fixtures; f != null; f = f.next) {
-            f.synchronize(W.m_contactManager.m_broadPhase, xf1, this);
+            f.synchronize(W.contactManager.m_broadPhase, xf1, this);
         }
     }
 
@@ -1229,8 +1237,8 @@ public class Body2D extends Transform {
         ((Rot) this).c = (float) Math.cos(sweep.a);
         Rot q = this;
         Tuple2f v = sweep.localCenter;
-        ((Transform) this).pos.x = sweep.c.x - q.c * v.x + q.s * v.y;
-        ((Transform) this).pos.y = sweep.c.y - q.s * v.x - q.c * v.y;
+        pos.x = sweep.c.x - q.c * v.x + q.s * v.y;
+        pos.y = sweep.c.y - q.s * v.x - q.c * v.y;
     }
 
     /**
@@ -1265,8 +1273,8 @@ public class Body2D extends Transform {
         sweep.a = sweep.a0;
         this.set(sweep.a);
         // m_xf.position = m_sweep.c - Mul(m_xf.R, m_sweep.localCenter);
-        Rot.mulToOutUnsafe(this, sweep.localCenter, ((Transform) this).pos);
-        ((Transform) this).pos.scaled(-1).added(sweep.c);
+        Rot.mulToOutUnsafe(this, sweep.localCenter, pos);
+        pos.scaled(-1).added(sweep.c);
     }
 
     public void preUpdate() {
@@ -1278,4 +1286,7 @@ public class Body2D extends Transform {
     }
 
 
+    public void getWorldPointToGL(Tuple2f localPoint, float preScale, GL2 gl) {
+        Transform.mulToOutUnsafe(this, localPoint, preScale, gl);
+    }
 }

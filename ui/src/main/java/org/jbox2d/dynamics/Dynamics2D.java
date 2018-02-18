@@ -73,18 +73,18 @@ public class Dynamics2D {
     public static final int CLEAR_FORCES = 0x0004;
 
     // statistics gathering
-    public int activeContacts = 0;
-    public int contactPoolCount = 0;
+//    public int activeContacts = 0;
+//    public int contactPoolCount = 0;
 
     protected int flags;
 
-    protected final ContactManager m_contactManager;
+    protected final ContactManager contactManager;
 
-    private Body2D m_bodyList;
-    private Joint m_jointList;
+    private Body2D bodies;
+    private int bodyCount;
 
-    private int m_bodyCount;
-    private int m_jointCount;
+    private Joint joints;
+    private int jointCount;
 
     private final Tuple2f m_gravity = new Vec2();
     private boolean m_allowSleep;
@@ -157,11 +157,11 @@ public class Dynamics2D {
         this.pool = pool;
         m_destructionListener = null;
 
-        m_bodyList = null;
-        m_jointList = null;
+        bodies = null;
+        joints = null;
 
-        m_bodyCount = 0;
-        m_jointCount = 0;
+        bodyCount = 0;
+        jointCount = 0;
 
         m_warmStarting = true;
         m_continuousPhysics = true;
@@ -175,7 +175,7 @@ public class Dynamics2D {
 
         m_inv_dt0 = 0f;
 
-        m_contactManager = new ContactManager(this, broadPhase);
+        contactManager = new ContactManager(this, broadPhase);
         m_profile = new Profile();
 
         m_particleSystem = new ParticleSystem(this);
@@ -189,7 +189,7 @@ public class Dynamics2D {
 
         m_allowSleep = flag;
         if (!m_allowSleep) {
-            for (Body2D b = m_bodyList; b != null; b = b.next) {
+            for (Body2D b = bodies; b != null; b = b.next) {
                 b.setAwake(true);
             }
         }
@@ -255,7 +255,7 @@ public class Dynamics2D {
      * @param filter
      */
     public void setContactFilter(ContactFilter filter) {
-        m_contactManager.m_contactFilter = filter;
+        contactManager.m_contactFilter = filter;
     }
 
     /**
@@ -264,7 +264,7 @@ public class Dynamics2D {
      * @param listener
      */
     public void setContactListener(ContactListener listener) {
-        m_contactManager.m_contactListener = listener;
+        contactManager.m_contactListener = listener;
     }
 
     /**
@@ -273,7 +273,7 @@ public class Dynamics2D {
      * @param listener
      */
     public void setFractureListener(FractureListener listener) {
-        m_contactManager.m_fractureListener = listener;
+        contactManager.m_fractureListener = listener;
     }
 
 //    /**
@@ -306,12 +306,12 @@ public class Dynamics2D {
 
             // add to world doubly linked list
             b.prev = null;
-            b.next = m_bodyList;
-            if (m_bodyList != null) {
-                m_bodyList.prev = b;
+            b.next = bodies;
+            if (bodies != null) {
+                bodies.prev = b;
             }
-            m_bodyList = b;
-            ++m_bodyCount;
+            bodies = b;
+            ++bodyCount;
 
         for (FixtureDef f : fd) {
             b.addFixture(f);
@@ -330,7 +330,7 @@ public class Dynamics2D {
      * @warning This function is locked during callbacks.
      */
     public void destroyBody(Body2D body) {
-        assert (m_bodyCount > 0);
+        assert (bodyCount > 0);
 
         //invokeLater(() -> {
 
@@ -354,7 +354,7 @@ public class Dynamics2D {
             while (ce != null) {
                 ContactEdge ce0 = ce;
                 ce = ce.next;
-                m_contactManager.destroy(ce0.contact);
+                contactManager.destroy(ce0.contact);
             }
             body.contacts = null;
 
@@ -367,7 +367,7 @@ public class Dynamics2D {
                     m_destructionListener.sayGoodbye(f0);
                 }
 
-                f0.destroyProxies(m_contactManager.m_broadPhase);
+                f0.destroyProxies(contactManager.m_broadPhase);
                 f0.destroy();
                 // TODO djm recycle fixtures (here or in that destroy method)
                 body.fixtures = f;
@@ -385,11 +385,11 @@ public class Dynamics2D {
                 body.next.prev = body.prev;
             }
 
-            if (body == m_bodyList) {
-                m_bodyList = body.next;
+            if (body == bodies) {
+                bodies = body.next;
             }
 
-            --m_bodyCount;
+            --bodyCount;
             // TODO djm recycle body
         //});
     }
@@ -410,32 +410,34 @@ public class Dynamics2D {
         invokeLater(() -> {
 
             // Connect to the world list.
-            j.m_prev = null;
-            j.next = m_jointList;
-            if (m_jointList != null) {
-                m_jointList.m_prev = j;
+            j.prev = null;
+            j.next = joints;
+            if (joints != null) {
+                joints.prev = j;
             }
-            m_jointList = j;
-            ++m_jointCount;
+            joints = j;
+            ++jointCount;
 
             // Connect to the bodies' doubly linked lists.
-            j.m_edgeA.joint = j;
-            j.m_edgeA.other = j.getBodyB();
-            j.m_edgeA.prev = null;
-            j.m_edgeA.next = j.getBodyA().joints;
-            if (j.getBodyA().joints != null) {
-                j.getBodyA().joints.prev = j.m_edgeA;
+            j.edgeA.joint = j;
+            Body2D B = j.getBodyB();
+            j.edgeA.other = B;
+            j.edgeA.prev = null;
+            Body2D A = j.getBodyA();
+            j.edgeA.next = A.joints;
+            if (A.joints != null) {
+                A.joints.prev = j.edgeA;
             }
-            j.getBodyA().joints = j.m_edgeA;
+            A.joints = j.edgeA;
 
-            j.m_edgeB.joint = j;
-            j.m_edgeB.other = j.getBodyA();
-            j.m_edgeB.prev = null;
-            j.m_edgeB.next = j.getBodyB().joints;
-            if (j.getBodyB().joints != null) {
-                j.getBodyB().joints.prev = j.m_edgeB;
+            j.edgeB.joint = j;
+            j.edgeB.other = A;
+            j.edgeB.prev = null;
+            j.edgeB.next = B.joints;
+            if (B.joints != null) {
+                B.joints.prev = j.edgeB;
             }
-            j.getBodyB().joints = j.m_edgeB;
+            B.joints = j.edgeB;
 
             Body2D bodyA = def.bodyA;
             Body2D bodyB = def.bodyB;
@@ -474,16 +476,16 @@ public class Dynamics2D {
             boolean collideConnected = j.getCollideConnected();
 
             // Remove from the doubly linked list.
-            if (j.m_prev != null) {
-                j.m_prev.next = j.next;
+            if (j.prev != null) {
+                j.prev.next = j.next;
             }
 
             if (j.next != null) {
-                j.next.m_prev = j.m_prev;
+                j.next.prev = j.prev;
             }
 
-            if (j == m_jointList) {
-                m_jointList = j.next;
+            if (j == joints) {
+                joints = j.next;
             }
 
             // Disconnect from island graph.
@@ -495,41 +497,41 @@ public class Dynamics2D {
             bodyB.setAwake(true);
 
             // Remove from body 1.
-            if (j.m_edgeA.prev != null) {
-                j.m_edgeA.prev.next = j.m_edgeA.next;
+            if (j.edgeA.prev != null) {
+                j.edgeA.prev.next = j.edgeA.next;
             }
 
-            if (j.m_edgeA.next != null) {
-                j.m_edgeA.next.prev = j.m_edgeA.prev;
+            if (j.edgeA.next != null) {
+                j.edgeA.next.prev = j.edgeA.prev;
             }
 
-            if (j.m_edgeA == bodyA.joints) {
-                bodyA.joints = j.m_edgeA.next;
+            if (j.edgeA == bodyA.joints) {
+                bodyA.joints = j.edgeA.next;
             }
 
-            j.m_edgeA.prev = null;
-            j.m_edgeA.next = null;
+            j.edgeA.prev = null;
+            j.edgeA.next = null;
 
             // Remove from body 2
-            if (j.m_edgeB.prev != null) {
-                j.m_edgeB.prev.next = j.m_edgeB.next;
+            if (j.edgeB.prev != null) {
+                j.edgeB.prev.next = j.edgeB.next;
             }
 
-            if (j.m_edgeB.next != null) {
-                j.m_edgeB.next.prev = j.m_edgeB.prev;
+            if (j.edgeB.next != null) {
+                j.edgeB.next.prev = j.edgeB.prev;
             }
 
-            if (j.m_edgeB == bodyB.joints) {
-                bodyB.joints = j.m_edgeB.next;
+            if (j.edgeB == bodyB.joints) {
+                bodyB.joints = j.edgeB.next;
             }
 
-            j.m_edgeB.prev = null;
-            j.m_edgeB.next = null;
+            j.edgeB.prev = null;
+            j.edgeB.next = null;
 
             Joint.destroy(j);
 
-            assert (m_jointCount > 0);
-            --m_jointCount;
+            assert (jointCount > 0);
+            --jointCount;
 
             // If the joint prevents collisions, then flag any contacts for filtering.
             if (!collideConnected) {
@@ -587,7 +589,7 @@ public class Dynamics2D {
             // If new fixtures were added, we need to find the new contacts.
             if ((flags & NEW_FIXTURE) == NEW_FIXTURE) {
                 // log.debug("There's a new fixture, lets look for new contacts");
-                m_contactManager.findNewContacts();
+                contactManager.findNewContacts();
                 flags &= ~NEW_FIXTURE;
             }
 
@@ -607,7 +609,7 @@ public class Dynamics2D {
 
             // Update contacts. This is where some contacts are destroyed.
             tempTimer.reset();
-            m_contactManager.collide();
+            contactManager.collide();
             m_profile.collide.record(tempTimer::getMilliseconds);
 
             // Integrate velocities, solve velocity constraints, and integrate positions.
@@ -661,7 +663,7 @@ public class Dynamics2D {
      * @see setAutoClearForces
      */
     public void clearForces() {
-        for (Body2D body = m_bodyList; body != null; body = body.next()) {
+        for (Body2D body = bodies; body != null; body = body.next()) {
             body.force.setZero();
             body.torque = 0.0f;
         }
@@ -683,9 +685,9 @@ public class Dynamics2D {
      * @param aabb     the query box.
      */
     public void queryAABB(QueryCallback callback, AABB aabb) {
-        wqwrapper.broadPhase = m_contactManager.m_broadPhase;
+        wqwrapper.broadPhase = contactManager.m_broadPhase;
         wqwrapper.callback = callback;
-        m_contactManager.m_broadPhase.query(wqwrapper, aabb);
+        contactManager.m_broadPhase.query(wqwrapper, aabb);
     }
 
     /**
@@ -696,9 +698,9 @@ public class Dynamics2D {
      * @param aabb             the query box.
      */
     public void queryAABB(QueryCallback callback, ParticleQueryCallback particleCallback, AABB aabb) {
-        wqwrapper.broadPhase = m_contactManager.m_broadPhase;
+        wqwrapper.broadPhase = contactManager.m_broadPhase;
         wqwrapper.callback = callback;
-        m_contactManager.m_broadPhase.query(wqwrapper, aabb);
+        contactManager.m_broadPhase.query(wqwrapper, aabb);
         m_particleSystem.queryAABB(particleCallback, aabb);
     }
 
@@ -725,12 +727,12 @@ public class Dynamics2D {
      * @param point2   the ray ending point
      */
     public void raycast(RayCastCallback callback, Tuple2f point1, Tuple2f point2) {
-        wrcwrapper.broadPhase = m_contactManager.m_broadPhase;
+        wrcwrapper.broadPhase = contactManager.m_broadPhase;
         wrcwrapper.callback = callback;
         input.maxFraction = 1.0f;
         input.p1.set(point1);
         input.p2.set(point2);
-        m_contactManager.m_broadPhase.raycast(wrcwrapper, input);
+        contactManager.m_broadPhase.raycast(wrcwrapper, input);
     }
 
     /**
@@ -745,12 +747,12 @@ public class Dynamics2D {
      */
     public void raycast(RayCastCallback callback, ParticleRaycastCallback particleCallback,
                         Tuple2f point1, Tuple2f point2) {
-        wrcwrapper.broadPhase = m_contactManager.m_broadPhase;
+        wrcwrapper.broadPhase = contactManager.m_broadPhase;
         wrcwrapper.callback = callback;
         input.maxFraction = 1.0f;
         input.p1.set(point1);
         input.p2.set(point2);
-        m_contactManager.m_broadPhase.raycast(wrcwrapper, input);
+        contactManager.m_broadPhase.raycast(wrcwrapper, input);
         m_particleSystem.raycast(particleCallback, point1, point2);
     }
 
@@ -773,7 +775,7 @@ public class Dynamics2D {
      * @return the head of the world body list.
      */
     public Body2D bodies() {
-        return m_bodyList;
+        return bodies;
     }
 
     /**
@@ -783,7 +785,7 @@ public class Dynamics2D {
      * @return the head of the world joint list.
      */
     public Joint joints() {
-        return m_jointList;
+        return joints;
     }
 
     /**
@@ -795,7 +797,7 @@ public class Dynamics2D {
      * to avoid missing contacts.
      */
     public Contact getContactList() {
-        return m_contactManager.m_contactList;
+        return contactManager.m_contactList;
     }
 
     public boolean isSleepingAllowed() {
@@ -836,7 +838,7 @@ public class Dynamics2D {
      * @return
      */
     public int getProxyCount() {
-        return m_contactManager.m_broadPhase.getProxyCount();
+        return contactManager.m_broadPhase.getProxyCount();
     }
 
     /**
@@ -845,7 +847,7 @@ public class Dynamics2D {
      * @return
      */
     public int getBodyCount() {
-        return m_bodyCount;
+        return bodyCount;
     }
 
     /**
@@ -854,7 +856,7 @@ public class Dynamics2D {
      * @return
      */
     public int getJointCount() {
-        return m_jointCount;
+        return jointCount;
     }
 
     /**
@@ -863,7 +865,7 @@ public class Dynamics2D {
      * @return
      */
     public int getContactCount() {
-        return m_contactManager.m_contactCount;
+        return contactManager.m_contactCount;
     }
 
     /**
@@ -872,7 +874,7 @@ public class Dynamics2D {
      * @return
      */
     public int getTreeHeight() {
-        return m_contactManager.m_broadPhase.getTreeHeight();
+        return contactManager.m_broadPhase.getTreeHeight();
     }
 
     /**
@@ -881,7 +883,7 @@ public class Dynamics2D {
      * @return
      */
     public int getTreeBalance() {
-        return m_contactManager.m_broadPhase.getTreeBalance();
+        return contactManager.m_broadPhase.getTreeBalance();
     }
 
     /**
@@ -890,7 +892,7 @@ public class Dynamics2D {
      * @return
      */
     public float getTreeQuality() {
-        return m_contactManager.m_broadPhase.getTreeQuality();
+        return contactManager.m_broadPhase.getTreeQuality();
     }
 
     /**
@@ -948,7 +950,7 @@ public class Dynamics2D {
      * @return
      */
     public ContactManager getContactManager() {
-        return m_contactManager;
+        return contactManager;
     }
 
     public Profile getProfile() {
@@ -965,32 +967,32 @@ public class Dynamics2D {
         m_profile.solvePosition.startAccum();
 
         // update previous transforms
-        for (Body2D b = m_bodyList; b != null; b = b.next) {
+        for (Body2D b = bodies; b != null; b = b.next) {
             b.transformPrev.set(b);
             b.preUpdate();
         }
 
         // Size the island for the worst case.
-        island.init(m_bodyCount, m_contactManager.m_contactCount, m_jointCount,
-                m_contactManager.m_contactListener);
+        island.init(bodyCount, contactManager.m_contactCount, jointCount,
+                contactManager.m_contactListener);
 
         // Clear all the island flags.
-        for (Body2D b = m_bodyList; b != null; b = b.next) {
+        for (Body2D b = bodies; b != null; b = b.next) {
             b.flags &= ~Body2D.e_islandFlag;
         }
-        for (Contact c = m_contactManager.m_contactList; c != null; c = c.m_next) {
+        for (Contact c = contactManager.m_contactList; c != null; c = c.m_next) {
             c.m_flags &= ~Contact.ISLAND_FLAG;
         }
-        for (Joint j = m_jointList; j != null; j = j.next) {
-            j.m_islandFlag = false;
+        for (Joint j = joints; j != null; j = j.next) {
+            j.islandFlag = false;
         }
 
         // Build and simulate all awake islands.
-        int stackSize = m_bodyCount;
+        int stackSize = bodyCount;
         if (stack.length < stackSize) {
             stack = new Body2D[stackSize];
         }
-        for (Body2D seed = m_bodyList; seed != null; seed = seed.next) {
+        for (Body2D seed = bodies; seed != null; seed = seed.next) {
             if ((seed.flags & Body2D.e_islandFlag) == Body2D.e_islandFlag) {
                 continue;
             }
@@ -1064,7 +1066,7 @@ public class Dynamics2D {
 
                 // Search all joints connect to this body.
                 for (JointEdge je = b.joints; je != null; je = je.next) {
-                    if (je.joint.m_islandFlag) {
+                    if (je.joint.islandFlag) {
                         continue;
                     }
 
@@ -1076,7 +1078,7 @@ public class Dynamics2D {
                     }
 
                     island.add(je.joint);
-                    je.joint.m_islandFlag = true;
+                    je.joint.islandFlag = true;
 
                     if ((other.flags & Body2D.e_islandFlag) == Body2D.e_islandFlag) {
                         continue;
@@ -1104,7 +1106,7 @@ public class Dynamics2D {
 
         broadphaseTimer.reset();
         // Synchronize fixtures, check for out of range bodies.
-        for (Body2D b = m_bodyList; b != null; b = b.next()) {
+        for (Body2D b = bodies; b != null; b = b.next()) {
             // If a body was not in an island then it did not move.
             if ((b.flags & Body2D.e_islandFlag) == 0) {
                 continue;
@@ -1120,7 +1122,7 @@ public class Dynamics2D {
         }
 
         // Look for new contacts.
-        m_contactManager.findNewContacts();
+        contactManager.findNewContacts();
         m_profile.broadphase.record(broadphaseTimer.getMilliseconds());
     }
 
@@ -1129,14 +1131,14 @@ public class Dynamics2D {
 
         final Island island = toiIsland;
         island.init(2 * Settings.maxTOIContacts, Settings.maxTOIContacts, 0,
-                m_contactManager.m_contactListener);
+                contactManager.m_contactListener);
         if (m_stepComplete) {
-            for (Body2D b = m_bodyList; b != null; b = b.next) {
+            for (Body2D b = bodies; b != null; b = b.next) {
                 b.flags &= ~Body2D.e_islandFlag;
                 b.sweep.alpha0 = 0.0f;
             }
 
-            for (Contact c = m_contactManager.m_contactList; c != null; c = c.m_next) {
+            for (Contact c = contactManager.m_contactList; c != null; c = c.m_next) {
                 // Invalidate TOI
                 c.m_flags &= ~(Contact.TOI_FLAG | Contact.ISLAND_FLAG);
                 c.m_toiCount = 0;
@@ -1150,7 +1152,7 @@ public class Dynamics2D {
             Contact minContact = null;
             float minAlpha = 1.0f;
 
-            for (Contact c = m_contactManager.m_contactList; c != null; c = c.m_next) {
+            for (Contact c = contactManager.m_contactList; c != null; c = c.m_next) {
                 // Is this contact disabled?
                 if (!c.isEnabled()) {
                     continue;
@@ -1262,7 +1264,7 @@ public class Dynamics2D {
             bB.advance(minAlpha);
 
             // The TOI contact likely has some new contact points.
-            minContact.update(m_contactManager.m_contactListener);
+            minContact.update(contactManager.m_contactListener);
             minContact.m_flags &= ~Contact.TOI_FLAG;
             ++minContact.m_toiCount;
 
@@ -1333,7 +1335,7 @@ public class Dynamics2D {
                         }
 
                         // Update the contact points
-                        contact.update(m_contactManager.m_contactListener);
+                        contact.update(contactManager.m_contactListener);
 
                         // Was the contact disabled by the user?
                         if (!contact.isEnabled()) {
@@ -1397,7 +1399,7 @@ public class Dynamics2D {
 
             // Commit fixture proxy movements to the broad-phase so that new contacts are created.
             // Also, some contacts can be destroyed.
-            m_contactManager.findNewContacts();
+            contactManager.findNewContacts();
 
             if (m_subStepping) {
                 m_stepComplete = false;

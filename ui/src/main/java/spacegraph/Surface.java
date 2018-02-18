@@ -21,7 +21,7 @@ abstract public class Surface implements SurfaceBase {
     /**
      * smallest recognizable dimension change
      */
-    public static final float EPSILON = 0.0001f;
+    public static final float EPSILON = 0.00001f;
 
     private final AtomicInteger serial = new AtomicInteger();
 
@@ -93,7 +93,7 @@ abstract public class Surface implements SurfaceBase {
         posChanged(r);
         return this;
     }
-    public final boolean posChanged(RectFloat2D r) {
+    protected final boolean posChanged(RectFloat2D r) {
         RectFloat2D b = this.bounds;
         if (!b.equals(r, Surface.EPSILON)) {
             this.bounds = r;

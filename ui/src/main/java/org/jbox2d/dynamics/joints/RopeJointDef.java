@@ -1,6 +1,7 @@
 package org.jbox2d.dynamics.joints;
 
 import org.jbox2d.common.Vec2;
+import org.jbox2d.dynamics.Body2D;
 import spacegraph.math.Tuple2f;
 
 /**
@@ -27,9 +28,12 @@ public class RopeJointDef extends JointDef {
      */
     public float maxLength;
 
-    public RopeJointDef() {
+
+    public RopeJointDef(Body2D a, Body2D b) {
         super(JointType.ROPE);
-        localAnchorA.set(-1.0f, 0.0f);
-        localAnchorB.set(1.0f, 0.0f);
+        this.bodyA = a;
+        this.bodyB = b;
+        localAnchorA.set(0.0f, 0.0f);
+        localAnchorB.set(0.0f, 0.0f);
     }
 }

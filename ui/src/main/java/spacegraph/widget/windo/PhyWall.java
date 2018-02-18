@@ -3,6 +3,7 @@ package spacegraph.widget.windo;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.event.On;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.collision.shapes.Shape;
@@ -23,6 +24,7 @@ import spacegraph.render.Draw;
 import spacegraph.widget.slider.XYSlider;
 
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -32,11 +34,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class PhyWall extends Wall implements Animated {
     public static final float SHAPE_SIZE_EPSILON = 0.001f;
 
-    /** set to smaller values to make more precise with respect to Box2D's default configuration */
-    static final float WORLD_SCALE =
-            1f;
-            //1/100f;
-
     final Dynamics2D W;
 
 
@@ -44,6 +41,8 @@ public class PhyWall extends Wall implements Animated {
 
     public PhyWall() {
         super();
+
+
         W = new Dynamics2D(new v2(0, 0));
         W.setParticleRadius(0.2f);
         W.setParticleDensity(1.0f);
@@ -74,38 +73,25 @@ public class PhyWall extends Wall implements Animated {
     @Override
     protected void paintBelow(GL2 gl) {
         super.paintBelow(gl);
-        //vykresli tuhe telesa
-        Dynamics2D w = this.W;
-        for (Body2D b = w.bodies(); b != null; b = b.next()) {
-            drawBody(b, gl);
-        }
 
-        //vykresli joiny
-        for (Joint j = w.joints(); j != null; j = j.next) {
+        Dynamics2D w = this.W;
+
+        for (Joint j = w.joints(); j != null; j = j.next)
             drawJoint(j, gl);
-        }
+
+        for (Body2D b = w.bodies(); b != null; b = b.next())
+            drawBody(b, gl);
+
     }
 
     private void drawJoint(Joint joint, GL2 g) {
-        g.glColor3f(0.6f, 1f, 0.1f);
+        g.glColor4f(0.9f, 0.8f, 0.1f, 0.75f);
         g.glLineWidth(10f);
-        Tuple2f v1 = new Vec2();
-        Tuple2f v2 = new Vec2();
+        Tuple2f v1 = new v2(), v2 = new v2();
         switch (joint.getType()) {
-            case DISTANCE:
-                DistanceJoint dj = (DistanceJoint) joint;
-                v1 = joint.getBodyA().getWorldPoint(dj.getLocalAnchorA());
-                v2 = joint.getBodyB().getWorldPoint(dj.getLocalAnchorB());
-                break;
-            case ROPE:
-                RopeJoint rj = (RopeJoint) joint;
-                v1 = joint.getBodyA().getWorldPoint(rj.getLocalAnchorA());
-                v2 = joint.getBodyB().getWorldPoint(rj.getLocalAnchorB());
-                break;
-            case MOUSE:
-                MouseJoint localMj = (MouseJoint) joint;
-                localMj.getAnchorA(v1);
-                localMj.getAnchorB(v2);
+            default:
+                joint.getAnchorA(v1);
+                joint.getAnchorB(v2);
                 break;
         }
         Draw.line(g, v1.x, v1.y, v2.x, v2.y);
@@ -118,9 +104,12 @@ public class PhyWall extends Wall implements Animated {
 //                    } else {
 //                        g.setColor(Color.GRAY);
 //                    }
-        gl.glColor3f(0.5f, 0.5f, 0.5f);
 
-        Tuple2f v = new v2();
+        //boolean active = body.isActive();
+        boolean awake = body.isAwake();
+        gl.glColor4f(0.5f, 0.5f, 0.5f, awake ? 0.5f : 0.3f);
+
+        //Tuple2f v = new v2();
         //List<PolygonFixture> generalPolygons = new FasterList<>();
         for (Fixture f = body.fixtures; f != null; f = f.next) {
             PolygonFixture pg = f.polygon;
@@ -130,20 +119,18 @@ public class PhyWall extends Wall implements Animated {
                 Shape shape = f.shape();
                 switch (shape.m_type) {
                     case POLYGON:
+
                         PolygonShape poly = (PolygonShape) shape;
+
                         gl.glBegin(GL2.GL_TRIANGLE_FAN);
                         int n = poly.vertices;
-                        for (int i = 0; i <= n; ++i) {
-                            boolean done = false;
-                            if (i == n) {
-                                i = 0;
-                                done = true;
-                            }
-                            body.getWorldPointToOut(poly.vertex[i], v);
-                            gl.glVertex2f(v.x, v.y);
-                            if (done)
-                                break;
-                        }
+                        Tuple2f[] pv = poly.vertex;
+                        float preScale = 1.1f;
+
+                        for (int i = 0; i < n; ++i)
+                            body.getWorldPointToGL(pv[i], preScale, gl);
+                        body.getWorldPointToGL(pv[0], preScale, gl); //close
+
                         gl.glEnd();
                         break;
                     case CIRCLE:
@@ -307,6 +294,16 @@ public class PhyWall extends Wall implements Animated {
     }
 
 
+
+    final Random rng = new XoRoShiRo128PlusRandom(1);
+    float rngPolar(float scale) {
+        return //2f*(rng.nextFloat()*scale-0.5f);
+                (float) rng.nextGaussian() * scale;
+    }
+    float rngNormal(float scale) {
+        return rng.nextFloat() * scale;
+    }
+
     final AtomicInteger i = new AtomicInteger(0);
 
 
@@ -329,10 +326,10 @@ public class PhyWall extends Wall implements Animated {
 
             pos(initialBounds);
 
-            this.shape = PolygonShape.box(initialBounds.w/2*WORLD_SCALE, initialBounds.h/2*WORLD_SCALE);
+            this.shape = PolygonShape.box(initialBounds.w/2, initialBounds.h/2);
 
             FixtureDef fd = new FixtureDef(shape, 0.1f, 0f);
-            fd.setRestitution(0f);
+            fd.setRestitution(0.1f);
 
             BodyDef bd = new BodyDef();
             bd.type = BodyType.DYNAMIC;
@@ -361,22 +358,23 @@ public class PhyWall extends Wall implements Animated {
             return f;
         }
 
+
         public void newPort() {
             float w = w()/10f;
             float h = h()/10f;
-            float dx = -w()/1.9f;
-            float dy = -h()/1.9f;
-            PhyWindow port = newWindow(new XYSlider(), RectFloat2D.XYWH(cx() + dx, cy() + dy, w, h));
+            float dx = rngPolar(w/2f); //-w()/1.9f;
+            float dy = rngPolar(h/2f);
+            PhyWindow port = newWindow(new XYSlider(),
+                    RectFloat2D.XYWH(cx() + dx, cy() + dy, w, h));
 
-            RopeJointDef jd = new RopeJointDef();
+            RopeJointDef jd = new RopeJointDef(port.body, this.body);
             jd.collideConnected = true;
-            jd.bodyA = port.body;
-            jd.bodyB = this.body;
-            jd.maxLength = Math.max(h(),w())/1.5f;
+            jd.maxLength = Math.max(h(),w())/1.25f; //some slack
             Joint link = W.newJoint(jd);
 
 
         }
+
 
 
         private class MyBody2D extends Body2D {
@@ -387,6 +385,7 @@ public class PhyWall extends Wall implements Animated {
             public MyBody2D(BodyDef bd) {
                 super(bd, PhyWall.this.W);
                 setFixedRotation(true);
+                this.physBounds = bounds;
             }
 
 
@@ -407,7 +406,7 @@ public class PhyWall extends Wall implements Animated {
                             updateFixtures((f) -> {
                                 //HACK assumes the first is the only one
                                 //if (f.m_shape == shape) {
-                                    f.setShape(shape.setAsBox(r.w / 2*WORLD_SCALE, r.h / 2*WORLD_SCALE));
+                                    f.setShape(shape.setAsBox(r.w / 2, r.h / 2));
                                 //}
 
 
@@ -421,7 +420,7 @@ public class PhyWall extends Wall implements Animated {
 //                    float px = p.x;
 //                    float py = p.y;
                     //setLinearVelocity(new v2(r.x - px, r.y - py));
-                    v2 target = new v2(r.cx()*WORLD_SCALE, r.cy()*WORLD_SCALE);
+                    v2 target = new v2(r.cx(), r.cy());
 //                    target.sub(p.x, p.y);
 //                    target.normalize();
 //
@@ -430,7 +429,7 @@ public class PhyWall extends Wall implements Animated {
 //
 //                    applyLinearImpulse(target, p, true);
 
-                    if (setTransform(target, 0))
+                    if (setTransform(target, 0, EPSILON))
                        setAwake(true);
 ////                    if (m_sweep.c.setIfChanged(r.cx(), r.cy(), Settings.EPSILON)) {
 ////                        //setLinearVelocity(new v2(0,0));
@@ -452,7 +451,10 @@ public class PhyWall extends Wall implements Animated {
 
                 float w = w(), h = h(); //HACK re-use the known width/height assumes that the physics engine cant change the shape's size
 
-                pos(physBounds = RectFloat2D.XYWH(p.x/WORLD_SCALE, p.y/WORLD_SCALE, w, h));
+                RectFloat2D r = RectFloat2D.XYWH(p.x, p.y, w, h);
+                if (!r.equals(physBounds, EPSILON)) {
+                    pos(physBounds = r);
+                }
 
             }
         }

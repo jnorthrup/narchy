@@ -8,7 +8,6 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.SurfaceBase;
 import spacegraph.render.Draw;
 import spacegraph.render.JoglSpace;
-import spacegraph.render.SpaceGraphFlat;
 import spacegraph.widget.windo.PhyWall;
 
 import java.util.Random;
@@ -24,7 +23,7 @@ public class TensorGlow extends PhyWall {
     private BitmapMatrixView rngView;
 
     public TensorGlow() {
-
+        super();
     }
 
     @Override

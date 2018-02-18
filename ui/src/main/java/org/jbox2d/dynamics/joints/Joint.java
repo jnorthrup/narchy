@@ -76,18 +76,18 @@ public abstract class Joint {
         joint.destructor();
     }
 
-    private final JointType m_type;
-    public Joint m_prev;
+    private final JointType type;
+    public Joint prev;
     public Joint next;
-    public JointEdge m_edgeA;
-    public JointEdge m_edgeB;
-    protected Body2D m_bodyA;
-    protected Body2D m_bodyB;
+    public JointEdge edgeA;
+    public JointEdge edgeB;
+    protected Body2D A;
+    protected Body2D B;
 
-    public boolean m_islandFlag;
-    private final boolean m_collideConnected;
+    public boolean islandFlag;
+    private final boolean collideConnected;
 
-    public Object m_userData;
+    public Object data;
 
     protected IWorldPool pool;
 
@@ -100,26 +100,26 @@ public abstract class Joint {
         assert (def.bodyA != def.bodyB);
 
         pool = worldPool;
-        m_type = def.type;
-        m_prev = null;
+        type = def.type;
+        prev = null;
         next = null;
-        m_bodyA = def.bodyA;
-        m_bodyB = def.bodyB;
-        m_collideConnected = def.collideConnected;
-        m_islandFlag = false;
-        m_userData = def.userData;
+        A = def.bodyA;
+        B = def.bodyB;
+        collideConnected = def.collideConnected;
+        islandFlag = false;
+        data = def.userData;
 
-        m_edgeA = new JointEdge();
-        m_edgeA.joint = null;
-        m_edgeA.other = null;
-        m_edgeA.prev = null;
-        m_edgeA.next = null;
+        edgeA = new JointEdge();
+        edgeA.joint = null;
+        edgeA.other = null;
+        edgeA.prev = null;
+        edgeA.next = null;
 
-        m_edgeB = new JointEdge();
-        m_edgeB.joint = null;
-        m_edgeB.other = null;
-        m_edgeB.prev = null;
-        m_edgeB.next = null;
+        edgeB = new JointEdge();
+        edgeB.joint = null;
+        edgeB.other = null;
+        edgeB.prev = null;
+        edgeB.next = null;
 
         // m_localCenterA = new Vec2();
         // m_localCenterB = new Vec2();
@@ -131,14 +131,14 @@ public abstract class Joint {
      * @return
      */
     public JointType getType() {
-        return m_type;
+        return type;
     }
 
     /**
      * get the first body attached to this joint.
      */
     public final Body2D getBodyA() {
-        return m_bodyA;
+        return A;
     }
 
     /**
@@ -147,7 +147,7 @@ public abstract class Joint {
      * @return
      */
     public final Body2D getBodyB() {
-        return m_bodyB;
+        return B;
     }
 
     /**
@@ -191,14 +191,14 @@ public abstract class Joint {
      * get the user data pointer.
      */
     public Object getUserData() {
-        return m_userData;
+        return data;
     }
 
     /**
      * Set the user data pointer.
      */
     public void setUserData(Object data) {
-        m_userData = data;
+        this.data = data;
     }
 
     /**
@@ -206,7 +206,7 @@ public abstract class Joint {
      * the flag is only checked when fixture AABBs begin to overlap.
      */
     public final boolean getCollideConnected() {
-        return m_collideConnected;
+        return collideConnected;
     }
 
     /**
@@ -215,7 +215,7 @@ public abstract class Joint {
      * @return
      */
     public boolean isActive() {
-        return m_bodyA.isActive() && m_bodyB.isActive();
+        return A.isActive() && B.isActive();
     }
 
     /**
@@ -238,4 +238,6 @@ public abstract class Joint {
      */
     public void destructor() {
     }
+
+
 }

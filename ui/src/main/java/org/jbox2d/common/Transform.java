@@ -23,6 +23,7 @@
  ******************************************************************************/
 package org.jbox2d.common;
 
+import com.jogamp.opengl.GL2;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 
@@ -80,8 +81,12 @@ public class Transform extends Rot {
     }
 
     public final static void mulToOut(final Transform T, final Tuple2f v, final Tuple2f out) {
-        final float tempy = (T.s * v.x + T.c * v.y) + T.pos.y;
-        out.x = (T.c * v.x - T.s * v.y) + T.pos.x;
+        float ts = T.s;
+        float vx = v.x;
+        float vy = v.y;
+        float tc = T.c;
+        final float tempy = (ts * vx + tc * vy) + T.pos.y;
+        out.x = (tc * vx - ts * vy) + T.pos.x;
         out.y = tempy;
     }
 
@@ -90,6 +95,31 @@ public class Transform extends Rot {
         Rot tq = T;
         out.x = (tq.c * v.x - tq.s * v.y) + T.pos.x;
         out.y = (tq.s * v.x + tq.c * v.y) + T.pos.y;
+    }
+    public final static void mulToOutUnsafe(final Transform T, final Tuple2f v, float scale, final Tuple2f out) {
+        assert (v != out);
+        float vy = v.y * scale;
+        float vx = v.x * scale;
+        Rot tq = T;
+        Tuple2f pos = T.pos;
+        float tqs = tq.s;
+        float tqc = tq.c;
+        out.x = (tqc * vx - tqs * vy) + pos.x;
+        out.y = (tqs * vx + tqc * vy) + pos.y;
+    }
+
+    public final static void mulToOutUnsafe(final Transform T, final Tuple2f v, float scale, final GL2 gl) {
+        float vy = v.y * scale;
+        float vx = v.x * scale;
+        Rot tq = T;
+        Tuple2f pos = T.pos;
+        float tqs = tq.s;
+        float tqc = tq.c;
+        gl.glVertex2f(
+            (tqc * vx - tqs * vy) + pos.x,
+            (tqs * vx + tqc * vy) + pos.y
+        );
+
     }
 
     public final static Tuple2f mulTrans(final Transform T, final Tuple2f v) {
