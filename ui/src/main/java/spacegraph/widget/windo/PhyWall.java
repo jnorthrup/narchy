@@ -393,7 +393,7 @@ public class PhyWall extends Wall implements Animated {
                 pathVis = null;
             }
 
-            updateEnd(finger);
+            //updateEnd(finger);
 
             if (this.start instanceof Wireable)
                 ((Wireable)start).onWireOut(this, false);
@@ -508,9 +508,9 @@ public class PhyWall extends Wall implements Animated {
                         return this;
                 }
 
-                Surface c = super.onTouch(finger, buttons);
-                if (c != null)
-                    return c;
+//                Surface c = super.onTouch(finger, buttons);
+//                if (c != null)
+//                    return c;
 
                 return this;
             }
