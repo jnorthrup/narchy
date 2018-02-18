@@ -82,11 +82,11 @@ public class AnimVector3f extends v3 implements Animated {
 //
 //        } else {
             //float v = (float) (rate / Math.sqrt(lenSq)); //constant speed
-            float v = //Math.min(1,
+            float v = Math.min(1,
                     (
                     //rate //constant speed
                     (float) (rate * Math.sqrt(lenSq)) //proportional speed
-            );
+            ));
 
 
             super.set(

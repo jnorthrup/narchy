@@ -19,7 +19,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class ZoomOrtho extends Ortho {
 
     float zoomRate = 0.2f;
-    float pressZoomOutRate = zoomRate;
+    float pressZoomOutRate = zoomRate*2;
 
 
     final static float minZoom = 0.25f;
@@ -148,11 +148,12 @@ public class ZoomOrtho extends Ortho {
 
     @Override
     Surface updateMouse(float sx, float sy, short[] buttonsDown) {
-        Surface s = super.updateMouse(sx, sy, buttonsDown);
 
-        if (s == null) {
+        Surface s =
+                super.updateMouse(sx, sy, buttonsDown);
+
+        if (s == null || (zoomingOut || panStart!=null))
             updatePan();
-        }
 
         return s;
     }

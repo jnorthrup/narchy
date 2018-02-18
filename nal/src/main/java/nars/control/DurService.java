@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -27,7 +26,6 @@ abstract public class DurService extends NARService implements Runnable {
     /** when the last cycle ended */
     private long now;
 
-    private final AtomicBoolean busy = new AtomicBoolean(true);
 
 
 

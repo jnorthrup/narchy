@@ -9,7 +9,7 @@ import nars.NAgentX;
 import nars.Task;
 import nars.concept.ScalarConcepts;
 import nars.gui.Vis;
-import nars.util.signal.Bitmap2DSensor;
+import nars.util.signal.Bitmap2DConcepts;
 import nars.video.Scale;
 import org.apache.commons.math3.util.MathUtils;
 import org.jetbrains.annotations.NotNull;
@@ -62,7 +62,7 @@ public class FZero extends NAgentX {
 
         this.fz = new FZeroGame();
 
-        Bitmap2DSensor<Scale> c = senseCamera($.the("cam"), new Scale(() -> fz.image,
+        Bitmap2DConcepts<Scale> c = senseCamera($.the("cam"), new Scale(() -> fz.image,
                 //32, 24
                 24, 16
                 //10,4

@@ -2,9 +2,17 @@ package nars.video;
 
 import jcog.Util;
 import jcog.math.random.XorShift128PlusRandom;
+import jcog.pri.Prioritized;
 import jcog.signal.Bitmap2D;
+import jcog.sort.CachedTopN;
 import nars.*;
 import nars.concept.ActionConcept;
+import nars.control.CauseChannel;
+import nars.exe.UniExec;
+import nars.op.stm.ConjClustering;
+import nars.task.ITask;
+import nars.task.TaskProxy;
+import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.util.signal.Bitmap2DSensor;
@@ -15,6 +23,7 @@ import java.util.Random;
 import java.util.function.Supplier;
 
 import static jcog.Util.lerp;
+import static nars.Op.BELIEF;
 
 /**
  * 2D flat Raytracing Retina
@@ -300,24 +309,6 @@ public abstract class PixelBag implements Bitmap2D {
         return true;
     }
 
-
-    public static class Eye extends SubNAR {
-
-        public Eye(NAR superNAR, Bitmap2D source) {
-            super(superNAR, (superr)->{
-                NAR n = NARS.realtime(10 /* durFPS */).deriverAdd(1, 8).get();
-                n.startFPS(10f);
-                Bitmap2DSensor retina = new Bitmap2DSensor($.the("eye"), source, n) {
-//                    @Override
-//                    protected int next(NAR nar, int work) {
-//                        System.out.println("SEE " + work);
-//                        return super.next(nar, work);
-//                    }
-                };
-                return n;
-            });
-        }
-    }
 
     public PixelBag addActions(Term termRoot, NAgent a) {
         return addActions(termRoot, a, true, true, true);

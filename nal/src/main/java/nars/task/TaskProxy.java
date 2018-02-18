@@ -62,17 +62,22 @@ public class TaskProxy implements Task {
 
     @Override
     public void meta(String key, Object value) {
-        throw new UnsupportedOperationException();
+        //ignore
+        //throw new UnsupportedOperationException();
     }
 
     @Override
     public <X> X meta(String key, Function<String, Object> valueIfAbsent) {
-        throw new UnsupportedOperationException();
+        //ignore
+        //throw new UnsupportedOperationException();
+        return null;
     }
 
     @Override
     public float priSet(float p) {
-        throw new UnsupportedOperationException();
+        //ignore
+        //throw new UnsupportedOperationException();
+        return p;
     }
 
     @Override
@@ -82,7 +87,9 @@ public class TaskProxy implements Task {
 
     @Override
     public boolean delete() {
-        throw new UnsupportedOperationException();
+        //ignore
+        //throw new UnsupportedOperationException();
+        return false;
     }
 
     @Override

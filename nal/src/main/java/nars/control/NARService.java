@@ -10,12 +10,16 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class NARService extends Services.AbstractService<NAR> implements Termed {
 
     static final Logger logger = LoggerFactory.getLogger(NARService.class);
 
     public final Term id;
     protected Ons ons;
+
+    protected final AtomicBoolean busy = new AtomicBoolean(true);
 
     @Deprecated protected NARService(NAR nar) {
         this(nar, null);

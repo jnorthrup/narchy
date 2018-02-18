@@ -15,9 +15,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+
+import static nars.Op.BELIEF;
 
 /**
  * rectangular region of pixels
@@ -40,8 +41,9 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<SensorConc
         assert(area > 0);
 
         this.src = src;
+        this.pixelPri = n.priDefault(BELIEF);
 
-        this.matrix = new SensorConcept[width][height];
+                this.matrix = new SensorConcept[width][height];
 
         final FloatSupplier pixelPri = () -> this.pixelPri;
 
@@ -98,12 +100,14 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<SensorConc
 
     /** stream of tasks containing changes in all updated pixels */
     public Stream<Task> stream(FloatFloatToObjectFunction<Truth> truther, int start, int end, NAR nar) {
+
         long now = nar.time();
         int dur = nar.dur();
 
         return IntStream.range(start, end)
                 .mapToObj(i -> get(i).update(truther, now, dur, nar))
-                .filter(Objects::nonNull);
+                //.filter(Objects::nonNull)
+        ;
     }
 
     public SensorConcept get(int i, int j) {

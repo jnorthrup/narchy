@@ -10,6 +10,7 @@ import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
 import nars.experiment.mario.Scene;
 import nars.experiment.mario.sprites.Mario;
+import nars.video.Eye;
 import nars.video.PixelBag;
 
 import javax.swing.*;
@@ -57,7 +58,7 @@ public class NARio extends NAgentX {
         cc.actions.forEach(a -> a.resolution.set(0.25f));
         //cc.setClarity(0.8f, 0.95f);
 
-        PixelBag.Eye eye = new PixelBag.Eye(nar, cc);
+        Eye eye = new Eye(nar, cc);
 
         /*Bitmap2DSensor<PixelBag> sc = addCamera(new Bitmap2DSensor<>(id, cc, this))
                 .resolution(0.02f);*/

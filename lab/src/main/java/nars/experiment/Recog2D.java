@@ -13,7 +13,6 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.util.signal.Bitmap2DConcepts;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.CameraSensorView;
 import nars.video.PixelBag;
@@ -116,7 +115,7 @@ public class Recog2D extends NAgentX {
         train = new Training(
                 //sensors,
                 Lists.newArrayList(
-                        ((Bitmap2DConcepts<P>) sp).src instanceof PixelBag ? Iterables.concat(sensors.keySet(), ((PixelBag) ((Bitmap2DConcepts<P>) sp).src).actions ) :
+                        sp.src instanceof PixelBag ? Iterables.concat(sensors.keySet(), ((PixelBag) sp.src).actions ) :
                                 sensors.keySet()
                 ),
                 outs, nar);
