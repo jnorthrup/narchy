@@ -89,7 +89,7 @@ public class ConstantVolumeJoint extends Joint {
                 djd.collideConnected = def.collideConnected;
                 djd.initialize(bodies[i], bodies[next], bodies[i].getWorldCenter(),
                         bodies[next].getWorldCenter());
-                distanceJoints[i] = (DistanceJoint) world.newJoint(djd);
+                distanceJoints[i] = (DistanceJoint) world.addJoint(djd);
             }
         } else {
             distanceJoints = def.joints.toArray(new DistanceJoint[def.joints.size()]);
@@ -104,7 +104,7 @@ public class ConstantVolumeJoint extends Joint {
     @Override
     public void destructor() {
         for (DistanceJoint distanceJoint : distanceJoints) {
-            world.destroyJoint(distanceJoint);
+            world.removeJoint(distanceJoint);
         }
     }
 

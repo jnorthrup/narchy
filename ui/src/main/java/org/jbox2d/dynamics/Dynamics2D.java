@@ -24,6 +24,7 @@
 package org.jbox2d.dynamics;
 
 import jcog.math.FloatSupplier;
+import jcog.util.QueueLock;
 import org.jbox2d.callbacks.*;
 import org.jbox2d.collision.AABB;
 import org.jbox2d.collision.RayCastInput;
@@ -54,10 +55,6 @@ import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The world class manages all physics entities, dynamic simulation, and asynchronous queries. The
@@ -70,7 +67,7 @@ public class Dynamics2D {
     public static final int WORLD_POOL_CONTAINER_SIZE = 16;
 
     public static final int NEW_FIXTURE = 0x0001;
-//    public static final int LOCKED = 0x0002;
+    //    public static final int LOCKED = 0x0002;
     public static final int CLEAR_FORCES = 0x0004;
 
     // statistics gathering
@@ -116,13 +113,16 @@ public class Dynamics2D {
 
 
     private final Smasher smasher = new Smasher();
-    @Deprecated private final HashTabulka<Fracture> fractures = new HashTabulka<>(); //TODO move into Smasher
+    @Deprecated
+    private final HashTabulka<Fracture> fractures = new HashTabulka<>(); //TODO move into Smasher
 
 
-    final Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
+    final QueueLock<Runnable> queue =
+            //QueueLock.getReentrant(512);
+            QueueLock.get(512);
 
-    final AtomicBoolean LOCKED = new AtomicBoolean(false);
-    final AtomicInteger BUSY = new AtomicInteger(0);
+//    final AtomicBoolean LOCKED = new AtomicBoolean(false);
+//    final AtomicInteger BUSY = new AtomicInteger(0);
 
     private final Island toiIsland = new Island(this);
     private final TOIInput toiInput = new TOIInput();
@@ -295,16 +295,16 @@ public class Dynamics2D {
      * @return
      * @warning This function is locked during callbacks.
      */
-    public Body2D newBody(BodyDef def) {
-        return newBody(new Body2D(def, this));
+    public Body2D addBody(BodyDef def) {
+        return addBody(new Body2D(def, this));
     }
 
-    public Body2D newBody(BodyDef def, FixtureDef... fd) {
-        return newBody(new Body2D(def, this), fd);
+    public Body2D addBody(BodyDef def, FixtureDef... fd) {
+        return addBody(new Body2D(def, this), fd);
     }
 
-    public Body2D newBody(Body2D b, FixtureDef... fd) {
-        //invokeLater(() -> {
+    public Body2D addBody(Body2D b, FixtureDef... fd) {
+        invoke(() -> {
 
             // add to world doubly linked list
             b.prev = null;
@@ -315,10 +315,10 @@ public class Dynamics2D {
             bodies = b;
             ++bodyCount;
 
-        for (FixtureDef f : fd) {
-            b.addFixture(f);
-        }
-        //});
+            for (FixtureDef f : fd) {
+                b.addFixture(f);
+            }
+        });
 
         return b;
     }
@@ -331,10 +331,10 @@ public class Dynamics2D {
      * @warning This automatically deletes all associated shapes and joints.
      * @warning This function is locked during callbacks.
      */
-    public void destroyBody(Body2D body) {
+    public void removeBody(Body2D body) {
         assert (bodyCount > 0);
 
-        //invokeLater(() -> {
+        invoke(() -> {
 
             // Delete the attached joints.
             JointEdge je = body.joints;
@@ -342,10 +342,10 @@ public class Dynamics2D {
                 JointEdge je0 = je;
                 je = je.next;
                 if (m_destructionListener != null) {
-                    m_destructionListener.sayGoodbye(je0.joint);
+                    m_destructionListener.beforeDestruct(je0.joint);
                 }
 
-                destroyJoint(je0.joint);
+                removeJoint(je0.joint);
 
                 body.joints = je;
             }
@@ -366,7 +366,7 @@ public class Dynamics2D {
                 f = f.next;
 
                 if (m_destructionListener != null) {
-                    m_destructionListener.sayGoodbye(f0);
+                    m_destructionListener.beforeDestruct(f0);
                 }
 
                 f0.destroyProxies(contactManager.m_broadPhase);
@@ -393,7 +393,7 @@ public class Dynamics2D {
 
             --bodyCount;
             // TODO djm recycle body
-        //});
+        });
     }
 
     /**
@@ -404,7 +404,7 @@ public class Dynamics2D {
      * @return
      * @warning This function is locked during callbacks.
      */
-    public Joint newJoint(JointDef def) {
+    public Joint addJoint(JointDef def) {
 
 
         Joint j = Joint.create(this, def);
@@ -471,9 +471,9 @@ public class Dynamics2D {
      * @param joint
      * @warning This function is locked during callbacks.
      */
-    public void destroyJoint(Joint j) {
+    public void removeJoint(Joint j) {
 
-        //invokeLater(() -> {
+        invoke(() -> {
 
             boolean collideConnected = j.getCollideConnected();
 
@@ -548,7 +548,7 @@ public class Dynamics2D {
                     edge = edge.next;
                 }
             }
-        //});
+        });
     }
 
     // djm pooling
@@ -556,18 +556,8 @@ public class Dynamics2D {
     private final Timer stepTimer = new Timer();
     private final Timer tempTimer = new Timer();
 
-    public void invoke(Runnable r) {
-
-        BUSY.incrementAndGet();
-        try {
-            if (isLocked()) {
-                queue.add(r);
-            } else {
-                r.run();
-            }
-        } finally {
-            BUSY.decrementAndGet();
-        }
+    public final void invoke(Runnable r) {
+        queue.accept(r);
     }
 
 
@@ -581,20 +571,22 @@ public class Dynamics2D {
     public void step(float dt, int velocityIterations, int positionIterations) {
 
 
-        if (!LOCKED.compareAndSet(false, true))
-            return; //already busy
+//        if (!LOCKED.compareAndSet(false, true))
+//            return; //already busy
+//
+//        while (BUSY.get()>0) Thread.onSpinWait(); //wait for any runnables invoked while unlocked to finish
 
-        while (BUSY.get()>0) Thread.onSpinWait(); //wait for any runnables invoked while unlocked to finish
 
-        try {
+        queue.accept(() -> {
+
 
             stepTimer.reset();
             tempTimer.reset();
             fractures.clear();
 
-            Runnable r;
-            while ((r = queue.poll()) != null)
-                r.run();
+//            Runnable r;
+//            while ((r = queue.poll()) != null)
+//                r.run();
 
             // log.debug("Starting step");
             // If new fixtures were added, we need to find the new contacts.
@@ -647,20 +639,21 @@ public class Dynamics2D {
             if ((flags & CLEAR_FORCES) == CLEAR_FORCES) {
                 clearForces();
             }
-        } finally {
-            LOCKED.set(false);
-        }
+        });
+//        } finally {
+//            LOCKED.set(false);
+//        }
 
-        {
+
+        invoke(()->{
 
 //            Fracture[] array = fractures.toArray(new Fracture[fractures.size()]);
 //            for (Fracture f : array)
 //                f.smash(smasher, dt);
             fractures.forEach(f -> {
-               f.smash(smasher, dt);
+                f.smash(smasher, dt);
             });
-        }
-
+        });
 
 
         m_profile.step.record(stepTimer.getMilliseconds());
@@ -924,14 +917,14 @@ public class Dynamics2D {
         return m_gravity;
     }
 
-    /**
-     * Is the world locked (in the middle of a time step).
-     *
-     * @return
-     */
-    public boolean isLocked() {
-        return LOCKED.get();
-    }
+//    /**
+//     * Is the world locked (in the middle of a time step).
+//     *
+//     * @return
+//     */
+//    public boolean isLocked() {
+//        return LOCKED.get();
+//    }
 
     /**
      * Set flag to control automatic clearing of forces after each time step.
@@ -1779,10 +1772,9 @@ public class Dynamics2D {
     }
 
     public Body2D newDynamicBody(Shape shape, float density, float friction) {
-        return newBody(new BodyDef(BodyType.DYNAMIC, new v2()),
+        return addBody(new BodyDef(BodyType.DYNAMIC, new v2()),
                 new FixtureDef(shape, density, friction));
     }
-
 
 
     public static class Profile {

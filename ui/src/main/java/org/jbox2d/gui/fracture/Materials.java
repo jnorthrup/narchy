@@ -32,7 +32,7 @@ public class Materials implements ICase {
             BodyDef bodyDef2 = new BodyDef();
             bodyDef2.type = BodyType.DYNAMIC;
             bodyDef2.position.set(0.0f, 10.0f); //pozicia
-            Body2D newBody = w.newBody(bodyDef2);
+            Body2D newBody = w.addBody(bodyDef2);
             PolygonShape shape3 = new PolygonShape();
             shape3.setAsBox(5.0f, 10.0f);
             Fixture f = newBody.addFixture(shape3, 1.0f);
@@ -49,7 +49,7 @@ public class Materials implements ICase {
             bodyDefBullet.type = BodyType.DYNAMIC;
             bodyDefBullet.position.set(-30.0f, 12.0f); //pozicia
             bodyDefBullet.linearVelocity = new v2(100.0f, 0.0f); // smer pohybu
-            Body2D bodyBullet = w.newBody(bodyDefBullet);
+            Body2D bodyBullet = w.addBody(bodyDefBullet);
             CircleShape circleShape = new CircleShape();
             circleShape.m_radius = 1.0f;
             Fixture fixtureBullet = bodyBullet.addFixture(circleShape, 5.0f);

@@ -63,11 +63,11 @@ public class Box2DTest {
             PhyWall s = new PhyWall();
             JoglSpace.window(s, 800, 800);
 
-            s.W.invoke(()->{
+            //s.W.invoke(()->{
                 for (int i = 0; i < 100; i++)
                     s.W.newDynamicBody(PolygonShape.box(20, 20), 1, 0.1f);
                 //s.W.newDynamicBody(PolygonShape.box(100, 100), 1, 0.1f).pos.add(-100, -100);
-            });
+            //});
 
         }
     }

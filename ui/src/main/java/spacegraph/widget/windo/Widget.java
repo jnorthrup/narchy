@@ -271,4 +271,7 @@ abstract public class Widget extends Switching {
         }
     }
 
+    public void untouch() {
+        touch(null); //HACK
+    }
 }

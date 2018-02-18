@@ -44,12 +44,12 @@ public interface DestructionListener {
      * to the destruction of one of its attached bodies.
      * @param joint
      */
-    void sayGoodbye(Joint joint);
+    void beforeDestruct(Joint joint);
 
     /**
      * Called when any fixture is about to be destroyed due
      * to the destruction of its parent body.
      * @param fixture
      */
-    void sayGoodbye(Fixture fixture);
+    void beforeDestruct(Fixture fixture);
 }

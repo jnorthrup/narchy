@@ -445,10 +445,7 @@ public class PhyWall extends Wall implements Animated {
 
             spatials.put(id, this);
 
-            W.invoke(()->{
-                W.newBody(body);
-                body.addFixture(fd);
-            });
+            W.addBody(body, fd);
 
         }
 
@@ -543,7 +540,7 @@ public class PhyWall extends Wall implements Animated {
             RopeJointDef jd = new RopeJointDef(port.body, this.body);
             jd.collideConnected = true;
             jd.maxLength = Math.max(h(),w())/1.25f; //some slack
-            Joint link = W.newJoint(jd);
+            Joint link = W.addJoint(jd);
 
 
         }

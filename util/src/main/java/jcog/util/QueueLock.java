@@ -1,11 +1,13 @@
 package jcog.util;
 
+import jcog.Util;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
@@ -31,6 +33,33 @@ public class QueueLock<X> implements Consumer<X> {
     //new LinkedBlockingQueue
      */
 
+
+    public static QueueLock<Runnable> get(int capacity) {
+        return new QueueLock<>(capacity, Runnable::run, null);
+    }
+
+    //TODO
+    public static QueueLock<Runnable> getReentrant(int capacity) {
+        final AtomicLong currentThread = new AtomicLong(-1);
+        return new QueueLock<>(capacity, (r)->{
+            currentThread.set(Thread.currentThread().getId());
+            r.run();
+            currentThread.set(-1);
+        }, null) {
+            @Override
+            public void accept(Runnable runnable) {
+                if (currentThread.get()==Thread.currentThread().getId()) {
+                    runnable.run();
+                    return; //elide queuing
+                }
+                super.accept(runnable);
+            }
+        };
+    }
+
+    public QueueLock(int capacity, Consumer<X> each, @Nullable IntConsumer afterBatch) {
+        this(Util.blockingQueue(capacity), each, afterBatch);
+    }
     /**
      * @param queue      holds the queue of items to be processed
      * @param each       procedure to process each queued item

@@ -163,7 +163,7 @@ public class Fracture {
         }
 
         if (b1.fixtureCount == 0) {
-            w.destroyBody(b1);
+            w.removeBody(b1);
         }
 
         //prida fragmenty do simulacie
@@ -174,7 +174,7 @@ public class Fracture {
                     Polygon[] convex = pg.convexDecomposition();
                     bodyDef.type = BodyType.DYNAMIC;
                     for (Polygon pgx : convex) {
-                        Body2D f_body = w.newBody(bodyDef);
+                        Body2D f_body = w.addBody(bodyDef);
                         pgx.flip();
                         PolygonShape ps = new PolygonShape();
                         ps.set(pgx.getArray(), pgx.size());
@@ -191,7 +191,7 @@ public class Fracture {
                 } else {
                     fd.material = f1.material.m_fragments; //rekurzivne stiepenie
                     bodyDef.type = b1.getType();
-                    Body2D f_body = w.newBody(bodyDef);
+                    Body2D f_body = w.addBody(bodyDef);
                     PolygonFixture pf = new PolygonFixture(pg);
 
                     f_body.addFixture(pf, fd);

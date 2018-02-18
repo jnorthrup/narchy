@@ -18,7 +18,7 @@ public class Chain implements ICase {
 
         Body2D ground = null;
         {
-            ground = w.newBody(new BodyDef());
+            ground = w.addBody(new BodyDef());
 
             EdgeShape shape = new EdgeShape();
             shape.set(new v2(-40.0f, 0.0f), new v2(40.0f, 0.0f));
@@ -39,12 +39,12 @@ public class Chain implements ICase {
 
             for (int i = 0; i < 30; ++i) {
 
-                Body2D body = w.newBody(
+                Body2D body = w.addBody(
                         new BodyDef(BodyType.DYNAMIC,
                                     new v2(0.5f + i, y) ),
                         box);
 
-                w.newJoint(jd.initialize(prevBody, body, /* anchor */ new v2(i, y)));
+                w.addJoint(jd.initialize(prevBody, body, /* anchor */ new v2(i, y)));
 
                 prevBody = body;
             }

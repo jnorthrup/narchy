@@ -210,9 +210,9 @@ public class Dynamic2DTests extends JComponent implements Runnable {
         {
             BodyDef bd = new BodyDef();
             bd.setType(BodyType.STATIC);
-            ground = w.newBody(bd);
-            Body2D wallRight = w.newBody(bd);
-            Body2D wallLeft = w.newBody(bd);
+            ground = w.addBody(bd);
+            Body2D wallRight = w.addBody(bd);
+            Body2D wallLeft = w.addBody(bd);
 
             PolygonShape shape1 = new PolygonShape();
             shape1.setAsBox(40, 5);
@@ -280,13 +280,13 @@ public class Dynamic2DTests extends JComponent implements Runnable {
                 }
                 if (destroyMj) {
                     if (mj.getBodyA().fixtureCount > 0 && mj.getBodyB().fixtureCount > 0) {
-                        w.destroyJoint(mj);
+                        w.removeJoint(mj);
                     }
                     mj = null;
                     destroyMj = false;
                 }
                 if (mjdef != null && mj == null) {
-                    mj = (MouseJoint) w.newJoint(mjdef);
+                    mj = (MouseJoint) w.addJoint(mjdef);
                     mjdef.bodyA.setAwake(true);
                     mjdef = null;
                 }

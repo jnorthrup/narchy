@@ -58,7 +58,9 @@ public class Body2D extends Transform {
 
     public int flags;
 
-    /** island index */
+    /**
+     * island index
+     */
     public int island;
 
     /**
@@ -71,10 +73,14 @@ public class Body2D extends Transform {
      */
     public final Sweep sweep = new Sweep();
 
-    /** linear velocity */
+    /**
+     * linear velocity
+     */
     public final Tuple2f vel = new v2();
 
-    /** angular velocity */
+    /**
+     * angular velocity
+     */
     public float velAngular = 0;
 
     public final Tuple2f force = new v2();
@@ -192,7 +198,7 @@ public class Body2D extends Transform {
         fixture.create(this, def);
 
 
-        //W.invokeLater(() -> {
+        W.invoke(() -> {
             if ((flags & e_activeFlag) == e_activeFlag) {
                 BroadPhase broadPhase = W.contactManager.m_broadPhase;
                 fixture.createProxies(broadPhase, this);
@@ -212,32 +218,36 @@ public class Body2D extends Transform {
             if (fixture.density > 0.0f) {
                 resetMassData();
             }
-        //});
+        });
 
         return fixture;
     }
 
-    /** call this if shape changes */
+    /**
+     * call this if shape changes
+     */
     protected final void updateFixtures(Consumer<Fixture> tx) {
-        for (Fixture f = fixtures; f != null; f = f.next) {
+        W.invoke(() -> {
+            for (Fixture f = fixtures; f != null; f = f.next) {
 
-            //destroy and re-create proxies
-            //if ((m_flags & e_activeFlag) == e_activeFlag) {
+                //destroy and re-create proxies
+                //if ((m_flags & e_activeFlag) == e_activeFlag) {
                 BroadPhase broadPhase = W.contactManager.m_broadPhase;
                 f.destroyProxies(broadPhase);
 
                 tx.accept(f);
 
                 f.createProxies(broadPhase, this);
-            //}
+                //}
 
-            // Adjust mass properties if needed.
-            if (f.density > 0.0f) {
-                resetMassData();
+                // Adjust mass properties if needed.
+                if (f.density > 0.0f) {
+                    resetMassData();
+                }
             }
-        }
-        synchronizeFixtures();
-        synchronizeTransform();
+            synchronizeFixtures();
+            synchronizeTransform();
+        });
     }
 
     private final FixtureDef fixDef = new FixtureDef();
@@ -298,12 +308,13 @@ public class Body2D extends Transform {
      */
     public final void removeFixture(Fixture fixture) {
 
-        assert (fixture.body == this);
+        W.invoke(() -> {
+            assert (fixture.body == this);
 
-        // Remove the fixture from this body's singly linked list.
-        assert (fixtureCount > 0);
+            // Remove the fixture from this body's singly linked list.
+            assert (fixtureCount > 0);
 
-        //W.invokeLater(() -> {
+            //W.invokeLater(() -> {
             Fixture node = fixtures;
             Fixture last = null; // java change
             boolean found = false;
@@ -356,7 +367,7 @@ public class Body2D extends Transform {
 
             // Reset the mass data.
             resetMassData();
-        //});
+        });
 
     }
 
@@ -388,9 +399,9 @@ public class Body2D extends Transform {
             sweep.c0.set(sweep.c);
             sweep.a0 = sweep.a;
 
-            BroadPhase broadPhase = W.contactManager.m_broadPhase;
-            for (Fixture f = fixtures; f != null; f = f.next)
-                f.synchronize(broadPhase, this, this);
+//            BroadPhase broadPhase = W.contactManager.m_broadPhase;
+//            for (Fixture f = fixtures; f != null; f = f.next)
+//                f.synchronize(broadPhase, this, this);
         });
 
         return true;
@@ -816,6 +827,7 @@ public class Body2D extends Transform {
     public final void getWorldPointToOut(Tuple2f localPoint, Tuple2f out) {
         Transform.mulToOutUnsafe(this, localPoint, out);
     }
+
     public final void getWorldPointToOut(Tuple2f localPoint, float preScale, Tuple2f out) {
         Transform.mulToOutUnsafe(this, localPoint, preScale, out);
     }
@@ -1086,34 +1098,37 @@ public class Body2D extends Transform {
             return;
         }
 
-        if (flag) {
-            flags |= e_activeFlag;
+        W.invoke(() -> {
 
-            // Create all proxies.
-            BroadPhase broadPhase = W.contactManager.m_broadPhase;
-            for (Fixture f = fixtures; f != null; f = f.next) {
-                f.createProxies(broadPhase, this);
+            if (flag) {
+                flags |= e_activeFlag;
+
+                // Create all proxies.
+                BroadPhase broadPhase = W.contactManager.m_broadPhase;
+                for (Fixture f = fixtures; f != null; f = f.next) {
+                    f.createProxies(broadPhase, this);
+                }
+
+                // Contacts are created the next time step.
+            } else {
+                flags &= ~e_activeFlag;
+
+                // Destroy all proxies.
+                BroadPhase broadPhase = W.contactManager.m_broadPhase;
+                for (Fixture f = fixtures; f != null; f = f.next) {
+                    f.destroyProxies(broadPhase);
+                }
+
+                // Destroy the attached contacts.
+                ContactEdge ce = contacts;
+                while (ce != null) {
+                    ContactEdge ce0 = ce;
+                    ce = ce.next;
+                    W.contactManager.destroy(ce0.contact);
+                }
+                contacts = null;
             }
-
-            // Contacts are created the next time step.
-        } else {
-            flags &= ~e_activeFlag;
-
-            // Destroy all proxies.
-            BroadPhase broadPhase = W.contactManager.m_broadPhase;
-            for (Fixture f = fixtures; f != null; f = f.next) {
-                f.destroyProxies(broadPhase);
-            }
-
-            // Destroy the attached contacts.
-            ContactEdge ce = contacts;
-            while (ce != null) {
-                ContactEdge ce0 = ce;
-                ce = ce.next;
-                W.contactManager.destroy(ce0.contact);
-            }
-            contacts = null;
-        }
+        });
     }
 
     /**
