@@ -407,7 +407,7 @@ public class Dynamics2D {
 
         Joint j = Joint.create(this, def);
 
-        //invokeLater(() -> {
+        invokeLater(() -> {
 
             // Connect to the world list.
             j.m_prev = null;
@@ -456,7 +456,7 @@ public class Dynamics2D {
 
             // Note: creating a joint doesn't wake the bodies.
 
-        //});
+        });
 
         return j;
     }

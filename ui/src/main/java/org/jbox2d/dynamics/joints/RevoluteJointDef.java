@@ -136,4 +136,10 @@ public class RevoluteJointDef extends JointDef {
         referenceAngle = bodyB.getAngle() - bodyA.getAngle();
         return this;
     }
+
+    /** uses the midpoint of their centers */
+    public RevoluteJointDef initialize(final Body2D b1, final Body2D b2) {
+        return initialize(b1, b2, b1.getWorldCenter().add(b2.getWorldCenter()));
+    }
+
 }
