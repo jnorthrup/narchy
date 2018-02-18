@@ -40,13 +40,13 @@ public class EdgeAndPolygonContact extends Contact {
     @Override
     public void init(Fixture fA, int indexA, Fixture fB, int indexB) {
         super.init(fA, indexA, fB, indexB);
-        assert (m_fixtureA.getType() == ShapeType.EDGE);
-        assert (m_fixtureB.getType() == ShapeType.POLYGON);
+        assert (aFixture.getType() == ShapeType.EDGE);
+        assert (bFixture.getType() == ShapeType.POLYGON);
     }
 
     @Override
     public void evaluate(Manifold manifold, Transform xfA, Transform xfB) {
-        pool.getCollision().collideEdgeAndPolygon(manifold, (EdgeShape) m_fixtureA.getShape(), xfA,
-                (PolygonShape) m_fixtureB.getShape(), xfB);
+        pool.getCollision().collideEdgeAndPolygon(manifold, (EdgeShape) aFixture.shape(), xfA,
+                (PolygonShape) bFixture.shape(), xfB);
     }
 }

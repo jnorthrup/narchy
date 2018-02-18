@@ -40,13 +40,13 @@ public class PolygonAndCircleContact extends Contact {
 
     public void init(Fixture fixtureA, Fixture fixtureB) {
         super.init(fixtureA, 0, fixtureB, 0);
-        assert (m_fixtureA.getType() == ShapeType.POLYGON);
-        assert (m_fixtureB.getType() == ShapeType.CIRCLE);
+        assert (aFixture.getType() == ShapeType.POLYGON);
+        assert (bFixture.getType() == ShapeType.CIRCLE);
     }
 
     @Override
     public void evaluate(Manifold manifold, Transform xfA, Transform xfB) {
-        Collision.collidePolygonAndCircle(manifold, (PolygonShape) m_fixtureA.getShape(),
-                xfA, (CircleShape) m_fixtureB.getShape(), xfB);
+        Collision.collidePolygonAndCircle(manifold, (PolygonShape) aFixture.shape(),
+                xfA, (CircleShape) bFixture.shape(), xfB);
     }
 }

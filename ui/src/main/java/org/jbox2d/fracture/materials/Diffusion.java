@@ -1,6 +1,7 @@
 package org.jbox2d.fracture.materials;
 
 import jcog.math.random.XoRoShiRo128PlusRandom;
+import org.jbox2d.common.Rot;
 import org.jbox2d.common.Transform;
 import org.jbox2d.fracture.Material;
 import spacegraph.math.Tuple2f;
@@ -28,8 +29,8 @@ public class Diffusion extends Material {
         float ln = vektor.length();
         Transform t = new Transform();
         t.set(startPoint, 0);
-        t.q.c = vektor.y / ln;
-        t.q.s = vektor.x / ln;
+        t.c = vektor.y / ln;
+        t.s = vektor.x / ln;
 
         Tuple2f[] va = new Tuple2f[count];
         for (int i = 1; i <= count; i++) {

@@ -96,12 +96,12 @@ public class ParticleGroup {
     }
 
     public Tuple2f getPosition() {
-        return m_transform.p;
+        return m_transform.pos;
     }
 
-    public float getAngle() {
-        return m_transform.q.getAngle();
-    }
+//    public float getAngle() {
+//        return m_transform.rotMatrix.getAngle();
+//    }
 
     public Object getUserData() {
         return m_userData;

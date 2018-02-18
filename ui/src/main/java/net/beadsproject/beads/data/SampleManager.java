@@ -321,9 +321,7 @@ public class SampleManager {
      * @param sampleName the sample name.
      */
     public static void removeSample(String sampleName) {
-        if (samples.containsKey(sampleName)) {
-            samples.remove(sampleName);
-        }
+        samples.remove(sampleName);
     }
 
     /**

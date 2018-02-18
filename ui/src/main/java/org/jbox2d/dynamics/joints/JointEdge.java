@@ -23,7 +23,7 @@
  ******************************************************************************/
 package org.jbox2d.dynamics.joints;
 
-import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Body2D;
 
 /**
  * A joint edge is used to connect bodies and joints together
@@ -39,7 +39,7 @@ public class JointEdge {
     /**
      * Provides quick access to the other body attached
      */
-    public Body other = null;
+    public Body2D other = null;
 
     /**
      * the joint

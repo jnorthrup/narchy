@@ -53,7 +53,7 @@ public class StatePath extends FasterList<Context> {
 
     @Override
     public String toString() {
-        return Joiner.on('/').join(Iterables.transform(this, Context::id)).toString();
+        return Joiner.on('/').join(Iterables.transform(this, Context::id));
     }
 
 }

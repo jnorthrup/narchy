@@ -9,7 +9,7 @@ import org.jbox2d.collision.RayCastInput;
 import org.jbox2d.collision.RayCastOutput;
 import org.jbox2d.collision.shapes.Shape;
 import org.jbox2d.common.*;
-import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Body2D;
 import org.jbox2d.dynamics.Dynamics2D;
 import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.TimeStep;
@@ -801,7 +801,7 @@ public class ParticleSystem {
         for (int k = 0; k < m_bodyContactCount; k++) {
             ParticleBodyContact contact = m_bodyContactBuffer[k];
             int a = contact.index;
-            Body b = contact.body;
+            Body2D b = contact.body;
             float w = contact.weight;
             float m = contact.mass;
             Tuple2f n = contact.normal;
@@ -841,17 +841,17 @@ public class ParticleSystem {
         for (int k = 0; k < m_bodyContactCount; k++) {
             final ParticleBodyContact contact = m_bodyContactBuffer[k];
             int a = contact.index;
-            Body b = contact.body;
+            Body2D b = contact.body;
             float w = contact.weight;
             float m = contact.mass;
             Tuple2f n = contact.normal;
             Tuple2f p = m_positionBuffer.data[a];
-            final float tempX = p.x - b.m_sweep.c.x;
-            final float tempY = p.y - b.m_sweep.c.y;
+            final float tempX = p.x - b.sweep.c.x;
+            final float tempY = p.y - b.sweep.c.y;
             final Tuple2f velA = m_velocityBuffer.data[a];
             // getLinearVelocityFromWorldPointToOut, with -= velA
-            float vx = -b.m_angularVelocity * tempY + b.m_linearVelocity.x - velA.x;
-            float vy = b.m_angularVelocity * tempX + b.m_linearVelocity.y - velA.y;
+            float vx = -b.velAngular * tempY + b.vel.x - velA.x;
+            float vy = b.velAngular * tempX + b.vel.y - velA.y;
             // done
             float vn = vx * n.x + vy * n.y;
             if (vn < 0) {
@@ -913,14 +913,14 @@ public class ParticleSystem {
                 rotation.set(step.dt * group.m_angularVelocity);
                 Rot.mulToOutUnsafe(rotation, group.m_center, cross);
                 temp.set(group.m_linearVelocity).scaled(step.dt).added(group.m_center).subbed(cross);
-                tempXf.p.set(temp);
-                tempXf.q.set(rotation);
+                tempXf.pos.set(temp);
+                tempXf.set(rotation);
                 Transform.mulToOut(tempXf, group.m_transform, group.m_transform);
                 final Transform velocityTransform = tempXf2;
-                velocityTransform.p.x = step.inv_dt * tempXf.p.x;
-                velocityTransform.p.y = step.inv_dt * tempXf.p.y;
-                velocityTransform.q.s = step.inv_dt * tempXf.q.s;
-                velocityTransform.q.c = step.inv_dt * (tempXf.q.c - 1);
+                velocityTransform.pos.x = step.inv_dt * tempXf.pos.x;
+                velocityTransform.pos.y = step.inv_dt * tempXf.pos.y;
+                velocityTransform.s = step.inv_dt * tempXf.s;
+                velocityTransform.c = step.inv_dt * (tempXf.c - 1);
                 for (int i = group.m_firstIndex; i < group.m_lastIndex; i++) {
                     Transform.mulToOutUnsafe(velocityTransform, m_positionBuffer.data[i],
                             m_velocityBuffer.data[i]);
@@ -1055,15 +1055,15 @@ public class ParticleSystem {
             final ParticleBodyContact contact = m_bodyContactBuffer[k];
             int a = contact.index;
             if ((m_flagsBuffer.data[a] & ParticleType.b2_viscousParticle) != 0) {
-                Body b = contact.body;
+                Body2D b = contact.body;
                 float w = contact.weight;
                 float m = contact.mass;
                 Tuple2f p = m_positionBuffer.data[a];
                 final Tuple2f va = m_velocityBuffer.data[a];
-                final float tempX = p.x - b.m_sweep.c.x;
-                final float tempY = p.y - b.m_sweep.c.y;
-                final float vx = -b.m_angularVelocity * tempY + b.m_linearVelocity.x - va.x;
-                final float vy = b.m_angularVelocity * tempX + b.m_linearVelocity.y - va.y;
+                final float tempX = p.x - b.sweep.c.x;
+                final float tempY = p.y - b.sweep.c.y;
+                final float vx = -b.velAngular * tempY + b.vel.x - va.x;
+                final float vy = b.velAngular * tempX + b.vel.y - va.y;
                 final Tuple2f f = tempVec;
                 final float pInvMass = getParticleInvMass();
                 f.x = viscousStrength * m * w * vx;
@@ -1104,7 +1104,7 @@ public class ParticleSystem {
             if ((m_flagsBuffer.data[a] & ParticleType.b2_powderParticle) != 0) {
                 float w = contact.weight;
                 if (w > minWeight) {
-                    Body b = contact.body;
+                    Body2D b = contact.body;
                     float m = contact.mass;
                     Tuple2f p = m_positionBuffer.data[a];
                     Tuple2f n = contact.normal;
@@ -2015,8 +2015,8 @@ public class ParticleSystem {
             if (fixture.isSensor()) {
                 return true;
             }
-            final Shape shape = fixture.getShape();
-            Body b = fixture.getBody();
+            final Shape shape = fixture.shape();
+            Body2D b = fixture.getBody();
             Tuple2f bp = b.getWorldCenter();
             float bm = b.getMass();
             float bI = b.getInertia() - bm * b.getLocalCenter().lengthSquared();
@@ -2098,8 +2098,8 @@ public class ParticleSystem {
             if (fixture.isSensor()) {
                 return true;
             }
-            final Shape shape = fixture.getShape();
-            Body body = fixture.getBody();
+            final Shape shape = fixture.shape();
+            Body2D body = fixture.getBody();
             int childCount = shape.getChildCount();
             for (int childIndex = 0; childIndex < childCount; childIndex++) {
                 AABB aabb = fixture.getAABB(childIndex);
@@ -2127,8 +2127,8 @@ public class ParticleSystem {
                             && ap.y <= aabbupperBoundy) {
                         Tuple2f av = system.m_velocityBuffer.data[a];
                         final Tuple2f temp = tempVec;
-                        Transform.mulTransToOutUnsafe(body.m_xf0, ap, temp);
-                        Transform.mulToOutUnsafe(body.m_xf, temp, input.p1);
+                        Transform.mulTransToOutUnsafe(body.transformPrev, ap, temp);
+                        Transform.mulToOutUnsafe(body, temp, input.p1);
                         input.p2.x = ap.x + step.dt * av.x;
                         input.p2.y = ap.y + step.dt * av.y;
                         input.maxFraction = 1;

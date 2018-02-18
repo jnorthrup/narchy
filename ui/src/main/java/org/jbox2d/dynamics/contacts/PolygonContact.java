@@ -38,13 +38,13 @@ public class PolygonContact extends Contact {
 
     public void init(Fixture fixtureA, Fixture fixtureB) {
         super.init(fixtureA, 0, fixtureB, 0);
-        assert (m_fixtureA.getType() == ShapeType.POLYGON);
-        assert (m_fixtureB.getType() == ShapeType.POLYGON);
+        assert (aFixture.getType() == ShapeType.POLYGON);
+        assert (bFixture.getType() == ShapeType.POLYGON);
     }
 
     @Override
     public void evaluate(Manifold manifold, Transform xfA, Transform xfB) {
-        pool.getCollision().collidePolygons(manifold, (PolygonShape) m_fixtureA.getShape(), xfA,
-                (PolygonShape) m_fixtureB.getShape(), xfB);
+        pool.getCollision().collidePolygons(manifold, (PolygonShape) aFixture.shape(), xfA,
+                (PolygonShape) bFixture.shape(), xfB);
     }
 }

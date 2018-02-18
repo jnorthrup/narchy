@@ -27,7 +27,7 @@ import org.jbox2d.common.MathUtils;
 import org.jbox2d.common.Rot;
 import org.jbox2d.common.Settings;
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Body2D;
 import org.jbox2d.dynamics.SolverData;
 import org.jbox2d.pooling.IWorldPool;
 import spacegraph.math.Tuple2f;
@@ -148,8 +148,8 @@ public class WheelJoint extends Joint {
     }
 
     public float getJointTranslation() {
-        Body b1 = m_bodyA;
-        Body b2 = m_bodyB;
+        Body2D b1 = m_bodyA;
+        Body2D b2 = m_bodyB;
 
         Tuple2f p1 = pool.popVec2();
         Tuple2f p2 = pool.popVec2();
@@ -172,7 +172,7 @@ public class WheelJoint extends Joint {
     }
 
     public float getJointSpeed() {
-        return m_bodyA.m_angularVelocity - m_bodyB.m_angularVelocity;
+        return m_bodyA.velAngular - m_bodyB.velAngular;
     }
 
     public boolean isMotorEnabled() {
@@ -232,10 +232,10 @@ public class WheelJoint extends Joint {
 
     @Override
     public void initVelocityConstraints(SolverData data) {
-        m_indexA = m_bodyA.m_islandIndex;
-        m_indexB = m_bodyB.m_islandIndex;
-        m_localCenterA.set(m_bodyA.m_sweep.localCenter);
-        m_localCenterB.set(m_bodyB.m_sweep.localCenter);
+        m_indexA = m_bodyA.island;
+        m_indexB = m_bodyB.island;
+        m_localCenterA.set(m_bodyA.sweep.localCenter);
+        m_localCenterB.set(m_bodyB.sweep.localCenter);
         m_invMassA = m_bodyA.m_invMass;
         m_invMassB = m_bodyB.m_invMass;
         m_invIA = m_bodyA.m_invI;

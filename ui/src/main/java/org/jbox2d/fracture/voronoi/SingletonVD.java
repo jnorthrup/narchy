@@ -74,7 +74,7 @@ public class SingletonVD {
 
     final Random rng = new XoRoShiRo128PlusRandom(1);
 
-    private final double RND() { return rng.nextDouble() + 0.5; };
+    private final double RND() { return rng.nextDouble() + 0.5; }
 
 
     private final Edge[] edges = new Edge[0x10000]; //2D pole hran

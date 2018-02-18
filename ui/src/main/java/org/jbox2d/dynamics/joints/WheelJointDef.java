@@ -29,7 +29,7 @@
 package org.jbox2d.dynamics.joints;
 
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Body2D;
 import spacegraph.math.Tuple2f;
 
 /**
@@ -91,7 +91,7 @@ public class WheelJointDef extends JointDef {
         motorSpeed = 0f;
     }
 
-    public void initialize(Body b1, Body b2, Tuple2f anchor, Tuple2f axis) {
+    public void initialize(Body2D b1, Body2D b2, Tuple2f anchor, Tuple2f axis) {
         bodyA = b1;
         bodyB = b2;
         b1.getLocalPointToOut(anchor, localAnchorA);

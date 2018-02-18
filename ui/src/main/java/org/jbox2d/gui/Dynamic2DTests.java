@@ -39,24 +39,19 @@ public class Dynamic2DTests extends JComponent implements Runnable {
     private float zoom = 1;
     private volatile Dynamics2D w;
 
-    private volatile Tuple2f startCenter = new Vec2();
+    private final Tuple2f startCenter = new Vec2();
     private volatile Point clickedPoint = null;
     private volatile Graphics2D g;
     private volatile boolean running = false;
     private volatile ICase testCase;
 
-    private volatile MouseJointDef mjdef;
-    private volatile MouseJoint mj;
-    private volatile boolean destroyMj = false;
+    private volatile Body2D ground;
 
-    private volatile Body ground;
-
-    private volatile Tuple2f mousePosition = new Vec2();
 
     /**
      * Pole testovacich scenarov
      */
-    private static ICase[] cases = new ICase[]{
+    private static final ICase[] cases = new ICase[]{
             new MainScene(),
             new Cube(),
             new Circle(),
@@ -73,6 +68,18 @@ public class Dynamic2DTests extends JComponent implements Runnable {
     private Dynamic2DTests() {
         initWorld();
 
+        initMouse();
+
+        zoom = 10;
+        center.set(0, 7);
+    }
+
+    private volatile MouseJointDef mjdef;
+    private volatile MouseJoint mj;
+    private volatile boolean destroyMj = false;
+    private volatile Tuple2f mousePosition = new Vec2();
+
+    private void initMouse() {
         addMouseWheelListener((MouseWheelEvent e) -> {
             if (e.getWheelRotation() < 0) {
                 zoom *= 1.25f * -e.getWheelRotation();
@@ -135,8 +142,8 @@ public class Dynamic2DTests extends JComponent implements Runnable {
                         /*synchronized(Tests.this)*/
                     {
                         bodyFor:
-                        for (Body b = w.getBodyList(); b != null; b = b.m_next) {
-                            for (Fixture f = b.getFixtureList(); f != null; f = f.m_next) {
+                        for (Body2D b = w.bodies(); b != null; b = b.next) {
+                            for (Fixture f = b.getFixtureList(); f != null; f = f.next) {
                                 if (f.testPoint(v)) {
                                     MouseJointDef def = new MouseJointDef();
 
@@ -184,9 +191,6 @@ public class Dynamic2DTests extends JComponent implements Runnable {
             public void mouseExited(MouseEvent e) {
             }
         });
-
-        zoom = 10;
-        center.set(0, 7);
     }
 
     private void initWorld() {
@@ -206,9 +210,9 @@ public class Dynamic2DTests extends JComponent implements Runnable {
         {
             BodyDef bd = new BodyDef();
             bd.setType(BodyType.STATIC);
-            ground = w.addBody(bd);
-            Body wallRight = w.addBody(bd);
-            Body wallLeft = w.addBody(bd);
+            ground = w.newBody(bd);
+            Body2D wallRight = w.newBody(bd);
+            Body2D wallLeft = w.newBody(bd);
 
             PolygonShape shape1 = new PolygonShape();
             shape1.setAsBox(40, 5);
@@ -246,11 +250,11 @@ public class Dynamic2DTests extends JComponent implements Runnable {
         t.start();
     }
 
-    private int stepsInSecond = 50;
-    private int iterations = 8;
-    private int velocity = 8;
-    private int slowmotion = 1;
-    private int plynuleSlowMo = 1;
+    private final int stepsInSecond = 50;
+    private final int iterations = 8;
+    private final int velocity = 8;
+    private final int slowmotion = 1;
+    private final int plynuleSlowMo = 1;
 
     private MyThread createThread() {
         return new MyThread();
@@ -275,14 +279,14 @@ public class Dynamic2DTests extends JComponent implements Runnable {
                     w.step(1.0f / stepsInSecond / plynuleSlowMo, velocity, iterations);
                 }
                 if (destroyMj) {
-                    if (mj.getBodyA().m_fixtureCount > 0 && mj.getBodyB().m_fixtureCount > 0) {
+                    if (mj.getBodyA().fixtureCount > 0 && mj.getBodyB().fixtureCount > 0) {
                         w.destroyJoint(mj);
                     }
                     mj = null;
                     destroyMj = false;
                 }
                 if (mjdef != null && mj == null) {
-                    mj = (MouseJoint) w.createJoint(mjdef);
+                    mj = (MouseJoint) w.newJoint(mjdef);
                     mjdef.bodyA.setAwake(true);
                     mjdef = null;
                 }
@@ -352,7 +356,7 @@ public class Dynamic2DTests extends JComponent implements Runnable {
     private final int x[] = new int[MAX_POLY_EDGES];
     private final int y[] = new int[MAX_POLY_EDGES];
 
-    private void drawBody(Body body) {
+    private void drawBody(Body2D body) {
         if (body.getType() == BodyType.DYNAMIC) {
             g.setColor(Color.LIGHT_GRAY);
         } else {
@@ -360,14 +364,14 @@ public class Dynamic2DTests extends JComponent implements Runnable {
         }
         Tuple2f v = new Vec2();
         MyList<PolygonFixture> generalPolygons = new MyList<>();
-        for (Fixture f = body.m_fixtureList; f != null; f = f.m_next) {
-            PolygonFixture pg = f.m_polygon;
+        for (Fixture f = body.fixtures; f != null; f = f.next) {
+            PolygonFixture pg = f.polygon;
             if (pg != null) {
                 if (!generalPolygons.contains(pg)) {
                     generalPolygons.add(pg);
                 }
             } else {
-                Shape shape = f.getShape();
+                Shape shape = f.shape();
                 switch (shape.m_type) {
                     case POLYGON:
                         PolygonShape poly = (PolygonShape) shape;
@@ -448,13 +452,13 @@ public class Dynamic2DTests extends JComponent implements Runnable {
             drawParticles();
 
             //vykresli tuhe telesa
-            for (Body b = w.getBodyList(); b != null; b = b.getNext()) {
+            for (Body2D b = w.bodies(); b != null; b = b.next()) {
                 drawBody(b);
-                fixtures += b.m_fixtureCount;
+                fixtures += b.fixtureCount;
             }
 
             //vykresli joiny
-            for (Joint j = w.getJointList(); j != null; j = j.m_next) {
+            for (Joint j = w.joints(); j != null; j = j.next) {
                 drawJoint(j);
             }
         }
@@ -511,7 +515,7 @@ public class Dynamic2DTests extends JComponent implements Runnable {
 
             String[] caseNames = new String[cases.length];
             for (int i = 0; i < cases.length; ++i) {
-                caseNames[i] = (i + 1) + ". " + cases[i].toString();
+                caseNames[i] = (i + 1) + ". " + cases[i];
             }
 
             JComboBox petList = new JComboBox(caseNames);

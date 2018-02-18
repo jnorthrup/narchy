@@ -40,13 +40,13 @@ public class EdgeAndCircleContact extends Contact {
     @Override
     public void init(Fixture fA, int indexA, Fixture fB, int indexB) {
         super.init(fA, indexA, fB, indexB);
-        assert (m_fixtureA.getType() == ShapeType.EDGE);
-        assert (m_fixtureB.getType() == ShapeType.CIRCLE);
+        assert (aFixture.getType() == ShapeType.EDGE);
+        assert (bFixture.getType() == ShapeType.CIRCLE);
     }
 
     @Override
     public void evaluate(Manifold manifold, Transform xfA, Transform xfB) {
-        pool.getCollision().collideEdgeAndCircle(manifold, (EdgeShape) m_fixtureA.getShape(), xfA,
-                (CircleShape) m_fixtureB.getShape(), xfB);
+        pool.getCollision().collideEdgeAndCircle(manifold, (EdgeShape) aFixture.shape(), xfA,
+                (CircleShape) bFixture.shape(), xfB);
     }
 }

@@ -46,7 +46,7 @@
 
 package org.jbox2d.dynamics.joints;
 
-import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Body2D;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 
@@ -128,11 +128,12 @@ public class RevoluteJointDef extends JointDef {
      * @param b2
      * @param anchor
      */
-    public void initialize(final Body b1, final Body b2, final Tuple2f anchor) {
+    public RevoluteJointDef initialize(final Body2D b1, final Body2D b2, final Tuple2f anchor) {
         bodyA = b1;
-        bodyB = b2;
         bodyA.getLocalPointToOut(anchor, localAnchorA);
+        bodyB = b2;
         bodyB.getLocalPointToOut(anchor, localAnchorB);
         referenceAngle = bodyB.getAngle() - bodyA.getAngle();
+        return this;
     }
 }

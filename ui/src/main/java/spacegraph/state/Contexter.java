@@ -2,7 +2,7 @@ package spacegraph.state;
 
 public interface Contexter extends Context {
 
-    static class ContextBranch implements Contexter {
+    class ContextBranch implements Contexter {
 
         private final String id;
         private Contexter parent = null;

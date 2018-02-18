@@ -50,14 +50,14 @@ public class PulleyJoint extends Joint {
 
     private final Tuple2f m_groundAnchorA = new Vec2();
     private final Tuple2f m_groundAnchorB = new Vec2();
-    private float m_lengthA;
-    private float m_lengthB;
+    private final float m_lengthA;
+    private final float m_lengthB;
 
     // Solver shared
     private final Tuple2f m_localAnchorA = new Vec2();
     private final Tuple2f m_localAnchorB = new Vec2();
-    private float m_constant;
-    private float m_ratio;
+    private final float m_constant;
+    private final float m_ratio;
     private float m_impulse;
 
     // Solver temp
@@ -182,10 +182,10 @@ public class PulleyJoint extends Joint {
 
     @Override
     public void initVelocityConstraints(final SolverData data) {
-        m_indexA = m_bodyA.m_islandIndex;
-        m_indexB = m_bodyB.m_islandIndex;
-        m_localCenterA.set(m_bodyA.m_sweep.localCenter);
-        m_localCenterB.set(m_bodyB.m_sweep.localCenter);
+        m_indexA = m_bodyA.island;
+        m_indexB = m_bodyB.island;
+        m_localCenterA.set(m_bodyA.sweep.localCenter);
+        m_localCenterB.set(m_bodyB.sweep.localCenter);
         m_invMassA = m_bodyA.m_invMass;
         m_invMassB = m_bodyB.m_invMass;
         m_invIA = m_bodyA.m_invI;

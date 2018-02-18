@@ -1,5 +1,6 @@
 package org.jbox2d.fracture;
 
+import jcog.list.FasterList;
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.collision.WorldManifold;
 import org.jbox2d.collision.shapes.CircleShape;
@@ -14,7 +15,7 @@ import org.jbox2d.fracture.util.MyList;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import static org.jbox2d.fracture.Material.CIRCLEVERTICES;
 
@@ -31,8 +32,8 @@ public class Fracture {
 
     private final Fixture f1; //primarna fixture, ktora sa rozbija
     private final Fixture f2; //sekundarna fixture
-    private final Body b1; //telo fixtury f1
-    private final Body b2; //telo fuxtury f2
+    private final Body2D b1; //telo fixtury f1
+    private final Body2D b2; //telo fuxtury f2
     private final Material m; //material triestiaceho sa telesa
     private final Tuple2f point; //kolizny bod vo worldCoordinates
     private final Contact contact; //kontakt, z ktoreho vznika fraktura
@@ -66,7 +67,7 @@ public class Fracture {
 
         Dynamics2D w = b1.W;
         Shape s = f1.m_shape;
-        Polygon p = f1.m_polygon;
+        Polygon p = f1.polygon;
 
         if (p == null) {
             switch (s.m_type) {
@@ -100,23 +101,26 @@ public class Fracture {
             }
         }
 
-        float mConst = f1.m_material.m_rigidity / normalImpulse; //sila v zavislosti na pevnosti telesa
+        float mConst = f1.material.m_rigidity / normalImpulse; //sila v zavislosti na pevnosti telesa
 
-        boolean fixA = f1 == contact.m_fixtureA; //true, ak f2 je v objekte contact ako m_fixtureA
+        boolean fixA = f1 == contact.aFixture; //true, ak f2 je v objekte contact ako m_fixtureA
         float oldAngularVelocity = fixA ? contact.m_angularVelocity_bodyA : contact.m_angularVelocity_bodyB;
         Tuple2f oldLinearVelocity = fixA ? contact.m_linearVelocity_bodyA : contact.m_linearVelocity_bodyB;
-        b1.setAngularVelocity((b1.m_angularVelocity - oldAngularVelocity) * mConst + oldAngularVelocity);
-        b1.setLinearVelocity(b1.m_linearVelocity.sub(oldLinearVelocity).scaled(mConst).added(oldLinearVelocity));
-        if (!w.isFractured(f2) && b2.m_type == BodyType.DYNAMIC && !b2.m_fractureTransformUpdate) { //ak sa druhy objekt nerozbija, tak sa jej nahodia povodne hodnoty (TREBA MODIFIKOVAT POHYB OBJEKTU, KTORY SPOSOBUJE ROZPAD)
+        b1.setAngularVelocity((b1.velAngular - oldAngularVelocity) * mConst + oldAngularVelocity);
+        b1.setLinearVelocity(b1.vel.sub(oldLinearVelocity).scaled(mConst).added(oldLinearVelocity));
+        if (!w.isFractured(f2) && b2.type == BodyType.DYNAMIC && !b2.m_fractureTransformUpdate) { //ak sa druhy objekt nerozbija, tak sa jej nahodia povodne hodnoty (TREBA MODIFIKOVAT POHYB OBJEKTU, KTORY SPOSOBUJE ROZPAD)
             oldAngularVelocity = !fixA ? contact.m_angularVelocity_bodyA : contact.m_angularVelocity_bodyB;
             oldLinearVelocity = !fixA ? contact.m_linearVelocity_bodyA : contact.m_linearVelocity_bodyB;
-            b2.setAngularVelocity((b2.m_angularVelocity - oldAngularVelocity) * mConst + oldAngularVelocity);
-            b2.setLinearVelocity(b2.m_linearVelocity.sub(oldLinearVelocity).scaled(mConst).added(oldLinearVelocity));
-            b2.setTransform(b2.m_xf0.p.add(b2.m_linearVelocity.scale(dt)), b2.m_xf0.q.getAngle()); //osetruje jbox2d od posuvania telesa pri rieseni kolizie
+            b2.setAngularVelocity((b2.velAngular - oldAngularVelocity) * mConst + oldAngularVelocity);
+            b2.setLinearVelocity(b2.vel.sub(oldLinearVelocity).scaled(mConst).added(oldLinearVelocity));
+            b2.setTransform(
+                    b2.transformPrev.pos.add(b2.vel.scale(dt)),
+                    b2.transformPrev.angle()
+            ); //osetruje jbox2d od posuvania telesa pri rieseni kolizie
             b2.m_fractureTransformUpdate = true;
         }
 
-        Tuple2f localPoint = Transform.mulTrans(b1.m_xf, point);
+        Tuple2f localPoint = Transform.mulTrans(b1, point);
         Tuple2f b1Vec = b1.getLinearVelocityFromWorldPoint(point);
         Tuple2f b2Vec = b2.getLinearVelocityFromWorldPoint(point);
         Tuple2f localVector = b2Vec.subbed(b1Vec);
@@ -130,23 +134,23 @@ public class Fracture {
 
         //definuje tela fragmentov - tie maju vsetky rovnaku definiciu (preberaju parametre z povodneho objektu)
         BodyDef bodyDef = new BodyDef();
-        bodyDef.position.set(b1.m_xf.p); //pozicia
-        bodyDef.angle = b1.m_xf.q.getAngle(); // otocenie
+        bodyDef.position.set(b1.pos); //pozicia
+        bodyDef.angle = b1.angle(); // otocenie
         bodyDef.fixedRotation = b1.isFixedRotation();
         bodyDef.angularDamping = b1.m_angularDamping;
         bodyDef.allowSleep = b1.isSleepingAllowed();
 
         FixtureDef fd = new FixtureDef();
-        fd.friction = f1.m_friction; // trenie
-        fd.restitution = f1.m_restitution; //odrazivost
-        fd.isSensor = f1.m_isSensor;
+        fd.friction = f1.friction; // trenie
+        fd.restitution = f1.restitution; //odrazivost
+        fd.isSensor = f1.isSensor;
         fd.density = f1.density;
 
         //odstrani fragmentacne predmety/cele teleso
-        ArrayList<Fixture> fixtures = new ArrayList<>();
-        if (f1.m_polygon != null) {
-            for (Fixture f = b1.m_fixtureList; f != null; f = f.m_next) {
-                if (f.m_polygon == f1.m_polygon) {
+        List<Fixture> fixtures = new FasterList<>();
+        if (f1.polygon != null) {
+            for (Fixture f = b1.fixtures; f != null; f = f.next) {
+                if (f.polygon == f1.polygon) {
                     fixtures.add(f);
                 }
             }
@@ -158,41 +162,41 @@ public class Fracture {
             b1.removeFixture(f);
         }
 
-        if (b1.m_fixtureCount == 0) {
+        if (b1.fixtureCount == 0) {
             w.destroyBody(b1);
         }
 
         //prida fragmenty do simulacie
-        MyList<Body> newbodies = new MyList<>();
+        MyList<Body2D> newbodies = new MyList<>();
         for (Polygon pg : fragment) { //vytvori tela, prida fixtury, poriesi konvexnu dekompoziciu
             if (pg.isCorrect()) {
                 if (pg instanceof Fragment) {
                     Polygon[] convex = pg.convexDecomposition();
                     bodyDef.type = BodyType.DYNAMIC;
                     for (Polygon pgx : convex) {
-                        Body f_body = w.addBody(bodyDef);
+                        Body2D f_body = w.newBody(bodyDef);
                         pgx.flip();
                         PolygonShape ps = new PolygonShape();
                         ps.set(pgx.getArray(), pgx.size());
                         fd.shape = ps;
                         fd.polygon = null;
-                        fd.material = f1.m_material.m_fragments; //rekurzivne stiepenie
+                        fd.material = f1.material.m_fragments; //rekurzivne stiepenie
 
                         f_body.addFixture(fd);
-                        f_body.setAngularVelocity(b1.m_angularVelocity);
+                        f_body.setAngularVelocity(b1.velAngular);
                         f_body.setLinearVelocity(b1.getLinearVelocityFromLocalPoint(f_body.getLocalCenter()));
                         newbodies.add(f_body);
                     }
 
                 } else {
-                    fd.material = f1.m_material.m_fragments; //rekurzivne stiepenie
+                    fd.material = f1.material.m_fragments; //rekurzivne stiepenie
                     bodyDef.type = b1.getType();
-                    Body f_body = w.addBody(bodyDef);
+                    Body2D f_body = w.newBody(bodyDef);
                     PolygonFixture pf = new PolygonFixture(pg);
 
                     f_body.addFixture(pf, fd);
                     f_body.setLinearVelocity(b1.getLinearVelocityFromLocalPoint(f_body.getLocalCenter()));
-                    f_body.setAngularVelocity(b1.m_angularVelocity);
+                    f_body.setAngularVelocity(b1.velAngular);
                     newbodies.add(f_body);
                 }
             }
@@ -213,8 +217,8 @@ public class Fracture {
      * @param w
      */
     public static void init(Contact contact, ContactImpulse impulse, Dynamics2D w) {
-        Fixture f1 = contact.m_fixtureA;
-        Fixture f2 = contact.m_fixtureB;
+        Fixture f1 = contact.aFixture;
+        Fixture f2 = contact.bFixture;
         float[] impulses = impulse.normalImpulses;
         for (int i = 0; i < impulse.count; ++i) {
             float iml = impulses[i];
@@ -232,7 +236,7 @@ public class Fracture {
 
     private static void fractureCheck(final Fixture f1, final Fixture f2, final float iml, Dynamics2D w, Contact contact, int i) {
         materials.clear();
-        for (Material m = f1.m_material; m != null; m = m.m_fragments) {
+        for (Material m = f1.material; m != null; m = m.m_fragments) {
             if (materials.contains(m)) {
                 return;
             }
@@ -242,7 +246,7 @@ public class Fracture {
                     WorldManifold wm = new WorldManifold();
                     contact.getWorldManifold(wm); //vola sa iba raz
                     w.addFracture(new Fracture(f1, f2, m, contact, iml, new Vec2(wm.points[i])));
-                } else if (f1.body.m_type != BodyType.DYNAMIC) {
+                } else if (f1.body.type != BodyType.DYNAMIC) {
                     w.addFracture(new Fracture(f1, f2, m, null, 0, null));
                 }
             }
@@ -251,8 +255,8 @@ public class Fracture {
     }
 
     private static boolean equals(Fixture f1, Fixture f2) {
-        PolygonFixture p1 = f1.m_polygon;
-        PolygonFixture p2 = f2.m_polygon;
+        PolygonFixture p1 = f1.polygon;
+        PolygonFixture p2 = f2.polygon;
         if (p1 != null && p2 != null) {
             return p1 == p2;
         } else {
@@ -274,8 +278,8 @@ public class Fracture {
 
     @Override
     public int hashCode() {
-        if (f1.m_polygon != null) {
-            return f1.m_polygon.hashCode();
+        if (f1.polygon != null) {
+            return f1.polygon.hashCode();
         } else {
             return f1.hashCode();
         }

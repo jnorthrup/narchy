@@ -29,12 +29,12 @@ public class OscillatorBank extends UGen {
     /**
      * The array of current positions of individual oscillators.
      */
-    private float[] point;
+    private final float[] point;
 
     /**
      * The array of increment rates of individual oscillators, given their frequencies.
      */
-    private double[] increment;
+    private final double[] increment;
 
     /**
      * The buffer used by all oscillators.

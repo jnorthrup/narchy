@@ -15,6 +15,7 @@ import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.layout.Gridding;
 import spacegraph.layout.Splitting;
+import spacegraph.render.JoglSpace;
 import spacegraph.render.Tex;
 import spacegraph.widget.button.PushButton;
 
@@ -262,7 +263,7 @@ public class WebCam {
     public static void main(String[] args) {
 
         final WebCam w = new WebCam();
-        SpaceGraph.window(
+        JoglSpace.window(
                 //new Cuboid(new WebcamSurface(320, 200),4,4), 1200, 1200);
                 w.surface(), 1200, 1200);
         //w.loop(10);

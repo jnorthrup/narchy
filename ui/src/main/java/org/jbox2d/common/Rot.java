@@ -25,20 +25,16 @@ package org.jbox2d.common;
 
 import spacegraph.math.Tuple2f;
 
-import java.io.Serializable;
-
 /**
  * Represents a rotation
  *
  * @author Daniel
  */
-public class Rot implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Rot  {
 
-    public float s, c; // sin and cos
+    public float s = 0, c = 1; // sin and cos
 
     public Rot() {
-        setIdentity();
     }
 
     public Rot(float angle) {
@@ -70,13 +66,12 @@ public class Rot implements Serializable {
         return this;
     }
 
-    public Rot setIdentity() {
+    public void setIdentity() {
         s = 0;
         c = 1;
-        return this;
     }
 
-    public float getAngle() {
+    @Deprecated /* slow */ public float angle() {
         return (float) Math.atan2(s, c);
     }
 
@@ -149,4 +144,6 @@ public class Rot implements Serializable {
         out.x = q.c * v.x + q.s * v.y;
         out.y = -q.s * v.x + q.c * v.y;
     }
+
+
 }

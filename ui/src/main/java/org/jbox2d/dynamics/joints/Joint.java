@@ -23,7 +23,7 @@
  ******************************************************************************/
 package org.jbox2d.dynamics.joints;
 
-import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Body2D;
 import org.jbox2d.dynamics.Dynamics2D;
 import org.jbox2d.dynamics.SolverData;
 import org.jbox2d.pooling.IWorldPool;
@@ -78,14 +78,14 @@ public abstract class Joint {
 
     private final JointType m_type;
     public Joint m_prev;
-    public Joint m_next;
+    public Joint next;
     public JointEdge m_edgeA;
     public JointEdge m_edgeB;
-    protected Body m_bodyA;
-    protected Body m_bodyB;
+    protected Body2D m_bodyA;
+    protected Body2D m_bodyB;
 
     public boolean m_islandFlag;
-    private boolean m_collideConnected;
+    private final boolean m_collideConnected;
 
     public Object m_userData;
 
@@ -102,7 +102,7 @@ public abstract class Joint {
         pool = worldPool;
         m_type = def.type;
         m_prev = null;
-        m_next = null;
+        next = null;
         m_bodyA = def.bodyA;
         m_bodyB = def.bodyB;
         m_collideConnected = def.collideConnected;
@@ -137,7 +137,7 @@ public abstract class Joint {
     /**
      * get the first body attached to this joint.
      */
-    public final Body getBodyA() {
+    public final Body2D getBodyA() {
         return m_bodyA;
     }
 
@@ -146,7 +146,7 @@ public abstract class Joint {
      *
      * @return
      */
-    public final Body getBodyB() {
+    public final Body2D getBodyB() {
         return m_bodyB;
     }
 
@@ -184,7 +184,7 @@ public abstract class Joint {
      * get the next joint the world joint list.
      */
     public Joint getNext() {
-        return m_next;
+        return next;
     }
 
     /**

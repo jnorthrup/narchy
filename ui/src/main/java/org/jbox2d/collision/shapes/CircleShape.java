@@ -104,8 +104,8 @@ public class CircleShape extends Shape {
         //
         // final Vec2 d = center.subLocal(p).negateLocal();
         // return Vec2.dot(d, d) <= m_radius * m_radius;
-        final Rot q = transform.q;
-        final Tuple2f tp = transform.p;
+        final Rot q = transform;
+        final Tuple2f tp = transform.pos;
         float centerx = -(q.c * m_p.x - q.s * m_p.y + tp.x - p.x);
         float centery = -(q.s * m_p.x + q.c * m_p.y + tp.y - p.y);
 
@@ -114,9 +114,9 @@ public class CircleShape extends Shape {
 
     @Override
     public float computeDistanceToOut(Transform xf, Tuple2f p, int childIndex, v2 normalOut) {
-        final Rot xfq = xf.q;
-        float centerx = xfq.c * m_p.x - xfq.s * m_p.y + xf.p.x;
-        float centery = xfq.s * m_p.x + xfq.c * m_p.y + xf.p.y;
+        final Rot xfq = xf;
+        float centerx = xfq.c * m_p.x - xfq.s * m_p.y + xf.pos.x;
+        float centery = xfq.s * m_p.x + xfq.c * m_p.y + xf.pos.y;
         float dx = p.x - centerx;
         float dy = p.y - centery;
         float d1 = (float) Math.sqrt(dx * dx + dy * dy);
@@ -135,8 +135,8 @@ public class CircleShape extends Shape {
 
         final Tuple2f inputp1 = input.p1;
         final Tuple2f inputp2 = input.p2;
-        final Rot tq = transform.q;
-        final Tuple2f tp = transform.p;
+        final Rot tq = transform;
+        final Tuple2f tp = transform.pos;
 
         // Rot.mulToOutUnsafe(transform.q, m_p, position);
         // position.addLocal(transform.p);
@@ -180,8 +180,8 @@ public class CircleShape extends Shape {
 
     @Override
     public final void computeAABB(final AABB aabb, final Transform transform, int childIndex) {
-        final Rot tq = transform.q;
-        final Tuple2f tp = transform.p;
+        final Rot tq = transform;
+        final Tuple2f tp = transform.pos;
         final float px = tq.c * m_p.x - tq.s * m_p.y + tp.x;
         final float py = tq.s * m_p.x + tq.c * m_p.y + tp.y;
 

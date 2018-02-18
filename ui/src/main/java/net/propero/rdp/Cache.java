@@ -35,8 +35,6 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.awt.image.IndexColorModel;
 
-;
-
 public class Cache {
 
     private static final int RDPCACHE_COLOURMAPSIZE = 0x06; // unified patch

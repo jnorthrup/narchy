@@ -31,7 +31,7 @@ public class DynamicTreeNode {
      */
     public final AABB aabb = new AABB();
 
-    public Object userData;
+    public Object data;
 
     protected DynamicTreeNode parent;
 
@@ -40,12 +40,12 @@ public class DynamicTreeNode {
     protected final int id;
     protected int height;
 
-    public Object getUserData() {
-        return userData;
+    public Object getData() {
+        return data;
     }
 
-    public void setUserData(Object argData) {
-        userData = argData;
+    public void setData(Object argData) {
+        data = argData;
     }
 
     protected DynamicTreeNode(int id) {

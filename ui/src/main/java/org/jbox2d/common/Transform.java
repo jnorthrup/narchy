@@ -26,57 +26,33 @@ package org.jbox2d.common;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 
-import java.io.Serializable;
-
 // updated to rev 100
 
 /**
  * A transform contains translation and rotation. It is used to represent the position and
  * orientation of rigid frames.
  */
-public class Transform implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Transform extends Rot {
 
     /**
      * The translation caused by the transform
      */
-    public final Tuple2f p;
-
-    /**
-     * A matrix representing a rotation
-     */
-    public final Rot q;
+    public final Tuple2f pos;
 
     /**
      * The default constructor.
      */
     public Transform() {
-        p = new Vec2();
-        q = new Rot();
+        pos = new v2();
     }
 
-    /**
-     * Initialize as a copy of another transform.
-     */
-    public Transform(final Transform xf) {
-        p = xf.p.clone();
-        q = xf.q.clone();
-    }
-
-    /**
-     * Initialize using a position vector and a rotation matrix.
-     */
-    public Transform(final Tuple2f _position, final Rot _R) {
-        p = _position.clone();
-        q = _R.clone();
-    }
 
     /**
      * Set this to equal another transform.
      */
     public final Transform set(final Transform xf) {
-        p.set(xf.p);
-        q.set(xf.q);
+        pos.set(xf.pos);
+        this.set((Rot) xf);
         return this;
     }
 
@@ -87,112 +63,113 @@ public class Transform implements Serializable {
      * @param angle
      */
     public final void set(Tuple2f p, float angle) {
-        this.p.set(p);
-        q.set(angle);
+        this.pos.set(p);
+        this.set(angle);
     }
 
     /**
      * Set this to the identity transform.
      */
     public final void setIdentity() {
-        p.setZero();
-        q.setIdentity();
+        pos.setZero();
+        super.setIdentity();
     }
 
     public final static Tuple2f mul(final Transform T, final Tuple2f v) {
-        return new v2((T.q.c * v.x - T.q.s * v.y) + T.p.x, (T.q.s * v.x + T.q.c * v.y) + T.p.y);
+        return new v2((T.c * v.x - T.s * v.y) + T.pos.x, (T.s * v.x + T.c * v.y) + T.pos.y);
     }
 
     public final static void mulToOut(final Transform T, final Tuple2f v, final Tuple2f out) {
-        final float tempy = (T.q.s * v.x + T.q.c * v.y) + T.p.y;
-        out.x = (T.q.c * v.x - T.q.s * v.y) + T.p.x;
+        final float tempy = (T.s * v.x + T.c * v.y) + T.pos.y;
+        out.x = (T.c * v.x - T.s * v.y) + T.pos.x;
         out.y = tempy;
     }
 
     public final static void mulToOutUnsafe(final Transform T, final Tuple2f v, final Tuple2f out) {
         assert (v != out);
-        Rot tq = T.q;
-        out.x = (tq.c * v.x - tq.s * v.y) + T.p.x;
-        out.y = (tq.s * v.x + tq.c * v.y) + T.p.y;
+        Rot tq = T;
+        out.x = (tq.c * v.x - tq.s * v.y) + T.pos.x;
+        out.y = (tq.s * v.x + tq.c * v.y) + T.pos.y;
     }
 
     public final static Tuple2f mulTrans(final Transform T, final Tuple2f v) {
-        final float px = v.x - T.p.x;
-        final float py = v.y - T.p.y;
-        float y = (-T.q.s * px + T.q.c * py);
-        return new v2((T.q.c * px + T.q.s * py), y);
+        final float px = v.x - T.pos.x;
+        final float py = v.y - T.pos.y;
+        float y = (-T.s * px + T.c * py);
+        return new v2((T.c * px + T.s * py), y);
     }
 
     public final static void mulTransToOut(final Transform T, final Tuple2f v, final Tuple2f out) {
-        final float px = v.x - T.p.x;
-        final float py = v.y - T.p.y;
-        final float tempy = (-T.q.s * px + T.q.c * py);
-        out.x = (T.q.c * px + T.q.s * py);
+        final float px = v.x - T.pos.x;
+        final float py = v.y - T.pos.y;
+        final float tempy = (-T.s * px + T.c * py);
+        out.x = (T.c * px + T.s * py);
         out.y = tempy;
     }
 
     public final static void mulTransToOutUnsafe(final Transform T, final Tuple2f v, final Tuple2f out) {
         assert (v != out);
-        final float px = v.x - T.p.x;
-        final float py = v.y - T.p.y;
-        out.x = (T.q.c * px + T.q.s * py);
-        out.y = (-T.q.s * px + T.q.c * py);
+        final float px = v.x - T.pos.x;
+        final float py = v.y - T.pos.y;
+        out.x = (T.c * px + T.s * py);
+        out.y = (-T.s * px + T.c * py);
     }
 
     public final static Transform mul(final Transform A, final Transform B) {
         Transform C = new Transform();
-        Rot.mulUnsafe(A.q, B.q, C.q);
-        Rot.mulToOutUnsafe(A.q, B.p, C.p);
-        C.p.added(A.p);
+        Rot.mulUnsafe(A, B, C);
+        Rot.mulToOutUnsafe(A, B.pos, C.pos);
+        C.pos.added(A.pos);
         return C;
     }
 
     public final static void mulToOut(final Transform A, final Transform B, final Transform out) {
         assert (out != A);
-        Rot.mul(A.q, B.q, out.q);
-        Rot.mulToOut(A.q, B.p, out.p);
-        out.p.added(A.p);
+        Rot.mul(A, B, out);
+        Rot.mulToOut(A, B.pos, out.pos);
+        out.pos.added(A.pos);
     }
 
     public final static void mulToOutUnsafe(final Transform A, final Transform B, final Transform out) {
         assert (out != B);
         assert (out != A);
-        Rot.mulUnsafe(A.q, B.q, out.q);
-        Rot.mulToOutUnsafe(A.q, B.p, out.p);
-        out.p.added(A.p);
+        Rot.mulUnsafe(A, B, out);
+        Rot.mulToOutUnsafe(A, B.pos, out.pos);
+        out.pos.added(A.pos);
     }
 
-    private static final Tuple2f pool = new Vec2();
-
-    public final static Transform mulTrans(final Transform A, final Transform B) {
-        Transform C = new Transform();
-        Rot.mulTransUnsafe(A.q, B.q, C.q);
-        pool.set(B.p).subbed(A.p);
-        Rot.mulTransUnsafe(A.q, pool, C.p);
-        return C;
-    }
-
-    public final static void mulTransToOut(final Transform A, final Transform B, final Transform out) {
-        assert (out != A);
-        Rot.mulTrans(A.q, B.q, out.q);
-        pool.set(B.p).subbed(A.p);
-        Rot.mulTrans(A.q, pool, out.p);
-    }
+//    private static final Tuple2f pool = new Vec2();
+//
+//    public final static Transform mulTrans(final Transform A, final Transform B) {
+//        Transform C = new Transform();
+//        Rot.mulTransUnsafe(A.rotMatrix, B.rotMatrix, C.rotMatrix);
+//        pool.set(B.pos).subbed(A.pos);
+//        Rot.mulTransUnsafe(A.rotMatrix, pool, C.pos);
+//        return C;
+//    }
+//
+//    public final static void mulTransToOut(final Transform A, final Transform B, final Transform out) {
+//        assert (out != A);
+//        Rot.mulTrans(A.rotMatrix, B.rotMatrix, out.rotMatrix);
+//        pool.set(B.pos).subbed(A.pos);
+//        Rot.mulTrans(A.rotMatrix, pool, out.pos);
+//    }
 
     public final static void mulTransToOutUnsafe(final Transform A, final Transform B,
                                                  final Transform out) {
         assert (out != A);
         assert (out != B);
-        Rot.mulTransUnsafe(A.q, B.q, out.q);
-        pool.set(B.p).subbed(A.p);
-        Rot.mulTransUnsafe(A.q, pool, out.p);
+        Rot.mulTransUnsafe(A, B, out);
+        v2 pool = new v2();
+        pool.set(B.pos).subbed(A.pos);
+        Rot.mulTransUnsafe(A, pool, out.pos);
     }
 
     @Override
     public final String toString() {
         String s = "XForm:\n";
-        s += "Position: " + p + '\n';
-        s += "R: \n" + q + '\n';
+        s += "Position: " + pos + '\n';
+        s += "R: \n" + this + '\n';
         return s;
     }
 }

@@ -5,6 +5,7 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.gui2.BasicWindow;
 import com.googlecode.lanterna.gui2.Label;
 import spacegraph.SpaceGraph;
+import spacegraph.render.JoglSpace;
 
 import static java.lang.Math.round;
 
@@ -61,6 +62,6 @@ public class BitmapLabel extends ConsoleGUI {
     }
 
     public static void main(String[] args) {
-        SpaceGraph.window(new BitmapLabel("what the fuck"), 500, 500);
+        JoglSpace.window(new BitmapLabel("what the fuck"), 500, 500);
     }
 }

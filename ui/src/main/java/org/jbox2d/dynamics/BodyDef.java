@@ -23,8 +23,8 @@
  ******************************************************************************/
 package org.jbox2d.dynamics;
 
-import org.jbox2d.common.Vec2;
 import spacegraph.math.Tuple2f;
+import spacegraph.math.v2;
 
 /**
  * A body definition holds all the data needed to construct a rigid body. You can safely re-use body
@@ -117,9 +117,9 @@ public class BodyDef {
 
     public BodyDef() {
         userData = null;
-        position = new Vec2();
+        position = new v2();
         angle = 0f;
-        linearVelocity = new Vec2();
+        linearVelocity = new v2();
         angularVelocity = 0f;
         linearDamping = 0f;
         angularDamping = 0f;
@@ -130,6 +130,12 @@ public class BodyDef {
         type = BodyType.STATIC;
         active = true;
         gravityScale = 1.0f;
+    }
+
+    public BodyDef(BodyType type, v2 pos) {
+        this();
+        this.type = type;
+        this.position = pos;
     }
 
     /**

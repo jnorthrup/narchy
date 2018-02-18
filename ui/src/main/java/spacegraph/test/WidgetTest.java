@@ -5,6 +5,7 @@ import jcog.Util;
 import spacegraph.SpaceGraph;
 import spacegraph.layout.Container;
 import spacegraph.layout.Splitting;
+import spacegraph.render.JoglSpace;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.TextEdit;
@@ -21,7 +22,7 @@ public class WidgetTest {
 
     public static void main(String[] args) {
 
-        SpaceGraph.window(
+        JoglSpace.window(
 
                 widgetDemo()
                 , 1200, 800);

@@ -236,13 +236,13 @@ public class PolygonShape extends Shape {
         centroid.set(center);
 
         final Transform xf = poolt1;
-        xf.p.set(center);
-        xf.q.set(angle);
+        xf.pos.set(center);
+        xf.set(angle);
 
         // Transform vertices and normals.
         for (int i = 0; i < vertices; ++i) {
             Transform.mulToOut(xf, vertex[i], vertex[i]);
-            Rot.mulToOut(xf.q, normals[i], normals[i]);
+            Rot.mulToOut(xf, normals[i], normals[i]);
         }
     }
 
@@ -253,10 +253,10 @@ public class PolygonShape extends Shape {
     @Override
     public final boolean testPoint(final Transform xf, final Tuple2f p) {
         float tempx, tempy;
-        final Rot xfq = xf.q;
+        final Rot xfq = xf;
 
-        tempx = p.x - xf.p.x;
-        tempy = p.y - xf.p.y;
+        tempx = p.x - xf.pos.x;
+        tempy = p.y - xf.pos.y;
         final float pLocalx = xfq.c * tempx + xfq.s * tempy;
         final float pLocaly = -xfq.s * tempx + xfq.c * tempy;
 
@@ -288,10 +288,10 @@ public class PolygonShape extends Shape {
         final Tuple2f lower = aabb.lowerBound;
         final Tuple2f upper = aabb.upperBound;
         final Tuple2f v1 = vertex[0];
-        final float xfqc = xf.q.c;
-        final float xfqs = xf.q.s;
-        final float xfpx = xf.p.x;
-        final float xfpy = xf.p.y;
+        final float xfqc = xf.c;
+        final float xfqs = xf.s;
+        final float xfpx = xf.pos.x;
+        final float xfpy = xf.pos.y;
         lower.x = (xfqc * v1.x - xfqs * v1.y) + xfpx;
         lower.y = (xfqs * v1.x + xfqc * v1.y) + xfpy;
         upper.x = lower.x;
@@ -336,10 +336,10 @@ public class PolygonShape extends Shape {
 
     @Override
     public float computeDistanceToOut(Transform xf, Tuple2f p, int childIndex, v2 normalOut) {
-        float xfqc = xf.q.c;
-        float xfqs = xf.q.s;
-        float tx = p.x - xf.p.x;
-        float ty = p.y - xf.p.y;
+        float xfqc = xf.c;
+        float xfqs = xf.s;
+        float tx = p.x - xf.pos.x;
+        float ty = p.y - xf.pos.y;
         float pLocalx = xfqc * tx + xfqs * ty;
         float pLocaly = -xfqs * tx + xfqc * ty;
 
@@ -392,9 +392,9 @@ public class PolygonShape extends Shape {
     @Override
     public final boolean raycast(RayCastOutput output, RayCastInput input, Transform xf,
                                  int childIndex) {
-        final float xfqc = xf.q.c;
-        final float xfqs = xf.q.s;
-        final Tuple2f xfp = xf.p;
+        final float xfqc = xf.c;
+        final float xfqs = xf.s;
+        final Tuple2f xfp = xf.pos;
         float tempx, tempy;
         // b2Vec2 p1 = b2MulT(xf.q, input.p1 - xf.p);
         // b2Vec2 p2 = b2MulT(xf.q, input.p2 - xf.p);

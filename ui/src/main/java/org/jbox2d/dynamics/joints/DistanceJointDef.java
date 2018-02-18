@@ -46,7 +46,7 @@
 
 package org.jbox2d.dynamics.joints;
 
-import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Body2D;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 
@@ -102,7 +102,7 @@ public class DistanceJointDef extends JointDef {
      * @param anchor1 World anchor on first body
      * @param anchor2 World anchor on second body
      */
-    public void initialize(final Body b1, final Body b2, final Tuple2f anchor1, final Tuple2f anchor2) {
+    public void initialize(final Body2D b1, final Body2D b2, final Tuple2f anchor1, final Tuple2f anchor2) {
         bodyA = b1;
         bodyB = b2;
         localAnchorA.set(bodyA.getLocalPoint(anchor1));

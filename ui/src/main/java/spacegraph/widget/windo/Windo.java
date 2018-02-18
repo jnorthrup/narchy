@@ -13,6 +13,7 @@ import spacegraph.input.Fingering;
 import spacegraph.layout.UnitContainer;
 import spacegraph.math.v2;
 import spacegraph.render.Draw;
+import spacegraph.render.JoglSpace;
 import spacegraph.test.WidgetTest;
 import spacegraph.widget.button.PushButton;
 
@@ -434,8 +435,8 @@ public class Windo extends Widget {
 //                gl.glUseProgram(0);
 //            }
 
-        };
-        SpaceGraph.window(d, 800, 800);
+        }
+        JoglSpace.window(d, 800, 800);
 
         //d.children.add(new GridTex(16).pos(0,0,1000,1000));
 

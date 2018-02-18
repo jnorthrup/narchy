@@ -18,7 +18,7 @@ public class XYSlider extends Widget {
     final v2 knob = new v2(0.5f, 0.5f);
 
     FloatFloatProcedure change = null;
-    private float[] knobColor = new float[] { 0.75f, 0.75f, 0.75f };
+    private final float[] knobColor = new float[] { 0.75f, 0.75f, 0.75f };
 
 
     private static final float _low = 0.2f;

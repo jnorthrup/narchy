@@ -23,7 +23,7 @@
  ******************************************************************************/
 package org.jbox2d.dynamics.joints;
 
-import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Body2D;
 
 /**
  * Joint definitions are used to construct joints.
@@ -53,12 +53,12 @@ public class JointDef {
     /**
      * The first attached body.
      */
-    public Body bodyA;
+    public Body2D bodyA;
 
     /**
      * The second attached body.
      */
-    public Body bodyB;
+    public Body2D bodyB;
 
     /**
      * Set this flag to true if the attached bodies should collide.

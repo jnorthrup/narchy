@@ -28,7 +28,7 @@ import org.jbox2d.collision.ManifoldPoint;
 import org.jbox2d.collision.WorldManifold;
 import org.jbox2d.collision.shapes.Shape;
 import org.jbox2d.common.*;
-import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Body2D;
 import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.dynamics.TimeStep;
 import org.jbox2d.dynamics.contacts.ContactVelocityConstraint.VelocityConstraintPoint;
@@ -101,14 +101,14 @@ public class ContactSolver {
             // System.out.println("contacts: " + m_count);
             final Contact contact = m_contacts[i];
 
-            final Fixture fixtureA = contact.m_fixtureA;
-            final Fixture fixtureB = contact.m_fixtureB;
-            final Shape shapeA = fixtureA.getShape();
-            final Shape shapeB = fixtureB.getShape();
+            final Fixture fixtureA = contact.aFixture;
+            final Fixture fixtureB = contact.bFixture;
+            final Shape shapeA = fixtureA.shape();
+            final Shape shapeB = fixtureB.shape();
             final float radiusA = shapeA.m_radius;
             final float radiusB = shapeB.m_radius;
-            final Body bodyA = fixtureA.getBody();
-            final Body bodyB = fixtureB.getBody();
+            final Body2D bodyA = fixtureA.getBody();
+            final Body2D bodyB = fixtureB.getBody();
             final Manifold manifold = contact.getManifold();
 
             int pointCount = manifold.pointCount;
@@ -118,8 +118,8 @@ public class ContactSolver {
             vc.friction = contact.m_friction;
             vc.restitution = contact.m_restitution;
             vc.tangentSpeed = contact.m_tangentSpeed;
-            vc.indexA = bodyA.m_islandIndex;
-            vc.indexB = bodyB.m_islandIndex;
+            vc.indexA = bodyA.island;
+            vc.indexB = bodyB.island;
             vc.invMassA = bodyA.m_invMass;
             vc.invMassB = bodyB.m_invMass;
             vc.invIA = bodyA.m_invI;
@@ -130,12 +130,12 @@ public class ContactSolver {
             vc.normalMass.setZero();
 
             ContactPositionConstraint pc = m_positionConstraints[i];
-            pc.indexA = bodyA.m_islandIndex;
-            pc.indexB = bodyB.m_islandIndex;
+            pc.indexA = bodyA.island;
+            pc.indexB = bodyB.island;
             pc.invMassA = bodyA.m_invMass;
             pc.invMassB = bodyB.m_invMass;
-            pc.localCenterA.set(bodyA.m_sweep.localCenter);
-            pc.localCenterB.set(bodyB.m_sweep.localCenter);
+            pc.localCenterA.set(bodyA.sweep.localCenter);
+            pc.localCenterB.set(bodyB.sweep.localCenter);
             pc.invIA = bodyA.m_invI;
             pc.invIB = bodyB.m_invI;
             pc.localNormal.set(manifold.localNormal);
@@ -248,14 +248,14 @@ public class ContactSolver {
 
             assert (manifold.pointCount > 0);
 
-            final Rot xfAq = xfA.q;
-            final Rot xfBq = xfB.q;
+            final Rot xfAq = xfA;
+            final Rot xfBq = xfB;
             xfAq.set(aA);
             xfBq.set(aB);
-            xfA.p.x = cA.x - (xfAq.c * localCenterA.x - xfAq.s * localCenterA.y);
-            xfA.p.y = cA.y - (xfAq.s * localCenterA.x + xfAq.c * localCenterA.y);
-            xfB.p.x = cB.x - (xfBq.c * localCenterB.x - xfBq.s * localCenterB.y);
-            xfB.p.y = cB.y - (xfBq.s * localCenterB.x + xfBq.c * localCenterB.y);
+            xfA.pos.x = cA.x - (xfAq.c * localCenterA.x - xfAq.s * localCenterA.y);
+            xfA.pos.y = cA.y - (xfAq.s * localCenterA.x + xfAq.c * localCenterA.y);
+            xfB.pos.x = cB.x - (xfBq.c * localCenterB.x - xfBq.s * localCenterB.y);
+            xfB.pos.y = cB.y - (xfBq.s * localCenterB.x + xfBq.c * localCenterB.y);
 
             worldManifold.initialize(manifold, xfA, radiusA, xfB, radiusB);
 
@@ -832,14 +832,14 @@ public class ContactSolver {
 
             // Solve normal constraints
             for (int j = 0; j < pointCount; ++j) {
-                final Rot xfAq = xfA.q;
-                final Rot xfBq = xfB.q;
+                final Rot xfAq = xfA;
+                final Rot xfBq = xfB;
                 xfAq.set(aA);
                 xfBq.set(aB);
-                xfA.p.x = cA.x - xfAq.c * localCenterAx + xfAq.s * localCenterAy;
-                xfA.p.y = cA.y - xfAq.s * localCenterAx - xfAq.c * localCenterAy;
-                xfB.p.x = cB.x - xfBq.c * localCenterBx + xfBq.s * localCenterBy;
-                xfB.p.y = cB.y - xfBq.s * localCenterBx - xfBq.c * localCenterBy;
+                xfA.pos.x = cA.x - xfAq.c * localCenterAx + xfAq.s * localCenterAy;
+                xfA.pos.y = cA.y - xfAq.s * localCenterAx - xfAq.c * localCenterAy;
+                xfB.pos.x = cB.x - xfBq.c * localCenterBx + xfBq.s * localCenterBy;
+                xfB.pos.y = cB.y - xfBq.s * localCenterBx - xfBq.c * localCenterBy;
 
                 final PositionSolverManifold psm = psolver;
                 psm.initialize(pc, xfA, xfB, j);
@@ -931,14 +931,14 @@ public class ContactSolver {
 
             // Solve normal constraints
             for (int j = 0; j < pointCount; ++j) {
-                final Rot xfAq = xfA.q;
-                final Rot xfBq = xfB.q;
+                final Rot xfAq = xfA;
+                final Rot xfBq = xfB;
                 xfAq.set(aA);
                 xfBq.set(aB);
-                xfA.p.x = cA.x - xfAq.c * localCenterAx + xfAq.s * localCenterAy;
-                xfA.p.y = cA.y - xfAq.s * localCenterAx - xfAq.c * localCenterAy;
-                xfB.p.x = cB.x - xfBq.c * localCenterBx + xfBq.s * localCenterBy;
-                xfB.p.y = cB.y - xfBq.s * localCenterBx - xfBq.c * localCenterBy;
+                xfA.pos.x = cA.x - xfAq.c * localCenterAx + xfAq.s * localCenterAy;
+                xfA.pos.y = cA.y - xfAq.s * localCenterAx - xfAq.c * localCenterAy;
+                xfB.pos.x = cB.x - xfBq.c * localCenterBx + xfBq.s * localCenterBy;
+                xfB.pos.y = cB.y - xfBq.s * localCenterBx - xfBq.c * localCenterBy;
 
                 final PositionSolverManifold psm = psolver;
                 psm.initialize(pc, xfA, xfB, j);
@@ -1011,8 +1011,8 @@ class PositionSolverManifold {
     public void initialize(ContactPositionConstraint pc, Transform xfA, Transform xfB, int index) {
         assert (pc.pointCount > 0);
 
-        final Rot xfAq = xfA.q;
-        final Rot xfBq = xfB.q;
+        final Rot xfAq = xfA;
+        final Rot xfBq = xfB;
         final Tuple2f pcLocalPointsI = pc.localPoints[index];
         switch (pc.type) {
             case CIRCLES: {
@@ -1026,10 +1026,10 @@ class PositionSolverManifold {
                 // separation = Vec2.dot(temp, normal) - pc.radiusA - pc.radiusB;
                 final Tuple2f plocalPoint = pc.localPoint;
                 final Tuple2f pLocalPoints0 = pc.localPoints[0];
-                final float pointAx = (xfAq.c * plocalPoint.x - xfAq.s * plocalPoint.y) + xfA.p.x;
-                final float pointAy = (xfAq.s * plocalPoint.x + xfAq.c * plocalPoint.y) + xfA.p.y;
-                final float pointBx = (xfBq.c * pLocalPoints0.x - xfBq.s * pLocalPoints0.y) + xfB.p.x;
-                final float pointBy = (xfBq.s * pLocalPoints0.x + xfBq.c * pLocalPoints0.y) + xfB.p.y;
+                final float pointAx = (xfAq.c * plocalPoint.x - xfAq.s * plocalPoint.y) + xfA.pos.x;
+                final float pointAy = (xfAq.s * plocalPoint.x + xfAq.c * plocalPoint.y) + xfA.pos.y;
+                final float pointBx = (xfBq.c * pLocalPoints0.x - xfBq.s * pLocalPoints0.y) + xfB.pos.x;
+                final float pointBy = (xfBq.s * pLocalPoints0.x + xfBq.c * pLocalPoints0.y) + xfB.pos.y;
                 normal.x = pointBx - pointAx;
                 normal.y = pointBy - pointAy;
                 normal.normalize();
@@ -1054,11 +1054,11 @@ class PositionSolverManifold {
                 final Tuple2f pcLocalPoint = pc.localPoint;
                 normal.x = xfAq.c * pcLocalNormal.x - xfAq.s * pcLocalNormal.y;
                 normal.y = xfAq.s * pcLocalNormal.x + xfAq.c * pcLocalNormal.y;
-                final float planePointx = (xfAq.c * pcLocalPoint.x - xfAq.s * pcLocalPoint.y) + xfA.p.x;
-                final float planePointy = (xfAq.s * pcLocalPoint.x + xfAq.c * pcLocalPoint.y) + xfA.p.y;
+                final float planePointx = (xfAq.c * pcLocalPoint.x - xfAq.s * pcLocalPoint.y) + xfA.pos.x;
+                final float planePointy = (xfAq.s * pcLocalPoint.x + xfAq.c * pcLocalPoint.y) + xfA.pos.y;
 
-                final float clipPointx = (xfBq.c * pcLocalPointsI.x - xfBq.s * pcLocalPointsI.y) + xfB.p.x;
-                final float clipPointy = (xfBq.s * pcLocalPointsI.x + xfBq.c * pcLocalPointsI.y) + xfB.p.y;
+                final float clipPointx = (xfBq.c * pcLocalPointsI.x - xfBq.s * pcLocalPointsI.y) + xfB.pos.x;
+                final float clipPointy = (xfBq.s * pcLocalPointsI.x + xfBq.c * pcLocalPointsI.y) + xfB.pos.y;
                 final float tempx = clipPointx - planePointx;
                 final float tempy = clipPointy - planePointy;
                 separation = tempx * normal.x + tempy * normal.y - pc.radiusA - pc.radiusB;
@@ -1082,11 +1082,11 @@ class PositionSolverManifold {
                 final Tuple2f pcLocalPoint = pc.localPoint;
                 normal.x = xfBq.c * pcLocalNormal.x - xfBq.s * pcLocalNormal.y;
                 normal.y = xfBq.s * pcLocalNormal.x + xfBq.c * pcLocalNormal.y;
-                final float planePointx = (xfBq.c * pcLocalPoint.x - xfBq.s * pcLocalPoint.y) + xfB.p.x;
-                final float planePointy = (xfBq.s * pcLocalPoint.x + xfBq.c * pcLocalPoint.y) + xfB.p.y;
+                final float planePointx = (xfBq.c * pcLocalPoint.x - xfBq.s * pcLocalPoint.y) + xfB.pos.x;
+                final float planePointy = (xfBq.s * pcLocalPoint.x + xfBq.c * pcLocalPoint.y) + xfB.pos.y;
 
-                final float clipPointx = (xfAq.c * pcLocalPointsI.x - xfAq.s * pcLocalPointsI.y) + xfA.p.x;
-                final float clipPointy = (xfAq.s * pcLocalPointsI.x + xfAq.c * pcLocalPointsI.y) + xfA.p.y;
+                final float clipPointx = (xfAq.c * pcLocalPointsI.x - xfAq.s * pcLocalPointsI.y) + xfA.pos.x;
+                final float clipPointy = (xfAq.s * pcLocalPointsI.x + xfAq.c * pcLocalPointsI.y) + xfA.pos.y;
                 final float tempx = clipPointx - planePointx;
                 final float tempy = clipPointy - planePointy;
                 separation = tempx * normal.x + tempy * normal.y - pc.radiusA - pc.radiusB;

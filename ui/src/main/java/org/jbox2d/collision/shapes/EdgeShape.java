@@ -87,10 +87,10 @@ public class EdgeShape extends Shape {
 
     @Override
     public float computeDistanceToOut(Transform xf, Tuple2f p, int childIndex, v2 normalOut) {
-        float xfqc = xf.q.c;
-        float xfqs = xf.q.s;
-        float xfpx = xf.p.x;
-        float xfpy = xf.p.y;
+        float xfqc = xf.c;
+        float xfqs = xf.s;
+        float xfpx = xf.pos.x;
+        float xfpy = xf.pos.y;
         float v1x = (xfqc * m_vertex1.x - xfqs * m_vertex1.y) + xfpx;
         float v1y = (xfqs * m_vertex1.x + xfqc * m_vertex1.y) + xfpy;
         float v2x = (xfqc * m_vertex2.x - xfqs * m_vertex2.y) + xfpx;
@@ -133,8 +133,8 @@ public class EdgeShape extends Shape {
         float tempx, tempy;
         final Tuple2f v1 = m_vertex1;
         final Tuple2f v2 = m_vertex2;
-        final Rot xfq = xf.q;
-        final Tuple2f xfp = xf.p;
+        final Rot xfq = xf;
+        final Tuple2f xfp = xf.pos;
 
         // Put the ray into the edge's frame of reference.
         // b2Vec2 p1 = b2MulT(xf.q, input.p1 - xf.p);
@@ -215,12 +215,12 @@ public class EdgeShape extends Shape {
     public void computeAABB(AABB aabb, Transform xf, int childIndex) {
         final Tuple2f lowerBound = aabb.lowerBound;
         final Tuple2f upperBound = aabb.upperBound;
-        final Rot xfq = xf.q;
+        final Rot xfq = xf;
 
-        final float v1x = (xfq.c * m_vertex1.x - xfq.s * m_vertex1.y) + xf.p.x;
-        final float v1y = (xfq.s * m_vertex1.x + xfq.c * m_vertex1.y) + xf.p.y;
-        final float v2x = (xfq.c * m_vertex2.x - xfq.s * m_vertex2.y) + xf.p.x;
-        final float v2y = (xfq.s * m_vertex2.x + xfq.c * m_vertex2.y) + xf.p.y;
+        final float v1x = (xfq.c * m_vertex1.x - xfq.s * m_vertex1.y) + xf.pos.x;
+        final float v1y = (xfq.s * m_vertex1.x + xfq.c * m_vertex1.y) + xf.pos.y;
+        final float v2x = (xfq.c * m_vertex2.x - xfq.s * m_vertex2.y) + xf.pos.x;
+        final float v2y = (xfq.s * m_vertex2.x + xfq.c * m_vertex2.y) + xf.pos.y;
 
         lowerBound.x = v1x < v2x ? v1x : v2x;
         lowerBound.y = v1y < v2y ? v1y : v2y;

@@ -55,7 +55,7 @@ public class IRL {
         }
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
 
         //https://wiki.openstreetmap.org/wiki/API_v0.6

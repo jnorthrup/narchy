@@ -9,6 +9,7 @@ import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.input.Finger;
 import spacegraph.math.v2;
+import spacegraph.render.JoglSpace;
 import spacegraph.render.Tex;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.meta.MetaFrame;
@@ -26,7 +27,7 @@ public class Sketch2DBitmap extends Widget implements MetaFrame.Menu {
 
     final Tex bmp = new Tex();
     private final int[] pix;
-    private BufferedImage buf;
+    private final BufferedImage buf;
     private final int pw, ph;
 
     public float brushWidth = 0.2f, brushAlpha = 0.5f;
@@ -168,7 +169,7 @@ public class Sketch2DBitmap extends Widget implements MetaFrame.Menu {
     public static void main(String[] args) {
 
 
-        SpaceGraph.window(new Sketch2DBitmap(256, 256).state(Widget.META), 800, 800);
+        JoglSpace.window(new Sketch2DBitmap(256, 256).state(Widget.META), 800, 800);
     }
 }
 

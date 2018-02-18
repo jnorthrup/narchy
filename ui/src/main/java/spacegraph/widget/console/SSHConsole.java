@@ -6,6 +6,7 @@ import com.jogamp.newt.event.KeyEvent;
 import org.fusesource.jansi.AnsiOutputStream;
 import spacegraph.SpaceGraph;
 import spacegraph.net.SSHClient;
+import spacegraph.render.JoglSpace;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -20,9 +21,9 @@ public class SSHConsole extends ConsoleTerminal {
 
     public static void main(String[] args) throws IOException, JSchException {
 
-        SpaceGraph.window(new SSHConsole(
+        JoglSpace.window(new SSHConsole(
                 "gest", "localhost", "tseg",
-                80, 24 ), 1000, 600);
+                80, 24), 1000, 600);
     }
 
 

@@ -149,8 +149,8 @@ public class ChainShape extends Shape {
 
         final Tuple2f vi1 = m_vertices[i1];
         final Tuple2f vi2 = m_vertices[i2];
-        final Rot xfq = xf.q;
-        final Tuple2f xfp = xf.p;
+        final Rot xfq = xf;
+        final Tuple2f xfp = xf.pos;
         float v1x = (xfq.c * vi1.x - xfq.s * vi1.y) + xfp.x;
         float v1y = (xfq.s * vi1.x + xfq.c * vi1.y) + xfp.y;
         float v2x = (xfq.c * vi2.x - xfq.s * vi2.y) + xfp.x;

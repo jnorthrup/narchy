@@ -49,7 +49,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 
     private short[] buttonsDown;
 
-    private Animated fingerUpdate;
+    private final Animated fingerUpdate;
 
 
     private volatile boolean focused = false;

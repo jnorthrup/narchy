@@ -52,7 +52,7 @@ import static com.jogamp.opengl.GL2.*;
 
 public class JoglPhysics<X> extends JoglSpace<X> {
 
-    private boolean simulating = true;
+    private final boolean simulating = true;
 
     /** 0 for variable timing */
     private final int maxSubsteps =

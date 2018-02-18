@@ -66,7 +66,7 @@ public class MouseJoint extends Joint {
         assert (def.dampingRatio >= 0);
 
         m_targetA.set(def.target);
-        Transform.mulTransToOutUnsafe(m_bodyB.getTransform(), m_targetA, m_localAnchorB);
+        Transform.mulTransToOutUnsafe(m_bodyB.getXform(), m_targetA, m_localAnchorB);
 
         m_maxForce = def.maxForce;
         m_impulse.setZero();
@@ -139,8 +139,8 @@ public class MouseJoint extends Joint {
 
     @Override
     public void initVelocityConstraints(final SolverData data) {
-        m_indexB = m_bodyB.m_islandIndex;
-        m_localCenterB.set(m_bodyB.m_sweep.localCenter);
+        m_indexB = m_bodyB.island;
+        m_localCenterB.set(m_bodyB.sweep.localCenter);
         m_invMassB = m_bodyB.m_invMass;
         m_invIB = m_bodyB.m_invI;
 

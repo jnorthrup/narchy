@@ -21,14 +21,14 @@ public class Circle implements ICase {
             bodyDef2.angle = -0.6f; // otocenie
             bodyDef2.linearVelocity = new v2(0.0f, 0.0f); // smer pohybu
             bodyDef2.angularVelocity = 0.0f; //rotacia (rychlost rotacie)
-            Body newBody = w.addBody(bodyDef2);
+            Body2D newBody = w.newBody(bodyDef2);
             CircleShape shape2 = new CircleShape();
             shape2.m_radius = 2.5f;
             Fixture f = newBody.addFixture(shape2, 1.0f);
-            f.m_friction = 0.5f; // trenie
-            f.m_restitution = 0.0f; //odrazivost
-            f.m_material = new Diffusion();
-            f.m_material.m_rigidity = 8.0f;
+            f.friction = 0.5f; // trenie
+            f.restitution = 0.0f; //odrazivost
+            f.material = new Diffusion();
+            f.material.m_rigidity = 8.0f;
         }
     }
 

@@ -52,37 +52,37 @@ public class Fixture {
 
     public float density;
 
-    public Fixture m_next;
-    public Body body;
+    public Fixture next;
+    public Body2D body;
 
     public Shape m_shape;
 
-    public float m_friction;
-    public float m_restitution;
+    public float friction;
+    public float restitution;
 
     public FixtureProxy[] m_proxies;
     public int m_proxyCount;
 
-    public final Filter m_filter;
+    public final Filter filter;
 
-    public boolean m_isSensor;
+    public boolean isSensor;
 
-    public Object m_userData;
+    public Object data;
 
-    public Material m_material;
+    public Material material;
 
-    public PolygonFixture m_polygon;
+    public PolygonFixture polygon;
 
     public Fixture() {
-        m_userData = null;
+        data = null;
         body = null;
-        m_next = null;
+        next = null;
         m_proxies = null;
         m_proxyCount = 0;
         m_shape = null;
-        m_filter = new Filter();
-        m_material = null;
-        m_polygon = null;
+        filter = new Filter();
+        material = null;
+        polygon = null;
     }
 
     /**
@@ -100,7 +100,7 @@ public class Fixture {
      *
      * @return
      */
-    public Shape getShape() {
+    public Shape shape() {
         return m_shape;
     }
 
@@ -110,7 +110,7 @@ public class Fixture {
      * @return
      */
     public boolean isSensor() {
-        return m_isSensor;
+        return isSensor;
     }
 
     /**
@@ -119,9 +119,9 @@ public class Fixture {
      * @param sensor
      */
     public void setSensor(boolean sensor) {
-        if (sensor != m_isSensor) {
+        if (sensor != isSensor) {
             body.setAwake(true);
-            m_isSensor = sensor;
+            isSensor = sensor;
         }
     }
 
@@ -133,7 +133,7 @@ public class Fixture {
      * @param filter
      */
     public void setFilterData(final Filter filter) {
-        m_filter.set(filter);
+        this.filter.set(filter);
 
         refilter();
     }
@@ -144,7 +144,7 @@ public class Fixture {
      * @return
      */
     public Filter getFilterData() {
-        return m_filter;
+        return filter;
     }
 
     /**
@@ -157,11 +157,11 @@ public class Fixture {
         }
 
         // Flag associated contacts for filtering.
-        ContactEdge edge = body.getContactList();
+        ContactEdge edge = body.contacts();
         while (edge != null) {
             Contact contact = edge.contact;
-            Fixture fixtureA = contact.getFixtureA();
-            Fixture fixtureB = contact.getFixtureB();
+            Fixture fixtureA = contact.aFixture;
+            Fixture fixtureB = contact.bFixture;
             if (fixtureA == this || fixtureB == this) {
                 contact.flagForFiltering();
             }
@@ -186,7 +186,7 @@ public class Fixture {
      *
      * @return
      */
-    public Body getBody() {
+    public Body2D getBody() {
         return body;
     }
 
@@ -196,7 +196,7 @@ public class Fixture {
      * @return
      */
     public Fixture getNext() {
-        return m_next;
+        return next;
     }
 
     public void setDensity(float density) {
@@ -215,7 +215,7 @@ public class Fixture {
      * @return
      */
     public Object getUserData() {
-        return m_userData;
+        return data;
     }
 
     /**
@@ -224,7 +224,7 @@ public class Fixture {
      * @param data
      */
     public void setUserData(Object data) {
-        m_userData = data;
+        this.data = data;
     }
 
     /**
@@ -234,7 +234,7 @@ public class Fixture {
      * @return
      */
     public boolean testPoint(final Tuple2f p) {
-        return m_shape.testPoint(body.m_xf, p);
+        return m_shape.testPoint(body, p);
     }
 
     /**
@@ -246,7 +246,7 @@ public class Fixture {
      * @param input
      */
     public boolean raycast(RayCastOutput output, RayCastInput input, int childIndex) {
-        return m_shape.raycast(output, input, body.m_xf, childIndex);
+        return m_shape.raycast(output, input, body, childIndex);
     }
 
     /**
@@ -265,7 +265,7 @@ public class Fixture {
      * @return
      */
     public float getFriction() {
-        return m_friction;
+        return friction;
     }
 
     /**
@@ -274,7 +274,7 @@ public class Fixture {
      * @param friction
      */
     public void setFriction(float friction) {
-        m_friction = friction;
+        this.friction = friction;
     }
 
     /**
@@ -283,7 +283,7 @@ public class Fixture {
      * @return
      */
     public float getRestitution() {
-        return m_restitution;
+        return restitution;
     }
 
     /**
@@ -293,7 +293,7 @@ public class Fixture {
      * @param restitution
      */
     public void setRestitution(float restitution) {
-        m_restitution = restitution;
+        this.restitution = restitution;
     }
 
     /**
@@ -314,35 +314,32 @@ public class Fixture {
      * @return distance
      */
     public float computeDistance(Tuple2f p, int childIndex, v2 normalOut) {
-        return m_shape.computeDistanceToOut(body.getTransform(), p, childIndex, normalOut);
+        return m_shape.computeDistanceToOut(body.getXform(), p, childIndex, normalOut);
     }
 
     // We need separation create/destroy functions from the constructor/destructor because
     // the destructor cannot access the allocator (no destructor arguments allowed by C++).
 
-    public void create(Body body, FixtureDef def) {
-        m_userData = def.userData;
-        m_friction = def.friction;
-        m_restitution = def.restitution;
+    public void create(Body2D body, FixtureDef def) {
+        data = def.userData;
+        friction = def.friction;
+        restitution = def.restitution;
 
         this.body = body;
-        m_next = null;
+        next = null;
 
 
-        m_filter.set(def.filter);
+        filter.set(def.filter);
 
-        m_isSensor = def.isSensor;
+        isSensor = def.isSensor;
 
 
         //moj doplneny kod
-        m_material = def.material;
-        m_polygon = def.polygon;
+        material = def.material;
+        polygon = def.polygon;
         density = def.density;
 
-        Shape shape = def.shape.clone();
-        setShape(shape);
-
-
+        setShape(def.shape.clone());
     }
 
     public void setShape(Shape shape) {
@@ -382,7 +379,7 @@ public class Fixture {
         // Free the child shape.
         m_shape = null;
         m_proxies = null;
-        m_next = null;
+        next = null;
 
         // TODO pool shapes
         // TODO pool fixtures
@@ -454,8 +451,8 @@ public class Fixture {
                     aabb1.upperBound.x > aab.upperBound.x ? aabb1.upperBound.x : aab.upperBound.x;
             proxy.aabb.upperBound.y =
                     aabb1.upperBound.y > aab.upperBound.y ? aabb1.upperBound.y : aab.upperBound.y;
-            displacement.x = transform2.p.x - transform1.p.x;
-            displacement.y = transform2.p.y - transform1.p.y;
+            displacement.x = transform2.pos.x - transform1.pos.x;
+            displacement.y = transform2.pos.y - transform1.pos.y;
 
             broadPhase.moveProxy(proxy.proxyId, proxy.aabb, displacement);
         }

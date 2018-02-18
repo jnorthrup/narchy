@@ -89,22 +89,16 @@ public class TimeStamp {
         if (timeStep < other.timeStep) {
             return true;
         } else {
-            if (timeStep == other.timeStep && timeSamples < other.timeSamples) {
-                return true;
-            }
+            return timeStep == other.timeStep && timeSamples < other.timeSamples;
         }
-        return false;
     }
 
     public boolean isAfter(TimeStamp other) {
         if (timeStep > other.timeStep) {
             return true;
         } else {
-            if (timeStep == other.timeStep && timeSamples > other.timeSamples) {
-                return true;
-            }
+            return timeStep == other.timeStep && timeSamples > other.timeSamples;
         }
-        return false;
     }
 
     /**

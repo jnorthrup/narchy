@@ -88,6 +88,6 @@ public class MetaFrame extends Bordering {
 
 
     public interface Menu {
-        public Surface menu();
+        Surface menu();
     }
 }

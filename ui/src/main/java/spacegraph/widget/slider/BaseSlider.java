@@ -11,6 +11,7 @@ import spacegraph.Surface;
 import spacegraph.input.Finger;
 import spacegraph.math.v2;
 import spacegraph.render.Draw;
+import spacegraph.render.JoglSpace;
 import spacegraph.widget.windo.Widget;
 
 import static spacegraph.layout.Gridding.col;
@@ -116,16 +117,16 @@ public class BaseSlider extends Widget {
 //    }
     public static void main(String[] args) {
 
-        SpaceGraph.window(
+        JoglSpace.window(
                 grid(
-                    new XYSlider(), new XYSlider(), new XYSlider(),
-                    col(
-                        new BaseSlider(0.75f),
-                        new BaseSlider(0.25f),
-                        new BaseSlider(0.5f)
-                    )
+                        new XYSlider(), new XYSlider(), new XYSlider(),
+                        col(
+                                new BaseSlider(0.75f),
+                                new BaseSlider(0.25f),
+                                new BaseSlider(0.5f)
+                        )
                 )
-        , 800, 800 );
+                , 800, 800);
     }
 
     private static float p(v2 hitPoint) {

@@ -209,10 +209,10 @@ public class Collision {
         // after inline:
         Tuple2f circle1p = circle1.m_p;
         Tuple2f circle2p = circle2.m_p;
-        float pAx = (xfA.q.c * circle1p.x - xfA.q.s * circle1p.y) + xfA.p.x;
-        float pAy = (xfA.q.s * circle1p.x + xfA.q.c * circle1p.y) + xfA.p.y;
-        float pBx = (xfB.q.c * circle2p.x - xfB.q.s * circle2p.y) + xfB.p.x;
-        float pBy = (xfB.q.s * circle2p.x + xfB.q.c * circle2p.y) + xfB.p.y;
+        float pAx = (xfA.c * circle1p.x - xfA.s * circle1p.y) + xfA.pos.x;
+        float pAy = (xfA.s * circle1p.x + xfA.c * circle1p.y) + xfA.pos.y;
+        float pBx = (xfB.c * circle2p.x - xfB.s * circle2p.y) + xfB.pos.x;
+        float pBy = (xfB.s * circle2p.x + xfB.c * circle2p.y) + xfB.pos.y;
         float dx = pBx - pAx;
         float dy = pBy - pAy;
         float distSqr = dx * dx + dy * dy;
@@ -256,12 +256,12 @@ public class Collision {
         // final float cLocaly = cLocal.y;
         // after inline:
         final Tuple2f circlep = circle.m_p;
-        final Rot xfBq = xfB.q;
-        final Rot xfAq = xfA.q;
-        final float cx = (xfBq.c * circlep.x - xfBq.s * circlep.y) + xfB.p.x;
-        final float cy = (xfBq.s * circlep.x + xfBq.c * circlep.y) + xfB.p.y;
-        final float px = cx - xfA.p.x;
-        final float py = cy - xfA.p.y;
+        final Rot xfBq = xfB;
+        final Rot xfAq = xfA;
+        final float cx = (xfBq.c * circlep.x - xfBq.s * circlep.y) + xfB.pos.x;
+        final float cy = (xfBq.s * circlep.x + xfBq.c * circlep.y) + xfB.pos.y;
+        final float px = cx - xfA.pos.x;
+        final float py = cy - xfA.pos.y;
         final float cLocalx = (xfAq.c * px + xfAq.s * py);
         final float cLocaly = (-xfAq.s * px + xfAq.c * py);
         // end inline
@@ -448,7 +448,7 @@ public class Collision {
         Tuple2f[] v2s = poly2.vertex;
 
         Transform.mulTransToOutUnsafe(xf2, xf1, xf);
-        final Rot xfq = xf.q;
+        final Rot xfq = xf;
 
         int bestIndex = 0;
         float maxSeparation = -Float.MAX_VALUE;
@@ -490,8 +490,8 @@ public class Collision {
 
         final ClipVertex c0 = c[0];
         final ClipVertex c1 = c[1];
-        final Rot xf1q = xf1.q;
-        final Rot xf2q = xf2.q;
+        final Rot xf1q = xf1;
+        final Rot xf2q = xf2;
 
         // Get the normal of the reference edge in poly2's frame.
         // Vec2 normal1 = MulT(xf2.R, Mul(xf1.R, normals1[edge1]));
@@ -526,8 +526,8 @@ public class Collision {
         // c0.v = Mul(xf2, vertices2[i1]);
         Tuple2f v1 = vertices2[i1];
         Tuple2f out = c0.v;
-        out.x = (xf2q.c * v1.x - xf2q.s * v1.y) + xf2.p.x;
-        out.y = (xf2q.s * v1.x + xf2q.c * v1.y) + xf2.p.y;
+        out.x = (xf2q.c * v1.x - xf2q.s * v1.y) + xf2.pos.x;
+        out.y = (xf2q.s * v1.x + xf2q.c * v1.y) + xf2.pos.y;
         c0.id.indexA = (byte) edge1;
         c0.id.indexB = (byte) i1;
         c0.id.typeA = (byte) ContactID.Type.FACE.ordinal();
@@ -536,8 +536,8 @@ public class Collision {
         // c1.v = Mul(xf2, vertices2[i2]);
         Tuple2f v2 = vertices2[i2];
         Tuple2f out1 = c1.v;
-        out1.x = (xf2q.c * v2.x - xf2q.s * v2.y) + xf2.p.x;
-        out1.y = (xf2q.s * v2.x + xf2q.c * v2.y) + xf2.p.y;
+        out1.x = (xf2q.c * v2.x - xf2q.s * v2.y) + xf2.pos.x;
+        out1.y = (xf2q.s * v2.x + xf2q.c * v2.y) + xf2.pos.y;
         c1.id.indexA = (byte) edge1;
         c1.id.indexB = (byte) i2;
         c1.id.typeA = (byte) ContactID.Type.FACE.ordinal();
@@ -612,7 +612,7 @@ public class Collision {
             manifold.type = ManifoldType.FACE_A;
             flip = false;
         }
-        final Rot xf1q = xf1.q;
+        final Rot xf1q = xf1;
 
         findIncidentEdge(incidentEdge, poly1, xf1, edge1, poly2, xf2);
 
@@ -694,10 +694,10 @@ public class Collision {
                 ManifoldPoint cp = manifold.points[pointCount];
                 // cp.m_localPoint = MulT(xf2, clipPoints2[i].v);
                 Tuple2f out = cp.localPoint;
-                final float px = clipPoints2[i].v.x - xf2.p.x;
-                final float py = clipPoints2[i].v.y - xf2.p.y;
-                out.x = (xf2.q.c * px + xf2.q.s * py);
-                out.y = (-xf2.q.s * px + xf2.q.c * py);
+                final float px = clipPoints2[i].v.x - xf2.pos.x;
+                final float py = clipPoints2[i].v.y - xf2.pos.y;
+                out.x = (xf2.c * px + xf2.s * py);
+                out.y = (-xf2.s * px + xf2.c * py);
                 cp.id.set(clipPoints2[i].id);
                 if (flip) {
                     // Swap features
@@ -1203,7 +1203,7 @@ public class Collision {
             m_polygonB.count = polygonB.vertices;
             for (int i = 0; i < polygonB.vertices; ++i) {
                 Transform.mulToOutUnsafe(m_xf, polygonB.vertex[i], m_polygonB.vertices[i]);
-                Rot.mulToOutUnsafe(m_xf.q, polygonB.normals[i], m_polygonB.normals[i]);
+                Rot.mulToOutUnsafe(m_xf, polygonB.normals[i], m_polygonB.normals[i]);
             }
 
             m_radius = 2.0f * Settings.polygonRadius;

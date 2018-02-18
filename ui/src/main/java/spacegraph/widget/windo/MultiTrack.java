@@ -9,6 +9,7 @@ import spacegraph.input.FingerMove;
 import spacegraph.input.Fingering;
 import spacegraph.layout.Stacking;
 import spacegraph.render.Draw;
+import spacegraph.render.JoglSpace;
 
 import java.util.List;
 
@@ -155,7 +156,7 @@ public class MultiTrack extends Widget {
         );
 
         t.layout();
-        SpaceGraph.window(t, 1200, 800);
+        JoglSpace.window(t, 1200, 800);
 
 
     }

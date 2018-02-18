@@ -377,9 +377,7 @@ public class SimpleBoxShape extends PolyhedralConvexShape {
 						float pz = pt.z;
 						float hz = halfExtents.z;
 						if (pz <= (hz + tolerance)) {
-							if (pz >= (-hz - tolerance)) {
-								return true;
-							}
+                            return pz >= (-hz - tolerance);
 						}
 					}
 				}

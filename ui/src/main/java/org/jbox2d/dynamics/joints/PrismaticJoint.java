@@ -24,7 +24,7 @@
 package org.jbox2d.dynamics.joints;
 
 import org.jbox2d.common.*;
-import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Body2D;
 import org.jbox2d.dynamics.SolverData;
 import org.jbox2d.pooling.IWorldPool;
 import spacegraph.math.Tuple2f;
@@ -199,8 +199,8 @@ public class PrismaticJoint extends Joint {
      * Get the current joint translation, usually in meters.
      */
     public float getJointSpeed() {
-        Body bA = m_bodyA;
-        Body bB = m_bodyB;
+        Body2D bA = m_bodyA;
+        Body2D bB = m_bodyB;
 
         Tuple2f temp = pool.popVec2();
         Tuple2f rA = pool.popVec2();
@@ -212,22 +212,22 @@ public class PrismaticJoint extends Joint {
         Tuple2f temp2 = pool.popVec2();
         Tuple2f temp3 = pool.popVec2();
 
-        temp.set(m_localAnchorA).subbed(bA.m_sweep.localCenter);
-        Rot.mulToOutUnsafe(bA.m_xf.q, temp, rA);
+        temp.set(m_localAnchorA).subbed(bA.sweep.localCenter);
+        Rot.mulToOutUnsafe(bA, temp, rA);
 
-        temp.set(m_localAnchorB).subbed(bB.m_sweep.localCenter);
-        Rot.mulToOutUnsafe(bB.m_xf.q, temp, rB);
+        temp.set(m_localAnchorB).subbed(bB.sweep.localCenter);
+        Rot.mulToOutUnsafe(bB, temp, rB);
 
-        p1.set(bA.m_sweep.c).added(rA);
-        p2.set(bB.m_sweep.c).added(rB);
+        p1.set(bA.sweep.c).added(rA);
+        p2.set(bB.sweep.c).added(rB);
 
         d.set(p2).subbed(p1);
-        Rot.mulToOutUnsafe(bA.m_xf.q, m_localXAxisA, axis);
+        Rot.mulToOutUnsafe(bA, m_localXAxisA, axis);
 
-        Tuple2f vA = bA.m_linearVelocity;
-        Tuple2f vB = bB.m_linearVelocity;
-        float wA = bA.m_angularVelocity;
-        float wB = bB.m_angularVelocity;
+        Tuple2f vA = bA.vel;
+        Tuple2f vB = bB.vel;
+        float wA = bA.velAngular;
+        float wB = bB.velAngular;
 
 
         Tuple2f.crossToOutUnsafe(wA, axis, temp);
@@ -386,10 +386,10 @@ public class PrismaticJoint extends Joint {
 
     @Override
     public void initVelocityConstraints(final SolverData data) {
-        m_indexA = m_bodyA.m_islandIndex;
-        m_indexB = m_bodyB.m_islandIndex;
-        m_localCenterA.set(m_bodyA.m_sweep.localCenter);
-        m_localCenterB.set(m_bodyB.m_sweep.localCenter);
+        m_indexA = m_bodyA.island;
+        m_indexB = m_bodyB.island;
+        m_localCenterA.set(m_bodyA.sweep.localCenter);
+        m_localCenterB.set(m_bodyB.sweep.localCenter);
         m_invMassA = m_bodyA.m_invMass;
         m_invMassB = m_bodyB.m_invMass;
         m_invIA = m_bodyA.m_invI;

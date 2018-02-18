@@ -5,6 +5,7 @@ import spacegraph.Surface;
 import spacegraph.layout.Gridding;
 import spacegraph.layout.MutableContainer;
 import spacegraph.layout.Splitting;
+import spacegraph.render.JoglSpace;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.button.ToggleButton;
@@ -68,9 +69,9 @@ public class TabPane extends Splitting {
 
 
     public static void main(String[] args) {
-        SpaceGraph.window(new TabPane(Map.of(
-                "a", ()->new Sketch2DBitmap(40,40),
-                "b", ()->new PushButton("x"))), 800, 800);
+        JoglSpace.window(new TabPane(Map.of(
+                "a", () -> new Sketch2DBitmap(40, 40),
+                "b", () -> new PushButton("x"))), 800, 800);
     }
 
 }

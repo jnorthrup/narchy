@@ -32,7 +32,7 @@ import org.jbox2d.common.Rot;
 import org.jbox2d.common.Settings;
 import org.jbox2d.common.Transform;
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Body2D;
 import org.jbox2d.dynamics.SolverData;
 import org.jbox2d.pooling.IWorldPool;
 import spacegraph.math.Tuple2f;
@@ -77,8 +77,8 @@ public class GearJoint extends Joint {
 
     // Body A is connected to body C
     // Body B is connected to body D
-    private final Body m_bodyC;
-    private final Body m_bodyD;
+    private final Body2D m_bodyC;
+    private final Body2D m_bodyD;
 
     // Solver shared
     private final Tuple2f m_localAnchorA = new Vec2();
@@ -89,10 +89,10 @@ public class GearJoint extends Joint {
     private final Tuple2f m_localAxisC = new Vec2();
     private final Tuple2f m_localAxisD = new Vec2();
 
-    private float m_referenceAngleA;
-    private float m_referenceAngleB;
+    private final float m_referenceAngleA;
+    private final float m_referenceAngleB;
 
-    private float m_constant;
+    private final float m_constant;
     private float m_ratio;
 
     private float m_impulse;
@@ -127,10 +127,10 @@ public class GearJoint extends Joint {
         m_bodyA = m_joint1.getBodyB();
 
         // Get geometry of joint1
-        Transform xfA = m_bodyA.m_xf;
-        float aA = m_bodyA.m_sweep.a;
-        Transform xfC = m_bodyC.m_xf;
-        float aC = m_bodyC.m_sweep.a;
+        Transform xfA = m_bodyA;
+        float aA = m_bodyA.sweep.a;
+        Transform xfC = m_bodyC;
+        float aC = m_bodyC.sweep.a;
 
         if (m_typeA == JointType.REVOLUTE) {
             RevoluteJoint revolute = (RevoluteJoint) def.joint1;
@@ -150,9 +150,9 @@ public class GearJoint extends Joint {
             m_localAxisC.set(prismatic.m_localXAxisA);
 
             Tuple2f pC = m_localAnchorC;
-            Rot.mulToOutUnsafe(xfA.q, m_localAnchorA, temp);
-            temp.added(xfA.p).subbed(xfC.p);
-            Rot.mulTransUnsafe(xfC.q, temp, pA);
+            Rot.mulToOutUnsafe(xfA, m_localAnchorA, temp);
+            temp.added(xfA.pos).subbed(xfC.pos);
+            Rot.mulTransUnsafe(xfC, temp, pA);
             coordinateA = Tuple2f.dot(pA.subbed(pC), m_localAxisC);
             pool.pushVec2(2);
         }
@@ -161,10 +161,10 @@ public class GearJoint extends Joint {
         m_bodyB = m_joint2.getBodyB();
 
         // Get geometry of joint2
-        Transform xfB = m_bodyB.m_xf;
-        float aB = m_bodyB.m_sweep.a;
-        Transform xfD = m_bodyD.m_xf;
-        float aD = m_bodyD.m_sweep.a;
+        Transform xfB = m_bodyB;
+        float aB = m_bodyB.sweep.a;
+        Transform xfD = m_bodyD;
+        float aD = m_bodyD.sweep.a;
 
         if (m_typeB == JointType.REVOLUTE) {
             RevoluteJoint revolute = (RevoluteJoint) def.joint2;
@@ -184,9 +184,9 @@ public class GearJoint extends Joint {
             m_localAxisD.set(prismatic.m_localXAxisA);
 
             Tuple2f pD = m_localAnchorD;
-            Rot.mulToOutUnsafe(xfB.q, m_localAnchorB, temp);
-            temp.added(xfB.p).subbed(xfD.p);
-            Rot.mulTransUnsafe(xfD.q, temp, pB);
+            Rot.mulToOutUnsafe(xfB, m_localAnchorB, temp);
+            temp.added(xfB.pos).subbed(xfD.pos);
+            Rot.mulTransUnsafe(xfD, temp, pB);
             coordinateB = Tuple2f.dot(pB.subbed(pD), m_localAxisD);
             pool.pushVec2(2);
         }
@@ -230,14 +230,14 @@ public class GearJoint extends Joint {
 
     @Override
     public void initVelocityConstraints(SolverData data) {
-        m_indexA = m_bodyA.m_islandIndex;
-        m_indexB = m_bodyB.m_islandIndex;
-        m_indexC = m_bodyC.m_islandIndex;
-        m_indexD = m_bodyD.m_islandIndex;
-        m_lcA.set(m_bodyA.m_sweep.localCenter);
-        m_lcB.set(m_bodyB.m_sweep.localCenter);
-        m_lcC.set(m_bodyC.m_sweep.localCenter);
-        m_lcD.set(m_bodyD.m_sweep.localCenter);
+        m_indexA = m_bodyA.island;
+        m_indexB = m_bodyB.island;
+        m_indexC = m_bodyC.island;
+        m_indexD = m_bodyD.island;
+        m_lcA.set(m_bodyA.sweep.localCenter);
+        m_lcB.set(m_bodyB.sweep.localCenter);
+        m_lcC.set(m_bodyC.sweep.localCenter);
+        m_lcD.set(m_bodyD.sweep.localCenter);
         m_mA = m_bodyA.m_invMass;
         m_mB = m_bodyB.m_invMass;
         m_mC = m_bodyC.m_invMass;

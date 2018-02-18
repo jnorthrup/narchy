@@ -1,7 +1,7 @@
 package org.jbox2d.dynamics.joints;
 
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Body2D;
 import spacegraph.math.Tuple2f;
 
 /**
@@ -43,7 +43,7 @@ public class MotorJointDef extends JointDef {
         correctionFactor = 0.3f;
     }
 
-    public void initialize(Body bA, Body bB) {
+    public void initialize(Body2D bA, Body2D bB) {
         bodyA = bA;
         bodyB = bB;
         Tuple2f xB = bodyB.getPosition();

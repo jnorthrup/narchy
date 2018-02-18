@@ -23,7 +23,7 @@
  ******************************************************************************/
 package org.jbox2d.dynamics.joints;
 
-import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Body2D;
 
 import java.util.ArrayList;
 
@@ -35,7 +35,7 @@ public class ConstantVolumeJointDef extends JointDef {
     public final float frequencyHz;
     public final float dampingRatio;
 
-    final ArrayList<Body> bodies;
+    final ArrayList<Body2D> bodies;
     ArrayList<DistanceJoint> joints;
 
     public ConstantVolumeJointDef() {
@@ -52,7 +52,7 @@ public class ConstantVolumeJointDef extends JointDef {
      *
      * @param argBody
      */
-    public void addBody(Body argBody) {
+    public void addBody(Body2D argBody) {
         bodies.add(argBody);
         if (bodies.size() == 1) {
             bodyA = argBody;
@@ -65,7 +65,7 @@ public class ConstantVolumeJointDef extends JointDef {
     /**
      * Adds a body and the pre-made distance joint. Should only be used for deserialization.
      */
-    public void addBodyAndJoint(Body argBody, DistanceJoint argJoint) {
+    public void addBodyAndJoint(Body2D argBody, DistanceJoint argJoint) {
         addBody(argBody);
         if (joints == null) {
             joints = new ArrayList<>();

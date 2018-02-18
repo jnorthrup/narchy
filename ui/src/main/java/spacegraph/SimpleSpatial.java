@@ -222,7 +222,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
         if (shape instanceof SimpleBoxShape) {
             ((SimpleBoxShape)shape).setSize(sx, sy, sz);
         } else if (shape instanceof SphereShape) {
-            ((SphereShape)shape).setLocalScaling(Math.abs(sx), Math.abs(sy), Math.abs(sz));
+            shape.setLocalScaling(Math.abs(sx), Math.abs(sy), Math.abs(sz));
             //((SphereShape)shape).setRadius(Util.max(Math.abs(sx), Math.abs(sy), Math.abs(sz)));
         } else {
             throw new UnsupportedOperationException();

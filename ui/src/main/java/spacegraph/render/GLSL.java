@@ -24,16 +24,16 @@ public class GLSL extends Surface {
         window(new GLSL().pos(1, 1, 500, 500), 800, 600);
     }
 
-    private boolean updateUniformVars = true;
+    private final boolean updateUniformVars = true;
     private int vertexShaderProgram;
     private int fragmentShaderProgram;
     private int shaderprogram;
 
-    private float x = -2;
-    private float y = -2;
-    private float height = 4;
-    private float width = 4;
-    private int iterations = 1;
+    private final float x = -2;
+    private final float y = -2;
+    private final float height = 4;
+    private final float width = 4;
+    private final int iterations = 1;
 
 
     boolean init = false;

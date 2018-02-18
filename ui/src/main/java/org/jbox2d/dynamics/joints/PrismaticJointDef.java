@@ -24,7 +24,7 @@
 package org.jbox2d.dynamics.joints;
 
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Body2D;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 
@@ -110,7 +110,7 @@ public class PrismaticJointDef extends JointDef {
      * Initialize the bodies, anchors, axis, and reference angle using the world anchor and world
      * axis.
      */
-    public void initialize(Body b1, Body b2, Tuple2f anchor, Tuple2f axis) {
+    public void initialize(Body2D b1, Body2D b2, Tuple2f anchor, Tuple2f axis) {
         bodyA = b1;
         bodyB = b2;
         bodyA.getLocalPointToOut(anchor, localAnchorA);

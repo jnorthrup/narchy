@@ -24,7 +24,7 @@
 package org.jbox2d.dynamics.joints;
 
 import org.jbox2d.common.*;
-import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Body2D;
 import org.jbox2d.dynamics.SolverData;
 import org.jbox2d.pooling.IWorldPool;
 import spacegraph.math.Tuple2f;
@@ -102,10 +102,10 @@ public class RevoluteJoint extends Joint {
 
     @Override
     public void initVelocityConstraints(final SolverData data) {
-        m_indexA = m_bodyA.m_islandIndex;
-        m_indexB = m_bodyB.m_islandIndex;
-        m_localCenterA.set(m_bodyA.m_sweep.localCenter);
-        m_localCenterB.set(m_bodyB.m_sweep.localCenter);
+        m_indexA = m_bodyA.island;
+        m_indexB = m_bodyB.island;
+        m_localCenterA.set(m_bodyA.sweep.localCenter);
+        m_localCenterB.set(m_bodyB.sweep.localCenter);
         m_invMassA = m_bodyA.m_invMass;
         m_invMassB = m_bodyB.m_invMass;
         m_invIA = m_bodyA.m_invI;
@@ -483,15 +483,15 @@ public class RevoluteJoint extends Joint {
     }
 
     public float getJointAngle() {
-        final Body b1 = m_bodyA;
-        final Body b2 = m_bodyB;
-        return b2.m_sweep.a - b1.m_sweep.a - m_referenceAngle;
+        final Body2D b1 = m_bodyA;
+        final Body2D b2 = m_bodyB;
+        return b2.sweep.a - b1.sweep.a - m_referenceAngle;
     }
 
     public float getJointSpeed() {
-        final Body b1 = m_bodyA;
-        final Body b2 = m_bodyB;
-        return b2.m_angularVelocity - b1.m_angularVelocity;
+        final Body2D b1 = m_bodyA;
+        final Body2D b2 = m_bodyB;
+        return b2.velAngular - b1.velAngular;
     }
 
     public boolean isMotorEnabled() {

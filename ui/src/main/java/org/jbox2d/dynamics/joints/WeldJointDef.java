@@ -24,7 +24,7 @@
 package org.jbox2d.dynamics.joints;
 
 import org.jbox2d.common.Vec2;
-import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Body2D;
 import spacegraph.math.Tuple2f;
 
 /**
@@ -74,7 +74,7 @@ public class WeldJointDef extends JointDef {
      * @param bB
      * @param anchor
      */
-    public void initialize(Body bA, Body bB, Tuple2f anchor) {
+    public void initialize(Body2D bA, Body2D bB, Tuple2f anchor) {
         bodyA = bA;
         bodyB = bB;
         bodyA.getLocalPointToOut(anchor, localAnchorA);

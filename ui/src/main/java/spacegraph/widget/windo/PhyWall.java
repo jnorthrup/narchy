@@ -5,14 +5,18 @@ import jcog.event.On;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Transform;
+import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
-import spacegraph.*;
+import org.jbox2d.dynamics.joints.MouseJoint;
+import org.jbox2d.dynamics.joints.MouseJointDef;
+import spacegraph.Ortho;
+import spacegraph.Scale;
+import spacegraph.Surface;
+import spacegraph.SurfaceBase;
 import spacegraph.input.Fingering;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 import spacegraph.phys.util.Animated;
-import spacegraph.test.WidgetTest;
-import spacegraph.widget.button.PushButton;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,6 +39,7 @@ public class PhyWall extends Wall implements Animated {
         W.setParticleDensity(1.0f);
 
         W.setAllowSleep(true);
+        W.setContinuousPhysics(true);
         //W.setSubStepping(true);
     }
 
@@ -56,6 +61,121 @@ public class PhyWall extends Wall implements Animated {
         return true;
     }
 
+
+    private volatile MouseJointDef mjdef;
+    private volatile MouseJoint mj;
+    private volatile boolean destroyMj = false;
+    private volatile Tuple2f mousePosition = new Vec2();
+
+    private void initMouse() {
+//                    addMouseWheelListener((MouseWheelEvent e) -> {
+//                        if (e.getWheelRotation() < 0) {
+//                            zoom *= 1.25f * -e.getWheelRotation();
+//                        } else {
+//                            zoom /= 1.25f * e.getWheelRotation();
+//                        }
+//
+//                        zoom = Math.min(zoom, 100);
+//                        zoom = Math.max(zoom, 0.1f);
+//                        repaint();
+//                    });
+
+//                    addMouseMotionListener(new MouseMotionListener() {
+//                        @Override
+//                        public void mouseDragged(MouseEvent e) {
+//                            Point p = e.getPoint();
+//                            mousePosition = getPoint(p);
+//                            if (clickedPoint != null) {
+//                                p.x -= clickedPoint.x;
+//                                p.y -= clickedPoint.y;
+//                                center.x = startCenter.x - p.x / zoom;
+//                                center.y = startCenter.y + p.y / zoom;
+//                            } else {
+//                                if (mj != null) {
+//                                    mj.setTarget(mousePosition);
+//                                }
+//                            }
+//                            if (!running) {
+//                                repaint();
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void mouseMoved(MouseEvent e) {
+//                            Point p = e.getPoint();
+//                            mousePosition = getPoint(p);
+//                            if (!running) {
+//                                repaint();
+//                            }
+//                        }
+//                    });
+
+//                    addMouseListener(new MouseListener() {
+//                        @Override
+//                        public void mouseClicked(MouseEvent e) {
+//                        }
+//
+//                        @Override
+//                        public void mousePressed(MouseEvent e) {
+//                            int x = e.getX();
+//                            int y = e.getY();
+//                            Point p = new Point(x, y);
+//                            switch (e.getButton()) {
+//                                case 3:
+//                                    startCenter.set(center);
+//                                    clickedPoint = p;
+//                                    break;
+//                                case 1:
+//                                    Tuple2f v = getPoint(p);
+//                                    /*synchronized(Tests.this)*/
+//                                {
+//                                    bodyFor:
+//                                    for (Body2D b = w.bodies(); b != null; b = b.next) {
+//                                        for (Fixture f = b.getFixtureList(); f != null; f = f.next) {
+//                                            if (f.testPoint(v)) {
+//                                                MouseJointDef def = new MouseJointDef();
+//
+//                                                def.bodyA = ground;
+//                                                def.bodyB = b;
+//                                                def.collideConnected = true;
+//
+//                                                def.target.set(v);
+//
+//                                                def.maxForce = 500f * b.getMass();
+//                                                def.dampingRatio = 0;
+//
+//                                                mjdef = def;
+//                                                break bodyFor;
+//                                            }
+//                                        }
+//                                    }
+//                                }
+//
+//                                break;
+//                            }
+//                        }
+//
+//                        @Override
+//                        public void mouseReleased(MouseEvent e) {
+//                            //synchronized (Tests.this) {
+//                            switch (e.getButton()) {
+//                                case 3:
+//                                    clickedPoint = null;
+//                                    break;
+//                                case 1:
+//                                    if (mj != null) {
+//                                        destroyMj = true;
+//                                    }
+//                                    break;
+//                            }
+//                            //}
+//                        }
+//                    });
+        mj = null;
+        destroyMj = false;
+        mjdef = null;
+    }
+
     @Override
     public void stop() {
         synchronized (this) {
@@ -69,7 +189,7 @@ public class PhyWall extends Wall implements Animated {
     final AtomicInteger i = new AtomicInteger(0);
 
 
-    public SpatialWindo window(Surface content, RectFloat2D initialBounds) {
+    public SpatialWindo newWindow(Surface content, RectFloat2D initialBounds) {
         SpatialWindo s = new SpatialWindo("w" + i.getAndIncrement(), initialBounds);
 //        objects.put(s.spatial.id, s.spatial);
         add(s);
@@ -80,7 +200,7 @@ public class PhyWall extends Wall implements Animated {
     final Map<String, SpatialWindo> spatials = new ConcurrentHashMap<>();
 
     class SpatialWindo extends Windo {
-        private final Body body;
+        private final Body2D body;
         private final PolygonShape shape;
 //        public final SimpleSpatial<String> spatial;
 
@@ -95,14 +215,16 @@ public class PhyWall extends Wall implements Animated {
 
             BodyDef bd = new BodyDef();
             bd.type = BodyType.DYNAMIC;
-            //bd.position.set(0,0);
-            Body body = new MyBody(bd);
-            W.addBody(body);
-            body.addFixture(fd);
+            Body2D body = new MyBody2D(bd);
 
             this.body = body;
 
             spatials.put(id, this);
+
+            W.invokeLater(()->{
+                W.newBody(body);
+                body.addFixture(fd);
+            });
 
         }
 
@@ -119,12 +241,12 @@ public class PhyWall extends Wall implements Animated {
         }
 
 
-        private class MyBody extends Body {
+        private class MyBody2D extends Body2D {
 
             RectFloat2D physBounds = null;
 
 
-            public MyBody(BodyDef bd) {
+            public MyBody2D(BodyDef bd) {
                 super(bd, PhyWall.this.W);
                 setFixedRotation(true);
             }
@@ -186,8 +308,8 @@ public class PhyWall extends Wall implements Animated {
             public void postUpdate() {
 
 
-                Transform t = getTransform();
-                Tuple2f p = t.p;
+                Transform t = getXform();
+                Tuple2f p = t.pos;
                 //float rot = t.q.getAngle();
 
                 float w = w(), h = h(); //HACK re-use the known width/height assumes that the physics engine cant change the shape's size
@@ -198,91 +320,4 @@ public class PhyWall extends Wall implements Animated {
         }
     }
 
-    public static void main(String[] args) {
-        PhyWall d = new PhyWall();
-
-        SpaceGraph.window(d, 800, 800);
-
-        //d.children.add(new GridTex(16).pos(0,0,1000,1000));
-
-        {
-            d.window(WidgetTest.widgetDemo(), RectFloat2D.XYWH(-250, 0, 150, 320));
-            d.window(WidgetTest.widgetDemo(), RectFloat2D.XYWH(+400, 0, 300, 100));
-//            Windo.Port p = w.addPort("X");
-        }
-
-//        d.addWindo(grid(new PushButton("x"), new PushButton("y"))).pos(10, 10, 50, 50);
-
-        for (int i = 0; i < 8; i++) {
-            float rx = (float) (Math.random() * 1000f / 2);
-            float ry = (float) (Math.random() * 1000f / 2);
-            float rw = 55 + 150 * (float) Math.random();
-            float rh = 50 + 150 * (float) Math.random();
-            d.window(new PushButton( String.valueOf((char)('w' + i)) ), RectFloat2D.XYWH(rx, ry, rw, rh));
-        }
-
-        //d.newWindo(grid(new PushButton("x"), new PushButton("y"))).pos(-100, -100, 0, 0);
-
-
-    }
-
-
-//    class Boundary extends SimpleSpatial<String> {
-//
-//        //final Dynamic b;
-//        float cx, cy, cz;
-//
-//        public Boundary(float x1, float y1, float z1, float x2, float y2, float z2) {
-//            super(UUID.randomUUID().toString() /* HACK */);
-//            scale(x2 - x1, y2 - y1, z2 - z1);
-//            this.cx = (x1 + x2) / 2;
-//            this.cy = (y1 + y2) / 2;
-//            this.cz = (z1 + z2) / 2;
-//
-//
-////            b = dyn.newBody(0,
-////                    new SimpleBoxShape(,
-////                    new Transform(,
-////                    +1, -1);
-////            b.setData(this);
-//        }
-//
-//        @Override
-//        public void update(Dynamics world) {
-//            move(cx, cy, cz);
-//            super.update(world);
-//            System.out.println(transform + " " + shape);
-//        }
-//
-//        @Override
-//        public float mass() {
-//            return 10000;
-//        }
-//
-//        //        @Override
-////        public void forEachBody(Consumer<Collidable> c) {
-////            c.accept(b);
-////        }
-////
-////        @Nullable
-////        @Override
-////        public List<TypedConstraint> constraints() {
-////            return null;
-////        }
-////
-////        @Override
-////        public void renderAbsolute(GL2 gl, long timeMS) {
-////
-////        }
-////
-////        @Override
-////        public void renderRelative(GL2 gl, Collidable body) {
-////
-////        }
-////
-////        @Override
-////        public float radius() {
-////            return 0;
-////        }
-//    }
 }

@@ -31,7 +31,7 @@ import org.jbox2d.collision.ManifoldPoint;
 import org.jbox2d.collision.WorldManifold;
 import org.jbox2d.collision.shapes.Shape;
 import org.jbox2d.common.Transform;
-import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Body2D;
 import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.pooling.IWorldPool;
 import spacegraph.math.Tuple2f;
@@ -70,11 +70,11 @@ public abstract class Contact {
     public ContactEdge m_nodeA = null;
     public ContactEdge m_nodeB = null;
 
-    public Fixture m_fixtureA;
-    public Fixture m_fixtureB;
+    public Fixture aFixture;
+    public Fixture bFixture;
 
-    public int m_indexA;
-    public int m_indexB;
+    public int aIndex;
+    public int bIndex;
 
     public final Manifold m_manifold;
 
@@ -95,8 +95,8 @@ public abstract class Contact {
     protected final IWorldPool pool;
 
     protected Contact(IWorldPool argPool) {
-        m_fixtureA = null;
-        m_fixtureB = null;
+        aFixture = null;
+        bFixture = null;
         m_nodeA = new ContactEdge();
         m_nodeB = new ContactEdge();
         m_manifold = new Manifold();
@@ -109,11 +109,11 @@ public abstract class Contact {
     public void init(Fixture fA, int indexA, Fixture fB, int indexB) {
         m_flags = ENABLED_FLAG;
 
-        m_fixtureA = fA;
-        m_fixtureB = fB;
+        aFixture = fA;
+        bFixture = fB;
 
-        m_indexA = indexA;
-        m_indexB = indexB;
+        aIndex = indexA;
+        bIndex = indexB;
 
         m_manifold.pointCount = 0;
 
@@ -131,8 +131,8 @@ public abstract class Contact {
         m_nodeB.other = null;
 
         m_toiCount = 0;
-        m_friction = Contact.mixFriction(fA.m_friction, fB.m_friction);
-        m_restitution = Contact.mixRestitution(fA.m_restitution, fB.m_restitution);
+        m_friction = Contact.mixFriction(fA.friction, fB.friction);
+        m_restitution = Contact.mixRestitution(fA.restitution, fB.restitution);
 
         m_tangentSpeed = 0;
     }
@@ -148,13 +148,13 @@ public abstract class Contact {
      * Get the world manifold.
      */
     public void getWorldManifold(WorldManifold worldManifold) {
-        final Body bodyA = m_fixtureA.getBody();
-        final Body bodyB = m_fixtureB.getBody();
-        final Shape shapeA = m_fixtureA.getShape();
-        final Shape shapeB = m_fixtureB.getShape();
+        final Body2D bodyA = aFixture.getBody();
+        final Body2D bodyB = bFixture.getBody();
+        final Shape shapeA = aFixture.shape();
+        final Shape shapeB = bFixture.shape();
 
-        worldManifold.initialize(m_manifold, bodyA.getTransform(), shapeA.m_radius,
-                bodyB.getTransform(), shapeB.m_radius);
+        worldManifold.initialize(m_manifold, bodyA.getXform(), shapeA.m_radius,
+                bodyB.getXform(), shapeB.m_radius);
     }
 
     /**
@@ -198,32 +198,6 @@ public abstract class Contact {
         return m_next;
     }
 
-    /**
-     * Get the first fixture in this contact.
-     *
-     * @return
-     */
-    public Fixture getFixtureA() {
-        return m_fixtureA;
-    }
-
-    public int getChildIndexA() {
-        return m_indexA;
-    }
-
-    /**
-     * Get the second fixture in this contact.
-     *
-     * @return
-     */
-    public Fixture getFixtureB() {
-        return m_fixtureB;
-    }
-
-    public int getChildIndexB() {
-        return m_indexB;
-    }
-
     public void setFriction(float friction) {
         m_friction = friction;
     }
@@ -233,7 +207,7 @@ public abstract class Contact {
     }
 
     public void resetFriction() {
-        m_friction = Contact.mixFriction(m_fixtureA.m_friction, m_fixtureB.m_friction);
+        m_friction = Contact.mixFriction(aFixture.friction, bFixture.friction);
     }
 
     public void setRestitution(float restitution) {
@@ -245,7 +219,7 @@ public abstract class Contact {
     }
 
     public void resetRestitution() {
-        m_restitution = Contact.mixRestitution(m_fixtureA.m_restitution, m_fixtureB.m_restitution);
+        m_restitution = Contact.mixRestitution(aFixture.restitution, bFixture.restitution);
     }
 
     public void setTangentSpeed(float speed) {
@@ -278,21 +252,21 @@ public abstract class Contact {
         boolean touching = false;
         boolean wasTouching = (m_flags & TOUCHING_FLAG) == TOUCHING_FLAG;
 
-        boolean sensorA = m_fixtureA.isSensor();
-        boolean sensorB = m_fixtureB.isSensor();
+        boolean sensorA = aFixture.isSensor();
+        boolean sensorB = bFixture.isSensor();
         boolean sensor = sensorA || sensorB;
 
-        Body bodyA = m_fixtureA.getBody();
-        Body bodyB = m_fixtureB.getBody();
-        Transform xfA = bodyA.getTransform();
-        Transform xfB = bodyB.getTransform();
+        Body2D bodyA = aFixture.getBody();
+        Body2D bodyB = bFixture.getBody();
+        Transform xfA = bodyA.getXform();
+        Transform xfB = bodyB.getXform();
         // log.debug("TransformA: "+xfA);
         // log.debug("TransformB: "+xfB);
 
         if (sensor) {
-            Shape shapeA = m_fixtureA.getShape();
-            Shape shapeB = m_fixtureB.getShape();
-            touching = pool.getCollision().testOverlap(shapeA, m_indexA, shapeB, m_indexB, xfA, xfB);
+            Shape shapeA = aFixture.shape();
+            Shape shapeB = bFixture.shape();
+            touching = pool.getCollision().testOverlap(shapeA, aIndex, shapeB, bIndex, xfA, xfB);
 
             // Sensors don't generate manifolds.
             m_manifold.pointCount = 0;
@@ -332,11 +306,11 @@ public abstract class Contact {
         }
 
         if (!sensor && touching) {
-            m_angularVelocity_bodyA = m_fixtureA.body.m_angularVelocity;
-            m_linearVelocity_bodyA.set(m_fixtureA.body.m_linearVelocity);
+            m_angularVelocity_bodyA = aFixture.body.velAngular;
+            m_linearVelocity_bodyA.set(aFixture.body.vel);
 
-            m_angularVelocity_bodyB = m_fixtureB.body.m_angularVelocity;
-            m_linearVelocity_bodyB.set(m_fixtureB.body.m_linearVelocity);
+            m_angularVelocity_bodyB = bFixture.body.velAngular;
+            m_linearVelocity_bodyB.set(bFixture.body.vel);
         }
 
         if (listener == null) {

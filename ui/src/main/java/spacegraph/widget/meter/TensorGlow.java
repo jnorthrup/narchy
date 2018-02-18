@@ -7,6 +7,7 @@ import jcog.math.tensor.TensorLERP;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.SurfaceBase;
 import spacegraph.render.Draw;
+import spacegraph.render.JoglSpace;
 import spacegraph.render.SpaceGraphFlat;
 import spacegraph.widget.windo.PhyWall;
 
@@ -31,7 +32,7 @@ public class TensorGlow extends PhyWall {
         super.start(parent);
 
 
-        window(rngView = BitmapMatrixView.get(
+        newWindow(rngView = BitmapMatrixView.get(
             randomVector, 16, Draw::colorBipolar
         ), RectFloat2D.XYWH(250, 250, 400, 400));
 
@@ -49,6 +50,6 @@ public class TensorGlow extends PhyWall {
     }
 
     public static void main(String[] args) {
-        SpaceGraphFlat.window(new TensorGlow(), 1200, 1000);
+        JoglSpace.window(new TensorGlow(), 1200, 1000);
     }
 }

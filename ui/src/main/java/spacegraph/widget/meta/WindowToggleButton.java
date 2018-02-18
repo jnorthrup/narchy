@@ -48,7 +48,7 @@ public class WindowToggleButton extends CheckBox implements WindowListener, Obje
             synchronized (spacer) {
                 space = this.space;
                 if (space == null) {
-                    space = this.space = SpaceGraph.window(spacer.get(), width, height);
+                    space = this.space = JoglSpace.window(spacer.get(), width, height);
                     space.addWindowListener(this);
                 }
             }

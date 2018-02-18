@@ -7,6 +7,7 @@ import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.layout.Gridding;
 import spacegraph.layout.Splitting;
+import spacegraph.render.JoglSpace;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.TextEdit;
 import spacegraph.widget.windo.Widget;
@@ -26,7 +27,7 @@ public class OmniBox extends Widget {
     private final Gridding results;
     private final Splitting divider;
 
-    private volatile AtomicReference<Querying> query = new AtomicReference<>(null);
+    private final AtomicReference<Querying> query = new AtomicReference<>(null);
 
     public OmniBox() {
         this(User.the());
@@ -170,6 +171,6 @@ public class OmniBox extends Widget {
     }
 
     public static void main(String[] args) {
-        SpaceGraph.window(new OmniBox(), 800, 250);
+        JoglSpace.window(new OmniBox(), 800, 250);
     }
 }

@@ -116,9 +116,7 @@ public class SimpleBroadphase extends Broadphase {
                             float amaxZ = a.max.z;
                             float bminZ = b.min.z;
 
-                            if (bminZ <= amaxZ) {
-                                return true;
-                            }
+                            return bminZ <= amaxZ;
                         }
                     }
                 }

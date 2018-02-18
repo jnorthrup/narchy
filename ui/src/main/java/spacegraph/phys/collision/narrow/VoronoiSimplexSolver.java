@@ -140,19 +140,19 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
                         t /= dotVV;
                         tmp.scale(t, v);
                         diff.sub(tmp);
-                        ((UsageBitfield) cachedBC).usedVertexA = true;
-                        ((UsageBitfield) cachedBC).usedVertexB = true;
+                        cachedBC.usedVertexA = true;
+                        cachedBC.usedVertexB = true;
                     } else {
                         t = 1;
                         diff.sub(v);
                         // reduce to 1 point
-                        ((UsageBitfield) cachedBC).usedVertexB = true;
+                        cachedBC.usedVertexB = true;
                     }
                 } else
                 {
                     t = 0;
                     //reduce to 1 point
-                    ((UsageBitfield) cachedBC).usedVertexA = true;
+                    cachedBC.usedVertexA = true;
                 }
                 cachedBC.setBarycentricCoordinates(1f-t, t, 0f, 0f);
 
@@ -286,7 +286,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 		if (d1 <= 0f && d2 <= 0f) 
 		{
 			result.closestPointOnSimplex.set(a);
-			((UsageBitfield) result).usedVertexA = true;
+			result.usedVertexA = true;
 			result.setBarycentricCoordinates(1f, 0f, 0f, 0f);
 			return true; // a; // barycentric coordinates (1,0,0)
 		}
@@ -301,7 +301,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 		if (d3 >= 0f && d4 <= d3) 
 		{
 			result.closestPointOnSimplex.set(b);
-			((UsageBitfield) result).usedVertexB = true;
+			result.usedVertexB = true;
 			result.setBarycentricCoordinates(0, 1f, 0f, 0f);
 
 			return true; // b; // barycentric coordinates (0,1,0)
@@ -312,8 +312,8 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 		if (vc <= 0f && d1 >= 0f && d3 <= 0f) {
 			float v = d1 / (d1 - d3);
 			result.closestPointOnSimplex.scaleAdd(v, ab, a);
-			((UsageBitfield) result).usedVertexA = true;
-			((UsageBitfield) result).usedVertexB = true;
+			result.usedVertexA = true;
+			result.usedVertexB = true;
 			result.setBarycentricCoordinates(1f-v, v, 0f, 0f);
 			return true;
 			//return a + v * ab; // barycentric coordinates (1-v,v,0)
@@ -329,7 +329,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 		if (d6 >= 0f && d5 <= d6) 
 		{
 			result.closestPointOnSimplex.set(c);
-			((UsageBitfield) result).usedVertexC = true;
+			result.usedVertexC = true;
 			result.setBarycentricCoordinates(0f, 0f, 1f, 0f);
 			return true;//c; // barycentric coordinates (0,0,1)
 		}
@@ -339,8 +339,8 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 		if (vb <= 0f && d2 >= 0f && d6 <= 0f) {
 			float w = d2 / (d2 - d6);
 			result.closestPointOnSimplex.scaleAdd(w, ac, a);
-			((UsageBitfield) result).usedVertexA = true;
-			((UsageBitfield) result).usedVertexC = true;
+			result.usedVertexA = true;
+			result.usedVertexC = true;
 			result.setBarycentricCoordinates(1f-w, 0f, w, 0f);
 			return true;
 			//return a + w * ac; // barycentric coordinates (1-w,0,w)
@@ -355,8 +355,8 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 			float w = (d4 - d3) / ((d4 - d3) + (d5 - d6));
 			result.closestPointOnSimplex.scaleAdd(w, tmp, b);
 
-			((UsageBitfield) result).usedVertexB = true;
-			((UsageBitfield) result).usedVertexC = true;
+			result.usedVertexB = true;
+			result.usedVertexC = true;
 			result.setBarycentricCoordinates(0, 1f-w, w, 0f);
 			return true;		
 		   // return b + w * (c - b); // barycentric coordinates (0,1-w,w)
@@ -373,9 +373,9 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 		float w = vc * denom;
 		tmp2.scale(w, ac);
 		VectorUtil.add(result.closestPointOnSimplex, a, tmp1, tmp2);
-		((UsageBitfield) result).usedVertexA = true;
-		((UsageBitfield) result).usedVertexB = true;
-		((UsageBitfield) result).usedVertexC = true;
+		result.usedVertexA = true;
+		result.usedVertexB = true;
+		result.usedVertexC = true;
 		result.setBarycentricCoordinates(1f-v-w, v, w, 0f);
 
 		return true;
@@ -459,9 +459,9 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 				finalResult.closestPointOnSimplex.set(q);
 				//convert result bitmask!
 				finalResult.reset();
-				((UsageBitfield) finalResult).usedVertexA = ((UsageBitfield) tempResult).usedVertexA;
-				((UsageBitfield) finalResult).usedVertexB = ((UsageBitfield) tempResult).usedVertexB;
-				((UsageBitfield) finalResult).usedVertexC = ((UsageBitfield) tempResult).usedVertexC;
+				finalResult.usedVertexA = tempResult.usedVertexA;
+				finalResult.usedVertexB = tempResult.usedVertexB;
+				finalResult.usedVertexC = tempResult.usedVertexC;
 				finalResult.setBarycentricCoordinates(
 						tempResult.barycentricCoords[VERTA],
 						tempResult.barycentricCoords[VERTB],
@@ -485,10 +485,10 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 				bestSqDist = sqDist;
 				finalResult.closestPointOnSimplex.set(q);
 				finalResult.reset();
-				((UsageBitfield) finalResult).usedVertexA = ((UsageBitfield) tempResult).usedVertexA;
+				finalResult.usedVertexA = tempResult.usedVertexA;
 
-				((UsageBitfield) finalResult).usedVertexC = ((UsageBitfield) tempResult).usedVertexB;
-				((UsageBitfield) finalResult).usedVertexD = ((UsageBitfield) tempResult).usedVertexC;
+				finalResult.usedVertexC = tempResult.usedVertexB;
+				finalResult.usedVertexD = tempResult.usedVertexC;
 				finalResult.setBarycentricCoordinates(
 						tempResult.barycentricCoords[VERTA],
 						0,
@@ -512,10 +512,10 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 				bestSqDist = sqDist;
 				finalResult.closestPointOnSimplex.set(q);
 				finalResult.reset();
-				((UsageBitfield) finalResult).usedVertexA = ((UsageBitfield) tempResult).usedVertexA;
-				((UsageBitfield) finalResult).usedVertexB = ((UsageBitfield) tempResult).usedVertexC;
+				finalResult.usedVertexA = tempResult.usedVertexA;
+				finalResult.usedVertexB = tempResult.usedVertexC;
 
-				((UsageBitfield) finalResult).usedVertexD = ((UsageBitfield) tempResult).usedVertexB;
+				finalResult.usedVertexD = tempResult.usedVertexB;
 				finalResult.setBarycentricCoordinates(
 						tempResult.barycentricCoords[VERTA],
 						tempResult.barycentricCoords[VERTC],
@@ -539,9 +539,9 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 				finalResult.closestPointOnSimplex.set(q);
 				finalResult.reset();
 				//
-				((UsageBitfield) finalResult).usedVertexB = ((UsageBitfield) tempResult).usedVertexA;
-				((UsageBitfield) finalResult).usedVertexC = ((UsageBitfield) tempResult).usedVertexC;
-				((UsageBitfield) finalResult).usedVertexD = ((UsageBitfield) tempResult).usedVertexB;
+				finalResult.usedVertexB = tempResult.usedVertexA;
+				finalResult.usedVertexC = tempResult.usedVertexC;
+				finalResult.usedVertexD = tempResult.usedVertexB;
 
 				finalResult.setBarycentricCoordinates(
 						0,

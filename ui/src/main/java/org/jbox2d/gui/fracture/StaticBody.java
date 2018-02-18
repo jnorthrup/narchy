@@ -22,7 +22,7 @@ public class StaticBody implements ICase {
             bodyDef2.position.set(10.0f, 0.0f); //pozicia
             bodyDef2.linearVelocity = new v2(0.0f, 0.0f); // smer pohybu
             bodyDef2.angularVelocity = 0.0f; //rotacia (rychlost rotacie)
-            Body newBody = w.addBody(bodyDef2);
+            Body2D newBody = w.newBody(bodyDef2);
 
             PolygonFixture pf = new PolygonFixture(new Tuple2f[]{
                     new v2(0.0f, 3.7f),
@@ -49,13 +49,13 @@ public class StaticBody implements ICase {
             bodyDefBullet.position.set(-20.0f, 18.0f); //pozicia
             bodyDefBullet.linearVelocity = new v2(100.0f, 0.0f); // smer pohybu
             bodyDefBullet.angularVelocity = 0.0f; //rotacia (rychlost rotacie)
-            Body bodyBullet = w.addBody(bodyDefBullet);
+            Body2D bodyBullet = w.newBody(bodyDefBullet);
 
             CircleShape circleShape = new CircleShape();
             circleShape.m_radius = 1.0f;
             Fixture fixtureBullet = bodyBullet.addFixture(circleShape, 2.0f);
-            fixtureBullet.m_friction = 0.4f; // trenie
-            fixtureBullet.m_restitution = 0.1f; //odrazivost
+            fixtureBullet.friction = 0.4f; // trenie
+            fixtureBullet.restitution = 0.1f; //odrazivost
         }
     }
 

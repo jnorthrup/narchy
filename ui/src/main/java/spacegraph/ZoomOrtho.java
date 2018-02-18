@@ -129,9 +129,9 @@ public class ZoomOrtho extends Ortho {
         pmx = e.getX();
         pmy = windowHeight - e.getY();
 
-        if ((pmx < hud.resizeBorder) && (pmy < hud.resizeBorder)) {
+        if ((pmx < Windo.resizeBorder) && (pmy < Windo.resizeBorder)) {
             hud.potentialDragMode = Windo.DragEdit.RESIZE_SW; //&& window.isResizable()
-        } else if ((pmx > windowWidth - hud.resizeBorder) && (pmy < hud.resizeBorder)) {
+        } else if ((pmx > windowWidth - Windo.resizeBorder) && (pmy < Windo.resizeBorder)) {
             hud.potentialDragMode = Windo.DragEdit.RESIZE_SE;  //&& window.isResizable()
         } else {
             hud.potentialDragMode = Windo.DragEdit.MOVE;

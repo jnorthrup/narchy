@@ -1,7 +1,7 @@
 package spacegraph.state;
 
 public interface Context {
-    public String id();
+    String id();
 
     default String[] tags() {
         return null;

@@ -1,6 +1,6 @@
 package org.jbox2d.fracture;
 
-import org.jbox2d.dynamics.Body;
+import org.jbox2d.dynamics.Body2D;
 
 import java.util.List;
 
@@ -18,5 +18,5 @@ public interface FractureListener {
      * @param intensity intenzita rozpadu
      * @param fragments polygony fragmentacie
      */
-    void action(Material material, float intensity, List<Body> fragments);
+    void action(Material material, float intensity, List<Body2D> fragments);
 }
