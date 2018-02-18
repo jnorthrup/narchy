@@ -88,24 +88,27 @@ public class Finger {
 
 
         //START DESCENT:
-        Surface s = null;
+        Surface s;
         Fingering ff = this.fingering;
-        if (root!=null /*&& (ff == null)*/) {
+        if (ff == null || ff.escapes()) {
 
             s = root.onTouch(this, nextButtonDown);
             if (s instanceof Widget) {
                 if (!on((Widget) s))
                     s = null;
             } else {
-                if (touching!=null) {
+                if (touching != null) {
                     touching.touch(null);
                     touching = null;
                 }
                 s = null;
             }
+        } else {
+            s = null;
         }
 
-        if (ff!=null) {
+
+        if (ff != null) {
             synchronized (this) {
                 if (!ff.update(this)) {
                     ff.stop(this);
@@ -113,6 +116,7 @@ public class Finger {
                 }
             }
         }
+
 
         for (int j = 0, jj = hitOnDown.length; j < jj; j++) {
             if (!buttonDown[j] && hitOnDown[j] != null) {
@@ -130,7 +134,6 @@ public class Finger {
     public boolean dragging(int button) {
         return (hitOnDownGlobal[button] != null && hitOnDownGlobal[button].distanceSq(posGlobal) > DRAG_THRESHOLD * DRAG_THRESHOLD);
     }
-
 
 
     private boolean on(@Nullable Widget touched) {
@@ -166,14 +169,18 @@ public class Finger {
     public boolean pressed(int button) {
         return buttonDown[button];
     }
+
     public boolean pressedNow(int i) {
         return pressed(i) && !prevButtonDown[i];
     }
+
     public boolean releasedNow(int i) {
         return !pressed(i) && prevButtonDown[i];
     }
 
-    /** additionally tests for no dragging while pressed */
+    /**
+     * additionally tests for no dragging while pressed
+     */
     public boolean clickedNow(int button) {
         return releasedNow(button) && !dragging(button);
     }
@@ -199,25 +206,26 @@ public class Finger {
     public static Consumer<Finger> clicked(int button, Runnable clicked) {
         return clicked(button, clicked, null, null, null);
     }
+
     public static Consumer<Finger> clicked(int button, Runnable clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
 
         final boolean[] idle = {true};
 
-        if (becameIdle!=null) becameIdle.run();
+        if (becameIdle != null) becameIdle.run();
 
         return (finger) -> {
 
             if (finger != null) {
                 if (finger.clickedNow(button)) {
-                    if (clicked!=null) clicked.run();
+                    if (clicked != null) clicked.run();
                 } else if (finger.pressedNow(button)) {
-                    if (armed!=null) armed.run();
+                    if (armed != null) armed.run();
                 } else {
-                    if (hover!=null) hover.run();
+                    if (hover != null) hover.run();
                 }
                 idle[0] = false;
             } else {
-                if (becameIdle!=null && !idle[0]) {
+                if (becameIdle != null && !idle[0]) {
                     becameIdle.run();
                     idle[0] = true;
                 }
@@ -226,7 +234,7 @@ public class Finger {
     }
 
     public boolean isFingering() {
-        return fingering!=null;
+        return fingering != null;
     }
 
     public v2 relativePos(Surface c) {

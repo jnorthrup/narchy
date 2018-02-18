@@ -373,6 +373,11 @@ public class PhyWall extends Wall implements Animated {
         }
 
         @Override
+        public boolean escapes() {
+            return true;
+        }
+
+        @Override
         protected boolean drag(Finger f) {
             if (path == null) {
                 path = new Path2D(16);

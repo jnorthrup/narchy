@@ -18,4 +18,11 @@ abstract public class Fingering {
     public void stop(Finger finger) {
 
     }
+
+    /** whether this is allowed to continue updating the finger's currently
+     * touched widget after it activates.
+     */
+    public boolean escapes() {
+        return false;
+    }
 }
