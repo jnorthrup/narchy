@@ -24,7 +24,7 @@ public class Triangulation {
      * @param count
      * @return
      */
-    public static ArrayList triangulate(Tuple2f[] vertices, int count) {
+    public static ArrayList<int[]> triangulate(Tuple2f[] vertices, int count) {
         return triangulate(1, new int[]{count}, vertices);
     }
 
@@ -48,10 +48,10 @@ public class Triangulation {
      * @param vertices              array of vertices, each item of array contains doubl[2] ~ {x,y}
      * @return ArrayList of ArrayLists which are triangles in form of indexes into array vertices
      */
-    public static ArrayList triangulate(int numContures, int[] numVerticesInContures, Tuple2f[] vertices) {
+    public static ArrayList<int[]> triangulate(int numContures, int[] numVerticesInContures, Tuple2f[] vertices) {
         Polygon p = new Polygon(numContures, numVerticesInContures, vertices);
         if (debug) {
-            p.setDebugFile(debugFileName);
+            //p.setDebugFile(debugFileName);
             p.setDebugOption(debug);
         } else {
             p.setDebugOption(false);

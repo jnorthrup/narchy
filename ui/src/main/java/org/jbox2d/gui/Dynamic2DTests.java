@@ -261,7 +261,7 @@ public class Dynamic2DTests extends JComponent implements Runnable {
     }
 
     private void setCase(ICase testcase) {
-        w.invokeLater(() -> {
+        w.invoke(() -> {
             this.testCase = testcase;
             initWorld();
             testCase.init(w);

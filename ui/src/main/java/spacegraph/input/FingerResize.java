@@ -24,15 +24,12 @@ public class FingerResize extends FingerDragging {
     }
 
     @Override
-    public void start(Finger f) {
-        this.before = resized.bounds;
-    }
-
-    @Override
     public boolean drag(Finger finger) {
+        if (before == null)
+            this.before = resized.bounds;
 
-        float fx = finger.hit.x;
-        float fy = finger.hit.y;
+        float fx = finger.pos.x;
+        float fy = finger.pos.y;
 
         v2 hitOnDown = finger.hitOnDown[button];
         if (hitOnDown == null)

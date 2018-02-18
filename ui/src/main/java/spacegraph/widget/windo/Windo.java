@@ -1,7 +1,6 @@
 package spacegraph.widget.windo;
 
 import com.jogamp.opengl.GL2;
-import jcog.Util;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.Surface;
 import spacegraph.ZoomOrtho;
@@ -74,8 +73,8 @@ public class Windo extends Widget {
             return super.onTouch(finger, buttons); //pass-through
 
         if (finger != null) {
-            float fx = finger.hit.x;
-            float fy = finger.hit.y;
+            float fx = finger.pos.x;
+            float fy = finger.pos.y;
 
             if (dragMode == null && !bounds.contains(fx, fy)) {
                 hover = false;
@@ -89,7 +88,7 @@ public class Windo extends Widget {
             if (s == this) {
 
                 //if (moveable()) System.out.println(bounds + "\thit=" + finger.hit + "\thitGlobal=" + finger.hitGlobal);
-                v2 hitPoint = finger.relativeHit(this);
+                v2 hitPoint = finger.relativePos(this);
 
                 hover = true;
 
@@ -281,82 +280,84 @@ public class Windo extends Widget {
                     gl.glColor3f(0.15f, 0.2f, 0f);
                     break;
                 default:
-                    gl.glColor3f(0.3f, 0.3f, 0.3f);
-                    break;
+                    //gl.glColor3f(0.3f, 0.3f, 0.3f);
+                    //break;
+                    return;
+
             }
             Draw.rect(gl, x(), y(), w(), h());
         }
     }
 
 
-    public static class Port extends Windo {
-        public final String id;
-
-        public final v2 posRel;
-        public final v2 sizeRel;
-        private final Windo win;
-
-        Port(String id, Windo win) {
-            super();
-            this.id = id;
-            this.win = win;
-
-            //Surface content = win.wall().newCurface(id);
-            //children(content);
-
-            //set(new Scale(new PushButton("?"), 0.9f));
-            this.posRel = new v2(Float.NEGATIVE_INFINITY, 0);
-            this.sizeRel = new v2(0.1f, 0.2f);
-        }
-
-        @Override
-        public void doLayout(int dtMS) {
-            float W = win.w();
-            float H = win.h();
-            {
-                float x1, y1, x2, y2;
-                float w = sizeRel.x * W;
-                float h = sizeRel.y * H;
-                if (posRel.x == Float.NEGATIVE_INFINITY) {
-                    //glued to left
-                    float y = Util.lerp((posRel.y) / 2f + 0.5f, win.bounds.y, win.bounds.bottom());
-                    x1 = win.x() - w;
-                    y1 = y - h / 2;
-                    x2 = win.x();
-                    y2 = y + h / 2;
-                    pos(x1, y1, x2, y2);
-                } else if (posRel.x == Float.POSITIVE_INFINITY) {
-                    //glued to right
-                } else {
-                    //TODO
-                    //etc
-                }
-            }
-
-            super.doLayout(dtMS);
-        }
-
-        @Override
-        protected void paintBack(GL2 gl) {
-            gl.glColor3f(1f, 0, 1f);
-            Draw.rect(gl, x(), y(), w(), h());
-        }
-
-//        @Override
-//        public Surface onTouch(Finger finger, v2 hitPoint, short[] buttons) {
-//            if (hitPoint != null && hitPoint.inUnit())
-//                return super.onTouch(finger, hitPoint, buttons);
-//            return null;
+//    public static class Port extends Windo {
+//        public final String id;
+//
+//        public final v2 posRel;
+//        public final v2 sizeRel;
+//        private final Windo win;
+//
+//        Port(String id, Windo win) {
+//            super();
+//            this.id = id;
+//            this.win = win;
+//
+//            //Surface content = win.wall().newCurface(id);
+//            //children(content);
+//
+//            //set(new Scale(new PushButton("?"), 0.9f));
+//            this.posRel = new v2(Float.NEGATIVE_INFINITY, 0);
+//            this.sizeRel = new v2(0.1f, 0.2f);
 //        }
-
-        @Override
-        protected Fingering fingering(DragEdit mode) {
-            if (mode == MOVE) {
-                return new FingerMove(this, false, true);
-            }
-            return super.fingering(mode);
-        }
-    }
+//
+//        @Override
+//        public void doLayout(int dtMS) {
+//            float W = win.w();
+//            float H = win.h();
+//            {
+//                float x1, y1, x2, y2;
+//                float w = sizeRel.x * W;
+//                float h = sizeRel.y * H;
+//                if (posRel.x == Float.NEGATIVE_INFINITY) {
+//                    //glued to left
+//                    float y = Util.lerp((posRel.y) / 2f + 0.5f, win.bounds.y, win.bounds.bottom());
+//                    x1 = win.x() - w;
+//                    y1 = y - h / 2;
+//                    x2 = win.x();
+//                    y2 = y + h / 2;
+//                    pos(x1, y1, x2, y2);
+//                } else if (posRel.x == Float.POSITIVE_INFINITY) {
+//                    //glued to right
+//                } else {
+//                    //TODO
+//                    //etc
+//                }
+//            }
+//
+//            super.doLayout(dtMS);
+//        }
+//
+//        @Override
+//        protected void paintBack(GL2 gl) {
+//            gl.glColor3f(1f, 0, 1f);
+//            Draw.rect(gl, x(), y(), w(), h());
+//        }
+//
+////        @Override
+////        public Surface onTouch(Finger finger, v2 hitPoint, short[] buttons) {
+////            if (hitPoint != null && hitPoint.inUnit())
+////                return super.onTouch(finger, hitPoint, buttons);
+////            return null;
+////        }
+//
+//        @Override
+//        protected Fingering fingering(DragEdit mode) {
+//            if (mode == MOVE) {
+//                return new FingerMove(this, false, true);
+//            }
+//            return super.fingering(mode);
+//        }
+//    }
 
 //    protected Wall wall() {
 //        return ((Wall) parent);

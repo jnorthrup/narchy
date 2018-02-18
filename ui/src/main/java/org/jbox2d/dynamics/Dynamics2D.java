@@ -57,6 +57,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The world class manages all physics entities, dynamic simulation, and asynchronous queries. The
@@ -121,6 +122,7 @@ public class Dynamics2D {
     final Queue<Runnable> queue = new ConcurrentLinkedQueue<>();
 
     final AtomicBoolean LOCKED = new AtomicBoolean(false);
+    final AtomicInteger BUSY = new AtomicInteger(0);
 
     private final Island toiIsland = new Island(this);
     private final TOIInput toiInput = new TOIInput();
@@ -407,7 +409,7 @@ public class Dynamics2D {
 
         Joint j = Joint.create(this, def);
 
-        invokeLater(() -> {
+        invoke(() -> {
 
             // Connect to the world list.
             j.prev = null;
@@ -554,13 +556,20 @@ public class Dynamics2D {
     private final Timer stepTimer = new Timer();
     private final Timer tempTimer = new Timer();
 
-    public synchronized void invokeLater(Runnable r) {
-        if (isLocked()) {
-            queue.add(r);
-        } else {
-            r.run();
+    public void invoke(Runnable r) {
+
+        BUSY.incrementAndGet();
+        try {
+            if (isLocked()) {
+                queue.add(r);
+            } else {
+                r.run();
+            }
+        } finally {
+            BUSY.decrementAndGet();
         }
     }
+
 
     /**
      * Take a time step. This performs collision detection, integration, and constraint solution.
@@ -574,6 +583,8 @@ public class Dynamics2D {
 
         if (!LOCKED.compareAndSet(false, true))
             return; //already busy
+
+        while (BUSY.get()>0) Thread.onSpinWait(); //wait for any runnables invoked while unlocked to finish
 
         try {
 
@@ -1771,6 +1782,8 @@ public class Dynamics2D {
         return newBody(new BodyDef(BodyType.DYNAMIC, new v2()),
                 new FixtureDef(shape, density, friction));
     }
+
+
 
     public static class Profile {
 

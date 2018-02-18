@@ -4,13 +4,13 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.tree.rtree.rect.RectFloat2D;
-import org.jetbrains.annotations.NotNull;
 import spacegraph.input.Finger;
 import spacegraph.layout.AspectAlign;
 import spacegraph.math.v2;
 
 import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Predicate;
 
 /**
  * planar subspace.
@@ -115,15 +115,40 @@ abstract public class Surface implements SurfaceBase {
         return parent == null ? null : parent.root();
     }
 
+    /** finds the most immediate parent matching the class */
+    public <S extends Surface> S parent(Class<S> s) {
+        return (S) parent(s::isInstance);
+    }
+
+    /** finds the most immediate parent matching the predicate */
+    public SurfaceBase parent(Predicate<SurfaceBase> test) {
+
+        SurfaceBase p = this.parent;
+
+        if (p instanceof Surface) {
+            if (test.test(p))
+                return p;
+            else
+                return ((Surface) p).parent(test);
+        }
+
+        return null;
+    }
+
+
     /**
      * null parent means it is the root surface
      */
-    public /*synchronized*/ void start(@NotNull SurfaceBase parent) {
-        this.parent = parent;
+    public /*synchronized*/ void start(SurfaceBase parent) {
+        synchronized (this) {
+            this.parent = parent;
+        }
     }
 
     public /*synchronized*/ void stop() {
-        parent = null;
+        synchronized (this) {
+            parent = null;
+        }
     }
 
     public void layout() {
@@ -143,8 +168,6 @@ abstract public class Surface implements SurfaceBase {
      * or null if nothing absorbed the gesture
      */
     public Surface onTouch(Finger finger, @Deprecated short[] buttons) {
-        //System.out.println(this + " " + hitPoint + " " + Arrays.toString(buttons));
-
         return null;
     }
 
@@ -163,10 +186,10 @@ abstract public class Surface implements SurfaceBase {
         if (!visible)
             return;
 
-        //DEBUG
-        if ((parent == null) && !(this instanceof Ortho)) {
-            throw new RuntimeException(this + " being rendered with null parent");
-        }
+//        //DEBUG
+//        if ((parent == null) && !(this instanceof Ortho)) {
+//            throw new RuntimeException(this + " being rendered with null parent");
+//        }
 
         paint(gl, dtMS);
 

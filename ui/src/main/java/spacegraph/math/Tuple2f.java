@@ -294,15 +294,11 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
     }
 
     public final static Tuple2f min(Tuple2f a, Tuple2f b) {
-        float x1 = a.x < b.x ? a.x : b.x;
-        float y1 = a.y < b.y ? a.y : b.y;
-        return new v2(x1, y1);
+        return new v2(Math.min(a.x, b.x), Math.min(a.y, b.y));
     }
 
     public final static Tuple2f max(Tuple2f a, Tuple2f b) {
-        float x1 = a.x > b.x ? a.x : b.x;
-        float y1 = a.y > b.y ? a.y : b.y;
-        return new v2(x1, y1);
+        return new v2(Math.max(a.x, b.x), Math.max(a.y, b.y));
     }
 
 

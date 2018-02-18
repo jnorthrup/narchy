@@ -183,11 +183,9 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      * @return Vrati najvacsiu vzdialenost 2 bodov.
      */
     private double radius() {
-        double ln = Float.MIN_VALUE;
+        double ln = Float.NEGATIVE_INFINITY;
         for (int i = 0; i < count; ++i) {
-            Tuple2f v1 = get(i);
-            Tuple2f v2 = cycleGet(i + 1);
-            ln = Math.max(Arithmetic.distanceSq(v1, v2), ln);
+            ln = Math.max(Arithmetic.distanceSq(get(i), cycleGet(i + 1)), ln);
         }
         return Math.sqrt(ln);
     }
@@ -206,22 +204,25 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      * fraktury. Preto je to umelo nafunknute o konstantu 1.
      */
     public AABB getAABB() {
-        float minX = Float.MAX_VALUE;
-        float minY = Float.MAX_VALUE;
-        float maxX = Float.MIN_VALUE;
-        float maxY = Float.MIN_VALUE;
+
         if (count == 0) {
             return null;
         } else {
+            float minX = Float.POSITIVE_INFINITY;
+            float minY = Float.POSITIVE_INFINITY;
+            float maxX = Float.NEGATIVE_INFINITY;
+            float maxY = Float.NEGATIVE_INFINITY;
             for (int i = 0; i < count; ++i) {
                 Tuple2f v = get(i);
                 minX = Math.min(v.x, minX);
-                minY = Math.min(v.y, minY);
                 maxX = Math.max(v.x, maxX);
+                minY = Math.min(v.y, minY);
                 maxY = Math.max(v.y, maxY);
             }
+            return new AABB(
+                    new v2(minX - AABBConst, minY - AABBConst),
+                    new v2(maxX + AABBConst, maxY + AABBConst), false);
         }
-        return new AABB(new v2(minX - AABBConst, minY - AABBConst), new v2(maxX + AABBConst, maxY + AABBConst), false);
     }
 
     /**
@@ -239,19 +240,16 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
             reverseArray[i] = get(count - i - 1);
         }
 
-        ArrayList<ArrayList<Integer>> triangles = Triangulation.triangulate(reverseArray, count);
+        ArrayList<int[]> triangles = Triangulation.triangulate(reverseArray, count);
 
         int c = triangles.size();
 
         int[][] list = new int[c][3];
         for (int i = 0; i < c; i++) {
-            ArrayList<Integer> t = triangles.get(i);
-            int i1 = t.get(0);
-            int i2 = t.get(1);
-            int i3 = t.get(2);
-            list[i][0] = i1;
-            list[i][1] = i2;
-            list[i][2] = i3;
+            int[] t = triangles.get(i);
+            list[i][0] = t[0];
+            list[i][1] = t[1];
+            list[i][2] = t[2];
         }
 
         HM.calculate(list, reverseArray, Settings.maxPolygonVertices);

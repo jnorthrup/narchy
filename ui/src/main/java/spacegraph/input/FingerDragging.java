@@ -10,8 +10,22 @@ abstract public class FingerDragging extends Fingering {
     }
 
     @Override
+    public boolean start(Finger f) {
+        if (!f.prevButtonDown[button] && pressed(f)) {
+            drag(f);
+            return true;
+        } else
+            return false;
+    }
+
+
+    @Override
     public boolean update(Finger finger) {
-        return drag(finger) && finger.buttonDown.length > 0 && finger.buttonDown[button];
+        return pressed(finger) && drag(finger);
+    }
+
+    private boolean pressed(Finger finger) {
+        return finger.buttonDown.length > 0 && finger.buttonDown[button];
     }
 
     /** return false to cancel the operation */

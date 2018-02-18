@@ -69,8 +69,10 @@ public class Poly2TriUtils {
     public static double orient2d(double[] pa, double[] pb, double[] pc) {
         double detleft, detright;
 
-        detleft = (pa[0] - pc[0]) * (pb[1] - pc[1]);
-        detright = (pa[1] - pc[1]) * (pb[0] - pc[0]);
+        double pc0 = pc[0];
+        double pc1 = pc[1];
+        detleft = (pa[0] - pc0) * (pb[1] - pc1);
+        detright = (pa[1] - pc1) * (pb[0] - pc0);
 
         return detleft - detright;
     }

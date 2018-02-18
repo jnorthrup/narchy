@@ -33,7 +33,7 @@ public class Finger {
      */
     public final static Point pointer = new Point();
 
-    public final v2 hit = new v2(), hitGlobal = new v2();
+    public final v2 pos = new v2(), posGlobal = new v2();
     public final v2[] hitOnDown = new v2[5], hitOnDownGlobal = new v2[5];
     public final boolean[] buttonDown = new boolean[5];
     public final boolean[] prevButtonDown = new boolean[5];
@@ -62,9 +62,9 @@ public class Finger {
         return on(this.root.surface, sx, sy, lx, ly, nextButtonDown);
     }
 
-    public Surface on(Surface root, float sx, float sy, float lx, float ly, short[] nextButtonDown) {
-        this.hit.set(lx, ly);
-        this.hitGlobal.set(sx, sy);
+    public synchronized Surface on(Surface root, float sx, float sy, float lx, float ly, short[] nextButtonDown) {
+        this.pos.set(lx, ly);
+        this.posGlobal.set(sx, sy);
 
         arraycopy(this.buttonDown, 0, prevButtonDown, 0, buttonDown.length);
 
@@ -77,8 +77,8 @@ public class Finger {
 
             for (int j = 0, jj = hitOnDown.length; j < jj; j++) {
                 if (!prevButtonDown[j] && buttonDown[j]) {
-                    hitOnDown[j] = new v2(hit);
-                    hitOnDownGlobal[j] = new v2(hitGlobal);
+                    hitOnDown[j] = new v2(pos);
+                    hitOnDownGlobal[j] = new v2(posGlobal);
                 }
             }
 
@@ -88,8 +88,9 @@ public class Finger {
 
 
         //START DESCENT:
-        Surface s;
-        if (root!=null && fingering == null) {
+        Surface s = null;
+        Fingering ff = this.fingering;
+        if (root!=null /*&& (ff == null)*/) {
 
             s = root.onTouch(this, nextButtonDown);
             if (s instanceof Widget) {
@@ -102,11 +103,13 @@ public class Finger {
                 }
                 s = null;
             }
-        } else {
-            s = null;
+        }
+
+        if (ff!=null) {
             synchronized (this) {
-                if (!fingering.update(this)) {
-                    fingering = null;
+                if (!ff.update(this)) {
+                    ff.stop(this);
+                    this.fingering = null;
                 }
             }
         }
@@ -125,7 +128,7 @@ public class Finger {
     }
 
     public boolean dragging(int button) {
-        return (hitOnDownGlobal[button] != null && hitOnDownGlobal[button].distanceSq(hitGlobal) > DRAG_THRESHOLD * DRAG_THRESHOLD);
+        return (hitOnDownGlobal[button] != null && hitOnDownGlobal[button].distanceSq(posGlobal) > DRAG_THRESHOLD * DRAG_THRESHOLD);
     }
 
 
@@ -182,10 +185,11 @@ public class Finger {
         if (root != null) {
             synchronized (this) {
                 if (fingering == null) {
-                    fingering = f;
-                    f.start(this);
-                    root.surface.onTouch(this, ArrayUtils.EMPTY_SHORT_ARRAY); //release all fingering on surfaces
-                    return true;
+                    if (f.start(this)) {
+                        fingering = f;
+                        root.surface.onTouch(this, ArrayUtils.EMPTY_SHORT_ARRAY); //release all fingering on surfaces
+                        return true;
+                    }
                 }
             }
         }
@@ -225,8 +229,8 @@ public class Finger {
         return fingering!=null;
     }
 
-    public v2 relativeHit(Surface c) {
-        return relative(hit, c);
+    public v2 relativePos(Surface c) {
+        return relative(pos, c);
     }
 
     public static v2 relative(v2 x, Surface c) {

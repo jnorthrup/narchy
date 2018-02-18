@@ -1,5 +1,6 @@
 package spacegraph.widget.windo;
 
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.event.On;
@@ -10,19 +11,21 @@ import org.jbox2d.collision.shapes.Shape;
 import org.jbox2d.common.Transform;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
-import org.jbox2d.dynamics.joints.*;
+import org.jbox2d.dynamics.joints.Joint;
+import org.jbox2d.dynamics.joints.MouseJoint;
+import org.jbox2d.dynamics.joints.MouseJointDef;
+import org.jbox2d.dynamics.joints.RopeJointDef;
 import org.jbox2d.fracture.PolygonFixture;
-import spacegraph.Ortho;
-import spacegraph.Scale;
-import spacegraph.Surface;
-import spacegraph.SurfaceBase;
+import spacegraph.*;
+import spacegraph.input.Finger;
+import spacegraph.input.FingerDragging;
 import spacegraph.input.Fingering;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 import spacegraph.phys.util.Animated;
 import spacegraph.render.Draw;
-import spacegraph.widget.slider.XYSlider;
 
+import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
@@ -317,6 +320,104 @@ public class PhyWall extends Wall implements Animated {
 
     final Map<String, PhyWindow> spatials = new ConcurrentHashMap<>();
 
+    static class Sketching extends Surface {
+
+        private final Path2D path;
+
+        public Sketching(Path2D path) {
+            this.path = path;
+        }
+
+        @Override
+        protected void paint(GL2 gl, int dtMS) {
+            if (path.points() > 1) {
+                gl.glLineWidth(8);
+                gl.glColor4f(0.5f, 0.5f, 1f, 0.8f);
+                gl.glBegin(GL.GL_LINE_STRIP);
+                path.vertex2f(gl);
+                gl.glEnd();
+            }
+        }
+
+    }
+
+    interface Wireable {
+        void onWireIn(@Nullable Wiring w, boolean active);
+        void onWireOut(@Nullable Wiring w, boolean active);
+    }
+
+    static class Wiring extends FingerDragging {
+
+
+        Path2D path;
+
+        final Surface start;
+        private Sketching pathVis;
+        private Surface end = null;
+
+        Wiring(Surface start) {
+            super(0);
+            this.start = start;
+        }
+
+        @Override
+        public boolean start(Finger f) {
+            if (super.start(f)) {
+
+                if (this.start instanceof Wireable)
+                    ((Wireable)start).onWireOut(this, true);
+
+                return true;
+            }
+            return false;
+        }
+
+        @Override
+        protected boolean drag(Finger f) {
+            if (path == null) {
+                path = new Path2D(16);
+                ((Ortho)(start.root())).window.add(pathVis = new Sketching(path));
+            }
+
+            path.add(f.pos, 32);
+
+            updateEnd(f);
+
+            return true;
+        }
+
+        @Override
+        public void stop(Finger finger) {
+            if (pathVis!=null) {
+                ((Ortho)(start.root())).window.remove(pathVis);
+                pathVis = null;
+            }
+
+            updateEnd(finger);
+
+            if (this.start instanceof Wireable)
+                ((Wireable)start).onWireOut(this, false);
+
+            if (this.end instanceof Wireable)
+                ((Wireable)end).onWireIn(this, false);
+
+            start.root().debug(start, 1, ()->"WIRE: " + start + " -> " + end);
+        }
+
+        private synchronized void updateEnd(Finger finger) {
+            Surface nextEnd = ((Ortho) start.root()).onTouch(finger, null);
+            if (nextEnd!=end) {
+                if (end instanceof Wireable) {
+                    ((Wireable)end).onWireIn(this, false);
+                }
+                this.end = nextEnd;
+                if (end instanceof Wireable) {
+                    ((Wireable)end).onWireIn(this, true);
+                }
+            }
+        }
+    }
+
     class PhyWindow extends Windo {
         private final Body2D body;
         private final PolygonShape shape;
@@ -339,7 +440,7 @@ public class PhyWall extends Wall implements Animated {
 
             spatials.put(id, this);
 
-            W.invokeLater(()->{
+            W.invoke(()->{
                 W.newBody(body);
                 body.addFixture(fd);
             });
@@ -359,12 +460,79 @@ public class PhyWall extends Wall implements Animated {
         }
 
 
+
+        class PortSurface extends Widget implements Wireable {
+
+            protected Wiring wiringOut = null;
+            protected Wiring wiringIn = null;
+
+//            final FingerDragging dragInit = new FingerDragging(0) {
+//
+//                @Override
+//                public void start(Finger f) {
+//                    //root().debug(this, 1f, ()->"fingering " + this);
+//                }
+//
+//                @Override
+//                protected boolean drag(Finger f) {
+//                    SurfaceRoot root = root();
+//                    root.debug(this, 1f, ()->"drag " + this);
+//                    if (f.tryFingering(this))
+//                        return false;
+//                    else
+//                        return true;
+//                }
+//            };
+
+
+            @Override
+            protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+
+                if (wiringOut !=null) {
+                    gl.glColor4f(0, 1, 0, 0.35f);
+                    Draw.rect(gl, bounds);
+                }
+                if (wiringIn!=null) {
+                    gl.glColor4f(0, 0, 1, 0.35f);
+                    Draw.rect(gl, bounds);
+                }
+
+
+            }
+
+            @Override
+            public Surface onTouch(Finger finger, short[] buttons) {
+
+                if (finger!=null && buttons!=null) {
+                    if (finger.tryFingering(new Wiring(this)))
+                        return this;
+                }
+
+                Surface c = super.onTouch(finger, buttons);
+                if (c != null)
+                    return c;
+
+                return this;
+            }
+
+            @Override
+            public void onWireIn(@Nullable Wiring w, boolean active) {
+                this.wiringIn = active ? w : null;
+            }
+
+            @Override
+            public void onWireOut(@Nullable Wiring w, boolean active) {
+                this.wiringOut = active ? w : null;
+            }
+        }
+
         public void newPort() {
             float w = w()/10f;
             float h = h()/10f;
             float dx = rngPolar(w/2f); //-w()/1.9f;
             float dy = rngPolar(h/2f);
-            PhyWindow port = newWindow(new XYSlider(),
+
+            PhyWindow port = newWindow(new PortSurface(),
                     RectFloat2D.XYWH(cx() + dx, cy() + dy, w, h));
 
             RopeJointDef jd = new RopeJointDef(port.body, this.body);
@@ -394,12 +562,7 @@ public class PhyWall extends Wall implements Animated {
 
 
                 RectFloat2D r = bounds;
-                if (physBounds == null || bounds!=physBounds) {
-
-                    //boolean change = false;
-                    if (physBounds == null)
-                        physBounds = bounds;
-                    if ((r.w != physBounds.w) || (r.h != physBounds.h)) {
+                if (physBounds == null || r!=physBounds) {
 
                         if (!Util.equals(r.w, physBounds.w, SHAPE_SIZE_EPSILON) ||
                             !Util.equals(r.h, physBounds.h, SHAPE_SIZE_EPSILON)) {
@@ -414,28 +577,10 @@ public class PhyWall extends Wall implements Animated {
                         }
 
 
-                    }
-
-//                    Tuple2f p = getWorldCenter();
-//                    float px = p.x;
-//                    float py = p.y;
-                    //setLinearVelocity(new v2(r.x - px, r.y - py));
                     v2 target = new v2(r.cx(), r.cy());
-//                    target.sub(p.x, p.y);
-//                    target.normalize();
-//
-//                    float updateSpeed = 10f;
-//                    target.scale(updateSpeed);
-//
-//                    applyLinearImpulse(target, p, true);
 
                     if (setTransform(target, 0, EPSILON))
                        setAwake(true);
-////                    if (m_sweep.c.setIfChanged(r.cx(), r.cy(), Settings.EPSILON)) {
-////                        //setLinearVelocity(new v2(0,0));
-////                        setAwake(true);
-////                    }
-
                 }
 
 

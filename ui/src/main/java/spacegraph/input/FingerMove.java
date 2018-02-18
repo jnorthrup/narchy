@@ -20,14 +20,14 @@ public class FingerMove extends FingerDragging {
         this.moving = moving;
     }
 
-    @Override public void start(Finger f) {
-        this.before = moving.bounds;
-    }
 
     @Override public boolean drag(Finger finger) {
+        if (before == null)
+            this.before = moving.bounds;
+
         float pmx = before.x;
         float pmy = before.y;
-        v2 fh = finger.hit;
+        v2 fh = finger.pos;
         //if (fh!=null) {
             v2 fhd = finger.hitOnDown[0];
             if (fhd!=null) {

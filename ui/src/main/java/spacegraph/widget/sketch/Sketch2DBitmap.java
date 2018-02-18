@@ -5,7 +5,6 @@ import jcog.Util;
 import jcog.signal.Bitmap2D;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.apache.commons.math3.random.MersenneTwister;
-import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.input.Finger;
 import spacegraph.math.v2;
@@ -58,7 +57,7 @@ public class Sketch2DBitmap extends Widget implements MetaFrame.Menu {
     public Surface onTouch(Finger finger, short[] buttons) {
 
         if (finger!=null) {
-            v2 hitPoint = finger.relativeHit(content);
+            v2 hitPoint = finger.relativePos(content);
             if (hitPoint.inUnit() && buttons != null && buttons.length > 0 && buttons[0] == 1) {
 
 //            if (fb == null)

@@ -398,8 +398,8 @@ public class Smasher {
      * ohnisk z clenskej premennej focee.
      */
     private List<Fragment> getVoronoi() {
-        Tuple2f min = new v2(Float.MAX_VALUE, Float.MAX_VALUE);
-        Tuple2f max = new v2(Float.MIN_VALUE, Float.MIN_VALUE);
+        Tuple2f min = new v2(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY);
+        Tuple2f max = new v2(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY);
 
         for (Tuple2f v : p) {
             min = Tuple2f.min(min, v);
@@ -410,7 +410,7 @@ public class Smasher {
             max = Tuple2f.max(max, v);
         }
 
-        Tuple2f deficit = new v2((float) 1, (float) 1);
+        Tuple2f deficit = new v2(1, 1);
         min.subbed(deficit);
         max.added(deficit);
 

@@ -1,10 +1,13 @@
 package org.jbox2d.fracture;
 
+import jcog.Util;
 import org.jbox2d.fracture.fragmentation.Smasher;
 import org.jbox2d.fracture.materials.Diffusion;
 import org.jbox2d.fracture.materials.Glass;
 import org.jbox2d.fracture.materials.Uniform;
 import spacegraph.math.Tuple2f;
+
+import static org.jbox2d.common.Settings.EPSILON;
 
 /**
  * Material telesa
@@ -91,31 +94,34 @@ public abstract class Material {
     protected Polygon[] split(Smasher geom, Polygon p, Tuple2f bodNarazu, Tuple2f vektor, float normalImpulse) {
         Tuple2f[] foceeArray = focee(bodNarazu, vektor);
 
-        geom.calculate(p, foceeArray, bodNarazu, point -> {
-            float x = bodNarazu.x - point.x;
-            float y = bodNarazu.y - point.y;
+        //inverzna tranformacia
+        float ln = vektor.length();
 
-            float xx = x;
-            float yy = y;
+        //definicia filtru posobnosti
+        float r = m_radius; // polomer
+        float rSq = r * r;
 
-            //inverzna tranformacia
-            float ln = vektor.length();
+        float c = 2;
+
+        float dSq = Util.sqr(Math.max(ln * c, r));
+
+        if (ln > EPSILON) {
+
             float sin = -vektor.x / ln;
             float cos = -vektor.y / ln;
-            x = cos * xx + -sin * yy;
-            y = sin * xx + cos * yy;
 
-            //definicia filtru posobnosti
-            float r = m_radius; // polomer
-            float c = 2;
-            float d = ln * c;
-            d = Math.max(d, r);
+            geom.calculate(p, foceeArray, bodNarazu, point -> {
+                float x = bodNarazu.x - point.x;
+                float y = bodNarazu.y - point.y;
 
-            r = r * r;
-            d = d * d;
+                x = cos * x + -sin * y;
+                y = sin * x + cos * y;
 
-            return (x * x + y * y < r && y < 0) || (x * x / r + y * y / d < 1 && y > 0);
-        });
+
+
+                return (x * x + y * y < rSq && y < 0) || (x * x / rSq + y * y / dSq < 1 && y > 0);
+            });
+        }
 
         return geom.fragments;
     }

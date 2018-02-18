@@ -91,11 +91,6 @@ abstract public class Container extends Surface {
 
     @Override
     public Surface onTouch(Finger finger, short[] buttons) {
-        Surface x = super.onTouch(finger, buttons);
-        if (x != null)
-            return x;
-
-        //2. test children reaction
 
         if (childrenCount() > 0) {
 
@@ -107,8 +102,8 @@ abstract public class Container extends Surface {
 
                 //HACK
                 final Surface[] found = {null};
-                float fx = finger.hit.x;
-                float fy = finger.hit.y;
+                float fx = finger.pos.x;
+                float fy = finger.pos.y;
                 forEach(c -> {
 
                     if (found[0] != null) //TODO use whileEach() with a predicate for fast terminate

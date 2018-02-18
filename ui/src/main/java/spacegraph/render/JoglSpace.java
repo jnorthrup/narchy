@@ -37,10 +37,10 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     protected int debug;
 
 
-    final List<Ortho> orthos = new FasterList<>(1);
+    final List<Surface> layers = new FasterList<>(1);
 
 
-    final List<Ortho> preAdd = new FasterList();
+    final List<Surface> preAdd = new FasterList();
 
     protected float aspect;
     private final float cameraSpeed = 5f;
@@ -79,24 +79,47 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     @Override
     public void windowDestroyed(WindowEvent windowEvent) {
         super.windowDestroyed(windowEvent);
-        orthos.clear();
+        layers.clear();
         onUpdate.clear();
         preAdd.clear();
     }
 
 
-    public JoglSpace add(Ortho c) {
-        if (window == null) {
-            preAdd.add(c);
-        } else {
-            _add(c);
+    public JoglSpace add(Surface layer) {
+        synchronized (this) {
+            if (window == null) {
+                preAdd.add(layer);
+            } else {
+                _add(layer);
+            }
         }
         return this;
     }
 
-    private void _add(Ortho c) {
-        this.orthos.add(c);
-        c.start(this);
+    public boolean remove(Surface layer) {
+        synchronized (this) {
+            if (window == null) {
+                return preAdd.remove(layer);
+            } else {
+                return _remove(layer);
+            }
+        }
+    }
+
+    private void _add(Surface c) {
+        this.layers.add(c);
+        if (c instanceof Ortho)
+            ((Ortho)c).start(this);
+        else
+            c.start(null);
+    }
+
+    private boolean _remove(Surface c) {
+        if (this.layers.remove(c)) {
+            c.stop();
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -105,10 +128,10 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
         initInput();
         updateWindowInfo();
 
-        for (Ortho f : preAdd)
-            _add(f);
-
-        preAdd.clear();
+        synchronized (this) {
+            preAdd.forEach(this::_add);
+            preAdd.clear();
+        }
 
 
         //gl.glEnable(GL_POINT_SPRITE);
@@ -224,7 +247,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     }
 
     protected void renderOrthos(int dtMS) {
-        int facialsSize = orthos.size();
+        int facialsSize = layers.size();
         if (facialsSize > 0) {
 
             ortho();
@@ -233,7 +256,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
 
             GL2 gl = this.gl;
             for (int i = 0; i < facialsSize; i++) {
-                orthos.get(i).render(gl, dtMS);
+                layers.get(i).render(gl, dtMS);
             }
 
             gl.glEnable(GL2.GL_DEPTH_TEST);

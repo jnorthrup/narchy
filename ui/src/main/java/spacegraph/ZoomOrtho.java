@@ -411,8 +411,8 @@ public class ZoomOrtho extends Ortho {
 //                float lmy = finger.hit.y; //hitPoint.y;
 
 
-                smx = finger.hitGlobal.x;
-                smy = finger.hitGlobal.y;
+                smx = finger.posGlobal.x;
+                smy = finger.posGlobal.y;
 
             }
 

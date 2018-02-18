@@ -9,9 +9,13 @@ package spacegraph.input;
  * */
 abstract public class Fingering {
 
-    abstract public void start(Finger f);
+    /** return true to allow begin */
+    abstract public boolean start(Finger f);
 
     /** return false to finish */
     abstract public boolean update(Finger f);
 
+    public void stop(Finger finger) {
+
+    }
 }

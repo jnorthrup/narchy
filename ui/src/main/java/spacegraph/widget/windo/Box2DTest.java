@@ -15,18 +15,21 @@ public class Box2DTest {
 
         public static void main(String[] args) {
             PhyWall s = new PhyWall();
+            s.pos(-1,-1,1,1);
+
             new SpaceGraphFlat(
                 new ZoomOrtho(s) {
 
                     @Override
                     public boolean autoresize() {
+                        s.root().zoom(s);
                         return false;
                     }
 
                 }
             ).show(1000, 1000);
 
-            s.root().zoom(s);
+
 
             {
                 PhyWall.PhyWindow w = s.newWindow(WidgetTest.widgetDemo(), RectFloat2D.XYWH(0, 0, 1f, 1f));
@@ -60,7 +63,7 @@ public class Box2DTest {
             PhyWall s = new PhyWall();
             JoglSpace.window(s, 800, 800);
 
-            s.W.invokeLater(()->{
+            s.W.invoke(()->{
                 for (int i = 0; i < 100; i++)
                     s.W.newDynamicBody(PolygonShape.box(20, 20), 1, 0.1f);
                 //s.W.newDynamicBody(PolygonShape.box(100, 100), 1, 0.1f).pos.add(-100, -100);

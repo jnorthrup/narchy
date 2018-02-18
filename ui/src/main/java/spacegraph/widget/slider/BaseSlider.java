@@ -6,9 +6,9 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.input.Finger;
+import spacegraph.input.FingerDragging;
 import spacegraph.math.v2;
 import spacegraph.render.Draw;
 import spacegraph.render.JoglSpace;
@@ -60,15 +60,19 @@ public class BaseSlider extends Widget {
     @Override
     public Surface onTouch(Finger finger, short[] buttons) {
 
-        if (finger!=null && leftButton(buttons)) {
-            v2 hitPoint = finger.relativeHit(content);
-            if (hitPoint.inUnit()) {
-                _set(p(hitPoint));
-                return this;
-            }
+        Surface s = super.onTouch(finger, buttons);
+        if (s == this && finger!=null) {
+            finger.tryFingering(new FingerDragging(0) {
+                @Override protected boolean drag(Finger f) {
+                    v2 hitPoint = finger.relativePos(content);
+                    if (hitPoint.inUnit()) {
+                        _set(p(hitPoint));
+                    }
+                    return true;
+                }
+            });
         }
-
-        return super.onTouch(finger, buttons);
+        return s;
     }
 
 

@@ -1,12 +1,18 @@
 package org.jbox2d.fracture.poly2Tri;
 
+import org.eclipse.collections.api.iterator.IntIterator;
+import org.eclipse.collections.api.iterator.MutableIntIterator;
+import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
+import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.jbox2d.fracture.poly2Tri.splayTree.BTreeNode;
 import org.jbox2d.fracture.poly2Tri.splayTree.SplayTree;
 import spacegraph.math.Tuple2f;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.PriorityQueue;
+import java.util.Stack;
 
 /**
  * Merged with BDMFile (Boundary Mesh File)
@@ -30,7 +36,7 @@ public class Polygon {
      * map in C++ code probably because od adding into map
      * ... see _pointsKeys
      */
-    protected final HashMap _points = new HashMap();
+    protected final IntObjectHashMap _points = new IntObjectHashMap();
 
     /**
      * Initialized in initialize() method ... number of points
@@ -44,7 +50,7 @@ public class Polygon {
      * typedef map<unsigned int, Linebase*>            LineMap;
      * all edges
      */
-    protected final HashMap _edges = new HashMap();
+    protected final IntObjectHashMap<Linebase> _edges = new IntObjectHashMap<>(0);
 
     /**
      * See _pointsKeys ... same for _edges.
@@ -79,13 +85,13 @@ public class Polygon {
      * typedef list<Triangle>                          Triangles;
      * typedef vector<unsigned int>                    Triangle;
      */
-    private final ArrayList _triangles = new ArrayList();
+    private final ArrayList<int[]> _triangles = new ArrayList<>();
 
     /**
      * typedef map<unsigned int, set<unsigned int> >   AdjEdgeMap;
      * data for monotone piece searching purpose;
      */
-    private final HashMap _startAdjEdgeMap = new HashMap();
+    private final IntObjectHashMap<IntHashSet> _startAdjEdgeMap = new IntObjectHashMap<>(0);
 
     /**
      * typedef map<unsigned int, Linebase*>            LineMap;
@@ -93,7 +99,7 @@ public class Polygon {
      * monotont pieces, not all diagonals of
      * given polygon
      */
-    private final HashMap _diagonals = new HashMap();
+    private final IntObjectHashMap<Linebase> _diagonals = new IntObjectHashMap<>(0);
 
     /**
      * debug option;
@@ -103,7 +109,7 @@ public class Polygon {
     /**
      * log file for debug purpose;
      */
-    private FileWriter _logfile = null;
+    private final FileWriter _logfile = null;
 
     /**
      * This is used to change key of all items in SplayTree.
@@ -113,13 +119,13 @@ public class Polygon {
     /**
      * If _debug == true, file with this name will be used to log the messages.
      */
-    private String _debugFileName = "polygon_triangulation_log.txt";
+    //private String _debugFileName = "polygon_triangulation_log.txt";
 
-    public HashMap points() {
+    public IntObjectHashMap points() {
         return _points;
     }
 
-    public HashMap edges() {
+    public IntObjectHashMap<Linebase> edges() {
         return _edges;
     }
 
@@ -208,7 +214,7 @@ public class Polygon {
     }
 
     public Linebase getEdge(int index) {
-        return (Linebase) _edges.get(index);
+        return _edges.get(index);
     }
 
     public Pointbase qpointsTop() {
@@ -223,10 +229,10 @@ public class Polygon {
     }
 
     public boolean is_exist(double x, double y) {
-        Iterator iter = _points.keySet().iterator();
+        MutableIntIterator iter = _points.keySet().intIterator();
         Pointbase pb;
         while (iter.hasNext()) {
-            pb = getPoint((Integer) iter.next());
+            pb = getPoint(iter.next());
             if ((pb.x == x) && (pb.y == y)) return true;
         }
         return false;
@@ -279,31 +285,28 @@ public class Polygon {
         for (int _pointsKey : _pointsKeys) (getPoint(_pointsKey)).rotate(theta);
     }
 
-    private static int[] getSorted(Set s) {
-        Object[] temp = s.toArray();
-        int[] result = new int[temp.length];
-        for (int i = 0; i < temp.length; ++i) {
-            assert(temp[i] instanceof Integer): temp[i] + " is " + temp[i].getClass();
-            result[i] = (Integer) temp[i];
-        }
-        Arrays.sort(result);
-        return result;
-    }
+//    private static int[] getSorted(IntSet s) {
+//
+//        Object[] temp = s.toArray();
+//        int[] result = new int[temp.length];
+//        for (int i = 0; i < temp.length; ++i) {
+//            assert (temp[i] instanceof Integer) : temp[i] + " is " + temp[i].getClass();
+//            result[i] = (Integer) temp[i];
+//        }
+//        Arrays.sort(result);
+//        return result;
+//    }
 
     private void initializePointsKeys() {
-        _pointsKeys = getSorted(_points.keySet());
+        _pointsKeys = _points.keySet().toSortedArray();
     }
 
     private void initializeEdgesKeys() {
-        _edgesKeys = getSorted(_edges.keySet());
+        _edgesKeys = _edges.keySet().toSortedArray();
     }
 
-    private Set getSetFromStartAdjEdgeMap(int index) {
-        Set s = (Set) _startAdjEdgeMap.get(index);
-        if (s != null) return s;
-        s = new HashSet();
-        _startAdjEdgeMap.put(index, s);
-        return s;
+    private IntHashSet getSetFromStartAdjEdgeMap(int index) {
+        return _startAdjEdgeMap.getIfAbsentPut(index, ()->new IntHashSet(0));
     }
 
     /**
@@ -372,7 +375,7 @@ public class Polygon {
 
         _diagonals.put(diag.id(), diag);
 
-        writeToLog("Add Diagonal from " + i + " to " + j + '\n');
+        //writeToLog("Add Diagonal from " + i + " to " + j + '\n');
     }
 
     /**
@@ -388,7 +391,7 @@ public class Polygon {
         _edgebst.inOrder(updateKey, y); // ya ... some special things happens ... see Linebase.setKeyValue()
 
         Linebase edge = getEdge(i);
-        if (edge!=null) {
+        if (edge != null) {
             edge.setHelper(i);
             edge.setKeyValue(y);
 
@@ -396,9 +399,9 @@ public class Polygon {
         }
 
         if (_debug) {
-            writeToLog("set e" + i + " helper to " + i + '\n');
-            writeToLog("Insert e" + i + " to splay tree\n");
-            writeToLog("key:" + edge.keyValue() + '\n');
+            //writeToLog("set e" + i + " helper to " + i + '\n');
+            //writeToLog("Insert e" + i + " to splay tree\n");
+            //writeToLog("key:" + edge.keyValue() + '\n');
         }
     }
 
@@ -415,7 +418,7 @@ public class Polygon {
 
         int previ = prev(i);
         Linebase edge = getEdge(previ);
-        if (edge!=null) {
+        if (edge != null) {
             int helper = edge.helper();
 
             if (getPoint(helper).type == Poly2TriUtils.MERGE)
@@ -423,8 +426,8 @@ public class Polygon {
             _edgebst.delete(edge.keyValue());
 
             if (_debug) {
-                writeToLog("Remove e" + previ + " from splay tree\n");
-                writeToLog("key:" + edge.keyValue() + '\n');
+                //writeToLog("Remove e" + previ + " from splay tree\n");
+                //writeToLog("key:" + edge.keyValue() + '\n');
             }
         }
     }
@@ -441,19 +444,19 @@ public class Polygon {
         _edgebst.inOrder(updateKey, y);
 
         BTreeNode leftnode = _edgebst.findMaxSmallerThan(x);
-        if (leftnode!=null) {
+        if (leftnode != null) {
             Linebase leftedge = (Linebase) leftnode.data();
 
             int helper = leftedge.helper();
             addDiagonal(i, helper);
 
             if (_debug) {
-                writeToLog("Search key:" + x + " edge key:" + leftedge.keyValue() + '\n');
-                writeToLog("e" + leftedge.id() + " is directly left to v" + i + '\n');
-                writeToLog("Set e" + leftedge.id() + " helper to " + i + '\n');
-                writeToLog("set e" + i + " helper to " + i + '\n');
-                writeToLog("Insert e" + i + " to splay tree\n");
-                writeToLog("Insert key:" + getEdge(i).keyValue() + '\n');
+                //writeToLog("Search key:" + x + " edge key:" + leftedge.keyValue() + '\n');
+                //writeToLog("e" + leftedge.id() + " is directly left to v" + i + '\n');
+                //writeToLog("Set e" + leftedge.id() + " helper to " + i + '\n');
+                //writeToLog("set e" + i + " helper to " + i + '\n');
+                //writeToLog("Insert e" + i + " to splay tree\n");
+                //writeToLog("Insert key:" + getEdge(i).keyValue() + '\n');
             }
 
             leftedge.setHelper(i);
@@ -478,7 +481,7 @@ public class Polygon {
 
         int previ = prev(i);
         Linebase previEdge = getEdge(previ);
-        if (previEdge!=null) {
+        if (previEdge != null) {
             int helper = previEdge.helper();
 
             Pointbase helperPoint = getPoint(helper);
@@ -489,8 +492,8 @@ public class Polygon {
             _edgebst.delete(previEdge.keyValue());
 
             if (_debug) {
-                writeToLog("e" + previ + " helper is " + helper + '\n');
-                writeToLog("Remove e" + previ + " from splay tree.\n");
+                //writeToLog("e" + previ + " helper is " + helper + '\n');
+                //writeToLog("Remove e" + previ + " from splay tree.\n");
             }
 
             BTreeNode leftnode = _edgebst.findMaxSmallerThan(x);
@@ -504,9 +507,9 @@ public class Polygon {
             leftedge.setHelper(i);
 
             if (_debug) {
-                writeToLog("Search key:" + x + " found:" + leftedge.keyValue() + '\n');
-                writeToLog("e" + leftedge.id() + " is directly left to v" + i + '\n');
-                writeToLog("Set e" + leftedge.id() + " helper to " + i + '\n');
+                //writeToLog("Search key:" + x + " found:" + leftedge.keyValue() + '\n');
+                //writeToLog("e" + leftedge.id() + " is directly left to v" + i + '\n');
+                //writeToLog("Set e" + leftedge.id() + " helper to " + i + '\n');
             }
         }
     }
@@ -526,7 +529,7 @@ public class Polygon {
         int previ = prev(i);
 
         Linebase previEdge = getEdge(previ);
-        if (previEdge!=null) {
+        if (previEdge != null) {
 
             int helper = previEdge.helper();
 
@@ -543,11 +546,11 @@ public class Polygon {
             _edgebst.insert(edge);
 
             if (_debug) {
-                writeToLog("e" + previ + " helper is " + helper + '\n');
-                writeToLog("Remove e" + previ + " from splay tree.\n");
-                writeToLog("Set e" + i + " helper to " + i + '\n');
-                writeToLog("Insert e" + i + " to splay tree\n");
-                writeToLog("Insert key:" + edge.keyValue() + '\n');
+                //writeToLog("e" + previ + " helper is " + helper + '\n');
+                //writeToLog("Remove e" + previ + " from splay tree.\n");
+                //writeToLog("Set e" + i + " helper to " + i + '\n');
+                //writeToLog("Insert e" + i + " to splay tree\n");
+                //writeToLog("Insert key:" + edge.keyValue() + '\n');
             }
         }
     }
@@ -565,7 +568,7 @@ public class Polygon {
         _edgebst.inOrder(updateKey, y);
 
         BTreeNode leftnode = _edgebst.findMaxSmallerThan(x);
-        if (leftnode!=null) {
+        if (leftnode != null) {
 
             Linebase leftedge = (Linebase) leftnode.data();
 
@@ -575,9 +578,9 @@ public class Polygon {
             leftedge.setHelper(i);
 
             if (_debug) {
-                writeToLog("Search key:" + x + " found:" + leftedge.keyValue() + '\n');
-                writeToLog("e" + leftedge.id() + " is directly left to v" + i + " and its helper is:" + helper + '\n');
-                writeToLog("Set e" + leftedge.id() + " helper to " + i + '\n');
+                //writeToLog("Search key:" + x + " found:" + leftedge.keyValue() + '\n');
+                //writeToLog("e" + leftedge.id() + " is directly left to v" + i + " and its helper is:" + helper + '\n');
+                //writeToLog("Set e" + leftedge.id() + " helper to " + i + '\n');
             }
 
         }
@@ -629,7 +632,7 @@ public class Polygon {
                         System.out.println("No duplicated points please! poly2tri stopped\n");
                         return false;
                 }
-                writeToLog("\n\nHandle vertex:" + vertex.id + " type:" + stype + '\n');
+                //writeToLog("\n\nHandle vertex:" + vertex.id + " type:" + stype + '\n');
             }
 
             switch (vertex.type) {
@@ -695,25 +698,26 @@ public class Polygon {
      */
     private int selectNextEdge(Linebase edge) {
         int eid = edge.endPoint(1).id;
-        Set edges = getSetFromStartAdjEdgeMap(eid);
+        IntHashSet edges = getSetFromStartAdjEdgeMap(eid);
 
-        assert (edges.size() != 0);
+        int numEdges = edges.size();
+        assert (numEdges != 0);
 
         int nexte = 0;
 
-        if (edges.size() == 1)
-            nexte = (Integer) (edges.iterator().next());
+        if (numEdges == 1)
+            nexte = (edges.intIterator().next());
         else {
-            int[] edgesKeys = getSorted(edges);
+            //int[] edgesKeys = edges.toSortedArray();
 
             int nexte_ccw = 0, nexte_cw = 0;
             double max = -2.0, min = 2.0; // max min of cos(alfa)
             Linebase iEdge;
 
-            Iterator iter = edges.iterator();
+            IntIterator iter = edges.toSortedList().intIterator();
             int it;
             while (iter.hasNext()) {
-                it = (Integer) iter.next();
+                it = iter.next();
                 if (it == edge.id()) continue;
 
                 iEdge = getEdge(it);
@@ -755,7 +759,7 @@ public class Polygon {
     public boolean searchMonotones() {
         int loop = 0;
 
-        HashMap edges = (HashMap) _edges.clone();
+        IntObjectHashMap<Linebase> edges = new IntObjectHashMap(_edges);
 
         ArrayList poly;
         int[] edgesKeys;
@@ -772,10 +776,10 @@ public class Polygon {
             // typedef list<unsigned int> Monopoly;
             poly = new ArrayList();
 
-            edgesKeys = getSorted(edges.keySet());
+            edgesKeys = edges.keySet().toSortedArray();
 
             it = edgesKeys[0];
-            itEdge = (Linebase) edges.get(it);
+            itEdge = edges.get(it);
 
             // Pointbase* startp=startp=it.second.endPoint(0); // ??? startp=startp :-O
             startp = itEdge.endPoint(0);
@@ -784,8 +788,8 @@ public class Polygon {
             poly.add(startp.id);
 
             if (_debug) {
-                writeToLog("Searching for loops:" + loop + '\n');
-                writeToLog("vertex index:" + startp.id + ' ');
+                //writeToLog("Searching for loops:" + loop + '\n');
+                //writeToLog("vertex index:" + startp.id + ' ');
             }
 
             for (; ; ) {
@@ -799,7 +803,7 @@ public class Polygon {
                 if (endp == startp) break;
                 poly.add(endp.id);
 
-                writeToLog(endp.id + " ");
+                //writeToLog(endp.id + " ");
 
                 nexte = selectNextEdge(next);
 
@@ -810,11 +814,11 @@ public class Polygon {
                     return false;
                 }
 
-                next = (Linebase) edges.get(nexte);
+                next = edges.get(nexte);
                 if (!(next.endPoint(0).equals(endp))) next.reverse();
             }
 
-            writeToLog("\nloop closed!\n\n");
+            //writeToLog("\nloop closed!\n\n");
 
             _mpolys.add(poly);
         }
@@ -854,7 +858,7 @@ public class Polygon {
         double[] pa = {0, 0}, pb = {0, 0}, pc = {0, 0};
         double area;
         boolean left;
-        ArrayList v; // typedef vector<unsigned int> Triangle;
+        int[] v; // typedef vector<unsigned int> Triangle;
 
         // TODO -> doesn't seem that copy constructors are needed here
         //		    nothing is changing ... we're wasting time here!
@@ -874,13 +878,13 @@ public class Polygon {
                     p2 = (Pointbase) spoint.peek();
 
                     // typedef vector<unsigned int> Triangle;
-                    v = new ArrayList(3);
-                    v.add(topQueuePoint.id - 1);
-                    v.add(p1.id - 1);
-                    v.add(p2.id - 1);
+                    v = new int[]{
+                            (topQueuePoint.id - 1),
+                            (p1.id - 1),
+                            (p2.id - 1)};
                     _triangles.add(v);
 
-                    writeToLog("Add triangle:" + ((Integer) v.get(0) + 1) + ' ' + ((Integer) v.get(1) + 1) + ' ' + ((Integer) v.get(2) + 1) + '\n');
+                    ////writeToLog("Add triangle:" + ((Integer) v[0] + 1) + ' ' + ((Integer) v.get(1) + 1) + ' ' + ((Integer) v.get(2) + 1) + '\n');
 
                 }
                 spoint.pop();
@@ -903,22 +907,22 @@ public class Polygon {
                     pc[0] = stack1Point.x;
                     pc[1] = stack1Point.y;
 
-                    if (_debug) {
-                        writeToLog("current top queue vertex index=" + topQueuePoint.id + '\n');
-                        writeToLog("Current top stack vertex index=" + stack1Point.id + '\n');
-                        writeToLog("Second stack vertex index=" + stack2Point.id + '\n');
-                    }
+//                    if (_debug) {
+//                        //writeToLog("current top queue vertex index=" + topQueuePoint.id + '\n');
+//                        //writeToLog("Current top stack vertex index=" + stack1Point.id + '\n');
+//                        //writeToLog("Second stack vertex index=" + stack2Point.id + '\n');
+//                    }
 
                     area = Poly2TriUtils.orient2d(pa, pb, pc);
                     left = stack1Point.left;
 
                     if ((area > 0 && left) || (area < 0 && !left)) {
-                        v = new ArrayList(3);
-                        v.add(topQueuePoint.id - 1);
-                        v.add(stack2Point.id - 1);
-                        v.add(stack1Point.id - 1);
+                        v = new int[]{
+                                (topQueuePoint.id - 1),
+                                (stack2Point.id - 1),
+                                (stack1Point.id - 1)};
                         _triangles.add(v);
-                        writeToLog("Add triangle:" + ((Integer) v.get(0) + 1) + ' ' + ((Integer) v.get(1) + 1) + ' ' + ((Integer) v.get(2) + 1) + '\n');
+                        ////writeToLog("Add triangle:" + ((Integer) v[0] + 1) + ' ' + ((Integer) v.get(1) + 1) + ' ' + ((Integer) v.get(2) + 1) + '\n');
                         spoint.pop();
                     } else
                         break;
@@ -935,13 +939,9 @@ public class Polygon {
             spoint.pop();
             top2Point = (Pointbase) spoint.peek();
 
-            v = new ArrayList(3);
-            v.add(lastQueuePoint.id - 1);
-            v.add(topPoint.id - 1);
-            v.add(top2Point.id - 1);
-            _triangles.add(v);
+            _triangles.add(v = new int[]{lastQueuePoint.id - 1, topPoint.id - 1, top2Point.id - 1});
 
-            writeToLog("Add triangle:" + ((Integer) v.get(0) + 1) + ' ' + ((Integer) v.get(1) + 1) + ' ' + ((Integer) v.get(2) + 1) + '\n');
+            ////writeToLog("Add triangle:" + ((Integer) v[0] + 1) + ' ' + ((Integer) v.get(1) + 1) + ' ' + ((Integer) v.get(2) + 1) + '\n');
         }
     }
 
@@ -967,7 +967,7 @@ public class Polygon {
     /**
      * return all triangles
      */
-    public ArrayList triangles() {
+    public ArrayList<int[]> triangles() {
         return _triangles;
     }
 
@@ -976,7 +976,7 @@ public class Polygon {
      */
     public void setDebugOption(boolean debug) {
         if (debug == _debug) return;
-        if (_debug) {
+//        if (_debug) {
             try {
                 _logfile.close();
             } catch (IOException e) {
@@ -984,19 +984,19 @@ public class Polygon {
                 e.printStackTrace();
                 System.out.println("Continueing the work");
             }
-        } else {
-            try {
-                _logfile = new FileWriter(_debugFileName);
-            } catch (IOException e) {
-                System.out.println("Error creating file polygon_triangulation_log.txt, switchin debug off, continuing.");
-                e.printStackTrace();
-                _debug = false;
-            }
-        }
+//        } else {
+//            try {
+//                _logfile = new FileWriter(_debugFileName);
+//            } catch (IOException e) {
+//                System.out.println("Error creating file polygon_triangulation_log.txt, switchin debug off, continuing.");
+//                e.printStackTrace();
+//                _debug = false;
+//            }
+//        }
         _debug = debug;
     }
 
-    public void setDebugFile(String debugFileName) {
-        _debugFileName = debugFileName;
-    }
+//    public void setDebugFile(String debugFileName) {
+//        _debugFileName = debugFileName;
+//    }
 }

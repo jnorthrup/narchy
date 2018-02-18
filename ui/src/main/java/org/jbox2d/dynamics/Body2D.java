@@ -377,7 +377,7 @@ public class Body2D extends Transform {
         if (getPosition().equals(position, epsilon) && Util.equals(angle, getAngle(), epsilon))
             return false; //no change
 
-        W.invokeLater(() -> {
+        W.invoke(() -> {
             this.set(angle);
             pos.set(position);
 
@@ -389,9 +389,8 @@ public class Body2D extends Transform {
             sweep.a0 = sweep.a;
 
             BroadPhase broadPhase = W.contactManager.m_broadPhase;
-            for (Fixture f = fixtures; f != null; f = f.next) {
+            for (Fixture f = fixtures; f != null; f = f.next)
                 f.synchronize(broadPhase, this, this);
-            }
         });
 
         return true;

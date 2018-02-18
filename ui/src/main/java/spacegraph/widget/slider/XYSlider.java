@@ -6,6 +6,7 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
 import spacegraph.Surface;
 import spacegraph.input.Finger;
+import spacegraph.input.FingerDragging;
 import spacegraph.math.v2;
 import spacegraph.render.Draw;
 import spacegraph.widget.windo.Widget;
@@ -41,20 +42,55 @@ public class XYSlider extends Widget {
 
     @Override
     public Surface onTouch(Finger finger, short[] buttons) {
-        if (finger!=null && leftButton(buttons)) {
-            pressing = true;
-            v2 hitPoint = finger.relativeHit(content);
-            if (hitPoint.inUnit()) {
-                if (!Util.equals(knob.x, hitPoint.x, Float.MIN_NORMAL) || !Util.equals(knob.y, hitPoint.y, Float.MIN_NORMAL)) {
-                    knob.set(hitPoint);
-                    updated();
+        Surface s = super.onTouch(finger, buttons);
+        if (s == this && finger!=null) {
+            finger.tryFingering(new FingerDragging(0) {
+
+                @Override
+                public boolean start(Finger f) {
+                    if (super.start(f)) {
+                        pressing = true;
+                        return true;
+                    }
+                    return false;
                 }
-                return this;
-            }
-        } else {
-            pressing = false;
+
+                @Override
+                public void stop(Finger finger) {
+                    super.stop(finger);
+                    pressing = false;
+                }
+
+                @Override protected boolean drag(Finger f) {
+                    v2 hitPoint = finger.relativePos(content);
+                    if (hitPoint.inUnit()) {
+                        pressing = true;
+                        if (!Util.equals(knob.x, hitPoint.x, Float.MIN_NORMAL) || !Util.equals(knob.y, hitPoint.y, Float.MIN_NORMAL)) {
+                            knob.set(hitPoint);
+                            updated();
+                        }
+                        return true;
+                    }
+                    return true;
+                }
+            });
         }
-        return super.onTouch(finger, buttons);
+        return s;
+//
+//        if (finger!=null && leftButton(buttons)) {
+//            pressing = true;
+//            v2 hitPoint = finger.relativeHit(content);
+//            if (hitPoint.inUnit()) {
+//                if (!Util.equals(knob.x, hitPoint.x, Float.MIN_NORMAL) || !Util.equals(knob.y, hitPoint.y, Float.MIN_NORMAL)) {
+//                    knob.set(hitPoint);
+//                    updated();
+//                }
+//                return this;
+//            }
+//        } else {
+//            pressing = false;
+//        }
+//        return super.onTouch(finger, buttons);
     }
 
 

@@ -25,7 +25,6 @@ package spacegraph.phys.math;
 
 import jcog.list.FasterList;
 import org.apache.commons.lang3.ArrayUtils;
-import spacegraph.phys.util.FloatArrayList;
 import spacegraph.phys.util.IntArrayList;
 import spacegraph.phys.util.OArrayList;
 
@@ -78,18 +77,7 @@ public class MiscUtil {
 		}
 	}
 	
-	/**
-	 * Resizes list to exact size, filling with given value when expanding.
-	 */
-	public static void resize(FloatArrayList list, int size, float value) {
-		while (list.size() < size) {
-			list.add(value);
-		}
-		
-		while (list.size() > size) {
-			list.remove(list.size() - 1);
-		}
-	}
+
 
 	/**
 	 * Resizes list to exact size, filling with new instances of given class type
