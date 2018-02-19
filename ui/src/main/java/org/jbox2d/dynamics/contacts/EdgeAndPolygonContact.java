@@ -40,8 +40,8 @@ public class EdgeAndPolygonContact extends Contact {
     @Override
     public void init(Fixture fA, int indexA, Fixture fB, int indexB) {
         super.init(fA, indexA, fB, indexB);
-        assert (aFixture.getType() == ShapeType.EDGE);
-        assert (bFixture.getType() == ShapeType.POLYGON);
+        assert (aFixture.type() == ShapeType.EDGE);
+        assert (bFixture.type() == ShapeType.POLYGON);
     }
 
     @Override

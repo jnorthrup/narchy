@@ -47,9 +47,9 @@ public class Distance {
      * GJK using Voronoi regions (Christer Ericson) and Barycentric coordinates.
      */
     private static class SimplexVertex {
-        public final Tuple2f wA = new Vec2(); // support point in shapeA
-        public final Tuple2f wB = new Vec2(); // support point in shapeB
-        public final Tuple2f w = new Vec2(); // wB - wA
+        public final Tuple2f wA = new v2(); // support point in shapeA
+        public final Tuple2f wB = new v2(); // support point in shapeB
+        public final Tuple2f w = new v2(); // wB - wA
         public float a; // barycentric coordinate for closest point
         public int indexA; // wA index
         public int indexB; // wB index
@@ -165,7 +165,7 @@ public class Distance {
             }
         }
 
-        private final Tuple2f e12 = new Vec2();
+        private final Tuple2f e12 = new v2();
 
         public final void getSearchDirection(final Tuple2f out) {
             switch (m_count) {
@@ -194,8 +194,8 @@ public class Distance {
         }
 
         // djm pooled
-        private final Tuple2f case2 = new Vec2();
-        private final Tuple2f case22 = new Vec2();
+        private final Tuple2f case2 = new v2();
+        private final Tuple2f case22 = new v2();
 
         /**
          * this returns pooled objects. don't keep or modify them
@@ -226,8 +226,8 @@ public class Distance {
         }
 
         // djm pooled, and from above
-        private final Tuple2f case3 = new Vec2();
-        private final Tuple2f case33 = new Vec2();
+        private final Tuple2f case3 = new v2();
+        private final Tuple2f case33 = new v2();
 
         public void getWitnessPoints(Vec2 pA, Tuple2f pB) {
             switch (m_count) {
@@ -351,11 +351,11 @@ public class Distance {
         }
 
         // djm pooled, and from above
-        private final Tuple2f e13 = new Vec2();
-        private final Tuple2f e23 = new Vec2();
-        private final Tuple2f w1 = new Vec2();
-        private final Tuple2f w2 = new Vec2();
-        private final Tuple2f w3 = new Vec2();
+        private final Tuple2f e13 = new v2();
+        private final Tuple2f e23 = new v2();
+        private final Tuple2f w1 = new v2();
+        private final Tuple2f w2 = new v2();
+        private final Tuple2f w3 = new v2();
 
         /**
          * Solve a line segment using barycentric coordinates.<br/>
@@ -483,7 +483,7 @@ public class Distance {
         public DistanceProxy() {
             m_vertices = new Tuple2f[Settings.maxPolygonVertices];
             for (int i = 0; i < m_vertices.length; i++) {
-                m_vertices[i] = new Vec2();
+                m_vertices[i] = new v2();
             }
             m_buffer = new Tuple2f[2];
             m_count = 0;
@@ -603,10 +603,14 @@ public class Distance {
     private final Simplex simplex = new Simplex();
     private final int[] saveA = new int[3];
     private final int[] saveB = new int[3];
-    private final Tuple2f closestPoint = new Vec2();
-    private final Vec2 d = new Vec2();
-    private final Tuple2f temp = new Vec2();
-    private final v2 normal = new Vec2();
+    private final Tuple2f closestPoint = new v2();
+    private final v2 d = new v2();
+    private final Tuple2f temp = new v2();
+    private final v2 normal = new v2();
+
+    public final void distance(final DistanceOutput output, final DistanceInput input) {
+        distance(output, new SimplexCache(), input);
+    }
 
     /**
      * Compute the closest points between two shapes. Supports any combination of: CircleShape and
@@ -705,11 +709,11 @@ public class Distance {
             // Compute a tentative new simplex vertex using support points.
             SimplexVertex vertex = vertices[simplex.m_count];
 
-            Rot.mulTransUnsafe(transformA, d.negateLocal(), temp);
+            Rot.mulTransUnsafe(transformA, d.negated(), temp);
             vertex.indexA = proxyA.getSupport(temp);
             Transform.mulToOutUnsafe(transformA, proxyA.vertex(vertex.indexA), vertex.wA);
             // Vec2 wBLocal;
-            Rot.mulTransUnsafe(transformB, d.negateLocal(), temp);
+            Rot.mulTransUnsafe(transformB, d.negated(), temp);
             vertex.indexB = proxyB.getSupport(temp);
             Transform.mulToOutUnsafe(transformB, proxyB.vertex(vertex.indexB), vertex.wB);
             vertex.w.set(vertex.wB).subbed(vertex.wA);

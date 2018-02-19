@@ -34,5 +34,5 @@ public class FixtureProxy {
     final AABB aabb = new AABB();
     Fixture fixture;
     int childIndex;
-    int proxyId;
+    int id;
 }

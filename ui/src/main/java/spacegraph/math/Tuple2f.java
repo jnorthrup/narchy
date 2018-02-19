@@ -749,10 +749,10 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
         set(0,0);
     }
 
-    public Tuple2f add(Tuple2f u) {
+    public v2 add(Tuple2f u) {
         return new v2(x + u.x, y + u.y);
     }
-    public Tuple2f sub(Tuple2f u) {
+    public v2 sub(Tuple2f u) {
         return new v2(x - u.x, y - u.y);
     }
 

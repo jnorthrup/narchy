@@ -55,12 +55,12 @@ public class Fixture {
     public Fixture next;
     public Body2D body;
 
-    public Shape m_shape;
+    public Shape shape;
 
     public float friction;
     public float restitution;
 
-    public FixtureProxy[] m_proxies;
+    public FixtureProxy[] proxies;
     public int m_proxyCount;
 
     public final Filter filter;
@@ -77,9 +77,9 @@ public class Fixture {
         data = null;
         body = null;
         next = null;
-        m_proxies = null;
+        proxies = null;
         m_proxyCount = 0;
-        m_shape = null;
+        shape = null;
         filter = new Filter();
         material = null;
         polygon = null;
@@ -90,8 +90,8 @@ public class Fixture {
      *
      * @return the shape type.
      */
-    public ShapeType getType() {
-        return m_shape.getType();
+    public ShapeType type() {
+        return shape.getType();
     }
 
     /**
@@ -101,7 +101,7 @@ public class Fixture {
      * @return
      */
     public Shape shape() {
-        return m_shape;
+        return shape;
     }
 
     /**
@@ -175,9 +175,9 @@ public class Fixture {
         }
 
         // Touch each proxy so that new pairs may be created
-        BroadPhase broadPhase = world.contactManager.m_broadPhase;
+        BroadPhase broadPhase = world.contactManager.broadPhase;
         for (int i = 0; i < m_proxyCount; ++i) {
-            broadPhase.touchProxy(m_proxies[i].proxyId);
+            broadPhase.touchProxy(proxies[i].id);
         }
     }
 
@@ -234,7 +234,7 @@ public class Fixture {
      * @return
      */
     public boolean testPoint(final Tuple2f p) {
-        return m_shape.testPoint(body, p);
+        return shape.testPoint(body, p);
     }
 
     /**
@@ -246,7 +246,7 @@ public class Fixture {
      * @param input
      */
     public boolean raycast(RayCastOutput output, RayCastInput input, int childIndex) {
-        return m_shape.raycast(output, input, body, childIndex);
+        return shape.raycast(output, input, body, childIndex);
     }
 
     /**
@@ -256,7 +256,7 @@ public class Fixture {
      * @return
      */
     public void getMassData(MassData massData) {
-        m_shape.computeMass(massData, density);
+        shape.computeMass(massData, density);
     }
 
     /**
@@ -304,7 +304,7 @@ public class Fixture {
      */
     public AABB getAABB(int childIndex) {
         assert (childIndex >= 0 && childIndex < m_proxyCount);
-        return m_proxies[childIndex].aabb;
+        return proxies[childIndex].aabb;
     }
 
     /**
@@ -314,7 +314,7 @@ public class Fixture {
      * @return distance
      */
     public float computeDistance(Tuple2f p, int childIndex, v2 normalOut) {
-        return m_shape.computeDistanceToOut(body.getXform(), p, childIndex, normalOut);
+        return shape.computeDistanceToOut(body, p, childIndex, normalOut);
     }
 
     // We need separation create/destroy functions from the constructor/destructor because
@@ -343,30 +343,30 @@ public class Fixture {
     }
 
     public void setShape(Shape shape) {
-        m_shape = shape;
+        this.shape = shape;
 
         // Reserve proxy space
-        int childCount = m_shape.getChildCount();
-        if (m_proxies == null || m_proxies.length!=childCount) {
-            m_proxies = new FixtureProxy[childCount];
+        int childCount = this.shape.getChildCount();
+        if (proxies == null || proxies.length!=childCount) {
+            proxies = new FixtureProxy[childCount];
             for (int i = 0; i < childCount; i++) {
-                m_proxies[i] = new FixtureProxy();
-                m_proxies[i].fixture = null;
-                m_proxies[i].proxyId = BroadPhase.NULL_PROXY;
+                proxies[i] = new FixtureProxy();
+                proxies[i].fixture = null;
+                proxies[i].id = BroadPhase.NULL_PROXY;
             }
         }
 
-        if (m_proxies.length < childCount) {
-            FixtureProxy[] old = m_proxies;
+        if (proxies.length < childCount) {
+            FixtureProxy[] old = proxies;
             int newLen = MathUtils.max(old.length * 2, childCount);
-            m_proxies = new FixtureProxy[newLen];
-            System.arraycopy(old, 0, m_proxies, 0, old.length);
+            proxies = new FixtureProxy[newLen];
+            System.arraycopy(old, 0, proxies, 0, old.length);
             for (int i = 0; i < newLen; i++) {
                 if (i >= old.length) {
-                    m_proxies[i] = new FixtureProxy();
+                    proxies[i] = new FixtureProxy();
                 }
-                m_proxies[i].fixture = null;
-                m_proxies[i].proxyId = BroadPhase.NULL_PROXY;
+                proxies[i].fixture = null;
+                proxies[i].id = BroadPhase.NULL_PROXY;
             }
         }
         m_proxyCount = 0;
@@ -377,8 +377,8 @@ public class Fixture {
         assert (m_proxyCount == 0);
 
         // Free the child shape.
-        m_shape = null;
-        m_proxies = null;
+        shape = null;
+        proxies = null;
         next = null;
 
         // TODO pool shapes
@@ -390,12 +390,12 @@ public class Fixture {
         assert (m_proxyCount == 0);
 
         // Create proxies in the broad-phase.
-        m_proxyCount = m_shape.getChildCount();
+        m_proxyCount = shape.getChildCount();
 
         for (int i = 0; i < m_proxyCount; ++i) {
-            FixtureProxy proxy = m_proxies[i];
-            m_shape.computeAABB(proxy.aabb, xf, i);
-            proxy.proxyId = broadPhase.createProxy(proxy.aabb, proxy);
+            FixtureProxy proxy = proxies[i];
+            shape.computeAABB(proxy.aabb, xf, i);
+            proxy.id = broadPhase.createProxy(proxy.aabb, proxy);
             proxy.fixture = this;
             proxy.childIndex = i;
         }
@@ -409,9 +409,9 @@ public class Fixture {
     public void destroyProxies(BroadPhase broadPhase) {
         // Destroy proxies in the broad-phase.
         for (int i = 0; i < m_proxyCount; ++i) {
-            FixtureProxy proxy = m_proxies[i];
-            broadPhase.destroyProxy(proxy.proxyId);
-            proxy.proxyId = BroadPhase.NULL_PROXY;
+            FixtureProxy proxy = proxies[i];
+            broadPhase.destroyProxy(proxy.id);
+            proxy.id = BroadPhase.NULL_PROXY;
         }
 
         m_proxyCount = 0;
@@ -435,13 +435,13 @@ public class Fixture {
         }
 
         for (int i = 0; i < m_proxyCount; ++i) {
-            FixtureProxy proxy = m_proxies[i];
+            FixtureProxy proxy = proxies[i];
 
             // Compute an AABB that covers the swept shape (may miss some rotation effect).
             final AABB aabb1 = pool1;
             final AABB aab = pool2;
-            m_shape.computeAABB(aabb1, transform1, proxy.childIndex);
-            m_shape.computeAABB(aab, transform2, proxy.childIndex);
+            shape.computeAABB(aabb1, transform1, proxy.childIndex);
+            shape.computeAABB(aab, transform2, proxy.childIndex);
 
             proxy.aabb.lowerBound.x =
                     aabb1.lowerBound.x < aab.lowerBound.x ? aabb1.lowerBound.x : aab.lowerBound.x;
@@ -454,7 +454,7 @@ public class Fixture {
             displacement.x = transform2.pos.x - transform1.pos.x;
             displacement.y = transform2.pos.y - transform1.pos.y;
 
-            broadPhase.moveProxy(proxy.proxyId, proxy.aabb, displacement);
+            broadPhase.moveProxy(proxy.id, proxy.aabb, displacement);
         }
     }
 }

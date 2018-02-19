@@ -66,7 +66,7 @@ public class Fracture {
         }
 
         Dynamics2D w = b1.W;
-        Shape s = f1.m_shape;
+        Shape s = f1.shape;
         Polygon p = f1.polygon;
 
         if (p == null) {

@@ -76,7 +76,7 @@ public class Wiring extends FingerDragging {
     }
 
     private void updateEnd(Finger finger) {
-        Surface nextEnd = ((Ortho) start.root()).onTouch(finger, null);
+        Surface nextEnd = finger.touching;
         if (nextEnd!=end) {
             if (end instanceof Wireable) {
                 ((Wireable)end).onWireIn(this, false);

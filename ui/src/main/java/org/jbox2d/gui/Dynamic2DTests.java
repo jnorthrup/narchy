@@ -143,7 +143,7 @@ public class Dynamic2DTests extends JComponent implements Runnable {
                     {
                         bodyFor:
                         for (Body2D b = w.bodies(); b != null; b = b.next) {
-                            for (Fixture f = b.getFixtureList(); f != null; f = f.next) {
+                            for (Fixture f = b.fixtures(); f != null; f = f.next) {
                                 if (f.testPoint(v)) {
                                     MouseJointDef def = new MouseJointDef();
 

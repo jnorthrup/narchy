@@ -40,8 +40,8 @@ public class PolygonAndCircleContact extends Contact {
 
     public void init(Fixture fixtureA, Fixture fixtureB) {
         super.init(fixtureA, 0, fixtureB, 0);
-        assert (aFixture.getType() == ShapeType.POLYGON);
-        assert (bFixture.getType() == ShapeType.CIRCLE);
+        assert (aFixture.type() == ShapeType.POLYGON);
+        assert (bFixture.type() == ShapeType.CIRCLE);
     }
 
     @Override

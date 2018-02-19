@@ -40,8 +40,8 @@ public class EdgeAndCircleContact extends Contact {
     @Override
     public void init(Fixture fA, int indexA, Fixture fB, int indexB) {
         super.init(fA, indexA, fB, indexB);
-        assert (aFixture.getType() == ShapeType.EDGE);
-        assert (bFixture.getType() == ShapeType.CIRCLE);
+        assert (aFixture.type() == ShapeType.EDGE);
+        assert (bFixture.type() == ShapeType.CIRCLE);
     }
 
     @Override

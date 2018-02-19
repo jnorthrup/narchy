@@ -5,8 +5,10 @@ import org.jbox2d.common.Rot;
 import org.jbox2d.common.Settings;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.SolverData;
+import org.jbox2d.dynamics.contacts.Velocity;
 import org.jbox2d.pooling.IWorldPool;
 import spacegraph.math.Tuple2f;
+import spacegraph.math.v2;
 
 /**
  * A rope joint enforces a maximum distance between two points on two bodies. It has no other
@@ -23,7 +25,7 @@ public class RopeJoint extends Joint {
     private final Tuple2f localAnchorB = new Vec2();
     private float targetLength;
     private float length;
-    private float m_impulse;
+    protected float m_impulse;
 
     // Solver temp
     private int indexA;
@@ -38,7 +40,7 @@ public class RopeJoint extends Joint {
     private float m_invIA;
     private float m_invIB;
     private float m_mass;
-    private LimitState m_state;
+    private LimitState state;
 
     public RopeJoint(IWorldPool worldPool, RopeJointDef def) {
         super(worldPool, def);
@@ -49,7 +51,7 @@ public class RopeJoint extends Joint {
 
         m_mass = 0.0f;
         m_impulse = 0.0f;
-        m_state = LimitState.INACTIVE;
+        state = LimitState.INACTIVE;
         length = 0.0f;
     }
 
@@ -74,9 +76,9 @@ public class RopeJoint extends Joint {
         Tuple2f vB = data.velocities[indexB].v;
         float wB = data.velocities[indexB].w;
 
-        final Rot qA = pool.popRot();
-        final Rot qB = pool.popRot();
-        final Tuple2f temp = pool.popVec2();
+        final Rot qA = new Rot();
+        final Rot qB = new Rot();
+        final Tuple2f temp = new v2();
 
         qA.set(aA);
         qB.set(aB);
@@ -92,14 +94,28 @@ public class RopeJoint extends Joint {
         float targetLength = targetLength();
 
         float C = length - targetLength;
-        m_state = C > 0.0f ? LimitState.AT_UPPER : LimitState.INACTIVE;
 
         if (length > Settings.linearSlop) {
             m_u.scaled(1.0f / length);
+//            if (C > Settings.linearSlop) {
+                state = LimitState.AT_UPPER;
+//            }
+//            /*else if (C < -Settings.linearSlop) {
+//                state = LimitState.AT_LOWER;
+//            } */ else {
+//                state = LimitState.INACTIVE;
+//                m_u.setZero();
+//                m_mass = 0.0f;
+//                m_impulse = 0.0f;
+//                length = 0;
+//                return;
+//            }
         } else {
+            state = LimitState.INACTIVE;
             m_u.setZero();
             m_mass = 0.0f;
             m_impulse = 0.0f;
+            length = 0;
             return;
         }
 
@@ -110,7 +126,7 @@ public class RopeJoint extends Joint {
 
         m_mass = invMass != 0.0f ? 1.0f / invMass : 0.0f;
 
-        if (data.step.warmStarting) {
+//        if (data.step.warmStarting) {
             // Scale the impulse to support a variable time step.
             m_impulse *= data.step.dtRatio;
 
@@ -123,12 +139,11 @@ public class RopeJoint extends Joint {
             vB.x += m_invMassB * Px;
             vB.y += m_invMassB * Py;
             wB += m_invIB * (m_rB.x * Py - m_rB.y * Px);
-        } else {
-            m_impulse = 0.0f;
-        }
+//        } else {
+//            m_impulse = 0.0f;
+//        }
 
-        pool.pushRot(2);
-        pool.pushVec2(1);
+
 
         // data.velocities[m_indexA].v = vA;
         data.velocities[indexA].w = wA;
@@ -145,10 +160,12 @@ public class RopeJoint extends Joint {
 
         float targetLength = targetLength();
 
-        Tuple2f vA = data.velocities[indexA].v;
-        float wA = data.velocities[indexA].w;
-        Tuple2f vB = data.velocities[indexB].v;
-        float wB = data.velocities[indexB].w;
+        Velocity VA = data.velocities[indexA];
+        Tuple2f vA = VA.v;
+        float wA = VA.w;
+        Velocity VB = data.velocities[indexB];
+        Tuple2f vB = VB.v;
+        float wB = VB.w;
 
         // Cdot = dot(u, v + cross(w, r))
         Tuple2f vpA = pool.popVec2();
@@ -160,13 +177,15 @@ public class RopeJoint extends Joint {
         Tuple2f.crossToOutUnsafe(wB, m_rB, vpB);
         vpB.added(vB);
 
-        float C = length - targetLength;
-        float Cdot = Tuple2f.dot(m_u, temp.set(vpB).subbed(vpA));
+        float dLen = length - targetLength;
+        float Cdot = Tuple2f.dot(m_u, temp.set(vpB).subbed(vpA))
+                //*dLen; //elasticity factor?
+        ;
 
         // Predictive constraint.
-        if (C < 0.0f) {
-            Cdot += data.step.inv_dt * C;
-        }
+//        if (dLen < 0.0f) {
+//            Cdot += data.step.inv_dt * dLen;
+//        }
 
         float impulse = -m_mass * Cdot;
         float oldImpulse = m_impulse;
@@ -175,25 +194,25 @@ public class RopeJoint extends Joint {
 
         float Px = impulse * m_u.x;
         float Py = impulse * m_u.y;
+
         vA.x -= m_invMassA * Px;
         vA.y -= m_invMassA * Py;
-        wA -= m_invIA * (m_rA.x * Py - m_rA.y * Px);
+
+        VA.w = wA - m_invIA * (m_rA.x * Py - m_rA.y * Px);
         vB.x += m_invMassB * Px;
         vB.y += m_invMassB * Py;
-        wB += m_invIB * (m_rB.x * Py - m_rB.y * Px);
+        VB.w = wB + m_invIB * (m_rB.x * Py - m_rB.y * Px);
 
         pool.pushVec2(3);
 
         // data.velocities[m_indexA].v = vA;
-        data.velocities[indexA].w = wA;
         // data.velocities[m_indexB].v = vB;
-        data.velocities[indexB].w = wB;
     }
 
     @Override
     public boolean solvePositionConstraints(final SolverData data) {
 
-        float targetLength = targetLength();
+        final float targetLength = targetLength();
 
         Tuple2f cA = data.positions[indexA].c;
         float aA = data.positions[indexA].a;
@@ -218,7 +237,7 @@ public class RopeJoint extends Joint {
         float length = u.normalize();
         float C = length - targetLength;
 
-        C = MathUtils.clamp(C, 0.0f, Settings.maxLinearCorrection);
+        //C = MathUtils.clamp(C, 0.0f, Settings.maxLinearCorrection);
 
         float impulse = -m_mass * C;
         float Px = impulse * u.x;
@@ -278,8 +297,8 @@ public class RopeJoint extends Joint {
         this.targetLength = targetLength;
     }
 
-    public LimitState getLimitState() {
-        return m_state;
-    }
+//    public LimitState getLimitState() {
+//        return state;
+//    }
 
 }

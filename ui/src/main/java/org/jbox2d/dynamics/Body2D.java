@@ -200,7 +200,7 @@ public class Body2D extends Transform {
 
         W.invoke(() -> {
             if ((flags & e_activeFlag) == e_activeFlag) {
-                BroadPhase broadPhase = W.contactManager.m_broadPhase;
+                BroadPhase broadPhase = W.contactManager.broadPhase;
                 fixture.createProxies(broadPhase, this);
             }
 
@@ -232,7 +232,7 @@ public class Body2D extends Transform {
 
                 //destroy and re-create proxies
                 //if ((m_flags & e_activeFlag) == e_activeFlag) {
-                BroadPhase broadPhase = W.contactManager.m_broadPhase;
+                BroadPhase broadPhase = W.contactManager.broadPhase;
                 f.destroyProxies(broadPhase);
 
                 tx.accept(f);
@@ -355,7 +355,7 @@ public class Body2D extends Transform {
             }
 
             if ((flags & e_activeFlag) == e_activeFlag) {
-                BroadPhase broadPhase = W.contactManager.m_broadPhase;
+                BroadPhase broadPhase = W.contactManager.broadPhase;
                 fixture.destroyProxies(broadPhase);
             }
 
@@ -405,15 +405,6 @@ public class Body2D extends Transform {
         });
 
         return true;
-    }
-
-    /**
-     * Get the body transform for the body's origin.
-     *
-     * @return the world transform of the body's origin.
-     */
-    public final Transform getXform() {
-        return this;
     }
 
     /**
@@ -998,11 +989,11 @@ public class Body2D extends Transform {
         contacts = null;
 
         // Touch the proxies so that new contacts will be created (when appropriate)
-        BroadPhase broadPhase = W.contactManager.m_broadPhase;
+        BroadPhase broadPhase = W.contactManager.broadPhase;
         for (Fixture f = fixtures; f != null; f = f.next) {
             int proxyCount = f.m_proxyCount;
             for (int i = 0; i < proxyCount; ++i) {
-                broadPhase.touchProxy(f.m_proxies[i].proxyId);
+                broadPhase.touchProxy(f.proxies[i].id);
             }
         }
     }
@@ -1104,7 +1095,7 @@ public class Body2D extends Transform {
                 flags |= e_activeFlag;
 
                 // Create all proxies.
-                BroadPhase broadPhase = W.contactManager.m_broadPhase;
+                BroadPhase broadPhase = W.contactManager.broadPhase;
                 for (Fixture f = fixtures; f != null; f = f.next) {
                     f.createProxies(broadPhase, this);
                 }
@@ -1114,7 +1105,7 @@ public class Body2D extends Transform {
                 flags &= ~e_activeFlag;
 
                 // Destroy all proxies.
-                BroadPhase broadPhase = W.contactManager.m_broadPhase;
+                BroadPhase broadPhase = W.contactManager.broadPhase;
                 for (Fixture f = fixtures; f != null; f = f.next) {
                     f.destroyProxies(broadPhase);
                 }
@@ -1167,7 +1158,7 @@ public class Body2D extends Transform {
     /**
      * Get the list of all fixtures attached to this body.
      */
-    public final Fixture getFixtureList() {
+    public final Fixture fixtures() {
         return fixtures;
     }
 
@@ -1235,7 +1226,7 @@ public class Body2D extends Transform {
         // end inline
 
         for (Fixture f = fixtures; f != null; f = f.next) {
-            f.synchronize(W.contactManager.m_broadPhase, xf1, this);
+            f.synchronize(W.contactManager.broadPhase, xf1, this);
         }
     }
 

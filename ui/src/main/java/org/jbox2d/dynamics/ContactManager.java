@@ -41,11 +41,11 @@ import org.jbox2d.pooling.IDynamicStack;
  */
 public class ContactManager implements PairCallback {
 
-    public final BroadPhase m_broadPhase;
+    public final BroadPhase broadPhase;
     public Contact m_contactList;
     public int m_contactCount;
     public ContactFilter m_contactFilter;
-    public ContactListener m_contactListener;
+    public ContactListener contactListener;
     public FractureListener m_fractureListener;
 
     private final Dynamics2D dyn;
@@ -57,8 +57,8 @@ public class ContactManager implements PairCallback {
         m_contactList = null;
         m_contactCount = 0;
         m_contactFilter = new ContactFilter();
-        m_contactListener = null;
-        m_broadPhase = broadPhase;
+        contactListener = null;
+        this.broadPhase = broadPhase;
         this.dyn = dyn;
 
         addType(this.dyn.pool.getCircleContactStack(), ShapeType.CIRCLE, ShapeType.CIRCLE);
@@ -156,8 +156,8 @@ public class ContactManager implements PairCallback {
         // Contact creation may swap fixtures.
         fixtureA = c.aFixture;
         fixtureB = c.bFixture;
-        indexA = c.aIndex;
-        indexB = c.bIndex;
+//        indexA = c.aIndex;
+//        indexB = c.bIndex;
         bodyA = fixtureA.getBody();
         bodyB = fixtureB.getBody();
 
@@ -203,7 +203,7 @@ public class ContactManager implements PairCallback {
     }
 
     public void findNewContacts() {
-        m_broadPhase.updatePairs(this);
+        broadPhase.updatePairs(this);
     }
 
     public void destroy(final Contact c) {
@@ -212,8 +212,8 @@ public class ContactManager implements PairCallback {
         Body2D aa = a.getBody();
         Body2D bb = b.getBody();
 
-        if (m_contactListener != null && c.isTouching()) {
-            m_contactListener.endContact(c);
+        if (contactListener != null && c.isTouching()) {
+            contactListener.endContact(c);
         }
 
         // Remove from the world.
@@ -261,7 +261,7 @@ public class ContactManager implements PairCallback {
         }
 
         //call the factory
-        contactStacks[a.getType().ordinal()][b.getType().ordinal()].creator.push(c);
+        contactStacks[a.type().ordinal()][b.type().ordinal()].creator.push(c);
 
         --m_contactCount;
     }
@@ -286,7 +286,7 @@ public class ContactManager implements PairCallback {
                 // Should these bodies collide?
                 if (!bodyB.shouldCollide(bodyA)) {
                     Contact cNuke = c;
-                    c = cNuke.getNext();
+                    c = cNuke.next();
                     destroy(cNuke);
                     continue;
                 }
@@ -294,7 +294,7 @@ public class ContactManager implements PairCallback {
                 // Check user filtering.
                 if (m_contactFilter != null && !ContactFilter.shouldCollide(fixtureA, fixtureB)) {
                     Contact cNuke = c;
-                    c = cNuke.getNext();
+                    c = cNuke.next();
                     destroy(cNuke);
                     continue;
                 }
@@ -303,36 +303,36 @@ public class ContactManager implements PairCallback {
                 c.m_flags &= ~Contact.FILTER_FLAG;
             }
 
-            boolean activeA = bodyA.isAwake() && bodyA.type != BodyType.STATIC;
-            boolean activeB = bodyB.isAwake() && bodyB.type != BodyType.STATIC;
+
 
             // At least one body must be awake and it must be dynamic or kinematic.
-            if (!activeA && !activeB) {
-                c = c.getNext();
+            if (!(bodyA.isAwake() && bodyA.type != BodyType.STATIC) &&
+                !(bodyB.isAwake() && bodyB.type != BodyType.STATIC)) {
+                c = c.next();
                 continue;
             }
 
-            int proxyIdA = fixtureA.m_proxies[indexA].proxyId;
-            int proxyIdB = fixtureB.m_proxies[indexB].proxyId;
-            boolean overlap = m_broadPhase.testOverlap(proxyIdA, proxyIdB);
+            int proxyIdA = fixtureA.proxies[indexA].id;
+            int proxyIdB = fixtureB.proxies[indexB].id;
+            boolean overlap = broadPhase.testOverlap(proxyIdA, proxyIdB);
 
             // Here we destroy contacts that cease to overlap in the broad-phase.
             if (!overlap) {
                 Contact cNuke = c;
-                c = cNuke.getNext();
+                c = cNuke.next();
                 destroy(cNuke);
                 continue;
             }
 
             // The contact persists.
-            c.update(m_contactListener);
-            c = c.getNext();
+            c.update(contactListener);
+            c = c.next();
         }
     }
 
     public Contact popContact(Fixture fixtureA, int indexA, Fixture fixtureB, int indexB) {
-        final ShapeType type1 = fixtureA.getType();
-        final ShapeType type2 = fixtureB.getType();
+        final ShapeType type1 = fixtureA.type();
+        final ShapeType type2 = fixtureB.type();
 
         final ContactRegister reg = contactStacks[type1.ordinal()][type2.ordinal()];
         if (reg != null) {

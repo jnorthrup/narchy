@@ -266,7 +266,7 @@ public class Dynamics2D {
      * @param listener
      */
     public void setContactListener(ContactListener listener) {
-        contactManager.m_contactListener = listener;
+        contactManager.contactListener = listener;
     }
 
     /**
@@ -369,7 +369,7 @@ public class Dynamics2D {
                     m_destructionListener.beforeDestruct(f0);
                 }
 
-                f0.destroyProxies(contactManager.m_broadPhase);
+                f0.destroyProxies(contactManager.broadPhase);
                 f0.destroy();
                 // TODO djm recycle fixtures (here or in that destroy method)
                 body.fixtures = f;
@@ -692,9 +692,9 @@ public class Dynamics2D {
      * @param aabb     the query box.
      */
     public void queryAABB(QueryCallback callback, AABB aabb) {
-        wqwrapper.broadPhase = contactManager.m_broadPhase;
+        wqwrapper.broadPhase = contactManager.broadPhase;
         wqwrapper.callback = callback;
-        contactManager.m_broadPhase.query(wqwrapper, aabb);
+        contactManager.broadPhase.query(wqwrapper, aabb);
     }
 
     /**
@@ -705,9 +705,9 @@ public class Dynamics2D {
      * @param aabb             the query box.
      */
     public void queryAABB(QueryCallback callback, ParticleQueryCallback particleCallback, AABB aabb) {
-        wqwrapper.broadPhase = contactManager.m_broadPhase;
+        wqwrapper.broadPhase = contactManager.broadPhase;
         wqwrapper.callback = callback;
-        contactManager.m_broadPhase.query(wqwrapper, aabb);
+        contactManager.broadPhase.query(wqwrapper, aabb);
         m_particleSystem.queryAABB(particleCallback, aabb);
     }
 
@@ -734,12 +734,12 @@ public class Dynamics2D {
      * @param point2   the ray ending point
      */
     public void raycast(RayCastCallback callback, Tuple2f point1, Tuple2f point2) {
-        wrcwrapper.broadPhase = contactManager.m_broadPhase;
+        wrcwrapper.broadPhase = contactManager.broadPhase;
         wrcwrapper.callback = callback;
         input.maxFraction = 1.0f;
         input.p1.set(point1);
         input.p2.set(point2);
-        contactManager.m_broadPhase.raycast(wrcwrapper, input);
+        contactManager.broadPhase.raycast(wrcwrapper, input);
     }
 
     /**
@@ -754,12 +754,12 @@ public class Dynamics2D {
      */
     public void raycast(RayCastCallback callback, ParticleRaycastCallback particleCallback,
                         Tuple2f point1, Tuple2f point2) {
-        wrcwrapper.broadPhase = contactManager.m_broadPhase;
+        wrcwrapper.broadPhase = contactManager.broadPhase;
         wrcwrapper.callback = callback;
         input.maxFraction = 1.0f;
         input.p1.set(point1);
         input.p2.set(point2);
-        contactManager.m_broadPhase.raycast(wrcwrapper, input);
+        contactManager.broadPhase.raycast(wrcwrapper, input);
         m_particleSystem.raycast(particleCallback, point1, point2);
     }
 
@@ -845,7 +845,7 @@ public class Dynamics2D {
      * @return
      */
     public int getProxyCount() {
-        return contactManager.m_broadPhase.getProxyCount();
+        return contactManager.broadPhase.getProxyCount();
     }
 
     /**
@@ -881,7 +881,7 @@ public class Dynamics2D {
      * @return
      */
     public int getTreeHeight() {
-        return contactManager.m_broadPhase.getTreeHeight();
+        return contactManager.broadPhase.getTreeHeight();
     }
 
     /**
@@ -890,7 +890,7 @@ public class Dynamics2D {
      * @return
      */
     public int getTreeBalance() {
-        return contactManager.m_broadPhase.getTreeBalance();
+        return contactManager.broadPhase.getTreeBalance();
     }
 
     /**
@@ -899,7 +899,7 @@ public class Dynamics2D {
      * @return
      */
     public float getTreeQuality() {
-        return contactManager.m_broadPhase.getTreeQuality();
+        return contactManager.broadPhase.getTreeQuality();
     }
 
     /**
@@ -981,7 +981,7 @@ public class Dynamics2D {
 
         // Size the island for the worst case.
         island.init(bodyCount, contactManager.m_contactCount, jointCount,
-                contactManager.m_contactListener);
+                contactManager.contactListener);
 
         // Clear all the island flags.
         for (Body2D b = bodies; b != null; b = b.next) {
@@ -1138,7 +1138,7 @@ public class Dynamics2D {
 
         final Island island = toiIsland;
         island.init(2 * Settings.maxTOIContacts, Settings.maxTOIContacts, 0,
-                contactManager.m_contactListener);
+                contactManager.contactListener);
         if (m_stepComplete) {
             for (Body2D b = bodies; b != null; b = b.next) {
                 b.flags &= ~Body2D.e_islandFlag;
@@ -1271,7 +1271,7 @@ public class Dynamics2D {
             bB.advance(minAlpha);
 
             // The TOI contact likely has some new contact points.
-            minContact.update(contactManager.m_contactListener);
+            minContact.update(contactManager.contactListener);
             minContact.m_flags &= ~Contact.TOI_FLAG;
             ++minContact.m_toiCount;
 
@@ -1342,7 +1342,7 @@ public class Dynamics2D {
                         }
 
                         // Update the contact points
-                        contact.update(contactManager.m_contactListener);
+                        contact.update(contactManager.contactListener);
 
                         // Was the contact disabled by the user?
                         if (!contact.isEnabled()) {

@@ -41,8 +41,8 @@ public class ChainAndCircleContact extends Contact {
     @Override
     public void init(Fixture fA, int indexA, Fixture fB, int indexB) {
         super.init(fA, indexA, fB, indexB);
-        assert (aFixture.getType() == ShapeType.CHAIN);
-        assert (bFixture.getType() == ShapeType.CIRCLE);
+        assert (aFixture.type() == ShapeType.CHAIN);
+        assert (bFixture.type() == ShapeType.CIRCLE);
     }
 
     private final EdgeShape edge = new EdgeShape();

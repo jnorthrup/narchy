@@ -27,6 +27,7 @@ import org.jbox2d.common.*;
 import org.jbox2d.dynamics.SolverData;
 import org.jbox2d.pooling.IWorldPool;
 import spacegraph.math.Tuple2f;
+import spacegraph.math.v2;
 
 /**
  * A mouse joint is used to make a point on a body track a specified world point. This a soft
@@ -38,21 +39,21 @@ import spacegraph.math.Tuple2f;
  */
 public class MouseJoint extends Joint {
 
-    private final Tuple2f m_localAnchorB = new Vec2();
-    private final Tuple2f m_targetA = new Vec2();
+    private final Tuple2f m_localAnchorB = new v2();
+    private final Tuple2f m_targetA = new v2();
     private float m_frequencyHz;
     private float m_dampingRatio;
     private float m_beta;
 
     // Solver shared
-    private final Vec2 m_impulse = new Vec2();
+    private final v2 m_impulse = new v2();
     private float m_maxForce;
     private float m_gamma;
 
     // Solver temp
     private int m_indexB;
-    private final Tuple2f m_rB = new Vec2();
-    private final Tuple2f m_localCenterB = new Vec2();
+    private final Tuple2f m_rB = new v2();
+    private final Tuple2f m_localCenterB = new v2();
     private float m_invMassB;
     private float m_invIB;
     private final Mat22 m_mass = new Mat22();
@@ -66,7 +67,7 @@ public class MouseJoint extends Joint {
         assert (def.dampingRatio >= 0);
 
         m_targetA.set(def.target);
-        Transform.mulTransToOutUnsafe(B.getXform(), m_targetA, m_localAnchorB);
+        Transform.mulTransToOutUnsafe(B, m_targetA, m_localAnchorB);
 
         m_maxForce = def.maxForce;
         m_impulse.setZero();
@@ -238,10 +239,11 @@ public class MouseJoint extends Joint {
 
         Tuple2f oldImpulse = temp;
         oldImpulse.set(m_impulse);
-        m_impulse.addLocal(impulse);
+        m_impulse.added(impulse);
         float maxImpulse = data.step.dt * m_maxForce;
-        if (m_impulse.lengthSquared() > maxImpulse * maxImpulse) {
-            m_impulse.scaled(maxImpulse / m_impulse.length());
+        float mImpulseLenSq = m_impulse.lengthSquared();
+        if (mImpulseLenSq > maxImpulse * maxImpulse) {
+            m_impulse.scaled((float) (maxImpulse / Math.sqrt(mImpulseLenSq)));
         }
         impulse.set(m_impulse).subbed(oldImpulse);
 

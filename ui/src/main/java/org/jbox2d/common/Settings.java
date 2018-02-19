@@ -112,7 +112,7 @@ public class Settings {
      * A small length used as a collision and constraint tolerance. Usually it is chosen to be
      * numerically significant, but visually insignificant.
      */
-    public static final float linearSlop = 0.002f;
+    public static final float linearSlop = 0.0005f;
 
     /**
      * A small angle used as a collision and constraint tolerance. Usually it is chosen to be

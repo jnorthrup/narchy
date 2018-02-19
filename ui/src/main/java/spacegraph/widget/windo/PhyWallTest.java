@@ -27,7 +27,8 @@ public class PhyWallTest {
             ).getOne().sprout(
                     new Gridding(0.1f, 1f, new PushButton("wtf")),
                     0.3f
-            ).getOne().sproutBranch("Other", ()->{
+            );//.getOne().sproutBranch("Other", 0.5f, ()->{
+            w.sproutBranch("Other", 0.25f, 0.33f, ()->{
                     return new Surface[] {
                         new PushButton("X"),
                         new PushButton("Y"),

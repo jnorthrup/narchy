@@ -73,7 +73,7 @@ public class Vec2 extends v2 {
     /**
      * Return the sum of this vector and another; does not alter either one.
      */
-    public final Tuple2f add(Tuple2f v) {
+    public final v2 add(Tuple2f v) {
         return new v2(x + v.x, y + v.y);
     }
 
@@ -81,14 +81,14 @@ public class Vec2 extends v2 {
     /**
      * Return the difference of this vector and another; does not alter either one.
      */
-    public final Tuple2f sub(Tuple2f v) {
+    public final v2 sub(Tuple2f v) {
         return new v2(x - v.x, y - v.y);
     }
 
     /**
      * Return this vector multiplied by a scalar; does not alter this vector.
      */
-    public final Tuple2f mul(float a) {
+    public final v2 mul(float a) {
         return new v2(x * a, y * a);
     }
 

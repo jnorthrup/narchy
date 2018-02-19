@@ -6,6 +6,7 @@ import jcog.data.graph.ImmutableDirectedEdge;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.NodeGraph;
 import jcog.event.On;
+import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.tuple.Pair;
@@ -28,6 +29,7 @@ import spacegraph.render.Draw;
 import spacegraph.render.SpaceGraphFlat;
 import spacegraph.widget.button.CheckBox;
 
+import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 
@@ -53,6 +55,7 @@ public class PhyWall extends Wall implements Animated {
         W.setParticleRadius(0.2f);
         W.setParticleDensity(1.0f);
 
+        W.setWarmStarting(true);
         W.setAllowSleep(true);
         W.setContinuousPhysics(true);
         //W.setSubStepping(true);
@@ -242,11 +245,21 @@ public class PhyWall extends Wall implements Animated {
 
             this.shape = PolygonShape.box(initialBounds.w / 2, initialBounds.h / 2);
 
-            FixtureDef fd = new FixtureDef(shape, 0.1f, 0f);
-            fd.setRestitution(0.1f);
-            W.addBody(this.body = new WallBody(), fd);
+            FixtureDef fd = new FixtureDef(shape, 1f, 0f);
+            fd.setRestitution(0f);
+
+            W.addBody(this.body = new WallBody(initialBounds.x, initialBounds.y), fd);
 
         }
+
+        public void remove() {
+            synchronized (undirectedLinks) {
+                undirectedLinks.removeNode(this);
+            }
+            W.removeBody(this.body);
+            PhyWall.this.remove(this);
+        }
+
 
 //        @Override
 //        protected Fingering fingering(DragEdit mode) {
@@ -272,21 +285,23 @@ public class PhyWall extends Wall implements Animated {
         public Pair<PhyWindow, RopeJoint> sprout(Surface target, float scale, float targetAspect) {
             float W = w();
             float H = h();
-            float l = new v2(W,H).length();
-            float w = W *scale;
-            float h = H *scale;
+            float sprouterRadius = radius();
+            float w = W * scale;
+            float h = H * scale;
 
             //TODO apply targetAspect in initial size of the target
 
+
+            RectFloat2D sproutSize = RectFloat2D.XYWH(0, 0, w, h);
+
             //min rope distance
-            float minRadius = l/2 + l*scale/2;
+            float minRadius = sprouterRadius + sproutSize.radius();
 
             float a = rng.nextFloat()*2*(float)Math.PI;
             float dx = (float) (minRadius * Math.cos(a));
             float dy = (float) (minRadius * Math.sin(a));
 
-            PhyWindow sprouted = newWindow(target,
-                    RectFloat2D.XYWH(cx() + dx, cy() + dy, w, h));
+            PhyWindow sprouted = newWindow(target, sproutSize.move(dx, dy, EPSILON));
 
             return link(sprouted);
         }
@@ -313,17 +328,49 @@ public class PhyWall extends Wall implements Animated {
 
                 RopeJointDef jd = new RopeJointDef(target.body, this.body);
                 jd.collideConnected = true;
-                jd.maxLength = 1f; //should be effectively ignored by the implementation below
+                jd.maxLength = Float.NaN; //should be effectively ignored by the implementation below
 
                 RopeJoint link = new RopeJoint(PhyWall.this.W.pool, jd) {
 
-                    float lengthScale = 1.3f;
+                    float lengthScale = 1.05f;
 
                     @Override
                     public float targetLength() {
                         //maxLength will be proportional to the radii of the two bodies
                         //so that if either changes, the rope's behavior changes also
-                        return ( (PhyWall.this.radius()/2f + target.radius()/2f) * lengthScale );
+
+//                        DistanceOutput o = new DistanceOutput();
+//
+//                        DistanceInput i = new DistanceInput();
+//
+//                        Fixture fixA = getBodyA().fixtures();
+//                        assert(fixA.m_proxyCount==1);
+//                        i.proxyA.set(getBodyA().fixtures().shape(), 0);
+//                        i.transformB.setIdentity();
+//
+//                        Fixture fixB = getBodyB().fixtures();
+//                        assert(fixB.m_proxyCount==1);
+//                        i.proxyB.set(fixB.shape(), 0);
+//                        i.transformB.setIdentity();
+//
+//                        i.useRadii = true;
+//
+//                        pool.getDistance().distance(o, i);
+//                        return o.distance;
+
+
+//                        v2 normal = new v2();//getBodyA().pos.sub(getBodyB().pos);
+//                        Tuple2f midPoint = getBodyA().pos.add(getBodyB().pos).scaled(0.5f);
+//                        float abDist = getBodyA().fixtures.computeDistance(midPoint, 0, normal);
+//                        float baDist = getBodyB().fixtures.computeDistance(midPoint, 0, normal);
+//                        return 2 * (Math.abs(abDist) + Math.abs(baDist)) * lengthScale;
+
+                        return ( (PhyWindow.this.radius() + target.radius()) * lengthScale )
+                            //* (0.9f/(1f+m_impulse))
+                        ;
+
+
+                        //return 0;
                     }
                 };
                 PhyWall.this.W.addJoint(link);
@@ -335,18 +382,22 @@ public class PhyWall extends Wall implements Animated {
             }
         }
 
-        public void sproutBranch(String label, Supplier<Surface[]> children) {
+        public void sproutBranch(String label, float scale, float childScale, Supplier<Surface[]> children) {
             CheckBox toggle = new CheckBox(label);
-            Pair<PhyWindow, RopeJoint> toggleWindo = sprout(toggle, 0.25f);
+            Pair<PhyWindow, RopeJoint> toggleWindo = sprout(toggle, scale);
+            List<PhyWindow> built = new FasterList(0);
             toggle.on((cb, enabled)->{
                 synchronized (toggle) {
                     if (enabled) {
                         Surface[] cc = children.get();
+                        ((FasterList<PhyWindow>) built).ensureCapacity(cc.length);
                         for (Surface x : cc) {
-                            toggleWindo.getOne().sprout(x, +2f);
+                            built.add( toggleWindo.getOne().sprout(x, childScale).getOne() );
                         }
                     } else {
                         //TODO remove what is shown
+                        built.forEach(PhyWindow::remove);
+                        built.clear();
                     }
                 }
             });
@@ -357,8 +408,8 @@ public class PhyWall extends Wall implements Animated {
 
             RectFloat2D physBounds = null;
 
-            public WallBody() {
-                super(new BodyDef(BodyType.DYNAMIC), PhyWall.this.W);
+            public WallBody(float cx, float cy) {
+                super(new BodyDef(BodyType.DYNAMIC, new v2(cx, cy)), PhyWall.this.W);
 
                 setData(this);
 
@@ -372,7 +423,7 @@ public class PhyWall extends Wall implements Animated {
 
 
                 RectFloat2D r = bounds;
-                if (physBounds == null || r!=physBounds) {
+                if (r!=physBounds) {
 
                         if (!Util.equals(r.w, physBounds.w, SHAPE_SIZE_EPSILON) ||
                             !Util.equals(r.h, physBounds.h, SHAPE_SIZE_EPSILON)) {
@@ -400,7 +451,7 @@ public class PhyWall extends Wall implements Animated {
             public void postUpdate() {
 
 
-                Transform t = getXform();
+                Transform t = this;
                 Tuple2f p = t.pos;
                 //float rot = t.q.getAngle();
 

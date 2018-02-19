@@ -96,7 +96,7 @@ abstract public class Container extends Surface {
 
             // Draw forward, propagate touch events backwards
             if (finger == null) {
-                forEach(c -> c.onTouch(finger, null));
+                forEach(c -> c.onTouch(null, null));
                 return null;
             } else {
 

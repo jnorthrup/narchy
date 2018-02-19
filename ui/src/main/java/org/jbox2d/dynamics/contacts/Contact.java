@@ -153,8 +153,8 @@ public abstract class Contact {
         final Shape shapeA = aFixture.shape();
         final Shape shapeB = bFixture.shape();
 
-        worldManifold.initialize(m_manifold, bodyA.getXform(), shapeA.m_radius,
-                bodyB.getXform(), shapeB.m_radius);
+        worldManifold.initialize(m_manifold, bodyA, shapeA.m_radius,
+                bodyB, shapeB.m_radius);
     }
 
     /**
@@ -194,7 +194,7 @@ public abstract class Contact {
      *
      * @return
      */
-    public Contact getNext() {
+    public Contact next() {
         return m_next;
     }
 
@@ -258,8 +258,8 @@ public abstract class Contact {
 
         Body2D bodyA = aFixture.getBody();
         Body2D bodyB = bFixture.getBody();
-        Transform xfA = bodyA.getXform();
-        Transform xfB = bodyB.getXform();
+        Transform xfA = bodyA;
+        Transform xfB = bodyB;
         // log.debug("TransformA: "+xfA);
         // log.debug("TransformB: "+xfB);
 

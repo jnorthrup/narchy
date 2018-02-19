@@ -221,7 +221,7 @@ abstract public class Surface implements SurfaceBase {
     }
 
     public float radius() {
-        return Math.max(w(), h());
+        return bounds.radius();
     }
 
 

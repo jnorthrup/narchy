@@ -35,6 +35,14 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
         nodes.clear();
     }
 
+    public boolean removeNode(N key) {
+        Node<N, E> removed = nodes.remove(key);
+        if (removed!=null) {
+            onRemoved(removed);
+            return true;
+        }
+        return false;
+    }
 
     public MutableNode<N, E> addNode(N key) {
 
@@ -61,6 +69,9 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
     }
 
     protected void onAdd(Node<N,E> r) {
+
+    }
+    protected void onRemoved(Node<N,E> r) {
 
     }
 
