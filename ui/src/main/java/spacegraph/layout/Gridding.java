@@ -31,6 +31,11 @@ public class Gridding extends MutableContainer {
         this(SQUARE, children);
     }
 
+    public Gridding(float margin, float aspect, Surface... children) {
+        this(children);
+        this.margin = margin;
+    }
+
     public Gridding(List<Surface> children) {
         this(SQUARE, children);
     }

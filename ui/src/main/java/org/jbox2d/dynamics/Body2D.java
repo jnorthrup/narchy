@@ -1198,14 +1198,14 @@ public class Body2D extends Transform {
     /**
      * Get the user data pointer that was provided in the body definition.
      */
-    public final Object getUserData() {
+    public final Object data() {
         return data;
     }
 
     /**
      * Set the user data. Use this to store your application specific data.
      */
-    public final void setUserData(Object data) {
+    public final void setData(Object data) {
         this.data = data;
     }
 

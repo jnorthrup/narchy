@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * immutable directed edge with cached hashcode
  */
-public class ImmutableDirectedEdge<N, E> {
+public class ImmutableDirectedEdge<N, E>  {
 
     private final int hash;
     public final E id;

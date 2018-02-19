@@ -39,7 +39,7 @@ import spacegraph.math.Tuple2f;
  */
 public abstract class Joint {
 
-    public static Joint create(Dynamics2D world, JointDef def) {
+    public static Joint build(Dynamics2D world, JointDef def) {
         // Joint joint = null;
         switch (def.type) {
             case MOUSE:

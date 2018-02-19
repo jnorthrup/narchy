@@ -405,9 +405,11 @@ public class Dynamics2D {
      * @warning This function is locked during callbacks.
      */
     public Joint addJoint(JointDef def) {
+        return addJoint(Joint.build(this, def));
+    }
 
-
-        Joint j = Joint.create(this, def);
+    public Joint addJoint( Joint jj) {
+        Joint j = jj;
 
         invoke(() -> {
 
@@ -441,11 +443,12 @@ public class Dynamics2D {
             }
             B.joints = j.edgeB;
 
-            Body2D bodyA = def.bodyA;
-            Body2D bodyB = def.bodyB;
+
+            Body2D bodyA = j.getBodyA();
+            Body2D bodyB = j.getBodyB();
 
             // If the joint prevents collisions, then flag any contacts for filtering.
-            if (!def.collideConnected) {
+            if (!j.getCollideConnected()) {
                 ContactEdge edge = bodyB.contacts();
                 while (edge != null) {
                     if (edge.other == bodyA) {

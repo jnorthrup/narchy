@@ -21,7 +21,7 @@ public class RopeJoint extends Joint {
     // Solver shared
     private final Tuple2f localAnchorA = new Vec2();
     private final Tuple2f localAnchorB = new Vec2();
-    private float maxLength;
+    private float targetLength;
     private float length;
     private float m_impulse;
 
@@ -40,12 +40,12 @@ public class RopeJoint extends Joint {
     private float m_mass;
     private LimitState m_state;
 
-    protected RopeJoint(IWorldPool worldPool, RopeJointDef def) {
+    public RopeJoint(IWorldPool worldPool, RopeJointDef def) {
         super(worldPool, def);
         localAnchorA.set(def.localAnchorA);
         localAnchorB.set(def.localAnchorB);
 
-        maxLength = def.maxLength;
+        targetLength = def.maxLength;
 
         m_mass = 0.0f;
         m_impulse = 0.0f;
@@ -89,7 +89,9 @@ public class RopeJoint extends Joint {
 
         length = m_u.length();
 
-        float C = length - maxLength;
+        float targetLength = targetLength();
+
+        float C = length - targetLength;
         m_state = C > 0.0f ? LimitState.AT_UPPER : LimitState.INACTIVE;
 
         if (length > Settings.linearSlop) {
@@ -134,8 +136,15 @@ public class RopeJoint extends Joint {
         data.velocities[indexB].w = wB;
     }
 
+    public float targetLength() {
+        return this.targetLength;
+    }
+
     @Override
     public void solveVelocityConstraints(final SolverData data) {
+
+        float targetLength = targetLength();
+
         Tuple2f vA = data.velocities[indexA].v;
         float wA = data.velocities[indexA].w;
         Tuple2f vB = data.velocities[indexB].v;
@@ -151,7 +160,7 @@ public class RopeJoint extends Joint {
         Tuple2f.crossToOutUnsafe(wB, m_rB, vpB);
         vpB.added(vB);
 
-        float C = length - maxLength;
+        float C = length - targetLength;
         float Cdot = Tuple2f.dot(m_u, temp.set(vpB).subbed(vpA));
 
         // Predictive constraint.
@@ -183,6 +192,9 @@ public class RopeJoint extends Joint {
 
     @Override
     public boolean solvePositionConstraints(final SolverData data) {
+
+        float targetLength = targetLength();
+
         Tuple2f cA = data.positions[indexA].c;
         float aA = data.positions[indexA].a;
         Tuple2f cB = data.positions[indexB].c;
@@ -204,7 +216,7 @@ public class RopeJoint extends Joint {
         u.set(cB).added(rB).subbed(cA).subbed(rA);
 
         float length = u.normalize();
-        float C = length - maxLength;
+        float C = length - targetLength;
 
         C = MathUtils.clamp(C, 0.0f, Settings.maxLinearCorrection);
 
@@ -227,7 +239,7 @@ public class RopeJoint extends Joint {
         // data.positions[m_indexB].c = cB;
         data.positions[indexB].a = aB;
 
-        return length - maxLength < Settings.linearSlop;
+        return length - targetLength < Settings.linearSlop;
     }
 
     @Override
@@ -258,12 +270,12 @@ public class RopeJoint extends Joint {
         return localAnchorB;
     }
 
-    public float getMaxLength() {
-        return maxLength;
+    public float getTargetLength() {
+        return targetLength;
     }
 
-    public void setMaxLength(float maxLength) {
-        this.maxLength = maxLength;
+    public void setTargetLength(float targetLength) {
+        this.targetLength = targetLength;
     }
 
     public LimitState getLimitState() {

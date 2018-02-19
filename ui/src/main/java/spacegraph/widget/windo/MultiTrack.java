@@ -3,7 +3,6 @@ package spacegraph.widget.windo;
 import com.google.common.collect.Iterables;
 import com.jogamp.opengl.GL2;
 import jcog.list.FasterList;
-import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.input.FingerMove;
 import spacegraph.input.Fingering;
