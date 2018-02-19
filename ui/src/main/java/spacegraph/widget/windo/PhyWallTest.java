@@ -3,11 +3,16 @@ package spacegraph.widget.windo;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jbox2d.collision.shapes.PolygonShape;
 import spacegraph.Surface;
+import spacegraph.SurfaceBase;
+import spacegraph.input.Wiring;
 import spacegraph.layout.Gridding;
+import spacegraph.math.v2;
 import spacegraph.test.WidgetTest;
+import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.TextEdit;
 import spacegraph.widget.text.Label;
+
 
 public class PhyWallTest {
 
@@ -63,10 +68,73 @@ public class PhyWallTest {
 
             //s.W.invoke(()->{
                 for (int i = 0; i < 100; i++)
-                    s.W.newDynamicBody(PolygonShape.box(20, 20), 1, 0.1f);
+                    s.W.newDynamicBody(PolygonShape.box(0.1f, 0.1f), 1, 0.1f);
                 //s.W.newDynamicBody(PolygonShape.box(100, 100), 1, 0.1f).pos.add(-100, -100);
             //});
 
         }
     }
+
+    public static class Box2DTest3_Basic_Link_Unlink {
+        public static void main(String[] args) {
+
+            PhyWall s = PhyWall.window(800, 800);
+
+            s.addWindow(new Gridding(0.1f, new Port() {
+                @Override
+                protected void onWired(Wiring w) {
+                    w.source().link(w.target());
+                }
+            }), RectFloat2D.XYWH(-1, 0, 0.25f, 0.25f));
+
+            s.addWindow(new Port(), RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
+
+        }
+    }
+
+    public static class Box2DTest3_SwitchedSignal {
+
+        public static class ToggledPort extends Gridding {
+
+            private final CheckBox button;
+            private final Port in;
+            private final Port out;
+
+            public ToggledPort() {
+                super();
+                margin = 0.25f;
+                in = new Port();
+                out = new Port();
+                button = new CheckBox("?", (b)->{
+
+                });
+
+                set(button);
+
+            }
+
+            @Override
+            public void start(SurfaceBase parent) {
+                super.start(parent);
+                parent(PhyWall.PhyWindow.class).grow(in, 0.8f, 1, new v2(-1,0));
+                parent(PhyWall.PhyWindow.class).grow(out, 0.8f, 1, new v2(+1,0));
+            }
+        }
+
+        public static void main(String[] args) {
+
+            PhyWall s = PhyWall.window(800, 800);
+
+            PhyWall.PhyWindow a = s.addWindow(new Port(), RectFloat2D.XYWH(-1, 0, 0.25f, 0.25f));
+
+            PhyWall.PhyWindow ab = s.addWindow(new ToggledPort(), RectFloat2D.XYWH(0, 0, 0.25f, 0.25f));
+
+            PhyWall.PhyWindow b = s.addWindow(new Port(), RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
+
+//            a.link(ab.in);
+//            ab.link(b);
+
+        }
+    }
+
 }

@@ -64,13 +64,29 @@ public class Port extends Widget implements Wiring.Wireable {
         return this;
     }
 
-    @Override
-    public void onWireIn(@Nullable Wiring w, boolean active) {
-        this.wiringIn = active ? w : null;
+
+    protected boolean acceptWiring(Wiring w) {
+        return true;
     }
+    @Override
+    public boolean onWireIn(@Nullable Wiring w, boolean active) {
+        if (active && !acceptWiring(w))
+            return false;
+        this.wiringIn = active ? w : null;
+        return true;
+    }
+
 
     @Override
     public void onWireOut(@Nullable Wiring w, boolean active) {
         this.wiringOut = active ? w : null;
+        if (!active) {
+            onWired(w);
+        }
+    }
+
+    /** wiring complete */
+    protected void onWired(Wiring w) {
+
     }
 }

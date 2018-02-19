@@ -4,22 +4,31 @@ import spacegraph.Ortho;
 import spacegraph.Path2D;
 import spacegraph.Surface;
 import spacegraph.widget.meta.SketchedPath;
+import spacegraph.widget.windo.PhyWall;
 
 import javax.annotation.Nullable;
 
 /** the process of drawing a wire between two surfaces */
 public class Wiring extends FingerDragging {
 
+
     public interface Wireable {
-        void onWireIn(@Nullable Wiring w, boolean active);
+        boolean onWireIn(@Nullable Wiring w, boolean active);
         void onWireOut(@Nullable Wiring w, boolean active);
     }
 
     Path2D path;
 
-    final Surface start;
+    private final Surface start;
     private SketchedPath pathVis;
     private Surface end = null;
+
+    public PhyWall.PhyWindow source() {
+        return start.parent(PhyWall.PhyWindow.class);
+    }
+    public PhyWall.PhyWindow target() {
+        return end!=null ? end.parent(PhyWall.PhyWindow.class) : null;
+    }
 
     public Wiring(Surface start) {
         super(0);
@@ -64,7 +73,7 @@ public class Wiring extends FingerDragging {
             pathVis = null;
         }
 
-        //updateEnd(finger);
+        start.root().debug(start, 1, ()->"WIRE: " + start + " -> " + end);
 
         if (this.start instanceof Wireable)
             ((Wireable)start).onWireOut(this, false);
@@ -72,7 +81,6 @@ public class Wiring extends FingerDragging {
         if (this.end instanceof Wireable)
             ((Wireable)end).onWireIn(this, false);
 
-        start.root().debug(start, 1, ()->"WIRE: " + start + " -> " + end);
     }
 
     private void updateEnd(Finger finger) {
@@ -81,9 +89,16 @@ public class Wiring extends FingerDragging {
             if (end instanceof Wireable) {
                 ((Wireable)end).onWireIn(this, false);
             }
-            this.end = nextEnd;
-            if (end instanceof Wireable) {
-                ((Wireable)end).onWireIn(this, true);
+
+            if (nextEnd instanceof Wireable) {
+                //TODO source filtering end
+
+                // end filtering source
+                if (((Wireable)nextEnd).onWireIn(this, true)) {
+                    this.end = nextEnd;
+                } else  {
+                    this.end = null;
+                }
             }
         }
     }

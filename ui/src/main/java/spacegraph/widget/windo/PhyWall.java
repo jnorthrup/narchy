@@ -6,6 +6,7 @@ import jcog.data.graph.ImmutableDirectedEdge;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.NodeGraph;
 import jcog.event.On;
+import jcog.list.ArrayIterator;
 import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.rect.RectFloat2D;
@@ -14,9 +15,7 @@ import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.collision.shapes.Shape;
 import org.jbox2d.common.Transform;
 import org.jbox2d.dynamics.*;
-import org.jbox2d.dynamics.joints.Joint;
-import org.jbox2d.dynamics.joints.RopeJoint;
-import org.jbox2d.dynamics.joints.RopeJointDef;
+import org.jbox2d.dynamics.joints.*;
 import org.jbox2d.fracture.PolygonFixture;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.event.Level;
@@ -313,6 +312,37 @@ public class PhyWall extends Wall implements Animated {
          * and linking it to this window via a constraint.
          */
         public Pair<PhyWindow, RopeJoint> sprout(Surface target, float scale, float targetAspect) {
+            PhyWindow sprouted = spawn(target, scale, targetAspect);
+
+            return link(sprouted);
+        }
+
+        /** spawns and attaches a new component to the boundary of this */
+        public PhyWindow grow(Surface target, float scale, float targetAspect, Tuple2f normal) {
+            PhyWindow x = spawn(target, scale, targetAspect);
+
+            WeldJoint j = weld(x, normal);
+
+            return x;
+        }
+
+        private WeldJoint weld(PhyWindow x, Tuple2f  normal) {
+            WeldJointDef jd = new WeldJointDef();
+            jd.bodyA = this.body;
+            jd.bodyB = x.body;
+            jd.localAnchorA.set( normal.scale(radius()) );
+            jd.localAnchorB.set( normal.scale(-x.radius()) );
+            jd.referenceAngle = (float) Math.atan2(normal.y, normal.x);
+            jd.collideConnected = false;
+            jd.dampingRatio = 0.5f;
+            jd.frequencyHz = 1f;
+
+            WeldJoint j = new WeldJoint(W.pool, jd);
+            W.addJoint(j);
+            return j;
+        }
+
+        public PhyWindow spawn(Surface target, float scale, float targetAspect) {
             float W = w();
             float H = h();
             float sprouterRadius = radius();
@@ -331,9 +361,7 @@ public class PhyWall extends Wall implements Animated {
             float dx = cx() + (float) (minRadius * Math.cos(a));
             float dy = cy() + (float) (minRadius * Math.sin(a));
 
-            PhyWindow sprouted = addWindow(target, sproutSize.move(dx, dy, EPSILON));
-
-            return link(sprouted);
+            return addWindow(target, sproutSize.move(dx, dy, EPSILON));
         }
 
 
@@ -412,16 +440,14 @@ public class PhyWall extends Wall implements Animated {
             }
         }
 
-        public void sproutBranch(String label, float scale, float childScale, Supplier<Surface[]> children) {
+        public void sproutBranch(String label, float scale, float childScale, Iterable<Surface> children) {
             CheckBox toggle = new CheckBox(label);
             Pair<PhyWindow, RopeJoint> toggleWindo = sprout(toggle, scale);
             List<PhyWindow> built = new FasterList(0);
             toggle.on((cb, enabled)->{
                 synchronized (toggle) {
                     if (enabled) {
-                        Surface[] cc = children.get();
-                        ((FasterList<PhyWindow>) built).ensureCapacity(cc.length);
-                        for (Surface x : cc) {
+                        for (Surface x : children) {
                             built.add( toggleWindo.getOne().sprout(x, childScale).getOne() );
                         }
                     } else {
@@ -431,6 +457,9 @@ public class PhyWall extends Wall implements Animated {
                     }
                 }
             });
+        }
+        public void sproutBranch(String label, float scale, float childScale, Supplier<Surface[]> children) {
+            sproutBranch(label, scale, childScale, ()-> ArrayIterator.get(children.get()));
         }
 
 

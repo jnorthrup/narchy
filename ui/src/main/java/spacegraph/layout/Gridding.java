@@ -24,7 +24,7 @@ public class Gridding extends MutableContainer {
     public static final float VERTICAL = Float.POSITIVE_INFINITY;
     public static final float SQUARE = 0.5f;
 
-    float margin = 0.05f;
+    protected float margin = 0.05f;
     float gridAspect = Float.NaN;
 
     public Gridding(Surface... children) {

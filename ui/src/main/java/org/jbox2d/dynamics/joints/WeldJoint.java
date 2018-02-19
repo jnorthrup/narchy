@@ -80,7 +80,7 @@ public class WeldJoint extends Joint {
     private float m_invIB;
     private final Mat33 m_mass = new Mat33();
 
-    protected WeldJoint(IWorldPool argWorld, WeldJointDef def) {
+    public WeldJoint(IWorldPool argWorld, WeldJointDef def) {
         super(argWorld, def);
         m_localAnchorA = new Vec2(def.localAnchorA);
         m_localAnchorB = new Vec2(def.localAnchorB);
