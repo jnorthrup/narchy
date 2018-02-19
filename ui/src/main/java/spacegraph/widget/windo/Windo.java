@@ -67,6 +67,12 @@ public class Windo extends Widget {
         if (!fingerable())
             return super.onTouch(finger, buttons); //pass-through
 
+
+        Surface c = super.onTouch(finger, buttons);
+        if (c!=this && c!=null)
+            return c;
+
+
         if (finger != null) {
             float fx = finger.pos.x;
             float fy = finger.pos.y;
@@ -141,23 +147,17 @@ public class Windo extends Widget {
                     }
                 }
 
-                return this;
 
             }
 
 
-        }  else {
-            potentialDragMode = null;
-            dragMode = null;
         }
+
 
         hover = false;
         potentialDragMode = null;
         dragMode = null;
 
-        if (dragMode == null) {
-            return super.onTouch(finger, buttons);
-        }
 
         return null;
     }

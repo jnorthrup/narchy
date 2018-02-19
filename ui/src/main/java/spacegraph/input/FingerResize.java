@@ -38,7 +38,6 @@ public class FingerResize extends FingerDragging {
 
         switch (mode) {
             case RESIZE_S: {
-                //TODO not right yet
                 float bh = before.h;
                 float bottom = before.bottom();
                 float ty = (fy - hitOnDown.y);
