@@ -67,6 +67,13 @@ public class Emotion implements Meter {
      * */
     public final float[] want = new float[MetaGoal.values().length];
 
+    /**
+     * sets the desired level for a particular MetaGoal.
+     * the value may be positive or negative indicating
+     * its desirability or undesirability.
+     * the absolute value is considered relative to the the absolute values
+     * of the other MetaGoal's
+     */
     public void want(MetaGoal g, float v) {
         want[g.ordinal()] = v;
     }

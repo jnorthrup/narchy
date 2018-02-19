@@ -22,7 +22,11 @@ class SubNARTest {
 
             n.onTask((t)->{
                 if (t.term().toString().equals("(a-->c)")) {
-                    superNAR.input(t);
+                    try {
+                        superNAR.believe("(a-->c)"); //HACK dont use the same task, the causes wont correspond
+                    } catch (Narsese.NarseseException e) {
+                        e.printStackTrace();
+                    }
                 }
             });
 

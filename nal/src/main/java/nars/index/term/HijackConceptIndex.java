@@ -2,12 +2,12 @@ package nars.index.term;
 
 import jcog.Util;
 import jcog.bag.impl.hijack.PLinkHijackBag;
-import jcog.exe.Loop;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
+import nars.control.DurService;
 import nars.index.term.map.MaplikeConceptIndex;
 import nars.term.Term;
 import nars.term.Termed;
@@ -30,10 +30,8 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     private final PLinkHijackBag<Termed> table;
     //private final Map<Term,Termed> permanent = new ConcurrentHashMap<>(1024);
 
-    private final Loop updater;
     final IntCountsHistogram conceptScores = new IntCountsHistogram(1000, 2);
 
-    private final int updatePeriodMS;
 
     /**
      * current update index
@@ -43,19 +41,16 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     /**
      * how many items to visit during update
      */
-    private final int updateBatchSize;
+    private final float updateRate = 1;
     private final float initial = 0.5f;
     private final float getBoost = 0.02f;
     private final float forget = 0.05f;
     private long now;
     private int dur;
+    private DurService onDur;
 
     public HijackConceptIndex(int capacity, int reprobes) {
         super();
-
-        updateBatchSize = 4096; //1 + (capacity / (reprobes * 2));
-        updatePeriodMS = 100;
-        updater = Loop.of(this::update);
 
         this.table = new PLinkHijackBag<>(capacity, reprobes) {
 
@@ -101,9 +96,9 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     }
 
     @Override
-    public void start(NAR nar) {
-        super.start(nar);
-        updater.runMS(updatePeriodMS);
+    public void init(NAR nar) {
+        super.init(nar);
+        onDur = DurService.on(nar, this::update);
     }
 
 
@@ -184,7 +179,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     /**
      * performs an iteration update
      */
-    private void update() {
+    private void update(NAR nar) {
 
         AtomicReferenceArray<PriReference<Termed>> tt = table.map;
 
@@ -195,7 +190,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
 
         int visit = this.visit;
         try {
-            int n = updateBatchSize;
+            int n = (int) Math.floor(updateRate * c);
 
             for (int i = 0; i < n; i++, visit++) {
 
@@ -207,9 +202,9 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
             }
         } finally {
             this.visit = visit;
-            Util.decode(conceptScores, "", 200, (x, v) -> {
-                System.out.println(x + "\t" + v);
-            });
+//            Util.decode(conceptScores, "", 200, (x, v) -> {
+//                System.out.println(x + "\t" + v);
+//            });
             conceptScores.reset();
         }
 
@@ -226,7 +221,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
         int score = (int) (score(c) * 1000f);
 
         float cutoff = 0.25f;
-        if (conceptScores.getTotalCount() > updateBatchSize / 4) {
+        if (conceptScores.getTotalCount() > this.table.capacity() / 2) {
             float percentile = (float) conceptScores.getPercentileAtOrBelowValue(score) / 100f;
             if (percentile < cutoff)
                 forget(x, c, cutoff * (1 - percentile));

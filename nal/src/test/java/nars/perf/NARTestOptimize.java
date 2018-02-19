@@ -91,10 +91,10 @@ public class NARTestOptimize {
             })
                     .exclude(NARLoop.class)
                     .tweak("PERCEIVE", -1f, +1f, 0.1f, (NAR n, float p) ->
-                            MetaGoal.Perceive.set(n.emotion.want, p)
+                            n.emotion.want(MetaGoal.Perceive, p)
                     )
                     .tweak("BELIEVE", -1f, +1f, 0.1f, (NAR n, float p) ->
-                            MetaGoal.Believe.set(n.emotion.want, p)
+                            n.emotion.want(MetaGoal.Believe, p)
                     )
                     .optimize(32, 1, (n) ->
                             tests(n,

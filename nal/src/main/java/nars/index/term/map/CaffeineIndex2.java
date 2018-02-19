@@ -80,7 +80,7 @@ public class CaffeineIndex2 extends MaplikeConceptIndex implements RemovalListen
     }
 
     @Override
-    public void start(NAR nar) {
+    public void init(NAR nar) {
         Caffeine builder = Caffeine.newBuilder().removalListener(this);
         if (capacity > 0) {
             //builder.maximumSize(capacity);
@@ -96,7 +96,7 @@ public class CaffeineIndex2 extends MaplikeConceptIndex implements RemovalListen
 
         this.vectors = builder.build();
 
-        super.start(nar);
+        super.init(nar);
     }
 
 

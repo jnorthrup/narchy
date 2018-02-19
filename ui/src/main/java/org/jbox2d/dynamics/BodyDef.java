@@ -132,6 +132,10 @@ public class BodyDef {
         gravityScale = 1.0f;
     }
 
+    public BodyDef(BodyType type) {
+        this(type, new v2());
+    }
+
     public BodyDef(BodyType type, v2 pos) {
         this();
         this.type = type;

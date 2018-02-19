@@ -66,8 +66,8 @@ public class TreeConceptIndex extends ConceptIndex implements Consumer<NAR> {
     }
 
     @Override
-    public void start(@NotNull NAR nar) {
-        super.start(nar);
+    public void init(@NotNull NAR nar) {
+        super.init(nar);
 
         nar.onCycle(this);
     }

@@ -131,7 +131,7 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         newCauseChannel("input"); //generic non-self source of input
 
         //if (concepts.nar == null) { //HACK dont reinitialize if already initialized, for sharing
-            concepts.start(this);
+            concepts.init(this);
             Builtin.init(this);
         //}
 

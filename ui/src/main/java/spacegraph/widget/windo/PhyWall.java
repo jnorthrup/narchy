@@ -19,17 +19,14 @@ import org.jbox2d.fracture.PolygonFixture;
 import spacegraph.*;
 import spacegraph.input.Finger;
 import spacegraph.input.FingerDragging;
-import spacegraph.input.Fingering;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 import spacegraph.phys.util.Animated;
 import spacegraph.render.Draw;
+import spacegraph.render.SpaceGraphFlat;
 
 import javax.annotation.Nullable;
-import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * wall which organizes its sub-surfaces according to 2D phys dynamics
@@ -42,9 +39,8 @@ public class PhyWall extends Wall implements Animated {
 
     private On on;
 
-    public PhyWall() {
+    private PhyWall() {
         super();
-
 
         W = new Dynamics2D(new v2(0, 0));
         W.setParticleRadius(0.2f);
@@ -53,6 +49,26 @@ public class PhyWall extends Wall implements Animated {
         W.setAllowSleep(true);
         W.setContinuousPhysics(true);
         //W.setSubStepping(true);
+    }
+
+    /** HACK */
+    public static PhyWall window(int width, int height) {
+        PhyWall s = new PhyWall();
+        s.pos(-1,-1,1,1);
+
+        new SpaceGraphFlat(
+                new ZoomOrtho(s) {
+
+                    @Override
+                    public boolean autoresize() {
+                        zoom(s);
+                        return false;
+                    }
+
+                }
+        ).show(width, height);
+
+        return s;
     }
 
     @Override
@@ -307,18 +323,16 @@ public class PhyWall extends Wall implements Animated {
         return rng.nextFloat() * scale;
     }
 
-    final AtomicInteger i = new AtomicInteger(0);
-
-
     public PhyWindow newWindow(Surface content, RectFloat2D initialBounds) {
-        PhyWindow s = new PhyWindow("w" + i.getAndIncrement(), initialBounds);
-//        objects.put(s.spatial.id, s.spatial);
+        PhyWindow s = new PhyWindow(initialBounds);
+        //s.children(new Scale(content, 1f - Windo.resizeBorder));
         add(s);
-        s.children(new Scale(content, 1f - Windo.resizeBorder));
+        s.add(content);
+
         return s;
     }
 
-    final Map<String, PhyWindow> spatials = new ConcurrentHashMap<>();
+    //final Map<String, PhyWindow> spatials = new ConcurrentHashMap<>();
 
     static class Sketching extends Surface {
 
@@ -428,38 +442,28 @@ public class PhyWall extends Wall implements Animated {
         private final PolygonShape shape;
 //        public final SimpleSpatial<String> spatial;
 
-        PhyWindow(String id, RectFloat2D initialBounds) {
-
+        PhyWindow(RectFloat2D initialBounds) {
+            super();
             pos(initialBounds);
 
-            this.shape = PolygonShape.box(initialBounds.w/2, initialBounds.h/2);
+            this.shape = PolygonShape.box(initialBounds.w / 2, initialBounds.h / 2);
 
             FixtureDef fd = new FixtureDef(shape, 0.1f, 0f);
             fd.setRestitution(0.1f);
-
-            BodyDef bd = new BodyDef();
-            bd.type = BodyType.DYNAMIC;
-            Body2D body = new MyBody2D(bd);
-
-            this.body = body;
-
-            spatials.put(id, this);
-
-            W.addBody(body, fd);
+            W.addBody(this.body = new WallBody(), fd);
 
         }
 
-
-        @Override
-        protected Fingering fingering(DragEdit mode) {
-            Fingering f = super.fingering(mode);
-            if (f != null) {
-//                spatial.body.clearForces();
-//                spatial.body.angularVelocity.zero();
-//                spatial.body.linearVelocity.zero();
-            }
-            return f;
-        }
+//        @Override
+//        protected Fingering fingering(DragEdit mode) {
+//            Fingering f = super.fingering(mode);
+//            if (f != null) {
+////                spatial.body.clearForces();
+////                spatial.body.angularVelocity.zero();
+////                spatial.body.linearVelocity.zero();
+//            }
+//            return f;
+//        }
 
 
 
@@ -547,13 +551,13 @@ public class PhyWall extends Wall implements Animated {
 
 
 
-        private class MyBody2D extends Body2D {
+        private class WallBody extends Body2D {
 
             RectFloat2D physBounds = null;
 
+            public WallBody() {
+                super(new BodyDef(BodyType.DYNAMIC), PhyWall.this.W);
 
-            public MyBody2D(BodyDef bd) {
-                super(bd, PhyWall.this.W);
                 setFixedRotation(true);
                 this.physBounds = bounds;
             }

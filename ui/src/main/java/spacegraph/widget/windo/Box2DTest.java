@@ -2,9 +2,6 @@ package spacegraph.widget.windo;
 
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jbox2d.collision.shapes.PolygonShape;
-import spacegraph.ZoomOrtho;
-import spacegraph.render.JoglSpace;
-import spacegraph.render.SpaceGraphFlat;
 import spacegraph.test.WidgetTest;
 import spacegraph.widget.text.Label;
 
@@ -14,20 +11,7 @@ public class Box2DTest {
     public static class Box2DTest1_Boxes {
 
         public static void main(String[] args) {
-            PhyWall s = new PhyWall();
-            s.pos(-1,-1,1,1);
-
-            new SpaceGraphFlat(
-                new ZoomOrtho(s) {
-
-                    @Override
-                    public boolean autoresize() {
-                        s.root().zoom(s);
-                        return false;
-                    }
-
-                }
-            ).show(1000, 1000);
+            PhyWall s = PhyWall.window(1000, 1000);
 
 
 
@@ -60,8 +44,7 @@ public class Box2DTest {
     public static class Box2DTest2_Joints {
         public static void main(String[] args) {
 
-            PhyWall s = new PhyWall();
-            JoglSpace.window(s, 800, 800);
+            PhyWall s = PhyWall.window(800, 800);
 
             //s.W.invoke(()->{
                 for (int i = 0; i < 100; i++)

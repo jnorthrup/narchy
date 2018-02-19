@@ -8,7 +8,6 @@ import spacegraph.input.Finger;
 import spacegraph.input.FingerMove;
 import spacegraph.input.FingerResize;
 import spacegraph.input.Fingering;
-import spacegraph.layout.UnitContainer;
 import spacegraph.math.v2;
 import spacegraph.render.Draw;
 
@@ -62,10 +61,6 @@ public class Windo extends Widget {
 //                );
     }
 
-
-    @Deprecated
-    RectFloat2D before = null;
-
     @Override
     public Surface onTouch(Finger finger, short[] buttons) {
 
@@ -77,21 +72,13 @@ public class Windo extends Widget {
             float fy = finger.pos.y;
 
             if (dragMode == null && !bounds.contains(fx, fy)) {
-                hover = false;
-                dragMode = null;
-                return null;
-            }
-
-            Surface s = //dragMode == null ? super.onTouch(finger, hitPoint, buttons) : this;
-                    super.onTouch(finger, buttons);
-
-            if (s == this) {
+                //???
+            } else {
 
                 //if (moveable()) System.out.println(bounds + "\thit=" + finger.hit + "\thitGlobal=" + finger.hitGlobal);
                 v2 hitPoint = finger.relativePos(this);
 
                 hover = true;
-
 
                 if (dragMode == null && !finger.prevButtonDown[ZoomOrtho.PAN_BUTTON] /* && hitPoint.x >= 0 && hitPoint.y >= 0 && hitPoint.x <= 1f && hitPoint.y <= 1f*/) {
 
@@ -145,27 +132,20 @@ public class Windo extends Widget {
                     if (dragMode == null && potentialDragMode != null) {
 
                         if (fingerable(potentialDragMode)) {
-                            //finger.lock(0, )..
-                            before = bounds; //TODO store these in a shared Finger-context "posOnHit" field, not in this instance
-
                             Fingering d = fingering(potentialDragMode);
                             if (d != null && finger.tryFingering(d)) {
                                 dragMode = d;
+                                return this;
                             }
-                        } else {
-                            dragMode = null;
                         }
-
                     }
-                } else {
-                    dragMode = null;
                 }
 
                 return this;
 
             }
 
-            return s;
+
         }  else {
             potentialDragMode = null;
             dragMode = null;
@@ -174,6 +154,11 @@ public class Windo extends Widget {
         hover = false;
         potentialDragMode = null;
         dragMode = null;
+
+        if (dragMode == null) {
+            return super.onTouch(finger, buttons);
+        }
+
         return null;
     }
 
@@ -216,7 +201,8 @@ public class Windo extends Widget {
 
     /** gets main content */
     public Surface get() {
-        return ((UnitContainer) content.children()[0]).the;
+        //return ((UnitContainer) content.children()[0]).the;
+        return content;
     }
 
     @Override

@@ -118,8 +118,8 @@ public class Dynamics2D {
 
 
     final QueueLock<Runnable> queue =
-            //QueueLock.getReentrant(512);
             QueueLock.get(512);
+            //QueueLock.get(512);
 
 //    final AtomicBoolean LOCKED = new AtomicBoolean(false);
 //    final AtomicInteger BUSY = new AtomicInteger(0);

@@ -1,6 +1,5 @@
 package spacegraph.widget.windo;
 
-import spacegraph.Scale;
 import spacegraph.Surface;
 import spacegraph.layout.Stacking;
 
@@ -46,17 +45,17 @@ public class Wall extends Stacking  {
             c.layout();
     }
 
-    public Windo addWindo() {
-        Windo w = new Windo();
-        add(w);
-        return w;
-    }
+//    public Windo addWindo() {
+//        Windo w = new Windo();
+//        add(w);
+//        return w;
+//    }
 
-    public Windo addWindo(Surface content) {
-        Windo w = addWindo();
-        w.children(new Scale(content, 1f - Windo.resizeBorder));
-        return w;
-    }
+//    public Windo addWindo(Surface content) {
+//        Windo w = addWindo();
+//        w.children(new Scale(content, 1f - Windo.resizeBorder));
+//        return w;
+//    }
 
 
 

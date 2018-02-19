@@ -41,7 +41,7 @@ public class ConceptIndexTest {
 
     static void testIndex(@NotNull ConceptIndex i) throws Narsese.NarseseException {
         NAR t = NARS.shell();
-        i.start(t);
+        i.init(t);
 
         testTermSharing(i);
         //testSequenceNotShared(i);
@@ -95,7 +95,7 @@ public class ConceptIndexTest {
 
     static void testTermSharing(@NotNull ConceptIndex tt) throws Narsese.NarseseException {
 
-        tt.start(NARS.shell());
+        tt.init(NARS.shell());
         testShared(tt, "<<x-->w> --> <y-->z>>");
         testShared(tt, "<a --> b>");
         testShared(tt, "(c, d)");

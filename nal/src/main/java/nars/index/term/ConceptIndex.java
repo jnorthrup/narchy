@@ -66,7 +66,7 @@ public abstract class ConceptIndex {
 //        //by default does nothing
 //    }
 
-    public void start(NAR nar) {
+    public void init(NAR nar) {
         this.nar = nar;
     }
 
