@@ -151,9 +151,9 @@ public interface Tensor extends Supplier<float[]> {
 
     /**
      * receives the pair: linearIndex,value (in increasing order)
+     * should not be subclassed
      */
     default void forEach(IntFloatProcedure sequential) {
-        get();
         forEach(sequential, 0, volume());
     }
 
@@ -162,10 +162,9 @@ public interface Tensor extends Supplier<float[]> {
      */
     void forEach(IntFloatProcedure sequential, int start, int end);
 
+    /** should not need subclassed */
     default void writeTo(float[] target) {
-        forEach((i, v) -> {
-            target[i] = v;
-        });
+        writeTo(target, 0);
     }
 
     default void writeTo(float[] target, int offset) {
@@ -174,6 +173,7 @@ public interface Tensor extends Supplier<float[]> {
         });
     }
 
+    /** should not need subclassed */
     default void writeTo(FloatToFloatFunction perElement, float[] target) {
         writeTo(perElement, target, 0);
     }
@@ -184,6 +184,7 @@ public interface Tensor extends Supplier<float[]> {
         });
     }
 
+    /** should not need subclassed */
     default void writeTo(FloatFloatToFloatFunction perElement, float[] target) {
         writeTo(perElement, target, 0);
     }

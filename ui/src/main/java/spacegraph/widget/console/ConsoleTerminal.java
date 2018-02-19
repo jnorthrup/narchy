@@ -12,15 +12,19 @@ import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminalListener;
 import com.jogamp.newt.event.KeyEvent;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.Surface;
 import spacegraph.SurfaceBase;
+import spacegraph.input.Finger;
+import spacegraph.widget.windo.Widget;
 
 import java.io.OutputStream;
 import java.util.TreeSet;
 
 
-public class ConsoleTerminal extends BitmapConsoleSurface/*ConsoleSurface*/ {
+public class ConsoleTerminal extends Widget {
 
     public final VirtualTerminal term;
+    public final MyBitmapConsoleSurface text = new MyBitmapConsoleSurface();
     private VirtualTerminalListener listener;
 
     public ConsoleTerminal(int cols, int rows) {
@@ -29,30 +33,10 @@ public class ConsoleTerminal extends BitmapConsoleSurface/*ConsoleSurface*/ {
 
 
     public ConsoleTerminal(VirtualTerminal t) {
-
-        this.term = t;
-        //resize(term.getTerminalSize().getColumns(), term.getTerminalSize().getRows());
-    }
-
-
-    @Override
-    public Appendable append(CharSequence c) {
-        int l = c.length();
-        for (int i = 0; i < l; i++) {
-            append(c.charAt(i));
-        }
-        return this;
-    }
-
-    @Override
-    public Appendable append(char c) {
-        term.putCharacter(c);
-        return this;
-    }
-
-    @Override
-    public Appendable append(CharSequence charSequence, int i, int i1) {
-        throw new UnsupportedOperationException("TODO");
+        super();
+        term = t;
+        children(text);
+        resize(term.getTerminalSize().getColumns(), term.getTerminalSize().getRows());
     }
 
 
@@ -61,7 +45,7 @@ public class ConsoleTerminal extends BitmapConsoleSurface/*ConsoleSurface*/ {
 
             @Override
             public void write(int i) {
-                append((char) i);
+                text.append((char) i);
             }
 
             @Override
@@ -70,6 +54,100 @@ public class ConsoleTerminal extends BitmapConsoleSurface/*ConsoleSurface*/ {
             }
         };
     }
+
+
+    //
+//    private static final ImmutableCharSet TYPED_KEYS_TO_IGNORE = CharSets.immutable.of('\n', '\t', '\r', '\b', '\u001b', '\u007f');
+//
+//    private boolean cursorIsVisible;
+//    private boolean enableInput;
+
+
+//    private final boolean blinkOn;
+
+    //    private TerminalPosition lastDrawnCursorPosition;
+
+
+
+
+
+//    synchronized void onCreated() {
+//        this.enableInput = true;
+//    }
+//
+//    synchronized void onDestroyed() {
+//        this.enableInput = false;
+//    }
+
+
+    //    synchronized void paintComponent(Graphics componentGraphics) {
+//        int width = this.getWidth();
+//        int height = this.getHeight();
+////        this.scrollController.updateModel(term.getBufferLineCount() * this.getFontHeight(), height);
+//        boolean needToUpdateBackBuffer = this.needFullRedraw;
+//        int leftoverWidth;
+//        if (width != this.lastComponentWidth || height != this.lastComponentHeight) {
+//            int columns = width / this.getFontWidth();
+//            leftoverWidth = height / this.getFontHeight();
+//            TerminalSize terminalSize = term.getTerminalSize().withColumns(columns).withRows(leftoverWidth);
+//            term.setTerminalSize(terminalSize);
+//            needToUpdateBackBuffer = true;
+//        }
+//
+////        if (needToUpdateBackBuffer) {
+////            this.updateBackBuffer(this.scrollController.getScrollingOffset());
+////        }
+//
+//        this.ensureGraphicBufferHasRightSize();
+//        Rectangle clipBounds = componentGraphics.getClipBounds();
+//        if (clipBounds == null) {
+//            clipBounds = new Rectangle(0, 0, this.getWidth(), this.getHeight());
+//        }
+//
+//        componentGraphics.drawImage(this.backbuffer, clipBounds.x, clipBounds.y, clipBounds.width, clipBounds.height, clipBounds.x, clipBounds.y, clipBounds.width, clipBounds.height, (ImageObserver) null);
+//        leftoverWidth = this.getWidth() % this.getFontWidth();
+//        componentGraphics.setColor(Color.BLACK);
+//        if (leftoverWidth > 0) {
+//            componentGraphics.fillRect(this.getWidth() - leftoverWidth, 0, leftoverWidth, this.getHeight());
+//        }
+//
+//        this.lastComponentWidth = width;
+//        this.lastComponentHeight = height;
+//        componentGraphics.dispose();
+//        this.notifyAll();
+//    }
+
+    //    public int cursorX() {
+//        return term.getCursorPosition().getColumn();
+//    }
+//
+//    public int cursorY() {
+//        return term.getCursorPosition().getRow();
+//    }
+//
+//    public int[] getCursorPos() {
+//        TerminalPosition p = term.getCursorPosition();
+//        int[] cursorPos = new int[2];
+//        cursorPos[0] = p.getColumn();
+//        cursorPos[1] = p.getRow();
+//        return cursorPos;
+//    }
+
+
+//    @Override
+//    protected void paintWidget(GL2 gl, RectFloat2D bounds) {
+//        //bmp.pos(bounds);
+//        //bmp.paintIt(gl);
+//        Draw.bounds(gl, this, bmp::paintIt);
+//    }
+//
+//    @Override
+//    public void doLayout(int dtMS) {
+//        super.doLayout(dtMS);
+//        bmp.doLayout(dtMS);
+//    }
+
+
 
     @Override
     public void start(@Nullable SurfaceBase parent) {
@@ -81,7 +159,7 @@ public class ConsoleTerminal extends BitmapConsoleSurface/*ConsoleSurface*/ {
 
                 @Override
                 public void onFlush() {
-                    needUpdate.set(true);
+                    text.setUpdateNecessary();
                 }
 
                 @Override
@@ -95,27 +173,15 @@ public class ConsoleTerminal extends BitmapConsoleSurface/*ConsoleSurface*/ {
 
                 @Override
                 public void onResized(Terminal terminal, TerminalSize terminalSize) {
-                    //render();
+                    text.setUpdateNecessary();
                 }
             });
 
-            needUpdate.set(true);
-            //term.addInput(KeyStroke.fromString("<pageup>")); //HACK trigger redraw
+            text.setUpdateNecessary();
+
 
         }
     }
-
-    @Override
-    public void stop() {
-        synchronized (this) {
-            term.close();
-            term.removeVirtualTerminalListener(listener);
-            listener = null;
-            super.stop();
-        }
-    }
-
-
     @Override
     public boolean onKey(KeyEvent e, boolean pressed) {
 
@@ -189,9 +255,9 @@ public class ConsoleTerminal extends BitmapConsoleSurface/*ConsoleSurface*/ {
                     new KeyStroke(c, e.isControlDown(), e.isAltDown(), e.isShiftDown())
             );
             //                    KeyEvent.isModifierKey(KeyEvent.VK_CONTROL),
-//                    KeyEvent.isModifierKey(KeyEvent.VK_ALT),
-//                    KeyEvent.isModifierKey(KeyEvent.VK_SHIFT)
-//            ));
+            //                    KeyEvent.isModifierKey(KeyEvent.VK_ALT),
+            //                    KeyEvent.isModifierKey(KeyEvent.VK_SHIFT)
+            //            ));
         } else {
             //...
         }
@@ -199,150 +265,129 @@ public class ConsoleTerminal extends BitmapConsoleSurface/*ConsoleSurface*/ {
         return true;
     }
 
-    //
-//    private static final ImmutableCharSet TYPED_KEYS_TO_IGNORE = CharSets.immutable.of('\n', '\t', '\r', '\b', '\u001b', '\u007f');
-//
-//    private boolean cursorIsVisible;
-//    private boolean enableInput;
-
-
-//    private final boolean blinkOn;
-
-    //    private TerminalPosition lastDrawnCursorPosition;
-
-
-
-
-
-//    synchronized void onCreated() {
-//        this.enableInput = true;
-//    }
-//
-//    synchronized void onDestroyed() {
-//        this.enableInput = false;
-//    }
-
-
-    //    synchronized void paintComponent(Graphics componentGraphics) {
-//        int width = this.getWidth();
-//        int height = this.getHeight();
-////        this.scrollController.updateModel(term.getBufferLineCount() * this.getFontHeight(), height);
-//        boolean needToUpdateBackBuffer = this.needFullRedraw;
-//        int leftoverWidth;
-//        if (width != this.lastComponentWidth || height != this.lastComponentHeight) {
-//            int columns = width / this.getFontWidth();
-//            leftoverWidth = height / this.getFontHeight();
-//            TerminalSize terminalSize = term.getTerminalSize().withColumns(columns).withRows(leftoverWidth);
-//            term.setTerminalSize(terminalSize);
-//            needToUpdateBackBuffer = true;
-//        }
-//
-////        if (needToUpdateBackBuffer) {
-////            this.updateBackBuffer(this.scrollController.getScrollingOffset());
-////        }
-//
-//        this.ensureGraphicBufferHasRightSize();
-//        Rectangle clipBounds = componentGraphics.getClipBounds();
-//        if (clipBounds == null) {
-//            clipBounds = new Rectangle(0, 0, this.getWidth(), this.getHeight());
-//        }
-//
-//        componentGraphics.drawImage(this.backbuffer, clipBounds.x, clipBounds.y, clipBounds.width, clipBounds.height, clipBounds.x, clipBounds.y, clipBounds.width, clipBounds.height, (ImageObserver) null);
-//        leftoverWidth = this.getWidth() % this.getFontWidth();
-//        componentGraphics.setColor(Color.BLACK);
-//        if (leftoverWidth > 0) {
-//            componentGraphics.fillRect(this.getWidth() - leftoverWidth, 0, leftoverWidth, this.getHeight());
-//        }
-//
-//        this.lastComponentWidth = width;
-//        this.lastComponentHeight = height;
-//        componentGraphics.dispose();
-//        this.notifyAll();
-//    }
 
     @Override
-    protected boolean updateBackBuffer() {
-        final TerminalPosition cursorPosition = term.getCursorBufferPosition();
-        final TerminalSize viewportSize = term.getTerminalSize();
-        int firstVisibleRowIndex = 0 / fontHeight;
-        int lastVisibleRowIndex = (this.pixelHeight()) / fontHeight;
-
-
-        int cols = viewportSize.getColumns();
-        int lastCol = this.cursorCol;
-        cursorCol = cursorPosition.getColumn();
-        int lastRow = this.cursorRow;
-        cursorRow = cursorPosition.getRow();
-
-        boolean allDirty;
-        if (term instanceof DefaultVirtualTerminal) {
-            allDirty = ((DefaultVirtualTerminal)term).isWholeBufferDirtyThenReset();
-        } else {
-            allDirty = true;
+    public void stop() {
+        synchronized (this) {
+            term.close();
+            term.removeVirtualTerminalListener(listener);
+            listener = null;
+            super.stop();
         }
-
-        if (allDirty) {
-            term.forEachLine(firstVisibleRowIndex, lastVisibleRowIndex, (row, bufferLine) -> {
-
-                for (int column = 0; column < cols; ++column) {
-                    redraw(bufferLine, column, row);
-                }
-
-//                if (needUpdate.get()) {
-//                    actuallyDirty = true; //TODO
-//                    return; //update in next frame
-//                }
-
-            });
-        } else {
-            if (lastCol!=this.cursorCol || lastRow!=this.cursorRow) {
-                redraw(lastCol, lastRow);
-                redraw(cursorCol, cursorRow);
-            }
-            TreeSet<TerminalPosition> dirty = ((DefaultVirtualTerminal) term).getAndResetDirtyCells();
-            if (!dirty.isEmpty()) {
-                for (TerminalPosition e: dirty) {
-                    redraw(e.getColumn(), e.getRow());
-//                    if (needUpdate.get())
-//                        return false; //update in next frame
-                }
-            }
-
-        }
-
-        return !needUpdate.get();
     }
 
-//    public int cursorX() {
-//        return term.getCursorPosition().getColumn();
-//    }
-//
-//    public int cursorY() {
-//        return term.getCursorPosition().getRow();
-//    }
-//
-//    public int[] getCursorPos() {
-//        TerminalPosition p = term.getCursorPosition();
-//        int[] cursorPos = new int[2];
-//        cursorPos[0] = p.getColumn();
-//        cursorPos[1] = p.getRow();
-//        return cursorPos;
-//    }
 
-    @Override
-    public TextCharacter charAt(int col, int row) {
-        return term.getCharacter(col, row);
+    public class MyBitmapConsoleSurface extends BitmapConsoleSurface {
+        @Override
+        public Surface onTouch(Finger finger, short[] buttons) {
+            return ConsoleTerminal.this;
+        }
+
+        @Override
+        public Appendable append(CharSequence c) {
+            int l = c.length();
+            for (int i = 0; i < l; i++) {
+                text.append(c.charAt(i));
+            }
+            return this;
+        }
+
+        @Override
+        public Appendable append(char c) {
+            term.putCharacter(c);
+            return this;
+        }
+
+        @Override
+        public Appendable append(CharSequence charSequence, int i, int i1) {
+            throw new UnsupportedOperationException("TODO");
+        }
+
+        @Override
+        public void doLayout(int dtMS) {
+            super.doLayout(dtMS);
+            TerminalSize ts = term.getTerminalSize();
+            if (ts.getColumns()!=cols || ts.getRows()!=rows) {
+                term.setTerminalSize(new TerminalSize(cols, rows));
+            }
+        }
+
+        @Override
+        protected void render() {
+            super.render();
+        }
+
+        @Override
+        protected boolean updateBackBuffer() {
+            final TerminalPosition cursorPosition = term.getCursorBufferPosition();
+
+
+            int firstVisibleRowIndex = 0 / fontHeight;
+            int lastVisibleRowIndex = (this.pixelHeight()) / fontHeight;
+
+
+            final int cols = this.cols;
+
+            int lastCol = this.cursorCol;
+            cursorCol = cursorPosition.getColumn();
+            int lastRow = this.cursorRow;
+            cursorRow = cursorPosition.getRow();
+
+            boolean allDirty;
+            if (term instanceof DefaultVirtualTerminal) {
+                allDirty = ((DefaultVirtualTerminal)term).isWholeBufferDirtyThenReset();
+            } else {
+                allDirty = true;
+            }
+
+            if (allDirty) {
+                term.forEachLine(firstVisibleRowIndex, lastVisibleRowIndex, (row, bufferLine) -> {
+
+                    for (int column = 0; column < cols; ++column) {
+                        redraw(bufferLine, column, row);
+                    }
+
+    //                if (needUpdate.get()) {
+    //                    actuallyDirty = true; //TODO
+    //                    return; //update in next frame
+    //                }
+
+                });
+            } else {
+                if (lastCol!=this.cursorCol || lastRow!=this.cursorRow) {
+                    redraw(lastCol, lastRow);
+                    redraw(cursorCol, cursorRow);
+                }
+                TreeSet<TerminalPosition> dirty = ((DefaultVirtualTerminal) term).getAndResetDirtyCells();
+                if (!dirty.isEmpty()) {
+                    for (TerminalPosition e: dirty) {
+                        redraw(e.getColumn(), e.getRow());
+    //                    if (needUpdate.get())
+    //                        return false; //update in next frame
+                    }
+                }
+
+            }
+
+            return !needUpdate.get();
+        }
+
+        protected void redraw(int column, int row) {
+            redraw(term.getBufferCharacter(column, row), column, row);
+        }
+
+        @Override
+        public TextCharacter charAt(int col, int row) {
+            return term.getCharacter(col, row);
+        }
+
+
     }
 
-    @Override
     public void resize(int cols, int rows) {
-        super.resize(cols, rows);
         term.setTerminalSize(new TerminalSize(cols, rows));
-    }
-
-
-    protected void redraw(int column, int row) {
-        redraw(term.getBufferCharacter(column, row), column, row);
+        text.resize(cols, rows);
+        layout();
     }
 
 

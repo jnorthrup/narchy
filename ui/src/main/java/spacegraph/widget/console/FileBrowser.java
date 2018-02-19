@@ -2,7 +2,6 @@ package spacegraph.widget.console;
 
 import com.googlecode.lanterna.gui2.BasicWindow;
 import com.googlecode.lanterna.gui2.dialogs.FileDialogBuilder;
-import spacegraph.SpaceGraph;
 import spacegraph.render.JoglSpace;
 
 public class FileBrowser extends ConsoleGUI {
@@ -24,6 +23,6 @@ public class FileBrowser extends ConsoleGUI {
     }
 
     public static void main(String[] args) {
-        JoglSpace.window(new FileBrowser(50, 25), 500, 500);
+        JoglSpace.window(new FileBrowser(50, 25).text, 500, 500);
     }
 }

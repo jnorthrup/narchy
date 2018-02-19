@@ -183,9 +183,9 @@ public class RopeJoint extends Joint {
         ;
 
         // Predictive constraint.
-//        if (dLen < 0.0f) {
-//            Cdot += data.step.inv_dt * dLen;
-//        }
+        if (dLen < 0.0f) {
+            Cdot += data.step.inv_dt * dLen;
+        }
 
         float impulse = -m_mass * Cdot;
         float oldImpulse = m_impulse;
@@ -237,7 +237,7 @@ public class RopeJoint extends Joint {
         float length = u.normalize();
         float C = length - targetLength;
 
-        //C = MathUtils.clamp(C, 0.0f, Settings.maxLinearCorrection);
+        C = MathUtils.clamp(C, 0.0f, Settings.maxLinearCorrection);
 
         float impulse = -m_mass * C;
         float Px = impulse * u.x;

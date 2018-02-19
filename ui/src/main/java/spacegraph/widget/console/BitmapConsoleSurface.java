@@ -3,7 +3,6 @@ package spacegraph.widget.console;
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.jogamp.opengl.GL2;
-import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.render.Tex;
 
 import java.awt.*;
@@ -32,6 +31,7 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
     protected float charAspect;
     int scale = 16;
     private float alpha = 1f;
+    private boolean fillTextBackground = true;
 
 
     protected BitmapConsoleSurface() {
@@ -49,17 +49,21 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
 
 
     }
-    private void ensureBufferSize() {
+    private boolean ensureBufferSize() {
 
-        if (this.backbuffer != null && this.backbuffer.getWidth() == this.pixelWidth() && this.backbuffer.getHeight() == this.pixelHeight()) {
-            return;
-        }
+        if (this.cols == 0 || this.rows == 0)
+            return false;
+
+        if (this.backbuffer != null && this.backbuffer.getWidth() == this.pixelWidth() && this.backbuffer.getHeight() == this.pixelHeight())
+            return true;
+
 
         //System.out.println(cols + " x " + pixelWidth() + " _ " + rows + " x " + pixelHeight());
 
         BufferedImage newBackbuffer = new BufferedImage(pixelWidth(), pixelHeight(), 1);
         Graphics2D backbufferGraphics = newBackbuffer.createGraphics();
-        backbufferGraphics.fillRect(0, 0, newBackbuffer.getWidth(), newBackbuffer.getHeight());
+        //backbufferGraphics.setPaint(new Color(0,0,0,0));
+        //backbufferGraphics.fillRect(0, 0, newBackbuffer.getWidth(), newBackbuffer.getHeight());
         backbufferGraphics.drawImage(this.backbuffer, 0, 0, null);
 
         backbufferGraphics.setFont(font);
@@ -73,6 +77,12 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
         this.backbufferGraphics = backbufferGraphics;
         this.backbuffer = newBackbuffer;
 
+        return true;
+    }
+
+
+    public void setFillTextBackground(boolean fillTextBackground) {
+        this.fillTextBackground = fillTextBackground;
     }
 
     public BitmapConsoleSurface alpha(float alpha) {
@@ -81,15 +91,16 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
     }
     protected void render() {
         if (needUpdate.compareAndSet(true, false)) {
-            ensureBufferSize();
-            updateBackBuffer();
-
-            tex.update(backbuffer);
+            if (ensureBufferSize()) {
+                updateBackBuffer();
+                tex.update(backbuffer);
+            }
         }
     }
 
+
     @Override
-    public void paintWidget(GL2 gl, RectFloat2D bounds) {
+    protected void paintIt(GL2 gl) {
         render();
         tex.paint(gl, bounds, alpha);
     }
@@ -106,11 +117,13 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
         layout();
     }
 
+//    @Override
+//    public boolean tangible() {
+//        return true;
+//    }
 
     @Override
     public void doLayout(int dtMS) {
-        super.doLayout(dtMS);
-
         float va = h()/w(); //visual aspect ratio
         int r, c;
         if (va <= charAspect) {
@@ -155,11 +168,14 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
         int x = columnIndex * fontWidth;
         int y = rowIndex * fontHeight;
 
+        if (fillTextBackground) {
+            Color backgroundColor = character.getBackgroundColor().toColor();
+            g.setColor(backgroundColor);
+            //g.setClip(x, y, characterWidth, fontHeight);
+            g.fillRect(x, y, characterWidth, fontHeight);
+        }
+
         Color foregroundColor = character.getForegroundColor().toColor();
-        Color backgroundColor = character.getBackgroundColor().toColor();
-        g.setColor(backgroundColor);
-        //g.setClip(x, y, characterWidth, fontHeight);
-        g.fillRect(x, y, characterWidth, fontHeight);
         g.setColor(foregroundColor);
 
         //FontMetrics fontMetrics = g.getFontMetrics();
@@ -193,5 +209,9 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
 //        }
         }
 
+    }
+
+    public void setUpdateNecessary() {
+        needUpdate.set(true);
     }
 }

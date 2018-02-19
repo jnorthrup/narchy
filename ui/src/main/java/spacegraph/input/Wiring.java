@@ -47,7 +47,7 @@ public class Wiring extends FingerDragging {
     protected boolean drag(Finger f) {
         if (path == null) {
             path = new Path2D(16);
-            ((Ortho)(start.root())).window.add(pathVis = new SketchedPath(path));
+            ((Ortho)(start.root())).addOverlay(pathVis = new SketchedPath(path));
         }
 
         path.add(f.pos, 32);
@@ -60,7 +60,7 @@ public class Wiring extends FingerDragging {
     @Override
     public void stop(Finger finger) {
         if (pathVis!=null) {
-            ((Ortho)(start.root())).window.remove(pathVis);
+            ((Ortho)(start.root())).removeOverlay(pathVis);
             pathVis = null;
         }
 

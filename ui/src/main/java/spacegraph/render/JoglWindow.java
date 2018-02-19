@@ -135,7 +135,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 //                }
             }
         });
-
         a.add(w);
     }
 

@@ -3,7 +3,6 @@ package spacegraph.input;
 import com.jogamp.nativewindow.util.Point;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.Ortho;
 import spacegraph.Surface;
 import spacegraph.math.v2;
 import spacegraph.widget.windo.Widget;
@@ -37,7 +36,6 @@ public class Finger {
     public final v2[] hitOnDown = new v2[5], hitOnDownGlobal = new v2[5];
     public final boolean[] buttonDown = new boolean[5];
     public final boolean[] prevButtonDown = new boolean[5];
-    private final Ortho root;
 
 
     //TODO wheel state
@@ -53,13 +51,8 @@ public class Finger {
     final static float DRAG_THRESHOLD = 3f;
 
 
-    public Finger(Ortho root) {
-        this.root = root;
-    }
+    public Finger() {
 
-
-    public Surface on(float sx, float sy, float lx, float ly, short[] nextButtonDown) {
-        return on(this.root.surface, sx, sy, lx, ly, nextButtonDown);
     }
 
     public synchronized Surface on(Surface root, float sx, float sy, float lx, float ly, short[] nextButtonDown) {
@@ -198,7 +191,7 @@ public class Finger {
      * acquire an exclusive fingering state
      */
     public boolean tryFingering(Fingering f) {
-        if (root != null) {
+
 
                 if (fingering.compareAndSet(null, STARTING)) {
                     if (f.start(this)) {
@@ -210,7 +203,7 @@ public class Finger {
                     }
                 }
 
-        }
+
         return false;
     }
 

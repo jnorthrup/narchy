@@ -39,7 +39,7 @@ public class ConsoleGUI extends ConsoleTerminal {
     }
 
     public ConsoleGUI scale(int scale) {
-        this.scale = scale;
+        text.scale = scale;
         return this;
     }
 
@@ -110,6 +110,7 @@ public class ConsoleGUI extends ConsoleTerminal {
             }
         }
     }
+
 
     @Override
     public void stop() {
@@ -182,7 +183,6 @@ public class ConsoleGUI extends ConsoleTerminal {
                     win.setSize(new TerminalSize(cols, rows));
                 }
             }
-            needUpdate.set(true);
         }
     }
 }

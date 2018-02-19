@@ -141,7 +141,7 @@ abstract public class Widget extends Switching {
         }
 
         @Override
-        protected void paintAbove(GL2 gl) {
+        protected void paintAbove(GL2 gl, int dtMS) {
             if (touchedBy != null) {
                 Draw.colorHash(gl, getClass().hashCode(), 0.5f + dz / 2f);
                 //gl.glColor3f(1f, 1f, 0f);

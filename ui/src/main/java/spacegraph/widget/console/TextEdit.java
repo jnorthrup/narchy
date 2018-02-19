@@ -1,11 +1,13 @@
 package spacegraph.widget.console;
 
+import com.google.common.base.Joiner;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.gui2.BasicWindow;
 import com.googlecode.lanterna.gui2.TextBox;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
+import org.apache.commons.lang3.ArrayUtils;
 import spacegraph.Surface;
 import spacegraph.input.Finger;
 
@@ -37,7 +39,7 @@ public class TextEdit extends DefaultVirtualTerminal {
 
 
     public TextEdit(int c, int r, String initialContent) {
-        this(c, r, initialContent, r>1);
+        this(c, r, initialContent, r > 1);
     }
 
     public TextEdit(int c, int r, String initialContent, boolean multiline) {
@@ -84,7 +86,7 @@ public class TextEdit extends DefaultVirtualTerminal {
 
             @Override
             public TextBox setText(String next) {
-                String prev = getSize().getColumns()== 0 ? null : this.getText();
+                String prev = getSize().getColumns() == 0 ? null : this.getText();
                 if (prev == null || !prev.equals(next)) {
                     synchronized (this) {
                         super.setText(next);
@@ -96,7 +98,7 @@ public class TextEdit extends DefaultVirtualTerminal {
 
         };
 
-        if (c!=-1)
+        if (c != -1)
             textBox.setSize(new TerminalSize(c, r));
 
     }
@@ -124,7 +126,6 @@ public class TextEdit extends DefaultVirtualTerminal {
         ConsoleGUI g = new ConsoleGUI(this) {
 
 
-
             @Override
             protected void init(BasicWindow window) {
                 //textBox.setPreferredSize(new TerminalSize(window.getSize().getColumns() - 2, window.getSize().getRows() - 2));
@@ -137,22 +138,22 @@ public class TextEdit extends DefaultVirtualTerminal {
             @Override
             public Surface onTouch(Finger finger, short[] buttons) {
                 /** middle mouse button paste */
-                Finger.clicked(2, ()->{
+                Finger.clicked(2, () -> {
                     paste();
                 });
-                return super.onTouch(finger, buttons);
+                return text.onTouch(finger, buttons);
             }
 
 
         };
-        g.alpha(DEFAULT_ALPHA);
+        g.text.alpha(DEFAULT_ALPHA);
         return g;
     }
 
 
-
     static Clipboard _clipboard = null;
     static DataFlavor _clipboardEnc;
+
     private synchronized Clipboard clipboard() {
         if (_clipboard == null) {
             _clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -161,7 +162,9 @@ public class TextEdit extends DefaultVirtualTerminal {
         return _clipboard;
     }
 
-    /** returns whether to allow the keystroke into the console (true), or whether it was intercepted (false) */
+    /**
+     * returns whether to allow the keystroke into the console (true), or whether it was intercepted (false)
+     */
     private boolean onKey(KeyStroke keyStroke) {
         KeyType kt = keyStroke.getKeyType();
 
@@ -183,7 +186,9 @@ public class TextEdit extends DefaultVirtualTerminal {
         return true;
     }
 
-    /** paste clipboard contents in at cursor location */
+    /**
+     * paste clipboard contents in at cursor location
+     */
     public synchronized void paste() {
         //shift-insert, paste
         try {
@@ -199,8 +204,27 @@ public class TextEdit extends DefaultVirtualTerminal {
         }
     }
 
+    public boolean limitLines(int limit) {
+
+        synchronized (textBox) {
+            //HACK this sucks
+
+            String tt = textBox.getText();
+            String[] lines = tt.split("\n");
+            if (lines.length > limit) {
+                lines = ArrayUtils.remove(lines, 0);
+                textBox.setText(Joiner.on('\n').join(lines));
+                return true;
+            }
+
+            return false;
+        }
+    }
+
     public void addLine(String x) {
-        textBox.addLine(x);
+        synchronized (textBox) {
+            textBox.addLine(x);
+        }
         //x.chars().forEach(c -> textBox.handleKeyStroke(new KeyStroke((char)c, false, false, false)));
         //flush();
     }

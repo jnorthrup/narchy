@@ -4,7 +4,6 @@ import com.googlecode.lanterna.TerminalPosition;
 import com.jcraft.jsch.JSchException;
 import com.jogamp.newt.event.KeyEvent;
 import org.fusesource.jansi.AnsiOutputStream;
-import spacegraph.SpaceGraph;
 import spacegraph.net.SSHClient;
 import spacegraph.render.JoglSpace;
 
@@ -23,7 +22,7 @@ public class SSHConsole extends ConsoleTerminal {
 
         JoglSpace.window(new SSHConsole(
                 "gest", "localhost", "tseg",
-                80, 24), 1000, 600);
+                80, 24).text, 1000, 600);
     }
 
 

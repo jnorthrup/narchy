@@ -191,10 +191,6 @@ public class Shell {
                     }
                 });
 
-                @Override
-                public void prePaint(int dtMS) {
-                    super.prePaint(dtMS);
-                }
 
                 @Override
                 public void touch(@Nullable Finger finger) {
@@ -206,10 +202,10 @@ public class Shell {
                 @Override
                 public void doLayout(int dtMS) {
 
-                    super.doLayout(dtMS);
+                    text.doLayout(dtMS);
 
                     float cc, rr;
-                    float boundsAspect = h() / w();
+                    float boundsAspect = text.h() / text.w();
                     if (boundsAspect >= 1) {
                         //taller
                         cc = scale / boundsAspect;

@@ -27,7 +27,7 @@ public class ConceptView extends Gridding {
         this.nar = n;
         this.sa = new StringBuilder();
         this.io = new ConsoleTerminal(120,60);
-        io.setBitmapFontSize(12);
+        io.text.setBitmapFontSize(12);
 
         io.term.setForegroundColor(TextColor.ANSI.WHITE);
 
@@ -43,13 +43,13 @@ public class ConceptView extends Gridding {
             c.print(sa, false, false, true, false);
 
             io.term.clearScreen();
-            io.append(sa);
+            io.text.append(sa);
             io.term.flush();
 
         } else {
             io.term.clearScreen();
             try {
-                io.append(String.valueOf(term)).append(" unconceptualized");
+                io.text.append(String.valueOf(term)).append(" unconceptualized");
             } catch (IOException e) {
                 e.printStackTrace();
             }

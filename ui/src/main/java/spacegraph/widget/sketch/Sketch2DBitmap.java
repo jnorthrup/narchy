@@ -154,7 +154,7 @@ public class Sketch2DBitmap extends Widget implements MetaFrame.Menu {
         });
 
         Surface toolMenu = grid(
-                new XYSlider().change((_width, _alpha)->{
+                new XYSlider().on((_width, _alpha)->{
                     brushWidth = Util.lerp(_width, 0.1f, 3f);
                     brushAlpha = Util.lerp(_alpha, 0.1f, 3f);
                 }).set(0.5f, 0.75f)

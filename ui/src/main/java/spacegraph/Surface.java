@@ -34,7 +34,7 @@ abstract public class Surface implements SurfaceBase {
 //    public v2 scale = new v2(1, 1); //v2.ONE;
     public RectFloat2D bounds;
     public SurfaceBase parent;
-    private boolean visible = true;
+    protected boolean visible = true;
 
     public Surface() {
         bounds = RectFloat2D.Unit;
@@ -219,6 +219,8 @@ abstract public class Surface implements SurfaceBase {
     public Surface visible(boolean b) {
         return b ? show() : hide();
     }
+
+    public boolean visible() { return visible; }
 
     public float radius() {
         return bounds.radius();

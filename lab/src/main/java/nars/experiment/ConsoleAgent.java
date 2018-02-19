@@ -331,6 +331,11 @@ public abstract class ConsoleAgent extends NAgentX {
         }
 
         @Override
+        protected void doLayout(int dtMS) {
+            
+        }
+
+        @Override
         public boolean onKey(KeyEvent e, boolean pressed) {
             if (write) return false; //ignore own
 

@@ -49,7 +49,7 @@ abstract public class Container extends Surface {
         return this;
     }
 
-    protected void paintAbove(GL2 gl) {
+    protected void paintAbove(GL2 gl, int dtMS) {
 
     }
 
@@ -81,16 +81,19 @@ abstract public class Container extends Surface {
 
         forEach(c -> c.render(gl, dtMS)); //render children, if any
 
-        paintAbove(gl);
+        paintAbove(gl, dtMS);
     }
 
-    protected void prePaint(int dtMS) {
+    public void prePaint(int dtMS) {
 
     }
 
 
     @Override
     public Surface onTouch(Finger finger, short[] buttons) {
+
+        if (!visible())
+            return null;
 
         if (childrenCount() > 0) {
 
@@ -149,16 +152,16 @@ abstract public class Container extends Surface {
 
     @Override
     public boolean onKey(KeyEvent e, boolean pressed) {
-        if (!super.onKey(e, pressed)) {
-            whileEach(c -> c.onKey(e, pressed));
+        if (visible() && !super.onKey(e, pressed)) {
+            return whileEach(c -> c.onKey(e, pressed));
         }
         return false;
     }
 
     @Override
     public boolean onKey(v2 hitPoint, char charCode, boolean pressed) {
-        if (!super.onKey(hitPoint, charCode, pressed)) {
-            forEach(c -> c.onKey(hitPoint, charCode, pressed));
+        if (visible() && !super.onKey(hitPoint, charCode, pressed)) {
+            return whileEach(c -> c.onKey(hitPoint, charCode, pressed));
         }
         return false;
     }

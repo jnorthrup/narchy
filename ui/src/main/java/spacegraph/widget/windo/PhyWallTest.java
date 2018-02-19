@@ -18,7 +18,7 @@ public class PhyWallTest {
             PhyWall s = PhyWall.window(1000, 800);
 
 
-            PhyWall.PhyWindow w = s.newWindow(WidgetTest.widgetDemo(), RectFloat2D.XYWH(0, 0, 1f, 1f));
+            PhyWall.PhyWindow w = s.addWindow(WidgetTest.widgetDemo(), RectFloat2D.XYWH(0, 0, 1f, 1f));
             //s.newWindow(WidgetTest.widgetDemo(), RectFloat2D.XYWH(+400, 0, 300, 100));
 
             w.sprout(
@@ -45,7 +45,7 @@ public class PhyWallTest {
                 float ry = s.rngPolar(2);
                 float rw = 0.05f + s.rngNormal(0.2f);
                 float rh = 0.05f + s.rngNormal(0.2f);
-                s.newWindow(new Label(String.valueOf((char)i)),
+                s.addWindow(new Label(String.valueOf((char)i)),
                         RectFloat2D.XYWH(rx, ry, rw, rh));
             }
 

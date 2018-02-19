@@ -1,13 +1,14 @@
 package spacegraph.render;
 
-import spacegraph.Ortho;
 import spacegraph.SpaceGraph;
+import spacegraph.Surface;
 
 public class SpaceGraphFlat extends SpaceGraph {
 
-    public SpaceGraphFlat(Ortho o) {
+    public SpaceGraphFlat(Surface... o) {
         super();
-        add(o);
+        for (Surface s : o)
+            add(s);
     }
 
 

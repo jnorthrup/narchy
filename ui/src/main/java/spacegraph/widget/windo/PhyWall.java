@@ -18,16 +18,21 @@ import org.jbox2d.dynamics.joints.Joint;
 import org.jbox2d.dynamics.joints.RopeJoint;
 import org.jbox2d.dynamics.joints.RopeJointDef;
 import org.jbox2d.fracture.PolygonFixture;
-import spacegraph.Ortho;
-import spacegraph.Surface;
-import spacegraph.SurfaceBase;
-import spacegraph.ZoomOrtho;
+import org.jetbrains.annotations.Nullable;
+import org.slf4j.event.Level;
+import spacegraph.*;
+import spacegraph.layout.EmptySurface;
+import spacegraph.layout.Gridding;
+import spacegraph.layout.Splitting;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 import spacegraph.phys.util.Animated;
 import spacegraph.render.Draw;
 import spacegraph.render.SpaceGraphFlat;
 import spacegraph.widget.button.CheckBox;
+import spacegraph.widget.button.PushButton;
+import spacegraph.widget.meta.OmniBox;
+import spacegraph.widget.meta.SpaceLogConsole;
 
 import java.util.List;
 import java.util.Random;
@@ -66,8 +71,19 @@ public class PhyWall extends Wall implements Animated {
         PhyWall s = new PhyWall();
         s.pos(-1,-1,1,1);
 
+        SpaceLogConsole log = new SpaceLogConsole();
+        //textGUI.text.alpha(0.5f);
+        log.visible(false);
+
+        HUDOrtho hud = new HUDOrtho();
+
         new SpaceGraphFlat(
                 new ZoomOrtho(s) {
+
+                    @Override
+                    protected boolean maximize() {
+                        return true;
+                    }
 
                     @Override
                     public boolean autoresize() {
@@ -75,8 +91,22 @@ public class PhyWall extends Wall implements Animated {
                         return false;
                     }
 
-                }
+                    @Override
+                    public void log(@Nullable Object key, float duration, Level level, Supplier<String> message) {
+                        if (log.visible())
+                            log.log(key, duration, level, message);
+                        //else: buffer?
+                    }
+                },
+                hud
         ).show(width, height);
+
+
+        hud.set(new Splitting(
+                new Gridding(new EmptySurface(), new EmptySurface(), new EmptySurface(), log),
+                new Gridding(new PushButton("+"),new OmniBox(),new CheckBox("Log", log::visible)),
+                0.1f
+        ));
 
         return s;
     }
@@ -222,7 +252,7 @@ public class PhyWall extends Wall implements Animated {
         return rng.nextFloat() * scale;
     }
 
-    public PhyWindow newWindow(Surface content, RectFloat2D initialBounds) {
+    public PhyWindow addWindow(Surface content, RectFloat2D initialBounds) {
         PhyWindow s = new PhyWindow(initialBounds);
         //s.children(new Scale(content, 1f - Windo.resizeBorder));
         add(s);
@@ -234,7 +264,7 @@ public class PhyWall extends Wall implements Animated {
 
 
 
-    class PhyWindow extends Windo {
+    public class PhyWindow extends Windo {
         private final Body2D body;
         private final PolygonShape shape;
 //        public final SimpleSpatial<String> spatial;
@@ -298,10 +328,10 @@ public class PhyWall extends Wall implements Animated {
             float minRadius = sprouterRadius + sproutSize.radius();
 
             float a = rng.nextFloat()*2*(float)Math.PI;
-            float dx = (float) (minRadius * Math.cos(a));
-            float dy = (float) (minRadius * Math.sin(a));
+            float dx = cx() + (float) (minRadius * Math.cos(a));
+            float dy = cy() + (float) (minRadius * Math.sin(a));
 
-            PhyWindow sprouted = newWindow(target, sproutSize.move(dx, dy, EPSILON));
+            PhyWindow sprouted = addWindow(target, sproutSize.move(dx, dy, EPSILON));
 
             return link(sprouted);
         }

@@ -17,13 +17,13 @@ public class TensorLERP extends TensorMerge implements FloatFloatToFloatFunction
     public TensorLERP(Tensor from, FloatSupplier rate) {
         super(from);
         this.rate = rate;
-        this.currentRate = rate.asFloat();
+        commit();
     }
 
-    @Override
-    public float[] get() {
+
+
+    @Override protected void commit() {
         currentRate = rate.asFloat();
-        return super.get();
     }
 
     @Override

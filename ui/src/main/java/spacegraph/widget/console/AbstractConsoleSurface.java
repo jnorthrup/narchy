@@ -1,9 +1,13 @@
 package spacegraph.widget.console;
 
 import com.googlecode.lanterna.TextCharacter;
-import spacegraph.widget.windo.Widget;
+import spacegraph.Surface;
+import spacegraph.layout.Container;
 
-public abstract class AbstractConsoleSurface extends Widget implements Appendable {
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+
+public abstract class AbstractConsoleSurface extends Container implements Appendable {
     protected int rows, cols;
 
     public void resize(int cols, int rows) {
@@ -12,4 +16,21 @@ public abstract class AbstractConsoleSurface extends Widget implements Appendabl
     }
 
     abstract public TextCharacter charAt(int col, int row);
+
+
+    @Override
+    public final void forEach(Consumer<Surface> o) {
+        //empty
+    }
+
+    @Override
+    public boolean whileEach(Predicate<Surface> o) {
+        //empty
+        return true;
+    }
+
+    @Override
+    public int childrenCount() {
+        return 0;
+    }
 }

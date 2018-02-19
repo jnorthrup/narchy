@@ -2,14 +2,13 @@ package spacegraph;
 
 import com.jogamp.newt.event.*;
 import com.jogamp.opengl.GL2;
-import jcog.event.ListTopic;
 import jcog.event.On;
-import jcog.event.Topic;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.input.Finger;
 import spacegraph.layout.Container;
+import spacegraph.layout.EmptySurface;
 import spacegraph.math.v3;
 import spacegraph.phys.util.AnimVector2f;
 import spacegraph.phys.util.AnimVector3f;
@@ -21,6 +20,8 @@ import spacegraph.widget.windo.Widget;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -55,13 +56,17 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     private volatile boolean focused = false;
 
     final Map<String, Pair<Object, Runnable>> singletons = new HashMap();
-    final Topic logs = new ListTopic();
 
     private final AtomicBoolean fingerUpdated = new AtomicBoolean(true);
+    private final Set<Surface> overlays = new CopyOnWriteArraySet<>();
+
+    public Ortho() {
+        this(new EmptySurface());
+    }
 
     public Ortho(Surface content) {
         super();
-        this.finger = new Finger(this);
+        this.finger = new Finger();
 
         this.scale = new AnimVector2f(1, 1, 5f) {
           //TODO add animation ifChanged -> fingerUpdated
@@ -86,7 +91,8 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         this.surface = content;
 
         this.fingerUpdate = dt -> {
-            if (/*hasFocus() ||*/ fingerUpdated.compareAndSet(true, false)) {
+            if (/*hasFocus() ||*/
+                    fingerUpdated.compareAndSet(true, false)) {
                 updateMouse(wmx, wmy, buttonsDown);
             }
             return true;
@@ -94,6 +100,21 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     }
 
 
+    @Override
+    public void windowResized(WindowEvent e) {
+        if (maximize()) {
+            //re-maximize
+            int ww = window.getWidth();
+            int hh = window.getHeight();
+            pos(0, 0, ww, hh); //triggers layout
+        } else {
+            layout(); //only layout
+        }
+    }
+
+    protected boolean maximize() {
+        return false;
+    }
 
     public boolean hasFocus() {
         return focused;
@@ -102,7 +123,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     @Override
     protected void doLayout(int dtMS) {
         cam.set(bounds.w / 2f, bounds.h / 2f);
-        //scale(1, 1);
 
         if (autoresize())
             surface.pos(bounds);
@@ -163,29 +183,25 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
 //        return logs.on(o);
 //    }
 
-    public void log(Object... o) {
-        logs.emit(o);
-    }
 
-    public void log(Object o) {
-        logs.emit(o);
-    }
 
 
     public void start(JoglSpace s) {
-        this.window = s;
-        s.addWindowListener(this);
-        this.focused = window.window.hasFocus();
-        s.addMouseListenerPre(this);
-        s.addKeyListener(this);
+        synchronized (this) {
+            this.window = s;
+            s.addWindowListener(this);
+            this.focused = window.window.hasFocus();
+            s.addMouseListenerPre(this);
+            s.addKeyListener(this);
 
-        surface.start(this);
+            onUpdate(scale);
+            onUpdate((Animated) cam);
+            onUpdate(fingerUpdate);
 
-        onUpdate(scale);
-        onUpdate((Animated)cam);
-        onUpdate(fingerUpdate);
+            windowResized(null);
 
-        windowResized(null);
+            surface.start(this);
+        }
 
     }
 
@@ -268,10 +284,6 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         return this;
     }
 
-    @Override
-    public void windowResized(WindowEvent e) {
-        layout();
-    }
 
 
 
@@ -450,7 +462,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
             Surface s;
             //System.out.println(lx + " " + ly);
             //if (lx >= 0 && ly >= 0 && lx <= 1f && ly <= 1f) {
-            if ((s = finger.on(sx, sy, wmx, wmy, buttonsDown)) != null) {
+            if ((s = finger.on(surface, sx, sy, wmx, wmy, buttonsDown)) != null) {
                 //log("on", s);
                 //            if (e != null)
                 //                e.setConsumed(true);
@@ -464,14 +476,33 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     }
 
 
+
     @Override
     protected void paintBelow(GL2 gl) {
+
+
+        gl.glLoadIdentity();
+
         float sx = scale.x;
         //float sy = scale.y;
         gl.glTranslatef(w() / 2f, h() / 2f, 0);
         gl.glScalef(sx, sx, 1);
         gl.glTranslatef(-cam.x, -cam.y, 0);
         //gl.glTranslatef((sx) * -cam.x, sy * -cam.y, 0);
+
+        gl.glPushMatrix();
+    }
+
+    @Override
+    protected void paintAbove(GL2 gl, int dtMS) {
+
+        gl.glPopMatrix();
+
+        if (!overlays.isEmpty()) {
+
+            overlays.forEach(s -> s.render(gl, dtMS));
+
+        }
     }
 
     @Override
@@ -492,6 +523,29 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     @Override
     public void mouseWheelMoved(MouseEvent e) {
 
+    }
+
+    public void addOverlay(Surface s) {
+        overlays.add(s);
+    }
+    public void removeOverlay(Surface s) {
+        overlays.remove(s);
+    }
+
+    public void set(Surface content) {
+        synchronized(this) {
+            if (this.surface == content) return;
+
+            if (this.surface !=null) {
+                this.surface.stop();
+            }
+
+            this.surface = content;
+
+            this.surface.start(this);
+        }
+
+        layout();
     }
 
 //    static final float zoomDilation = 1.05f;
