@@ -78,7 +78,7 @@ public class OmniBox extends Widget {
             }
         };
 
-        children(divider.split(edit.surface().scale(2), results, 0));
+        content(divider.split(edit.surface().scale(2), results, 0));
     }
 
     class Result {

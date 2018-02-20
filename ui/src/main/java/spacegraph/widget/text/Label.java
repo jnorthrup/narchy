@@ -2,6 +2,8 @@ package spacegraph.widget.text;
 
 import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat2D;
+import spacegraph.Surface;
+import spacegraph.input.Finger;
 import spacegraph.layout.AspectAlign;
 import spacegraph.layout.EmptySurface;
 import spacegraph.math.Color4f;
@@ -33,6 +35,10 @@ public class Label extends AspectAlign {
         text(s);
     }
 
+    @Override
+    public Surface onTouch(Finger finger, short[] buttons) {
+        return null;
+    }
 
     @Override
     protected void doLayout(float tx, float ty, float tw, float th) {

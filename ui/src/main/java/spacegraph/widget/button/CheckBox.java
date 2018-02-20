@@ -21,7 +21,7 @@ public class CheckBox extends ToggleButton {
     public CheckBox(String text) {
         this.text = text;
 
-        add((label = new Label("")).scale(0.8f).align(AspectAlign.Align.LeftCenter));
+        content((label = new Label("")).scale(0.8f).align(AspectAlign.Align.LeftCenter));
 
         set(false);
     }

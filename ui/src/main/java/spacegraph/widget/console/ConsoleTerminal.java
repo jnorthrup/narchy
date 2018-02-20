@@ -35,7 +35,7 @@ public class ConsoleTerminal extends Widget {
     public ConsoleTerminal(VirtualTerminal t) {
         super();
         term = t;
-        children(text);
+        content(text);
         resize(term.getTerminalSize().getColumns(), term.getTerminalSize().getRows());
     }
 

@@ -118,7 +118,7 @@ public class Finger {
                 }
             }
 
-            if (touching!=touchedNext && touching != null) {
+            if (touching != touchedNext && touching != null) {
                 touching.untouch();
                 touching = null;
             }
@@ -180,11 +180,20 @@ public class Finger {
         return !pressed(i) && prevButtonDown[i];
     }
 
+    public boolean releasedNow(int i, Surface c) {
+        return releasedNow(i) && (c != null && hitOnDown[i] != null && Finger.relative(hitOnDown[i], c).inUnit());
+    }
+
+
     /**
      * additionally tests for no dragging while pressed
      */
     public boolean clickedNow(int button) {
         return releasedNow(button) && !dragging(button);
+    }
+
+    public boolean clickedNow(int i, Surface c) {
+        return clickedNow(i) && (c != null && hitOnDown[i] != null && Finger.relative(hitOnDown[i], c).inUnit());
     }
 
     /**
@@ -193,21 +202,24 @@ public class Finger {
     public boolean tryFingering(Fingering f) {
 
 
-                if (fingering.compareAndSet(null, STARTING)) {
-                    if (f.start(this)) {
-                        fingering.set(f);
-                        //root.surface.onTouch(this, ArrayUtils.EMPTY_SHORT_ARRAY); //release all fingering on surfaces
-                        return true;
-                    } else {
-                        fingering.set(null);
-                    }
-                }
+        if (fingering.compareAndSet(null, STARTING)) {
+            if (f.start(this)) {
+                fingering.set(f);
+                //root.surface.onTouch(this, ArrayUtils.EMPTY_SHORT_ARRAY); //release all fingering on surfaces
+                return true;
+            } else {
+                fingering.set(null);
+                return false;
+            }
+        }
 
 
         return false;
     }
 
-    /** dummy intermediate placeholder state */
+    /**
+     * dummy intermediate placeholder state
+     */
     private final Fingering STARTING = new Fingering() {
 
         @Override
@@ -233,8 +245,8 @@ public class Finger {
 
         return (finger) -> {
 
-            if (finger != null) {
-                if (finger.clickedNow(button)) {
+            if (finger != null && finger.touching != null) {
+                if (finger.clickedNow(button, finger.touching)) {
                     if (clicked != null) clicked.run();
                 } else if (finger.pressedNow(button)) {
                     if (armed != null) armed.run();
@@ -258,6 +270,7 @@ public class Finger {
     public v2 relativePos(Surface c) {
         return relative(pos, c);
     }
+
 
     public static v2 relative(v2 x, Surface c) {
         v2 y = new v2(x);

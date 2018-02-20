@@ -17,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.Scale;
 import spacegraph.Surface;
 import spacegraph.input.Finger;
+import spacegraph.layout.EmptySurface;
 import spacegraph.layout.Gridding;
 import spacegraph.widget.console.ConsoleTerminal;
 import spacegraph.widget.meta.AutoSurface;
@@ -185,9 +186,9 @@ public class Shell {
 
                 Consumer<Finger> pressable = Finger.clicked(0, () -> {
                     if (menuShown.compareAndSet(false, true)) {
-                        add(menu);
+                        content(menu);
                     } else if (menuShown.compareAndSet(true, false)) {
-                        remove(menu);
+                        content(new EmptySurface());
                     }
                 });
 
@@ -225,7 +226,7 @@ public class Shell {
             };
 
 
-            children(console);
+            content(console);
         }
     }
 

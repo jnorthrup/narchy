@@ -5,25 +5,22 @@
  */
 package jcog.meter;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  *
  * @author me
  */
-public class TemporalMetrics<O> extends Metrics<Double,O> {
+@Deprecated public class TemporalMetrics<O> extends Metrics<Double,O> {
 
     public TemporalMetrics(int historySize) {
         super(historySize);
     }
 
 
-    public List<SignalData> getSignalDatas() {
-        List<SignalData> l = getSignals().stream().map(sv -> newSignalData(sv.id)).collect(Collectors.toList());
-
-        return l;
-    }
+//    public List<SignalData> getSignalDatas() {
+//        List<SignalData> l = getSignals().stream().map(sv -> newSignalData(sv.id)).collect(Collectors.toList());
+//
+//        return l;
+//    }
 
     /** allows updating with an integer/long time, because it will be converted
      * to double internally

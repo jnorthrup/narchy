@@ -395,6 +395,9 @@ public enum Util {
     public static int hashCombine(int a, int b) {
         return a ^ (b + 0x9e3779b9 + (a << 6) + (a >> 2));
     }
+    public static int hashCombine(Object a, Object b) {
+        return hashCombine(a.hashCode(), b.hashCode());
+    }
 
     /**
      * == hashCombine(1, b)
@@ -760,7 +763,22 @@ public enum Util {
      * tests equivalence (according to epsilon precision)
      */
     public static boolean equals(float a, float b, float epsilon) {
-        return a == b || Math.abs(a - b) < epsilon;
+        return  ((a!=a) && (b!=b)) //NaN
+                ||
+                (a == b)
+                ||
+                (Math.abs(a - b) < epsilon);
+    }
+
+    /**
+     * tests equivalence (according to epsilon precision)
+     */
+    public static boolean equals(double a, double b, double epsilon) {
+        return  ((a!=a) && (b!=b)) //NaN
+                ||
+                (a == b)
+                ||
+                (Math.abs(a - b) < epsilon);
     }
 
     public static boolean equals(float[] a, float[] b, float epsilon) {
@@ -773,13 +791,6 @@ public enum Util {
         return true;
     }
 
-    /**
-     * tests equivalence (according to epsilon precision)
-     */
-    public static boolean equals(double a, double b, double epsilon) {
-        return a == b || Math.abs(a - b) < epsilon;
-        //return Math.abs(a - b) < epsilon;
-    }
 
 
     private final static Object waitLock = new Object();

@@ -181,30 +181,30 @@ abstract public class Widget extends Switching {
 
     public Widget(Surface... child) {
         this();
-        children(child);
+        content(child);
     }
 
-    public Surface[] children() {
+    public Surface[] content() {
         return content.children();
     }
 
-    public final Widget children(List<Surface> next) {
+    public final Widget content(List<Surface> next) {
         content.set(next);
         return this;
     }
 
-    public final Widget children(Surface... next) {
+    public final Widget content(Surface... next) {
         content.set(next);
         return this;
     }
-    public final Widget add(Surface x) {
-        content.add(x);
-        return this;
-    }
-    public final Widget remove(Surface x) {
-        content.remove(x);
-        return this;
-    }
+//    public final Widget add(Surface x) {
+//        content.add(x);
+//        return this;
+//    }
+//    public final Widget remove(Surface x) {
+//        content.remove(x);
+//        return this;
+//    }
 
 
     @Override
@@ -216,13 +216,13 @@ abstract public class Widget extends Switching {
         touchedBy = finger;
         if (finger != null) {
 
-            if (finger.clickedNow(1)) { //released middle button
+            if (finger.clickedNow(1, this)) { //released middle button
 
                 int curState = switched;
                 int nextState = nextState(curState);
                 state(nextState); //toggle
 
-            } else if (finger.releasedNow(2 /*right button*/) ) {
+            } else if (finger.releasedNow(2 /*right button*/, this)) {
 //                /** hold to zoom */
 //                finger.tryFingering(new FingerDragging(2) {
 //

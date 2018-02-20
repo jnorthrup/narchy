@@ -32,10 +32,8 @@ public class Windo extends Widget {
 
     public final static float resizeBorder = 0.1f;
 
-
     protected boolean hover;
 
-    //Map<Object, Port> ports = null;
 
     public Windo() {
         super();
@@ -69,8 +67,8 @@ public class Windo extends Widget {
 
 
         Surface c = super.onTouch(finger, buttons);
-        if (c!=this && c!=null)
-            return c;
+        if (c!=this && c!=null && c!=this.get())
+            return c; //something else or a child inside of the content
 
 
         if (finger != null) {
@@ -159,7 +157,7 @@ public class Windo extends Widget {
         dragMode = null;
 
 
-        return null;
+        return c;
     }
 
     protected Fingering fingering(DragEdit mode) {

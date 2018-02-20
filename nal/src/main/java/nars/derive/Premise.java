@@ -42,7 +42,7 @@ public class Premise extends Pri {
         super();
         this.task = task;
         this.term = term;
-        this.hash = Util.hashCombine(task.hashCode(), term.hashCode());
+        this.hash = Util.hashCombine(task, term);
     }
 
     final static int var = Op.VAR_QUERY.bit | Op.VAR_DEP.bit | Op.VAR_INDEP.bit;

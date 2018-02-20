@@ -15,7 +15,17 @@ public class TogglePort extends Gridding {
         margin = 0.25f;
 
         //if enabled, this will forward to the output
-        this.port = new Port();
+        this.port = new Port() {
+            @Override
+            protected void paintBelow(GL2 gl) {
+                if (port.enabled()) {
+                    gl.glColor4f(0,1,0,0.75f);
+                } else {
+                    gl.glColor4f(1,0,0,0.75f);
+                }
+                Draw.rect(gl, bounds);
+            }
+        };
         port.on((w, x)-> {
             port.out(x); //forward
         });
@@ -26,13 +36,5 @@ public class TogglePort extends Gridding {
 
     }
 
-    @Override
-    protected void paintBelow(GL2 gl) {
-        if (port.enabled()) {
-            gl.glColor4f(0,1,0,0.25f);
-        } else {
-            gl.glColor4f(1,0,0,0.25f);
-        }
-        Draw.rect(gl, bounds);
-    }
+
 }

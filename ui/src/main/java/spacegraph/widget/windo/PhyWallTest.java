@@ -1,16 +1,22 @@
 package spacegraph.widget.windo;
 
+import jcog.Util;
 import jcog.exe.Loop;
+import jcog.math.FloatRange;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jbox2d.collision.shapes.PolygonShape;
 import spacegraph.Surface;
 import spacegraph.input.Wiring;
+import spacegraph.layout.EmptySurface;
 import spacegraph.layout.Gridding;
 import spacegraph.math.v2;
 import spacegraph.test.WidgetTest;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.TextEdit;
+import spacegraph.widget.slider.FloatSlider;
 import spacegraph.widget.text.Label;
+
+import javax.annotation.Nullable;
 
 
 public class PhyWallTest {
@@ -119,7 +125,7 @@ public class PhyWallTest {
             PhyWall.PhyWindow a = s.addWindow(A, RectFloat2D.XYWH(-1, 0, 0.25f, 0.25f));
 
 
-            Port B = new ToStringLabelPort();
+            Port B = LabeledPort.generic();
             PhyWall.PhyWindow b = s.addWindow(B, RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
 
             TogglePort AB = new TogglePort();
@@ -133,17 +139,74 @@ public class PhyWallTest {
             }).runFPS(0.3f);
         }
 
-        private static class ToStringLabelPort extends Port {
-            final Label l = new Label("?");
+    }
 
-            ToStringLabelPort() {
-                children(l);
-                on((v)->l.text(v.toString()));
+    public static class FloatPort extends /*Source*/Port {
+
+        static final float EPSILON = 0.001f;
+
+        private float curValue = Float.NaN;
+        private final FloatRange f;
+
+        public FloatPort(FloatRange f/*, Consumer<Runnable> updater*/) {
+            this.f = f;
+
+            FloatSlider s = new FloatSlider(f);
+            content(new Gridding(0.25f, new EmptySurface(), s));
+        }
+
+        @Override
+        public void prePaint(int dtMS) {
+            //TODO make this an optional synchronous method of updating
+
+            float nextValue = f.get();
+            if (!Util.equals(nextValue,curValue, EPSILON)) {
+                curValue = nextValue;
+                out();
             }
 
+            super.prePaint(dtMS);
+        }
 
+        public void out() {
+            out(curValue);
+        }
 
+        @Override
+        public void on(@Nullable InPort i) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean in(Wire from, Object s) {
+            return false;
+        }
+
+        @Override
+        public boolean onWireIn(@Nullable Wiring w, boolean preOrPost) {
+            return false; //disallow
+        }
+
+        @Override
+        protected void onWired(Wiring w) {
+            out();
         }
     }
 
+    public static class Box2DTest_FloatMux {
+
+        public static void main(String[] args) {
+            PhyWall s = PhyWall.window(800, 800);
+
+            Port A = new FloatPort(new FloatRange(0.5f, 0, 1));
+            PhyWall.PhyWindow a = s.addWindow(A, RectFloat2D.XYWH(-1, 0, 0.25f, 0.25f));
+
+            Port B = new FloatPort(new FloatRange(0.5f, 0, 1));
+            PhyWall.PhyWindow b = s.addWindow(B, RectFloat2D.XYWH(-1, 0, 0.25f, 0.25f));
+
+            Port Y = LabeledPort.generic();
+            PhyWall.PhyWindow y = s.addWindow(Y, RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
+
+        }
+    }
 }

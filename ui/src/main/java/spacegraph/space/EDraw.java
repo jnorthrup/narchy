@@ -24,7 +24,7 @@ public class EDraw<Y extends SimpleSpatial> extends PLink<Twin<Y>> {
 
     public EDraw(Y src, Y target, float pri) {
         super(Tuples.twin(src,target), pri);
-        this.hash = Util.hashCombine(src.id.hashCode(), target.id.hashCode());
+        this.hash = Util.hashCombine(src.id, target.id);
     }
 
     public Y src() {

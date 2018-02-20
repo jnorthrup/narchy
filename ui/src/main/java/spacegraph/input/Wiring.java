@@ -20,9 +20,9 @@ public class Wiring extends FingerDragging {
 
     Path2D path;
 
-    private final Surface start;
+    protected final Surface start;
     private SketchedPath pathVis;
-    private Surface end = null;
+    protected Surface end = null;
 
     public PhyWall.PhyWindow source() {
         return start.parent(PhyWall.PhyWindow.class);
@@ -32,7 +32,7 @@ public class Wiring extends FingerDragging {
     }
 
     public Wiring(Surface start) {
-        super(0);
+        super(2);
         this.start = start;
     }
 
@@ -74,7 +74,11 @@ public class Wiring extends FingerDragging {
             pathVis = null;
         }
 
-        start.root().debug(start, 1, ()->"WIRE: " + start + " -> " + end);
+        if (end != null) {
+            start.root().debug(start, 1, () -> "WIRE: " + start + " -> " + end);
+
+            onWired();
+        }
 
         if (this.start instanceof Wireable)
             ((Wireable)start).onWireOut(this, false);
@@ -84,9 +88,19 @@ public class Wiring extends FingerDragging {
 
     }
 
+    protected void onWired() {
+
+    }
+
     private void updateEnd(Finger finger) {
         Surface nextEnd = finger.touching;
         if (nextEnd!=end) {
+
+            if (nextEnd == start) {
+                end = null; //dont allow self-loop
+                return;
+            }
+
             if (end instanceof Wireable) {
                 ((Wireable)end).onWireIn(this, false);
             }

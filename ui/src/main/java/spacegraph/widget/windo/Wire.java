@@ -1,10 +1,12 @@
 package spacegraph.widget.windo;
 
+import jcog.Util;
 import spacegraph.Surface;
 
 /** undirected edge */
 public class Wire {
 
+    private final int hash;
     private volatile long lastActive = Long.MIN_VALUE;
     //final AtomicHistogram hits = new AtomicHistogram();
 
@@ -21,6 +23,20 @@ public class Wire {
 
         this.a = a;
         this.b = b;
+        this.hash = Util.hashCombine(a, b);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+
+        Wire w = ((Wire)obj);
+        return w.hash == hash && (w.a.equals(a) && w.b.equals(b));
+    }
+
+    @Override
+    public int hashCode() {
+        return hash;
     }
 
     /** sends to target */
@@ -52,7 +68,7 @@ public class Wire {
         if (l == Long.MIN_VALUE)
             return 0;
         else {
-            return 1f/(1+Math.abs(now - l)/((float)window));
+            return (float) (1f/(1f+(Math.abs(now - l))/((float)(window))));
         }
     }
 

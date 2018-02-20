@@ -79,7 +79,7 @@ public class BeliefTableChart extends Widget {
         label.textColor.a(0.5f);
         //label.scale(0.5f, 0.5f);
 
-        children(label);
+        content(label);
 
         beliefs = new TruthWave(0);
         beliefProj = new TruthWave(0);

@@ -28,7 +28,7 @@ public class TensorGlow  {
 
         MyMatrix() {
             super();
-            children(rv);
+            content(rv);
 
             Loop.of(()->{
                 lerpVector.update();

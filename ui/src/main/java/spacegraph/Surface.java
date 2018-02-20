@@ -23,7 +23,7 @@ abstract public class Surface implements SurfaceBase {
      */
     public static final float EPSILON = 0.00001f;
 
-    private final AtomicInteger serial = new AtomicInteger();
+    private final static AtomicInteger serial = new AtomicInteger();
 
     /** serial id unique to each instanced surface */
     public final int id = serial.incrementAndGet();

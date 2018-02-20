@@ -107,19 +107,34 @@ public class Port extends Widget implements Wiring.Wireable {
 
     }
 
+//    @Override
+//    public boolean tangible() {
+//        return false;
+//    }
+
     @Override
     public Surface onTouch(Finger finger, short[] buttons) {
 
+
+
         if (finger!=null && buttons!=null) {
-            if (finger.tryFingering(new Wiring(this)))
-                return this;
+            Surface x = super.onTouch(finger, buttons);
+            if (x==null || x==this) {
+                if (finger.tryFingering(new LinkingWiring(this)))
+                    return this;
+            }
+
+            return x;
         }
+
+        return super.onTouch(finger, buttons);
+
 
 //                Surface c = super.onTouch(finger, buttons);
 //                if (c != null)
 //                    return c;
 
-        return this;
+
     }
 
 
@@ -128,18 +143,18 @@ public class Port extends Widget implements Wiring.Wireable {
     }
 
     @Override
-    public boolean onWireIn(@Nullable Wiring w, boolean active) {
-        if (active && !acceptWiring(w))
+    public boolean onWireIn(@Nullable Wiring w, boolean preOrPost) {
+        if (preOrPost && !acceptWiring(w))
             return false;
-        this.wiringIn = active ? w : null;
+        this.wiringIn = preOrPost ? w : null;
         return true;
     }
 
 
     @Override
-    public void onWireOut(@Nullable Wiring w, boolean active) {
-        this.wiringOut = active ? w : null;
-        if (!active) {
+    public void onWireOut(@Nullable Wiring w, boolean preOrPost) {
+        this.wiringOut = preOrPost ? w : null;
+        if (!preOrPost) {
             onWired(w);
         }
     }

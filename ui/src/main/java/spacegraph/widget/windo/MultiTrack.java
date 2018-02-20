@@ -101,7 +101,7 @@ public class MultiTrack extends Widget {
 
         float y = 0;
         float w = w();
-        for (Surface t : children()) {
+        for (Surface t : content()) {
             float th = h()/4; //HACK
             if (t instanceof Track) {
                 ((Track)t).update(state, 0, w, y, th);
@@ -148,7 +148,7 @@ public class MultiTrack extends Widget {
 //                super.prePaint(dtMS);
 //            }
         };
-        t.children(
+        t.content(
             new DummyTrack(1, 4, 4),
             new DummyTrack(2, 5, 5),
             new DummyTrack(1, 3, 15)

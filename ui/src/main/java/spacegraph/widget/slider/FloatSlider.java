@@ -31,7 +31,7 @@ import spacegraph.widget.windo.Widget;
 
 
 
-        children(
+        content(
             new Scale((slider = new XSlider(v, min, max)), 0.95f),
             label.scale(0.85f).align(AspectAlign.Align.Center)
         );

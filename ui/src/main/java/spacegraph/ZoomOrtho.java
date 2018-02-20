@@ -22,7 +22,7 @@ public class ZoomOrtho extends Ortho {
 
 
     final float minZoom = 0.25f;
-    final float maxZoom = 1000f;
+    final float maxZoom = 10000f;
 
     public final static short PAN_BUTTON = 0;
     final static short ZOOM_OUT_TOUCHING_NEGATIVE_SPACE_BUTTON = 2;
