@@ -113,8 +113,7 @@ public class PstCache {
         // rd_read_file(fd, celldata, cellhdr.length);
         celldata = new byte[c.length];
         fd.read(celldata);
-        logger.debug("Loading bitmap from disk (" + cache_id + ':' + cache_idx
-                + ")\n");
+        logger.debug("Loading bitmap from disk ({}" + ':' + "{})\n", cache_id, cache_idx);
 
         bitmap = new Bitmap(celldata, c.width, c.height, 0, 0, Options.Bpp);
         // bitmap = ui_create_bitmap(cellhdr.width, cellhdr.height, celldata);
@@ -212,8 +211,7 @@ public class PstCache {
             }
         }
 
-        logger.info(n + " bitmaps in persistent cache, " + c
-                + " bitmaps loaded in memory\n");
+        logger.info("{} bitmaps in persistent cache, {} bitmaps loaded in memory\n", n, c);
         g_pstcache_enumerated = true;
         return n;
     }
@@ -233,7 +231,7 @@ public class PstCache {
 
         g_pstcache_Bpp = Options.Bpp;
         filename = "./cache/pstcache_" + cache_id + '_' + g_pstcache_Bpp;
-        logger.debug("persistent bitmap cache file: " + filename);
+        logger.debug("persistent bitmap cache file: {}", filename);
 
         File cacheDir = new File("./cache/");
         if (!cacheDir.exists() && !cacheDir.mkdir()) {

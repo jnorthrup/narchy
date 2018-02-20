@@ -176,9 +176,8 @@ public class RdpPacket_Localised extends RdpPacket {
     @Override
     public void setPosition(int position) {
         if (position > bb.capacity() || position < 0) {
-            logger.warn("stream position =" + getPosition() + " end ="
-                    + getEnd() + " capacity =" + capacity());
-            logger.warn("setPosition(" + position + ") failed");
+            logger.warn("stream position ={} end ={} capacity ={}", getPosition(), getEnd(), capacity());
+            logger.warn("setPosition({}) failed", position);
             throw new ArrayIndexOutOfBoundsException();
         }
         bb.position(position);

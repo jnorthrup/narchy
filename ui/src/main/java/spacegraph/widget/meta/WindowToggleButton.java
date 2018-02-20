@@ -5,7 +5,6 @@ import com.jogamp.newt.event.WindowListener;
 import com.jogamp.newt.event.WindowUpdateEvent;
 import com.jogamp.newt.opengl.GLWindow;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
-import spacegraph.SpaceGraph;
 import spacegraph.input.Finger;
 import spacegraph.render.JoglSpace;
 import spacegraph.widget.button.CheckBox;

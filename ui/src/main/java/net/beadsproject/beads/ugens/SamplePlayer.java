@@ -822,7 +822,7 @@ public class SamplePlayer extends UGen {
      * the end. This occurs when the SamplePlayer's position reaches then end
      * when playing forwards in a non-looping mode, or reaches the the beginning
      * when playing backwards in a non-looping mode. It is never triggered in a
-     * looping mode. As an alternative, you can use the method {@link Auvent.#setKillListener(Auvent)} as long as {@link #setKillOnEnd(boolean)} is
+     * looping mode. As an alternative, you can use the method {@link Auvent.setKillListener(Auvent)} as long as {@link #setKillOnEnd(boolean)} is
      * set to true. In other words, you set this SamplePlayer to kill itself
      * when it reaches the end of the sample, and then use the functionality of
      * {@link Auvent}, which allows you to create a trigger whenever a Bead is

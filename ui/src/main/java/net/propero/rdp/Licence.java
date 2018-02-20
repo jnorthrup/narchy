@@ -112,7 +112,7 @@ public class Licence {
             }
         }
         len = data.getLittleEndian32();
-        logger.debug("save_licence: len=" + len);
+        logger.debug("save_licence: len={}", len);
         if (data.getPosition() + len - startpos > length) {
             logger.warn("Error in parsing licence key.");
             return;
@@ -187,7 +187,7 @@ public class Licence {
                 break;
 
             default:
-                logger.warn("got licence tag: " + tag);
+                logger.warn("got licence tag: {}", tag);
         }
 
     }
@@ -221,7 +221,7 @@ public class Licence {
         if (!Options.built_in_licence && Options.load_licence) {
             byte[] licence_data = load_licence();
             if ((licence_data != null) && (licence_data.length > 0)) {
-                logger.debug("licence_data.length = " + licence_data.length);
+                logger.debug("licence_data.length = {}", licence_data.length);
                 /* Generate a signature for the HWID buffer */
                 byte[] hwid = generate_hwid();
                 byte[] signature = secure.sign(this.licence_sign_key, 16, 16,

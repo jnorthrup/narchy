@@ -596,9 +596,7 @@ public abstract class Input {
             // here we add the key so we can later check if it happened
             pressedKeys.addElement(e.getKeyCode());
 
-            logger.debug("PRESSED keychar='" + e.getKeyChar() + "' keycode=0x"
-                    + Integer.toHexString(e.getKeyCode()) + " char='"
-                    + ((char) e.getKeyCode()) + '\'');
+            logger.debug("PRESSED keychar='{}' keycode=0x{} char='{}" + '\'', e.getKeyChar(), Integer.toHexString(e.getKeyCode()), (char) e.getKeyCode());
 
             if (rdp != null) {
                 if (!handleSpecialKeys(time, e, true)) {
@@ -622,9 +620,7 @@ public abstract class Input {
             // here we add the key so we can later check if it happened
             pressedKeys.addElement(e.getKeyCode());
 
-            logger.debug("TYPED keychar='" + e.getKeyChar() + "' keycode=0x"
-                    + Integer.toHexString(e.getKeyCode()) + " char='"
-                    + ((char) e.getKeyCode()) + '\'');
+            logger.debug("TYPED keychar='{}' keycode=0x{} char='{}" + '\'', e.getKeyChar(), Integer.toHexString(e.getKeyCode()), (char) e.getKeyCode());
 
             if (rdp != null) {
                 if (!handleSpecialKeys(time, e, true))
@@ -653,9 +649,7 @@ public abstract class Input {
             modifiersValid = true;
             long time = getTime();
 
-            logger.debug("RELEASED keychar='" + e.getKeyChar() + "' keycode=0x"
-                    + Integer.toHexString(e.getKeyCode()) + " char='"
-                    + ((char) e.getKeyCode()) + '\'');
+            logger.debug("RELEASED keychar='{}' keycode=0x{} char='{}" + '\'', e.getKeyChar(), Integer.toHexString(e.getKeyCode()), (char) e.getKeyCode());
             if (rdp != null) {
                 if (!handleSpecialKeys(time, e, false))
                     sendKeyPresses(newKeyMapper.getKeyStrokes(e));

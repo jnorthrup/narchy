@@ -169,7 +169,7 @@ public class RasterOp {
                 ropSet(biDst, dstwidth, x, y, cx, cy, Bpp);
                 break;
             default:
-                logger.warn("do_array unsupported opcode: " + opcode);
+                logger.warn("do_array unsupported opcode: {}", opcode);
                 // rop_array(opcode,dst,dstwidth,x,y,cx,cy,src,srcwidth,srcx,srcy);
         }
     }
@@ -240,7 +240,7 @@ public class RasterOp {
                 dst.setRGB(x, y, mask);
                 break;
             default:
-                logger.warn("do_byte unsupported opcode: " + opcode);
+                logger.warn("do_byte unsupported opcode: {}", opcode);
         }
     }
 

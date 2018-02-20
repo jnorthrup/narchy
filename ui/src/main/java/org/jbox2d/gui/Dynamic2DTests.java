@@ -194,7 +194,7 @@ public class Dynamic2DTests extends JComponent implements Runnable {
     }
 
     private void initWorld() {
-        w = new Dynamics2D(new v2((float) 0, -9.81f));
+        w = new Dynamics2D(new v2(0, -9.81f));
         w.setParticleRadius(0.2f);
         w.setParticleDensity(1.0f);
         w.setContinuousPhysics(true);
@@ -207,28 +207,18 @@ public class Dynamic2DTests extends JComponent implements Runnable {
     }
 
     private void setBox() {
-        {
-            BodyDef bd = new BodyDef();
-            bd.setType(BodyType.STATIC);
-            ground = w.addBody(bd);
-            Body2D wallRight = w.addBody(bd);
-            Body2D wallLeft = w.addBody(bd);
+        ground = w.addBody(new BodyDef(BodyType.STATIC),
+                new FixtureDef(PolygonShape.box(40, 5),
+                        0, 0));
+        ground.setTransform(new v2(0, -5.0f), 0);
 
-            PolygonShape shape1 = new PolygonShape();
-            shape1.setAsBox(40, 5);
-            ground.addFixture(shape1, 0.0f);
-            ground.setTransform(new v2((float) 0, -5.0f), 0);
+        Body2D wallRight = w.addBody(new BodyDef(BodyType.STATIC),
+                new FixtureDef(PolygonShape.box(2, 40), 0, 0));
+        wallRight.setTransform(new v2(-41, 30.0f), 0);
 
-            PolygonShape shape2r = new PolygonShape();
-            shape2r.setAsBox(2, 40);
-            wallRight.addFixture(shape2r, 0.0f);
-            wallRight.setTransform(new v2((float) -41, 30.0f), 0);
-
-            PolygonShape shape2l = new PolygonShape();
-            shape2l.setAsBox(2, 40);
-            wallLeft.addFixture(shape2l, 0.0f);
-            wallLeft.setTransform(new v2((float) 41, 30.0f), 0);
-        }
+        Body2D wallLeft = w.addBody(new BodyDef(BodyType.STATIC),
+                new FixtureDef(PolygonShape.box(2, 40), 0, 0));
+        wallLeft.setTransform(new v2(41, 30.0f), 0);
     }
 
     private Point getPoint(Tuple2f point) {

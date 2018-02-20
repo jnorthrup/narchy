@@ -131,7 +131,7 @@ public class AutoSurface<X> extends Gridding {
         return s;
     }
 
-    private Surface collectElements(Collection<?> x, int depth) {
+    private Surface collectElements(Iterable<?> x, int depth) {
         FasterList<Surface> m = new FasterList();
         for (Object o : x) {
             collect(o, m, depth);
@@ -143,7 +143,7 @@ public class AutoSurface<X> extends Gridding {
 
 //        Map<Services.Service, FloatSlider> controls = new HashMap();
         x.entrySet().forEach((ks) -> {
-            Object key = ks.getKey();
+//            Object key = ks.getKey();
             Services.Service<?> s = ks.getValue();
 
             if (seen.add(s)) {

@@ -103,9 +103,7 @@ public class Path2D extends FloatArrayList {
     }
 
     public void vertex2f(GL2 gl) {
-        forEach((x, y) -> {
-            gl.glVertex2f(x, y);
-        });
+        forEach(gl::glVertex2f);
     }
 
 //    @Override

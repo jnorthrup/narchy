@@ -1086,7 +1086,7 @@ public class Rdp {
                 break;
 
             default:
-                logger.warn("Unimplemented Data PDU type " + data_type);
+                logger.warn("Unimplemented Data PDU type {}", data_type);
 
         }
         return false;
@@ -1115,7 +1115,7 @@ public class Rdp {
             case (Rdp.RDP_UPDATE_SYNCHRONIZE):
                 break;
             default:
-                logger.warn("Unimplemented Update type " + update_type);
+                logger.warn("Unimplemented Update type {}", update_type);
         }
     }
 
@@ -1329,8 +1329,7 @@ public class Rdp {
                 break;
 
             default:
-                logger.warn("Unimplemented system pointer message 0x"
-                        + Integer.toHexString(system_pointer_type));
+                logger.warn("Unimplemented system pointer message 0x{}", Integer.toHexString(system_pointer_type));
                 // unimpl("System pointer message 0x%x\n", system_pointer_type);
         }
     }
@@ -1381,8 +1380,7 @@ public class Rdp {
 
             /* Server may limit bpp - this is how we find out */
             if (Options.server_bpp != bitsperpixel) {
-                logger.warn("Server limited colour depth to " + bitsperpixel
-                        + " bits");
+                logger.warn("Server limited colour depth to {} bits", bitsperpixel);
                 Options.set_bpp(bitsperpixel);
             }
 

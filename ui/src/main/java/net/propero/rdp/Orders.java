@@ -308,9 +308,7 @@ public class Orders {
 
         // in_uint8p(s, data, bufsize);
 
-        logger.info("BMPCACHE2(compr=" + compressed + ",flags=" + flags
-                + ",cx=" + width + ",cy=" + height + ",id=" + cache_id
-                + ",idx=" + cache_idx + ",Bpp=" + Bpp + ",bs=" + bufsize + ')');
+        logger.info("BMPCACHE2(compr={},flags={},cx={},cy={},id={},idx={},Bpp={},bs={}" + ')', compressed, flags, width, height, cache_id, cache_idx, Bpp, bufsize);
 
         bmpdata = new byte[width * height * Bpp];
         int[] bmpdataInt = new int[width * height];
@@ -682,7 +680,7 @@ public class Orders {
                         break;
 
                     default:
-                        logger.warn("Unimplemented Order type " + order_type);
+                        logger.warn("Unimplemented Order type {}", order_type);
                         return;
                 }
 
@@ -769,7 +767,7 @@ public class Orders {
                 break;
 
             default:
-                logger.warn("Unimplemented 2ry Order type " + type);
+                logger.warn("Unimplemented 2ry Order type {}", type);
         }
 
         data.setPosition(next_order);
@@ -894,7 +892,7 @@ public class Orders {
         // ("+line.getEndX()+","+line.getEndY()+")");
 
         if (line.getOpcode() < 0x01 || line.getOpcode() > 0x10) {
-            logger.warn("bad ROP2 0x" + line.getOpcode());
+            logger.warn("bad ROP2 0x{}", line.getOpcode());
             return;
         }
 

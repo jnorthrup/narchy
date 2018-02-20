@@ -1,6 +1,5 @@
 package spacegraph.widget.tab;
 
-import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.layout.Gridding;
 import spacegraph.layout.MutableContainer;

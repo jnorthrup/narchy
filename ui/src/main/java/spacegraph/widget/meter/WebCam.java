@@ -11,7 +11,6 @@ import jcog.event.Ons;
 import jcog.event.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.layout.Gridding;
 import spacegraph.layout.Splitting;

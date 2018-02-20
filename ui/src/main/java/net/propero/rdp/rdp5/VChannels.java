@@ -149,9 +149,7 @@ public class VChannels {
      */
     public VChannel find_channel_by_channelno(int channelno) {
         if (channelno > MCS.MCS_GLOBAL_CHANNEL + num_channels) {
-            logger.warn("Channel " + channelno
-                    + " not defined. Highest channel defined is "
-                    + MCS.MCS_GLOBAL_CHANNEL + num_channels);
+            logger.warn("Channel {} not defined. Highest channel defined is " + MCS.MCS_GLOBAL_CHANNEL + "{}", channelno, num_channels);
             return null;
         } else
             return channels[channelno - MCS.MCS_GLOBAL_CHANNEL - 1];

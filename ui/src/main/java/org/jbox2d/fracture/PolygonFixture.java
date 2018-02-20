@@ -4,6 +4,8 @@ import org.jbox2d.dynamics.Fixture;
 import org.jbox2d.fracture.util.MyList;
 import spacegraph.math.Tuple2f;
 
+import java.util.List;
+
 /**
  * Sluzi na aplikovanie konkavnych polygonov do jbox2d enginu. Fixtury telesa,
  * ktore su produktom konvexnej dekompozicie, maju v sebe ulozenu referenciu na
@@ -44,5 +46,5 @@ public class PolygonFixture extends Polygon {
      * Mnozina fixture, z ktorych dany polygon pozostava (reprezentuju konvexnu
      * dekompoziciu).
      */
-    public final MyList<Fixture> fixtureList = new MyList<>();
+    public final List<Fixture> fixtureList = new MyList<>();
 }

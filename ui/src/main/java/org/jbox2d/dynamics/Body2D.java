@@ -399,9 +399,9 @@ public class Body2D extends Transform {
             sweep.c0.set(sweep.c);
             sweep.a0 = sweep.a;
 
-//            BroadPhase broadPhase = W.contactManager.m_broadPhase;
-//            for (Fixture f = fixtures; f != null; f = f.next)
-//                f.synchronize(broadPhase, this, this);
+            BroadPhase broadPhase = W.contactManager.broadPhase;
+            for (Fixture f = fixtures; f != null; f = f.next)
+                f.synchronize(broadPhase, this, this);
         });
 
         return true;
@@ -1237,10 +1237,9 @@ public class Body2D extends Transform {
         // Rot.mulToOutUnsafe(m_xf.q, m_sweep.localCenter, m_xf.p);
         // m_xf.p.mulLocal(-1).addLocal(m_sweep.c);
         //
-        ((Rot) this).s = (float) Math.sin(sweep.a);
-
-        ((Rot) this).c = (float) Math.cos(sweep.a);
         Rot q = this;
+        q.s = (float) Math.sin(sweep.a);
+        q.c = (float) Math.cos(sweep.a);
         Tuple2f v = sweep.localCenter;
         pos.x = sweep.c.x - q.c * v.x + q.s * v.y;
         pos.y = sweep.c.y - q.s * v.x - q.c * v.y;

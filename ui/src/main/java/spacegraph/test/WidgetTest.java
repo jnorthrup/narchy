@@ -2,7 +2,6 @@ package spacegraph.test;
 
 import jcog.Texts;
 import jcog.Util;
-import spacegraph.SpaceGraph;
 import spacegraph.layout.Container;
 import spacegraph.layout.Splitting;
 import spacegraph.render.JoglSpace;

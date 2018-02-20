@@ -78,7 +78,7 @@ public abstract class LicenceStore {
             /* write to the licence file */
             fd.write(databytes);
             fd.close();
-            logger.info("Stored licence at " + filepath);
+            logger.info("Stored licence at {}", filepath);
         } catch (FileNotFoundException e) {
             logger.warn("save_licence: file path not valid!");
         } catch (IOException e) {

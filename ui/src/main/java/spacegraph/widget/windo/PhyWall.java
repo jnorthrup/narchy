@@ -48,6 +48,9 @@ public class PhyWall extends Wall implements Animated {
 
     static final float SHAPE_SIZE_EPSILON = 0.0001f;
 
+    /** increase for more physics precision */
+    final int solverIterations = 1;
+
     final Dynamics2D W;
     private On on;
 
@@ -125,10 +128,11 @@ public class PhyWall extends Wall implements Animated {
     }
 
 
+
     @Override
     public boolean animate(float dt) {
 
-        W.step(dt, 4, 4);
+        W.step(dt, solverIterations, solverIterations);
 
         return true;
     }

@@ -480,7 +480,7 @@ public class Secure {
         }
 
         // this.client_random = this.generateRandom(SEC_RANDOM_SIZE);
-        logger.debug("readCert = " + readCert);
+        logger.debug("readCert = {}", readCert);
         if (readCert) { /*
          * Which means we should use RDP5-style encryption
          */
@@ -799,7 +799,7 @@ public class Secure {
         int flags = data.getLittleEndian32(); // in_uint32_le(s, flags); // 1
         // = RDP4-style, 0x80000002 =
         // X.509
-        logger.debug("Flags = 0x" + Integer.toHexString(flags));
+        logger.debug("Flags = 0x{}", Integer.toHexString(flags));
         if ((flags & 1) != 0) {
             logger.debug(("We're going for the RDP4-style encryption"));
             data.incrementPosition(8); // in_uint8s(s, 8); // unknown

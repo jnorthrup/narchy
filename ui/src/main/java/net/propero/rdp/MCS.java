@@ -349,7 +349,7 @@ public class MCS {
 
         buffer.incrementPosition(2); // Skip UserID
         channel[0] = buffer.getBigEndian16(); // Get ChannelID
-        logger.debug("Channel ID = " + channel[0]);
+        logger.debug("Channel ID = {}", channel[0]);
         buffer.incrementPosition(1); // Skip Flags
 
         length = buffer.get8();

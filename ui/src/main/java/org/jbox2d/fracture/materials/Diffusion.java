@@ -1,7 +1,6 @@
 package org.jbox2d.fracture.materials;
 
 import jcog.math.random.XoRoShiRo128PlusRandom;
-import org.jbox2d.common.Rot;
 import org.jbox2d.common.Transform;
 import org.jbox2d.fracture.Material;
 import spacegraph.math.Tuple2f;

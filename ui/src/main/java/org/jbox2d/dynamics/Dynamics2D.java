@@ -327,17 +327,17 @@ public class Dynamics2D {
      * destroy a rigid body given a definition. No reference to the definition is retained. This
      * function is locked during callbacks.
      *
-     * @param body
+     * @param b
      * @warning This automatically deletes all associated shapes and joints.
      * @warning This function is locked during callbacks.
      */
-    public void removeBody(Body2D body) {
+    public void removeBody(Body2D b) {
         assert (bodyCount > 0);
 
         invoke(() -> {
 
             // Delete the attached joints.
-            JointEdge je = body.joints;
+            JointEdge je = b.joints;
             while (je != null) {
                 JointEdge je0 = je;
                 je = je.next;
@@ -347,20 +347,20 @@ public class Dynamics2D {
 
                 removeJoint(je0.joint);
 
-                body.joints = je;
+                b.joints = je;
             }
-            body.joints = null;
+            b.joints = null;
 
             // Delete the attached contacts.
-            ContactEdge ce = body.contacts;
+            ContactEdge ce = b.contacts;
             while (ce != null) {
                 ContactEdge ce0 = ce;
                 ce = ce.next;
                 contactManager.destroy(ce0.contact);
             }
-            body.contacts = null;
+            b.contacts = null;
 
-            Fixture f = body.fixtures;
+            Fixture f = b.fixtures;
             while (f != null) {
                 Fixture f0 = f;
                 f = f.next;
@@ -372,23 +372,23 @@ public class Dynamics2D {
                 f0.destroyProxies(contactManager.broadPhase);
                 f0.destroy();
                 // TODO djm recycle fixtures (here or in that destroy method)
-                body.fixtures = f;
-                body.fixtureCount -= 1;
+                b.fixtures = f;
+                b.fixtureCount -= 1;
             }
-            body.fixtures = null;
-            body.fixtureCount = 0;
+            b.fixtures = null;
+            b.fixtureCount = 0;
 
             // Remove world body list.
-            if (body.prev != null) {
-                body.prev.next = body.next;
+            if (b.prev != null) {
+                b.prev.next = b.next;
             }
 
-            if (body.next != null) {
-                body.next.prev = body.prev;
+            if (b.next != null) {
+                b.next.prev = b.prev;
             }
 
-            if (body == bodies) {
-                bodies = body.next;
+            if (b == bodies) {
+                bodies = b.next;
             }
 
             --bodyCount;
@@ -408,8 +408,7 @@ public class Dynamics2D {
         return addJoint(Joint.build(this, def));
     }
 
-    public Joint addJoint( Joint jj) {
-        Joint j = jj;
+    public Joint addJoint( Joint j) {
 
         invoke(() -> {
 
@@ -585,7 +584,6 @@ public class Dynamics2D {
 
             stepTimer.reset();
             tempTimer.reset();
-            fractures.clear();
 
 //            Runnable r;
 //            while ((r = queue.poll()) != null)
@@ -602,11 +600,7 @@ public class Dynamics2D {
             step.dt = dt;
             step.velocityIterations = velocityIterations;
             step.positionIterations = positionIterations;
-            if (dt > 0.0f) {
-                step.inv_dt = 1.0f / dt;
-            } else {
-                step.inv_dt = 0.0f;
-            }
+            step.inv_dt = (dt > 0.0f) ? (1.0f / dt) : 0.0f;
 
             step.dtRatio = m_inv_dt0 * dt;
 
@@ -620,11 +614,14 @@ public class Dynamics2D {
 
             // Integrate velocities, solve velocity constraints, and integrate positions.
             if (m_stepComplete && step.dt > 0.0f) {
+
                 tempTimer.reset();
                 m_particleSystem.solve(step); // Particle Simulation
                 m_profile.solveParticleSystem.record(tempTimer::getMilliseconds);
+
                 tempTimer.reset();
                 solve(step);
+
                 m_profile.solve.record(tempTimer::getMilliseconds);
             }
 
@@ -643,9 +640,7 @@ public class Dynamics2D {
                 clearForces();
             }
         });
-//        } finally {
-//            LOCKED.set(false);
-//        }
+
 
 
         invoke(()->{
@@ -656,6 +651,7 @@ public class Dynamics2D {
             fractures.forEach(f -> {
                 f.smash(smasher, dt);
             });
+            fractures.clear();
         });
 
 
@@ -1276,7 +1272,7 @@ public class Dynamics2D {
             ++minContact.m_toiCount;
 
             // Is the contact solid?
-            if (minContact.isEnabled() == false || minContact.isTouching() == false) {
+            if (!minContact.isEnabled() || !minContact.isTouching()) {
                 // Restore the sweeps.
                 minContact.setEnabled(false);
                 bA.sweep.set(backup1);

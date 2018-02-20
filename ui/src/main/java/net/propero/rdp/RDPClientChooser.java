@@ -164,13 +164,13 @@ public class RDPClientChooser {
         try {
             new File(rdproot).mkdir();
         } catch (Exception e) {
-            logger.warn("Failed to create directory " + rdproot);
+            logger.warn("Failed to create directory {}", rdproot);
             return false;
         }
 
         // Dynamically create the RDP config file based on args passed.
 
-        logger.info("Creating RDP Config in " + rdproot);
+        logger.info("Creating RDP Config in {}", rdproot);
 
         FileWriter rdpConfigFile = new FileWriter(rdproot + "/Default.rdp");
 
@@ -255,7 +255,7 @@ public class RDPClientChooser {
 
         try {
             Process p = Runtime.getRuntime().exec(appcopycmd);
-            logger.warn("RDP Client copied to " + rdproot);
+            logger.warn("RDP Client copied to {}", rdproot);
             try {
                 p.waitFor(); // Wait for the command to complete
             } catch (InterruptedException e) {
@@ -300,7 +300,7 @@ public class RDPClientChooser {
 
         try {
             Process p = Runtime.getRuntime().exec(rdpcmd);
-            logger.info("RDP Client Launched from " + rdproot);
+            logger.info("RDP Client Launched from {}", rdproot);
             try {
                 p.waitFor(); // Wait for the open command to complete
             } catch (InterruptedException e) {
@@ -330,7 +330,7 @@ public class RDPClientChooser {
         try {
             Runtime.getRuntime().exec(rmcmd);
         } catch (IOException e) {
-            logger.warn("Unable to remove temporary directory " + rdproot);
+            logger.warn("Unable to remove temporary directory {}", rdproot);
             return true;
         }
 

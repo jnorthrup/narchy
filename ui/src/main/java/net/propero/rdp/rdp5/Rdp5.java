@@ -105,7 +105,7 @@ public class Rdp5 extends Rdp {
             length = bf.getLittleEndian16();
             /* next_packet = */
             next = bf.getPosition() + length;
-            logger.debug("RDP5: type = " + type);
+            logger.debug("RDP5: type = {}", type);
             switch (type) {
                 case 0: /* orders */
                     count = bf.getLittleEndian16();
@@ -136,7 +136,7 @@ public class Rdp5 extends Rdp {
                     process_new_pointer_pdu(bf);
                     break;
                 default:
-                    logger.warn("Unimplemented RDP5 opcode " + type);
+                    logger.warn("Unimplemented RDP5 opcode {}", type);
             }
 
             bf.setPosition(next);

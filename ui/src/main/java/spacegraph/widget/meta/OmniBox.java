@@ -3,7 +3,6 @@ package spacegraph.widget.meta;
 import jcog.User;
 import jcog.list.FasterList;
 import org.apache.lucene.document.Document;
-import spacegraph.SpaceGraph;
 import spacegraph.Surface;
 import spacegraph.layout.Gridding;
 import spacegraph.layout.Splitting;

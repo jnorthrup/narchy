@@ -463,6 +463,7 @@ public class SingletonVD {
      * @return -1 ak je v nalavo od priamky a -> b, 1 ak napravo, 0 ak na nej
      */
     private static int site(final Tuple2f a, final Tuple2f b, final Tuple2f v) {
+        if (a == b) return 0;
         double ax = a.x;
         double ay = a.y;
         double bx = b.x;
@@ -472,6 +473,7 @@ public class SingletonVD {
         double g = (bx - ax) * (vy - by);
         double h = (vx - bx) * (by - ay);
         return g > h ? 1 : g == h ? 0 : -1;
+
     }
 
     /**

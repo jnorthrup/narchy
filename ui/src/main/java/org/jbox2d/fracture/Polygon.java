@@ -9,7 +9,6 @@ import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 
 /**
@@ -68,7 +67,7 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      *
      * @param c Kolekcia s vrcholmi.
      */
-    public void add(Collection<? extends Tuple2f> c) {
+    public void add(Iterable<? extends Tuple2f> c) {
         for (Tuple2f v : c) {
             add(v);
         }

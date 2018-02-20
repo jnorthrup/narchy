@@ -529,7 +529,7 @@ public class Rdesktop {
             usage();
 
         String java = System.getProperty("java.specification.version");
-        logger.info("Java version is " + java);
+        logger.info("Java version is {}", java);
 
         String os = System.getProperty("os.name");
         String osvers = System.getProperty("os.version");
@@ -537,7 +537,7 @@ public class Rdesktop {
         if (os.equals("Windows 2000") || os.equals("Windows XP"))
             Options.built_in_licence = true;
 
-        logger.info("Operating System is " + os + " version " + osvers);
+        logger.info("Operating System is {} version {}", os, osvers);
 
         if (os.startsWith("Linux"))
             Constants.OS = Constants.LINUX;
@@ -589,7 +589,7 @@ public class Rdesktop {
             boolean[] deactivated = new boolean[1];
             int[] ext_disc_reason = new int[1];
 
-            logger.debug("keep_running = " + keep_running);
+            logger.debug("keep_running = {}", keep_running);
             while (keep_running) {
                 logger.debug("Initialising RDP layer...");
                 RdpLayer = new Rdp5(channels);
@@ -600,8 +600,7 @@ public class Rdesktop {
                 window.registerCommLayer(RdpLayer);
                 loggedon = false;
                 readytosend = false;
-                logger.info("Connecting to " + server[0] + ':' + Options.port
-                        + " ...");
+                logger.info("Connecting to {}" + ':' + "{} ...", server[0], Options.port);
 
                 if (server[0].equalsIgnoreCase("localhost"))
                     server[0] = "127.0.0.1";
@@ -655,7 +654,7 @@ public class Rdesktop {
                                     String msg[] = {"Connection terminated",
                                             reason};
                                     window.showErrorDialog(msg);
-                                    logger.warn("Connection terminated: " + reason);
+                                    logger.warn("Connection terminated: {}", reason);
                                     Rdesktop.exit(0, RdpLayer, window, true);
                                 }
 
@@ -687,8 +686,7 @@ public class Rdesktop {
                         error(e, RdpLayer, window, true);
                     } catch (SocketException s) {
                         if (RdpLayer.isConnected()) {
-                            logger.error(s.getClass().getName() + ' '
-                                    + s.getMessage());
+                            logger.error("{}" + ' ' + "{}", s.getClass().getName(), s.getMessage());
                             s.printStackTrace();
                             error(s, RdpLayer, window, true);
                             Rdesktop.exit(0, RdpLayer, window, true);
@@ -696,7 +694,7 @@ public class Rdesktop {
                     } catch (RdesktopException e) {
                         String msg1 = e.getClass().getName();
                         String msg2 = e.getMessage();
-                        logger.error(msg1 + ": " + msg2);
+                        logger.error("{}: {}", msg1, msg2);
 
                         e.printStackTrace(System.err);
 
@@ -727,7 +725,7 @@ public class Rdesktop {
                             Rdesktop.exit(0, RdpLayer, window, true);
                         }
                     } catch (Exception e) {
-                        logger.warn(e.getClass().getName() + ' ' + e.getMessage());
+                        logger.warn("{}" + ' ' + "{}", e.getClass().getName(), e.getMessage());
                         e.printStackTrace();
                         error(e, RdpLayer, window, true);
                     }
@@ -818,15 +816,14 @@ public class Rdesktop {
             String msg1 = e.getClass().getName();
             String msg2 = e.getMessage();
 
-            logger.error(msg1 + ": " + msg2);
+            logger.error("{}: {}", msg1, msg2);
 
             String[] msg = {msg1, msg2};
             window.showErrorDialog(msg);
 
             // e.printStackTrace(System.err);
         } catch (Exception ex) {
-            logger.warn("Exception in Rdesktop.error: "
-                    + ex.getClass().getName() + ": " + ex.getMessage());
+            logger.warn("Exception in Rdesktop.error: {}: {}", ex.getClass().getName(), ex.getMessage());
         }
 
         Rdesktop.exit(0, RdpLayer, window, sysexit);

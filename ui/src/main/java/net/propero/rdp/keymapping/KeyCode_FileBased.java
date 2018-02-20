@@ -180,7 +180,7 @@ public abstract class KeyCode_FileBased {
             throw new KeyMapException("Error parsing keymap file: "
                     + kmEx.getMessage() + " at line " + lineNum);
         } catch (Exception e) {
-            logger.error(e.getClass().getName() + ": " + e.getMessage());
+            logger.error("{}: {}", e.getClass().getName(), e.getMessage());
             e.printStackTrace();
             throw new KeyMapException(e.getClass().getName() + ": "
                     + e.getMessage());
@@ -399,9 +399,7 @@ public abstract class KeyCode_FileBased {
                     .getKeyCode());
             registerKeyEvent(e, def);
             if (e.getID() == KeyEvent.KEY_RELEASED)
-                logger.debug("Released: " + e.getKeyCode()
-                        + " returned scancode: "
-                        + ((def != null) ? String.valueOf(def.getScancode()) : "null"));
+                logger.debug("Released: {} returned scancode: {}", e.getKeyCode(), (def != null) ? String.valueOf(def.getScancode()) : "null");
             return def;
         }
 
@@ -434,11 +432,9 @@ public abstract class KeyCode_FileBased {
         }
 
         if (e.getID() == KeyEvent.KEY_PRESSED)
-            logger.debug("Pressed: " + e.getKeyCode() + " returned scancode: "
-                    + ((best != null) ? String.valueOf(best.getScancode()) : "null"));
+            logger.debug("Pressed: {} returned scancode: {}", e.getKeyCode(), (best != null) ? String.valueOf(best.getScancode()) : "null");
         if (e.getID() == KeyEvent.KEY_TYPED)
-            logger.debug("Typed: " + e.getKeyChar() + " returned scancode: "
-                    + ((best != null) ? String.valueOf(best.getScancode()) : "null"));
+            logger.debug("Typed: {} returned scancode: {}", e.getKeyChar(), (best != null) ? String.valueOf(best.getScancode()) : "null");
 
         registerKeyEvent(e, best);
 

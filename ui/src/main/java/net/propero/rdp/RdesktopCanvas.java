@@ -664,9 +664,7 @@ public abstract class RdesktopCanvas extends Canvas {
         srcy += y - memblt.getY();
 
         if (logger.isInfoEnabled())
-            logger.info("MEMBLT x=" + x + " y=" + y + " cx=" + cx + " cy=" + cy
-                    + " srcx=" + srcx + " srcy=" + srcy + " opcode="
-                    + memblt.getOpcode());
+            logger.info("MEMBLT x={} y={} cx={} cy={} srcx={} srcy={} opcode={}", x, y, cx, cy, srcx, srcy, memblt.getOpcode());
         try {
             Bitmap bitmap = cache.getBitmap(memblt.getCacheID(), memblt
                     .getCacheIDX());
@@ -762,7 +760,7 @@ public abstract class RdesktopCanvas extends Canvas {
                 this.repaint(x, y, cx, cy);
                 break;
             default:
-                logger.warn("Unsupported brush style " + brush.getStyle());
+                logger.warn("Unsupported brush style {}", brush.getStyle());
         }
     }
 
@@ -851,8 +849,7 @@ public abstract class RdesktopCanvas extends Canvas {
 
                 default:
                     logger
-                            .warn("Unimplemented Triblt opcode:"
-                                    + triblt.getOpcode());
+                            .warn("Unimplemented Triblt opcode:{}", triblt.getOpcode());
                     RasterOp.do_array(ROP2_COPY, backstore, this.width, x, y, cx, cy,
                             bitmap.getBitmapData(), bitmap.getWidth(), srcx, srcy);
             }
