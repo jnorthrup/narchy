@@ -166,8 +166,8 @@ public class PhyWall extends Wall implements Animated {
             g.glColor4f(0.3f + activity * 0.75f, 0.3f - 0.1f * activity, 0.3f, 0.5f + 0.25f * activity);
             g.glLineWidth(15f + activity * 5f);
 
-//            Draw.line(g, w.a.cx(), w.a.cy(), w.b.cx(), w.b.cy());
-//            return;
+            Draw.line(g, w.a.cx(), w.a.cy(), w.b.cx(), w.b.cy());
+            return;
         } else {
 
             g.glColor4f(0.9f, 0.8f, 0.1f, 0.5f);
@@ -540,47 +540,47 @@ public class PhyWall extends Wall implements Animated {
                 W.invoke(() -> {
 
 
-//                {
-//                    //RAW unidirectional
-//                    RopeJoint ropeJoint = rope(source, target);
-//                    ropeJoint.setData(wire);
-//                }
+                {
+                    //RAW unidirectional
+                    RopeJoint ropeJoint = rope(aa, bb);
+                    ropeJoint.setData(wire);
+                }
 
-                    {
-                        //split with control widget at midpoint
-                        float scale = 0.25f;
-                        float wh =
-                                Math.max(Util.mean(aa.w(), bb.w()),
-                                        Util.mean(aa.h(), bb.h())
-                                ) * scale;
-
-                        PushButton controller;
-                        //not sure why this has to be embedded in something like Gridding
-                        addWindow(new Gridding(controller = new PushButton("o")),
-                                RectFloat2D.XYWH(
-                                        (aa.cx() + bb.cx()) / 2,
-                                        (aa.cy() + bb.cy()) / 2,
-                                        wh, wh
-                                ));
-
-                        RopeJoint ropeJointS = rope(aa, controller);
-                        ropeJointS.setData(wire);
-
-                        RopeJoint ropeJointT = rope(controller, bb);
-                        ropeJointT.setData(wire);
-
-
-                        controller.click(() -> {
-                            W.invoke(() -> {
-                                if (unlink(aa, bb) != null) {
-                                    W.removeJoint(ropeJointS);
-                                    W.removeJoint(ropeJointT);
-                                    controller.parent(PhyWindow.class).remove();
-                                }
-                            });
-                        });
-
-                    }
+//                    {
+//                        //split with control widget at midpoint
+//                        float scale = 0.25f;
+//                        float wh =
+//                                Math.max(Util.mean(aa.w(), bb.w()),
+//                                        Util.mean(aa.h(), bb.h())
+//                                ) * scale;
+//
+//                        PushButton controller;
+//                        //not sure why this has to be embedded in something like Gridding
+//                        addWindow(new Gridding(controller = new PushButton("o")),
+//                                RectFloat2D.XYWH(
+//                                        (aa.cx() + bb.cx()) / 2,
+//                                        (aa.cy() + bb.cy()) / 2,
+//                                        wh, wh
+//                                ));
+//
+//                        RopeJoint ropeJointS = rope(aa, controller);
+//                        ropeJointS.setData(wire);
+//
+//                        RopeJoint ropeJointT = rope(controller, bb);
+//                        ropeJointT.setData(wire);
+//
+//
+//                        controller.click(() -> {
+//                            W.invoke(() -> {
+//                                if (unlink(aa, bb) != null) {
+//                                    W.removeJoint(ropeJointS);
+//                                    W.removeJoint(ropeJointT);
+//                                    controller.parent(PhyWindow.class).remove();
+//                                }
+//                            });
+//                        });
+//
+//                    }
                 });
             }
 

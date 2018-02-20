@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.lang.reflect.InaccessibleObjectException;
 import java.util.IdentityHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -86,14 +87,20 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
                 if (!includeClass(fieldType)) return;
 
                 try {
-                    field.setAccessible(true);
+                    try {
+                        field.setAccessible(true);
 
-                    Object value = field.get(x);
+                        Object value = field.get(x);
 
-                    if ((value != null ||  includeNull()) && includeValue(value)) {
-                        FieldAccessor axe = new FieldAccessor(field);
-                        access(root, n, clazz, value, axe, path, level);
+                        if ((value != null ||  includeNull()) && includeValue(value)) {
+                            FieldAccessor axe = new FieldAccessor(field);
+                            access(root, n, clazz, value, axe, path, level);
+                        }
+
+                    } catch (InaccessibleObjectException ioe) {
+                        logger.debug("inaccessible: {} {}", field, ioe );
                     }
+
 
                 } catch (IllegalAccessException e) {
                     // Ignore the exception

@@ -199,7 +199,7 @@ public class Transform extends Rot {
     public final String toString() {
         String s = "XForm:\n";
         s += "Position: " + pos + '\n';
-        s += "R: \n" + this + '\n';
+        s += "R: \n" + super.toString() + '\n';
         return s;
     }
 }

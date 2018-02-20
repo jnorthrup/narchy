@@ -141,10 +141,10 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
                 Util.equals(h, hh, epsilon);
     }
 
-    @Override
-    public int hashCode() {
-        throw new TODO();
-    }
+//    @Override
+//    public int hashCode() {
+//        throw new TODO();
+//    }
 
     public String toString() {
         final StringBuilder sb = new StringBuilder();

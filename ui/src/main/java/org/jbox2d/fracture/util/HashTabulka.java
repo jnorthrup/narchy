@@ -220,4 +220,14 @@ public class HashTabulka<T> extends AbstractSet<T> implements Set<T> {
     public Iterator<T> iterator() {
         throw new TODO();
     }
+
+    @Override
+    public String toString() {
+        return getClass() + "@" + hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+        return System.identityHashCode(this);//super.hashCode();
+    }
 }

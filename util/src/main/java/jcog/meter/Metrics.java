@@ -27,7 +27,6 @@ import java.util.function.Predicate;
  */
 public class Metrics<RowKey,Cell> implements Iterable<Object[]> {
 
-    static final int PRECISION = 4;
 
 
 

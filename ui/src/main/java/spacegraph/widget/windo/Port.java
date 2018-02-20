@@ -32,7 +32,7 @@ public class Port extends Widget implements Wiring.Wireable {
     }
 
     /** for convenience */
-    public Port(Consumer i) {
+    public Port(Consumer<?> i) {
         this();
         on(i);
     }

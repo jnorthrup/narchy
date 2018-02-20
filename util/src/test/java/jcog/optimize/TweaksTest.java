@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class AutoTweaksTest {
+public class TweaksTest {
 
     public static class Model {
         public final SubModel sub = new SubModel();
@@ -37,9 +37,14 @@ public class AutoTweaksTest {
 
     @Test
     public void test1() {
-        AutoTweaks<Model> a = new AutoTweaks(Model::new);
+        Tweaks<Model> a = new Tweaks<>(Model::new).discover();
+        a.tweaks.forEach(
+                t -> System.out.println(t)
+        );
+        assertTrue(a.tweaks.size() >= 4);
+
         //assertEquals(4, a.all.size());
-        Result<Model> r = a.optimize(64, (m)->m.get().score());
+        Result<Model> r = a.optimize(64, 1, (m)->m.get().score());
         r.print();
         r.tree(3, 4).print();
         assertTrue(r.best().getOne() > 5f);

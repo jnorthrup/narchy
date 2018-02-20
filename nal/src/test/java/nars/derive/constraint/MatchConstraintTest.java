@@ -3,7 +3,6 @@ package nars.derive.constraint;
 import nars.$;
 import nars.NARS;
 import nars.Narsese;
-import nars.term.Term;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
 

@@ -229,3 +229,27 @@ public class Optimize<X> {
     }
 
 }
+
+//public class MeshOptimize<X> extends Optimize<X> {
+//
+//    /** experiment id's */
+//    private static final AtomicInteger serial = new AtomicInteger();
+//
+//    /** should get serialized compactly though by msgpack */
+//    private final MeshMap<Integer, List<Float>> m;
+//
+//    public MeshOptimize(String id, Supplier<X> subject, Tweaks<X> tweaks) {
+//        super(subject, tweaks);
+//
+//        m = MeshMap.get(id, (k,v)->{
+//            System.out.println("optimize recv: " + v);
+//        });
+//
+//    }
+//
+//    @Override
+//    protected void experimentIteration(double[] point, double score) {
+//        super.experimentIteration(point, score);
+//        m.put(serial.incrementAndGet(), Floats.asList(ArrayUtils.add(Util.toFloat(point), (float)score)));
+//    }
+//}

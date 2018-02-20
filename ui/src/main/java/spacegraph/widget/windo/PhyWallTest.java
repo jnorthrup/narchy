@@ -1,6 +1,7 @@
 package spacegraph.widget.windo;
 
 import jcog.Util;
+import jcog.data.graph.ObjectGraph;
 import jcog.exe.Loop;
 import jcog.math.FloatRange;
 import jcog.tree.rtree.rect.RectFloat2D;
@@ -17,6 +18,7 @@ import spacegraph.widget.slider.FloatSlider;
 import spacegraph.widget.text.Label;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Field;
 
 
 public class PhyWallTest {
@@ -38,24 +40,24 @@ public class PhyWallTest {
                     new Gridding(0.1f, 1f, new PushButton("wtf")),
                     0.3f
             );//.getOne().sproutBranch("Other", 0.5f, ()->{
-            w.sproutBranch("Other", 0.25f, 0.33f, ()->{
-                    return new Surface[] {
-                        new PushButton("X"),
-                        new PushButton("Y"),
-                        new PushButton("Z")
-                    };
-                }
+            w.sproutBranch("Other", 0.25f, 0.33f, () -> {
+                        return new Surface[]{
+                                new PushButton("X"),
+                                new PushButton("Y"),
+                                new PushButton("Z")
+                        };
+                    }
             );
 
             for (int i = 0; i < 4; i++)
-                w.sprout(new Port(), (float) (0.1f + Math.random()*0.1f));
+                w.sprout(new Port(), (float) (0.1f + Math.random() * 0.1f));
 
             for (int i = 0; i < 4; i++) {
                 float rx = s.rngPolar(2);
                 float ry = s.rngPolar(2);
                 float rw = 0.05f + s.rngNormal(0.2f);
                 float rh = 0.05f + s.rngNormal(0.2f);
-                s.addWindow(new Label(String.valueOf((char)i)),
+                s.addWindow(new Label(String.valueOf((char) i)),
                         RectFloat2D.XYWH(rx, ry, rw, rh));
             }
 
@@ -72,9 +74,9 @@ public class PhyWallTest {
             PhyWall s = PhyWall.window(800, 800);
 
             //s.W.invoke(()->{
-                for (int i = 0; i < 100; i++)
-                    s.W.newDynamicBody(PolygonShape.box(0.1f, 0.1f), 1, 0.1f);
-                //s.W.newDynamicBody(PolygonShape.box(100, 100), 1, 0.1f).pos.add(-100, -100);
+            for (int i = 0; i < 100; i++)
+                s.W.newDynamicBody(PolygonShape.box(0.1f, 0.1f), 1, 0.1f);
+            //s.W.newDynamicBody(PolygonShape.box(100, 100), 1, 0.1f).pos.add(-100, -100);
             //});
 
         }
@@ -105,11 +107,11 @@ public class PhyWallTest {
             PhyWall s = PhyWall.window(800, 800);
 
             PhyWall.PhyWindow a = s.addWindow(new Label("X"), RectFloat2D.XYWH(-0.5f, +0.5f, 0.4f, 0.25f));
-            a.grow(new Label("R"), 1f, 1, new v2(1,0));
-            a.grow(new Label("L"), 1f, 1, new v2(-1,0));
-            a.grow(new Label("D"), 1f, 1, new v2(0,+1));
-            a.grow(new Label("U1"), 0.5f, 0.5f, new v2(+0.5f,-1));
-            a.grow(new Label("U2"), 0.5f, 0.5f, new v2(-0.5f,-1));
+            a.grow(new Label("R"), 1f, 1, new v2(1, 0));
+            a.grow(new Label("L"), 1f, 1, new v2(-1, 0));
+            a.grow(new Label("D"), 1f, 1, new v2(0, +1));
+            a.grow(new Label("U1"), 0.5f, 0.5f, new v2(+0.5f, -1));
+            a.grow(new Label("U2"), 0.5f, 0.5f, new v2(-0.5f, -1));
 
 
         }
@@ -134,7 +136,7 @@ public class PhyWallTest {
             A.link(AB.port);
             AB.port.link(B);
 
-            Loop.of(()->{
+            Loop.of(() -> {
                 A.out(String.valueOf(s.rng.nextInt(5)));
             }).runFPS(0.3f);
         }
@@ -160,7 +162,7 @@ public class PhyWallTest {
             //TODO make this an optional synchronous method of updating
 
             float nextValue = f.get();
-            if (!Util.equals(nextValue,curValue, EPSILON)) {
+            if (!Util.equals(nextValue, curValue, EPSILON)) {
                 curValue = nextValue;
                 out();
             }
@@ -206,6 +208,40 @@ public class PhyWallTest {
 
             Port Y = LabeledPort.generic();
             PhyWall.PhyWindow y = s.addWindow(Y, RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
+
+        }
+    }
+
+    public static class Box2DTest_ObjGraph {
+        public static void main(String[] args) {
+            PhyWall s = PhyWall.window(800, 800);
+
+            ObjectGraph og = new ObjectGraph(2, s) {
+
+                @Override
+                public boolean includeValue(Object v) {
+                    return true;
+                }
+
+                @Override
+                public boolean includeClass(Class<?> c) {
+                    return true;
+                }
+
+                @Override
+                public boolean includeField(Field f) {
+                    return true;
+                }
+            };
+
+            og.forEachNode(n->{
+                PhyWall.PhyWindow oo = s.addWindow(new PushButton(n.id.getClass().toString()), RectFloat2D.XYWH(0, 0, 1, 1));
+            });
+//            og.forEachNode(n->{
+//                s.links.node(n)
+//            }
+//            n.edges()
+//            oo.link()
 
         }
     }

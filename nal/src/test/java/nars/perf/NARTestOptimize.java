@@ -1,8 +1,8 @@
 package nars.perf;
 
 import com.google.common.util.concurrent.AtomicDouble;
-import jcog.optimize.AutoTweaks;
 import jcog.optimize.Result;
+import jcog.optimize.Tweaks;
 import nars.NAR;
 import nars.NARLoop;
 import nars.NARS;
@@ -19,6 +19,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -69,11 +70,11 @@ public class NARTestOptimize {
             try {
                 Param.DEBUG = false;
                 t.test.test(false);
-                //return t.test.score;
-                return 1 + t.test.score; //+1 for successful completion
+                return t.test.score;
+                //return 1 + t.test.score; //+1 for successful completion
             } catch (Throwable ee) {
-                //return -1f;
-                return 0f;
+                return -1f;
+                //return 0f;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,29 +86,29 @@ public class NARTestOptimize {
 
 
         while (true) {
-            Result<NAR> r = new AutoTweaks<>(() -> {
+            Result<NAR> r = new Tweaks<>(() -> {
                 NAR n = NARS.tmp();
                 return n;
             })
-                    .exclude(NARLoop.class)
-                    .tweak("PERCEIVE", -1f, +1f, 0.1f, (NAR n, float p) ->
-                            n.emotion.want(MetaGoal.Perceive, p)
-                    )
-                    .tweak("BELIEVE", -1f, +1f, 0.1f, (NAR n, float p) ->
-                            n.emotion.want(MetaGoal.Believe, p)
-                    )
-                    .optimize(32, 1, (n) ->
-                            tests(n,
-                                    NAL1Test.class,
-                                    NAL1MultistepTest.class,
-                                    NAL2Test.class,
-                                    NAL3Test.class,
-                                    NAL5Test.class,
-                                    NAL6Test.class
+                .discover(Set.of(NARLoop.class))
+                .tweak("PERCEIVE", -1f, +1f, 0.1f, (NAR n, float p) ->
+                        n.emotion.want(MetaGoal.Perceive, p)
+                )
+                .tweak("BELIEVE", -1f, +1f, 0.1f, (NAR n, float p) ->
+                        n.emotion.want(MetaGoal.Believe, p)
+                )
+                .optimize(32, 1, (n) ->
+                        tests(n,
+                                NAL1Test.class,
+                                NAL1MultistepTest.class,
+                                NAL2Test.class,
+                                NAL3Test.class,
+                                NAL5Test.class,
+                                NAL6Test.class
 
-                                    //NAL7Test.class,
-                                    //NAL8Test.class
-                            ));
+                                //NAL7Test.class,
+                                //NAL8Test.class
+                        ));
 
             r.print();
             r.tree(2, 8).print();

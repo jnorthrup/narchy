@@ -2,20 +2,12 @@ package nars.video;
 
 import jcog.Util;
 import jcog.math.random.XorShift128PlusRandom;
-import jcog.pri.Prioritized;
 import jcog.signal.Bitmap2D;
-import jcog.sort.CachedTopN;
-import nars.*;
+import nars.$;
+import nars.NAgent;
 import nars.concept.ActionConcept;
-import nars.control.CauseChannel;
-import nars.exe.UniExec;
-import nars.op.stm.ConjClustering;
-import nars.task.ITask;
-import nars.task.TaskProxy;
-import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.util.signal.Bitmap2DSensor;
 
 import java.awt.image.BufferedImage;
 import java.util.List;
@@ -23,7 +15,6 @@ import java.util.Random;
 import java.util.function.Supplier;
 
 import static jcog.Util.lerp;
-import static nars.Op.BELIEF;
 
 /**
  * 2D flat Raytracing Retina
