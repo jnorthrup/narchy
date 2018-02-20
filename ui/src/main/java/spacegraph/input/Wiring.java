@@ -15,6 +15,7 @@ public class Wiring extends FingerDragging {
     public interface Wireable {
         boolean onWireIn(@Nullable Wiring w, boolean active);
         void onWireOut(@Nullable Wiring w, boolean active);
+
     }
 
     Path2D path;
@@ -91,14 +92,18 @@ public class Wiring extends FingerDragging {
             }
 
             if (nextEnd instanceof Wireable) {
-                //TODO source filtering end
 
-                // end filtering source
-                if (((Wireable)nextEnd).onWireIn(this, true)) {
-                    this.end = nextEnd;
-                } else  {
-                    this.end = null;
-                }
+                //start filtering end
+                //if (!(start instanceof Wireable) || ((Wireable)start).acceptWireTo(end)) {
+
+                    // end filtering start
+                    if (((Wireable) nextEnd).onWireIn(this, true)) {
+                        this.end = nextEnd;
+                        return;
+                    }
+                //}
+                this.end = null;
+
             }
         }
     }

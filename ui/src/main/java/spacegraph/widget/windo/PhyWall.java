@@ -143,20 +143,23 @@ public class PhyWall extends Wall implements Animated {
 
         Dynamics2D w = this.W;
 
+        long now = System.currentTimeMillis();
         for (Joint j = w.joints(); j != null; j = j.next)
-            drawJoint(j, gl);
+            drawJoint(j, gl, now);
 
         for (Body2D b = w.bodies(); b != null; b = b.next())
             drawBody(b, gl);
 
     }
 
-    private void drawJoint(Joint joint, GL2 g) {
+    private void drawJoint(Joint joint, GL2 g, long now) {
         Object data = joint.data();
         if (data instanceof Wire) {
             Wire w = (Wire)data;
 
-            g.glColor4f(0.3f, 0.8f, 0.2f, 0.75f);
+            float activity = w.activity(now, 500);
+
+            g.glColor4f(0.3f + activity * 0.75f, 0.3f, 0.3f, 0.5f + 0.25f * activity);
             g.glLineWidth(20f);
 
             Draw.line(g, w.a.cx(), w.a.cy(), w.b.cx(), w.b.cy());
@@ -281,40 +284,6 @@ public class PhyWall extends Wall implements Animated {
         return s;
     }
 
-
-    /** undirected edge */
-    public static class Wire {
-        final Surface a, b;
-
-        public Wire(Surface a, Surface b) {
-            assert(a!=b);
-            if (a.id > b.id) {
-                //ordering
-                Surface x = b;
-                b = a;
-                a = x;
-            }
-
-            this.a = a;
-            this.b = b;
-        }
-
-        /** sends to target */
-        public boolean in(Surface sender, Object s) {
-            return ((Port)other(sender)).in(s);
-        }
-
-        public Surface other(Surface x) {
-            if (x == a) {
-                return b;
-            } else if (x == b) {
-                return a;
-            } else {
-                throw new RuntimeException();
-            }
-        }
-
-    }
 
     public class PhyWindow extends Windo {
         private final Body2D body;
@@ -453,6 +422,11 @@ public class PhyWall extends Wall implements Animated {
             return link(get(), target);
         }
 
+        public Iterable<ImmutableDirectedEdge<Surface, Wire>> edges(Surface s, boolean in, boolean out) {
+            NodeGraph.Node<Surface, Wire> n = links.node(s);
+            return n!=null ? n.edges(in, out) : Collections.emptyList();
+        }
+
         /** convenience method for creating a basic undirected link joint.
          *  no endpoint is necessarily an owner of the other so
          *  it should not matter who is the callee.
@@ -558,10 +532,6 @@ public class PhyWall extends Wall implements Animated {
 
 
 
-        public Iterable<ImmutableDirectedEdge<Surface, Wire>> edges(boolean in, boolean out) {
-            NodeGraph.Node<Surface, Wire> n = links.node(get());
-            return n!=null ? n.edges(in, out) : Collections.emptyList();
-        }
 
 
         private class WallBody extends Body2D {

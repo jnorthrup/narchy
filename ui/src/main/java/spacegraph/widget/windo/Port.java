@@ -9,6 +9,8 @@ import spacegraph.input.Wiring;
 import spacegraph.render.Draw;
 
 import javax.annotation.Nullable;
+import java.lang.reflect.Type;
+import java.util.function.Consumer;
 
 /** base class for a port implementation */
 public class Port extends Widget implements Wiring.Wireable {
@@ -16,6 +18,60 @@ public class Port extends Widget implements Wiring.Wireable {
     protected Wiring wiringOut = null;
     protected Wiring wiringIn = null;
     private boolean enabled = true;
+
+    /** input handler */
+    private InPort in = null;
+
+    public Port() {
+        super();
+    }
+
+    public Port(InPort i) {
+        this();
+        on(i);
+    }
+
+    /** for convenience */
+    public Port(Consumer i) {
+        this();
+        on(i);
+    }
+
+    public void on(Consumer i) {
+        on((w,x)->i.accept(x));
+    }
+
+    /** set the input handler */
+    public void on(@Nullable InPort i) {
+        this.in = i;
+    }
+
+    public Wire link(Port target) {
+        PhyWall.PhyWindow pw = parent(PhyWall.PhyWindow.class);
+        if (pw == null)
+            throw new RuntimeException("port not materialized");
+        return pw.link(this,target);
+    }
+
+    public boolean enabled() {
+        return enabled;
+    }
+
+    @FunctionalInterface interface InPort<T> {
+
+        /** TODO more informative backpressure-determining state
+         *  TODO pluggable receive procedure:
+         *          local buffers (ex: QueueLock), synch, threadpool, etc
+         * */
+
+        /** test before typed wire connection */
+        default boolean accept(Type t) {
+            return true;
+        }
+
+        void accept(Wire from, T t);
+
+    }
 
 //            final FingerDragging dragInit = new FingerDragging(0) {
 //
@@ -95,29 +151,34 @@ public class Port extends Widget implements Wiring.Wireable {
 
 
 
-    public void out(Object s) {
+    public void out(Object x) {
+        out(this, x);
+    }
+
+    protected void out(Port sender, Object x) {
         PhyWall.PhyWindow w = parent(PhyWall.PhyWindow.class);
         if (w==null)
             throw new NullPointerException();
 
         //TODO transfer function
 
-        Iterable<ImmutableDirectedEdge<Surface, PhyWall.Wire>> targets = w.edges(false, true);
-        targets.forEach((x)->{
-            x.id.in(this, s);
+        Iterable<ImmutableDirectedEdge<Surface, Wire>> targets = w.edges(this, false, true);
+        targets.forEach((t)->{
+            t.id.in(sender, x);
         });
     }
 
-    /** TODO more informative backpressure-determining state
-     *  TODO pluggable receive procedure:
-     *          local buffers (ex: QueueLock), synch, threadpool, etc
-     * */
-    public boolean in(Object s) {
-        if (!enabled) {
+    public boolean in(Wire from, Object s) {
+        if (!enabled || this.in == null) {
             return false;
         } else {
-            System.out.println("receive: " + s);
-            return true;
+            try {
+                this.in.accept(from, s);
+                return true;
+            } catch (Throwable t) {
+                root().error(this, 1f, t);
+                return false;
+            }
         }
     }
 

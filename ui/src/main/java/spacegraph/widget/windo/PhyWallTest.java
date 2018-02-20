@@ -8,7 +8,6 @@ import spacegraph.input.Wiring;
 import spacegraph.layout.Gridding;
 import spacegraph.math.v2;
 import spacegraph.test.WidgetTest;
-import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.TextEdit;
 import spacegraph.widget.text.Label;
@@ -112,26 +111,6 @@ public class PhyWallTest {
 
     public static class Box2DTest_SwitchedSignal {
 
-        public static class ToggledPort extends Gridding {
-
-            //private final CheckBox button;
-            public final Port in;
-            public final Port out;
-
-            public ToggledPort(Port in, Port out) {
-                super(VERTICAL);
-
-                this.in = in; this.out = out;
-
-                margin = 0.25f;
-
-                set(new CheckBox("?", in::enable).set(true),
-                    new Gridding(HORIZONTAL, in, out) );
-
-            }
-
-        }
-
         public static void main(String[] args) {
 
             PhyWall s = PhyWall.window(800, 800);
@@ -140,16 +119,14 @@ public class PhyWallTest {
             PhyWall.PhyWindow a = s.addWindow(A, RectFloat2D.XYWH(-1, 0, 0.25f, 0.25f));
 
 
-            Port B = new Port();
+            Port B = new ToStringLabelPort();
             PhyWall.PhyWindow b = s.addWindow(B, RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
 
-            ToggledPort AB = new ToggledPort(new ToStringLabelPort(), new Port() {
-
-            });
+            TogglePort AB = new TogglePort();
             s.addWindow(AB, RectFloat2D.XYWH(0, 0, 0.25f, 0.25f));
 
-            a.link(AB.in);
-            b.link(AB.out);
+            A.link(AB.port);
+            AB.port.link(B);
 
             Loop.of(()->{
                 A.out(String.valueOf(s.rng.nextInt(5)));
@@ -159,19 +136,12 @@ public class PhyWallTest {
         private static class ToStringLabelPort extends Port {
             final Label l = new Label("?");
 
-            {
+            ToStringLabelPort() {
                 children(l);
+                on((v)->l.text(v.toString()));
             }
 
-            @Override public boolean in(Object s) {
-                if (super.in(s)) {
-                    l.text(s.toString());
-                    return true;
-                } else {
-                    l.text("---");
-                    return false;
-                }
-            }
+
 
         }
     }

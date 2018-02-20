@@ -29,6 +29,11 @@ public interface SpaceLogger {
     default void info(@Nullable Object key, float duration /* seconds */, String message) {
         log(key, duration, Level.INFO, ()->message);
     }
+
+    default void error(@Nullable Object key, float duration /* seconds */, Throwable error) {
+        log(key, duration, Level.ERROR, error::toString);
+    }
+
     default void error(@Nullable Object key, float duration /* seconds */, Supplier<String> message) {
         log(key, duration, Level.ERROR, message);
     }
