@@ -11,6 +11,8 @@ import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.tuple.Pair;
+import org.jbox2d.collision.RayCastInput;
+import org.jbox2d.collision.RayCastOutput;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.collision.shapes.Shape;
 import org.jbox2d.common.Transform;
@@ -30,9 +32,9 @@ import spacegraph.render.Draw;
 import spacegraph.render.SpaceGraphFlat;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
-import spacegraph.widget.meta.OmniBox;
 import spacegraph.widget.meta.SpaceLogConsole;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
@@ -50,7 +52,7 @@ public class PhyWall extends Wall implements Animated {
     private On on;
 
     /** TODO use more efficient graph representation */
-    final MapNodeGraph<PhyWindow,RopeJoint> undirectedLinks = new MapNodeGraph();
+    final MapNodeGraph<Surface,Wire> links = new MapNodeGraph();
 
     private PhyWall() {
         super();
@@ -65,7 +67,9 @@ public class PhyWall extends Wall implements Animated {
         //W.setSubStepping(true);
     }
 
-    /** HACK */
+    /** HACK
+     * note: adds development frame but this shouldnt be part of the default general-purpose window constructor
+     * */
     public static PhyWall window(int width, int height) {
         PhyWall s = new PhyWall();
         s.pos(-1,-1,1,1);
@@ -103,7 +107,9 @@ public class PhyWall extends Wall implements Animated {
 
         hud.set(new Splitting(
                 new Gridding(new EmptySurface(), new EmptySurface(), new EmptySurface(), log),
-                new Gridding(new PushButton("+"),new OmniBox(),new CheckBox("Log", log::visible)),
+                new Gridding(new PushButton("+"),
+                        //new OmniBox(),
+                        new CheckBox("Log", log::visible)),
                 0.1f
         ));
 
@@ -142,7 +148,18 @@ public class PhyWall extends Wall implements Animated {
     }
 
     private void drawJoint(Joint joint, GL2 g) {
-        g.glColor4f(0.9f, 0.8f, 0.1f, 0.75f);
+        Object data = joint.data();
+        if (data instanceof Wire) {
+            Wire w = (Wire)data;
+
+            g.glColor4f(0.3f, 0.8f, 0.2f, 0.75f);
+            g.glLineWidth(20f);
+
+            Draw.line(g, w.a.cx(), w.a.cy(), w.b.cx(), w.b.cy());
+            return;
+        }
+
+        g.glColor4f(0.9f, 0.8f, 0.1f, 0.5f);
         g.glLineWidth(10f);
         Tuple2f v1 = new v2(), v2 = new v2();
         switch (joint.getType()) {
@@ -261,7 +278,39 @@ public class PhyWall extends Wall implements Animated {
     }
 
 
+    /** undirected edge */
+    public static class Wire {
+        final Surface a, b;
 
+        public Wire(Surface a, Surface b) {
+            assert(a!=b);
+            if (a.id > b.id) {
+                //ordering
+                Surface x = b;
+                b = a;
+                a = x;
+            }
+
+            this.a = a;
+            this.b = b;
+        }
+
+        /** sends to target */
+        public boolean in(Surface sender, Object s) {
+            return ((Port)other(sender)).in(s);
+        }
+
+        public Surface other(Surface x) {
+            if (x == a) {
+                return b;
+            } else if (x == b) {
+                return a;
+            } else {
+                throw new RuntimeException();
+            }
+        }
+
+    }
 
     public class PhyWindow extends Windo {
         private final Body2D body;
@@ -282,8 +331,8 @@ public class PhyWall extends Wall implements Animated {
         }
 
         public void remove() {
-            synchronized (undirectedLinks) {
-                undirectedLinks.removeNode(this);
+            synchronized (links) {
+                links.removeNode(this);
             }
             W.removeBody(this.body);
             PhyWall.this.remove(this);
@@ -302,7 +351,7 @@ public class PhyWall extends Wall implements Animated {
 //        }
 
 
-        public Pair<PhyWindow, RopeJoint> sprout(Surface target, float scale) {
+        public Pair<PhyWindow, Wire> sprout(Surface target, float scale) {
             return sprout(target, scale, 1f);
         }
 
@@ -311,28 +360,57 @@ public class PhyWall extends Wall implements Animated {
          * of a proportional size with some content (ex: a port),
          * and linking it to this window via a constraint.
          */
-        public Pair<PhyWindow, RopeJoint> sprout(Surface target, float scale, float targetAspect) {
+        public Pair<PhyWindow, Wire> sprout(Surface target, float scale, float targetAspect) {
             PhyWindow sprouted = spawn(target, scale, targetAspect);
 
-            return link(sprouted);
+            return pair(sprouted, link(target));
         }
 
         /** spawns and attaches a new component to the boundary of this */
         public PhyWindow grow(Surface target, float scale, float targetAspect, Tuple2f normal) {
+
             PhyWindow x = spawn(target, scale, targetAspect);
 
-            WeldJoint j = weld(x, normal);
+
+            Tuple2f myWeldLocal, theirWeldLocal;
+            RayCastInput input = new RayCastInput();
+            RayCastOutput output = new RayCastOutput();
+            {
+                input.p2.set(0, 0);
+                float r = radius()*2;
+                input.p1.set(0 + normal.x * r, 0 + normal.y * r); //looking back to center
+                input.maxFraction = 1.0f;
+
+                boolean hit = body.fixtures.raycast(output, input, 0);
+                assert (hit);
+                Tuple2f hitPoint = (input.p2.sub(input.p1)).scaled(output.fraction).added(input.p1);
+                myWeldLocal = hitPoint;//.sub(body.pos);
+            }
+            {
+                input.p2.set(0, 0);
+                float r = x.radius()*2;
+                input.p1.set(0 - normal.x * r, 0 - normal.y * r); //looking back to center
+                input.maxFraction = 1.0f;
+
+                boolean hit = x.body.fixtures.raycast(output, input, 0);
+                assert (hit);
+                Tuple2f hitPoint = (input.p2.sub(input.p1)).scaled(output.fraction).added(input.p1);
+                theirWeldLocal = hitPoint;
+            }
+
+
+            WeldJoint j = weld(x, myWeldLocal, theirWeldLocal);
 
             return x;
         }
 
-        private WeldJoint weld(PhyWindow x, Tuple2f  normal) {
+        private WeldJoint weld(PhyWindow x, Tuple2f myLocal, Tuple2f theirLocal) {
             WeldJointDef jd = new WeldJointDef();
             jd.bodyA = this.body;
             jd.bodyB = x.body;
-            jd.localAnchorA.set( normal.scale(radius()) );
-            jd.localAnchorB.set( normal.scale(-x.radius()) );
-            jd.referenceAngle = (float) Math.atan2(normal.y, normal.x);
+            jd.localAnchorA.set( myLocal );
+            jd.localAnchorB.set( theirLocal.scaled(0.5f) );
+            jd.referenceAngle = ((v2)myLocal).angle(theirLocal);
             jd.collideConnected = false;
             jd.dampingRatio = 0.5f;
             jd.frequencyHz = 1f;
@@ -365,32 +443,42 @@ public class PhyWall extends Wall implements Animated {
         }
 
 
+        /** assumes the PhyWindow wraps *THE* source */
+        public Wire link(Surface target) {
+            assert(children().length==1);
+            return link(get(), target);
+        }
+
         /** convenience method for creating a basic undirected link joint.
          *  no endpoint is necessarily an owner of the other so
          *  it should not matter who is the callee.
          *
          *  duplicate links are prevented.
          */
-        public Pair<PhyWindow, RopeJoint> link(PhyWindow target) {
+        public Wire link(Surface source, Surface target) {
 
-            synchronized (undirectedLinks) {
-                NodeGraph.MutableNode<PhyWindow, RopeJoint> me = undirectedLinks.addNode(this);
+            synchronized (links) {
 
-                Iterable<ImmutableDirectedEdge<PhyWindow, RopeJoint>> edges = me.edges(true, true);
+                Wire wire = new Wire(source, target);
+
+                NodeGraph.MutableNode<Surface, Wire> A = links.addNode(wire.a);
+                NodeGraph.MutableNode<Surface, Wire> B = links.addNode(wire.b);
+
+                Iterable<ImmutableDirectedEdge<Surface, Wire>> edges = A.edges(false, true); //only need to scan the out of the src (triangular half of the graph 'matrix')
                 if (edges!=null) {
-                    for (ImmutableDirectedEdge<PhyWindow, RopeJoint> e : edges) {
+                    for (ImmutableDirectedEdge<Surface, Wire> e : edges) {
                         if (e.from.id == target || e.to.id == target)
-                            return pair(target, e.id);
+                            return e.id;
                     }
                 }
 
-                RopeJointDef jd = new RopeJointDef(target.body, this.body);
+                RopeJointDef jd = new RopeJointDef(target.parent(PhyWindow.class).body, this.body);
                 jd.collideConnected = true;
                 jd.maxLength = Float.NaN; //should be effectively ignored by the implementation below
 
-                RopeJoint link = new RopeJoint(PhyWall.this.W.pool, jd) {
+                RopeJoint ropeJoint = new RopeJoint(PhyWall.this.W.pool, jd) {
 
-                    float lengthScale = 1.05f;
+                    float lengthScale = 2.05f;
 
                     @Override
                     public float targetLength() {
@@ -431,18 +519,20 @@ public class PhyWall extends Wall implements Animated {
                         //return 0;
                     }
                 };
-                PhyWall.this.W.addJoint(link);
 
-                undirectedLinks.addNode(target);
-                undirectedLinks.addEdge(this, link, target);
+                ropeJoint.setData(wire);
 
-                return pair(target, link);
+                PhyWall.this.W.addJoint(ropeJoint);
+
+                links.addEdge(A, wire, B);
+
+                return wire;
             }
         }
 
         public void sproutBranch(String label, float scale, float childScale, Iterable<Surface> children) {
             CheckBox toggle = new CheckBox(label);
-            Pair<PhyWindow, RopeJoint> toggleWindo = sprout(toggle, scale);
+            Pair<PhyWindow, Wire> toggleWindo = sprout(toggle, scale);
             List<PhyWindow> built = new FasterList(0);
             toggle.on((cb, enabled)->{
                 synchronized (toggle) {
@@ -460,6 +550,13 @@ public class PhyWall extends Wall implements Animated {
         }
         public void sproutBranch(String label, float scale, float childScale, Supplier<Surface[]> children) {
             sproutBranch(label, scale, childScale, ()-> ArrayIterator.get(children.get()));
+        }
+
+
+
+        public Iterable<ImmutableDirectedEdge<Surface, Wire>> edges(boolean in, boolean out) {
+            NodeGraph.Node<Surface, Wire> n = links.node(get());
+            return n!=null ? n.edges(in, out) : Collections.emptyList();
         }
 
 

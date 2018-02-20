@@ -201,8 +201,9 @@ public class Windo extends Widget {
 
     /** gets main content */
     public Surface get() {
+        return content.children()[0];
         //return ((UnitContainer) content.children()[0]).the;
-        return content;
+        //return content;
     }
 
     @Override

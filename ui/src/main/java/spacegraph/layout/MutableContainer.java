@@ -43,7 +43,7 @@ public class MutableContainer extends Container {
         synchronized (children) {
             super.start(parent);
             children.forEach(c -> {
-                assert(c.parent==null);
+                assert(c.parent==null || c.parent == this);
                 c.start(this);
             });
         }

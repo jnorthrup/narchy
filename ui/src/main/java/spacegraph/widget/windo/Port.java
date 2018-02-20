@@ -1,6 +1,7 @@
 package spacegraph.widget.windo;
 
 import com.jogamp.opengl.GL2;
+import jcog.data.graph.ImmutableDirectedEdge;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.Surface;
 import spacegraph.input.Finger;
@@ -14,6 +15,7 @@ public class Port extends Widget implements Wiring.Wireable {
 
     protected Wiring wiringOut = null;
     protected Wiring wiringIn = null;
+    private boolean enabled = true;
 
 //            final FingerDragging dragInit = new FingerDragging(0) {
 //
@@ -68,6 +70,7 @@ public class Port extends Widget implements Wiring.Wireable {
     protected boolean acceptWiring(Wiring w) {
         return true;
     }
+
     @Override
     public boolean onWireIn(@Nullable Wiring w, boolean active) {
         if (active && !acceptWiring(w))
@@ -88,5 +91,37 @@ public class Port extends Widget implements Wiring.Wireable {
     /** wiring complete */
     protected void onWired(Wiring w) {
 
+    }
+
+
+
+    public void out(Object s) {
+        PhyWall.PhyWindow w = parent(PhyWall.PhyWindow.class);
+        if (w==null)
+            throw new NullPointerException();
+
+        //TODO transfer function
+
+        Iterable<ImmutableDirectedEdge<Surface, PhyWall.Wire>> targets = w.edges(false, true);
+        targets.forEach((x)->{
+            x.id.in(this, s);
+        });
+    }
+
+    /** TODO more informative backpressure-determining state
+     *  TODO pluggable receive procedure:
+     *          local buffers (ex: QueueLock), synch, threadpool, etc
+     * */
+    public boolean in(Object s) {
+        if (!enabled) {
+            return false;
+        } else {
+            System.out.println("receive: " + s);
+            return true;
+        }
+    }
+
+    public void enable(boolean b) {
+        this.enabled = b;
     }
 }

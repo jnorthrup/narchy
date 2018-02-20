@@ -140,7 +140,7 @@ public class v2 extends Tuple2f {
      * @param v1 the other vector
      * @return the angle in radians in the range [0,PI]
      */
-    public final float angle(v2 v1) {
+    public final float angle(Tuple2f v1) {
         double vDot = this.dot(v1) / (this.lengthSquared());
         if (vDot < -1.0) vDot = -1.0;
         if (vDot > 1.0) vDot = 1.0;
@@ -152,7 +152,7 @@ public class v2 extends Tuple2f {
      *
      * @param v1 the other vector
      */
-    public final float dot(v2 v1) {
+    public final float dot(Tuple2f v1) {
         return (this.x * v1.x + this.y * v1.y);
     }
 

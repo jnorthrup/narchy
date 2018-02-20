@@ -1,9 +1,9 @@
 package spacegraph.widget.windo;
 
+import jcog.exe.Loop;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jbox2d.collision.shapes.PolygonShape;
 import spacegraph.Surface;
-import spacegraph.SurfaceBase;
 import spacegraph.input.Wiring;
 import spacegraph.layout.Gridding;
 import spacegraph.math.v2;
@@ -76,6 +76,7 @@ public class PhyWallTest {
     }
 
     public static class Box2DTest3_Basic_Link_Unlink {
+
         public static void main(String[] args) {
 
             PhyWall s = PhyWall.window(800, 800);
@@ -92,47 +93,85 @@ public class PhyWallTest {
         }
     }
 
-    public static class Box2DTest3_SwitchedSignal {
+    public static class Box2DTest_WeldGrow {
+
+        public static void main(String[] args) {
+
+            PhyWall s = PhyWall.window(800, 800);
+
+            PhyWall.PhyWindow a = s.addWindow(new Label("X"), RectFloat2D.XYWH(-0.5f, +0.5f, 0.4f, 0.25f));
+            a.grow(new Label("R"), 1f, 1, new v2(1,0));
+            a.grow(new Label("L"), 1f, 1, new v2(-1,0));
+            a.grow(new Label("D"), 1f, 1, new v2(0,+1));
+            a.grow(new Label("U1"), 0.5f, 0.5f, new v2(+0.5f,-1));
+            a.grow(new Label("U2"), 0.5f, 0.5f, new v2(-0.5f,-1));
+
+
+        }
+    }
+
+    public static class Box2DTest_SwitchedSignal {
 
         public static class ToggledPort extends Gridding {
 
-            private final CheckBox button;
-            private final Port in;
-            private final Port out;
+            //private final CheckBox button;
+            public final Port in;
+            public final Port out;
 
-            public ToggledPort() {
-                super();
+            public ToggledPort(Port in, Port out) {
+                super(VERTICAL);
+
+                this.in = in; this.out = out;
+
                 margin = 0.25f;
-                in = new Port();
-                out = new Port();
-                button = new CheckBox("?", (b)->{
 
-                });
-
-                set(button);
+                set(new CheckBox("?", in::enable).set(true),
+                    new Gridding(HORIZONTAL, in, out) );
 
             }
 
-            @Override
-            public void start(SurfaceBase parent) {
-                super.start(parent);
-                parent(PhyWall.PhyWindow.class).grow(in, 0.8f, 1, new v2(-1,0));
-                parent(PhyWall.PhyWindow.class).grow(out, 0.8f, 1, new v2(+1,0));
-            }
         }
 
         public static void main(String[] args) {
 
             PhyWall s = PhyWall.window(800, 800);
 
-            PhyWall.PhyWindow a = s.addWindow(new Port(), RectFloat2D.XYWH(-1, 0, 0.25f, 0.25f));
+            Port A = new Port();
+            PhyWall.PhyWindow a = s.addWindow(A, RectFloat2D.XYWH(-1, 0, 0.25f, 0.25f));
 
-            PhyWall.PhyWindow ab = s.addWindow(new ToggledPort(), RectFloat2D.XYWH(0, 0, 0.25f, 0.25f));
 
-            PhyWall.PhyWindow b = s.addWindow(new Port(), RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
+            Port B = new Port();
+            PhyWall.PhyWindow b = s.addWindow(B, RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
 
-//            a.link(ab.in);
-//            ab.link(b);
+            ToggledPort AB = new ToggledPort(new ToStringLabelPort(), new Port() {
+
+            });
+            s.addWindow(AB, RectFloat2D.XYWH(0, 0, 0.25f, 0.25f));
+
+            a.link(AB.in);
+            b.link(AB.out);
+
+            Loop.of(()->{
+                A.out(String.valueOf(s.rng.nextInt(5)));
+            }).runFPS(0.3f);
+        }
+
+        private static class ToStringLabelPort extends Port {
+            final Label l = new Label("?");
+
+            {
+                children(l);
+            }
+
+            @Override public boolean in(Object s) {
+                if (super.in(s)) {
+                    l.text(s.toString());
+                    return true;
+                } else {
+                    l.text("---");
+                    return false;
+                }
+            }
 
         }
     }
