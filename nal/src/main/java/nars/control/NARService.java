@@ -22,17 +22,17 @@ public class NARService extends Services.AbstractService<NAR> implements Termed 
     protected final AtomicBoolean busy = new AtomicBoolean(true);
 
     @Deprecated protected NARService(NAR nar) {
-        this(nar, null);
-    }
-
-    protected NARService(@Nullable NAR nar, @Nullable Term id) {
-
-        this.id = id!=null ? id :
-            $.p($.quote(getClass().getName()), $.the(System.identityHashCode(this)) );
+        this((Term)null);
 
         if (nar!=null)
             nar.on(this);
     }
+
+    protected NARService(@Nullable Term id) {
+        this.id = id!=null ? id :
+                $.p($.quote(getClass().getName()), $.the(System.identityHashCode(this)) );
+    }
+
 
     @Override
     protected void start(NAR nar) {

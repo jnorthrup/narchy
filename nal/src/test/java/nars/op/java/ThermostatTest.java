@@ -6,7 +6,6 @@ import nars.NAR;
 import nars.NARS;
 import nars.Task;
 import nars.control.DurService;
-import nars.control.MetaGoal;
 import nars.op.ArithmeticIntroduction;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
@@ -86,28 +85,28 @@ public class ThermostatTest {
 
 
     final Runnable pause = () -> {
-        Util.sleep(500);
+        //Util.sleep(500);
     };
     @Test
     @Disabled
     public void test1() {
         //Param.DEBUG = true;
-        final int DUR = 2;
+        final int DUR = 10;
 
         final int subTrainings = 2;
-        final int thinkDurs = 1;
+        final int thinkDurs = 2;
 
         NAR n = NARS.tmp();
 
         n.time.dur(DUR);
         //n.timeFocus.set(4);
-        n.termVolumeMax.set(36);
-        n.freqResolution.set(0.02f);
+        n.termVolumeMax.set(24);
+        n.freqResolution.set(0.05f);
         n.confResolution.set(0.02f);
         n.deep.set(0.8);
 
 
-        n.emotion.want(MetaGoal.Desire, 0.2f);
+     //   n.emotion.want(MetaGoal.Desire, 0.2f);
 //        n.want(MetaGoal.Believe, 0.1f);
 //        n.want(MetaGoal.Perceive, -0.01f);
 

@@ -31,7 +31,10 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
     private final NAR nar;
 
     public Bitmap2DSensor(@Nullable Term root, P src, NAR n) {
-        this(RadixProduct(root, src.width(), src.height(), /*RADIX*/1), src, n);
+        this(src.height() > 1 ?
+                /* 2D default */ RadixProduct(root, src.width(), src.height(), /*RADIX*/1) :
+                /* 1D default */ (x,y)->$.p(x)
+                , src, n);
     }
 
     public Bitmap2DSensor(@Nullable Int2Function<Term> pixelTerm, P src, NAR n) {
@@ -264,7 +267,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
 //                ///((float)Math.sqrt(end-start));
 
             pixelPri =
-                    nar.priDefault(BELIEF) * pri();
+                    nar.priDefault(BELIEF);
 //                (float) (nar.priDefault(BELIEF) / pixelsToProcess);
 
             start = this.lastPixel;

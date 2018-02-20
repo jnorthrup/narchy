@@ -1,25 +1,45 @@
 package jcog.signal;
 
+import java.lang.reflect.Array;
+
 public class ArrayBitmap2D implements Bitmap2D {
 
-    private final float[][] x;
+    private final float[][] b;
+
+    public ArrayBitmap2D(int w, int h) {
+        this((float[][]) Array.newInstance(float.class, h, w));
+    }
 
     public ArrayBitmap2D(float[][] x) {
-        this.x = x;
+        this.b = x;
     }
 
     @Override
     public int width() {
-        return x[0].length;
+        return b[0].length;
     }
 
     @Override
     public int height() {
-        return x.length;
+        return b.length;
     }
 
     @Override
     public float brightness(int xx, int yy) {
-        return x[xx][yy];
+        return b[yy][xx];
+    }
+
+    public void set(int x, int y, float v) {
+        this.b[y][x] = v;
+    }
+    public interface IntIntToFloatFunction {
+        public float value(int x, int y);
+    }
+    public void set(IntIntToFloatFunction set) {
+        int W = width();
+        int H = height();
+        for (int x = 0; x < W; x++)
+            for (int y = 0; y < H; y++)
+                this.b[y][x] = set.value(x,y);
     }
 }

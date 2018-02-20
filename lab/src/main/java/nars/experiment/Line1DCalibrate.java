@@ -39,7 +39,7 @@ public class Line1DCalibrate {
 
         //n.truthResolution.setValue(0.05f);
 
-        Line1DSimplest a = new Line1DSimplest(n) {
+        Line1DSimplest a = new Line1DSimplest() {
 
 //                final FloatAveraged rewardAveraged = new FloatAveraged(()->super.act(), 10);
 

@@ -5,8 +5,6 @@ import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatPolarNormalized;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Bitmap2D;
-import nars.derive.Deriver;
-import nars.derive.Derivers;
 import nars.exe.Focus;
 import nars.exe.PoolMultiExec;
 import nars.gui.Vis;
@@ -234,19 +232,19 @@ abstract public class NAgentX extends NAgent {
 
 //        new RLBooster(a, HaiQAgent::new, 1);
 
-        new Deriver(a.fire(), Derivers.deriver(1, 8,
-                "motivation.nal"
-                //, "goal_analogy.nal"
-        ).apply(n).deriver, n) {
-//            @Override
-//            protected long matchTime(Task task) {
-//
-//                //future lookahead to catalyze prediction
-//                return n.time() +
-//                        Util.sqr(n.random().nextInt(3)) * n.dur();
-//
-//            }
-        };
+//        new Deriver(a.fire(), Derivers.deriver(1, 8,
+//                "motivation.nal"
+//                //, "goal_analogy.nal"
+//        ).apply(n).deriver, n) {
+////            @Override
+////            protected long matchTime(Task task) {
+////
+////                //future lookahead to catalyze prediction
+////                return n.time() +
+////                        Util.sqr(n.random().nextInt(3)) * n.dur();
+////
+////            }
+//        };
 
 
 

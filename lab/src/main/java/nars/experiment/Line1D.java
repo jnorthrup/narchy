@@ -261,7 +261,7 @@ public class Line1D {
 
 
             AtomicBoolean AUTO = new AtomicBoolean(true);
-            agent = new Line1DSimplest(n) {
+            agent = new Line1DSimplest() {
                 public final AtomicBoolean auto = AUTO;
 
 //                final FloatAveraged rewardAveraged = new FloatAveraged(()->super.act(), 10);

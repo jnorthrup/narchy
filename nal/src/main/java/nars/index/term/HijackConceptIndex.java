@@ -7,7 +7,6 @@ import jcog.pri.PriReference;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
-import nars.control.DurService;
 import nars.index.term.map.MaplikeConceptIndex;
 import nars.term.Term;
 import nars.term.Termed;
@@ -15,7 +14,6 @@ import org.HdrHistogram.IntCountsHistogram;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
@@ -44,10 +42,10 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     private final float updateRate = 1;
     private final float initial = 0.5f;
     private final float getBoost = 0.02f;
-    private final float forget = 0.05f;
+    //private final float forget = 0.05f;
     private long now;
     private int dur;
-    private DurService onDur;
+    //private DurService onDur;
 
     public HijackConceptIndex(int capacity, int reprobes) {
         super();
@@ -98,7 +96,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     @Override
     public void init(NAR nar) {
         super.init(nar);
-        onDur = DurService.on(nar, this::update);
+        //onDur = DurService.on(nar, this::update);
     }
 
 
@@ -176,59 +174,59 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     }
 
 
-    /**
-     * performs an iteration update
-     */
-    private void update(NAR nar) {
-
-        AtomicReferenceArray<PriReference<Termed>> tt = table.map;
-
-        int c = tt.length();
-
-        now = nar.time();
-        dur = nar.dur();
-
-        int visit = this.visit;
-        try {
-            int n = (int) Math.floor(updateRate * c);
-
-            for (int i = 0; i < n; i++, visit++) {
-
-                if (visit >= c) visit = 0;
-
-                PriReference<Termed> x = tt.get(visit);
-                if (x != null)
-                    update(x);
-            }
-        } finally {
-            this.visit = visit;
-//            Util.decode(conceptScores, "", 200, (x, v) -> {
-//                System.out.println(x + "\t" + v);
-//            });
-            conceptScores.reset();
-        }
-
-    }
-
-    protected void update(PriReference<Termed> x) {
-
-        //TODO better update function based on Concept features
-        Termed tc = x.get();
-        if (tc instanceof PermanentConcept)
-            return; //dont touch
-
-        Concept c = (Concept) tc;
-        int score = (int) (score(c) * 1000f);
-
-        float cutoff = 0.25f;
-        if (conceptScores.getTotalCount() > this.table.capacity() / 2) {
-            float percentile = (float) conceptScores.getPercentileAtOrBelowValue(score) / 100f;
-            if (percentile < cutoff)
-                forget(x, c, cutoff * (1 - percentile));
-        }
-
-        conceptScores.recordValue(score);
-    }
+//    /**
+//     * performs an iteration update
+//     */
+//    private void update(NAR nar) {
+//
+//        AtomicReferenceArray<PriReference<Termed>> tt = table.map;
+//
+//        int c = tt.length();
+//
+//        now = nar.time();
+//        dur = nar.dur();
+//
+//        int visit = this.visit;
+//        try {
+//            int n = (int) Math.floor(updateRate * c);
+//
+//            for (int i = 0; i < n; i++, visit++) {
+//
+//                if (visit >= c) visit = 0;
+//
+//                PriReference<Termed> x = tt.get(visit);
+//                if (x != null)
+//                    update(x);
+//            }
+//        } finally {
+//            this.visit = visit;
+////            Util.decode(conceptScores, "", 200, (x, v) -> {
+////                System.out.println(x + "\t" + v);
+////            });
+//            conceptScores.reset();
+//        }
+//
+//    }
+//
+//    protected void update(PriReference<Termed> x) {
+//
+//        //TODO better update function based on Concept features
+//        Termed tc = x.get();
+//        if (tc instanceof PermanentConcept)
+//            return; //dont touch
+//
+//        Concept c = (Concept) tc;
+//        int score = (int) (score(c) * 1000f);
+//
+//        float cutoff = 0.25f;
+//        if (conceptScores.getTotalCount() > this.table.capacity() / 2) {
+//            float percentile = (float) conceptScores.getPercentileAtOrBelowValue(score) / 100f;
+//            if (percentile < cutoff)
+//                forget(x, c, cutoff * (1 - percentile));
+//        }
+//
+//        conceptScores.recordValue(score);
+//    }
 
     @Override
     public Stream<? extends Termed> stream() {

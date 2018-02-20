@@ -28,7 +28,7 @@ public class NARVideo extends NARServiceSet<NARVideo.Video> {
         private JoglSpace surfaceWindow = null;
 
         Video(NAR nar, Webcam cam) {
-            super(null, $.p($.the("video"), $.the(cam.getName())));
+            super($.p($.the("video"), $.the(cam.getName())));
             this.cam = cam;
             surface = new Gridding(); //blank
             nar.off(this); //default off

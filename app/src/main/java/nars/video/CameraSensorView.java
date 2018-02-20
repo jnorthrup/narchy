@@ -25,11 +25,16 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
     private long start, end;
     int dur;
 
+
     public CameraSensorView(Bitmap2DSensor cam, NAgent a) {
+        this(cam, a.nar);
+    }
+
+    public CameraSensorView(Bitmap2DSensor cam, NAR n) {
         super(cam.width, cam.height);
         this.cam = cam;
-        this.nar = a.nar;
-        this.dur = a.nar.dur();
+        this.nar = n;
+        this.dur = n.dur();
     }
 
     @Override

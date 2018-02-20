@@ -121,12 +121,15 @@ public class NAR extends Param implements Consumer<ITask>, NARIn, NAROut, Cycles
         time.reset();
 
         this.exe = exe;
+
+        self = new AtomicReference<>(null);
+        setSelf(Param.randomSelf());
+
         services = new Services(this, exe);
 
         this.emotion = new Emotion(this);
 
-        self = new AtomicReference<>(null);
-        setSelf(Param.randomSelf());
+
 
         newCauseChannel("input"); //generic non-self source of input
 

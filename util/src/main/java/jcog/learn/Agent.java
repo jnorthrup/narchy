@@ -25,7 +25,6 @@ public abstract class Agent {
 //        return act((float)reward, f);
 //    }
 
-
     @Override
     public String toString() {
         return summary();

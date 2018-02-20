@@ -181,7 +181,7 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
 
 
     public ScalarConcepts(FloatSupplier input, @NotNull NAR nar, ScalarEncoder freqer, @NotNull Term... states) {
-        super(null, $.func(ScalarConcepts.class.getSimpleName(),
+        super($.func(ScalarConcepts.class.getSimpleName(),
                 SETe.the(states),
                 $.quote(Util.toString(input)), $.the(freqer.toString())
         ));

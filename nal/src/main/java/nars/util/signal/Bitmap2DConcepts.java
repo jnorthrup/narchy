@@ -43,7 +43,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<SensorConc
         this.src = src;
         this.pixelPri = n.priDefault(BELIEF);
 
-                this.matrix = new SensorConcept[width][height];
+        this.matrix = new SensorConcept[width][height];
 
         final FloatSupplier pixelPri = () -> this.pixelPri;
 

@@ -33,7 +33,7 @@ public class WaveIn extends NARService {
     final MiniPID autogain = new MiniPID(1, 0.1, 0.4);
 
     WaveIn(NAR nar, Term id, Supplier<WaveCapture> capture) {
-        super(null, id);
+        super(id);
         this.capture = capture;
         nar.off(this); //default off
     }

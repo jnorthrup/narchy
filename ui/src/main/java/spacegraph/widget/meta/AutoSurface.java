@@ -2,7 +2,6 @@ package spacegraph.widget.meta;
 
 import com.google.common.collect.Sets;
 import jcog.Services;
-import jcog.Util;
 import jcog.event.Ons;
 import jcog.list.FasterList;
 import jcog.math.EnumParam;
@@ -14,7 +13,6 @@ import spacegraph.layout.Gridding;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.button.ToggleButton;
-import spacegraph.widget.slider.AllOrNothingSlider;
 import spacegraph.widget.slider.FloatSlider;
 import spacegraph.widget.tab.ButtonSet;
 import spacegraph.widget.text.LabeledPane;
@@ -140,22 +138,22 @@ public class AutoSurface<X> extends Gridding {
 
     private void collectServices(Services<Object, Object> x, List<Surface> l) {
 
-        Map<Services.Service, FloatSlider> controls = new HashMap();
+//        Map<Services.Service, FloatSlider> controls = new HashMap();
         x.entrySet().forEach((ks) -> {
             Object key = ks.getKey();
             Services.Service<?> s = ks.getValue();
 
             if (seen.add(s)) {
                 String label = s.toString(); //StringUtils.abbreviate(s.toString(), 16);
-                FloatSlider fs = new FloatSlider(s.pri(), 0f, 1f).on((f, v) -> {
-                    if (v < 0.01f) {
-                        x.off(key);
-                    } else {
-                        x.on(key, v);
-                        //TODO set aux power parameter
-                    }
-                });
-                controls.put(s, fs);
+//                FloatSlider fs = new FloatSlider(s.pri(), 0f, 1f).on((f, v) -> {
+//                    if (v < 0.01f) {
+//                        x.off(key);
+//                    } else {
+//                        x.on(key, v);
+//                        //TODO set aux power parameter
+//                    }
+//                });
+//                controls.put(s, fs);
 
                 l.add(
                         new Cover(
@@ -165,7 +163,7 @@ public class AutoSurface<X> extends Gridding {
                                                 //yLabel!=null ? yLabel : sx.toString(),
                                                 new Gridding(
                                                         //enable
-                                                        AllOrNothingSlider.AllOrNothingSlider(fs),
+//                                                        AllOrNothingSlider.AllOrNothingSlider(fs),
 //                                new CheckBox("On").set(s.isOn()).on((ToggleButton tb, boolean on)->{
 //                                    if (on) {
 //                                        x.on(key);
@@ -178,15 +176,15 @@ public class AutoSurface<X> extends Gridding {
                 );
             }
 
-            ons.add(x.change.on((co) -> {
-                Services.Service<Object> z = co.getOne();
-                FloatSlider c = controls.get(z);
-                if (c != null) {
-                    c.valueRelative(
-                            co.getTwo() ? Util.round(z.pri(), 0.01f) : 0
-                    );
-                }
-            }));
+//            ons.add(x.change.on((co) -> {
+//                Services.Service<Object> z = co.getOne();
+//                FloatSlider c = controls.get(z);
+//                if (c != null) {
+//                    c.valueRelative(
+//                            co.getTwo() ? Util.round(z.pri(), 0.01f) : 0
+//                    );
+//                }
+//            }));
         });
     }
 

@@ -3,7 +3,6 @@ package nars.test.agent;
 import jcog.Util;
 import jcog.math.FloatRange;
 import nars.$;
-import nars.NAR;
 import nars.NAgent;
 import nars.concept.SensorConcept;
 
@@ -33,8 +32,8 @@ public class Line1DSimplest extends NAgent {
     public final SensorConcept in;
 
 
-    public Line1DSimplest(NAR n) {
-        super( n);
+    public Line1DSimplest() {
+        super( );
 
 
         in = senseNumber(

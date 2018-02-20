@@ -1,5 +1,6 @@
 package nars;
 
+import jcog.TODO;
 import jcog.event.On;
 import jcog.exe.Loop;
 import jcog.list.FasterList;
@@ -9,7 +10,6 @@ import jcog.math.FloatRange;
 import nars.concept.ActionConcept;
 import nars.concept.Concept;
 import nars.concept.SensorConcept;
-import nars.control.Activate;
 import nars.control.CauseChannel;
 import nars.control.DurService;
 import nars.control.NARService;
@@ -22,17 +22,19 @@ import nars.term.var.Variable;
 import nars.truth.DiscreteTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -50,9 +52,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     
 
     public final Map<SensorConcept, CauseChannel<ITask>> sensors = new LinkedHashMap();
-
     public final Map<ActionConcept, CauseChannel<ITask>> actions = new LinkedHashMap();
-    Runnable[] actionUpdates = null, sensorUpdates = null;
 
 //    /**
 //     * the general reward signal for this agent
@@ -70,83 +70,55 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     /**
      * action exploration rate; analogous to epsilon in QLearning
      */
-    public final FloatRange curiosity;
+    public FloatRange curiosity;
     public final FloatRange depress = new FloatRange(0.1f, 0f, 1f);
 
 
     public final AtomicBoolean enabled = new AtomicBoolean(false);
 
-    public final SensorConcept happy;
-    private final CauseChannel<ITask> in;
+    public SensorConcept happy;
 
     public boolean trace;
 
-    public long now;
+    public long now = ETERNAL; //not started
 
 
     /**
      * range: -1..+1
      */
     public float reward;
-    public final NAR nar;
+
+    public NAR nar = null;
+    private CauseChannel<ITask> in = null;
+
     private int dur;
 
     public final FloatRange motivation = new FloatRange(0.5f, 0f, 1f);
     protected List<Task> always = $.newArrayList();
 
-    /** concepts (which are present at start time) */
-    private List<Termed> concepts;
+
 
     protected NAgent(@NotNull NAR nar) {
         this("", nar);
     }
 
-    protected NAgent(@NotNull String id, @NotNull NAR nar) {
+    protected NAgent(String id, NAR nar) {
         this(id.isEmpty() ? null : Atomic.the(id), nar);
     }
+    @Deprecated protected NAgent(Term id, NAR nar) {
+        this(id);
+        if (nar!=null)
+            nar.on(this);
+    }
 
-    protected NAgent(@Nullable Term id, @NotNull NAR nar) {
-        super(null, id);
+    protected NAgent() {
+        this("", null);
+    }
 
-        this.nar = nar;
-        this.in = nar.newCauseChannel(this);
-
-        this.now = ETERNAL; //not started
-
-        Term happyTerm = id == null ?
-                $.the("happy") : //generally happy
-                //$.inh(id, $.the("happy")); //happy in this environment
-                $.prop(id, $.the("happy")); //happiness of this environment
-
-        FloatNormalized happyValue = new FloatPolarNormalized(
-                //new FloatHighPass(
-                () -> reward
-                //)
-        ).relax(Param.HAPPINESS_RE_SENSITIZATION_RATE);
-
-        this.happy = new ActionInfluencingSensorConcept(happyTerm, happyValue);
+    protected NAgent(@Nullable Term id) {
+        super(id);
 
 
-
-//        this.reward = senseNumber(new FloatPolarNormalized(() -> rewardCurrent), ScalarConcepts.Mirror,
-//                id == null ?
-//                        $.the("happy") : //generally happy
-//                        $.p(id, $.the("happy")), //happy in this environment
-//                id == null ?
-//                        $.the("sad") : //generally sad
-//                        $.p(id, $.the("sad")) //sad in this environment
-//        );
-        //happy = this.reward.sensors.get(0);
-        //sad = this.reward.sensors.get(1);
-
-        //fireHappy = Activation.get(happy, 1f, new ConceptFire(happy, 1f);
-
-        curiosity = new FloatRange(0.10f, 0f, 1f);
-
-
-//        if (id == null) id = $.quote(getClass().toString());
-
-        nar.on(this);
     }
 
     public NALTask alwaysWant(Termed x, float conf) {
@@ -207,6 +179,11 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     protected abstract float act();
 
 
+    public Random random() {
+        NAR nar = this.nar;
+        return nar!=null ? nar.random() : ThreadLocalRandom.current();
+    }
+
     @NotNull
     public String summary() {
 
@@ -225,60 +202,45 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
      */
     @Override
     protected void start(NAR nar) {
+        synchronized (this) {
+            super.start(nar);
 
-        this.now = nar.time();
+            Term happyTerm = id == null ?
+                    $.the("happy") : //generally happy
+                    //$.inh(id, $.the("happy")); //happy in this environment
+                    $.prop(id, $.the("happy")); //happiness of this environment
 
-        super.start(nar);
+            FloatNormalized happyValue = new FloatPolarNormalized(
+                    //new FloatHighPass(
+                    () -> reward
+                    //)
+            ).relax(Param.HAPPINESS_RE_SENSITIZATION_RATE);
+
+            assert(this.nar == null || this.nar == nar);
+            this.nar = nar;
+
+            this.in = nar.newCauseChannel(this);
+            this.now = nar.time();
 
 
+            this.happy = new ActionInfluencingSensorConcept(happyTerm, happyValue);
 
+            this.curiosity = new FloatRange(0.10f, 0f, 1f);
 
-        Set<ActionConcept> actionSet = actions.keySet();
-        actionUpdates = new Runnable[actionSet.size()];
-        {
-            int j = 0;
-            for (Map.Entry<ActionConcept, CauseChannel<ITask>> ac : actions.entrySet()) {
-                ActionConcept a = ac.getKey();
-                CauseChannel c = ac.getValue();
-                actionUpdates[j++] = () -> {
-                    Stream<ITask> s = a.update(now, dur, NAgent.this.nar);
-                    if (s != null)
-                        c.input(s);
-                };
-            }
+            alwaysWant(happy, nar.confDefault(GOAL));
+
+            //finally:
+            enabled.set(true);
         }
-
-        Set<SensorConcept> sensorSet = sensors.keySet();
-        sensorUpdates = new Runnable[sensorSet.size()];
-        {
-            int j = 0;
-            FloatFloatToObjectFunction<Truth> truther = (prev, next) -> $.t(next, nar.confDefault(BELIEF));
-            for (Map.Entry<SensorConcept, CauseChannel<ITask>> sc : sensors.entrySet()) {
-                SensorConcept s = sc.getKey();
-                CauseChannel c = sc.getValue();
-
-
-                sensorUpdates[j++] = ()-> {
-                    c.input(s.update(truther, now, dur, nar));
-                };
-            }
-        }
-
-
-
-        List<Termed> cc = new FasterList();
-        cc.add(happy);
-        cc.addAll(actionSet);
-        cc.addAll(sensorSet);
-        this.concepts = cc;
-
-
-        alwaysWant(happy, nar.confDefault(GOAL));
-
-        //finally:
-        enabled.set(true);
-
     }
+
+    @Override
+    protected void stopping(NAR nar) {
+        //disconnect channel
+        //remove all other services
+        throw new TODO();
+    }
+
 
     protected void always(float activation) {
         for (int i = 0, alwaysSize = always.size(); i < alwaysSize; i++) {
@@ -297,25 +259,32 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     @Override
     public void run() {
-        if (!enabled.get()) {
+        if (!enabled.get())
             return;
-        }
-
 
         this.dur = nar.dur();
         this.now = nar.time();
 
         reward = act() - depress.floatValue();
 
-        for (Runnable r : sensorUpdates)
-            r.run();
 
         always(motivation.floatValue());
 
-        //evaluate actions in shuffled order for fairness, in case of mutex's among them
-        ArrayUtils.shuffle(actionUpdates, nar.random);
-        for (Runnable r : actionUpdates)
-            r.run();
+        actions.entrySet().forEach( (ac) -> {
+            Stream<ITask> s = ac.getKey().update(now, dur, NAgent.this.nar);
+            if (s != null)
+                ac.getValue().input(s);
+        });
+
+//        //evaluate actions in shuffled order for fairness, in case of mutex's among them
+//        ArrayUtils.shuffle(actionUpdates, nar.random);
+//        for (Runnable r : actionUpdates)
+//            r.run();
+
+        FloatFloatToObjectFunction<Truth> truther = (prev, next) -> $.t(next, nar.confDefault(BELIEF));
+        sensors.entrySet().forEach( (sc) -> {
+            sc.getValue().input(sc.getKey().update(truther, now, dur, nar));
+        });
 
 
         Truth happynowT = nar.beliefTruth(happy, now);
@@ -326,37 +295,32 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             logger.info(summary());
     }
 
-    /** creates an activator specific to this agent context */
-    public Consumer<Predicate<Activate>> fire() {
-        return p -> {
-            Activate a;
-
-            final int numConcepts = concepts.size();
-            int remainMissing = numConcepts;
-            if (remainMissing == 0) return;
-
-            float pri = motivation.floatValue();
-            Random rng = nar.random();
-            do {
-                Concept cc = nar.conceptualize(concepts.get(rng.nextInt(numConcepts)));
-                if (cc!=null) {
-                    a = new Activate(cc, 0);
-                    a.delete(); //prevents termlinking
-                } else {
-                    a = null;
-                    if (remainMissing-- <= 0) //safety exit
-                        break;
-                    else
-                        continue;
-                }
-            } while (a==null || p.test(a));
-        };
-    }
-
-    /** concepts involved in this agent */
-    public List<Termed> concepts() {
-        return concepts;
-    }
+//    /** creates an activator specific to this agent context */
+//    public Consumer<Predicate<Activate>> fire() {
+//        return p -> {
+//            Activate a;
+//
+//            final int numConcepts = concepts.size();
+//            int remainMissing = numConcepts;
+//            if (remainMissing == 0) return;
+//
+//            float pri = motivation.floatValue();
+//            Random rng = nar.random();
+//            do {
+//                Concept cc = nar.conceptualize(concepts.get(rng.nextInt(numConcepts)));
+//                if (cc!=null) {
+//                    a = new Activate(cc, 0);
+//                    a.delete(); //prevents termlinking
+//                } else {
+//                    a = null;
+//                    if (remainMissing-- <= 0) //safety exit
+//                        break;
+//                    else
+//                        continue;
+//                }
+//            } while (a==null || p.test(a));
+//        };
+//    }
 
 
     /** default rate = 1 dur/ 1 frame */
@@ -718,8 +682,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         List<Termed> templatesPlusActions;
 
         public ActionInfluencingSensorConcept(Term id, FloatNormalized value) {
-            super(id, NAgent.this.nar(), value
-            );
+            super(id, NAgent.this.nar(), value);
             templatesPlusActions = null;
 
 

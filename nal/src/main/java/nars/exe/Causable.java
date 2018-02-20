@@ -44,7 +44,7 @@ abstract public class Causable extends NARService {
     }
 
     protected Causable(NAR nar, Term id) {
-        super(null, id);
+        super(id);
         busy = singleton() ? new AtomicBoolean(false) : null;
         can = new Can(term().toString());
         if (nar != null)

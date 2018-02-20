@@ -3,8 +3,10 @@ package spacegraph.widget.meter;
 import com.jogamp.opengl.GL2;
 import jcog.math.FloatSupplier;
 import jcog.math.tensor.ArrayTensor;
+import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.Surface;
+import spacegraph.math.v2;
 import spacegraph.render.Draw;
 import spacegraph.render.Tex;
 
@@ -32,7 +34,22 @@ public class BitmapMatrixView extends Surface {
         bmp.paint(gl, bounds);
     }
 
-//
+    /** the position of a cell's center */
+    public v2 cell(float x, float y) {
+        float W = w();
+        float xx = ((x + 0.5f)/(w))*W;
+        float H = h();
+        float yy = ((y + 0.5f)/(h))*H;
+        return new v2(xx, yy);
+    }
+    /** the prw, prh represent a rectangular size proportional to the displayed cell size */
+    public RectFloat2D cellRect(float x, float y, float prw, float prh) {
+        v2 c = cell(x, y);
+        float pw = prw / this.w;
+        float ph = prh / this.h;
+        return RectFloat2D.XYWH(c.x, c.y, pw * w(), ph * h());
+    }
+
     public static ViewFunction2D arrayRenderer(float[][] ww) {
         return (x, y) -> {
             float v = ww[x][y];

@@ -13,11 +13,12 @@
  */
 package jcog;
 
-import com.google.common.annotations.GwtIncompatible;
 import jcog.event.ListTopic;
 import jcog.event.Topic;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
 import java.util.Map;
@@ -85,9 +86,9 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  * @author Luke Sandberg
  * @since 14.0
  */
-@GwtIncompatible
 public class Services<X, C>  {
 
+    final Logger logger;
     private final C id;
     private final Executor exe;
     public final Topic<ObjectBooleanPair<Service<C>>> change = new ListTopic<>();
@@ -140,28 +141,12 @@ public class Services<X, C>  {
             return state() == Services.ServiceState.Off;
         }
 
-        default float pri() {
-            return isOn() ? 1f : 0f;
-        }
-        default void setPri(float ignored) { }
     }
 
     public static abstract class AbstractService<C> extends AtomicReference<ServiceState> implements Service<C> {
 
-        float pri = 0f;
-
         protected AbstractService() {
             super(ServiceState.Off);
-        }
-
-        @Override
-        public float pri() {
-            return pri;
-        }
-
-        @Override
-        public void setPri(float pri) {
-            this.pri = Util.unitize(pri);
         }
 
         @Override
@@ -179,7 +164,7 @@ public class Services<X, C>  {
 
         @Override
         public final void start(Services<?,C> x, Executor exe) {
-            if (pri() > 0 && compareAndSet(ServiceState.Off, ServiceState.OffToOn)) {
+            if (compareAndSet(ServiceState.Off, ServiceState.OffToOn)) {
                 exe.execute(() -> {
                     try {
                         start(x.id);
@@ -188,8 +173,8 @@ public class Services<X, C>  {
                         );
                         x.change.emit(pair(AbstractService.this, true));
                     } catch (Throwable e) {
-                        e.printStackTrace();
                         delete();
+                        x.logger.error("{} {}", this, e);
                     }
                 });
             }
@@ -215,8 +200,8 @@ public class Services<X, C>  {
                             afterDelete.run();
                         }
                     } catch (Throwable e) {
-                        e.printStackTrace();
                         delete();
+                        x.logger.error("{} {}", this, e);
                     }
                 });
             }
@@ -239,8 +224,6 @@ public class Services<X, C>  {
     }
 
 
-//    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(Services.class);
-
     public final ConcurrentMap<X, Service<C>> services;
 
     public Services(C id) {
@@ -261,6 +244,7 @@ public class Services<X, C>  {
      */
     public Services(@Nullable C id, Executor exe) {
         this.id = id == null ? (C)this : id;
+        this.logger = LoggerFactory.getLogger(id.toString());
         this.exe = exe;
         this.services = new ConcurrentHashMap<>();
     }
@@ -278,12 +262,7 @@ public class Services<X, C>  {
 
 
     public final void on(X key) {
-        on(key, 1f);
-    }
-
-    public void on(X key, float v) {
         Service<C> s = services.get(key);
-        s.setPri(v);
         if (s.isOff()) {
             s.start(this, exe);
         }
@@ -306,7 +285,6 @@ public class Services<X, C>  {
             removed.stop(this, exe, start ? ()-> s.start(this, exe) : null);
         } else {
             if (start) {
-                s.setPri(1f);
                 s.start(this, exe);
             }
         }
