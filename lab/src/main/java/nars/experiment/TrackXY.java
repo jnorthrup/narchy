@@ -8,17 +8,21 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import nars.*;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
+import nars.exe.UniExec;
 import nars.gui.Vis;
 import nars.index.term.map.CaffeineIndex;
 import nars.op.ArithmeticIntroduction;
 import nars.op.RLBooster;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
+import nars.time.CycleTime;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.CameraSensorView;
 import spacegraph.layout.Gridding;
 import spacegraph.render.Draw;
 import spacegraph.widget.meta.AutoSurface;
+
+import java.util.function.Consumer;
 
 import static nars.Op.BELIEF;
 import static spacegraph.render.JoglSpace.window;
@@ -36,18 +40,26 @@ public class TrackXY extends NAgent {
     public Bitmap2DSensor cam;
 
 
-    private float controlSpeed = 1f, targetSpeed = 0.5f;
+    private float controlSpeed = 1f;
     private float visionContrast = 0.9f;
+
+    Consumer<TrackXY> updater =
+            //new RandomTarget();
+            new CyclicTarget();
 
     public static void main(String[] args) {
 
         float fps = 40;
 
         boolean nars = true;
-        boolean rl = false;
+        boolean rl = true;
 
-        NARS nb = NARS
-                .realtime(fps)
+        int dur = 1;
+
+        NARS nb = new NARS()
+                //.realtime(fps*2)
+                .exe(new UniExec(1024))
+                .time(new CycleTime().dur(dur))
                 .index(
                     //new HijackConceptIndex(4 * 1024, 4)
                     new CaffeineIndex(8*1024)
@@ -58,10 +70,10 @@ public class TrackXY extends NAgent {
         NAR n = nb.get();
 
         n.termVolumeMax.set(36);
-        n.conceptActivation.set(0.9f);
-        n.forgetRate.set(0.75f);
+        n.conceptActivation.set(0.5f);
+        n.forgetRate.set(1f);
 
-        TrackXY t = new TrackXY(6, 6);
+        TrackXY t = new TrackXY(4, 1);
         n.on(t);
 
         n.time.synch(n);
@@ -70,13 +82,17 @@ public class TrackXY extends NAgent {
 
         if (nars) {
             Deriver d = new Deriver(Derivers.rules(1, 8, n), n);
-            ConjClustering cj = new ConjClustering(n, BELIEF, (tt)->true, 8, 64);
+            ConjClustering cj = new ConjClustering(n, BELIEF,
+                    //(tt)->true,
+                    (tt)->tt.isInput(),
+                    2, 8);
             ArithmeticIntroduction ai = new ArithmeticIntroduction(32,n);
             window(new Gridding(
                     new AutoSurface(d),
                     new AutoSurface(cj),
                     new AutoSurface(ai)
             ), 400, 300);
+            n.onTask(tt -> { if (tt.isGoal() ) { System.out.println(tt); } });
         }
         window(Vis.top(n), 800, 250);
         NAgentX.chart(t);
@@ -99,6 +115,7 @@ public class TrackXY extends NAgent {
                     HaiQAgent::new,
                     //RandomAgent::new,
                     1);
+            t.curiosity.set(0);
         }
 
         //n.log();
@@ -150,11 +167,40 @@ public class TrackXY extends NAgent {
         }
     }
 
-    protected void update() {
-        synchronized (view) {
-            this.tx = Util.clamp(tx + 2 * targetSpeed * (random().nextFloat()-0.5f), 0, view.width() - 1);
-            if (view.height() > 1)
-                this.ty = Util.clamp(ty + 2 * targetSpeed * (random().nextFloat()-0.5f), 0, view.height() - 1);
+    public int width() { return view.width(); }
+    public int height() { return view.height(); }
+
+    public static class RandomTarget implements Consumer<TrackXY> {
+        private float targetSpeed = 0.5f;
+        public void accept(TrackXY t) {
+
+            float tx,ty;
+            tx = Util.clamp(t.tx + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.width() - 1);
+            if (t.height() > 1) {
+                ty = Util.clamp(t.ty + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.height() - 1);
+            } else {
+                ty = 0;
+            }
+
+            t.tx = tx;
+            t.ty = ty;
+        }
+    }
+
+    public static class CyclicTarget implements Consumer<TrackXY> {
+
+
+        float speed = 0.02f;
+        float x = 0;
+
+        @Override
+        public void accept(TrackXY t) {
+            x += speed;
+            t.tx = (((float) Math.sin(x)*0.5f)+0.5f) * (t.width()-1);
+//            int tw = t.width();
+//            if (t.tx > tw -1)
+//                t.tx -= tw;
+            t.ty = 0;
         }
     }
 
@@ -162,23 +208,25 @@ public class TrackXY extends NAgent {
     protected synchronized float act() {
 
         synchronized (view) {
+            Consumer<TrackXY> u = updater;
+            if (u!=null)
+                u.accept(this);
+
             view.set((x,y)->{
                 float dist = (float) Math.sqrt(Util.sqr(tx-x) + Util.sqr(ty-y));
                 return Math.max(0, 1-dist* visionContrast);
             });
-            update();
         }
 
         cam.input();
-
 
 
         float dist = (float) Math.sqrt(Util.sqr(tx-sx) + Util.sqr(ty-sy));
 
 
         //return 1f/(1f+dist);
-        return controlSpeed - dist; //controlSpeed is margin of tolerance
-
+        //return controlSpeed - dist*dist; //controlSpeed is margin of tolerance
+        return -dist;
     }
 }
 

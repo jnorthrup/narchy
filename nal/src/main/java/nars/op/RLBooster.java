@@ -42,6 +42,17 @@ public class RLBooster implements Consumer<NAR> {
     public final FloatRange conf = new FloatRange(0.5f, 0f, 1f);
 
     public RLBooster(NAgent env, IntIntToObjectFunc<Agent> rl, int actionDiscretization) {
+        this(env, rl, actionDiscretization, true);
+    }
+
+    /**
+     *
+     * @param env
+     * @param rl
+     * @param actionDiscretization
+     * @param nothingAction reserve 0 for nothing
+     */
+    public RLBooster(NAgent env, IntIntToObjectFunc<Agent> rl, int actionDiscretization, boolean nothingAction) {
         assert(actionDiscretization>=1);
 
         this.env = env;
@@ -59,7 +70,7 @@ public class RLBooster implements Consumer<NAR> {
 
         input = new float[inD];
 
-        boolean nothingAction = false; //reserve 0 for nothing
+
 
         this.outD = (nothingAction ? 1 : 0) /* nothing */ + env.actions.size() * actionDiscretization /* pos/neg for each action */;
         this.output = new Runnable[outD];
@@ -137,7 +148,11 @@ public class RLBooster implements Consumer<NAR> {
     public void accept(NAR ignored) {
 
         //TODO provide actual action vector, not what it thinks it enacted by itself
-        int o = rl.act(env.reward, input());
+
+        //NAgent's happiness value, normalized to -1..+1
+        float reward = (env.happy.asFloat() - 0.5f) * 2f;
+
+        int o = rl.act(reward, input());
         //System.out.println(now + " "  + o + " " + a.o.floatValue() + " " + " " + a.rewardValue);
 
         output[o].run();

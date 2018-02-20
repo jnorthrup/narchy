@@ -723,6 +723,9 @@ public enum Util {
     public static float round(float value, float epsilon) {
         return Math.round(value / epsilon) * epsilon;
     }
+    public static double round(double value, double epsilon) {
+        return Math.round(value / epsilon) * epsilon;
+    }
 
     /**
      * rounds x to the nearest multiple of the dither parameter

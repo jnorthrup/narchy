@@ -32,6 +32,7 @@ import nars.term.var.Variable;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.math3.fraction.Fraction;
 import org.eclipse.collections.api.block.function.primitive.CharToObjectFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -577,6 +578,19 @@ public enum $ {
 
     public static Term the(boolean b) {
         return b ? Op.True : Op.False;
+    }
+
+    public static Term the(double x) {
+        int rx = (int)Util.round(x, 1);
+        if (Util.equals(rx, x, Double.MIN_NORMAL)) {
+            return Int.the(rx);
+        } else {
+            return the(new Fraction(x));
+        }
+    }
+
+    public static Term the(Fraction o) {
+        return $.func("div", $.the(o.getNumerator()), $.the(o.getDenominator()));
     }
 
     public static Term the(Object o) {

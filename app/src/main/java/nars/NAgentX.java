@@ -86,7 +86,7 @@ abstract public class NAgentX extends NAgent {
                         :
                         $.the("joy"),
                 new FloatPolarNormalized(new FloatFirstOrderDifference(nar::time,
-                        () -> reward)).relax(0.01f));
+                        () -> reward)).relax(0.001f));
         alwaysWant(joy, nar.confDefault(GOAL)*0.75f);
 
         if (Param.DEBUG) {

@@ -222,10 +222,26 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
                     //)
             ) {
                         @Override
-                        public float max() {
-                            //decrease the max toward min in proportion to the depression setting
-                            return Util.lerp(depress.floatValue(), super.max(), super.min());
+                        public float asFloat() {
+                            float f = super.asFloat();
+                            if (f!=f) return Float.NaN;
+                            else {
+                                //depression curve and offset
+                                assert(f >= 0 && f <= 1f);
+                                //return Util.max(0,f*f - depress.floatValue());
+                                return Util.max(0,f - depress.floatValue());
+                            }
                         }
+                        //                        @Override
+//                        public float min() {
+//                            return Util.lerp(depress.floatValue(), super.max(), super.min());
+//                        }
+//
+//                        @Override
+//                        public float max() {
+//                            //decrease the max toward min in proportion to the depression setting
+//                            return Util.lerp(depress.floatValue(), super.max(), super.min());
+//                        }
                     }.relax(Param.HAPPINESS_RE_SENSITIZATION_RATE);
 
             assert(this.nar == null || this.nar == nar);

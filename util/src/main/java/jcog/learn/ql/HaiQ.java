@@ -83,16 +83,17 @@ public class HaiQ extends Agent {
         setQ(0.1f, 0.5f, 0.75f); // 0.1 0.5 0.9
         rng = new XorShift128PlusRandom();
 
+        //HaiQ only
         decideInput =
                 //DecideEpsilonGreedy.ArgMax;
                 new DecideSoftmax(0.25f, rng);
 
         decideState =
-                //DecideEpsilonGreedy.ArgMax;
-                new DecideSoftmax(0.25f, rng);
+                DecideEpsilonGreedy.ArgMax;
+                //new DecideSoftmax(0.25f, rng);
 
         decideAction =
-                new DecideEpsilonGreedy(0.05f, rng);
+                new DecideEpsilonGreedy(0.03f, rng);
                 //new DecideSoftmax(0.25f, rng);
     }
 

@@ -161,7 +161,7 @@ public class NARS {
 
         concepts = DefaultConceptBuilder::new;
 
-        derivers = new FasterList();
+        derivers = new FasterList<>();
     }
 
     /**
@@ -196,12 +196,6 @@ public class NARS {
      */
     public static NAR threadSafe() {
         return new DefaultNAR(8, true).get();
-    }
-
-
-    public NARS threadable() {
-        index = () -> new CaffeineIndex(64 * 1024 /*HACK */);
-        return this;
     }
 
 

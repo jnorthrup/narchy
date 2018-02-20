@@ -25,6 +25,9 @@ public class QueueLock<X> implements Consumer<X> {
 
     final static Logger logger = LoggerFactory.getLogger(QueueLock.class);
 
+    /** exclusive current working thread */
+    private long exe = Long.MIN_VALUE;
+
     /*
     //new EvictingQueue<>(capacity);
     //new DisruptorBlockingQueue<>(capacity);
@@ -60,6 +63,11 @@ public class QueueLock<X> implements Consumer<X> {
     public void accept(X x) {
 
 
+        if (this.exe == Thread.currentThread().getId()) {
+            //re-entrant invocation
+            proc.accept(x);
+            return;
+        }
 
         try {
             queue.put(x);
@@ -104,6 +112,8 @@ public class QueueLock<X> implements Consumer<X> {
 
                 int done = 0;
 
+                this.exe = Thread.currentThread().getId();
+
                 final X[] next = (X[]) new Object[1];
                 while (busy.updateAndGet((y) -> (next[0] = queue.poll()) != null ? 1 : 0) == 1) {
                     X n = next[0];
@@ -123,6 +133,7 @@ public class QueueLock<X> implements Consumer<X> {
                     }
                 }
             } finally {
+                this.exe = Long.MIN_VALUE;
                 busy.set(0);
             }
         }

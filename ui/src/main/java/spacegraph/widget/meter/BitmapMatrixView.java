@@ -39,7 +39,7 @@ public class BitmapMatrixView extends Surface {
         float W = w();
         float xx = ((x + 0.5f )/(w))*W;
         float H = h();
-        float yy = ((y + 0.5f )/(h) )*H;
+        float yy = (1f-((y + 0.5f )/(h) ))*H;
         return new v2(xx, yy);
     }
     /** the prw, prh represent a rectangular size proportional to the displayed cell size */

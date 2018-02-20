@@ -9,7 +9,7 @@ import java.util.function.DoubleSupplier;
 public class FloatNormalized implements FloatSupplier {
 
     private final FloatSupplier in;
-    private float min;
+    protected float min;
     private float max;
     private final float minStart;
     private final float maxStart;
@@ -69,11 +69,11 @@ public class FloatNormalized implements FloatSupplier {
         return normalize(raw, min(), max());
     }
 
-    public float normalize(float x, float min, float max) {
+    protected float normalize(float x, float min, float max) {
         float r = max - min;
         assert(r >= 0);
         if (r <= epsilon)
-            return x;
+            return 0.5f;
         else
             return (x - min) / r;
     }

@@ -1,6 +1,7 @@
 package nars.op.java;
 
 import com.google.common.collect.ImmutableSet;
+import jcog.TODO;
 import jcog.Util;
 import jcog.data.map.CustomConcurrentHashMap;
 import nars.$;
@@ -364,6 +365,16 @@ public class DefaultTermizer implements Termizer {
         if (o instanceof Boolean) {
             if (((Boolean) o)) return TRUE;
             else return FALSE;
+        } else if (o instanceof Number) {
+            if (o instanceof Byte || o instanceof Short || o instanceof Integer || (o instanceof Long && Math.abs((Long)o) < Integer.MAX_VALUE-1) )  {
+                return Int.the(((Number) o).intValue());
+            } else if (o instanceof Float || o instanceof Double) {
+                return $.the(((Number) o).doubleValue());
+            } else if (o instanceof Long /* beyond an Int's capacity */) {
+                return $.the(Long.toString((Long)o)); //HACK
+            } else {
+                throw new TODO("support: " + o + " (" + o.getClass() + ")");
+            }
         } else if (o instanceof String) {
             return Atomic.the((String)o);
         }

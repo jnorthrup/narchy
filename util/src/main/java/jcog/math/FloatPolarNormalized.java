@@ -23,7 +23,7 @@ public class FloatPolarNormalized extends FloatNormalized {
     public float normalize(float raw) {
         if (raw==raw) {
             updateRange(Math.abs(raw));
-            //min = 0;
+            min = 0;
             return normalize(raw, -max(), max());
         } else {
             return Float.NaN;
