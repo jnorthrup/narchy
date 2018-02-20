@@ -55,11 +55,11 @@ public class Wiring extends FingerDragging {
     @Override
     protected boolean drag(Finger f) {
         if (path == null) {
-            path = new Path2D(16);
+            path = new Path2D(64);
             ((Ortho)(start.root())).addOverlay(pathVis = new SketchedPath(path));
         }
 
-        path.add(f.pos, 32);
+        path.add(f.pos, 64);
 
         updateEnd(f);
 

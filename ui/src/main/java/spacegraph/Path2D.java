@@ -1,13 +1,14 @@
 package spacegraph;
 
 import com.jogamp.opengl.GL2;
-import jcog.Util;
 import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 
-import java.util.concurrent.ThreadLocalRandom;
+import static spacegraph.math.Simplify2D.collinear;
+import static spacegraph.math.Simplify2D.collinearity;
+
 
 /**
  * pairs of x,y coordiates stored in linear array
@@ -37,33 +38,88 @@ public class Path2D extends FloatArrayList {
      */
     public synchronized void add(Tuple2f p, int maxPoints) {
         assert (maxPoints > 3);
-        if (points() < maxPoints) {
+//        if (points() < maxPoints) {
+//            add(p);
+//        } else {
             add(p);
-        } else {
-            //TODO path simplification
-            //make subclass which stores triples of values:
-            //x,y,[distance to next vertex]
-            //total distance can be stored in the final unused triple
-            //the distance value will help determine what points to interpolate during simplification
+            if (points() > maxPoints)
+                collinearSimplifyNext();
+            //collinearSimplify(0.01f, maxPoints);
+//            //TODO path simplification
+//            //make subclass which stores triples of values:
+//            //x,y,[distance to next vertex]
+//            //total distance can be stored in the final unused triple
+//            //the distance value will help determine what points to interpolate during simplification
+//
+//            //HACK remove point at random
+//            int toRemove = 1 + ThreadLocalRandom.current().nextInt(maxPoints - 2);
+//            float rx = removeAtIndex(toRemove * 2);
+//            float ry = removeAtIndex(toRemove * 2); //called twice at the same index
+//
+//
+//            //interpolate 33% with after
+//            items[toRemove * 2 + 0] = Util.lerp(items[toRemove * 2 + 0], rx, 0.33f);
+//            items[toRemove * 2 + 1] = Util.lerp(items[toRemove * 2 + 1], ry, 0.33f);
+//
+//
+//            if (toRemove > 1) {
+//                //interpolate 33% with prev
+//                items[toRemove * 2 - 2] = Util.lerp(items[toRemove * 2 - 2], rx, 0.33f);
+//                items[toRemove * 2 - 1] = Util.lerp(items[toRemove * 2 - 1], ry, 0.33f);
+//            }
+//
+//            add(p);
+//        }
+    }
 
-            //HACK remove point at random
-            int toRemove = 1 + ThreadLocalRandom.current().nextInt(maxPoints - 2);
-            float rx = removeAtIndex(toRemove * 2);
-            float ry = removeAtIndex(toRemove * 2); //called twice at the same index
+    void collinearSimplifyNext() {
+        int n = points();
+        int worst = -1;
+        float minC = Float.POSITIVE_INFINITY;
+        for (int i = 1; i < n-1; i++) {
+            int prevId = i - 1;
+            if (prevId < 0) prevId = n - 1;
+            int nextId = i + 1;
+            if (nextId >= n) nextId = 0;
 
+            {
 
-            //interpolate 33% with after
-            items[toRemove * 2 + 0] = Util.lerp(items[toRemove * 2 + 0], rx, 0.33f);
-            items[toRemove * 2 + 1] = Util.lerp(items[toRemove * 2 + 1], ry, 0.33f);
+                v2 prev = point(prevId);
+                v2 current = point(i);
+                v2 next = point(nextId);
 
-
-            if (toRemove > 1) {
-                //interpolate 33% with prev
-                items[toRemove * 2 - 2] = Util.lerp(items[toRemove * 2 - 2], rx, 0.33f);
-                items[toRemove * 2 - 1] = Util.lerp(items[toRemove * 2 - 1], ry, 0.33f);
+                float c = collinearity(prev, current, next);
+                if (c < minC) {
+                    worst = i;
+                    minC = c;
+                }
             }
+        }
+        assert(worst!=-1);
+        removeAtIndex(worst*2); removeAtIndex(worst*2);
+    }
 
-            add(p);
+    void collinearSimplify(float collinearityTolerance, int maxPoints) {
+        // We can't simplify polygons under 3 vertices
+        assert(maxPoints >= 3);
+
+        int n = points();
+        for (int i = 0; n > maxPoints && i < n; ) {
+            int prevId = i - 1;
+            if (prevId < 0) prevId = n - 1;
+            int nextId = i + 1;
+            if (nextId >= n) nextId = 0;
+
+            v2 prev = point(prevId);
+            v2 current = point(i);
+            v2 next = point(nextId);
+
+            if (i > 0 && i < n-1 && collinear(prev, current, next, collinearityTolerance)) {
+                removeAtIndex(i*2); removeAtIndex(i*2);
+                n--;
+            } else {
+                i++;
+            }
         }
     }
 
@@ -82,9 +138,13 @@ public class Path2D extends FloatArrayList {
 
 
     public v2 start() {
-        assert (size > 0);
+        //assert (size > 0);
+        return point(0);
+    }
+
+    public v2 point(int i) {
         float[] ii = items;
-        return new v2(ii[0], ii[1]);
+        return new v2(ii[i*2], ii[i*2+1]);
     }
 
     public v2 end() {

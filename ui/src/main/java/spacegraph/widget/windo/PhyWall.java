@@ -412,12 +412,12 @@ public class PhyWall extends Wall implements Animated {
             WeldJointDef jd = new WeldJointDef();
             jd.bodyA = this.body;
             jd.bodyB = x.body;
-            jd.localAnchorA.set( myLocal );
+            jd.localAnchorA.set( myLocal.scaled(0.5f) );
             jd.localAnchorB.set( theirLocal.scaled(0.5f) );
             jd.referenceAngle = ((v2)myLocal).angle(theirLocal);
             jd.collideConnected = false;
             jd.dampingRatio = 0.5f;
-            jd.frequencyHz = 1f;
+            jd.frequencyHz = 0.25f;
 
             WeldJoint j = new WeldJoint(W.pool, jd);
             W.addJoint(j);
