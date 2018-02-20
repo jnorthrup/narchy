@@ -2,13 +2,14 @@ package nars.gui.graph;
 
 import jcog.Util;
 import jcog.bag.Bag;
-import jcog.bag.impl.hijack.PLinkHijackBag;
+import jcog.bag.impl.ConcurrentArrayBag;
 import jcog.bag.util.Bagregate;
 import jcog.event.Ons;
 import jcog.list.FasterList;
 import jcog.math.EnumParam;
 import jcog.math.FloatRange;
 import jcog.pri.PriReference;
+import jcog.pri.op.PriMerge;
 import jcog.util.Flip;
 import nars.NAR;
 import nars.Task;
@@ -238,25 +239,26 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
             this.edges =
 
-                    new PLinkHijackBag(0, 2);
-                    edges.setCapacity(maxEdges);
-//                    new ConcurrentArrayBag<>(
+                    //new PLinkHijackBag(0, 2);
+                    //edges.setCapacity(maxEdges);
+
+                    new ConcurrentArrayBag<>(
 //                    //new PLinkArrayBag(maxEdges,
 //                            //PriMerge.max,
 //                            //PriMerge.replace,
-//                            PriMerge.plus,
+                            PriMerge.plus,
 //                            //new UnifiedMap()
 //                            //new LinkedHashMap()
 //                            //new LinkedHashMap() //maybe: edgeBagSharedMap
-//                            //maxEdges
+                            maxEdges
 //                            new HashMap()
-//                    ) {
-//                        @Nullable
-//                        @Override
-//                        public ConceptWidget.EdgeComponent key(ConceptWidget.EdgeComponent x) {
-//                            return x;
-//                        }
-//                    };
+                    ) {
+                        @Nullable
+                        @Override
+                        public ConceptWidget.EdgeComponent key(ConceptWidget.EdgeComponent x) {
+                            return x;
+                        }
+                    };
         }
 
 

@@ -57,13 +57,16 @@ public class PriForget<P extends Priority> implements Consumer<P> {
     @Override
     public void accept(P b) {
 
-        b.priSub(priRemoved);
+        //average constant removed, not fair to low priority items
+        //b.priSub(priRemoved);
 
-//        float bp = b.pri();
-//        if (bp==bp)
-//            b.setPri(bp * (1f - ((1f - bp) * (1f - priFactor))) );
+        //proportional removal, tax rate proportional to priority
+        float p = b.pri();
+        if (p==p) {
+            b.priSet( p * (1-(p * priRemoved)) );
+        }
 
-        //b.priSub(avgToBeRemoved);
+
 
 //        b.priSub(avgToBeRemoved
 //            ,0.5f //50% retained

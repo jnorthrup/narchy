@@ -7,36 +7,30 @@ import jcog.pri.Pri;
  * */
 public class FloatPolarNormalized extends FloatNormalized {
 
-    public FloatPolarNormalized(FloatSupplier in, float midPoint, float radius) {
-        this(() -> in.asFloat() - midPoint, radius );
-    }
+//    public FloatPolarNormalized(FloatSupplier in, float midPoint, float radius) {
+//        this(() -> in.asFloat() - midPoint, radius );
+//    }
 
     public FloatPolarNormalized(FloatSupplier in) {
         this(in, Pri.EPSILON);
     }
 
     public FloatPolarNormalized(FloatSupplier in, float radius) {
-        super(in);
-        radius(radius);
+        super(in, -radius, radius);
     }
 
     @Override
     public float normalize(float raw) {
         if (raw==raw) {
             updateRange(Math.abs(raw));
-            min = 0;
-            return normalize(raw, -max, max);
+            //min = 0;
+            return normalize(raw, -max(), max());
         } else {
             return Float.NaN;
         }
     }
 
 
-    public FloatPolarNormalized radius(float radius) {
-        this.min = 0;
-        this.max = radius;
-        return this;
-    }
 
     //    final RangeNormalizedFloat positive;
 //    final RangeNormalizedFloat negative;

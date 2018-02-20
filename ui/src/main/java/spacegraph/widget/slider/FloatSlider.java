@@ -5,6 +5,7 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
+import jcog.math.IntRange;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
@@ -49,6 +50,11 @@ import spacegraph.widget.windo.Widget;
     public FloatSlider(FloatRange f) {
         this(f.floatValue(), f.min, f.max);
         input = f;
+        slider.on((s, v) -> f.set(v));
+    }
+    public FloatSlider(IntRange f) {
+        this(f.floatValue(), f.min, f.max);
+        input = f::floatValue;
         slider.on((s, v) -> f.set(v));
     }
 

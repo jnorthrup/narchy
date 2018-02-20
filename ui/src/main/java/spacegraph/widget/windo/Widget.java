@@ -222,7 +222,7 @@ abstract public class Widget extends Switching {
                 int nextState = nextState(curState);
                 state(nextState); //toggle
 
-            } else if (finger.pressedNow(2 /*right button*/)) {
+            } else if (finger.releasedNow(2 /*right button*/) ) {
 //                /** hold to zoom */
 //                finger.tryFingering(new FingerDragging(2) {
 //

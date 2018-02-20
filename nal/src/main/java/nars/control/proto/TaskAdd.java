@@ -29,7 +29,9 @@ public class TaskAdd extends NativeTask {
     @Override
     public ITask run(NAR n) {
         @Nullable Concept c = task.concept(n, true);
-        if (!(c instanceof TaskConcept)) {
+        if (c == null) {
+            return null; //may not have capacity in the concept index
+        } else if (!(c instanceof TaskConcept)) {
             if (task.isBeliefOrGoal() || Param.DEBUG_EXTRA) {
                 throw new RuntimeException(task + " does not resolve a TaskConcept");
             } else

@@ -86,7 +86,7 @@ abstract public class NAgentX extends NAgent {
                         :
                         $.the("joy"),
                 new FloatPolarNormalized(new FloatFirstOrderDifference(nar::time,
-                        () -> reward)).relax(0.95f));
+                        () -> reward)).relax(0.01f));
         alwaysWant(joy, nar.confDefault(GOAL)*0.75f);
 
         if (Param.DEBUG) {
@@ -198,7 +198,7 @@ abstract public class NAgentX extends NAgent {
                         // new PriMapTermIndex()
                         //new CaffeineIndex2(64 * 1024)
                         //new CaffeineIndex2(-1)
-                        //new HijackTermIndex(Primes.nextPrime( 64 * 1024 + 1),  3)
+                        //new HijackConceptIndex(Primes.nextPrime( 64 * 1024 + 1),  3)
                         //new MapTermIndex(new CustomConcurrentHashMap<>(STRONG, EQUALS, SOFT, EQUALS, 128*1024))
                 )
                 .get();
@@ -394,6 +394,7 @@ abstract public class NAgentX extends NAgent {
 //            window(new ConceptView(a.happy,n), 800, 600);
 
 
+            n.on(a);
             //START AGENT
             Loop aLoop = a.runFPS(agentFPS);
 

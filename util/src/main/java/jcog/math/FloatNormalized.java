@@ -9,8 +9,8 @@ import java.util.function.DoubleSupplier;
 public class FloatNormalized implements FloatSupplier {
 
     private final FloatSupplier in;
-    protected float min;
-    protected float max;
+    private float min;
+    private float max;
     private final float minStart;
     private final float maxStart;
 
@@ -38,8 +38,8 @@ public class FloatNormalized implements FloatSupplier {
     @Override
     public String toString() {
         return "RangeNormalizedFloat{" +
-                "min=" + min +
-                ", max=" + max +
+                "min=" + min() +
+                ", max=" + max() +
                 '}';
     }
 
@@ -66,7 +66,7 @@ public class FloatNormalized implements FloatSupplier {
 
         updateRange(raw);
 
-        return normalize(raw, min, max);
+        return normalize(raw, min(), max());
     }
 
     public float normalize(float x, float min, float max) {
@@ -119,9 +119,4 @@ public class FloatNormalized implements FloatSupplier {
         return this;
     }
 
-
-    /** whether a min/max range has been set or measured */
-    public boolean ranged() {
-        return Float.isFinite(min) && Float.isFinite(max);
-    }
 }

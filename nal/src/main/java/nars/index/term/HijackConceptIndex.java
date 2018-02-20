@@ -7,6 +7,7 @@ import jcog.pri.PriReference;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
+import nars.control.DurService;
 import nars.index.term.map.MaplikeConceptIndex;
 import nars.term.Term;
 import nars.term.Termed;
@@ -45,6 +46,7 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     //private final float forget = 0.05f;
     private long now;
     private int dur;
+    private DurService onDur;
     //private DurService onDur;
 
     public HijackConceptIndex(int capacity, int reprobes) {
@@ -96,10 +98,13 @@ public class HijackConceptIndex extends MaplikeConceptIndex {
     @Override
     public void init(NAR nar) {
         super.init(nar);
-        //onDur = DurService.on(nar, this::update);
+        onDur = DurService.on(nar, this::commit);
     }
 
 
+    public void commit(NAR n) {
+        table.commit();
+    }
 
 //    @Override
 //    public void commit(Concept c) {

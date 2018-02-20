@@ -1,6 +1,7 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.math.IntRange;
 import jcog.math.Range;
 import jcog.memoize.HijackMemoize;
 import jcog.memoize.Memoize;
@@ -38,7 +39,8 @@ import static nars.time.Tense.ETERNAL;
 public class Deriver extends Causable {
 
 
-    int conceptsPerIteration = 1;
+
+    public final IntRange conceptsPerIteration = new IntRange(1, 1, 16);
 
 
     /**
@@ -154,6 +156,10 @@ public class Deriver extends Causable {
     public final DeriverRoot deriver;
     private final NAR nar;
 
+    public Deriver(PremiseRuleSet rules, NAR n) {
+        this(TrieDeriver.the(rules), n);
+    }
+
     public Deriver(DeriverRoot deriver, NAR nar) {
         this(nar.exe::fire, deriver, nar);
     }
@@ -183,7 +189,7 @@ public class Deriver extends Causable {
 
         Set<Premise> premiseBurst = d.premiseBurst;
 
-        int totalPremisesRemain = iterations * conceptsPerIteration;
+        int totalPremisesRemain = iterations * conceptsPerIteration.intValue();
         final int[] fired = {0};
         while (totalPremisesRemain > 0) {
 

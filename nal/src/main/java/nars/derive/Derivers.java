@@ -63,9 +63,13 @@ public class Derivers {
     public static Function<NAR, Deriver> deriver(int minLevel, int maxLevel, String... extraFiles) {
         assert ((minLevel <= maxLevel && maxLevel > 0) || extraFiles.length > 0);
 
-        return Deriver.deriver(nar ->
-                PremiseRuleSet.rules(nar, new PatternIndex(),
-                        standard(minLevel, maxLevel, extraFiles)
-                ));
+        return Deriver.deriver(nar -> rules(minLevel, maxLevel, nar, extraFiles));
+    }
+
+    /** standard ruleset */
+    public static PremiseRuleSet rules(int minLevel, int maxLevel, NAR nar, String... extraFiles) {
+        return PremiseRuleSet.rules(nar, new PatternIndex(),
+                standard(minLevel, maxLevel, extraFiles)
+        );
     }
 }

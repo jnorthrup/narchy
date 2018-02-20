@@ -5,17 +5,22 @@ import jcog.Util;
 import jcog.learn.ql.HaiQAgent;
 import jcog.signal.ArrayBitmap2D;
 import jcog.tree.rtree.rect.RectFloat2D;
-import nars.$;
-import nars.NAR;
-import nars.NARS;
-import nars.NAgent;
-import nars.index.term.HijackConceptIndex;
+import nars.*;
+import nars.derive.Deriver;
+import nars.derive.Derivers;
+import nars.gui.Vis;
+import nars.index.term.map.CaffeineIndex;
+import nars.op.ArithmeticIntroduction;
 import nars.op.RLBooster;
+import nars.op.stm.ConjClustering;
 import nars.term.Term;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.CameraSensorView;
+import spacegraph.layout.Gridding;
 import spacegraph.render.Draw;
+import spacegraph.widget.meta.AutoSurface;
 
+import static nars.Op.BELIEF;
 import static spacegraph.render.JoglSpace.window;
 
 /* 1D and 2D grid tracking */
@@ -32,33 +37,49 @@ public class TrackXY extends NAgent {
 
 
     private float controlSpeed = 1f, targetSpeed = 0.5f;
-    private float sharpness = 0.9f;
+    private float visionContrast = 0.9f;
 
     public static void main(String[] args) {
 
-        float fps = 10;
+        float fps = 40;
 
         boolean nars = true;
         boolean rl = false;
 
         NARS nb = NARS
                 .realtime(fps)
-                .index(new HijackConceptIndex(8 * 1024, 4));
+                .index(
+                    //new HijackConceptIndex(4 * 1024, 4)
+                    new CaffeineIndex(8*1024)
+                );
 
-        if (nars) {
-            nb.deriverAdd(1, 8);
-        }
+
 
         NAR n = nb.get();
 
+        n.termVolumeMax.set(36);
+        n.conceptActivation.set(0.9f);
+        n.forgetRate.set(0.75f);
 
-        TrackXY t = new TrackXY(4, 4);
+        TrackXY t = new TrackXY(6, 6);
         n.on(t);
 
         n.time.synch(n);
 
 
 
+        if (nars) {
+            Deriver d = new Deriver(Derivers.rules(1, 8, n), n);
+            ConjClustering cj = new ConjClustering(n, BELIEF, (tt)->true, 8, 64);
+            ArithmeticIntroduction ai = new ArithmeticIntroduction(32,n);
+            window(new Gridding(
+                    new AutoSurface(d),
+                    new AutoSurface(cj),
+                    new AutoSurface(ai)
+            ), 400, 300);
+        }
+        window(Vis.top(n), 800, 250);
+        NAgentX.chart(t);
         window(new CameraSensorView(t.cam, n) {
             @Override
             protected void paint(GL2 gl, int dtMS) {
@@ -74,12 +95,13 @@ public class TrackXY extends NAgent {
 
         if (rl) {
             new RLBooster(t,
+                    //DQN::new,
                     HaiQAgent::new,
                     //RandomAgent::new,
                     1);
         }
 
-        n.log();
+        //n.log();
 
     }
 
@@ -110,6 +132,8 @@ public class TrackXY extends NAgent {
         });
 
         this.cam = new Bitmap2DSensor((Term)null, view, nar);
+        senseNumber($.the("x"), ()->sx/(view.width()-1));
+        senseNumber($.the("y"), ()->sy/(view.height()-1));
 
 
         randomize();
@@ -140,7 +164,7 @@ public class TrackXY extends NAgent {
         synchronized (view) {
             view.set((x,y)->{
                 float dist = (float) Math.sqrt(Util.sqr(tx-x) + Util.sqr(ty-y));
-                return Math.max(0, 1-dist*sharpness);
+                return Math.max(0, 1-dist* visionContrast);
             });
             update();
         }
@@ -151,6 +175,10 @@ public class TrackXY extends NAgent {
 
         float dist = (float) Math.sqrt(Util.sqr(tx-sx) + Util.sqr(ty-sy));
 
-        return 1f/(1f+dist);
+
+        //return 1f/(1f+dist);
+        return controlSpeed - dist; //controlSpeed is margin of tolerance
+
     }
 }
+

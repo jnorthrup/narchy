@@ -151,7 +151,7 @@ public enum MetaGoal {
             final int gg = g.ordinal();
             float min = -2;
             float max = +2;
-            b.in(new FloatPolarNormalized(() -> ne.want[gg], min, max));
+            b.in(new FloatPolarNormalized(() -> ne.want[gg], max));
 
             float step = 0.5f;
 

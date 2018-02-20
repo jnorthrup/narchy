@@ -31,7 +31,7 @@ public class GoalActionConcept extends ActionConcept {
         this(c, act.nar(), act.curiosity(), motor);
     }
 
-    public GoalActionConcept(@NotNull Term c, @NotNull NAR n, FloatRange curiosity, @NotNull MotorFunction motor) {
+    public GoalActionConcept(@NotNull Term c, @NotNull NAR n, @NotNull FloatRange curiosity, @NotNull MotorFunction motor) {
         super(c, n);
 
         this.curiosity = curiosity;

@@ -471,6 +471,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
     @Override
     public float act() {
 
+        this.pixels.input();
+
         state.timePerFall = Math.round(timePerFall.floatValue());
         state.next();
         return state.score;

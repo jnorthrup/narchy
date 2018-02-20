@@ -50,8 +50,11 @@ public class TreeChart<X> extends Surface {
     protected void paint(GL2 gl, int dtMS) {
 
         double totalArea = w() * h();
-        for (ItemVis v : phase.read()) {
-            v.paint(gl, v.area * totalArea);
+        CircularArrayList<ItemVis<X>> read = phase.read();
+        if (!read.isEmpty()) {
+            for (ItemVis v : read) {
+                v.paint(gl, v.area * totalArea);
+            }
         }
     }
 

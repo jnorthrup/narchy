@@ -718,7 +718,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     //final AtomicBoolean busy = new AtomicBoolean(false);
 
-    @NotNull
     @Override
     public HijackBag<K, V> commit(@Nullable Consumer<V> update) {
 

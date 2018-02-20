@@ -1,11 +1,11 @@
 package nars;
 
 import jcog.TODO;
+import jcog.Util;
 import jcog.event.On;
 import jcog.exe.Loop;
 import jcog.list.FasterList;
 import jcog.math.FloatNormalized;
-import jcog.math.FloatPolarNormalized;
 import jcog.math.FloatRange;
 import nars.concept.ActionConcept;
 import nars.concept.Concept;
@@ -71,6 +71,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
      * action exploration rate; analogous to epsilon in QLearning
      */
     public FloatRange curiosity;
+
+    /** dampens the dynamically normalized happiness range toward sadness as a motivation strategy */
     public final FloatRange depress = new FloatRange(0.1f, 0f, 1f);
 
 
@@ -106,9 +108,11 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         this(id.isEmpty() ? null : Atomic.the(id), nar);
     }
     @Deprecated protected NAgent(Term id, NAR nar) {
-        this(id);
-        if (nar!=null)
-            nar.on(this);
+        super(id);
+        this.nar = nar;
+
+        this.curiosity = new FloatRange(0.10f, 0f, 1f);
+
     }
 
     protected NAgent() {
@@ -116,7 +120,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     }
 
     protected NAgent(@Nullable Term id) {
-        super(id);
+        this(id, null);
 
 
     }
@@ -210,11 +214,19 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
                     //$.inh(id, $.the("happy")); //happy in this environment
                     $.prop(id, $.the("happy")); //happiness of this environment
 
-            FloatNormalized happyValue = new FloatPolarNormalized(
+            FloatNormalized happyValue =
+                    new FloatNormalized(
+                    //new FloatPolarNormalized(
                     //new FloatHighPass(
                     () -> reward
                     //)
-            ).relax(Param.HAPPINESS_RE_SENSITIZATION_RATE);
+            ) {
+                        @Override
+                        public float max() {
+                            //decrease the max toward min in proportion to the depression setting
+                            return Util.lerp(depress.floatValue(), super.max(), super.min());
+                        }
+                    }.relax(Param.HAPPINESS_RE_SENSITIZATION_RATE);
 
             assert(this.nar == null || this.nar == nar);
             this.nar = nar;
@@ -225,7 +237,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
             this.happy = new ActionInfluencingSensorConcept(happyTerm, happyValue);
 
-            this.curiosity = new FloatRange(0.10f, 0f, 1f);
+
 
             alwaysWant(happy, nar.confDefault(GOAL));
 
@@ -265,7 +277,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         this.dur = nar.dur();
         this.now = nar.time();
 
-        reward = act() - depress.floatValue();
+        reward = act();
 
 
         always(motivation.floatValue());

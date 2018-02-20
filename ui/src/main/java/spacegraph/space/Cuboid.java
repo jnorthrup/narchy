@@ -121,7 +121,7 @@ public class Cuboid<X> extends SimpleSpatial<X> implements SurfaceRoot {
 
 
         if (front != null) {
-            Transform it = Transform.t(transform()).inverse();
+            Transform it = Transform.t(transform).inverse();
             v3 localPoint = it.transform(v(r.hitPointWorld));
 
             if (body != null && body.shape() instanceof SimpleBoxShape) {

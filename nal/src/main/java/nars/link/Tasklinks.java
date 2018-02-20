@@ -107,7 +107,9 @@ public class Tasklinks {
             for (int i = 0, tsSize = ts.size(); i < tsSize; i++) {
                 Termed x = ts.get(i);
                 if (x.op().conceptualizable) {
-                    cc.add(nar.conceptualize(x));
+                    Concept ccc = nar.conceptualize(x);
+                    if (ccc!=null)
+                        cc.add(ccc);
                 }
             }
 

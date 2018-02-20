@@ -37,9 +37,9 @@ public class BitmapMatrixView extends Surface {
     /** the position of a cell's center */
     public v2 cell(float x, float y) {
         float W = w();
-        float xx = ((x + 0.5f)/(w))*W;
+        float xx = ((x + 0.5f )/(w))*W;
         float H = h();
-        float yy = ((y + 0.5f)/(h))*H;
+        float yy = ((y + 0.5f )/(h) )*H;
         return new v2(xx, yy);
     }
     /** the prw, prh represent a rectangular size proportional to the displayed cell size */

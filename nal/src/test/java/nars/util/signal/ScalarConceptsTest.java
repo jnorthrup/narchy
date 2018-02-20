@@ -47,8 +47,7 @@ public class ScalarConceptsTest {
         NAR n = NARS.shell();
         MutableFloat m = new MutableFloat(0f);
 
-        FloatPolarNormalized range = new FloatPolarNormalized(() -> m.floatValue());
-        range.radius(1f);
+        FloatPolarNormalized range = new FloatPolarNormalized(() -> m.floatValue(), 1f);
         ScalarConcepts f = new ScalarConcepts(range, n, ScalarConcepts.FuzzyNeedle,
                 $.p("low"), $.p("mid"), $.p("hih"));
 
