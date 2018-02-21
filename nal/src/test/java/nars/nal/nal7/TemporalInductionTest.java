@@ -1,16 +1,27 @@
 package nars.nal.nal7;
 
+import jcog.math.FloatSupplier;
+import jcog.meter.TemporalMetrics;
+import jcog.meter.event.DoubleMeter;
+import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.concept.Concept;
 import nars.concept.TaskConcept;
+import nars.control.Activate;
+import nars.exe.UniExec;
 import nars.table.BeliefTable;
+import nars.term.Term;
 import nars.test.TestNAR;
+import nars.time.Tense;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
+import java.io.FileNotFoundException;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static nars.Op.BELIEF;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -209,5 +220,66 @@ public class TemporalInductionTest {
         return a.intValue();
     }
 
+    static class PriMeter extends DoubleMeter {
+
+        private final FloatSupplier getter;
+
+        public PriMeter(NAR n, String id) {
+            super("pri(" + id + ")", true);
+            Term term = $.$safe(id);
+            this.getter = ()->{
+                Concept cc = n.concept(term);
+                if (cc == null)
+                    return 0;
+                Activate c = ((UniExec)(n.exe)).active.get(cc);
+                if (c == null)
+                    return 0;
+                else return c.priElseZero();
+            };
+        }
+
+        @Override
+        public DoubleMeter reset() {
+            set(getter.asFloat());
+            return this;
+        }
+
+
+    }
+    /**
+     * higher-level rules learned from events, especially repeatd
+     * events, "should" ultimately accumulate a higher priority than
+     * the events themselves.
+     */
+    @Test public void testPriorityOfInductedRulesVsEventsThatItLearnedFrom() throws FileNotFoundException {
+        NAR n = NARS.tmp();
+
+        n.priDefault(BELIEF, 0.1f);
+        n.deep.set(1f);
+        n.log();
+
+        TemporalMetrics m = new TemporalMetrics<>(1024);
+        m.add(new PriMeter(n,"(0)"));
+        m.add(new PriMeter(n,"(1)"));
+        m.add(new PriMeter(n,"(2)"));
+        m.add(new PriMeter(n,"((0) && (1))"));
+        m.add(new PriMeter(n,"((0) ==> (1))"));
+        m.add(new PriMeter(n,"((1) && (2))"));
+        m.add(new PriMeter(n,"((1) ==> (2))"));
+
+        n.onCycle(()->m.update(n.time()));
+
+        //expose to repeat sequence
+        int loops = 32, eventsPerLoop = 3, delayBetweenEvents = 2;
+        for (int i = 0; i < loops; i++) {
+            for (int j = 0; j < eventsPerLoop; j++) {
+                n.believe($.p(j), Tense.Present);
+                n.run(delayBetweenEvents);
+            }
+        }
+
+        m.printCSV4("/tmp/x.csv");
+        m.printCSV4(System.out);
+    }
 
 }

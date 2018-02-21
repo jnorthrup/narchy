@@ -385,7 +385,7 @@ abstract public class NAgentX extends NAgent {
         Loop loop = n.startFPS(narFPS);
 
 
-        a.nar.runLater(() -> {
+        n.runLater(() -> {
 
             chart(a);
 

@@ -85,7 +85,8 @@ public class Tasklinks {
             }
 
             if (priApplied > Float.MIN_NORMAL) {
-                float conceptActivation = priApplied * nar.amp(t.cause());
+                float conceptActivation = priApplied;
+                        //* nar.amp(t.cause());
                 if (conceptActivation > 0) {
 
 //                    BatchActivation ba = BatchActivation.get();

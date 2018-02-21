@@ -45,12 +45,12 @@ public class PoleCart extends NAgentX {
                 a.nar.confResolution.set(0.02f);
 
 
-                Vis.conceptWindow(a.happy, n);
+
 
                 NARSpeak s = new NARSpeak(n);
-                s.speech.chatty();;
+                s.speech.chatty();
                 s.spoken.on(new NativeSpeechDispatcher()::speak);
-                new NARSpeak.VocalCommentary(a);
+//                new NARSpeak.VocalCommentary(a);
 
                 //a.durations.setValue(1f);
                 //n.goalConfidence(0.75f);

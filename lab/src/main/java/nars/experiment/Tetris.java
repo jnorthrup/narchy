@@ -1714,8 +1714,8 @@ public class Tetris extends NAgentX implements Bitmap2D {
                 score = Float.NaN;
                         //-prevRows;
             } else {
-                if (diff == 0) score = Float.NaN; //no score
-                else
+//                if (diff == 0) score = Float.NaN; //no score
+//                else
                     score = diff;
             }
         }

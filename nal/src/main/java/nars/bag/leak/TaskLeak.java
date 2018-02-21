@@ -23,8 +23,9 @@ public abstract class TaskLeak extends Causable {
     protected final DtLeak<Task, PLink<Task>> in;
 
     protected TaskLeak(int capacity, float ratePerDuration, @NotNull NAR n) {
+        //noinspection Convert2Diamond
         this(
-                new ConcurrentArrayBag<Task,PLink<Task>>(PriMerge.max, capacity) {
+                new ConcurrentArrayBag<Task, PLink<Task>>(PriMerge.max, capacity) {
                     @Nullable
                     @Override
                     public Task key(PLink<Task> t) {
@@ -84,7 +85,12 @@ public abstract class TaskLeak extends Causable {
 
     public final void accept(NAR nar, Task t) {
         if (preFilter(t))
-            in.put(new PLink<>(t, t.priElseZero()));
+            in.put(new PLink<>(t, pri(t)));
+    }
+
+    /** an adjusted priority of the task for its insertion to the leak bag */
+    protected float pri(Task t) {
+        return t.priElseZero();
     }
 
     protected boolean preFilter(Task next) {

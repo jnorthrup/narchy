@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 /** tests NAL8 interactions with &,|,~,-, etc.. */
 public class NAL8SetTest extends NALTest {
 
-    public static final int cycles = 230;
+    public static final int cycles = 1530;
 
 
     @BeforeEach

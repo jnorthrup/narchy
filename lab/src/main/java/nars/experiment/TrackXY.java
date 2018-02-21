@@ -11,7 +11,6 @@ import nars.derive.Derivers;
 import nars.exe.UniExec;
 import nars.gui.Vis;
 import nars.index.term.map.CaffeineIndex;
-import nars.op.ArithmeticIntroduction;
 import nars.op.RLBooster;
 import nars.op.stm.ConjClustering;
 import nars.term.Term;
@@ -45,20 +44,21 @@ public class TrackXY extends NAgent {
 
     Consumer<TrackXY> updater =
             //new RandomTarget();
-            new CyclicTarget();
+            //new CyclicTarget();
+            new CircleTarget();
 
     public static void main(String[] args) {
 
         float fps = 40;
 
         boolean nars = true;
-        boolean rl = true;
+        boolean rl = false;
 
         int dur = 1;
 
         NARS nb = new NARS()
                 //.realtime(fps*2)
-                .exe(new UniExec(1024))
+                .exe(new UniExec(512))
                 .time(new CycleTime().dur(dur))
                 .index(
                     //new HijackConceptIndex(4 * 1024, 4)
@@ -70,10 +70,13 @@ public class TrackXY extends NAgent {
         NAR n = nb.get();
 
         n.termVolumeMax.set(36);
+        n.priDefault(BELIEF, 0.1f);
+//        n.priDefault(GOAL, 0.5f);
         n.conceptActivation.set(0.5f);
-        n.forgetRate.set(1f);
+        n.forgetRate.set(0.9f);
 
-        TrackXY t = new TrackXY(4, 1);
+        TrackXY t = new TrackXY(8, 8);
+
         n.on(t);
 
         n.time.synch(n);
@@ -81,16 +84,20 @@ public class TrackXY extends NAgent {
 
 
         if (nars) {
+
             Deriver d = new Deriver(Derivers.rules(1, 8, n), n);
+
             ConjClustering cj = new ConjClustering(n, BELIEF,
                     //(tt)->true,
                     (tt)->tt.isInput(),
                     2, 8);
-            ArithmeticIntroduction ai = new ArithmeticIntroduction(32,n);
+
+            //ArithmeticIntroduction ai = new ArithmeticIntroduction(32,n);
+
             window(new Gridding(
                     new AutoSurface(d),
-                    new AutoSurface(cj),
-                    new AutoSurface(ai)
+                    new AutoSurface(cj)
+                    //,new AutoSurface(ai)
             ), 400, 300);
             n.onTask(tt -> { if (tt.isGoal() ) { System.out.println(tt); } });
         }
@@ -149,8 +156,9 @@ public class TrackXY extends NAgent {
         });
 
         this.cam = new Bitmap2DSensor((Term)null, view, nar);
-        senseNumber($.the("x"), ()->sx/(view.width()-1));
-        senseNumber($.the("y"), ()->sy/(view.height()-1));
+        this.cam.resolution(0.1f);
+        //senseNumber($.the("x"), ()->sx/(view.width()-1));
+        //senseNumber($.the("y"), ()->sy/(view.height()-1));
 
 
         randomize();
@@ -204,6 +212,26 @@ public class TrackXY extends NAgent {
         }
     }
 
+    /** ellipse, technically */
+    public static class CircleTarget implements Consumer<TrackXY> {
+
+
+        float speed = 0.02f;
+        float theta = 0;
+
+
+        @Override
+        public void accept(TrackXY t) {
+            theta += speed;
+            t.tx = (((float) Math.cos(theta)*0.5f)+0.5f) * (t.width()-1);
+            t.ty = (((float) Math.sin(theta)*0.5f)+0.5f) * (t.height()-1);
+//            int tw = t.width();
+//            if (t.tx > tw -1)
+//                t.tx -= tw;
+
+        }
+    }
+
     @Override
     protected synchronized float act() {
 
@@ -212,9 +240,18 @@ public class TrackXY extends NAgent {
             if (u!=null)
                 u.accept(this);
 
-            view.set((x,y)->{
-                float dist = (float) Math.sqrt(Util.sqr(tx-x) + Util.sqr(ty-y));
-                return Math.max(0, 1-dist* visionContrast);
+            view.set((x,y)-> {
+//                float dist = (float) Math.sqrt(Util.sqr(tx-x) + Util.sqr(ty-y));
+//                return Math.max(0, 1-dist* visionContrast);
+
+                if (Util.equals(sx, x, controlSpeed) && Util.equals(sy, y, controlSpeed)) {
+                    //show cursor in negative
+                    return 0f;
+                } else {
+                    float dist = (float) Math.sqrt(Util.sqr(tx - x) + Util.sqr(ty - y));
+                    return 0.5f + 0.5f * Math.max(0, 1 - dist * visionContrast);
+                }
+
             });
         }
 

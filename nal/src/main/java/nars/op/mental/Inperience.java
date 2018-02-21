@@ -117,6 +117,16 @@ public class Inperience extends LeakBack {
     }
 
     @Override
+    protected float pri(Task t) {
+        float p = super.pri(t);
+        if (t.term().isTemporal()) {
+            //drastically reduce the strength of temporal containing terms because once reified, these inflate the unique terms present in the system
+            p /= t.volume();
+        }
+        return p;
+    }
+
+    @Override
     public boolean preFilter(Task next) {
 
 

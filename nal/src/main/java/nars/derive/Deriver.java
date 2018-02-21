@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 import static jcog.Util.unitize;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
+import static nars.truth.TruthFunctions.w2cSafe;
 
 /**
  * an individual deriver process: executes a particular Deriver model
@@ -141,7 +142,10 @@ public class Deriver extends Causable {
             //loss of relative confidence: prefer confidence, relative to the premise which formed it
             float parentEvi = d.single ? d.premiseEviSingle : d.premiseEviDouble;
             if (parentEvi > 0) {
-                discount *= unitize(derivedTruth.evi() / parentEvi);
+                discount *= unitize(
+                        //derivedTruth.evi() / parentEvi
+                        derivedTruth.conf() / w2cSafe(parentEvi)
+                );
             }
 
             //optional: prefer polarized

@@ -522,6 +522,9 @@ public class Metrics<RowKey,Cell> implements Iterable<Object[]> {
         }
         out.flush();
     }
+    public void printCSV4(String filename) throws FileNotFoundException {
+        printCSV4(new PrintStream(new FileOutputStream(filename)));
+    }
 
     private static void printCSVRow(PrintStream out, Object[] row) {
 //        for (Object o : row) {
