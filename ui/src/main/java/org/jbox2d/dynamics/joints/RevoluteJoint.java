@@ -83,6 +83,9 @@ public class RevoluteJoint extends Joint {
     private float m_motorMass; // effective mass for motor/limit angular constraint.
     private LimitState m_limitState;
 
+    /** how important it is to resolve position 'error' (distance from point-point) */
+    public float positionFactor;
+
     protected RevoluteJoint(IWorldPool argWorld, RevoluteJointDef def) {
         super(argWorld, def);
         m_localAnchorA.set(def.localAnchorA);
@@ -160,11 +163,11 @@ public class RevoluteJoint extends Joint {
             m_motorMass = 1.0f / m_motorMass;
         }
 
-        if (m_enableMotor == false || fixedRotation) {
+        if (!m_enableMotor || fixedRotation) {
             m_motorImpulse = 0.0f;
         }
 
-        if (m_enableLimit && fixedRotation == false) {
+        if (m_enableLimit && !fixedRotation) {
             float jointAngle = aB - aA - m_referenceAngle;
             if (Math.abs(m_upperAngle - m_lowerAngle) < 2.0f * Settings.angularSlop) {
                 m_limitState = LimitState.EQUAL;
@@ -230,7 +233,7 @@ public class RevoluteJoint extends Joint {
         boolean fixedRotation = (iA + iB == 0.0f);
 
         // Solve motor constraint.
-        if (m_enableMotor && m_limitState != LimitState.EQUAL && fixedRotation == false) {
+        if (m_enableMotor && m_limitState != LimitState.EQUAL && !fixedRotation) {
             float Cdot = wB - wA - m_motorSpeed;
             float impulse = -m_motorMass * Cdot;
             float oldImpulse = m_motorImpulse;
@@ -244,7 +247,7 @@ public class RevoluteJoint extends Joint {
         final Tuple2f temp = pool.popVec2();
 
         // Solve limit constraint.
-        if (m_enableLimit && m_limitState != LimitState.INACTIVE && fixedRotation == false) {
+        if (m_enableLimit && m_limitState != LimitState.INACTIVE && !fixedRotation) {
 
             final Tuple2f Cdot1 = pool.popVec2();
             final Vec3 Cdot = pool.popVec3();
@@ -252,7 +255,7 @@ public class RevoluteJoint extends Joint {
             // Solve point-to-point constraint
             Tuple2f.crossToOutUnsafe(wA, m_rA, temp);
             Tuple2f.crossToOutUnsafe(wB, m_rB, Cdot1);
-            Cdot1.added(vB).subbed(vA).subbed(temp);
+            Cdot1.added(vB).subbed(vA).subbed(temp).scaled(positionFactor);
             float Cdot2 = wB - wA;
             Cdot.set(Cdot1.x, Cdot1.y, Cdot2);
 
@@ -323,7 +326,7 @@ public class RevoluteJoint extends Joint {
 
             Tuple2f.crossToOutUnsafe(wA, m_rA, temp);
             Tuple2f.crossToOutUnsafe(wB, m_rB, Cdot);
-            Cdot.added(vB).subbed(vA).subbed(temp);
+            Cdot.added(vB).subbed(vA).subbed(temp).scaled(positionFactor);
             m_mass.solve22ToOut(Cdot.negated(), impulse); // just leave negated
 
             m_impulse.x += impulse.x;
@@ -366,7 +369,7 @@ public class RevoluteJoint extends Joint {
         boolean fixedRotation = (m_invIA + m_invIB == 0.0f);
 
         // Solve angular limit constraint.
-        if (m_enableLimit && m_limitState != LimitState.INACTIVE && fixedRotation == false) {
+        if (m_enableLimit && m_limitState != LimitState.INACTIVE && !fixedRotation) {
             float angle = aB - aA - m_referenceAngle;
             float limitImpulse = 0.0f;
 
@@ -415,8 +418,9 @@ public class RevoluteJoint extends Joint {
 
             Rot.mulToOutUnsafe(qA, C.set(m_localAnchorA).subbed(m_localCenterA), rA);
             Rot.mulToOutUnsafe(qB, C.set(m_localAnchorB).subbed(m_localCenterB), rB);
-            C.set(cB).added(rB).subbed(cA).subbed(rA);
+            C.set(cB).added(rB).subbed(cA).subbed(rA).scaled(positionFactor);
             positionError = C.length();
+
 
             float mA = m_invMassA, mB = m_invMassB;
             float iA = m_invIA, iB = m_invIB;

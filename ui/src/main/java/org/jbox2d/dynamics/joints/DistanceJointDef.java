@@ -96,18 +96,18 @@ public class DistanceJointDef extends JointDef {
 
     /**
      * Initialize the bodies, anchors, and length using the world anchors.
-     *
-     * @param b1      First body
+     *  @param b1      First body
      * @param b2      Second body
      * @param anchor1 World anchor on first body
      * @param anchor2 World anchor on second body
      */
-    public void initialize(final Body2D b1, final Body2D b2, final Tuple2f anchor1, final Tuple2f anchor2) {
+    public DistanceJointDef initialize(final Body2D b1, final Body2D b2, final Tuple2f anchor1, final Tuple2f anchor2) {
         bodyA = b1;
         bodyB = b2;
         localAnchorA.set(bodyA.getLocalPoint(anchor1));
         localAnchorB.set(bodyB.getLocalPoint(anchor2));
         Tuple2f d = anchor2.sub(anchor1);
         length = d.length();
+        return this;
     }
 }

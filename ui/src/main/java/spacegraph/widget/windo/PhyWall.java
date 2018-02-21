@@ -52,7 +52,7 @@ public class PhyWall extends Wall implements Animated {
     /**
      * increase for more physics precision
      */
-    final int solverIterations = 1;
+    final int solverIterations = 2;
 
     public final Dynamics2D W;
     private On on;
@@ -285,6 +285,12 @@ public class PhyWall extends Wall implements Animated {
         return s;
     }
 
+    protected Snake snake(Surface source, Surface target) {
+        Body2D from = source.parent(PhyWindow.class).body;
+        Body2D to = target.parent(PhyWindow.class).body;
+        assert(from!=to);
+        return new Snake(from, to, 8, 0.2f, 0.05f);
+    }
 
     protected RopeJoint rope(Surface source, Surface target) {
 
@@ -338,12 +344,12 @@ public class PhyWall extends Wall implements Animated {
         };
 
 
-        PhyWall.this.W.addJoint(ropeJoint);
+        W.addJoint(ropeJoint);
         return ropeJoint;
     }
 
     public class PhyWindow extends Windo {
-        private final Body2D body;
+        public final Body2D body;
         private final PolygonShape shape;
 //        public final SimpleSpatial<String> spatial;
 
@@ -535,10 +541,17 @@ public class PhyWall extends Wall implements Animated {
                 W.invoke(() -> {
 
 
+//                {
+//                    //RAW unidirectional
+//                    RopeJoint ropeJoint = rope(aa, bb);
+//                    ropeJoint.setData(wire);
+//                }
+
                 {
                     //RAW unidirectional
-                    RopeJoint ropeJoint = rope(aa, bb);
-                    ropeJoint.setData(wire);
+                    //RopeJoint ropeJoint = rope(aa, bb);
+                    //ropeJoint.setData(wire);
+                    Snake s = snake(aa, bb);
                 }
 
 //                    {

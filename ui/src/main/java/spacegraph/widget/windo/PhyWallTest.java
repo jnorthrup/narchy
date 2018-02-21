@@ -6,6 +6,7 @@ import jcog.exe.Loop;
 import jcog.math.FloatRange;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jbox2d.collision.shapes.PolygonShape;
+import org.jbox2d.dynamics.*;
 import spacegraph.Surface;
 import spacegraph.input.Wiring;
 import spacegraph.layout.EmptySurface;
@@ -82,20 +83,31 @@ public class PhyWallTest {
         }
     }
 
+
     public static class Box2DTest3_Basic_Link_Unlink {
 
         public static void main(String[] args) {
 
             PhyWall s = PhyWall.window(800, 800);
+//
+//            s.addWindow(new Port(), RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
+//
+//            s.addWindow(new Port(), RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
 
-            s.addWindow(new Gridding(0.1f, new Port() {
-                @Override
-                protected void onWired(Wiring w) {
-                    w.source().link(w.target());
+
+
+                Body2D start = s.addWindow(new Port(), RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f)).body;
+                Body2D end = s.addWindow(new Port(), RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f)).body;
+
+                {
+
+                    Snake ss = new Snake(start, end, 8, 0.3f, 0.1f);
+
+//                    Util.sleep(1000);
+//
+//                    ss.remove(false);
+
                 }
-            }), RectFloat2D.XYWH(-1, 0, 0.25f, 0.25f));
-
-            s.addWindow(new Port(), RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
 
         }
     }
@@ -234,7 +246,7 @@ public class PhyWallTest {
                 }
             };
 
-            og.forEachNode(n->{
+            og.forEachNode(n -> {
                 PhyWall.PhyWindow oo = s.addWindow(new PushButton(n.id.getClass().toString()), RectFloat2D.XYWH(0, 0, 1, 1));
             });
 //            og.forEachNode(n->{

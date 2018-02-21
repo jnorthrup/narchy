@@ -1293,4 +1293,8 @@ public class Body2D extends Transform {
     public void getWorldPointToGL(Tuple2f localPoint, float preScale, GL2 gl) {
         Transform.mulToOutUnsafe(this, localPoint, preScale, gl);
     }
+
+    public void remove() {
+        W.removeBody(this);
+    }
 }
