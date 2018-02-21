@@ -83,8 +83,12 @@ public class RevoluteJoint extends Joint {
     private float m_motorMass; // effective mass for motor/limit angular constraint.
     private LimitState m_limitState;
 
-    /** how important it is to resolve position 'error' (distance from point-point) */
-    public float positionFactor;
+    /** how important it is to resolve position 'error' (distance from point-point).
+     * 1 = normal revolute joint behavior
+     * ~ = somewhat solve it
+     * 0 = does not resolve point-to-point distance 'error'
+     */
+    public float positionFactor = 1f;
 
     protected RevoluteJoint(IWorldPool argWorld, RevoluteJointDef def) {
         super(argWorld, def);

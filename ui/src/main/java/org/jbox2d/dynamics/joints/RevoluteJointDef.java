@@ -121,6 +121,16 @@ public class RevoluteJointDef extends JointDef {
         enableMotor = false;
     }
 
+    /** uses the midpoint of their centers */
+    public RevoluteJointDef(final Body2D b1, final Body2D b2) {
+        this();
+        bodyA = b1;
+        localAnchorA.set(0,0);
+        bodyB = b2;
+        localAnchorB.set(0,0);
+        referenceAngle = 0;
+    }
+
     /**
      * Initialize the bodies, anchors, and reference angle using the world anchor.
      *
@@ -137,10 +147,7 @@ public class RevoluteJointDef extends JointDef {
         return this;
     }
 
-    /** uses the midpoint of their centers */
-    public RevoluteJointDef initialize(final Body2D b1, final Body2D b2) {
-        return initialize(b1, b2, b1.getWorldCenter().add(b2.getWorldCenter()));
-    }
+
 
 
 }

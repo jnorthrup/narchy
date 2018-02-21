@@ -67,6 +67,15 @@ public class WeldJointDef extends JointDef {
         referenceAngle = 0.0f;
     }
 
+    /** center to center */
+    public WeldJointDef(Body2D a, Body2D b) {
+        this();
+        this.bodyA = a;
+        this.bodyB = b;
+        this.referenceAngle = 0;
+    }
+
+
     /**
      * Initialize the bodies, anchors, and reference angle using a world anchor point.
      *

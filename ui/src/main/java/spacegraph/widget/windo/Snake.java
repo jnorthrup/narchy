@@ -3,9 +3,7 @@ package spacegraph.widget.windo;
 import jcog.list.FasterList;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.dynamics.*;
-import org.jbox2d.dynamics.joints.Joint;
-import org.jbox2d.dynamics.joints.RevoluteJoint;
-import org.jbox2d.dynamics.joints.RevoluteJointDef;
+import org.jbox2d.dynamics.joints.*;
 import spacegraph.math.v2;
 
 import java.util.List;
@@ -23,8 +21,9 @@ public class Snake {
 
         Dynamics2D w = start.W;
 
-        FixtureDef box = new FixtureDef(
-                PolygonShape.box(eleLen/2, thick/2), 0.1f, 0.1f);
+        FixtureDef segment = new FixtureDef(
+                PolygonShape.box(eleLen/2, thick/2), 0.1f, 0f);
+        segment.filter.maskBits = 0; //no collision
 
         final float y = 0f;
 
@@ -45,7 +44,7 @@ public class Snake {
                     to = w.addBody(
                             new BodyDef(BodyType.DYNAMIC,
                                     new v2(i * eleLen, y)),
-                            box);
+                            segment);
                 }
 
                 RevoluteJointDef jd = new RevoluteJointDef();
@@ -82,6 +81,12 @@ public class Snake {
         }
 
         bodies.add(from);
+    }
+
+    /** attach a body to center of one of the segments */
+    public void attach(Body2D b, int segment) {
+        Joint w = b.W.addJoint(new RevoluteJointDef(bodies.get(segment), b));
+        joints.add(w);
     }
 
     public void remove(boolean includeStartEnd) {

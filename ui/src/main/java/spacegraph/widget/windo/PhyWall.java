@@ -289,7 +289,12 @@ public class PhyWall extends Wall implements Animated {
         Body2D from = source.parent(PhyWindow.class).body;
         Body2D to = target.parent(PhyWindow.class).body;
         assert(from!=to);
-        return new Snake(from, to, 8, 0.2f, 0.05f);
+        Snake s = new Snake(from, to, 8, 0.2f, 0.05f);
+
+        PhyWindow contW = addWindow(new PushButton("o"), RectFloat2D.mid(source.bounds, target.bounds, 0.1f));
+        s.attach(contW.body, 4);
+
+        return s;
     }
 
     protected RopeJoint rope(Surface source, Surface target) {
