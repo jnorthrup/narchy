@@ -211,8 +211,19 @@ public class PolygonShape extends Shape {
         normals[2].set(0.0f, 1.0f);
         normals[3].set(-1.0f, 0.0f);
         centroid.setZero();
-
         return this;
+    }
+
+    public final static org.jbox2d.collision.shapes.PolygonShape regular(int n, float r) {
+        PolygonShape p = new PolygonShape(n);
+        p.vertices = n;
+        for (int i = 0; i < n; i++) {
+            double theta = i / (float) n * 2 * Math.PI;
+            p.vertex[i].set( (float)(r * Math.cos(theta)), ((float)(r * Math.sin(theta))));
+        }
+        p.centroid.setZero();
+        p.set(p.vertex, n);
+        return p;
     }
 
     /**

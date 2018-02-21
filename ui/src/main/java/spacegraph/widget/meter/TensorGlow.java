@@ -8,7 +8,10 @@ import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.math.tensor.Tensor;
 import jcog.math.tensor.TensorLERP;
 import jcog.tree.rtree.rect.RectFloat2D;
+import org.jbox2d.collision.shapes.PolygonShape;
+import org.jbox2d.dynamics.*;
 import spacegraph.layout.Gridding;
+import spacegraph.math.Tuple2f;
 import spacegraph.render.Draw;
 import spacegraph.widget.meta.AutoSurface;
 import spacegraph.widget.slider.XYSlider;
@@ -19,6 +22,7 @@ import spacegraph.widget.windo.Port;
 import spacegraph.widget.windo.Widget;
 
 import java.util.Random;
+import java.util.function.Consumer;
 
 public class TensorGlow {
 
@@ -39,9 +43,43 @@ public class TensorGlow {
         }
     }
 
+    public static class Pacman extends Body2D implements Consumer<GL2> {
+
+        public Pacman(Dynamics2D world) {
+            super(new BodyDef(BodyType.DYNAMIC), world);
+
+            addFixture(new FixtureDef(
+                    PolygonShape.regular(9,0.24f),
+                    0.5f, 0.2f));
+
+            world.addBody(this);
+        }
+
+        @Override
+        public void accept(GL2 gl) {
+            gl.glColor3f(1, 1, 0);
+            Draw.drawPoly(this, gl, (PolygonShape) fixtures.shape);
+
+
+            float a = angle();
+            gl.glColor3f(0, 0, 0);
+            Tuple2f center = getWorldCenter();
+            Draw.rect(gl,center.x + 0.01f * (float)Math.cos(a),center.y + 0.01f * (float)Math.sin(a),0.25f,0.25f);
+
+        }
+
+        @Override
+        public void preUpdate() {
+            //applyForceToCenter(new v2(rng.nextFloat()*0.01f,rng.nextFloat()*0.01f));
+        }
+    }
+
     public static void main(String[] args) {
 
         PhyWall p = PhyWall.window(1200, 1000);
+
+
+        new Pacman(p.W);
 
         MyMatrix m = new MyMatrix();
         PhyWall.PhyWindow w = p.addWindow(new Gridding(0.25f,

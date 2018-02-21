@@ -37,6 +37,7 @@ import spacegraph.widget.meta.SpaceLogConsole;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -53,7 +54,7 @@ public class PhyWall extends Wall implements Animated {
      */
     final int solverIterations = 1;
 
-    final Dynamics2D W;
+    public final Dynamics2D W;
     private On on;
 
     /**
@@ -194,6 +195,10 @@ public class PhyWall extends Wall implements Animated {
         if (body.data() instanceof PhyWindow.WallBody) {
             return; //its rendered already via its Surface
         }
+        if (body instanceof Consumer) { //HACK make better custom enderer interface
+            ((Consumer)body).accept(gl);
+            return;
+        }
 
         //boolean active = body.isActive();
         boolean awake = body.isAwake();
@@ -210,20 +215,10 @@ public class PhyWall extends Wall implements Animated {
                 switch (shape.m_type) {
                     case POLYGON:
 
-                        PolygonShape poly = (PolygonShape) shape;
-
-                        gl.glBegin(GL2.GL_TRIANGLE_FAN);
-                        int n = poly.vertices;
-                        Tuple2f[] pv = poly.vertex;
-                        float preScale = 1.1f;
-
-                        for (int i = 0; i < n; ++i)
-                            body.getWorldPointToGL(pv[i], preScale, gl);
-                        body.getWorldPointToGL(pv[0], preScale, gl); //close
-
-                        gl.glEnd();
+                        Draw.drawPoly(body, gl, (PolygonShape) shape);
                         break;
                     case CIRCLE:
+
 //                                    CircleShape circle = (CircleShape) shape;
 //                                    float r = circle.m_radius;
 //                                    body.getWorldPointToOut(circle.m_p, v);

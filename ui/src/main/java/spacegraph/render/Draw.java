@@ -35,11 +35,14 @@ import jcog.list.FasterList;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
+import org.jbox2d.collision.shapes.PolygonShape;
+import org.jbox2d.dynamics.Body2D;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SimpleSpatial;
 import spacegraph.Surface;
 import spacegraph.math.AxisAngle4f;
 import spacegraph.math.Quat4f;
+import spacegraph.math.Tuple2f;
 import spacegraph.math.v3;
 import spacegraph.phys.collision.broad.BroadphaseNativeType;
 import spacegraph.phys.math.Transform;
@@ -905,6 +908,21 @@ public enum Draw {
 
     public static void colorRGBA(float[] c, float r, float g, float b, float a) {
         c[0] = r; c[1] = g; c[2] = b; c[3] = a;
+    }
+
+    public static void drawPoly(Body2D body, GL2 gl, PolygonShape shape) {
+        PolygonShape poly = shape;
+
+        gl.glBegin(GL_TRIANGLE_FAN);
+        int n = poly.vertices;
+        Tuple2f[] pv = poly.vertex;
+        float preScale = 1.1f;
+
+        for (int i = 0; i < n; ++i)
+            body.getWorldPointToGL(pv[i], preScale, gl);
+        body.getWorldPointToGL(pv[0], preScale, gl); //close
+
+        gl.glEnd();
     }
 
 
