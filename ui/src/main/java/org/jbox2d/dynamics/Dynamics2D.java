@@ -338,6 +338,8 @@ public class Dynamics2D {
 
         invoke(() -> {
 
+            b.onRemoval();
+
             // Delete the attached joints.
             JointEdge je = b.joints;
             while (je != null) {

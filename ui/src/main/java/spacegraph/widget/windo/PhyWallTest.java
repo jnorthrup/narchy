@@ -139,7 +139,8 @@ public class PhyWallTest {
             PhyWall.PhyWindow a = s.addWindow(A, RectFloat2D.XYWH(-1, 0, 0.25f, 0.25f));
 
 
-            Port B = LabeledPort.generic();
+            Port B = //LabeledPort.generic();
+                    new Port();
             PhyWall.PhyWindow b = s.addWindow(B, RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
 
             TogglePort AB = new TogglePort();

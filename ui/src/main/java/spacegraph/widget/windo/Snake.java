@@ -10,7 +10,7 @@ import java.util.List;
 
 public class Snake {
 
-    final List<Body2D> bodies;
+    final List<Body2D> bodies, attachments;
     final List<Joint> joints;
 
     public Snake(Body2D start, Body2D end, int num, float eleLen /* TODO parametric */, float thick) {
@@ -18,6 +18,7 @@ public class Snake {
 
         bodies = new FasterList(num);
         joints = new FasterList(num);
+        attachments = new FasterList(0);
 
         Dynamics2D w = start.W;
 
@@ -50,7 +51,6 @@ public class Snake {
                 RevoluteJointDef jd = new RevoluteJointDef();
                 //DistanceJointDef jd = new DistanceJointDef();
                 jd.collideConnected = false;
-                //jd.initialize(prevBody, body, /* anchor */ new v2(i * eleLen, y));
 
                 jd.bodyA = from;
                 if (from != start) {
@@ -67,34 +67,46 @@ public class Snake {
                     jd.localAnchorB.set(0,0);
                 }
                 jd.referenceAngle = 0;
+
                 Joint jj = w.addJoint(jd);
                 joints.add(jj);
 
                 ((RevoluteJoint)jj).positionFactor = 0.1f;
 
-                from = to;
+                if (to!=end)
+                    bodies.add(to);
 
+                from = to;
             }
 
 
-            bodies.add(from);
         }
 
-        bodies.add(from);
     }
 
     /** attach a body to center of one of the segments */
     public void attach(Body2D b, int segment) {
-        Joint w = b.W.addJoint(new RevoluteJointDef(bodies.get(segment), b));
-        joints.add(w);
+        synchronized (this) {
+            Joint w = b.W.addJoint(new RevoluteJointDef(bodies.get(segment), b));
+            attachments.add(b);
+            joints.add(w);
+        }
     }
 
-    public void remove(boolean includeStartEnd) {
-        Dynamics2D world = bodies.get(0).W;
-        for (int i = (includeStartEnd ? 0 : 1); i < bodies.size()- (includeStartEnd ? 1 : 0); i++)
-            bodies.get(i).remove();
-        bodies.clear();
-        joints.forEach(world::removeJoint);
-        joints.clear();
+    public void remove() {
+        synchronized (this) {
+            Dynamics2D world = bodies.get(0).W;
+
+            joints.forEach(world::removeJoint);
+            joints.clear();
+
+            bodies.forEach(world::removeBody);
+
+            attachments.forEach(world::removeBody);
+            attachments.clear();
+
+            bodies.clear();
+
+        }
     }
 }

@@ -167,8 +167,8 @@ public class PhyWall extends Wall implements Animated {
             g.glColor4f(0.3f + activity * 0.75f, 0.3f - 0.1f * activity, 0.3f, 0.5f + 0.25f * activity);
             g.glLineWidth(15f + activity * 5f);
 
-            Draw.line(g, w.a.cx(), w.a.cy(), w.b.cx(), w.b.cy());
-            return;
+//            Draw.line(g, w.a.cx(), w.a.cy(), w.b.cx(), w.b.cy());
+//            return;
         } else {
 
             g.glColor4f(0.9f, 0.8f, 0.1f, 0.5f);
@@ -278,6 +278,7 @@ public class PhyWall extends Wall implements Animated {
 
     public PhyWindow addWindow(Surface content, RectFloat2D initialBounds) {
         PhyWindow s = new PhyWindow(initialBounds);
+        content.pos(initialBounds);
         //s.children(new Scale(content, 1f - Windo.resizeBorder));
         add(s);
         s.content(content);
@@ -285,14 +286,37 @@ public class PhyWall extends Wall implements Animated {
         return s;
     }
 
-    protected Snake snake(Surface source, Surface target) {
+    protected Snake snake(Surface source, Surface target, Runnable onRemove) {
         Body2D from = source.parent(PhyWindow.class).body;
         Body2D to = target.parent(PhyWindow.class).body;
         assert(from!=to);
-        Snake s = new Snake(from, to, 8, 0.2f, 0.05f);
 
-        PhyWindow contW = addWindow(new PushButton("o"), RectFloat2D.mid(source.bounds, target.bounds, 0.1f));
-        s.attach(contW.body, 4);
+
+        float sa = source.bounds.area();
+        float ta = target.bounds.area();
+        float areaDiff = Math.abs(sa - ta)/(sa+ta);
+
+        int segments = Util.lerp(areaDiff, 8, 6); //heuristic estimate: larger area difference = shorter snake
+
+        PushButton menu;
+        PhyWindow menuBody = addWindow(new Gridding(0.25f,menu = new PushButton("o")),
+                RectFloat2D.mid(source.bounds, target.bounds, 0.1f));
+
+        float mw = menuBody.radius();
+
+        Snake s = new Snake(from, to, segments, 1.618f * 2 * mw, mw) {
+
+            @Override
+            public void remove() {
+                onRemove.run();
+                super.remove();
+            }
+        };
+
+
+        s.attach(menuBody.body, segments/2-1);
+
+        menu.click(s::remove);
 
         return s;
     }
@@ -556,7 +580,14 @@ public class PhyWall extends Wall implements Animated {
                     //RAW unidirectional
                     //RopeJoint ropeJoint = rope(aa, bb);
                     //ropeJoint.setData(wire);
-                    Snake s = snake(aa, bb);
+                    Snake s = snake(aa, bb, ()->{
+                        unlink(aa, bb);
+                    });
+
+
+                        for (Joint j : s.joints)
+                            j.setData(wire);
+
                 }
 
 //                    {
@@ -639,10 +670,13 @@ public class PhyWall extends Wall implements Animated {
                 this.physBounds = bounds;
             }
 
+            @Override
+            protected void onRemoval() {
+                PhyWall.this.remove(content); //body has been destroyed
+            }
 
             @Override
             public void preUpdate() {
-
 
                 RectFloat2D r = bounds;
                 if (r != physBounds) {

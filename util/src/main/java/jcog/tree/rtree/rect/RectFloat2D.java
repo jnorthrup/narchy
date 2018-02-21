@@ -225,4 +225,8 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
         float H = h/2;
         return ((float) Math.sqrt(W*W+H*H));
     }
+
+    public float area() {
+        return w*h;
+    }
 }

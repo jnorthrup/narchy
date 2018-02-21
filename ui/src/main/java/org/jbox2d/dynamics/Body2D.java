@@ -1297,4 +1297,9 @@ public class Body2D extends Transform {
     public void remove() {
         W.removeBody(this);
     }
+
+    /** called prior to removal */
+    protected void onRemoval() {
+
+    }
 }
