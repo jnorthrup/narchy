@@ -2,6 +2,7 @@ package nars.task;
 
 import jcog.bag.Bag;
 import nars.*;
+import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.concept.state.DefaultConceptState;
 import nars.term.Compound;
@@ -247,6 +248,10 @@ public class RevisionTest {
                        "(x ==> y). :|: %0.0;0.9%" );
 
         n.run(1);
+
+        Concept c = n.concept($.$("(x ==> y)"));
+        assertEquals(2, c.beliefs().size());
+
         Truth t = n.belief($.$("(x ==> y)"), 0).truth();
         assertEquals(0.5f, t.freq(), 0.01f);
         assertEquals(0.947f, t.conf(), 0.01f);

@@ -267,7 +267,12 @@ public class BeliefTableTest {
     }
 
     @Test
-    public void testBestMatch() throws Narsese.NarseseException {
+    public void testBestMatchConjSimple() throws Narsese.NarseseException {
+        //TODO
+    }
+
+    @Test
+    public void testBestMatchImplSimple() throws Narsese.NarseseException {
         for (Tense t : new Tense[]{Present/*, Eternal*/}) {
             NAR n = NARS.tmp();
             n.dtMergeOrChoose.set(false);
@@ -277,8 +282,10 @@ public class BeliefTableTest {
 
             long when = t == Present ? 0 : ETERNAL;
 
-            Task fwd = n.match($.impl($.$("a"), +5, $.$("b")), BELIEF, when);
-            assertEquals("(a ==>+5 b)", fwd.term().toString());
+            for (int dt = 3; dt < 7; dt++) {
+                Task fwd = n.match($.impl($.$("a"), +dt, $.$("b")), BELIEF, when);
+                assertEquals("(a ==>+5 b)", fwd.term().toString());
+            }
 
             Task bwd = n.match($.impl($.$("a"), -5, $.$("b")), BELIEF, when);
             assertEquals("(a ==>-5 b)", bwd.term().toString());

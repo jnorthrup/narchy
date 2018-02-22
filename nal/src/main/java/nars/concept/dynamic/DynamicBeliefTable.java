@@ -202,7 +202,8 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
                     next = template.dt(artificialDT);
 
                     if (next.subs() < templateSubs || next.dt() == XTERNAL) {
-                        if (templateSubs == 2) {
+                        next = template;
+                        if (next.subs() == 2) {
 
                             //possibly pulled an internal XTERNAL to the outside, so try artificializing this as well
                             int limit = 2;

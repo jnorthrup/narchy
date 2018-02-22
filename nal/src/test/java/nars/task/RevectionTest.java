@@ -286,7 +286,7 @@ public class RevectionTest {
         n.run();
 
         b.print();
-        assertEquals(3, b.size(true));
+        assertTrue(3 <= b.size(true));
         assertEquals(5, b.wave().start());
         assertEquals(11, b.wave().end());
 

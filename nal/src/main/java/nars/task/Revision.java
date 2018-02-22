@@ -866,7 +866,7 @@ public class Revision {
 
         long start = density.unionStart;
         long end = density.unionEnd;
-        long range = end - start;
+        long range = 1 + (end - start);
 
         Term content;
         if (!termSame) {

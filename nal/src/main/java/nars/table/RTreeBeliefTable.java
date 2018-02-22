@@ -46,8 +46,6 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             1f;
             //0.5f;
 
-    /** if the size is less than equal to this value, the entire table is scanned in one sweep (no time or conf sub-sweeps) */
-    private static final int COMPLETE_SCAN_SIZE_THRESHOLD = 4;
 
     /**
      * max allowed truths to be truthpolated in one test
@@ -71,6 +69,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
     private static final Split<TaskRegion> SPLIT =
             Spatialization.DefaultSplits.AXIAL.get(); //Spatialization.DefaultSplits.LINEAR; //<- probably doesnt work here
 
+    /** if the size is less than equal to this value, the entire table is scanned in one sweep (no time or conf sub-sweeps) */
+    private static final int COMPLETE_SCAN_SIZE_THRESHOLD = MAX_TASKS_PER_LEAF;
 
     protected int capacity;
 
@@ -589,38 +589,22 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
      * simple version, ignores term content
      */
     private static FloatFunction<Task> taskStrength(@Nullable Term template, long start, long end, int dur) {
-        return taskStrength(start, end, dur);
+        //return taskStrength(start, end, dur); //<-- ignores template
+        return taskStrengthWithTemplateTermComparison(template, start, end, dur);
     }
 
-//    /**
-//     * dtDiff needs work
-//     */
-//    static FloatFunction<Task> taskStrengthComparingTemplates(@Nullable Term template, long start, long end, int dur) {
-//        if (template == null || !template.isTemporal() || template.equals(template.root())) { //TODO this result can be cached for the entire table once knowing what term it stores
-//            return taskStrength(start, end, dur);
-//        } else {
-//            //int tableDur = 1 + (int) (tableDur());
-//            return (Task x) ->
-//                    temporalTaskPriority(x, start, end, dur) / (1f + Revision.dtDiff(template, x.term()));
-//        }
-//    }
-
-
-//    protected Task find(/*@NotNull*/ TaskRegion t) {
-//        final Task[] found = {null};
-//        tree.intersecting(t, (x) -> {
-//            if (x.equals(t)) {
-//                Task xt = x.task();
-//                if (xt != null) {
-//                    found[0] = xt;
-//                    return false; //finished
-//                }
-//            }
-//            return true;
-//        });
-//        return found[0];
-//    }
-
+    /**
+     * dtDiff needs work
+     */
+    static FloatFunction<Task> taskStrengthWithTemplateTermComparison(@Nullable Term template, long start, long end, int dur) {
+        if (template == null) { // || !template.isTemporal() || template.equals(template.root())) {
+            return taskStrength(start, end, dur);
+        } else {
+            //int tableDur = 1 + (int) (tableDur());
+            return (Task x) ->
+                    temporalTaskPriority(x, start, end, dur) / (1f + Revision.dtDiff(template, x.term()));
+        }
+    }
 
     @Override
     public int capacity() {
@@ -831,12 +815,14 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
 
             table.readOptimistic((Space<TaskRegion> tree) -> {
 
-                this.clear(); //in case of optimisticRead, if tried twice
-
                 int s = tree.size();
+                if (s == 0)
+                    return;
+
+                ScanFilter.this.clear(); //in case of optimisticRead, if tried twice
+
                 if (s <= COMPLETE_SCAN_SIZE_THRESHOLD) {
-                    if (s > 0)
-                        tree.forEach(this::add);
+                    tree.forEach(this::add);
                     return;
                 }
 
