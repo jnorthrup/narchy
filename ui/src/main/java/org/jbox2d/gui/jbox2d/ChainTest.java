@@ -10,7 +10,7 @@ import spacegraph.math.v2;
 /**
  * @author Daniel Murphy
  */
-public class Chain implements ICase {
+public class ChainTest implements ICase {
 
     @Override
     public void init(Dynamics2D w) {

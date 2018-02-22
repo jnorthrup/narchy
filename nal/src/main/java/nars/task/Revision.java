@@ -884,7 +884,6 @@ public class Revision {
             if (content == null || !content.op().conceptualizable)
                 return first;
 
-
         } else {
             content = first.term();
         }
@@ -898,6 +897,11 @@ public class Revision {
         float eAdjusted = truth.evi() * factor;
         if ((eAdjusted * range) < minEviInteg)
             return first;
+
+        if (content.op()==NEG) {
+            content = content.unneg();
+            truth = truth.neg();
+        }
 
         @Nullable PreciseTruth cTruth = truth.dither(nar, factor);
         if (cTruth == null)

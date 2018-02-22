@@ -50,6 +50,13 @@ public class BitmapMatrixView extends Surface {
         return RectFloat2D.XYWH(c.x, c.y, pw * w(), ph * h());
     }
 
+    public static ViewFunction2D arrayRenderer(float[] ww) {
+        return (x, y) -> {
+            float v = ww[x];
+            return Draw.colorBipolar(v);
+        };
+    }
+
     public static ViewFunction2D arrayRenderer(float[][] ww) {
         return (x, y) -> {
             float v = ww[x][y];
@@ -109,6 +116,10 @@ public class BitmapMatrixView extends Surface {
         this.h = h;
         this.view = view != null ? view : ((ViewFunction2D) this);
         this.bmp = new Tex();
+    }
+
+    public BitmapMatrixView(float[] f) {
+        this(f.length, 1, arrayRenderer(f));
     }
 
     public BitmapMatrixView(float[][] f) {

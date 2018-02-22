@@ -1,6 +1,6 @@
 package nars;
 
-import jcog.learn.ql.HaiQAgent;
+import jcog.learn.ql.HaiQae;
 import nars.op.RLBooster;
 import nars.term.Term;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -75,7 +75,7 @@ public class NAgentTest {
         NAR n = NARS.shell();
 
         assertOscillatesAction(n, (a)->{
-            new RLBooster(a, HaiQAgent::new, 2);
+            new RLBooster(a, HaiQae::new, 2);
         });
 
     }

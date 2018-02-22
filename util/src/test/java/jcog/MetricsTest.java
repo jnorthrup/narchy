@@ -35,7 +35,7 @@ public class MetricsTest {
     @Test public void testTemporalMetrics() {
 
         
-        TemporalMetrics<Integer> tm = new TemporalMetrics<>(3);
+        TemporalMetrics tm = new TemporalMetrics(3);
         tm.add(timeDoubler);
         
         assertEquals(0, tm.numRows());
@@ -85,7 +85,7 @@ public class MetricsTest {
     @Disabled
     @Test public void testSummaryStatistics() {
 
-        TemporalMetrics<Double> tm = new TemporalMetrics<>(10);
+        TemporalMetrics tm = new TemporalMetrics(10);
         tm.add(new BasicStatistics(tm, tm.getSignalIDs()[0]));
         
         for (int i = 0; i < 10; i++) {

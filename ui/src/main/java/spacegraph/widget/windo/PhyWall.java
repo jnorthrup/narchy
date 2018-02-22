@@ -13,6 +13,8 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jbox2d.collision.RayCastInput;
 import org.jbox2d.collision.RayCastOutput;
+import org.jbox2d.collision.shapes.CircleShape;
+import org.jbox2d.collision.shapes.EdgeShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.collision.shapes.Shape;
 import org.jbox2d.common.Transform;
@@ -219,20 +221,21 @@ public class PhyWall extends Wall implements Animated {
                         break;
                     case CIRCLE:
 
-//                                    CircleShape circle = (CircleShape) shape;
-//                                    float r = circle.m_radius;
-//                                    body.getWorldPointToOut(circle.m_p, v);
-//                                    Point p = getPoint(v);
-//                                    int wr = (int) (r * zoom);
-//                                    g.fillOval(p.x - wr, p.y - wr, wr * 2, wr * 2);
+                                    CircleShape circle = (CircleShape) shape;
+                                    float r = circle.m_radius;
+                                    v2 v = new v2();
+                                    body.getWorldPointToOut(circle.m_p, v);
+                                    //Point p = getPoint(v);
+                                    //int wr = (int) (r * zoom);
+                                    //g.fillOval(p.x - wr, p.y - wr, wr * 2, wr * 2);
+                                    Draw.circle(gl, new v2(v.x, v.y), true, r, 9);
                         break;
                     case EDGE:
-//                                    EdgeShape edge = (EdgeShape) shape;
-//                                    Tuple2f v1 = edge.m_vertex1;
-//                                    Tuple2f v2 = edge.m_vertex2;
-//                                    Point p1 = getPoint(v1);
-//                                    Point p2 = getPoint(v2);
-//                                    g.drawLine(p1.x, p1.y, p2.x, p2.y);
+                                    EdgeShape edge = (EdgeShape) shape;
+                                    Tuple2f p1 = edge.m_vertex1;
+                                    Tuple2f p2 = edge.m_vertex2;
+                                    gl.glLineWidth(4f);
+                                    Draw.line(gl, p1.x, p1.y, p2.x, p2.y);
                         break;
                 }
             }
@@ -518,9 +521,9 @@ public class PhyWall extends Wall implements Animated {
             return link(get(), target);
         }
 
-        public Iterable<ImmutableDirectedEdge<Surface, Wire>> edges(Surface s, boolean in, boolean out) {
+        public Iterable<ImmutableDirectedEdge<Surface, Wire>> edges(Surface s) {
             NodeGraph.Node<Surface, Wire> n = links.node(s);
-            return n != null ? n.edges(in, out) : Collections.emptyList();
+            return n != null ? n.edges(true, true) : Collections.emptyList();
         }
 
         public Wire unlink(Surface source, Surface target) {

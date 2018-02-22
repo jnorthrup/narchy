@@ -2,7 +2,8 @@ package nars.experiment;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.learn.ql.HaiQAgent;
+import jcog.learn.ql.HaiQae;
+import jcog.meter.TemporalMetrics;
 import jcog.signal.ArrayBitmap2D;
 import jcog.tree.rtree.rect.RectFloat2D;
 import nars.*;
@@ -13,6 +14,7 @@ import nars.gui.Vis;
 import nars.index.term.map.CaffeineIndex;
 import nars.op.RLBooster;
 import nars.op.stm.ConjClustering;
+import nars.task.DerivedTask;
 import nars.term.Term;
 import nars.time.CycleTime;
 import nars.util.signal.Bitmap2DSensor;
@@ -21,6 +23,7 @@ import spacegraph.layout.Gridding;
 import spacegraph.render.Draw;
 import spacegraph.widget.meta.AutoSurface;
 
+import java.io.FileNotFoundException;
 import java.util.function.Consumer;
 
 import static nars.Op.BELIEF;
@@ -49,16 +52,13 @@ public class TrackXY extends NAgent {
 
     public static void main(String[] args) {
 
-        float fps = 40;
+        boolean nars = false;
+        boolean rl = true;
 
-        boolean nars = true;
-        boolean rl = false;
-
-        int dur = 1;
+        int dur = 2;
 
         NARS nb = new NARS()
-                //.realtime(fps*2)
-                .exe(new UniExec(512))
+                .exe(new UniExec(128))
                 .time(new CycleTime().dur(dur))
                 .index(
                     //new HijackConceptIndex(4 * 1024, 4)
@@ -69,23 +69,76 @@ public class TrackXY extends NAgent {
 
         NAR n = nb.get();
 
-        n.termVolumeMax.set(36);
-        n.priDefault(BELIEF, 0.1f);
+        n.termVolumeMax.set(24);
+        n.priDefault(BELIEF, 0.2f);
 //        n.priDefault(GOAL, 0.5f);
         n.conceptActivation.set(0.5f);
-        n.forgetRate.set(0.9f);
+        n.forgetRate.set(0.8f);
 
-        TrackXY t = new TrackXY(8, 8);
 
+        TrackXY t = new TrackXY(8 , 1);
         n.on(t);
+
+        int experimentTime = 8192;
+
+        TemporalMetrics m = new TemporalMetrics(experimentTime+100);
+        n.onCycle(()->m.update(n.time()));
+        m.add("reward", ()-> t.reward);
+        m.add("happy", ()-> {
+            float h = t.happy.asFloat();
+            if (h!=h)
+                return 0.5f;
+            return h;
+        });
+        m.add("dex", ()-> t.dexterity());
+        Runtime.getRuntime().addShutdownHook(new Thread(()->{
+            String filename = "/tmp/x.csv";
+            System.err.println("saving " + m + " to: " + filename);
+            try {
+                m.printCSV(filename);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }));
+
 
         n.time.synch(n);
 
 
 
+
+        window(Vis.top(n), 800, 250);
+        NAgentX.chart(t);
+        window(new CameraSensorView(t.cam, n) {
+            @Override
+            protected void paint(GL2 gl, int dtMS) {
+                super.paint(gl, dtMS);
+                RectFloat2D at = cellRect(t.sx, t.sy, 0.5f, 0.5f);
+                gl.glColor4f(1, 0, 0, 0.9f);
+                Draw.rect(gl, at);
+            }
+        }, 800, 800);
+
+
+        if (rl) {
+            new RLBooster(t,
+                    //DQN::new,
+                    //HaiQ::new,
+                    HaiQae::new,
+                    //RandomAgent::new,
+                    1);
+            t.curiosity.set(0);
+        }
         if (nars) {
 
-            Deriver d = new Deriver(Derivers.rules(1, 8, n), n);
+            Param.DEBUG = true;
+            //n.log();
+
+            Deriver d = new Deriver(Derivers.rules(
+                    //1,
+                    6,
+                    8, n), n);
+            d.conceptsPerIteration.set(32);
 
             ConjClustering cj = new ConjClustering(n, BELIEF,
                     //(tt)->true,
@@ -99,34 +152,16 @@ public class TrackXY extends NAgent {
                     new AutoSurface(cj)
                     //,new AutoSurface(ai)
             ), 400, 300);
-            n.onTask(tt -> { if (tt.isGoal() ) { System.out.println(tt); } });
-        }
-        window(Vis.top(n), 800, 250);
-        NAgentX.chart(t);
-        window(new CameraSensorView(t.cam, n) {
-            @Override
-            protected void paint(GL2 gl, int dtMS) {
-                super.paint(gl, dtMS);
-                RectFloat2D at = cellRect(t.sx, t.sy, 0.5f, 0.5f);
-                gl.glColor4f(1, 0, 0, 0.9f);
-                Draw.rect(gl, at);
-            }
-        }, 800, 800);
-
-        n.startFPS(fps);
-        t.runFPS(fps);
-
-        if (rl) {
-            new RLBooster(t,
-                    //DQN::new,
-                    HaiQAgent::new,
-                    //RandomAgent::new,
-                    1);
-            t.curiosity.set(0);
+            n.onTask(tt -> { if (tt instanceof DerivedTask && tt.isGoal() ) { System.out.println(tt.proof()); } });
         }
 
         //n.log();
 
+//        n.startFPS(fps);
+//        t.runFPS(fps);
+        n.onCycle(t);
+        n.run(experimentTime);
+        System.exit(0);
     }
 
     protected TrackXY(int x, int y) {
@@ -156,7 +191,9 @@ public class TrackXY extends NAgent {
         });
 
         this.cam = new Bitmap2DSensor((Term)null, view, nar);
-        this.cam.resolution(0.1f);
+        //this.cam.resolution(0.1f);
+        sensorCam.add(cam);
+
         //senseNumber($.the("x"), ()->sx/(view.width()-1));
         //senseNumber($.the("y"), ()->sy/(view.height()-1));
 
@@ -216,15 +253,21 @@ public class TrackXY extends NAgent {
     public static class CircleTarget implements Consumer<TrackXY> {
 
 
-        float speed = 0.02f;
+        float speed = 0.05f;
         float theta = 0;
 
 
         @Override
         public void accept(TrackXY t) {
             theta += speed;
+
             t.tx = (((float) Math.cos(theta)*0.5f)+0.5f) * (t.width()-1);
-            t.ty = (((float) Math.sin(theta)*0.5f)+0.5f) * (t.height()-1);
+
+            if (t.height() > 1)
+                t.ty = (((float) Math.sin(theta)*0.5f)+0.5f) * (t.height()-1);
+            else
+                t.ty = 0;
+
 //            int tw = t.width();
 //            if (t.tx > tw -1)
 //                t.tx -= tw;
@@ -249,7 +292,8 @@ public class TrackXY extends NAgent {
                     return 0f;
                 } else {
                     float dist = (float) Math.sqrt(Util.sqr(tx - x) + Util.sqr(ty - y));
-                    return 0.5f + 0.5f * Math.max(0, 1 - dist * visionContrast);
+                    //return 0.5f + 0.5f * Math.max(0, 1 - dist * visionContrast);
+                    return 0.25f + 0.75f * Math.max(0, 1 - dist * visionContrast);
                 }
 
             });

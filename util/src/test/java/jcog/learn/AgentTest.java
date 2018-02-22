@@ -3,7 +3,7 @@ package jcog.learn;
 import jcog.learn.ql.DPG;
 import jcog.learn.ql.DQN;
 import jcog.learn.ql.HaiQ;
-import jcog.learn.ql.HaiQAgent;
+import jcog.learn.ql.HaiQae;
 import org.eclipse.collections.impl.map.mutable.primitive.IntIntHashMap;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ public class AgentTest {
         testAgent( new HaiQ(1, 2) );
     }
     @Test public void testHaiQAgent() {
-        testAgent( new HaiQAgent(1, 2) );
+        testAgent( new HaiQae(1, 2) );
     }
 
     @Disabled

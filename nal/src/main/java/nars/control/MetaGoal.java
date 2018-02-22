@@ -3,7 +3,7 @@ package nars.control;
 import com.google.common.collect.TreeBasedTable;
 import jcog.Paper;
 import jcog.Util;
-import jcog.learn.ql.HaiQAgent;
+import jcog.learn.ql.HaiQae;
 import jcog.list.FasterList;
 import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
@@ -123,7 +123,7 @@ public enum MetaGoal {
 
         AgentBuilder b = new AgentBuilder(
                 //DQN::new,
-                HaiQAgent::new,
+                HaiQae::new,
                 //() -> Util.tanhFast(a.dexterity())) //reward function
                 () -> a.enabled.get() ? (0.1f + a.dexterity()) * Util.tanhFast(a.reward) /* - lag */ : 0f) //reward function
 

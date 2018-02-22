@@ -1,0 +1,270 @@
+package org.jbox2d.gui.jbox2d;
+
+import org.jbox2d.collision.shapes.CircleShape;
+import org.jbox2d.collision.shapes.EdgeShape;
+import org.jbox2d.collision.shapes.PolygonShape;
+import org.jbox2d.common.MathUtils;
+import org.jbox2d.dynamics.*;
+import org.jbox2d.dynamics.joints.DistanceJointDef;
+import org.jbox2d.dynamics.joints.RevoluteJoint;
+import org.jbox2d.dynamics.joints.RevoluteJointDef;
+import org.jbox2d.gui.ICase;
+import spacegraph.math.v2;
+
+public class TheoJansen implements ICase  {
+    private static final long CHASSIS_TAG = 1;
+    private static final long WHEEL_TAG = 2;
+    private static final long MOTOR_TAG = 8;
+
+    v2 m_offset = new v2();
+    Body2D m_chassis;
+    Body2D m_wheel;
+    RevoluteJoint m_motorJoint;
+    boolean m_motorOn;
+    float m_motorSpeed;
+    private Dynamics2D w;
+
+//    @Override
+//    public Long getTag(Body2D argBody) {
+//        if (argBody2D == m_chassis) {
+//            return CHASSIS_TAG;
+//        } else if (argBody2D == m_wheel) {
+//            return WHEEL_TAG;
+//        }
+//        return null;
+//    }
+//
+//    @Override
+//    public Long getTag(Joint argJoint) {
+//        if (argJoint == m_motorJoint) {
+//            return MOTOR_TAG;
+//        }
+//        return null;
+//    }
+
+//    @Override
+//    public void processBody(Body2D argBody, Long argTag) {
+//        if (argTag == CHASSIS_TAG) {
+//            m_chassis = argBody;
+//        } else if (argTag == WHEEL_TAG) {
+//            m_wheel = argBody;
+//        }
+//    }
+//
+//    @Override
+//    public void processJoint(Joint argJoint, Long argTag) {
+//        if (argTag == MOTOR_TAG) {
+//            m_motorJoint = (RevoluteJoint) argJoint;
+//            m_motorOn = m_motorJoint.isMotorEnabled();
+//        }
+//    }
+
+
+
+    @Override
+    public void init(Dynamics2D w) {
+
+        this.w = w;
+        
+        m_offset.set(0.0f, 8.0f);
+        m_motorSpeed = 2.0f;
+        m_motorOn = true;
+        v2 pivot = new v2(0.0f, 0.8f);
+
+        // Ground
+        {
+            BodyDef bd = new BodyDef();
+            Body2D ground = w.addBody(bd);
+
+            EdgeShape shape = new EdgeShape();
+            shape.set(new v2(-50.0f, 0.0f), new v2(50.0f, 0.0f));
+            ground.addFixture(shape, 0.0f);
+
+            shape.set(new v2(-50.0f, 0.0f), new v2(-50.0f, 10.0f));
+            ground.addFixture(shape, 0.0f);
+
+            shape.set(new v2(50.0f, 0.0f), new v2(50.0f, 10.0f));
+            ground.addFixture(shape, 0.0f);
+        }
+
+        // Balls
+        for (int i = 0; i < 40; ++i) {
+            CircleShape shape = new CircleShape();
+            shape.m_radius = 0.25f;
+
+            BodyDef bd = new BodyDef();
+            bd.type = BodyType.DYNAMIC;
+            bd.position.set(-40.0f + 2.0f * i, 0.5f);
+
+            Body2D body = w.addBody(bd);
+            body.addFixture(shape, 1.0f);
+        }
+
+        // Chassis
+        {
+            PolygonShape shape = new PolygonShape();
+            shape.setAsBox(2.5f, 1.0f);
+
+            FixtureDef sd = new FixtureDef();
+            sd.density = 1.0f;
+            sd.shape = shape;
+            sd.filter.groupIndex = -1;
+            BodyDef bd = new BodyDef();
+            bd.type = BodyType.DYNAMIC;
+            bd.position.set(pivot).added(m_offset);
+            m_chassis = w.addBody(bd);
+            m_chassis.addFixture(sd);
+        }
+
+        {
+            CircleShape shape = new CircleShape();
+            shape.m_radius = 1.6f;
+
+            FixtureDef sd = new FixtureDef();
+            sd.density = 1.0f;
+            sd.shape = shape;
+            sd.filter.groupIndex = -1;
+            BodyDef bd = new BodyDef();
+            bd.type = BodyType.DYNAMIC;
+            bd.position.set(pivot).added(m_offset);
+            m_wheel = w.addBody(bd);
+            m_wheel.addFixture(sd);
+        }
+
+        {
+            RevoluteJointDef jd = new RevoluteJointDef();
+
+            jd.initialize(m_wheel, m_chassis, pivot.add(m_offset));
+            jd.collideConnected = false;
+            jd.motorSpeed = m_motorSpeed;
+            jd.maxMotorTorque = 400.0f;
+            jd.enableMotor = m_motorOn;
+            m_motorJoint = (RevoluteJoint) w.addJoint(jd);
+        }
+
+        v2 wheelAnchor;
+
+        wheelAnchor = pivot.add(new v2(0.0f, -0.8f));
+
+        createLeg(-1.0f, wheelAnchor);
+        createLeg(1.0f, wheelAnchor);
+
+        m_wheel.setTransform(m_wheel.getPosition(), 120.0f * MathUtils.PI / 180.0f);
+        createLeg(-1.0f, wheelAnchor);
+        createLeg(1.0f, wheelAnchor);
+
+        m_wheel.setTransform(m_wheel.getPosition(), -120.0f * MathUtils.PI / 180.0f);
+        createLeg(-1.0f, wheelAnchor);
+        createLeg(1.0f, wheelAnchor);
+    }
+
+    void createLeg(float s, v2 wheelAnchor) {
+        v2 p1 = new v2(5.4f * s, -6.1f);
+        v2 p2 = new v2(7.2f * s, -1.2f);
+        v2 p3 = new v2(4.3f * s, -1.9f);
+        v2 p4 = new v2(3.1f * s, 0.8f);
+        v2 p5 = new v2(6.0f * s, 1.5f);
+        v2 p6 = new v2(2.5f * s, 3.7f);
+
+        FixtureDef fd1 = new FixtureDef();
+        FixtureDef fd2 = new FixtureDef();
+        fd1.filter.groupIndex = -1;
+        fd2.filter.groupIndex = -1;
+        fd1.density = 1.0f;
+        fd2.density = 1.0f;
+
+        PolygonShape poly1 = new PolygonShape();
+        PolygonShape poly2 = new PolygonShape();
+
+        if (s > 0.0f) {
+            v2[] vertices = new v2[3];
+
+            vertices[0] = p1;
+            vertices[1] = p2;
+            vertices[2] = p3;
+            poly1.set(vertices, 3);
+
+            vertices[0] = new v2();
+            vertices[1] = p5.sub(p4);
+            vertices[2] = p6.sub(p4);
+            poly2.set(vertices, 3);
+        } else {
+            v2[] vertices = new v2[3];
+
+            vertices[0] = p1;
+            vertices[1] = p3;
+            vertices[2] = p2;
+            poly1.set(vertices, 3);
+
+            vertices[0] = new v2();
+            vertices[1] = p6.sub(p4);
+            vertices[2] = p5.sub(p4);
+            poly2.set(vertices, 3);
+        }
+
+        fd1.shape = poly1;
+        fd2.shape = poly2;
+
+        BodyDef bd1 = new BodyDef(), bd2 = new BodyDef();
+        bd1.type = BodyType.DYNAMIC;
+        bd2.type = BodyType.DYNAMIC;
+        bd1.position = m_offset;
+        bd2.position = p4.add(m_offset);
+
+        bd1.angularDamping = 10.0f;
+        bd2.angularDamping = 10.0f;
+
+        Body2D body1 = w.addBody(bd1);
+        Body2D body2 = w.addBody(bd2);
+
+        body1.addFixture(fd1);
+        body2.addFixture(fd2);
+
+        DistanceJointDef djd = new DistanceJointDef();
+
+        // Using a soft distance constraint can reduce some jitter.
+        // It also makes the structure seem a bit more fluid by
+        // acting like a suspension system.
+        djd.dampingRatio = 0.5f;
+        djd.frequencyHz = 10.0f;
+
+        djd.initialize(body1, body2, p2.add(m_offset), p5.add(m_offset));
+        w.addJoint(djd);
+
+        djd.initialize(body1, body2, p3.add(m_offset), p4.add(m_offset));
+        w.addJoint(djd);
+
+        djd.initialize(body1, m_wheel, p3.add(m_offset), wheelAnchor.add(m_offset));
+        w.addJoint(djd);
+
+        djd.initialize(body2, m_wheel, p6.add(m_offset), wheelAnchor.add(m_offset));
+        w.addJoint(djd);
+
+        RevoluteJointDef rjd = new RevoluteJointDef();
+
+        rjd.initialize(body2, m_chassis, p4.add(m_offset));
+        w.addJoint(rjd);
+    }
+
+//    @Override
+//    public void keyPressed(char key, int argKeyCode) {
+//        switch (key) {
+//            case 'a':
+//                m_motorJoint.setMotorSpeed(-m_motorSpeed);
+//                break;
+//
+//            case 's':
+//                m_motorJoint.setMotorSpeed(0.0f);
+//                break;
+//
+//            case 'd':
+//                m_motorJoint.setMotorSpeed(m_motorSpeed);
+//                break;
+//
+//            case 'm':
+//                m_motorJoint.enableMotor(!m_motorJoint.isMotorEnabled());
+//                break;
+//        }
+//    }
+
+}

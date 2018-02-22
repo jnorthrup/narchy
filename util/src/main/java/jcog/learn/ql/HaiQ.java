@@ -1,7 +1,6 @@
 package jcog.learn.ql;
 
 import jcog.decide.DecideEpsilonGreedy;
-import jcog.decide.DecideSoftmax;
 import jcog.decide.Deciding;
 import jcog.learn.Agent;
 import jcog.math.FloatRange;
@@ -85,8 +84,8 @@ public class HaiQ extends Agent {
 
         //HaiQ only
         decideInput =
-                //DecideEpsilonGreedy.ArgMax;
-                new DecideSoftmax(0.25f, rng);
+                DecideEpsilonGreedy.ArgMax;
+                //new DecideSoftmax(0.25f, rng);
 
         decideState =
                 DecideEpsilonGreedy.ArgMax;

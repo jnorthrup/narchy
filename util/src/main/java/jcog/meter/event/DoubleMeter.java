@@ -6,6 +6,7 @@
 package jcog.meter.event;
 
 import java.util.function.DoubleConsumer;
+import java.util.function.DoubleSupplier;
 
 /**
  * Stores the latest provided value for retrieval by a Metrics 
@@ -28,7 +29,17 @@ public class DoubleMeter extends SourceFunctionMeter<Double> implements DoubleCo
     
     public DoubleMeter(String id) {
         this(id, false);
-    }    
+    }
+
+    public static DoubleMeter get(String id, DoubleSupplier x) {
+        return new DoubleMeter(id, true) {
+            @Override
+            public DoubleMeter reset() {
+                set(x.getAsDouble());
+                return this;
+            }
+        };
+    }
 
 
     public DoubleMeter reset() {

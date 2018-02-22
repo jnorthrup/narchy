@@ -23,7 +23,8 @@ public class Snake {
         Dynamics2D w = start.W;
 
         FixtureDef segment = new FixtureDef(
-                PolygonShape.box(eleLen/2, thick/2), 0.1f, 0f);
+                PolygonShape.box(eleLen/2, thick/2), 0.1f, 0.9f);
+        segment.restitution = (0f);
         segment.filter.maskBits = 0; //no collision
 
         final float y = 0f;
@@ -87,7 +88,7 @@ public class Snake {
     /** attach a body to center of one of the segments */
     public void attach(Body2D b, int segment) {
         synchronized (this) {
-            Joint w = b.W.addJoint(new RevoluteJointDef(bodies.get(segment), b));
+            RevoluteJoint w = (RevoluteJoint) b.W.addJoint(new RevoluteJointDef(bodies.get(segment), b));
             attachments.add(b);
             joints.add(w);
         }

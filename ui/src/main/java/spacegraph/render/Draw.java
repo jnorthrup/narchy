@@ -36,14 +36,13 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.impl.list.mutable.primitive.ByteArrayList;
 import org.jbox2d.collision.shapes.PolygonShape;
+import org.jbox2d.common.MathUtils;
 import org.jbox2d.dynamics.Body2D;
+import org.jbox2d.particle.ParticleColor;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SimpleSpatial;
 import spacegraph.Surface;
-import spacegraph.math.AxisAngle4f;
-import spacegraph.math.Quat4f;
-import spacegraph.math.Tuple2f;
-import spacegraph.math.v3;
+import spacegraph.math.*;
 import spacegraph.phys.collision.broad.BroadphaseNativeType;
 import spacegraph.phys.math.Transform;
 import spacegraph.phys.math.VectorUtil;
@@ -526,6 +525,63 @@ public enum Draw {
 
     }
 
+    public static void circle(GL2 gl, v2 center, boolean solid, float radius, int NUM_CIRCLE_POINTS) {
+        //gl.glPushMatrix();
+        //transformViewport(gl, zero);
+        float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
+        float c = (float) Math.cos(theta);
+        float s = (float) Math.sin(theta);
+        float x = radius;
+        float y = 0;
+        float cx = center.x;
+        float cy = center.y;
+        gl.glBegin(solid ? GL2.GL_TRIANGLE_FAN : GL2.GL_LINE_LOOP);
+
+        for (int i = 0; i < NUM_CIRCLE_POINTS; i++) {
+            gl.glVertex3f(x + cx, y + cy, 0);
+            // apply the rotation matrix
+            float temp = x;
+            x = c * x - s * y;
+            y = s * temp + c * y;
+        }
+        gl.glEnd();
+        //gl.glPopMatrix();
+    }
+
+    public static void particles(GL2 gl, v2[] centers, float radius, int NUM_CIRCLE_POINTS,  ParticleColor[] colors, int count) {
+
+        //gl.glPushMatrix();
+        //transformViewport(gl, zero);
+
+        float theta = 2 * MathUtils.PI / NUM_CIRCLE_POINTS;
+        float c = (float) Math.cos(theta);
+        float s = (float) Math.sin(theta);
+
+        float x = radius;
+        float y = 0;
+
+        for (int i = 0; i < count; i++) {
+            v2 center = centers[i];
+            float cx = center.x;
+            float cy = center.y;
+            gl.glBegin(GL2.GL_TRIANGLE_FAN);
+            if (colors == null) {
+                gl.glColor4f(1, 1, 1, .4f);
+            } else {
+                ParticleColor color = colors[i];
+                gl.glColor4b(color.r, color.g, color.b, color.a);
+            }
+            for (int j = 0; j < NUM_CIRCLE_POINTS; j++) {
+                gl.glVertex3f(x + cx, y + cy, 0);
+                float temp = x;
+                x = c * x - s * y;
+                y = s * temp + c * y;
+            }
+            gl.glEnd();
+        }
+        //gl.glPopMatrix();
+    }
+
     public static void rect(GL2 gl, float x1, float y1, float w, float h) {
 
         gl.glRectf(x1, y1, x1 + w, y1 + h);
@@ -812,8 +868,12 @@ public enum Draw {
     }
 
     public static int colorBipolar(float v) {
+
+
         float r, g, b;
-        if (v < 0) {
+        if (v!=v) {
+            r = g = b = 0.5f;
+        } else if (v < 0) {
             v = unitize(-v);
             r = v;
             g = 0f;

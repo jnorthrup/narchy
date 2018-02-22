@@ -32,8 +32,8 @@ import java.util.ArrayList;
  * maintain a constant volume within them.
  */
 public class ConstantVolumeJointDef extends JointDef {
-    public final float frequencyHz;
-    public final float dampingRatio;
+    public float frequencyHz;
+    public float dampingRatio;
 
     final ArrayList<Body2D> bodies;
     ArrayList<DistanceJoint> joints;

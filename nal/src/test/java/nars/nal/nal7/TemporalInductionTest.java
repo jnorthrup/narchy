@@ -258,7 +258,9 @@ public class TemporalInductionTest {
         n.deep.set(1f);
         n.log();
 
-        TemporalMetrics m = new TemporalMetrics<>(1024);
+        TemporalMetrics m = new TemporalMetrics(1024);
+        n.onCycle(()->m.update(n.time()));
+
         m.add(new PriMeter(n,"(0)"));
         m.add(new PriMeter(n,"(1)"));
         m.add(new PriMeter(n,"(2)"));
@@ -267,7 +269,6 @@ public class TemporalInductionTest {
         m.add(new PriMeter(n,"((1) && (2))"));
         m.add(new PriMeter(n,"((1) ==> (2))"));
 
-        n.onCycle(()->m.update(n.time()));
 
         //expose to repeat sequence
         int loops = 32, eventsPerLoop = 3, delayBetweenEvents = 2;

@@ -14,7 +14,9 @@ import org.jbox2d.fracture.Material;
 import org.jbox2d.fracture.PolygonFixture;
 import org.jbox2d.fracture.util.MyList;
 import org.jbox2d.gui.fracture.*;
-import org.jbox2d.gui.jbox2d.Chain;
+import org.jbox2d.gui.jbox2d.BlobTest4;
+import org.jbox2d.gui.jbox2d.ChainTest;
+import org.jbox2d.gui.jbox2d.TheoJansen;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 
@@ -61,7 +63,9 @@ public class Dynamic2DTests extends JComponent implements Runnable {
             new Materials(Material.UNIFORM),
             new Materials(Material.DIFFUSION),
             new Materials(Material.GLASS),
-            new Chain()
+            new ChainTest(),
+            new BlobTest4(),
+            new TheoJansen()
     };
 
 

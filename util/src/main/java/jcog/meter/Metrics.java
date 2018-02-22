@@ -25,7 +25,7 @@ import java.util.function.Predicate;
  * time point (first column).
  * 
  */
-public class Metrics<RowKey,Cell> implements Iterable<Object[]> {
+public class Metrics<RowKey> implements Iterable<Object[]> {
 
 
 
@@ -240,8 +240,13 @@ public class Metrics<RowKey,Cell> implements Iterable<Object[]> {
     public void clearData() {
         rows.clear();
     }
-    
-    public <M extends Signals<C>, C extends Cell> M add(M m) {
+
+    public <M extends Signals<C>, C> void addAll(M... m) {
+        for (M mm : m)
+            add(mm);
+    }
+
+    public <M extends Signals<C>, C> M add(M m) {
         for (Signal s : m.getSignals()) {
             if (getSignal(s.id)!=null)
                 throw new RuntimeException("Signal " + s.id + " already exists in "+ this);
@@ -255,7 +260,7 @@ public class Metrics<RowKey,Cell> implements Iterable<Object[]> {
         return m;
     }
     
-    public void removeMeter(Signals<? extends Cell> m) {
+    public void removeMeter(Signals m) {
         throw new RuntimeException("Removal not supported yet");
     }
     
@@ -270,7 +275,7 @@ public class Metrics<RowKey,Cell> implements Iterable<Object[]> {
 
         int c = 0;
         for (Signals m : meters) {
-            Cell[] v = ((Signals<? extends Cell>)m).sample(key);
+            Object[] v = m.sample(key);
             if (v == null) continue;
             int vl = v.length;
 

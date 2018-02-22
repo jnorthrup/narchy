@@ -22,16 +22,14 @@ import nars.term.var.Variable;
 import nars.truth.DiscreteTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
+import nars.util.signal.Bitmap2DSensor;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -52,6 +50,9 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     
 
     public final Map<SensorConcept, CauseChannel<ITask>> sensors = new LinkedHashMap();
+
+    @Deprecated public final Set<Bitmap2DSensor<?>> sensorCam = new LinkedHashSet<>();
+
     public final Map<ActionConcept, CauseChannel<ITask>> actions = new LinkedHashMap();
 
 //    /**

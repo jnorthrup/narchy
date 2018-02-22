@@ -29,6 +29,7 @@
 package org.jbox2d.dynamics.joints;
 
 import org.jbox2d.common.*;
+import org.jbox2d.dynamics.Dynamics2D;
 import org.jbox2d.dynamics.SolverData;
 import org.jbox2d.pooling.IWorldPool;
 import spacegraph.math.Tuple2f;
@@ -79,6 +80,10 @@ public class WeldJoint extends Joint {
     private float m_invIA;
     private float m_invIB;
     private final Mat33 m_mass = new Mat33();
+
+    public WeldJoint(Dynamics2D w, WeldJointDef def) {
+        this(w.pool, def);
+    }
 
     public WeldJoint(IWorldPool argWorld, WeldJointDef def) {
         super(argWorld, def);

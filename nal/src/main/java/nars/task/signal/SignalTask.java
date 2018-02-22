@@ -24,10 +24,10 @@ public class SignalTask extends NALTask {
 //        //return 0.1f;
 //    }
 
-    @Override
-    public boolean isInput() {
-        return false;
-    }
+//    @Override
+//    public boolean isInput() {
+//        return false;
+//    }
 
 
 }

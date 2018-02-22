@@ -43,8 +43,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.function.Function;
 import java.util.function.IntConsumer;
 import java.util.function.Supplier;
@@ -64,8 +62,6 @@ import static spacegraph.render.JoglPhysics.window;
  */
 abstract public class NAgentX extends NAgent {
 
-
-    public final Set<Bitmap2DSensor<?>> cam = new LinkedHashSet<>();
 
 //    @Override
 //    public Set<Termed> concepts() {
@@ -627,7 +623,7 @@ abstract public class NAgentX extends NAgent {
                     //"agentPredict",
 
                     a instanceof NAgentX ?
-                            new WindowToggleButton("vision", () -> grid(((NAgentX) a).cam.stream().map(cs -> new AspectAlign(new CameraSensorView(cs, a), AspectAlign.Align.Center, cs.width, cs.height))
+                            new WindowToggleButton("vision", () -> grid(((NAgentX) a).sensorCam.stream().map(cs -> new AspectAlign(new CameraSensorView(cs, a), AspectAlign.Align.Center, cs.width, cs.height))
                                     .toArray(Surface[]::new))
                             ) : grid()
 
@@ -772,7 +768,7 @@ abstract public class NAgentX extends NAgent {
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> addCamera(Bitmap2DSensor<C> c) {
-        cam.add(c);
+        sensorCam.add(c);
         return c;
     }
 

@@ -5,11 +5,15 @@
  */
 package jcog.meter;
 
+import jcog.meter.event.DoubleMeter;
+
+import java.util.function.DoubleSupplier;
+
 /**
  *
  * @author me
  */
-@Deprecated public class TemporalMetrics<O> extends Metrics<Double,O> {
+public class TemporalMetrics extends Metrics<Double> {
 
     public TemporalMetrics(int historySize) {
         super(historySize);
@@ -29,5 +33,8 @@ package jcog.meter;
         update((double)integerTime);
     }
 
+    public void add(String id, DoubleSupplier x) {
+        add(DoubleMeter.get(id, x));
+    }
 
 }

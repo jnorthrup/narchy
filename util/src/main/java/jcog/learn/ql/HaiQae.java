@@ -1,7 +1,6 @@
 package jcog.learn.ql;
 
 import jcog.learn.Autoencoder;
-import jcog.math.FloatAveragedAsync;
 import jcog.math.FloatSupplier;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -12,15 +11,15 @@ import java.util.function.BiFunction;
 /**
  * Created by me on 5/22/16.
  */
-public class HaiQAgent extends HaiQ {
+public class HaiQae extends HaiQ {
 
-    public static final Logger logger = LoggerFactory.getLogger(HaiQAgent.class);
+    public static final Logger logger = LoggerFactory.getLogger(HaiQae.class);
 
 
     public @NotNull Autoencoder ae;
     float perceptionAlpha;
     float perceptionNoise;
-    float perceptionCorruption = 0.05f;
+    float perceptionCorruption = 0.01f;
     float perceptionForget;
     public FloatSupplier perceptionError;
     public float lastPerceptionError;
@@ -28,21 +27,24 @@ public class HaiQAgent extends HaiQ {
     //float aeForget = 1f;
 
 
-    public HaiQAgent(int inputs, int outputs) {
-        this(inputs, (i,o)->(int) Math.ceil(Math.sqrt(1 + (i)*(o))), outputs);
+    public HaiQae(int inputs, int outputs) {
+        this(inputs,
+                (i,o)->(int) Math.ceil(Math.sqrt(1 + (1+i)*(1+o))), outputs);
     }
 
-    public HaiQAgent(int inputs, BiFunction<Integer,Integer,Integer> states, int outputs) {
+    public HaiQae(int inputs, BiFunction<Integer,Integer,Integer> states, int outputs) {
         this(inputs, states.apply(inputs, outputs), outputs);
     }
 
-    public HaiQAgent(int inputs, int states, int outputs) {
+    public HaiQae(int inputs, int states, int outputs) {
         super(states, outputs);
         //logger.info("start {} -> {} -> {}", inputs, states, outputs);
         this.perceptionAlpha =
                 //1f/(inputs);
-                0.05f;
-        this.perceptionError = FloatAveragedAsync.averaged(()->lastPerceptionError, inputs/2);
+                0.1f;
+        this.perceptionError =
+                ()->0.01f;
+                //FloatAveragedAsync.averaged(()->lastPerceptionError, inputs/2);
         this.ae = perception(inputs, states);
     }
 
