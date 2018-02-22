@@ -24,6 +24,8 @@ import org.jbox2d.fracture.PolygonFixture;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.event.Level;
 import spacegraph.*;
+import spacegraph.input.Finger;
+import spacegraph.input.FingerDragging;
 import spacegraph.layout.EmptySurface;
 import spacegraph.layout.Gridding;
 import spacegraph.layout.Splitting;
@@ -35,6 +37,7 @@ import spacegraph.render.SpaceGraphFlat;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.meta.SpaceLogConsole;
+import spacegraph.widget.text.Label;
 
 import java.util.Collections;
 import java.util.List;
@@ -51,12 +54,14 @@ public class PhyWall extends Wall implements Animated {
 
     static final float SHAPE_SIZE_EPSILON = 0.0001f;
 
+    private final float linearDampening = 0.9f;
+
     /**
      * increase for more physics precision
      */
     final int solverIterations = 2;
 
-    public final Dynamics2D W;
+    public final Dynamics2D W = new Dynamics2D(new v2(0, 0));
     private On on;
 
     /**
@@ -67,7 +72,6 @@ public class PhyWall extends Wall implements Animated {
     private PhyWall() {
         super();
 
-        W = new Dynamics2D(new v2(0, 0));
         W.setParticleRadius(0.2f);
         W.setParticleDensity(1.0f);
 
@@ -86,8 +90,10 @@ public class PhyWall extends Wall implements Animated {
         s.pos(-1, -1, 1, 1);
 
         SpaceLogConsole log = new SpaceLogConsole();
-        //textGUI.text.alpha(0.5f);
         log.visible(false);
+
+        Label statusBar = new Label();
+
 
         HUDOrtho hud = new HUDOrtho();
 
@@ -109,6 +115,8 @@ public class PhyWall extends Wall implements Animated {
                     public void log(@Nullable Object key, float duration, Level level, Supplier<String> message) {
                         if (log.visible())
                             log.log(key, duration, level, message);
+                        if (statusBar.visible())
+                            statusBar.text(message.get());
                         //else: buffer?
                     }
                 },
@@ -116,13 +124,24 @@ public class PhyWall extends Wall implements Animated {
         ).show(width, height);
 
 
-        hud.set(new Splitting(
-                new Gridding(new EmptySurface(), new EmptySurface(), new EmptySurface(), log),
-                new Gridding(new PushButton("+"),
-                        //new OmniBox(),
-                new CheckBox("Log", (Runnable)log::visible)),
-                0.1f
-        ));
+        hud.set(
+                new Splitting(new EmptySurface(),
+                        //new Gridding(new EmptySurface(), new EmptySurface(), new EmptySurface(), log),
+                        new Gridding(new EmptySurface(), statusBar),
+                        0.1f)
+        );
+        log.pos(0, 0.9f, 0.5f * width, 1f);
+        System.out.println(hud.bounds);
+
+//        log.visible(false);
+//        hud.set(
+//            new Splitting(
+//                new Gridding(new EmptySurface(), new EmptySurface(), new EmptySurface(), log),
+//                new Gridding(new PushButton("+"),
+//                        //new OmniBox(),
+//                new CheckBox("Log", (Runnable)log::visible)),
+//                0.1f
+//        ));
 
         return s;
     }
@@ -198,7 +217,7 @@ public class PhyWall extends Wall implements Animated {
             return; //its rendered already via its Surface
         }
         if (body instanceof Consumer) { //HACK make better custom enderer interface
-            ((Consumer)body).accept(gl);
+            ((Consumer) body).accept(gl);
             return;
         }
 
@@ -221,21 +240,21 @@ public class PhyWall extends Wall implements Animated {
                         break;
                     case CIRCLE:
 
-                                    CircleShape circle = (CircleShape) shape;
-                                    float r = circle.radius;
-                                    v2 v = new v2();
-                                    body.getWorldPointToOut(circle.center, v);
-                                    //Point p = getPoint(v);
-                                    //int wr = (int) (r * zoom);
-                                    //g.fillOval(p.x - wr, p.y - wr, wr * 2, wr * 2);
-                                    Draw.circle(gl, new v2(v.x, v.y), true, r, 9);
+                        CircleShape circle = (CircleShape) shape;
+                        float r = circle.radius;
+                        v2 v = new v2();
+                        body.getWorldPointToOut(circle.center, v);
+                        //Point p = getPoint(v);
+                        //int wr = (int) (r * zoom);
+                        //g.fillOval(p.x - wr, p.y - wr, wr * 2, wr * 2);
+                        Draw.circle(gl, new v2(v.x, v.y), true, r, 9);
                         break;
                     case EDGE:
-                                    EdgeShape edge = (EdgeShape) shape;
-                                    Tuple2f p1 = edge.m_vertex1;
-                                    Tuple2f p2 = edge.m_vertex2;
-                                    gl.glLineWidth(4f);
-                                    Draw.line(gl, p1.x, p1.y, p2.x, p2.y);
+                        EdgeShape edge = (EdgeShape) shape;
+                        Tuple2f p1 = edge.m_vertex1;
+                        Tuple2f p2 = edge.m_vertex2;
+                        gl.glLineWidth(4f);
+                        Draw.line(gl, p1.x, p1.y, p2.x, p2.y);
                         break;
                 }
             }
@@ -279,9 +298,18 @@ public class PhyWall extends Wall implements Animated {
         return rng.nextFloat() * scale;
     }
 
+    /**
+     * spawns in view center at the given size
+     */
+    public PhyWindow addWindow(Surface content, float w, float h) {
+        Ortho view = (Ortho) root();
+        float cx = view.x();
+        float cy = view.y();
+        return addWindow(content, RectFloat2D.XYWH(cx, cy, w, h));
+    }
+
     public PhyWindow addWindow(Surface content, RectFloat2D initialBounds) {
         PhyWindow s = new PhyWindow(initialBounds);
-        content.pos(initialBounds);
         //s.children(new Scale(content, 1f - Windo.resizeBorder));
         add(s);
         s.content(content);
@@ -292,17 +320,17 @@ public class PhyWall extends Wall implements Animated {
     protected Snake snake(Surface source, Surface target, Runnable onRemove) {
         Body2D from = source.parent(PhyWindow.class).body;
         Body2D to = target.parent(PhyWindow.class).body;
-        assert(from!=to);
+        assert (from != to);
 
 
         float sa = source.bounds.area();
         float ta = target.bounds.area();
-        float areaDiff = Math.abs(sa - ta)/(sa+ta);
+        float areaDiff = Math.abs(sa - ta) / (sa + ta);
 
         int segments = Util.lerp(areaDiff, 8, 6); //heuristic estimate: larger area difference = shorter snake
 
         PushButton menu;
-        PhyWindow menuBody = addWindow(new Gridding(0.25f,menu = new PushButton("o")),
+        PhyWindow menuBody = addWindow(new Gridding(0.25f, menu = new PushButton("o")),
                 RectFloat2D.mid(source.bounds, target.bounds, 0.1f));
 
         float mw = menuBody.radius();
@@ -317,7 +345,7 @@ public class PhyWall extends Wall implements Animated {
         };
 
 
-        s.attach(menuBody.body, segments/2-1);
+        s.attach(menuBody.body, segments / 2 - 1);
 
         menu.click(s::remove);
 
@@ -383,6 +411,7 @@ public class PhyWall extends Wall implements Animated {
     public class PhyWindow extends Windo {
         public final Body2D body;
         private final PolygonShape shape;
+
 //        public final SimpleSpatial<String> spatial;
 
         PhyWindow(RectFloat2D initialBounds) {
@@ -391,11 +420,21 @@ public class PhyWall extends Wall implements Animated {
 
             this.shape = PolygonShape.box(initialBounds.w / 2, initialBounds.h / 2);
 
-            FixtureDef fd = new FixtureDef(shape, 1f, 0f);
-            fd.setRestitution(0f);
+            FixtureDef fd = new FixtureDef(shape, 1f, 0.75f);
+            fd.setRestitution(0.1f);
+
 
             W.addBody(this.body = new WallBody(initialBounds.x, initialBounds.y), fd);
+            body.setLinearDamping(linearDampening);
 
+        }
+
+        @Override
+        public boolean fingerable(DragEdit d) {
+            if (d == DragEdit.MOVE)
+                return false; //this will be handled by box2d mousejoint
+
+            return super.fingerable(d);
         }
 
         public void remove() {
@@ -547,7 +586,9 @@ public class PhyWall extends Wall implements Animated {
             return link(new Wire(source, target));
         }
 
-        /** undirected link */
+        /**
+         * undirected link
+         */
         public Wire link(Wire wire) {
 
             Surface aa = wire.a;
@@ -579,19 +620,19 @@ public class PhyWall extends Wall implements Animated {
 //                    ropeJoint.setData(wire);
 //                }
 
-                {
-                    //RAW unidirectional
-                    //RopeJoint ropeJoint = rope(aa, bb);
-                    //ropeJoint.setData(wire);
-                    Snake s = snake(aa, bb, ()->{
-                        unlink(aa, bb);
-                    });
+                    {
+                        //RAW unidirectional
+                        //RopeJoint ropeJoint = rope(aa, bb);
+                        //ropeJoint.setData(wire);
+                        Snake s = snake(aa, bb, () -> {
+                            unlink(aa, bb);
+                        });
 
 
                         for (Joint j : s.joints)
                             j.setData(wire);
 
-                }
+                    }
 
 //                    {
 //                        //split with control widget at midpoint
@@ -725,45 +766,106 @@ public class PhyWall extends Wall implements Animated {
         }
     }
 
+
+    @Override
+    public Surface onTouch(Finger finger, short[] buttons) {
+
+        Surface s = super.onTouch(finger, buttons);
+        if (s != null && s != this && !(s instanceof PhyWindow))
+            return s; //some other content, like an inner elmeent of a window but not a window itself
+
+        if (finger.tryFingering(jointDrag))
+            return this;
+
+
+        return this;
+    }
+
+    final static int MOUSE_JOINT_BUTTON = 0;
+    FingerDragging jointDrag = new FingerDragging(MOUSE_JOINT_BUTTON) {
+
+        final Body2D ground = W.addBody(new BodyDef(BodyType.STATIC), new FixtureDef(PolygonShape.box(0, 0), 0, 0));
+
+        @Override
+        public boolean start(Finger f) {
+            boolean b = super.start(f);
+            if (b) {
+
+                Body2D touched2D;
+                if (((touched2D = pick(f)) != null)) {
+                    MouseJointDef def = new MouseJointDef();
+
+                    def.bodyA = ground;
+                    def.bodyB = touched2D;
+                    def.collideConnected = true;
+
+
+                    def.target.set(f.pos);
+
+                    def.maxForce = 500f * touched2D.getMass();
+                    def.dampingRatio = 0;
+
+                    mj = (MouseJoint) W.addJoint(new MouseJoint(W.pool, def));
+                    return true;
+                }
+
+            }
+            return false;
+        }
+
+        public Body2D pick(Finger ff) {
+            v2 p = ff.pos;
+
+            //TODO use queryAABB
+            for (Body2D b = W.bodies(); b != null; b = b.next) {
+                for (Fixture f = b.fixtures(); f != null; f = f.next) {
+                    if (f.filter.maskBits != 0 /* filter non-colllidables */ && f.testPoint(p)) {
+                        return b;
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public void stop(Finger finger) {
+            super.stop(finger);
+            if (mj != null) {
+                W.removeJoint(mj);
+                mj = null;
+            }
+        }
+
+        @Override
+        protected boolean drag(Finger f) {
+            if (mj != null) {
+                v2 p = f.pos;
+                /*if (clickedPoint != null)*/
+
+//                v2 clickedPoint = f.hitOnDown[MOUSE_JOINT_BUTTON];
+//                p.x -= clickedPoint.x;
+//                p.y -= clickedPoint.y;
+                mj.setTarget(p);
+            }
+//                center.x = startCenter.x - p.x / zoom;
+//                center.y = startCenter.y + p.y / zoom;
+//            } else {
+//                if (mj != null) {
+//                    mj.setTarget(mousePosition);
+//                }
+//            }
+            return true;
+
+        }
+
+
+        private volatile MouseJoint mj;
+
+    };
 }
-//    private volatile MouseJointDef mjdef;
-//    private volatile MouseJoint mj;
-//    private volatile boolean destroyMj = false;
-//private volatile Tuple2f mousePosition = new Vec2();
 
 //    private void initMouse() {
-//                    addMouseWheelListener((MouseWheelEvent e) -> {
-//                        if (e.getWheelRotation() < 0) {
-//                            zoom *= 1.25f * -e.getWheelRotation();
-//                        } else {
-//                            zoom /= 1.25f * e.getWheelRotation();
-//                        }
-//
-//                        zoom = Math.min(zoom, 100);
-//                        zoom = Math.max(zoom, 0.1f);
-//                        repaint();
-//                    });
 
-//                    addMouseMotionListener(new MouseMotionListener() {
-//                        @Override
-//                        public void mouseDragged(MouseEvent e) {
-//                            Point p = e.getPoint();
-//                            mousePosition = getPoint(p);
-//                            if (clickedPoint != null) {
-//                                p.x -= clickedPoint.x;
-//                                p.y -= clickedPoint.y;
-//                                center.x = startCenter.x - p.x / zoom;
-//                                center.y = startCenter.y + p.y / zoom;
-//                            } else {
-//                                if (mj != null) {
-//                                    mj.setTarget(mousePosition);
-//                                }
-//                            }
-//                            if (!running) {
-//                                repaint();
-//                            }
-//                        }
-//
 //                        @Override
 //                        public void mouseMoved(MouseEvent e) {
 //                            Point p = e.getPoint();
@@ -796,22 +898,6 @@ public class PhyWall extends Wall implements Animated {
 //                                    bodyFor:
 //                                    for (Body2D b = w.bodies(); b != null; b = b.next) {
 //                                        for (Fixture f = b.getFixtureList(); f != null; f = f.next) {
-//                                            if (f.testPoint(v)) {
-//                                                MouseJointDef def = new MouseJointDef();
-//
-//                                                def.bodyA = ground;
-//                                                def.bodyB = b;
-//                                                def.collideConnected = true;
-//
-//                                                def.target.set(v);
-//
-//                                                def.maxForce = 500f * b.getMass();
-//                                                def.dampingRatio = 0;
-//
-//                                                mjdef = def;
-//                                                break bodyFor;
-//                                            }
-//                                        }
 //                                    }
 //                                }
 //
@@ -827,9 +913,6 @@ public class PhyWall extends Wall implements Animated {
 //                                    clickedPoint = null;
 //                                    break;
 //                                case 1:
-//                                    if (mj != null) {
-//                                        destroyMj = true;
-//                                    }
 //                                    break;
 //                            }
 //                            //}

@@ -25,6 +25,7 @@ package org.jbox2d.dynamics.joints;
 
 import org.jbox2d.common.*;
 import org.jbox2d.dynamics.Body2D;
+import org.jbox2d.dynamics.Dynamics2D;
 import org.jbox2d.dynamics.SolverData;
 import org.jbox2d.pooling.IWorldPool;
 import spacegraph.math.Tuple2f;
@@ -90,7 +91,11 @@ public class RevoluteJoint extends Joint {
      */
     public float positionFactor = 1f;
 
-    protected RevoluteJoint(IWorldPool argWorld, RevoluteJointDef def) {
+    public RevoluteJoint(Dynamics2D world, RevoluteJointDef def) {
+        this(world.pool, def);
+    }
+
+    public RevoluteJoint(IWorldPool argWorld, RevoluteJointDef def) {
         super(argWorld, def);
         m_localAnchorA.set(def.localAnchorA);
         m_localAnchorB.set(def.localAnchorB);

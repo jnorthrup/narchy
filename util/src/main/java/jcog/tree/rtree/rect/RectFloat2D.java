@@ -36,7 +36,7 @@ public class RectFloat2D implements HyperRegion<Float2D>, Comparable<RectFloat2D
     public static RectFloat2D mid(RectFloat2D source, RectFloat2D target, float relScale) {
         float cx = (source.cx()+target.cx())/2f;
         float cy = (source.cy()+target.cy())/2f;
-        float wh = relScale * (source.w + target.w + source.h + target.h) / 4;
+        float wh = relScale * Math.max((source.w + target.w)/2f, (source.h + target.h) / 2f);
         return RectFloat2D.XYWH(cx, cy, wh, wh);
     }
 

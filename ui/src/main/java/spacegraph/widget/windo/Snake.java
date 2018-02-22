@@ -23,7 +23,7 @@ public class Snake {
         Dynamics2D w = start.W;
 
         FixtureDef segment = new FixtureDef(
-                PolygonShape.box(eleLen/2, thick/2), 0.1f, 0.9f);
+                PolygonShape.box(eleLen/2, thick/2), 0.2f, 0f);
         segment.restitution = (0f);
         segment.filter.maskBits = 0; //no collision
 
@@ -47,6 +47,8 @@ public class Snake {
                             new BodyDef(BodyType.DYNAMIC,
                                     new v2(i * eleLen, y)),
                             segment);
+                    to.setGravityScale(0);
+                    to.setLinearDamping(0);
                 }
 
                 RevoluteJointDef jd = new RevoluteJointDef();

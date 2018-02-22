@@ -608,21 +608,21 @@ public interface NAct {
                 PreciseTruth Nb,Ng, Pb,Pg;
 
                 if (y == y) {
-                    //y: (-1..+1)
-//                    float yp, yn;
-//                    if (Math.abs(y) >= n.freqResolution.floatValue()) {
-//                        yp = y >= 0 ? 0.5f + y/2f : 0.5f;
-//                        yn = y >= 0 ? 0.5f : 0.5f + -y/2f;
-//                    } else {
-//                        yp = yn = 0;
-//                    }
+                //y: (-1..+1)
+                    float yp, yn;
+                    if (Math.abs(y) >= n.freqResolution.floatValue()) {
+                        yp = 0.5f + y/2f;
+                        yn = 1f - yp;
+                    } else {
+                        yp = yn = 0.5f;
+                    }
 
 //                    float yp = 0.5f + y/2f;
 //                    float yn = 1f - yp;
-//                    float pbf = yp;
-//                    float nbf = yn;
-//                    Pb = $.t(pbf, feedbackConf);
-//                    Nb = $.t(nbf, feedbackConf);
+                    float pbf = yp;
+                    float nbf = yn;
+                    Pb = $.t(pbf, goalConf);
+                    Nb = $.t(nbf, goalConf);
 //                    float goalEvi =
 //                            eviMin;
 //                    //max(eviMin, max(e[0], e[1]));
@@ -646,37 +646,37 @@ public interface NAct {
 
 
 
-                    float fThresh = nar().freqResolution.floatValue();
-                    int sign = (y > fThresh ? +1 : (y < -fThresh ? -1 : 0));
-
-                    float feedConf =
-                            w2cSafe(c2wSafe(goalConf)/2f); //half/half
-                            //goalConf;
-                            //Math.max(confMin, goalConf * coherence);
-                    switch (sign) {
-                        case +1:
-                            //Pb = $.t(1f, Util.lerp(+y, confBase, feedbackConf));
-                            Pb = $.t(y/2f + 0.5f, feedConf);
-                            Nb =
-                                    //null;
-                                    $.t(0, feedConf);
-                            break;
-                        case -1:
-                            Pb =
-                                    //null;
-                                    $.t(0, feedConf);
-
-                            Nb = $.t(-y/2f + 0.5f, feedConf);
-                            break;
-                        case 0:
-                            //Pb = Nb = null; //no signal
-                            Pb = Nb = $.t(0, feedConf);
-                                    //Math.max(confMin, feedConf);
-                                    //w2cSafe(c2wSafe(feedConf)/2f))); //zero
-                            break;
-                        default:
-                            throw new UnsupportedOperationException();
-                    }
+//                    float fThresh = nar().freqResolution.floatValue();
+//                    int sign = (y > fThresh ? +1 : (y < -fThresh ? -1 : 0));
+//
+//                    float feedConf =
+//                            w2cSafe(c2wSafe(goalConf)/2f); //half/half
+//                            //goalConf;
+//                            //Math.max(confMin, goalConf * coherence);
+//                    switch (sign) {
+//                        case +1:
+//                            //Pb = $.t(1f, Util.lerp(+y, confBase, feedbackConf));
+//                            Pb = $.t(y/2f + 0.5f, feedConf);
+//                            Nb =
+//                                    //null;
+//                                    $.t(0, feedConf);
+//                            break;
+//                        case -1:
+//                            Pb =
+//                                    //null;
+//                                    $.t(0, feedConf);
+//
+//                            Nb = $.t(-y/2f + 0.5f, feedConf);
+//                            break;
+//                        case 0:
+//                            //Pb = Nb = null; //no signal
+//                            Pb = Nb = $.t(0, feedConf);
+//                                    //Math.max(confMin, feedConf);
+//                                    //w2cSafe(c2wSafe(feedConf)/2f))); //zero
+//                            break;
+//                        default:
+//                            throw new UnsupportedOperationException();
+//                    }
                     Pg = null;
                     Ng = null;
 

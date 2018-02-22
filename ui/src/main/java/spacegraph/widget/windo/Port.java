@@ -12,7 +12,9 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 import java.util.function.Consumer;
 
-/** base class for a port implementation */
+/** base class for a port implementation
+ * @see http://rawbots.wikia.com/wiki/Category:Visual_Programming_Operands
+ * */
 public class Port extends Widget implements Wiring.Wireable {
 
     protected Wiring wiringOut = null;

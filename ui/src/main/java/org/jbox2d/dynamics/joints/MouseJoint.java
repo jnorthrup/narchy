@@ -59,7 +59,7 @@ public class MouseJoint extends Joint {
     private final Mat22 m_mass = new Mat22();
     private final Tuple2f m_C = new Vec2();
 
-    protected MouseJoint(IWorldPool argWorld, MouseJointDef def) {
+    public MouseJoint(IWorldPool argWorld, MouseJointDef def) {
         super(argWorld, def);
         assert (def.target.isValid());
         assert (def.maxForce >= 0);

@@ -308,6 +308,8 @@ abstract public class NAgentX extends NAgent {
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF, (Task::isInput), 32, 128);
         ConjClustering conjClusterBnonInput = new ConjClustering(n, BELIEF, (t->!t.isInput()), 4, 16);
 
+        ConjClustering conjClusterG = new ConjClustering(n, GOAL, (t->true), 4, 16);
+
         ArithmeticIntroduction arith = new ArithmeticIntroduction(64, n);
 
 //        RelationClustering relCluster = new RelationClustering(n,

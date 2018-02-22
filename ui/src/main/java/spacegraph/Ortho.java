@@ -459,17 +459,12 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
         } else {*/
 
         try {
-            Surface s;
-            //System.out.println(lx + " " + ly);
-            //if (lx >= 0 && ly >= 0 && lx <= 1f && ly <= 1f) {
-            if ((s = finger.on(surface, sx, sy, wmx, wmy, buttonsDown)) != null) {
-                //log("on", s);
-                //            if (e != null)
-                //                e.setConsumed(true);
-                return s;
-            } else {
-                return null;
+            Surface touching = finger.touching;
+            Surface touchedNext = finger.on(surface, sx, sy, wmx, wmy, buttonsDown);
+            if (touchedNext!=null && touchedNext!=touching) {
+                debug(this, 1f, ()->"touch: " + touchedNext);
             }
+            return touchedNext;
         } finally {
             updatingMouse.set(false);
         }

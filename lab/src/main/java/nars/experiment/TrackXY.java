@@ -27,6 +27,7 @@ import spacegraph.widget.meta.AutoSurface;
 import java.io.FileNotFoundException;
 import java.util.function.Consumer;
 
+import static jcog.Texts.n4;
 import static nars.Op.BELIEF;
 import static spacegraph.render.JoglSpace.window;
 
@@ -44,8 +45,8 @@ public class TrackXY extends NAgent {
 
 
     private float controlSpeed =
-            //1f;
-            0.5f;
+            1f;
+            //0.5f;
     private float visionContrast = 0.9f;
 
     Consumer<TrackXY> updater =
@@ -61,7 +62,7 @@ public class TrackXY extends NAgent {
         int dur = 1;
 
         NARS nb = new NARS()
-                .exe(new UniExec(128))
+                .exe(new UniExec(64))
                 .time(new CycleTime().dur(dur))
                 .index(
                         //new HijackConceptIndex(4 * 1024, 4)
@@ -72,16 +73,17 @@ public class TrackXY extends NAgent {
         NAR n = nb.get();
 
         n.termVolumeMax.set(26);
+        n.goalConfidence(0.5f);
         n.priDefault(BELIEF, 0.2f);
 //        n.priDefault(GOAL, 0.5f);
         n.conceptActivation.set(0.5f);
         n.forgetRate.set(0.8f);
 
 
-        TrackXY t = new TrackXY(8, 8);
+        TrackXY t = new TrackXY(5, 2);
         n.on(t);
 
-        int experimentTime = 8192;
+        int experimentTime = 2048;
 
         TemporalMetrics m = new TemporalMetrics(experimentTime + 100);
         n.onCycle(() -> m.update(n.time()));
@@ -136,20 +138,27 @@ public class TrackXY extends NAgent {
 
             Deriver d = new Deriver(Derivers.rules(
                     //1,
-                    3,
+                    1,
                     8, n), n);
             d.conceptsPerIteration.set(32);
 
-            ConjClustering cj = new ConjClustering(n, BELIEF,
+            ConjClustering cjB = new ConjClustering(n, BELIEF,
                     //(tt)->true,
                     (tt) -> tt.isInput(),
                     2, 8);
+
+//            ConjClustering cjG = new ConjClustering(n, GOAL,
+//                    //(tt)->true,
+//                    (tt) -> tt.isInput(),
+//                    2, 8);
 
             ArithmeticIntroduction ai = new ArithmeticIntroduction(4, n);
 
             window(new Gridding(
                     new AutoSurface(d),
-                    new AutoSurface(cj)
+                    new AutoSurface(cjB)
+//                    new AutoSurface(cjG)
+
                     //,new AutoSurface(ai)
             ), 400, 300);
             n.onTask(tt -> {
@@ -164,7 +173,14 @@ public class TrackXY extends NAgent {
 //        n.startFPS(fps);
 //        t.runFPS(fps);
         n.onCycle(t);
+        final double[] rewardSum = {0};
+        n.onCycle(()->{
+            rewardSum[0] += t.reward;
+        });
         n.run(experimentTime);
+
+        System.out.println(n4(rewardSum[0] / n.time()) + " avg reward");
+
         System.exit(0);
     }
 
@@ -265,7 +281,8 @@ public class TrackXY extends NAgent {
     public static class CircleTarget implements Consumer<TrackXY> {
 
 
-        float speed = 0.05f;
+        float speed =
+                0.05f;
         float theta = 0;
 
 
@@ -325,7 +342,9 @@ public class TrackXY extends NAgent {
         cam.input();
 
 
-        float dist = (float) Math.sqrt(Util.sqr(tx - sx) + Util.sqr(ty - sy));
+        float maxDist = (float) Math.sqrt(width()*width()+height()*height());
+        float dist = (float) Math.sqrt(Util.sqr(tx - sx) + Util.sqr(ty - sy))
+                / maxDist;
 
 
         //return 1f/(1f+dist);
