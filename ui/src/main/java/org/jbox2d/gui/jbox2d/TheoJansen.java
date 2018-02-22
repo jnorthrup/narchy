@@ -90,7 +90,7 @@ public class TheoJansen implements ICase  {
         // Balls
         for (int i = 0; i < 40; ++i) {
             CircleShape shape = new CircleShape();
-            shape.m_radius = 0.25f;
+            shape.radius = 0.25f;
 
             BodyDef bd = new BodyDef();
             bd.type = BodyType.DYNAMIC;
@@ -118,7 +118,7 @@ public class TheoJansen implements ICase  {
 
         {
             CircleShape shape = new CircleShape();
-            shape.m_radius = 1.6f;
+            shape.radius = 1.6f;
 
             FixtureDef sd = new FixtureDef();
             sd.density = 1.0f;

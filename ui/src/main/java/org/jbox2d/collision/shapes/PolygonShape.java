@@ -319,10 +319,10 @@ public class PolygonShape extends Shape {
             upper.y = upper.y > vy ? upper.y : vy;
         }
 
-        lower.x -= m_radius;
-        lower.y -= m_radius;
-        upper.x += m_radius;
-        upper.y += m_radius;
+        lower.x -= radius;
+        lower.y -= radius;
+        upper.x += radius;
+        upper.y += radius;
     }
 
     /**

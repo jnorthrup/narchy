@@ -82,12 +82,12 @@ public class Fracture {
                 case CIRCLE:
                     CircleShape cs = (CircleShape) s;
                     p = new Polygon();
-                    float radius = cs.m_radius;
+                    float radius = cs.radius;
 
                     double u = Math.PI * 2 / CIRCLEVERTICES;
                     radius = (float) Math.sqrt(u / Math.sin(u)) * radius; //upravim radius tak, aby bola zachovana velkost obsahu
 
-                    Tuple2f center = cs.m_p;
+                    Tuple2f center = cs.center;
                     for (int i = 0; i < CIRCLEVERTICES; ++i) {
                         double j = u * i; //uhol
                         float sin = (float) Math.sin(j);

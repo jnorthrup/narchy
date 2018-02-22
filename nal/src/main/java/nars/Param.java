@@ -109,7 +109,7 @@ public abstract class Param {
 
     public static final PriMerge tasklinkMerge =
             //PriMerge.max;
-            PriMerge.plus;
+            PriMerge.max;
 
     //    /**
 //     * budgets premises from their links, but isolated from affecting the derivation budgets, which are from the tasks (and not the links)

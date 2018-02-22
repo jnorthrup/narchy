@@ -51,7 +51,7 @@ public class ChainShape extends Shape {
     public ChainShape() {
         super(ShapeType.CHAIN);
         m_vertices = null;
-        m_radius = Settings.polygonRadius;
+        radius = Settings.polygonRadius;
         m_count = 0;
     }
 
@@ -70,7 +70,7 @@ public class ChainShape extends Shape {
      */
     public void getChildEdge(EdgeShape edge, int index) {
         assert (0 <= index && index < m_count - 1);
-        edge.m_radius = m_radius;
+        edge.radius = radius;
 
         final Tuple2f v0 = m_vertices[index + 0];
         final Tuple2f v1 = m_vertices[index + 1];

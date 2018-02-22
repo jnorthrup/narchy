@@ -120,7 +120,7 @@ public class PhyWall extends Wall implements Animated {
                 new Gridding(new EmptySurface(), new EmptySurface(), new EmptySurface(), log),
                 new Gridding(new PushButton("+"),
                         //new OmniBox(),
-                        new CheckBox("Log", log::visible)),
+                new CheckBox("Log", (Runnable)log::visible)),
                 0.1f
         ));
 
@@ -222,9 +222,9 @@ public class PhyWall extends Wall implements Animated {
                     case CIRCLE:
 
                                     CircleShape circle = (CircleShape) shape;
-                                    float r = circle.m_radius;
+                                    float r = circle.radius;
                                     v2 v = new v2();
-                                    body.getWorldPointToOut(circle.m_p, v);
+                                    body.getWorldPointToOut(circle.center, v);
                                     //Point p = getPoint(v);
                                     //int wr = (int) (r * zoom);
                                     //g.fillOval(p.x - wr, p.y - wr, wr * 2, wr * 2);

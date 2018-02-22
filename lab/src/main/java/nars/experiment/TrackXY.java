@@ -2,7 +2,7 @@ package nars.experiment;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import jcog.learn.ql.HaiQae;
+import jcog.learn.ql.DQN;
 import jcog.meter.TemporalMetrics;
 import jcog.signal.ArrayBitmap2D;
 import jcog.tree.rtree.rect.RectFloat2D;
@@ -12,6 +12,7 @@ import nars.derive.Derivers;
 import nars.exe.UniExec;
 import nars.gui.Vis;
 import nars.index.term.map.CaffeineIndex;
+import nars.op.ArithmeticIntroduction;
 import nars.op.RLBooster;
 import nars.op.stm.ConjClustering;
 import nars.task.DerivedTask;
@@ -42,7 +43,9 @@ public class TrackXY extends NAgent {
     public Bitmap2DSensor cam;
 
 
-    private float controlSpeed = 1f;
+    private float controlSpeed =
+            //1f;
+            0.5f;
     private float visionContrast = 0.9f;
 
     Consumer<TrackXY> updater =
@@ -52,46 +55,45 @@ public class TrackXY extends NAgent {
 
     public static void main(String[] args) {
 
-        boolean nars = false;
+        boolean nars = true;
         boolean rl = true;
 
-        int dur = 2;
+        int dur = 1;
 
         NARS nb = new NARS()
                 .exe(new UniExec(128))
                 .time(new CycleTime().dur(dur))
                 .index(
-                    //new HijackConceptIndex(4 * 1024, 4)
-                    new CaffeineIndex(8*1024)
+                        //new HijackConceptIndex(4 * 1024, 4)
+                        new CaffeineIndex(16 * 1024)
                 );
-
 
 
         NAR n = nb.get();
 
-        n.termVolumeMax.set(24);
+        n.termVolumeMax.set(26);
         n.priDefault(BELIEF, 0.2f);
 //        n.priDefault(GOAL, 0.5f);
         n.conceptActivation.set(0.5f);
         n.forgetRate.set(0.8f);
 
 
-        TrackXY t = new TrackXY(8 , 1);
+        TrackXY t = new TrackXY(8, 8);
         n.on(t);
 
         int experimentTime = 8192;
 
-        TemporalMetrics m = new TemporalMetrics(experimentTime+100);
-        n.onCycle(()->m.update(n.time()));
-        m.add("reward", ()-> t.reward);
-        m.add("happy", ()-> {
+        TemporalMetrics m = new TemporalMetrics(experimentTime + 100);
+        n.onCycle(() -> m.update(n.time()));
+        m.add("reward", () -> t.reward);
+        m.add("happy", () -> {
             float h = t.happy.asFloat();
-            if (h!=h)
+            if (h != h)
                 return 0.5f;
             return h;
         });
-        m.add("dex", ()-> t.dexterity());
-        Runtime.getRuntime().addShutdownHook(new Thread(()->{
+        m.add("dex", () -> t.dexterity());
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             String filename = "/tmp/x.csv";
             System.err.println("saving " + m + " to: " + filename);
             try {
@@ -105,8 +107,6 @@ public class TrackXY extends NAgent {
         n.time.synch(n);
 
 
-
-
         window(Vis.top(n), 800, 250);
         NAgentX.chart(t);
         window(new CameraSensorView(t.cam, n) {
@@ -115,16 +115,16 @@ public class TrackXY extends NAgent {
                 super.paint(gl, dtMS);
                 RectFloat2D at = cellRect(t.sx, t.sy, 0.5f, 0.5f);
                 gl.glColor4f(1, 0, 0, 0.9f);
-                Draw.rect(gl, at);
+                Draw.rect(gl, at.move(x(), y(), 0.01f));
             }
-        }, 800, 800);
+        }.withControls(), 800, 800);
 
 
         if (rl) {
             new RLBooster(t,
-                    //DQN::new,
+                    DQN::new,
                     //HaiQ::new,
-                    HaiQae::new,
+                    //HaiQae::new,
                     //RandomAgent::new,
                     1);
             t.curiosity.set(0);
@@ -136,23 +136,27 @@ public class TrackXY extends NAgent {
 
             Deriver d = new Deriver(Derivers.rules(
                     //1,
-                    6,
+                    3,
                     8, n), n);
             d.conceptsPerIteration.set(32);
 
             ConjClustering cj = new ConjClustering(n, BELIEF,
                     //(tt)->true,
-                    (tt)->tt.isInput(),
+                    (tt) -> tt.isInput(),
                     2, 8);
 
-            //ArithmeticIntroduction ai = new ArithmeticIntroduction(32,n);
+            ArithmeticIntroduction ai = new ArithmeticIntroduction(4, n);
 
             window(new Gridding(
                     new AutoSurface(d),
                     new AutoSurface(cj)
                     //,new AutoSurface(ai)
             ), 400, 300);
-            n.onTask(tt -> { if (tt instanceof DerivedTask && tt.isGoal() ) { System.out.println(tt.proof()); } });
+            n.onTask(tt -> {
+                if (tt instanceof DerivedTask && tt.isGoal()) {
+                    System.out.println(tt.proof());
+                }
+            });
         }
 
         //n.log();
@@ -175,22 +179,22 @@ public class TrackXY extends NAgent {
 
         if (view.height() > 1) {
             actionToggle($.the("up"), () -> {
-                sy = Util.clamp(sy + controlSpeed, 0, view.height()-1);
+                sy = Util.clamp(sy + controlSpeed, 0, view.height() - 1);
 
             });
             actionToggle($.the("down"), () -> {
-                sy = Util.clamp(sy - controlSpeed, 0, view.height()-1);
+                sy = Util.clamp(sy - controlSpeed, 0, view.height() - 1);
             });
         }
 
-        actionToggle($.the("right"), ()->{
-            sx = Util.clamp(sx + controlSpeed, 0, view.width()-1);
+        actionToggle($.the("right"), () -> {
+            sx = Util.clamp(sx + controlSpeed, 0, view.width() - 1);
         });
-        actionToggle($.the("left"), ()->{
-            sx = Util.clamp(sx - controlSpeed, 0, view.width()-1);
+        actionToggle($.the("left"), () -> {
+            sx = Util.clamp(sx - controlSpeed, 0, view.width() - 1);
         });
 
-        this.cam = new Bitmap2DSensor((Term)null, view, nar);
+        this.cam = new Bitmap2DSensor((Term) null, view, nar);
         //this.cam.resolution(0.1f);
         sensorCam.add(cam);
 
@@ -212,14 +216,20 @@ public class TrackXY extends NAgent {
         }
     }
 
-    public int width() { return view.width(); }
-    public int height() { return view.height(); }
+    public int width() {
+        return view.width();
+    }
+
+    public int height() {
+        return view.height();
+    }
 
     public static class RandomTarget implements Consumer<TrackXY> {
         private float targetSpeed = 0.5f;
+
         public void accept(TrackXY t) {
 
-            float tx,ty;
+            float tx, ty;
             tx = Util.clamp(t.tx + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.width() - 1);
             if (t.height() > 1) {
                 ty = Util.clamp(t.ty + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.height() - 1);
@@ -241,7 +251,7 @@ public class TrackXY extends NAgent {
         @Override
         public void accept(TrackXY t) {
             x += speed;
-            t.tx = (((float) Math.sin(x)*0.5f)+0.5f) * (t.width()-1);
+            t.tx = (((float) Math.sin(x) * 0.5f) + 0.5f) * (t.width() - 1);
 //            int tw = t.width();
 //            if (t.tx > tw -1)
 //                t.tx -= tw;
@@ -249,7 +259,9 @@ public class TrackXY extends NAgent {
         }
     }
 
-    /** ellipse, technically */
+    /**
+     * ellipse, technically
+     */
     public static class CircleTarget implements Consumer<TrackXY> {
 
 
@@ -261,10 +273,10 @@ public class TrackXY extends NAgent {
         public void accept(TrackXY t) {
             theta += speed;
 
-            t.tx = (((float) Math.cos(theta)*0.5f)+0.5f) * (t.width()-1);
+            t.tx = (((float) Math.cos(theta) * 0.5f) + 0.5f) * (t.width() - 1);
 
             if (t.height() > 1)
-                t.ty = (((float) Math.sin(theta)*0.5f)+0.5f) * (t.height()-1);
+                t.ty = (((float) Math.sin(theta) * 0.5f) + 0.5f) * (t.height() - 1);
             else
                 t.ty = 0;
 
@@ -280,21 +292,32 @@ public class TrackXY extends NAgent {
 
         synchronized (view) {
             Consumer<TrackXY> u = updater;
-            if (u!=null)
+            if (u != null)
                 u.accept(this);
 
-            view.set((x,y)-> {
-//                float dist = (float) Math.sqrt(Util.sqr(tx-x) + Util.sqr(ty-y));
-//                return Math.max(0, 1-dist* visionContrast);
+            view.set((x, y) -> {
 
-                if (Util.equals(sx, x, controlSpeed) && Util.equals(sy, y, controlSpeed)) {
-                    //show cursor in negative
-                    return 0f;
-                } else {
-                    float dist = (float) Math.sqrt(Util.sqr(tx - x) + Util.sqr(ty - y));
-                    //return 0.5f + 0.5f * Math.max(0, 1 - dist * visionContrast);
-                    return 0.25f + 0.75f * Math.max(0, 1 - dist * visionContrast);
-                }
+//                float dist = (float) Math.sqrt(Util.sqr(tx - x) + Util.sqr(ty - y));
+//                return Math.max(0, 1 - dist * visionContrast);
+
+
+                float distOther = (float) Math.sqrt(Util.sqr(tx - x) + Util.sqr(ty - y));
+                float distSelf = (float) Math.sqrt(Util.sqr(sx - x) + Util.sqr(sy - y));
+                return Math.max(0,
+                        Math.max(1 - distOther * visionContrast,
+                                1 - distSelf * visionContrast
+                                ));
+
+
+
+//                if (Util.equals(sx, x, controlSpeed) && Util.equals(sy, y, controlSpeed)) {
+//                    //show cursor in negative
+//                    return 0f;
+//                } else {
+//                    float dist = (float) Math.sqrt(Util.sqr(tx - x) + Util.sqr(ty - y));
+//                    //return 0.5f + 0.5f * Math.max(0, 1 - dist * visionContrast);
+//                    return 0.55f + 0.5f * Math.max(0, 1 - dist * visionContrast);
+//                }
 
             });
         }
@@ -302,12 +325,13 @@ public class TrackXY extends NAgent {
         cam.input();
 
 
-        float dist = (float) Math.sqrt(Util.sqr(tx-sx) + Util.sqr(ty-sy));
+        float dist = (float) Math.sqrt(Util.sqr(tx - sx) + Util.sqr(ty - sy));
 
 
         //return 1f/(1f+dist);
         //return controlSpeed - dist*dist; //controlSpeed is margin of tolerance
-        return -dist;
+        //return -dist; //chase
+        return +dist; //avoid
     }
 }
 

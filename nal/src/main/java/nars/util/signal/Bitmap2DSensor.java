@@ -261,19 +261,16 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
 
             int start, end;
 
-//        float pixelPri =
+            //pixelPri.set(nar.priDefault(BELIEF));
+            //                (float) (nar.priDefault(BELIEF) / pixelsToProcess);
+                //        float pixelPri =
+                //                (float) (nar.priDefault(BELIEF) / (Math.sqrt(numPixels)));
+                //                ///((float)Math.sqrt(end-start));
 
-//                (float) (nar.priDefault(BELIEF) / (Math.sqrt(numPixels)));
-//                ///((float)Math.sqrt(end-start));
-
-            pixelPri =
-                    nar.priDefault(BELIEF);
-//                (float) (nar.priDefault(BELIEF) / pixelsToProcess);
 
             start = this.lastPixel;
             end = (start + pixelsToProcess);
             Stream<Task> s;
-
 
             if (end > totalPixels) {
                 //wrap around

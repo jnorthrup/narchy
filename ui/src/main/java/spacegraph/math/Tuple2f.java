@@ -379,14 +379,16 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
     }
 
     /** multiplies each component */
-    public final void scaled(Tuple2f z) {
+    public final Tuple2f scaled(Tuple2f z) {
         this.x *= z.x;
         this.y *= z.y;
+        return this;
     }
 
-    public final void scaled(float sx, float sy) {
+    public final Tuple2f scaled(float sx, float sy) {
         this.x *= sx;
         this.y *= sy;
+        return this;
     }
 
     /**
@@ -397,7 +399,7 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
      * @param t1 the tuple to be multipled
      * @param t2 the tuple to be added
      */
-    public final void scaleAdd(float s, Tuple2f t1, Tuple2f t2) {
+    public final void scaledAdded(float s, Tuple2f t1, Tuple2f t2) {
         this.x = s * t1.x + t2.x;
         this.y = s * t1.y + t2.y;
     }
@@ -410,7 +412,7 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
      * @param s  the scalar value
      * @param t1 the tuple to be added
      */
-    public final void scaleAdd(float s, Tuple2f t1) {
+    public final void scaledAdded(float s, Tuple2f t1) {
         this.x = s * this.x + t1.x;
         this.y = s * this.y + t1.y;
     }

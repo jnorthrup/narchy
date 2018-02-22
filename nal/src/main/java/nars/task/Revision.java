@@ -903,21 +903,27 @@ public class Revision {
             truth = truth.neg();
         }
 
-        @Nullable PreciseTruth cTruth = truth.dither(nar, factor);
-        if (cTruth == null)
+
+        Task t = Task.tryTask(content, first.punc(), truth, (c, tr)->{
+            @Nullable PreciseTruth cTruth = tr.dither(nar, factor);
+            if (cTruth == null)
+                return null;
+
+            return new NALTask(c, first.punc(),
+                    cTruth,
+                    nar.time(), start, end,
+                    Stamp.sample(Param.STAMP_CAPACITY, evidence /* TODO account for relative evidence contributions */, nar.random())
+            );
+        });
+        if (t == null)
             return first;
 
-        NALTask t = new NALTask(content, first.punc(),
-                cTruth,
-                nar.time(), start, end,
-                Stamp.sample(Param.STAMP_CAPACITY, evidence /* TODO account for relative evidence contributions */, nar.random())
-        );
 
         t.priSet(Priority.fund(Util.max((TaskRegion p)->p.task().priElseZero(),tt),
                 false,
                 Tasked::task, tt));
 
-        t.cause = Cause.sample(Param.causeCapacity.intValue(), tt);
+        ((NALTask)t).cause = Cause.sample(Param.causeCapacity.intValue(), tt);
 
         if (Param.DEBUG)
             t.log("Temporal Merge");

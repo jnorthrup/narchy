@@ -207,8 +207,8 @@ public class Collision {
         // float distSqr = d.x * d.x + d.y * d.y;
 
         // after inline:
-        Tuple2f circle1p = circle1.m_p;
-        Tuple2f circle2p = circle2.m_p;
+        Tuple2f circle1p = circle1.center;
+        Tuple2f circle2p = circle2.center;
         float pAx = (xfA.c * circle1p.x - xfA.s * circle1p.y) + xfA.pos.x;
         float pAy = (xfA.s * circle1p.x + xfA.c * circle1p.y) + xfA.pos.y;
         float pBx = (xfB.c * circle2p.x - xfB.s * circle2p.y) + xfB.pos.x;
@@ -218,7 +218,7 @@ public class Collision {
         float distSqr = dx * dx + dy * dy;
         // end inline
 
-        final float radius = circle1.m_radius + circle2.m_radius;
+        final float radius = circle1.radius + circle2.radius;
         if (distSqr > radius * radius) {
             return;
         }
@@ -255,7 +255,7 @@ public class Collision {
         // final float cLocalx = cLocal.x;
         // final float cLocaly = cLocal.y;
         // after inline:
-        final Tuple2f circlep = circle.m_p;
+        final Tuple2f circlep = circle.center;
         final Rot xfBq = xfB;
         final Rot xfAq = xfA;
         final float cx = (xfBq.c * circlep.x - xfBq.s * circlep.y) + xfB.pos.x;
@@ -269,7 +269,7 @@ public class Collision {
         // Find the min separating edge.
         int normalIndex = 0;
         float separation = -Float.MAX_VALUE;
-        final float radius = polygon.m_radius + circle.m_radius;
+        final float radius = polygon.radius + circle.radius;
         final int vertexCount = polygon.vertices;
         float s;
         final Tuple2f[] vertices = polygon.vertex;
@@ -576,7 +576,7 @@ public class Collision {
         // The normal points from 1 to 2
 
         manifold.pointCount = 0;
-        float totalRadius = polyA.m_radius + polyB.m_radius;
+        float totalRadius = polyA.radius + polyB.radius;
 
         findMaxSeparation(results1, polyA, xfA, polyB, xfB);
         if (results1.separation > totalRadius) {
@@ -725,7 +725,7 @@ public class Collision {
 
         // Compute circle in frame of edge
         // Vec2 Q = MulT(xfA, Mul(xfB, circleB.m_p));
-        Transform.mulToOutUnsafe(xfB, circleB.m_p, temp);
+        Transform.mulToOutUnsafe(xfB, circleB.center, temp);
         Transform.mulTransToOutUnsafe(xfA, temp, Q);
 
         final Tuple2f A = edgeA.m_vertex1;
@@ -736,7 +736,7 @@ public class Collision {
         float u = Tuple2f.dot(e, temp.set(B).subbed(Q));
         float v = Tuple2f.dot(e, temp.set(Q).subbed(A));
 
-        float radius = edgeA.m_radius + circleB.m_radius;
+        float radius = edgeA.radius + circleB.radius;
 
         // ContactFeature cf;
         cf.indexB = 0;
@@ -772,7 +772,7 @@ public class Collision {
             manifold.localPoint.set(P);
             // manifold.points[0].id.key = 0;
             manifold.points[0].id.set(cf);
-            manifold.points[0].localPoint.set(circleB.m_p);
+            manifold.points[0].localPoint.set(circleB.center);
             return;
         }
 
@@ -807,7 +807,7 @@ public class Collision {
             manifold.localPoint.set(P);
             // manifold.points[0].id.key = 0;
             manifold.points[0].id.set(cf);
-            manifold.points[0].localPoint.set(circleB.m_p);
+            manifold.points[0].localPoint.set(circleB.center);
             return;
         }
 
@@ -839,7 +839,7 @@ public class Collision {
         manifold.localPoint.set(A);
         // manifold.points[0].id.key = 0;
         manifold.points[0].id.set(cf);
-        manifold.points[0].localPoint.set(circleB.m_p);
+        manifold.points[0].localPoint.set(circleB.center);
     }
 
     private final EPCollider collider = new EPCollider();

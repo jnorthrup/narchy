@@ -11,8 +11,6 @@ import jcog.event.On;
 import jcog.event.Topic;
 import jcog.exe.Loop;
 import jcog.list.FastCoWList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import spacegraph.phys.util.Animated;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -103,7 +101,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         return w;
     }
 
-    static final Logger logger = LoggerFactory.getLogger(JoglWindow.class);
+    //static final Logger logger = LoggerFactory.getLogger(JoglWindow.class);
 
     private static final FastCoWList<JoglWindow> windows = new FastCoWList<>(16, JoglWindow[]::new);
 
@@ -537,7 +535,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         }
 
         @Override
-        public final synchronized boolean isStarted() {
+        public final boolean isStarted() {
             //return null != window;
             return true;
         }

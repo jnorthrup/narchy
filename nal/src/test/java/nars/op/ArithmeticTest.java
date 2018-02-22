@@ -19,12 +19,16 @@ public class ArithmeticTest {
 
     @Test
     public void test1() throws Narsese.NarseseException {
-        assertEquals("((#1,add(#1,1))&&(#1<->2))",
+        assertEquals(
+                //"((#1,add(#1,1))&&(#1<->2))",
+                "(($1,add($1,1))==>($1<->2))",
                 ArithmeticIntroduction.apply($.$("(2,3)"), rng).toString());
     }
 
     @Test public void test2() throws Narsese.NarseseException {
-        assertEquals("(x(#1,add(#1,1))&&(#1<->2))",
+        assertEquals(
+                //"(x(#1,add(#1,1))&&(#1<->2))",
+                "(x($1,add($1,1))==>($1<->2))",
                 ArithmeticIntroduction.apply($.$("x(2,3)"), rng).toString());
     }
 
@@ -93,7 +97,11 @@ public class ArithmeticTest {
         t.believe("(a,3)");
         t.believe("(a,4)");
         t.ask("(a,#x)");
-        t.mustBelieve(1000, "((a,add(#1,1))&&(#1<->4))", 1f, 0.81f);
+        t.mustBelieve(1000,
+                //"((a,add(#1,1))&&(#1<->4))",
+                //"((a,add(#1,1))&&(#1<->4))",
+                "((a,add($1,1))==>(#1<->4))",
+                1f, 0.81f);
         t.mustBelieve(1000, "(a,5)", 1f, 0.81f);
         t.test(true);
     }

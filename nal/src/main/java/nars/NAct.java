@@ -336,7 +336,7 @@ public interface NAct {
 
 
         actionUnipolar(t, (f) -> {
-            boolean positive = f > 0.5f;
+            boolean positive = f >= 0.5f + nar().freqResolution.get();
             on.value(positive);
             return positive ? 1f : 0f;
         });
@@ -574,7 +574,7 @@ public interface NAct {
                         //frequency -======================
 
                         //A. subtraction
-                        x = 2 * ((g[0] - g[1]) - 0.5f); //subtract
+                        x = ((g[0] - g[1])); //subtract
 
                         //B. difference, like the truth func
                         //df =  g[0] >= g[1] ?  (g[0] * (1f-g[1])) : -(g[1] * (1f-g[0]));
@@ -649,7 +649,9 @@ public interface NAct {
                     float fThresh = nar().freqResolution.floatValue();
                     int sign = (y > fThresh ? +1 : (y < -fThresh ? -1 : 0));
 
-                    float feedConf = goalConf;
+                    float feedConf =
+                            w2cSafe(c2wSafe(goalConf)/2f); //half/half
+                            //goalConf;
                             //Math.max(confMin, goalConf * coherence);
                     switch (sign) {
                         case +1:
@@ -668,7 +670,9 @@ public interface NAct {
                             break;
                         case 0:
                             //Pb = Nb = null; //no signal
-                            Pb = Nb = $.t(0, Math.max(confMin, w2cSafe(c2wSafe(feedConf)/2f))); //zero
+                            Pb = Nb = $.t(0, feedConf);
+                                    //Math.max(confMin, feedConf);
+                                    //w2cSafe(c2wSafe(feedConf)/2f))); //zero
                             break;
                         default:
                             throw new UnsupportedOperationException();
@@ -689,6 +693,7 @@ public interface NAct {
                 }
 
 
+                //System.out.println(Pb + "," + Nb + " <- " + g[0] + ";" + c[0] + ", " + g[1] + ';' + c[1]);
 
                 CC[0].feedback(Pb, Pg, n);
 
@@ -725,12 +730,12 @@ public interface NAct {
 
         final float[] lastF = {0.5f};
         return action(s, (b, g) -> {
-            float gFreq = (g != null) ?
+            float gg = (g != null) ?
                     (freqOrExp ? g.freq() : g.expectation()) : (latch ? lastF[0] : Float.NaN);
 
-            lastF[0] = gFreq;
+            lastF[0] = gg;
 
-            float bFreq = (gFreq == gFreq) ? update.valueOf(gFreq) : Float.NaN;
+            float bFreq = (gg == gg) ? update.valueOf(gg) : Float.NaN;
             if (bFreq == bFreq) {
                 float confFeedback =
                         nar().confDefault(BELIEF);

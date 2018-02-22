@@ -71,7 +71,7 @@ public class Fluid implements ICase {
             bodyDefBullet.bullet = true;
             Body2D bodyBullet = w.addBody(bodyDefBullet);
             CircleShape circleShape = new CircleShape();
-            circleShape.m_radius = 0.5f;
+            circleShape.radius = 0.5f;
             Fixture fixtureBullet = bodyBullet.addFixture(circleShape, 10.0f);
             fixtureBullet.friction = 0.4f; // trenie
             fixtureBullet.restitution = 0.1f; //odrazivost

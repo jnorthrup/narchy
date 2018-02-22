@@ -154,7 +154,7 @@ public class NARS {
 
         time = new CycleTime();
 
-        exe = () -> new UniExec(64);
+        exe = () -> new UniExec(96);
 
         rng = () ->
                 new XoRoShiRo128PlusRandom(1);

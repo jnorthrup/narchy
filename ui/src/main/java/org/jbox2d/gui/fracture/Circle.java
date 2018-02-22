@@ -23,7 +23,7 @@ public class Circle implements ICase {
             bodyDef2.angularVelocity = 0.0f; //rotacia (rychlost rotacie)
             Body2D newBody = w.addBody(bodyDef2);
             CircleShape shape2 = new CircleShape();
-            shape2.m_radius = 2.5f;
+            shape2.radius = 2.5f;
             Fixture f = newBody.addFixture(shape2, 1.0f);
             f.friction = 0.5f; // trenie
             f.restitution = 0.0f; //odrazivost

@@ -52,7 +52,7 @@ public class StaticBody implements ICase {
             Body2D bodyBullet = w.addBody(bodyDefBullet);
 
             CircleShape circleShape = new CircleShape();
-            circleShape.m_radius = 1.0f;
+            circleShape.radius = 1.0f;
             Fixture fixtureBullet = bodyBullet.addFixture(circleShape, 2.0f);
             fixtureBullet.friction = 0.4f; // trenie
             fixtureBullet.restitution = 0.1f; //odrazivost

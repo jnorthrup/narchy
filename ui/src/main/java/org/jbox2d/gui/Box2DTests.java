@@ -17,6 +17,7 @@ import org.jbox2d.gui.fracture.*;
 import org.jbox2d.gui.jbox2d.BlobTest4;
 import org.jbox2d.gui.jbox2d.ChainTest;
 import org.jbox2d.gui.jbox2d.TheoJansen;
+import org.jbox2d.gui.jbox2d.VerletTest;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 
@@ -35,7 +36,7 @@ import java.awt.image.BufferedImage;
  *
  * @author Marek Benovic
  */
-public class Dynamic2DTests extends JComponent implements Runnable {
+public class Box2DTests extends JComponent implements Runnable {
     private final Dimension screenSize = new Dimension(1024, 540);
     private final Tuple2f center = new Vec2();
     private float zoom = 1;
@@ -54,6 +55,7 @@ public class Dynamic2DTests extends JComponent implements Runnable {
      * Pole testovacich scenarov
      */
     private static final ICase[] cases = new ICase[]{
+            new VerletTest(),
             new MainScene(),
             new Cube(),
             new Circle(),
@@ -69,7 +71,7 @@ public class Dynamic2DTests extends JComponent implements Runnable {
     };
 
 
-    private Dynamic2DTests() {
+    private Box2DTests() {
         initWorld();
 
         initMouse();
@@ -379,8 +381,8 @@ public class Dynamic2DTests extends JComponent implements Runnable {
                         break;
                     case CIRCLE:
                         CircleShape circle = (CircleShape) shape;
-                        float r = circle.m_radius;
-                        body.getWorldPointToOut(circle.m_p, v);
+                        float r = circle.radius;
+                        body.getWorldPointToOut(circle.center, v);
                         Point p = getPoint(v);
                         int wr = (int) (r * zoom);
                         g.fillOval(p.x - wr, p.y - wr, wr * 2, wr * 2);
@@ -518,7 +520,7 @@ public class Dynamic2DTests extends JComponent implements Runnable {
             Dimension dimMax = petList.getMaximumSize();
             petList.setMaximumSize(new Dimension(dimMax.width, 30));
 
-            Dynamic2DTests canvas = new Dynamic2DTests();
+            Box2DTests canvas = new Box2DTests();
 
             petList.addActionListener(e -> {
 

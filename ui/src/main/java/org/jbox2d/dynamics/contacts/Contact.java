@@ -153,8 +153,8 @@ public abstract class Contact {
         final Shape shapeA = aFixture.shape();
         final Shape shapeB = bFixture.shape();
 
-        worldManifold.initialize(m_manifold, bodyA, shapeA.m_radius,
-                bodyB, shapeB.m_radius);
+        worldManifold.initialize(m_manifold, bodyA, shapeA.radius,
+                bodyB, shapeB.radius);
     }
 
     /**

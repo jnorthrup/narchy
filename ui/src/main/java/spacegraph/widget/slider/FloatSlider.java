@@ -44,7 +44,11 @@ import spacegraph.widget.windo.Widget;
     public FloatSlider(String label, float v, float min, float max) {
         this(v, min, max);
         this.labelText = label;
-        //this.label.set(label);
+    }
+
+    public FloatSlider(String label, FloatRange f) {
+        this(f);
+        this.labelText = label;
     }
 
     public FloatSlider(FloatRange f) {

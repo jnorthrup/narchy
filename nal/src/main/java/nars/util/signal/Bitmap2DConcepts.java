@@ -1,6 +1,7 @@
 package nars.util.signal;
 
 import jcog.Util;
+import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.signal.Bitmap2D;
 import jcog.util.Array2DIterable;
@@ -31,7 +32,8 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<SensorConc
 
     public final Array2DIterable<SensorConcept> iter;
 
-    protected float pixelPri = 0;
+    /** each pixel's belief task priority for next input */
+    public final FloatRange pixelPri = new FloatRange(0, 0, 1f);
 
     protected Bitmap2DConcepts(P src, @Nullable Int2Function<Term> pixelTerm, NAR n) {
 
@@ -41,11 +43,9 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<SensorConc
         assert(area > 0);
 
         this.src = src;
-        this.pixelPri = n.priDefault(BELIEF);
+        this.pixelPri.set( n.priDefault(BELIEF) );
 
         this.matrix = new SensorConcept[width][height];
-
-        final FloatSupplier pixelPri = () -> this.pixelPri;
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
@@ -110,8 +110,13 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<SensorConc
         ;
     }
 
-    public SensorConcept get(int i, int j) {
+    public SensorConcept getSafe(int i, int j) {
         return matrix[i][j];
+    }
+    @Nullable public SensorConcept get(int i, int j) {
+        if ((i < 0) || (j < 0) || (i >= width || j >= height))
+                return null;
+        return getSafe(i, j);
     }
 
 }

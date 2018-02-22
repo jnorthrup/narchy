@@ -38,7 +38,7 @@ import spacegraph.math.v2;
 public abstract class Shape {
 
     public final ShapeType m_type;
-    public float m_radius;
+    public float radius;
 
     public Shape(ShapeType type) {
         this.m_type = type;
@@ -60,7 +60,7 @@ public abstract class Shape {
      * @return
      */
     public float getRadius() {
-        return m_radius;
+        return radius;
     }
 
     /**
@@ -70,7 +70,7 @@ public abstract class Shape {
      * @param radius
      */
     public void setRadius(float radius) {
-        this.m_radius = radius;
+        this.radius = radius;
     }
 
     /**

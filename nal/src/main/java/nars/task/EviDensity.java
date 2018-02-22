@@ -78,7 +78,8 @@ public final class EviDensity {
 
     public void add(TaskRegion x) {
         Task xt = x.task();
-        add(xt);
+        if (xt!=null)
+            add(xt);
     }
 
     public void add(Task xt) {

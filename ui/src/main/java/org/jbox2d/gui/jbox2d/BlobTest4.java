@@ -53,7 +53,7 @@ public class BlobTest4 implements ICase {
 
       FixtureDef fd = new FixtureDef();
       CircleShape cd = new CircleShape();
-      cd.m_radius = bodyRadius;
+      cd.radius = bodyRadius;
       fd.shape = cd;
       fd.density = 1.0f;
       body.addFixture(fd);

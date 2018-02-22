@@ -23,6 +23,7 @@ import nars.truth.DiscreteTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.util.signal.Bitmap2DSensor;
+import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -297,24 +298,21 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         reward = act();
 
 
-        always(motivation.floatValue());
-
-        actions.entrySet().forEach( (ac) -> {
-            Stream<ITask> s = ac.getKey().update(now, dur, NAgent.this.nar);
-            if (s != null)
-                ac.getValue().input(s);
-        });
-
-//        //evaluate actions in shuffled order for fairness, in case of mutex's among them
-//        ArrayUtils.shuffle(actionUpdates, nar.random);
-//        for (Runnable r : actionUpdates)
-//            r.run();
-
         FloatFloatToObjectFunction<Truth> truther = (prev, next) -> $.t(next, nar.confDefault(BELIEF));
         sensors.entrySet().forEach( (sc) -> {
             sc.getValue().input(sc.getKey().update(truther, now, dur, nar));
         });
 
+        always(motivation.floatValue());
+
+        //HACK TODO compile this to re-used array on init like before
+        Map.Entry<ActionConcept, CauseChannel<ITask>>[] aa = actions.entrySet().toArray(new Map.Entry[actions.size()]);
+        ArrayUtils.shuffle(aa, random()); //fair chance of ordering to all motors
+        for (Map.Entry<ActionConcept, CauseChannel<ITask>> ac : aa) {
+            Stream<ITask> s = ac.getKey().update(now, dur, NAgent.this.nar);
+            if (s != null)
+                ac.getValue().input(s);
+        }
 
         Truth happynowT = nar.beliefTruth(happy, now);
         float happynow = happynowT != null ? (happynowT.freq() - 0.5f) * 2f : 0;

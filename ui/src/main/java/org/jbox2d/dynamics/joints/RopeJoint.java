@@ -41,6 +41,7 @@ public class RopeJoint extends Joint {
     private float m_invIB;
     private float m_mass;
     private LimitState state;
+    private float positionFactor = 1f;
 
     public RopeJoint(IWorldPool worldPool, RopeJointDef def) {
         super(worldPool, def);
@@ -53,6 +54,10 @@ public class RopeJoint extends Joint {
         m_impulse = 0.0f;
         state = LimitState.INACTIVE;
         length = 0.0f;
+    }
+
+    public float targetLength() {
+        return targetLength;
     }
 
     @Override
@@ -91,11 +96,11 @@ public class RopeJoint extends Joint {
 
         length = m_u.length();
 
-        float targetLength = targetLength();
-
-        float C = length - targetLength;
+        float C = length - targetLength();
+        float ca = Math.abs(C);
 
         if (length > Settings.linearSlop) {
+
             m_u.scaled(1.0f / length);
 //            if (C > Settings.linearSlop) {
                 state = LimitState.AT_UPPER;
@@ -128,7 +133,7 @@ public class RopeJoint extends Joint {
 
 //        if (data.step.warmStarting) {
             // Scale the impulse to support a variable time step.
-            m_impulse *= data.step.dtRatio;
+            m_impulse *= data.step.dtRatio * positionFactor;
 
             float Px = m_impulse * m_u.x;
             float Py = m_impulse * m_u.y;
@@ -151,9 +156,7 @@ public class RopeJoint extends Joint {
         data.velocities[indexB].w = wB;
     }
 
-    public float targetLength() {
-        return this.targetLength;
-    }
+
 
     @Override
     public void solveVelocityConstraints(final SolverData data) {
@@ -183,9 +186,9 @@ public class RopeJoint extends Joint {
         ;
 
         // Predictive constraint.
-        if (dLen < 0.0f) {
-            Cdot += data.step.inv_dt * dLen;
-        }
+        //if (dLen < 0.0f) {
+            Cdot += data.step.inv_dt * Math.abs(dLen) * positionFactor;
+        //}
 
         float impulse = -m_mass * Cdot;
         float oldImpulse = m_impulse;
@@ -237,7 +240,7 @@ public class RopeJoint extends Joint {
         float length = u.normalize();
         float C = length - targetLength;
 
-        C = MathUtils.clamp(C, 0.0f, Settings.maxLinearCorrection);
+//        C = MathUtils.clamp(C, 0.0f, Settings.maxLinearCorrection);
 
         float impulse = -m_mass * C;
         float Px = impulse * u.x;
@@ -258,7 +261,7 @@ public class RopeJoint extends Joint {
         // data.positions[m_indexB].c = cB;
         data.positions[indexB].a = aB;
 
-        return length - targetLength < Settings.linearSlop;
+        return Math.abs(length - targetLength) < Settings.linearSlop;
     }
 
     @Override
@@ -273,7 +276,7 @@ public class RopeJoint extends Joint {
 
     @Override
     public void getReactionForce(float inv_dt, Tuple2f argOut) {
-        argOut.set(m_u).scaled(inv_dt).scaled(m_impulse);
+        argOut.set(m_u).scaled(inv_dt).scaled(m_impulse * positionFactor);
     }
 
     @Override
@@ -289,12 +292,12 @@ public class RopeJoint extends Joint {
         return localAnchorB;
     }
 
-    public float getTargetLength() {
-        return targetLength;
-    }
-
     public void setTargetLength(float targetLength) {
         this.targetLength = targetLength;
+    }
+
+    public void setPositionFactor(float positionFactor) {
+        this.positionFactor = positionFactor;
     }
 
 //    public LimitState getLimitState() {

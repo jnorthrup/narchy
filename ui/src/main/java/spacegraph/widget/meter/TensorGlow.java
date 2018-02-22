@@ -125,7 +125,7 @@ public class TensorGlow {
 
             {
                 CircleShape shape = new CircleShape();
-                shape.m_radius = scale * 1.6f;
+                shape.radius = scale * 1.6f;
 
                 FixtureDef sd = new FixtureDef();
                 sd.density = 1.0f;

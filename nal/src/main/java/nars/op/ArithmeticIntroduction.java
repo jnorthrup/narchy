@@ -70,7 +70,9 @@ public class ArithmeticIntroduction extends LeakBack {
         //FasterList<Supplier<Term[]>> mods = new FasterList(1);
         IntObjectHashMap<List<Supplier<Term[]>>> mods = new IntObjectHashMap(ii.length);
 
-        Variable v = $.varDep("x");
+        Variable v =
+                //$.varDep("x");
+                $.varIndep("x");
 
         //test arithmetic relationships
         for (int a = 0; a < ui; a++) {
@@ -133,7 +135,11 @@ public class ArithmeticIntroduction extends LeakBack {
                 mm[0] = anon.put(mm[0]);
             yy = yy.replace(mm[0], mm[1]);
         }
-        Term y = CONJ.the(yy, SIM.the(baseTerm, v));
+
+        Term y =
+                //CONJ.the(yy, SIM.the(baseTerm, v));
+                //IMPL.the(SIM.the(baseTerm, v), yy);
+                IMPL.the(yy, SIM.the(baseTerm, v));
 
         if (x.isNormalized()) {
             y = y.normalize();

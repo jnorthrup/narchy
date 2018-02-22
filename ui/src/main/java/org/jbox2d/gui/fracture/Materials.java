@@ -51,7 +51,7 @@ public class Materials implements ICase {
             bodyDefBullet.linearVelocity = new v2(100.0f, 0.0f); // smer pohybu
             Body2D bodyBullet = w.addBody(bodyDefBullet);
             CircleShape circleShape = new CircleShape();
-            circleShape.m_radius = 1.0f;
+            circleShape.radius = 1.0f;
             Fixture fixtureBullet = bodyBullet.addFixture(circleShape, 5.0f);
             fixtureBullet.friction = 0.4f; // trenie
             fixtureBullet.restitution = 0.1f; //odrazivost

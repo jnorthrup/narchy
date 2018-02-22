@@ -63,7 +63,7 @@ public class EdgeShape extends Shape {
 
     public EdgeShape() {
         super(ShapeType.EDGE);
-        m_radius = Settings.polygonRadius;
+        radius = Settings.polygonRadius;
     }
 
     @Override
@@ -227,10 +227,10 @@ public class EdgeShape extends Shape {
         upperBound.x = v1x > v2x ? v1x : v2x;
         upperBound.y = v1y > v2y ? v1y : v2y;
 
-        lowerBound.x -= m_radius;
-        lowerBound.y -= m_radius;
-        upperBound.x += m_radius;
-        upperBound.y += m_radius;
+        lowerBound.x -= radius;
+        lowerBound.y -= radius;
+        upperBound.x += radius;
+        upperBound.y += radius;
     }
 
     @Override
@@ -243,7 +243,7 @@ public class EdgeShape extends Shape {
     @Override
     public Shape clone() {
         EdgeShape edge = new EdgeShape();
-        edge.m_radius = this.m_radius;
+        edge.radius = this.radius;
         edge.m_hasVertex0 = this.m_hasVertex0;
         edge.m_hasVertex3 = this.m_hasVertex3;
         edge.m_vertex0.set(this.m_vertex0);

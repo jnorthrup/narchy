@@ -26,6 +26,10 @@ public class CheckBox extends ToggleButton {
         set(false);
     }
 
+    public CheckBox(String text, Runnable r) {
+        this(text, (b) -> { if (b) r.run(); } );
+    }
+
     public CheckBox(String text, BooleanProcedure b) {
         this(text);
         on((a, e) -> b.value(e));
