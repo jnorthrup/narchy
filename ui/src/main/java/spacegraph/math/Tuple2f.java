@@ -741,7 +741,7 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
         set(x + dx, y + dy);
     }
 
-    public float distanceSq(v2 v) {
+    public float distanceSq(Tuple2f v) {
         if (v == this) return 0;
         float d = Util.sqr(x - v.x) + Util.sqr(y - v.y);
         return d;

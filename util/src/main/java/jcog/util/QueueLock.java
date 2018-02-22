@@ -28,6 +28,10 @@ public class QueueLock<X> implements Consumer<X> {
     /** exclusive current working thread */
     private long exe = Long.MIN_VALUE;
 
+    /** when false, re-entrant enqueuing by the accepted thread are elided and proceeds synchronously.
+     *  when true, re-entrant enqueue will actually be enqueued to be executed later as if it were another thread attempting access. */
+    boolean forceQueue = false;
+
     /*
     //new EvictingQueue<>(capacity);
     //new DisruptorBlockingQueue<>(capacity);
@@ -40,6 +44,10 @@ public class QueueLock<X> implements Consumer<X> {
         return new QueueLock<>(capacity, Runnable::run, null);
     }
 
+
+    public void forceQueue(boolean forceQueue) {
+        this.forceQueue = forceQueue;
+    }
 
     public QueueLock(int capacity, Consumer<X> each, @Nullable IntConsumer afterBatch) {
         this(Util.blockingQueue(capacity), each, afterBatch);
@@ -63,7 +71,7 @@ public class QueueLock<X> implements Consumer<X> {
     public void accept(X x) {
 
 
-        if (this.exe == Thread.currentThread().getId()) {
+        if (!forceQueue && this.exe == Thread.currentThread().getId()) {
             //re-entrant invocation
             proc.accept(x);
             return;

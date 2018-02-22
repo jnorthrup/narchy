@@ -20,14 +20,14 @@ public class Fragment extends Polygon {
     public Fragment() {
     }
 
-    /**
-     * Inicializuje fragment na zaklade vstupneho pola (priradi referenciu).
-     *
-     * @param ar
-     */
-    public Fragment(Tuple2f[] ar) {
-        super(ar);
-    }
+//    /**
+//     * Inicializuje fragment na zaklade vstupneho pola (priradi referenciu).
+//     *
+//     * @param ar
+//     */
+//    public Fragment(Tuple2f[] ar) {
+//        super(ar);
+//    }
 
     /**
      * Ohnisko fragmentu
@@ -63,20 +63,20 @@ public class Fragment extends Polygon {
         }
     }
 
-    /**
-     * Zotriedi vrcholy polygonu do konvexneho polygonu, ako idu za sebou.
-     * Triedi podla uhlu, aky zviera usecka tvoriaca bodmi focus a lubovolny
-     * vrchol polygonu. Polygony su vacsinou velmi male, cca 8 bodov, preto
-     * je vyuzivany selected sort ako najrychlejsi algoritmus na data takehoto
-     * typu.
-     *
-     * @param focus Vlozi vnutorny bod, podla ktoreho zotriedi polygon - podla
-     *              uhlu spojnice daneho bodu a parametra.
-     */
-    void sort(Tuple2f focus) {
-        this.focus = focus;
-        resort();
-    }
+//    /**
+//     * Zotriedi vrcholy polygonu do konvexneho polygonu, ako idu za sebou.
+//     * Triedi podla uhlu, aky zviera usecka tvoriaca bodmi focus a lubovolny
+//     * vrchol polygonu. Polygony su vacsinou velmi male, cca 8 bodov, preto
+//     * je vyuzivany selected sort ako najrychlejsi algoritmus na data takehoto
+//     * typu.
+//     *
+//     * @param focus Vlozi vnutorny bod, podla ktoreho zotriedi polygon - podla
+//     *              uhlu spojnice daneho bodu a parametra.
+//     */
+//    void sort(Tuple2f focus) {
+//        this.focus = focus;
+//        resort();
+//    }
 
     /**
      * Vymeni 2 vrcholy polygonu
@@ -85,8 +85,9 @@ public class Fragment extends Polygon {
      * @param j
      */
     private void swap(int i, int j) {
-        Tuple2f item = array[i];
-        array[i] = array[j];
-        array[j] = item;
+        Tuple2f[] a = this.array;
+        Tuple2f item = a[i];
+        a[i] = a[j];
+        a[j] = item;
     }
 }

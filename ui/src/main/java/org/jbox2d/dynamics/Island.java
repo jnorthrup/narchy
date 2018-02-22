@@ -23,6 +23,7 @@
  ******************************************************************************/
 package org.jbox2d.dynamics;
 
+import com.google.common.base.Joiner;
 import org.jbox2d.callbacks.ContactImpulse;
 import org.jbox2d.callbacks.ContactListener;
 import org.jbox2d.common.MathUtils;
@@ -164,7 +165,7 @@ public class Island {
 
     public Body2D[] m_bodies;
     public Contact[] m_contacts;
-    public Joint[] m_joints;
+    public Joint[] joints;
 
     public Position[] m_positions;
     public Velocity[] m_velocities;
@@ -177,7 +178,9 @@ public class Island {
     public int m_contactCapacity;
     public int m_jointCapacity;
 
-    public final Dynamics2D m_world;
+    private final Dynamics2D m_world;
+
+    private final ContactImpulse impulse = new ContactImpulse();
 
     public Island(Dynamics2D m_world) {
         this.m_world = m_world;
@@ -198,8 +201,8 @@ public class Island {
         if (m_bodies == null || m_bodyCapacity > m_bodies.length) {
             m_bodies = new Body2D[m_bodyCapacity];
         }
-        if (m_joints == null || m_jointCapacity > m_joints.length) {
-            m_joints = new Joint[m_jointCapacity];
+        if (joints == null || m_jointCapacity > joints.length) {
+            joints = new Joint[m_jointCapacity];
         }
         if (m_contacts == null || m_contactCapacity > m_contacts.length) {
             m_contacts = new Contact[m_contactCapacity];
@@ -307,7 +310,7 @@ public class Island {
         }
 
         for (int i = 0; i < m_jointCount; ++i) {
-            m_joints[i].initVelocityConstraints(solverData);
+            joints[i].initVelocityConstraints(solverData);
         }
 
         profile.solveInit.accum(timer::getMilliseconds);
@@ -317,7 +320,7 @@ public class Island {
         // System.out.println("island solving velocities");
         for (int i = 0; i < step.velocityIterations; ++i) {
             for (int j = 0; j < m_jointCount; ++j) {
-                m_joints[j].solveVelocityConstraints(solverData);
+                joints[j].solveVelocityConstraints(solverData);
             }
 
             contactSolver.solveVelocityConstraints();
@@ -368,7 +371,7 @@ public class Island {
 
             boolean jointsOkay = true;
             for (int j = 0; j < m_jointCount; ++j) {
-                boolean jointOkay = m_joints[j].solvePositionConstraints(solverData);
+                boolean jointOkay = joints[j].solvePositionConstraints(solverData);
                 jointsOkay = jointsOkay && jointOkay;
             }
 
@@ -574,11 +577,10 @@ public class Island {
     }
 
     public void add(Joint joint) {
-        assert (m_jointCount < m_jointCapacity);
-        m_joints[m_jointCount++] = joint;
+        assert (m_jointCount < m_jointCapacity): this + " has too many joints: " + Joiner.on('\n').join(joints);
+        joints[m_jointCount++] = joint;
     }
 
-    private final ContactImpulse impulse = new ContactImpulse();
 
     public void report(ContactVelocityConstraint[] constraints) {
         for (int i = 0; i < m_contactCount; ++i) {

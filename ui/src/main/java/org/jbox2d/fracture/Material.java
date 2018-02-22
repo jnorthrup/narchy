@@ -20,7 +20,8 @@ public abstract class Material {
     /**
      * Najmensi ulomok, ktory je mozne triestit - aby sa zabranilo rekurzivnemu triesteniu.
      */
-    public static final float MINMASSDESCTRUCTION = 0.5f;
+    public static final float MINMASSDESCTRUCTION = 0.005f;
+
 
     /**
      * Po destrukcii kruhu je kruh transformovany na regular polygon s danym poctom vrcholov.
@@ -66,12 +67,12 @@ public abstract class Material {
      */
     public float m_radius = 2.0f;
 
-    /**
-     * Aky material sa definuje na fragmenty. this - fragmenty preberaju material
-     * od povodneho predka, null - ziadne rekurzivne triestenie. Pomocou inych
-     * referencii sa da dobre definovat napr. cihlova stena.
-     */
-    public final Material m_fragments = this;
+//    /**
+//     * Aky material sa definuje na fragmenty. this - fragmenty preberaju material
+//     * od povodneho predka, null - ziadne rekurzivne triestenie. Pomocou inych
+//     * referencii sa da dobre definovat napr. cihlova stena.
+//     */
+//    public final Material m_fragments = this;
 
     /**
      * Abstraktna funkcia urcujuca sposob triesenia.
@@ -86,40 +87,40 @@ public abstract class Material {
      * Fragmentacia telesa.
      *
      * @param p             Teleso
-     * @param vektor        Vektor ratajuc aj jeho velkost - ta urcuje rychlost.
-     * @param bodNarazu     Lokalny bod narazu na danom telese.
+     * @param localVel        Vektor ratajuc aj jeho velkost - ta urcuje rychlost.
+     * @param localPos     Lokalny bod narazu na danom telese.
      * @param normalImpulse Intenzita kolizie
      * @return Vrati pole Polygonov, na ktore bude dany polygon rozdeleny
      */
-    protected Polygon[] split(Smasher geom, Polygon p, Tuple2f bodNarazu, Tuple2f vektor, float normalImpulse) {
-        Tuple2f[] foceeArray = focee(bodNarazu, vektor);
+    protected Polygon[] split(Smasher geom, Polygon p, Tuple2f localPos, Tuple2f localVel, float normalImpulse) {
+        Tuple2f[] foceeArray = focee(localPos, localVel);
 
         //inverzna tranformacia
-        float ln = vektor.length();
+        float ln = localVel.length();
 
         //definicia filtru posobnosti
         float r = m_radius; // polomer
-        float rSq = r * r;
+        float rr = r * r;
 
         float c = 2;
 
-        float dSq = Util.sqr(Math.max(ln * c, r));
+        float dd = Util.sqr(Math.max(ln * c, r));
 
         if (ln > EPSILON) {
 
-            float sin = -vektor.x / ln;
-            float cos = -vektor.y / ln;
+            float sin = -localVel.x / ln;
+            float cos = -localVel.y / ln;
 
-            geom.calculate(p, foceeArray, bodNarazu, point -> {
-                float x = bodNarazu.x - point.x;
-                float y = bodNarazu.y - point.y;
+            geom.calculate(p, foceeArray, localPos, point -> {
+                float x = localPos.x - point.x;
+                float y = localPos.y - point.y;
 
                 x = cos * x + -sin * y;
                 y = sin * x + cos * y;
 
-
-
-                return (x * x + y * y < rSq && y < 0) || (x * x / rSq + y * y / dSq < 1 && y > 0);
+                float xx = x * x;
+                float yy = y * y;
+                return (y < 0 && (xx + yy < rr)) || (y > 0 && (xx / rr + yy / dd < 1));
             });
         }
 

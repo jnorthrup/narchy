@@ -54,7 +54,7 @@ public class Smasher {
         //Geometry geom = new Geometry(foceeAll, p);
         List<Fragment> list = getVoronoi();
 
-        List<EdgePolygon> polygonEdgesList = new ArrayList<>();
+        List<EdgePolygon> polygonEdgesList = new FasterList<>();
         HashTabulka<EdgeDiagram> diagramEdges = new HashTabulka<>();
         HashTabulka<EdgePolygon> polygonEdges = new HashTabulka<>();
 
@@ -94,7 +94,7 @@ public class Smasher {
         diagramEdges.clear();
         polygonEdges.clear();
 
-        ArrayList<EVec2> vectorList = new ArrayList<>();
+        List<EVec2> vectorList = new FasterList<>();
 
         for (AEdge[] array : allEdges) {
             for (AEdge e : array) {
@@ -175,8 +175,7 @@ public class Smasher {
         for (int i = 0; i < polygonAll.size(); i++) {
             Tuple2f v = polygonAll.get(i);
             if (v instanceof Vec2Intersect) {
-                Vec2Intersect vi = (Vec2Intersect) v;
-                vi.index = i;
+                ((Vec2Intersect) v).index = i;
             }
         }
 
@@ -226,7 +225,7 @@ public class Smasher {
 
                 //toto sa nahradi vzorcom na vypocet vzdialenosti body od usecky
                 Tuple2f vv = ep.kolmicovyBod(contactPoint);
-                double newDistance = Arithmetic.distanceSq(contactPoint, vv);
+                double newDistance = contactPoint.distanceSq(vv);
                 if (newDistance <= distance[0]) {
                     distance[0] = newDistance;
                     kolmicovyBod[0] = vv;

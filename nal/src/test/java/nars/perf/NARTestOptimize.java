@@ -90,7 +90,7 @@ public class NARTestOptimize {
                 NAR n = NARS.tmp();
                 return n;
             })
-                .discover(Set.of(NARLoop.class))
+                .learn(Set.of(NARLoop.class))
                 .tweak("PERCEIVE", -1f, +1f, 0.1f, (NAR n, float p) ->
                         n.emotion.want(MetaGoal.Perceive, p)
                 )

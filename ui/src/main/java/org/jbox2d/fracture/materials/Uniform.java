@@ -2,7 +2,6 @@ package org.jbox2d.fracture.materials;
 
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import org.jbox2d.fracture.Material;
-import org.jbox2d.fracture.util.MyList;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 
@@ -14,28 +13,22 @@ import java.util.Random;
  * @author Marek Benovic
  */
 public class Uniform extends Material {
-    private final Random r = new XoRoShiRo128PlusRandom(1);
+    private static final Random r = new XoRoShiRo128PlusRandom(1);
 
     @Override
-    public Tuple2f[] focee(Tuple2f bodNarazu, Tuple2f vektorNarazu) {
-        MyList<Tuple2f> focee = new MyList<>();
-        float rad = m_shattering / 4;
-        for (int i = 0; i < 100; ++i) {
-            float x = r.nextFloat() - 0.5f;
-            float y = r.nextFloat() - 0.5f;
+    public Tuple2f[] focee(Tuple2f point, Tuple2f velocity) {
+        int num = 32;
+        Tuple2f[] focee = new Tuple2f[num];
 
-            x = x * rad * 10;
-            y = y * rad * 10;
+        float scale = 2 * m_shattering;
 
-            Tuple2f v = new v2(x, y);
+        for (int i = 0; i < num; ++i) {
+            float x = r.nextFloat() - 0.5f; //rad: -1/2..+1/2
+            float y = r.nextFloat() - 0.5f; //rad: -1/2..+1/2
 
-            v.added(bodNarazu);
-
-            focee.add(v);
+            focee[i] = new v2(point.x + x * scale, point.y + y * scale);
         }
-        Tuple2f[] foceeArray = new Tuple2f[focee.size()];
-        focee.addToArray(foceeArray);
-        return foceeArray;
+        return focee;
     }
 
     @Override

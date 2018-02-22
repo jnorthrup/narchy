@@ -38,11 +38,11 @@ import java.awt.image.BufferedImage;
  */
 public class Box2DTests extends JComponent implements Runnable {
     private final Dimension screenSize = new Dimension(1024, 540);
-    private final Tuple2f center = new Vec2();
+    private final Tuple2f center = new v2();
     private float zoom = 1;
     private volatile Dynamics2D w;
 
-    private final Tuple2f startCenter = new Vec2();
+    private final Tuple2f startCenter = new v2();
     private volatile Point clickedPoint = null;
     private volatile Graphics2D g;
     private volatile boolean running = false;
@@ -55,10 +55,12 @@ public class Box2DTests extends JComponent implements Runnable {
      * Pole testovacich scenarov
      */
     private static final ICase[] cases = new ICase[]{
-            new VerletTest(),
+
             new MainScene(),
+
             new Cube(),
             new Circle(),
+
             new RotatedBody(),
             new StaticBody(),
             new Fluid(),
@@ -67,7 +69,8 @@ public class Box2DTests extends JComponent implements Runnable {
             new Materials(Material.GLASS),
             new ChainTest(),
             new BlobTest4(),
-            new TheoJansen()
+            new TheoJansen(),
+            new VerletTest()
     };
 
 

@@ -18,17 +18,6 @@ public class Arithmetic {
     /**
      * @param a
      * @param b
-     * @return Vrati kvadraticku vzdialenost bodov z parametra.
-     */
-    public static double distanceSq(Tuple2f a, Tuple2f b) {
-        double x = a.x - b.x;
-        double y = a.y - b.y;
-        return x * x + y * y;
-    }
-
-    /**
-     * @param a
-     * @param b
      * @return Vrati kvadraticku vzdialenost 2 bodov z parametra.
      */
     public static double distanceSq(Tuple2f a, Point2D.Double b) {

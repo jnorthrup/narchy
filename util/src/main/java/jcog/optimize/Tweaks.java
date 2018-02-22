@@ -25,46 +25,81 @@ import java.util.function.Supplier;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
-/** automatically discovers tweakable fields for use in Optimize
- *
+/**
+ * automatically discovers tweakable fields for use in Optimize
+ * <p>
  * TODO
- *      - MutableFloat, AtomicInteger, etc.. tweaks - but dont descend into these (terminal)
- *      - boolean, AtomicBoolean, MutableBoolean etc tweaks
- *      - @Range annotations on primitive array values (the annotation will be on the array, which it can find at the previous Path element)
- *      - enum tweaks
- *      - String tweaks
- *
- *      - Map accessor
- *      - List/collection accessor
- *
- *      - lambda accessors for dynamically specified access
- *
- *      - hint string expressions, in place of current autoInc
- *              would be:   X.inc = (X.max - X.min)/4
- *              where X would be substituted for the key prior to eval of each
- *
- *      - discover and report private/final/static fields separately as potentially tweakable
- *
- *      - objenome dep inject
- *
- *      - probes for runtime optimization
- * */
+ * - MutableFloat, AtomicInteger, etc.. tweaks - but dont descend into these (terminal)
+ * - boolean, AtomicBoolean, MutableBoolean etc tweaks
+ * - @Range annotations on primitive array values (the annotation will be on the array, which it can find at the previous Path element)
+ * - enum tweaks
+ * - String tweaks
+ * <p>
+ * - Map accessor
+ * - List/collection accessor
+ * <p>
+ * - lambda accessors for dynamically specified access
+ * <p>
+ * - hint string expressions, in place of current autoInc
+ * would be:   X.inc = (X.max - X.min)/4
+ * where X would be substituted for the key prior to eval of each
+ * <p>
+ * - discover and report private/final/static fields separately as potentially tweakable
+ * <p>
+ * - objenome dep inject
+ * <p>
+ * - probes for runtime optimization
+ */
 public class Tweaks<X> {
 
     private static final int DEFAULT_DEPTH = 7;
     private final Supplier<X> subjects;
     private final Map<String, Float> hints = new HashMap();
 
+    /**
+     * set of all partially or fully ready Tweaks
+     */
+    protected final List<Tweak<X, ?>> tweaks = new FasterList();
+
+    public Tweaks(X subject) {
+        this(() -> subject);
+    }
+
     public Tweaks(Supplier<X> subjects) {
         this.subjects = subjects;
     }
 
-    public Tweaks<X> discover() {
-        return discover(Set.of());
+
+    /**
+     * learns how to modify the possibility space of the parameters of a subject
+     * (generates accessors via reflection)
+     */
+    public Tweaks<X> learn() {
+        return learn(Set.of());
     }
 
-    /** auto discovers tweaks by reflecting a sample of the subject */
-    public Tweaks<X> discover(Set<Class> excludedClasses) {
+    public Tweaks<X> learn(Set<Class> excludedClasses) {
+        return discover(excludedClasses, (root, path, targetType) -> {
+            FastList<Pair<Class, ObjectGraph.Accessor>> p = path.clone();
+            String key = key(p);
+
+            //TODO find matching Super-types
+            tweakers.get(Primitives.wrap(targetType)).learn(root, key, p);
+
+            learn(key, p);
+        });
+    }
+
+
+    @FunctionalInterface
+    interface Discovery<X> {
+        void discovered(X x, FasterList<Pair<Class, ObjectGraph.Accessor>> path, Class type);
+    }
+
+    /**
+     * auto discovers tweaks by reflecting a sample of the subject
+     */
+    public Tweaks<X> discover(Set<Class> excludedClasses, Discovery<X> each) {
 
         //sample instance
         X x = (this.subjects.get());
@@ -81,7 +116,7 @@ public class Tweaks<X> {
                     return false;
 
                 if (tweakable(targetType)) {
-                    tweak((X)root, path.clone(), targetType);
+                    each.discovered((X) root, path.clone(), targetType);
                 }
 
                 return !Primitives.unwrap(target.getClass()).isPrimitive();
@@ -125,54 +160,61 @@ public class Tweaks<X> {
     }
 
 
-    @FunctionalInterface interface Tweaker<X> {
+    @FunctionalInterface
+    interface Tweaker<X> {
         void learn(X sample, String key, FastList<Pair<Class, ObjectGraph.Accessor>> path);
     }
 
-    final Map<Class,Tweaker<X>> tweakers = Map.of(
+    final Map<Class, Tweaker<X>> tweakers = Map.of(
 
-            Boolean.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p)->{
+            Boolean.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p) -> {
+                Function<X, Float> get = ObjectGraph.getter(p);
                 final BiConsumer<X, Boolean> set = ObjectGraph.setter(p);
-                tweak(k, 0, 1, 0.5f, (x, v)->{
+                tweak(k, 0, 1, 0.5f, get, (x, v) -> {
                     boolean b = v >= 0.5f;
                     set.accept(x, b);
                     return (b) ? 1f : 0f;
                 });
             },
 
-            AtomicBoolean.class, (sample, k, p)->{
+            AtomicBoolean.class, (sample, k, p) -> {
                 final Function<X, AtomicBoolean> get = ObjectGraph.getter(p);
                 AtomicBoolean fr = get.apply(sample); //use the min/max at the time this is constructed, which assumes they will remain the same
-                tweak(k, 0, 1, 0.5f, (x, v)->{
+                tweak(k, 0, 1, 0.5f, (x, v) -> {
                     boolean b = v >= 0.5f;
                     fr.set(b);
                     return b ? 1f : 0f;
                 });
             },
 
-            Integer.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p)->{
+            Integer.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p) -> {
+                final Function<X, Integer> get = ObjectGraph.getter(p);
                 final BiConsumer<X, Integer> set = ObjectGraph.setter(p);
-                tweak(k, set::accept);
+                tweak(k, get, set::accept);
             },
-            IntRange.class,  (sample, k, p)->{
+            IntRange.class, (sample, k, p) -> {
                 final Function<X, IntRange> get = ObjectGraph.getter(p);
                 IntRange fr = get.apply(sample); //use the min/max at the time this is constructed, which assumes they will remain the same
-                tweak(k, fr.min, fr.max, -1, (ObjectIntProcedure<X>)(x, v)->{ fr.set(v); });
+                tweak(k, fr.min, fr.max, -1, null /* TODO */, (ObjectIntProcedure<X>) (x, v) -> {
+                    fr.set(v);
+                });
             },
 //            AtomicInteger.class, null,
 //            MutableInteger.class, null,
 
-            Float.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p)->{
+            Float.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p) -> {
                 final BiConsumer<X, Float> set = ObjectGraph.setter(p);
                 tweak(k, Float.NaN, Float.NaN, Float.NaN, set::accept);
             },
 //            MutableFloat.class, null,
 
 
-            FloatRange.class, (sample, k, p)->{
+            FloatRange.class, (sample, k, p) -> {
                 final Function<X, FloatRange> get = ObjectGraph.getter(p);
                 FloatRange fr = get.apply(sample); //use the min/max at the time this is constructed, which assumes they will remain the same
-                tweak(k, fr.min, fr.max, Float.NaN, (x,v)->{ fr.set(v); });
+                tweak(k, fr.min, fr.max, Float.NaN, (x, v) -> {
+                    fr.set(v);
+                });
             }
 
 //            FloatRangeRounded.class, null
@@ -184,13 +226,15 @@ public class Tweaks<X> {
 
     );
 
-    /** extract any hints from the path (ex: annotations, etc) */
+    /**
+     * extract any hints from the path (ex: annotations, etc)
+     */
     private void learn(String key, FastList<Pair<Class, ObjectGraph.Accessor>> path) {
         ObjectGraph.Accessor a = path.getLast().getTwo();
         if (a instanceof ObjectGraph.FieldAccessor) {
-            Field field = ((ObjectGraph.FieldAccessor)a).field;
+            Field field = ((ObjectGraph.FieldAccessor) a).field;
             Range r = field.getAnnotation(Range.class);
-            if (r!=null) {
+            if (r != null) {
                 double min = r.min();
                 if (min == min)
                     hints.put(key + ".min", (float) min);
@@ -215,20 +259,18 @@ public class Tweaks<X> {
     protected boolean includeField(Field f) {
         return true;
     }
-    /** set of all partially or fully ready Tweaks */
-    protected final List<Tweak<X>> tweaks = new FasterList();
 
 
-    public Tweaks<X> tweak(String key, ObjectIntProcedure<X> apply) {
-        return tweak(key, Float.NaN, Float.NaN, Float.NaN, (X x, float v) -> {
+    public Tweaks<X> tweak(String key, Function<X, Integer> get, ObjectIntProcedure<X> apply) {
+        return tweak(key, Float.NaN, Float.NaN, Float.NaN, (x) -> get.apply(x).floatValue() /* HACK */, (X x, float v) -> {
             int i = Math.round(v);
             apply.accept(x, i);
             return i;
         });
     }
 
-    public Tweaks<X> tweak(String key, int min, int max, int inc, ObjectIntProcedure<X> apply) {
-        return tweak(key, min, max, inc < 0 ? Float.NaN : inc, (X x, float v) -> {
+    public Tweaks<X> tweak(String key, int min, int max, int inc, Function<X, Integer> get, ObjectIntProcedure<X> apply) {
+        return tweak(key, min, max, inc < 0 ? Float.NaN : inc, (x) -> get.apply(x).floatValue() /* HACK */, (X x, float v) -> {
             int i = Math.round(v);
             apply.accept(x, i);
             return i;
@@ -236,15 +278,21 @@ public class Tweaks<X> {
     }
 
     public Tweaks<X> tweak(String id, float min, float max, float inc, ObjectFloatProcedure<X> apply) {
-        tweaks.add(new TweakFloat<>(id, min, max, inc, (X x, float v) -> {
+        tweaks.add(new TweakFloat<X>(id, min, max, inc, null /* TODO */, (X x, float v) -> {
             apply.value(x, v);
             return v;
         }));
         return this;
     }
 
-    public Tweaks<X> tweak(String id, float min, float max, float inc, ObjectFloatToFloatFunction<X> apply) {
-        tweaks.add(new TweakFloat<>(id, min, max, inc, apply));
+
+    @Deprecated
+    public Tweaks<X> tweak(String id, float min, float max, float inc, ObjectFloatToFloatFunction<X> set) {
+        return tweak(id, min, max, inc, null, set);
+    }
+
+    public Tweaks<X> tweak(String id, float min, float max, float inc, Function<X, Float> get, ObjectFloatToFloatFunction<X> set) {
+        tweaks.add(new TweakFloat<>(id, min, max, inc, get, set));
         return this;
     }
 
@@ -254,7 +302,7 @@ public class Tweaks<X> {
     }
 
 
-    public Pair<List<Tweak<X>>, SortedSet<String>> get(Map<String, Float> additionalHints) {
+    public Pair<List<Tweak<X, ?>>, SortedSet<String>> get(Map<String, Float> additionalHints) {
         Map<String, Float> h;
         if (!this.hints.isEmpty()) {
             if (additionalHints.isEmpty()) {
@@ -268,10 +316,10 @@ public class Tweaks<X> {
         } else {
             h = additionalHints;
         }
-        final List<Tweak<X>> ready = new FasterList();
+        final List<Tweak<X, ?>> ready = new FasterList();
 
         TreeSet<String> unknowns = new TreeSet<>();
-        for (Tweak<X> t : tweaks) {
+        for (Tweak<X, ?> t : tweaks) {
             List<String> u = t.unknown(h);
             if (u.isEmpty()) {
                 ready.add(t);
@@ -283,19 +331,9 @@ public class Tweaks<X> {
         return pair(ready, unknowns);
     }
 
-    protected void tweak(X sample, FastList<Pair<Class, ObjectGraph.Accessor>> path, Class targetType) {
-        String key = key(path);
-
-        //TODO find matching Super-types
-        tweakers.get(Primitives.wrap(targetType)).learn(sample, key, path);
-
-        learn(key, path);
-    }
-
     private boolean tweakable(Class<?> t) {
         return tweakers.containsKey(Primitives.wrap(t));
     }
-
 
 
     public Result<X> optimize(int maxIterations, int repeats, FloatFunction<Supplier<X>> eval) {

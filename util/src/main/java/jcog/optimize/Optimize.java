@@ -41,7 +41,7 @@ public class Optimize<X> {
      */
     static final float autoInc_default = 3f;
 
-    final List<Tweak<X>> tweaks;
+    final List<Tweak<X,?>> tweaks;
     final Supplier<X> subject;
 
     private final boolean trace = false;
@@ -54,8 +54,8 @@ public class Optimize<X> {
     }
 
     protected Optimize(Supplier<X> subject, Tweaks<X> t, Map<String, Float> hints) {
-        Pair<List<Tweak<X>>, SortedSet<String>> uu = t.get(hints);
-        List<Tweak<X>> ready = uu.getOne();
+        Pair<List<Tweak<X,?>>, SortedSet<String>> uu = t.get(hints);
+        List<Tweak<X,?>> ready = uu.getOne();
         SortedSet<String> unknown = uu.getTwo();
         if (ready.isEmpty()) {
             throw new RuntimeException("tweaks not ready:\n" + Joiner.on('\n').join(unknown));
@@ -156,7 +156,7 @@ public class Optimize<X> {
             logger.info("solve {} {}", func, t);
         }
 
-        return new Result<>(experiments, tweaks);
+        return new Result<X>(experiments, tweaks);
 
 
     }
@@ -222,7 +222,7 @@ public class Optimize<X> {
         X x = subject.get();
 
         for (int i = 0, dim = point.length; i < dim; i++) {
-            point[i] = tweaks.get(i).apply.value(x, (float) point[i]);
+            point[i] = ((Tweak<X,Float>)tweaks.get(i)).set(x, (float) point[i]);
         }
 
         return x;

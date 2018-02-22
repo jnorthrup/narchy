@@ -27,21 +27,21 @@ public class MainScene implements ICase {
             f.restitution = 0.0f; //odrazivost
 
             f.material = Material.UNIFORM;
-            f.material.m_rigidity = 40.0f;
-            f.material.m_shattering = 3.0f;
+            f.material.m_rigidity = 80.0f;
+            f.material.m_shattering = 10.0f;
         }
 
         {
-            BodyDef bodyDefBullet = new BodyDef();
-            bodyDefBullet.type = BodyType.DYNAMIC;
-            bodyDefBullet.position.set(-30.0f, 5.3f); //pozicia
-            bodyDefBullet.linearVelocity = new v2(100.0f, 0.0f); // smer pohybu
-            Body2D bodyBullet = w.addBody(bodyDefBullet);
+            BodyDef ball = new BodyDef();
+            ball.type = BodyType.DYNAMIC;
+            ball.position.set(-30.0f, 5.3f); //pozicia
+            ball.linearVelocity = new v2(100.0f, 0.0f); // smer pohybu
+            Body2D ballBody = w.addBody(ball);
             CircleShape circleShape = new CircleShape();
             circleShape.radius = 1.0f;
-            Fixture fixtureBullet = bodyBullet.addFixture(circleShape, 5.0f);
-            fixtureBullet.friction = 0.4f; // trenie
-            fixtureBullet.restitution = 0.1f; //odrazivost
+            Fixture fb = ballBody.addFixture(circleShape, 5.0f);
+            fb.friction = 0.4f; // trenie
+            fb.restitution = 0.1f; //odrazivost
         }
     }
 

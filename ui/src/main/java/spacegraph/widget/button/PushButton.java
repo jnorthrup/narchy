@@ -22,7 +22,7 @@ public class PushButton extends AbstractButton {
 
     public PushButton(String s) {
         super();
-        content((label = new Label(s)).scale(0.8f).align(AspectAlign.Align.Center));
+        content((label = new Label(s)).scale(0.8f));
     }
 
     public PushButton(Consumer<PushButton> onClick) {

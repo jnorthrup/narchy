@@ -23,7 +23,7 @@ public class Diffusion extends Material {
         final int count = 128; //pocet
         double c = 4; // natiahnutie
 
-        vektor = new v2((float) 1, (float) 0);
+        //vektor = new v2(1, 0);
 
         float ln = vektor.length();
         Transform t = new Transform();
@@ -34,8 +34,8 @@ public class Diffusion extends Material {
         Tuple2f[] va = new Tuple2f[count];
         for (int i = 1; i <= count; i++) {
 
-            double a = r.nextDouble() * 2 * Math.PI;
-            double d = -Math.log(r.nextDouble()) * m_shattering;
+            double a = r.nextFloat() * 2 * Math.PI;
+            double d = -Math.log(r.nextFloat()) * m_shattering;
 
             double x = Math.sin(a) * d;
             double y = Math.cos(a) * d * c;

@@ -37,7 +37,7 @@ public class TweaksTest {
 
     @Test
     public void test1() {
-        Tweaks<Model> a = new Tweaks<>(Model::new).discover();
+        Tweaks<Model> a = new Tweaks<>(Model::new).learn();
         a.tweaks.forEach(
                 t -> System.out.println(t)
         );

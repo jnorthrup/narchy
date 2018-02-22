@@ -12,6 +12,7 @@ import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.joints.RevoluteJoint;
 import org.jbox2d.dynamics.joints.RevoluteJointDef;
+import org.jbox2d.fracture.materials.Uniform;
 import spacegraph.layout.Gridding;
 import spacegraph.math.v2;
 import spacegraph.widget.meta.AutoSurface;
@@ -37,12 +38,12 @@ public class TensorGlow {
 
     private static void addBox(Dynamics2D world, float x1, float y1, float x2, float y2, boolean top, boolean right, boolean bottom, boolean left) {
 
-        float cx = (x1+x2)/2f;
-        float cy = (y1+y2)/2f;
+        float cx = (x1 + x2) / 2f;
+        float cy = (y1 + y2) / 2f;
         float w = x2 - x1;
         float h = y2 - y1;
 
-        float thick = Math.min(w,h)/20f;
+        float thick = Math.min(w, h) / 20f;
 
         if (bottom) {
             Body2D _bottom = world.addBody(new BodyDef(BodyType.STATIC),
@@ -60,15 +61,15 @@ public class TensorGlow {
 
         if (left) {
             Body2D _left = world.addBody(new BodyDef(BodyType.STATIC),
-                    new FixtureDef(PolygonShape.box(thick/2, h/2-thick/2),
+                    new FixtureDef(PolygonShape.box(thick / 2, h / 2 - thick / 2),
                             0, 0));
             _left.setTransform(new v2(x1, cy), 0);
 
         }
 
-        if (right ) {
+        if (right) {
             Body2D _right = world.addBody(new BodyDef(BodyType.STATIC),
-                    new FixtureDef(PolygonShape.box(thick / 2, h / 2-thick/2),
+                    new FixtureDef(PolygonShape.box(thick / 2, h / 2 - thick / 2),
                             0, 0));
             _right.setTransform(new v2(x2, cy), 0);
         }
@@ -88,19 +89,36 @@ public class TensorGlow {
         PhyWall p = PhyWall.window(1200, 1000);
 
         p.W.setGravity(new v2(0, -2.8f));
-        addBox(p.W, -2, -1, +2, 2f);
+        addBox(p.W, -10, -8, +10, 2f, false, true, true, true);
 
-        //ceiling rack
-        addBox(p.W, -1, +0.4f, 0, +0.65f, false, true, true, true);
+        for (int j = 0; j < 3; j++)        {
+            BodyDef bodyDef2 = new BodyDef();
+            bodyDef2.type = BodyType.DYNAMIC;
+            bodyDef2.angle = -0.6f; // otocenie
+            bodyDef2.linearVelocity = new v2(0.0f, 0.0f); // smer pohybu
+            bodyDef2.angularVelocity = 0.0f; //rotacia (rychlost rotacie)
+            Body2D newBody = p.W.addBody(bodyDef2);
+            PolygonShape shape2 = new PolygonShape();
+            shape2.setAsBox(0.25f, 0.25f);
+            Fixture f = newBody.addFixture(shape2, 1.0f);
+            f.friction = 0.5f; // trenie
+            f.restitution = 0.0f; //odrazivost
+            f.material = new Uniform();
+            f.material.m_rigidity = 1.0f;
+        }
+//        //ceiling rack
+//        addBox(p.W, -1, +0.4f, 0, +0.65f, false, true, true, true);
 
         //new Pacman(p.W);
         {
-            TheoJansen t = new TheoJansen(p.W, new v2(0, 0.1f), 0.05f);
-            PhyWall.PhyWindow pw = p.addWindow(new Gridding(0.5f,new Port((float[] v)->{
+            TheoJansen t = new TheoJansen(p.W, 0.25f);
+            PhyWall.PhyWindow pw = p.addWindow(new Gridding(0.5f, new Port((float[] v) -> {
                 //System.out.println(v);
-                t.motorJoint.setMotorSpeed(v[0]);
-                t.motorJoint.setLimits(-v[1], +v[2]);
-            })), RectFloat2D.XYWH(0, 0, 0.2f, 0.1f));
+                t.motorJoint.setMotorSpeed(v[0]*2 - v[1]*2);
+                t.motorJoint.setMaxMotorTorque(v[2]);
+                t.motorJoint.enableLimit(true);
+                t.motorJoint.setLimits((float) (-v[3]*Math.PI), (float) (+v[4]*Math.PI));
+            })), 0.8f, 0.4f);
             p.W.addJoint(new RevoluteJoint(p.W, new RevoluteJointDef(pw.body, t.chassis)));
         }
 
@@ -114,7 +132,7 @@ public class TensorGlow {
 
         PhyWall.PhyWindow w = p.addWindow(new Gridding(0.25f,
                         new AutoUpdateMatrixView(
-                            lerpVector.data
+                                lerpVector.data
                         ),
                         new LabeledPane("lerp", new XYSlider().on((x, y) -> {
                             lerpRate.set(x);

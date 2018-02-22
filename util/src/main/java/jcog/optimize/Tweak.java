@@ -1,23 +1,29 @@
 package jcog.optimize;
 
-import jcog.util.ObjectFloatToFloatFunction;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 /**
  * a knob but cooler
  */
-public class Tweak<X> {
+public class Tweak<X,Y> {
 
-    public final ObjectFloatToFloatFunction<X> apply;
+    public final BiFunction<X,Y,Y> set;
+    public final Function<X,Y> get;
     public final String id;
 
+    @Deprecated public Tweak(String id, BiFunction<X,Y,Y> set) {
+        this(id, null, set);
+    }
+
     /** transduces a generic floating point value to a change in a property of the experiment subject */
-    public Tweak(String id, ObjectFloatToFloatFunction<X> apply) {
+    public Tweak(String id, Function<X,Y> get, BiFunction<X,Y,Y> set) {
         this.id = id;
-        this.apply = apply;
+        this.get = get;
+        this.set = set;
     }
 
     @Override
@@ -30,4 +36,11 @@ public class Tweak<X> {
         return Collections.emptyList();
     }
 
+    public final Y get(X example) {
+        return get.apply(example);
+    }
+
+    public Y set(X subject, Y value) {
+        return set.apply(subject, value);
+    }
 }

@@ -5,19 +5,16 @@ import jcog.util.ObjectFloatToFloatFunction;
 
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
-public class TweakFloat<X> extends Tweak<X> {
+public class TweakFloat<X> extends Tweak<X,Float> {
 
 
     private float min, max;
     private float inc;
 
-    protected TweakFloat(String id, ObjectFloatToFloatFunction<X> apply) {
-        this(id, Float.NaN, Float.NaN, Float.NaN, apply);
-    }
-
-    protected TweakFloat(String id, float min, float max, float inc, ObjectFloatToFloatFunction<X> apply) {
-        super(id, apply);
+    protected TweakFloat(String id, float min, float max, float inc, Function<X,Float> get, ObjectFloatToFloatFunction<X> set) {
+        super(id, get, set::value);
         this.min = min;
         this.max = max;
         this.inc = inc;

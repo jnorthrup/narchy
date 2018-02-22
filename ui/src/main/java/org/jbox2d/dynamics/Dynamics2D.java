@@ -585,6 +585,7 @@ public class Dynamics2D {
 
         queue.accept(() -> {
 
+            queue.forceQueue(true);
 
             stepTimer.reset();
             tempTimer.reset();
@@ -643,6 +644,8 @@ public class Dynamics2D {
             if ((flags & CLEAR_FORCES) == CLEAR_FORCES) {
                 clearForces();
             }
+
+            queue.forceQueue(false);
         });
 
 

@@ -7,7 +7,6 @@ import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.collision.shapes.Shape;
 import org.jbox2d.common.Transform;
-import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.contacts.Contact;
 import org.jbox2d.fracture.fragmentation.Smasher;
@@ -123,11 +122,11 @@ public class Fracture {
         Tuple2f localPoint = Transform.mulTrans(b1, point);
         Tuple2f b1Vec = b1.getLinearVelocityFromWorldPoint(point);
         Tuple2f b2Vec = b2.getLinearVelocityFromWorldPoint(point);
-        Tuple2f localVector = b2Vec.subbed(b1Vec);
+        Tuple2f localVelocity = b2Vec.subbed(b1Vec);
 
-        localVector.scaled(dt);
+        localVelocity.scaled(dt);
 
-        Polygon[] fragment = m.split(smasher, p, localPoint, localVector, normalImpulse); //rodeli to
+        Polygon[] fragment = m.split(smasher, p, localPoint, localVelocity, normalImpulse); //rodeli to
         if (fragment.length <= 1) { //nerozbilo to na ziadne fragmenty
             return;
         }
@@ -180,7 +179,8 @@ public class Fracture {
                         ps.set(pgx.getArray(), pgx.size());
                         fd.shape = ps;
                         fd.polygon = null;
-                        fd.material = f1.material.m_fragments; //rekurzivne stiepenie
+                        fd.material = f1.material;
+                                //.m_fragments; //rekurzivne stiepenie
 
                         f_body.addFixture(fd);
                         f_body.setAngularVelocity(b1.velAngular);
@@ -189,7 +189,8 @@ public class Fracture {
                     }
 
                 } else {
-                    fd.material = f1.material.m_fragments; //rekurzivne stiepenie
+                    fd.material =
+                            f1.material;//.m_fragments; //rekurzivne stiepenie
                     bodyDef.type = b1.getType();
                     Body2D f_body = w.addBody(bodyDef);
                     PolygonFixture pf = new PolygonFixture(pg);
@@ -227,31 +228,32 @@ public class Fracture {
         }
     }
 
-    /**
-     * Kontrolue, ci je kolizia kriticka, ak je, tak ju prida do hashovacej tabulky
-     * kritickych kolizii. Treba zauvazit aj multimaterialove telesa. Materialy
-     * tvoria spojovy zoznam, pre triestenie sa vsak pouzije len jeden
-     */
-    private static final MyList<Material> materials = new MyList<>();
+//    /**
+//     * Kontrolue, ci je kolizia kriticka, ak je, tak ju prida do hashovacej tabulky
+//     * kritickych kolizii. Treba zauvazit aj multimaterialove telesa. Materialy
+//     * tvoria spojovy zoznam, pre triestenie sa vsak pouzije len jeden
+//     */
+//    private static final MyList<Material> materials = new MyList<>();
 
     private static void fractureCheck(final Fixture f1, final Fixture f2, final float iml, Dynamics2D w, Contact contact, int i) {
-        materials.clear();
-        for (Material m = f1.material; m != null; m = m.m_fragments) {
-            if (materials.contains(m)) {
-                return;
-            }
-            if (m.m_rigidity < iml) {
+//        materials.clear();
+//        for (Material m = f1.material; m != null; m = m.m_fragments) {
+//            if (materials.contains(m)) {
+//                return;
+//            }
+            Material m = f1.material;
+            if (m!=null && m.m_rigidity < iml) {
                 f1.body.m_fractureTransformUpdate = f2.body.m_fractureTransformUpdate = false;
                 if (f1.body.m_massArea > Material.MINMASSDESCTRUCTION) {
                     WorldManifold wm = new WorldManifold();
                     contact.getWorldManifold(wm); //vola sa iba raz
-                    w.addFracture(new Fracture(f1, f2, m, contact, iml, new Vec2(wm.points[i])));
+                    w.addFracture(new Fracture(f1, f2, m, contact, iml, new v2(wm.points[i])));
                 } else if (f1.body.type != BodyType.DYNAMIC) {
                     w.addFracture(new Fracture(f1, f2, m, null, 0, null));
                 }
             }
-            materials.add(m);
-        }
+//            materials.add(m);
+//        }
     }
 
     private static boolean equals(Fixture f1, Fixture f2) {
@@ -266,6 +268,7 @@ public class Fracture {
 
     @Override
     public boolean equals(Object obj) {
+        if (this == obj) return true;
         if (obj instanceof Fracture) {
             Fracture f = (Fracture) obj;
             return equals(f.f1, f1);

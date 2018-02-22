@@ -48,21 +48,32 @@ public class Label extends AspectAlign {
         if (len == 0) return;
 
         float charAspect = 1.4f;
-        this.textScaleX = 1f / len;
-        this.textScaleY = 1 * charAspect;
-
-        float visAspect = th / tw;
-        if (textScaleY / textScaleX <= visAspect) {
-            this.textScaleX = 1f / (charAspect * len);
-            this.textScaleY = textScaleX * charAspect;
+        this.textScaleX = len/charAspect;
+        this.textScaleY = 1;
+        float tr = textScaleY / textScaleX;
+        if (tr <= th/tw) {
+            this.textScaleX = 1;
+            this.textScaleY = 1*tr;
+            textScaleX/=len;
+            assert(textScaleY < 1);
         } else {
-            this.textScaleY = textScaleX / visAspect;
+            if (tr >= 1) {
+                this.textScaleY = 1;
+                this.textScaleX = 1 / tr;
+            } else {
+                this.textScaleY = 1;
+                this.textScaleX = 1 * tr;
+            }
+            assert(textScaleX < 1);
+            //this.textScaleY = textScaleX / visAspect;
+//            textScaleY = 1;
+//            textScaleX = textScaleY * (charAspect)/len;
         }
 
-        if (textScaleY > 1f) {
-            textScaleY = 1f;
-            textScaleX = 1f / (charAspect * len);
-        }
+//        if (textScaleY > 1f) {
+//            textScaleY = 1f;
+//            textScaleX = 1f / (charAspect * len);
+//        }
 
         textY = 0.5f - textScaleY / 2f;
     }

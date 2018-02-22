@@ -12,10 +12,10 @@ import java.util.List;
 public class Result<X> {
 
     final FastList<DoubleObjectPair<double[]>> experiments;
-    final List<Tweak<X>> tweaks;
+    final List<Tweak<X,?>> tweaks;
 
 
-    public Result(FastList<DoubleObjectPair<double[]>> experiments, List<Tweak<X>> tweaks) {
+    public Result(FastList<DoubleObjectPair<double[]>> experiments, List<Tweak<X,?>> tweaks) {
         experiments.sortThisByDouble(DoubleObjectPair::getOne);
         this.experiments = experiments;
         this.tweaks = tweaks;

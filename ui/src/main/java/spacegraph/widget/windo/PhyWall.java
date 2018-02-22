@@ -59,7 +59,7 @@ public class PhyWall extends Wall implements Animated {
     /**
      * increase for more physics precision
      */
-    final int solverIterations = 2;
+    final int solverIterations = 8;
 
     public final Dynamics2D W = new Dynamics2D(new v2(0, 0));
     private On on;

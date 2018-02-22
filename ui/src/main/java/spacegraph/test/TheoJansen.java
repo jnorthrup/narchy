@@ -21,14 +21,11 @@ public class TheoJansen {
     protected final Body2D chassis;
     public final RevoluteJoint motorJoint;
 
-    public TheoJansen(Dynamics2D w, v2 offset, float scale) {
+    public TheoJansen(Dynamics2D w, float scale) {
+
+        this.center = new v2(0, 8*scale);
 
         this.world = w;
-
-
-
-        this.center = offset;
-        center.set(0,0);
 
 
         v2 pivot = new v2(scale * 0.0f, scale * 0.8f);
@@ -56,6 +53,11 @@ public class TheoJansen {
             sd.density = 1.0f;
             sd.shape = shape;
             sd.filter.groupIndex = -1;
+
+
+
+
+
             BodyDef bd = new BodyDef();
             bd.type = BodyType.DYNAMIC;
             bd.position.set(pivot).added(center);
@@ -152,6 +154,8 @@ public class TheoJansen {
         fd1.shape = poly1;
         fd2.shape = poly2;
 
+
+
         BodyDef bd1 = new BodyDef(), bd2 = new BodyDef();
         bd1.type = BodyType.DYNAMIC;
         bd2.type = BodyType.DYNAMIC;
@@ -160,6 +164,7 @@ public class TheoJansen {
 
         bd1.angularDamping = 10.0f;
         bd2.angularDamping = 10.0f;
+
 
         Body2D body1 = world.addBody(bd1);
         Body2D body2 = world.addBody(bd2);
