@@ -73,7 +73,7 @@ public class NARTestOptimize {
                 return t.test.score;
                 //return 1 + t.test.score; //+1 for successful completion
             } catch (Throwable ee) {
-                return -1f;
+                return -2f;
                 //return 0f;
             }
         } catch (Exception e) {

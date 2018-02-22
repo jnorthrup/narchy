@@ -9,7 +9,6 @@ import java.util.function.Function;
 
 public class TweakFloat<X> extends Tweak<X,Float> {
 
-
     private float min, max;
     private float inc;
 

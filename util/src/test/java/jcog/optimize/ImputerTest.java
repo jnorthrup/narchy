@@ -2,8 +2,6 @@ package jcog.optimize;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ImputerTest {
@@ -14,7 +12,7 @@ class ImputerTest {
     }
 
     @Test
-    public void test1() {
+    public void testSimple() {
         Imputer i = new Imputer();
 
         SimplePOJO x = new SimplePOJO();
@@ -26,10 +24,11 @@ class ImputerTest {
 
 
         SimplePOJO y = new SimplePOJO();
-        List<Tweak> yy = i.apply(y, "default");
-        assertEquals(2, yy.size());
-        assertEquals(1, x.a);
-        assertEquals(true, x.b);
+        Imputer.Imputing<SimplePOJO> yy = i.apply(y, "default");
+        assertEquals(2, yy.log.size());
+        assertEquals(0, yy.issues.size());
+        assertEquals(x.a, y.a);
+        assertEquals(x.b, y.b);
     }
 
 }
