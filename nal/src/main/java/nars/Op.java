@@ -1403,7 +1403,7 @@ public enum Op {
             return conj;
 
         Term implication = conj.sub(whichImpl).unneg();
-
+        Term implicationPolarized = conj.sub(whichImpl);
 
         Term other;
         if (conjSize == 2) {
@@ -1412,7 +1412,8 @@ public enum Op {
             //more than 2; group them as one term
             Subterms cs = conj.subterms();
             SortedSet<Term> ss = cs.toSetSorted();
-            assert (ss.remove(implication)) : "must have removed something";
+            boolean removed = ss.remove(implicationPolarized);
+            assert removed : "must have removed something";
 
             Term[] css = sorted(ss);
             if (conj.dt() == conjDT && cs.equalTerms(css))
@@ -1423,7 +1424,7 @@ public enum Op {
 
         if (other.op() == IMPL) {
             //TODO if other is negated impl
-            if ((other.dt() == DTERNAL) && other.sub(1).equals(implication.sub(1))) {
+            if ((other.dt() == DTERNAL) && other.sub(1).equals(implicationPolarized.sub(1))) {
                 //same predicate
                 other = other.sub(0);
             } else {

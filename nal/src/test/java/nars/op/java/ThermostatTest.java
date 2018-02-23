@@ -91,26 +91,26 @@ public class ThermostatTest {
     @Disabled
     public void test1() {
         //Param.DEBUG = true;
-        final int DUR = 10;
+        final int DUR = 2;
 
         final int subTrainings = 2;
-        final int thinkDurs = 2;
+        final int thinkDurs = 1;
 
         NAR n = NARS.tmp();
 
         n.time.dur(DUR);
         //n.timeFocus.set(4);
-        n.termVolumeMax.set(24);
-        n.freqResolution.set(0.05f);
+        n.termVolumeMax.set(30);
+        n.freqResolution.set(0.02f);
         n.confResolution.set(0.02f);
-        n.deep.set(0.8);
+        //n.deep.set(0.8);
 
 
      //   n.emotion.want(MetaGoal.Desire, 0.2f);
 //        n.want(MetaGoal.Believe, 0.1f);
 //        n.want(MetaGoal.Perceive, -0.01f);
 
-        float exeThresh = 0.55f;
+        float exeThresh = 0.51f;
 
         new ArithmeticIntroduction(8, n);
         new ConjClustering(n, BELIEF, (t) -> true, 4, 16);

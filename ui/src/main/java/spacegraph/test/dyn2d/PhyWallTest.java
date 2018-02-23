@@ -1,4 +1,4 @@
-package spacegraph.widget.windo;
+package spacegraph.test.dyn2d;
 
 import jcog.Util;
 import jcog.data.graph.ObjectGraph;
@@ -6,7 +6,7 @@ import jcog.exe.Loop;
 import jcog.math.FloatRange;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jbox2d.collision.shapes.PolygonShape;
-import org.jbox2d.dynamics.*;
+import org.jbox2d.dynamics.Body2D;
 import spacegraph.Surface;
 import spacegraph.input.Wiring;
 import spacegraph.layout.EmptySurface;
@@ -17,6 +17,7 @@ import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.TextEdit;
 import spacegraph.widget.slider.FloatSlider;
 import spacegraph.widget.text.Label;
+import spacegraph.widget.windo.*;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;

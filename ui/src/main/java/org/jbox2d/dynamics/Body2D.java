@@ -809,8 +809,8 @@ public class Body2D extends Transform {
      * @param localPoint a point on the body measured relative the the body's origin.
      * @return the same point expressed in world coordinates.
      */
-    public final Tuple2f getWorldPoint(Tuple2f localPoint) {
-        Tuple2f v = new Vec2();
+    public final v2 getWorldPoint(Tuple2f localPoint) {
+        v2 v = new v2();
         getWorldPointToOut(localPoint, v);
         return v;
     }

@@ -65,7 +65,7 @@ public class CameraSensorTest {
     }
 
     static void assertEquals(Bitmap2DSensor c, float[][] f, long when, NAR n) {
-        final float tolerance = 0.35f;
+        final float tolerance = 0.47f;
         for (int i = 0; i < c.width; i++) {
             for (int j = 0; j < c.height; j++) {
                 SensorConcept p = c.get(i, j);

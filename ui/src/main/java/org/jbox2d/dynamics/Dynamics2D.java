@@ -303,6 +303,7 @@ public class Dynamics2D {
 
     public Body2D addBody(Body2D b, FixtureDef... fd) {
 
+        assert(b.W==null);
 
         invoke(() -> {
 

@@ -209,7 +209,8 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
         doubtEvi = Util.lerp(doubtEviFactor, cMin, cMax);
         invokeEvi = Util.lerp(invokeEviFactor, cMin, cMax);
         uninvokeEvi = Util.lerp(uninvokeEviFactor, cMin, cMax);
-        invokePri = beliefPri = nar.priDefault(BELIEF) * in.amp();
+        invokePri = beliefPri = nar.priDefault(BELIEF);
+                // * in.amp();
         probing.forEach(p -> p.update(nar));
     }
 

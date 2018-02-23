@@ -309,14 +309,14 @@ public class PhyWall extends Wall implements Animated {
     }
 
 
-    final Random rng = new XoRoShiRo128PlusRandom(1);
+    public final Random rng = new XoRoShiRo128PlusRandom(1);
 
-    float rngPolar(float scale) {
+    public float rngPolar(float scale) {
         return //2f*(rng.nextFloat()*scale-0.5f);
                 (float) rng.nextGaussian() * scale;
     }
 
-    float rngNormal(float scale) {
+    public float rngNormal(float scale) {
         return rng.nextFloat() * scale;
     }
 

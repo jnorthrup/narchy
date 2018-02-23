@@ -59,7 +59,8 @@ public class Port extends Widget implements Wiring.Wireable {
         return enabled;
     }
 
-    @FunctionalInterface interface InPort<T> {
+    @FunctionalInterface
+    public interface InPort<T> {
 
         /** TODO more informative backpressure-determining state
          *  TODO pluggable receive procedure:

@@ -1,4 +1,4 @@
-package spacegraph.test;
+package spacegraph.test.dyn2d;
 
 import com.jogamp.opengl.GL2;
 import org.jbox2d.collision.shapes.PolygonShape;

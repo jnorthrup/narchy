@@ -57,12 +57,12 @@ public class TrackXY extends NAgent {
     public static void main(String[] args) {
 
         boolean nars = true;
-        boolean rl = false;
+        boolean rl = true;
 
         int dur = 1;
 
         NARS nb = new NARS()
-                .exe(new UniExec(64))
+                .exe(new UniExec(256))
                 .time(new CycleTime().dur(dur))
                 .index(
                         //new HijackConceptIndex(4 * 1024, 4)
@@ -72,15 +72,14 @@ public class TrackXY extends NAgent {
 
         NAR n = nb.get();
 
-        n.termVolumeMax.set(26);
-        n.goalConfidence(0.5f);
+        n.termVolumeMax.set(32);
         n.priDefault(BELIEF, 0.2f);
 //        n.priDefault(GOAL, 0.5f);
         n.conceptActivation.set(0.5f);
-        n.forgetRate.set(0.8f);
+        n.forgetRate.set(0.9f);
 
 
-        TrackXY t = new TrackXY(5, 2);
+        TrackXY t = new TrackXY(5, 3);
         n.on(t);
 
         int experimentTime = 2048;

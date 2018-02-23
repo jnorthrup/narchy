@@ -1,4 +1,4 @@
-package spacegraph.test;
+package spacegraph.test.dyn2d;
 
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;

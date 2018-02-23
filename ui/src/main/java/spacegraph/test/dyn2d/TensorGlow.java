@@ -1,4 +1,4 @@
-package spacegraph.test;
+package spacegraph.test.dyn2d;
 
 import com.jogamp.opengl.GL2;
 import jcog.exe.Loop;
@@ -36,29 +36,29 @@ public class TensorGlow {
 
     static final Random rng = new XoRoShiRo128PlusRandom(1);
 
-    private static void addBox(Dynamics2D world, float x1, float y1, float x2, float y2) {
-        addBox(world, x1, y1, x2, y2, true, true, true, true);
+    public static void staticBox(Dynamics2D world, float x1, float y1, float x2, float y2) {
+        staticBox(world, x1, y1, x2, y2, true, true, true, true);
     }
 
-    private static void addBox(Dynamics2D world, float x1, float y1, float x2, float y2, boolean top, boolean right, boolean bottom, boolean left) {
+    public static void staticBox(Dynamics2D world, float x1, float y1, float x2, float y2, boolean top, boolean right, boolean bottom, boolean left) {
 
         float cx = (x1 + x2) / 2f;
         float cy = (y1 + y2) / 2f;
-        float w = x2 - x1;
-        float h = y2 - y1;
+        float w = Math.abs(x2 - x1);
+        float h = Math.abs(y2 - y1);
 
         float thick = Math.min(w, h) / 20f;
 
         if (bottom) {
             Body2D _bottom = world.addBody(new BodyDef(BodyType.STATIC),
-                    new FixtureDef(PolygonShape.box(w / 2, thick / 2),
+                    new FixtureDef(PolygonShape.box(w / 2 - thick / 2, thick / 2),
                             0, 0));
             _bottom.setTransform(new v2(cx, y1), 0);
         }
 
         if (top) {
             Body2D _top = world.addBody(new BodyDef(BodyType.STATIC),
-                    new FixtureDef(PolygonShape.box(w / 2, thick / 2),
+                    new FixtureDef(PolygonShape.box(w / 2 - thick / 2, thick / 2),
                             0, 0));
             _top.setTransform(new v2(cx, y2), 0);
         }
@@ -94,7 +94,7 @@ public class TensorGlow {
         PhyWall p = PhyWall.window(1200, 1000);
 
         p.W.setGravity(new v2(0, -2.8f));
-        addBox(p.W, -10, -8, +10, 2f, false, true, true, true);
+        staticBox(p.W, -10, -8, +10, 2f, false, true, true, true);
 
         for (int j = 0; j < 3; j++)        {
             BodyDef bodyDef2 = new BodyDef();
