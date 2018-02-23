@@ -14,7 +14,7 @@ public class ParticlesTest implements ICase {
     @Override
     public void init(Dynamics2D m_world) {
 
-        Body2D ground = m_world.bodies(); //first one
+        Body2D ground = m_world.bodies().iterator().next(); //first one
         
         {
             PolygonShape shape = new PolygonShape();

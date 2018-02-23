@@ -175,8 +175,7 @@ public class PhyWall extends Wall implements Animated {
         for (Joint j = w.joints(); j != null; j = j.next)
             drawJoint(j, gl, now);
 
-        for (Body2D b = w.bodies(); b != null; b = b.next())
-            drawBody(b, gl);
+        W.bodies().forEach(b -> drawBody(b, gl));
 
         drawParticleSystem(gl, w.particles);
     }

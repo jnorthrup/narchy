@@ -38,6 +38,7 @@ import org.jbox2d.fracture.PolygonFixture;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 /**
@@ -87,7 +88,6 @@ public class Body2D extends Transform {
     public float torque = 0;
 
     public final Dynamics2D W;
-    public Body2D prev, next;
 
     public Fixture fixtures;
     public int fixtureCount;
@@ -108,6 +108,13 @@ public class Body2D extends Transform {
     public float m_sleepTime;
 
     public Object data;
+
+    final static AtomicInteger serial = new AtomicInteger();
+    final int id = serial.incrementAndGet();
+
+    public Body2D(final BodyType t, Dynamics2D world) {
+        this(new BodyDef(t), world);
+    }
 
     public Body2D(final BodyDef bd, Dynamics2D world) {
         assert (bd.position.isValid());
@@ -148,8 +155,6 @@ public class Body2D extends Transform {
 
         joints = null;
         contacts = null;
-        prev = null;
-        next = null;
 
         vel.set(bd.linearVelocity);
         velAngular = bd.angularVelocity;
@@ -180,6 +185,16 @@ public class Body2D extends Transform {
 
         fixtures = null;
         fixtureCount = 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this==obj;
     }
 
     /**
@@ -1179,12 +1194,6 @@ public class Body2D extends Transform {
         return contacts;
     }
 
-    /**
-     * Get the next body in the world's body list.
-     */
-    public final Body2D next() {
-        return next;
-    }
 
     /**
      * Get the user data pointer that was provided in the body definition.

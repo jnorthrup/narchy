@@ -152,8 +152,7 @@ public class Box2DTests extends JComponent implements Runnable {
                         Tuple2f v = getPoint(p);
                         /*synchronized(Tests.this)*/
                     {
-                        bodyFor:
-                        for (Body2D b = w.bodies(); b != null; b = b.next) {
+                        w.bodies().forEach(b->{
                             for (Fixture f = b.fixtures(); f != null; f = f.next) {
                                 if (f.testPoint(v)) {
                                     MouseJointDef def = new MouseJointDef();
@@ -168,10 +167,10 @@ public class Box2DTests extends JComponent implements Runnable {
                                     def.dampingRatio = 0;
 
                                     mjdef = def;
-                                    break bodyFor;
+                                    return;
                                 }
                             }
-                        }
+                        });
                     }
 
                     break;
@@ -441,7 +440,6 @@ public class Box2DTests extends JComponent implements Runnable {
 
         //predpripravi scenu
 
-        int fixtures = 0;
 
         /*synchronized(this)*/
         {
@@ -453,10 +451,7 @@ public class Box2DTests extends JComponent implements Runnable {
             drawParticles();
 
             //vykresli tuhe telesa
-            for (Body2D b = w.bodies(); b != null; b = b.next()) {
-                drawBody(b);
-                fixtures += b.fixtureCount;
-            }
+            w.bodies().forEach(this::drawBody);
 
             //vykresli joiny
             for (Joint j = w.joints(); j != null; j = j.next) {
@@ -476,7 +471,7 @@ public class Box2DTests extends JComponent implements Runnable {
             g.drawString("Screen position: [" + center.x + ", " + center.y + ']', 20, 80);
             g.drawString("Zoom:      " + zoom, 20, 100);
             g.drawString("Bodies:    " + w.getBodyCount(), 20, 120);
-            g.drawString("Fixtures:  " + fixtures, 20, 140);
+//            g.drawString("Fixtures:  " + fixtures, 20, 140);
             g.drawString("Contacts:  " + w.getContactCount(), 20, 160);
             g.drawString("Particles: " + w.getParticleCount(), 20, 180);
         }

@@ -16,7 +16,9 @@ import static spacegraph.test.dyn2d.TensorGlow.staticBox;
 
 public class Explosives {
 
-    /** TODO bullet hard TTL in case it goes off to infinity */
+    /**
+     * TODO bullet hard TTL in case it goes off to infinity
+     */
     static class Gun {
 
         private final Body2D barrel;
@@ -26,24 +28,32 @@ public class Explosives {
         public Gun(Dynamics2D world) {
 
             barrel = world.addBody(new BodyDef(BodyType.DYNAMIC),
-                    new FixtureDef(PolygonShape.box(barrelLength/2, barrelThick/2), 0.1f, 0f));
+                    new FixtureDef(PolygonShape.box(barrelLength / 2, barrelThick / 2), 0.1f, 0f));
 
         }
 
         public void fire() {
 
-            barrel.W.invoke(()->{
+            barrel.W.invoke(() -> {
 
-                float bulletLength= 0.1f;
-                Tuple2f barrelTip = //barrel.getWorldPoint(new v2(barrel., 0));
-                        barrel.getWorldVector(new v2(barrelLength+bulletLength+0.01f, 0));
+                float bulletLength = 0.1f;
+//                Tuple2f barrelTip = //barrel.getWorldPoint(new v2(barrel., 0));
+//                        barrel.getWorldVector(new v2(barrelLength+bulletLength+0.01f, 0));
                 v2 direction = new v2(barrel.c, barrel.s);
 
-                float power = 0.05f;
+                float power = 0.15f;
 
-                PolygonShape pos = PolygonShape.box(bulletLength/2, barrelThick/2*0.9f);
-                Body2D projectile = barrel.W.addBody(new BodyDef(BodyType.DYNAMIC),
-                        new FixtureDef(pos, 0.1f, 0f));
+                PolygonShape pos = PolygonShape.box(bulletLength / 2, barrelThick / 2 * 0.9f);
+                Body2D projectile = new Body2D(BodyType.DYNAMIC, barrel.W) {
+                    @Override
+                    protected void onRemoval() {
+                        W.invokeLater(() -> {
+                            W.addBody(new Fireball(W, pos, 1f).body);
+                        });
+                    }
+                };
+                barrel.W.addBody(projectile, new FixtureDef(pos, 0.1f, 0f));
+
 
                 projectile.setBullet(true);
 
@@ -56,7 +66,9 @@ public class Explosives {
         }
     }
 
-    /** expanding shockwave, visible */
+    /**
+     * expanding shockwave, visible
+     */
     public static class Fireball {
 
         private final Body2D body;
@@ -72,13 +84,17 @@ public class Explosives {
                     super.preUpdate();
                     if (rad < maxRad) {
                         Fireball.this.rad *= 1.1f;
-                        updateFixtures((f) -> {
-                            shape.radius = rad;
-                            f.setShape(shape);
+                        w.invokeLater(() -> {
+                            updateFixtures((f) -> {
+                                shape.radius = rad;
+                                f.setShape(shape);
+                            });
                         });
                     } else {
                         //end
-                        remove();
+                        W.invokeLater(()->{
+                            remove();
+                        });
                     }
                 }
             };
@@ -97,17 +113,14 @@ public class Explosives {
 
             protected void explode(Body2D b) {
 
-                b.remove();
-                new Fireball(w, b.pos, 1f);
+                w.invokeLater(() -> {
+                    b.remove();
+                });
             }
 
             @Override
             public void beginContact(Contact contact) {
-                if (contact.aFixture.body.isBullet()) { //HACK TODO use an explosive callback tag
-                    explode(contact.aFixture.body);
-                } else if (contact.bFixture.body.isBullet()) {
-                    explode(contact.bFixture.body);
-                }
+
             }
 
             @Override
@@ -117,7 +130,12 @@ public class Explosives {
 
             @Override
             public void preSolve(Contact contact, Manifold oldManifold) {
-
+                if (contact.aFixture.body.isBullet()) { //HACK TODO use an explosive callback tag
+                    explode(contact.aFixture.body);
+                }
+                if (contact.bFixture.body.isBullet()) {
+                    explode(contact.bFixture.body);
+                }
             }
 
             @Override
@@ -132,7 +150,7 @@ public class Explosives {
 
 
         Gun g = new Gun(w);
-        Loop.of(()->g.fire()).runFPS(1f);
+        Loop.of(() -> g.fire()).runFPS(4f);
 
 
     }
