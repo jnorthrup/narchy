@@ -318,7 +318,8 @@ public abstract class Contact {
         }
 
         if (!wasTouching && touching) {
-            listener.beginContact(this);
+            if (!listener.beginContact(this))
+                touching = false;
         }
 
         if (wasTouching && !touching) {

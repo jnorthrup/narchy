@@ -54,20 +54,21 @@ public class QueueLock<X> implements Consumer<X> {
         this.afterBatch = afterBatch;
     }
 
-    /** when false, re-entrant enqueuing by the accepted thread are elided and proceeds synchronously.
-     *  when true, re-entrant enqueue will actually be enqueued to be executed later as if it were another thread attempting access. */
-    public void accept(X x, boolean forceQueue) {
-        if (!forceQueue && this.exe.get() == Thread.currentThread().getId()) {
-            //re-entrant invocation
-            proc.accept(x);
-            return;
-        }
+//    /** when false, re-entrant enqueuing by the accepted thread are elided and proceeds synchronously.
+//     *  when true, re-entrant enqueue will actually be enqueued to be executed later as if it were another thread attempting access. */
+
+    public void accept(X x) {
+        boolean responsible;
+        long threadID = Thread.currentThread().getId();
 
         try {
             queue.put(x);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        responsible = exe.compareAndSet(Long.MIN_VALUE, threadID);
+
 
 //        if (!queue.offer(x)) {
 //            proc.accept(x); //bypass queue, requires that the procedure be thread-safe otherwise it must block here
@@ -80,8 +81,7 @@ public class QueueLock<X> implements Consumer<X> {
         //            throw new RuntimeException(e);
         //        }
 
-        long threadID = Thread.currentThread().getId();
-        boolean responsible = exe.compareAndSet(Long.MIN_VALUE, threadID);
+
         if (responsible) {
 
             try {
@@ -108,7 +108,8 @@ public class QueueLock<X> implements Consumer<X> {
                 int done = 0;
 
                 final X[] next = (X[]) new Object[1];
-                while (exe.updateAndGet((y) -> (next[0] = queue.poll()) != null ? threadID : Long.MIN_VALUE) != Long.MIN_VALUE) {
+                long finalThreadID = threadID;
+                while (exe.updateAndGet((y) -> (next[0] = queue.poll()) != null ? finalThreadID : Long.MIN_VALUE) != Long.MIN_VALUE) {
                     X n = next[0];
                     try {
                         proc.accept(n);
@@ -133,12 +134,6 @@ public class QueueLock<X> implements Consumer<X> {
 
     }
 
-    @Override
-    public void accept(X x) {
-
-        accept(x, false);
-
-    }
 
     protected void onException(X x, Throwable t) {
         logger.error("{} {}", x, t);

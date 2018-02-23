@@ -94,7 +94,7 @@ public class TensorGlow {
         PhyWall p = PhyWall.window(1200, 1000);
 
         p.W.setGravity(new v2(0, -2.8f));
-        staticBox(p.W, -10, -8, +10, 2f, false, true, true, true);
+        staticBox(p.W, -5, -8, +5, 2f, false, true, true, true);
 
         for (int j = 0; j < 3; j++)        {
             BodyDef bodyDef2 = new BodyDef();
@@ -116,13 +116,19 @@ public class TensorGlow {
 
         //new Pacman(p.W);
         {
-            TheoJansen t = new TheoJansen(p.W, 0.25f);
+            p.W.setContactListener(new Explosives.ExplosionContacts());
+
+            TheoJansen t = new TheoJansen(p.W, 0.35f);
             PhyWall.PhyWindow pw = p.addWindow(new Gridding(0.5f, new Port((float[] v) -> {
                 //System.out.println(v);
                 t.motorJoint.setMotorSpeed(v[0]*2 - v[1]*2);
                 t.motorJoint.setMaxMotorTorque(v[2]);
                 t.motorJoint.enableLimit(true);
                 t.motorJoint.setLimits((float) (-v[3]*Math.PI), (float) (+v[4]*Math.PI));
+                if (v[5] > 0.5f) {
+                    t.gun.fire();
+                }
+                t.turretJoint.setLimits((float) (+Math.PI/2 + v[6] * Math.PI -0.1f), (float) (+Math.PI/2 + v[6] * Math.PI +0.1f));
             })), 0.8f, 0.4f);
             p.W.addJoint(new RevoluteJoint(p.W, new RevoluteJointDef(pw.body, t.chassis)));
         }

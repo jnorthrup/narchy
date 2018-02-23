@@ -544,8 +544,8 @@ public class Dynamics2D {
         queue.accept(r);
     }
 
-    public final void invokeLater(Runnable r) {
-        queue.accept(r, true);
+    @Deprecated public final void invokeLater(Runnable r) {
+        invoke(r);
     }
 
     /**
@@ -629,12 +629,16 @@ public class Dynamics2D {
 //            Fracture[] array = smasher.fractures.toArray(new Fracture[smasher.fractures.size()]);
 //            for (Fracture f : array)
 //                f.smash(smasher, dt);
+
+
+            m_profile.step.record(stepTimer.getMilliseconds());
+//        });
+//
+//        invokeLater(()->{
             smasher.fractures.forEach(f -> {
                 f.smash(smasher, dt);
             });
             smasher.fractures.clear();
-
-            m_profile.step.record(stepTimer.getMilliseconds());
         });
 
 
@@ -954,17 +958,12 @@ public class Dynamics2D {
         m_profile.solveVelocity.startAccum();
         m_profile.solvePosition.startAccum();
 
-        // Size the island for the worst case.
-        int bodyCount = bodies.size();
-        island.init(bodyCount, contactManager.m_contactCount, jointCount,
-                contactManager.contactListener);
-
-
         Iterator<Body2D> ii = bodies().iterator();
         while (ii.hasNext()) {
             Body2D b = ii.next();
             if (!b.preUpdate()) {
-                ii.remove();
+                removeBody(b);
+                //ii.remove();
             } else {
                 // update previous transforms
                 b.transformPrev.set(b);
@@ -972,6 +971,14 @@ public class Dynamics2D {
                 b.flags &= ~Body2D.e_islandFlag;
             }
         }
+
+        // Size the island for the worst case.
+        int bodyCount = bodies.size();
+        island.init(bodyCount, contactManager.m_contactCount, jointCount,
+                contactManager.contactListener);
+
+
+
 
         for (Contact c = contactManager.m_contactList; c != null; c = c.m_next) {
             c.m_flags &= ~Contact.ISLAND_FLAG;

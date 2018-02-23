@@ -48,7 +48,7 @@ public interface ContactListener {
      *
      * @param contact
      */
-    void beginContact(Contact contact);
+    boolean beginContact(Contact contact);
 
     /**
      * Called when two fixtures cease to touch.
