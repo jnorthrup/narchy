@@ -71,14 +71,14 @@ public class RopeJoint extends Joint {
         m_invIA = A.m_invI;
         m_invIB = B.m_invI;
 
-        Tuple2f cA = data.positions[indexA].c;
+        Tuple2f cA = data.positions[indexA];
         float aA = data.positions[indexA].a;
-        Tuple2f vA = data.velocities[indexA].v;
+        Tuple2f vA = data.velocities[indexA];
         float wA = data.velocities[indexA].w;
 
-        Tuple2f cB = data.positions[indexB].c;
+        Tuple2f cB = data.positions[indexB];
         float aB = data.positions[indexB].a;
-        Tuple2f vB = data.velocities[indexB].v;
+        Tuple2f vB = data.velocities[indexB];
         float wB = data.velocities[indexB].w;
 
         final Rot qA = new Rot();
@@ -164,10 +164,10 @@ public class RopeJoint extends Joint {
         float targetLength = targetLength();
 
         Velocity VA = data.velocities[indexA];
-        Tuple2f vA = VA.v;
+        Tuple2f vA = VA;
         float wA = VA.w;
         Velocity VB = data.velocities[indexB];
-        Tuple2f vB = VB.v;
+        Tuple2f vB = VB;
         float wB = VB.w;
 
         // Cdot = dot(u, v + cross(w, r))
@@ -217,9 +217,9 @@ public class RopeJoint extends Joint {
 
         final float targetLength = targetLength();
 
-        Tuple2f cA = data.positions[indexA].c;
+        Tuple2f cA = data.positions[indexA];
         float aA = data.positions[indexA].a;
-        Tuple2f cB = data.positions[indexB].c;
+        Tuple2f cB = data.positions[indexB];
         float aB = data.positions[indexB].a;
 
         final Rot qA = pool.popRot();

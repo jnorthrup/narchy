@@ -184,9 +184,9 @@ public class ContactSolver {
             float iB = vc.invIB;
             int pointCount = vc.pointCount;
 
-            Tuple2f vA = m_velocities[indexA].v;
+            Tuple2f vA = m_velocities[indexA];
             float wA = m_velocities[indexA].w;
-            Tuple2f vB = m_velocities[indexB].v;
+            Tuple2f vB = m_velocities[indexB];
             float wB = m_velocities[indexB].w;
 
             Tuple2f normal = vc.normal;
@@ -236,14 +236,14 @@ public class ContactSolver {
             Tuple2f localCenterA = pc.localCenterA;
             Tuple2f localCenterB = pc.localCenterB;
 
-            Tuple2f cA = m_positions[indexA].c;
+            Tuple2f cA = m_positions[indexA];
             float aA = m_positions[indexA].a;
-            Tuple2f vA = m_velocities[indexA].v;
+            Tuple2f vA = m_velocities[indexA];
             float wA = m_velocities[indexA].w;
 
-            Tuple2f cB = m_positions[indexB].c;
+            Tuple2f cB = m_positions[indexB];
             float aB = m_positions[indexB].a;
-            Tuple2f vB = m_velocities[indexB].v;
+            Tuple2f vB = m_velocities[indexB];
             float wB = m_velocities[indexB].w;
 
             assert (manifold.pointCount > 0);
@@ -343,9 +343,9 @@ public class ContactSolver {
             float iB = vc.invIB;
             int pointCount = vc.pointCount;
 
-            Tuple2f vA = m_velocities[indexA].v;
+            Tuple2f vA = m_velocities[indexA];
             float wA = m_velocities[indexA].w;
-            Tuple2f vB = m_velocities[indexB].v;
+            Tuple2f vB = m_velocities[indexB];
             float wB = m_velocities[indexB].w;
 
             Tuple2f normal = vc.normal;
@@ -825,9 +825,9 @@ public class ContactSolver {
             final float localCenterBy = localCenterB.y;
             int pointCount = pc.pointCount;
 
-            Tuple2f cA = m_positions[indexA].c;
+            Tuple2f cA = m_positions[indexA];
             float aA = m_positions[indexA].a;
-            Tuple2f cB = m_positions[indexB].c;
+            Tuple2f cB = m_positions[indexB];
             float aB = m_positions[indexB].a;
 
             // Solve normal constraints
@@ -923,10 +923,10 @@ public class ContactSolver {
                 iB = pc.invIB;
             }
 
-            Tuple2f cA = m_positions[indexA].c;
+            Tuple2f cA = m_positions[indexA];
             float aA = m_positions[indexA].a;
 
-            Tuple2f cB = m_positions[indexB].c;
+            Tuple2f cB = m_positions[indexB];
             float aB = m_positions[indexB].a;
 
             // Solve normal constraints

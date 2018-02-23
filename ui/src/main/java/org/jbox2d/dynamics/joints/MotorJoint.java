@@ -176,14 +176,14 @@ public class MotorJoint extends Joint {
         m_invIA = A.m_invI;
         m_invIB = B.m_invI;
 
-        final Tuple2f cA = data.positions[m_indexA].c;
+        final Tuple2f cA = data.positions[m_indexA];
         float aA = data.positions[m_indexA].a;
-        final Tuple2f vA = data.velocities[m_indexA].v;
+        final Tuple2f vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
 
-        final Tuple2f cB = data.positions[m_indexB].c;
+        final Tuple2f cB = data.positions[m_indexB];
         float aB = data.positions[m_indexB].a;
-        final Tuple2f vB = data.velocities[m_indexB].v;
+        final Tuple2f vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         final Rot qA = pool.popRot();
@@ -261,9 +261,9 @@ public class MotorJoint extends Joint {
 
     @Override
     public void solveVelocityConstraints(SolverData data) {
-        final Tuple2f vA = data.velocities[m_indexA].v;
+        final Tuple2f vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
-        final Tuple2f vB = data.velocities[m_indexB].v;
+        final Tuple2f vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         float mA = m_invMassA, mB = m_invMassB;

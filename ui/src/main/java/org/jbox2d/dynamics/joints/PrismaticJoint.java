@@ -395,14 +395,14 @@ public class PrismaticJoint extends Joint {
         m_invIA = A.m_invI;
         m_invIB = B.m_invI;
 
-        Tuple2f cA = data.positions[m_indexA].c;
+        Tuple2f cA = data.positions[m_indexA];
         float aA = data.positions[m_indexA].a;
-        Tuple2f vA = data.velocities[m_indexA].v;
+        Tuple2f vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
 
-        Tuple2f cB = data.positions[m_indexB].c;
+        Tuple2f cB = data.positions[m_indexB];
         float aB = data.positions[m_indexB].a;
-        Tuple2f vB = data.velocities[m_indexB].v;
+        Tuple2f vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         final Rot qA = pool.popRot();
@@ -526,9 +526,9 @@ public class PrismaticJoint extends Joint {
 
     @Override
     public void solveVelocityConstraints(final SolverData data) {
-        Tuple2f vA = data.velocities[m_indexA].v;
+        Tuple2f vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
-        Tuple2f vB = data.velocities[m_indexB].v;
+        Tuple2f vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         float mA = m_invMassA, mB = m_invMassB;
@@ -672,9 +672,9 @@ public class PrismaticJoint extends Joint {
 
         final Vec3 impulse = pool.popVec3();
 
-        Tuple2f cA = data.positions[m_indexA].c;
+        Tuple2f cA = data.positions[m_indexA];
         float aA = data.positions[m_indexA].a;
-        Tuple2f cB = data.positions[m_indexB].c;
+        Tuple2f cB = data.positions[m_indexB];
         float aB = data.positions[m_indexB].a;
 
         qA.set(aA);

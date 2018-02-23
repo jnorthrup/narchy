@@ -892,8 +892,11 @@ public enum Draw {
     }
 
     public static void colorUnipolarHue(GL2 gl, float v, float hueMin, float hueMax) {
-        float hue = Util.lerp(v, hueMin, hueMax);
-        hsb(gl, hue, 0.7f, 0.7f, 1f);
+        colorUnipolarHue(gl, v, hueMin, hueMax, 1f);
+    }
+
+    public static void colorUnipolarHue(GL2 gl, float v, float hueMin, float hueMax, float alpha) {
+        hsb(gl, Util.lerp(v, hueMin, hueMax), 0.7f, 0.7f, alpha);
     }
 
     public static void colorUnipolarHue(float[] c, float v) {
@@ -905,8 +908,7 @@ public enum Draw {
     }
 
     public static void colorUnipolarHue(float[] c, float v, float hueMin, float hueMax, float alpha) {
-        float hue = Util.lerp(v, hueMin, hueMax);
-        hsb(c, hue, 0.7f, 0.7f, alpha);
+        hsb(c, Util.lerp(v, hueMin, hueMax), 0.7f, 0.7f, alpha);
     }
 
 
@@ -970,7 +972,7 @@ public enum Draw {
         c[0] = r; c[1] = g; c[2] = b; c[3] = a;
     }
 
-    public static void drawPoly(Body2D body, GL2 gl, PolygonShape shape) {
+    public static void poly(Body2D body, GL2 gl, PolygonShape shape) {
         PolygonShape poly = shape;
 
         gl.glBegin(GL_TRIANGLE_FAN);

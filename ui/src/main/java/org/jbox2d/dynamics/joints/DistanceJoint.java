@@ -177,14 +177,14 @@ public class DistanceJoint extends Joint {
         m_invIA = A.m_invI;
         m_invIB = B.m_invI;
 
-        Tuple2f cA = data.positions[m_indexA].c;
+        Tuple2f cA = data.positions[m_indexA];
         float aA = data.positions[m_indexA].a;
-        Tuple2f vA = data.velocities[m_indexA].v;
+        Tuple2f vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
 
-        Tuple2f cB = data.positions[m_indexB].c;
+        Tuple2f cB = data.positions[m_indexB];
         float aB = data.positions[m_indexB].a;
-        Tuple2f vB = data.velocities[m_indexB].v;
+        Tuple2f vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         final Rot qA = pool.popRot();
@@ -269,9 +269,9 @@ public class DistanceJoint extends Joint {
 
     @Override
     public void solveVelocityConstraints(final SolverData data) {
-        Tuple2f vA = data.velocities[m_indexA].v;
+        Tuple2f vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
-        Tuple2f vB = data.velocities[m_indexB].v;
+        Tuple2f vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         final Tuple2f vpA = pool.popVec2();
@@ -317,9 +317,9 @@ public class DistanceJoint extends Joint {
         final Tuple2f rB = pool.popVec2();
         final Tuple2f u = pool.popVec2();
 
-        Tuple2f cA = data.positions[m_indexA].c;
+        Tuple2f cA = data.positions[m_indexA];
         float aA = data.positions[m_indexA].a;
-        Tuple2f cB = data.positions[m_indexB].c;
+        Tuple2f cB = data.positions[m_indexB];
         float aB = data.positions[m_indexB].a;
 
         qA.set(aA);

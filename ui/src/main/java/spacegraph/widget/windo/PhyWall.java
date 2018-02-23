@@ -257,7 +257,7 @@ public class PhyWall extends Wall implements Animated {
                 switch (shape.m_type) {
                     case POLYGON:
 
-                        Draw.drawPoly(body, gl, (PolygonShape) shape);
+                        Draw.poly(body, gl, (PolygonShape) shape);
                         break;
                     case CIRCLE:
 
@@ -268,7 +268,7 @@ public class PhyWall extends Wall implements Animated {
                         //Point p = getPoint(v);
                         //int wr = (int) (r * zoom);
                         //g.fillOval(p.x - wr, p.y - wr, wr * 2, wr * 2);
-                        Draw.circle(gl, new v2(v.x, v.y), true, r, 9);
+                        Draw.circle(gl, v, true, r, 9);
                         break;
                     case EDGE:
                         EdgeShape edge = (EdgeShape) shape;
@@ -741,7 +741,7 @@ public class PhyWall extends Wall implements Animated {
             }
 
             @Override
-            public void preUpdate() {
+            public boolean preUpdate() {
 
                 RectFloat2D r = bounds;
                 if (r != physBounds) {
@@ -765,7 +765,7 @@ public class PhyWall extends Wall implements Animated {
                         setAwake(true);
                 }
 
-
+                return true;
             }
 
             @Override

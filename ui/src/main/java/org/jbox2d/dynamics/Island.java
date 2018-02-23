@@ -35,6 +35,7 @@ import org.jbox2d.dynamics.contacts.ContactSolver.ContactSolverDef;
 import org.jbox2d.dynamics.joints.Joint;
 import org.jbox2d.fracture.Fracture;
 import spacegraph.math.Tuple2f;
+import spacegraph.math.v2;
 
 /*
  Position Correction Notes
@@ -278,11 +279,11 @@ public class Island {
                 w *= 1.0f / (1.0f + h * b.m_angularDamping);
             }
 
-            m_positions[i].c.x = c.x;
-            m_positions[i].c.y = c.y;
+            ((Tuple2f) m_positions[i]).x = c.x;
+            ((Tuple2f) m_positions[i]).y = c.y;
             m_positions[i].a = a;
-            m_velocities[i].v.x = v.x;
-            m_velocities[i].v.y = v.y;
+            ((v2) m_velocities[i]).x = v.x;
+            ((v2) m_velocities[i]).y = v.y;
             m_velocities[i].w = w;
         }
 
@@ -332,9 +333,9 @@ public class Island {
 
         // Integrate positions
         for (int i = 0; i < m_bodyCount; ++i) {
-            final Tuple2f c = m_positions[i].c;
+            final Tuple2f c = m_positions[i];
             float a = m_positions[i].a;
-            final Tuple2f v = m_velocities[i].v;
+            final Tuple2f v = m_velocities[i];
             float w = m_velocities[i].w;
 
             // Check for large velocities
@@ -385,11 +386,11 @@ public class Island {
         // Copy state buffers back to the bodies
         for (int i = 0; i < m_bodyCount; ++i) {
             Body2D body = m_bodies[i];
-            body.sweep.c.x = m_positions[i].c.x;
-            body.sweep.c.y = m_positions[i].c.y;
+            body.sweep.c.x = ((Tuple2f) m_positions[i]).x;
+            body.sweep.c.y = ((Tuple2f) m_positions[i]).y;
             body.sweep.a = m_positions[i].a;
-            body.vel.x = m_velocities[i].v.x;
-            body.vel.y = m_velocities[i].v.y;
+            body.vel.x = ((v2) m_velocities[i]).x;
+            body.vel.y = ((v2) m_velocities[i]).y;
             body.velAngular = m_velocities[i].w;
             body.synchronizeTransform();
         }
@@ -439,11 +440,11 @@ public class Island {
 
         // Initialize the body state.
         for (int i = 0; i < m_bodyCount; ++i) {
-            m_positions[i].c.x = m_bodies[i].sweep.c.x;
-            m_positions[i].c.y = m_bodies[i].sweep.c.y;
+            ((Tuple2f) m_positions[i]).x = m_bodies[i].sweep.c.x;
+            ((Tuple2f) m_positions[i]).y = m_bodies[i].sweep.c.y;
             m_positions[i].a = m_bodies[i].sweep.a;
-            m_velocities[i].v.x = m_bodies[i].vel.x;
-            m_velocities[i].v.y = m_bodies[i].vel.y;
+            ((v2) m_velocities[i]).x = m_bodies[i].vel.x;
+            ((v2) m_velocities[i]).y = m_bodies[i].vel.y;
             m_velocities[i].w = m_bodies[i].velAngular;
         }
 
@@ -495,10 +496,10 @@ public class Island {
         // #endif
 
         // Leap of faith to new safe state.
-        m_bodies[toiIndexA].sweep.c0.x = m_positions[toiIndexA].c.x;
-        m_bodies[toiIndexA].sweep.c0.y = m_positions[toiIndexA].c.y;
+        m_bodies[toiIndexA].sweep.c0.x = ((Tuple2f) m_positions[toiIndexA]).x;
+        m_bodies[toiIndexA].sweep.c0.y = ((Tuple2f) m_positions[toiIndexA]).y;
         m_bodies[toiIndexA].sweep.a0 = m_positions[toiIndexA].a;
-        m_bodies[toiIndexB].sweep.c0.set(m_positions[toiIndexB].c);
+        m_bodies[toiIndexB].sweep.c0.set(m_positions[toiIndexB]);
         m_bodies[toiIndexB].sweep.a0 = m_positions[toiIndexB].a;
 
         // No warm starting is needed for TOI events because warm
@@ -517,9 +518,9 @@ public class Island {
 
         // Integrate positions
         for (int i = 0; i < m_bodyCount; ++i) {
-            Tuple2f c = m_positions[i].c;
+            Tuple2f c = m_positions[i];
             float a = m_positions[i].a;
-            Tuple2f v = m_velocities[i].v;
+            Tuple2f v = m_velocities[i];
             float w = m_velocities[i].w;
 
             // Check for large velocities
@@ -543,11 +544,11 @@ public class Island {
             c.y += v.y * h;
             a += h * w;
 
-            m_positions[i].c.x = c.x;
-            m_positions[i].c.y = c.y;
+            ((Tuple2f) m_positions[i]).x = c.x;
+            ((Tuple2f) m_positions[i]).y = c.y;
             m_positions[i].a = a;
-            m_velocities[i].v.x = v.x;
-            m_velocities[i].v.y = v.y;
+            ((v2) m_velocities[i]).x = v.x;
+            ((v2) m_velocities[i]).y = v.y;
             m_velocities[i].w = w;
 
             // Sync bodies

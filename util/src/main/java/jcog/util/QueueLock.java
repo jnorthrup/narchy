@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
@@ -16,8 +16,6 @@ import java.util.function.IntConsumer;
  */
 public class QueueLock<X> implements Consumer<X> {
 
-    //public final Lock lock;
-    public final AtomicInteger busy;
     public final BlockingQueue<X> queue;
     private final Consumer<X> proc;
 
@@ -26,7 +24,7 @@ public class QueueLock<X> implements Consumer<X> {
     final static Logger logger = LoggerFactory.getLogger(QueueLock.class);
 
     /** exclusive current working thread */
-    volatile private long exe = Long.MIN_VALUE;
+    volatile private AtomicLong exe = new AtomicLong(Long.MIN_VALUE);
 
 
     /*
@@ -52,9 +50,6 @@ public class QueueLock<X> implements Consumer<X> {
      */
     public QueueLock(BlockingQueue<X> queue, Consumer<X> each, @Nullable IntConsumer afterBatch) {
         this.queue = queue;
-
-        //this.lock = lock;
-        this.busy = new AtomicInteger(0);
         this.proc = each;
         this.afterBatch = afterBatch;
     }
@@ -62,7 +57,7 @@ public class QueueLock<X> implements Consumer<X> {
     /** when false, re-entrant enqueuing by the accepted thread are elided and proceeds synchronously.
      *  when true, re-entrant enqueue will actually be enqueued to be executed later as if it were another thread attempting access. */
     public void accept(X x, boolean forceQueue) {
-        if (!forceQueue && this.exe == Thread.currentThread().getId()) {
+        if (!forceQueue && this.exe.get() == Thread.currentThread().getId()) {
             //re-entrant invocation
             proc.accept(x);
             return;
@@ -85,7 +80,8 @@ public class QueueLock<X> implements Consumer<X> {
         //            throw new RuntimeException(e);
         //        }
 
-        boolean responsible = busy.compareAndSet(0, 1);
+        long threadID = Thread.currentThread().getId();
+        boolean responsible = exe.compareAndSet(Long.MIN_VALUE, threadID);
         if (responsible) {
 
             try {
@@ -111,10 +107,8 @@ public class QueueLock<X> implements Consumer<X> {
 
                 int done = 0;
 
-                this.exe = Thread.currentThread().getId();
-
                 final X[] next = (X[]) new Object[1];
-                while (busy.updateAndGet((y) -> (next[0] = queue.poll()) != null ? 1 : 0) == 1) {
+                while (exe.updateAndGet((y) -> (next[0] = queue.poll()) != null ? threadID : Long.MIN_VALUE) != Long.MIN_VALUE) {
                     X n = next[0];
                     try {
                         proc.accept(n);
@@ -131,9 +125,9 @@ public class QueueLock<X> implements Consumer<X> {
                         onException(null, t);
                     }
                 }
-            } finally {
-                this.exe = Long.MIN_VALUE;
-                busy.set(0);
+            } catch (Exception e) {
+                this.exe.set(Long.MIN_VALUE);
+                throw e;
             }
         }
 

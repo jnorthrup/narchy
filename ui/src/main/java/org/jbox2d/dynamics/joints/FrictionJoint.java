@@ -138,11 +138,11 @@ public class FrictionJoint extends Joint {
         m_invIB = B.m_invI;
 
         float aA = data.positions[m_indexA].a;
-        Vec2 vA = data.velocities[m_indexA].v;
+        v2 vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
 
         float aB = data.positions[m_indexB].a;
-        Vec2 vB = data.velocities[m_indexB].v;
+        v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
 
@@ -191,11 +191,11 @@ public class FrictionJoint extends Joint {
             P.set(m_linearImpulse);
 
             temp.set(P).scaled(mA);
-            vA.subLocal(temp);
+            vA.subbed(temp);
             wA -= iA * (Tuple2f.cross(m_rA, P) + m_angularImpulse);
 
             temp.set(P).scaled(mB);
-            vB.addLocal(temp);
+            vB.added(temp);
             wB += iB * (Tuple2f.cross(m_rB, P) + m_angularImpulse);
 
             pool.pushVec2(1);
@@ -216,9 +216,9 @@ public class FrictionJoint extends Joint {
 
     @Override
     public void solveVelocityConstraints(final SolverData data) {
-        Vec2 vA = data.velocities[m_indexA].v;
+        v2 vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
-        Vec2 vB = data.velocities[m_indexB].v;
+        v2 vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         float mA = m_invMassA, mB = m_invMassB;
@@ -268,11 +268,11 @@ public class FrictionJoint extends Joint {
             impulse.set(m_linearImpulse).subbed(oldImpulse);
 
             temp.set(impulse).scaled(mA);
-            vA.subLocal(temp);
+            vA.subbed(temp);
             wA -= iA * Tuple2f.cross(m_rA, impulse);
 
             temp.set(impulse).scaled(mB);
-            vB.addLocal(temp);
+            vB.added(temp);
             wB += iB * Tuple2f.cross(m_rB, impulse);
 
         }

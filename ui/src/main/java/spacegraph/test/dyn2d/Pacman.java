@@ -28,7 +28,7 @@ public class Pacman extends Body2D implements Consumer<GL2> {
     @Override
     public void accept(GL2 gl) {
         gl.glColor3f(1, 1, 0);
-        Draw.drawPoly(this, gl, (PolygonShape) fixtures.shape);
+        Draw.poly(this, gl, (PolygonShape) fixtures.shape);
 
 
         float a = angle();
@@ -38,8 +38,9 @@ public class Pacman extends Body2D implements Consumer<GL2> {
 
     }
 
-    @Override
-    public void preUpdate() {
-        //applyForceToCenter(new v2(rng.nextFloat()*0.01f,rng.nextFloat()*0.01f));
-    }
+//    @Override
+//    public boolean preUpdate() {
+//        //applyForceToCenter(new v2(rng.nextFloat()*0.01f,rng.nextFloat()*0.01f));
+//        return true;
+//    }
 }

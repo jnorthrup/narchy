@@ -23,10 +23,8 @@
  ******************************************************************************/
 package org.jbox2d.dynamics.contacts;
 
-import org.jbox2d.common.Vec2;
-import spacegraph.math.Tuple2f;
+import spacegraph.math.v2;
 
-public class Position {
-    public final Tuple2f c = new Vec2();
+public class Position extends v2 {
     public float a;
 }

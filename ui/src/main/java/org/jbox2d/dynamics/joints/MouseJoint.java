@@ -145,9 +145,9 @@ public class MouseJoint extends Joint {
         m_invMassB = B.m_invMass;
         m_invIB = B.m_invI;
 
-        Tuple2f cB = data.positions[m_indexB].c;
+        Tuple2f cB = data.positions[m_indexB];
         float aB = data.positions[m_indexB].a;
-        Tuple2f vB = data.velocities[m_indexB].v;
+        Tuple2f vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         final Rot qB = pool.popRot();
@@ -223,7 +223,7 @@ public class MouseJoint extends Joint {
     @Override
     public void solveVelocityConstraints(final SolverData data) {
 
-        Tuple2f vB = data.velocities[m_indexB].v;
+        Tuple2f vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         // Cdot = v + cross(w, r)

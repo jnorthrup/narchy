@@ -1290,8 +1290,9 @@ public class Body2D extends Transform {
         pos.scaled(-1).added(sweep.c);
     }
 
-    public void preUpdate() {
-
+    /** return false to immediately remove this body */
+    public boolean preUpdate() {
+        return true;
     }
 
     public void postUpdate() {

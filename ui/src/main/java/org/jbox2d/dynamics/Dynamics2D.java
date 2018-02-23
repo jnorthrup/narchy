@@ -53,6 +53,7 @@ import org.jbox2d.pooling.normal.DefaultWorldPool;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
@@ -70,6 +71,9 @@ public class Dynamics2D {
     public static final int NEW_FIXTURE = 0x0001;
     //    public static final int LOCKED = 0x0002;
     public static final int CLEAR_FORCES = 0x0004;
+
+    /** set to System.currentTimeMS() at start of solver iteration */
+    public long realtimeMS;
 
     // statistics gathering
 //    public int activeContacts = 0;
@@ -322,9 +326,11 @@ public class Dynamics2D {
     public void removeBody(Body2D b) {
 
         if (bodies.remove(b)!=null) {
+
+            b.onRemoval();
+
             invoke(() -> {
 
-                b.onRemoval();
 
                 // Delete the attached joints.
                 JointEdge je = b.joints;
@@ -560,6 +566,8 @@ public class Dynamics2D {
 
         invokeLater(() -> {
 
+            realtimeMS = System.currentTimeMillis();
+
             stepTimer.reset();
             tempTimer.reset();
 
@@ -625,10 +633,12 @@ public class Dynamics2D {
                 f.smash(smasher, dt);
             });
             smasher.fractures.clear();
+
+            m_profile.step.record(stepTimer.getMilliseconds());
         });
 
 
-        m_profile.step.record(stepTimer.getMilliseconds());
+
     }
 
     /**
@@ -944,21 +954,24 @@ public class Dynamics2D {
         m_profile.solveVelocity.startAccum();
         m_profile.solvePosition.startAccum();
 
-        // update previous transforms
-        bodies().forEach(b->{
-            b.transformPrev.set(b);
-            b.preUpdate();
-        });
-
         // Size the island for the worst case.
         int bodyCount = bodies.size();
         island.init(bodyCount, contactManager.m_contactCount, jointCount,
                 contactManager.contactListener);
 
-        // Clear all the island flags.
-        bodies().forEach(b->{
-            b.flags &= ~Body2D.e_islandFlag;
-        });
+
+        Iterator<Body2D> ii = bodies().iterator();
+        while (ii.hasNext()) {
+            Body2D b = ii.next();
+            if (!b.preUpdate()) {
+                ii.remove();
+            } else {
+                // update previous transforms
+                b.transformPrev.set(b);
+                // Clear all the island flags.
+                b.flags &= ~Body2D.e_islandFlag;
+            }
+        }
 
         for (Contact c = contactManager.m_contactList; c != null; c = c.m_next) {
             c.m_flags &= ~Contact.ISLAND_FLAG;

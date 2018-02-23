@@ -35,6 +35,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * TODO this is untested
+ *
+ * TODO it would be better to use a plain Array as the cached
+ * "linked list" but this must be synchronized with the
+ * ConcurrentHashMap's modifications..
+ * which is possible but requires more care than what is done here
+ */
 public class ConcurrentLinkedHashSet<T> implements Set<T> {
 
     final List<T> list = new CopyOnWriteArrayList<>();

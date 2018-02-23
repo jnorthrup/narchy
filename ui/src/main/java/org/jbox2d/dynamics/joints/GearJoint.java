@@ -249,22 +249,22 @@ public class GearJoint extends Joint {
 
         // Vec2 cA = data.positions[m_indexA].c;
         float aA = data.positions[m_indexA].a;
-        Tuple2f vA = data.velocities[m_indexA].v;
+        Tuple2f vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
 
         // Vec2 cB = data.positions[m_indexB].c;
         float aB = data.positions[m_indexB].a;
-        Tuple2f vB = data.velocities[m_indexB].v;
+        Tuple2f vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
 
         // Vec2 cC = data.positions[m_indexC].c;
         float aC = data.positions[m_indexC].a;
-        Tuple2f vC = data.velocities[m_indexC].v;
+        Tuple2f vC = data.velocities[m_indexC];
         float wC = data.velocities[m_indexC].w;
 
         // Vec2 cD = data.positions[m_indexD].c;
         float aD = data.positions[m_indexD].a;
-        Tuple2f vD = data.velocities[m_indexD].v;
+        Tuple2f vD = data.velocities[m_indexD];
         float wD = data.velocities[m_indexD].w;
 
         Rot qA = pool.popRot(), qB = pool.popRot(), qC = pool.popRot(), qD = pool.popRot();
@@ -350,13 +350,13 @@ public class GearJoint extends Joint {
 
     @Override
     public void solveVelocityConstraints(SolverData data) {
-        Tuple2f vA = data.velocities[m_indexA].v;
+        Tuple2f vA = data.velocities[m_indexA];
         float wA = data.velocities[m_indexA].w;
-        Tuple2f vB = data.velocities[m_indexB].v;
+        Tuple2f vB = data.velocities[m_indexB];
         float wB = data.velocities[m_indexB].w;
-        Tuple2f vC = data.velocities[m_indexC].v;
+        Tuple2f vC = data.velocities[m_indexC];
         float wC = data.velocities[m_indexC].w;
-        Tuple2f vD = data.velocities[m_indexD].v;
+        Tuple2f vD = data.velocities[m_indexD];
         float wD = data.velocities[m_indexD].w;
 
         Tuple2f temp1 = pool.popVec2();
@@ -406,13 +406,13 @@ public class GearJoint extends Joint {
 
     @Override
     public boolean solvePositionConstraints(SolverData data) {
-        Tuple2f cA = data.positions[m_indexA].c;
+        Tuple2f cA = data.positions[m_indexA];
         float aA = data.positions[m_indexA].a;
-        Tuple2f cB = data.positions[m_indexB].c;
+        Tuple2f cB = data.positions[m_indexB];
         float aB = data.positions[m_indexB].a;
-        Tuple2f cC = data.positions[m_indexC].c;
+        Tuple2f cC = data.positions[m_indexC];
         float aC = data.positions[m_indexC].a;
-        Tuple2f cD = data.positions[m_indexD].c;
+        Tuple2f cD = data.positions[m_indexD];
         float aD = data.positions[m_indexD].a;
 
         Rot qA = pool.popRot(), qB = pool.popRot(), qC = pool.popRot(), qD = pool.popRot();
