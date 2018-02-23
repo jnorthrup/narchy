@@ -548,7 +548,7 @@ public enum Draw {
         //gl.glPopMatrix();
     }
 
-    public static void particles(GL2 gl, v2[] centers, float radius, int NUM_CIRCLE_POINTS,  ParticleColor[] colors, int count) {
+    public static void particles(GL2 gl, Tuple2f[] centers, float radius, int NUM_CIRCLE_POINTS,  ParticleColor[] colors, int count) {
 
         //gl.glPushMatrix();
         //transformViewport(gl, zero);
@@ -561,7 +561,7 @@ public enum Draw {
         float y = 0;
 
         for (int i = 0; i < count; i++) {
-            v2 center = centers[i];
+            Tuple2f center = centers[i];
             float cx = center.x;
             float cy = center.y;
             gl.glBegin(GL2.GL_TRIANGLE_FAN);

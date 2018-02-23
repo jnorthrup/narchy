@@ -37,7 +37,7 @@ public interface BroadPhase {
 
     void touchProxy(int proxyId);
 
-    Object getUserData(int proxyId);
+    Object get(int proxyId);
 
     AABB getFatAABB(int proxyId);
 

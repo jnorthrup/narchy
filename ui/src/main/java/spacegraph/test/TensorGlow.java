@@ -8,11 +8,15 @@ import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.math.tensor.Tensor;
 import jcog.math.tensor.TensorLERP;
 import jcog.tree.rtree.rect.RectFloat2D;
+import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.joints.RevoluteJoint;
 import org.jbox2d.dynamics.joints.RevoluteJointDef;
 import org.jbox2d.fracture.materials.Uniform;
+import org.jbox2d.particle.ParticleColor;
+import org.jbox2d.particle.ParticleGroupDef;
+import org.jbox2d.particle.ParticleType;
 import spacegraph.layout.Gridding;
 import spacegraph.math.v2;
 import spacegraph.widget.meta.AutoSurface;
@@ -74,6 +78,7 @@ public class TensorGlow {
             _right.setTransform(new v2(x2, cy), 0);
         }
 
+
 //        Body2D wallRight = w.addBody(new BodyDef(BodyType.STATIC),
 //                new FixtureDef(PolygonShape.box(0.1f, 5), 0, 0));
 //        wallRight.setTransform(new v2(-41, 30.0f), 0);
@@ -122,6 +127,24 @@ public class TensorGlow {
             p.W.addJoint(new RevoluteJoint(p.W, new RevoluteJointDef(pw.body, t.chassis)));
         }
 
+        {
+            p.W.setParticleRadius(0.05f);
+            p.W.setParticleDamping(0.1f);
+
+            CircleShape shape = new CircleShape();
+            shape.center.set(0, 10);
+            shape.radius = 2f;
+            ParticleGroupDef pd = new ParticleGroupDef();
+            pd.flags = ParticleType.
+                    b2_waterParticle;
+                    //b2_viscousParticle;
+                    //b2_elasticParticle;
+                    //b2_springParticle;
+                    //b2_powderParticle;
+            pd.color = new ParticleColor(0.7f, 0.1f, 0.1f, 0.8f);
+            pd.shape = shape;
+            p.W.addParticles(pd);
+        }
 
         HaiQae q = new HaiQae(8, 2);
         float[] in = new float[q.ae.inputs()];

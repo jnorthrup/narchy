@@ -59,7 +59,7 @@ public class Fluid implements ICase {
             pgf.shape = shapeParticles;
             pgf.linearVelocity.y = 2.0f;
 
-            w.createParticleGroup(pgf);
+            w.addParticles(pgf);
         }
 
         {

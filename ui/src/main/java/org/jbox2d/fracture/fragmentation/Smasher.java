@@ -2,6 +2,7 @@ package org.jbox2d.fracture.fragmentation;
 
 import jcog.list.FasterList;
 import org.jbox2d.common.Vec2;
+import org.jbox2d.fracture.Fracture;
 import org.jbox2d.fracture.Fragment;
 import org.jbox2d.fracture.Polygon;
 import org.jbox2d.fracture.util.HashTabulka;
@@ -29,6 +30,8 @@ public class Smasher {
      * Mnozina vyslednych fragmentov.
      */
     public Polygon[] fragments;
+
+    public final HashTabulka<Fracture> fractures = new HashTabulka<>(); //TODO move into Smasher
 
     private Tuple2f[] focee;
     private Polygon p;

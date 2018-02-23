@@ -3,7 +3,7 @@ package org.jbox2d.particle;
 import org.jbox2d.callbacks.ParticleDestructionListener;
 import org.jbox2d.callbacks.ParticleQueryCallback;
 import org.jbox2d.callbacks.ParticleRaycastCallback;
-import org.jbox2d.callbacks.QueryCallback;
+
 import org.jbox2d.collision.AABB;
 import org.jbox2d.collision.RayCastInput;
 import org.jbox2d.collision.RayCastOutput;
@@ -19,6 +19,7 @@ import spacegraph.math.v2;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
+import java.util.function.Predicate;
 
 public class ParticleSystem {
     /**
@@ -277,7 +278,7 @@ public class ParticleSystem {
             new CreateParticleGroupCallback();
     private final ParticleDef tempParticleDef = new ParticleDef();
 
-    public ParticleGroup createParticleGroup(ParticleGroupDef groupDef) {
+    public ParticleGroup createParticleGroup(Dynamics2D world, ParticleGroupDef groupDef) {
         float stride = getParticleStride();
         final Transform identity = tempTransform;
         identity.setIdentity();
@@ -334,62 +335,65 @@ public class ParticleSystem {
         group.m_userData = groupDef.userData;
         group.m_transform.set(transform);
         group.m_destroyAutomatically = groupDef.destroyAutomatically;
-        group.m_prev = null;
-        group.m_next = m_groupList;
-        if (m_groupList != null) {
-            m_groupList.m_prev = group;
-        }
-        m_groupList = group;
-        ++m_groupCount;
-        for (int i = firstIndex; i < lastIndex; i++) {
-            m_groupBuffer[i] = group;
-        }
 
-        updateContacts(true);
-        if ((groupDef.flags & k_pairFlags) != 0) {
-            for (int k = 0; k < m_contactCount; k++) {
-                ParticleContact contact = m_contactBuffer[k];
-                int a = contact.indexA;
-                int b = contact.indexB;
-                if (a > b) {
-                    int temp = a;
-                    a = b;
-                    b = temp;
-                }
-                if (firstIndex <= a && b < lastIndex) {
-                    if (m_pairCount >= m_pairCapacity) {
-                        int oldCapacity = m_pairCapacity;
-                        int newCapacity =
-                                m_pairCount != 0 ? 2 * m_pairCount : Settings.minParticleBufferCapacity;
-                        m_pairBuffer =
-                                BufferUtils.reallocateBuffer(Pair.class, m_pairBuffer, oldCapacity, newCapacity);
-                        m_pairCapacity = newCapacity;
-                    }
-                    Pair pair = m_pairBuffer[m_pairCount];
-                    pair.indexA = a;
-                    pair.indexB = b;
-                    pair.flags = contact.flags;
-                    pair.strength = groupDef.strength;
-                    pair.distance = MathUtils.distance(m_positionBuffer.data[a], m_positionBuffer.data[b]);
-                    m_pairCount++;
-                }
+        world.invoke(() -> {
+            group.m_prev = null;
+            group.m_next = m_groupList;
+            if (m_groupList != null) {
+                m_groupList.m_prev = group;
             }
-        }
-        if ((groupDef.flags & k_triadFlags) != 0) {
-            VoronoiDiagram diagram = new VoronoiDiagram(lastIndex - firstIndex);
+            m_groupList = group;
+            ++m_groupCount;
+            //Arrays.fill..
             for (int i = firstIndex; i < lastIndex; i++) {
-                diagram.addGenerator(m_positionBuffer.data[i], i);
+                m_groupBuffer[i] = group;
             }
-            diagram.generate(stride / 2);
-            createParticleGroupCallback.system = this;
-            createParticleGroupCallback.def = groupDef;
-            createParticleGroupCallback.firstIndex = firstIndex;
-            diagram.getNodes(createParticleGroupCallback);
-        }
-        if ((groupDef.groupFlags & ParticleGroupType.b2_solidParticleGroup) != 0) {
-            computeDepthForGroup(group);
-        }
 
+            updateContacts(true);
+            if ((groupDef.flags & k_pairFlags) != 0) {
+                for (int k = 0; k < m_contactCount; k++) {
+                    ParticleContact contact = m_contactBuffer[k];
+                    int a = contact.indexA;
+                    int b = contact.indexB;
+                    if (a > b) {
+                        int temp = a;
+                        a = b;
+                        b = temp;
+                    }
+                    if (firstIndex <= a && b < lastIndex) {
+                        if (m_pairCount >= m_pairCapacity) {
+                            int oldCapacity = m_pairCapacity;
+                            int newCapacity =
+                                    m_pairCount != 0 ? 2 * m_pairCount : Settings.minParticleBufferCapacity;
+                            m_pairBuffer =
+                                    BufferUtils.reallocateBuffer(Pair.class, m_pairBuffer, oldCapacity, newCapacity);
+                            m_pairCapacity = newCapacity;
+                        }
+                        Pair pair = m_pairBuffer[m_pairCount];
+                        pair.indexA = a;
+                        pair.indexB = b;
+                        pair.flags = contact.flags;
+                        pair.strength = groupDef.strength;
+                        pair.distance = MathUtils.distance(m_positionBuffer.data[a], m_positionBuffer.data[b]);
+                        m_pairCount++;
+                    }
+                }
+            }
+            if ((groupDef.flags & k_triadFlags) != 0) {
+                VoronoiDiagram diagram = new VoronoiDiagram(lastIndex - firstIndex);
+                for (int i = firstIndex; i < lastIndex; i++) {
+                    diagram.addGenerator(m_positionBuffer.data[i], i);
+                }
+                diagram.generate(stride / 2);
+                createParticleGroupCallback.system = this;
+                createParticleGroupCallback.def = groupDef;
+                createParticleGroupCallback.firstIndex = firstIndex;
+                diagram.getNodes(createParticleGroupCallback);
+            }
+            if ((groupDef.groupFlags & ParticleGroupType.b2_solidParticleGroup) != 0) {
+                computeDepthForGroup(group);
+            }
+        });
         return group;
     }
 
@@ -656,7 +660,7 @@ public class ParticleSystem {
 
     private final SolveCollisionCallback sccallback = new SolveCollisionCallback();
 
-    public void solveCollision(TimeStep step) {
+    private void solveCollision(TimeStep step) {
         final AABB aabb = temp;
         final Tuple2f lowerBound = aabb.lowerBound;
         final Tuple2f upperBound = aabb.upperBound;
@@ -664,13 +668,17 @@ public class ParticleSystem {
         lowerBound.y = Float.MAX_VALUE;
         upperBound.x = -Float.MAX_VALUE;
         upperBound.y = -Float.MAX_VALUE;
+        v2[] V = m_velocityBuffer.data;
+        v2[] P = m_positionBuffer.data;
+        float dt = step.dt;
         for (int i = 0; i < m_count; i++) {
-            final Tuple2f v = m_velocityBuffer.data[i];
-            final Tuple2f p1 = m_positionBuffer.data[i];
+            final Tuple2f v = V[i];
+            final Tuple2f p1 = P[i];
             final float p1x = p1.x;
             final float p1y = p1.y;
-            final float p2x = p1x + step.dt * v.x;
-            final float p2y = p1y + step.dt * v.y;
+
+            final float p2x = p1x + dt * v.x;
+            final float p2y = p1y + dt * v.y;
             final float bx = p1x < p2x ? p1x : p2x;
             final float by = p1y < p2y ? p1y : p2y;
             lowerBound.x = lowerBound.x < bx ? lowerBound.x : bx;
@@ -2005,13 +2013,13 @@ public class ParticleSystem {
         }
     }
 
-    static class UpdateBodyContactsCallback implements QueryCallback {
+    static class UpdateBodyContactsCallback implements Predicate<Fixture> {
         ParticleSystem system;
 
         private final v2 tempVec = new Vec2();
 
         @Override
-        public boolean reportFixture(Fixture fixture) {
+        public boolean test(Fixture fixture) {
             if (fixture.isSensor()) {
                 return true;
             }
@@ -2084,7 +2092,7 @@ public class ParticleSystem {
         }
     }
 
-    static class SolveCollisionCallback implements QueryCallback {
+    static class SolveCollisionCallback implements Predicate<Fixture> {
         ParticleSystem system;
         TimeStep step;
 
@@ -2094,7 +2102,7 @@ public class ParticleSystem {
         private final Tuple2f tempVec2 = new Vec2();
 
         @Override
-        public boolean reportFixture(Fixture fixture) {
+        public boolean test(Fixture fixture) {
             if (fixture.isSensor()) {
                 return true;
             }

@@ -103,7 +103,7 @@ public class DefaultBroadPhaseBuffer implements TreeCallback, BroadPhase {
     }
 
     @Override
-    public Object getUserData(int proxyId) {
+    public Object get(int proxyId) {
         return m_tree.getUserData(proxyId);
     }
 

@@ -67,9 +67,11 @@ public class Box2DTests extends JComponent implements Runnable {
             new Materials(Material.UNIFORM),
             new Materials(Material.DIFFUSION),
             new Materials(Material.GLASS),
+
             new ChainTest(),
             new BlobTest4(),
             new TheoJansen(),
+            new ParticlesTest(),
             new VerletTest()
     };
 

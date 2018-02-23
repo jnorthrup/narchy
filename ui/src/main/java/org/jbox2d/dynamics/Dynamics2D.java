@@ -46,7 +46,6 @@ import org.jbox2d.dynamics.joints.JointEdge;
 import org.jbox2d.fracture.Fracture;
 import org.jbox2d.fracture.FractureListener;
 import org.jbox2d.fracture.fragmentation.Smasher;
-import org.jbox2d.fracture.util.HashTabulka;
 import org.jbox2d.particle.*;
 import org.jbox2d.pooling.IWorldPool;
 import org.jbox2d.pooling.Vec2Array;
@@ -55,6 +54,7 @@ import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * The world class manages all physics entities, dynamic simulation, and asynchronous queries. The
@@ -109,12 +109,10 @@ public class Dynamics2D {
 
     private final Profile m_profile;
 
-    private final ParticleSystem m_particleSystem;
+    public final ParticleSystem particles;
 
 
     private final Smasher smasher = new Smasher();
-    @Deprecated
-    private final HashTabulka<Fracture> fractures = new HashTabulka<>(); //TODO move into Smasher
 
 
     final QueueLock<Runnable> queue =
@@ -180,7 +178,7 @@ public class Dynamics2D {
         contactManager = new ContactManager(this, broadPhase);
         m_profile = new Profile();
 
-        m_particleSystem = new ParticleSystem(this);
+        particles = new ParticleSystem(this);
 
     }
 
@@ -212,19 +210,19 @@ public class Dynamics2D {
     public void addFracture(Fracture fracture) {
         //prida frakturu do hashovacej tabulky fraktur
         //ak na dany fixture tam uz existuje fraktura tak sa pozrie, ci je nova fraktura silnejsia a ak ano, tak ju vymeni
-        Fracture f = fractures.get(fracture);
+        Fracture f = smasher.fractures.get(fracture);
         if (f != null) {
             if (f.normalImpulse < fracture.normalImpulse) {
-                fractures.remove(f);
-                fractures.add(fracture);
+                smasher.fractures.remove(f);
+                smasher.fractures.add(fracture);
             }
         } else {
-            fractures.add(fracture);
+            smasher.fractures.add(fracture);
         }
     }
 
     public boolean isFractured(Fixture fx) {
-        return fractures.contains(fx);
+        return smasher.fractures.contains(fx);
     }
 
 
@@ -621,7 +619,7 @@ public class Dynamics2D {
             if (m_stepComplete && step.dt > 0.0f) {
 
                 tempTimer.reset();
-                m_particleSystem.solve(step); // Particle Simulation
+                particles.solve(step); // Particle Simulation
                 m_profile.solveParticleSystem.record(tempTimer::getMilliseconds);
 
                 tempTimer.reset();
@@ -652,13 +650,13 @@ public class Dynamics2D {
 
         invoke(()->{
 
-//            Fracture[] array = fractures.toArray(new Fracture[fractures.size()]);
+//            Fracture[] array = smasher.fractures.toArray(new Fracture[smasher.fractures.size()]);
 //            for (Fracture f : array)
 //                f.smash(smasher, dt);
-            fractures.forEach(f -> {
+            smasher.fractures.forEach(f -> {
                 f.smash(smasher, dt);
             });
-            fractures.clear();
+            smasher.fractures.clear();
         });
 
 
@@ -694,7 +692,7 @@ public class Dynamics2D {
      * @param callback a user implemented callback class.
      * @param aabb     the query box.
      */
-    public void queryAABB(QueryCallback callback, AABB aabb) {
+    public void queryAABB(Predicate<Fixture> callback, AABB aabb) {
         wqwrapper.broadPhase = contactManager.broadPhase;
         wqwrapper.callback = callback;
         contactManager.broadPhase.query(wqwrapper, aabb);
@@ -707,11 +705,11 @@ public class Dynamics2D {
      * @param particleCallback callback for particles.
      * @param aabb             the query box.
      */
-    public void queryAABB(QueryCallback callback, ParticleQueryCallback particleCallback, AABB aabb) {
+    public void queryAABB(Predicate<Fixture> callback, ParticleQueryCallback particleCallback, AABB aabb) {
         wqwrapper.broadPhase = contactManager.broadPhase;
         wqwrapper.callback = callback;
         contactManager.broadPhase.query(wqwrapper, aabb);
-        m_particleSystem.queryAABB(particleCallback, aabb);
+        particles.queryAABB(particleCallback, aabb);
     }
 
     /**
@@ -721,7 +719,7 @@ public class Dynamics2D {
      * @param aabb             the query box.
      */
     public void queryAABB(ParticleQueryCallback particleCallback, AABB aabb) {
-        m_particleSystem.queryAABB(particleCallback, aabb);
+        particles.queryAABB(particleCallback, aabb);
     }
 
     private final WorldRayCastWrapper wrcwrapper = new WorldRayCastWrapper();
@@ -763,7 +761,7 @@ public class Dynamics2D {
         input.p1.set(point1);
         input.p2.set(point2);
         contactManager.broadPhase.raycast(wrcwrapper, input);
-        m_particleSystem.raycast(particleCallback, point1, point2);
+        particles.raycast(particleCallback, point1, point2);
     }
 
     /**
@@ -775,7 +773,7 @@ public class Dynamics2D {
      * @param point2           the ray ending point
      */
     public void raycast(ParticleRaycastCallback particleCallback, Tuple2f point1, Tuple2f point2) {
-        m_particleSystem.raycast(particleCallback, point1, point2);
+        particles.raycast(particleCallback, point1, point2);
     }
 
     /**
@@ -1449,7 +1447,7 @@ public class Dynamics2D {
 //        if (isLocked()) {
 //            return 0;
 //        }
-        int p = m_particleSystem.createParticle(def);
+        int p = particles.createParticle(def);
         return p;
     }
 
@@ -1469,7 +1467,7 @@ public class Dynamics2D {
      * @param Whether to call the destruction listener just before the particle is destroyed.
      */
     public void destroyParticle(int index, boolean callDestructionListener) {
-        m_particleSystem.destroyParticle(index, callDestructionListener);
+        particles.destroyParticle(index, callDestructionListener);
     }
 
     /**
@@ -1502,7 +1500,7 @@ public class Dynamics2D {
 //        if (isLocked()) {
 //            return 0;
 //        }
-        return m_particleSystem.destroyParticlesInShape(shape, xf, callDestructionListener);
+        return particles.destroyParticlesInShape(shape, xf, callDestructionListener);
     }
 
     /**
@@ -1511,13 +1509,8 @@ public class Dynamics2D {
      *
      * @warning This function is locked during callbacks.
      */
-    public ParticleGroup createParticleGroup(ParticleGroupDef def) {
-//        assert (!isLocked());
-//        if (isLocked()) {
-//            return null;
-//        }
-        ParticleGroup g = m_particleSystem.createParticleGroup(def);
-        return g;
+    public ParticleGroup addParticles(ParticleGroupDef def) {
+        return particles.createParticleGroup(this, def);
     }
 
     /**
@@ -1528,11 +1521,9 @@ public class Dynamics2D {
      * @warning This function is locked during callbacks.
      */
     public void joinParticleGroups(ParticleGroup groupA, ParticleGroup groupB) {
-//        assert (!isLocked());
-//        if (isLocked()) {
-//            return;
-//        }
-        m_particleSystem.joinParticleGroups(groupA, groupB);
+        invoke(()->{
+            particles.joinParticleGroups(groupA, groupB);
+        });
     }
 
     /**
@@ -1543,11 +1534,9 @@ public class Dynamics2D {
      * @warning This function is locked during callbacks.
      */
     public void destroyParticlesInGroup(ParticleGroup group, boolean callDestructionListener) {
-//        assert (!isLocked());
-//        if (isLocked()) {
-//            return;
-//        }
-        m_particleSystem.destroyParticlesInGroup(group, callDestructionListener);
+        invoke(()->{
+            particles.destroyParticlesInGroup(group, callDestructionListener);
+        });
     }
 
     /**
@@ -1558,7 +1547,9 @@ public class Dynamics2D {
      * @warning This function is locked during callbacks.
      */
     public void destroyParticlesInGroup(ParticleGroup group) {
-        destroyParticlesInGroup(group, false);
+        invoke(()-> {
+            destroyParticlesInGroup(group, false);
+        });
     }
 
     /**
@@ -1568,7 +1559,7 @@ public class Dynamics2D {
      * @return the head of the world particle group list.
      */
     public ParticleGroup[] getParticleGroupList() {
-        return m_particleSystem.getParticleGroupList();
+        return particles.getParticleGroupList();
     }
 
     /**
@@ -1577,7 +1568,7 @@ public class Dynamics2D {
      * @return
      */
     public int getParticleGroupCount() {
-        return m_particleSystem.getParticleGroupCount();
+        return particles.getParticleGroupCount();
     }
 
     /**
@@ -1586,7 +1577,7 @@ public class Dynamics2D {
      * @return
      */
     public int getParticleCount() {
-        return m_particleSystem.getParticleCount();
+        return particles.getParticleCount();
     }
 
     /**
@@ -1595,7 +1586,7 @@ public class Dynamics2D {
      * @return
      */
     public int getParticleMaxCount() {
-        return m_particleSystem.getParticleMaxCount();
+        return particles.getParticleMaxCount();
     }
 
     /**
@@ -1604,7 +1595,7 @@ public class Dynamics2D {
      * @param count
      */
     public void setParticleMaxCount(int count) {
-        m_particleSystem.setParticleMaxCount(count);
+        particles.setParticleMaxCount(count);
     }
 
     /**
@@ -1613,7 +1604,7 @@ public class Dynamics2D {
      * @param density
      */
     public void setParticleDensity(float density) {
-        m_particleSystem.setParticleDensity(density);
+        particles.setParticleDensity(density);
     }
 
     /**
@@ -1622,7 +1613,7 @@ public class Dynamics2D {
      * @return
      */
     public float getParticleDensity() {
-        return m_particleSystem.getParticleDensity();
+        return particles.getParticleDensity();
     }
 
     /**
@@ -1632,7 +1623,7 @@ public class Dynamics2D {
      * @param gravityScale
      */
     public void setParticleGravityScale(float gravityScale) {
-        m_particleSystem.setParticleGravityScale(gravityScale);
+        particles.setParticleGravityScale(gravityScale);
 
     }
 
@@ -1642,7 +1633,7 @@ public class Dynamics2D {
      * @return
      */
     public float getParticleGravityScale() {
-        return m_particleSystem.getParticleGravityScale();
+        return particles.getParticleGravityScale();
     }
 
     /**
@@ -1653,7 +1644,7 @@ public class Dynamics2D {
      * @param damping
      */
     public void setParticleDamping(float damping) {
-        m_particleSystem.setParticleDamping(damping);
+        particles.setParticleDamping(damping);
     }
 
     /**
@@ -1662,7 +1653,7 @@ public class Dynamics2D {
      * @return
      */
     public float getParticleDamping() {
-        return m_particleSystem.getParticleDamping();
+        return particles.getParticleDamping();
     }
 
     /**
@@ -1672,7 +1663,7 @@ public class Dynamics2D {
      * @param radius
      */
     public void setParticleRadius(float radius) {
-        m_particleSystem.setParticleRadius(radius);
+        particles.setParticleRadius(radius);
     }
 
     /**
@@ -1681,7 +1672,7 @@ public class Dynamics2D {
      * @return
      */
     public float getParticleRadius() {
-        return m_particleSystem.getParticleRadius();
+        return particles.getParticleRadius();
     }
 
     /**
@@ -1690,27 +1681,27 @@ public class Dynamics2D {
      * @return
      */
     public int[] getParticleFlagsBuffer() {
-        return m_particleSystem.getParticleFlagsBuffer();
+        return particles.getParticleFlagsBuffer();
     }
 
     public Tuple2f[] getParticlePositionBuffer() {
-        return m_particleSystem.getParticlePositionBuffer();
+        return particles.getParticlePositionBuffer();
     }
 
     public Tuple2f[] getParticleVelocityBuffer() {
-        return m_particleSystem.getParticleVelocityBuffer();
+        return particles.getParticleVelocityBuffer();
     }
 
     public ParticleColor[] getParticleColorBuffer() {
-        return m_particleSystem.getParticleColorBuffer();
+        return particles.getParticleColorBuffer();
     }
 
     public ParticleGroup[] getParticleGroupBuffer() {
-        return m_particleSystem.getParticleGroupBuffer();
+        return particles.getParticleGroupBuffer();
     }
 
     public Object[] getParticleUserDataBuffer() {
-        return m_particleSystem.getParticleUserDataBuffer();
+        return particles.getParticleUserDataBuffer();
     }
 
     /**
@@ -1720,26 +1711,26 @@ public class Dynamics2D {
      * @param size   is the number of values in the block.
      */
     public void setParticleFlagsBuffer(int[] buffer, int capacity) {
-        m_particleSystem.setParticleFlagsBuffer(buffer, capacity);
+        particles.setParticleFlagsBuffer(buffer, capacity);
     }
 
     public void setParticlePositionBuffer(v2[] buffer, int capacity) {
-        m_particleSystem.setParticlePositionBuffer(buffer, capacity);
+        particles.setParticlePositionBuffer(buffer, capacity);
 
     }
 
     public void setParticleVelocityBuffer(v2[] buffer, int capacity) {
-        m_particleSystem.setParticleVelocityBuffer(buffer, capacity);
+        particles.setParticleVelocityBuffer(buffer, capacity);
 
     }
 
     public void setParticleColorBuffer(ParticleColor[] buffer, int capacity) {
-        m_particleSystem.setParticleColorBuffer(buffer, capacity);
+        particles.setParticleColorBuffer(buffer, capacity);
 
     }
 
     public void setParticleUserDataBuffer(Object[] buffer, int capacity) {
-        m_particleSystem.setParticleUserDataBuffer(buffer, capacity);
+        particles.setParticleUserDataBuffer(buffer, capacity);
     }
 
     /**
@@ -1748,11 +1739,11 @@ public class Dynamics2D {
      * @return
      */
     public ParticleContact[] getParticleContacts() {
-        return m_particleSystem.m_contactBuffer;
+        return particles.m_contactBuffer;
     }
 
     public int getParticleContactCount() {
-        return m_particleSystem.m_contactCount;
+        return particles.m_contactCount;
     }
 
     /**
@@ -1761,11 +1752,11 @@ public class Dynamics2D {
      * @return
      */
     public ParticleBodyContact[] getParticleBodyContacts() {
-        return m_particleSystem.m_bodyContactBuffer;
+        return particles.m_bodyContactBuffer;
     }
 
     public int getParticleBodyContactCount() {
-        return m_particleSystem.m_bodyContactCount;
+        return particles.m_bodyContactCount;
     }
 
     /**
@@ -1774,7 +1765,7 @@ public class Dynamics2D {
      * @return
      */
     public float computeParticleCollisionEnergy() {
-        return m_particleSystem.computeParticleCollisionEnergy();
+        return particles.computeParticleCollisionEnergy();
     }
 
     public Body2D newDynamicBody(Shape shape, float density, float friction) {
@@ -1869,12 +1860,12 @@ public class Dynamics2D {
 
 class WorldQueryWrapper implements TreeCallback {
     public boolean treeCallback(int nodeId) {
-        FixtureProxy proxy = (FixtureProxy) broadPhase.getUserData(nodeId);
-        return callback.reportFixture(proxy.fixture);
+        FixtureProxy proxy = (FixtureProxy) broadPhase.get(nodeId);
+        return callback.test(proxy.fixture);
     }
 
     BroadPhase broadPhase;
-    QueryCallback callback;
+    Predicate<Fixture> callback;
 }
 
 
@@ -1886,7 +1877,7 @@ class WorldRayCastWrapper implements TreeRayCastCallback {
     private final Tuple2f point = new Vec2();
 
     public float raycastCallback(RayCastInput input, int nodeId) {
-        Object userData = broadPhase.getUserData(nodeId);
+        Object userData = broadPhase.get(nodeId);
         FixtureProxy proxy = (FixtureProxy) userData;
         Fixture fixture = proxy.fixture;
         int index = proxy.childIndex;

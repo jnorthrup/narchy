@@ -26,11 +26,11 @@ public class QueueLock<X> implements Consumer<X> {
     final static Logger logger = LoggerFactory.getLogger(QueueLock.class);
 
     /** exclusive current working thread */
-    private long exe = Long.MIN_VALUE;
+    volatile private long exe = Long.MIN_VALUE;
 
     /** when false, re-entrant enqueuing by the accepted thread are elided and proceeds synchronously.
      *  when true, re-entrant enqueue will actually be enqueued to be executed later as if it were another thread attempting access. */
-    boolean forceQueue = false;
+    volatile boolean forceQueue = false;
 
     /*
     //new EvictingQueue<>(capacity);

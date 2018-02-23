@@ -1,13 +1,14 @@
 package org.jbox2d.particle;
 
 import org.jbox2d.common.Color3f;
+import spacegraph.math.Color4f;
 
 /**
  * Small color object for each particle
  *
  * @author dmurph
  */
-public class ParticleColor {
+@Deprecated public class ParticleColor {
     public byte r, g, b, a;
 
     public ParticleColor() {
@@ -17,19 +18,35 @@ public class ParticleColor {
         a = 50;
     }
 
+
+    public ParticleColor(float r, float g, float b, float a) {
+        set(new Color4f(r, g, b, a));
+    }
+
     public ParticleColor(byte r, byte g, byte b, byte a) {
         set(r, g, b, a);
     }
 
+    public ParticleColor(Color4f color) {
+        set(color);
+    }
     public ParticleColor(Color3f color) {
         set(color);
     }
 
+
+    public void set(Color4f color) {
+        r = (byte) (127 * color.x);
+        g = (byte) (127 * color.y);
+        b = (byte) (127 * color.z);
+        a = (byte) (127 * color.w);
+    }
+
     public void set(Color3f color) {
-        r = (byte) (255 * color.x);
-        g = (byte) (255 * color.y);
-        b = (byte) (255 * color.z);
-        a = (byte) 255;
+        r = (byte) (127 * color.x);
+        g = (byte) (127 * color.y);
+        b = (byte) (127 * color.z);
+        a = (byte) 127;
     }
 
     public void set(ParticleColor color) {

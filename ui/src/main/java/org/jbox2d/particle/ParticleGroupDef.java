@@ -13,7 +13,7 @@ public class ParticleGroupDef {
     /**
      * The particle-behavior flags.
      */
-    public final int flags;
+    public int flags;
 
     /**
      * The group-construction flags.

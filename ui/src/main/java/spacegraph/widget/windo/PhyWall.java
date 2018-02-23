@@ -11,6 +11,7 @@ import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.tuple.Pair;
+import org.jbox2d.collision.AABB;
 import org.jbox2d.collision.RayCastInput;
 import org.jbox2d.collision.RayCastOutput;
 import org.jbox2d.collision.shapes.CircleShape;
@@ -21,6 +22,8 @@ import org.jbox2d.common.Transform;
 import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.joints.*;
 import org.jbox2d.fracture.PolygonFixture;
+import org.jbox2d.particle.ParticleColor;
+import org.jbox2d.particle.ParticleSystem;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.event.Level;
 import spacegraph.*;
@@ -36,7 +39,6 @@ import spacegraph.render.Draw;
 import spacegraph.render.SpaceGraphFlat;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
-import spacegraph.widget.meta.SpaceLogConsole;
 import spacegraph.widget.text.Label;
 
 import java.util.Collections;
@@ -89,8 +91,8 @@ public class PhyWall extends Wall implements Animated {
         PhyWall s = new PhyWall();
         s.pos(-1, -1, 1, 1);
 
-        SpaceLogConsole log = new SpaceLogConsole();
-        log.visible(false);
+        //SpaceLogConsole log = new SpaceLogConsole();
+        //log.visible(false);
 
         Label statusBar = new Label();
 
@@ -113,8 +115,8 @@ public class PhyWall extends Wall implements Animated {
 
                     @Override
                     public void log(@Nullable Object key, float duration, Level level, Supplier<String> message) {
-                        if (log.visible())
-                            log.log(key, duration, level, message);
+                        //if (log.visible())
+                            //log.log(key, duration, level, message);
                         if (statusBar.visible())
                             statusBar.text(message.get());
                         //else: buffer?
@@ -130,7 +132,7 @@ public class PhyWall extends Wall implements Animated {
                         new Gridding(new EmptySurface(), statusBar),
                         0.1f)
         );
-        log.pos(0, 0.9f, 0.5f * width, 1f);
+        //log.pos(0, 0.9f, 0.5f * width, 1f);
         System.out.println(hud.bounds);
 
 //        log.visible(false);
@@ -176,6 +178,26 @@ public class PhyWall extends Wall implements Animated {
         for (Body2D b = w.bodies(); b != null; b = b.next())
             drawBody(b, gl);
 
+        drawParticleSystem(gl, w.particles);
+    }
+
+    private void drawParticleSystem(GL2 gl, ParticleSystem system) {
+        //boolean wireframe = (m_debugDraw.getFlags() & DebugDraw.e_wireframeDrawingBit) != 0;
+        int particleCount = system.getParticleCount();
+        if (particleCount != 0) {
+            float particleRadius = system.getParticleRadius();
+            Tuple2f[] positionBuffer = system.getParticlePositionBuffer();
+            ParticleColor[] colorBuffer = null;
+            if (system.m_colorBuffer.data != null) {
+                colorBuffer = system.getParticleColorBuffer();
+            }
+//            if (wireframe) {
+//                m_debugDraw.drawParticlesWireframe(positionBuffer, particleRadius, colorBuffer,
+//                        particleCount);
+//            } else {
+                Draw.particles(gl, positionBuffer, particleRadius, 6, colorBuffer, particleCount);
+//            }
+        }
     }
 
     private void drawJoint(Joint joint, GL2 g, long now) {
@@ -192,7 +214,7 @@ public class PhyWall extends Wall implements Animated {
 //            return;
         } else {
 
-            g.glColor4f(0.9f, 0.8f, 0.1f, 0.5f);
+            Draw.colorHash(g, joint.getClass().hashCode(), 0.5f);
             g.glLineWidth(10f);
         }
         Tuple2f v1 = new v2(), v2 = new v2();
@@ -223,7 +245,7 @@ public class PhyWall extends Wall implements Animated {
 
         //boolean active = body.isActive();
         boolean awake = body.isAwake();
-        gl.glColor4f(0.5f, 0.5f, 0.5f, awake ? 0.5f : 0.3f);
+        gl.glColor4f(0.5f, 0.5f, 0.5f, awake ? 0.75f : 0.65f);
 
         //Tuple2f v = new v2();
         //List<PolygonFixture> generalPolygons = new FasterList<>();
@@ -816,15 +838,33 @@ public class PhyWall extends Wall implements Animated {
         public Body2D pick(Finger ff) {
             v2 p = ff.pos;
 
-            //TODO use queryAABB
-            for (Body2D b = W.bodies(); b != null; b = b.next) {
-                for (Fixture f = b.fixtures(); f != null; f = f.next) {
-                    if (f.filter.maskBits != 0 /* filter non-colllidables */ && f.testPoint(p)) {
-                        return b;
-                    }
+            float w = 0;
+            float h =0;
+
+
+            final Fixture[] found = {null};
+            W.queryAABB((Fixture f) -> {
+                if (f.body.type!=BodyType.STATIC &&
+                        f.filter.maskBits != 0 /* filter non-colllidables */ && f.testPoint(p)) {
+                    found[0] = f;
+                    return false;
                 }
-            }
-            return null;
+
+                return true;
+            }, new AABB(new v2(p.x-w, p.y-h), new v2(p.x+w, p.y+h), false));
+
+//            //TODO use queryAABB
+//            for (Body2D b = W.bodies(); b != null; b = b.next) {
+//
+//                if (b.type==BodyType.STATIC) continue; //dont grab statics
+//
+//                for (Fixture f = b.fixtures(); f != null; f = f.next) {
+//                    if (f.filter.maskBits != 0 /* filter non-colllidables */ && f.testPoint(p)) {
+//                        return b;
+//                    }
+//                }
+//            }
+            return found[0]!=null ? found[0].body : null;
         }
 
         @Override
