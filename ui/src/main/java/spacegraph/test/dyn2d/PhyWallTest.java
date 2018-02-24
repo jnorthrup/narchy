@@ -13,17 +13,24 @@ import spacegraph.audio.WaveCapture;
 import spacegraph.input.Wiring;
 import spacegraph.layout.EmptySurface;
 import spacegraph.layout.Gridding;
+import spacegraph.layout.MutableContainer;
+import spacegraph.layout.Splitting;
 import spacegraph.math.v2;
 import spacegraph.test.WidgetTest;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.TextEdit;
+import spacegraph.widget.meta.OmniBox;
 import spacegraph.widget.meter.WebCam;
 import spacegraph.widget.slider.FloatSlider;
+import spacegraph.widget.tab.ButtonSet;
+import spacegraph.widget.tab.TabPane;
 import spacegraph.widget.text.Label;
 import spacegraph.widget.windo.*;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.function.Supplier;
 
 
 public class PhyWallTest {
@@ -105,19 +112,18 @@ public class PhyWallTest {
 //            s.addWindow(new Port(), RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
 
 
+            Body2D start = s.addWindow(new Port(), RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f)).body;
+            Body2D end = s.addWindow(new Port(), RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f)).body;
 
-                Body2D start = s.addWindow(new Port(), RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f)).body;
-                Body2D end = s.addWindow(new Port(), RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f)).body;
+            {
 
-                {
-
-                    Snake ss = new Snake(start, end, 8, 0.3f, 0.1f);
+                Snake ss = new Snake(start, end, 8, 0.3f, 0.1f);
 
 //                    Util.sleep(1000);
 //
 //                    ss.remove(false);
 
-                }
+            }
 
         }
     }
@@ -265,6 +271,78 @@ public class PhyWallTest {
 //            }
 //            n.edges()
 //            oo.link()
+
+        }
+    }
+
+
+    /**
+     * widget which can become "anything"
+     */
+    public static class ProtoWidget extends Widget {
+
+        //Surface palette(Surface... )
+
+        public ProtoWidget() {
+            super();
+            content(
+                    new TabPane(ButtonSet.Mode.One, Map.of(
+                        "..", () -> new OmniBox()
+                        ,
+                        "*", () -> {
+                            //frequent
+                            return new Gridding(
+                                    becoming("X", () -> new Label("X")),
+                                    becoming("Y", () -> new Label("Y"))
+                            );
+                        }
+                        ,
+                        "Input", () -> {
+                            return new Gridding(
+                                    becoming("Keyboard", () -> new Label("W")),
+                                    becoming("Gamepad", () -> new Label("Z")),
+                                    becoming("Webcam", () -> new Label("def")),
+                                    becoming("Microphone", () -> new Label("def"))
+                            );
+                        },
+                        "Signal", () -> {
+                            return new Gridding(
+                                    becoming("W", () -> new Label("W")),
+                                    becoming("Z", () -> new Label("Z")),
+                                    becoming("abc", () -> new Label("def"))
+                            );
+                        }
+                    ))
+                    //...
+            );
+        }
+
+        PushButton becoming(String label, Supplier<Surface> replacement) {
+            return new PushButton(label,
+                    () -> ((MutableContainer) parent).replace(this, new UndoFrame(replacement.get())));
+        }
+
+        class UndoFrame extends Splitting {
+
+            public UndoFrame(Surface surface) {
+                super();
+                split(0.9f);
+                set(new Gridding(new EmptySurface(), new EmptySurface(), new PushButton("<-", ()->{
+                    ((MutableContainer)UndoFrame.this.parent).replace(UndoFrame.this, ProtoWidget.this);
+                })), surface);
+            }
+        }
+    }
+
+    public static class Box2DTest_ProtoWidget {
+
+        public static void main(String[] args) {
+            PhyWall s = PhyWall.window(800, 800);
+
+
+            s.addWindow(new Gridding(0.25f, new ProtoWidget()), 1, 1);
+
+
 
         }
     }

@@ -1,6 +1,7 @@
 package spacegraph.widget.tab;
 
 import spacegraph.Surface;
+import spacegraph.SurfaceBase;
 import spacegraph.layout.Gridding;
 import spacegraph.layout.MutableContainer;
 import spacegraph.layout.Splitting;
@@ -27,11 +28,15 @@ public class TabPane extends Splitting {
 
 
     public TabPane(Map<String, Supplier<Surface>> builder) {
+        this(ButtonSet.Mode.Multi, builder);
+    }
+
+    public TabPane(ButtonSet.Mode mode, Map<String, Supplier<Surface>> builder) {
         super();
 
         content = new Gridding();
 
-        tabs = new ButtonSet<>(ButtonSet.Mode.Multi, builder.entrySet().stream().map(x -> {
+        tabs = new ButtonSet<>(mode, builder.entrySet().stream().map(x -> {
             final Surface[] created = {null};
             Supplier<Surface> creator = x.getValue();
             String label = x.getKey();
@@ -63,9 +68,16 @@ public class TabPane extends Splitting {
             });
         }).toArray(ToggleButton[]::new));
 
-        split(0).set(tabs, content);
+
     }
 
+    @Override
+    public void start(SurfaceBase parent) {
+        synchronized (this) {
+            super.start(parent);
+            split(0).set(tabs, content);
+        }
+    }
 
     public static void main(String[] args) {
         JoglSpace.window(new TabPane(Map.of(

@@ -12,6 +12,7 @@ import jcog.event.On;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SurfaceBase;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.util.List;
 
@@ -148,7 +149,12 @@ public class ConsoleGUI extends ConsoleTerminal {
         @Override
         public synchronized boolean processEventsAndUpdate() throws IOException {
 
-            textGUI.processInput();
+            try {
+                textGUI.processInput();
+            } catch (EOFException e) {
+                return false;
+            }
+
 
             Runnable r;
             while ((r = customTasks.poll())!=null) {

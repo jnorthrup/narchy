@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL3Test extends NALTest {
 
-    public static final int cycles = 800;
+    public static final int cycles = 1600;
     
     @Override protected NAR nar() { return NARS.tmp(3); }
 
@@ -23,10 +23,10 @@ public class NAL3Test extends NALTest {
     public void compound_composition_two_premises() {
 
         TestNAR tester = test;
-        tester.believe("<swan --> swimmer>", 0.9f, 0.9f); //.en("Swan is a type of swimmer.");
-        tester.believe("<swan --> bird>", 0.8f, 0.9f); //.en("Swan is a type of bird.");
-        tester.mustBelieve(cycles, "<swan --> (|,bird,swimmer)>", 0.98f, 0.81f); //.en("Swan is a type of bird or a type of swimmer.");
-        tester.mustBelieve(cycles, "<swan --> (&,bird,swimmer)>", 0.72f, 0.81f); //.en("Swan is a type of swimming bird.");
+        tester.believe("(swan --> swimmer)", 0.9f, 0.9f); //.en("Swan is a type of swimmer.");
+        tester.believe("(swan --> bird)", 0.8f, 0.9f); //.en("Swan is a type of bird.");
+        tester.mustBelieve(cycles, "(swan --> (bird | swimmer))", 0.98f, 0.81f); //.en("Swan is a type of bird or a type of swimmer.");
+        tester.mustBelieve(cycles, "(swan --> (bird & swimmer))", 0.72f, 0.81f); //.en("Swan is a type of swimming bird.");
 
     }
 

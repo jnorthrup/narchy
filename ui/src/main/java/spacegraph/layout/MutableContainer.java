@@ -210,6 +210,16 @@ public class MutableContainer extends Container {
         }
     }
 
+    /** this can be accelerated by storing children as a Map */
+    public void replace(Surface child, Surface replacement) {
+        synchronized (this) {
+            if (!children.remove(child))
+                throw new RuntimeException("could not replace missing " + child + " with " + replacement);
+
+            add(replacement);
+        }
+    }
+
 //    private class Children extends FastCoWList<Surface> {
 //
 //        public Children(int capacity) {
