@@ -3,7 +3,6 @@ package org.jbox2d.particle;
 import org.jbox2d.callbacks.ParticleDestructionListener;
 import org.jbox2d.callbacks.ParticleQueryCallback;
 import org.jbox2d.callbacks.ParticleRaycastCallback;
-
 import org.jbox2d.collision.AABB;
 import org.jbox2d.collision.RayCastInput;
 import org.jbox2d.collision.RayCastOutput;

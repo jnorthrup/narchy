@@ -3,7 +3,9 @@ package spacegraph.widget.windo;
 import jcog.list.FasterList;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.dynamics.*;
-import org.jbox2d.dynamics.joints.*;
+import org.jbox2d.dynamics.joints.Joint;
+import org.jbox2d.dynamics.joints.RevoluteJoint;
+import org.jbox2d.dynamics.joints.RevoluteJointDef;
 import spacegraph.math.v2;
 
 import java.util.List;

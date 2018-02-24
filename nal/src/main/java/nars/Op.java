@@ -22,7 +22,6 @@ import nars.term.compound.CachedCompound;
 import nars.term.compound.CachedUnitCompound;
 import nars.term.var.UnnormalizedVariable;
 import nars.time.Tense;
-import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.IntIntPair;
@@ -30,9 +29,7 @@ import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.factory.Maps;
 import org.eclipse.collections.impl.map.mutable.primitive.LongByteHashMap;
-import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.eclipse.collections.impl.tuple.Tuples;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
@@ -1027,110 +1024,110 @@ public enum Op {
         return conj(ae);
     }
 
-    /*@NotNull*/
-    static public Term conjMerge0(Term a, @Deprecated long aStart, Term b, long bStart) {
-
-        int ae = a.eventCount();
-        int be = b.eventCount();
-        if (ae == 1 && be == 1) {
-            long bo = bStart - aStart;
-            assert (bo < Integer.MAX_VALUE);
-            return conjSeqFinal((int) bo, a, b);
-        }
-
-        LongObjectHashMap<Collection<Term>> eventSets = new LongObjectHashMap(ae + be);
-
-        LongObjectPredicate<Term> insert = (long w, Term xb) -> {
-            Collection<Term> ab = eventSets.updateValue(w,
-                    () -> {
-                        Collection<Term> x = new UnifiedSet<>(1);
-                        x.add(xb);
-                        return x;
-                    },
-                    (Collection<Term> xx) -> {
-                        if (xx.add(xb)) {
-                            Op o = xb.op();
-                            if (o == NEG) {
-                                if (xx.contains(xb.unneg()))
-                                    return null;
-                            } else {
-                                //if (xa.contains(xb.neg())) return null;
-                                for (Term z : xx) {
-                                    if (z.op() == NEG && z.sub(0).equals(xb))
-                                        return null;
-                                }
-                            }
-                        }
-                        return xx;
-                    });
-            return ab != null;
-        };
-
-        if (!(a.eventsWhile(insert, aStart) && b.eventsWhile(insert, bStart)))
-            return False;
-
-        LongObjectHashMap<Term> eventSet = new LongObjectHashMap<>();
-        Term[] cut = {null};
-        if (!eventSets.keyValuesView().allSatisfy((ws) -> {
-            Term[] sps = sorted(ws.getTwo());
-            assert (sps.length > 0);
-            Term pp;
-            if (sps.length == 1)
-                pp = sps[0];
-            else {
-                pp = implInConjReduce(instance(CONJ, 0, sps)); //direct
-            }
-            if (pp instanceof Bool) {
-                cut[0] = pp;
-                return false;
-            }
-            eventSet.put(ws.getOne(), pp);
-            return true;
-        })) {
-            return cut[0];
-        }
-
-
-        FasterList<LongObjectPair<Term>> events = new FasterList<>(eventSet.size());
-        eventSet.forEachKeyValue((w, t) -> events.add(PrimitiveTuples.pair(w, t)));
-        return conj(events);
-
-//        //group all parallel clusters
-//        LongObjectPair<Term> e0 = events.get(0);
+//    /*@NotNull*/
+//    static public Term conjMerge0(Term a, @Deprecated long aStart, Term b, long bStart) {
 //
-//        long headAt = e0.getOne();
-//        int groupStart = -1;
-//        for (int i = 1; i <= ee; i++) {
-//            long nextAt = (i != ee) ? events.get(i).getOne() : ETERNAL;
-//            if (nextAt == headAt) {
-//                if (groupStart == -1) groupStart = i - 1;
-//            } else {
-//                if (groupStart != -1) {
-//                    int groupEnd = i;
-//                    Term[] p = new Term[groupEnd - groupStart];
-//                    assert (p.length > 1);
-//                    long when = events.get(groupStart).getOne();
-//                    for (int k = 0, j = groupStart; j < groupEnd; j++) {
-//                        p[k++] = events.get(groupStart).getTwo();
-//                        events.remove(groupStart);
-//                        i--;
-//                        ee--;
-//                    }
-//                    Term replacement = p.length > 1 ? CONJ.the(0, p) : p[0];
-//                    if (events.isEmpty()) {
-//                        //got them all here
-//                        return replacement;
-//                    }
-//                    events.add(i, PrimitiveTuples.pair(when, replacement));
-//                    i++;
-//                    ee++;
-//                    groupStart = -1; //reset
-//                }
-//            }
-//            headAt = nextAt;
+//        int ae = a.eventCount();
+//        int be = b.eventCount();
+//        if (ae == 1 && be == 1) {
+//            long bo = bStart - aStart;
+//            assert (bo < Integer.MAX_VALUE);
+//            return conjSeqFinal((int) bo, a, b);
 //        }
-
-    }
+//
+//        LongObjectHashMap<Collection<Term>> eventSets = new LongObjectHashMap(ae + be);
+//
+//        LongObjectPredicate<Term> insert = (long w, Term xb) -> {
+//            Collection<Term> ab = eventSets.updateValue(w,
+//                    () -> {
+//                        Collection<Term> x = new UnifiedSet<>(1);
+//                        x.add(xb);
+//                        return x;
+//                    },
+//                    (Collection<Term> xx) -> {
+//                        if (xx.add(xb)) {
+//                            Op o = xb.op();
+//                            if (o == NEG) {
+//                                if (xx.contains(xb.unneg()))
+//                                    return null;
+//                            } else {
+//                                //if (xa.contains(xb.neg())) return null;
+//                                for (Term z : xx) {
+//                                    if (z.op() == NEG && z.sub(0).equals(xb))
+//                                        return null;
+//                                }
+//                            }
+//                        }
+//                        return xx;
+//                    });
+//            return ab != null;
+//        };
+//
+//        if (!(a.eventsWhile(insert, aStart) && b.eventsWhile(insert, bStart)))
+//            return False;
+//
+//        LongObjectHashMap<Term> eventSet = new LongObjectHashMap<>();
+//        Term[] cut = {null};
+//        if (!eventSets.keyValuesView().allSatisfy((ws) -> {
+//            Term[] sps = sorted(ws.getTwo());
+//            assert (sps.length > 0);
+//            Term pp;
+//            if (sps.length == 1)
+//                pp = sps[0];
+//            else {
+//                pp = implInConjReduce(instance(CONJ, 0, sps)); //direct
+//            }
+//            if (pp instanceof Bool) {
+//                cut[0] = pp;
+//                return false;
+//            }
+//            eventSet.put(ws.getOne(), pp);
+//            return true;
+//        })) {
+//            return cut[0];
+//        }
+//
+//
+//        FasterList<LongObjectPair<Term>> events = new FasterList<>(eventSet.size());
+//        eventSet.forEachKeyValue((w, t) -> events.add(PrimitiveTuples.pair(w, t)));
+//        return conj(events);
+//
+////        //group all parallel clusters
+////        LongObjectPair<Term> e0 = events.get(0);
+////
+////        long headAt = e0.getOne();
+////        int groupStart = -1;
+////        for (int i = 1; i <= ee; i++) {
+////            long nextAt = (i != ee) ? events.get(i).getOne() : ETERNAL;
+////            if (nextAt == headAt) {
+////                if (groupStart == -1) groupStart = i - 1;
+////            } else {
+////                if (groupStart != -1) {
+////                    int groupEnd = i;
+////                    Term[] p = new Term[groupEnd - groupStart];
+////                    assert (p.length > 1);
+////                    long when = events.get(groupStart).getOne();
+////                    for (int k = 0, j = groupStart; j < groupEnd; j++) {
+////                        p[k++] = events.get(groupStart).getTwo();
+////                        events.remove(groupStart);
+////                        i--;
+////                        ee--;
+////                    }
+////                    Term replacement = p.length > 1 ? CONJ.the(0, p) : p[0];
+////                    if (events.isEmpty()) {
+////                        //got them all here
+////                        return replacement;
+////                    }
+////                    events.add(i, PrimitiveTuples.pair(when, replacement));
+////                    i++;
+////                    ee++;
+////                    groupStart = -1; //reset
+////                }
+////            }
+////            headAt = nextAt;
+////        }
+//
+//    }
 
 
     /**
