@@ -2014,6 +2014,7 @@ public enum Util {
     @Paper
     public static float[] marginMax(int num, IntToFloatFunction build, float lower, float upper) {
         float[] minmax = {Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY};
+
         float[] w = Util.map(num, i -> {
             float v = build.valueOf(i);
             if (v < minmax[0]) minmax[0] = v;
@@ -2023,15 +2024,19 @@ public enum Util {
 
         if (Util.equals(minmax[0], minmax[1], Float.MIN_NORMAL * 2)) {
             Arrays.fill(w, 0.5f);
-            return w;
+        } else {
+
+            //TODO combine these into one normalize() by calculating an equivalent effective minmax range
+            Util.normalize(w, minmax[0], minmax[1]);
+            Util.normalize(w, 0 - lower, 1 + upper);
         }
-
-
-        //TODO combine these into one normalize() by calculating an equivalent effective minmax range
-        Util.normalize(w, minmax[0], minmax[1]);
-        Util.normalize(w, 0 - lower, 1 + upper);
         return w;
     }
+
+    public static float[] softmax(int num, IntToFloatFunction build, float temperature) {
+        return Util.map(num, i -> (i!=0 ? ((float) Math.exp(build.valueOf(i)))  : 1) / temperature);
+    }
+
 
     public static float[] map(int num, IntToFloatFunction build, @Nullable float[] reuse) {
         float[] f = (reuse != null && reuse.length == num) ? reuse : new float[num];

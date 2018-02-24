@@ -8,6 +8,8 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.dynamics.Body2D;
 import spacegraph.Surface;
+import spacegraph.audio.AudioSource;
+import spacegraph.audio.WaveCapture;
 import spacegraph.input.Wiring;
 import spacegraph.layout.EmptySurface;
 import spacegraph.layout.Gridding;
@@ -15,6 +17,7 @@ import spacegraph.math.v2;
 import spacegraph.test.WidgetTest;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.TextEdit;
+import spacegraph.widget.meter.WebCam;
 import spacegraph.widget.slider.FloatSlider;
 import spacegraph.widget.text.Label;
 import spacegraph.widget.windo.*;
@@ -50,6 +53,12 @@ public class PhyWallTest {
                         };
                     }
             );
+
+            w.sprout(new WebCam().view(), 1f, 1f);
+
+            WaveCapture au = new WaveCapture(new AudioSource(20));
+            au.runFPS(20f);
+            w.sprout(au.view(), 1f, 1f);
 
             for (int i = 0; i < 4; i++)
                 w.sprout(new Port(), (float) (0.1f + Math.random() * 0.1f));

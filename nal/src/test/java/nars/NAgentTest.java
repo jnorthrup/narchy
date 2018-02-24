@@ -56,7 +56,7 @@ public class NAgentTest {
                 $.$safe("(t,y)"),
                 posOrNeg);
 
-        a.runSynch(2000);
+        a.runSynch(4000);
 
         assertTrue(a.avgReward() > 0.2f);
         assertTrue(a.dex.getMean() > 0.02f);

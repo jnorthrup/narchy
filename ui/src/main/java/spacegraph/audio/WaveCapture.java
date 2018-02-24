@@ -42,7 +42,7 @@ public class WaveCapture extends Loop {
 
     //private final boolean normalizeDisplayedWave = false;
 
-    public Surface newMonitorPane() {
+    public Surface view() {
 
         final Plot2D.Series rawWave, wavelet1d;
 

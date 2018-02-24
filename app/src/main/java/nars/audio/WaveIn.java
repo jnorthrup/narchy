@@ -39,7 +39,7 @@ public class WaveIn extends NARService {
     }
 
     public Surface surface() {
-        return capturing != null ? capturing.newMonitorPane() : new Label("not enabled try again"); //HACK
+        return capturing != null ? capturing.view() : new Label("not enabled try again"); //HACK
     }
 
     @Override

@@ -72,15 +72,15 @@ public class Try implements Consumer<Derivation> {
     public void forkTTLBudget(Derivation d, int[] choices) {
 
         float ttlTotal = d.ttl;
-        int n = choices.length;
-        float[] w = Util.marginMax(n, x ->
-                        valueSum(choices[x]), //sum of downstream cause values
-                1f / n, 0
-        );
+        int N = choices.length;
+        float[] w =
+                //Util.marginMax(N, x -> valueSum(choices[x]), 1f / N, 0);
+                Util.softmax(N, i -> causes[i].value(), 1f);
+
         float valueSum = Util.sum(w);
 
-        int[] order = new int[n];
-        for (int i = 0; i < n; i++) order[i] = i;
+        int[] order = new int[N];
+        for (int i = 0; i < N; i++) order[i] = i;
         ArrayUtils.shuffle(order, d.random);
 
         int k = 0;
@@ -88,7 +88,7 @@ public class Try implements Consumer<Derivation> {
         while (d.ttl > 0) {
             int ttlSave = d.ttl;
 
-            int c = order[(k++)%n];
+            int c = order[(k++)%N];
             int ttlFrac = Math.max(Param.TTL_MIN(), Math.round(ttlTotal * w[c]/valueSum));
             d.ttl = ttlFrac;
 
@@ -102,14 +102,13 @@ public class Try implements Consumer<Derivation> {
     }
 
     public void forkRoulette(Derivation d, int[] choices, float reserve) {
-        int n = choices.length;
-        float[] w = Util.marginMax(n, x ->
-                        valueSum(choices[x]), //sum of downstream cause values
-                1f / n, 0
-        );
+        int N = choices.length;
+        float[] w =
+                //Util.marginMax(N, x -> valueSum(choices[x]), 1f / N, 0);
+                Util.softmax(N, i -> causes[i].value(), 0.5f);
 
         int before = d.now();
-        Roulette.selectRouletteUnique(n, i -> w[i], (i) -> {
+        Roulette.selectRouletteUnique(N, i -> w[i], (i) -> {
             int ttlSave = d.ttl;
 
             int ci = choices[i];
@@ -130,7 +129,8 @@ public class Try implements Consumer<Derivation> {
         }, d.random);
     }
 
-    public float valueSum(int choice) {
+    /** sum of downstream cause values*/
+    float valueSum(int choice) {
         return Util.sum(Cause::value, ((ValueFork)(branches[choice])).causes);
     }
 

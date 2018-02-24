@@ -48,7 +48,7 @@ import static nars.time.Tense.*;
 public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan> {
 
     private static final boolean dternalAsZero = false;
-    protected boolean autoNeg = false;
+    protected Predicate<Term> autoNeg = (x)->true;
 
     static class TimeSpan {
         public final long dt;
@@ -236,7 +236,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeGraph.TimeSpan>
         if (byTerm.put(eventTerm, event)) {
 
 
-            if (autoNeg) {
+            if (autoNeg.test(eventTerm)) {
                 //link(event, 0, know(eventTerm.neg())); //WEAK
                 link(know(eventTerm), 0, know(eventTerm.neg())); //WEAK
             }

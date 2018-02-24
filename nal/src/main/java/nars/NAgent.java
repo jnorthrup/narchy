@@ -114,7 +114,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         this.nar = nar;
 
         this.curiosity = new FloatRange(0.10f, 0f, 1f);
-
+        nar.on(this);
     }
 
     protected NAgent() {
@@ -228,9 +228,11 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
                             float f = super.asFloat();
                             if (f!=f) return Float.NaN;
                             else {
+                                f = Util.unitize(f);
+
+                                //assert(f >= 0 && f <= 1f);
+
                                 //depression curve and offset
-                                assert(f >= 0 && f <= 1f);
-                                //return Util.max(0,f*f - depress.floatValue());
                                 return Util.max(0,f - depress.floatValue());
                             }
                         }

@@ -76,6 +76,10 @@ public class Implier extends DurService {
     }
 
 
+    public Implier(NAgent a, float... relativeTargetDurs) {
+        this(1, a, relativeTargetDurs);
+    }
+
     public Implier(float everyDurs, NAgent a, float... relativeTargetDurs) {
         this(everyDurs, a.nar,
                 Iterables.concat(

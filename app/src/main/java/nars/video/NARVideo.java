@@ -43,7 +43,7 @@ public class NARVideo extends NARServiceSet<NARVideo.Video> {
             synchronized (cam) {
                 cam.open(true);
                 c = new WebCam(cam);
-                surface = c.surface();
+                surface = c.view();
                 surfaceWindow = window(surface, 800, 600);
             }
         }

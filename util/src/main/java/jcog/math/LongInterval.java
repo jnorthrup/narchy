@@ -207,7 +207,7 @@ public interface LongInterval {
 
     default boolean intersects(long rangeStart, long rangeEnd) {
         long start = start();
-        return (start == ETERNAL) || (rangeStart <= end() && rangeEnd >= start);
+        return (start == ETERNAL) || (rangeEnd >= start && rangeStart <= end());
     }
 
     default boolean contains(long rangeStart, long rangeEnd) {

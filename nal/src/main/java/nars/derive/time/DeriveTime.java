@@ -125,12 +125,23 @@ public class DeriveTime extends TimeGraph {
         //HACK autoNeg only the specific terms which appear as both
         if (tt.hasAny(NEG) || (bb!=null && bb.hasAny(NEG) ) ) {
             ObjectByteHashMap<Term> events = new ObjectByteHashMap();
-            eventPolarities(tt.unneg(), events);
+            eventPolarities(tt, events);
             if (bb!=null)
-                eventPolarities(bb.unneg(), events);
-            autoNeg = !(events.anySatisfy((x)->x==0)); //safe to autoNeg if no mixed polarities present
+                eventPolarities(bb, events);
+
+            Set<Term> mixed = new HashSet();
+            events.forEachKeyValue((k,v)->{
+                if (v == 0) {
+                    mixed.add(k);
+                }
+            });
+            if (!mixed.isEmpty()) {
+                autoNeg = (x) -> !mixed.contains(x);
+            }
+            //!(events.anySatisfy((x)->x==0)); //safe to autoNeg if no mixed polarities present
         } else {
-            autoNeg = true; //safe to autoNeg since no negations are present anyway
+            //safe to autoNeg since no negations are present anyway
+            //no need to change default setting
         }
 
         if (!single) {
@@ -173,6 +184,7 @@ public class DeriveTime extends TimeGraph {
     }
 
     void eventPolarities(Term tt, ObjectByteHashMap<Term> events) {
+
         tt.eventsWhile((w,t)->{
             byte polarity;
             if (t.op()==NEG) {

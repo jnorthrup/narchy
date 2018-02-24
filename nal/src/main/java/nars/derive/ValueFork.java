@@ -67,7 +67,9 @@ public class ValueFork extends ForkDerivation<Derivation> {
             return d.revertLive(before);
         } else {
 
-            float[] w = Util.marginMax(N, i -> causes[i].value(), 1f / N, 0);
+            float[] w =
+                    //Util.marginMax(N, i -> causes[i].value(), 1f / N, 0);
+                    Util.softmax(N, i -> causes[i].value(), 0.5f);
 
             Roulette.selectRouletteUnique(N, i->w[i], (b) -> {
 

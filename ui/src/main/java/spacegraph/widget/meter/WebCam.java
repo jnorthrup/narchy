@@ -277,7 +277,7 @@ public class WebCam {
 
     }
 
-    public Surface surface() {
+    public Surface view() {
 
         return new WebCamSurface(new Tex());
 
@@ -297,7 +297,7 @@ public class WebCam {
         final WebCam w = new WebCam();
         JoglSpace.window(
                 //new Cuboid(new WebcamSurface(320, 200),4,4), 1200, 1200);
-                w.surface(), 1200, 1200);
+                w.view(), 1200, 1200);
         //w.loop(10);
 
 

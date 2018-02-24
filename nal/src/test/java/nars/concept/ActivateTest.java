@@ -169,7 +169,7 @@ public class ActivateTest {
     public void testTemplatesWithInt2() throws Narsese.NarseseException {
         testTemplates("num((0))",
                 //"[((0)), (0), num]"
-                "[((0)), num]"
+                "[((0)), (0), num]"
         );
     }
 
@@ -252,7 +252,7 @@ public class ActivateTest {
     @Test
     public void testTemplateSimProdCompound() throws Narsese.NarseseException {
         testTemplates("((a,b)<->#1)",
-                "[(a,b), #1]");
+                "[(a,b), a, b, #1]");
     }
 
     @Test
