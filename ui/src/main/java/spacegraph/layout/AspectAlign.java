@@ -55,8 +55,7 @@ public class AspectAlign extends UnitContainer {
         super(the);
         this.aspect = aspect;
         this.align = a;
-        this.scaleX = scaleX;
-        this.scaleY = scaleY;
+        scale(scaleX, scaleY);
     }
 
     public AspectAlign scale(float sx, float sy) {
@@ -85,19 +84,20 @@ public class AspectAlign extends UnitContainer {
         if (aspect == aspect /* not NaN */) {
 
             if (h > w/aspect) {
-                //if (aspect >= 1) {
+//                if (aspect >= 1) {
                     //taller than wide
                     //tw = w;
                     th = tw / aspect;
 //                } else {
 //                    //wider than tall
 //                    tw = vw;
-//                    th = vh*aspect;
-//                }
-            } else if (h * aspect > w) {
+                    //th = h*aspect;
+                //}
+            } else if (w * aspect < h) {
 //                if (aspect >= 1) {
                     //th = h;
-                    tw = th * aspect;
+                    //tw = th * aspect;
+                    th = tw * aspect;
 //                } else {
 //                    tw = vw*aspect;
 //                    th = vh;

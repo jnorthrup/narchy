@@ -1,7 +1,6 @@
 package spacegraph.widget.button;
 
 import org.jetbrains.annotations.Nullable;
-import spacegraph.layout.AspectAlign;
 import spacegraph.widget.text.Label;
 
 import java.util.function.Consumer;
@@ -22,7 +21,7 @@ public class PushButton extends AbstractButton {
 
     public PushButton(String s) {
         super();
-        content((label = new Label(s)).scale(0.8f));
+        content(label = new Label(s));
     }
 
     public PushButton(Consumer<PushButton> onClick) {

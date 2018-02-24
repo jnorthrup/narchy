@@ -3,8 +3,8 @@ package spacegraph.widget.meter;
 import boofcv.struct.image.InterleavedU8;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamEvent;
+import com.github.sarxos.webcam.WebcamEventType;
 import com.github.sarxos.webcam.WebcamListener;
-import jcog.User;
 import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Ons;
@@ -12,16 +12,20 @@ import jcog.event.Topic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.Surface;
-import spacegraph.layout.Gridding;
-import spacegraph.layout.Splitting;
+import spacegraph.SurfaceBase;
+import spacegraph.layout.AspectAlign;
 import spacegraph.render.JoglSpace;
 import spacegraph.render.Tex;
-import spacegraph.widget.button.PushButton;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 
+
+/** TODO
+ *
+ * event listeners:
+ *      onClose - destroy surfaces
+ */
 
 public class WebCam {
 
@@ -49,15 +53,10 @@ public class WebCam {
 
     public WebCam(Webcam wc) {
 
-
-
         logger.info("Webcam Devices: {} ", com.github.sarxos.webcam.Webcam.getWebcams());
-
 
         // Open a webcam at a resolution close to 640x480
         webcam = wc;
-
-
 
         if (!webcam.open(true))
             throw new RuntimeException("webcam not open");
@@ -241,21 +240,55 @@ public class WebCam {
 //
 //    }
 
+    public class WebCamSurface extends AspectAlign {
+
+
+        private final Tex ts;
+        private On on;
+
+        WebCamSurface(Tex ts) {
+            super(ts.view(), ((float)webcam.getViewSize().getHeight()) / ((float)webcam.getViewSize().getWidth()));
+            this.ts = ts;
+            layout();
+        }
+
+        @Override
+        public void start(SurfaceBase parent) {
+            synchronized(this) {
+                super.start(parent);
+                on = eventChange.on(x -> {
+                    if (x.getType()==WebcamEventType.CLOSED || x.getType()==WebcamEventType.DISPOSED) {
+                        this.stop();
+                    } else if (x.getType()==WebcamEventType.NEW_IMAGE) {
+                        ts.update(iimage);
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void stop() {
+            synchronized(this) {
+                on.off();
+                on = null;
+                super.stop();
+            }
+        }
+
+    }
+
     public Surface surface() {
 
-        Tex ts = new Tex();
+        return new WebCamSurface(new Tex());
 
-        eventChange.on(x -> {
-            ts.update(iimage);
-        });
-
-        return new Splitting(ts.view(), new Gridding(new PushButton("snap").click(()->{
-            byte[] bytes = ((DataBufferByte)iimage.getRaster().getDataBuffer()).getData();
-            User.the().put(
-                    "(\"" + webcam.getName() +"\"," + System.currentTimeMillis() + ")",
-                    bytes
-                    );
-        })),0.1f);
+//
+//        return new Splitting(ts.view(), new Gridding(new PushButton("snap").click(()->{
+//            byte[] bytes = ((DataBufferByte)iimage.getRaster().getDataBuffer()).getData();
+//            User.the().put(
+//                    "(\"" + webcam.getName() +"\"," + System.currentTimeMillis() + ")",
+//                    bytes
+//                    );
+//        })),0.1f);
     }
 
 

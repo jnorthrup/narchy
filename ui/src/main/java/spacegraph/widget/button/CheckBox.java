@@ -4,7 +4,6 @@ import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
-import spacegraph.layout.AspectAlign;
 import spacegraph.render.Draw;
 import spacegraph.widget.text.Label;
 
@@ -21,7 +20,7 @@ public class CheckBox extends ToggleButton {
     public CheckBox(String text) {
         this.text = text;
 
-        content((label = new Label("")).scale(0.8f).align(AspectAlign.Align.LeftCenter));
+        content((label = new Label("")));
 
         set(false);
     }
