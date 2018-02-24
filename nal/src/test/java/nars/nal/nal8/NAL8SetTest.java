@@ -38,7 +38,7 @@ public class NAL8SetTest extends NALTest {
     public void testDiffGoal1Pos1st() {
         test
                 .log()
-                .input("((a~b)-->g)!")
+                .input("((a~b)-->g)! %1.00;0.90%")
                 .input("(a-->g).")
                 .mustGoal(cycles,"(b-->g)", 0f, 0.81f);
     }

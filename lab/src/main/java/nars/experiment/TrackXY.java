@@ -138,7 +138,7 @@ public class TrackXY extends NAgent {
             Deriver d = new Deriver(Derivers.rules(
                     //1,
                     1,
-                    8, n), n);
+                    8, n, "list.nal", "motivation.nal"), n);
             d.conceptsPerIteration.set(32);
 
             ConjClustering cjB = new ConjClustering(n, BELIEF,

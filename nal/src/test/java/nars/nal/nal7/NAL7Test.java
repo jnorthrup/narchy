@@ -178,10 +178,29 @@ public class NAL7Test extends NALTest {
     }
 
     @Test
-    public void testDropAnyEventSimple2() {
+    public void testDropAnyEventSimple2a() {
+        test
+                .inputAt(1, "((happy &&+4120 (i)) &&+1232 (j))! :|:")
+                .mustGoal(cycles, "(happy &&+4120 (i))", 1f, 0.81f, 1)
+                .mustNotOutput(cycles, "((i)&&happy)", GOAL, 1)
+        ;
+    }
+
+    @Test
+    public void testDropAnyEventSimple2ba() {
+        test
+                .inputAt(1, "(happy &&+4120 ((i) &&+1232 (--,(i))))! :|:")
+                .mustGoal(cycles, "(happy &&+4120 (i))", 1f, 0.81f, 1)
+                .mustNotOutput(cycles, "(happy &&+4120 (i))", GOAL, 1233)
+                .mustNotOutput(cycles, "((i)&&happy)", GOAL, 1)
+        ;
+    }
+    @Test
+    public void testDropAnyEventSimple2bb() {
         test
                 .inputAt(1, "((happy &&+4120 (i)) &&+1232 (--,(i)))! :|:")
                 .mustGoal(cycles, "(happy &&+4120 (i))", 1f, 0.81f, 1)
+                .mustNotOutput(cycles, "(happy &&+4120 (i))", GOAL, 1233)
                 .mustNotOutput(cycles, "((i)&&happy)", GOAL, 1)
         ;
     }
@@ -240,41 +259,7 @@ public class NAL7Test extends NALTest {
         ;
     }
 
-    @Test
-    public void testDontStretchImplDerivation() {
-        /*
-        WRONG
-          $0.0 (((a,b) &&+4 (#1,d)) ==>+1 (b,#1)). 1⋈5 %1.0;.40% {31: 1;2;3} ((%1,%2,task("."),time(raw),time(dtEventsOrEternals),neqAndCom(%1,%2)),(varIntro((polarize(%2,belief) &&+- polarize(%1,task))),((IntersectionDepolarized-->Belief))))
-              $.01 ((a,b) ==>+1 (b,c)). 1 %1.0;.45% {2: 1;2} ((%1,%2,time(raw),belief(positive),task("."),time(dtEvents),neq(%1,%2),notImpl(%2)),((%2 ==>+- %1),((Induction-->Belief))))
-              $.50 (c,d). 5 %1.0;.90% {5: 3}
-        */
 
-        test
-                .inputAt(1, "((a,b) ==>+1 (b,c)). :|:")
-                .inputAt(5, "(c, d). :|:")
-                .mustBelieve(cycles, "(((a,b) &&+4 (c,d)) ==>-3 (b,c))", 1f, 0.81f, 1)
-                .mustBelieve(cycles, "(((a,b) &&+4 ($1,d)) ==>-3 (b,$1))", 1f, 0.81f, 1)
-        ;
-
-    }
-
-    @Disabled
-    @Test
-    public void justPlainWrongTiming() {
-        /*
-        WRONG
-        $0.0 ((a&|b) &&+5 (b&|c)). -9⋈-4 %1.0;.11% {397: 1;2;3} ((%1,(%2==>%3),time(urgent),neq(%1,%2),notImpl(%1)),(subIfUnifiesAny(%2,%3,%1),((AbductionRecursivePB-->Belief),(DeciInduction-->Goal))))
-            $.50 (c &&+5 d). 11⋈16 %1.0;.90% {11: 3}
-            $0.0 (((a&|b) &&+5 (b&|c)) ==>+5 (c &&+5 d)). 6 %1.0;.29% {310: 1;2;3} ((((&&,%1073742337..+)==>%2),%3,neqRCom(%2,%3),notImpl(%3)),((((&&,%1073742337..+) &&+- %3) ==>+- %2),((Induction-->Belief))))
-            */
-        test
-                .inputAt(11, "(c &&+5 d). :|:")
-                .inputAt(6, "(((a&|b) &&+5 (b&|c)) ==>+5 (c &&+5 d)). :|:")
-                .mustBelieve(cycles, "((a&|b) &&+5 (b&|c))", 1, 0.45f, 1)
-                //.mustNotOutput(cycles, "((a&|b) &&+5 (b&|c))", BELIEF, (t) -> t!=1)
-                .mustNotOutput(cycles, "(c &&+5 d)", BELIEF, (t) -> t != 11)
-        ;
-    }
 
     @Test
     public void testSameDamnConjunction() {

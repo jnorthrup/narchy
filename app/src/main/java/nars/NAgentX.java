@@ -179,7 +179,7 @@ abstract public class NAgentX extends NAgent {
                 .deriverAdd("motivation.nal")
                 //.deriverAdd("goal_analogy.nal")
                 //.deriverAdd(6,6) //extra NAL6
-                //.deriverAdd("list.nal")
+                .deriverAdd("list.nal")
 
                 .index(
                         new CaffeineIndex(

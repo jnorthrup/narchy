@@ -17,6 +17,7 @@ import nars.time.Tense;
 import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.primitive.LongLongPair;
+import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.Nullable;
@@ -26,6 +27,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import static nars.Op.NEG;
 import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
@@ -115,9 +117,23 @@ public class DeriveTime extends TimeGraph {
         this.cache = new HashMap(0);
         this.seen = new HashSet<>();
 
+        this.belief = !single ? d.belief : null;
+
+        //determine whether to auto-neg
+        Term tt = (this.task=d.task).term();
+        Term bb = !single ? (belief).term() : null;
+        //HACK autoNeg only the specific terms which appear as both
+        if (tt.hasAny(NEG) || (bb!=null && bb.hasAny(NEG) ) ) {
+            ObjectByteHashMap<Term> events = new ObjectByteHashMap();
+            eventPolarities(tt.unneg(), events);
+            if (bb!=null)
+                eventPolarities(bb.unneg(), events);
+            autoNeg = !(events.anySatisfy((x)->x==0)); //safe to autoNeg if no mixed polarities present
+        } else {
+            autoNeg = true; //safe to autoNeg since no negations are present anyway
+        }
+
         if (!single) {
-            Term tt = (this.task=d.task).term();
-            Term bb = (this.belief=d.belief).term();
             boolean taskTime, beliefTime;
 //            Op tto = tt.op();
 //            Op bbo = bb.op();
@@ -150,11 +166,30 @@ public class DeriveTime extends TimeGraph {
                 }
             }
         } else {
-            know(this.task = d.task, d.taskTruth, d.taskAt);
-            this.belief = null;
+            know(task, d.taskTruth, d.taskAt);
         }
 
 
+    }
+
+    void eventPolarities(Term tt, ObjectByteHashMap<Term> events) {
+        tt.eventsWhile((w,t)->{
+            byte polarity;
+            if (t.op()==NEG) {
+                polarity = (byte) -1;
+                t = t.unneg();
+            } else
+                polarity = (byte)+1;
+            if (events.containsKey(t)) {
+                byte p = events.get(t);
+                if (p!=polarity) {
+                    events.put(t, (byte)0);
+                }
+            } else {
+                events.put(t, polarity);
+            }
+            return true;
+        }, 0, true, true, true, 0);
     }
 
 

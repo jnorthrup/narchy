@@ -597,7 +597,9 @@ public enum Terms {
 
     public static boolean flattenMatchDT(int candidate, int target) {
         return (candidate == target)
-                || ((target == 0) && (candidate == DTERNAL)); //promotes DTERNAL to parallel as necessary
+                || ((target == 0) && (candidate == DTERNAL))
+                //|| ((target == DTERNAL) && (candidate == 0))
+                ; //promotes DTERNAL to parallel as necessary
     }
 
     public static Term flatten(/*@NotNull*/ Op op, int dt, Term x, ObjectByteHashMap<Term> s) {
@@ -643,8 +645,6 @@ public enum Terms {
 
     static boolean testCoNegate(Term x, ObjectByteHashMap<Term> s) {
 
-        assert (x != Null);
-
         byte polarity;
         Term t;
         if (x.op() == NEG || x == False) {
@@ -654,7 +654,37 @@ public enum Terms {
             polarity = +1;
             t = x;
         }
-        return s.getIfAbsentPut(t, polarity) == polarity;
+        if (s.isEmpty()) {
+            s.put(t, polarity);
+        } else {
+            if (s.getIfAbsentPut(t, polarity) != polarity) {
+                return false;
+            } else {
+                //HACK check for co-negation of conjunctions of DTERNAL/0 interaction
+                if (polarity == -1) {
+                    if (s.keyValuesView().anySatisfy(kv->{
+                        if (kv.getTwo()==+1) {
+                            Term sk = kv.getOne();
+                            if (sk.op() == CONJ) {
+                                int dt = sk.dt();
+                                if ((dt == DTERNAL || dt == 0)) {
+                                    if (sk.contains(t))
+                                        return true; //conegated
+                                }
+                            }
+                        }
+                        return false;
+                    }))
+                        return false;
+
+//                    for (Term sk : s.entrys()) {
+//                            }
+//                        }
+//                    }
+                }
+            }
+        }
+        return true;
     }
 
     @NotNull

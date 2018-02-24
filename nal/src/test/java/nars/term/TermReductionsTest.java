@@ -1307,20 +1307,40 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test public void testImplInConjPos() throws Narsese.NarseseException {
-        assertEquals(True, $.$("((c==>a)&&a)"));
+        String s = "((c==>a)&&a)";
+        assertEquals(
+                //True,
+                //no reduction
+                s,
+                $.$(s).toString());
     }
     @Test public void testImplInConjNeg() throws Narsese.NarseseException {
-        assertEquals(True, $.$("((--,(c==>a))&&(--,a))")); //since --(c==>a) == (c==>--a)
+        String s = "((--,(c==>a))&&(--,a))";
+        assertEquals(
+                //True,
+                s, //no reduction
+                $.$(s).toString()); //since --(c==>a) == (c==>--a)
     }
     @Test public void testImplInConj2xPos() throws Narsese.NarseseException {
-        assertEquals("((c&&d)==>a)", $.$("((c==>a) && (d==>a))").toString());
+        String s = "((c==>a)&&(d==>a))";
+        assertEquals(
+                //"((c&&d)==>a)",
+                s, //no reduction
+                $.$(s).toString());
     }
+
     @Test public void testImplInConj2xNeg() throws Narsese.NarseseException {
-        assertEquals("(--,((c&&d)==>a))", $.$("(--(c==>a) && --(d==>a))").toString());
+        String s = "(--(c==>a) && --(d==>a))";
+        //equivalent to: (c==>--a) && (d ==> --a)
+        assertEquals(
+                //"(--,((c&&d)==>a))",
+                s, //no reduction
+                $.$(s).toString());
     }
-    @Test public void testImplInConj2xPosTemporal() throws Narsese.NarseseException {
-        assertEquals("((c &&+1 d) ==>+1 a)", $.$("((c ==>+2 a) && (d ==>+1 a))").toString());
-    }
+
+//    @Disabled @Test public void testImplInConj2xPosTemporal() throws Narsese.NarseseException {
+//        assertEquals("((c &&+1 d) ==>+1 a)", $.$("((c ==>+2 a) && (d ==>+1 a))").toString());
+//    }
 
     @Test
     public void testConjunctiveCoNegationAcrossImpl() {
@@ -1391,6 +1411,7 @@ public class TermReductionsTest extends NarseseTest {
 
         //parallel
         assertEquals("(--,x)", $.$("((--,(x &| y)) &| (--,x))").toString());
+        assertEquals("(--,x)", $.$("((--,(x &| y)) && (--,x))").toString());
 
         //eternal
         assertEquals("(--,x)", $.$("((--,(x && y)) && (--,x))").toString());
@@ -1400,10 +1421,14 @@ public class TermReductionsTest extends NarseseTest {
     }
 
     @Test
-    public void testCoNegatedConjunctionParallelEternal() {
+    public void testCoNegatedConjunctionParallelEternal1() {
         //mix of parallel and eternal
         assertReduction(False,
                 "(((--,(z&&y))&&x)&|(--,x))");
+    }
+
+    @Test
+    public void testCoNegatedConjunctionParallelEternal2() {
         assertReduction(False,
                 "(((--,(y&&z))&|x)&&(--,x))");
 

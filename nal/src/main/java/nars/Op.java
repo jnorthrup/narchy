@@ -1362,108 +1362,110 @@ public enum Op {
      * precondition combiner: a combination nconjunction/implication reduction
      */
     static private Term implInConjReduce(final Term conj /* possibly a conjunction */) {
-        if (conj.op() != CONJ)
-            return conj;
-
-        if (!conj.hasAny(IMPL))
-            return conj; //fall-through
-
-        int conjDT = conj.dt();
-//        if (conjDT!=0 && conjDT!=DTERNAL)
-//            return conj; //dont merge temporal
-//        assert (conjDT != XTERNAL);
-
-        //if there is only one implication subterm (first layer only), then fold into that.
-        int whichImpl = -1;
-        int conjSize = conj.subs();
-
-
-        boolean implIsNeg = false;
-        for (int i = 0; i < conjSize; i++) {
-            Term conjSub = conj.sub(i);
-            Op conjSubOp = conjSub.op();
-            if (conjSubOp == IMPL) {
-                //only handle the first implication in this iteration
-//                if (implDT == XTERNAL) {
-//                    //dont proceed any further if XTERNAL
-//                    //return conj;
-//                }
-                whichImpl = i;
-                break;
-            } else if (conjSubOp == NEG) {
-                if (conjSub.unneg().op() == IMPL) {
-                    whichImpl = i;
-                    implIsNeg = true;
-                    break;
-                }
-            }
-        }
-
-        if (whichImpl == -1)
-            return conj;
-
-        Term implication = conj.sub(whichImpl).unneg();
-        Term implicationPolarized = conj.sub(whichImpl);
-
-        Term other;
-        if (conjSize == 2) {
-            other = conj.sub(1 - whichImpl);
-        } else {
-            //more than 2; group them as one term
-            Subterms cs = conj.subterms();
-            SortedSet<Term> ss = cs.toSetSorted();
-            boolean removed = ss.remove(implicationPolarized);
-            assert removed : "must have removed something";
-
-            Term[] css = sorted(ss);
-            if (conj.dt() == conjDT && cs.equalTerms(css))
-                return conj; //prevent recursive loop
-            else
-                other = CONJ.the(conjDT, css /* assumes commutive since > 2 */);
-        }
-
-        if (other.op() == IMPL) {
-            //TODO if other is negated impl
-            if ((other.dt() == DTERNAL) && other.sub(1).equals(implicationPolarized.sub(1))) {
-                //same predicate
-                other = other.sub(0);
-            } else {
-                //cant be combined
-                return conj;
-            }
-        }
-        int implDT = implication.dt();
-
-        Term conjInner;
-        Term ours = implication.sub(0);
-        int cist;
-        if (conjDT == DTERNAL) {
-            conjInner = CONJ.the(other, ours);
-            cist = 0;
-        } else if ((conjDT < 0 ? (1 - whichImpl) : whichImpl) == 1) {
-            conjInner = conjMerge(other, 0, ours, -conjDT);
-            cist = -conjDT;
-        } else {
-            conjInner = conjMerge(ours, 0, other, conjDT);
-            cist = 0;
-        }
-
-
-        if (conjInner instanceof Bool)
-            return conjInner;
-
-
-        if (implDT != DTERNAL) {
-//            int cist = conjInner.dt() == DTERNAL ? 0 : conjInner.subTimeSafe(ours); //HACK
-//            if (cist == DTERNAL)
-//                throw new TODO();
-
-            implDT -= (conjInner.dtRange() - cist) - (ours.dtRange());
-        }
-
-        return IMPL.the(implDT, conjInner, implication.sub(1)).negIf(implIsNeg);
-
+        return conj;
     }
+//        if (conj.op() != CONJ)
+//            return conj;
+//
+//        if (!conj.hasAny(IMPL))
+//            return conj; //fall-through
+//
+//        int conjDT = conj.dt();
+////        if (conjDT!=0 && conjDT!=DTERNAL)
+////            return conj; //dont merge temporal
+////        assert (conjDT != XTERNAL);
+//
+//        //if there is only one implication subterm (first layer only), then fold into that.
+//        int whichImpl = -1;
+//        int conjSize = conj.subs();
+//
+//
+//        boolean implIsNeg = false;
+//        for (int i = 0; i < conjSize; i++) {
+//            Term conjSub = conj.sub(i);
+//            Op conjSubOp = conjSub.op();
+//            if (conjSubOp == IMPL) {
+//                //only handle the first implication in this iteration
+////                if (implDT == XTERNAL) {
+////                    //dont proceed any further if XTERNAL
+////                    //return conj;
+////                }
+//                whichImpl = i;
+//                break;
+//            } else if (conjSubOp == NEG) {
+//                if (conjSub.unneg().op() == IMPL) {
+//                    whichImpl = i;
+//                    implIsNeg = true;
+//                    break;
+//                }
+//            }
+//        }
+//
+//        if (whichImpl == -1)
+//            return conj;
+//
+//        Term implication = conj.sub(whichImpl).unneg();
+//        Term implicationPolarized = conj.sub(whichImpl);
+//
+//        Term other;
+//        if (conjSize == 2) {
+//            other = conj.sub(1 - whichImpl);
+//        } else {
+//            //more than 2; group them as one term
+//            Subterms cs = conj.subterms();
+//            SortedSet<Term> ss = cs.toSetSorted();
+//            boolean removed = ss.remove(implicationPolarized);
+//            assert removed : "must have removed something";
+//
+//            Term[] css = sorted(ss);
+//            if (conj.dt() == conjDT && cs.equalTerms(css))
+//                return conj; //prevent recursive loop
+//            else
+//                other = CONJ.the(conjDT, css /* assumes commutive since > 2 */);
+//        }
+//
+//        if (other.op() == IMPL) {
+//            //TODO if other is negated impl
+//            if ((other.dt() == DTERNAL) && other.sub(1).equals(implicationPolarized.sub(1))) {
+//                //same predicate
+//                other = other.sub(0);
+//            } else {
+//                //cant be combined
+//                return conj;
+//            }
+//        }
+//        int implDT = implication.dt();
+//
+//        Term conjInner;
+//        Term ours = implication.sub(0);
+//        int cist;
+//        if (conjDT == DTERNAL) {
+//            conjInner = CONJ.the(other, ours);
+//            cist = 0;
+//        } else if ((conjDT < 0 ? (1 - whichImpl) : whichImpl) == 1) {
+//            conjInner = conjMerge(other, 0, ours, -conjDT);
+//            cist = -conjDT;
+//        } else {
+//            conjInner = conjMerge(ours, 0, other, conjDT);
+//            cist = 0;
+//        }
+//
+//
+//        if (conjInner instanceof Bool)
+//            return conjInner;
+//
+//
+//        if (implDT != DTERNAL) {
+////            int cist = conjInner.dt() == DTERNAL ? 0 : conjInner.subTimeSafe(ours); //HACK
+////            if (cist == DTERNAL)
+////                throw new TODO();
+//
+//            implDT -= (conjInner.dtRange() - cist) - (ours.dtRange());
+//        }
+//
+//        return IMPL.the(implDT, conjInner, implication.sub(1)).negIf(implIsNeg);
+//
+//    }
 
     static boolean hasNull(Term[] t) {
         for (Term x : t)

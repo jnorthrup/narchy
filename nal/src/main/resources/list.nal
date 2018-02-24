@@ -2,7 +2,10 @@
 //(P-->C), X, is(P,"*"), subOf(X,P), task(containsBeliefRecursively) |- ({indicesOf(P,X)}-->C), (Belief:Identity, Goal:Identity)
 //(C-->P), X, is(P,"*"), subOf(X,P), task(containsBeliefRecursively) |- (C-->{indicesOf(P,X)}), (Belief:Identity, Goal:Identity)
 (P-->C), X, is(P,"*"), subOf(X,P) |- ((C-->X)-->indicesOf(P,X)), (Belief:StructuralReduction)
-        //, Goal:StructuralReduction
+
+      //raw product version:
+      P, X, is(P,"*"), subOf(X,P) |- (X-->indicesOf(P,X)), (Belief:StructuralReduction)
+
     (P-->C), X, is(P,"*"), subOf(X,P), task("?") |- ((C,indicesOf(P,X))-->X), (Punctuation:Question)
     (P-->C), X, is(P,"*"), subOf(X,P), task("@") |- ((C,indicesOf(P,X))-->X), (Punctuation:Quest)
 (C-->P), X, is(P,"*"), subOf(X,P) |- ((X-->C)-->indicesOf(P,X)), (Belief:StructuralReduction)

@@ -120,7 +120,7 @@ public class ActivateTest {
         //layer 2:
         testTemplates("open(John,door)",
                 //"[(John,door), John, door, open]"
-                "[(John,door), open]"
+                "[(John,door), John, door, open]"
                 );
     }
 
@@ -155,7 +155,7 @@ public class ActivateTest {
     public void testFunction() throws Narsese.NarseseException {
         testTemplates("f(x)",
                 //"[(x), f, x]"
-                "[(x), f]"
+                "[(x), f, x]"
         );
     }
     @Test
@@ -176,7 +176,7 @@ public class ActivateTest {
     @Test
     public void testTemplatesWithInt1() throws Narsese.NarseseException {
         testTemplates("(0)",
-                "[]");
+                "[0]");
     }
 
     @Test
@@ -224,7 +224,7 @@ public class ActivateTest {
     @Test
     public void testTemplateProd() throws Narsese.NarseseException {
         testTemplates("(a,b)",
-                "[]");
+                "[a, b]");
     }
 
     @Test

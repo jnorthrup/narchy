@@ -147,7 +147,10 @@ public class TemporalTermTest {
     @Test
     public void testStableConceptualization2() throws Narsese.NarseseException {
         Term c1 = ceptualStable("(((a)&&(b))&|do(that))");
-        assertEquals("(((a)&&(b)) &&+- do(that))", c1.toString());
+        assertEquals(
+                //"(((a)&&(b)) &&+- do(that))",
+                "(&&,do(that),(a),(b))",
+                c1.toString());
     }
 
 //    @Test
@@ -289,7 +292,7 @@ public class TemporalTermTest {
         Compound x = $("((--,(($1&&x) ==>+1 ((--,y) &&+2 $1))) &&+3 (--,y))");
 
         Term y = x.temporalize(Retemporalize.retemporalizeAllToXTERNAL);
-        assertEquals("(--,(((x &&+- $1) &&+- (--,y)) ==>+- ((--,y) &&+- $1)))", y.toString());
+        assertEquals("((--,((x &&+- $1) ==>+- ((--,y) &&+- $1))) &&+- (--,y))", y.toString());
     }
 
     @Test
@@ -328,8 +331,8 @@ public class TemporalTermTest {
     @Test
     public void testParseOperationInFunctionalForm2() throws Narsese.NarseseException {
         assertEquals(
-                "(((a)&&(b))&|do(that))",
-                //"(&|,do(that),(a),(b))",
+                //"(((a)&&(b))&|do(that))",
+                "(&|,do(that),(a),(b))",
                 $("(do(that) &&+0 ((a)&&(b)))").toString());
 
         Termed nt = $("(((that)-->do) &&+0 ((a)&&(b)))");

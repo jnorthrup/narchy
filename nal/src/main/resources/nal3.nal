@@ -49,7 +49,10 @@
     (S --> M), S, is(S,"|") |- (dropAnySet(S) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
     (S --> (B - G)), (B - G) |- (S --> B), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+        (S --> (B - G)), (B - G) |- (--,(S --> G)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+
     ((B ~ G) --> S), (B ~ G) |- (B --> S), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+        ((B ~ G) --> S), (B ~ G) |- (--,(G --> S)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
         (B ~ G), B |- B, (Belief:StructuralDeduction, Goal:StructuralDeduction)
             (B ~ G), G |- (--,G), (Belief:StructuralDeduction, Goal:StructuralDeduction)
