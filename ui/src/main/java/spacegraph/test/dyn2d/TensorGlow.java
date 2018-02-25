@@ -7,7 +7,6 @@ import jcog.math.FloatRange;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.math.tensor.Tensor;
 import jcog.math.tensor.TensorLERP;
-import jcog.tree.rtree.rect.RectFloat2D;
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.dynamics.*;
@@ -174,7 +173,7 @@ public class TensorGlow {
                                 out(lerpVector.data);
                             }
                         })),
-                RectFloat2D.XYWH(0, 0, 0.5f, 0.5f));
+                0.5f, 0.5f);
 
         p.addWindow(new TogglePort(), 0.25f, 0.25f);
 
@@ -197,7 +196,7 @@ public class TensorGlow {
                         )
 
                 ),
-                RectFloat2D.XYWH(1, 1, 1, 1));
+                1, 1);
 
         Loop.of(() -> {
             lerpVector.update();

@@ -486,7 +486,13 @@ public class Derivation extends ProtoDerivation {
     /** returns false if there was a critical truth deficit */
     protected boolean setTruth() {
 
-        long tAt = _task.nearestPointInternal(time);
+        long tAt;
+        //if task is eternal, pretend task is temporal and current moment if belief is temporal and task is eternal
+        if (_task.isEternal() && (belief!=null && !belief.isEternal()))
+            tAt = time;
+        else
+            tAt = _task.nearestPointInternal(time);
+
         this.taskAt = tAt;
         switch (this.taskPunc = _task.punc()) {
             case QUESTION:

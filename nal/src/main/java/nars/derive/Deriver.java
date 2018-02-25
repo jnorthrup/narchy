@@ -18,6 +18,7 @@ import nars.term.Term;
 import nars.truth.Truth;
 
 import java.io.PrintStream;
+import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiPredicate;
@@ -257,9 +258,13 @@ public class Deriver extends Causable {
 
 
 
-        int derived = d.commit(n::input);
+        int derived = d.commit(this::input);
 
         return fired[0];
+    }
+
+    protected void input(Collection<Task> x) {
+        nar.input(x);
     }
 
     private void selectPremises(int premises, Derivation d, BiPredicate<PriReference<Task>, PriReference<Term>> each) {

@@ -1,16 +1,22 @@
 package nars;
 
+import com.google.common.collect.Collections2;
 import jcog.learn.ql.HaiQae;
+import nars.derive.Deriver;
+import nars.derive.Derivers;
 import nars.op.RLBooster;
 import nars.term.Term;
+import nars.time.Tense;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.Collection;
 import java.util.function.Consumer;
 
+import static nars.Op.IMPL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NAgentTest {
@@ -209,4 +215,41 @@ public class NAgentTest {
 //            }
 //        });
 
+    @Test public void testSameCheat() {
+
+        NAR n = new NARS().get();
+        Deriver d = new Deriver(Derivers.rules(1, 8, n), n) {
+
+            @Override
+            protected void input(Collection<Task> x) {
+                //HACK TODO this is more efficiently done by filtering the rules rather than the results!
+                Collection<Task> filtered = Collections2.filter(x, Task::isGoal);
+                if (!filtered.isEmpty()) {
+                    System.out.println(filtered);
+                }
+                super.input(filtered);
+            }
+        };
+        d.conceptsPerIteration.set(16);
+        n.log();
+
+
+        Term action = $.$safe("(t,y)");
+        MiniTest a = new ToggleSame(n, $.the("t"),
+                //$.$safe("t:y"),
+                action,
+                true);
+
+//        n.onCycle(a::run);
+//        n.run(100);
+
+        //n.goal("(t,y)", Tense.Present, 1f);
+        Term ax = IMPL.the(action, 0, $.$safe("(t --> [happy])") /*a.happy.term*/);
+        n.believe(ax, Tense.Present);
+
+        a.runSynch(500);
+
+        assertTrue(a.avgReward() > 0.2f);
+        assertTrue(a.dex.getMean() > 0.02f);
+    }
 }

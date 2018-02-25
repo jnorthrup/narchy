@@ -9,7 +9,9 @@ import jcog.Util;
  */
 public class Pri implements Priority {
 
-    protected volatile float pri;
+    protected
+        //volatile
+        float pri;
 
     public Pri(Prioritized b) {
         this(b.pri());

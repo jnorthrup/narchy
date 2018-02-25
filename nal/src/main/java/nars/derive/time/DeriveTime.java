@@ -366,7 +366,7 @@ public class DeriveTime extends TimeGraph {
 
 
         int taken = 0;
-        if (when!=ETERNAL && t.range() > 1) {
+        if (when!=ETERNAL && (!t.isEternal() && t.range() > 1)) {
             LongHashSet sampled = new LongHashSet(3);
 
             //HACK all points in time where the task's truth (used in the derivation's truth calculation) is constant are eligible to be sampled

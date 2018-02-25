@@ -324,9 +324,7 @@ public class PhyWall extends Wall implements Animated {
      */
     public PhyWindow addWindow(Surface content, float w, float h) {
         Ortho view = (Ortho) root();
-        float cx = view.x();
-        float cy = view.y();
-        return addWindow(content, RectFloat2D.XYWH(cx, cy, w, h));
+        return addWindow(content, RectFloat2D.XYWH(view.x(), view.y(), w, h));
     }
 
     public PhyWindow addWindow(Surface content, RectFloat2D initialBounds) {
@@ -529,7 +527,6 @@ public class PhyWall extends Wall implements Animated {
                 Tuple2f hitPoint = (input.p2.sub(input.p1)).scaled(output.fraction).added(input.p1);
                 theirWeldLocal = hitPoint;
             }
-
 
             WeldJoint j = weld(x, myWeldLocal, theirWeldLocal);
 
