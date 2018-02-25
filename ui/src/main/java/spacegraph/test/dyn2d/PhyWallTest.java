@@ -8,6 +8,7 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.dynamics.Body2D;
 import spacegraph.Surface;
+import spacegraph.SurfaceBase;
 import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;
 import spacegraph.input.Wiring;
@@ -22,7 +23,6 @@ import spacegraph.widget.console.TextEdit;
 import spacegraph.widget.meta.OmniBox;
 import spacegraph.widget.meter.WebCam;
 import spacegraph.widget.slider.FloatSlider;
-import spacegraph.widget.tab.ButtonSet;
 import spacegraph.widget.tab.TabPane;
 import spacegraph.widget.text.Label;
 import spacegraph.widget.windo.*;
@@ -285,53 +285,53 @@ public class PhyWallTest {
 
         public ProtoWidget() {
             super();
-            content(
-                    new TabPane(ButtonSet.Mode.One, Map.of(
-                        "..", () -> new OmniBox()
-                        ,
-                        "*", () -> {
-                            //frequent
-                            return new Gridding(
-                                    becoming("X", () -> new Label("X")),
-                                    becoming("Y", () -> new Label("Y"))
-                            );
-                        }
-                        ,
-                        "Input", () -> {
-                            return new Gridding(
-                                    becoming("Keyboard", () -> new Label("W")),
-                                    becoming("Gamepad", () -> new Label("Z")),
-                                    becoming("Webcam", () -> new Label("def")),
-                                    becoming("Microphone", () -> new Label("def"))
-                            );
-                        },
-                        "Signal", () -> {
-                            return new Gridding(
-                                    becoming("W", () -> new Label("W")),
-                                    becoming("Z", () -> new Label("Z")),
-                                    becoming("abc", () -> new Label("def"))
-                            );
-                        }
-                    ))
-                    //...
-            );
         }
+
+        @Override
+        public void start(SurfaceBase parent) {
+            synchronized (this) {
+                super.start(parent);
+                content(
+                        new TabPane(//ButtonSet.Mode.One,
+                            Map.of(
+                                "..", () -> new OmniBox()
+                                ,
+                                "*", () -> {
+                                    //frequent
+                                    return new Gridding(
+                                            becoming("X", () -> new Label("X")),
+                                            becoming("Y", () -> new Label("Y"))
+                                    );
+                                }
+                                ,
+                                "Hardware", () -> {
+                                    return new Gridding(
+                                            becoming("Keyboard", () -> new Label("W")),
+                                            becoming("Gamepad", () -> new Label("Z")),
+                                            becoming("Webcam", () -> new Label("def")),
+                                            becoming("Microphone", () -> new Label("def"))
+                                    );
+                                },
+                                "Signal", () -> {
+                                    return new Gridding(
+                                            becoming("Gen", () -> new Label("W")),
+                                            becoming("Filter", () -> new Label("Z")),
+                                            becoming("Split", () -> new Label("def")),
+                                            becoming("Mix", () -> new Label("def"))
+                                    );
+                                }
+                        ))
+                        //...
+                );
+            }
+        }
+
 
         PushButton becoming(String label, Supplier<Surface> replacement) {
             return new PushButton(label,
-                    () -> ((MutableContainer) parent).replace(this, new UndoFrame(replacement.get())));
+                    () -> ((MutableContainer) parent).replace(this, new UndoFrame(this, replacement.get())));
         }
 
-        class UndoFrame extends Splitting {
-
-            public UndoFrame(Surface surface) {
-                super();
-                split(0.9f);
-                set(new Gridding(new EmptySurface(), new EmptySurface(), new PushButton("<-", ()->{
-                    ((MutableContainer)UndoFrame.this.parent).replace(UndoFrame.this, ProtoWidget.this);
-                })), surface);
-            }
-        }
     }
 
     public static class Box2DTest_ProtoWidget {
@@ -340,10 +340,33 @@ public class PhyWallTest {
             PhyWall s = PhyWall.window(800, 800);
 
 
-            s.addWindow(new Gridding(0.25f, new ProtoWidget()), 1, 1);
+            s.addWindow(
+                    /*new Gridding(0.25f, */new ProtoWidget()/*)*/, 1, 1);
 
 
 
+        }
+    }
+
+    public static class UndoFrame extends Splitting {
+
+        public UndoFrame(Surface prev, Surface next) {
+            super();
+            split(0.9f);
+            set(new Gridding(
+                //Undo
+                new PushButton("<-", ()->{
+                    ((MutableContainer)(this.parent)).replace(this, prev);
+                }),
+
+                new EmptySurface(), new EmptySurface(),
+
+                //Hide/Delete
+                new PushButton("X", ()->{
+                    ((MutableContainer)(this.parent)).remove(this);
+                })
+
+            ), next);
         }
     }
 }

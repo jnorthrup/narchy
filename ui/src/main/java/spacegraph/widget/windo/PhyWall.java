@@ -333,6 +333,8 @@ public class PhyWall extends Wall implements Animated {
         PhyWindow s = new PhyWindow(initialBounds);
         //s.children(new Scale(content, 1f - Windo.resizeBorder));
         add(s);
+
+
         s.content(content);
 
         return s;

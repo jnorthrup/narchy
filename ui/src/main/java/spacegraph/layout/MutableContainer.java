@@ -72,7 +72,7 @@ public class MutableContainer extends Container {
      */
     public Surface set(int index, Surface next) {
         Surface existing;
-        synchronized (this) {
+        synchronized (children) {
             if (children.size() - 1 < index)
                 throw new RuntimeException("index out of bounds");
 
@@ -91,7 +91,7 @@ public class MutableContainer extends Container {
     }
 
     public void add(Surface s) {
-        synchronized (this) {
+        synchronized (children) {
 
             assert (s.parent == null);
             s.start(this);
@@ -105,7 +105,7 @@ public class MutableContainer extends Container {
     //TODO: addIfNotPresent(x) that tests for existence first
 
     public boolean remove(Surface s) {
-        synchronized (this) {
+        synchronized (children) {
             assert (s.parent == this);
             s.stop();
             children.remove(s);
@@ -116,7 +116,7 @@ public class MutableContainer extends Container {
 
     public final Container set(Surface... next) {
 
-        synchronized (this) {
+        synchronized (children) {
 
             if (parent == null) {
                 children.set(next);
@@ -201,7 +201,7 @@ public class MutableContainer extends Container {
     }
 
     public void clear() {
-        synchronized (this) {
+        synchronized (children) {
             if (size()> 0) {
                 children.forEach(Surface::stop);
                 children.clear();
@@ -212,7 +212,7 @@ public class MutableContainer extends Container {
 
     /** this can be accelerated by storing children as a Map */
     public void replace(Surface child, Surface replacement) {
-        synchronized (this) {
+        synchronized (children) {
             if (!children.remove(child))
                 throw new RuntimeException("could not replace missing " + child + " with " + replacement);
 
