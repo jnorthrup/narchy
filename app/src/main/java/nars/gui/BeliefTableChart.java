@@ -12,7 +12,6 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
 import nars.truth.TruthWave;
-import nars.truth.Truthed;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SurfaceBase;
 import spacegraph.render.Draw;
@@ -40,7 +39,7 @@ public class BeliefTableChart extends Widget {
 
     TaskConcept cc; //cached concept
     float cp; //cached priority
-    private int dur; //cached dur
+    //private int dur; //cached dur
     private long now; //cached time
     private String termString; //cached string
 
@@ -120,7 +119,7 @@ public class BeliefTableChart extends Widget {
 
 
             long now = this.now = nar.time();
-            int dur = this.dur = nar.dur();
+            int dur = /*this.dur = */nar.dur();
 
             cc = (TaskConcept) nar.concept(term/* lookup by term, not the termed which could be a dead instance */);
 
@@ -288,13 +287,9 @@ public class BeliefTableChart extends Widget {
 //            new Color(0.2f + 0.4f * c, 1f, 0.2f, 0.39f + 0.6f * c)
 //    );
 
-    public static void drawCrossHair(GL2 gl, float x, float gew, Truthed truth, double theta) {
+    public static void drawCrossHair(GL2 gl, float x, float gew, float freq, float conf, double theta) {
         gl.glLineWidth(CROSSHAIR_THICK);
 
-        float conf = truth.conf();
-
-
-        float bcy = truth.freq();
 
         //ge.strokeLine(bcx, border, bcx, geh - border);
         //ge.strokeLine(border, bcy, gew - border, bcy);
@@ -303,12 +298,12 @@ public class BeliefTableChart extends Widget {
 
         double dx0 = Math.cos(theta) * r;
         double dy0 = Math.sin(theta) * r;
-        Draw.line(gl, dx0 + x, dy0 + bcy, -dx0 + x, -dy0 + bcy);
+        Draw.line(gl, dx0 + x, dy0 + freq, -dx0 + x, -dy0 + freq);
 
         double hpi = PI / 2.0;
         double dx1 = Math.cos(theta + hpi) * r;
         double dy1 = Math.sin(theta + hpi) * r;
-        Draw.line(gl, dx1 + x, dy1 + bcy, -dx1 + x, -dy1 + bcy);
+        Draw.line(gl, dx1 + x, dy1 + freq, -dx1 + x, -dy1 + freq);
     }
 
 
@@ -339,21 +334,32 @@ public class BeliefTableChart extends Widget {
             renderWaveLine(nowX, minT, maxT, gl, pwave, beliefOrGoal);
         }
 
+        float chSize = 0.1f;
+
         Truth bc = wave.current;
         if (bc != null) {
             float theta;
-            float dTheta = (bc.expectation() - 0.5f) * angleSpeed;
+            float expectation = bc.expectation();
+            float dTheta = (expectation - 0.5f) * angleSpeed;
+            float conf = bc.conf();
             if (beliefOrGoal) {
                 this.beliefTheta += dTheta;
                 theta = beliefTheta;
-                gl.glColor4f(1f, 0f, 0, 0.2f + 0.8f * bc.conf());
+                gl.glColor4f(1f, 0f, 0, 0.2f + 0.8f * conf);
+                drawCrossHair(gl, nowX, chSize, bc.freq(), conf, theta);
             } else {
                 this.goalTheta += dTheta;
                 theta = goalTheta;
-                gl.glColor4f(0f, 1f, 0, 0.2f + 0.8f * bc.conf());
+
+                //freq
+                gl.glColor4f(0f, 1f, 0, 0.2f + 0.8f * conf);
+                drawCrossHair(gl, nowX, chSize, bc.freq(), conf, theta);
+
+                //expectation
+                gl.glColor4f(1f, 1f, 0, 0.2f + 0.8f * conf);
+                drawCrossHair(gl, nowX, chSize, expectation, expectation, theta);
+
             }
-            float chSize = 0.1f;
-            drawCrossHair(gl, nowX, chSize, bc, theta);
         }
 
     }

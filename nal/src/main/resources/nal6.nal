@@ -118,16 +118,18 @@
 //Same as for inheritance again
 
 
-    (S ==> M), (C ==> M), is(C,"&&"),in(S,C) |- (conjWithout(C,S) ==>+- M), (Belief:DecomposeNegativePositivePositive)
+    (S ==> M), (C ==> M), is(C,"&&"), in(S,C) |- (conjWithout(C,S) ==>+- M), (Belief:DecomposeNegativePositivePositive)
+    (S ==> M), (C ==> M), is(C,"&&"), inNeg(S,C) |- (conjWithout(C,--S) ==>+- M), (Belief:DecomposeNegativePositivePositiveN)
         //(S ==> M), ((&&,(--,%S),A..+) ==> M) |- ((&&,A..+) ==>+- M), (Belief:DecomposeNegativePositivePositiveN)
         //(S ==> M), ((||,S,A..+) ==> M) |- ((||,A..+) ==>+- M), (Belief:DecomposePositiveNegativeNegative)
 
-    (M ==> S), (M ==> C), task(positive), is(C,"&&"),in(S,C) |- (M ==>+- conjWithout(C,S)), (Belief:DecomposePositiveNegativeNegative)
-    (M ==> S), (M ==> C), task(negative), is(C,"&&"),in(S,C) |- (M ==>+- conjWithout(C,--S)), (Belief:DecomposePositiveNegativeNegativeN)
+    (M ==> S), (M ==> C), is(C,"&&"), in(S,C) |- (M ==>+- conjWithout(C,S)), (Belief:DecomposePositiveNegativeNegative)
+    (M ==> S), (M ==> C), is(C,"&&"), inNeg(S,C) |- (M ==>+- conjWithout(C,--S)), (Belief:DecomposePositiveNegativeNegativeN)
         //(M ==> S), (M ==> (&&,(--,%S),A..+)) |- (M ==>+- (&&,A..+)), (Belief:DecomposePositiveNegativeNegativeN)
         //(M ==> S), (M ==> (||,S,A..+)) |- (M ==>+- (||,A..+)), (Belief:DecomposeNegativePositivePositive)
 
     (M ==> C), C, is(C,"&&") |- (M ==>+- dropAnyEvent(C)), (Belief:StructuralDeduction)
+    (M ==> C), C, is(C,"&&") |- (--,(M ==>+- dropAnyEvent(C))), (Belief:StructuralDeductionN)
           //(M ==> C), D, belief("&&") |- (M ==>+- subIfUnifiesAny(dropAnyEvent(C), same, D)), (Belief:StructuralDeduction)
         //(--M ==> C), C, belief("&&") |- (--M ==>+- dropAnyEvent(C)), (Belief:StructuralDeduction)
           //(--M ==> C), D, belief("&&") |- (--M ==>+- subIfUnifiesAny(dropAnyEvent(C), same, D, strict)), (Belief:StructuralDeduction)
@@ -173,12 +175,12 @@
 //   original:   ((&&,A_1..n) =\> C), M, not_implication_or_equivalence(M) |- ((&&,M,A_1..n) =\> C), (Truth:Induction)
 //   original:   ((&&,M,A_1..n) ==> C), ((&&,A,A_1..n) ==> C) |- (A ==> M), (Truth:Induction, Order:ForAllSame)
 
-    (X ==> C), M,  belief(positive), is(X,"&&"), in(M,X) |- (conjWithout(X,M) ==>+- C), (Belief:Deduction)
-    (X ==> C), M,  belief(negative), is(X,"&&"), inNeg(M,X) |- (conjWithout(X,--M) ==>+- C), (Belief:DeductionPN)
+    (X ==> C), M, is(X,"&&"), in(M,X) |- (conjWithout(X,M) ==>+- C), (Belief:Deduction)
+    (X ==> C), M, is(X,"&&"), inNeg(M,X) |- (conjWithout(X,--M) ==>+- C), (Belief:DeductionPN)
 
         //((&&,M,A..+) ==> C), M,                  |- ((&&,A..+) ==>+- C), (Belief:Deduction)
-    (X ==> C), (B==>M), belief(positive), is(X,"&&"), in(M,X) |- ((conjWithout(X,M) &&+- B) ==>+- C), (Belief:Deduction)
-    (X ==> C), (B==>M), belief(negative), is(X,"&&"), inNeg(M,X) |- ((conjWithout(X,--M) &&+- B) ==>+- C), (Belief:DeductionPN)
+    (X ==> C), (B==>M), is(X,"&&"), in(M,X) |- ((conjWithout(X,M) &&+- B) ==>+- C), (Belief:Deduction)
+    (X ==> C), (B==>M), is(X,"&&"), inNeg(M,X) |- ((conjWithout(X,--M) &&+- B) ==>+- C), (Belief:DeductionPN)
         //((&&,M,A..+) ==> C), (B ==> M), neq(B,M) |- ((&&,B,A..+) ==>+- C), (Belief:Deduction)
 
     (X ==> C), (Y==>C), is(X,"&&"), is(Y,"&&"), neq(X,Y)   |- differ(Y,X), (Belief:AbductionPB)

@@ -56,7 +56,7 @@ public class TrackXY extends NAgent {
     public static void main(String[] args) {
 
         boolean nars = true;
-        boolean rl = true;
+        boolean rl = false;
 
         int dur = 1;
 

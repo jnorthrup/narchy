@@ -450,7 +450,7 @@ public class PhyWall extends Wall implements Animated {
             fd.setRestitution(0.1f);
 
 
-            W.addBody(this.body = new WallBody(initialBounds.x, initialBounds.y), fd);
+            W.addBody(this.body = new WallBody(initialBounds.cx(), initialBounds.cy()), fd);
             body.setLinearDamping(linearDampening);
 
         }
@@ -808,6 +808,7 @@ public class PhyWall extends Wall implements Animated {
         if (finger!=null && finger.tryFingering(jointDrag))
             return this;
 
+        //TODO encapsulate in Finger.DoubleClicking class
         if (finger!=null && finger.clickedNow(0)) {
             //System.out.println("click " + doubleClickSpot + " " + finger.hitOnDown[0] + " " + (System.currentTimeMillis() - doubleClickTime));
             v2 downHit = finger.hitOnDownGlobal[0];
