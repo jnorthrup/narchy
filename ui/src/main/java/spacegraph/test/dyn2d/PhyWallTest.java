@@ -3,12 +3,12 @@ package spacegraph.test.dyn2d;
 import jcog.Util;
 import jcog.data.graph.ObjectGraph;
 import jcog.exe.Loop;
+import jcog.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.dynamics.Body2D;
 import spacegraph.Surface;
-import spacegraph.SurfaceBase;
 import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;
 import spacegraph.input.Wiring;
@@ -285,51 +285,46 @@ public class PhyWallTest {
 
         public ProtoWidget() {
             super();
-        }
-
-        @Override
-        public void start(SurfaceBase parent) {
-            synchronized (this) {
-                super.start(parent);
-                content(
-                        new TabPane(//ButtonSet.Mode.One,
+            content(
+                    new TabPane(//ButtonSet.Mode.One,
                             Map.of(
-                                "..", () -> new OmniBox()
-                                ,
-                                "*", () -> {
-                                    //frequent
-                                    return new Gridding(
-                                            becoming("X", () -> new Label("X")),
-                                            becoming("Y", () -> new Label("Y"))
-                                    );
-                                }
-                                ,
-                                "Hardware", () -> {
-                                    return new Gridding(
-                                            becoming("Keyboard", () -> new Label("W")),
-                                            becoming("Gamepad", () -> new Label("Z")),
-                                            becoming("Webcam", () -> new Label("def")),
-                                            becoming("Microphone", () -> new Label("def"))
-                                    );
-                                },
-                                "Signal", () -> {
-                                    return new Gridding(
-                                            becoming("Gen", () -> new Label("W")),
-                                            becoming("Filter", () -> new Label("Z")),
-                                            becoming("Split", () -> new Label("def")),
-                                            becoming("Mix", () -> new Label("def"))
-                                    );
-                                }
-                        ))
-                        //...
-                );
-            }
+                                    "..", () -> new OmniBox()
+                                    ,
+                                    "*", () -> {
+                                        //frequent
+                                        return new Gridding(
+                                                becoming("X", () -> new Label("X")),
+                                                becoming("Y", () -> new Label("Y"))
+                                        );
+                                    }
+                                    ,
+                                    "Hardware", () -> {
+                                        return new Gridding(
+                                                becoming("Keyboard", () -> new Label("W")),
+                                                becoming("Gamepad", () -> new Label("Z")),
+                                                becoming("Webcam", () -> new Label("def")),
+                                                becoming("Microphone", () -> new Label("def"))
+                                        );
+                                    },
+                                    "Signal", () -> {
+                                        return new Gridding(
+                                                becoming("Gen", () -> new Label("W")),
+                                                becoming("Filter", () -> new Label("Z")),
+                                                becoming("Split", () -> new Label("def")),
+                                                becoming("Mix", () -> new Label("def"))
+                                        );
+                                    }
+                            ))
+                    //...
+            );
+
         }
 
 
         PushButton becoming(String label, Supplier<Surface> replacement) {
             return new PushButton(label,
-                    () -> ((MutableContainer) parent).replace(this, new UndoFrame(this, replacement.get())));
+                    () -> ((MutableContainer) parent).replace(ProtoWidget.this,
+                            replacement.get()));
         }
 
     }
@@ -341,32 +336,69 @@ public class PhyWallTest {
 
 
             s.addWindow(
-                    /*new Gridding(0.25f, */new ProtoWidget()/*)*/, 1, 1);
+                    new WizardFrame( new ProtoWidget() ), 1, 1);
 
 
 
         }
     }
 
-    public static class UndoFrame extends Splitting {
+    public static class WizardFrame extends Splitting {
 
-        public UndoFrame(Surface prev, Surface next) {
+        private final PushButton backButton;
+
+        public WizardFrame(Surface next) {
+            this(null, next);
+        }
+        public WizardFrame(@Nullable Surface prev, Surface next) {
             super();
             split(0.9f);
+
             set(new Gridding(
-                //Undo
-                new PushButton("<-", ()->{
-                    ((MutableContainer)(this.parent)).replace(this, prev);
-                }),
+                //Undo?
+                this.backButton = new PushButton("<-", this::pop),
 
                 new EmptySurface(), new EmptySurface(),
 
                 //Hide/Delete
-                new PushButton("X", ()->{
-                    ((MutableContainer)(this.parent)).remove(this);
-                })
+                new PushButton("X", this::close)
 
             ), next);
+
+            backButton.hide();
+        }
+
+        private final FasterList<Surface> stack = new FasterList();
+
+        @Override
+        public void replace(Surface existingChild, Surface nextChild) {
+
+            assert(existingChild!=nextChild);
+
+            synchronized (this) {
+                if (get(1) == existingChild) {
+                    if (stack.isEmpty())
+                        backButton.show();
+                    stack.add(existingChild);
+                    set(1, nextChild);
+                } else {
+                    throw new UnsupportedOperationException();
+                }
+
+            }
+        }
+
+        public void pop() {
+            synchronized (this) {
+                Surface prev = stack.removeLast();
+                if (stack.isEmpty())
+                    backButton.hide();
+                assert(prev!=null);
+                set(1, prev);
+            }
+        }
+        public void close() {
+            ((MutableContainer)(this.parent)).remove(this);
         }
     }
 }

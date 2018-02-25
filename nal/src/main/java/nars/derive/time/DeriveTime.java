@@ -136,7 +136,8 @@ public class DeriveTime extends TimeGraph {
                 }
             });
             if (!mixed.isEmpty()) {
-                autoNeg = (x) -> !mixed.contains(x);
+                //autoNeg = (x) -> !mixed.contains(x);
+                autoNeg = (x) -> false; //safer
             }
             //!(events.anySatisfy((x)->x==0)); //safe to autoNeg if no mixed polarities present
         } else {

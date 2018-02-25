@@ -74,7 +74,7 @@ public class Switching extends Container {
     public void stop() {
         synchronized (this) {
             current.stop();
-            current = new EmptySurface();
+            //current = new EmptySurface();
             super.stop();
         }
     }

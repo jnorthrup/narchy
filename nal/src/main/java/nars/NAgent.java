@@ -114,7 +114,9 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
         this.nar = nar;
 
         this.curiosity = new FloatRange(0.10f, 0f, 1f);
-        nar.on(this);
+
+        if (nar!=null)
+            nar.on(this);
     }
 
     protected NAgent() {
