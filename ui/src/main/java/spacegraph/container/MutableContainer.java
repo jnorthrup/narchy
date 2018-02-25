@@ -1,4 +1,4 @@
-package spacegraph.layout;
+package spacegraph.container;
 
 import com.google.common.collect.Sets;
 import jcog.list.FastCoWList;
@@ -107,11 +107,14 @@ public class MutableContainer extends Container {
     public boolean remove(Surface s) {
         synchronized (children) {
             assert (s.parent == this);
-            s.stop();
-            children.remove(s);
+            if (children.remove(s)) {
+                s.stop();
+                layout();
+                return true;
+            } else {
+                return false;
+            }
         }
-        layout();
-        return true;
     }
 
     public final Container set(Surface... next) {

@@ -1,4 +1,4 @@
-package spacegraph.layout;
+package spacegraph.container;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;

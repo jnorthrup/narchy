@@ -10,7 +10,7 @@ import jcog.math.IntRange;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
 import spacegraph.SurfaceBase;
-import spacegraph.layout.Gridding;
+import spacegraph.container.Gridding;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.button.ToggleButton;

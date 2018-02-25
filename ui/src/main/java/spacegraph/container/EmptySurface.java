@@ -1,4 +1,4 @@
-package spacegraph.layout;
+package spacegraph.container;
 
 import com.jogamp.opengl.GL2;
 import spacegraph.Surface;

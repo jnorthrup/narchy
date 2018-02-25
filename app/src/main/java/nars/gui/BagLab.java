@@ -22,8 +22,8 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.Consumer;
 
 import static jcog.pri.op.PriMerge.plus;
-import static spacegraph.layout.Gridding.col;
-import static spacegraph.layout.Gridding.row;
+import static spacegraph.container.Gridding.col;
+import static spacegraph.container.Gridding.row;
 
 /**
  * Created by me on 11/29/16.

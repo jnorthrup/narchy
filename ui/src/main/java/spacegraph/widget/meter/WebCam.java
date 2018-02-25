@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spacegraph.Surface;
 import spacegraph.SurfaceBase;
-import spacegraph.layout.AspectAlign;
+import spacegraph.container.AspectAlign;
 import spacegraph.render.JoglSpace;
 import spacegraph.render.Tex;
 

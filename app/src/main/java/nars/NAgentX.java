@@ -30,9 +30,9 @@ import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SubOrtho;
 import spacegraph.Surface;
-import spacegraph.layout.AspectAlign;
-import spacegraph.layout.EdgeDirected;
-import spacegraph.layout.Splitting;
+import spacegraph.container.AspectAlign;
+import spacegraph.container.EdgeDirected;
+import spacegraph.container.Splitting;
 import spacegraph.render.JoglPhysics;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.ConsoleTerminal;
@@ -50,8 +50,8 @@ import java.util.function.Supplier;
 import static nars.$.$;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
-import static spacegraph.layout.Gridding.col;
-import static spacegraph.layout.Gridding.grid;
+import static spacegraph.container.Gridding.col;
+import static spacegraph.container.Gridding.grid;
 import static spacegraph.render.JoglPhysics.window;
 
 /**

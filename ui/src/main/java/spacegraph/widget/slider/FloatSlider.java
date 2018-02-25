@@ -12,7 +12,7 @@ import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedur
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Scale;
 import spacegraph.SurfaceBase;
-import spacegraph.layout.AspectAlign;
+import spacegraph.container.AspectAlign;
 import spacegraph.widget.text.Label;
 import spacegraph.widget.windo.Widget;
 

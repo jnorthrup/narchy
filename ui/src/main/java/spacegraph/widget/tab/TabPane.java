@@ -2,9 +2,9 @@ package spacegraph.widget.tab;
 
 import spacegraph.Surface;
 import spacegraph.SurfaceBase;
-import spacegraph.layout.Gridding;
-import spacegraph.layout.MutableContainer;
-import spacegraph.layout.Splitting;
+import spacegraph.container.Gridding;
+import spacegraph.container.MutableContainer;
+import spacegraph.container.Splitting;
 import spacegraph.render.JoglSpace;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;

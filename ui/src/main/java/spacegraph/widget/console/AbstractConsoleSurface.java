@@ -2,7 +2,7 @@ package spacegraph.widget.console;
 
 import com.googlecode.lanterna.TextCharacter;
 import spacegraph.Surface;
-import spacegraph.layout.Container;
+import spacegraph.container.Container;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;

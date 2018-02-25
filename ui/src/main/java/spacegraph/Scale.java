@@ -1,6 +1,6 @@
 package spacegraph;
 
-import spacegraph.layout.UnitContainer;
+import spacegraph.container.UnitContainer;
 
 public class Scale extends UnitContainer {
 

@@ -16,7 +16,7 @@ import org.jbox2d.fracture.materials.Uniform;
 import org.jbox2d.particle.ParticleColor;
 import org.jbox2d.particle.ParticleGroupDef;
 import org.jbox2d.particle.ParticleType;
-import spacegraph.layout.Gridding;
+import spacegraph.container.Gridding;
 import spacegraph.math.v2;
 import spacegraph.widget.meta.AutoSurface;
 import spacegraph.widget.meter.BitmapMatrixView;
@@ -29,7 +29,7 @@ import spacegraph.widget.windo.TogglePort;
 
 import java.util.Random;
 
-import static spacegraph.layout.Gridding.VERTICAL;
+import static spacegraph.container.Gridding.VERTICAL;
 
 public class TensorGlow {
 

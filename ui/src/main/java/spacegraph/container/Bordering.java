@@ -1,4 +1,4 @@
-package spacegraph.layout;
+package spacegraph.container;
 
 import jcog.TODO;
 import spacegraph.Surface;

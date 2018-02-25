@@ -4,8 +4,8 @@ import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.Surface;
 import spacegraph.input.Finger;
-import spacegraph.layout.AspectAlign;
-import spacegraph.layout.EmptySurface;
+import spacegraph.container.AspectAlign;
+import spacegraph.container.EmptySurface;
 import spacegraph.math.Color4f;
 import spacegraph.render.Draw;
 

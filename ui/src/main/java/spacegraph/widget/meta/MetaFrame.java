@@ -1,11 +1,11 @@
 package spacegraph.widget.meta;
 
 import spacegraph.Surface;
-import spacegraph.layout.Bordering;
+import spacegraph.container.Bordering;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.windo.Widget;
 
-import static spacegraph.layout.Gridding.grid;
+import static spacegraph.container.Gridding.grid;
 
 /**
  * a dynamic frame for attaching to widgets providing access to context menus, controls, and display

@@ -19,7 +19,7 @@ import nars.term.Term;
 import nars.time.CycleTime;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.CameraSensorView;
-import spacegraph.layout.Gridding;
+import spacegraph.container.Gridding;
 import spacegraph.render.Draw;
 import spacegraph.widget.meta.AutoSurface;
 

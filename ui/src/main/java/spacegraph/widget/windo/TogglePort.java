@@ -1,7 +1,7 @@
 package spacegraph.widget.windo;
 
 import com.jogamp.opengl.GL2;
-import spacegraph.layout.Gridding;
+import spacegraph.container.Gridding;
 import spacegraph.render.Draw;
 import spacegraph.widget.button.CheckBox;
 

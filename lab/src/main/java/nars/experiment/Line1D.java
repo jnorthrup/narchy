@@ -10,7 +10,7 @@ import nars.op.stm.ConjClustering;
 import nars.task.DerivedTask;
 import nars.test.agent.Line1DSimplest;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import spacegraph.layout.Gridding;
+import spacegraph.container.Gridding;
 import spacegraph.widget.meta.AutoSurface;
 import spacegraph.widget.meter.Plot2D;
 
@@ -20,7 +20,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.lang.Math.PI;
 import static nars.Op.BELIEF;
-import static spacegraph.layout.Gridding.*;
+import static spacegraph.container.Gridding.*;
 import static spacegraph.render.JoglPhysics.window;
 
 /**

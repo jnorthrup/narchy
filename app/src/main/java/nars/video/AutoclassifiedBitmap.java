@@ -7,7 +7,7 @@ import nars.control.CauseChannel;
 import nars.task.ITask;
 import nars.term.Term;
 import spacegraph.Surface;
-import spacegraph.layout.Gridding;
+import spacegraph.container.Gridding;
 import spacegraph.widget.meter.BitmapMatrixView;
 
 import java.util.Arrays;

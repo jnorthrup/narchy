@@ -10,7 +10,7 @@ import nars.term.Compound;
 import nars.truth.Truth;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
-import spacegraph.layout.Gridding;
+import spacegraph.container.Gridding;
 import spacegraph.render.Draw;
 
 import java.util.Collection;

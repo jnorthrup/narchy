@@ -16,8 +16,8 @@ import nars.exe.Causable;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.Surface;
-import spacegraph.layout.Gridding;
-import spacegraph.layout.Splitting;
+import spacegraph.container.Gridding;
+import spacegraph.container.Splitting;
 import spacegraph.render.Draw;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.meta.AutoSurface;
@@ -31,7 +31,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static spacegraph.layout.Gridding.*;
+import static spacegraph.container.Gridding.*;
 
 public class ExecCharts {
 

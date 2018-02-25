@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.event.Level;
 import spacegraph.SpaceLogger;
 import spacegraph.SurfaceBase;
-import spacegraph.layout.Gridding;
+import spacegraph.container.Gridding;
 import spacegraph.widget.console.ConsoleGUI;
 import spacegraph.widget.console.TextEdit;
 

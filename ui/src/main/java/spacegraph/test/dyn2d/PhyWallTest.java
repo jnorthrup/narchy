@@ -3,7 +3,6 @@ package spacegraph.test.dyn2d;
 import jcog.Util;
 import jcog.data.graph.ObjectGraph;
 import jcog.exe.Loop;
-import jcog.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jbox2d.collision.shapes.PolygonShape;
@@ -12,15 +11,15 @@ import spacegraph.Surface;
 import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;
 import spacegraph.input.Wiring;
-import spacegraph.layout.EmptySurface;
-import spacegraph.layout.Gridding;
-import spacegraph.layout.MutableContainer;
-import spacegraph.layout.Splitting;
+import spacegraph.container.EmptySurface;
+import spacegraph.container.Gridding;
+import spacegraph.container.MutableContainer;
 import spacegraph.math.v2;
 import spacegraph.test.WidgetTest;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.TextEdit;
 import spacegraph.widget.meta.OmniBox;
+import spacegraph.widget.meta.WizardFrame;
 import spacegraph.widget.meter.WebCam;
 import spacegraph.widget.slider.FloatSlider;
 import spacegraph.widget.tab.TabPane;
@@ -42,8 +41,7 @@ public class PhyWallTest {
             PhyWall s = PhyWall.window(1000, 800);
 
 
-            PhyWall.PhyWindow w = s.addWindow(WidgetTest.widgetDemo(), RectFloat2D.XYWH(0, 0, 1f, 1f));
-            //s.newWindow(WidgetTest.widgetDemo(), RectFloat2D.XYWH(+400, 0, 300, 100));
+            PhyWall.PhyWindow w = s.addWindow(WidgetTest.widgetDemo(), 1f, 1f);
 
             w.sprout(
                     new Gridding(0.1f, 1f, new TextEdit(16, 3, "wtf").surface()),
@@ -52,6 +50,7 @@ public class PhyWallTest {
                     new Gridding(0.1f, 1f, new PushButton("wtf")),
                     0.3f
             );//.getOne().sproutBranch("Other", 0.5f, ()->{
+
             w.sproutBranch("Other", 0.25f, 0.33f, () -> {
                         return new Surface[]{
                                 new PushButton("X"),
@@ -61,11 +60,15 @@ public class PhyWallTest {
                     }
             );
 
-            w.sprout(new WebCam().view(), 1f, 1f);
+            {
+                w.sprout(new WebCam().view(), 1f, 1f);
+            }
 
-            WaveCapture au = new WaveCapture(new AudioSource(20));
-            au.runFPS(20f);
-            w.sprout(au.view(), 1f, 1f);
+            {
+                WaveCapture au = new WaveCapture(new AudioSource(20));
+                au.runFPS(20f);
+                w.sprout(au.view(), 1f, 1f);
+            }
 
             for (int i = 0; i < 4; i++)
                 w.sprout(new Port(), (float) (0.1f + Math.random() * 0.1f));
@@ -343,62 +346,4 @@ public class PhyWallTest {
         }
     }
 
-    public static class WizardFrame extends Splitting {
-
-        private final PushButton backButton;
-
-        public WizardFrame(Surface next) {
-            this(null, next);
-        }
-        public WizardFrame(@Nullable Surface prev, Surface next) {
-            super();
-            split(0.9f);
-
-            set(new Gridding(
-                //Undo?
-                this.backButton = new PushButton("<-", this::pop),
-
-                new EmptySurface(), new EmptySurface(),
-
-                //Hide/Delete
-                new PushButton("X", this::close)
-
-            ), next);
-
-            backButton.hide();
-        }
-
-        private final FasterList<Surface> stack = new FasterList();
-
-        @Override
-        public void replace(Surface existingChild, Surface nextChild) {
-
-            assert(existingChild!=nextChild);
-
-            synchronized (this) {
-                if (get(1) == existingChild) {
-                    if (stack.isEmpty())
-                        backButton.show();
-                    stack.add(existingChild);
-                    set(1, nextChild);
-                } else {
-                    throw new UnsupportedOperationException();
-                }
-
-            }
-        }
-
-        public void pop() {
-            synchronized (this) {
-                Surface prev = stack.removeLast();
-                if (stack.isEmpty())
-                    backButton.hide();
-                assert(prev!=null);
-                set(1, prev);
-            }
-        }
-        public void close() {
-            ((MutableContainer)(this.parent)).remove(this);
-        }
-    }
 }

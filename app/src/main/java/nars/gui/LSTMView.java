@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.learn.lstm.DistractedSequenceRecall;
 import jcog.learn.lstm.SimpleLSTM;
 import jcog.math.random.XorShift128PlusRandom;
-import spacegraph.layout.Gridding;
+import spacegraph.container.Gridding;
 import spacegraph.render.Draw;
 import spacegraph.widget.meter.MatrixView;
 

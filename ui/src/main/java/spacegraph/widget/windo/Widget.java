@@ -6,8 +6,8 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
 import spacegraph.SurfaceRoot;
 import spacegraph.input.Finger;
-import spacegraph.layout.Stacking;
-import spacegraph.layout.Switching;
+import spacegraph.container.Stacking;
+import spacegraph.container.Switching;
 import spacegraph.render.Draw;
 import spacegraph.widget.meta.MetaFrame;
 

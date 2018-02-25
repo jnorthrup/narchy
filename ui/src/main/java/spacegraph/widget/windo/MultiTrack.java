@@ -6,7 +6,7 @@ import jcog.list.FasterList;
 import spacegraph.Surface;
 import spacegraph.input.FingerMove;
 import spacegraph.input.Fingering;
-import spacegraph.layout.Stacking;
+import spacegraph.container.Stacking;
 import spacegraph.render.Draw;
 import spacegraph.render.JoglSpace;
 

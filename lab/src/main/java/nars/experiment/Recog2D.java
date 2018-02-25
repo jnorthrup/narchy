@@ -20,8 +20,8 @@ import nars.video.Scale;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.SpaceGraph;
 import spacegraph.Surface;
-import spacegraph.layout.AspectAlign;
-import spacegraph.layout.Gridding;
+import spacegraph.container.AspectAlign;
+import spacegraph.container.Gridding;
 import spacegraph.render.Draw;
 import spacegraph.widget.meter.Plot2D;
 

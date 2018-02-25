@@ -20,7 +20,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
 import static java.awt.image.BufferedImage.TYPE_INT_ARGB;
-import static spacegraph.layout.Gridding.grid;
+import static spacegraph.container.Gridding.grid;
 
 public class Sketch2DBitmap extends Widget implements MetaFrame.Menu {
 

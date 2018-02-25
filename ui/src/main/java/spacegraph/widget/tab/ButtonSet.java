@@ -3,7 +3,7 @@ package spacegraph.widget.tab;
 import jcog.data.ArrayHashSet;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.layout.Gridding;
+import spacegraph.container.Gridding;
 import spacegraph.widget.button.ToggleButton;
 
 /** set of buttons, which may be linked behaviorally in various ways */

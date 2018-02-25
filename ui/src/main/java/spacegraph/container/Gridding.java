@@ -1,4 +1,4 @@
-package spacegraph.layout;
+package spacegraph.container;
 
 import com.google.common.collect.Iterables;
 import jcog.Util;

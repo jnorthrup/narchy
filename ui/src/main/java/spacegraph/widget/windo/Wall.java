@@ -1,7 +1,7 @@
 package spacegraph.widget.windo;
 
 import spacegraph.Surface;
-import spacegraph.layout.Stacking;
+import spacegraph.container.Stacking;
 
 /**
  * a wall (virtual surface) contains zero or more windows;

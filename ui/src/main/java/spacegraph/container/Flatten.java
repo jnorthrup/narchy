@@ -1,4 +1,4 @@
-package spacegraph.layout;
+package spacegraph.container;
 
 import com.jogamp.opengl.math.Quaternion;
 import spacegraph.SimpleSpatial;

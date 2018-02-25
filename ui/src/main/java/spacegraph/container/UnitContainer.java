@@ -1,4 +1,4 @@
-package spacegraph.layout;
+package spacegraph.container;
 
 import org.jetbrains.annotations.NotNull;
 import spacegraph.Surface;

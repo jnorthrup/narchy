@@ -1,7 +1,7 @@
 package spacegraph.widget.text;
 
 import spacegraph.Surface;
-import spacegraph.layout.Splitting;
+import spacegraph.container.Splitting;
 
 public class LabeledPane extends Splitting {
 

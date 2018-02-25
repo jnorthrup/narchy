@@ -3,8 +3,8 @@ package spacegraph.space;
 import spacegraph.AbstractSpace;
 import spacegraph.Active;
 import spacegraph.Spatial;
-import spacegraph.layout.EdgeDirected;
-import spacegraph.layout.Flatten;
+import spacegraph.container.EdgeDirected;
+import spacegraph.container.Flatten;
 import spacegraph.render.JoglPhysics;
 
 import java.util.List;

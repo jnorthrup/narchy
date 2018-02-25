@@ -1,8 +1,8 @@
-package spacegraph.layout;
+package spacegraph.container;
 
 import spacegraph.Surface;
 
-import static spacegraph.layout.AspectAlign.Align.Center;
+import static spacegraph.container.AspectAlign.Align.Center;
 
 public class AspectAlign extends UnitContainer {
 

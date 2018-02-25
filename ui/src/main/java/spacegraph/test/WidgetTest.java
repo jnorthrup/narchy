@@ -2,8 +2,8 @@ package spacegraph.test;
 
 import jcog.Texts;
 import jcog.Util;
-import spacegraph.layout.Container;
-import spacegraph.layout.Splitting;
+import spacegraph.container.Container;
+import spacegraph.container.Splitting;
 import spacegraph.render.JoglSpace;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
@@ -15,7 +15,7 @@ import spacegraph.widget.slider.XYSlider;
 import spacegraph.widget.text.Label;
 import spacegraph.widget.windo.Widget;
 
-import static spacegraph.layout.Gridding.*;
+import static spacegraph.container.Gridding.*;
 
 public class WidgetTest {
 

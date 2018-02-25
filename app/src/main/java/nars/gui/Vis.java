@@ -12,8 +12,8 @@ import nars.control.DurService;
 import nars.term.Termed;
 import nars.truth.Truth;
 import spacegraph.Surface;
-import spacegraph.layout.Gridding;
-import spacegraph.layout.Stacking;
+import spacegraph.container.Gridding;
+import spacegraph.container.Stacking;
 import spacegraph.math.Color3f;
 import spacegraph.widget.console.ConsoleTerminal;
 import spacegraph.widget.console.TextEdit;
@@ -31,7 +31,7 @@ import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 import static nars.$.$safe;
-import static spacegraph.layout.Gridding.col;
+import static spacegraph.container.Gridding.col;
 import static spacegraph.render.JoglPhysics.window;
 
 /**

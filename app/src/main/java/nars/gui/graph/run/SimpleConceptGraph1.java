@@ -14,7 +14,7 @@ import spacegraph.widget.meta.AutoSurface;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static spacegraph.layout.Gridding.grid;
+import static spacegraph.container.Gridding.grid;
 
 public class SimpleConceptGraph1 extends DynamicConceptSpace {
 

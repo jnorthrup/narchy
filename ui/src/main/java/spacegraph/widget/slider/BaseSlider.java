@@ -14,8 +14,8 @@ import spacegraph.render.Draw;
 import spacegraph.render.JoglSpace;
 import spacegraph.widget.windo.Widget;
 
-import static spacegraph.layout.Gridding.col;
-import static spacegraph.layout.Gridding.grid;
+import static spacegraph.container.Gridding.col;
+import static spacegraph.container.Gridding.grid;
 
 /**
  * abstract 1D slider/scrollbar

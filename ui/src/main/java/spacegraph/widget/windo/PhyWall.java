@@ -29,16 +29,18 @@ import org.slf4j.event.Level;
 import spacegraph.*;
 import spacegraph.input.Finger;
 import spacegraph.input.FingerDragging;
-import spacegraph.layout.EmptySurface;
-import spacegraph.layout.Gridding;
-import spacegraph.layout.Splitting;
+import spacegraph.container.EmptySurface;
+import spacegraph.container.Gridding;
+import spacegraph.container.Splitting;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 import spacegraph.phys.util.Animated;
 import spacegraph.render.Draw;
 import spacegraph.render.SpaceGraphFlat;
+import spacegraph.test.dyn2d.PhyWallTest;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
+import spacegraph.widget.meta.WizardFrame;
 import spacegraph.widget.text.Label;
 
 import java.util.Collections;
@@ -326,6 +328,9 @@ public class PhyWall extends Wall implements Animated {
         Ortho view = (Ortho) root();
         return addWindow(content, RectFloat2D.XYWH(view.x(), view.y(), w, h));
     }
+
+
+
 
     public PhyWindow addWindow(Surface content, RectFloat2D initialBounds) {
         PhyWindow s = new PhyWindow(initialBounds);
@@ -736,7 +741,8 @@ public class PhyWall extends Wall implements Animated {
 
             @Override
             protected void onRemoval() {
-                PhyWall.this.remove(content); //body has been destroyed
+                //body has been destroyed
+                PhyWindow.this.remove();
             }
 
             @Override
@@ -787,6 +793,11 @@ public class PhyWall extends Wall implements Animated {
     }
 
 
+    //TODO encapsulate in Finger.DoubleClicking class
+    v2 doubleClickSpot = null;
+    long maxDoubleClickTime = 250, doubleClickTime = Long.MIN_VALUE; //ms
+
+
     @Override
     public Surface onTouch(Finger finger, short[] buttons) {
 
@@ -794,11 +805,29 @@ public class PhyWall extends Wall implements Animated {
         if (s != null && s != this && !(s instanceof PhyWindow))
             return s; //some other content, like an inner elmeent of a window but not a window itself
 
-        if (finger.tryFingering(jointDrag))
+        if (finger!=null && finger.tryFingering(jointDrag))
             return this;
+
+        if (finger!=null && finger.clickedNow(0)) {
+            //System.out.println("click " + doubleClickSpot + " " + finger.hitOnDown[0] + " " + (System.currentTimeMillis() - doubleClickTime));
+            v2 downHit = finger.hitOnDownGlobal[0];
+            if (downHit!=null && doubleClickSpot!=null && doubleClickSpot.equals(downHit, 0.001f) && System.currentTimeMillis() - doubleClickTime < maxDoubleClickTime) {
+                //System.out.println("double click");
+                doubleClick(finger.pos);
+            }
+
+            doubleClickSpot = finger.hitOnDownGlobal[0];
+            doubleClickTime = System.currentTimeMillis();
+        }
 
 
         return this;
+    }
+
+    public void doubleClick(v2 pos) {
+        addWindow(
+                new WizardFrame( new PhyWallTest.ProtoWidget() ),
+                RectFloat2D.XYWH(pos.x, pos.y, 1, 1));
     }
 
     final static int MOUSE_JOINT_BUTTON = 0;

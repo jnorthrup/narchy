@@ -1,4 +1,4 @@
-package spacegraph.layout;
+package spacegraph.container;
 
 import spacegraph.SimpleSpatial;
 import spacegraph.SpaceTransform;
