@@ -141,7 +141,7 @@ public class MyConcurrentRadixTree<X> /* TODO extends ReentrantReadWriteLock */ 
     static int search(Node[] a, int size, byte key) {
         if (size == 0) {
             return -1;
-        } else if (size >= SortedArray.binarySearchThreshold) {
+        } else if (size >= SortedArray.BINARY_SEARCH_THRESHOLD) {
             return binarySearch(key, size, a);
         } else {
             return linearSearch(key, a);

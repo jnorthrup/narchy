@@ -97,7 +97,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     private int dur;
 
-    public final FloatRange motivation = new FloatRange(0.5f, 0f, 1f);
+    public final FloatRange motivation = new FloatRange(0f, 0f, 1f);
     protected List<Task> always = $.newArrayList();
 
 
@@ -212,6 +212,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     protected void start(NAR nar) {
         synchronized (this) {
             super.start(nar);
+
+            motivation.set(nar.priDefault(GOAL));
 
             Term happyTerm = id == null ?
                     $.the("happy") : //generally happy

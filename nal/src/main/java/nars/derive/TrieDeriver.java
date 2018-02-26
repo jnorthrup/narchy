@@ -484,11 +484,13 @@ public final class TrieDeriver {
                 }
                 i++;
             }
-            assert(bundle.size()>1);
-            x.add(AndCondition.the(fx.p, Fork.fork(bundle.toArray(new PrediTerm[bundle.size()]), builder)));
+            if (!bundle.isEmpty()) {
+                assert (bundle.size() > 1);
+                x.add(AndCondition.the(fx.p, Fork.fork(bundle.toArray(new PrediTerm[bundle.size()]), builder)));
 
-            if (x.size() == 1)
-                return x.get(0);
+                if (x.size() == 1)
+                    return x.get(0);
+            }
         }
 
         return Fork.fork(x.toArray(new PrediTerm[x.size()]), builder);

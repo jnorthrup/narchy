@@ -1,10 +1,13 @@
 package nars;
 
 import jcog.Util;
+import jcog.bag.impl.PLinkArrayBag;
 import jcog.bloom.StableBloomFilter;
 import jcog.bloom.hash.BytesHashProvider;
 import jcog.list.FasterList;
 import jcog.pri.PLink;
+import jcog.pri.PriReference;
+import jcog.pri.op.PriMerge;
 import nars.concept.Concept;
 import nars.control.proto.TaskAdd;
 import nars.op.Operator;
@@ -13,7 +16,6 @@ import nars.task.ITask;
 import nars.task.NALTask;
 import nars.task.TaskProxy;
 import nars.task.signal.SignalTask;
-import nars.task.util.AnswerBag;
 import nars.task.util.InvalidTaskException;
 import nars.task.util.TaskRegion;
 import nars.term.Term;
@@ -28,6 +30,7 @@ import nars.truth.Truthed;
 import org.eclipse.collections.api.PrimitiveIterable;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.tuple.Pair;
+import org.eclipse.collections.api.tuple.Twin;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
@@ -696,11 +699,19 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
             Concept concept = concept(nar, true);
             if (concept != null) {
-                AnswerBag answers = concept.meta("?", (x) ->
-                        new AnswerBag(nar, Param.ANSWER_BAG_CAPACITY)
+                //shared by both questions and quests per concept
+                PLinkArrayBag<Twin<Task>> answers = concept.meta("?", (x) ->
+                        new PLinkArrayBag<Twin<Task>>(PriMerge.max, Param.ANSWER_BAG_CAPACITY)
                 );
-                answers.commit().putAsync(new PLink<>(twin(this, answer),
-                        (this.priElseZero()) * (answer.conf())));
+
+                Twin<Task> qa = twin(this, answer);
+                PLink<Twin<Task>> p = new PLink<>(qa,
+                        (this.priElseZero()) * (answer.conf()));
+                PriReference<Twin<Task>> r = answers.commit().put(p);
+                if (Param.DEBUG_REPORT_ANSWERS && r == p) {
+                    //added
+                    nar.input(Operator.log(nar.time(), qa.getOne() + "  " + qa.getTwo()));
+                }
 
             }
 

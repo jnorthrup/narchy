@@ -1,4 +1,4 @@
-package jcog.list;
+package jcog.util;
 
 import com.google.common.collect.Iterators;
 import org.jetbrains.annotations.NotNull;

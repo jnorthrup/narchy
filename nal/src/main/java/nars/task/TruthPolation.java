@@ -17,7 +17,6 @@ import static nars.truth.TruthFunctions.w2cSafe;
  * see:
  * https://en.wikipedia.org/wiki/Category:Intertemporal_economics
  * https://en.wikipedia.org/wiki/Discounted_utility
- *
  */
 public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
@@ -25,7 +24,9 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
     static class TaskComponent {
         public final Task task;
 
-        /** NaN if not yet computed */
+        /**
+         * NaN if not yet computed
+         */
         public float evi = NaN;
         public float freq = NaN;
 
@@ -53,7 +54,7 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
     public TruthPolation(long start, long end, int dur, TaskRegion... tasks) {
         this(start, end, dur);
         for (TaskRegion t : tasks) {
-            if (t!=null)
+            if (t != null)
                 add(t);
         }
     }
@@ -68,7 +69,7 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
         this.start = start;
         this.end = end;
 
-        assert(dur > 0);
+        assert (dur > 0);
         this.dur = dur;
     }
 
@@ -81,7 +82,7 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
         long dd = t.minDistanceTo(start, end);
 
         if (dur > 1) {
-            if (dd < dur) dur = Math.max(1, (int)dd);
+            if (dd < dur) dur = Math.max(1, (int) dd);
 
 //            if (computeDensity) {
 //                long ts = Util.clamp(t.start(), start, end);
@@ -127,10 +128,12 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
                 LongHashSet e = new LongHashSet(s * 2);
                 removeIf(tc -> {
                     long[] stamp = tc.task.stamp();
+
                     for (long ss : stamp) {
                         if (!e.add(ss))
                             return true; //overlap
                     }
+
 
                     return false;
                 });
@@ -141,25 +144,28 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
         {
             int s = size();
             switch (s) {
-                case 0: return null;
+                case 0:
+                    return null;
                 case 1: {
                     TaskComponent only = get(0);
                     return new PreciseTruth(only.freq, only.evi, false);
                 }
                 default: {
                     //interpolate
-                    float eviSum = 0 , wFreqSum = 0;
+                    float eviSum = 0, confSum = 0, wFreqSum = 0;
                     for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
                         TaskComponent x = this.get(i);
-                        float xe = x.evi;
-                        eviSum += xe;
-                        wFreqSum += xe * x.freq;
+                        float ee = x.evi;
+                        eviSum += ee;
+                        float ce = w2cSafe(ee);
+                        confSum += ce;
+                        wFreqSum += ce * x.freq;
                     }
                     float c = w2cSafe(eviSum);
                     if (c < Param.TRUTH_EPSILON)
                         return null;
                     else {
-                        float f = (wFreqSum / eviSum);
+                        float f = (wFreqSum / confSum);
                         return new PreciseTruth(f, c);
                     }
                 }
@@ -169,11 +175,13 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
 
     }
 
-    /** blends any result with an eternal "background" contribution */
+    /**
+     * blends any result with an eternal "background" contribution
+     */
     public Truth get(@Nullable Task eternalTask) {
 
         Truth temporal = get(true);
-        Truth eternal = eternalTask!=null ? eternalTask.truth() : null;
+        Truth eternal = eternalTask != null ? eternalTask.truth() : null;
         if (eternal == null)
             return temporal;
         else if (temporal == null)

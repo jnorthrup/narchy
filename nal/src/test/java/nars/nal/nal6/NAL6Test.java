@@ -13,7 +13,7 @@ import static nars.time.Tense.ETERNAL;
 public class NAL6Test extends NALTest {
 
 
-    public final int cycles = 4500;
+    public final int cycles = 1500;
 
     @Override protected NAR nar() {
         return NARS.tmp(6);

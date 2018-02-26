@@ -14,7 +14,6 @@ import nars.term.subst.Unify;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -113,7 +112,7 @@ public class ActiveQuestionTask extends NALTask implements Consumer<Task> {
     }
 
     ArrayBag<Task, PriReference<Task>> newBag(int history) {
-        return new PLinkArrayBag<>(history, PriMerge.max, new HashMap<>(history)) {
+        return new PLinkArrayBag<>(PriMerge.max, history) {
             @Override
             public void onAdd(PriReference<Task> t) {
                 eachAnswer.accept(ActiveQuestionTask.this, t.get());

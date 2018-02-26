@@ -1,6 +1,6 @@
 package nars.subterm;
 
-import jcog.list.ArrayIterator;
+import jcog.util.ArrayIterator;
 import nars.Op;
 import nars.term.Term;
 import org.jetbrains.annotations.NotNull;

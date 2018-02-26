@@ -6,7 +6,7 @@ import jcog.data.graph.ImmutableDirectedEdge;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.NodeGraph;
 import jcog.event.On;
-import jcog.list.ArrayIterator;
+import jcog.util.ArrayIterator;
 import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.rect.RectFloat2D;

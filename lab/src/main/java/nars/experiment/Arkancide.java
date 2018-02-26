@@ -3,10 +3,7 @@ package nars.experiment;
 
 import jcog.Util;
 import jcog.math.FloatRange;
-import nars.$;
-import nars.NAR;
-import nars.NAgentX;
-import nars.Narsese;
+import nars.*;
 import nars.util.signal.Bitmap2DConcepts;
 import nars.video.BufferedImageBitmap2D;
 import nars.video.Scale;
@@ -25,7 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Arkancide extends NAgentX {
 
     static boolean numeric = true;
-    static boolean cam = true;
+    static boolean cam = false;
 
     public final FloatRange ballSpeed = new FloatRange(0.75f, 0.04f, 6f);
     //public final FloatParam paddleSpeed = new FloatParam(2f, 0.1f, 3f);
@@ -36,11 +33,10 @@ public class Arkancide extends NAgentX {
 
     //final int afterlife = 60;
 
-    final float paddleSpeed;
+    static float paddleSpeed;
 
 
     final Arkanoid noid;
-    //private final ActionConcept left, right;
 
     private float prevScore;
 
@@ -75,7 +71,7 @@ public class Arkancide extends NAgentX {
 
             return a;
 
-        }, 20);
+        }, 50);
 
 
 //        nar.forEachActiveConcept(c -> {
@@ -114,7 +110,7 @@ public class Arkancide extends NAgentX {
 //        };
 
 
-        paddleSpeed = 250 * noid.BALL_VELOCITY;
+        paddleSpeed = 50 * noid.BALL_VELOCITY;
 
         //initBipolarDirect();
         initBipolarRelative();
@@ -138,10 +134,10 @@ public class Arkancide extends NAgentX {
 
 
         if (numeric) {
-            senseNumberBi($.inh("px", id), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
-            senseNumberBi($.inh("dx", id), (() -> Math.abs(noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
-            senseNumberBi($.inh("bx", id), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
-            senseNumberBi($.inh("by", id), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
+            senseNumberBi($.the("px"), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
+            senseNumberBi($.the("dx"), (() -> Math.abs(noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
+            senseNumberBi($.the("bx"), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
+            senseNumberBi($.the("by"), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
             //SensorConcept d = senseNumber("noid:bvx", new FloatPolarNormalized(() -> noid.ball.velocityX)).resolution(0.25f);
             //SensorConcept e = senseNumber("noid:bvy", new FloatPolarNormalized(() -> noid.ball.velocityY)).resolution(0.25f);
 
@@ -153,13 +149,14 @@ public class Arkancide extends NAgentX {
 //            SpaceGraph.window(Vis.beliefCharts(100,
 //                    Lists.newArrayList(ab.term(), a.term(), b.term(), c.term()),
 //                    nar), 600, 600);
-//            nar.onTask(t -> {
-//                if (//t instanceof DerivedTask &&
-//                        t.isEternal()) {
-//                        //t.isGoal()) {
-//                    System.err.println(t.proof());
-//                }
-//            });
+            Param.DEBUG = true;
+            nar.onTask(t -> {
+                if (//t instanceof DerivedTask &&
+                        //t.isEternal()) {
+                        t.isGoal()) {
+                    System.err.println(t.proof());
+                }
+            });
 
 //            window(Vis.beliefCharts(64, java.util.List.of(px, dx, bx, by), nar), 300, 300);
 //
@@ -250,6 +247,8 @@ public class Arkancide extends NAgentX {
 
     private void initBipolarRelative() {
         actionBipolar($.the("X"), false, (dx) -> {
+
+            System.out.println(dx);
             if (noid.paddle.move(dx * paddleSpeed))
                 return dx;
             else
@@ -263,13 +262,12 @@ public class Arkancide extends NAgentX {
         });
     }
     private void initToggle() {
-        //BAD because whichever 'key' is second cancels the first
-        actionPushButton($.inh("L", id), () -> noid.paddle.move(-paddleSpeed));
-        actionPushButton($.inh("R", id), () -> noid.paddle.move(+paddleSpeed));
+        actionPushButton($.the("L"), () -> noid.paddle.move(-paddleSpeed));
+        actionPushButton($.the("R"), () -> noid.paddle.move(+paddleSpeed));
     }
     private void initUnipolar() {
-        actionUnipolar($.inh("L", id), (u)-> noid.paddle.move(-paddleSpeed*u) ? u : 0);
-        actionUnipolar($.inh("R", id), (u)-> noid.paddle.move(+paddleSpeed*u) ? u : 0);
+        actionUnipolar($.the("L"), (u)-> noid.paddle.move(-paddleSpeed*u) ? u : 0);
+        actionUnipolar($.the("R"), (u)-> noid.paddle.move(+paddleSpeed*u) ? u : 0);
     }
 
     @Override
@@ -288,6 +286,8 @@ public class Arkancide extends NAgentX {
      */
     public static class Arkanoid extends JFrame implements KeyListener {
 
+        private final Canvas canvas;
+
         int score;
 
         public static final int SCREEN_WIDTH = 360;
@@ -301,7 +301,6 @@ public class Arkancide extends NAgentX {
 
         public static final float PADDLE_WIDTH = 40.0f;
         public static final float PADDLE_HEIGHT = 20.0f;
-        public static final float PADDLE_VELOCITY = 0.6f;
 
         public static final float BLOCK_WIDTH = 40.0f;
         public static final float BLOCK_HEIGHT = 15.0f;
@@ -380,7 +379,7 @@ public class Arkancide extends NAgentX {
 
         class Paddle extends Rectangle {
 
-            public float velocity;
+//            public float velocity;
 
             public Paddle(float x, float y) {
                 this.x = x;
@@ -392,37 +391,35 @@ public class Arkancide extends NAgentX {
             /**
              * returns percent of movement accomplished
              */
-            public boolean move(float dx) {
+            public synchronized boolean move(float dx) {
                 float px = x;
-                x += dx;
-                x = Math.max(x, sizeX);
-                x = Math.min(x, SCREEN_WIDTH - sizeX);
+                x = Util.clamp(x + dx, sizeX, SCREEN_WIDTH - sizeX);
                 return !Util.equals(px, x, 1f);
             }
-
-            void update() {
-                x += velocity * FT_STEP;
-            }
-
-            void stopMove() {
-                velocity = 0.0f;
-            }
-
-            void moveLeft() {
-                if (left() > 0.0) {
-                    velocity = -PADDLE_VELOCITY;
-                } else {
-                    velocity = 0.0f;
-                }
-            }
-
-            void moveRight() {
-                if (right() < SCREEN_WIDTH) {
-                    velocity = PADDLE_VELOCITY;
-                } else {
-                    velocity = 0.0f;
-                }
-            }
+//
+//            void update() {
+//                x += velocity * FT_STEP;
+//            }
+//
+//            void stopMove() {
+//                velocity = 0.0f;
+//            }
+//
+//            void moveLeft() {
+//                if (left() > 0.0) {
+//                    velocity = -paddleSpeed;
+//                } else {
+//                    velocity = 0.0f;
+//                }
+//            }
+//
+//            void moveRight() {
+//                if (right() < SCREEN_WIDTH) {
+//                    velocity = paddleSpeed;
+//                } else {
+//                    velocity = 0.0f;
+//                }
+//            }
 
             void draw(Graphics g) {
                 g.setColor(Color.WHITE);
@@ -610,10 +607,18 @@ public class Arkancide extends NAgentX {
             this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             this.setUndecorated(false);
             this.setResizable(false);
-            this.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-            this.addKeyListener(this);
+
             this.setLocationRelativeTo(null);
-            //setIgnoreRepaint(true);
+            setIgnoreRepaint(true);
+
+            canvas = new Canvas();
+            canvas.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+            JPanel jc = new JPanel(new BorderLayout());
+            jc.add(canvas);
+            setContentPane(jc);
+            pack();
+
+            canvas.addKeyListener(this);
 
             if (visible)
                 this.setVisible(true);
@@ -657,7 +662,6 @@ public class Arkancide extends NAgentX {
             //for (; currentSlice >= FT_SLICE; currentSlice -= FT_SLICE) {
 
             ball.update(paddle);
-            paddle.update();
             testCollision(paddle, ball);
 
             //synchronized (bricks) {
@@ -673,39 +677,20 @@ public class Arkancide extends NAgentX {
 
             //}
 
+            Graphics g = canvas.getGraphics();
+            g.setColor(Color.black);
+            g.fillRect(0, 0, getWidth(), getHeight());
 
-            //SwingUtilities.invokeLater(this::repaint);
-            repaint();
+            ball.draw(g);
+            paddle.draw(g);
+            for (Brick brick : bricks) {
+                brick.draw(g);
+            }
+
 
             return score;
         }
 
-
-        @Override
-        public void paint(Graphics g) {
-            // Code for the drawing goes here.
-            //BufferStrategy bf = this.getBufferStrategy();
-
-            try {
-
-
-                g.setColor(Color.black);
-                g.fillRect(0, 0, getWidth(), getHeight());
-
-                ball.draw(g);
-                paddle.draw(g);
-                for (Brick brick : bricks) {
-                    brick.draw(g);
-                }
-
-            } finally {
-                g.dispose();
-            }
-
-
-            //Toolkit.getDefaultToolkit().sync();
-
-        }
 
         @Override
         public void keyPressed(KeyEvent event) {
@@ -715,10 +700,10 @@ public class Arkancide extends NAgentX {
 
             switch (event.getKeyCode()) {
                 case KeyEvent.VK_LEFT:
-                    paddle.moveLeft();
+                    paddle.move(-paddleSpeed);
                     break;
                 case KeyEvent.VK_RIGHT:
-                    paddle.moveRight();
+                    paddle.move(+paddleSpeed);
                     break;
                 default:
                     break;
@@ -730,7 +715,6 @@ public class Arkancide extends NAgentX {
             switch (event.getKeyCode()) {
                 case KeyEvent.VK_LEFT:
                 case KeyEvent.VK_RIGHT:
-                    paddle.stopMove();
                     break;
                 default:
                     break;

@@ -296,19 +296,19 @@
 
 
     //X is the desired outcome. C is a sequence ending in it.  this forms a goal of the sequence minus the trailing
-    X, C, belief("&&"), task(positive), in(X,C) |- ifNeqRoot(conjDropIfLatest(C,X),--X), (Goal:Strong)
+    X, C, belief("&&"), in(X,C) |- ifNeqRoot(conjDropIfLatest(C,X),--X), (Goal:Strong)
     //X is the desired non-outcome.  C is a sequence ending in it.   this forms a goal of the sequence minus the trailing
-    X, C, belief("&&"), task(negative), inNeg(X,C) |- ifNeqRoot(conjDropIfLatest(C,--X), X), (Goal:StrongN)
+    X, C, belief("&&"), inNeg(X,C) |- ifNeqRoot(conjDropIfLatest(C,--X), X), (Goal:StrongN)
     //X is the desired non-outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
-    X, C, belief("&&"), task(positive), inNeg(X,C) |- ifNeqRoot((--,conjDropIfLatest(C,--X)), X), (Goal:Strong)
+    X, C, belief("&&"), inNeg(X,C) |- ifNeqRoot((--,conjDropIfLatest(C,--X)), X), (Goal:Strong)
     //X is the undesired outcome. C is a sequence ending in it.  this forms a weak antigoal of the sequence minus the trailing
-    X, C, belief("&&"), task(negative), in(X,C) |- ifNeqRoot((--,conjDropIfLatest(C,X)), --X), (Goal:StrongN)
+    X, C, belief("&&"), in(X,C) |- ifNeqRoot((--,conjDropIfLatest(C,X)), --X), (Goal:StrongN)
 
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),conjEvent(C,late),B), (Goal:Strong)
     //B, C, belief("&&+"), task("!"), time(urgent) |- subIfUnifiesAny(conjEvent(C,early),--conjEvent(C,late),B), (Goal:StrongN)
 
-    C, X, task("&&"), belief(positive), in(X,C) |- conjDropIfEarliest(C,X), (Goal:Induction)
-    C, X, task("&&"), belief(negative), inNeg(X,C) |- conjDropIfEarliest(C,--X), (Goal:InductionPN)
+    C, X, task("&&"), in(X,C) |- conjDropIfEarliest(C,X), (Goal:Induction)
+    C, X, task("&&"), inNeg(X,C) |- conjDropIfEarliest(C,--X), (Goal:InductionPN)
         //(&&,X,A..+), X, task("!") |- X, (Goal:Strong)
         //(&&,--X,A..+), X, task("!") |- X, (Goal:StrongPN)
 

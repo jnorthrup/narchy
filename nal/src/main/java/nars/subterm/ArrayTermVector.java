@@ -1,6 +1,6 @@
 package nars.subterm;
 
-import jcog.list.ArrayIterator;
+import jcog.util.ArrayIterator;
 import nars.Param;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;

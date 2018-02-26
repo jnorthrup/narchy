@@ -1,6 +1,7 @@
 package jcog.list;
 
 import jcog.TODO;
+import jcog.util.ArrayIterator;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;

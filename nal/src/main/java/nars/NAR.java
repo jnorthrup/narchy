@@ -8,7 +8,7 @@ import jcog.event.ListTopic;
 import jcog.event.On;
 import jcog.event.Topic;
 import jcog.exe.Cycler;
-import jcog.list.ArrayIterator;
+import jcog.util.ArrayIterator;
 import jcog.list.FasterList;
 import jcog.math.MutableInteger;
 import jcog.pri.Pri;

@@ -21,7 +21,7 @@ package jcog.tree.rtree;
  */
 
 import jcog.Util;
-import jcog.list.ArrayIterator;
+import jcog.util.ArrayIterator;
 import jcog.tree.rtree.util.CounterNode;
 import jcog.tree.rtree.util.Stats;
 

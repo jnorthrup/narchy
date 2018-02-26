@@ -10,7 +10,7 @@ import jcog.pri.Prioritized;
 import jcog.pri.Priority;
 import jcog.pri.op.PriMerge;
 import jcog.sort.SortedArray;
-import jcog.util.AtomicFixedPrecisionFloatFieldUpdater;
+import jcog.util.AtomicFloatFieldUpdater;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,12 +29,12 @@ import java.util.stream.Stream;
  * TODO extract a version of this which will work for any Prioritized, not only BLink
  */
 abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X, Y> implements Bag<X, Y> {
-    private static final AtomicFixedPrecisionFloatFieldUpdater<ArrayBag> mass =
-            new AtomicFixedPrecisionFloatFieldUpdater(
-                    AtomicIntegerFieldUpdater.newUpdater(ArrayBag.class, "_mass"), 16*1024);
-    private static final AtomicFixedPrecisionFloatFieldUpdater<ArrayBag> pressure =
-            new AtomicFixedPrecisionFloatFieldUpdater(
-                    AtomicIntegerFieldUpdater.newUpdater(ArrayBag.class, "_pressure"), 16*1024);
+    private static final AtomicFloatFieldUpdater<ArrayBag> mass =
+            new AtomicFloatFieldUpdater(
+                    AtomicIntegerFieldUpdater.newUpdater(ArrayBag.class, "_mass"));
+    private static final AtomicFloatFieldUpdater<ArrayBag> pressure =
+            new AtomicFloatFieldUpdater(
+                    AtomicIntegerFieldUpdater.newUpdater(ArrayBag.class, "_pressure"));
 
     final PriMerge mergeFunction;
 
@@ -103,7 +103,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
      */
     @Override
     public float depressurize() {
-        return Util.max(0, pressure.getAndSet(this,0f)); //max() in case it becomes negative
+        return Util.max(0, pressure.getAndZero(this)); //max() in case it becomes negative
     }
 
     @Override
