@@ -76,7 +76,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
      */
     static final float growthLerpRate = 0.5f;
 
-    final static float PRESSURE_THRESHOLD = 0.05f;
+//    final static float PRESSURE_THRESHOLD = 0.05f;
 
     static final AtomicReferenceArray EMPTY_ARRAY = new AtomicReferenceArray(0);
 
@@ -520,10 +520,10 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         if (k == null)
             return null;
 
-        int c = capacity;
-        int s = size;
-        if (((float) Math.abs(c - s)) / c < PRESSURE_THRESHOLD)
-            pressurize(pri(v));
+        //int c = capacity;
+        //int s = size;
+        //if (((float) Math.abs(c - s)) / c < PRESSURE_THRESHOLD)
+        pressurize(pri(v));
 
         V x = update(k, v, PUT, overflowing);
         if (x == null) {

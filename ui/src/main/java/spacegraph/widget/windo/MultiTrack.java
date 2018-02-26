@@ -4,9 +4,9 @@ import com.google.common.collect.Iterables;
 import com.jogamp.opengl.GL2;
 import jcog.list.FasterList;
 import spacegraph.Surface;
+import spacegraph.container.Stacking;
 import spacegraph.input.FingerMove;
 import spacegraph.input.Fingering;
-import spacegraph.container.Stacking;
 import spacegraph.render.Draw;
 import spacegraph.render.JoglSpace;
 

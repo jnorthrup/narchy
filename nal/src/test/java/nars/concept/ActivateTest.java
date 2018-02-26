@@ -3,7 +3,6 @@ package nars.concept;
 import jcog.pri.PLink;
 import nars.*;
 import nars.control.Activate;
-import nars.control.BatchActivation;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
@@ -46,10 +45,10 @@ public class ActivateTest {
 
         Term A = $.the("a");
 
-        BatchActivation ba = new BatchActivation();
+//        BatchActivation ba = new BatchActivation();
         for (int i = 0; i < 100; i++) {
             final int[] remain = {9};
-            cf.premises(nar, ba, (task, term) -> {
+            cf.premises(nar, (task, term) -> {
                 Task ptask = task.get();
                 Term pterm = term.get();
                 System.out.println("tasklink=" + ptask + " termlink=" + pterm);
@@ -62,7 +61,7 @@ public class ActivateTest {
                 taskHits.addOccurrences(/*tasklink.get() + " " +*/ (ptask + " " + pterm), 1);
                 return --remain[0] > 0;
             }, 3);
-            ba.commit(nar);
+//            ba.commit(nar);
         }
 
 

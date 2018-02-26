@@ -6,7 +6,6 @@ import nars.$;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.control.BatchActivation;
 import nars.control.Cause;
 import nars.derive.rule.PremiseRule;
 import nars.derive.time.DeriveTime;
@@ -58,10 +57,8 @@ public class Derivation extends ProtoDerivation {
 
     public NAR nar;
 
-
 //    public final ByteShuffler shuffler = new ByteShuffler(64);
-
-    public final BatchActivation activator = new BatchActivation();
+//    public final BatchActivation activator = new BatchActivation();
 
     public final Anon anon =
             new Anon(ANON_CAPACITY);
@@ -712,7 +709,7 @@ public class Derivation extends ProtoDerivation {
      */
     public int commit(Consumer<Collection<Task>> target) {
 
-        activator.commit(nar);
+//        activator.commit(nar);
 
 //        //experimental normalization
 //        final float[] priSum = {0};

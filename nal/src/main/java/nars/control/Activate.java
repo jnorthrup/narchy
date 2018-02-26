@@ -31,7 +31,7 @@ public class Activate extends PLink<Concept> implements Termed {
      * hypothesize premises, up to a max specified #
      */
     /*@NotNull*/
-    public void premises(NAR nar, BatchActivation ba, BiPredicate<PriReference<Task>, PriReference<Term>> each, int _termlinksPerTasklink) {
+    public void premises(NAR nar, BiPredicate<PriReference<Task>, PriReference<Term>> each, int _termlinksPerTasklink) {
 
         final Bag<Term, PriReference<Term>> termlinks = id.termlinks();
 
@@ -47,7 +47,7 @@ public class Activate extends PLink<Concept> implements Termed {
         termlinks.commit(termlinks.forget(linkForgetting));
 
         if (!isDeleted())
-            activateTemplates(nar, ba);
+            activateTemplates(nar);
 
         int ntermlinks = termlinks.size();
         if (ntermlinks == 0) {
@@ -89,10 +89,10 @@ public class Activate extends PLink<Concept> implements Termed {
     }
 
 
-    void activateTemplates(NAR nar, BatchActivation ba) {
+    void activateTemplates(NAR nar) {
         nar.emotion.conceptFire.increment();
 
-        float cost = TermLinks.linkTemplates(id, priElseZero(), nar.momentum.floatValue(), nar, ba);
+        float cost = TermLinks.linkTemplates(id, priElseZero(), nar.momentum.floatValue(), nar);
         if (cost >= Pri.EPSILON)
             priSub(cost);
     }

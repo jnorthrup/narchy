@@ -7,7 +7,6 @@ import jcog.learn.gng.impl.Centroid;
 import jcog.list.FasterList;
 import jcog.pri.VLink;
 import jcog.pri.op.PriMerge;
-import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -46,7 +45,7 @@ public class BagClustering<X> {
 
         this.net = new NeuralGasNet(model.dims, centroids, model::distanceSq);
 
-        this.bag = new ArrayBag<X,VLink<X>>(PriMerge.max, initialCap) {
+        this.bag = new ArrayBag<>(PriMerge.max, initialCap) {
 
             @Nullable
             @Override

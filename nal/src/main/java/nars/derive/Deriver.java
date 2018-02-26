@@ -275,7 +275,7 @@ public class Deriver extends Causable {
 
             int[] perConceptRemain = new int[] {premisesPerConcept};
 
-            a.premises(nar, d.activator, (tasklink, termlink) ->
+            a.premises(nar, (tasklink, termlink) ->
 
                     //can return false to stop the current concept but not the entire chain
                     (--perConceptRemain[0] > 0) && each.test(tasklink, termlink) && (--premisesRemain[0]>0), termLinksPerTaskLink);

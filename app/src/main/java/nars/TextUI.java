@@ -20,7 +20,7 @@ import com.googlecode.lanterna.terminal.virtual.DefaultVirtualTerminal;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
 import com.googlecode.lanterna.terminal.virtual.VirtualTerminalListener;
 import jcog.bag.impl.ArrayBag;
-import jcog.bag.impl.ConcurrentArrayBag;
+import jcog.bag.impl.PLinkArrayBag;
 import jcog.event.On;
 import jcog.math.FloatRange;
 import jcog.math.MutableInteger;
@@ -32,7 +32,6 @@ import nars.control.Activate;
 import nars.control.DurService;
 import nars.control.NARService;
 import nars.op.language.NARHear;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -473,14 +472,15 @@ public class TextUI {
                 this.autoupdate = autoupdate;
                 visible.set(capacity);
 
-                bag = new ConcurrentArrayBag<>(PriMerge.replace, capacity * 2) {
+                bag = new PLinkArrayBag<>(PriMerge.replace, capacity * 2);
+                //bag = new ConcurrentArrayBag<>(PriMerge.replace, capacity * 2) {
 
-                    @Nullable
-                    @Override
-                    public X key(PriReference<X> x) {
-                        return x.get();
-                    }
-                };
+//                    {@Nullable
+//                    @Override
+//                    public X key(PriReference<X> x) {
+//                        return x.get();
+//                    }}
+                //};
                 update = newGUIUpdate(this::update);
 
             }

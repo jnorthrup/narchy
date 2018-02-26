@@ -4,8 +4,8 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
 import jcog.Texts;
 import jcog.tree.rtree.rect.RectFloat2D;
-import spacegraph.input.Finger;
 import spacegraph.container.AspectAlign;
+import spacegraph.input.Finger;
 import spacegraph.math.v2;
 
 import java.io.PrintStream;

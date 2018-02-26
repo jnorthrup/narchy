@@ -10,7 +10,6 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.concept.Concept;
-import nars.control.BatchActivation;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termed;
@@ -196,7 +195,7 @@ public enum TermLinks {
     }
 
     @Nullable
-    public static Concept linkTemplate(Term srcTerm, Bag srcTermLinks, Termed target, float priForward, float priReverse, BatchActivation a, NAR nar, MutableFloat refund) {
+    public static Concept linkTemplate(Term srcTerm, Bag srcTermLinks, Termed target, float priForward, float priReverse, NAR nar, MutableFloat refund) {
 
         Term targetTerm = null;
         boolean reverseLinked = false;
@@ -207,7 +206,7 @@ public enum TermLinks {
                 c.termlinks().put(
                         new PLink<>(srcTerm, priReverse), refund
                 );
-                a.put(c, priForward + priReverse);
+                nar.activate(c, priForward + priReverse);
                 reverseLinked = true;
                 targetTerm = c.term();
             }
@@ -329,7 +328,7 @@ public enum TermLinks {
     /**
      * send some activation, returns the cost
      */
-    public static float linkTemplates(Concept src, float totalBudget, float momentum, NAR nar, BatchActivation ba) {
+    public static float linkTemplates(Concept src, float totalBudget, float momentum, NAR nar) {
 
         List<Termed> templates = src.templates();
         int n = templates.size();
@@ -358,7 +357,7 @@ public enum TermLinks {
             Concept c = linkTemplate(srcTerm, srcTermLinks, t,
                     budgetedToEach * balance,
                     budgetedToEach * (1f - balance),
-                    ba, nar, refund);
+                    nar, refund);
 
         }
 

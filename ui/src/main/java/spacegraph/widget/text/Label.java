@@ -3,9 +3,9 @@ package spacegraph.widget.text;
 import com.jogamp.opengl.GL2;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.Surface;
-import spacegraph.input.Finger;
 import spacegraph.container.AspectAlign;
 import spacegraph.container.EmptySurface;
+import spacegraph.input.Finger;
 import spacegraph.math.Color4f;
 import spacegraph.render.Draw;
 

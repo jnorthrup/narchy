@@ -37,8 +37,8 @@ public class CurveBag<X extends Priority> extends PriArrayBag<X> {
         if (size == 1 || random==null)
             return 0;
         else {
-            float min = this.min;
-            float max = this.max;
+            float min = this.priMin();
+            float max = this.priMax();
             float diff = max - min;
             if (diff > Prioritized.EPSILON * size) {
                 float i = random.nextFloat(); //uniform

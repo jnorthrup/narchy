@@ -1,9 +1,11 @@
 package nars.op;
 
 import jcog.bag.impl.ArrayBag;
+import jcog.bag.impl.PLinkArrayBag;
 import jcog.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.pri.PLink;
+import jcog.pri.PriReference;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Op;
@@ -17,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -54,13 +55,7 @@ public class AtomicExec implements BiFunction<Task, NAR, Task> {
     final BiConsumer<Term, NAR> exe;
 
     final static int ACTIVE_CAPACITY = 16;
-    final ArrayBag<Term, PLink<Term>> active = new ArrayBag<Term, PLink<Term>>(PriMerge.max, new HashMap()) {
-        @Nullable
-        @Override
-        public Term key(PLink<Term> l) {
-            return l.get();
-        }
-    };
+    final ArrayBag<Term, PriReference<Term>> active = new PLinkArrayBag<>(PriMerge.max, ACTIVE_CAPACITY);
 
 
     private DurService onCycle;

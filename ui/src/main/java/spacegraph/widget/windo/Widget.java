@@ -5,9 +5,9 @@ import jcog.tree.rtree.rect.RectFloat2D;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
 import spacegraph.SurfaceRoot;
-import spacegraph.input.Finger;
 import spacegraph.container.Stacking;
 import spacegraph.container.Switching;
+import spacegraph.input.Finger;
 import spacegraph.render.Draw;
 import spacegraph.widget.meta.MetaFrame;
 

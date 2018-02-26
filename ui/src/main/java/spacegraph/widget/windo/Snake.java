@@ -34,7 +34,7 @@ public class Snake {
         Dynamics2D w = sourceBody.W;
 
         FixtureDef segment = new FixtureDef(
-                PolygonShape.box(eleLen/2, thick/2), 0.2f, 0f);
+                PolygonShape.box(eleLen / 2, thick / 2), 0.2f, 0f);
         segment.restitution = (0f);
         segment.filter.maskBits = 0; //no collision
 
@@ -75,11 +75,11 @@ public class Snake {
                     jd.localAnchorA.set(0, 0);
                 }
                 jd.bodyB = to;
-                if (to!=targetBody) {
+                if (to != targetBody) {
                     jd.localAnchorB.set(-eleLen / 2, 0); //left side
                 } else {
                     //bind to center of the start or end
-                    jd.localAnchorB.set(0,0);
+                    jd.localAnchorB.set(0, 0);
                 }
                 jd.referenceAngle = 0;
 
@@ -93,16 +93,18 @@ public class Snake {
 
         }
 
-        w.invoke(()->{
+        w.invoke(() -> {
             bodies.forEach(b -> w.addBody(b));
             joints.forEach(w::addJoint);
         });
     }
 
-    /** attach a body to center of one of the segments */
+    /**
+     * attach a body to center of one of the segments
+     */
     public void attach(Body2D b, int segment) {
         Dynamics2D world = world();
-        world.invoke(()->{
+        world.invoke(() -> {
             RevoluteJoint w = (RevoluteJoint) b.W.addJoint(new RevoluteJointDef(bodies.get(segment), b));
             attachments.add(b);
             joints.add(w);
@@ -116,7 +118,7 @@ public class Snake {
     public void remove() {
 
         Dynamics2D world = world();
-        world.invoke(()->{
+        world.invoke(() -> {
 
 //            joints.forEach(world::removeJoint); //joints should be removed automatically when the attached body/bodies are removed
 //            joints.clear();
@@ -148,13 +150,22 @@ public class Snake {
         public boolean solvePositionConstraints(SolverData data) {
             //calc relative position of the surface within the body, allowing distinct positions of multiple ports at different positions in one body
             if (finalFrom == sourceBody) {
-                localAnchorA.set(source.cx(), source.cy()).subbed(
-                        sourceBody.pos
-                );
+                if (source.parent == null) {
+                    remove();
+
+                } else {
+                    localAnchorA.set(source.cx(), source.cy()).subbed(
+                            sourceBody.pos
+                    );
+                }
             } else if (to == targetBody) {
-                localAnchorB.set(target.cx(), target.cy()).subbed(
-                        targetBody.pos
-                );
+                if (target.parent == null) {
+                    remove();
+                } else {
+                    localAnchorB.set(target.cx(), target.cy()).subbed(
+                            targetBody.pos
+                    );
+                }
             }
             return super.solvePositionConstraints(data);
         }

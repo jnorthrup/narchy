@@ -15,7 +15,6 @@
 package jcog;
 
 import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
-import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
