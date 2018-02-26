@@ -56,8 +56,8 @@ import spacegraph.math.v2;
 public class RevoluteJoint extends Joint {
 
     // Solver shared
-    protected final Tuple2f m_localAnchorA = new Vec2();
-    protected final Tuple2f m_localAnchorB = new Vec2();
+    protected final Tuple2f localAnchorA = new v2();
+    protected final Tuple2f localAnchorB = new v2();
     private final Vec3 m_impulse = new Vec3();
     private float m_motorImpulse;
 
@@ -73,10 +73,10 @@ public class RevoluteJoint extends Joint {
     // Solver temp
     private int m_indexA;
     private int m_indexB;
-    private final Tuple2f m_rA = new Vec2();
-    private final Tuple2f m_rB = new Vec2();
-    private final Tuple2f m_localCenterA = new Vec2();
-    private final Tuple2f m_localCenterB = new Vec2();
+    private final Tuple2f m_rA = new v2();
+    private final Tuple2f m_rB = new v2();
+    private final Tuple2f m_localCenterA = new v2();
+    private final Tuple2f m_localCenterB = new v2();
     private float m_invMassA;
     private float m_invMassB;
     private float m_invIA;
@@ -98,8 +98,8 @@ public class RevoluteJoint extends Joint {
 
     public RevoluteJoint(IWorldPool argWorld, RevoluteJointDef def) {
         super(argWorld, def);
-        m_localAnchorA.set(def.localAnchorA);
-        m_localAnchorB.set(def.localAnchorB);
+        localAnchorA.set(def.localAnchorA);
+        localAnchorB.set(def.localAnchorB);
         m_referenceAngle = def.referenceAngle;
 
         m_motorImpulse = 0;
@@ -141,8 +141,8 @@ public class RevoluteJoint extends Joint {
         qB.set(aB);
 
         // Compute the effective masses.
-        Rot.mulToOutUnsafe(qA, temp.set(m_localAnchorA).subbed(m_localCenterA), m_rA);
-        Rot.mulToOutUnsafe(qB, temp.set(m_localAnchorB).subbed(m_localCenterB), m_rB);
+        Rot.mulToOutUnsafe(qA, temp.set(localAnchorA).subbed(m_localCenterA), m_rA);
+        Rot.mulToOutUnsafe(qB, temp.set(localAnchorB).subbed(m_localCenterB), m_rB);
 
         // J = [-I -r1_skew I r2_skew]
         // [ 0 -1 0 1]
@@ -420,8 +420,8 @@ public class RevoluteJoint extends Joint {
             final Tuple2f C = new v2();
             final Tuple2f impulse = new v2();
 
-            Rot.mulToOutUnsafe(qA, C.set(m_localAnchorA).subbed(m_localCenterA), rA);
-            Rot.mulToOutUnsafe(qB, C.set(m_localAnchorB).subbed(m_localCenterB), rB);
+            Rot.mulToOutUnsafe(qA, C.set(localAnchorA).subbed(m_localCenterA), rA);
+            Rot.mulToOutUnsafe(qB, C.set(localAnchorB).subbed(m_localCenterB), rB);
             C.set(cB).added(rB).subbed(cA).subbed(rA).scaled(positionFactor);
             positionError = C.length();
 
@@ -458,11 +458,11 @@ public class RevoluteJoint extends Joint {
     }
 
     public Tuple2f getLocalAnchorA() {
-        return m_localAnchorA;
+        return localAnchorA;
     }
 
     public Tuple2f getLocalAnchorB() {
-        return m_localAnchorB;
+        return localAnchorB;
     }
 
     public float getReferenceAngle() {
@@ -471,12 +471,12 @@ public class RevoluteJoint extends Joint {
 
     @Override
     public void getAnchorA(Tuple2f argOut) {
-        A.getWorldPointToOut(m_localAnchorA, argOut);
+        A.getWorldPointToOut(localAnchorA, argOut);
     }
 
     @Override
     public void getAnchorB(Tuple2f argOut) {
-        B.getWorldPointToOut(m_localAnchorB, argOut);
+        B.getWorldPointToOut(localAnchorB, argOut);
     }
 
     @Override

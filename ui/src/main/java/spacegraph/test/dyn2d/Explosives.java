@@ -121,17 +121,18 @@ public class Explosives {
 
         @Override
         protected void onRemoval() {
-            W.invokeLater(() -> {
-                int blasts = 1;
-                float bulletRadius = 0.2f; //fixtures.shape().radius * 2f; //<- not working
-                float blastScatter = bulletRadius * (blasts - 1);
-                float blastRadius = bulletRadius;
-                for (int i = 0; i < blasts; i++) {
-                    W.addBody(new Fireball(W, pos.add(
-                            new v2((float) rng.nextGaussian() * blastScatter, (float) rng.nextGaussian() * blastScatter)),
-                            blastRadius));
-                }
-            });
+            //fixtures.shape().radius * 2f; //<- not working
+            W.invoke(() -> {
+                    int blasts = 1;
+                    float bulletRadius = 0.2f; //fixtures.shape().radius * 2f; //<- not working
+                    float blastScatter = bulletRadius * (blasts - 1);
+                    float blastRadius = bulletRadius;
+                    for (int i = 0; i < blasts; i++) {
+                        W.addBody(new Fireball(W, pos.add(
+                                new v2((float) rng.nextGaussian() * blastScatter, (float) rng.nextGaussian() * blastScatter)),
+                                blastRadius));
+                    }
+                });
         }
 
         @Override

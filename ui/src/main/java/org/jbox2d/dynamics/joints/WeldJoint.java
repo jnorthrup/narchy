@@ -33,6 +33,7 @@ import org.jbox2d.dynamics.Dynamics2D;
 import org.jbox2d.dynamics.SolverData;
 import org.jbox2d.pooling.IWorldPool;
 import spacegraph.math.Tuple2f;
+import spacegraph.math.v2;
 
 //Point-to-point constraint
 //C = p2 - p1
@@ -71,10 +72,10 @@ public class WeldJoint extends Joint {
     // Solver temp
     private int m_indexA;
     private int m_indexB;
-    private final Tuple2f m_rA = new Vec2();
-    private final Tuple2f m_rB = new Vec2();
-    private final Tuple2f m_localCenterA = new Vec2();
-    private final Tuple2f m_localCenterB = new Vec2();
+    private final Tuple2f m_rA = new v2();
+    private final Tuple2f m_rB = new v2();
+    private final Tuple2f m_localCenterA = new v2();
+    private final Tuple2f m_localCenterB = new v2();
     private float m_invMassA;
     private float m_invMassB;
     private float m_invIA;
@@ -87,8 +88,8 @@ public class WeldJoint extends Joint {
 
     public WeldJoint(IWorldPool argWorld, WeldJointDef def) {
         super(argWorld, def);
-        m_localAnchorA = new Vec2(def.localAnchorA);
-        m_localAnchorB = new Vec2(def.localAnchorB);
+        m_localAnchorA = new v2(def.localAnchorA);
+        m_localAnchorB = new v2(def.localAnchorB);
         m_referenceAngle = def.referenceAngle;
         m_frequencyHz = def.frequencyHz;
         m_dampingRatio = def.dampingRatio;

@@ -134,8 +134,8 @@ public class GearJoint extends Joint {
 
         if (m_typeA == JointType.REVOLUTE) {
             RevoluteJoint revolute = (RevoluteJoint) def.joint1;
-            m_localAnchorC.set(revolute.m_localAnchorA);
-            m_localAnchorA.set(revolute.m_localAnchorB);
+            m_localAnchorC.set(revolute.localAnchorA);
+            m_localAnchorA.set(revolute.localAnchorB);
             m_referenceAngleA = revolute.m_referenceAngle;
             m_localAxisC.setZero();
 
@@ -168,8 +168,8 @@ public class GearJoint extends Joint {
 
         if (m_typeB == JointType.REVOLUTE) {
             RevoluteJoint revolute = (RevoluteJoint) def.joint2;
-            m_localAnchorD.set(revolute.m_localAnchorA);
-            m_localAnchorB.set(revolute.m_localAnchorB);
+            m_localAnchorD.set(revolute.localAnchorA);
+            m_localAnchorB.set(revolute.localAnchorB);
             m_referenceAngleB = revolute.m_referenceAngle;
             m_localAxisD.setZero();
 

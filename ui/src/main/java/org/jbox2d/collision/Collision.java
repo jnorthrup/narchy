@@ -186,7 +186,7 @@ public class Collision {
     // #### COLLISION STUFF (not from collision.h or collision.cpp) ####
 
     // djm pooling
-    private static final Tuple2f d = new Vec2();
+    private static final Tuple2f d = new v2();
 
     /**
      * Compute the collision manifold between two circles.
@@ -424,10 +424,10 @@ public class Collision {
     }
 
     // djm pooling, and from above
-    private final Tuple2f temp = new Vec2();
+    private final Tuple2f temp = new v2();
     private final Transform xf = new Transform();
-    private final v2 n = new Vec2();
-    private final Tuple2f v1 = new Vec2();
+    private final v2 n = new v2();
+    private final Tuple2f v1 = new v2();
 
     /**
      * Find the max separation between poly1 and poly2 using edge normals from poly1.
@@ -547,12 +547,12 @@ public class Collision {
     private final EdgeResults results1 = new EdgeResults();
     private final EdgeResults results2 = new EdgeResults();
     private final ClipVertex[] incidentEdge = new ClipVertex[2];
-    private final v2 localTangent = new Vec2();
-    private final Tuple2f localNormal = new Vec2();
-    private final Tuple2f planePoint = new Vec2();
-    private final Vec2 tangent = new Vec2();
-    private final Tuple2f v11 = new Vec2();
-    private final Tuple2f v12 = new Vec2();
+    private final v2 localTangent = new v2();
+    private final Tuple2f localNormal = new v2();
+    private final Tuple2f planePoint = new v2();
+    private final v2 tangent = new v2();
+    private final Tuple2f v11 = new v2();
+    private final Tuple2f v12 = new v2();
     private final ClipVertex[] clipPoints1 = new ClipVertex[2];
     private final ClipVertex[] clipPoints2 = new ClipVertex[2];
 
@@ -666,9 +666,9 @@ public class Collision {
 
         // Clip to box side 1
         // np = ClipSegmentToLine(clipPoints1, incidentEdge, -sideNormal, sideOffset1);
-        tangent.negateLocal();
+        tangent.negated();
         np = clipSegmentToLine(clipPoints1, incidentEdge, tangent, sideOffset1, iv1);
-        tangent.negateLocal();
+        tangent.negated();
 
         if (np < 2) {
             return;
@@ -710,11 +710,11 @@ public class Collision {
         manifold.pointCount = pointCount;
     }
 
-    private final Tuple2f Q = new Vec2();
-    private final Tuple2f e = new Vec2();
+    private final Tuple2f Q = new v2();
+    private final Tuple2f e = new v2();
     private final ContactID cf = new ContactID();
-    private final Tuple2f e1 = new Vec2();
-    private final Tuple2f P = new Vec2();
+    private final Tuple2f e1 = new v2();
+    private final Tuple2f P = new v2();
 
     // Compute contact points for edge versus circle.
     // This accounts for edge connectivity.
@@ -866,7 +866,7 @@ public class Collision {
         public final ContactID id;
 
         public ClipVertex() {
-            v = new Vec2();
+            v = new v2();
             id = new ContactID();
         }
 
@@ -929,8 +929,8 @@ public class Collision {
 
         public TempPolygon() {
             for (int i = 0; i < vertices.length; i++) {
-                vertices[i] = new Vec2();
-                normals[i] = new Vec2();
+                vertices[i] = new v2();
+                normals[i] = new v2();
             }
         }
     }
@@ -940,14 +940,14 @@ public class Collision {
      */
     static class ReferenceFace {
         int i1, i2;
-        final Tuple2f v1 = new Vec2();
-        final Tuple2f v2 = new Vec2();
-        final Tuple2f normal = new Vec2();
+        final Tuple2f v1 = new v2();
+        final Tuple2f v2 = new v2();
+        final Tuple2f normal = new v2();
 
-        final Tuple2f sideNormal1 = new Vec2();
+        final Tuple2f sideNormal1 = new v2();
         float sideOffset1;
 
-        final Tuple2f sideNormal2 = new Vec2();
+        final Tuple2f sideNormal2 = new v2();
         float sideOffset2;
     }
 
@@ -962,20 +962,20 @@ public class Collision {
         final TempPolygon m_polygonB = new TempPolygon();
 
         final Transform m_xf = new Transform();
-        final Tuple2f m_centroidB = new Vec2();
-        Tuple2f m_v0 = new Vec2();
-        Tuple2f m_v1 = new Vec2();
-        Tuple2f m_v2 = new Vec2();
-        Tuple2f m_v3 = new Vec2();
-        final Tuple2f m_normal0 = new Vec2();
-        final Tuple2f m_normal1 = new Vec2();
-        final Tuple2f m_normal2 = new Vec2();
-        final Tuple2f m_normal = new Vec2();
+        final Tuple2f m_centroidB = new v2();
+        Tuple2f m_v0 = new v2();
+        Tuple2f m_v1 = new v2();
+        Tuple2f m_v2 = new v2();
+        Tuple2f m_v3 = new v2();
+        final Tuple2f m_normal0 = new v2();
+        final Tuple2f m_normal1 = new v2();
+        final Tuple2f m_normal2 = new v2();
+        final Tuple2f m_normal = new v2();
 
         VertexType m_type1, m_type2;
 
-        final Tuple2f m_lowerLimit = new Vec2();
-        final Tuple2f m_upperLimit = new Vec2();
+        final Tuple2f m_lowerLimit = new v2();
+        final Tuple2f m_upperLimit = new v2();
         float m_radius;
         boolean m_front;
 
@@ -987,10 +987,10 @@ public class Collision {
             }
         }
 
-        private final v2 edge1 = new Vec2();
-        private final Tuple2f temp = new Vec2();
-        private final v2 edge0 = new Vec2();
-        private final v2 edge2 = new Vec2();
+        private final v2 edge1 = new v2();
+        private final Tuple2f temp = new v2();
+        private final v2 edge0 = new v2();
+        private final v2 edge2 = new v2();
         private final ClipVertex[] ie = new ClipVertex[2];
         private final ClipVertex[] clipPoints1 = new ClipVertex[2];
         private final ClipVertex[] clipPoints2 = new ClipVertex[2];
@@ -1384,8 +1384,8 @@ public class Collision {
             }
         }
 
-        private final Tuple2f perp = new Vec2();
-        private final Tuple2f n = new Vec2();
+        private final Tuple2f perp = new v2();
+        private final Tuple2f n = new v2();
 
         public void computePolygonSeparation(EPAxis axis) {
             axis.type = EPAxis.Type.UNKNOWN;

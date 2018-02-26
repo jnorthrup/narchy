@@ -30,10 +30,6 @@ package org.boon;
 
 
 import jcog.list.FasterList;
-import org.boon.collections.DoubleList;
-import org.boon.collections.FloatList;
-import org.boon.collections.IntList;
-import org.boon.collections.LongList;
 import org.boon.core.Conversions;
 import org.boon.core.Function;
 import org.boon.core.Predicate;
@@ -228,29 +224,29 @@ public class Lists {
 //
 //        return outputList;
 //    }
+//
+//    public static IntList toIntList( List<?> inputList, String propertyPath ) {
+//
+//        return IntList.toIntList(inputList, propertyPath);
+//    }
+//
+//
+//    public static FloatList toFloatList( List<?> inputList, String propertyPath ) {
+//
+//        return FloatList.toFloatList(inputList, propertyPath);
+//    }
+//
+//
+//    public static DoubleList toDoubleList( List<?> inputList, String propertyPath ) {
+//
+//        return DoubleList.toDoubleList(inputList, propertyPath);
+//    }
 
-    public static IntList toIntList( List<?> inputList, String propertyPath ) {
 
-        return IntList.toIntList(inputList, propertyPath);
-    }
-
-
-    public static FloatList toFloatList( List<?> inputList, String propertyPath ) {
-
-        return FloatList.toFloatList(inputList, propertyPath);
-    }
-
-
-    public static DoubleList toDoubleList( List<?> inputList, String propertyPath ) {
-
-        return DoubleList.toDoubleList(inputList, propertyPath);
-    }
-
-
-    public static LongList toLongList( List<?> inputList, String propertyPath ) {
-
-        return LongList.toLongList(inputList, propertyPath);
-    }
+//    public static LongList toLongList( List<?> inputList, String propertyPath ) {
+//
+//        return LongList.toLongList(inputList, propertyPath);
+//    }
 
     public static List<?> toList( List<?> inputList, String propertyPath ) {
         List<Object> outputList = new ArrayList<>();

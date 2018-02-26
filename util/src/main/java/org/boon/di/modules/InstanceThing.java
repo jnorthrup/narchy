@@ -28,13 +28,15 @@
 
 package org.boon.di.modules;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import org.boon.Exceptions;
 import org.boon.Sets;
-import org.boon.collections.MultiMapImpl;
 import org.boon.core.reflection.ClassMeta;
 import org.boon.core.reflection.MethodAccess;
 import org.boon.di.Supply;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,7 +46,7 @@ import java.util.function.Supplier;
 public class InstanceThing extends BaseThing {
 
     private final Map<Class, Supply> supplierTypeMap = new ConcurrentHashMap<>();
-    private final MultiMapImpl<String, Supply> supplierNameMap = new MultiMapImpl<>();
+    private final Multimap<String, Supply> supplierNameMap = HashMultimap.create();
 
     private final Object module;
 
@@ -110,7 +112,7 @@ public class InstanceThing extends BaseThing {
     public Object a(String name ) {
 
 
-        Supply pi = supplierNameMap.get(name);
+        Supply pi = supplierNameMap.get(name).iterator().next();
         if (pi!=null) {
             return pi.supplier().get();
         }
@@ -132,7 +134,7 @@ public class InstanceThing extends BaseThing {
 
     @Override
     public Supply supply(String name) {
-        return this.supplierNameMap.get(name);
+        return this.supplierNameMap.get(name).iterator().next();
     }
 
     @Override
@@ -145,7 +147,7 @@ public class InstanceThing extends BaseThing {
     private Supply doGetProvider(final Class<?> type, final String name ) {
 
 
-        Set<Supply> set = Sets.set( supplierNameMap.getAll( name ) );
+        Collection<Supply> set = supplierNameMap.get( name ); //Set<>
 
 
         Supply nullTypeInfo = null;
@@ -169,7 +171,7 @@ public class InstanceThing extends BaseThing {
     public <T> java.util.function.Supplier<T> supplying(final Class<T> type, final String name ) {
 
         try {
-            Set<Supply> set = Sets.set(supplierNameMap.getAll(name));
+            Set<Supply> set = Sets.set(supplierNameMap.get(name));
             for ( Supply s : set ) {
                 InternalSupplier supplier = ( InternalSupplier ) s.supplier();
                 if ( type.isAssignableFrom( supplier.method.returnType() ) ) {

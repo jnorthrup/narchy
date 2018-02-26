@@ -8,6 +8,10 @@ import java.util.Map;
 
 public class PLinkArrayBag<X> extends ArrayBag<X, PriReference<X>> {
 
+    public PLinkArrayBag(PriMerge mergeFunction, int cap) {
+        super(mergeFunction, cap);
+    }
+
     public PLinkArrayBag(int cap, PriMerge mergeFunction, @NotNull Map<X, PriReference<X>> map) {
         super(cap, mergeFunction, map);
     }

@@ -3,7 +3,6 @@ package org.jbox2d.dynamics.joints;
 import org.jbox2d.common.MathUtils;
 import org.jbox2d.common.Rot;
 import org.jbox2d.common.Settings;
-import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.SolverData;
 import org.jbox2d.dynamics.contacts.Velocity;
 import org.jbox2d.pooling.IWorldPool;
@@ -21,8 +20,8 @@ import spacegraph.math.v2;
  */
 public class RopeJoint extends Joint {
     // Solver shared
-    private final Tuple2f localAnchorA = new Vec2();
-    private final Tuple2f localAnchorB = new Vec2();
+    private final Tuple2f localAnchorA = new v2();
+    private final Tuple2f localAnchorB = new v2();
     private float targetLength;
     private float length;
     protected float m_impulse;
@@ -30,11 +29,11 @@ public class RopeJoint extends Joint {
     // Solver temp
     private int indexA;
     private int indexB;
-    private final Tuple2f m_u = new Vec2();
-    private final Tuple2f m_rA = new Vec2();
-    private final Tuple2f m_rB = new Vec2();
-    private final Tuple2f m_localCenterA = new Vec2();
-    private final Tuple2f m_localCenterB = new Vec2();
+    private final Tuple2f m_u = new v2();
+    private final Tuple2f m_rA = new v2();
+    private final Tuple2f m_rB = new v2();
+    private final Tuple2f m_localCenterA = new v2();
+    private final Tuple2f m_localCenterB = new v2();
     private float m_invMassA;
     private float m_invMassB;
     private float m_invIA;

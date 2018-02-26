@@ -31,7 +31,6 @@ package org.boon.primitive;
 import org.boon.Exceptions;
 import org.boon.StringScanner;
 import org.boon.Universal;
-import org.boon.collections.IntList;
 import org.boon.core.reflection.BeanUtils;
 import org.boon.core.reflection.Invoker;
 import org.boon.core.reflection.fields.FieldAccess;
@@ -1507,14 +1506,14 @@ public class Int {
         return Math.round(Math.sqrt(variance));
     }
 
-    /**
-     * Calculate standard deviation.
-     *
-     * @return standard deviation
-     */
-    public static int median(Collection<?> inputList, String propertyPath) {
-        return IntList.toIntList(inputList, propertyPath).median();
-    }
+//    /**
+//     * Calculate standard deviation.
+//     *
+//     * @return standard deviation
+//     */
+//    public static int median(Collection<?> inputList, String propertyPath) {
+//        return new IntList.toIntList(inputList, propertyPath).median();
+//    }
 
 
     /**

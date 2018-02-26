@@ -178,7 +178,7 @@ public class Port extends Widget implements Wiring.Wireable {
         if (w==null)
             throw new NullPointerException();
 
-        //TODO transfer function
+        //TODO optional transfer function
 
         Iterable<ImmutableDirectedEdge<Surface, Wire>> targets = w.edges(this);
         targets.forEach((t)->{

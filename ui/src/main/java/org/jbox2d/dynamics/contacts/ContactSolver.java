@@ -40,26 +40,26 @@ import spacegraph.math.v2;
  */
 public class ContactSolver {
 
-    public static final boolean DEBUG_SOLVER = false;
-    public static final float k_errorTol = 1e-3f;
+    private static final boolean DEBUG_SOLVER = false;
+    private static final float k_errorTol = 1.0e-3f;
     /**
      * For each solver, this is the initial number of constraints in the array, which expands as
      * needed.
      */
-    public static final int INITIAL_NUM_CONSTRAINTS = 256;
+    private static final int INITIAL_NUM_CONSTRAINTS = 256;
 
     /**
      * Ensure a reasonable condition number. for the block solver
      */
-    public static final float k_maxConditionNumber = 100.0f;
+    private static final float k_maxConditionNumber = 100.0f;
 
-    public TimeStep m_step;
-    public Position[] m_positions;
-    public Velocity[] m_velocities;
-    public ContactPositionConstraint[] m_positionConstraints;
+    private TimeStep m_step;
+    private Position[] m_positions;
+    private Velocity[] m_velocities;
+    private ContactPositionConstraint[] m_positionConstraints;
     public ContactVelocityConstraint[] m_velocityConstraints;
-    public Contact[] m_contacts;
-    public int m_count;
+    private Contact[] m_contacts;
+    private int m_count;
 
     public ContactSolver() {
         m_positionConstraints = new ContactPositionConstraint[INITIAL_NUM_CONSTRAINTS];
@@ -916,8 +916,8 @@ public class ContactSolver {
                 iA = pc.invIA;
             }
 
-            float mB = 0f;
-            float iB = 0f;
+            float mB = 0.0f;
+            float iB = 0.0f;
             if (indexB == toiIndexA || indexB == toiIndexB) {
                 mB = pc.invMassB;
                 iB = pc.invIB;
@@ -1004,8 +1004,8 @@ public class ContactSolver {
 
 class PositionSolverManifold {
 
-    public final v2 normal = new Vec2();
-    public final Tuple2f point = new Vec2();
+    public final v2 normal = new v2();
+    public final v2 point = new v2();
     public float separation;
 
     public void initialize(ContactPositionConstraint pc, Transform xfA, Transform xfB, int index) {
@@ -1034,8 +1034,8 @@ class PositionSolverManifold {
                 normal.y = pointBy - pointAy;
                 normal.normalize();
 
-                point.x = (pointAx + pointBx) * .5f;
-                point.y = (pointAy + pointBy) * .5f;
+                point.x = (pointAx + pointBx) * 0.5f;
+                point.y = (pointAy + pointBy) * 0.5f;
                 final float tempx = pointBx - pointAx;
                 final float tempy = pointBy - pointAy;
                 separation = tempx * normal.x + tempy * normal.y - pc.radiusA - pc.radiusB;

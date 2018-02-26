@@ -28,9 +28,9 @@
 
 package org.boon.criteria;
 
-import org.boon.collections.DoubleList;
 import org.boon.core.reflection.BeanUtils;
 import org.boon.core.reflection.fields.FieldAccess;
+import org.eclipse.collections.impl.list.mutable.primitive.DoubleArrayList;
 
 import java.util.Collection;
 import java.util.List;
@@ -55,7 +55,7 @@ public class DoubleCollector extends Selector {
         return new DoubleCollector(propertyName);
     }
 
-    private DoubleList list;
+    private DoubleArrayList list;
 
     public DoubleCollector(String fieldName) {
         super(fieldName);
@@ -74,7 +74,7 @@ public class DoubleCollector extends Selector {
 
     @Override
     public void handleStart(Collection<?> results) {
-        list = new DoubleList(results.size());
+        list = new DoubleArrayList(results.size());
 
 
     }
@@ -84,7 +84,7 @@ public class DoubleCollector extends Selector {
 
     }
 
-    public DoubleList list() {
+    public DoubleArrayList list() {
         return list;
     }
 }

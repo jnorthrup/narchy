@@ -28,8 +28,9 @@
 
 package org.boon.core.reflection;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import org.boon.Lists;
-import org.boon.collections.MultiMapImpl;
 import org.boon.core.Typ;
 import org.boon.core.reflection.fields.FieldAccess;
 import org.boon.core.reflection.impl.ConstructorAccessImpl;
@@ -58,7 +59,7 @@ public class ClassMeta <T> implements Annotated{
 
     final List<ConstructorAccess<T>> constructorAccessSet;
 
-    final MultiMapImpl<String, MethodAccess> methodsMulti;
+    final Multimap<String, MethodAccess> methodsMulti;
     final List <MethodAccess> methods;
 
     final Map<String, FieldAccess> fieldMap;
@@ -173,7 +174,7 @@ public class ClassMeta <T> implements Annotated{
 
 
         methodMap = new ConcurrentHashMap<>(  );
-        methodsMulti = new MultiMapImpl<>(  );
+        methodsMulti = HashMultimap.create();
         instanceMethods = new LinkedHashSet<>();
         classMethods = new LinkedHashSet<>();
 
@@ -258,8 +259,8 @@ public class ClassMeta <T> implements Annotated{
     }
 
 
-    public Iterable<MethodAccess> methods(String name) {
-        return methodsMulti.getAll( name );
+    public Collection<MethodAccess> methods(String name) {
+        return methodsMulti.get( name );
     }
 
     private static List<Class<?>> getBaseClassesSuperFirst(Class<?> cls) {
@@ -361,7 +362,7 @@ public class ClassMeta <T> implements Annotated{
 
     public boolean respondsTo(String methodName, Class<?>... types) {
 
-        Iterable<MethodAccess> methods = this.methodsMulti.getAll(methodName);
+        Collection<MethodAccess> methods = this.methodsMulti.get(methodName);
         for (MethodAccess methodAccess : methods) {
            if (methodAccess.isStatic()) continue;
            if (methodAccess.respondsTo(types) ) {
@@ -375,9 +376,10 @@ public class ClassMeta <T> implements Annotated{
 
     public boolean respondsTo(String methodName, Object... args) {
 
-        Iterable<MethodAccess> methods = this.methodsMulti.getAll(methodName);
+        Iterable<MethodAccess> methods = this.methodsMulti.get(methodName);
         for (MethodAccess methodAccess : methods) {
-            if (methodAccess.isStatic()) continue;
+            if (methodAccess.isStatic())
+                continue;
             if (methodAccess.respondsTo(args) ) {
                 return true;
             }

@@ -137,7 +137,7 @@ public class Settings {
     /**
      * Maximum number of contacts to be handled to solve a TOI island.
      */
-    public static final int maxTOIContacts = 32;
+    public static final int maxTOIContacts = 128;
 
     /**
      * A velocity threshold for elastic collisions. Any collision with a relative linear velocity

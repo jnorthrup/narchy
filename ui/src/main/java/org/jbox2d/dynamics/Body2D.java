@@ -845,7 +845,7 @@ public class Body2D extends Transform {
      * @return the same vector expressed in world coordinates.
      */
     public final Tuple2f getWorldVector(Tuple2f localVector) {
-        Tuple2f out = new Vec2();
+        Tuple2f out = new v2();
         getWorldVectorToOut(localVector, out);
         return out;
     }
@@ -865,7 +865,7 @@ public class Body2D extends Transform {
      * @return the corresponding local point relative to the body's origin.
      */
     public final Tuple2f getLocalPoint(Tuple2f worldPoint) {
-        Tuple2f out = new Vec2();
+        Tuple2f out = new v2();
         getLocalPointToOut(worldPoint, out);
         return out;
     }
@@ -881,7 +881,7 @@ public class Body2D extends Transform {
      * @return the corresponding local vector.
      */
     public final Tuple2f getLocalVector(Tuple2f worldVector) {
-        Tuple2f out = new Vec2();
+        Tuple2f out = new v2();
         getLocalVectorToOut(worldVector, out);
         return out;
     }
@@ -920,7 +920,7 @@ public class Body2D extends Transform {
      * @return the world velocity of a point.
      */
     public final Tuple2f getLinearVelocityFromLocalPoint(Tuple2f localPoint) {
-        Tuple2f out = new Vec2();
+        Tuple2f out = new v2();
         getLinearVelocityFromLocalPointToOut(localPoint, out);
         return out;
     }

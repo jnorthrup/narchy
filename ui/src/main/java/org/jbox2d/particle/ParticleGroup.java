@@ -1,8 +1,8 @@
 package org.jbox2d.particle;
 
 import org.jbox2d.common.Transform;
-import org.jbox2d.common.Vec2;
 import spacegraph.math.Tuple2f;
+import spacegraph.math.v2;
 
 public class ParticleGroup {
 
@@ -17,8 +17,8 @@ public class ParticleGroup {
     int m_timestamp;
     float m_mass;
     float m_inertia;
-    final Tuple2f m_center = new Vec2();
-    final Tuple2f m_linearVelocity = new Vec2();
+    final Tuple2f m_center = new v2();
+    final Tuple2f m_linearVelocity = new v2();
     float m_angularVelocity;
     final Transform m_transform = new Transform();
 

@@ -1,35 +1,25 @@
 package spacegraph.test.dyn2d;
 
-import jcog.Util;
 import jcog.data.graph.ObjectGraph;
 import jcog.exe.Loop;
-import jcog.math.FloatRange;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jbox2d.collision.shapes.PolygonShape;
-import org.jbox2d.dynamics.Body2D;
 import spacegraph.Surface;
-import spacegraph.audio.AudioSource;
-import spacegraph.audio.WaveCapture;
-import spacegraph.input.Wiring;
-import spacegraph.container.EmptySurface;
 import spacegraph.container.Gridding;
-import spacegraph.container.MutableContainer;
 import spacegraph.math.v2;
 import spacegraph.test.WidgetTest;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.console.TextEdit;
-import spacegraph.widget.meta.OmniBox;
+import spacegraph.widget.meta.ProtoWidget;
 import spacegraph.widget.meta.WizardFrame;
-import spacegraph.widget.meter.WebCam;
-import spacegraph.widget.slider.FloatSlider;
-import spacegraph.widget.tab.TabPane;
 import spacegraph.widget.text.Label;
+import spacegraph.widget.text.LabeledPane;
 import spacegraph.widget.windo.*;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Field;
-import java.util.Map;
-import java.util.function.Supplier;
+
+import static spacegraph.container.Gridding.HORIZONTAL;
+import static spacegraph.container.Gridding.VERTICAL;
 
 
 public class PhyWallTest {
@@ -60,15 +50,15 @@ public class PhyWallTest {
                     }
             );
 
-            {
-                w.sprout(new WebCam().view(), 1f, 1f);
-            }
+//            {
+//                w.sprout(new WebCam().view(), 1f, 1f);
+//            }
 
-            {
-                WaveCapture au = new WaveCapture(new AudioSource(20));
-                au.runFPS(20f);
-                w.sprout(au.view(), 1f, 1f);
-            }
+//            {
+//                WaveCapture au = new WaveCapture(new AudioSource(20));
+//                au.runFPS(20f);
+//                w.sprout(au.view(), 1f, 1f);
+//            }
 
             for (int i = 0; i < 4; i++)
                 w.sprout(new Port(), (float) (0.1f + Math.random() * 0.1f));
@@ -103,33 +93,6 @@ public class PhyWallTest {
         }
     }
 
-
-    public static class Box2DTest3_Basic_Link_Unlink {
-
-        public static void main(String[] args) {
-
-            PhyWall s = PhyWall.window(800, 800);
-//
-//            s.addWindow(new Port(), RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
-//
-//            s.addWindow(new Port(), RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f));
-
-
-            Body2D start = s.addWindow(new Port(), RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f)).body;
-            Body2D end = s.addWindow(new Port(), RectFloat2D.XYWH(+1, 0, 0.25f, 0.25f)).body;
-
-            {
-
-                Snake ss = new Snake(start, end, 8, 0.3f, 0.1f);
-
-//                    Util.sleep(1000);
-//
-//                    ss.remove(false);
-
-            }
-
-        }
-    }
 
     public static class Box2DTest_WeldGrow {
 
@@ -175,67 +138,21 @@ public class PhyWallTest {
 
     }
 
-    public static class FloatPort extends /*Source*/Port {
-
-        static final float EPSILON = 0.001f;
-
-        private float curValue = Float.NaN;
-        private final FloatRange f;
-
-        public FloatPort(FloatRange f/*, Consumer<Runnable> updater*/) {
-            this.f = f;
-
-            FloatSlider s = new FloatSlider(f);
-            content(new Gridding(0.25f, new EmptySurface(), s));
-        }
-
-        @Override
-        public void prePaint(int dtMS) {
-            //TODO make this an optional synchronous method of updating
-
-            float nextValue = f.get();
-            if (!Util.equals(nextValue, curValue, EPSILON)) {
-                curValue = nextValue;
-                out();
-            }
-
-            super.prePaint(dtMS);
-        }
-
-        public void out() {
-            out(curValue);
-        }
-
-        @Override
-        public void on(@Nullable InPort i) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public boolean in(Wire from, Object s) {
-            return false;
-        }
-
-        @Override
-        public boolean onWireIn(@Nullable Wiring w, boolean preOrPost) {
-            return false; //disallow
-        }
-
-        @Override
-        protected void onWired(Wiring w) {
-            out();
-        }
-    }
-
     public static class Box2DTest_FloatMux {
 
         public static void main(String[] args) {
             PhyWall s = PhyWall.window(800, 800);
 
-            Port A = new FloatPort(new FloatRange(0.5f, 0, 1));
+            Surface mux = new Gridding(HORIZONTAL, new LabeledPane("->", new Gridding(VERTICAL,
+                    new Port(),
+                    new Port()
+            )), new LabeledPane("->", new Port()));
+            s.addWindow(mux, 0.5f, 0.5f);
+
+            Port A = new FloatPort(0.5f, 0, 1);
             PhyWall.PhyWindow a = s.addWindow(A, RectFloat2D.XYWH(-1, 0, 0.25f, 0.25f));
 
-            Port B = new FloatPort(new FloatRange(0.5f, 0, 1));
+            Port B = new FloatPort(0.5f, 0, 1);
             PhyWall.PhyWindow b = s.addWindow(B, RectFloat2D.XYWH(-1, 0, 0.25f, 0.25f));
 
             Port Y = LabeledPort.generic();
@@ -279,69 +196,14 @@ public class PhyWallTest {
     }
 
 
-    /**
-     * widget which can become "anything"
-     */
-    public static class ProtoWidget extends Widget {
-
-        //Surface palette(Surface... )
-
-        public ProtoWidget() {
-            super();
-            content(
-                    new TabPane(//ButtonSet.Mode.One,
-                            Map.of(
-                                    "..", () -> new OmniBox()
-                                    ,
-                                    "*", () -> {
-                                        //frequent
-                                        return new Gridding(
-                                                becoming("X", () -> new Label("X")),
-                                                becoming("Y", () -> new Label("Y"))
-                                        );
-                                    }
-                                    ,
-                                    "Hardware", () -> {
-                                        return new Gridding(
-                                                becoming("Keyboard", () -> new Label("W")),
-                                                becoming("Gamepad", () -> new Label("Z")),
-                                                becoming("Webcam", () -> new Label("def")),
-                                                becoming("Microphone", () -> new Label("def"))
-                                        );
-                                    },
-                                    "Signal", () -> {
-                                        return new Gridding(
-                                                becoming("Gen", () -> new Label("W")),
-                                                becoming("Filter", () -> new Label("Z")),
-                                                becoming("Split", () -> new Label("def")),
-                                                becoming("Mix", () -> new Label("def"))
-                                        );
-                                    }
-                            ))
-                    //...
-            );
-
-        }
-
-
-        PushButton becoming(String label, Supplier<Surface> replacement) {
-            return new PushButton(label,
-                    () -> ((MutableContainer) parent).replace(ProtoWidget.this,
-                            replacement.get()));
-        }
-
-    }
-
     public static class Box2DTest_ProtoWidget {
 
         public static void main(String[] args) {
             PhyWall s = PhyWall.window(800, 800);
 
-
             s.addWindow(
-                    new WizardFrame( new ProtoWidget() ), 1, 1);
-
-
+                    new WizardFrame( new ProtoWidget() ),
+            1, 1);
 
         }
     }

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 public class NAL1Test extends NALTest {
 
-    final int CYCLES = 50;
+    final int CYCLES = 250;
 
     static {
         //Param.DEBUG = true;

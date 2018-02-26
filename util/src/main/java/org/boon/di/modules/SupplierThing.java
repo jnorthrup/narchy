@@ -28,18 +28,18 @@
 
 package org.boon.di.modules;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import org.boon.Exceptions;
-import org.boon.Sets;
-import org.boon.collections.MultiMapImpl;
 import org.boon.core.reflection.BeanUtils;
 import org.boon.core.reflection.MapObjectConversion;
 import org.boon.core.reflection.Reflection;
 import org.boon.di.Supply;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.boon.di.modules.NamedUtils.namedValueForClass;
@@ -51,7 +51,7 @@ public class SupplierThing extends BaseThing {
 
     private final Map<Class, Supply> supplierTypeMap = new ConcurrentHashMap<>();
 
-    private final MultiMapImpl<String, Supply> supplierNameMap = new MultiMapImpl<>();
+    private final Multimap<String, Supply> supplierNameMap = HashMultimap.create();
 
     public SupplierThing(Supply... suppliers ) {
         supplierExtraction( suppliers );
@@ -132,7 +132,7 @@ public class SupplierThing extends BaseThing {
     @Override
     public Object a(String name ) {
 
-        Supply pi = supplierNameMap.get(name);
+        Supply pi = supplierNameMap.get(name).iterator().next();
         if (pi!=null) {
             return pi.supplier().get();
         }
@@ -157,7 +157,7 @@ public class SupplierThing extends BaseThing {
 
     @Override
     public Supply supply(String name) {
-        return supplierNameMap.get(name);
+        return supplierNameMap.get(name).iterator().next();
     }
 
     @Override
@@ -173,7 +173,7 @@ public class SupplierThing extends BaseThing {
         Supply nullInfo = null;
 
         try {
-            Set<Supply> set = Sets.set( supplierNameMap.getAll( name ) );
+            Collection<Supply> set = /*Sets.set*/( supplierNameMap.get( name ) ); //Set<>
 
             for ( Supply info : set ) {
 
@@ -198,7 +198,7 @@ public class SupplierThing extends BaseThing {
     private Supply doGetProvider(final Class<?> type, final String name ) {
 
 
-        Set<Supply> set = Sets.set( supplierNameMap.getAll( name ) );
+        Collection<Supply> set = ( supplierNameMap.get( name ) ); //Set<>
 
 
         Supply nullTypeInfo = null;

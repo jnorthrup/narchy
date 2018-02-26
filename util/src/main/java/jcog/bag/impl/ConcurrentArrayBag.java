@@ -9,9 +9,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 import java.util.function.Consumer;
 
-abstract public class ConcurrentArrayBag<K,X extends Priority> extends ArrayBag<K,X> {
+@Deprecated abstract public class ConcurrentArrayBag<K,X extends Priority> extends ArrayBag<K,X> {
 
     private final QueueLock<X> toPut;
 
@@ -24,7 +25,8 @@ abstract public class ConcurrentArrayBag<K,X extends Priority> extends ArrayBag<
         super(mergeFunction, map);
         setCapacity(cap);
 
-        this.toPut = new QueueLock<X>(Util.blockingQueue(cap*2), super::putAsync, (batchSize) -> {
+        BlockingQueue q = Util.blockingQueue(cap * 2);
+        this.toPut = new QueueLock<X>(q, super::putAsync, (batchSize) -> {
             if (mustSort) {
                 synchronized (items) {
                     super.ensureSorted();

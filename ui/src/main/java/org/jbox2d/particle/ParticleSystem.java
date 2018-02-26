@@ -582,7 +582,7 @@ public class ParticleSystem {
         }
     }
 
-    public void updateContacts(boolean exceptZombie) {
+    void updateContacts(boolean exceptZombie) {
         for (int p = 0; p < m_proxyCount; p++) {
             Proxy proxy = m_proxyBuffer[p];
             int i = proxy.index;

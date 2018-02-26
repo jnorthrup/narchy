@@ -1,6 +1,7 @@
 package jcog.bag.util;
 
-import jcog.bag.impl.ConcurrentArrayBag;
+import jcog.bag.Bag;
+import jcog.bag.impl.PLinkArrayBag;
 import jcog.math.FloatRange;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
@@ -8,9 +9,10 @@ import jcog.pri.Prioritized;
 import jcog.pri.op.PriMerge;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -18,8 +20,9 @@ import java.util.stream.Stream;
  * resulting in containing effectively the integrated / moving average values of the input bag
  * TODO make a PLink version of ArrayBag since quality is not used here
  */
-public class Bagregate<X extends Prioritized> extends ConcurrentArrayBag<X, PriReference<X>> {
+public class Bagregate<X extends Prioritized> implements Iterable<PriReference<X>> {
 
+    final Bag<X, PriReference<X>> bag;
     private final Iterable<X> src;
     private final MutableFloat scale;
     final AtomicBoolean busy = new AtomicBoolean();
@@ -29,10 +32,18 @@ public class Bagregate<X extends Prioritized> extends ConcurrentArrayBag<X, PriR
     }
 
     public Bagregate(@NotNull Iterable<X> src, int capacity, float scale) {
-        super(PriMerge.plus, capacity);
-
+        this.bag = new PLinkArrayBag(PriMerge.plus, capacity) {
+            @Override
+            public void onRemove(Object value) {
+                Bagregate.this.onRemove((PriReference<X>) value);
+            }
+        };
         this.src = src;
         this.scale = new FloatRange(scale);
+
+    }
+
+    protected void onRemove(PriReference<X> value) {
 
     }
 
@@ -42,7 +53,7 @@ public class Bagregate<X extends Prioritized> extends ConcurrentArrayBag<X, PriR
 
         try {
 
-            commit();
+            bag.commit();
 
             float scale = this.scale.floatValue();
 
@@ -50,7 +61,7 @@ public class Bagregate<X extends Prioritized> extends ConcurrentArrayBag<X, PriR
                 if (include(x)) {
                     float pri = x.pri();
                     if (pri==pri)
-                        putAsync(new PLink<>(x, pri * scale));
+                        bag.putAsync(new PLink<>(x, pri * scale));
                 }
             });
 
@@ -68,10 +79,25 @@ public class Bagregate<X extends Prioritized> extends ConcurrentArrayBag<X, PriR
         return true;
     }
 
-
-    @Nullable
+    @NotNull
     @Override
-    public X key(PriReference<X> x) {
-        return x.get();
+    public Iterator<PriReference<X>> iterator() {
+        return bag.iterator();
     }
+
+    @Override
+    public void forEach(Consumer<? super PriReference<X>> action) {
+        bag.forEach(action);
+    }
+
+    public void clear() {
+        bag.clear();
+    }
+
+
+    //    @Nullable
+//    @Override
+//    public X key(PriReference<X> x) {
+//        return x.get();
+//    }
 }

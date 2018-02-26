@@ -49,7 +49,6 @@ package org.jbox2d.dynamics.joints;
 import org.jbox2d.common.MathUtils;
 import org.jbox2d.common.Rot;
 import org.jbox2d.common.Settings;
-import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.SolverData;
 import org.jbox2d.pooling.IWorldPool;
 import spacegraph.math.Tuple2f;
@@ -82,11 +81,11 @@ public class DistanceJoint extends Joint {
     // Solver temp
     private int m_indexA;
     private int m_indexB;
-    private final Tuple2f m_u = new Vec2();
-    private final Tuple2f m_rA = new Vec2();
-    private final Tuple2f m_rB = new Vec2();
-    private final Tuple2f m_localCenterA = new Vec2();
-    private final Tuple2f m_localCenterB = new Vec2();
+    private final Tuple2f m_u = new v2();
+    private final Tuple2f m_rA = new v2();
+    private final Tuple2f m_rB = new v2();
+    private final Tuple2f m_localCenterA = new v2();
+    private final Tuple2f m_localCenterB = new v2();
     private float m_invMassA;
     private float m_invMassB;
     private float m_invIA;

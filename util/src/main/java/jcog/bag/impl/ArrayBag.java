@@ -14,6 +14,7 @@ import jcog.sort.SortedArray;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -38,7 +39,12 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     public float mass;
 
     protected float min, max;
-    protected boolean mustSort;
+    protected volatile boolean mustSort;
+
+    protected ArrayBag(PriMerge mergeFunction, int capacity) {
+        this(mergeFunction, new HashMap<>(capacity, 0.99f));
+        setCapacity(capacity);
+    }
 
     protected ArrayBag(PriMerge mergeFunction, /*@NotNull*/ Map<X, Y> map) {
         this(0, mergeFunction, map);

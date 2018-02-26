@@ -1,11 +1,12 @@
 package nars.bag;
 
 import jcog.bag.Bag;
-import jcog.bag.impl.HijackBag;
+import jcog.bag.impl.ArrayBag;
 import jcog.learn.gng.NeuralGasNet;
 import jcog.learn.gng.impl.Centroid;
 import jcog.list.FasterList;
 import jcog.pri.VLink;
+import jcog.pri.op.PriMerge;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,33 +46,33 @@ public class BagClustering<X> {
 
         this.net = new NeuralGasNet(model.dims, centroids, model::distanceSq);
 
-//        this.bag = new ConcurrentArrayBag<>(PriMerge.max, initialCap) {
-//
-//            @Nullable
+        this.bag = new ArrayBag<X,VLink<X>>(PriMerge.max, initialCap) {
+
+            @Nullable
+            @Override
+            public X key(VLink<X> x) {
+                return x.id;
+            }
+
+        };
+
+//        this.bag = new HijackBag<>(initialCap, 4) {
 //            @Override
-//            public X key(VLink<X> x) {
-//                return x.id;
+//            protected VLink<X> merge(VLink<X> existing, VLink<X> incoming, @Nullable MutableFloat overflowing) {
+//                existing.priMax(incoming.priElseZero());
+//                return existing;
 //            }
 //
+//            @Override
+//            public float pri(VLink<X> key) {
+//                return key.pri();
+//            }
+//
+//            @Override
+//            public X key(VLink<X> value) {
+//                return value.get();
+//            }
 //        };
-
-        this.bag = new HijackBag<>(initialCap, 4) {
-            @Override
-            protected VLink<X> merge(VLink<X> existing, VLink<X> incoming, @Nullable MutableFloat overflowing) {
-                existing.priMax(incoming.priElseZero());
-                return existing;
-            }
-
-            @Override
-            public float pri(VLink<X> key) {
-                return key.pri();
-            }
-
-            @Override
-            public X key(VLink<X> value) {
-                return value.get();
-            }
-        };
     }
 
 

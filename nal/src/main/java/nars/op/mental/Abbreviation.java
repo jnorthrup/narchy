@@ -1,10 +1,11 @@
 package nars.op.mental;
 
 
-import jcog.bag.impl.ConcurrentArrayBag;
+import jcog.bag.impl.PLinkArrayBag;
 import jcog.math.FloatRange;
 import jcog.math.MutableIntRange;
 import jcog.pri.PLink;
+import jcog.pri.PriReference;
 import jcog.pri.Prioritized;
 import jcog.pri.op.PriMerge;
 import nars.$;
@@ -44,7 +45,7 @@ public class Abbreviation/*<S extends Term>*/ extends TaskService {
      */
     @NotNull
     public final MutableFloat abbreviationConfidence;
-    private final DtLeak<Compound, PLink<Compound>> bag;
+    private final DtLeak<Compound, PriReference<Compound>> bag;
 
     /**
      * whether to use a (strong, proxying) alias atom concept
@@ -66,13 +67,13 @@ public class Abbreviation/*<S extends Term>*/ extends TaskService {
 
     public Abbreviation(@NotNull NAR nar, String termPrefix, int volMin, int volMax, float selectionRate, int capacity) {
         super(nar);
-        bag = new DtLeak<>(new ConcurrentArrayBag<Compound, PLink<Compound>>(PriMerge.plus, capacity) {
-            @Nullable
-            @Override
-            public Compound key(PLink<Compound> l) {
-                return l.get();
-            }
-        }, new FloatRange(selectionRate)) {
+        bag = new DtLeak<>(new PLinkArrayBag<Compound>(PriMerge.plus, capacity)
+//       {     @Nullable
+//            @Override
+//            public Compound key(PriReference<Compound> l) {
+//                return l.get();
+//            } }
+        , new FloatRange(selectionRate)) {
 
             @Override
             protected Random random() {
@@ -80,7 +81,7 @@ public class Abbreviation/*<S extends Term>*/ extends TaskService {
             }
 
             @Override
-            protected float receive(PLink<Compound> b) {
+            protected float receive(PriReference<Compound> b) {
                 return abbreviate(b.get(), b, nar) ? 1f : 0f;
             }
         };

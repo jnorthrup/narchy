@@ -15,11 +15,11 @@ import java.util.function.Function;
 
 /**
  * this reads joystick events using the jstest command, which is available in most linux distributions
- *
+ * <p>
  * TODO add calibration as a set of limits cached in GamePad, which it can resolve the raw data to
  * using a method like:
- *      gamePad1.calibrate(event1) -> CalibratedGameInputEvent
- *
+ * gamePad1.calibrate(event1) -> CalibratedGameInputEvent
+ * <p>
  * http://www.java-gaming.org/index.php?PHPSESSID=ecau62mklg3us0870iq44ule60&topic=16866.0
  */
 public class GamePad implements Function<String, GamePad.GameInputEvent>, Runnable {
@@ -32,9 +32,7 @@ public class GamePad implements Function<String, GamePad.GameInputEvent>, Runnab
 
 
     public static void main(String[] args) {
-        new GamePad("js0", (e) -> {
-            System.out.println(e + " @ " + System.currentTimeMillis());
-        }).start();
+        new GamePad("js0", System.out::println).start();
     }
 
 
@@ -79,7 +77,8 @@ public class GamePad implements Function<String, GamePad.GameInputEvent>, Runnab
         }
     }
 
-    @Override public GameInputEvent apply(String l) {
+    @Override
+    public GameInputEvent apply(String l) {
 
         String prefix = "Event: ";
         if (!l.startsWith(prefix)) {
@@ -92,23 +91,23 @@ public class GamePad implements Function<String, GamePad.GameInputEvent>, Runnab
 
         if (fields.size() != 4) {
             logger.warn("unknown format: {}", fields);
-        } else {
-            //ignor the "type" field for now
-
-            long when =
-                    //TODO for more accuracy, use the included time stamp, but it must be shifted to absolute unixtime
-                    //Long.parseLong(fields.get("time"));
-                    System.currentTimeMillis();
-
-            int axis = Integer.parseInt(fields.get("number"));
-            int value = Integer.parseInt(fields.get("value"));
-
-            GameInputEvent e = new GameInputEvent(axis, value, when);
-            each.accept(e);
-            return e;
+            return null;
         }
 
-        return null;
+        //ignor the "type" field for now
+
+        long when =
+                //TODO for more accuracy, use the included time stamp, but it must be shifted to absolute unixtime
+                //Long.parseLong(fields.get("time"));
+                System.currentTimeMillis();
+
+        int axis = Integer.parseInt(fields.get("number"));
+        int value = Integer.parseInt(fields.get("value"));
+
+        GameInputEvent e = new GameInputEvent(axis, value, when);
+        each.accept(e);
+        return e;
+
     }
 
     public synchronized void stop() {

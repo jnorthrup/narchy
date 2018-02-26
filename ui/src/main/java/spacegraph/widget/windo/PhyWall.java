@@ -37,7 +37,7 @@ import spacegraph.math.v2;
 import spacegraph.phys.util.Animated;
 import spacegraph.render.Draw;
 import spacegraph.render.SpaceGraphFlat;
-import spacegraph.test.dyn2d.PhyWallTest;
+import spacegraph.widget.meta.ProtoWidget;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.meta.WizardFrame;
@@ -118,7 +118,7 @@ public class PhyWall extends Wall implements Animated {
                     @Override
                     public void log(@Nullable Object key, float duration, Level level, Supplier<String> message) {
                         //if (log.visible())
-                            //log.log(key, duration, level, message);
+                        //log.log(key, duration, level, message);
                         if (statusBar.visible())
                             statusBar.text(message.get());
                         //else: buffer?
@@ -196,7 +196,7 @@ public class PhyWall extends Wall implements Animated {
 //                m_debugDraw.drawParticlesWireframe(positionBuffer, particleRadius, colorBuffer,
 //                        particleCount);
 //            } else {
-                Draw.particles(gl, positionBuffer, particleRadius, 6, colorBuffer, particleCount);
+            Draw.particles(gl, positionBuffer, particleRadius, 6, colorBuffer, particleCount);
 //            }
         }
     }
@@ -330,8 +330,6 @@ public class PhyWall extends Wall implements Animated {
     }
 
 
-
-
     public PhyWindow addWindow(Surface content, RectFloat2D initialBounds) {
         PhyWindow s = new PhyWindow(initialBounds);
         //s.children(new Scale(content, 1f - Windo.resizeBorder));
@@ -344,10 +342,7 @@ public class PhyWall extends Wall implements Animated {
     }
 
     protected Snake snake(Surface source, Surface target, Runnable onRemove) {
-        Body2D from = source.parent(PhyWindow.class).body;
-        Body2D to = target.parent(PhyWindow.class).body;
-        assert (from != to);
-
+        assert (source != target);
 
         float sa = source.bounds.area();
         float ta = target.bounds.area();
@@ -361,7 +356,7 @@ public class PhyWall extends Wall implements Animated {
 
         float mw = menuBody.radius();
 
-        Snake s = new Snake(from, to, segments, 1.618f * 2 * mw, mw) {
+        Snake s = new Snake(source, target, segments, 1.618f * 2 * mw, mw) {
 
             @Override
             public void remove() {
@@ -707,7 +702,8 @@ public class PhyWall extends Wall implements Animated {
             Pair<PhyWindow, Wire> toggleWindo = sprout(toggle, scale);
             List<PhyWindow> built = new FasterList(0);
             toggle.on((cb, enabled) -> {
-                synchronized (toggle) {
+                W.invoke(() -> {
+
                     if (enabled) {
                         for (Surface x : children) {
                             built.add(toggleWindo.getOne().sprout(x, childScale).getOne());
@@ -717,7 +713,8 @@ public class PhyWall extends Wall implements Animated {
                         built.forEach(PhyWindow::remove);
                         built.clear();
                     }
-                }
+
+                });
             });
         }
 
@@ -793,9 +790,7 @@ public class PhyWall extends Wall implements Animated {
     }
 
 
-    //TODO encapsulate in Finger.DoubleClicking class
-    v2 doubleClickSpot = null;
-    long maxDoubleClickTime = 250, doubleClickTime = Long.MIN_VALUE; //ms
+    final Finger.DoubleClicking doubleClicking = new Finger.DoubleClicking(0, this::doubleClick);
 
 
     @Override
@@ -805,29 +800,18 @@ public class PhyWall extends Wall implements Animated {
         if (s != null && s != this && !(s instanceof PhyWindow))
             return s; //some other content, like an inner elmeent of a window but not a window itself
 
-        if (finger!=null && finger.tryFingering(jointDrag))
+        if (finger.tryFingering(jointDrag))
             return this;
 
-        //TODO encapsulate in Finger.DoubleClicking class
-        if (finger!=null && finger.clickedNow(0)) {
-            //System.out.println("click " + doubleClickSpot + " " + finger.hitOnDown[0] + " " + (System.currentTimeMillis() - doubleClickTime));
-            v2 downHit = finger.hitOnDownGlobal[0];
-            if (downHit!=null && doubleClickSpot!=null && doubleClickSpot.equals(downHit, 0.001f) && System.currentTimeMillis() - doubleClickTime < maxDoubleClickTime) {
-                //System.out.println("double click");
-                doubleClick(finger.pos);
-            }
-
-            doubleClickSpot = finger.hitOnDownGlobal[0];
-            doubleClickTime = System.currentTimeMillis();
-        }
-
+        if (doubleClicking.update(finger))
+            return this;
 
         return this;
     }
 
-    public void doubleClick(v2 pos) {
+    void doubleClick(v2 pos) {
         addWindow(
-                new WizardFrame( new PhyWallTest.ProtoWidget() ),
+                new WizardFrame(new ProtoWidget()),
                 RectFloat2D.XYWH(pos.x, pos.y, 1, 1));
     }
 
@@ -867,19 +851,19 @@ public class PhyWall extends Wall implements Animated {
             v2 p = ff.pos;
 
             float w = 0;
-            float h =0;
+            float h = 0;
 
 
             final Fixture[] found = {null};
             W.queryAABB((Fixture f) -> {
-                if (f.body.type!=BodyType.STATIC &&
+                if (f.body.type != BodyType.STATIC &&
                         f.filter.maskBits != 0 /* filter non-colllidables */ && f.testPoint(p)) {
                     found[0] = f;
                     return false;
                 }
 
                 return true;
-            }, new AABB(new v2(p.x-w, p.y-h), new v2(p.x+w, p.y+h), false));
+            }, new AABB(new v2(p.x - w, p.y - h), new v2(p.x + w, p.y + h), false));
 
 //            //TODO use queryAABB
 //            for (Body2D b = W.bodies(); b != null; b = b.next) {
@@ -892,7 +876,7 @@ public class PhyWall extends Wall implements Animated {
 //                    }
 //                }
 //            }
-            return found[0]!=null ? found[0].body : null;
+            return found[0] != null ? found[0].body : null;
         }
 
         @Override

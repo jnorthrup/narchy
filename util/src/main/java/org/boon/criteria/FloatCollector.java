@@ -28,9 +28,9 @@
 
 package org.boon.criteria;
 
-import org.boon.collections.FloatList;
 import org.boon.core.reflection.BeanUtils;
 import org.boon.core.reflection.fields.FieldAccess;
+import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
 
 import java.util.Collection;
 import java.util.List;
@@ -54,7 +54,7 @@ public class FloatCollector extends Selector {
         return new DoubleCollector(propertyName);
     }
 
-    private FloatList list;
+    private FloatArrayList list;
 
     public FloatCollector(String fieldName) {
         super(fieldName);
@@ -73,9 +73,7 @@ public class FloatCollector extends Selector {
 
     @Override
     public void handleStart(Collection<?> results) {
-        list = new FloatList(results.size());
-
-
+        list = new FloatArrayList(results.size());
     }
 
     @Override
@@ -83,7 +81,7 @@ public class FloatCollector extends Selector {
 
     }
 
-    public FloatList list() {
+    public FloatArrayList list() {
         return list;
     }
 }

@@ -6,6 +6,7 @@ import org.jbox2d.dynamics.*;
 import org.jbox2d.dynamics.joints.Joint;
 import org.jbox2d.dynamics.joints.RevoluteJoint;
 import org.jbox2d.dynamics.joints.RevoluteJointDef;
+import spacegraph.Surface;
 import spacegraph.math.v2;
 
 import java.util.List;
@@ -14,15 +15,23 @@ public class Snake {
 
     final List<Body2D> bodies, attachments;
     final List<Joint> joints;
+    private final Surface source;
+    private final Surface target;
+    private final Body2D sourceBody, targetBody;
 
-    public Snake(Body2D start, Body2D end, int num, float eleLen /* TODO parametric */, float thick) {
+    public Snake(Surface source, Surface target, int num, float eleLen /* TODO parametric */, float thick) {
+
+        this.source = source;
+        this.target = target;
+        this.sourceBody = source.parent(PhyWall.PhyWindow.class).body;
+        this.targetBody = target.parent(PhyWall.PhyWindow.class).body;
 
 
         bodies = new FasterList(num);
         joints = new FasterList(num);
         attachments = new FasterList(0);
 
-        Dynamics2D w = start.W;
+        Dynamics2D w = sourceBody.W;
 
         FixtureDef segment = new FixtureDef(
                 PolygonShape.box(eleLen/2, thick/2), 0.2f, 0f);
@@ -37,18 +46,19 @@ public class Snake {
 
 
             if (from == null) {
-                from = start;
+                from = sourceBody;
             } else {
 
                 Body2D to;
                 if (i == num - 1) {
-                    to = end;
+                    to = targetBody;
                 } else {
 
-                    to = w.addBody(
+                    to = new Body2D(
                             new BodyDef(BodyType.DYNAMIC,
-                                    new v2(i * eleLen, y)),
-                            segment);
+                                    new v2(i * eleLen, y)), w);
+                    bodies.add(to);
+                    to.addFixture(segment);
                     to.setGravityScale(0);
                     to.setLinearDamping(0);
                 }
@@ -58,14 +68,14 @@ public class Snake {
                 jd.collideConnected = false;
 
                 jd.bodyA = from;
-                if (from != start) {
+                if (from != sourceBody) {
                     jd.localAnchorA.set(eleLen / 2, 0); //right side
                 } else {
                     //bind to center of the start or end
                     jd.localAnchorA.set(0, 0);
                 }
                 jd.bodyB = to;
-                if (to!=end) {
+                if (to!=targetBody) {
                     jd.localAnchorB.set(-eleLen / 2, 0); //left side
                 } else {
                     //bind to center of the start or end
@@ -73,13 +83,9 @@ public class Snake {
                 }
                 jd.referenceAngle = 0;
 
-                Joint jj = w.addJoint(jd);
+
+                RevoluteJoint jj = new MyRevoluteJoint(w, jd, from, source, to, target);
                 joints.add(jj);
-
-                ((RevoluteJoint)jj).positionFactor = 0.1f;
-
-                if (to!=end)
-                    bodies.add(to);
 
                 from = to;
             }
@@ -87,31 +93,70 @@ public class Snake {
 
         }
 
+        w.invoke(()->{
+            bodies.forEach(b -> w.addBody(b));
+            joints.forEach(w::addJoint);
+        });
     }
 
     /** attach a body to center of one of the segments */
     public void attach(Body2D b, int segment) {
-        synchronized (this) {
+        Dynamics2D world = world();
+        world.invoke(()->{
             RevoluteJoint w = (RevoluteJoint) b.W.addJoint(new RevoluteJointDef(bodies.get(segment), b));
             attachments.add(b);
             joints.add(w);
-        }
+        });
+    }
+
+    private Dynamics2D world() {
+        return bodies.get(0).W;
     }
 
     public void remove() {
-        synchronized (this) {
-            Dynamics2D world = bodies.get(0).W;
 
-            joints.forEach(world::removeJoint);
-            joints.clear();
+        Dynamics2D world = world();
+        world.invoke(()->{
 
-            bodies.forEach(world::removeBody);
+//            joints.forEach(world::removeJoint); //joints should be removed automatically when the attached body/bodies are removed
+//            joints.clear();
 
             attachments.forEach(world::removeBody);
             attachments.clear();
 
+            bodies.forEach(world::removeBody);
             bodies.clear();
+        });
+    }
 
+    private class MyRevoluteJoint extends RevoluteJoint {
+        private final Body2D finalFrom;
+        private final Surface source;
+        private final Body2D to;
+        private final Surface target;
+
+        public MyRevoluteJoint(Dynamics2D w, RevoluteJointDef jd, Body2D finalFrom, Surface source, Body2D to, Surface target) {
+            super(w, jd);
+            this.finalFrom = finalFrom;
+            this.source = source;
+            this.to = to;
+            this.target = target;
+            this.positionFactor = 0.1f;
+        }
+
+        @Override
+        public boolean solvePositionConstraints(SolverData data) {
+            //calc relative position of the surface within the body, allowing distinct positions of multiple ports at different positions in one body
+            if (finalFrom == sourceBody) {
+                localAnchorA.set(source.cx(), source.cy()).subbed(
+                        sourceBody.pos
+                );
+            } else if (to == targetBody) {
+                localAnchorB.set(target.cx(), target.cy()).subbed(
+                        targetBody.pos
+                );
+            }
+            return super.solvePositionConstraints(data);
         }
     }
 }

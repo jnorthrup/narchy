@@ -26,11 +26,11 @@ package org.jbox2d.dynamics.joints;
 import org.jbox2d.common.MathUtils;
 import org.jbox2d.common.Rot;
 import org.jbox2d.common.Settings;
-import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.Body2D;
 import org.jbox2d.dynamics.SolverData;
 import org.jbox2d.pooling.IWorldPool;
 import spacegraph.math.Tuple2f;
+import spacegraph.math.v2;
 
 //Linear constraint (point-to-line)
 //d = pB - pA = xB + rB - xA - rA
@@ -62,10 +62,10 @@ public class WheelJoint extends Joint {
     private float m_dampingRatio;
 
     // Solver shared
-    private final Tuple2f m_localAnchorA = new Vec2();
-    private final Tuple2f m_localAnchorB = new Vec2();
-    private final Tuple2f m_localXAxisA = new Vec2();
-    private final Tuple2f m_localYAxisA = new Vec2();
+    private final Tuple2f m_localAnchorA = new v2();
+    private final Tuple2f m_localAnchorB = new v2();
+    private final Tuple2f m_localXAxisA = new v2();
+    private final Tuple2f m_localYAxisA = new v2();
 
     private float m_impulse;
     private float m_motorImpulse;
@@ -78,15 +78,15 @@ public class WheelJoint extends Joint {
     // Solver temp
     private int m_indexA;
     private int m_indexB;
-    private final Tuple2f m_localCenterA = new Vec2();
-    private final Tuple2f m_localCenterB = new Vec2();
+    private final Tuple2f m_localCenterA = new v2();
+    private final Tuple2f m_localCenterB = new v2();
     private float m_invMassA;
     private float m_invMassB;
     private float m_invIA;
     private float m_invIB;
 
-    private final Tuple2f m_ax = new Vec2();
-    private final Tuple2f m_ay = new Vec2();
+    private final Tuple2f m_ax = new v2();
+    private final Tuple2f m_ay = new v2();
     private float m_sAx, m_sBx;
     private float m_sAy, m_sBy;
 
@@ -226,9 +226,9 @@ public class WheelJoint extends Joint {
     }
 
     // pooling
-    private final Tuple2f rA = new Vec2();
-    private final Tuple2f rB = new Vec2();
-    private final Tuple2f d = new Vec2();
+    private final Tuple2f rA = new v2();
+    private final Tuple2f rB = new v2();
+    private final Tuple2f d = new v2();
 
     @Override
     public void initVelocityConstraints(SolverData data) {

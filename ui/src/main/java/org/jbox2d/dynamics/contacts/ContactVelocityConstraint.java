@@ -25,12 +25,12 @@ package org.jbox2d.dynamics.contacts;
 
 import org.jbox2d.common.Mat22;
 import org.jbox2d.common.Settings;
-import org.jbox2d.common.Vec2;
 import spacegraph.math.Tuple2f;
+import spacegraph.math.v2;
 
 public class ContactVelocityConstraint {
     public final VelocityConstraintPoint[] points = new VelocityConstraintPoint[Settings.maxManifoldPoints];
-    public final Tuple2f normal = new Vec2();
+    public final Tuple2f normal = new v2();
     public final Mat22 normalMass = new Mat22();
     public final Mat22 K = new Mat22();
     public int indexA;
@@ -50,8 +50,8 @@ public class ContactVelocityConstraint {
     }
 
     public static class VelocityConstraintPoint {
-        public final Tuple2f rA = new Vec2();
-        public final Tuple2f rB = new Vec2();
+        public final Tuple2f rA = new v2();
+        public final Tuple2f rB = new v2();
         public float normalImpulse;
         public float tangentImpulse;
         public float normalMass;

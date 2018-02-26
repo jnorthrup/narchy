@@ -15,6 +15,7 @@
 package jcog;
 
 import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
+import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -2137,6 +2138,7 @@ public enum Util {
     public static BlockingQueue blockingQueue(int capacity) {
         try {
             return new DisruptorBlockingQueue<>(capacity);
+            //return new MultithreadConcurrentQueue(capacity);
         } catch (Throwable e) {
             //for JDK which doesnt support what Disruptor requires
             return new ArrayBlockingQueue<>(capacity);

@@ -23,8 +23,8 @@
  ******************************************************************************/
 package org.jbox2d.dynamics;
 
+import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import jcog.math.FloatSupplier;
-import jcog.util.QueueLock;
 import org.jbox2d.callbacks.*;
 import org.jbox2d.collision.AABB;
 import org.jbox2d.collision.RayCastInput;
@@ -90,7 +90,7 @@ public class Dynamics2D {
     private Joint joints;
     private int jointCount;
 
-    private final Tuple2f m_gravity = new Vec2();
+    private final Tuple2f m_gravity = new v2();
     private boolean m_allowSleep;
 
     // private Body m_groundBody;
@@ -121,10 +121,10 @@ public class Dynamics2D {
     private final Smasher smasher = new Smasher();
 
 
-    final QueueLock<Runnable> queue =
-            QueueLock.get(512);
-            //QueueLock.get(512);
-
+    final MultithreadConcurrentQueue<Runnable> queue = new MultithreadConcurrentQueue<>(512);
+//    final QueueLock<Runnable> queue =
+//            QueueLock.get(512);
+//            //QueueLock.get(512);
 //    final AtomicBoolean LOCKED = new AtomicBoolean(false);
 //    final AtomicInteger BUSY = new AtomicInteger(0);
 
@@ -331,6 +331,7 @@ public class Dynamics2D {
 
             invoke(() -> {
 
+                b.setActive(false);
 
                 // Delete the attached joints.
                 JointEdge je = b.joints;
@@ -459,6 +460,7 @@ public class Dynamics2D {
 
         invoke(() -> {
 
+
             boolean collideConnected = j.getCollideConnected();
 
             // Remove from the doubly linked list.
@@ -541,11 +543,9 @@ public class Dynamics2D {
     private final Timer tempTimer = new Timer();
 
     public final void invoke(Runnable r) {
-        queue.accept(r);
-    }
-
-    @Deprecated public final void invokeLater(Runnable r) {
-        invoke(r);
+        if (!queue.offer(r)) {
+            throw new RuntimeException(this + " queue overflow");
+        }
     }
 
     /**
@@ -564,7 +564,23 @@ public class Dynamics2D {
 //        while (BUSY.get()>0) Thread.onSpinWait(); //wait for any runnables invoked while unlocked to finish
 
 
-        invokeLater(() -> {
+        //            Runnable r;
+        //            while ((r = queue.poll()) != null)
+        //                r.run();
+        // log.debug("Starting step");
+        // If new fixtures were added, we need to find the new contacts.
+        // log.debug("There's a new fixture, lets look for new contacts");
+        // Update contacts. This is where some contacts are destroyed.
+        // Integrate velocities, solve velocity constraints, and integrate positions.
+        // Particle Simulation
+        // Handle TOI events.
+        //            Fracture[] array = smasher.fractures.toArray(new Fracture[smasher.fractures.size()]);
+        //            for (Fracture f : array)
+        //                f.smash(smasher, dt);
+        //        });
+        //
+        //        invokeLater(()->{
+        invoke(() -> {
 
             realtimeMS = System.currentTimeMillis();
 
@@ -641,7 +657,11 @@ public class Dynamics2D {
             smasher.fractures.clear();
         });
 
-
+        synchronized (queue) {
+            Runnable next;
+            while ((next = queue.poll()) != null)
+                next.run();
+        }
 
     }
 
@@ -661,8 +681,8 @@ public class Dynamics2D {
 
     private final Color3f color = new Color3f();
     private final Transform xf = new Transform();
-    private final Tuple2f cA = new Vec2();
-    private final Tuple2f cB = new Vec2();
+    private final Tuple2f cA = new v2();
+    private final Tuple2f cB = new v2();
     private final Vec2Array avs = new Vec2Array();
 
 
@@ -950,7 +970,7 @@ public class Dynamics2D {
     }
 
     private final Island island = new Island(this);
-    private Body2D[] stack = new Body2D[10]; // TODO djm find a good initial stack number;
+
     private final Timer broadphaseTimer = new Timer();
 
     private void solve(TimeStep step) {
@@ -989,9 +1009,8 @@ public class Dynamics2D {
 
         // Build and simulate all awake islands.
         int stackSize = bodyCount;
-        if (stack.length < stackSize) {
-            stack = new Body2D[stackSize];
-        }
+        Body2D[] stack = new Body2D[stackSize]; // TODO djm find a good initial stack number;
+
         bodies().forEach(seed->{
             if ((seed.flags & Body2D.e_islandFlag) == Body2D.e_islandFlag)
                 return;
@@ -1013,7 +1032,9 @@ public class Dynamics2D {
             while (stackCount > 0) {
                 // Grab the next body off the stack and add it to the island.
                 Body2D b = stack[--stackCount];
-                assert (b.isActive());
+                if (!b.isActive())
+                    continue;
+                //assert (b.isActive());
                 island.add(b);
 
                 // Make sure the body is awake.
@@ -1090,7 +1111,7 @@ public class Dynamics2D {
             // Post solve cleanup.
             for (int i = 0; i < island.m_bodyCount; ++i) {
                 // Allow static bodies to participate in other islands.
-                Body2D b = island.m_bodies[i];
+                Body2D b = island.bodies[i];
                 if (b.getType() == BodyType.STATIC) {
                     b.flags &= ~Body2D.e_islandFlag;
                 }
@@ -1373,7 +1394,7 @@ public class Dynamics2D {
 
             // Reset island flags and synchronize broad-phase proxies.
             for (int i = 0; i < island.m_bodyCount; ++i) {
-                Body2D body = island.m_bodies[i];
+                Body2D body = island.bodies[i];
                 body.flags &= ~Body2D.e_islandFlag;
 
                 if (body.type != BodyType.DYNAMIC) {
@@ -1405,8 +1426,8 @@ public class Dynamics2D {
     private static final Integer LIQUID_INT = 1234598372;
     private final float liquidLength = .12f;
     private final float averageLinearVel = -1;
-    private final Tuple2f liquidOffset = new Vec2();
-    private final Tuple2f circCenterMoved = new Vec2();
+    private final Tuple2f liquidOffset = new v2();
+    private final Tuple2f circCenterMoved = new v2();
     private final Color3f liquidColor = new Color3f(.4f, .4f, 1f);
 
     private final Tuple2f center = new v2();
@@ -1856,8 +1877,8 @@ class WorldRayCastWrapper implements TreeRayCastCallback {
 
     // djm pooling
     private final RayCastOutput output = new RayCastOutput();
-    private final Tuple2f temp = new Vec2();
-    private final Tuple2f point = new Vec2();
+    private final Tuple2f temp = new v2();
+    private final Tuple2f point = new v2();
 
     public float raycastCallback(RayCastInput input, int nodeId) {
         Object userData = broadPhase.get(nodeId);

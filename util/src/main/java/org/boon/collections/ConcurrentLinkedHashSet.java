@@ -29,6 +29,8 @@
 package org.boon.collections;
 
 
+import com.google.common.collect.Sets;
+
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -46,7 +48,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class ConcurrentLinkedHashSet<T> implements Set<T> {
 
     final List<T> list = new CopyOnWriteArrayList<>();
-    final Set<T> set = new ConcurrentHashSet<>();
+    final Set<T> set = Sets.newConcurrentHashSet();
 
     @Override
     public int size() {

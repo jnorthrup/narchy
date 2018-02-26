@@ -125,8 +125,8 @@ public class PrismaticJoint extends Joint {
     // Solver temp
     private int m_indexA;
     private int m_indexB;
-    private final Tuple2f m_localCenterA = new Vec2();
-    private final Tuple2f m_localCenterB = new Vec2();
+    private final Tuple2f m_localCenterA = new v2();
+    private final Tuple2f m_localCenterB = new v2();
     private float m_invMassA;
     private float m_invMassB;
     private float m_invIA;
@@ -139,11 +139,11 @@ public class PrismaticJoint extends Joint {
 
     protected PrismaticJoint(IWorldPool argWorld, PrismaticJointDef def) {
         super(argWorld, def);
-        m_localAnchorA = new Vec2(def.localAnchorA);
-        m_localAnchorB = new Vec2(def.localAnchorB);
-        m_localXAxisA = new Vec2(def.localAxisA);
+        m_localAnchorA = new v2(def.localAnchorA);
+        m_localAnchorB = new v2(def.localAnchorB);
+        m_localXAxisA = new v2(def.localAxisA);
         m_localXAxisA.normalize();
-        m_localYAxisA = new Vec2();
+        m_localYAxisA = new v2();
         Tuple2f.crossToOutUnsafe(1f, m_localXAxisA, m_localYAxisA);
         m_referenceAngle = def.referenceAngle;
 
@@ -160,8 +160,8 @@ public class PrismaticJoint extends Joint {
         m_limitState = LimitState.INACTIVE;
 
         m_K = new Mat33();
-        m_axis = new Vec2();
-        m_perp = new Vec2();
+        m_axis = new v2();
+        m_perp = new v2();
     }
 
     public Tuple2f getLocalAnchorA() {

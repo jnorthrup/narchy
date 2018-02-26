@@ -24,7 +24,6 @@
 package org.jbox2d.collision;
 
 import org.jbox2d.common.Settings;
-import org.jbox2d.common.Vec2;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 
@@ -86,8 +85,8 @@ public class Manifold {
         for (int i = 0; i < Settings.maxManifoldPoints; i++) {
             points[i] = new ManifoldPoint();
         }
-        localNormal = new Vec2();
-        localPoint = new Vec2();
+        localNormal = new v2();
+        localPoint = new v2();
         pointCount = 0;
     }
 

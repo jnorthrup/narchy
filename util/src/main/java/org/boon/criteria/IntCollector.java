@@ -28,9 +28,9 @@
 
 package org.boon.criteria;
 
-import org.boon.collections.IntList;
 import org.boon.core.reflection.BeanUtils;
 import org.boon.core.reflection.fields.FieldAccess;
+import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 
 import java.util.Collection;
 import java.util.List;
@@ -53,7 +53,7 @@ public class IntCollector extends Selector {
        return new IntCollector(propertyName);
     }
 
-    private IntList list;
+    private IntArrayList list;
 
     public IntCollector(String fieldName) {
         super(fieldName);
@@ -72,7 +72,7 @@ public class IntCollector extends Selector {
 
     @Override
     public void handleStart(Collection<?> results) {
-       list = new IntList(results.size());
+       list = new IntArrayList(results.size());
 
 
     }
@@ -82,7 +82,7 @@ public class IntCollector extends Selector {
 
     }
 
-    public IntList list() {
+    public IntArrayList list() {
         return list;
     }
 }

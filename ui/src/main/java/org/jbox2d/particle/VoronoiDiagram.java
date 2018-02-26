@@ -1,29 +1,30 @@
 package org.jbox2d.particle;
 
 import org.jbox2d.common.MathUtils;
-import org.jbox2d.common.Vec2;
 import org.jbox2d.pooling.normal.MutableStack;
 import spacegraph.math.Tuple2f;
+import spacegraph.math.v2;
 
 public class VoronoiDiagram {
-    public static class Generator {
-        final Tuple2f center = new Vec2();
+
+    /** the extended v2 point represents the center */
+    static class Generator extends v2 {
         int tag;
     }
 
-    public static class VoronoiDiagramTask {
+    static class VoronoiDiagramTask {
         int m_x, m_y, m_i;
         Generator m_generator;
 
         public VoronoiDiagramTask() {
         }
 
-        public VoronoiDiagramTask(int x, int y, int i, Generator g) {
-            m_x = x;
-            m_y = y;
-            m_i = i;
-            m_generator = g;
-        }
+//        public VoronoiDiagramTask(int x, int y, int i, Generator g) {
+//            m_x = x;
+//            m_y = y;
+//            m_i = i;
+//            m_generator = g;
+//        }
 
         public VoronoiDiagramTask set(int x, int y, int i, Generator g) {
             m_x = x;
@@ -77,13 +78,13 @@ public class VoronoiDiagram {
 
     public void addGenerator(Tuple2f center, int tag) {
         Generator g = m_generatorBuffer[m_generatorCount++];
-        g.center.x = center.x;
-        g.center.y = center.y;
+        g.x = center.x;
+        g.y = center.y;
         g.tag = tag;
     }
 
-    private final Tuple2f lower = new Vec2();
-    private final Tuple2f upper = new Vec2();
+    private final Tuple2f lower = new v2();
+    private final Tuple2f upper = new v2();
     private final MutableStack<VoronoiDiagramTask> taskPool =
             new MutableStack<>(50) {
                 @Override
@@ -107,8 +108,8 @@ public class VoronoiDiagram {
         upper.y = -Float.MAX_VALUE;
         for (int k = 0; k < m_generatorCount; k++) {
             Generator g = m_generatorBuffer[k];
-            Tuple2f.minToOut(lower, g.center, lower);
-            Tuple2f.maxToOut(upper, g.center, upper);
+            Tuple2f.minToOut(lower, g, lower);
+            Tuple2f.maxToOut(upper, g, upper);
         }
         m_countX = 1 + (int) (inverseRadius * (upper.x - lower.x));
         m_countY = 1 + (int) (inverseRadius * (upper.y - lower.y));
@@ -116,10 +117,10 @@ public class VoronoiDiagram {
         queue.reset(new VoronoiDiagramTask[4 * m_countX * m_countX]);
         for (int k = 0; k < m_generatorCount; k++) {
             Generator g = m_generatorBuffer[k];
-            g.center.x = inverseRadius * (g.center.x - lower.x);
-            g.center.y = inverseRadius * (g.center.y - lower.y);
-            int x = MathUtils.max(0, MathUtils.min((int) g.center.x, m_countX - 1));
-            int y = MathUtils.max(0, MathUtils.min((int) g.center.y, m_countY - 1));
+            g.x = inverseRadius * (g.x - lower.x);
+            g.y = inverseRadius * (g.y - lower.y);
+            int x = MathUtils.max(0, MathUtils.min((int) g.x, m_countX - 1));
+            int y = MathUtils.max(0, MathUtils.min((int) g.y, m_countY - 1));
             queue.push(taskPool.pop().set(x, y, x + y * m_countX, g));
         }
         while (!queue.empty()) {
@@ -179,10 +180,10 @@ public class VoronoiDiagram {
                 Generator a = m_diagram[i];
                 Generator b = k;
                 if (a != b) {
-                    float ax = a.center.x - x;
-                    float ay = a.center.y - y;
-                    float bx = b.center.x - x;
-                    float by = b.center.y - y;
+                    float ax = a.x - x;
+                    float ay = a.y - y;
+                    float bx = b.x - x;
+                    float by = b.y - y;
                     float a2 = ax * ax + ay * ay;
                     float b2 = bx * bx + by * by;
                     if (a2 > b2) {

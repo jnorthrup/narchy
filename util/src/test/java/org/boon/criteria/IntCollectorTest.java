@@ -28,16 +28,16 @@
 package org.boon.criteria;
 
 import org.boon.Lists;
-import org.boon.collections.IntList;
 import org.boon.core.reflection.BeanUtils;
-import org.boon.primitive.Int;
+import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
 
 import static org.boon.Boon.puts;
-import static org.boon.Lists.*;
+import static org.boon.Lists.lazyAdd;
+import static org.boon.Lists.list;
 import static org.boon.Maps.map;
 import static org.boon.core.reflection.BeanUtils.atIndex;
 import static org.boon.criteria.Selector.collectFrom;
@@ -60,50 +60,50 @@ public class IntCollectorTest {
         employees = BeanUtils.idxList(Employee.class, departments, "employees");
         IntCollector salaryCollection = new IntCollector("salary");
         collectFrom(selects(salaryCollection), employees);
-        IntList list = salaryCollection.list();
+        IntArrayList list = salaryCollection.list();
         puts("sum", list.sum());
         puts("max", list.max());
         puts("min", list.min());
-        puts("mean", list.mean());
+        puts("mean", list.average());
         puts("median", list.median());
-        puts("st.dev", list.standardDeviation());
-        equalsOrDie(2000, list.sum());
+        //puts("st.dev", list.standardDeviation());
+        equalsOrDie(2000, (int) list.sum());
         equalsOrDie(400, list.max());
         equalsOrDie(100, list.min());
-        equalsOrDie(250, list.mean());
-        equalsOrDie(250, list.median());
-        equalsOrDie(112, list.standardDeviation());
-        /**
-         * If you are only selecting one then this is faster
-         */
-        list = toIntList(employees, "salary");
-        puts("sum", list.sum());
-        puts("max", list.max());
-        puts("min", list.min());
-        puts("mean", list.mean());
-        puts("median", list.median());
-        puts("st.dev", list.standardDeviation());
-        equalsOrDie(2000, list.sum());
-        equalsOrDie(400, list.max());
-        equalsOrDie(100, list.min());
-        equalsOrDie(250, list.mean());
-        equalsOrDie(250, list.median());
-        equalsOrDie(112, list.standardDeviation());
-        puts("sum", list.sum());
-        puts("max", list.max());
-        puts("min", list.min());
-        puts("mean", list.mean());
-        puts("median", list.median());
-        puts("st.dev", list.standardDeviation());
-        equalsOrDie(2000, (int) Int.sum(employees, "salary"));
-        //equalsOrDie(400, Int.max(employees, "salary"));
-        //equalsOrDie(100, list.min());
-        //equalsOrDie(250, (int) Int.mean(employees, "salary") );
-        equalsOrDie(250, Int.median(employees, "salary"));
-        equalsOrDie(112, (int) Int.standardDeviation(employees, "salary"));
-        puts("sum", (int) Int.sum(employees, "salary"));
-        puts("median", Int.median(employees, "salary"));
-        puts("stdev", Int.standardDeviation(employees, "salary"));
+        equalsOrDie(250, (int) list.average());
+        equalsOrDie(250, (int) list.median());
+        //equalsOrDie(112, list.standardDeviation());
+//        /**
+//         * If you are only selecting one then this is faster
+//         */
+//        list = toIntList(employees, "salary");
+//        puts("sum", list.sum());
+//        puts("max", list.max());
+//        puts("min", list.min());
+//        puts("mean", list.mean());
+//        puts("median", list.median());
+//        puts("st.dev", list.standardDeviation());
+//        equalsOrDie(2000, list.sum());
+//        equalsOrDie(400, list.max());
+//        equalsOrDie(100, list.min());
+//        equalsOrDie(250, list.mean());
+//        equalsOrDie(250, list.median());
+//        equalsOrDie(112, list.standardDeviation());
+//        puts("sum", list.sum());
+//        puts("max", list.max());
+//        puts("min", list.min());
+//        puts("mean", list.mean());
+//        puts("median", list.median());
+//        puts("st.dev", list.standardDeviation());
+//        equalsOrDie(2000, (int) Int.sum(employees, "salary"));
+//        //equalsOrDie(400, Int.max(employees, "salary"));
+//        //equalsOrDie(100, list.min());
+//        //equalsOrDie(250, (int) Int.mean(employees, "salary") );
+//        equalsOrDie(250, Int.median(employees, "salary"));
+//        equalsOrDie(112, (int) Int.standardDeviation(employees, "salary"));
+//        puts("sum", (int) Int.sum(employees, "salary"));
+//        puts("median", Int.median(employees, "salary"));
+//        puts("stdev", Int.standardDeviation(employees, "salary"));
     }
 
     public static class ContactInfo {
