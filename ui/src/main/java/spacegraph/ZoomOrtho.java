@@ -5,7 +5,6 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.input.Finger;
-import spacegraph.phys.util.AnimVector2f;
 import spacegraph.render.Draw;
 import spacegraph.widget.windo.Windo;
 
@@ -21,8 +20,6 @@ public class ZoomOrtho extends Ortho {
     float pressZoomOutRate = zoomRate*2;
 
 
-    final float minZoom = 0.25f;
-    final float maxZoom = 10000f;
 
     public final static short PAN_BUTTON = 0;
     final static short ZOOM_OUT_TOUCHING_NEGATIVE_SPACE_BUTTON = 2;
@@ -254,7 +251,7 @@ public class ZoomOrtho extends Ortho {
 
             }
 
-            if (bd[ZOOM_OUT_TOUCHING_NEGATIVE_SPACE_BUTTON] && Math.max(scale.x,scale.y) > minZoom) {
+            if (bd[ZOOM_OUT_TOUCHING_NEGATIVE_SPACE_BUTTON] && Math.max(scale.x,scale.y) > scaleMin) {
                 if (finger.touching==null) {
 
                     panStart = null;
@@ -288,14 +285,8 @@ public class ZoomOrtho extends Ortho {
 
         float zoomMult = Util.clamp(1f + -dWheel * zoomRate, 0.5f, 1.5f);
 
-        AnimVector2f s = this.scale;
-        float psx = s.targetX();
-        //float psy = psx;
-        float sx = psx * zoomMult;
-
-        sx = Math.max(sx, minZoom);
-        sx = Math.min(sx, maxZoom);
-        scale.set(sx, sx);
+        float sx = this.scale.targetX() * zoomMult;
+        scale(sx, sx);
 
     }
 

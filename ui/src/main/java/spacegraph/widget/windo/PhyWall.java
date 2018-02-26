@@ -429,6 +429,11 @@ public class PhyWall extends Wall implements Animated {
         return ropeJoint;
     }
 
+    public Iterable<ImmutableDirectedEdge<Surface, Wire>> edges(Surface s) {
+        NodeGraph.Node<Surface, Wire> n = links.node(s);
+        return n != null ? n.edges(true, true) : Collections.emptyList();
+    }
+
     public class PhyWindow extends Windo {
         public final Body2D body;
         private final PolygonShape shape;
@@ -578,11 +583,6 @@ public class PhyWall extends Wall implements Animated {
         public Wire link(Surface target) {
             assert (content().length == 1);
             return link(get(), target);
-        }
-
-        public Iterable<ImmutableDirectedEdge<Surface, Wire>> edges(Surface s) {
-            NodeGraph.Node<Surface, Wire> n = links.node(s);
-            return n != null ? n.edges(true, true) : Collections.emptyList();
         }
 
         public Wire unlink(Surface source, Surface target) {

@@ -2,6 +2,7 @@ package spacegraph;
 
 import com.jogamp.newt.event.*;
 import com.jogamp.opengl.GL2;
+import jcog.Util;
 import jcog.event.On;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.apache.commons.lang3.ArrayUtils;
@@ -35,6 +36,8 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 public class Ortho extends Container implements SurfaceRoot, WindowListener, KeyListener, MouseListener {
 
     protected final AnimVector2f scale;
+    public float scaleMin = 0.25f;
+    public float scaleMax = 10000f;
 
     boolean visible;
 
@@ -279,7 +282,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     }
 
     public Ortho scale(float sx, float sy) {
-        float s = Math.min(sx, sy);
+        float s = Util.clamp(Math.min(sx, sy), scaleMin, scaleMax);
         scale.set(s, s);
         return this;
     }

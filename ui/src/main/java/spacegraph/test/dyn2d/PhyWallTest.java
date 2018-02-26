@@ -5,6 +5,7 @@ import jcog.exe.Loop;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jbox2d.collision.shapes.PolygonShape;
 import spacegraph.Surface;
+import spacegraph.ZoomOrtho;
 import spacegraph.container.Gridding;
 import spacegraph.math.v2;
 import spacegraph.test.WidgetTest;
@@ -128,8 +129,8 @@ public class PhyWallTest {
             TogglePort AB = new TogglePort();
             s.addWindow(AB, RectFloat2D.XYWH(0, 0, 0.25f, 0.25f));
 
-            A.link(AB.port);
-            AB.port.link(B);
+//            A.link(AB.port);
+//            AB.port.link(B);
 
             Loop.of(() -> {
                 A.out(String.valueOf(s.rng.nextInt(5)));
@@ -142,6 +143,8 @@ public class PhyWallTest {
 
         public static void main(String[] args) {
             PhyWall s = PhyWall.window(800, 800);
+            ((ZoomOrtho)s.root()).scaleMin = 100f;
+            ((ZoomOrtho)s.root()).scaleMax = 500;
 
             Surface mux = new Gridding(HORIZONTAL, new LabeledPane("->", new Gridding(VERTICAL,
                     new Port(),

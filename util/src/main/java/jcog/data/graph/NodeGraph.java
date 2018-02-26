@@ -166,7 +166,7 @@ public abstract class NodeGraph<N, E> {
         }
 
         protected static <N,E> MutableNode<N,E> withEdgeSets(N id, int inOutInitialCapacity) {
-            return new MutableNode(id,
+            return new MutableNode<>(id,
                     new FastIteratingHashSet<>(inOutInitialCapacity),
                     //new HashSet<>();
                     new FastIteratingHashSet<>(inOutInitialCapacity)

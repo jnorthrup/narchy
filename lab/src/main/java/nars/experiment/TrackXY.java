@@ -45,7 +45,7 @@ public class TrackXY extends NAgent {
 
     private float controlSpeed =
             1f;
-            //0.5f;
+    //0.5f;
     private float visionContrast = 0.9f;
 
     Consumer<TrackXY> updater =
@@ -56,22 +56,22 @@ public class TrackXY extends NAgent {
     public static void main(String[] args) {
 
         boolean nars = true;
-        boolean rl = true;
+        boolean rl = false;
 
-        int dur = 1;
+        int dur = 2;
 
         NARS nb = new NARS()
-                .exe(new UniExec(256))
+                .exe(new UniExec(128))
                 .time(new CycleTime().dur(dur))
                 .index(
                         //new HijackConceptIndex(4 * 1024, 4)
-                        new CaffeineIndex(16 * 1024)
+                        new CaffeineIndex(8 * 1024)
                 );
 
 
         NAR n = nb.get();
 
-        n.termVolumeMax.set(32);
+        n.termVolumeMax.set(24);
         n.priDefault(BELIEF, 0.2f);
 //        n.priDefault(GOAL, 0.5f);
         n.conceptActivation.set(0.5f);
@@ -134,16 +134,21 @@ public class TrackXY extends NAgent {
             Param.DEBUG = true;
             //n.log();
 
-            Deriver d = new Deriver(Derivers.rules(
-                    //1,
-                    1,
-                    8, n, "list.nal", "motivation.nal"), n);
-            d.conceptsPerIteration.set(32);
+//            for (String action : new String[]{"up", "down", "left", "right"}) {
+//                //n.goal($.the(action), Tense.Present, 0f, 0.1f);
+//                n.goal($.the(action), Tense.Present, 1f, 0.1f);
+//            }
 
-            ConjClustering cjB = new ConjClustering(n, BELIEF,
-                    //(tt)->true,
-                    (tt) -> tt.isInput(),
-                    2, 8);
+        Deriver d = new Deriver(Derivers.rules(
+                //1,
+                1,
+                8, n, "list.nal", "motivation.nal"), n);
+        d.conceptsPerIteration.set(32);
+
+        ConjClustering cjB = new ConjClustering(n, BELIEF,
+                //(tt)->true,
+                (tt) -> tt.isInput(),
+                2, 8);
 
 //            ConjClustering cjG = new ConjClustering(n, GOAL,
 //                    //(tt)->true,
@@ -154,35 +159,39 @@ public class TrackXY extends NAgent {
 
 //            ArithmeticIntroduction ai = new ArithmeticIntroduction(4, n);
 
-            window(new Gridding(
-                    new AutoSurface(d),
-                    new AutoSurface(cjB)
+        window(new Gridding(
+                new AutoSurface(d),
+                new AutoSurface(cjB)
 //                    new AutoSurface(cjG)
 
-                    //,new AutoSurface(ai)
-            ), 400, 300);
-            n.onTask(tt -> {
-                if (tt instanceof DerivedTask && tt.isGoal()) {
-                    System.out.println(tt.proof());
-                }
-            });
-        }
+                //,new AutoSurface(ai)
+        ), 400, 300);
+        n.onTask(tt -> {
+            if (tt instanceof DerivedTask && tt.isGoal()) {
+                System.out.println(tt.proof());
+            }
+        });
+    }
 
-        //n.log();
+    //n.log();
 
 //        n.startFPS(fps);
 //        t.runFPS(fps);
         n.onCycle(t);
-        final double[] rewardSum = {0};
-        n.onCycle(()->{
-            rewardSum[0] += t.reward;
-        });
+    final double[] rewardSum = {0};
+        n.onCycle(()->
+
+    {
+        rewardSum[0] += t.reward;
+    });
         n.run(experimentTime);
 
-        System.out.println(n4(rewardSum[0] / n.time()) + " avg reward");
+        System.out.println(
+
+    n4(rewardSum[0]/n.time())+" avg reward");
 
         System.exit(0);
-    }
+}
 
     protected TrackXY(int x, int y) {
         super("trackXY", null);
@@ -240,69 +249,70 @@ public class TrackXY extends NAgent {
         return view.height();
     }
 
-    public static class RandomTarget implements Consumer<TrackXY> {
-        private float targetSpeed = 0.5f;
+public static class RandomTarget implements Consumer<TrackXY> {
+    private float targetSpeed = 0.5f;
 
-        public void accept(TrackXY t) {
+    public void accept(TrackXY t) {
 
-            float tx, ty;
-            tx = Util.clamp(t.tx + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.width() - 1);
-            if (t.height() > 1) {
-                ty = Util.clamp(t.ty + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.height() - 1);
-            } else {
-                ty = 0;
-            }
-
-            t.tx = tx;
-            t.ty = ty;
+        float tx, ty;
+        tx = Util.clamp(t.tx + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.width() - 1);
+        if (t.height() > 1) {
+            ty = Util.clamp(t.ty + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.height() - 1);
+        } else {
+            ty = 0;
         }
+
+        t.tx = tx;
+        t.ty = ty;
     }
+}
 
-    public static class CyclicTarget implements Consumer<TrackXY> {
+public static class CyclicTarget implements Consumer<TrackXY> {
 
 
-        float speed = 0.02f;
-        float x = 0;
+    float speed = 0.02f;
+    float x = 0;
 
-        @Override
-        public void accept(TrackXY t) {
-            x += speed;
-            t.tx = (((float) Math.sin(x) * 0.5f) + 0.5f) * (t.width() - 1);
+    @Override
+    public void accept(TrackXY t) {
+        x += speed;
+        t.tx = (((float) Math.sin(x) * 0.5f) + 0.5f) * (t.width() - 1);
 //            int tw = t.width();
 //            if (t.tx > tw -1)
 //                t.tx -= tw;
+        t.ty = 0;
+    }
+}
+
+/**
+ * ellipse, technically
+ */
+public static class CircleTarget implements Consumer<TrackXY> {
+
+
+    float speed =
+            0.05f;
+    float theta = 0;
+
+
+    @Override
+    public void accept(TrackXY t) {
+        theta += speed;
+
+        t.tx = (((float) Math.cos(theta) * 0.5f) + 0.5f) * (t.width() - 1);
+
+        if (t.height() > 1)
+            t.ty = (((float) Math.sin(theta) * 0.5f) + 0.5f) * (t.height() - 1);
+        else
             t.ty = 0;
-        }
-    }
-
-    /**
-     * ellipse, technically
-     */
-    public static class CircleTarget implements Consumer<TrackXY> {
-
-
-        float speed =
-                0.05f;
-        float theta = 0;
-
-
-        @Override
-        public void accept(TrackXY t) {
-            theta += speed;
-
-            t.tx = (((float) Math.cos(theta) * 0.5f) + 0.5f) * (t.width() - 1);
-
-            if (t.height() > 1)
-                t.ty = (((float) Math.sin(theta) * 0.5f) + 0.5f) * (t.height() - 1);
-            else
-                t.ty = 0;
 
 //            int tw = t.width();
 //            if (t.tx > tw -1)
 //                t.tx -= tw;
 
-        }
     }
+
+}
 
     @Override
     protected synchronized float act() {
@@ -323,8 +333,7 @@ public class TrackXY extends NAgent {
                 return Math.max(0,
                         Math.max(1 - distOther * visionContrast,
                                 1 - distSelf * visionContrast
-                                ));
-
+                        ));
 
 
 //                if (Util.equals(sx, x, controlSpeed) && Util.equals(sy, y, controlSpeed)) {
@@ -342,7 +351,7 @@ public class TrackXY extends NAgent {
         cam.input();
 
 
-        float maxDist = (float) Math.sqrt(width()*width()+height()*height());
+        float maxDist = (float) Math.sqrt(width() * width() + height() * height());
         float dist = (float) Math.sqrt(Util.sqr(tx - sx) + Util.sqr(ty - sy))
                 / maxDist;
 

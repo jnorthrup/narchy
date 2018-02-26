@@ -1,9 +1,10 @@
 package spacegraph.widget.windo;
 
 import com.jogamp.opengl.GL2;
-import jcog.data.graph.ImmutableDirectedEdge;
+import jcog.data.graph.NodeGraph;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.Surface;
+import spacegraph.SurfaceBase;
 import spacegraph.input.Finger;
 import spacegraph.input.Wiring;
 import spacegraph.render.Draw;
@@ -23,6 +24,8 @@ public class Port extends Widget implements Wiring.Wireable {
 
     /** input handler */
     private InPort in = null;
+
+    private transient NodeGraph.Node<Surface, Wire> node;
 
     public Port() {
         super();
@@ -48,12 +51,12 @@ public class Port extends Widget implements Wiring.Wireable {
         this.in = i;
     }
 
-    public Wire link(Port target) {
-        PhyWall.PhyWindow pw = parent(PhyWall.PhyWindow.class);
-        if (pw == null)
-            throw new RuntimeException("port not materialized");
-        return pw.link(this,target);
-    }
+//    public Wire link(Port target) {
+//        PhyWall.PhyWindow pw = parent(PhyWall.PhyWindow.class);
+//        if (pw == null)
+//            throw new RuntimeException("port not materialized");
+//        return pw.link(this,target);
+//    }
 
     public boolean enabled() {
         return enabled;
@@ -99,11 +102,11 @@ public class Port extends Widget implements Wiring.Wireable {
     protected void paintWidget(GL2 gl, RectFloat2D bounds) {
 
         if (wiringOut !=null) {
-            gl.glColor4f(0, 1, 0, 0.35f);
+            gl.glColor4f(0.5f, 1, 0, 0.35f);
             Draw.rect(gl, bounds);
         }
         if (wiringIn!=null) {
-            gl.glColor4f(0, 0, 1, 0.35f);
+            gl.glColor4f(0, 0.5f, 1, 0.35f);
             Draw.rect(gl, bounds);
         }
 
@@ -173,17 +176,28 @@ public class Port extends Widget implements Wiring.Wireable {
         out(this, x);
     }
 
+    @Override
+    public void start(@Nullable SurfaceBase parent) {
+        synchronized(this) {
+            super.start(parent);
+            this.node = parent(PhyWall.class).links.addNode(this);
+        }
+    }
+
+    @Override
+    public void stop() {
+        synchronized (this) {
+            parent(PhyWall.class).links.removeNode(this);
+            node = null;
+            super.stop();
+        }
+    }
+
     protected void out(Port sender, Object x) {
-        PhyWall.PhyWindow w = parent(PhyWall.PhyWindow.class);
-        if (w==null)
-            throw new NullPointerException();
-
         //TODO optional transfer function
-
-        Iterable<ImmutableDirectedEdge<Surface, Wire>> targets = w.edges(this);
-        targets.forEach((t)->{
-            t.id.in(sender, x);
-        });
+        if (enabled) {
+            node.edges(true, true).forEach(t -> t.id.in(sender, x));
+        }
     }
 
     public boolean in(Wire from, Object s) {

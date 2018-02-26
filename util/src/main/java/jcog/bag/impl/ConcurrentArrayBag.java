@@ -27,27 +27,27 @@ import java.util.function.Consumer;
 
         BlockingQueue q = Util.blockingQueue(cap * 2);
         this.toPut = new QueueLock<X>(q, super::putAsync, (batchSize) -> {
-            if (mustSort) {
-                synchronized (items) {
-                    super.ensureSorted();
-                }
-            }
+//            if (mustSort) {
+//                synchronized (items) {
+//                    super.ensureSorted();
+//                }
+//            }
         });
     }
 
     @Override
     public Bag<K, X> commit(Consumer<X> update) {
         super.commit(update);
-        synchronized (items) {
-            super.ensureSorted();
-        }
+        //synchronized (items) {
+          //  super.ensureSorted();
+        //}
         return this;
     }
 
-    @Override
-    protected void ensureSorted() {
-        //sort elides until after batchFinished
-    }
+//    @Override
+//    protected void ensureSorted() {
+//        //sort elides until after batchFinished
+//    }
 
     @Override
     public void putAsync(X b) {

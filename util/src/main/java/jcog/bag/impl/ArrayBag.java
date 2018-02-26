@@ -7,7 +7,6 @@ import jcog.list.table.SortedListTable;
 import jcog.math.AtomicFloat;
 import jcog.pri.PLinkUntilDeleted;
 import jcog.pri.Pri;
-import jcog.pri.Prioritized;
 import jcog.pri.Priority;
 import jcog.pri.op.PriMerge;
 import jcog.sort.SortedArray;
@@ -37,9 +36,6 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     public final AtomicFloat pressure = new AtomicFloat();
 
     public float mass;
-
-    //protected volatile float min, max;
-    protected volatile boolean mustSort;
 
     protected ArrayBag(PriMerge mergeFunction, int capacity) {
         this(mergeFunction, new HashMap<>(capacity, 0.99f));
@@ -91,8 +87,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         if (newCapacity != this.capacity) {
             this.capacity = newCapacity;
             //synchronized (items) {
-            if (this.size() > newCapacity)
-                commit(null);
+
+            commit(null);
             //}
             //return true;
         }
@@ -174,14 +170,6 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
     }
 
 
-    protected void ensureSorted() {
-        //if (mustSort) {
-        sort();
-        //updateRange();
-        mustSort = false;
-        //}
-    }
-
     protected void sort() {
         int s = size();
         if (s == 0)
@@ -222,8 +210,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
         final Object[] l = items2.array();
         int removedFromMap = 0;
 
-        float above = Float.POSITIVE_INFINITY;
-        boolean mustSort = false;
+//        float above = Float.POSITIVE_INFINITY;
+//        boolean mustSort = false;
         for (int i = 0; i < s; i++) {
             Y x = (Y) l[i];
             float p;
@@ -238,10 +226,10 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                 min = Util.min(min, p);
                 max = Util.max(max, p);
                 mass += p;
-                if (p - above >= Prioritized.EPSILON)
-                    mustSort = true;
+//                if (p - above >= Prioritized.EPSILON)
+//                    mustSort = true;
 
-                above = p;
+//                above = p;
             }
         }
 
@@ -264,7 +252,6 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 //            System.out.println("elides sort");
 
         this.mass = mass;
-        this.mustSort |= mustSort;
         return s;
     }
 
@@ -582,15 +569,21 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                 if (trsh.getLast() == incoming)
                     return false; //rejected this one
             }
+
+            sort();
+
         } else {
             float p = pri(incoming);
             int i = items.add(incoming, -p, this);
+            //insertion sorted
             assert (i >= 0);
             mass += p;
         }
+
         return true;
     }
 
+    /** will not need to be sorted after calling this; the index is automatically updated */
     private final Y merge(Y existing, Y incoming, @Nullable MutableFloat overflow) {
 
 //        int s = size();
@@ -681,7 +674,8 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
 //            return;
 //        }
 
-        if (size() > 0) {
+        int s = size();
+        if ((update!=null && s > 0) || (update == null && (s > capacity))) {
             @Nullable List<Y> trash = null;
             synchronized (items) {
 
@@ -691,7 +685,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                     trash.forEach(this::mapRemove);
                 }
 
-                ensureSorted();
+                sort();
             }
 
             //then outside the synch:
