@@ -22,6 +22,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static jcog.Texts.n4;
+import static jcog.bag.ArrayBagTest.assertSorted;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -275,6 +276,7 @@ public class BagTest {
 
         a.commit(null); //commit but dont forget
         assertEquals(a.capacity(), a.size());
+        if (a instanceof ArrayBag) assertSorted((ArrayBag)a);
 
         //a.print();
 
@@ -296,16 +298,16 @@ public class BagTest {
         populate(b, rng, count, dimensionality, minPri, maxPri, qua, qua);
     }
 
-    public static void populate(Bag<String, PriReference<String>> b, Random rng, int count, int dimensionality, float minPri, float maxPri, float minQua, float maxQua) {
+    public static void populate(Bag<String, PriReference<String>> a, Random rng, int count, int dimensionality, float minPri, float maxPri, float minQua, float maxQua) {
         float dPri = maxPri - minPri;
         for (int i = 0; i < count; i++) {
-            b.put(new PLink(
+            a.put(new PLink(
                     "x" + rng.nextInt(dimensionality),
                     rng.nextFloat() * dPri + minPri)
             );
         }
-        b.commit(null);
-
+        a.commit(null);
+        if (a instanceof ArrayBag) assertSorted((ArrayBag)a);
     }
 
     /**
@@ -325,6 +327,7 @@ public class BagTest {
         assertEquals(c, bag.size());
         assertEquals(0.5f / c, bag.priMin(), 0.03f);
         assertEquals(1 - 1f/(c*2f), bag.priMax(), 0.03f); //no pressure should have been applied because capacity was only reached after the last put
+        if (bag instanceof ArrayBag) assertSorted((ArrayBag)bag);
     }
     public static void fillRandom(CurveBag<PLink<String>> bag) {
         assertTrue(bag.isEmpty());
@@ -342,6 +345,7 @@ public class BagTest {
         }
         bag.commit(null);
         assertEquals(c, bag.size());
+        assertSorted(bag);
     }
 
 

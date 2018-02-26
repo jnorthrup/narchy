@@ -371,6 +371,13 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
         l[b] = l[a];
         l[a] = x;
     }
+
+    public boolean isSorted(FloatFunction<E> f) {
+        for (int i= 1; i < size; i++)
+            if (f.floatValueOf(list[i-1]) >= f.floatValueOf(list[i]))
+                return false;
+        return true;
+    }
 //
 //    public int indexOfIdentity(E p) {
 //        int i = 0;

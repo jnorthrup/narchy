@@ -1,6 +1,7 @@
 package jcog.bag;
 
 import jcog.Util;
+import jcog.bag.impl.ArrayBag;
 import jcog.bag.impl.CurveBag;
 import jcog.bag.impl.PLinkArrayBag;
 import jcog.pri.PLink;
@@ -115,6 +116,7 @@ public class ArrayBagTest {
         assertEquals(2, a.size());
 
         a.commit(null);
+        assertSorted(a);
         assertEquals(0.1f, a.priMin(), 0.01f);
 
         a.put(new PLink("z", 0.05f));
@@ -137,9 +139,9 @@ public class ArrayBagTest {
         final int[] sorts = {0};
         @NotNull CurveBag<PLink<String>> x = new CurveBag(PriMerge.plus, new HashMap<>(), 4) {
             @Override
-            protected void sort() {
+            protected void sort(int from, int to) {
                 sorts[0]++;
-                super.sort();
+                super.sort(from, to);
             }
         };
 
@@ -153,6 +155,12 @@ public class ArrayBagTest {
 
         assertEquals(0, sorts[0]);
 
+        assertSorted(x);
+
+    }
+
+    static public void assertSorted(@NotNull ArrayBag x) {
+        assert(x.items.isSorted(x));
     }
 
     @Test

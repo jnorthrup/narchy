@@ -2366,8 +2366,8 @@ public enum Op {
         return cache;
     }
 
-    final static TermCache cache = new TermCache(192 * 1024, 4, false);
-    final static TermCache cacheTemporal = new TermCache(128 * 1024, 3, false);
+    final static TermCache cache = new TermCache(256 * 1024, 4, false);
+    final static TermCache cacheTemporal = new TermCache(192 * 1024, 4, false);
 
     protected Term compound(int dt, Term[] u, boolean intern) {
         return (intern && internable(dt, u)) ?

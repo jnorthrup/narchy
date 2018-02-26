@@ -82,6 +82,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
     public final int reprobes;
 
+    //TODO use atomic field updater
     public final AtomicFloat pressure = new AtomicFloat();
 
 
