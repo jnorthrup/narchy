@@ -1055,7 +1055,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                     //convert to final implicit answer
                     byte p = isQuestion() ? BELIEF : GOAL;
 
-
                     @Nullable NALTask finalResult = clone(this, x, $.t(y == True ? 1f : 0f, n.confDefault(p)), p);
 
                     delete();

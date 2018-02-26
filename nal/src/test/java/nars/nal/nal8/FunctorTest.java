@@ -1,12 +1,10 @@
 package nars.nal.nal8;
 
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
-import nars.Param;
+import nars.*;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
 
+import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -15,22 +13,23 @@ public class FunctorTest {
 
     @Test
     public void testImmediateTransformOfInput() throws Narsese.NarseseException { //as opposed to deriver's use of it
-        NAR d = NARS.tmp();
+        NAR n = NARS.tmp();
 
 
-        d.log();
+        n.log();
         final boolean[] got = {false};
-        d.onTask(t -> {
+        n.onTask(t -> {
             String s = t.toString();
             assertFalse(s.contains("union"));
             if (s.contains("[a,b]"))
                 got[0] = true;
         });
-        d.input("union([a],[b]).");
+        n.input("union([a],[b]).");
 
-        d.run(1);
+        n.run(1);
 
         assertTrue(got[0]);
+        assertTrue(n.beliefTruth($.$safe("[a,b]"), ETERNAL)!=null);
     }
 
     @Test
@@ -61,8 +60,15 @@ public class FunctorTest {
         t.log();
         t.believe("((complexity($1)<->3)==>c3($1))");
         t.ask("c3(x:y)");
+//        t.ask("c3(?1)");
         t.mustBelieve(1024, "c3(x:y)", 1f, 0.81f);
+//        t.nar.at(1000, ()->{
+//           t.nar.concept($.the("c3")).print();
+//            t.nar.concept($.the("(complexity((y-->x))<->3)")).print();
+//
+//        });
         t.test(true);
+
     }
 
     @Test
