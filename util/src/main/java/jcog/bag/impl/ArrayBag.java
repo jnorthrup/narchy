@@ -570,7 +570,7 @@ abstract public class ArrayBag<X, Y extends Priority> extends SortedListTable<X,
                     return false; //rejected this one
             }
 
-            sort();
+            //sort(); //<- shouldnt need sorted
 
         } else {
             float p = pri(incoming);

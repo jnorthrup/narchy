@@ -30,8 +30,13 @@ import static java.util.stream.Collectors.toList;
 
 public class NARTestOptimize {
 
+    static final int threads =
+            //Math.max(1,Runtime.getRuntime().availableProcessors()-1);
+            2;
+
     /** necessary to do what jdk "parallel" streams refuses to do... WTF */
-    static final ExecutorService exe = Executors.newFixedThreadPool(Math.max(1,Runtime.getRuntime().availableProcessors()-1));
+    static final ExecutorService exe = Executors.newFixedThreadPool(
+            threads);
 
     /** HACK runs all Junit test methods, summing the scores.
      * TODO use proper JUnit5 test runner api but it is a mess to figure out right now */
@@ -97,7 +102,7 @@ public class NARTestOptimize {
                 .tweak("BELIEVE", -1f, +1f, 0.1f, (NAR n, float p) ->
                         n.emotion.want(MetaGoal.Believe, p)
                 )
-                .optimize(32, 1, (n) ->
+                .optimize(1024, 2, (n) ->
                         tests(n,
                                 NAL1Test.class,
                                 NAL1MultistepTest.class,
