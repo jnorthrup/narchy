@@ -152,20 +152,23 @@ public class TruthPolation extends FasterList<TruthPolation.TaskComponent> {
                 }
                 default: {
                     //interpolate
-                    float eviSum = 0, confSum = 0, wFreqSum = 0;
+                    //float eviSum = 0, confSum = 0, wFreqSum = 0;
+                    float eviSum = 0, wFreqSum = 0;
                     for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
                         TaskComponent x = this.get(i);
                         float ee = x.evi;
                         eviSum += ee;
-                        float ce = w2cSafe(ee);
-                        confSum += ce;
-                        wFreqSum += ce * x.freq;
+//                        float ce = w2cSafe(ee);
+//                        confSum += ce;
+                        //wFreqSum += ce * x.freq;
+                        wFreqSum += ee * x.freq;
                     }
                     float c = w2cSafe(eviSum);
                     if (c < Param.TRUTH_EPSILON)
                         return null;
                     else {
-                        float f = (wFreqSum / confSum);
+                        //float f = (wFreqSum / confSum);
+                        float f = (wFreqSum / eviSum);
                         return new PreciseTruth(f, c);
                     }
                 }
