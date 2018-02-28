@@ -33,8 +33,8 @@ public class Focus extends AtomicRoulette<Causable> {
      * how quickly the iteration demand can grow from previous (max) values
      */
     static final double IterGrowthIncrement = 1;
-    static final double IterGrowthRateMin = 1.25f;
-    static final double IterGrowthRateMax = 2.0f;
+    static final double IterGrowthRateMin = 1.1f;
+    static final double IterGrowthRateMax = 1.5f;
 
 
     private final Exec.Revaluator revaluator;
@@ -102,7 +102,7 @@ public class Focus extends AtomicRoulette<Causable> {
         causable.id = slot;
     }
 
-    final static int WINDOW = 4;
+    final static int WINDOW = 8;
     private final long[] committed = new long[2];
     private final LongLongProcedure commiter = (timeNS, iter) -> {
         committed[0] = timeNS;
@@ -178,15 +178,19 @@ public class Focus extends AtomicRoulette<Causable> {
 
             long timeNS = committed[0];
             if (timeNS > 0) {
+
                 DescriptiveStatistics t = this.time[i];
                 t.addValue(timeNS);
+                this.timeMean[i] = t.getMean();
 
                 DescriptiveStatistics d = this.done[i];
                 d.addValue(committed[1]);
                 this.doneMean[i] = d.getMean();
                 this.doneMax[i] = Math.round(d.getMax());
-                this.timeMean[i] = t.getMean();
-                value[i] = c.value();
+
+                value[i] =
+                        c.value();
+
             } else {
                 //value[i] = unchanged
                 value[i] *= 0.99f; //slowly forget
@@ -215,7 +219,9 @@ public class Focus extends AtomicRoulette<Causable> {
 
         //float lowMargin = (minmax[1] - minmax[0]) / n;
         for (int i = 0; i < n; i++) {
-            double vNorm = normalize(value[i], vMin, vMax) / Math.max(1E3 /* 1uS in nanos */, timeMean[i]);
+            double vNorm = normalize(value[i], vMin, vMax)
+                / Math.max(1E3 /* 1uS in nanos */, timeMean[i]);
+                //;
             int pri = (int) Util.clampI((PRI_GRANULARITY * vNorm), 1, AtomicRoulette.PRI_GRANULARITY);
 
             //the priority determined by the value primarily affects the probability of the choice being selected as a timeslice

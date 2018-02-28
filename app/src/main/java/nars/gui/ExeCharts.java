@@ -33,7 +33,7 @@ import java.util.stream.IntStream;
 
 import static spacegraph.container.Gridding.*;
 
-public class ExecCharts {
+public class ExeCharts {
 
     public static Surface metaGoalPlot(NAR nar) {
 

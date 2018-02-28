@@ -62,6 +62,15 @@ public class NAgentTest {
                 $.$safe("(t,y)"),
                 posOrNeg);
 
+//        a.curiosity.set(0.5f);
+//        Param.DEBUG = true;
+//        //a.nar.log();
+//        a.nar.onTask(t -> {
+//            if (!t.isInput() & t.isGoal()) {
+//                System.out.println(t.proof());
+//            }
+//        });
+
         a.runSynch(4000);
 
         assertTrue(a.avgReward() > 0.2f);

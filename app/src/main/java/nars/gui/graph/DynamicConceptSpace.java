@@ -382,7 +382,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
         }
 
 
-        public void preCollect(ConceptWidget cw) {
+        void preCollect(ConceptWidget cw) {
             float p = cw.pri;
 
 

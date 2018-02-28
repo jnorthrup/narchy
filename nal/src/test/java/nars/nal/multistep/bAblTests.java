@@ -20,7 +20,7 @@ public class bAblTests extends NALTest {
                 .believe("in(john,playground)") //john is in the playground.
                 .believe("in(bob,office)") //Bob is in the office.
                 .ask("in(john,?where)") //Where is john?
-                .mustBelieve(100, "in(john,playground)", 1f, 0.47f) //note that the 0.90 conf result should have been provided as an answer to the question, not as a belief. the lower conf version is a side effect so we'll test for that at least
+                .mustBelieve(100, "in(john,playground)", 1f, 0.73f) //note that the 0.90 conf result should have been provided as an answer to the question, not as a belief. the lower conf version is a side effect so we'll test for that at least
         ;
 
 

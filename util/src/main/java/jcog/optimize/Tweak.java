@@ -15,9 +15,9 @@ public class Tweak<X,Y> {
     public final Function<X,Y> get;
     public final String id;
 
-    @Deprecated public Tweak(String id, BiFunction<X,Y,Y> set) {
-        this(id, null, set);
-    }
+//    @Deprecated public Tweak(String id, BiFunction<X,Y,Y> set) {
+//        this(id, null, set);
+//    }
 
     /** transduces a generic floating point value to a change in a property of the experiment subject */
     public Tweak(String id, Function<X,Y> get, BiFunction<X,Y,Y> set) {
@@ -47,10 +47,12 @@ public class Tweak<X,Y> {
     }
 
     public final Y get(X example) {
-        return get.apply(example);
+        return get == null ? null : get.apply(example);
     }
 
     public Y set(X subject, Y value) {
         return set.apply(subject, value);
     }
+
+
 }

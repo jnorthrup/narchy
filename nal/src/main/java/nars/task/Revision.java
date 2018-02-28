@@ -962,8 +962,9 @@ public class Revision {
     static float dtDiff(Term a, Term b, int depth) {
         if (a.equals(b)) return 0f;
 
-        if (!a.isTemporal() || !b.isTemporal())
-            return 0f;
+//        if (!a.isTemporal() || !b.isTemporal()) {
+//            return 0f;
+//        }
 
         Op ao = a.op();
         Op bo = b.op();
@@ -1030,9 +1031,15 @@ public class Revision {
         } else {
             int adt = a.dt();
             int bdt = b.dt();
+
+            //ockham temoral razor - prefer temporally shorter explanations
+            if (adt == DTERNAL) adt = 0; //dternal prefer match with immediate dt=0
+            if (bdt == DTERNAL) bdt = 0; //dternal prefer match with immediate dt=0
+
             if (adt == XTERNAL) adt = bdt;
             if (bdt == XTERNAL) bdt = adt;
-            if (adt != bdt && adt != DTERNAL && bdt != DTERNAL) {
+
+            if (adt != bdt/* && adt != DTERNAL && bdt != DTERNAL*/) {
 
 //            if (adt == DTERNAL) {
 //                adt = 0;

@@ -195,7 +195,7 @@ public abstract class Param {
      * cost of a successful task derivation
      */
     @Range(min=0, max=64)
-    public static int TTL_DERIVE_TASK_SUCCESS = 37;
+    public static int TTL_DERIVE_TASK_SUCCESS = 15;
 
     /**
      * cost of a repeat (of another within the premise's batch) task derivation

@@ -168,12 +168,14 @@ public class Tweaks<X> {
     final Map<Class, Tweaker<X>> tweakers = Map.of(
 
             Boolean.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p) -> {
-                Function<X, Float> get = ObjectGraph.getter(p);
+                Function<X, Boolean> get = ObjectGraph.getter(p);
                 final BiConsumer<X, Boolean> set = ObjectGraph.setter(p);
-                tweak(k, 0, 1, 0.5f, get, (x, v) -> {
-                    boolean b = v >= 0.5f;
-                    set.accept(x, b);
-                    return (b) ? 1f : 0f;
+                tweak(k, 0, 1, 0.5f,
+                    (x)->get.apply(x) ? 1f : 0f,
+                    (x, v) -> {
+                        boolean b = (v >= 0.5f);
+                        set.accept(x, b);
+                        return (b) ? 1f : 0f;
                 });
             },
 
@@ -203,8 +205,11 @@ public class Tweaks<X> {
 //            MutableInteger.class, null,
 
             Float.class, (X sample, String k, FastList<Pair<Class, ObjectGraph.Accessor>> p) -> {
+                Function<X, Float> get = ObjectGraph.getter(p);
                 final BiConsumer<X, Float> set = ObjectGraph.setter(p);
-                tweak(k, Float.NaN, Float.NaN, Float.NaN, set::accept);
+                tweak(k, Float.NaN, Float.NaN, Float.NaN,
+                        get::apply,
+                        (x,v)->{ set.accept(x,v); return v; });
             },
 //            MutableFloat.class, null,
 
@@ -212,9 +217,12 @@ public class Tweaks<X> {
             FloatRange.class, (sample, k, p) -> {
                 final Function<X, FloatRange> get = ObjectGraph.getter(p);
                 FloatRange fr = get.apply(sample); //use the min/max at the time this is constructed, which assumes they will remain the same
-                tweak(k, fr.min, fr.max, Float.NaN, (x, v) -> {
-                    fr.set(v);
-                });
+                tweak(k, fr.min, fr.max, Float.NaN,
+                    (x)-> get.apply(x).floatValue(),
+                    (x, v) -> {
+                        get.apply(x).set(v);
+                        return v;
+                    });
             }
 
 //            FloatRangeRounded.class, null
@@ -270,7 +278,9 @@ public class Tweaks<X> {
     }
 
     public Tweaks<X> tweak(String key, int min, int max, int inc, Function<X, Integer> get, ObjectIntProcedure<X> apply) {
-        return tweak(key, min, max, inc < 0 ? Float.NaN : inc, (x) -> get.apply(x).floatValue() /* HACK */, (X x, float v) -> {
+        return tweak(key, min, max, inc < 0 ? Float.NaN : inc,
+            (x) -> get!=null ? get.apply(x).floatValue() : null /* HACK */,
+            (X x, float v) -> {
             int i = Math.round(v);
             apply.accept(x, i);
             return i;
@@ -278,7 +288,7 @@ public class Tweaks<X> {
     }
 
     public Tweaks<X> tweak(String id, float min, float max, float inc, ObjectFloatProcedure<X> apply) {
-        tweaks.add(new TweakFloat<X>(id, min, max, inc, null /* TODO */, (X x, float v) -> {
+        tweaks.add(new TweakFloat<>(id, min, max, inc, (x)->null, (X x, float v) -> {
             apply.value(x, v);
             return v;
         }));

@@ -211,7 +211,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         long[] stamp = ss.getOne();
 
         NALTask dyn = new DynTruthTask(c, beliefOrGoal, tr, nar, start, end, stamp);
-        if (ss.getTwo() > 0) dyn.setCyclic(true);
+        //if (ss.getTwo() > 0) dyn.setCyclic(true);
 
         dyn.cause = cause();
         dyn.priSet(priority);

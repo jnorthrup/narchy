@@ -32,7 +32,7 @@ public class NARTestOptimize {
 
     static final int threads =
             //Math.max(1,Runtime.getRuntime().availableProcessors()-1);
-            2;
+            3;
 
     /** necessary to do what jdk "parallel" streams refuses to do... WTF */
     static final ExecutorService exe = Executors.newFixedThreadPool(

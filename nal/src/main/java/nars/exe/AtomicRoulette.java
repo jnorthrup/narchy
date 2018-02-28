@@ -17,7 +17,7 @@ import java.util.stream.IntStream;
 
 public class AtomicRoulette<X> {
 
-    protected static final int PRI_GRANULARITY = 127;
+    protected static final int PRI_GRANULARITY = 1024;
 
     /**
      * TODO this can be smaller per cause, ex: byte

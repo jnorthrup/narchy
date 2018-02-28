@@ -602,7 +602,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
         } else {
             //int tableDur = 1 + (int) (tableDur());
             return (Task x) ->
-                    temporalTaskPriority(x, start, end, dur) / (1f + Revision.dtDiff(template, x.term()));
+                    temporalTaskPriority(x, start, end, dur) / (1f + Revision.dtDiff(template, x.term()) / (dur*dur) );
         }
     }
 

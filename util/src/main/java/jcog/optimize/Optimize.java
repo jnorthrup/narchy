@@ -88,16 +88,21 @@ public class Optimize<X> {
         double[] min = new double[dim];
         double[] max = new double[dim];
         double[] inc = new double[dim];
-        double[] range = new double[dim];
+//        double[] range = new double[dim];
 
+        X example = subject.get();
         int i = 0;
         for (Tweak w : tweaks) {
             TweakFloat s = (TweakFloat) w;
-            mid[i] = (s.getMax() + s.getMin()) / 2f;
+
+            //initial guess: get from sample, otherwise midpoint of min/max range
+            Object guess = s.get(example);
+            mid[i] = guess!=null ? ((float) guess) : ((s.getMax() + s.getMin()) / 2f);
+
             min[i] = (s.getMin());
             max[i] = (s.getMax());
             inc[i] = s.getInc();
-            range[i] = max[i] - min[i];
+//            range[i] = max[i] - min[i];
             //sigma[i] = Math.abs(max[i] - min[i]) * 0.75f; //(s.getInc());
             i++;
         }

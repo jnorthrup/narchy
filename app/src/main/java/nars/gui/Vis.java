@@ -311,8 +311,8 @@ public class Vis {
         return new TabPane(Map.of(
                 "shl", () -> new ConsoleTerminal(new nars.TextUI(n).session(10f)),
                 "nar", () -> new AutoSurface<>(n),
-                "exe", () -> ExecCharts.exePanel(n),
-                "can", () -> ExecCharts.causePanel(n),
+                "exe", () -> ExeCharts.exePanel(n),
+                "can", () -> ExeCharts.causePanel(n),
                 "svc", () -> new AutoSurface<>(n.services),
                 "cpt", () -> bagHistogram((Iterable) () -> n.conceptsActive().iterator(), 8)
         ));
