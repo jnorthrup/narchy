@@ -1,10 +1,11 @@
-package nars.derive;
+package nars.derive.value;
 
 import com.google.common.base.Joiner;
 import jcog.Util;
 import jcog.decide.Roulette;
 import nars.Param;
 import nars.control.Cause;
+import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.pred.PrediTerm;
 import org.apache.commons.lang3.ArrayUtils;
@@ -59,7 +60,9 @@ public class Try implements Consumer<Derivation> {
             default:
 
                 forkRoulette(d, choices,
-                        1f/N
+                        //1f
+                        0.5f  //exponential decay
+                        //1f/N
                         //1f/((float)Math.sqrt(N))
                 );
                 //forkTTLBudget(d, choices);
@@ -69,7 +72,7 @@ public class Try implements Consumer<Derivation> {
     }
 
     /** TTL and the value of each decides budget to allocate to each branch. then these are tried in shuffled order */
-    public void forkTTLBudget(Derivation d, int[] choices) {
+    void forkTTLBudget(Derivation d, int[] choices) {
 
         float ttlTotal = d.ttl;
         int N = choices.length;
@@ -101,17 +104,18 @@ public class Try implements Consumer<Derivation> {
 
     }
 
-    public void forkRoulette(Derivation d, int[] choices, float reserve) {
+    void forkRoulette(Derivation d, int[] choices, float reserve) {
         int N = choices.length;
         float[] w =
                 //Util.marginMax(N, x -> valueSum(choices[x]), 1f / N, 0);
-                Util.softmax(N, i -> causes[i].value(), 0.5f);
+                Util.softmax(N, i -> valueSum(choices[i]), Param.TRIE_DERIVER_TEMPERATURE);
+
+        //System.out.println(Arrays.toString(choices) + " " + Arrays.toString(w));
 
         int before = d.now();
         Roulette.selectRouletteUnique(N, i -> w[i], (i) -> {
             int ttlSave = d.ttl;
 
-            int ci = choices[i];
 
             //int fanout = ((ValueFork)(branches[ci])).causes.length;
             int ttlFrac =
@@ -119,7 +123,7 @@ public class Try implements Consumer<Derivation> {
                     //Math.min(ttlSave, Math.max(fanout * Param.TTL_MIN, Math.round(ttlSave*reserve)));
             d.ttl = ttlFrac;
 
-            branches[ci].test(d);
+            branches[choices[i]].test(d);
             d.revert(before);
 
             int ttlUsed = Math.max(1, ttlFrac - d.ttl);

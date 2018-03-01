@@ -135,7 +135,7 @@ public interface PriMerge extends BiConsumer<Priority, Prioritized> {
 //    /** or priority, LERP other components in proportion to the priorities */
     PriMerge or = (tgt, src) -> blend(tgt, src, OR);
 
-    //    /** or priority, LERP other components in proportion to the priorities */
+
     PriMerge max = (tgt, src) -> blend(tgt, src, MAX);
 
     /** avg priority, LERP other components in proportion to the priorities */

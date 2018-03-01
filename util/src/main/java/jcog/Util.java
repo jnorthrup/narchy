@@ -2020,7 +2020,7 @@ public enum Util {
     }
 
     public static float[] softmax(int num, IntToFloatFunction build, float temperature) {
-        return Util.map(num, i -> (i!=0 ? ((float) Math.exp(build.valueOf(i)))  : 1) / temperature);
+        return Util.map(num, i -> (i!=0 ? ((float) Math.exp(build.valueOf(i)/ temperature)) : 1) );
     }
 
 

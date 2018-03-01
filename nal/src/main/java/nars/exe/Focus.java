@@ -127,10 +127,10 @@ public class Focus extends AtomicRoulette<Causable> {
     /**
      * cache for iter.getMean() and time.getMean()
      */
-    public double[] doneMean = null;
-    public long[] doneMax = null;
-    public double[] timeMean = null;
-    public int[] sliceIters = new int[0];
+    double[] doneMean = null;
+    long[] doneMax = null;
+    double[] timeMean = null;
+    int[] sliceIters = new int[0];
 
     protected void update(NAR nar) {
 
@@ -373,11 +373,12 @@ public class Focus extends AtomicRoulette<Causable> {
         final static double minUpdateDurs = 1f;
         final RecycledSummaryStatistics[] causeSummary = new RecycledSummaryStatistics[MetaGoal.values().length];
         float momentum =
-//                    0f;
-                //0.5f;
+                //0f;
+                0.5f;
                 //0.75f;
-                0.9f;
-        //0.95f;
+                //0.9f;
+                //0.95f;
+
         long lastUpdate = ETERNAL;
         /**
          * intermediate calculation buffer

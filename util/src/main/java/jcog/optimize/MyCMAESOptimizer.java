@@ -16,6 +16,7 @@ import org.apache.commons.math3.optim.nonlinear.scalar.MultivariateOptimizer;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.util.MathArrays;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -180,7 +181,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
     /**
      * @param maxIterations Maximal number of iterations.
      * @param stopFitness Whether to stop if objective function value is smaller than
-     * {@code stopFitness}.
+     * {@code stopFitness}.  use NaN to disable
      * @param isActiveCMA Chooses the covariance matrix update method.
      * @param diagonalOnly Number of initial iterations, where the covariance matrix
      * remains diagonal.
@@ -370,7 +371,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
             }
             // handle termination criteria
             // Break, if fitness is good enough
-            if (stopFitness != 0 && bestFitness < (isMinimize ? stopFitness : -stopFitness)) {
+            if (stopFitness==stopFitness && bestFitness < (isMinimize ? stopFitness : -stopFitness)) {
                 break generationLoop;
             }
             final double[] sqrtDiagC = sqrt(diagC).getColumn(0);
@@ -432,6 +433,12 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
             }
         }
         return optimum;
+    }
+
+    public void print(PrintStream out) {
+        out.println("sigmaHistory: " + statisticsSigmaHistory);
+        out.println("sigmaFitnessHistory: " + statisticsFitnessHistory);
+        out.println("meanHistory: " + statisticsMeanHistory);
     }
 
     /**

@@ -4,8 +4,8 @@ import jcog.bag.Bag;
 import jcog.bag.impl.PLinkArrayBag;
 import jcog.math.FloatRange;
 import jcog.pri.PLink;
-import jcog.pri.op.PriMerge;
 import nars.NAR;
+import nars.Param;
 import nars.Task;
 import nars.exe.Causable;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,7 @@ public abstract class TaskLeak extends Causable {
         //noinspection Convert2Diamond
         this(
                 //new ConcurrentArrayBag<Task, PLink<Task>>(PriMerge.max, capacity) {
-                new PLinkArrayBag(PriMerge.max, capacity)
+                new PLinkArrayBag(Param.taskMerge, capacity)
 //              {      @Nullable
 //                    @Override
 //                    public Task key(PLink<Task> t) {

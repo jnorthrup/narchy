@@ -228,11 +228,12 @@ public class Cause implements Comparable<Cause> {
             valueSummary[i].accept(p.current);
         }
     }
+
     public void commit() {
-        for (int i = 0, purposeLength = goal.length; i < purposeLength; i++) {
-            goal[i].commit();
-        }
+        for (Traffic aGoal : goal)
+            aGoal.commit();
     }
+
     public void print(PrintStream out) {
         out.println(toString() + "\t" +
                 IntStream.range(0, goal.length).mapToObj(x->

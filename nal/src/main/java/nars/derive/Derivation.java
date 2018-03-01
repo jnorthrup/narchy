@@ -33,7 +33,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
@@ -628,6 +627,8 @@ public class Derivation extends ProtoDerivation {
                         Param.TaskToDerivation.valueOf(taskPri) :
                         Param.TaskBeliefToDerivation.apply(taskPri, _belief.priElseZero());
 
+        //this.pri *= Math.max(1f, nar.amp(parentCause));
+
         this.premiseEviSingle = taskTruth != null ? taskTruth.evi() : 0;
         this.premiseEviDouble = beliefTruth != null ?
                 Math.max(premiseEviSingle, beliefTruth.evi()) :
@@ -704,29 +705,6 @@ public class Derivation extends ProtoDerivation {
     }
 
 
-    /**
-     * called at the end of the cycle, input all generated derivations
-     */
-    public int commit(Consumer<Collection<Task>> target) {
-
-//        activator.commit(nar);
-
-//        //experimental normalization
-//        final float[] priSum = {0};
-//        derivations.values().forEach(dd -> priSum[0] = dd.priElseZero());
-//        if (priSum[0] > 1f) {
-//            float factor = 1f/priSum[0];
-//            derivations.values().forEach(dd -> dd.priMult(factor));
-//        }
-
-        int s = derivations.size();
-        if (s > 0) {
-            nar.emotion.deriveTask.increment(s);
-            target.accept(derivations.values());
-            derivations.clear();
-        }
-        return s;
-    }
 
     public Task add(Task t) {
         return derivations.merge(t, t, DUPLICATE_DERIVATION_MERGE);

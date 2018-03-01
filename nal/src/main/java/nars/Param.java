@@ -39,6 +39,9 @@ public abstract class Param {
      */
     public static final boolean TERM_ARRAY_SHARE = true;
 
+    /** softmax roulette parameter in trie deriver fork decisions */
+    public static final float TRIE_DERIVER_TEMPERATURE = 0.5f;
+
     /**
      * pri threshold for emitting task activation events
      */
@@ -100,16 +103,16 @@ public abstract class Param {
     //Budget Merging: the sequence listed here is significant
 
     public static final PriMerge activateMerge =
-            //PriMerge.plus;
-            PriMerge.max;
+            PriMerge.plus;
+            //PriMerge.max;
 
     public static final PriMerge termlinkMerge =
             //PriMerge.max;
             PriMerge.plus;
 
     public static final PriMerge tasklinkMerge =
-            //PriMerge.max;
             PriMerge.max;
+            //PriMerge.plus;
 
     //    /**
 //     * budgets premises from their links, but isolated from affecting the derivation budgets, which are from the tasks (and not the links)
@@ -135,7 +138,7 @@ public abstract class Param {
     /**
      * budget factor for single-premise derivations: depends only on the task budget
      */
-    public static final FloatToFloatFunction TaskToDerivation = (t) -> t/2;
+    public static final FloatToFloatFunction TaskToDerivation = (t) -> t;
 
     public static final PriMerge taskMerge = PriMerge.max;
 
@@ -161,7 +164,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange matchTTLmean = new IntRange(620, 0, 1024);
+    public final IntRange matchTTLmean = new IntRange(256, 0, 1024);
 
 
     /** temporal radius (in durations) around the present moment to scan for truth */

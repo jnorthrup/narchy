@@ -15,6 +15,8 @@ public class UniExec extends AbstractExec {
 
     int WORK_PER_CYCLE = 1;
 
+    final Focus.DefaultRevaluator revaluator = new Focus.DefaultRevaluator();
+
     public UniExec(int capacity) {
         super(capacity);
     }
@@ -36,6 +38,7 @@ public class UniExec extends AbstractExec {
         });
 
         n.onCycle(() -> {
+            revaluator.update(n);
             for (int i = 0, canSize = can.size(); i < canSize; i++) {
                 can.get(i).run(n, WORK_PER_CYCLE);
             }

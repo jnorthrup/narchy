@@ -208,11 +208,11 @@ abstract public class NAgentX extends NAgent {
                 1f
                 //0.5f //nyquist
         );
-        n.timeFocus.set(4);
+        //n.timeFocus.set(4);
 
         n.confMin.set(0.01f);
         n.freqResolution.set(0.01f);
-        n.termVolumeMax.set(40);
+        n.termVolumeMax.set(32);
 
         n.beliefConfidence(0.9f);
         n.goalConfidence(0.9f);

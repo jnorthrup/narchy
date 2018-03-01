@@ -1,7 +1,6 @@
 package jcog.optimize;
 
 import com.google.common.base.Joiner;
-import jcog.Util;
 import jcog.list.FasterList;
 import jcog.meter.event.CSVOutput;
 import org.apache.commons.lang3.ArrayUtils;
@@ -41,7 +40,7 @@ public class Optimize<X> {
      */
     static final float autoInc_default = 2f;
 
-    final List<Tweak<X,?>> tweaks;
+    final List<Tweak<X, ?>> tweaks;
     final Supplier<X> subject;
 
     private final boolean trace = false;
@@ -54,8 +53,8 @@ public class Optimize<X> {
     }
 
     protected Optimize(Supplier<X> subject, Tweaks<X> t, Map<String, Float> hints) {
-        Pair<List<Tweak<X,?>>, SortedSet<String>> uu = t.get(hints);
-        List<Tweak<X,?>> ready = uu.getOne();
+        Pair<List<Tweak<X, ?>>, SortedSet<String>> uu = t.get(hints);
+        List<Tweak<X, ?>> ready = uu.getOne();
         SortedSet<String> unknown = uu.getTwo();
         if (ready.isEmpty()) {
             throw new RuntimeException("tweaks not ready:\n" + Joiner.on('\n').join(unknown));
@@ -97,7 +96,7 @@ public class Optimize<X> {
 
             //initial guess: get from sample, otherwise midpoint of min/max range
             Object guess = s.get(example);
-            mid[i] = guess!=null ? ((float) guess) : ((s.getMax() + s.getMin()) / 2f);
+            mid[i] = guess != null ? ((float) guess) : ((s.getMax() + s.getMin()) / 2f);
 
             min[i] = (s.getMin());
             max[i] = (s.getMax());
@@ -141,7 +140,7 @@ public class Optimize<X> {
 
             maxScore[0] = Math.max(maxScore[0], score);
             System.out.println(
-                n4(score) + " / " + n4(maxScore[0]) + "\t" + n4(point)
+                    n4(score) + " / " + n4(maxScore[0]) + "\t" + n4(point)
             );
 
             experiments.add(pair(score, point));
@@ -179,20 +178,25 @@ public class Optimize<X> {
             );
         } else {
 
-            int popSize = 4 * Math.round(Util.sqr(tweaks.size())); /* estimate */
+            int popSize =
+                    //4 + 3 ln(n)
+                    (int) Math.ceil(4 + 3 * Math.log(tweaks.size()));
+
 
             double[] sigma = MathArrays.scale(1f, inc);
 
-            new MyCMAESOptimizer(maxIterations, Double.NEGATIVE_INFINITY,
+            MyCMAESOptimizer m = new MyCMAESOptimizer(maxIterations, Double.NaN,
                     true, 0,
                     1, new MersenneTwister(System.nanoTime()),
-                    true, null, popSize, sigma).optimize(
-                    new MaxEval(maxIterations), //<- ignored?
+                    true, null, popSize, sigma);
+            m.optimize(
                     func,
                     GoalType.MAXIMIZE,
+                    new MaxEval(maxIterations),
                     new SimpleBounds(min, max),
                     new InitialGuess(mid)
             );
+            m.print(System.out);
 
 //            final int numIterpolationPoints = 3 * dim; //2 * dim + 1 + 1;
 //            new BOBYQAOptimizer(numIterpolationPoints,
@@ -227,7 +231,7 @@ public class Optimize<X> {
         X x = subject.get();
 
         for (int i = 0, dim = point.length; i < dim; i++) {
-            point[i] = ((Tweak<X,Float>)tweaks.get(i)).set(x, (float) point[i]);
+            point[i] = ((Tweak<X, Float>) tweaks.get(i)).set(x, (float) point[i]);
         }
 
         return x;

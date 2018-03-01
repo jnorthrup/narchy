@@ -7,10 +7,10 @@ import nars.NAR;
 import nars.NARLoop;
 import nars.NARS;
 import nars.Param;
+import nars.control.MetaGoal;
 import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
-import nars.nal.nal3.NAL3Test;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
 
@@ -27,8 +27,8 @@ import static java.util.stream.Collectors.toList;
 public class NARTestOptimize {
 
     static final int threads =
-            //Math.max(1,Runtime.getRuntime().availableProcessors()-1);
-            4;
+            Math.max(1,Runtime.getRuntime().availableProcessors()-1);
+            //4;
 
     /** necessary to do what jdk "parallel" streams refuses to do... WTF */
     static final ExecutorService exe = Executors.newFixedThreadPool(
@@ -92,18 +92,18 @@ public class NARTestOptimize {
                 return n;
             })
                 .learnExcept(NARLoop.class)
-//                .tweak("PERCEIVE", -1f, +1f, 0.25f, (NAR n, float p) ->
-//                        n.emotion.want(MetaGoal.Perceive, p)
-//                )
-//                .tweak("BELIEVE", -1f, +1f, 0.25f, (NAR n, float p) ->
-//                        n.emotion.want(MetaGoal.Believe, p)
-//                )
-                .optimize(64, 4, (n) ->
+                .tweak("PERCEIVE", -1f, +1f, 0.25f, (NAR n, float p) ->
+                        n.emotion.want(MetaGoal.Perceive, p)
+                )
+                .tweak("BELIEVE", -1f, +1f, 0.25f, (NAR n, float p) ->
+                        n.emotion.want(MetaGoal.Believe, p)
+                )
+                .optimize(128, 2, (n) ->
                         tests(n,
                                 NAL1Test.class,
                                 NAL1MultistepTest.class,
-                                NAL2Test.class,
-                                NAL3Test.class
+                                NAL2Test.class
+                                //NAL3Test.class
                                 //NAL5Test.class,
                                 //NAL6Test.class
 

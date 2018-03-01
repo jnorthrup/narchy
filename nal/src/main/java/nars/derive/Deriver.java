@@ -194,6 +194,7 @@ public class Deriver extends Causable {
 
         Set<Premise> premiseBurst = d.premiseBurst;
 
+        int totalPremises = 0;
         int totalPremisesRemain = iterations * conceptsPerIteration.intValue();
         final int[] fired = {0};
         while (totalPremisesRemain > 0) {
@@ -227,7 +228,9 @@ public class Deriver extends Causable {
 
             this.now = nar.time();
 
-            premiseBurst.removeIf(premise -> {
+            totalPremises += premiseBurst.size();
+
+            premiseBurst.forEach(premise -> {
 
                 if (premise.match(d, this::matchTime, matchTTL) != null) {
 
@@ -251,19 +254,36 @@ public class Deriver extends Causable {
                     n.emotion.premiseFailMatch.increment();
                 }
 
-                return true;
+
             });
+            premiseBurst.clear();
         }
 
+        int s = d.derivations.size();
+        if (s > 0) {
+            nar.emotion.deriveTask.increment(s);
+            input(totalPremises, d.derivations.values());
+            d.derivations.clear();
+        }
 
-
-
-        int derived = d.commit(this::input);
 
         return fired[0];
     }
 
-    protected void input(Collection<Task> x) {
+    protected void input(int premises, Collection<Task> x) {
+//        //experimental normalization
+//        final float[] priSum = {0};
+//        derivations.values().forEach(dd -> priSum[0] = dd.priElseZero());
+//        if (priSum[0] > 1f) {
+//            float factor = 1f/priSum[0];
+//            derivations.values().forEach(dd -> dd.priMult(factor));
+//        }
+
+//        int limit = Math.max(8, premises * 2);
+//        if (x.size() > limit) {
+//            x = x.stream().sorted(Comparators.byFloatFunction(Task::priElseZero).reversed()).limit(limit).collect(toList());
+//        }
+
         nar.input(x);
     }
 

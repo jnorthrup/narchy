@@ -1,5 +1,6 @@
 package nars.derive;
 
+import nars.derive.value.Try;
 import nars.term.pred.PrediTerm;
 
 import java.io.PrintStream;

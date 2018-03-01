@@ -15,7 +15,6 @@ import nars.index.term.map.CaffeineIndex;
 import nars.op.RLBooster;
 import nars.op.stm.ConjClustering;
 import nars.task.DerivedTask;
-import nars.term.Term;
 import nars.time.CycleTime;
 import nars.util.signal.Bitmap2DSensor;
 import nars.video.CameraSensorView;
@@ -72,13 +71,13 @@ public class TrackXY extends NAgent {
         NAR n = nb.get();
 
         n.termVolumeMax.set(32);
-        n.priDefault(BELIEF, 0.2f);
+//        n.priDefault(BELIEF, 0.2f);
 //        n.priDefault(GOAL, 0.5f);
         n.conceptActivation.set(0.5f);
         n.forgetRate.set(0.9f);
 
 
-        TrackXY t = new TrackXY(5, 1);
+        TrackXY t = new TrackXY(8, 8);
         n.on(t);
 
         int experimentTime = 2048;
@@ -219,7 +218,7 @@ public class TrackXY extends NAgent {
             sx = Util.clamp(sx - controlSpeed, 0, view.width() - 1);
         });
 
-        this.cam = new Bitmap2DSensor((Term) null, view, nar);
+        this.cam = new Bitmap2DSensor(id /*(Term) null*/, view, nar);
         //this.cam.resolution(0.1f);
         sensorCam.add(cam);
 

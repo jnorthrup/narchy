@@ -230,13 +230,13 @@ public class NAgentTest {
         Deriver d = new Deriver(Derivers.rules(1, 8, n), n) {
 
             @Override
-            protected void input(Collection<Task> x) {
+            protected void input(int premises, Collection<Task> x) {
                 //HACK TODO this is more efficiently done by filtering the rules rather than the results!
                 Collection<Task> filtered = Collections2.filter(x, Task::isGoal);
                 if (!filtered.isEmpty()) {
                     System.out.println(filtered);
                 }
-                super.input(filtered);
+                super.input(premises, filtered);
             }
         };
         d.conceptsPerIteration.set(16);

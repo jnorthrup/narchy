@@ -275,8 +275,8 @@ public class NARS {
             nar.DEFAULT_GOAL_PRIORITY = 0.5f;
             nar.DEFAULT_QUEST_PRIORITY = nar.DEFAULT_QUESTION_PRIORITY = 0.5f;
 
+//            nar.emotion.want(Perceive, -0.1f);
 
-            //nar.defaultWants();
 
 
         }

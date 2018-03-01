@@ -10,6 +10,8 @@ import nars.derive.constraint.MatchConstraint;
 import nars.derive.op.TaskBeliefOp;
 import nars.derive.op.UnifyTerm;
 import nars.derive.rule.PremiseRuleSet;
+import nars.derive.value.Try;
+import nars.derive.value.ValueFork;
 import nars.term.Term;
 import nars.term.pred.AndCondition;
 import nars.term.pred.Fork;

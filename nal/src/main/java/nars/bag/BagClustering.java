@@ -32,14 +32,12 @@ public class BagClustering<X> {
     /**
      * TODO allow dynamic change
      */
-    private final short clusters;
     protected /*Flip<*/ FasterList<VLink<X>> sorted =
             new FasterList<>();
     //new Flip(FasterList::new);
 
     public BagClustering(Dimensionalize<X> model, int centroids, int initialCap) {
 
-        this.clusters = (short) centroids;
 
         this.model = model;
 

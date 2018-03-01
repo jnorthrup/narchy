@@ -1,9 +1,13 @@
-package nars.derive;
+package nars.derive.value;
 
 import jcog.Util;
 import jcog.decide.Roulette;
 import nars.$;
+import nars.Param;
 import nars.control.Cause;
+import nars.derive.Derivation;
+import nars.derive.ForkDerivation;
+import nars.derive.Taskify;
 import nars.derive.op.UnifyTerm;
 import nars.term.pred.AbstractPred;
 import nars.term.pred.AndCondition;
@@ -69,7 +73,7 @@ public class ValueFork extends ForkDerivation<Derivation> {
 
             float[] w =
                     //Util.marginMax(N, i -> causes[i].value(), 1f / N, 0);
-                    Util.softmax(N, i -> causes[i].value(), 0.5f);
+                    Util.softmax(N, i -> causes[i].value(), Param.TRIE_DERIVER_TEMPERATURE);
 
             Roulette.selectRouletteUnique(N, i->w[i], (b) -> {
 

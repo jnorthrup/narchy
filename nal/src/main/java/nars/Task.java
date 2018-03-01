@@ -701,7 +701,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
             if (concept != null) {
                 //shared by both questions and quests per concept
                 PLinkArrayBag<Twin<Task>> answers = concept.meta("?", (x) ->
-                        new PLinkArrayBag<Twin<Task>>(PriMerge.max, Param.ANSWER_BAG_CAPACITY)
+                        new PLinkArrayBag<Twin<Task>>(Param.taskMerge, Param.ANSWER_BAG_CAPACITY)
                 );
 
                 Twin<Task> qa = twin(this, answer);

@@ -2,6 +2,7 @@ package nars.nar;
 
 import nars.NAR;
 import nars.NARS;
+import nars.control.MetaGoal;
 import nars.test.DeductiveMeshTest;
 import org.junit.jupiter.api.Test;
 
@@ -11,11 +12,21 @@ public class MetaGoalTest {
 
     @Test
     public void test1() {
-        NAR n = NARS.tmp(1);
+        NAR n = NARS.tmp(6);
 
-        DeductiveMeshTest m = new DeductiveMeshTest(n, 4, 4);
+        n.emotion.want(MetaGoal.Believe, 0.05f);
+        n.emotion.want(MetaGoal.Perceive, -0.05f);
+
         n.log();
-        n.run(500);
+
+        DeductiveMeshTest m = new DeductiveMeshTest(n, new int[] { 3, 3 }, 3500);
+        m.test.test(true);
+        //n.run(500);
+
+        analyzeCauses(n);
+    }
+
+    static void analyzeCauses(NAR n) {
 
         SortedMap<String, Object> x = n.stats();
         x.forEach((k, v) -> {
@@ -24,7 +35,12 @@ public class MetaGoalTest {
 
         n.causes.forEach(c -> {
             c.commit();
-            c.print(System.out);
+            double perceive = c.goal[MetaGoal.Perceive.ordinal()].total;
+            double believe = c.goal[MetaGoal.Believe.ordinal()].total;
+            double desire = c.goal[MetaGoal.Desire.ordinal()].total;
+            if (perceive > 0) {
+                c.print(System.out);
+            }
         });
     }
 }
