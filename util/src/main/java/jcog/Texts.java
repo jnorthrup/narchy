@@ -505,10 +505,14 @@ public enum Texts {
         return dig1;
     }
 
+    public static float f(String s) {
+        return f(s, Float.NaN);
+    }
+
     /**
      * fast parse for float, checking common conditions
      */
-    public static float f(String s) {
+    public static float f(String s, float ifMissing) {
 
         switch (s) {
             case "0":
@@ -526,13 +530,17 @@ public enum Texts {
             case "0.5":
                 return 0.5f;
             default:
-                return Float.parseFloat(s);
+                try {
+                    return Float.parseFloat(s);
+                } catch (NumberFormatException e) {
+                    return ifMissing;
+                }
         }
 
     }
 
     public static float f(String s, float min, float max) {
-        float x = f(s);
+        float x = f(s, Float.NaN);
         if ((x < min) || x > max)
             return Float.NaN;
         return x;

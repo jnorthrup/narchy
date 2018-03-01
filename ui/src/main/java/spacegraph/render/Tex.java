@@ -6,6 +6,7 @@ import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.TextureIO;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.Surface;
+import spacegraph.container.MutableContainer;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBuffer;
@@ -53,7 +54,7 @@ public class Tex {
 
             if (texture == null) {
                 texture = TextureIO.newTexture(gl, nextData);
-            } else {
+            } else if (nextData != null) {
                 //TODO compute 'd' outside of rendering paint in the update method
                 texture.updateImage(gl, nextData);
             }
@@ -101,6 +102,7 @@ public class Tex {
                 buffer, null
         );
     }
+
     protected void update(int[] iimage, int width, int height) {
 
         this.src = iimage;
@@ -125,7 +127,12 @@ public class Tex {
 
         @Override
         protected void paint(GL2 gl, int dtMS) {
-            Tex.this.paint(gl, bounds);
+            try {
+                Tex.this.paint(gl, bounds);
+            } catch (NullPointerException e) {
+                ((MutableContainer) parent).remove(this);
+                e.printStackTrace();
+            }
         }
     }
 }
