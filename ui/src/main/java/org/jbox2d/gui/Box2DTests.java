@@ -450,13 +450,10 @@ public class Box2DTests extends JComponent implements Runnable {
             //vykresli particles
             drawParticles();
 
-            //vykresli tuhe telesa
-            w.bodies().forEach(this::drawBody);
+            w.bodies(this::drawBody);
 
-            //vykresli joiny
-            for (Joint j = w.joints(); j != null; j = j.next) {
-                drawJoint(j);
-            }
+            w.joints(this::drawJoint);
+
         }
 
         //text

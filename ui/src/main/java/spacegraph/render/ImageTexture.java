@@ -20,7 +20,7 @@ import java.util.zip.ZipEntry;
 public class ImageTexture extends Tex {
 
     private static JarFile fontawesome = null;
-    static final String fa_prefix = "fontawesome://";
+    private static final String fa_prefix = "fontawesome://";
 
     static {
         try {

@@ -174,10 +174,10 @@ public class PhyWall extends Wall implements Animated {
         Dynamics2D w = this.W;
 
         long now = System.currentTimeMillis();
-        for (Joint j = w.joints(); j != null; j = j.next)
-            drawJoint(j, gl, now);
 
-        W.bodies().forEach(b -> drawBody(b, gl));
+        w.joints(j -> drawJoint(j, gl, now));
+
+        w.bodies(b -> drawBody(b, gl));
 
         drawParticleSystem(gl, w.particles);
     }

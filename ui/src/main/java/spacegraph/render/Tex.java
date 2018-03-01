@@ -46,6 +46,7 @@ public class Tex {
     public void paint(GL2 gl, RectFloat2D bounds, float repeatScale, float alpha) {
 
 
+
         if (profile == null) {
             profile = gl.getGLProfile();
         }

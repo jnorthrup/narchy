@@ -56,6 +56,7 @@ import spacegraph.math.v2;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -83,11 +84,10 @@ public class Dynamics2D {
 
     protected final ContactManager contactManager;
 
-    //ConcurrentLinkedHashSet
     final ConcurrentHashMap<Body2D,Body2D> bodies = new ConcurrentHashMap<>();
 
+    final ConcurrentHashMap<Joint,Joint> joints = new ConcurrentHashMap<>();
 
-    private Joint joints;
     private int jointCount;
 
     private final Tuple2f m_gravity = new v2();
@@ -160,10 +160,10 @@ public class Dynamics2D {
     }
 
     public Dynamics2D(Tuple2f gravity, IWorldPool pool, BroadPhase broadPhase) {
-        this.pool = pool;
-        m_destructionListener = null;
 
-        joints = null;
+        this.pool = pool;
+
+        m_destructionListener = null;
 
         jointCount = 0;
 
@@ -327,9 +327,9 @@ public class Dynamics2D {
 
         if (bodies.remove(b)!=null) {
 
-            b.onRemoval();
-
             invoke(() -> {
+
+                b.onRemoval();
 
                 b.setActive(false);
 
@@ -392,60 +392,56 @@ public class Dynamics2D {
     }
 
     public Joint addJoint( Joint j) {
+        if (joints.putIfAbsent(j, j)==null) {
 
-        invoke(() -> {
+            invoke(() -> {
 
-            // Connect to the world list.
-            j.prev = null;
-            j.next = joints;
-            if (joints != null) {
-                joints.prev = j;
-            }
-            joints = j;
-            ++jointCount;
+                ++jointCount;
 
-            // Connect to the bodies' doubly linked lists.
-            j.edgeA.joint = j;
-            Body2D B = j.getBodyB();
-            j.edgeA.other = B;
-            j.edgeA.prev = null;
-            Body2D A = j.getBodyA();
-            j.edgeA.next = A.joints;
-            if (A.joints != null) {
-                A.joints.prev = j.edgeA;
-            }
-            A.joints = j.edgeA;
-
-            j.edgeB.joint = j;
-            j.edgeB.other = A;
-            j.edgeB.prev = null;
-            j.edgeB.next = B.joints;
-            if (B.joints != null) {
-                B.joints.prev = j.edgeB;
-            }
-            B.joints = j.edgeB;
-
-
-            Body2D bodyA = j.getBodyA();
-            Body2D bodyB = j.getBodyB();
-
-            // If the joint prevents collisions, then flag any contacts for filtering.
-            if (!j.getCollideConnected()) {
-                ContactEdge edge = bodyB.contacts();
-                while (edge != null) {
-                    if (edge.other == bodyA) {
-                        // Flag the contact for filtering at the next time step (where either
-                        // body is awake).
-                        edge.contact.flagForFiltering();
-                    }
-
-                    edge = edge.next;
+                // Connect to the bodies' doubly linked lists.
+                j.edgeA.joint = j;
+                Body2D B = j.getBodyB();
+                j.edgeA.other = B;
+                j.edgeA.prev = null;
+                Body2D A = j.getBodyA();
+                j.edgeA.next = A.joints;
+                if (A.joints != null) {
+                    A.joints.prev = j.edgeA;
                 }
-            }
+                A.joints = j.edgeA;
 
-            // Note: creating a joint doesn't wake the bodies.
+                j.edgeB.joint = j;
+                j.edgeB.other = A;
+                j.edgeB.prev = null;
+                j.edgeB.next = B.joints;
+                if (B.joints != null) {
+                    B.joints.prev = j.edgeB;
+                }
+                B.joints = j.edgeB;
 
-        });
+
+
+                // If the joint prevents collisions, then flag any contacts for filtering.
+                if (!j.getCollideConnected()) {
+                    Body2D bodyA = j.getBodyA();
+                    Body2D bodyB = j.getBodyB();
+
+                    ContactEdge edge = bodyB.contacts();
+                    while (edge != null) {
+                        if (edge.other == bodyA) {
+                            // Flag the contact for filtering at the next time step (where either
+                            // body is awake).
+                            edge.contact.flagForFiltering();
+                        }
+
+                        edge = edge.next;
+                    }
+                }
+
+                // Note: creating a joint doesn't wake the bodies.
+
+            });
+        }
 
         return j;
     }
@@ -458,83 +454,72 @@ public class Dynamics2D {
      */
     public void removeJoint(Joint j) {
 
-        invoke(() -> {
+        if (joints.remove(j)!=null) {
+            invoke(() -> {
 
 
-            boolean collideConnected = j.getCollideConnected();
+                boolean collideConnected = j.getCollideConnected();
 
-            // Remove from the doubly linked list.
-            if (j.prev != null) {
-                j.prev.next = j.next;
-            }
+                // Disconnect from island graph.
+                // Wake up connected bodies.
+                Body2D bodyA = j.getBodyA();
+                bodyA.setAwake(true);
 
-            if (j.next != null) {
-                j.next.prev = j.prev;
-            }
+                Body2D bodyB = j.getBodyB();
+                bodyB.setAwake(true);
 
-            if (j == joints) {
-                joints = j.next;
-            }
-
-            // Disconnect from island graph.
-            Body2D bodyA = j.getBodyA();
-            Body2D bodyB = j.getBodyB();
-
-            // Wake up connected bodies.
-            bodyA.setAwake(true);
-            bodyB.setAwake(true);
-
-            // Remove from body 1.
-            if (j.edgeA.prev != null) {
-                j.edgeA.prev.next = j.edgeA.next;
-            }
-
-            if (j.edgeA.next != null) {
-                j.edgeA.next.prev = j.edgeA.prev;
-            }
-
-            if (j.edgeA == bodyA.joints) {
-                bodyA.joints = j.edgeA.next;
-            }
-
-            j.edgeA.prev = null;
-            j.edgeA.next = null;
-
-            // Remove from body 2
-            if (j.edgeB.prev != null) {
-                j.edgeB.prev.next = j.edgeB.next;
-            }
-
-            if (j.edgeB.next != null) {
-                j.edgeB.next.prev = j.edgeB.prev;
-            }
-
-            if (j.edgeB == bodyB.joints) {
-                bodyB.joints = j.edgeB.next;
-            }
-
-            j.edgeB.prev = null;
-            j.edgeB.next = null;
-
-            Joint.destroy(j);
-
-            assert (jointCount > 0);
-            --jointCount;
-
-            // If the joint prevents collisions, then flag any contacts for filtering.
-            if (!collideConnected) {
-                ContactEdge edge = bodyB.contacts();
-                while (edge != null) {
-                    if (edge.other == bodyA) {
-                        // Flag the contact for filtering at the next time step (where either
-                        // body is awake).
-                        edge.contact.flagForFiltering();
-                    }
-
-                    edge = edge.next;
+                // Remove from body 1.
+                if (j.edgeA.prev != null) {
+                    j.edgeA.prev.next = j.edgeA.next;
                 }
-            }
-        });
+
+                if (j.edgeA.next != null) {
+                    j.edgeA.next.prev = j.edgeA.prev;
+                }
+
+                if (j.edgeA == bodyA.joints) {
+                    bodyA.joints = j.edgeA.next;
+                }
+
+                j.edgeA.prev = null;
+                j.edgeA.next = null;
+
+                // Remove from body 2
+                if (j.edgeB.prev != null) {
+                    j.edgeB.prev.next = j.edgeB.next;
+                }
+
+                if (j.edgeB.next != null) {
+                    j.edgeB.next.prev = j.edgeB.prev;
+                }
+
+                if (j.edgeB == bodyB.joints) {
+                    bodyB.joints = j.edgeB.next;
+                }
+
+                j.edgeB.prev = null;
+                j.edgeB.next = null;
+
+                Joint.destroy(j);
+
+                assert (jointCount > 0);
+                --jointCount;
+
+                // If the joint prevents collisions, then flag any contacts for filtering.
+                if (!collideConnected) {
+                    ContactEdge edge = bodyB.contacts();
+                    while (edge != null) {
+                        if (edge.other == bodyA) {
+                            // Flag the contact for filtering at the next time step (where either
+                            // body is awake).
+                            edge.contact.flagForFiltering();
+                        }
+
+                        edge = edge.next;
+                    }
+                }
+            });
+        }
     }
 
     // djm pooling
@@ -679,14 +664,14 @@ public class Dynamics2D {
         });
     }
 
-    private final Color3f color = new Color3f();
-    private final Transform xf = new Transform();
-    private final Tuple2f cA = new v2();
-    private final Tuple2f cB = new v2();
-    private final Vec2Array avs = new Vec2Array();
+//    private final Color3f color = new Color3f();
+//    private final Transform xf = new Transform();
+//    private final Tuple2f cA = new v2();
+//    private final Tuple2f cB = new v2();
+//    private final Vec2Array avs = new Vec2Array();
 
 
-    private final WorldQueryWrapper wqwrapper = new WorldQueryWrapper();
+
 
     /**
      * Query the world for all fixtures that potentially overlap the provided AABB.
@@ -695,9 +680,7 @@ public class Dynamics2D {
      * @param aabb     the query box.
      */
     public void queryAABB(Predicate<Fixture> callback, AABB aabb) {
-        wqwrapper.broadPhase = contactManager.broadPhase;
-        wqwrapper.callback = callback;
-        contactManager.broadPhase.query(wqwrapper, aabb);
+        contactManager.broadPhase.query(new WorldQueryWrapper(callback), aabb);
     }
 
     /**
@@ -708,9 +691,7 @@ public class Dynamics2D {
      * @param aabb             the query box.
      */
     public void queryAABB(Predicate<Fixture> callback, ParticleQueryCallback particleCallback, AABB aabb) {
-        wqwrapper.broadPhase = contactManager.broadPhase;
-        wqwrapper.callback = callback;
-        contactManager.broadPhase.query(wqwrapper, aabb);
+        contactManager.broadPhase.query(new WorldQueryWrapper(callback), aabb);
         particles.queryAABB(particleCallback, aabb);
     }
 
@@ -790,14 +771,22 @@ public class Dynamics2D {
         return bodies.values();
     }
 
+    public void bodies(Consumer<Body2D> each) {
+        bodies.values().forEach(each);
+    }
+
     /**
      * Get the world joint list. With the returned joint, use Joint.getNext to get the next joint in
      * the world list. A null joint indicates the end of the list.
      *
      * @return the head of the world joint list.
      */
-    public Joint joints() {
-        return joints;
+    public Iterable<Joint> joints() {
+        return joints.values();
+    }
+
+    public void joints(Consumer<Joint> each) {
+        joints.values().forEach(each);
     }
 
     /**
@@ -1003,7 +992,7 @@ public class Dynamics2D {
         for (Contact c = contactManager.m_contactList; c != null; c = c.m_next) {
             c.m_flags &= ~Contact.ISLAND_FLAG;
         }
-        for (Joint j = joints; j != null; j = j.next) {
+        for (Joint j : joints()) {
             j.islandFlag = false;
         }
 
@@ -1859,18 +1848,24 @@ public class Dynamics2D {
             strings.add("  solveTOI: " + solveTOI);
         }
     }
-}
 
+    private class WorldQueryWrapper implements TreeCallback {
 
-class WorldQueryWrapper implements TreeCallback {
-    public boolean treeCallback(int nodeId) {
-        FixtureProxy proxy = (FixtureProxy) broadPhase.get(nodeId);
-        return callback.test(proxy.fixture);
+        final Predicate<Fixture> callback;
+
+        WorldQueryWrapper(Predicate<Fixture> callback) {
+            this.callback = callback;
+        }
+
+        public boolean treeCallback(int nodeId) {
+            return callback.test(((FixtureProxy) contactManager.broadPhase.get(nodeId)).fixture);
+        }
+
     }
-
-    BroadPhase broadPhase;
-    Predicate<Fixture> callback;
 }
+
+
+
 
 
 class WorldRayCastWrapper implements TreeRayCastCallback {

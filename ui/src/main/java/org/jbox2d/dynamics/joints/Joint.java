@@ -39,6 +39,18 @@ import spacegraph.math.Tuple2f;
  */
 public abstract class Joint {
 
+    final int id = Body2D.serial.incrementAndGet();
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return this==obj;
+    }
+
     public static Joint build(Dynamics2D world, JointDef def) {
         // Joint joint = null;
         switch (def.type) {

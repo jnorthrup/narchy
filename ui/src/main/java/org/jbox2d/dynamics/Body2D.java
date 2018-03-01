@@ -112,7 +112,7 @@ public class Body2D extends Transform {
 
     public Object data;
 
-    final static AtomicInteger serial = new AtomicInteger();
+    public final static AtomicInteger serial = new AtomicInteger();
     final int id = serial.incrementAndGet();
 
     public Body2D(final BodyType t, Dynamics2D world) {
