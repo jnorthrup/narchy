@@ -65,7 +65,7 @@ public class Explosives {
             float heading = barrel.angle() + 2 * (rng.nextFloat() - 0.5f) * inaccuracy;
             v2 direction = new v2((float) Math.cos(heading), (float) Math.sin(heading));
 
-            float power = barrelThick;
+            float power = barrelThick*2000;
 
             float bulletThick = barrelThick / 2 * 0.25f;
 
@@ -107,7 +107,7 @@ public class Explosives {
             super(BodyType.DYNAMIC, w);
 
             start = System.currentTimeMillis();
-            long ttl = 2 * 1000;
+            long ttl = 3 * 1000;
             end = start + ttl;
         }
 
@@ -128,7 +128,7 @@ public class Explosives {
                     float blastScatter = bulletRadius * (blasts - 1);
                     float blastRadius = bulletRadius;
                     for (int i = 0; i < blasts; i++) {
-                        W.addBody(new Fireball(W, pos.add(
+                        W.addBody(new Fireball(W, getWorldCenter().add(
                                 new v2((float) rng.nextGaussian() * blastScatter, (float) rng.nextGaussian() * blastScatter)),
                                 blastRadius));
                     }

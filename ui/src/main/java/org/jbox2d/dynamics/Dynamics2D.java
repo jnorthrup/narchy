@@ -24,6 +24,7 @@
 package org.jbox2d.dynamics;
 
 import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
+import jcog.list.FasterList;
 import jcog.math.FloatSupplier;
 import org.jbox2d.callbacks.*;
 import org.jbox2d.collision.AABB;
@@ -967,19 +968,24 @@ public class Dynamics2D {
         m_profile.solveVelocity.startAccum();
         m_profile.solvePosition.startAccum();
 
+        List<Body2D> preRemove = new FasterList(0);
         Iterator<Body2D> ii = bodies().iterator();
         while (ii.hasNext()) {
             Body2D b = ii.next();
+
+            // Clear all the island flags.
+            b.flags &= ~Body2D.e_islandFlag;
+
             if (!b.preUpdate()) {
-                removeBody(b);
-                //ii.remove();
+                preRemove.add(b);
             } else {
                 // update previous transforms
                 b.transformPrev.set(b);
-                // Clear all the island flags.
-                b.flags &= ~Body2D.e_islandFlag;
             }
         }
+
+        preRemove.forEach(this::removeBody);
+        preRemove.clear();
 
         // Size the island for the worst case.
         int bodyCount = bodies.size();
@@ -1000,7 +1006,7 @@ public class Dynamics2D {
         int stackSize = bodyCount;
         Body2D[] stack = new Body2D[stackSize]; // TODO djm find a good initial stack number;
 
-        bodies().forEach(seed->{
+        bodies(seed->{
             if ((seed.flags & Body2D.e_islandFlag) == Body2D.e_islandFlag)
                 return;
 
@@ -1113,7 +1119,7 @@ public class Dynamics2D {
 
         broadphaseTimer.reset();
         // Synchronize fixtures, check for out of range bodies.
-        bodies().forEach(b->{
+        bodies(b->{
             // If a body was not in an island then it did not move.
             if ((b.flags & Body2D.e_islandFlag) == 0 || b.getType() == BodyType.STATIC) return;
 
@@ -1134,7 +1140,7 @@ public class Dynamics2D {
         island.init(2 * Settings.maxTOIContacts, Settings.maxTOIContacts, 0,
                 contactManager.contactListener);
         if (m_stepComplete) {
-            bodies().forEach(b->{
+            bodies(b->{
                 b.flags &= ~Body2D.e_islandFlag;
                 b.sweep.alpha0 = 0.0f;
             });

@@ -1,6 +1,9 @@
 package spacegraph.widget.button;
 
 import org.jetbrains.annotations.Nullable;
+import spacegraph.Surface;
+import spacegraph.container.EmptySurface;
+import spacegraph.render.ImageTexture;
 import spacegraph.widget.text.Label;
 
 import java.util.function.Consumer;
@@ -10,7 +13,7 @@ import java.util.function.Consumer;
  */
 public class PushButton extends AbstractButton {
 
-    private final Label label;
+    private Surface label = new EmptySurface();
 
 
     @Nullable private Consumer<PushButton> onClick;
@@ -21,7 +24,7 @@ public class PushButton extends AbstractButton {
 
     public PushButton(String s) {
         super();
-        content(label = new Label(s));
+        label(s);
     }
 
     public PushButton(Consumer<PushButton> onClick) {
@@ -47,10 +50,14 @@ public class PushButton extends AbstractButton {
         return this;
     }
 
-    public void setLabel(String s) {
-        this.label.text(s);
+    public PushButton icon(String s) {
+        content(label = new ImageTexture(s).view());
+        return this;
     }
-
+    public PushButton label(String s) {
+        content(label = new Label(s));
+        return this;
+    }
 
     @Override
     protected void onClick() {

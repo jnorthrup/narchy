@@ -89,8 +89,6 @@ public abstract class Joint {
     }
 
     private final JointType type;
-    public Joint prev;
-    public Joint next;
     public JointEdge edgeA;
     public JointEdge edgeB;
     protected Body2D A;
@@ -113,8 +111,6 @@ public abstract class Joint {
 
         pool = worldPool;
         type = def.type;
-        prev = null;
-        next = null;
         A = def.bodyA;
         B = def.bodyB;
         collideConnected = def.collideConnected;
@@ -192,12 +188,7 @@ public abstract class Joint {
      */
     public abstract float getReactionTorque(float inv_dt);
 
-    /**
-     * get the next joint the world joint list.
-     */
-    public Joint getNext() {
-        return next;
-    }
+
 
     /**
      * get the user data pointer.

@@ -278,64 +278,67 @@ public class ParticleSystem {
     private final ParticleDef tempParticleDef = new ParticleDef();
 
     public ParticleGroup createParticleGroup(Dynamics2D world, ParticleGroupDef groupDef) {
-        float stride = getParticleStride();
-        final Transform identity = tempTransform;
-        identity.setIdentity();
-        Transform transform = tempTransform2;
-        transform.setIdentity();
-        int firstIndex = m_count;
-        if (groupDef.shape != null) {
-            final ParticleDef particleDef = tempParticleDef;
-            particleDef.flags = groupDef.flags;
-            particleDef.color = groupDef.color;
-            particleDef.userData = groupDef.userData;
-            Shape shape = groupDef.shape;
-            transform.set(groupDef.position, groupDef.angle);
-            AABB aabb = temp;
-            int childCount = shape.getChildCount();
-            for (int childIndex = 0; childIndex < childCount; childIndex++) {
-                if (childIndex == 0) {
-                    shape.computeAABB(aabb, identity, childIndex);
-                } else {
-                    AABB childAABB = temp2;
-                    shape.computeAABB(childAABB, identity, childIndex);
-                    aabb.combine(childAABB);
-                }
-            }
-            final float upperBoundY = aabb.upperBound.y;
-            final float upperBoundX = aabb.upperBound.x;
-            for (float y = MathUtils.floor(aabb.lowerBound.y / stride) * stride; y < upperBoundY; y +=
-                    stride) {
-                for (float x = MathUtils.floor(aabb.lowerBound.x / stride) * stride; x < upperBoundX; x +=
-                        stride) {
-                    Vec2 p = tempVec;
-                    p.x = x;
-                    p.y = y;
-                    if (shape.testPoint(identity, p)) {
-                        Transform.mulToOut(transform, p, p);
-                        particleDef.position.x = p.x;
-                        particleDef.position.y = p.y;
-                        p.subLocal(groupDef.position);
-                        Tuple2f.crossToOutUnsafe(groupDef.angularVelocity, p, particleDef.velocity);
-                        particleDef.velocity.addLocal(groupDef.linearVelocity);
-                        createParticle(particleDef);
-                    }
-                }
-            }
-        }
-        int lastIndex = m_count;
-
         ParticleGroup group = new ParticleGroup();
         group.m_system = this;
-        group.m_firstIndex = firstIndex;
-        group.m_lastIndex = lastIndex;
         group.m_groupFlags = groupDef.groupFlags;
         group.m_strength = groupDef.strength;
         group.m_userData = groupDef.userData;
-        group.m_transform.set(transform);
         group.m_destroyAutomatically = groupDef.destroyAutomatically;
 
+
+
         world.invoke(() -> {
+            float stride = getParticleStride();
+            final Transform identity = tempTransform;
+            identity.setIdentity();
+            Transform transform = tempTransform2;
+            transform.setIdentity();
+            int firstIndex = m_count;
+            if (groupDef.shape != null) {
+                final ParticleDef particleDef = tempParticleDef;
+                particleDef.flags = groupDef.flags;
+                particleDef.color = groupDef.color;
+                particleDef.userData = groupDef.userData;
+                Shape shape = groupDef.shape;
+                transform.set(groupDef.position, groupDef.angle);
+                AABB aabb = temp;
+                int childCount = shape.getChildCount();
+                for (int childIndex = 0; childIndex < childCount; childIndex++) {
+                    if (childIndex == 0) {
+                        shape.computeAABB(aabb, identity, childIndex);
+                    } else {
+                        AABB childAABB = temp2;
+                        shape.computeAABB(childAABB, identity, childIndex);
+                        aabb.combine(childAABB);
+                    }
+                }
+                final float upperBoundY = aabb.upperBound.y;
+                final float upperBoundX = aabb.upperBound.x;
+                for (float y = MathUtils.floor(aabb.lowerBound.y / stride) * stride; y < upperBoundY; y +=
+                        stride) {
+                    for (float x = MathUtils.floor(aabb.lowerBound.x / stride) * stride; x < upperBoundX; x +=
+                            stride) {
+                        Vec2 p = tempVec;
+                        p.x = x;
+                        p.y = y;
+                        if (shape.testPoint(identity, p)) {
+                            Transform.mulToOut(transform, p, p);
+                            particleDef.position.x = p.x;
+                            particleDef.position.y = p.y;
+                            p.subLocal(groupDef.position);
+                            Tuple2f.crossToOutUnsafe(groupDef.angularVelocity, p, particleDef.velocity);
+                            particleDef.velocity.addLocal(groupDef.linearVelocity);
+                            createParticle(particleDef);
+                        }
+                    }
+                }
+            }
+            int lastIndex = m_count;
+
+            group.m_firstIndex = firstIndex;
+            group.m_lastIndex = lastIndex;
+            group.m_transform.set(transform);
+
             group.m_prev = null;
             group.m_next = m_groupList;
             if (m_groupList != null) {
@@ -589,7 +592,10 @@ public class ParticleSystem {
             Tuple2f pos = m_positionBuffer.data[i];
             proxy.tag = computeTag(m_inverseDiameter * pos.x, m_inverseDiameter * pos.y);
         }
+
+
         Arrays.sort(m_proxyBuffer, 0, m_proxyCount);
+
         m_contactCount = 0;
         int c_index = 0;
         for (int i = 0; i < m_proxyCount; i++) {

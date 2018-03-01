@@ -40,14 +40,17 @@ public class WidgetTest {
         return
                 grid(
                         row(new PushButton("row1"), new PushButton("row2"), new PushButton("clickMe()", (p) -> {
-                            p.setLabel(Texts.n2(Math.random()));
+                            p.label(Texts.n2(Math.random()));
                         })),
                         new Splitting(
                                 new PushButton("vsplit"),
                                 row(
                                         col(new CheckBox("checkbox"), new CheckBox("checkbox")),
                                         grid(
-                                                new PushButton("a"), new PushButton("b"), new PushButton("c"), new PushButton("d")
+                                                new PushButton().icon("fontawesome://code"),
+                                                new PushButton().icon("fontawesome://trash"),
+                                                new PushButton().icon("fontawesome://fighter-jet"),
+                                                new PushButton().icon("fontawesome://wrench")
                                         )
                                 ), 0.8f
                         ),
