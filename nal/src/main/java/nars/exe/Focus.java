@@ -134,15 +134,10 @@ public class Focus extends AtomicRoulette<Causable> {
 
     protected void update(NAR nar) {
 
-        double timesliceS = nar.loop.jiffy.floatValue();
-
-        timesliceNS = timesliceS * 1.0E9;
-
-        revaluator.update(nar);
-
         int n = choice.size();
         if (n == 0)
             return;
+
 
         if (sliceIters.length != n) {
 
@@ -167,6 +162,11 @@ public class Focus extends AtomicRoulette<Causable> {
             sliceIters = new int[n]; //last
         }
 
+        double timesliceS = nar.loop.jiffy.floatValue();
+
+        timesliceNS = timesliceS * 1.0E9;
+
+        revaluator.update(nar);
 
         for (int i = 0; i < n; i++) {
             Causable c = choice.getSafe(i);

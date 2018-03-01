@@ -3,54 +3,72 @@ package jcog.meter.event;
 import jcog.util.AtomicFloat;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 
-import static java.lang.Float.floatToIntBits;
-
 /**
- * count and sum are not kept perfectly synchronized on value addition.
- * but each commit they are.
- * the count is incremented prior to the sum so any result will be at worst an underestimate.
+ * thread-safe, atomic accumulator for calculating sums and means
+ *
+ * while count is zero, the mean is Float.NaN
+ *
+ * make sure to call commit before using the 'sum' and 'mean',
+ * or use the commitMean and commitSum methods to accurately access
+ * either of those current values in one atomic commit
  */
 public class AtomicFloatGuage extends AtomicFloat implements FloatProcedure {
 
-    private volatile int count = 0;
-
     public final String id;
-    float sum = 0, mean = 0;
+
+    private volatile int count = 0;
+    private volatile float sum = 0, mean = 0;
 
     public AtomicFloatGuage(String id) {
         super(0f);
         this.id = id;
     }
 
+    public float commitSum() {
+        return commit()[1];
+    }
+
+    public float commitMean() {
+        return commit()[0];
+    }
+
+    /** last commited sum */
     public float getSum() {
         return sum;
     }
+
+    /** last commited mean */
     public float getMean() {
         return mean;
     }
 
-    static final int ZERO = floatToIntBits(0);
+    /** records current values and clears for a new cycle.
+     *
+     * returns float[2] pair: mean, sum */
+    public float[] commit() {
+        int[] c = new int[1];
 
-    /** records current values and clears for a new cycle */
-    public void commit() {
-        int c = this.count;
-        if (c > 0) {
-            this.mean = (this.sum = Float.intBitsToFloat(getAndUpdate((v) -> {
-                count = 0;
-                return ZERO;
-            }))) / c;
+        float mean = this.mean = (this.sum = getAndZero((v) -> {
+            c[0] = count;
+            count = 0;
+        })) / (c[0] > 0 ? c[0] : Float.NaN);
+
+        if (mean==mean) {
+            //recalculate sum via the atomically calculated mean on the stack, not field access
+            //slight loss of precision
+            return new float[] { mean, mean * c[0] };
         } else {
-            this.mean = Float.NaN;
+            return new float[] { Float.NaN, 0 };
         }
     }
 
     public void accept(float v) {
-        count++;
-        addAndGet(v);
+        addUpdate(v, ()->count++);
     }
 
     @Override
     public final void value(float v) {
         accept(v);
     }
+
 }

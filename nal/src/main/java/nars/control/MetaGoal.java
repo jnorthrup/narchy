@@ -88,7 +88,7 @@ public enum MetaGoal {
      * contributes the value to a particular goal in a cause's goal vector
      */
     protected static void learn(Traffic[] goalValue, int ordinal, float v) {
-        goalValue[ordinal].addAndGet(v);
+        goalValue[ordinal].add(v);
     }
 
 

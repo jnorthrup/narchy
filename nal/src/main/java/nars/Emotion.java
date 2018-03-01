@@ -188,8 +188,8 @@ public class Emotion implements Meter {
 
         termVolMax = nar.termVolumeMax.floatValue();
 
-        _happy = happy.getSum();
-        happy.commit();
+        _happy = happy.commitSum();
+
 
         busyVol.commit();
 

@@ -30,7 +30,7 @@ public class Cause implements Comparable<Cause> {
      * current scalar utility estimate for this cause's support of the current MetaGoal's.
      * may be positive or negative, and is in relation to other cause's values
      */
-    private float value = 0;
+    private volatile float value = 0;
 
     /**
      * the value measured contributed by its effect on each MetaGoal.

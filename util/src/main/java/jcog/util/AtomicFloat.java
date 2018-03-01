@@ -1,6 +1,8 @@
 package jcog.util;
 
-import java.util.concurrent.atomic.AtomicInteger;
+import jcog.math.FloatSupplier;
+
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import static java.lang.Float.floatToIntBits;
 import static java.lang.Float.intBitsToFloat;
@@ -16,63 +18,76 @@ import static java.lang.Float.intBitsToFloat;
  *
  * sorry
  */
-public class AtomicFloat extends AtomicInteger {
+public class AtomicFloat extends Number implements FloatSupplier {
 
-    final static int ZERO = floatToIntBits(0f);
+    private static final AtomicFloatFieldUpdater<AtomicFloat> _f =
+            new AtomicFloatFieldUpdater(
+                    AtomicIntegerFieldUpdater.newUpdater(AtomicFloat.class, "f"));
+
+    private volatile int f;
 
     public AtomicFloat() {
         this(0f);
     }
 
     public AtomicFloat(float initialValue) {
-        super(floatToIntBits(initialValue));
+        set(initialValue);
     }
 
     public final boolean compareAndSet(float expect, float update) {
-        return this.compareAndSet(floatToIntBits(expect),
-                                  floatToIntBits(update));
+        return _f.compareAndSet(this, expect, update);
     }
-
-
 
 
     public final void set(float newValue) {
-        this.set(floatToIntBits(newValue));
+        f = floatToIntBits(newValue);
     }
 
-    @Override
-    public float floatValue() {
-        return intBitsToFloat(get());
+    public final float floatValue() {
+        return intBitsToFloat(f);
     }
 
     public final float getAndSet(float newValue) {
-        return intBitsToFloat(this.getAndSet(floatToIntBits(newValue)));
-    }
-    public final float getAndZero() {
-        return intBitsToFloat(this.getAndSet(AtomicFloat.ZERO));
-    }
-    public final void zero(FloatConsumer with) {
-        this.getAndUpdate((x)->{ with.accept(intBitsToFloat(x)); return AtomicFloat.ZERO; } );
+        return _f.getAndSet(this, newValue);
     }
 
-    public final boolean weakCompareAndSet(float expect, float update) {
-        return this.weakCompareAndSet(floatToIntBits(expect),
-                                      floatToIntBits(update));
+    public final float getAndZero() {
+        return _f.getAndZero(this);
     }
+
+    public final void zero(FloatConsumer with) {
+        _f.zero(this, with);
+    }
+    public final float getAndZero(FloatConsumer with) {
+        return _f.getAndZero(this, with);
+    }
+
 
     @Override
     public String toString() {
         return String.valueOf(floatValue());
     }
 
-
     @Override
     public double doubleValue() { return floatValue(); }
+
     @Override
     public int intValue()       { return Math.round(floatValue());  }
 
-    public float addAndGet(float x) {
-        return updateAndGet((i)-> floatToIntBits(intBitsToFloat(i) + x ));
+    @Override
+    public long longValue() {
+        return Math.round(floatValue());
     }
 
+    public void add(float x) {
+        _f.add(this,x);
+    }
+    public void addUpdate(float v, Runnable r) {
+        _f.addUpdate(this, v, r);
+    }
+
+    @Override
+    public float asFloat() {
+        return floatValue();
+    }
 }
