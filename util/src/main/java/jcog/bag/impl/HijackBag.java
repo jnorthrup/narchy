@@ -8,7 +8,7 @@ import jcog.bag.util.SpinMutex;
 import jcog.bag.util.Treadmill2;
 import jcog.data.array.Arrays;
 import jcog.decide.Roulette;
-import jcog.math.AtomicFloat;
+import jcog.util.AtomicFloat;
 import jcog.math.random.XorShift128PlusRandom;
 import jcog.pri.Pri;
 import jcog.pri.Prioritized;

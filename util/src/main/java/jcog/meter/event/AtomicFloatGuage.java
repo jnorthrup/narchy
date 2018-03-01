@@ -1,6 +1,6 @@
 package jcog.meter.event;
 
-import jcog.math.AtomicFloat;
+import jcog.util.AtomicFloat;
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 
 import static java.lang.Float.floatToIntBits;

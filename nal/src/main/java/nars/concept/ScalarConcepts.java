@@ -1,7 +1,7 @@
 package nars.concept;
 
 import jcog.Util;
-import jcog.math.AtomicFloat;
+import jcog.util.AtomicFloat;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;

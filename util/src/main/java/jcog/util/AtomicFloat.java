@@ -1,4 +1,4 @@
-package jcog.math;
+package jcog.util;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,6 +17,8 @@ import static java.lang.Float.intBitsToFloat;
  * sorry
  */
 public class AtomicFloat extends AtomicInteger {
+
+    final static int ZERO = floatToIntBits(0f);
 
     public AtomicFloat() {
         this(0f);
@@ -45,6 +47,12 @@ public class AtomicFloat extends AtomicInteger {
 
     public final float getAndSet(float newValue) {
         return intBitsToFloat(this.getAndSet(floatToIntBits(newValue)));
+    }
+    public final float getAndZero() {
+        return intBitsToFloat(this.getAndSet(AtomicFloat.ZERO));
+    }
+    public final void zero(FloatConsumer with) {
+        this.getAndUpdate((x)->{ with.accept(intBitsToFloat(x)); return AtomicFloat.ZERO; } );
     }
 
     public final boolean weakCompareAndSet(float expect, float update) {

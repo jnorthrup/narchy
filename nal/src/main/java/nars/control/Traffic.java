@@ -1,7 +1,7 @@
 package nars.control;
 
 import jcog.Texts;
-import jcog.math.AtomicFloat;
+import jcog.util.AtomicFloat;
 
 /** concurrent traffic accumulator;
  *  concurrent updates (ie. add) but expects a synchronous commit
@@ -11,17 +11,19 @@ import jcog.math.AtomicFloat;
  *  that safely supports multiple concurrent accumulators */
 public class Traffic extends AtomicFloat {
 
-    /** previous value */
-    public float prev;
+//    /** previous value */
+//    public float prev;
 
     /** current value */
-    public float current;
+    public volatile float current;
 
-    public double total;
+    public volatile double total;
 
     public final void commit() {
-        this.prev = this.current;
-        this.total += (this.current = getAndSet(0f));
+        zero((cur)->{
+//          this.prev = this.current;
+            this.total += (this.current = cur);
+        });
     }
 
     @Override

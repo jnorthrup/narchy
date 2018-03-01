@@ -28,14 +28,13 @@ public class AtomicFloatFieldUpdater<X>  {
     }
 
     public float getAndZero(X x) {
-        return fvalue(updater.getAndSet(x, ZERO));
+        return fvalue(updater.getAndSet(x, AtomicFloat.ZERO));
     }
 
     public float get(X x) {
         return fvalue(updater.get(x));
     }
 
-    final static int ZERO = Float.floatToIntBits(0f);
     static int ivalue(float x) { return Float.floatToIntBits(x); }
     static float fvalue(int x) { return Float.intBitsToFloat(x); }
 
