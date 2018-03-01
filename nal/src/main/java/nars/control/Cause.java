@@ -4,10 +4,13 @@ import jcog.Util;
 import jcog.math.RecycledSummaryStatistics;
 import nars.task.util.TaskRegion;
 import org.apache.commons.lang3.ArrayUtils;
-import org.eclipse.collections.api.ShortIterable;
-import org.eclipse.collections.api.block.predicate.primitive.ShortPredicate;
 import org.eclipse.collections.impl.list.mutable.primitive.ShortArrayList;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.PrintStream;
+import java.util.stream.IntStream;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * represents a causal influence and tracks its
@@ -179,8 +182,8 @@ public class Cause implements Comparable<Cause> {
             return ArrayUtils.EMPTY_SHORT_ARRAY;
 
         //boolean enough = (totalItems < maxLen);
-        ShortIterable l;
-        ShortPredicate adder;
+//        ShortIterable l;
+//        ShortPredicate adder;
         AwesomeShortArrayList ll = new AwesomeShortArrayList(totalItems);
 
         int ls = 0;
@@ -210,12 +213,12 @@ public class Cause implements Comparable<Cause> {
         return lll;
     }
 
-    /**
-     * learn the utility of this cause with regard to a goal.
-     */
-    public final void learn(MetaGoal p, float v) {
-        MetaGoal.learn(goal, p.ordinal(), v);
-    }
+//    /**
+//     * learn the utility of this cause with regard to a goal.
+//     */
+//    public final void learn(MetaGoal p, float v) {
+//        MetaGoal.learn(goal, p.ordinal(), v);
+//    }
 
 
     public void commit(RecycledSummaryStatistics[] valueSummary) {
@@ -224,6 +227,19 @@ public class Cause implements Comparable<Cause> {
             p.commit();
             valueSummary[i].accept(p.current);
         }
+    }
+    public void commit() {
+        for (int i = 0, purposeLength = goal.length; i < purposeLength; i++) {
+            goal[i].commit();
+        }
+    }
+    public void print(PrintStream out) {
+        out.println(toString() + "\t" +
+                IntStream.range(0, goal.length).mapToObj(x->
+                    MetaGoal.values()[x] + "=" + goal[x]
+                ).collect(toList())
+        );
+
     }
 
 

@@ -75,10 +75,14 @@ public class Tweaks<X> {
      * (generates accessors via reflection)
      */
     public Tweaks<X> learn() {
-        return learn(Set.of());
+        return learnExcept(Set.of());
     }
 
-    public Tweaks<X> learn(Set<Class> excludedClasses) {
+    public Tweaks<X> learnExcept(Class... excludedClasses) {
+        return learnExcept(Set.of(excludedClasses));
+    }
+
+    public Tweaks<X> learnExcept(Set<Class> excludedClasses) {
         return discover(excludedClasses, (root, path, targetType) -> {
             FastList<Pair<Class, ObjectGraph.Accessor>> p = path.clone();
             String key = key(p);
@@ -348,8 +352,12 @@ public class Tweaks<X> {
 
     public Result<X> optimize(int maxIterations, int repeats, FloatFunction<Supplier<X>> eval) {
 
-        float sampleScore = eval.floatValueOf(subjects);
-        System.out.println("control score=" + sampleScore); //TODO move to supereclass
+        float controlScoreSum = 0;
+        for (int i = 0; i < repeats; i++) {
+            controlScoreSum += eval.floatValueOf(subjects);
+        }
+        float controlScore = controlScoreSum / repeats;
+        System.out.println("control score=" + controlScore); //TODO move to supereclass
 
         return optimize(subjects).run(maxIterations, repeats, eval);
     }

@@ -125,7 +125,7 @@ public class PatrickTests extends NALTest {
         tt.nar.confResolution.set(0.02f);
 
         //tt.nar.DEFAULT_BELIEF_PRIORITY = 0.1f;
-        tt.nar.time.dur(5);
+        tt.nar.time.dur(10);
         tt.nar.termVolumeMax.set(32);
         //tt.nar.deep.set(0.75f);
         //tt.log();
@@ -160,6 +160,52 @@ public class PatrickTests extends NALTest {
 //        tt.mustNotOutput(cycles,  "lighter(I, toothbrush)", GOAL, (t)->t!=0);
 
 
+
+    }
+
+    @Test
+    public void testToothbrushSimpler() {
+
+
+        TestNAR tt = test;
+        //Param.TRACE = true;
+
+        int cycles = 5000;
+
+        tt.confTolerance(0.9f);
+//        MetaGoal.Desire.want(nar.want, 0.5f);
+        tt.nar.freqResolution.set(0.05f);
+        tt.nar.confResolution.set(0.02f);
+
+        //tt.nar.DEFAULT_BELIEF_PRIORITY = 0.1f;
+        tt.nar.time.dur(10);
+        tt.nar.termVolumeMax.set(32);
+        //tt.nar.deep.set(0.75f);
+        //tt.log();
+//        tt.nar.emotion.deriveFailTemporal.why.on((x)->System.out.println(x));
+
+
+
+
+        tt.input(
+                "made_of(toothbrush,plastic).",
+                "( ( made_of($1, plastic) &| lighter($1) ) ==>+10 hot:$1).",
+                "(hot:$1 ==>+10 molten:$1).",
+                "(molten:$1 =|> pliable:$1).",
+                "(pliable:$1 =|> molten:$1).",
+                "( (pliable:$1 &| reshape($1)) ==>+10 hard:$1).",
+                "(hard:$1 =|> unscrews:$1).",
+                "$1.0 unscrews:toothbrush! :|:"
+        );
+
+        tt.mustGoal(cycles, "hot:toothbrush", 1f, 0.5f, (t)->t >= 0);
+
+        tt.mustGoal(cycles, "hard:toothbrush", 1f, 0.5f, (t)->t >= 0);
+        tt.mustGoal(cycles, "pliable:toothbrush", 1f, 0.5f, (t)->t >= 0);
+        tt.mustGoal(cycles, "molten:toothbrush", 1f, 0.5f, (t)->t >= 0);
+        tt.mustGoal(cycles, "lighter(toothbrush)", 1f,
+                0.3f,
+                (t) -> t == 0);
 
     }
 

@@ -978,9 +978,15 @@ public class Revision {
 
         float d = 0;
 
-        int blen = bb.subs();
-        if (a.op() == CONJ && (len > 2 || blen > 2)) {
-            if (len > 2 && blen == len) {
+        //if (len!=blen) {
+        //TODO compare by events
+        if (!aa.equals(bb)) {
+            return (a.dtRange() + b.dtRange()) / depth; //estimate
+        }
+        //int blen = bb.subs();
+
+        if (a.op() == CONJ && (len > 2 /*|| blen > 2*/)) {
+            if (len > 2 /*&& blen == len*/) {
 
                 //parallel, eternal, or xternal commutive
                 for (int i = 0; i < len; i++)

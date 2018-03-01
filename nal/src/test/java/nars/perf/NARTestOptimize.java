@@ -7,19 +7,15 @@ import nars.NAR;
 import nars.NARLoop;
 import nars.NARS;
 import nars.Param;
-import nars.control.MetaGoal;
 import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
-import nars.nal.nal5.NAL5Test;
-import nars.nal.nal6.NAL6Test;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -32,7 +28,7 @@ public class NARTestOptimize {
 
     static final int threads =
             //Math.max(1,Runtime.getRuntime().availableProcessors()-1);
-            3;
+            4;
 
     /** necessary to do what jdk "parallel" streams refuses to do... WTF */
     static final ExecutorService exe = Executors.newFixedThreadPool(
@@ -78,8 +74,8 @@ public class NARTestOptimize {
                 return t.test.score;
                 //return 1 + t.test.score; //+1 for successful completion
             } catch (Throwable ee) {
-                return -2f;
-                //return 0f;
+                //return -2f;
+                return 0f;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -95,21 +91,21 @@ public class NARTestOptimize {
                 NAR n = NARS.tmp();
                 return n;
             })
-                .learn(Set.of(NARLoop.class))
-                .tweak("PERCEIVE", -1f, +1f, 0.1f, (NAR n, float p) ->
-                        n.emotion.want(MetaGoal.Perceive, p)
-                )
-                .tweak("BELIEVE", -1f, +1f, 0.1f, (NAR n, float p) ->
-                        n.emotion.want(MetaGoal.Believe, p)
-                )
-                .optimize(1024, 2, (n) ->
+                .learnExcept(NARLoop.class)
+//                .tweak("PERCEIVE", -1f, +1f, 0.25f, (NAR n, float p) ->
+//                        n.emotion.want(MetaGoal.Perceive, p)
+//                )
+//                .tweak("BELIEVE", -1f, +1f, 0.25f, (NAR n, float p) ->
+//                        n.emotion.want(MetaGoal.Believe, p)
+//                )
+                .optimize(64, 4, (n) ->
                         tests(n,
                                 NAL1Test.class,
                                 NAL1MultistepTest.class,
                                 NAL2Test.class,
-                                NAL3Test.class,
-                                NAL5Test.class,
-                                NAL6Test.class
+                                NAL3Test.class
+                                //NAL5Test.class,
+                                //NAL6Test.class
 
                                 //NAL7Test.class,
                                 //NAL8Test.class

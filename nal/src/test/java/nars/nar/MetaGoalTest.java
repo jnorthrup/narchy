@@ -5,6 +5,8 @@ import nars.NARS;
 import nars.test.DeductiveMeshTest;
 import org.junit.jupiter.api.Test;
 
+import java.util.SortedMap;
+
 public class MetaGoalTest {
 
     @Test
@@ -15,7 +17,14 @@ public class MetaGoalTest {
         n.log();
         n.run(500);
 
+        SortedMap<String, Object> x = n.stats();
+        x.forEach((k, v) -> {
+            System.out.println(k + "\t" + v);
+        });
 
-
+        n.causes.forEach(c -> {
+            c.commit();
+            c.print(System.out);
+        });
     }
 }

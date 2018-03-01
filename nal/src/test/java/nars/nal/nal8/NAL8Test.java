@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 830;
+    public static final int cycles = 1530;
 
 
     @BeforeEach
@@ -627,9 +627,9 @@ public class NAL8Test extends NALTest {
     public void testGoalConjunctionPos1() {
 
         test
-                .input("(a)!")
-                .input("((a) && (b)).")
-                .mustGoal(cycles, "(b)", 1f, 0.81f);
+                .input("a!")
+                .input("(a && b).")
+                .mustGoal(cycles, "b", 1f, 0.81f);
     }
 
     @Test

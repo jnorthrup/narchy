@@ -65,7 +65,7 @@
     (S --> P), (P --> S) |- (S <-> P), (Belief:Intersection, Goal:Weak)
 
     (X <-> Y), X, task("?") |- (Y-->X),   (Punctuation:Question)
-    (X <-> Y), Y, task("?") |- (X-->Y),   (Punctuation:Question)
+    //(X <-> Y), Y, task("?") |- (X-->Y),   (Punctuation:Question)
     //(X <-> Y), X, task("?") |- Y,   (Punctuation:Question)
     //(X <-> Y), X, task("@") |- Y,   (Punctuation:Quest)
 

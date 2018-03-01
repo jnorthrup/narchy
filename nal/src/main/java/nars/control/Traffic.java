@@ -21,8 +21,7 @@ public class Traffic extends AtomicFloat {
 
     public final void commit() {
         this.prev = this.current;
-        double next = getAndSet(0f);
-        this.total += (this.current = (float) next);
+        this.total += (this.current = getAndSet(0f));
     }
 
     @Override
