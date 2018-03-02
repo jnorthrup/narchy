@@ -32,32 +32,33 @@ public class BoolTest {
         assertEquals("((--,x)-->†)", INH.the(x.neg(), True).toString());
     }
 
-    @Test public void testInheritanceTaskReduction() throws Narsese.NarseseException {
-        {
-            NAR n = NARS.shell(); //HACK separate NAR to prevent revision
-            //HACK using "true:true" to produce True, since i forget if True/False has a parse
-            Task aIsTrue = n.inputTask("(a-->true:true).");
-            assertEquals("$.50 a. %1.0;.90%", aIsTrue.toString());
-        }
 
-        {
-            NAR n = NARS.shell(); //HACK separate NAR to prevent revision
-            Task aIsFalse = n.inputTask("(a --> --(true-->true)).");
-            assertEquals("$.50 a. %0.0;.90%", aIsFalse.toString());
-        }
-
-        {
-            NAR n = NARS.shell(); //HACK separate NAR to prevent revision
-            Task notAIsFalse = n.inputTask("(--a --> --(true-->true)).");
-            assertEquals("$.50 a. %1.0;.90%", notAIsFalse.toString());
-        }
-
-        {
-            NAR n = NARS.shell(); //HACK separate NAR to prevent revision
-            Task notAIsntFalse = n.inputTask("--(--a --> --(true-->true)).");
-            assertEquals("$.50 a. %0.0;.90%", notAIsntFalse.toString());
-        }
-    }
+//    @Test public void testInheritanceTaskReduction() throws Narsese.NarseseException {
+//        {
+//            NAR n = NARS.shell(); //HACK separate NAR to prevent revision
+//            //HACK using "true:true" to produce True, since i forget if True/False has a parse
+//            Task aIsTrue = n.inputTask("(a-->true:true).");
+//            assertEquals("$.50 a. %1.0;.90%", aIsTrue.toString());
+//        }
+//
+//        {
+//            NAR n = NARS.shell(); //HACK separate NAR to prevent revision
+//            Task aIsFalse = n.inputTask("(a --> --(true-->true)).");
+//            assertEquals("$.50 a. %0.0;.90%", aIsFalse.toString());
+//        }
+//
+//        {
+//            NAR n = NARS.shell(); //HACK separate NAR to prevent revision
+//            Task notAIsFalse = n.inputTask("(--a --> --(true-->true)).");
+//            assertEquals("$.50 a. %1.0;.90%", notAIsFalse.toString());
+//        }
+//
+//        {
+//            NAR n = NARS.shell(); //HACK separate NAR to prevent revision
+//            Task notAIsntFalse = n.inputTask("--(--a --> --(true-->true)).");
+//            assertEquals("$.50 a. %0.0;.90%", notAIsntFalse.toString());
+//        }
+//    }
 
     @Test
     public void testImplicationTautologies() {

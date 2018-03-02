@@ -20,15 +20,15 @@ public class Autoencoder {
 
 
 	/** input vector after preprocessing (noise, corruption, etc..) */
-	public final float[] xx;
+	public final float[] x;
 
 	/** output vector */
 	final public float[] y;
 
 	public final float[][] W;
 
-	private final float[] hbias;
-	private final float[] vbias;
+	public final float[] hbias;
+	public final float[] vbias;
 	private final Random rng;
 
 	public final float[] z;
@@ -53,7 +53,7 @@ public class Autoencoder {
 
 	public Autoencoder(int ins, int outs, Random rng) {
 
-		xx = new float[ins];
+		x = new float[ins];
 		z = new float[ins];
 		L_vbias = new float[ins];
 		y = new float[outs];
@@ -93,7 +93,7 @@ public class Autoencoder {
         Random r = this.rng;
 		int ins = x.length;
 
-		float[] xx = this.xx;
+		float[] xx = this.x;
 		for (int i = 0; i < ins; i++) {
 			float v = x[i];
             if ((corruptionRate > 0) && (r.nextFloat() < corruptionRate)) {
@@ -322,7 +322,7 @@ public class Autoencoder {
 		}
 
 		// W
-		float[] xx = this.xx;
+		float[] xx = this.x;
 		for (int i = 0; i < outs; i++) {
 			float yi = y[i];
 			float lhb = L_hbias[i];
@@ -396,6 +396,6 @@ public class Autoencoder {
 	}
 
 	public int inputs() {
-		return xx.length;
+		return x.length;
 	}
 }

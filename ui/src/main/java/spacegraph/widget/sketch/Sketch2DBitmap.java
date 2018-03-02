@@ -25,14 +25,14 @@ import static spacegraph.container.Gridding.grid;
 public class Sketch2DBitmap extends Widget implements MetaFrame.Menu {
 
     final Tex bmp = new Tex();
-    private final int[] pix;
+    public final int[] pix;
     private final BufferedImage buf;
     private final int pw, ph;
 
     public float brushWidth = 0.2f, brushAlpha = 0.5f;
 
     final MersenneTwister rng = new MersenneTwister();
-    private GL2 gl;
+//    private GL2 gl;
 
     public Sketch2DBitmap(int w, int h) {
         this.pw = w;
@@ -114,7 +114,7 @@ public class Sketch2DBitmap extends Widget implements MetaFrame.Menu {
     @Override
     protected void paintWidget(GL2 gl, RectFloat2D bounds) {
         if (gl == null) {
-            this.gl = gl;
+//            this.gl = gl;
             bmp.profile = gl.getGLProfile();
             update();
         }

@@ -87,7 +87,7 @@ public class AutoclassifiedBitmap extends Autoencoder implements Consumer<NAR> {
         pw = pixIn.length;
         this.nw = (int) Math.ceil(pw / ((float) sw)); //number strides wide
         this.nh = (int) Math.ceil(ph / ((float) sh)); //number strides high
-        this.in = new float[xx.length];
+        this.in = new float[x.length];
         this.pixRecon = new float[pw][ph];
 
         this.pixEnable = new boolean[nw][nh][states];

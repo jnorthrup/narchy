@@ -2,6 +2,7 @@ package nars;
 
 import com.google.common.collect.Collections2;
 import jcog.learn.ql.HaiQae;
+import nars.control.MetaGoal;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.op.RLBooster;
@@ -32,7 +33,8 @@ public class NAgentTest {
         //n.emotion.deriveFailTemporal.why.on(new Meter.ReasonCollector());
         //n.emotion.deriveFailEval.why.on(new Meter.ReasonCollector());
 
-        //n.want(MetaGoal.Perceive, -0.1f);
+        n.emotion.want(MetaGoal.Perceive, -0.1f);
+        n.emotion.want(MetaGoal.Desire, +0.1f);
 
 //        n.logWhen(System.out, false, true, true);
 
@@ -240,7 +242,8 @@ public class NAgentTest {
             }
         };
         d.conceptsPerIteration.set(16);
-        n.log();
+
+//        n.log();
 
 
         Term action = $.$safe("(t,y)");

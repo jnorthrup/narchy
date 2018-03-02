@@ -186,7 +186,7 @@ public class TensorGlow {
                         })),
                         new Gridding(VERTICAL,
                                 new AutoUpdateMatrixView(in),
-                                new AutoUpdateMatrixView(q.ae.xx),
+                                new AutoUpdateMatrixView(q.ae.x),
                                 new AutoUpdateMatrixView(q.ae.W),
                                 new AutoUpdateMatrixView(q.ae.y)
                         ),
@@ -205,7 +205,7 @@ public class TensorGlow {
 
     }
 
-    private static class AutoUpdateMatrixView extends BitmapMatrixView {
+    public static class AutoUpdateMatrixView extends BitmapMatrixView {
         public AutoUpdateMatrixView(float[] x) {
             super(x);
         }

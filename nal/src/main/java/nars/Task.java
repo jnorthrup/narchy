@@ -7,7 +7,6 @@ import jcog.bloom.hash.BytesHashProvider;
 import jcog.list.FasterList;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
-import jcog.pri.op.PriMerge;
 import nars.concept.Concept;
 import nars.control.proto.TaskAdd;
 import nars.op.Operator;
@@ -468,24 +467,27 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                 negated = !negated;
             }
 
-            if (o == INH && t.hasAny(BOOL)) {
-                Term pred = t.sub(1);
-                if (pred.op() == BOOL) {
-                    if (pred == Null)
-                        return null;
-                    else {
-                        t = t.sub(0); //reduce to the subject
-                        o = t.op();
-
-                        if (pred == False)
-                            negated = !negated; //invert truth
-
-                        if (t.op()==NEG)
-                            reduced = false; //repeat to handle the possible contained reductions
-                    }
-
-                }
+            if (o.statement && t.hasAny(BOOL)) {
+                return null;
             }
+//            if (o == INH && t.hasAny(BOOL)) {
+//                Term pred = t.sub(1);
+//                if (pred.op() == BOOL) {
+//                    if (pred == Null)
+//                        return null;
+//                    else {
+//                        t = t.sub(0); //reduce to the subject
+//                        o = t.op();
+//
+//                        if (pred == False)
+//                            negated = !negated; //invert truth
+//
+//                        if (t.op()==NEG)
+//                            reduced = false; //repeat to handle the possible contained reductions
+//                    }
+//
+//                }
+//            }
 
         } while (!reduced);
 
