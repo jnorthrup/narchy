@@ -20,8 +20,13 @@ public class IntRange extends MutableInteger {
 
     @Override
     public void set(Number value) {
-        float f = value.floatValue();
-        set(Math.round(f));
+        if ((value instanceof Float || value instanceof Double)) {
+            set(Math.round(value.floatValue()));
+        } else if (value instanceof Long) {
+            throw new RuntimeException();
+        } else {
+            set(value.intValue());
+        }
     }
 
 }

@@ -184,8 +184,7 @@ public class NALTask extends Pri implements Task {
                 //dont clear meta if debugging
             } else {
                 CompactArrayMap<String, Object> m = this.meta;
-                if (m!=null)
-                    m.clearExcept("@");
+                m.clearExcept("@");
             }
             return true;
         }

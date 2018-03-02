@@ -15,6 +15,7 @@ import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.button.ToggleButton;
 import spacegraph.widget.slider.FloatSlider;
+import spacegraph.widget.slider.IntSlider;
 import spacegraph.widget.tab.ButtonSet;
 import spacegraph.widget.text.LabeledPane;
 
@@ -86,7 +87,7 @@ public class AutoSurface<X> extends Gridding {
         if (x instanceof FloatRange) {
             target.add(new MySlider((FloatRange) x, yLabel));
         } else if (x instanceof IntRange) {
-            target.add(new MySlider((IntRange) x, yLabel));
+            target.add(new MyIntSlider((IntRange) x, yLabel));
         } else if (x instanceof AtomicBoolean) {
             target.add(new CheckBox(yLabel, (AtomicBoolean) x));
 //                    } else if (y instanceof MutableBoolean) {
@@ -237,7 +238,17 @@ public class AutoSurface<X> extends Gridding {
             super(p);
             this.k = k;
         }
-        public MySlider(IntRange p, String k) {
+
+
+        @Override
+        public String text() {
+            return k + "=" + super.text();
+        }
+    }
+    private static class MyIntSlider extends IntSlider {
+        private final String k;
+
+        public MyIntSlider(IntRange p, String k) {
             super(p);
             this.k = k;
         }

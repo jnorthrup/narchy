@@ -205,6 +205,7 @@ public class TensorGlow {
 
     }
 
+    //TODO make this take a supplier of arrays, and re-create bitmap matrix view when the value changed
     public static class AutoUpdateMatrixView extends BitmapMatrixView {
         public AutoUpdateMatrixView(float[] x) {
             super(x);

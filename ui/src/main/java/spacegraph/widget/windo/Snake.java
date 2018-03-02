@@ -123,10 +123,10 @@ public class Snake {
 //            joints.forEach(world::removeJoint); //joints should be removed automatically when the attached body/bodies are removed
 //            joints.clear();
 
-            attachments.forEach(world::removeBody);
+            attachments.forEach(Body2D::remove);
             attachments.clear();
 
-            bodies.forEach(world::removeBody);
+            bodies.forEach(Body2D::remove);
             bodies.clear();
         });
     }

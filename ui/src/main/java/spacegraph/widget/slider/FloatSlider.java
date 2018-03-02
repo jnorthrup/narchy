@@ -5,7 +5,6 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
-import jcog.math.IntRange;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectFloatProcedure;
@@ -19,26 +18,29 @@ import spacegraph.widget.windo.Widget;
 /**
  * Created by me on 11/18/16.
  */
-@Deprecated public class FloatSlider extends Widget {
+public class FloatSlider extends Widget {
 
     final Label label = new Label();
     public FloatSupplier input;
     private String labelText = "";
 
-    private final BaseSlider slider;
+    protected final BaseSlider slider;
 
     public FloatSlider(float v, float min, float max) {
 
 
 
         content(
-            new Scale((slider = new XSlider(v, min, max)), 0.95f),
+            new Scale((slider = slider(v, min, max)), 0.95f),
             label.scale(0.85f).align(AspectAlign.Align.Center)
         );
         updateText();
 
     }
 
+    protected FloatSlider.XSlider slider(float v, float min, float max) {
+        return new XSlider(v, min, max);
+    }
 
 
     public FloatSlider(String label, float v, float min, float max) {
@@ -56,11 +58,7 @@ import spacegraph.widget.windo.Widget;
         input = f;
         slider.on((s, v) -> f.set(v));
     }
-    public FloatSlider(IntRange f) {
-        this(f.floatValue(), f.min, f.max);
-        input = f::floatValue;
-        slider.on((s, v) -> f.set(v));
-    }
+
 
     public FloatSlider text(String label) {
         this.labelText = label;
@@ -105,7 +103,7 @@ import spacegraph.widget.windo.Widget;
         return this;
     }
 
-    private class XSlider extends BaseSlider {
+    protected class XSlider extends BaseSlider {
 
         private final float min;
         private final float max;
@@ -147,4 +145,5 @@ import spacegraph.widget.windo.Widget;
         }
 
     }
+
 }

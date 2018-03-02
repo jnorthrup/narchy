@@ -71,7 +71,6 @@ public class ConcurrentFastIteratingHashSet<T> extends AbstractSet<T> {
             T r = super.remove(key);
             if (r != null) {
                 list = null;
-                return null;
             }
             return r;
         }
