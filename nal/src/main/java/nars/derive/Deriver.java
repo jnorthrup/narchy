@@ -42,7 +42,7 @@ public class Deriver extends Causable {
 
 
 
-    public final IntRange conceptsPerIteration = new IntRange(1, 1, 1024);
+    public final IntRange conceptsPerIteration = new IntRange(2, 1, 1024);
 
 
     /**
@@ -208,7 +208,7 @@ public class Deriver extends Causable {
 
             //SELECT
 
-            selectPremises(burstSize, d, (tasklink, termlink)->{
+            selectPremises(burstSize, (tasklink, termlink)->{
                 Task t = tasklink.get();
                 if (t != null) {
                     Premise premise = new Premise(t, termlink.get());
@@ -287,7 +287,7 @@ public class Deriver extends Causable {
         nar.input(x);
     }
 
-    private void selectPremises(int premises, Derivation d, BiPredicate<PriReference<Task>, PriReference<Term>> each) {
+    private void selectPremises(int premises, BiPredicate<PriReference<Task>, PriReference<Term>> each) {
 
         int premisesRemain[] = new int[]{premises};
 

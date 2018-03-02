@@ -26,6 +26,7 @@ package org.jbox2d.dynamics;
 import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import jcog.list.FasterList;
 import jcog.math.FloatSupplier;
+import org.boon.collections.ConcurrentFastIteratingHashSet;
 import org.jbox2d.callbacks.*;
 import org.jbox2d.collision.AABB;
 import org.jbox2d.collision.RayCastInput;
@@ -54,9 +55,8 @@ import org.jbox2d.pooling.normal.DefaultWorldPool;
 import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 
-import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -85,9 +85,9 @@ public class Dynamics2D {
 
     protected final ContactManager contactManager;
 
-    final ConcurrentHashMap<Body2D,Body2D> bodies = new ConcurrentHashMap<>();
+    final Set<Body2D> bodies = new ConcurrentFastIteratingHashSet<>(new Body2D[0]);
 
-    final ConcurrentHashMap<Joint,Joint> joints = new ConcurrentHashMap<>();
+    final Set<Joint> joints = new ConcurrentFastIteratingHashSet<>(new Joint[0]);
 
     private int jointCount;
 
@@ -194,7 +194,7 @@ public class Dynamics2D {
 
         m_allowSleep = flag;
         if (!m_allowSleep) {
-            bodies().forEach(b->b.setAwake(true));
+            bodies(b->b.setAwake(true));
         }
     }
 
@@ -306,7 +306,7 @@ public class Dynamics2D {
 
     public Body2D addBody(Body2D b, FixtureDef... fd) {
 
-        if (bodies.putIfAbsent(b, b)==null) {
+        if (bodies.add(b)) {
             invoke(() -> {
                 for (FixtureDef f : fd)
                     b.addFixture(f);
@@ -326,7 +326,7 @@ public class Dynamics2D {
      */
     public void removeBody(Body2D b) {
 
-        if (bodies.remove(b)!=null) {
+        if (bodies.remove(b)) {
 
             invoke(() -> {
 
@@ -393,7 +393,7 @@ public class Dynamics2D {
     }
 
     public Joint addJoint( Joint j) {
-        if (joints.putIfAbsent(j, j)==null) {
+        if (joints.add(j)) {
 
             invoke(() -> {
 
@@ -455,7 +455,7 @@ public class Dynamics2D {
      */
     public void removeJoint(Joint j) {
 
-        if (joints.remove(j)!=null) {
+        if (joints.remove(j)) {
             invoke(() -> {
 
 
@@ -659,7 +659,7 @@ public class Dynamics2D {
      * @see setAutoClearForces
      */
     public void clearForces() {
-        bodies().forEach((b) -> {
+        bodies(b -> {
            b.force.setZero();
            b.torque = 0;
         });
@@ -760,34 +760,21 @@ public class Dynamics2D {
         particles.raycast(particleCallback, point1, point2);
     }
 
-    /**
-     * Get the world body list. With the returned body, use Body.getNext to get the next body in the
-     * world list. A null body indicates the end of the list.
-     *
-     * @return the head of the world body list.
-     *
-     * TODO cache to a fast iterator
-     */
+
     public Iterable<Body2D> bodies() {
-        return bodies.values();
+        return bodies;
     }
 
     public void bodies(Consumer<Body2D> each) {
-        bodies.values().forEach(each);
+        bodies.forEach(each);
     }
 
-    /**
-     * Get the world joint list. With the returned joint, use Joint.getNext to get the next joint in
-     * the world list. A null joint indicates the end of the list.
-     *
-     * @return the head of the world joint list.
-     */
     public Iterable<Joint> joints() {
-        return joints.values();
+        return joints;
     }
 
     public void joints(Consumer<Joint> each) {
-        joints.values().forEach(each);
+        joints.forEach(each);
     }
 
     /**
@@ -969,10 +956,7 @@ public class Dynamics2D {
         m_profile.solvePosition.startAccum();
 
         List<Body2D> preRemove = new FasterList(0);
-        Iterator<Body2D> ii = bodies().iterator();
-        while (ii.hasNext()) {
-            Body2D b = ii.next();
-
+        bodies(b->{
             // Clear all the island flags.
             b.flags &= ~Body2D.e_islandFlag;
 
@@ -982,7 +966,7 @@ public class Dynamics2D {
                 // update previous transforms
                 b.transformPrev.set(b);
             }
-        }
+        });
 
         preRemove.forEach(this::removeBody);
         preRemove.clear();
@@ -998,9 +982,8 @@ public class Dynamics2D {
         for (Contact c = contactManager.m_contactList; c != null; c = c.m_next) {
             c.m_flags &= ~Contact.ISLAND_FLAG;
         }
-        for (Joint j : joints()) {
-            j.islandFlag = false;
-        }
+
+        joints(j->j.islandFlag = false);
 
         // Build and simulate all awake islands.
         int stackSize = bodyCount;

@@ -54,7 +54,7 @@ public class NALTask extends Pri implements Task {
         if ((start == ETERNAL && end != ETERNAL) || (start != ETERNAL && start > end))
             throw new RuntimeException("start=" + start + ", end=" + end + " is invalid task occurrence time");
 
-        if (Param.DEBUG)
+        if (Param.DEBUG_EXTRA)
             Task.validTaskTerm(term, punc, false);
 
         this.term = term;

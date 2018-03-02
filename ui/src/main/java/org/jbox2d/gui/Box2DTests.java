@@ -152,7 +152,7 @@ public class Box2DTests extends JComponent implements Runnable {
                         Tuple2f v = getPoint(p);
                         /*synchronized(Tests.this)*/
                     {
-                        w.bodies().forEach(b->{
+                        w.bodies(b->{
                             for (Fixture f = b.fixtures(); f != null; f = f.next) {
                                 if (f.testPoint(v)) {
                                     MouseJointDef def = new MouseJointDef();

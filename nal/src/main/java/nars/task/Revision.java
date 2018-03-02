@@ -689,7 +689,7 @@ public class Revision {
                 if (ccp != null) {
 
                     cc = ccp.getOne();
-                    assert (cc.isNormalized());
+                    //assert (cc.isNormalized());
 
                     if (ccp.getTwo())
                         cTruth = cTruth.neg();

@@ -132,13 +132,13 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 
     }
 
-    static class EdgeComponent extends PLink<PriReference<? extends Termed>> {
+    static class EdgeComponent extends PLink<Termed> {
         final ConceptWidget src, tgt;
         final int type;
         private final int hash;
 
         EdgeComponent(PriReference<? extends Termed> link, ConceptWidget src, ConceptWidget tgt, int type, float pri) {
-            super(link, link.priElseZero());
+            super(link.get(), link.priElseZero());
             this.src = src;
             this.tgt = tgt;
             this.type = type;

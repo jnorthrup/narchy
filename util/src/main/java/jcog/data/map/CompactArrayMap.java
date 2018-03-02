@@ -8,7 +8,7 @@ import java.util.function.Function;
 
 public class CompactArrayMap<K, V>  {
 
-    Object[] items = null;
+    volatile Object[] items = null;
 
     public CompactArrayMap() {
     }

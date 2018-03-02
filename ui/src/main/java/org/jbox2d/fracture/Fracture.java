@@ -59,13 +59,16 @@ public class Fracture {
      * @param dt casova dlzka framu
      */
     public void smash(Smasher smasher, float dt) {
+        Shape s = f1.shape;
+        if (s == null)
+            return;
+
         if (contact == null) { //riesi sa staticky prvok, ktory ma priliz maly obsah
             b1.setType(BodyType.DYNAMIC);
             return;
         }
 
         Dynamics2D w = b1.W;
-        Shape s = f1.shape;
         Polygon p = f1.polygon;
 
         if (p == null) {

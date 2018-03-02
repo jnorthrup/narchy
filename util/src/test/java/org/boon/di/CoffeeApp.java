@@ -158,7 +158,7 @@ public class CoffeeApp implements Runnable {
         ok = stuff.a("foodImpl") != null || die();
         stuff.remove(m0);
         stuff.add(m11);
-        stuff.addFirst(m0);
+        stuff.add(m0);
         coffeeApp = stuff.a(CoffeeApp.class);
         validateApp(coffeeApp);
         stuff.a(SoylentGreen.class);

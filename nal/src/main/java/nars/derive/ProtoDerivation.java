@@ -70,13 +70,14 @@ public abstract class ProtoDerivation extends Unify {
 
         public PremiseKey(Derivation d) {
 
-            DynBytes k = new DynBytes(192);
+            DynBytes k = new DynBytes(128);
 
-            d.taskTerm.root().append((ByteArrayDataOutput)k);
-            d.beliefTerm.root().append((ByteArrayDataOutput)k);
             k.writeByte(d.taskPunc);
             //2 bits for each polarity, each one offset by +1 (because it ranges from -1..+1)
             k.writeByte(((d.taskPolarity+1)<<2) | (d.beliefPolarity+1) );
+
+            d.taskTerm.root().append((ByteArrayDataOutput)k);
+            d.beliefTerm.root().append((ByteArrayDataOutput)k);
 
             this.key = k.array();
             this.hash = k.hashCode();

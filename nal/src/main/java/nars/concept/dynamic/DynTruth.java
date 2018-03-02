@@ -15,6 +15,8 @@ import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
+import nars.truth.Truthed;
+import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
@@ -110,7 +112,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
     }
 
     @Nullable
-    public Truth truth(Term superterm, DynamicTruthModel m, @Nullable Consumer<NALTask> withBuiltTask, boolean beliefOrGoal, NAR nar) {
+    public Truthed truth(Term superterm, DynamicTruthModel m, boolean taskOrJustTruth, boolean beliefOrGoal, NAR nar) {
 
 
         Truth t = m.truth(this, nar);
@@ -133,7 +135,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
 
         float f;
         long start, end;
-        if (withBuiltTask != null) {
+        if (taskOrJustTruth) {
 
             if (size() > 1) {
                 if (superterm.op() == CONJ) {
@@ -187,30 +189,24 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         Truth tr = Truth.theDiscrete(f, evi, nar);
         if (tr == null)
             return null;
-        if (withBuiltTask == null)
+        if (!taskOrJustTruth)
             return tr;
 
         float priority = pri();
 
-        Term c = m.construct(superterm, this);
-        if (c == null)
-            return null;
 
-        if (c.op() == NEG)
-
-        {
-            c = c.unneg();
-            tr = tr.neg();
-        }
 
         // then if the term is valid, see if it is valid for a task
-        if (!Task.validTaskTerm(c, beliefOrGoal ? BELIEF : GOAL, true))
+        @Nullable ObjectBooleanPair<Term> r = Task.tryContent(
+                m.construct(superterm, this),
+                beliefOrGoal ? BELIEF : GOAL, true);
+        if (r == null)
             return null;
 
-
-        long[] stamp = ss.getOne();
-
-        NALTask dyn = new DynTruthTask(c, beliefOrGoal, tr, nar, start, end, stamp);
+        NALTask dyn = new DynTruthTask(
+                r.getOne(), beliefOrGoal,
+                tr.negIf(r.getTwo()), nar, start, end,
+                ss.getOne());
         //if (ss.getTwo() > 0) dyn.setCyclic(true);
 
         dyn.cause = cause();
@@ -219,9 +215,7 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         if (Param.DEBUG)
             dyn.log("Dynamic");
 
-        withBuiltTask.accept(dyn);
-
-        return tr;
+        return dyn;
     }
 
     @Override

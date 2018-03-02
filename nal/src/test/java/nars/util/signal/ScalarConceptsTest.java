@@ -122,7 +122,7 @@ public class ScalarConceptsTest {
     }
 
     @Test
-    public void testServiceAndHardEncoder2() throws Narsese.NarseseException {
+    public void testServiceAndFluidEncoder() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
 
         FloatRange x = new FloatRange(0f, 0f, 1f);

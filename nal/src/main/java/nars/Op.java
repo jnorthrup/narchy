@@ -1358,7 +1358,7 @@ public enum Op {
     /**
      * precondition combiner: a combination nconjunction/implication reduction
      */
-    static private Term implInConjReduce(final Term conj /* possibly a conjunction */) {
+    @Deprecated static private Term implInConjReduce(final Term conj /* possibly a conjunction */) {
         return conj;
     }
 //        if (conj.op() != CONJ)
@@ -1474,8 +1474,8 @@ public enum Op {
     private static Term differ(/*@NotNull*/ Op op, Term... t) {
 
 
-        if (hasNull(t))
-            return Null;
+//        if (hasNull(t))
+//            return Null;
 
         //TODO product 1D, 2D, etc unwrap
         //if (t.length >= 2 && Util.and((Term tt) -> tt.op() == PROD && tt.subs()==1, t)) {

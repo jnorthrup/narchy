@@ -493,12 +493,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
         t = t.normalize().the();
 
-        if (Task.validTaskTerm(t, punc, safe)) {
-            return pair(t, negated);
-        } else {
-            return null;
-        }
-
+        return Task.validTaskTerm(t, punc, safe) ? pair(t, negated) : null;
     }
 
 

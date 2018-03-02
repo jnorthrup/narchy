@@ -21,6 +21,7 @@ import java.lang.reflect.Field;
 
 import static spacegraph.container.Gridding.HORIZONTAL;
 import static spacegraph.container.Gridding.VERTICAL;
+import static spacegraph.test.dyn2d.TensorGlow.rng;
 
 
 public class PhyWallTest {
@@ -86,8 +87,8 @@ public class PhyWallTest {
             PhyWall s = PhyWall.window(800, 800);
 
             //s.W.invoke(()->{
-            for (int i = 0; i < 100; i++)
-                s.W.newDynamicBody(PolygonShape.box(0.1f, 0.1f), 1, 0.1f);
+            for (int i = 0; i < 200; i++)
+                s.W.newDynamicBody(PolygonShape.box(0.1f+rng.nextFloat()*0.2f, 0.1f), 1, 0.1f);
             //s.W.newDynamicBody(PolygonShape.box(100, 100), 1, 0.1f).pos.add(-100, -100);
             //});
 

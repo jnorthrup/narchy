@@ -78,9 +78,7 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
     protected Task generate(final Term template, long start, long end, NAR nar) {
         DynTruth yy = truth(start, end, template, nar);
         if (yy != null) {
-            Task[] tt = new Task[1];
-            yy.truth(term, model, t -> tt[0] = t, beliefOrGoal, nar);
-            return tt[0];
+            return (Task)(yy.truth(term, model, true, beliefOrGoal, nar));
         } else {
             return null;
         }
@@ -88,16 +86,10 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
 
     @Override
     public Truth truth(long start, long end, NAR nar) {
-        //DynTruth d = truth(start, end, null, nar);
         DynTruth d = model.eval(term, beliefOrGoal, start, end, nar);
-        if (d == null) {
-            return null;
-        } else {
-            Truth tr = d.truth(term, model, null, beliefOrGoal, nar);
-
-            Truth st = super.truth(start, end, nar);
-            return tr != null ? Truth.maxConf(tr, st) : st;
-        }
+        return Truth.maxConf(
+                d!=null ? (Truth)(d.truth(term, model, false, beliefOrGoal, nar)) : null,
+                super.truth(start, end, nar));
     }
 
 //    /** prepare a term, if necessary, for use as template  */
@@ -275,8 +267,8 @@ public class DynamicBeliefTable extends DefaultBeliefTable {
 
     @Override
     public Task match(long start, long end, Term template, NAR nar, Predicate<Task> filter) {
-        Task x = super.match(start, end, template, nar, filter);
 
+        Task x = super.match(start, end, template, nar, filter);
 
         Task y = generate(template, start, end, nar);
         if (y == null || y.equals(x)) return x;

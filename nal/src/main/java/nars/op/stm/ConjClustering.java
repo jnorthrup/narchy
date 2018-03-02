@@ -379,7 +379,7 @@ public class ConjClustering extends Causable {
     public static class STMClusterTask extends NALTask {
 
         public STMClusterTask(@Nullable ObjectBooleanPair<Term> cp, Truth t, long start, long end, long[] evidence, byte punc, long now) throws InvalidTaskException {
-            super(cp.getOne(), punc, t, now, start, end, evidence);
+            super(cp.getOne(), punc, t.negIf(cp.getTwo()), now, start, end, evidence);
         }
 
         @Override

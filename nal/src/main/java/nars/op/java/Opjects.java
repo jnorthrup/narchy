@@ -26,7 +26,7 @@ import nars.task.signal.TruthletTask;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import org.apache.commons.lang3.ArrayUtils;
-import org.boon.collections.ConcurrentLinkedHashSet;
+import org.boon.collections.ConcurrentFastIteratingHashSet;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -99,7 +99,7 @@ public class Opjects extends DefaultTermizer implements MethodHandler {
     private float beliefEvi = 0, doubtEvi = 0, beliefPri = 0, invokeEvi, uninvokeEvi, invokePri;
 
     /** set of operators in probing mode which are kept here for batched execution */
-    final ConcurrentLinkedHashSet<MethodExec> probing = new ConcurrentLinkedHashSet<>();
+    final ConcurrentFastIteratingHashSet<MethodExec> probing = new ConcurrentFastIteratingHashSet<>(new MethodExec[0]);
 
 
 

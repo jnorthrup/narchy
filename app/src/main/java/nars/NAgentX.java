@@ -127,8 +127,8 @@ abstract public class NAgentX extends NAgent {
 
 
         float clockFPS =
-                agentFPS;
-                //narFPS;
+                //agentFPS;
+                narFPS;
 
         RealTime clock =
                 clockFPS >= 10 / 2f ? /* nyquist threshold between decisecond (0.1) and centisecond (0.01) clock resolution */
@@ -179,7 +179,7 @@ abstract public class NAgentX extends NAgent {
                 .deriverAdd("motivation.nal")
                 //.deriverAdd("goal_analogy.nal")
                 //.deriverAdd(6,6) //extra NAL6
-                .deriverAdd("list.nal")
+                //.deriverAdd("list.nal")
 
                 .index(
                         new CaffeineIndex(

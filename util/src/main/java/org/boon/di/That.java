@@ -48,8 +48,6 @@ public interface That extends Thing {
 
     That remove(Thing module );
 
-    That addFirst(Thing module );
-
     Iterable<Thing> has();
 
     void resolveProperties( Object o );
@@ -59,7 +57,6 @@ public interface That extends Thing {
     void debug(  );
 
     That combine(That newContext );
-    That combineFirst(That newContext );
 
 
 }

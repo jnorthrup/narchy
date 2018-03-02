@@ -31,7 +31,7 @@ package org.boon.di.impl;
 import org.boon.Boon;
 import org.boon.BoonLogger;
 import org.boon.Exceptions;
-import org.boon.collections.ConcurrentLinkedHashSet;
+import org.boon.collections.ConcurrentFastIteratingHashSet;
 import org.boon.core.Typ;
 import org.boon.core.reflection.Fields;
 import org.boon.core.reflection.Invoker;
@@ -57,7 +57,8 @@ import static org.boon.json.JsonFactory.fromJson;
 
 public class ThatImpl implements That, Thing {
 
-    protected final ConcurrentLinkedHashSet<Thing> modules = new ConcurrentLinkedHashSet<>();
+    protected final ConcurrentFastIteratingHashSet<Thing> modules = new ConcurrentFastIteratingHashSet<>(
+            new Thing[0]);
     private String name;
     private final AtomicReference<That> parent = new AtomicReference<>();
 
@@ -104,17 +105,6 @@ public class ThatImpl implements That, Thing {
         return this;
     }
 
-
-    public That combineFirst(That newContext) {
-
-        ThatImpl newContextImpl = (ThatImpl) newContext;
-
-        for (Thing module : newContextImpl.modules) {
-            module.inside(this);
-            this.modules.addFirst(module);
-        }
-        return this;
-    }
 
     @Override
     public void inside(That context) {
@@ -729,14 +719,6 @@ public class ThatImpl implements That, Thing {
         this.modules.remove(module);
         return this;
     }
-
-    @Override
-    public That addFirst(Thing module) {
-        module.inside(this);
-        this.modules.addFirst(module);
-        return this;
-    }
-
 
     @Override
     public String toString() {
