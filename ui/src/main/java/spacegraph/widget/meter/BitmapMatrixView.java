@@ -6,6 +6,9 @@ import jcog.math.tensor.ArrayTensor;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import spacegraph.Surface;
+import spacegraph.input.Finger;
+import spacegraph.math.Point2i;
+import spacegraph.math.Tuple2f;
 import spacegraph.math.v2;
 import spacegraph.render.Draw;
 import spacegraph.render.Tex;
@@ -29,10 +32,46 @@ public class BitmapMatrixView extends Surface {
     private int[] pix;
     private final Tex bmp;
 
+    protected Tuple2f touchPos;
+    protected Point2i touchPixel;
+
+    @Override
+    public Surface onTouch(Finger finger, short[] buttons) {
+        if (finger!=null) {
+            updateTouch(finger);
+        } else {
+            touchPos = null;
+            touchPixel = null;
+        }
+        return null;
+
+    }
+
+
+
+    public void updateTouch(Finger finger) {
+
+        touchPos = finger.relativePos(this).scaled(w, h);
+
+        touchPixel = new Point2i((int) Math.floor(touchPos.x),
+                (int) Math.floor(touchPos.y)); //wtf
+
+    }
+
     @Override
     protected void paint(GL2 gl, int dtMS) {
         bmp.paint(gl, bounds);
+        if (touchPixel !=null) {
+            float w = w()/this.w;
+            float h = h()/this.h;
+            gl.glColor4f(1,1,1, 0.75f);
+            gl.glLineWidth(2);
+            float x = x();
+            float y = y();
+            Draw.rectStroke(gl, x+touchPixel.x*w, y+touchPixel.y*h, w, h);
+        }
     }
+
 
     /** the position of a cell's center */
     public v2 cell(float x, float y) {

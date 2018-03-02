@@ -1,38 +1,36 @@
-package net.beadsproject.beads;
+package spacegraph.test;
 
-import jcog.Util;
 import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.core.Auvent;
 import net.beadsproject.beads.data.WaveFactory;
 import net.beadsproject.beads.ugens.*;
+import spacegraph.SpaceGraph;
+import spacegraph.input.Finger;
+import spacegraph.widget.meter.BitmapMatrixView;
+import spacegraph.widget.windo.Widget;
 
-public class arpeggiator_01 {
-    float frequency = 100.0f;
-    int tick = 0;
-    FuncGen arpeggiator;
-    WavePlayer square;
+import static net.beadsproject.beads.arpeggiator_01.midiPitchToFrequency;
 
-    Envelope gainEnvelope;
-    Gain gain;
+public class Synthiano extends Widget {
 
-    int lastKeyPressed = -1;
+    private final AudioContext ac;
 
-    Clock beatClock;
+    private final FuncGen arpeggiator;
+    private final Clock beatClock;
+    private final Gain gain;
+    private final Envelope gainEnvelope;
+    float frequency = 0;
 
-    public static void main(String[] args) {
-        arpeggiator_01 synth = new arpeggiator_01();
-        synth.setup();
-    }
+    public Synthiano() {
+        ac = new AudioContext();
 
-    // construct the synthesizer
-    public void setup() {
-        AudioContext ac = new AudioContext();
-
-        // the gain envelope
         gainEnvelope = new Envelope(ac, 0.0f);
 
-        // set up a custom function to arpeggiate the pitch
+
+        // custom function to arpeggiate the pitch
         arpeggiator = new FuncGen(gainEnvelope) {
+
+            int tick = 0;
 
             @Override
             public float floatValueOf(float[] anObject) {
@@ -49,10 +47,10 @@ public class arpeggiator_01 {
         ac.out(arpeggiator);
 
         // the square generator
-        square = new WavePlayer(ac, arpeggiator, WaveFactory.SQUARE);
+        WavePlayer square = new WavePlayer(ac, arpeggiator, WaveFactory.TRIANGLE);
 
         // set up a clock to keep time
-        beatClock = new Clock(ac, 500.0f);
+        beatClock = new Clock(ac, 800.0f);
         beatClock.setTicksPerBeat(4);
         beatClock.on(arpeggiator);
         ac.out.dependsOn(beatClock);
@@ -89,40 +87,32 @@ public class arpeggiator_01 {
 //        }
 //      }
 //    });
-        keyDown(79);
+        content(new BitmapMatrixView(4,4, (x,y)->0) {
+
+            @Override
+            public void updateTouch(Finger finger) {
+                super.updateTouch(finger);
+                if (finger.pressed(0))
+                    key( Math.round((touchPos.y * 4)+touchPos.x));
+            }
+        });
+
 
         beatClock.start();
-        Util.sleep(100000L);
     }
 
-    public static float midiPitchToFrequency(int midiPitch) {
-        /*
-         *  MIDI pitch number to frequency conversion equation from
-         *  http://newt.phys.unsw.edu.au/jw/notes.html
-         */
-        double exponent = (midiPitch - 69.0) / 12.0;
-        return (float) (Math.pow(2, exponent) * 440.0f);
+    protected void key(int key) {
+        frequency = midiPitchToFrequency(30+key);
+
+        beatClock.reset();
+
+        // interrupt the envelope
+        gainEnvelope.clear();
+        // attack segment
+        gainEnvelope.add(0.5f, 10.0f);
     }
 
-    public void keyDown(int midiPitch) {
-        if (square != null && gainEnvelope != null) {
-            lastKeyPressed = midiPitch;
-
-            // restart the arpeggiator
-            frequency = midiPitchToFrequency(midiPitch);
-            tick = -1;
-            beatClock.reset();
-
-            // interrupt the envelope
-            gainEnvelope.clear();
-            // attack segment
-            gainEnvelope.add(0.5f, 10.0f);
-        }
-    }
-
-    public void keyUp(int midiPitch) {
-        // release segment
-        if (midiPitch == lastKeyPressed && gainEnvelope != null)
-            gainEnvelope.add(0.0f, 50.0f);
+    public static void main(String[] args) {
+        SpaceGraph.window(new Synthiano(), 500, 500);
     }
 }

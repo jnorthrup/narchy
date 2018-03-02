@@ -1,6 +1,5 @@
 package nars.video;
 
-import com.jogamp.opengl.GL2;
 import jcog.Util;
 import nars.NAR;
 import nars.NAgent;
@@ -19,8 +18,6 @@ import spacegraph.container.Gridding;
 import spacegraph.container.Splitting;
 import spacegraph.input.Finger;
 import spacegraph.input.FingerDragging;
-import spacegraph.math.Point2i;
-import spacegraph.math.Tuple2f;
 import spacegraph.render.Draw;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.meter.BitmapMatrixView;
@@ -43,8 +40,7 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
 //    private float maxConceptPriority;
     private long start, end;
     int dur;
-    private Tuple2f touchPos;
-    private Point2i touchPixel;
+
     private SensorConcept touchConcept;
 
     private Consumer<SensorConcept> touchMode = (x) -> { };
@@ -65,66 +61,42 @@ public class CameraSensorView extends BitmapMatrixView implements BitmapMatrixVi
     }
 
 
-
     @Override
-    public Surface onTouch(Finger finger, short[] buttons) {
-        if (finger!=null) {
-            updateTouch(finger);
+    public void updateTouch(Finger finger) {
 
 
-            if (finger.clickedNow(2, this)) {
-                SensorConcept c = this.touchConcept;
-                if (c != null)
-                    Vis.conceptWindow(c, nar);
-            }
+        super.updateTouch(finger);
 
-            finger.tryFingering(new FingerDragging(0) {
-                @Override
-                protected boolean drag(Finger f) {
-                    updateTouch(finger);
-                    SensorConcept c = touchConcept;
-                    if (c!=null)
-                        onTouch(touchConcept);
-                    return true;
-                }
-            });
-        } else {
-            touchPos = null;
-            touchPixel = null;
+        if (finger == null) {
             touchConcept = null;
+        } else {
+            touchConcept = cam.get(touchPixel.x, cam.height - 1 - touchPixel.y);
         }
-        return null;
+
+        if (finger.clickedNow(2, this)) {
+            SensorConcept c = this.touchConcept;
+            if (c != null)
+                Vis.conceptWindow(c, nar);
+        }
+
+        finger.tryFingering(new FingerDragging(0) {
+            @Override
+            protected boolean drag(Finger f) {
+                updateTouch(finger);
+                SensorConcept c = touchConcept;
+                if (c!=null)
+                    onTouch(touchConcept);
+                return true;
+            }
+        });
+
+
 
     }
+
 
     public void onTouch(SensorConcept touchConcept) {
         touchMode.accept(touchConcept);
-
-    }
-
-    public void updateTouch(Finger finger) {
-
-        touchPos = finger.relativePos(this).scaled(cam.width, cam.height);
-
-        touchPixel = new Point2i((int) Math.floor(touchPos.x),
-                (int) Math.floor(touchPos.y)); //wtf
-
-        touchConcept = cam.get(touchPixel.x, cam.height - 1 - touchPixel.y);
-
-    }
-
-    @Override
-    protected void paint(GL2 gl, int dtMS) {
-        super.paint(gl, dtMS);
-        if (touchPixel !=null) {
-            float w = w()/cam.width;
-            float h = h()/cam.height;
-            gl.glColor4f(1,1,1, 0.75f);
-            gl.glLineWidth(2);
-            float x = x();
-            float y = y();
-            Draw.rectStroke(gl, x+touchPixel.x*w, y+touchPixel.y*h, w, h);
-        }
     }
 
     @Override

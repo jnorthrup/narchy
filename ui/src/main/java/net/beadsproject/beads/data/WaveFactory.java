@@ -7,7 +7,8 @@ import jcog.math.tensor.ArrayTensor;
 import jcog.math.tensor.Tensor;
 import net.beadsproject.beads.data.buffers.*;
 
-import java.util.Hashtable;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Abstract base class for factories that generate {@link Buffer}s. Create subclasses of BufferFactory to generate different types of {@link Buffer}.
@@ -16,21 +17,21 @@ import java.util.Hashtable;
  * @see Buffer
  */
 public abstract class WaveFactory {
+    /**
+     * A static storage area for common buffers, such as a sine wave. Used by {@link WaveFactory} to keep track of common buffers.
+     */
+    public static final Map<String, ArrayTensor> staticBufs = new ConcurrentHashMap<String,ArrayTensor>();
 
     /**
      * The Constant DEFAULT_BUFFER_SIZE.
      */
-    public static final int DEFAULT_BUFFER_SIZE = 4096;
+    public static final int DEFAULT_BUFFER_SIZE = 8192;
     // A collection of default buffers, initialised for your convenience.
     public static final Tensor SINE = new SineWave().getDefault();
     public static final Tensor SAW = new SawWave().getDefault();
     public static final Tensor SQUARE = new SquareWave().getDefault();
     public static final Tensor TRIANGLE = new TriangleWave().getDefault();
     public static final Tensor NOISE = new NoiseWave().getDefault();
-    /**
-     * A static storage area for common buffers, such as a sine wave. Used by {@link WaveFactory} to keep track of common buffers.
-     */
-    public static Hashtable<String, ArrayTensor> staticBufs = new Hashtable<>();
 
     /**
      * Subclasses should override this method to generate a {@link Buffer} of the specified size.
@@ -53,15 +54,8 @@ public abstract class WaveFactory {
      * @return the default Buffer.
      */
     public final ArrayTensor getDefault() {
-        if (staticBufs == null) {
-            staticBufs = new Hashtable<>();
-        }
-
         String name = getName();
-        if (!staticBufs.containsKey(name)) {
-            staticBufs.put(name, get(DEFAULT_BUFFER_SIZE));
-        }
-        return staticBufs.get(name);
+        return staticBufs.computeIfAbsent(name, (n)->get(DEFAULT_BUFFER_SIZE));
     }
 
 }
