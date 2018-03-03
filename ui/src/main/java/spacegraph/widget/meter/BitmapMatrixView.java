@@ -56,6 +56,7 @@ public class BitmapMatrixView extends Surface {
         touchPixel = new Point2i((int) Math.floor(touchPos.x),
                 (int) Math.floor(touchPos.y)); //wtf
 
+
     }
 
     @Override
@@ -64,7 +65,7 @@ public class BitmapMatrixView extends Surface {
         if (touchPixel !=null) {
             float w = w()/this.w;
             float h = h()/this.h;
-            gl.glColor4f(1,1,1, 0.75f);
+            gl.glColor4f(0.5f,0.5f,0.5f, 0.75f);
             gl.glLineWidth(2);
             float x = x();
             float y = y();

@@ -128,7 +128,8 @@ public final class AndCondition<D> extends AbstractPred<D> {
     }
 
     public @Nullable PrediTerm<D> without(PrediTerm<D> condition) {
-        PrediTerm[] x = ArrayUtils.remove(cond, ArrayUtils.indexOf(cond, condition)); assert(x.length != cond.length);
+        PrediTerm[] x = ArrayUtils.remove(cond, PrediTerm[]::new, ArrayUtils.indexOf(cond, condition));
+        assert(x.length != cond.length);
         return AndCondition.the(x);
     }
 

@@ -20,8 +20,8 @@ import nars.*;
 import nars.concept.Concept;
 import nars.derive.match.EllipsisMatch;
 import nars.subterm.ArrayTermVector;
-import nars.subterm.TermVector;
-import nars.subterm.TermVector1;
+import nars.subterm.Subterms;
+import nars.subterm.UnitSubterm;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import org.jetbrains.annotations.NotNull;
@@ -594,8 +594,8 @@ public class TermTest {
 
     @Test public void testHashConsistent() {
         Term x = $.the("z");
-        TermVector1 a = new TermVector1(x);
-        TermVector b = new ArrayTermVector(x);
+        Subterms a = new UnitSubterm(x);
+        Subterms b = new ArrayTermVector(x);
         assertEquals(a, b);
         assertEquals(a.hashCode(), b.hashCode());
         assertEquals(a.hashCodeSubterms(), b.hashCodeSubterms());
@@ -603,8 +603,8 @@ public class TermTest {
     }
 
     @Test public void testHashDistribution() {
-        int ah = new TermVector1($.the("x")).hashCode(); //one letter apart
-        int bh = new TermVector1($.the("y")).hashCode();
+        int ah = new UnitSubterm($.the("x")).hashCode(); //one letter apart
+        int bh = new UnitSubterm($.the("y")).hashCode();
         assertTrue(Math.abs(ah-bh) > 1, ah + " vs " + bh);
     }
 

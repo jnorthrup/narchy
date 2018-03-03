@@ -97,8 +97,8 @@ public class SubtermsTest {
     @Test
     public void testEqualityOfUnitSubtermsImpls() {
         Term a = Atomic.the("a");
-        Subterms x = new TermVector1(a);
-        Subterms x0 = new TermVector1(a);
+        Subterms x = new UnitSubterm(a);
+        Subterms x0 = new UnitSubterm(a);
         assertEquals(x, x0);
 
         Subterms y = new ArrayTermVector(a);

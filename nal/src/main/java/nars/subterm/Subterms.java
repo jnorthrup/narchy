@@ -1010,9 +1010,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 return true;
             }
 
-            u.termutes.add(new CommutivePermutations(
-                    $.pFast($.vFast(xs)),
-                    $.pFast($.vFast(ys))));
+            u.termutes.add(new CommutivePermutations($.pFast(xs), $.pFast(ys)));
             return true;
         }
 //        } else /* yss!=xss */ {
@@ -1031,8 +1029,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (!toRemove.contains(i))
                 t[j++] = sub(i);
         }
-        if (t.length == 0) t = Compound.EmptyArray;
-        return t;
+        return (t.length == 0) ? Compound.EmptyArray : t;
     }
 
     default Term[] termsExcept(MetalBitSet toRemove) {
@@ -1045,8 +1042,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (!toRemove.get(i))
                 t[j++] = sub(i);
         }
-        if (t.length == 0) t = Compound.EmptyArray;
-        return t;
+        return t.length == 0 ? Compound.EmptyArray : t;
     }
 
     default Term[] termsExcept(Collection<Term> except) {
@@ -1154,7 +1150,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default Term[] termsExcept(int i) {
-        return ArrayUtils.remove(arrayShared(), i);
+        return ArrayUtils.remove(arrayShared(), Term[]::new, i);
     }
 
     default int hashWith(Op op) {

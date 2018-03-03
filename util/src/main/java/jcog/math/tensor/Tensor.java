@@ -41,7 +41,7 @@ public interface Tensor extends Supplier<float[]> {
         return new ArrayTensor(values);
     }
 
-    static Tensor forEach(Tensor vector, FloatToFloatFunction operator) {
+    static TensorFunc forEach(Tensor vector, FloatToFloatFunction operator) {
         return new TensorFunc(vector, operator);
     }
 
@@ -101,7 +101,7 @@ public interface Tensor extends Supplier<float[]> {
                         d -> (float)random.nextDouble() * (max - min) + min);
     }
 
-    static Tensor randomVectorGauss(int dimension, float mean, float standardDeviation, Random random) {
+    static TensorFunc randomVectorGauss(int dimension, float mean, float standardDeviation, Random random) {
         return forEach(new ArrayTensor(dimension),
                         d -> (float)random.nextGaussian() * standardDeviation + mean);
     }

@@ -35,12 +35,12 @@ public class DecideEpsilonGreedy implements Deciding {
     public int decide(float[] vector, int lastAction) {
         int actions = vector.length;
 
-        if (motivationOrder == null) {
+        if (motivationOrder == null || motivationOrder.length!=actions) {
             motivationOrder = new int[actions];
             for (int i = 0; i < actions; i++)
                 motivationOrder[i] = i;
-
         }
+        
         if (epsilonRandom > 0 && random.nextFloat() < epsilonRandom) {
             return random.nextInt(actions);
         }

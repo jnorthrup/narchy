@@ -33,6 +33,7 @@ public class XYSlider extends Widget {
 
     public XYSlider() {
         super();
+        updated();
     }
 
     public XYSlider on(FloatFloatProcedure change) {

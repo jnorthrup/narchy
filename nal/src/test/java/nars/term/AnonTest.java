@@ -4,10 +4,7 @@ import com.google.common.collect.Iterators;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import nars.Narsese;
-import nars.subterm.ArrayTermVector;
-import nars.subterm.TermVector;
-import nars.subterm.TermVector1;
-import nars.subterm.TermVector2;
+import nars.subterm.*;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.anon.AnonVector;
@@ -76,7 +73,7 @@ public class AnonTest {
 
         Term[] x = {Anom.the(3), Anom.the(1), Anom.the(2)};
 
-        assertEqual(new TermVector1(x[0]), new AnonVector(x[0]));
+        assertEqual(new UnitSubterm(x[0]), new AnonVector(x[0]));
         assertEqual(new TermVector2(x[0], x[1]), new AnonVector(x[0], x[1]));
         assertEqual(new ArrayTermVector(x), new AnonVector(x));
     }
@@ -109,7 +106,7 @@ public class AnonTest {
 
             ArrayUtils.shuffle(x, rng);
 
-            assertEqual(new TermVector1(x[0]), new AnonVector(x[0]));
+            assertEqual(new UnitSubterm(x[0]), new AnonVector(x[0]));
             assertEqual(new TermVector2(x[0], x[1]), new AnonVector(x[0], x[1]));
             assertEqual(new ArrayTermVector(x), new AnonVector(x));
         }
@@ -131,7 +128,7 @@ public class AnonTest {
         return a;
     }
 
-    static void assertEqual(TermVector v, AnonVector a) {
+    static void assertEqual(Subterms v, AnonVector a) {
         assertEquals(v, a);
         assertEquals(v.toString(), a.toString());
         assertEquals(v.hashCode(), a.hashCode());

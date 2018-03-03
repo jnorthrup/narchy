@@ -6414,7 +6414,21 @@ public enum ArrayUtils { ;
 
         return result;
     }
+    public static <X> X[] remove(final X[] input, IntFunction<X[]> outputter, final int index) {
+        final int length = input.length;
+        //assert(output.length == length-1);
 
+//        if (index < 0 || index >= length) {
+//            throw new IndexOutOfBoundsException("Index: " + index + ", Length: " + length);
+//        }
+
+        X[] output = outputter.apply(length - 1);
+        System.arraycopy(input, 0, output, 0, index);
+        if (index < length - 1) {
+            System.arraycopy(input, index + 1, output, index, length - index - 1);
+        }
+        return output;
+    }
     /**
      * <p>Removes the elements at the specified positions from the specified array.
      * All remaining elements are shifted to the left.

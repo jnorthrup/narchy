@@ -1,6 +1,7 @@
 package nars.subterm;
 
 import jcog.Util;
+import nars.term.Compound;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 
@@ -68,6 +69,10 @@ abstract public class AbstractUnitSubterm implements Subterms {
         return sub();
     }
 
+    public final Term[] termsExcept(int i) {
+        assert(i==0);
+        return Compound.EmptyArray;
+    }
 
     @Override
     public final int subs() {
@@ -81,7 +86,8 @@ abstract public class AbstractUnitSubterm implements Subterms {
 
     @Override
     public void forEach(Consumer<? super Term> c, int start, int stop) {
-        if (start!=0 && stop!=1)
+        if (start!=0 ||
+                stop!=1)
             throw new ArrayIndexOutOfBoundsException();
         c.accept(sub());
     }

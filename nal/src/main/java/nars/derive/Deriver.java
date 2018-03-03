@@ -42,7 +42,7 @@ public class Deriver extends Causable {
 
 
 
-    public final IntRange conceptsPerIteration = new IntRange(2, 1, 1024);
+    public final IntRange conceptsPerIteration = new IntRange(3, 1, 1024);
 
 
     /**

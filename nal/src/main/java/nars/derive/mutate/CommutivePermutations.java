@@ -5,14 +5,13 @@ import nars.subterm.ShuffledSubterms;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.subst.Unify;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by me on 12/22/15.
  */
 public final class CommutivePermutations extends Termutator.AbstractTermutator {
 
-    @NotNull
+
     private final Subterms y;
     private final Subterms x;
 
