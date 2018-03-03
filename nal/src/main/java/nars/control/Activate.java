@@ -31,7 +31,7 @@ public class Activate extends PLink<Concept> implements Termed {
      * hypothesize premises, up to a max specified #
      */
     /*@NotNull*/
-    public void premises(NAR nar, BiPredicate<PriReference<Task>, PriReference<Term>> each, int _termlinksPerTasklink) {
+    public void premises(NAR nar, BiPredicate<PriReference<Task>, PriReference<Term>> each, int _tasklinks, int _termlinksPerTasklink) {
 
         final Bag<Term, PriReference<Term>> termlinks = id.termlinks();
 
@@ -50,15 +50,14 @@ public class Activate extends PLink<Concept> implements Termed {
             activateTemplates(nar);
 
         int ntermlinks = termlinks.size();
-        if (ntermlinks == 0) {
-            //if (termlinks.size()==0)
-                return; //TODO this happens with raw products, find other cases too
-        }
+        if (ntermlinks == 0)
+            return; //TODO this happens with raw products, find other cases too
+
 
         int termlinksPerTasklink = Math.min(ntermlinks, _termlinksPerTasklink);
 
 
-        int[] ttl = { tasklinks.size() *  termlinksPerTasklink };
+        int[] ttl = { _tasklinks *  termlinksPerTasklink };
 
         Random rng = nar.random();
 

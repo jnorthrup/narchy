@@ -113,15 +113,16 @@ public class ConjClustering extends Causable {
 
         int gs = gen.size();
 
-        float forgetRate = 1f - ((float)gs)/bag.bag.capacity();
-        bag.bag.commit(t -> t.priMult(forgetRate));
 
         if (gs > 0) {
+            float forgetRate = 1f - ((float)gs)/bag.bag.capacity();
+            bag.bag.commit(t -> t.priMult(forgetRate));
 //            System.out.println(gen);
             in.input(gen);
+            return (int) Math.ceil(((float)gen.size())/bag.net.centroids.length);
         }
 
-        return Math.round(((float)gen.size())/bag.net.centroids.length);
+        return 0;
     }
 
 //    /**

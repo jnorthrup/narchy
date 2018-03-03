@@ -123,7 +123,7 @@ public class ExeCharts {
 
                 x.update(s, (x, y)-> {
                     float v = x.value();
-                    y.updateMomentum((float) (x.can.write().time.get()/1E6),
+                    y.updateMomentum(x.can.sumPrev()/1000000f,
                             0.1f, v < 0 ? -v : 0, 0,v > 0 ? +v : 0);
 
                 }, updater);

@@ -1,15 +1,13 @@
 package jcog.exe;
 
-import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
+import com.conversantmedia.util.concurrent.ConcurrentQueue;
 import jcog.TODO;
 import jcog.list.FasterList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayDeque;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Queue;
 import java.util.concurrent.AbstractExecutorService;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -21,17 +19,18 @@ import java.util.concurrent.TimeUnit;
  */
 public abstract class BusyPool extends AbstractExecutorService {
 
-    final private BlockingQueue q;
+    final private ConcurrentQueue  q;
     public List<Thread> workers = new FasterList<>();
-    final WorkLoop anonymous;
+//    final WorkLoop anonymous;
     static final Logger logger = LoggerFactory.getLogger(BusyPool.class);
 
-    public BusyPool(int threads, BlockingQueue qq) {
-
-        anonymous = newWorkLoop(this.q = qq); //shared by callees when overflow occurrs
+    /** for safety, q should be a BlockingQueue implementation but if not, ordinary Queue can be used */
+    public BusyPool(int threads, ConcurrentQueue<Runnable> q) {
+        this.q = q;
+//        anonymous = newWorkLoop(q);
 
         for (int i = 0; i < threads; i++) {
-            Thread newthread = new Thread(newWorkLoop(qq));
+            Thread newthread = new Thread(newWorkLoop(q));
 
             //ProxyProduce proxyProduce = new ProxyProduce(newthread,recycleRunable);
             //Thread proxyThread =(Thread)proxyProduce.bind();
@@ -43,7 +42,7 @@ public abstract class BusyPool extends AbstractExecutorService {
 
     }
 
-    abstract protected WorkLoop newWorkLoop(Queue<Runnable> q);
+    abstract protected WorkLoop newWorkLoop(ConcurrentQueue<Runnable> q);
 
     @Override
     public void shutdown() {
@@ -64,10 +63,18 @@ public abstract class BusyPool extends AbstractExecutorService {
 
     @Override
     public List<Runnable> shutdownNow() {
-        workers.stream().forEach(Thread::interrupt);
-        List<Runnable> interrupted = new FasterList();
-        interrupted.addAll(q);
-        return interrupted;
+        synchronized (this) {
+            workers.stream().forEach(Thread::interrupt);
+            List<Runnable> interrupted = new FasterList();
+
+            Object x = null;
+            while ((x = q.poll())!=null) {
+                Object xx = x;
+                interrupted.add(()->{ execute((Runnable)xx); }); //TODO see if xx is sometimes not a Runnable and needs run(x)
+            }
+
+            return interrupted;
+        }
     }
 
     @Override
@@ -93,18 +100,32 @@ public abstract class BusyPool extends AbstractExecutorService {
 
 
     public void queue(Object x) {
-        while (!q.offer(x)) {
-            //logger.error("lag"); //TODO statistics
-            anonymous.pollNext();
+        if (!q.offer(x)) {
+            if (q instanceof BlockingQueue) {
+                logger.warn("{} lagged queuing {}", Thread.currentThread(), x); //TODO statistics
+                try {
+                    ((BlockingQueue) q).put(x);
+                } catch (InterruptedException e) {
+                    logger.error("interrupted {}", e);
+                }
+            } else {
+                logger.error("{} queue overflow {}", Thread.currentThread(), x);
+                //drop
+            }
         }
+
+//        while (!q.offer(x)) {
+//            logger.error("lag"); //TODO statistics
+//            anonymous.pollNext();
+//        }
     }
 
     public abstract static class WorkLoop implements Runnable {
 
-        final Queue q;
-        final Queue localQ = new ArrayDeque();
+        final ConcurrentQueue q;
+//        final Queue localQ = new ArrayDeque();
 
-        protected WorkLoop(Queue q) {
+        protected WorkLoop(ConcurrentQueue q) {
             this.q = q;
         }
 
@@ -132,15 +153,13 @@ public abstract class BusyPool extends AbstractExecutorService {
 
 
 
-        protected void drain() {
-            int drained = ((DisruptorBlockingQueue) q).drainTo(localQ);
-            if (drained > 0) {
-                localQ.removeIf(x -> {
-                    runSafe(x);
-                    return true;
-                });
-            }
-        }
+//        protected void drain() {
+//            int drained = ((DisruptorBlockingQueue) q).drainTo(localQ);
+//            if (drained > 0) {
+//                localQ.forEach(this::runSafe);
+//                localQ.clear();
+//            }
+//        }
 
 
     }

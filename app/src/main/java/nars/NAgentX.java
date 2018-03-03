@@ -82,7 +82,8 @@ abstract public class NAgentX extends NAgent {
                         $.the("joy"),
                 new FloatPolarNormalized(new FloatFirstOrderDifference(nar::time,
                         () -> reward)).relax(0.001f));
-        alwaysWant(joy, nar.confDefault(GOAL)*0.75f);
+        //dont be too strong because we want to be happy primarily, not to seek increasing joy at some cost of stable happiness (ie. it will allow sadness to get future joy)
+        alwaysWant(joy, nar.confDefault(GOAL)*0.25f);
 
         if (Param.DEBUG) {
 //            nar.onTask(x -> {

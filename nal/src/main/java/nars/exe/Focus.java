@@ -12,7 +12,7 @@ import nars.control.MetaGoal;
 import nars.control.Traffic;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.eclipse.collections.api.block.procedure.primitive.LongLongProcedure;
+import org.eclipse.collections.api.block.procedure.primitive.LongIntProcedure;
 
 import java.util.Random;
 
@@ -104,7 +104,7 @@ public class Focus extends AtomicRoulette<Causable> {
 
     final static int WINDOW = 8;
     private final long[] committed = new long[2];
-    private final LongLongProcedure commiter = (timeNS, iter) -> {
+    private final LongIntProcedure commiter = (timeNS, iter) -> {
         committed[0] = timeNS;
         committed[1] = iter;
     };

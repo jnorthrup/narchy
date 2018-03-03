@@ -40,7 +40,7 @@ public class DecideEpsilonGreedy implements Deciding {
             for (int i = 0; i < actions; i++)
                 motivationOrder[i] = i;
         }
-        
+
         if (epsilonRandom > 0 && random.nextFloat() < epsilonRandom) {
             return random.nextInt(actions);
         }

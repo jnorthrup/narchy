@@ -1,16 +1,16 @@
 package nars.time;
 
-import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
+import com.conversantmedia.util.concurrent.ConcurrentQueue;
+import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import com.netflix.servo.util.Clock;
+import jcog.list.FasterList;
 import nars.NAR;
 import nars.task.NativeTask.SchedTask;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
@@ -38,9 +38,12 @@ public abstract class Time implements Clock, Serializable {
 
 
     final AtomicLong scheduledNext = new AtomicLong(Long.MIN_VALUE);
-    final static int MAX_QUEUED = 4 * 1024;
-    final BlockingQueue<SchedTask> pendingSched =
-            new DisruptorBlockingQueue<>(MAX_QUEUED);
+
+    final static int MAX_PRE_SCHED = 4 * 1024;
+    final ConcurrentQueue<SchedTask> preSched =
+            //new DisruptorBlockingQueue<>(MAX_QUEUED);
+            new MultithreadConcurrentQueue<>(MAX_PRE_SCHED);
+
     //new ArrayBlockingQueue<>(MAX_QUEUED);
     //final ConcurrentQueue<SchedTask> pendingSched =
     //new MultithreadConcurrentQueue(MAX_QUEUED);
@@ -54,7 +57,7 @@ public abstract class Time implements Clock, Serializable {
     public void clear(NAR n) {
         synchronized(scheduled) {
             synch(n);
-            pendingSched.clear();
+            //pendingSched.clear();
             scheduled.clear();
         }
     }
@@ -98,16 +101,20 @@ public abstract class Time implements Clock, Serializable {
         at(new SchedTask(whenOrAfter, then));
     }
 
-    private final void at(SchedTask event) {
-        //pendingSched.add(event);
-        try {
-            pendingSched.put(event);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
+    private void at(SchedTask event) {
+
+        //try {
+            if (!preSched.offer(event)) {
+                throw new RuntimeException(this + " overflow"); //TODO handle better
+            }
+//        } catch (InterruptedException e) {
+//            throw new RuntimeException(e);
+//        }
 
         long w = event.when;
-        scheduledNext.updateAndGet((z) -> Math.min(z, w));
+        if (scheduledNext.get() > w) {
+            scheduledNext.updateAndGet(z -> Math.min(z, w));
+        }
     }
 
 
@@ -120,32 +127,47 @@ public abstract class Time implements Clock, Serializable {
 //            return null; //too soon for the next one
 
 
+        long now = now();
         long nextScheduled = scheduledNext.get();
-        if ((now() < nextScheduled) || !(scheduledNext.compareAndSet(nextScheduled, Long.MAX_VALUE)))
+        if ((now < nextScheduled) || !(scheduledNext.compareAndSet(nextScheduled, Long.MAX_VALUE)))
             return null;
 
 
         try  {
 
-            pendingSched.drainTo(scheduled);
+            //preSched.drainTo(scheduled);
+
+            List<SchedTask> pending =
+                    //new LinkedList();
+                    new FasterList(0);
+
+            int s = 0;
+            SchedTask p;
+            while ((p = preSched.poll())!=null && s++ <= MAX_PRE_SCHED) { //limit by MAX in case the preSched continues filling while this is being processed
+                if (p.when <= now)
+                    pending.add(p); //bypass the queue
+                else
+                    scheduled.offer(p);
+            }
 
 
-            List<SchedTask> pending = new LinkedList();
 
             SchedTask next;
-            while (((next = scheduled.peek()) != null) && (next.when <= now())) {
+            while (((next = scheduled.peek()) != null) && (next.when <= now)) {
                 SchedTask actualNext = scheduled.poll();
                 assert (next == actualNext);
                 pending.add(next);
             }
 
-            long nextNextWhen = next!=null ? next.when : Long.MAX_VALUE;
+            long nextNextWhen = next!=null ? next.when : Long.MAX_VALUE; //if emptied the priority queue, delay indefintely. otherwise delay until the time of the next item not dequeued now
             scheduledNext.updateAndGet(z -> Math.min(z, nextNextWhen ));
-            return pending;
+
+            return pending.isEmpty() ? null : pending;
 
         } catch (Throwable t) {
+            //logger.error() //TODO
             t.printStackTrace();
-            scheduledNext.set(now()); //try again immediately
+            scheduledNext.set(now); //try again immediately
             return null;
         }
 
@@ -161,7 +183,9 @@ public abstract class Time implements Clock, Serializable {
      * flushes the pending work queued for the current time
      */
     public void synch(NAR n) {
-        n.input(exeScheduled());
+        List<SchedTask> l = exeScheduled();
+        if (l!=null)
+            n.input(l);
     }
 
     public long[] nextInputStamp() {

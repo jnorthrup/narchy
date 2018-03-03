@@ -28,7 +28,8 @@ public class BoolTest {
             assertEquals(Null, o.the(Null, Null));
         }
 
-        assertEquals("(x-->†)", INH.the(x, True).toString());
+        assertEquals("(x-->†)", INH.the(x, True).toString()); //??
+        assertEquals(Null, INH.the(True, x));
         assertEquals("((--,x)-->†)", INH.the(x.neg(), True).toString());
     }
 

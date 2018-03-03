@@ -46,17 +46,18 @@ public class Deriver extends Causable {
 
 
     /**
+     * how many premises to keep per concept; should be <= Hypothetical count
+     */
+    @Range(min=1, max=16)
+    public int premisesPerConcept = 3;
+
+    /**
      * controls the rate at which tasklinks 'spread' to interact with termlinks
      */
     @Range(min=1, max=16)
     public int termLinksPerTaskLink = 3;
 
 
-    /**
-     * how many premises to keep per concept; should be <= Hypothetical count
-     */
-    @Range(min=1, max=16)
-    public int premisesPerConcept = 5;
 
     @Range(min=1, max=1024)
     public int burstMax = 512;
@@ -195,8 +196,11 @@ public class Deriver extends Causable {
         Set<Premise> premiseBurst = d.premiseBurst;
 
         int totalPremises = 0;
-        int totalPremisesRemain = iterations * conceptsPerIteration.intValue();
-        final int[] fired = {0};
+
+        int iterMult = premisesPerConcept * conceptsPerIteration.intValue();
+        int totalPremisesRemain = iterations * iterMult;
+
+        int fired = 0;
         while (totalPremisesRemain > 0) {
 
             int burstSize = Math.min(burstMax, totalPremisesRemain);
@@ -208,7 +212,7 @@ public class Deriver extends Causable {
 
             //SELECT
 
-            selectPremises(burstSize, (tasklink, termlink)->{
+            fired += selectPremises(burstSize, (tasklink, termlink)->{
                 Task t = tasklink.get();
                 if (t != null) {
                     Premise premise = new Premise(t, termlink.get());
@@ -267,7 +271,9 @@ public class Deriver extends Causable {
         }
 
 
-        return fired[0];
+        if (fired == 0) return 0;
+        else
+            return (int) Math.ceil(fired/((float)iterMult)); //adjust for the workload to correspond with the demand units
     }
 
     protected void input(int premises, Collection<Task> x) {
@@ -287,9 +293,11 @@ public class Deriver extends Causable {
         nar.input(x);
     }
 
-    private void selectPremises(int premises, BiPredicate<PriReference<Task>, PriReference<Term>> each) {
+    private int selectPremises(final int premisesMax, BiPredicate<PriReference<Task>, PriReference<Term>> each) {
 
-        int premisesRemain[] = new int[]{premises};
+        int premisesRemain[] = new int[]{premisesMax};
+
+        int tasklinks = (int) Math.ceil(premisesMax / ((float)termLinksPerTaskLink));
 
         this.concepts.accept(a -> {
 
@@ -298,11 +306,15 @@ public class Deriver extends Causable {
             a.premises(nar, (tasklink, termlink) ->
 
                     //can return false to stop the current concept but not the entire chain
-                    (--perConceptRemain[0] > 0) && each.test(tasklink, termlink) && (--premisesRemain[0]>0), termLinksPerTaskLink);
+                    (--perConceptRemain[0] > 0) && each.test(tasklink, termlink) && (--premisesRemain[0]>0),
+                    tasklinks,
+                    termLinksPerTaskLink);
 
             return (--premisesRemain[0]) > 0;
 
         });
+
+        return premisesMax - premisesRemain[0];
 
     }
 

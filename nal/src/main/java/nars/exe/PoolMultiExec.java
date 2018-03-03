@@ -1,5 +1,7 @@
 package nars.exe;
 
+import com.conversantmedia.util.concurrent.ConcurrentQueue;
+import com.conversantmedia.util.concurrent.MultithreadConcurrentQueue;
 import jcog.Util;
 import jcog.exe.BusyPool;
 import jcog.math.MutableInteger;
@@ -14,7 +16,6 @@ import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Queue;
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.LongPredicate;
@@ -24,8 +25,6 @@ import java.util.stream.Stream;
  * uses a common forkjoin pool for execution
  */
 public class PoolMultiExec extends AbstractExec {
-
-    static final int IDLE_PERIOD_MS = 50;
 
     private final int qSize;
     BusyPool pool;
@@ -71,7 +70,7 @@ public class PoolMultiExec extends AbstractExec {
     @Override
     public void execute(Object t) {
 
-        if (t instanceof Task || isWorker(Thread.currentThread())) {
+        if (t instanceof Task || isWorker()) {
             executeInline(t);
         } else {
             exe.accept(t);
@@ -93,7 +92,7 @@ public class PoolMultiExec extends AbstractExec {
      * the input procedure according to the current thread
      */
     private Consumer add() {
-        return isWorker(Thread.currentThread()) ? immediate : deferred;
+        return isWorker() ? immediate : deferred;
     }
 
     @Override
@@ -106,6 +105,10 @@ public class PoolMultiExec extends AbstractExec {
         input.forEachRemaining(add());
     }
 
+    private boolean isWorker() {
+        return isWorker(Thread.currentThread());
+    }
+
     private boolean isWorker(Thread t) {
         return isActiveThreadId.test(t.getId());
     }
@@ -115,15 +118,17 @@ public class PoolMultiExec extends AbstractExec {
      * to be called in initWorkers() impl for each thread constructed
      */
     private void register(Thread t) {
-        activeThreads.add(t);
-        activeThreadIds = LongSets.mutable.ofAll(activeThreadIds).with(t.getId()).toImmutable();
-        long max = activeThreadIds.max();
-        long min = activeThreadIds.min();
-        if (max - min == activeThreadIds.size() - 1) {
-            //contiguous id's, use fast id tester
-            isActiveThreadId = (x) -> x >= min && x <= max;
-        } else {
-            isActiveThreadId = activeThreadIds::contains;
+        synchronized (this) {
+            activeThreads.add(t);
+            activeThreadIds = LongSets.mutable.ofAll(activeThreadIds).with(t.getId()).toImmutable();
+            long max = activeThreadIds.max();
+            long min = activeThreadIds.min();
+            if (max - min == activeThreadIds.size() - 1) {
+                //contiguous id's, use fast id tester
+                isActiveThreadId = (x) -> x >= min && x <= max;
+            } else {
+                isActiveThreadId = activeThreadIds::contains;
+            }
         }
     }
 
@@ -147,11 +152,11 @@ public class PoolMultiExec extends AbstractExec {
             super.start(nar);
 
             this.pool = new BusyPool(threads.intValue(),
-                    Util.blockingQueue(qSize)
-                    //new ArrayBlockingQueue(qSize)
+                    new MultithreadConcurrentQueue(qSize) //(disruptor) fastest but unsafe (overflow trainwrecks)
+                    //Util.blockingQueue(qSize) //(disruptor) fast, and safe (overflows gracefully, with warning too)
             ) {
                 @Override
-                protected WorkLoop newWorkLoop(Queue<Runnable> q) {
+                protected WorkLoop newWorkLoop(ConcurrentQueue<Runnable> q) {
                     return new MyWorkLoop(q, nar);
                 }
             };
@@ -188,7 +193,7 @@ public class PoolMultiExec extends AbstractExec {
         final Random rng;
         private final NAR nar;
 
-        public MyWorkLoop(Queue<Runnable> q, NAR nar) {
+        public MyWorkLoop(ConcurrentQueue q, NAR nar) {
             super(q);
             this.nar = nar;
 
