@@ -38,7 +38,6 @@
 package jcog.data;
 
 import jcog.list.FasterList;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -103,8 +102,9 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 	}
 	
 	public ArrayHashSet(int capacity) {
-		this.set  = //new HashSet<>(capacity);
-				new UnifiedSet<>(capacity);
+		this.set  =
+				new HashSet<>(capacity, 0.9f);
+				//new UnifiedSet<>(capacity);
 		this.list =
 				//EMPTY_LIST; //new ArrayList<E>(capacity);
 				new FasterList<>(capacity);

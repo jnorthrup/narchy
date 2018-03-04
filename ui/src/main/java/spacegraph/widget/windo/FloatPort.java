@@ -45,7 +45,7 @@ public class FloatPort extends /*Source*/Port {
     }
 
     @Override
-    public void on(@Nullable In i) {
+    public Port on(@Nullable In i) {
         throw new UnsupportedOperationException();
     }
 

@@ -29,6 +29,7 @@ public class Port extends Widget implements Wiring.Wireable {
 
     private transient NodeGraph.Node<Surface, Wire> node;
 
+
     public Port() {
         super();
     }
@@ -44,13 +45,29 @@ public class Port extends Widget implements Wiring.Wireable {
         on(i);
     }
 
-    public void on(Consumer i) {
-        on((w,x)->i.accept(x));
+
+    public Port on(Consumer i) {
+        return on((w,x)->i.accept(x));
     }
 
     /** set the input handler */
-    public void on(@Nullable In i) {
-        this.in = i;
+    public Port on(@Nullable In i) {
+        this.in = i; return this;
+    }
+
+    public Port update(@Nullable Runnable update) {
+        this.updater = (i,p)->update.run();
+        return this;
+    }
+
+    public Port update(@Nullable Consumer<Port> update) {
+        this.updater = (i,p)->update.accept(p);
+        return this;
+    }
+
+    public Port update(@Nullable IntObjectProcedure<Port> update) {
+        this.updater = update;
+        return this;
     }
 
 //    public Wire link(Port target) {
@@ -152,8 +169,10 @@ public class Port extends Widget implements Wiring.Wireable {
 
     @Override
     public boolean onWireIn(@Nullable Wiring w, boolean preOrPost) {
-        if (preOrPost && !acceptWiring(w))
+        if (preOrPost && !acceptWiring(w)) {
+            this.wiringIn = null;
             return false;
+        }
         this.wiringIn = preOrPost ? w : null;
         return true;
     }
