@@ -223,27 +223,30 @@ public final class Conclude {
 
         @Override
         public boolean test(Derivation p) {
-            Term x = p.derivedTerm.get();
+            final Term x = p.derivedTerm.get();
 
-            Term y;
 
             @Nullable Pair<Term, Map<Term, Term>> xy = DepIndepVarIntroduction.the.apply(x, p.random);
             if (xy == null)
                 return false;
-            y = xy.getOne();
 
-            if (!(y.op().conceptualizable) || (y.equals(x) /* keep only if it differs */)) {
+            final Term y = xy.getOne();
+
+            if (!y.op().conceptualizable ||
+                y.equals(x) /* keep only if it differs */ ||
+                !y.hasAny(Op.ConstantAtomics)  //entirely variablized
+            )
                 return false;
-            } else {
-                if (!y.hasAny(Op.ConstantAtomics)) {
-                    return false; //entirely variablized
-                } else {
-                    //Map<Term, Term> changes = xy.getTwo();
-                    //p.xy.putAll(changes);
-                    p.derivedTerm.set(y);
-                    return true;
-                }
-            }
+
+
+            //Map<Term, Term> changes = xy.getTwo();
+            //p.xy.putAll(changes);
+            p.derivedTerm.set(y);
+
+//            //reduce evidence by a factor proportional to the number of variables introduced
+//            p.concEviFactor *= (((float)(1+y.complexity()))/(1+x.complexity()));
+
+            return true;
         }
     }
 }

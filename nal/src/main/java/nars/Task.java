@@ -871,9 +871,10 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
     }
 
     default float conf(long start, long end, long dur) {
-        float cw = evi(start, end, dur);
-        assert (cw == cw);
-        return cw > 0 ? w2cSafe(cw) : Float.NaN;
+        return w2cSafe(evi(start, end, dur));
+//        float cw = evi(start, end, dur);
+//        assert (cw == cw);
+//        return cw > 0 ? w2cSafe(cw) : Float.NaN;
     }
 
     default float conf(long when, long dur) {

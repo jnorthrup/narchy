@@ -42,7 +42,7 @@ public class Deriver extends Causable {
 
 
 
-    public final IntRange conceptsPerIteration = new IntRange(3, 1, 1024);
+    public final IntRange conceptsPerIteration = new IntRange(2, 1, 1024);
 
 
     /**
@@ -296,22 +296,26 @@ public class Deriver extends Causable {
     private int selectPremises(final int premisesMax, BiPredicate<PriReference<Task>, PriReference<Term>> each) {
 
         int premisesRemain[] = new int[]{premisesMax};
+        int perConceptRemain[] = new int[1];
 
         int tasklinks = (int) Math.ceil(premisesMax / ((float)termLinksPerTaskLink));
 
+        //return false to stop the current concept but not the entire chain
+        BiPredicate<PriReference<Task>, PriReference<Term>> kontinue = (tasklink, termlink) ->
+                (perConceptRemain[0]-- > 0) && each.test(tasklink, termlink) && (--premisesRemain[0] > 0);
+
+        //for safety in case nothing is generated, this will limit the max # of concepts tried
+        int[] conceptsRemain = new int[] { 2 * (int) Math.ceil(premisesMax / ((float)(termLinksPerTaskLink*termLinksPerTaskLink))) };
+
         this.concepts.accept(a -> {
 
-            int[] perConceptRemain = new int[] {premisesPerConcept};
+            perConceptRemain[0] = premisesPerConcept;
 
-            a.premises(nar, (tasklink, termlink) ->
-
-                    //can return false to stop the current concept but not the entire chain
-                    (--perConceptRemain[0] > 0) && each.test(tasklink, termlink) && (--premisesRemain[0]>0),
+            a.premises(nar, kontinue,
                     tasklinks,
                     termLinksPerTaskLink);
 
-            return (--premisesRemain[0]) > 0;
-
+            return premisesRemain[0] > 0 && conceptsRemain[0]-- > 0;
         });
 
         return premisesMax - premisesRemain[0];

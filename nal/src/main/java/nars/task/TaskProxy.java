@@ -128,6 +128,31 @@ public class TaskProxy implements Task {
     }
 
     @Override
+    public float freq() {
+        return task.freq();
+    }
+
+    @Override
+    public float conf() {
+        return task.conf();
+    }
+
+    @Override
+    public float evi() {
+        return task.evi();
+    }
+
+    @Override
+    public float evi(long when, long dur) {
+        return task.evi(when, dur);
+    }
+
+    @Override
+    public float eviInteg() {
+        return task.eviInteg();
+    }
+
+    @Override
     public byte punc() {
         return task.punc();
     }

@@ -38,6 +38,7 @@
 package jcog.data;
 
 import jcog.list.FasterList;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -92,18 +93,21 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 		}
 	};
 
-    private HashSet<X> set;
-	public List<X> list;
+    private final Set<X> set;
+	public final List<X> list;
 
-	final static List EMPTY_LIST = Collections.emptyList();
+//	final static List EMPTY_LIST = Collections.emptyList();
 	
 	public ArrayHashSet() {
 		this(4);
 	}
 	
 	public ArrayHashSet(int capacity) {
-		this.set  = new HashSet<X>(capacity);
-		this.list = EMPTY_LIST; //new ArrayList<E>(capacity);
+		this.set  = //new HashSet<>(capacity);
+				new UnifiedSet<>(capacity);
+		this.list =
+				//EMPTY_LIST; //new ArrayList<E>(capacity);
+				new FasterList<>(capacity);
 	}
 	
 	public ArrayHashSet(Collection<X> collection) {
@@ -148,8 +152,6 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 	@Override
 	public boolean add(X element) {
 		if (set.add(element)) {
-			if (list == EMPTY_LIST)
-				list = new FasterList<>(1);
 			list.add(element);
 			return true;
 		}
@@ -190,24 +192,25 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 		boolean removed = set.remove(o);
 		if (removed) {
 			list.remove(o);
-			if (list.isEmpty())
-				list = EMPTY_LIST;
+//			if (list.isEmpty())
+//				list = EMPTY_LIST;
 		}
 		return removed;
 	}
 	
 	@Override
 	public void clear() {
-		if (list != EMPTY_LIST) {
-			list = EMPTY_LIST;
+//		if (list != EMPTY_LIST) {
+//			list = EMPTY_LIST;
+			list.clear();
 			set.clear();
-		}
+//		}
 	}
 
-	@Override
-	public boolean isEmpty() {
-		return list== EMPTY_LIST;
-	}
+//	@Override
+//	public boolean isEmpty() {
+//		return list== EMPTY_LIST;
+//	}
 
 	@Override
 	public void shuffle(Random random) {
@@ -280,8 +283,8 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
 			arrayListIterator.remove();
 
-			if (list.isEmpty())
-				list = EMPTY_LIST;
+//			if (list.isEmpty())
+//				list = EMPTY_LIST;
 		}
 
 		@Override

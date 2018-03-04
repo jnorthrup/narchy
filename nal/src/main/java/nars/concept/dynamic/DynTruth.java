@@ -22,7 +22,6 @@ import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 import static nars.Op.*;
 import static nars.time.Tense.XTERNAL;
@@ -203,9 +202,11 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         if (r == null)
             return null;
 
+        //ignore the r.getTwo() negation flag since the truth is already precisely calculated according to the dynamic model
+
         NALTask dyn = new DynTruthTask(
                 r.getOne(), beliefOrGoal,
-                tr.negIf(r.getTwo()), nar, start, end,
+                tr, nar, start, end,
                 ss.getOne());
         //if (ss.getTwo() > 0) dyn.setCyclic(true);
 

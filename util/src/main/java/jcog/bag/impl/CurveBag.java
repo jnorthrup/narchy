@@ -9,7 +9,6 @@ import jcog.pri.Priority;
 import jcog.pri.op.PriMerge;
 import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.Random;
@@ -19,15 +18,15 @@ import java.util.Random;
  */
 public class CurveBag<X extends Priority> extends PriArrayBag<X> {
 
-    public static final int SAMPLE_WINDOW_SIZE = 8;
+    public static final int SAMPLE_WINDOW_SIZE = 4;
 
-    public CurveBag(@NotNull PriMerge mergeFunction, @NotNull Map<X, X> map, int cap) {
+    public CurveBag(PriMerge mergeFunction, Map<X, X> map, int cap) {
         this(mergeFunction, map);
         setCapacity(cap);
     }
 
 
-    public CurveBag(@NotNull PriMerge mergeFunction, @NotNull Map<X, X> map) {
+    public CurveBag(PriMerge mergeFunction, Map<X, X> map) {
         super(mergeFunction, map);
     }
 

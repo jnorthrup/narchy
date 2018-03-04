@@ -3,6 +3,7 @@ package spacegraph.widget.windo;
 import com.jogamp.opengl.GL2;
 import jcog.data.graph.NodeGraph;
 import jcog.tree.rtree.rect.RectFloat2D;
+import org.eclipse.collections.api.block.procedure.primitive.IntObjectProcedure;
 import spacegraph.Surface;
 import spacegraph.SurfaceBase;
 import spacegraph.input.Finger;
@@ -23,7 +24,8 @@ public class Port extends Widget implements Wiring.Wireable {
     private boolean enabled = true;
 
     /** input handler */
-    private InPort in = null;
+    private In in = null;
+    private IntObjectProcedure<Port> updater = null;
 
     private transient NodeGraph.Node<Surface, Wire> node;
 
@@ -31,7 +33,7 @@ public class Port extends Widget implements Wiring.Wireable {
         super();
     }
 
-    public Port(InPort i) {
+    public Port(In i) {
         this();
         on(i);
     }
@@ -47,7 +49,7 @@ public class Port extends Widget implements Wiring.Wireable {
     }
 
     /** set the input handler */
-    public void on(@Nullable InPort i) {
+    public void on(@Nullable In i) {
         this.in = i;
     }
 
@@ -63,7 +65,7 @@ public class Port extends Widget implements Wiring.Wireable {
     }
 
     @FunctionalInterface
-    public interface InPort<T> {
+    public interface In<T> {
 
         /** TODO more informative backpressure-determining state
          *  TODO pluggable receive procedure:
@@ -171,6 +173,13 @@ public class Port extends Widget implements Wiring.Wireable {
     }
 
 
+    @Override
+    public void prePaint(int dtMS) {
+        if (updater!=null)
+            updater.value(0, this);
+
+        super.prePaint(dtMS);
+    }
 
     public void out(Object x) {
         out(this, x);
@@ -181,6 +190,8 @@ public class Port extends Widget implements Wiring.Wireable {
         synchronized(this) {
             super.start(parent);
             this.node = parent(PhyWall.class).links.addNode(this);
+            if (updater!=null)
+                updater.value(0, this);
         }
     }
 

@@ -46,6 +46,9 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
     private static final AtomicReferenceFieldUpdater<HijackBag, AtomicReferenceArray> mapUpdater =
             AtomicReferenceFieldUpdater.newUpdater(HijackBag.class, AtomicReferenceArray.class, "map");
 
+    private static final SpinMutex mutex = new Treadmill2();
+    private static final AtomicInteger serial = new AtomicInteger();
+
     /** internal random number generator, used for deciding hijacks but not sampling. */
     final Random rng;
 
@@ -61,8 +64,6 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
      */
     public volatile AtomicReferenceArray<V> map;
 
-    private static final SpinMutex mutex = new Treadmill2();
-    private static final AtomicInteger serial = new AtomicInteger();
 
 
 
@@ -563,7 +564,10 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
 
             boolean direction = random.nextBoolean();
 
-            int windowCap = Math.min(s, (1 + reprobes) * 2); //ESTIMATE HUERISTIC
+            int windowCap = Math.min(s,
+                    //(1 + reprobes) * 2 //ESTIMATE HUERISTIC
+                    (1 + reprobes) //ESTIMATE HUERISTIC
+            );
             float[] wPri = new float[windowCap];
             Object[] wVal = new Object[windowCap];
 

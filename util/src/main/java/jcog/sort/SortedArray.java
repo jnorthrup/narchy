@@ -717,8 +717,8 @@ public abstract class SortedArray<E> extends AbstractCollection<E> {
         int size = this.size;
         if (size == 0) return null;
         E[] ll = list;
-//        return ll[Math.min(ll.length - 1, size - 1)];
-        return ll[size-1];
+        return ll[Math.min(ll.length - 1, size - 1)];
+//        return ll[size-1];
     }
 
     //	@Override

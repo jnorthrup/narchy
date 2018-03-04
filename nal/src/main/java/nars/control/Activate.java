@@ -33,8 +33,9 @@ public class Activate extends PLink<Concept> implements Termed {
     /*@NotNull*/
     public void premises(NAR nar, BiPredicate<PriReference<Task>, PriReference<Term>> each, int _tasklinks, int _termlinksPerTasklink) {
 
-        final Bag<Term, PriReference<Term>> termlinks = id.termlinks();
 
+        if (!isDeleted())
+            activateTemplates(nar);
 
         final Bag tasklinks = id.tasklinks();
 
@@ -44,24 +45,20 @@ public class Activate extends PLink<Concept> implements Termed {
         if (ntasklinks == 0)
             return;
 
+        final Bag<Term, PriReference<Term>> termlinks = id.termlinks();
         termlinks.commit(termlinks.forget(linkForgetting));
-
-        if (!isDeleted())
-            activateTemplates(nar);
-
         int ntermlinks = termlinks.size();
         if (ntermlinks == 0)
-            return; //TODO this happens with raw products, find other cases too
+            return; //TODO when can this happen
 
 
-        int termlinksPerTasklink = Math.min(ntermlinks, _termlinksPerTasklink);
 
 
-        int[] ttl = { _tasklinks *  termlinksPerTasklink };
+        int[] ttl = { _tasklinks *  _termlinksPerTasklink };
 
         Random rng = nar.random();
 
-        tasklinks.sample(rng, (Predicate<PriReference<Task>>) tasklink -> {
+        tasklinks.sample(rng, _tasklinks, (Predicate<PriReference<Task>>) tasklink -> {
 
 
             Task task = tasklink.get();
@@ -70,7 +67,7 @@ public class Activate extends PLink<Concept> implements Termed {
                 //if (priApplied > Pri.EPSILON)
                 Tasklinks.linkTaskTemplates(id, task, /*pri *  */ task.priElseZero(), nar);
 
-                termlinks.sample(rng, termlinksPerTasklink, (termlink) -> {
+                termlinks.sample(rng, _termlinksPerTasklink, (termlink) -> {
                     if (!each.test(tasklink, termlink)) {
                         ttl[0] = 0;
                         return false;

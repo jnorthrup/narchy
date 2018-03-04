@@ -253,13 +253,14 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 //                            //new LinkedHashMap() //maybe: edgeBagSharedMap
                             maxEdges
 //                            new HashMap()
-                    ) {
+                    );
+//                    ) {
 //                        @Nullable
 //                        @Override
 //                        public ConceptWidget.EdgeComponent key(ConceptWidget.EdgeComponent x) {
 //                            return x;
 //                        }
-                    };
+//                    };
         }
 
 
@@ -275,15 +276,16 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             });
 
             edges.commit(ee -> {
-                ConceptWidget src = ee.src;
+                ConceptWidget src = ee.src();
                 Map<Concept, ConceptWidget.ConceptEdge> eee = src.edges.write();
-                if (ee.tgt.active()) {
-                    eee.computeIfAbsent(ee.tgt.id, (t) ->
-                            new ConceptWidget.ConceptEdge(src, ee.tgt, 0)
+                ConceptWidget tgt = ee.tgt();
+                if (tgt.active()) {
+                    eee.computeIfAbsent(tgt.id, (t) ->
+                            new ConceptWidget.ConceptEdge(src, tgt, 0)
                     ).merge(ee);
                 } else {
                     ee.delete();
-                    eee.remove(ee.tgt.id);
+                    eee.remove(tgt.id);
                 }
             });
             float termlinkOpac = termlinkOpacity.floatValue();
@@ -370,7 +372,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                             int type;
                             type = ttt instanceof Task ? TASKLINK : TERMLINK;
 
-                            edges.putAsync(new ConceptWidget.EdgeComponent(link, src, tgt, type, pri * edgeBrightness.floatValue()));
+                            edges.putAsync(new ConceptWidget.EdgeComponent(src, tgt, type, pri * edgeBrightness.floatValue()));
                             //new PLinkUntilDeleted(ate, pri)
                             //new PLink(ate, pri)
 

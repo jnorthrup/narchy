@@ -19,7 +19,6 @@ import java.util.function.Function;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
-import static nars.truth.TruthFunctions.c2wSafe;
 
 
 public class NALTask extends Pri implements Task {
@@ -241,7 +240,7 @@ public class NALTask extends Pri implements Task {
 
     @Override
     public float evi() {
-        return c2wSafe(conf());
+        return truth.evi();
     }
 
 

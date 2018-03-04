@@ -1,12 +1,11 @@
 package nars.gui.graph;
 
-import jcog.Util;
 import jcog.pri.PLink;
 import jcog.pri.Pri;
-import jcog.pri.PriReference;
 import jcog.util.Flip;
 import nars.concept.Concept;
-import nars.term.Termed;
+import org.eclipse.collections.api.tuple.Twin;
+import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
 import spacegraph.SpaceGraph;
 import spacegraph.phys.Dynamic;
 import spacegraph.phys.shape.CollisionShape;
@@ -21,6 +20,8 @@ import java.util.Map;
 
 import static nars.gui.graph.DynamicConceptSpace.ConceptVis2.TASKLINK;
 import static nars.gui.graph.DynamicConceptSpace.ConceptVis2.TERMLINK;
+import static org.eclipse.collections.impl.tuple.Tuples.twin;
+import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 import static spacegraph.math.v3.v;
 
 
@@ -132,43 +133,28 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 
     }
 
-    static class EdgeComponent extends PLink<Termed> {
-        final ConceptWidget src, tgt;
-        final int type;
-        private final int hash;
+    static class EdgeComponent extends PLink<ObjectIntPair<Twin<ConceptWidget>>> {
 
-        EdgeComponent(PriReference<? extends Termed> link, ConceptWidget src, ConceptWidget tgt, int type, float pri) {
-            super(link.get(), link.priElseZero());
-            this.src = src;
-            this.tgt = tgt;
+        final int type;
+
+        EdgeComponent(ConceptWidget src, ConceptWidget tgt, int type, float pri) {
+            super(pair(twin(src, tgt), type), pri);
             this.type = type;
             this.pri = pri;
-            this.hash = Util.hashCombine(src.hash, tgt.hash, type);
         }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (hash != o.hashCode()) return false;
-            EdgeComponent that = (EdgeComponent) o;
-            return type == that.type &&
-                    src.equals(that.src) &&
-                    tgt.equals(that.tgt);
-        }
+        public ConceptWidget src() { return get().getOne().getOne(); }
+        public ConceptWidget tgt() { return get().getOne().getTwo(); }
 
         @Override
         public boolean isDeleted() {
-            if (!src.active() || !tgt.active()) {
+            if (!src().active() || !tgt().active()) {
                 delete();
                 return true;
             }
             return super.isDeleted();
         }
 
-        @Override
-        public int hashCode() {
-            return hash;
-        }
     }
 
 

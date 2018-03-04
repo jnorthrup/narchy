@@ -1,5 +1,6 @@
 package nars.derive;
 
+import jcog.data.ArrayHashSet;
 import jcog.pri.Pri;
 import jcog.version.Versioned;
 import nars.$;
@@ -157,7 +158,9 @@ public class Derivation extends ProtoDerivation {
     public long taskAt, beliefAt;
 
     /** temporary buffer for storing unique premises */
-    public Set<Premise> premiseBurst = new LinkedHashSet();
+    public Set<Premise> premiseBurst =
+            //new LinkedHashSet();
+            new ArrayHashSet<>();
 
 ////    public final TopNUniquePremises premises = new TopNUniquePremises();
 //

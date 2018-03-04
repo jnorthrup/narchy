@@ -11,6 +11,9 @@ import nars.control.MetaGoal;
 import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
+import nars.nal.nal3.NAL3Test;
+import nars.nal.nal5.NAL5Test;
+import nars.nal.nal6.NAL6Test;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
 
@@ -102,10 +105,10 @@ public class NARTestOptimize {
                         tests(n,
                                 NAL1Test.class,
                                 NAL1MultistepTest.class,
-                                NAL2Test.class
-                                //NAL3Test.class
-                                //NAL5Test.class,
-                                //NAL6Test.class
+                                NAL2Test.class,
+                                NAL3Test.class,
+                                NAL5Test.class,
+                                NAL6Test.class
 
                                 //NAL7Test.class,
                                 //NAL8Test.class
