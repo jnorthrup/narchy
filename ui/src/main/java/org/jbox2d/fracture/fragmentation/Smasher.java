@@ -1,7 +1,7 @@
 package org.jbox2d.fracture.fragmentation;
 
 import jcog.list.FasterList;
-import org.jbox2d.common.Vec2;
+import org.jbox2d.common.PlatformMathUtils;
 import org.jbox2d.fracture.Fracture;
 import org.jbox2d.fracture.Fragment;
 import org.jbox2d.fracture.Polygon;
@@ -319,7 +319,7 @@ public class Smasher {
                 Tuple2f p2Next = p2.cycleGet(firstV.index + 1);
                 Tuple2f p1Back = p1.cycleGet((firstV.p1 == p1 ? firstV.i1 : firstV.i2) + 1);
 
-                if (Arithmetic.siteDef(p1Back, firstV, p2Next) >= 0) {
+                if (PlatformMathUtils.siteDef(p1Back, firstV, p2Next) >= 0) {
                     break;
                 }
             }
@@ -422,13 +422,15 @@ public class Smasher {
 
         Tuple2f[] pp = new Tuple2f[factory.pCount];
         for (int i = 0; i < factory.pCount; ++i) {
-            pp[i] = new Vec2(factory.points[i]);
+            pp[i] = new v2(factory.points[i]);
         }
 
         for (int i = 0; i < focee.length; i++) {
-            Fragment f = new Fragment();
+
             int n = factory.vCount[i];
             int[] ppx = factory.voronoi[i];
+
+            Fragment f = new Fragment(n);
             for (int j = 0; j < n; ++j) {
                 f.add(pp[ppx[j]]);
             }
@@ -481,7 +483,7 @@ public class Smasher {
             if (v.next != null && !v.visited) {
                 Polygon p = new Polygon();
                 for (GraphVertex iterator = v; !iterator.visited; iterator = iterator.next) {
-                    if (Arithmetic.siteDef(iterator.next.value, iterator.value, iterator.prev.value) != 0) {
+                    if (PlatformMathUtils.siteDef(iterator.next.value, iterator.value, iterator.prev.value) != 0) {
                         p.add(iterator.value);
                     }
                     iterator.visited = true;

@@ -76,14 +76,15 @@ public class Fracture {
                 case POLYGON:
                     PolygonShape ps = (PolygonShape) s;
                     Tuple2f[] vertices = ps.vertex;
-                    p = new Polygon();
-                    for (int i = 0; i < ps.vertices; ++i) {
-                        p.add(vertices[ps.vertices - i - 1]);
+                    int n = ps.vertices;
+                    p = new Polygon(n);
+                    for (int i = 0; i < n; ++i) {
+                        p.add(vertices[n - i - 1]);
                     }
                     break;
                 case CIRCLE:
                     CircleShape cs = (CircleShape) s;
-                    p = new Polygon();
+                    p = new Polygon(CIRCLEVERTICES);
                     float radius = cs.radius;
 
                     double u = Math.PI * 2 / CIRCLEVERTICES;

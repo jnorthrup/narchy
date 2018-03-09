@@ -331,10 +331,13 @@ public class PhyWall extends Wall implements Animated {
 
 
     public PhyWindow addWindow(Surface content, RectFloat2D initialBounds) {
-        PhyWindow s = new PhyWindow(initialBounds);
-        //s.children(new Scale(content, 1f - Windo.resizeBorder));
-        add(s);
+        return addWindow(content, initialBounds, true);
+    }
 
+    public PhyWindow addWindow(Surface content, RectFloat2D initialBounds, boolean collides) {
+        PhyWindow s = new PhyWindow(initialBounds, collides);
+
+        add(s);
 
         s.content(content);
 
@@ -440,19 +443,38 @@ public class PhyWall extends Wall implements Animated {
 
 //        public final SimpleSpatial<String> spatial;
 
-        PhyWindow(RectFloat2D initialBounds) {
+        PhyWindow(RectFloat2D initialBounds, boolean collides) {
             super();
             pos(initialBounds);
 
-            this.shape = PolygonShape.box(initialBounds.w / 2, initialBounds.h / 2);
+
+
+            this.shape =
+                    //PolygonShape.box(0.1f, 0.1f);
+                    PolygonShape.box(initialBounds.w / 2, initialBounds.h / 2);
 
             FixtureDef fd = new FixtureDef(shape, 1f, 0.75f);
+            if (!collides) {
+                fd.filter.maskBits = 0; //no collision
+            }
+
             fd.setRestitution(0.1f);
 
 
             W.addBody(this.body = new WallBody(initialBounds.cx(), initialBounds.cy()), fd);
             body.setLinearDamping(linearDampening);
 
+            if (!collides) {
+                body.setGravityScale(0f);
+            }
+        }
+
+        public void setCollidable(boolean c) {
+            W.invoke(()->{
+                body.fixtures.filter.maskBits = (c ? 0xffff : 0);
+                body.setGravityScale(c ? 1f : 0f);
+                body.setAwake(true);
+            });
         }
 
         @Override
@@ -460,6 +482,7 @@ public class PhyWall extends Wall implements Animated {
             if (d == DragEdit.MOVE)
                 return false; //this will be handled by box2d mousejoint
 
+            //TODO handle other dragging interaction with box2d mousejoint
             return super.fingerable(d);
         }
 
@@ -753,7 +776,10 @@ public class PhyWall extends Wall implements Animated {
                         updateFixtures((f) -> {
                             //HACK assumes the first is the only one
                             //if (f.m_shape == shape) {
-                            f.setShape(shape.setAsBox(r.w / 2, r.h / 2));
+                            f.setShape(
+                                shape.setAsBox(r.w / 2, r.h / 2)
+                                //shape.lerpAsBox(r.w / 2, r.h / 2, 0.1f)
+                            );
                             //}
 
 
@@ -811,14 +837,28 @@ public class PhyWall extends Wall implements Animated {
 
     void doubleClick(v2 pos) {
         addWindow(
-                new WizardFrame(new ProtoWidget()),
-                RectFloat2D.XYWH(pos.x, pos.y, 1, 1));
+                new WizardFrame(new ProtoWidget()) {
+                    @Override
+                    protected void become(Surface next) {
+                        super.become(next);
+
+                        PhyWindow pp = parent(PhyWindow.class);
+                        if (next instanceof ProtoWidget) {
+                            pp.setCollidable(false);
+                        } else {
+                            pp.setCollidable(true);
+                        }
+
+                    }
+                },
+                RectFloat2D.XYWH(pos.x, pos.y, 1, 1), false);
     }
 
     final static int MOUSE_JOINT_BUTTON = 0;
     FingerDragging jointDrag = new FingerDragging(MOUSE_JOINT_BUTTON) {
 
-        final Body2D ground = W.addBody(new BodyDef(BodyType.STATIC), new FixtureDef(PolygonShape.box(0, 0), 0, 0));
+        final Body2D ground = W.addBody(new BodyDef(BodyType.STATIC),
+                new FixtureDef(PolygonShape.box(0, 0), 0, 0).noCollide());
 
         @Override
         public boolean start(Finger f) {

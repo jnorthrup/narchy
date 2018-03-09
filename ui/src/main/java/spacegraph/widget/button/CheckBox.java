@@ -1,10 +1,7 @@
 package spacegraph.widget.button;
 
-import com.jogamp.opengl.GL2;
-import jcog.tree.rtree.rect.RectFloat2D;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
-import spacegraph.render.Draw;
 import spacegraph.widget.text.Label;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -63,17 +60,4 @@ public class CheckBox extends ToggleButton {
         this.text = s;
     }
 
-    public static class ColorToggle extends ToggleButton {
-        public float r, g, b;
-
-        public ColorToggle(float r, float g, float b) {
-            this.r = r; this.g = g; this.b = b;
-        }
-
-        @Override
-        protected void paintWidget(GL2 gl, RectFloat2D bounds) {
-            gl.glColor4f(r, g, b, 0.95f);
-            Draw.rect(gl, bounds);
-        }
-    }
 }

@@ -2,6 +2,7 @@ package spacegraph.container;
 
 import com.google.common.collect.Sets;
 import jcog.list.FastCoWList;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.Surface;
 import spacegraph.SurfaceBase;
 
@@ -189,6 +190,17 @@ public class MutableContainer extends Container {
     public boolean whileEach(Predicate<Surface> o) {
         for (Surface x : children.copy) {
             if (x.parent!=null) //if ready
+                if (!o.test(x))
+                    return false;
+        }
+        return true;
+    }
+    @Override
+    public boolean whileEachReverse(Predicate<Surface> o) {
+        @Nullable Surface[] copy = children.copy;
+        for (int i = copy.length-1; i >= 0; i--) {
+            Surface x = copy[i];
+            if (x.parent != null) //if ready
                 if (!o.test(x))
                     return false;
         }

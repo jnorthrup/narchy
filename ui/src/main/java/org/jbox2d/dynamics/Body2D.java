@@ -1100,7 +1100,7 @@ public class Body2D extends Transform {
      *
      * @param flag
      */
-    public void setActive(boolean flag) {
+    void setActive(boolean flag) {
 //        assert (W.isLocked() == false);
 
         if (flag == isActive()) {
@@ -1212,12 +1212,6 @@ public class Body2D extends Transform {
         this.data = data;
     }
 
-    /**
-     * Get the parent world of this body.
-     */
-    public final Dynamics2D getWorld() {
-        return W;
-    }
 
     // djm pooling
     private final Transform pxf = new Transform();
@@ -1230,11 +1224,11 @@ public class Body2D extends Transform {
         // Rot.mulToOutUnsafe(xf1.q, m_sweep.localCenter, xf1.p);
         // xf1.p.mulLocal(-1).addLocal(m_sweep.c0);
         // inlined:
-        ((Rot) xf1).s = (float) Math.sin(sweep.a0);
-
-        ((Rot) xf1).c = (float) Math.cos(sweep.a0);
-        xf1.pos.x = sweep.c0.x - ((Rot) xf1).c * sweep.localCenter.x + ((Rot) xf1).s * sweep.localCenter.y;
-        xf1.pos.y = sweep.c0.y - ((Rot) xf1).s * sweep.localCenter.x - ((Rot) xf1).c * sweep.localCenter.y;
+        Rot r = xf1;
+        r.s = (float) Math.sin(sweep.a0);
+        r.c = (float) Math.cos(sweep.a0);
+        xf1.pos.x = sweep.c0.x - r.c * sweep.localCenter.x + r.s * sweep.localCenter.y;
+        xf1.pos.y = sweep.c0.y - r.s * sweep.localCenter.x - r.c * sweep.localCenter.y;
         // end inline
 
         for (Fixture f = fixtures; f != null; f = f.next) {
@@ -1272,10 +1266,8 @@ public class Body2D extends Transform {
 
         // Does a joint prevent collision?
         for (JointEdge jn = joints; jn != null; jn = jn.next) {
-            if (jn.other == other) {
-                if (jn.joint.getCollideConnected() == false) {
-                    return false;
-                }
+            if (jn.other == other && !jn.joint.getCollideConnected()) {
+                return false;
             }
         }
 

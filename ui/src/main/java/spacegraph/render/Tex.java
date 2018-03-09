@@ -6,6 +6,7 @@ import com.jogamp.opengl.util.texture.TextureData;
 import com.jogamp.opengl.util.texture.TextureIO;
 import jcog.tree.rtree.rect.RectFloat2D;
 import spacegraph.Surface;
+import spacegraph.container.AspectAlign;
 import spacegraph.container.MutableContainer;
 
 import java.awt.image.BufferedImage;
@@ -122,6 +123,10 @@ public class Tex {
 
     public Surface view() {
         return new TexSurface();
+    }
+
+    public Surface view(float aspect) {
+        return new AspectAlign(new TexSurface(), aspect);
     }
 
     private class TexSurface extends Surface {

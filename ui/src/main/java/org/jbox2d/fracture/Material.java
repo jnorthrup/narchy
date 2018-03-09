@@ -26,7 +26,7 @@ public abstract class Material {
     /**
      * Po destrukcii kruhu je kruh transformovany na regular polygon s danym poctom vrcholov.
      */
-    public static final int CIRCLEVERTICES = 32;
+    public static final int CIRCLEVERTICES = 11;
 
     /**
      * Objekty musia mat najdlhsiu hranu (radius) vacsiu ako dany limit, vacsi obsah

@@ -1,8 +1,8 @@
 package org.jbox2d.fracture;
 
 import org.jbox2d.collision.AABB;
+import org.jbox2d.common.PlatformMathUtils;
 import org.jbox2d.common.Settings;
-import org.jbox2d.fracture.fragmentation.Arithmetic;
 import org.jbox2d.fracture.hertelmehlhorn.SingletonHM;
 import org.jbox2d.fracture.poly2Tri.Triangulation;
 import spacegraph.math.Tuple2f;
@@ -35,7 +35,10 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
      * konkavny aj nonsimple.
      */
     public Polygon() {
-        array = new Tuple2f[8];
+        this(8);
+    }
+    public Polygon(int capacity) {
+        array = new Tuple2f[capacity];
         count = 0;
     }
 
@@ -285,7 +288,7 @@ public class Polygon implements Iterable<Tuple2f>, Cloneable {
             Tuple2f a = get(i);
             Tuple2f b = cycleGet(i + 1);
             Tuple2f c = cycleGet(i + 2);
-            if (Arithmetic.siteDef(a, b, c) == 1) {
+            if (PlatformMathUtils.siteDef(a, b, c) == 1) {
                 return false;
             }
         }

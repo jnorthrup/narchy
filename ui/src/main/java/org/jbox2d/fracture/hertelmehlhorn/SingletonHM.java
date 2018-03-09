@@ -1,7 +1,7 @@
 package org.jbox2d.fracture.hertelmehlhorn;
 
+import org.jbox2d.common.PlatformMathUtils;
 import org.jbox2d.fracture.Polygon;
-import org.jbox2d.fracture.fragmentation.Arithmetic;
 import spacegraph.math.Tuple2f;
 
 import java.util.Arrays;
@@ -56,7 +56,7 @@ public class SingletonHM {
             Tuple2f a = vertices[ar[0]];
             Tuple2f b = vertices[ar[1]];
             Tuple2f c = vertices[ar[2]];
-            if (Arithmetic.site(a, b, c) == 1) {
+            if (PlatformMathUtils.site(a, b, c) == 1) {
                 int k = ar[1];
                 ar[1] = ar[2];
                 ar[2] = k;
@@ -178,8 +178,8 @@ public class SingletonHM {
                 int i3 = opposite.index;
 
                 if (
-                        Arithmetic.siteDef(vertices[i3], vertices[i2], vertices[n2.next.index]) < 1 &&
-                                Arithmetic.siteDef(vertices[i3], vertices[i1], vertices[n1.prev.index]) > -1
+                        PlatformMathUtils.siteDef(vertices[i3], vertices[i2], vertices[n2.next.index]) < 1 &&
+                                PlatformMathUtils.siteDef(vertices[i3], vertices[i1], vertices[n1.prev.index]) > -1
                         ) {
                     //priplnam do polygonu - rozsiruje sa
                     int oppositeTriangleIndex = e.i1 == triangle ? e.i2 : e.i1;

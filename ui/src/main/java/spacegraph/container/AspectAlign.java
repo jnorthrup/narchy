@@ -103,6 +103,25 @@ public class AspectAlign extends UnitContainer {
 //                    th = vh;
 //                }
             }
+            if (th / tw < aspect) {
+                //wider, shrink y
+                th = tw * aspect;
+            }
+            if (th / tw > aspect) {
+                //taller, shrink x
+                tw = th / aspect;
+            }
+            if (tw > w) {
+                //too wide
+                th = (tw/th)*w;
+                tw = w;
+            }
+            if (th > h) {
+                //too tall
+                tw = (th/tw)*h;
+                th = h;
+            }
+
 //            if (vh / vw > aspect) {
 //                //wider, shrink y
 //                tw = vw;

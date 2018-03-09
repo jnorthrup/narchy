@@ -101,4 +101,9 @@ public class Switching extends Container {
         else
             return true;
     }
+
+    @Override
+    public final boolean whileEachReverse(Predicate<Surface> o) {
+        return whileEach(o);
+    }
 }

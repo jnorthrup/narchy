@@ -9,7 +9,6 @@ import spacegraph.input.Finger;
 import spacegraph.math.v2;
 
 import java.io.PrintStream;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -107,10 +106,12 @@ abstract public class Container extends Surface {
                 final Surface[] found = {null};
                 float fx = finger.pos.x;
                 float fy = finger.pos.y;
-                forEach(c -> {
 
-                    if (found[0] != null) //TODO use whileEach() with a predicate for fast terminate
-                        return;
+                //iterate in reverse, so that the contents drawn last are tested first for interaction (sloppy z-ordering)
+                whileEachReverse(c -> {
+
+//                    if (found[0] != null) //TODO use whileEach() with a predicate for fast terminate
+//                        return;
 
                     //TODO factor in the scale if different from 1
 
@@ -133,6 +134,8 @@ abstract public class Container extends Surface {
                                 found[0] = s; //FIFO
                         }
                     }
+
+                    return found[0] == null; //while null
 
                 });
 
@@ -178,30 +181,32 @@ abstract public class Container extends Surface {
 
     abstract public boolean whileEach(Predicate<Surface> o);
 
-    /**
-     * identity compare
-     */
-    static boolean equals(List x, Object[] y) {
-        int s = x.size();
-        if (s != y.length) return false;
-        for (int i = 0; i < s; i++) {
-            if (x.get(i) != y[i])
-                return false;
-        }
-        return true;
-    }
+    abstract public boolean whileEachReverse(Predicate<Surface> o);
 
-    /**
-     * identity compare
-     */
-    static boolean equals(List x, List y) {
-        int s = x.size();
-        if (s != y.size()) return false;
-        for (int i = 0; i < s; i++) {
-            if (x.get(i) != y.get(i))
-                return false;
-        }
-        return true;
-    }
+//    /**
+//     * identity compare
+//     */
+//    static boolean equals(List x, Object[] y) {
+//        int s = x.size();
+//        if (s != y.length) return false;
+//        for (int i = 0; i < s; i++) {
+//            if (x.get(i) != y[i])
+//                return false;
+//        }
+//        return true;
+//    }
+
+//    /**
+//     * identity compare
+//     */
+//    static boolean equals(List x, List y) {
+//        int s = x.size();
+//        if (s != y.size()) return false;
+//        for (int i = 0; i < s; i++) {
+//            if (x.get(i) != y.get(i))
+//                return false;
+//        }
+//        return true;
+//    }
 
 }

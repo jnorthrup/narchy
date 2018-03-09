@@ -10,7 +10,7 @@ import spacegraph.input.Finger;
 import spacegraph.math.v2;
 import spacegraph.render.JoglSpace;
 import spacegraph.render.Tex;
-import spacegraph.widget.button.CheckBox;
+import spacegraph.widget.button.ColorToggle;
 import spacegraph.widget.meta.MetaFrame;
 import spacegraph.widget.slider.XYSlider;
 import spacegraph.widget.tab.ButtonSet;
@@ -136,16 +136,16 @@ public class Sketch2DBitmap extends Widget implements MetaFrame.Menu {
 
     @Override
     public Surface menu() {
-        ButtonSet<CheckBox.ColorToggle> colorMenu = new ButtonSet<>(ButtonSet.Mode.One,
-                new CheckBox.ColorToggle(0f, 0, 0), //black
-                new CheckBox.ColorToggle(1f, 0, 0), //red
-                new CheckBox.ColorToggle(1f, 0.5f, 0),//orange
-                new CheckBox.ColorToggle(0.75f, 0.75f, 0),//yellow
-                new CheckBox.ColorToggle(0f, 1, 0), //green
-                new CheckBox.ColorToggle(0f, 0, 1), //blue
-                new CheckBox.ColorToggle(1f, 0, 1), //purple
-                new CheckBox.ColorToggle(0.5f, 0.5f, 0.5f), //gray
-                new CheckBox.ColorToggle(1f, 1, 1) //white
+        ButtonSet<ColorToggle> colorMenu = new ButtonSet<>(ButtonSet.Mode.One,
+                new ColorToggle(0f, 0, 0), //black
+                new ColorToggle(1f, 0, 0), //red
+                new ColorToggle(1f, 0.5f, 0),//orange
+                new ColorToggle(0.75f, 0.75f, 0),//yellow
+                new ColorToggle(0f, 1, 0), //green
+                new ColorToggle(0f, 0, 1), //blue
+                new ColorToggle(1f, 0, 1), //purple
+                new ColorToggle(0.5f, 0.5f, 0.5f), //gray
+                new ColorToggle(1f, 1, 1) //white
         );
         colorMenu.on((cc,e)->{
             if (e) {

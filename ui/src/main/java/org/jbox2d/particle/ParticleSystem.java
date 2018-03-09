@@ -170,9 +170,9 @@ public class ParticleSystem {
 
 //  public void assertNotSamePosition() {
 //    for (int i = 0; i < m_count; i++) {
-//      Vec2 vi = m_positionBuffer.data[i];
+//      v2 vi = m_positionBuffer.data[i];
 //      for (int j = i + 1; j < m_count; j++) {
-//        Vec2 vj = m_positionBuffer.data[j];
+//        v2 vj = m_positionBuffer.data[j];
 //        assert(vi.x != vj.x || vi.y != vj.y);
 //      }
 //    }
@@ -270,7 +270,7 @@ public class ParticleSystem {
     }
 
     private final AABB temp2 = new AABB();
-    private final Vec2 tempVec = new Vec2();
+    private final v2 tempVec = new v2();
     private final Transform tempTransform = new Transform();
     private final Transform tempTransform2 = new Transform();
     private final CreateParticleGroupCallback createParticleGroupCallback =
@@ -318,14 +318,14 @@ public class ParticleSystem {
                         stride) {
                     for (float x = MathUtils.floor(aabb.lowerBound.x / stride) * stride; x < upperBoundX; x +=
                             stride) {
-                        Vec2 p = tempVec;
+                        v2 p = tempVec;
                         p.x = x;
                         p.y = y;
                         if (shape.testPoint(identity, p)) {
                             Transform.mulToOut(transform, p, p);
                             particleDef.position.x = p.x;
                             particleDef.position.y = p.y;
-                            p.subLocal(groupDef.position);
+                            p.subbed(groupDef.position);
                             Tuple2f.crossToOutUnsafe(groupDef.angularVelocity, p, particleDef.velocity);
                             particleDef.velocity.addLocal(groupDef.linearVelocity);
                             createParticle(particleDef);
@@ -911,7 +911,7 @@ public class ParticleSystem {
         }
     }
 
-    private final Tuple2f tempVec2 = new Vec2();
+    private final Tuple2f tempv2 = new v2();
     private final Rot tempRot = new Rot();
     private final Transform tempXf = new Transform();
     private final Transform tempXf2 = new Transform();
@@ -921,7 +921,7 @@ public class ParticleSystem {
             if ((group.m_groupFlags & ParticleGroupType.b2_rigidParticleGroup) != 0) {
                 group.updateStatistics();
                 Tuple2f temp = tempVec;
-                Tuple2f cross = tempVec2;
+                Tuple2f cross = tempv2;
                 Rot rotation = tempRot;
                 rotation.set(step.dt * group.m_angularVelocity);
                 Rot.mulToOutUnsafe(rotation, group.m_center, cross);
@@ -1735,7 +1735,7 @@ public class ParticleSystem {
                 tempVec.x = px + t * vx;
                 tempVec.y = py + t * vy;
                 n.normalize();
-                final Tuple2f point = tempVec2;
+                final Tuple2f point = tempv2;
                 point.x = point1.x + t * vx;
                 point.y = point1.y + t * vy;
                 float f = callback.reportParticle(i, point, n, t);
@@ -1862,7 +1862,7 @@ public class ParticleSystem {
         int indexA, indexB, indexC;
         int flags;
         float strength;
-        final Tuple2f pa = new Vec2(), pb = new Vec2(), pc = new Vec2();
+        final Tuple2f pa = new v2(), pb = new v2(), pc = new v2();
         float ka, kb, kc, s;
     }
 
@@ -2021,11 +2021,11 @@ public class ParticleSystem {
     static class UpdateBodyContactsCallback implements Predicate<Fixture> {
         ParticleSystem system;
 
-        private final v2 tempVec = new Vec2();
+        private final v2 tempVec = new v2();
 
         @Override
         public boolean test(Fixture fixture) {
-            if (fixture.isSensor()) {
+            if (fixture.isSensor() || fixture.filter.maskBits==0) {
                 return true;
             }
             final Shape shape = fixture.shape();
@@ -2103,8 +2103,8 @@ public class ParticleSystem {
 
         private final RayCastInput input = new RayCastInput();
         private final RayCastOutput output = new RayCastOutput();
-        private final Tuple2f tempVec = new Vec2();
-        private final Tuple2f tempVec2 = new Vec2();
+        private final Tuple2f tempVec = new v2();
+        private final Tuple2f tempv2 = new v2();
 
         @Override
         public boolean test(Fixture fixture) {
@@ -2163,7 +2163,7 @@ public class ParticleSystem {
                             final float ay = particleMass * (av.y - vy);
                             Tuple2f b = output.normal;
                             final float fdn = ax * b.x + ay * b.y;
-                            final Tuple2f f = tempVec2;
+                            final Tuple2f f = tempv2;
                             f.x = fdn * b.x;
                             f.y = fdn * b.y;
                             body.applyLinearImpulse(f, p, true);

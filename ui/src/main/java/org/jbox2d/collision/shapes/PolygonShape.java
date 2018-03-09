@@ -23,6 +23,7 @@
  ******************************************************************************/
 package org.jbox2d.collision.shapes;
 
+import jcog.Util;
 import org.jbox2d.collision.AABB;
 import org.jbox2d.collision.RayCastInput;
 import org.jbox2d.collision.RayCastOutput;
@@ -212,6 +213,18 @@ public class PolygonShape extends Shape {
         normals[3].set(-1.0f, 0.0f);
         centroid.setZero();
         return this;
+    }
+
+    public final org.jbox2d.collision.shapes.PolygonShape lerpAsBox(final float hx, final float hy, float rate) {
+        if (vertices!=4) {
+            return setAsBox(0.1f, 0.1f); //TODO epsilon
+        } else {
+            float currentWidth = vertex[1].x;
+            float currentHeight = -vertex[1].y;
+            float nextWidth = Util.lerp(rate, currentWidth, hx);
+            float nextHeight = Util.lerp(rate, currentHeight, hy);
+            return setAsBox(nextWidth, nextHeight);
+        }
     }
 
     public final static org.jbox2d.collision.shapes.PolygonShape regular(int n, float r) {

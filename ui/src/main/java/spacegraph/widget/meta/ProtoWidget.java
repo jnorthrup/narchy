@@ -8,8 +8,12 @@ import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;
 import spacegraph.container.Gridding;
 import spacegraph.container.MutableContainer;
+import spacegraph.render.ImageTexture;
+import spacegraph.widget.button.CheckBox;
+import spacegraph.widget.button.IconToggle;
 import spacegraph.widget.button.PushButton;
 import spacegraph.widget.meter.WebCam;
+import spacegraph.widget.tab.ButtonSet;
 import spacegraph.widget.tab.TabPane;
 import spacegraph.widget.text.Label;
 import spacegraph.widget.windo.FloatPort;
@@ -96,7 +100,14 @@ public class ProtoWidget extends Widget {
             categories.put(t, ()->new Gridding( fields ) );
         });
 
-        content(new TabPane(categories));
+        content(new TabPane(ButtonSet.Mode.Multi, categories, (l)->{
+            switch (l) {
+                case "Hardware":
+                    return new IconToggle(new ImageTexture("fontawesome://wrench"));
+            }
+
+            return new CheckBox(l);
+        }));
 
     }
 

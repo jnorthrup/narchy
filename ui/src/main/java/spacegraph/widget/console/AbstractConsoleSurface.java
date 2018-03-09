@@ -30,6 +30,11 @@ public abstract class AbstractConsoleSurface extends Container implements Append
     }
 
     @Override
+    public final boolean whileEachReverse(Predicate<Surface> o) {
+        return whileEach(o);
+    }
+
+    @Override
     public int childrenCount() {
         return 0;
     }

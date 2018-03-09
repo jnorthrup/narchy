@@ -324,6 +324,11 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     }
 
     @Override
+    public boolean whileEachReverse(Predicate<Surface> o) {
+        return whileEach(o);
+    }
+
+    @Override
     public void windowGainedFocus(WindowEvent e) {
         focused = true;
         updateMouse(null);

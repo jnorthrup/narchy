@@ -12,6 +12,7 @@ public class WizardFrame extends Splitting {
 
     private final PushButton backButton;
 
+    private final FasterList<Surface> stack = new FasterList();
 
     public WizardFrame(Surface next) {
         super();
@@ -31,7 +32,6 @@ public class WizardFrame extends Splitting {
         backButton.hide();
     }
 
-    private final FasterList<Surface> stack = new FasterList();
 
     @Override
     public void replace(Surface existingChild, Surface nextChild) {
@@ -43,12 +43,16 @@ public class WizardFrame extends Splitting {
                 if (stack.isEmpty())
                     backButton.show();
                 stack.add(existingChild);
-                set(1, nextChild);
+                become(nextChild);
             } else {
                 throw new UnsupportedOperationException();
             }
 
         }
+    }
+
+    protected void become(Surface next) {
+        set(1, next);
     }
 
     public void pop() {
@@ -57,11 +61,14 @@ public class WizardFrame extends Splitting {
             if (stack.isEmpty())
                 backButton.hide();
             assert(prev!=null);
-            set(1, prev);
+            become(prev);
         }
     }
+
     public void close() {
-        ((PhyWall.PhyWindow)((Surface)parent).parent).remove(); //HACK
+        synchronized (this) {
+            ((PhyWall.PhyWindow) ((Surface) parent).parent).remove(); //HACK TODO use appropriate parent selection method
+        }
 //        if (!parent(PhyWall.class).remove()) { //HACK
 //            throw new RuntimeException("not completely removed");
 //        }

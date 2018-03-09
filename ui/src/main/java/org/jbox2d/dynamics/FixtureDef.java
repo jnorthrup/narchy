@@ -198,4 +198,9 @@ public class FixtureDef {
     public void setFilter(Filter filter) {
         this.filter = filter;
     }
+
+    public FixtureDef noCollide() {
+        filter.maskBits = 0;
+        return this;
+    }
 }

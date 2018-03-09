@@ -3,10 +3,10 @@ package org.jbox2d.dynamics.joints;
 import org.jbox2d.common.Mat22;
 import org.jbox2d.common.MathUtils;
 import org.jbox2d.common.Rot;
-import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.SolverData;
 import org.jbox2d.pooling.IWorldPool;
 import spacegraph.math.Tuple2f;
+import spacegraph.math.v2;
 
 //Point-to-point constraint
 //Cdot = v2 - v1
@@ -29,9 +29,9 @@ import spacegraph.math.Tuple2f;
 public class MotorJoint extends Joint {
 
     // Solver shared
-    private final Tuple2f m_linearOffset = new Vec2();
+    private final Tuple2f m_linearOffset = new v2();
     private float m_angularOffset;
-    private final Vec2 m_linearImpulse = new Vec2();
+    private final v2 m_linearImpulse = new v2();
     private float m_angularImpulse;
     private float m_maxForce;
     private float m_maxTorque;
@@ -40,11 +40,11 @@ public class MotorJoint extends Joint {
     // Solver temp
     private int m_indexA;
     private int m_indexB;
-    private final Tuple2f m_rA = new Vec2();
-    private final Tuple2f m_rB = new Vec2();
-    private final Tuple2f m_localCenterA = new Vec2();
-    private final Tuple2f m_localCenterB = new Vec2();
-    private final Tuple2f m_linearError = new Vec2();
+    private final Tuple2f m_rA = new v2();
+    private final Tuple2f m_rB = new v2();
+    private final Tuple2f m_localCenterA = new v2();
+    private final Tuple2f m_localCenterB = new v2();
+    private final Tuple2f m_linearError = new v2();
     private float m_angularError;
     private float m_invMassA;
     private float m_invMassB;
@@ -188,7 +188,7 @@ public class MotorJoint extends Joint {
 
         final Rot qA = pool.popRot();
         final Rot qB = pool.popRot();
-        final Tuple2f temp = pool.popVec2();
+        final Tuple2f temp = new v2();
         Mat22 K = pool.popMat22();
 
         qA.set(aA);
@@ -249,7 +249,6 @@ public class MotorJoint extends Joint {
             m_angularImpulse = 0.0f;
         }
 
-        pool.pushVec2(1);
         pool.pushMat22(1);
         pool.pushRot(2);
 
@@ -272,7 +271,7 @@ public class MotorJoint extends Joint {
         float h = data.step.dt;
         float inv_h = data.step.inv_dt;
 
-        final Tuple2f temp = pool.popVec2();
+        final Tuple2f temp = new v2();
 
         // Solve angular friction
         {
@@ -288,7 +287,7 @@ public class MotorJoint extends Joint {
             wB += iB * impulse;
         }
 
-        final Tuple2f Cdot = pool.popVec2();
+        final Tuple2f Cdot = new v2();
 
         // Solve linear friction
         {
@@ -302,9 +301,9 @@ public class MotorJoint extends Joint {
             final Tuple2f impulse = temp;
             Mat22.mulToOutUnsafe(m_linearMass, Cdot, impulse);
             impulse.negated();
-            final Tuple2f oldImpulse = pool.popVec2();
+            final Tuple2f oldImpulse = new v2();
             oldImpulse.set(m_linearImpulse);
-            m_linearImpulse.addLocal(impulse);
+            m_linearImpulse.added(impulse);
 
             float maxImpulse = h * m_maxForce;
 
@@ -325,7 +324,6 @@ public class MotorJoint extends Joint {
             wB += iB * (m_rB.x * impulse.y - m_rB.y * impulse.x);
         }
 
-        pool.pushVec2(3);
 
         // data.velocities[m_indexA].v.set(vA);
         data.velocities[m_indexA].w = wA;

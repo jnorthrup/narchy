@@ -1,5 +1,6 @@
 package spacegraph.widget.tab;
 
+import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import spacegraph.Surface;
 import spacegraph.SurfaceBase;
 import spacegraph.container.Gridding;
@@ -13,6 +14,7 @@ import spacegraph.widget.sketch.Sketch2DBitmap;
 import spacegraph.widget.text.Label;
 
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -32,6 +34,10 @@ public class TabPane extends Splitting {
     }
 
     public TabPane(ButtonSet.Mode mode, Map<String, Supplier<Surface>> builder) {
+        this(mode, builder, CheckBox::new);
+    }
+
+    public TabPane(ButtonSet.Mode mode, Map<String, Supplier<Surface>> builder, Function<String,ToggleButton> buttonBuilder) {
         super();
 
         content = new Gridding();
@@ -40,7 +46,7 @@ public class TabPane extends Splitting {
             final Surface[] created = {null};
             Supplier<Surface> creator = x.getValue();
             String label = x.getKey();
-            return new CheckBox(label).on((cb, a) -> {
+            ObjectBooleanProcedure<ToggleButton> toggle = (cb, a) -> {
                 synchronized (content) {
                     if (a) {
                         Surface cx;
@@ -56,16 +62,19 @@ public class TabPane extends Splitting {
                         content.add(created[0] = cx);
                         split(CONTENT_VISIBLE_SPLIT); //hide empty content area
                     } else {
-                         if (created[0] !=null) {
-                             content.remove(created[0]);
-                             created[0] = null;
-                         }
-                         if (content.isEmpty()) {
+                        if (created[0] != null) {
+                            content.remove(created[0]);
+                            created[0] = null;
+                        }
+                        if (content.isEmpty()) {
                             split(0f); //hide empty content area
-                         }
+                        }
                     }
                 }
-            });
+            };
+
+            ToggleButton bb = buttonBuilder.apply(label);
+            return bb.on(toggle);
         }).toArray(ToggleButton[]::new));
 
 

@@ -49,4 +49,9 @@ public abstract class UnitContainer extends Container {
         else
             return true;
     }
+
+    @Override
+    public final boolean whileEachReverse(Predicate<Surface> o) {
+        return whileEach(o);
+    }
 }

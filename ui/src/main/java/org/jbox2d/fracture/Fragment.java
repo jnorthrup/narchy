@@ -1,6 +1,6 @@
 package org.jbox2d.fracture;
 
-import org.jbox2d.fracture.fragmentation.Arithmetic;
+import org.jbox2d.common.PlatformMathUtils;
 import spacegraph.math.Tuple2f;
 
 /**
@@ -18,6 +18,9 @@ public class Fragment extends Polygon {
      * Inicializuje prazdny fragment
      */
     public Fragment() {
+    }
+    public Fragment(int sides) {
+        super(sides);
     }
 
 //    /**
@@ -47,7 +50,7 @@ public class Fragment extends Polygon {
         int size = size();
         double[] comparer = new double[size];
         for (int i = 0; i != size; ++i) {
-            comparer[i] = Arithmetic.angle(get(i), focus);
+            comparer[i] = PlatformMathUtils.angle(get(i), focus);
         }
         for (int i = 0; i != size; ++i) {
             int maxIndex = i;

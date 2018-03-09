@@ -967,6 +967,9 @@ public enum Draw {
         Draw.rect(gl, bounds.x, bounds.y, bounds.w, bounds.h);
     }
 
+    public static void rectStroke(GL2 gl, RectFloat2D bounds) {
+        Draw.rectStroke(gl, bounds.x, bounds.y, bounds.w, bounds.h);
+    }
 
     public static void colorRGBA(float[] c, float r, float g, float b, float a) {
         c[0] = r; c[1] = g; c[2] = b; c[3] = a;
