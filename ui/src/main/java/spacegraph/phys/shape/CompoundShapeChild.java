@@ -44,7 +44,7 @@ public final class CompoundShapeChild {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj == null || !(obj instanceof CompoundShapeChild)) return false;
+		if (!(obj instanceof CompoundShapeChild)) return false;
 		CompoundShapeChild child = (CompoundShapeChild)obj;
 		return transform.equals(child.transform) &&
 		       childShape == child.childShape

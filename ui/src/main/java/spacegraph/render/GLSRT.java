@@ -169,7 +169,7 @@ public class GLSRT {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj == null || !(obj instanceof SphereKey)) return false;
+			if (!(obj instanceof SphereKey)) return false;
 			SphereKey other = (SphereKey)obj;
 			return radius == other.radius;
 		}
@@ -225,7 +225,7 @@ public class GLSRT {
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj == null || !(obj instanceof CylinderKey)) return false;
+			if (!(obj instanceof CylinderKey)) return false;
 			CylinderKey other = (CylinderKey) obj;
 			if (radius != other.radius) return false;
             return halfHeight == other.halfHeight;

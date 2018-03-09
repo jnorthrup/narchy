@@ -108,7 +108,7 @@ public class AutoSurface<X> extends Gridding {
             collectFields(x, target, depth + 1);
 
             if (x instanceof Collection) {
-                Surface cx = collectElements((Collection) x, depth + 1);
+                Surface cx = collectElements((Iterable<?>) x, depth + 1);
                 if (cx != null) {
                     target.add(new LabeledPane(yLabel, cx));
                 }
@@ -140,7 +140,7 @@ public class AutoSurface<X> extends Gridding {
         return !m.isEmpty() ? grid(m) : null;
     }
 
-    private void collectServices(Services<Object, Object> x, List<Surface> l) {
+    private void collectServices(Services<Object, Object> x, Collection<Surface> l) {
 
 //        Map<Services.Service, FloatSlider> controls = new HashMap();
         x.entrySet().forEach((ks) -> {

@@ -27,7 +27,7 @@ public class MutableContainer extends Container {
     }
 
     public MutableContainer(Collection<Surface> x) {
-        this(x.toArray(new Surface[x.size()]));
+        this(x.toArray(new Surface[0]));
     }
 
     public Surface[] children() {
@@ -173,7 +173,7 @@ public class MutableContainer extends Container {
     }
 
     public final Container set(List<? extends Surface> next) {
-        set(next.toArray(new Surface[next.size()]));
+        set(next.toArray(new Surface[0]));
         return this;
     }
 

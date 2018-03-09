@@ -280,40 +280,4 @@ public class Finger {
         return y;
     }
 
-    public static class DoubleClicking {
-
-        private final int button;
-
-        /** accepts the mouse point where clicked */
-        private final Consumer<v2> onDoubleClick;
-
-        //TODO encapsulate in Finger.DoubleClicking class
-        v2 doubleClickSpot = null;
-        long maxDoubleClickTime = 250, doubleClickTime = Long.MIN_VALUE; //ms
-
-        public DoubleClicking(int button, Consumer<v2> doubleClicked) {
-            this.button = button;
-            this.onDoubleClick = doubleClicked;
-        }
-
-
-        public boolean update(Finger finger) {
-            //TODO encapsulate in Finger.DoubleClicking class
-            if (finger!=null && finger.clickedNow(0)) {
-                //System.out.println("click " + doubleClickSpot + " " + finger.hitOnDown[0] + " " + (System.currentTimeMillis() - doubleClickTime));
-                v2 downHit = finger.hitOnDownGlobal[0];
-                if (downHit!=null && doubleClickSpot!=null && doubleClickSpot.equals(downHit, 0.001f) && System.currentTimeMillis() - doubleClickTime < maxDoubleClickTime) {
-                    //System.out.println("double click");
-                    onDoubleClick.accept(finger.pos);
-                    return true;
-                }
-
-                doubleClickSpot = finger.hitOnDownGlobal[0];
-                doubleClickTime = System.currentTimeMillis();
-            }
-
-            return false;
-        }
-
-    }
 }

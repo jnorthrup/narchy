@@ -208,7 +208,7 @@ public class Gridding extends MutableContainer {
     }
 
     static Surface[] array(Collection<? extends Surface> content) {
-        return content.toArray(new Surface[content.size()]);
+        return content.toArray(new Surface[0]);
     }
 
     public static Gridding row(Surface... content) {

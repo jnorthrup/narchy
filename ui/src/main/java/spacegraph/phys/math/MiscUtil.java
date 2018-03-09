@@ -28,6 +28,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import spacegraph.phys.util.IntArrayList;
 import spacegraph.phys.util.OArrayList;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Comparator;
 
@@ -105,7 +106,7 @@ public class MiscUtil {
 		try {
 			int ls = list.size();
 			while (ls < size) {
-				list.add(valueCls != null? valueCls.newInstance() : null);
+				list.add(valueCls != null? valueCls.getConstructor().newInstance() : null);
 				ls++;
 			}
 
@@ -115,8 +116,12 @@ public class MiscUtil {
 		}
 		catch (IllegalAccessException | InstantiationException e) {
 			throw new IllegalStateException(e);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
 		}
-    }
+	}
 	
 	/**
 	 * Searches object in array.

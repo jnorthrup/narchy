@@ -107,7 +107,7 @@ public abstract class BitmapConsoleSurface extends AbstractConsoleSurface {
 
 
     public void setBitmapFontSize(int s) {
-        this.font = new Font("Monospaced", 0, s);
+        this.font = new Font("Monospaced", Font.PLAIN, s);
 
         FontRenderContext ctx = this.getFontRenderContext();
         Rectangle2D b = font.getStringBounds("W", ctx);

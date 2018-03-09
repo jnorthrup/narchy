@@ -3,12 +3,10 @@ package spacegraph;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
-import org.jetbrains.annotations.Nullable;
 import spacegraph.input.Finger;
 import spacegraph.render.Draw;
 import spacegraph.widget.windo.Windo;
 
-import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -365,23 +363,12 @@ public class ZoomOrtho extends Ortho {
         }
 
 
-        String str(@Nullable Object x) {
-            if (x instanceof Object[])
-                return Arrays.toString((Object[]) x);
-            else
-                return x.toString();
-        }
-
-        {
-//            set(
-//                    overlay
-//                    //bottomRightMenu.scale(64,64)
-//            );
-        }
-
-        {
-//            clipTouchBounds = false;
-        }
+//        String str(@Nullable Object x) {
+//            if (x instanceof Object[])
+//                return Arrays.toString((Object[]) x);
+//            else
+//                return x.toString();
+//        }
 
 
         @Override

@@ -348,6 +348,7 @@ public class Islands {
         public abstract void processIsland(Collection<Collidable> bodies, FasterList<PersistentManifold> manifolds, int manifolds_offset, int numManifolds, int islandId);
     }
 
-    private static final Comparator<PersistentManifold> persistentManifoldComparator = (lhs, rhs) -> getIslandId(lhs) < getIslandId(rhs) ? -1 : +1;
+    private static final Comparator<PersistentManifold> persistentManifoldComparator = (lhs, rhs) ->
+            getIslandId(lhs) < getIslandId(rhs) ? -1 : +1;
 
 }

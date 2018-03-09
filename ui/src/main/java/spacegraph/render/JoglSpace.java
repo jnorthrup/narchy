@@ -247,6 +247,7 @@ abstract public class JoglSpace<X> extends JoglWindow implements Iterable<Spatia
     }
 
     protected void renderOrthos(int dtMS) {
+
         int facialsSize = layers.size();
         if (facialsSize > 0) {
 

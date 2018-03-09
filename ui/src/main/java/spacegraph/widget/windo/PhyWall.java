@@ -30,6 +30,7 @@ import spacegraph.*;
 import spacegraph.container.EmptySurface;
 import spacegraph.container.Gridding;
 import spacegraph.container.Splitting;
+import spacegraph.input.DoubleClicking;
 import spacegraph.input.Finger;
 import spacegraph.input.FingerDragging;
 import spacegraph.math.Tuple2f;
@@ -611,10 +612,17 @@ public class PhyWall extends Wall implements Animated {
         public Wire unlink(Surface source, Surface target) {
             synchronized (links) {
                 Wire wire = new Wire(source, target);
-                boolean removed = links.edgeRemove(new ImmutableDirectedEdge(
-                        links.node(wire.a), links.node(wire.b), wire)
-                );
-                return removed ? wire : null;
+                NodeGraph.Node<Surface, Wire> an = links.node(wire.a);
+                if (an!=null) {
+                    NodeGraph.Node<Surface, Wire> bn = links.node(wire.b);
+                    if (bn!=null) {
+                        boolean removed = links.edgeRemove(new ImmutableDirectedEdge<>(
+                                an, bn, wire)
+                        );
+                        return removed ? wire : null;
+                    }
+                }
+                return null;
             }
         }
 
@@ -643,6 +651,7 @@ public class PhyWall extends Wall implements Animated {
 
                 Iterable<ImmutableDirectedEdge<Surface, Wire>> edges = A.edges(false, true); //only need to scan the out of the src (triangular half of the graph 'matrix')
                 if (edges != null) {
+                    //HACK TODO use Set.contains or something
                     for (ImmutableDirectedEdge<Surface, Wire> e : edges) {
                         Wire ee = e.id;
                         if (wire.equals(ee))
@@ -816,7 +825,7 @@ public class PhyWall extends Wall implements Animated {
     }
 
 
-    final Finger.DoubleClicking doubleClicking = new Finger.DoubleClicking(0, this::doubleClick);
+    final DoubleClicking doubleClicking = new DoubleClicking(0, this::doubleClick);
 
 
     @Override

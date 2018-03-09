@@ -74,14 +74,14 @@ public class ImageTexture extends Tex {
         //pngquant 2 wrench.png --speed 1 --quality 0 --nofs
 
         String file = "/home/me/Font-Awesome-SVG-PNG/white/png/x128/wrench-fs8.png";
-        SpaceGraphFlat.window(
+        JoglSpace.window(
                 new Gridding(
 //                    new ImageTexture(new File(file)).view(),
-                    new ImageTexture("fontawesome://wrench").view(),
+                        new ImageTexture("fontawesome://wrench").view(),
                         new ImageTexture("fontawesome://feed").view(),
                         new ImageTexture("fontawesome://space-shuttle").view(),
                         new ImageTexture("fontawesome://youtube").view(),
-                    new ImageTexture(new File(file)).view()
+                        new ImageTexture(new File(file)).view()
                 ),
                 500, 500);
     }

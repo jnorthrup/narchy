@@ -36,7 +36,7 @@ public class AspectAlign extends UnitContainer {
 
 
     public AspectAlign(Surface the, Align a, float w, float h) {
-        this(the, w / h, a, 1f);
+        this(the, h / w, a, 1f);
     }
 
     public AspectAlign(Surface the, float aspect) {
@@ -79,47 +79,50 @@ public class AspectAlign extends UnitContainer {
         //target's relative size being computed
         float tw = w * scaleX;
         float th = h * scaleY;
+        final float otw = tw, oth = th;
 
         float aspect = this.aspect;
         if (aspect == aspect /* not NaN */) {
 
-            if (h > w/aspect) {
+            if (th > tw/aspect) {
 //                if (aspect >= 1) {
                     //taller than wide
                     //tw = w;
-                    th = tw / aspect;
+                    th = tw * aspect;
 //                } else {
 //                    //wider than tall
 //                    tw = vw;
                     //th = h*aspect;
                 //}
-            } else if (w * aspect < h) {
+            }
+            if (tw * aspect < th) {
 //                if (aspect >= 1) {
                     //th = h;
-                    //tw = th * aspect;
-                    th = tw * aspect;
+                    tw = th / aspect;
+                    //th = tw / aspect;
 //                } else {
 //                    tw = vw*aspect;
 //                    th = vh;
 //                }
             }
-            if (th / tw < aspect) {
-                //wider, shrink y
-                th = tw * aspect;
-            }
-            if (th / tw > aspect) {
-                //taller, shrink x
-                tw = th / aspect;
-            }
-            if (tw > w) {
+            //TODO fix:
+//            if (th / tw < aspect) {
+//                //wider, shrink y
+//                th = tw * aspect;
+//            }
+//            if (th / tw > aspect) {
+//                //taller, shrink x
+//                tw = th / aspect;
+//            }
+            if (tw > otw) {
                 //too wide
-                th = (tw/th)*w;
-                tw = w;
+                th = otw/(tw/th);
+                tw = otw;
             }
-            if (th > h) {
+            if (th > oth) {
                 //too tall
-                tw = (th/tw)*h;
-                th = h;
+                tw = oth/(th/tw);
+                th = oth;
             }
 
 //            if (vh / vw > aspect) {

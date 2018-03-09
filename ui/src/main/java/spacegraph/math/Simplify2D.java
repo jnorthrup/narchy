@@ -145,7 +145,7 @@ public class Simplify2D {
 		areaTolerance *= 2;
 		for (int index = 0; index < vertices.size(); ++index, v2 = v3) {
 			if (index == vertices.size() - 1) {
-				if (result.size() == 0) {
+				if (result.isEmpty()) {
 					throw new InvalidParameterException("areaTolerance: The tolerance is too high!");
 				}
 				v3 = result.get(0);

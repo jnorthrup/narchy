@@ -4,8 +4,8 @@ import jcog.data.graph.ObjectGraph;
 import jcog.exe.Loop;
 import jcog.tree.rtree.rect.RectFloat2D;
 import org.jbox2d.collision.shapes.PolygonShape;
+import spacegraph.Ortho;
 import spacegraph.Surface;
-import spacegraph.ZoomOrtho;
 import spacegraph.container.Gridding;
 import spacegraph.math.v2;
 import spacegraph.test.WidgetTest;
@@ -144,8 +144,8 @@ public class PhyWallTest {
 
         public static void main(String[] args) {
             PhyWall s = PhyWall.window(800, 800);
-            ((ZoomOrtho)s.root()).scaleMin = 100f;
-            ((ZoomOrtho)s.root()).scaleMax = 500;
+            ((Ortho) s.root()).scaleMin = 100f;
+            ((Ortho) s.root()).scaleMax = 500;
 
             Surface mux = new Gridding(HORIZONTAL, new LabeledPane("->", new Gridding(VERTICAL,
                     new Port(),

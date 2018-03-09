@@ -101,12 +101,34 @@ public class ProtoWidget extends Widget {
         });
 
         content(new TabPane(ButtonSet.Mode.Multi, categories, (l)->{
+            String icon;
             switch (l) {
+                case "Control":
+                    icon = "cogs";
+                    break;
+                case "Hear":
+                    icon = "volume-up";
+                    break;
+
+                case "Signal":
+                    icon = "sliders";
+                    break;
+                case "See":
+                    icon = "bar-chart-o";
+                    break;
                 case "Hardware":
-                    return new IconToggle(new ImageTexture("fontawesome://wrench"));
+                    icon = "wrench";
+                    break;
+                default:
+                    icon = null;
+                    break;
             }
 
-            return new CheckBox(l);
+            if (icon!=null) {
+                return new IconToggle(new ImageTexture("fontawesome://" + icon ));
+            } else {
+                return new CheckBox(l);
+            }
         }));
 
     }

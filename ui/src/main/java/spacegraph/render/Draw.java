@@ -1429,7 +1429,7 @@ public enum Draw {
         }
 
 
-        fontMono = glyphs.toArray(new HGlyph[glyphs.size()]);
+        fontMono = glyphs.toArray(new HGlyph[0]);
     }
 
     static void init(GL2 gl) {

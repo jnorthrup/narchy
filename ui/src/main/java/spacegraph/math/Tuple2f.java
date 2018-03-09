@@ -75,30 +75,30 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
         this.y = t[1];
     }
 
-    public final static Tuple2f abs(Tuple2f a) {
+    public static Tuple2f abs(Tuple2f a) {
         return new v2(Math.abs(a.x), Math.abs(a.y));
     }
 
-    public final static void absToOut(Tuple2f a, Tuple2f out) {
+    public static void absToOut(Tuple2f a, Tuple2f out) {
         out.x = Math.abs(a.x);
         out.y = Math.abs(a.y);
     }
 
-    public final static float dot(final Tuple2f a, final Tuple2f b) {
+    public static float dot(final Tuple2f a, final Tuple2f b) {
         return a.x * b.x + a.y * b.y;
     }
 
-    public final static void negateToOut(Tuple2f a, Tuple2f out) {
+    public static void negateToOut(Tuple2f a, Tuple2f out) {
         out.x = -a.x;
         out.y = -a.y;
     }
 
-    public final static void minToOut(Tuple2f a, Tuple2f b, Tuple2f out) {
+    public static void minToOut(Tuple2f a, Tuple2f b, Tuple2f out) {
         out.x = a.x < b.x ? a.x : b.x;
         out.y = a.y < b.y ? a.y : b.y;
     }
 
-    public final static void maxToOut(Tuple2f a, Tuple2f b, Tuple2f out) {
+    public static void maxToOut(Tuple2f a, Tuple2f b, Tuple2f out) {
         out.x = a.x > b.x ? a.x : b.x;
         out.y = a.y > b.y ? a.y : b.y;
     }
@@ -277,11 +277,11 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
         set(this.x - dx, this.y - dy);
     }
 
-    public final static float cross(final Tuple2f a, final Tuple2f b) {
+    public static float cross(final Tuple2f a, final Tuple2f b) {
         return a.x * b.y - a.y * b.x;
     }
 
-    public final static Tuple2f cross(Tuple2f a, float s) {
+    public static Tuple2f cross(Tuple2f a, float s) {
         float y1 = -s * a.x;
         return new v2(s * a.y, y1);
     }
@@ -293,11 +293,11 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
         return !Float.isNaN(x) && !Float.isInfinite(x) && !Float.isNaN(y) && !Float.isInfinite(y);
     }
 
-    public final static Tuple2f min(Tuple2f a, Tuple2f b) {
+    public static Tuple2f min(Tuple2f a, Tuple2f b) {
         return new v2(Math.min(a.x, b.x), Math.min(a.y, b.y));
     }
 
-    public final static Tuple2f max(Tuple2f a, Tuple2f b) {
+    public static Tuple2f max(Tuple2f a, Tuple2f b) {
         return new v2(Math.max(a.x, b.x), Math.max(a.y, b.y));
     }
 
@@ -337,30 +337,30 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
     }
 
 
-    public final static void crossToOut(Tuple2f a, float s, Tuple2f out) {
+    public static void crossToOut(Tuple2f a, float s, Tuple2f out) {
         final float tempy = -s * a.x;
         out.x = s * a.y;
         out.y = tempy;
     }
 
-    public final static void crossToOutUnsafe(Tuple2f a, float s, Tuple2f out) {
+    public static void crossToOutUnsafe(Tuple2f a, float s, Tuple2f out) {
         assert (out != a);
         out.x = s * a.y;
         out.y = -s * a.x;
     }
 
-    public final static Tuple2f cross(float s, Tuple2f a) {
+    public static Tuple2f cross(float s, Tuple2f a) {
         float x1 = -s * a.y;
         return new v2(x1, s * a.x);
     }
 
-    public final static void crossToOut(float s, Tuple2f a, Tuple2f out) {
+    public static void crossToOut(float s, Tuple2f a, Tuple2f out) {
         final float tempY = s * a.x;
         out.x = -s * a.y;
         out.y = tempY;
     }
 
-    public final static void crossToOutUnsafe(float s, Tuple2f a, Tuple2f out) {
+    public static void crossToOutUnsafe(float s, Tuple2f a, Tuple2f out) {
         assert (out != a);
         out.x = -s * a.y;
         out.y = s * a.x;

@@ -6,6 +6,7 @@ import net.beadsproject.beads.data.WaveFactory;
 import net.beadsproject.beads.ugens.*;
 import spacegraph.SpaceGraph;
 import spacegraph.input.Finger;
+import spacegraph.render.JoglSpace;
 import spacegraph.widget.meter.BitmapMatrixView;
 import spacegraph.widget.windo.Widget;
 
@@ -113,6 +114,6 @@ public class Synthiano extends Widget {
     }
 
     public static void main(String[] args) {
-        SpaceGraph.window(new Synthiano(), 500, 500);
+        JoglSpace.window(new Synthiano(), 500, 500);
     }
 }

@@ -68,7 +68,7 @@ public class Wire {
         if (l == Long.MIN_VALUE)
             return 0;
         else {
-            return (float) (1f/(1f+(Math.abs(now - l))/((float)(window))));
+            return 1f/(1f+(Math.abs(now - l))/((float)(window)));
         }
     }
 

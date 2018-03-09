@@ -40,9 +40,9 @@ abstract public class Surface implements SurfaceBase {
         bounds = RectFloat2D.Unit;
     }
 
-    public static boolean leftButton(short[] buttons) {
-        return buttons != null && buttons.length == 1 && buttons[0] == 1;
-    }
+//    public static boolean leftButton(short[] buttons) {
+//        return buttons != null && buttons.length == 1 && buttons[0] == 1;
+//    }
 
 
     public float x() {
