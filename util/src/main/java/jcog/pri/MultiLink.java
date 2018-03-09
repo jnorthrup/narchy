@@ -38,8 +38,8 @@ public class MultiLink<X extends Prioritized,Y> extends AbstractPLink<Y> {
     }
 
     @Override
-    public float priMax(float max) {
-        return super.priMax( Util.lerp(1/x.length, priElseZero(), max));
+    public void priMax(float max) {
+        super.priMax( Util.lerp(1/x.length, priElseZero(), max));
     }
 
     @Override

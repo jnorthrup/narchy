@@ -12,8 +12,6 @@ import nars.nal.nal1.NAL1MultistepTest;
 import nars.nal.nal1.NAL1Test;
 import nars.nal.nal2.NAL2Test;
 import nars.nal.nal3.NAL3Test;
-import nars.nal.nal5.NAL5Test;
-import nars.nal.nal6.NAL6Test;
 import nars.util.NALTest;
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +28,8 @@ import static java.util.stream.Collectors.toList;
 public class NARTestOptimize {
 
     static final int threads =
-            Math.max(1,Runtime.getRuntime().availableProcessors()-1);
+            2;
+            //Math.max(1,Runtime.getRuntime().availableProcessors()-1);
             //4;
 
     /** necessary to do what jdk "parallel" streams refuses to do... WTF */
@@ -43,7 +42,8 @@ public class NARTestOptimize {
 
 
         List<Method> methods = Stream.of(c)
-                .flatMap(cc -> Stream.of(cc.getMethods()).filter(x -> x.getAnnotation(Test.class) != null))
+                .flatMap(cc -> Stream.of(cc.getMethods())
+                .filter(x -> x.getAnnotation(Test.class) != null))
                 .collect(toList());
 
         final CountDownLatch remain = new CountDownLatch(methods.size());
@@ -101,14 +101,14 @@ public class NARTestOptimize {
                 .tweak("BELIEVE", -1f, +1f, 0.25f, (NAR n, float p) ->
                         n.emotion.want(MetaGoal.Believe, p)
                 )
-                .optimize(128, 2, (n) ->
+                .optimize(128, 3, (n) ->
                         tests(n,
                                 NAL1Test.class,
                                 NAL1MultistepTest.class,
                                 NAL2Test.class,
-                                NAL3Test.class,
-                                NAL5Test.class,
-                                NAL6Test.class
+                                NAL3Test.class
+                                //NAL5Test.class,
+                                //NAL6Test.class
 
                                 //NAL7Test.class,
                                 //NAL8Test.class

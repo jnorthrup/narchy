@@ -19,8 +19,8 @@ import java.util.function.Consumer;
  * */
 public class Port extends Widget implements Wiring.Wireable {
 
-    protected Wiring wiringOut = null;
-    protected Wiring wiringIn = null;
+    transient volatile protected Wiring beingWiredOut = null;
+    transient volatile protected Wiring beingWiredIn = null;
     private boolean enabled = true;
 
     /** input handler */
@@ -120,11 +120,11 @@ public class Port extends Widget implements Wiring.Wireable {
     @Override
     protected void paintWidget(GL2 gl, RectFloat2D bounds) {
 
-        if (wiringOut !=null) {
+        if (beingWiredOut !=null) {
             gl.glColor4f(0.5f, 1, 0, 0.35f);
             Draw.rect(gl, bounds);
         }
-        if (wiringIn!=null) {
+        if (beingWiredIn !=null) {
             gl.glColor4f(0, 0.5f, 1, 0.35f);
             Draw.rect(gl, bounds);
         }
@@ -132,10 +132,6 @@ public class Port extends Widget implements Wiring.Wireable {
 
     }
 
-//    @Override
-//    public boolean tangible() {
-//        return false;
-//    }
 
     @Override
     public Surface onTouch(Finger finger, short[] buttons) {
@@ -170,17 +166,17 @@ public class Port extends Widget implements Wiring.Wireable {
     @Override
     public boolean onWireIn(@Nullable Wiring w, boolean preOrPost) {
         if (preOrPost && !acceptWiring(w)) {
-            this.wiringIn = null;
+            this.beingWiredIn = null;
             return false;
         }
-        this.wiringIn = preOrPost ? w : null;
+        this.beingWiredIn = preOrPost ? w : null;
         return true;
     }
 
 
     @Override
     public void onWireOut(@Nullable Wiring w, boolean preOrPost) {
-        this.wiringOut = preOrPost ? w : null;
+        this.beingWiredOut = preOrPost ? w : null;
         if (!preOrPost) {
             onWired(w);
         }
@@ -194,13 +190,14 @@ public class Port extends Widget implements Wiring.Wireable {
 
     @Override
     public void prePaint(int dtMS) {
-        if (updater!=null)
-            updater.value(0, this);
+        IntObjectProcedure<Port> u = this.updater;
+        if (u !=null)
+            u.value(dtMS, this);
 
         super.prePaint(dtMS);
     }
 
-    public void out(Object x) {
+    public final void out(Object x) {
         out(this, x);
     }
 
@@ -209,8 +206,9 @@ public class Port extends Widget implements Wiring.Wireable {
         synchronized(this) {
             super.start(parent);
             this.node = parent(PhyWall.class).links.addNode(this);
-            if (updater!=null)
-                updater.value(0, this);
+            IntObjectProcedure<Port> u = this.updater;
+            if (u !=null)
+                u.value(0, this);
         }
     }
 
@@ -223,7 +221,7 @@ public class Port extends Widget implements Wiring.Wireable {
         }
     }
 
-    protected void out(Port sender, Object x) {
+    protected final void out(Port sender, Object x) {
         //TODO optional transfer function
         if (enabled) {
             node.edges(true, true).forEach(t -> t.id.in(sender, x));
