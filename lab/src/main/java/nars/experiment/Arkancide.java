@@ -48,21 +48,14 @@ public class Arkancide extends NAgentX {
 
         NAR nar = runRT((NAR n) -> {
 
-            Arkancide a = null;
-
-            try {
-                //n.truthResolution.setValue(.06f);
-
-                a = new Arkancide(n, cam, numeric);
+            Arkancide a = new Arkancide(n, cam, numeric);
                 //a.curiosity.setValue(0.05f);
 
                 //a.trace = true;
                 //((RealTime)a.nar.time).durSeconds(0.05f);
                 //a.nar.log();
 
-            } catch (Narsese.NarseseException e) {
-                e.printStackTrace();
-            }
+
 
             //new RLBooster(a, HaiQAgent::new, 2 );
 
@@ -91,11 +84,11 @@ public class Arkancide extends NAgentX {
     }
 
 
-    public Arkancide(NAR nar) throws Narsese.NarseseException {
+    public Arkancide(NAR nar) {
         this(nar, true, true);
     }
 
-    public Arkancide(NAR nar, boolean cam, boolean numeric) throws Narsese.NarseseException {
+    public Arkancide(NAR nar, boolean cam, boolean numeric)  {
         super("noid", nar);
         //super(nar, HaiQAgent::new);
 
@@ -134,10 +127,10 @@ public class Arkancide extends NAgentX {
 
 
         if (numeric) {
-            senseNumberBi($.the("px"), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
-            senseNumberBi($.the("dx"), (() -> Math.abs(noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
-            senseNumberBi($.the("bx"), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
-            senseNumberBi($.the("by"), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
+            senseNumber($.the("px"), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
+            senseNumber($.the("dx"), (() -> Math.abs(noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
+            senseNumber($.the("bx"), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
+            senseNumber($.the("by"), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
             //SensorConcept d = senseNumber("noid:bvx", new FloatPolarNormalized(() -> noid.ball.velocityX)).resolution(0.25f);
             //SensorConcept e = senseNumber("noid:bvy", new FloatPolarNormalized(() -> noid.ball.velocityY)).resolution(0.25f);
 
@@ -149,14 +142,14 @@ public class Arkancide extends NAgentX {
 //            SpaceGraph.window(Vis.beliefCharts(100,
 //                    Lists.newArrayList(ab.term(), a.term(), b.term(), c.term()),
 //                    nar), 600, 600);
-            Param.DEBUG = true;
-            nar.onTask(t -> {
-                if (//t instanceof DerivedTask &&
-                        //t.isEternal()) {
-                        t.isGoal()) {
-                    System.err.println(t.proof());
-                }
-            });
+//            Param.DEBUG = true;
+//            nar.onTask(t -> {
+//                if (//t instanceof DerivedTask &&
+//                        //t.isEternal()) {
+//                        t.isGoal()) {
+//                    System.err.println(t.proof());
+//                }
+//            });
 
 //            window(Vis.beliefCharts(64, java.util.List.of(px, dx, bx, by), nar), 300, 300);
 //
@@ -248,7 +241,7 @@ public class Arkancide extends NAgentX {
     private void initBipolarRelative() {
         actionBipolar($.the("X"), false, (dx) -> {
 
-            System.out.println(dx);
+            //System.out.println(dx);
             if (noid.paddle.move(dx * paddleSpeed))
                 return dx;
             else

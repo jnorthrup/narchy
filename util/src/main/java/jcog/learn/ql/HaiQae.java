@@ -1,5 +1,7 @@
 package jcog.learn.ql;
 
+import jcog.decide.DecideEpsilonGreedy;
+import jcog.decide.Deciding;
 import jcog.learn.Autoencoder;
 import jcog.math.FloatSupplier;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +28,10 @@ public class HaiQae extends HaiQ {
 
     //float aeForget = 1f;
 
+    /**
+     * "horizontal" state selection
+     */
+    protected final Deciding decideState;
 
     public HaiQae(int inputs, int outputs) {
         this(inputs,
@@ -45,6 +51,11 @@ public class HaiQae extends HaiQ {
         this.perceptionError =
                 ()->0.01f;
                 //FloatAveragedAsync.averaged(()->lastPerceptionError, inputs/2);
+
+        decideState =
+                DecideEpsilonGreedy.ArgMax;
+                //new DecideSoftmax(0.25f, rng);
+
         this.ae = perception(inputs, states);
     }
 

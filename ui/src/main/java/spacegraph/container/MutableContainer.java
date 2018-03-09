@@ -90,6 +90,11 @@ public class MutableContainer extends Container {
         return existing;
     }
 
+    public void addAll(Surface... s) {
+        for (Surface x : s)
+            add(x);
+    }
+
     public void add(Surface s) {
         synchronized (children) {
 

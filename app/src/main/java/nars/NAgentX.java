@@ -48,6 +48,7 @@ import java.util.function.IntConsumer;
 import java.util.function.Supplier;
 
 import static nars.$.$;
+import static nars.$.$safe;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static spacegraph.container.Gridding.col;
@@ -710,12 +711,11 @@ abstract public class NAgentX extends NAgent {
     /**
      * pixelTruth defaults to linear monochrome brightness -> frequency
      */
-    protected Bitmap2DSensor senseCamera(String id, Container w, int pw, int ph) throws Narsese.NarseseException {
+    protected Bitmap2DSensor senseCamera(String id, Container w, int pw, int ph) {
         return senseCamera(id, new SwingBitmap2D(w), pw, ph);
     }
 
-    protected Bitmap2DSensor<Scale> senseCamera(String id, Supplier<BufferedImage> w, int pw, int ph) throws
-            Narsese.NarseseException {
+    protected Bitmap2DSensor<Scale> senseCamera(String id, Supplier<BufferedImage> w, int pw, int ph)  {
         return senseCamera(id, new Scale(w, pw, ph));
     }
 
@@ -744,15 +744,13 @@ abstract public class NAgentX extends NAgent {
         return senseCamera(id, pb);
     }
 
-    protected Bitmap2DSensor<WaveletBag> senseCameraFreq(String id, Supplier<BufferedImage> w, int pw, int ph) throws
-            Narsese.NarseseException {
+    protected Bitmap2DSensor<WaveletBag> senseCameraFreq(String id, Supplier<BufferedImage> w, int pw, int ph) {
         WaveletBag pb = new WaveletBag(w, pw, ph);
         return senseCamera(id, pb);
     }
 
-    protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable String id, C bc) throws
-            Narsese.NarseseException {
-        return senseCamera(id != null ? $(id) : null, bc);
+    protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable String id, C bc) {
+        return senseCamera(id != null ? $safe(id) : null, bc);
     }
 
     protected <C extends Bitmap2D> Bitmap2DSensor<C> senseCamera(@Nullable Term id, C bc) {

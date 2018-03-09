@@ -98,7 +98,7 @@ public interface Priority extends Prioritized {
      */
     float priSet(float p);
 
-    default void priSet(/*@NotNull*/ Prioritized p) {
+    default void priSet(Prioritized p) {
         priSet(p.pri());
     }
 

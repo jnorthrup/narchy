@@ -4,8 +4,7 @@ import jcog.decide.DecideEpsilonGreedy;
 import jcog.decide.Deciding;
 import jcog.learn.Agent;
 import jcog.math.FloatRange;
-import jcog.math.random.XorShift128PlusRandom;
-import org.apache.commons.lang3.mutable.MutableFloat;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 
 import java.util.Random;
 
@@ -14,10 +13,7 @@ import java.util.Random;
  */
 public class HaiQ extends Agent {
 
-    public final Random rng;
-
-    //@NotNull
-    //final Hsom som;
+    protected final Random rng;
 
     public float[][] q; // state x action
     public float[][] et;
@@ -56,22 +52,21 @@ public class HaiQ extends Agent {
      * state values which might have been incorrectly reinforced and create a
      * more defined path to the goal in fewer episodes.
      */
-    public float Gamma, Lambda;
+    public final FloatRange Gamma = new FloatRange(0, 0, 1f);
 
-    public final MutableFloat Alpha = new FloatRange(0, 0, 1f);
+    public final FloatRange Lambda = new FloatRange(0, 0, 1f);
+
+    public final FloatRange Alpha = new FloatRange(0, 0, 1f);
 
     /** input selection; HaiQAgent will not use this in its override of perceive */
-    private final Deciding decideInput;
+    public final Deciding decideInput;
 
-    /**
-     * "horizontal" state selection
-     */
-    protected final Deciding decideState;
+
 
     /**
      * "vertical" action selection
      */
-    protected final Deciding decideAction;
+    public final Deciding decideAction;
 
     public HaiQ(int inputs, int actions) {
         super(inputs, actions);
@@ -80,16 +75,13 @@ public class HaiQ extends Agent {
         et = new float[inputs][actions];
 
         setQ(0.1f, 0.5f, 0.75f); // 0.1 0.5 0.9
-        rng = new XorShift128PlusRandom();
+        rng = new XoRoShiRo128PlusRandom(1);
 
         //HaiQ only
         decideInput =
                 DecideEpsilonGreedy.ArgMax;
                 //new DecideSoftmax(0.25f, rng);
 
-        decideState =
-                DecideEpsilonGreedy.ArgMax;
-                //new DecideSoftmax(0.25f, rng);
 
         decideAction =
                 new DecideEpsilonGreedy(0.03f, rng);
@@ -115,7 +107,7 @@ public class HaiQ extends Agent {
 
             //SARSA? (see: http://www.cse.unsw.edu.au/~cs9417ml/RL1/source/RLearner.java )
             float lastQ = q[lastState][lastAction];
-            float delta = reward + (Gamma * q[state][action]) - lastQ;
+            float delta = reward + (Gamma.floatValue() * q[state][action]) - lastQ;
             q[state][action] = lastQ +
                     (learningFactor * Alpha.floatValue()) *
                             delta;
@@ -160,7 +152,7 @@ public class HaiQ extends Agent {
         float[][] et = this.et;
 
         float alphaDelta = alpha * deltaQ;
-        float gammaLambda = Gamma * Lambda;
+        float gammaLambda = Gamma.floatValue() * Lambda.floatValue();
 
 
         for (int i = 0; i < inputs; i++) {
@@ -198,8 +190,8 @@ public class HaiQ extends Agent {
 
     public void setQ(float alpha, float gamma, float lambda) {
         Alpha.set(alpha);
-        Gamma = gamma;
-        Lambda = lambda;
+        Gamma.set(gamma);
+        Lambda.set(lambda);
     }
 
     /**

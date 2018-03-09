@@ -9,6 +9,7 @@ import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import nars.concept.ActionConcept;
 import nars.concept.Concept;
+import nars.concept.ScalarConcepts;
 import nars.concept.SensorConcept;
 import nars.control.CauseChannel;
 import nars.control.DurService;
@@ -52,6 +53,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     public final Map<SensorConcept, CauseChannel<ITask>> sensors = new LinkedHashMap();
 
+    @Deprecated public final Set<ScalarConcepts> senseNums = new LinkedHashSet<>();
     @Deprecated public final Set<Bitmap2DSensor<?>> sensorCam = new LinkedHashSet<>();
 
     public final Map<ActionConcept, CauseChannel<ITask>> actions = new LinkedHashMap();
@@ -701,6 +703,9 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     @Override
     public DurService onFrame(Consumer/*<NAR>*/ each) {
+        if (each instanceof ScalarConcepts) {
+            senseNums.add((ScalarConcepts)each);
+        }
         return DurService.on(nar, ()->{ if (enabled.get()) each.accept(nar); });
     }
 

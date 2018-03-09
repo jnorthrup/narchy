@@ -34,15 +34,12 @@ public class Pacman extends NAgentX {
                     BufferedImageBitmap2D.ColorMode.G,
                     BufferedImageBitmap2D.ColorMode.B
             }) {
-                try {
                     senseCamera("(G,c" + cm.name() + ")",
                             camScale.filter(cm)//.blur()
                     )
                             .resolution(0.1f);
 
-                } catch (Narsese.NarseseException e) {
-                    e.printStackTrace();
-                }
+
             }
 
         actionTriState($.p(id, Atomic.the("x")), (dh) -> {
