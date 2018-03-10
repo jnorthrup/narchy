@@ -758,7 +758,7 @@ public abstract class Tuple2f implements java.io.Serializable, Cloneable {
         return new v2(x - u.x, y - u.y);
     }
 
-    public Tuple2f scale(float s) {
+    public v2 scale(float s) {
         return new v2(x * s, y * s);
     }
 

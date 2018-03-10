@@ -45,6 +45,8 @@ public class RLBooster implements Consumer<NAR> {
         this(env, rl, actionDiscretization, true);
     }
 
+    public int actions() { return outD; }
+
     /**
      *
      * @param env

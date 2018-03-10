@@ -72,4 +72,13 @@ public class Wire {
         }
     }
 
+    public boolean connect() {
+        if (a instanceof Port && b instanceof Port) {
+            synchronized (this) {
+                return ((Port) a).connected((Port) b) && ((Port) b).connected((Port) a);
+            }
+        }
+
+        return true;
+    }
 }

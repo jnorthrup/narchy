@@ -80,7 +80,7 @@ public class Body2D extends Transform {
     /**
      * linear velocity
      */
-    public final Tuple2f vel = new v2();
+    public final v2 vel = new v2();
 
     /**
      * angular velocity
@@ -480,7 +480,7 @@ public class Body2D extends Transform {
      *
      * @return the linear velocity of the center of mass.
      */
-    public final Tuple2f getLinearVelocity() {
+    public final v2 getLinearVelocity() {
         return vel;
     }
 
@@ -847,8 +847,8 @@ public class Body2D extends Transform {
      * @param localVector a vector fixed in the body.
      * @return the same vector expressed in world coordinates.
      */
-    public final Tuple2f getWorldVector(Tuple2f localVector) {
-        Tuple2f out = new v2();
+    public final v2 getWorldVector(Tuple2f localVector) {
+        v2 out = new v2();
         getWorldVectorToOut(localVector, out);
         return out;
     }

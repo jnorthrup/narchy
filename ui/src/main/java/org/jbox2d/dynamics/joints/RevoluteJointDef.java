@@ -81,17 +81,17 @@ public class RevoluteJointDef extends JointDef {
     /**
      * A flag to enable joint limits.
      */
-    public final boolean enableLimit;
+    public boolean enableLimit;
 
     /**
      * The lower angle for the joint limit (radians).
      */
-    public final float lowerAngle;
+    public float lowerAngle;
 
     /**
      * The upper angle for the joint limit (radians).
      */
-    public final float upperAngle;
+    public float upperAngle;
 
     /**
      * A flag to enable the joint motor.

@@ -659,8 +659,13 @@ public class PhyWall extends Wall implements Animated {
                     }
                 }
 
+                if (!wire.connect()) {
+                    return null;
+                }
+
                 NodeGraph.MutableNode<Surface, Wire> B = links.addNode(bb);
                 links.addEdge(A, wire, B);
+
 
 
                 W.invoke(() -> {

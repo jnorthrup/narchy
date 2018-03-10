@@ -11,8 +11,8 @@ import spacegraph.input.Wiring;
 import spacegraph.render.Draw;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Type;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /** base class for a port implementation
  * @see http://rawbots.wikia.com/wiki/Category:Visual_Programming_Operands
@@ -25,9 +25,17 @@ public class Port extends Widget implements Wiring.Wireable {
 
     /** input handler */
     private In in = null;
+
+    /** prototype (example) builder.  stipulates a protocol as specified by an example instance */
+    private Supplier specifyHow = null;
+
+    /** prototype (example) acceptor. accepts a protocol (on connect / re-connect) */
+    private Consumer obeyHow = null;
+
     private IntObjectProcedure<Port> updater = null;
 
     private transient NodeGraph.Node<Surface, Wire> node;
+
 
 
     public Port() {
@@ -46,12 +54,22 @@ public class Port extends Widget implements Wiring.Wireable {
     }
 
 
-    public Port on(Consumer i) {
-        return on((w,x)->i.accept(x));
+    public <X> Port on(Consumer<X> i) {
+        return on((Wire w,X x)->i.accept(x));
+    }
+
+    public <X> Port specify(Supplier<X> proto) {
+        this.specifyHow = proto;
+        return this;
+    }
+
+    public <X> Port obey(Consumer<X> withRecievedProto) {
+        this.obeyHow = withRecievedProto;
+        return this;
     }
 
     /** set the input handler */
-    public Port on(@Nullable In i) {
+    public <X> Port on(@Nullable In<X> i) {
         this.in = i; return this;
     }
 
@@ -81,6 +99,23 @@ public class Port extends Widget implements Wiring.Wireable {
         return enabled;
     }
 
+    public boolean connected(Port other) {
+        if (other.specifyHow !=null) {
+
+            if (specifyHow!=null) {
+                //both specify a protocol, so test that the spec matches
+                return specifyHow.get().equals(other.specifyHow.get());
+            }
+
+            if (obeyHow!=null) {
+                //teach how to obey the protocol
+                obeyHow.accept(other.specifyHow.get());
+            }
+        }
+
+        return true;
+    }
+
     @FunctionalInterface
     public interface In<T> {
 
@@ -90,11 +125,13 @@ public class Port extends Widget implements Wiring.Wireable {
          * */
 
         /** test before typed wire connection */
-        default boolean accept(Type t) {
+        default boolean accept(T proto) {
             return true;
         }
 
         void accept(Wire from, T t);
+
+
 
     }
 

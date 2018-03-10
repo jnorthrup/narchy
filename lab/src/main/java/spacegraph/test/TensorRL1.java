@@ -83,7 +83,7 @@ public class TensorRL1 {
             final Port sensePort = new Port();
             final DummyAgent[] agent = new DummyAgent[]{new DummyAgent(1, 1)};
 
-            new RLBooster(a, (int ii, int aa) -> {
+            RLBooster adapter = new RLBooster(a, (int ii, int aa) -> {
                 return agent[0] = new DummyAgent(ii, aa) {
                     @Override
                     public int act(float r, float[] nextObservation) {
@@ -98,11 +98,37 @@ public class TensorRL1 {
                     new LabeledPane(a.getClass().getSimpleName(), new AutoSurface<>(a)),
                     new LabeledPane("sense", sensePort),
                     new LabeledPane("reward", rewardPort),
-                    new LabeledPane("act", new Port().on((i) -> {
-                        agent[0].nextAct = (int) i;
-                    }))
+                    new LabeledPane("act", new Port()
+                        .specify(
+                            ()->new IntRange(-1, 0, adapter.actions()))
+                        .on((IntRange i) -> {
+                            assert(i.min == 0 && i.max == adapter.actions());
+                            agent[0].nextAct = i.intValue();
+                        }))
             );
 
+        }
+
+        private static class DummyAgent extends Agent {
+
+            public float[] sense;
+            public int nextAct;
+            public float reward;
+
+            public DummyAgent(int ii, int aa) {
+                super(ii, aa);
+                sense = new float[1];
+                nextAct = 0;
+                reward = 0;
+            }
+
+            @Override
+            public int act(float reward, float[] nextObservation) {
+                this.sense = nextObservation;
+                this.reward = reward;
+
+                return nextAct;
+            }
         }
     }
 
@@ -177,12 +203,12 @@ public class TensorRL1 {
 
         class Config {
 
-            public final IntRange actions = new IntRange(2, 2, 16);
+            int actions = 1;
 
             protected synchronized void reset(boolean resetAgent, boolean resetView) {
 
                 if (resetAgent) {
-                    agent = builder.apply(in.length, config.actions.intValue());
+                    agent = builder.apply(in.length, actions);
                 }
 
                 if (resetView) {
@@ -204,7 +230,7 @@ public class TensorRL1 {
             }
 
             public void update(float[] i) {
-                if (in.length != i.length || config.actions.intValue() != agent.actions) {
+                if (in.length != i.length || config.actions != agent.actions) {
                     in = i;
                     reset(true, true);
                 } else if (i != in) {
@@ -226,7 +252,10 @@ public class TensorRL1 {
             config.reset(true, true);
 
             Label actionLabel = new Label("");
-            ACTION = new Port();
+            ACTION = new Port().obey(((IntRange p)->{
+                assert(p.min == 0);
+                config.actions = p.max;
+            }));
             ACTION.update(() -> {
                 actionLabel.text(String.valueOf(lastAction));
             }).content(new Scale(actionLabel, 0.5f));
@@ -242,7 +271,7 @@ public class TensorRL1 {
 
                         lastAction = a;
 
-                        ACTION.out(a);
+                        ACTION.out(new IntRange(a, 0, config.actions));
                     })),
 
                     new LabeledPane("input", INPUT = new Port((float[] i) -> {
@@ -322,25 +351,4 @@ public class TensorRL1 {
         }
     }
 
-    private static class DummyAgent extends Agent {
-
-        public float[] sense;
-        public int nextAct;
-        public float reward;
-
-        public DummyAgent(int ii, int aa) {
-            super(ii, aa);
-            sense = new float[1];
-            nextAct = 0;
-            reward = 0;
-        }
-
-        @Override
-        public int act(float reward, float[] nextObservation) {
-            this.sense = nextObservation;
-            this.reward = reward;
-
-            return nextAct;
-        }
-    }
 }

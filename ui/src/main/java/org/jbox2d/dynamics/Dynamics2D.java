@@ -299,6 +299,12 @@ public class Dynamics2D {
     public Body2D addBody(BodyDef def) {
         return addBody(new Body2D(def, this));
     }
+    public Body2D addDynamic(FixtureDef def) {
+        return addBody(new BodyDef(BodyType.DYNAMIC), def);
+    }
+    public Body2D addStatic(FixtureDef def) {
+        return addBody(new BodyDef(BodyType.STATIC), def);
+    }
 
     public Body2D addBody(BodyDef def, FixtureDef... fd) {
         return addBody(new Body2D(def, this), fd);

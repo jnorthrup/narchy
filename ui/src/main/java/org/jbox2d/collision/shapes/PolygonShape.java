@@ -23,7 +23,6 @@
  ******************************************************************************/
 package org.jbox2d.collision.shapes;
 
-import jcog.Util;
 import org.jbox2d.collision.AABB;
 import org.jbox2d.collision.RayCastInput;
 import org.jbox2d.collision.RayCastOutput;
@@ -93,6 +92,16 @@ public class PolygonShape extends Shape {
         centroid.setZero();
     }
 
+    public PolygonShape(float... xy) {
+        this(xy.length/2);
+        Tuple2f[] t = new Tuple2f[xy.length/2];
+        int j = 0;
+        for (int i = 0; i< xy.length; i+=2) {
+            t[j++] = new v2(xy[i], xy[i+1]);
+        }
+        set(t, xy.length/2);
+    }
+
     public final Shape clone() {
         PolygonShape shape = new PolygonShape(vertex.length);
         shape.centroid.set(this.centroid);
@@ -114,7 +123,7 @@ public class PolygonShape extends Shape {
      * @warning the points may be re-ordered, even if they form a convex polygon.
      * @warning collinear points are removed.
      */
-    public final void set(final Tuple2f[] verts, final int num) {
+    public final PolygonShape set(final Tuple2f[] verts, final int num) {
         assert (3 <= num && num <= Settings.maxPolygonVertices);
 
         // Create the convex hull using the Gift wrapping algorithm
@@ -189,12 +198,16 @@ public class PolygonShape extends Shape {
 
         // Compute the polygon centroid.
         computeCentroidToOut(vertex, vertices, centroid);
+
+        return this;
     }
 
     public static PolygonShape box(final float hx, final float hy) {
         return new PolygonShape(4).setAsBox(hx, hy);
     }
-
+    public static PolygonShape box(float x1, float y1, float x2, float y2) {
+        return new PolygonShape(4).setAsBox(x1, y1, x2, y2);
+    }
     /**
      * Build vertices to represent an axis-aligned box.
      *
@@ -215,17 +228,17 @@ public class PolygonShape extends Shape {
         return this;
     }
 
-    public final org.jbox2d.collision.shapes.PolygonShape lerpAsBox(final float hx, final float hy, float rate) {
-        if (vertices!=4) {
-            return setAsBox(0.1f, 0.1f); //TODO epsilon
-        } else {
-            float currentWidth = vertex[1].x;
-            float currentHeight = -vertex[1].y;
-            float nextWidth = Util.lerp(rate, currentWidth, hx);
-            float nextHeight = Util.lerp(rate, currentHeight, hy);
-            return setAsBox(nextWidth, nextHeight);
-        }
-    }
+//    public final org.jbox2d.collision.shapes.PolygonShape lerpAsBox(final float hx, final float hy, float rate) {
+//        if (vertices!=4) {
+//            return setAsBox(0.1f, 0.1f); //TODO epsilon
+//        } else {
+//            float currentWidth = vertex[1].x;
+//            float currentHeight = -vertex[1].y;
+//            float nextWidth = Util.lerp(rate, currentWidth, hx);
+//            float nextHeight = Util.lerp(rate, currentHeight, hy);
+//            return setAsBox(nextWidth, nextHeight);
+//        }
+//    }
 
     public final static org.jbox2d.collision.shapes.PolygonShape regular(int n, float r) {
         PolygonShape p = new PolygonShape(n);
@@ -247,7 +260,7 @@ public class PolygonShape extends Shape {
      * @param center the center of the box in local coordinates.
      * @param angle  the rotation of the box in local coordinates.
      */
-    public final void setAsBox(final float hx, final float hy, final Tuple2f center, final float angle) {
+    public final PolygonShape setAsBox(final float hx, final float hy, final Tuple2f center, final float angle) {
         vertices = 4;
         vertex[0].set(-hx, -hy);
         vertex[1].set(hx, -hy);
@@ -268,8 +281,33 @@ public class PolygonShape extends Shape {
             Transform.mulToOut(xf, vertex[i], vertex[i]);
             Rot.mulToOut(xf, normals[i], normals[i]);
         }
+        return this;
     }
+    public final PolygonShape setAsBox(float x1, float y1, float x2, float y2) {
+        vertices = 4;
+        vertex[0].set(x1, y1);
+        vertex[1].set(x2, y1);
+        vertex[2].set(x2, y2);
+        vertex[3].set(x1, y2);
+        normals[0].set(0.0f, -1.0f);
+        normals[1].set(1.0f, 0.0f);
+        normals[2].set(0.0f, 1.0f);
+        normals[3].set(-1.0f, 0.0f);
 
+        v2 center = new v2((x1+x2)/2, (y1+y2)/2);
+        centroid.set(center);
+
+        final Transform xf = poolt1;
+        xf.pos.set(center);
+        xf.set(0);
+
+        // Transform vertices and normals.
+        for (int i = 0; i < vertices; ++i) {
+            Transform.mulToOut(xf, vertex[i], vertex[i]);
+            Rot.mulToOut(xf, normals[i], normals[i]);
+        }
+        return this;
+    }
     public int getChildCount() {
         return 1;
     }
