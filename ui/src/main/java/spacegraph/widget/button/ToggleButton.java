@@ -1,5 +1,6 @@
 package spacegraph.widget.button;
 
+import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectBooleanProcedure;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,6 +39,10 @@ public abstract class ToggleButton extends AbstractButton {
 
     public boolean get() {
         return on.get();
+    }
+
+    public ToggleButton on(BooleanProcedure a) {
+        return on((thizz, x)->a.value(x));
     }
 
     public ToggleButton on(ObjectBooleanProcedure<ToggleButton> a) {

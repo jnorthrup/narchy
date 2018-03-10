@@ -6,10 +6,10 @@ import jcog.data.graph.ImmutableDirectedEdge;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.NodeGraph;
 import jcog.event.On;
-import jcog.util.ArrayIterator;
 import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.util.ArrayIterator;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jbox2d.collision.AABB;
 import org.jbox2d.collision.RayCastInput;
@@ -40,12 +40,16 @@ import spacegraph.render.Draw;
 import spacegraph.render.SpaceGraphFlat;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.PushButton;
+import spacegraph.widget.button.ToggleButton;
 import spacegraph.widget.meta.ProtoWidget;
 import spacegraph.widget.meta.WizardFrame;
+import spacegraph.widget.tab.ButtonSet;
+import spacegraph.widget.tab.TabPane;
 import spacegraph.widget.text.Label;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -345,7 +349,10 @@ public class PhyWall extends Wall implements Animated {
         return s;
     }
 
-    protected Snake snake(Surface source, Surface target, Runnable onRemove) {
+    protected Snake snake(Wire wire, Runnable onRemove) {
+        Surface source = wire.a;
+        Surface target = wire.b;
+
         assert (source != target);
 
         float sa = source.bounds.area();
@@ -354,8 +361,49 @@ public class PhyWall extends Wall implements Animated {
 
         int segments = Util.lerp(areaDiff, 8, 6); //heuristic estimate: larger area difference = shorter snake
 
-        PushButton menu;
-        PhyWindow menuBody = addWindow(new Gridding(0.25f, menu = new PushButton("o")),
+        float EXPAND_SCALE_FACTOR = 4;
+
+        PushButton deleteButton = new PushButton("x");
+        Surface menu = new TabPane(ButtonSet.Mode.Multi, Map.of("o", ()->new Gridding(
+                new Label(source.toString()),
+                new Label(target.toString()),
+                deleteButton
+        )), (l)->new CheckBox(l) {
+            @Override
+            protected String label(String text, boolean on) {
+                return text; //override just display the 'o'
+            }
+
+            @Override
+            public ToggleButton set(boolean expanded) {
+
+                super.set(expanded);
+
+                synchronized (wire) {
+
+                    PhyWindow w = parent(PhyWindow.class);
+                    if (w == null)
+                        return this;
+                    float cx = w.cx();
+                    float cy = w.cy();
+                    float ww, hh;
+                    if (expanded) {
+                        //grow
+                        ww = w.w() * EXPAND_SCALE_FACTOR;
+                        hh = w.h() * EXPAND_SCALE_FACTOR;
+                    } else {
+                        //shrink
+                        ww = w.w() / EXPAND_SCALE_FACTOR;
+                        hh = w.h() / EXPAND_SCALE_FACTOR;
+                    }
+                    w.pos(cx - ww / 2, cy - hh / 2, cx + ww / 2, cy + hh / 2);
+                }
+
+                return this;
+            }
+        });
+
+        PhyWindow menuBody = addWindow(menu,
                 RectFloat2D.mid(source.bounds, target.bounds, 0.1f));
 
         float mw = menuBody.radius();
@@ -372,7 +420,7 @@ public class PhyWall extends Wall implements Animated {
 
         s.attach(menuBody.body, segments / 2 - 1);
 
-        menu.click(s::remove);
+        deleteButton.click(s::remove);
 
         return s;
     }
@@ -681,7 +729,7 @@ public class PhyWall extends Wall implements Animated {
                         //RAW unidirectional
                         //RopeJoint ropeJoint = rope(aa, bb);
                         //ropeJoint.setData(wire);
-                        Snake s = snake(aa, bb, () -> {
+                        Snake s = snake(wire, () -> {
                             unlink(aa, bb);
                         });
 

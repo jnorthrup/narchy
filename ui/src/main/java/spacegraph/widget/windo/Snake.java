@@ -132,14 +132,14 @@ public class Snake {
     }
 
     private class MyRevoluteJoint extends RevoluteJoint {
-        private final Body2D finalFrom;
+        private final Body2D from;
         private final Surface source;
         private final Body2D to;
         private final Surface target;
 
-        public MyRevoluteJoint(Dynamics2D w, RevoluteJointDef jd, Body2D finalFrom, Surface source, Body2D to, Surface target) {
+        public MyRevoluteJoint(Dynamics2D w, RevoluteJointDef jd, Body2D from, Surface source, Body2D to, Surface target) {
             super(w, jd);
-            this.finalFrom = finalFrom;
+            this.from = from;
             this.source = source;
             this.to = to;
             this.target = target;
@@ -149,7 +149,7 @@ public class Snake {
         @Override
         public boolean solvePositionConstraints(SolverData data) {
             //calc relative position of the surface within the body, allowing distinct positions of multiple ports at different positions in one body
-            if (finalFrom == sourceBody) {
+            if (from == sourceBody) {
                 if (source.parent == null) {
                     remove();
 

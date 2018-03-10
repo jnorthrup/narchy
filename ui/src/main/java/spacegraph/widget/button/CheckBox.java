@@ -51,9 +51,14 @@ public class CheckBox extends ToggleButton {
 
     @Override
     public ToggleButton set(boolean on) {
-        label.text((on ? "[X] " : "[ ] ") + text);
+        label.text(label(text, on));
         super.set(on);
         return this;
+    }
+
+
+    protected String label(String text, boolean on) {
+        return (on ? "[X] " : "[ ] ") + text;
     }
 
     public void setText(String s) {

@@ -274,13 +274,13 @@ public class TensorRL1 {
                         ACTION.out(new IntRange(a, 0, config.actions));
                     })),
 
-                    new LabeledPane("input", INPUT = new Port((float[] i) -> {
+                    new LabeledPane("sense", INPUT = new Port((float[] i) -> {
                         config.update(i);
                     })),
 
                     view,
 
-                    new LabeledPane("action", ACTION)
+                    new LabeledPane("act", ACTION)
 
             );
 

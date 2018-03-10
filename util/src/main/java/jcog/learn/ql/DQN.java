@@ -14,7 +14,7 @@ public class DQN extends ReinforceJSAgent {
 
     @Override
     String getAgentInitCode(int inputs, int actions) {
-        int hiddens = 1 * inputs * actions; //heuristic
+        int hiddens = 2 * inputs * actions; //heuristic
         String spec = "{ alpha: " + alpha + ", epsilon: " + epsilon + ", num_hidden_units: " + hiddens + " }";
         return "var agent = new RL.DQNAgent(env, " + spec + "); ";
     }
