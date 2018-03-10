@@ -76,10 +76,10 @@ public abstract class PixelBag implements Bitmap2D {
             }
 
             @Override
-            public void update(float frameRate) {
+            public void update() {
                 b = bb.get();
                 if (b != null)
-                    super.update(frameRate);
+                    super.update();
 
             }
 
@@ -109,7 +109,7 @@ public abstract class PixelBag implements Bitmap2D {
     abstract public int sh();
 
     @Override
-    public void update(float frameRate) {
+    public void update() {
 
         int sw = sw();
         int sh = sh();

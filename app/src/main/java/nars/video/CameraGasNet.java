@@ -108,7 +108,7 @@ public class CameraGasNet<P extends Bitmap2D> implements Consumer<NAR> {
     @Override
     public void accept(NAR n) {
 
-        src.update(1);
+        src.update();
 
         int width = src.width();
         int height = src.height();

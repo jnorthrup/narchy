@@ -10,7 +10,8 @@ import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
 import nars.experiment.mario.Scene;
 import nars.experiment.mario.sprites.Mario;
-import nars.video.Eye;
+import nars.term.Term;
+import nars.util.signal.Bitmap2DSensor;
 import nars.video.PixelBag;
 
 import javax.swing.*;
@@ -58,10 +59,9 @@ public class NARio extends NAgentX {
         cc.actions.forEach(a -> a.resolution.set(0.25f));
         //cc.setClarity(0.8f, 0.95f);
 
-        Eye eye = new Eye(nar, cc);
+        //Eye eye = new Eye(nar, cc);
 
-        /*Bitmap2DSensor<PixelBag> sc = addCamera(new Bitmap2DSensor<>(id, cc, this))
-                .resolution(0.02f);*/
+        addCamera(new Bitmap2DSensor((Term)null, cc, this.nar)).resolution(0.05f);
 
         //new ShapeSensor($.the("shape"), new BufferedImageBitmap2D(()->mario.image),this);
 
@@ -109,9 +109,9 @@ public class NARio extends NAgentX {
         //initToggle();
 
 
-        SensorConcept dvx = senseNumberDifference($safe("nario:vx"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
+        SensorConcept dvx = senseNumberDifference($safe("(v,x)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
                 mario.x : 0).resolution(0.02f);
-        SensorConcept dvy = senseNumberDifference($safe("nario:vy"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
+        SensorConcept dvy = senseNumberDifference($safe("(v,y)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
                 mario.y : 0).resolution(0.02f);
 
 //        window(Vis.beliefCharts(64, concat(dvx,dvy), nar), 300, 300);

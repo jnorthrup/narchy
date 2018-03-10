@@ -717,6 +717,10 @@ public class Derivation extends ProtoDerivation {
     final static BiFunction<Task, Task, Task> DUPLICATE_DERIVATION_MERGE = (pp, tt) -> {
         pp.priMax(tt.pri());
         ((NALTask)pp).causeMerge(tt);
+        if (pp.isCyclic() && !tt.isCyclic()) {
+            //clear cyclic if the other is not cyclic, for fairness
+            pp.setCyclic(false);
+        }
         return pp;
     };
 

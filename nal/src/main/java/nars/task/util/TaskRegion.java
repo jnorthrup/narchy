@@ -5,6 +5,7 @@ import jcog.math.LongInterval;
 import jcog.tree.rtree.HyperRegion;
 import nars.Task;
 import nars.task.Tasked;
+import nars.time.Tense;
 import nars.truth.TruthFunctions;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -88,7 +89,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
             }
         }
         if (start == Long.MAX_VALUE) //nothing or all eternal
-            return Task.ETERNAL_ETERNAL;
+            return Tense.ETERNAL_ETERNAL;
         else
             return new long[]{start, end};
     }

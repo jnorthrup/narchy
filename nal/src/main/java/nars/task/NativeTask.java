@@ -13,9 +13,8 @@ import java.util.function.Consumer;
  * the reasoner remains oblivious of these.
  * but it holds a constant 1.0 priority.
  */
-public abstract class NativeTask implements ITask {
+public abstract class NativeTask implements ITask, Priority {
 
-    @Override
     public byte punc() {
         return 0;
     }
@@ -46,6 +45,20 @@ public abstract class NativeTask implements ITask {
     @Override
     public @Nullable Priority clonePri() {
         throw new UnsupportedOperationException();
+    }
+
+    public abstract ITask run(NAR n);
+
+    public boolean isInput() {
+        return false;
+    }
+
+    /**
+     * fluent form of setPri which returns this class
+     */
+    public ITask pri(float p) {
+        priSet(p);
+        return this;
     }
 
     /**

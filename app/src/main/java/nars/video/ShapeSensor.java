@@ -128,7 +128,7 @@ public class ShapeSensor implements Runnable {
         if (last == ETERNAL)
             last = now;
 
-        input.update(1f);
+        input.update();
 
         if (img == null || img.width != input.width() || img.height != input.height()) {
             //img = new GrayF32(input.width(), input.height());

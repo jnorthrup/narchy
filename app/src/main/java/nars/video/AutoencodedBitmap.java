@@ -42,8 +42,8 @@ public class AutoencodedBitmap implements Bitmap2D {
     }
 
     @Override
-    public void update(float frameRate) {
-        source.update(frameRate);
+    public void update() {
+        source.update();
 
         //image = ConvertBufferedImage.convertFrom(source.get(), image);
         int w = source.width();

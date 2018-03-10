@@ -50,9 +50,9 @@ public class Scale extends BufferedImageBitmap2D implements ImageObserver {
     }
 
     @Override
-    public void update(float frameRate) {
+    public void update() {
         if (src instanceof Bitmap2D)
-            ((Bitmap2D) src).update(frameRate);
+            ((Bitmap2D) src).update();
 
         Image in = src.get();
         if (in == null)

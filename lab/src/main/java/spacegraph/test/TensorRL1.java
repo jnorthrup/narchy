@@ -14,7 +14,7 @@ import jcog.signal.Bitmap2D;
 import nars.NAR;
 import nars.NARS;
 import nars.NAgent;
-import nars.experiment.PoleCart;
+import nars.experiment.NARio;
 import nars.op.RLBooster;
 import spacegraph.Scale;
 import spacegraph.ZoomOrtho;
@@ -45,9 +45,10 @@ public class TensorRL1 {
 
         {
             p.addWindow(new EnvChip(
-                    PoleCart::new
+                    //PoleCart::new
+                    //Recog2D::new
                     //TrackXY::new
-                    //NARio::new
+                    NARio::new
                     //(n) -> new Arkancide(n, false, true)
             ), 1.75f, 1);
         }
@@ -69,7 +70,7 @@ public class TensorRL1 {
         public EnvChip(Function<NAR, NAgent> env) {
             super();
 
-            NAR n = NARS.shell();
+            NAR n = new NARS.DefaultNAR(0, true).get();
 
             NAgent a = env.apply(n);
 
@@ -91,7 +92,16 @@ public class TensorRL1 {
                         return super.act(r, nextObservation);
                     }
                 };
-            }, 1);
+            }, 1) {
+                @Override
+                public void accept(NAR ignored) {
+                    a.sensorCam.forEach(c -> {
+                        c.update();
+                        c.input();
+                    }); //HACK
+                    super.accept(ignored);
+                }
+            };
 
             set(
                     new LabeledPane(a.getClass().getSimpleName(), new AutoSurface<>(a)),
@@ -315,7 +325,8 @@ public class TensorRL1 {
                             new TensorGlow.AutoUpdateMatrixView(ae.vbias)
                     ),
                     new TensorGlow.AutoUpdateMatrixView(ae.W),
-                    new TensorGlow.AutoUpdateMatrixView(ae.y)
+                    new TensorGlow.AutoUpdateMatrixView(ae.y),
+                    new TensorGlow.AutoUpdateMatrixView(ae.z)
             );
 
             //root().info(AutoencoderChip.this, 1, "reset");

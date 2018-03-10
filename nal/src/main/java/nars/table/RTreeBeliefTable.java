@@ -61,8 +61,8 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
             1.5f;
 
 
-    private static final int SCAN_CONF_DIVISIONS = 3;
-    private static final int SCAN_TIME_DIVISIONS = 4;
+    private static final int SCAN_CONF_DIVISIONS_MAX = 2;
+    private static final int SCAN_TIME_DIVISIONS_MAX = 5;
 
     private static final int MIN_TASKS_PER_LEAF = 3;
     private static final int MAX_TASKS_PER_LEAF = 4;
@@ -150,7 +150,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     //taskRelevance(start, end)
                     taskStrength(start, end, dur)
             ), maxTries)
-                    .scan(this, start - dur, end + dur, SCAN_CONF_DIVISIONS);
+                    .scan(this, start - dur, end + dur);
 
             if (!tt.isEmpty()) {
                 return new TruthPolation(start, end, dur, tt).get(ete);
@@ -680,7 +680,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     task(taskStrength),
                     (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)), //maxTries
                     filter)
-                    .scan(this, start, end, SCAN_CONF_DIVISIONS );
+                    .scan(this, start, end);
 
             return Revision.mergeTemporal(nar, tt.list, tt.size());
         }
@@ -701,7 +701,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                     task(taskStrength(template, start, end, dur)),
                     (int) Math.max(1, Math.ceil(capacity * SCAN_QUALITY)), //maxTries
                     filter)
-                .scan(this, start, end, SCAN_CONF_DIVISIONS);
+                .scan(this, start, end);
 
 //            //merge up to the top 2
 //            switch (tt.size()) {
@@ -810,7 +810,7 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
          * however maybe the quality can be specified in terms that are compared
          * only after the pair has been scanned making the order irrelevant.
          */
-        ScanFilter scan(RTreeBeliefTable table, long _start, long _end, int confDivisions) {
+        ScanFilter scan(RTreeBeliefTable table, long _start, long _end) {
 
 
             table.readOptimistic((Space<TaskRegion> tree) -> {
@@ -834,8 +834,14 @@ public abstract class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> imple
                 long start = Math.min(boundsEnd, Math.max(boundsStart, _start));
                 long end = Math.max(boundsStart, Math.min(boundsEnd, _end));
 
+
+                int ss = s / COMPLETE_SCAN_SIZE_THRESHOLD;
+
+                int confDivisions = Math.max(1, Math.min(SCAN_CONF_DIVISIONS_MAX, ss));
+
+                int scanTimeDivisions = Math.max(1, Math.min(SCAN_TIME_DIVISIONS_MAX, ss));
                 long expand = Math.max(1, (
-                        Math.round(((double) (boundsEnd - boundsStart)) / (1 << (1+SCAN_TIME_DIVISIONS))))
+                        Math.round(((double) (boundsEnd - boundsStart)) / (1 << (1+scanTimeDivisions))))
                 );
 
                 //TODO use a polynomial or exponential scan expansion, to start narrow and grow wider faster

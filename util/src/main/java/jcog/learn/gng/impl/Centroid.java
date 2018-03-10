@@ -128,6 +128,31 @@ public class Centroid extends ArrayRealVector {
 
     public interface DistanceFunction {
         double distance(double[] a, double[] b);
+
+        /**
+         * for range normalization
+         * warning: the result here is the Square of the distance, ie. to
+         * avoid needing to calculate sqrt() this can be used in a comparison
+         */
+        static double distanceCartesianSq(double[] x, double[] y) {
+            double s = 0;
+            int l = y.length;
+            for (int i = 0; i < l; i++) {
+                final double d = (y[i] - x[i]);
+                s += d * d;
+            }
+            return s;
+        }
+        static double distanceCartesianManhattan(double[] x, double[] y) {
+            double s = 0;
+            int l = y.length;
+            for (int i = 0; i < l; i++) {
+                final double d = Math.abs(y[i] - x[i]);
+                s += d;
+            }
+            return s;
+        }
+
     }
 
     public double learn(double[] x, DistanceFunction dist) {

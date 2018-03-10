@@ -99,7 +99,7 @@ public class TopCraft extends NAgentX {
         }, 4, this) {
             @Override
             public void accept(NAR n) {
-                p.update(1);
+                p.update();
                 super.accept(n);
             }
         };

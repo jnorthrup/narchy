@@ -10,7 +10,7 @@ public interface Bitmap2D {
     }
 
     /** explicit refresh update the image */
-    default void update(float frameRate) {
+    default void update() {
 
     }
 

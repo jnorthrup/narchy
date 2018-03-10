@@ -3,6 +3,8 @@ package spacegraph.widget.windo;
 import jcog.Util;
 import spacegraph.Surface;
 
+import java.lang.reflect.Array;
+
 /** undirected edge */
 public class Wire {
 
@@ -30,7 +32,7 @@ public class Wire {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(Object obj) {
         if (this == obj) return true;
 
         Wire w = ((Wire)obj);
@@ -38,16 +40,21 @@ public class Wire {
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return hash;
     }
 
     /** sends to target */
-    public boolean in(Surface sender, Object s) {
+    public final boolean in(Surface sender, Object s) {
         if (((Port)other(sender)).in(this, s)) {
             long now = System.currentTimeMillis();
 
-            int th = s.getClass().hashCode();
+            Class<?> cl = s.getClass();
+            int th = cl.hashCode();
+            if (cl.isArray()) {
+                //include the array length as part of the hash to additionally differentiate them
+                th = Util.hashCombine(th, Array.getLength(s));
+            }
 
             if (sender == a) {
                 this.aLastActive = now;
@@ -63,7 +70,7 @@ public class Wire {
         return false;
     }
 
-    public Surface other(Surface x) {
+    public final Surface other(Surface x) {
         if (x == a) {
             return b;
         } else if (x == b) {
@@ -87,7 +94,7 @@ public class Wire {
         }
     }
 
-    public boolean connect() {
+    public final boolean connect() {
         if (a instanceof Port && b instanceof Port) {
             synchronized (this) {
                 return ((Port) a).connected((Port) b) && ((Port) b).connected((Port) a);

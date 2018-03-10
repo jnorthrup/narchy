@@ -2,22 +2,32 @@ package spacegraph.widget.meta;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import com.jogamp.opengl.GL2;
+import jcog.Util;
+import jcog.learn.Autoencoder;
+import jcog.learn.gng.NeuralGasNet;
+import jcog.learn.gng.impl.Centroid;
+import jcog.math.IntRange;
+import jcog.math.random.XoRoShiRo128PlusRandom;
 import org.eclipse.collections.api.tuple.Pair;
 import spacegraph.Surface;
 import spacegraph.audio.AudioSource;
 import spacegraph.audio.WaveCapture;
 import spacegraph.container.Gridding;
 import spacegraph.container.MutableContainer;
+import spacegraph.render.Draw;
 import spacegraph.render.ImageTexture;
 import spacegraph.widget.button.CheckBox;
 import spacegraph.widget.button.IconToggle;
 import spacegraph.widget.button.PushButton;
+import spacegraph.widget.meter.Plot2D;
 import spacegraph.widget.meter.WebCam;
 import spacegraph.widget.tab.ButtonSet;
 import spacegraph.widget.tab.TabPane;
 import spacegraph.widget.text.Label;
 import spacegraph.widget.windo.FloatPort;
 import spacegraph.widget.windo.LabeledPort;
+import spacegraph.widget.windo.Port;
 import spacegraph.widget.windo.Widget;
 
 import java.util.HashMap;
@@ -75,7 +85,8 @@ public class ProtoWidget extends Widget {
         add("PID", TODO, "Control");
 
         add("Text", LabeledPort::generic, "See");
-        add("Plot", TODO, "See");
+        add("Plot", ()->new PlotChip(), "See");
+        add("Cluster2D", ()->new Cluster2DChip(), "See");
         add("Color", TODO, "See");
 
         add("Audio", TODO, "Hear");
@@ -140,4 +151,100 @@ public class ProtoWidget extends Widget {
                         replacement.get()));
     }
 
+    public static class PlotChip extends Gridding {
+        final Port in;
+        private final Plot2D plot;
+        double nextValue = Double.NaN;
+
+        public PlotChip() {
+            super();
+
+            this.plot = new Plot2D(256, Plot2D.Line);
+            plot.add("x", ()->nextValue);
+
+            this.in = new Port().on((Float x)->{
+                nextValue = x;
+                plot.update();
+            });
+
+            set(in, plot);
+
+
+        }
+    }
+    public static class Cluster2DChip extends Gridding {
+
+        private final Port in;
+        private final Surface display;
+
+        Autoencoder ae;
+        NeuralGasNet g;
+        class Config {
+            public final IntRange clusters = new IntRange(16, 2, 32);
+
+            synchronized void reset(int dim) {
+                if (ae == null || ae.inputs()!=dim) {
+                    g = new NeuralGasNet(dim, clusters.intValue(), Centroid.DistanceFunction::distanceCartesianManhattan);
+                    ae = new Autoencoder(dim, 2, new XoRoShiRo128PlusRandom(1));
+                }
+            }
+        }
+
+        final Config config = new Config();
+
+        public Cluster2DChip() {
+            super();
+
+            config.reset(2);
+
+            in = new Port().on((float[] x)->{
+                synchronized (g) {
+                    config.reset(x.length);
+                    g.put(Util.toDouble(x));//Util.toDouble(ae.y));
+                }
+            });
+            display = new Surface() {
+
+                @Override
+                protected void paint(GL2 gl, int dtMS) {
+                    Draw.bounds(gl, bounds, this::paint);
+                }
+
+                protected void paint(GL2 gl) {
+                    synchronized (g) {
+                        NeuralGasNet g = Cluster2DChip.this.g;
+//                        double x1 = Double.POSITIVE_INFINITY;
+//                        double x2 = Double.NEGATIVE_INFINITY;
+//                        double y1 = Double.POSITIVE_INFINITY;
+//                        double y2 = Double.NEGATIVE_INFINITY;
+
+//                        double x1 = 0, y1 = 0, x2 = 1, y2 = 1;
+                        float cw = 0.1f;
+                        float ch = 0.1f;
+                        for (Centroid c : g.centroids) {
+                            float a = (float) (1.0 / (1 + c.localError()));
+                            ae.put(Util.toFloat(c.getDataRef()), a * 0.05f, 0.001f, 0, false);
+                            float x = //c.getEntry(0);
+                                    0.5f*(1+ae.y[0]);
+//                            x1 = Math.min(x, x1);
+//                            x2 = Math.max(x, x2);
+                            float y = //c.getEntry(1);
+                                    0.5f*(1+ae.y[1]);
+//                            y1 = Math.min(y, y1);
+//                            y2 = Math.max(y, y2);
+//                        }
+//                        for (Centroid c : g.centroids) {
+//                            float x = (float) Util.normalize(c.getEntry(0), x1, x2);
+//                            float y = (float) Util.normalize(c.getEntry(1), y1, y2);
+
+                            Draw.colorHash(gl, c.id, a);
+                            Draw.rect(gl, x-cw/2, y-ch/2, cw, ch);
+                        }
+                    }
+                }
+
+            };
+            set(in, new AutoSurface(config), display);
+        }
+    }
 }

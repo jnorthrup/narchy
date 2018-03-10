@@ -20,6 +20,7 @@ public enum Tense {
      * means "always" in Judgment/Question, but "current" in Goal/Quest
      */
     public static final long ETERNAL = LongInterval.ETERNAL;
+    public static final long[] ETERNAL_ETERNAL = {ETERNAL, ETERNAL};
     public static final long TIMELESS = LongInterval.TIMELESS;
 
     /**

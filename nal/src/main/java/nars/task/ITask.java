@@ -23,20 +23,7 @@ import nars.NAR;
  * @param X identifier key
  */
 public interface ITask extends Priority {
-
     ITask run(NAR n);
 
     byte punc();
-
-    default boolean isInput() {
-        return false;
-    }
-
-    /**
-     * fluent form of setPri which returns this class
-     */
-    default ITask pri(float p) {
-        priSet(p);
-        return this;
-    }
 }

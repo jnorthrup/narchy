@@ -420,6 +420,7 @@ public class PhyWall extends Wall implements Animated {
 
             float p = ((float)jj)/(segments-1);
 
+            //custom joint renderer: color coded indicate activity and type of data
             j.setData((ObjectLongProcedure<GL2>) (g, now) -> {
 
                 int TIME_DECAY_MS = 250;

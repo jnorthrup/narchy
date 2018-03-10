@@ -84,7 +84,7 @@ public class BufferedImageBitmap2D implements Bitmap2D, Supplier<BufferedImage> 
 
 
     @Override
-    public void update(float frameRate) {
+    public void update() {
         if (this.source!=null) //get next frame
             out = source.get();
     }
@@ -159,7 +159,7 @@ public class BufferedImageBitmap2D implements Bitmap2D, Supplier<BufferedImage> 
 
     /** for chaining these together */
     @Override public BufferedImage get() {
-        update(1);
+        update();
         return out;
     }
 }

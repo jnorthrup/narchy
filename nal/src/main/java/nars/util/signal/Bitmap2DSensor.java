@@ -222,7 +222,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> impl
             if (now - this.lastUpdate >= nar.dur() * minUpdateDurs) {
                 int pixelsProcessedInLastDur = totalPixels - pixelsRemainPerUpdate;
                 pixelsProcessed.addValue(pixelsProcessedInLastDur);
-                Bitmap2DSensor.this.update(1);
+                Bitmap2DSensor.this.update();
                 pixelsRemainPerUpdate = totalPixels;
                 this.lastUpdate = now;
             } else {

@@ -28,9 +28,9 @@ public class FZero extends NAgentX {
 
     private final FZeroGame fz;
 
-    float fwdSpeed = 14;
+    float fwdSpeed = 24;
     float rotSpeed = 0.35f/3f;
-    static float fps = 20f;
+    static float fps = 30f;
     final MiniPID rewardFilter = new MiniPID(0.1f, 0.1, 0.1f);
     final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
     final MiniPID rotFilter = new MiniPID(0.5f, 0.3, 0.2f);
@@ -43,7 +43,7 @@ public class FZero extends NAgentX {
         NAgentX.runRT((n) -> {
 
             FZero a = null;
-            n.freqResolution.set(0.1f);
+//            n.freqResolution.set(0.1f);
             n.confResolution.set(0.02f);
 
             a = new FZero(n);

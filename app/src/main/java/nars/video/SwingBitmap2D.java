@@ -18,12 +18,12 @@ public class SwingBitmap2D extends BufferedImageBitmap2D {
     public SwingBitmap2D(Component component) {
         this.component = component;
         input(0, 0, component.getWidth(), component.getHeight());
-        update(1);
+        update();
     }
 
 //    final AtomicBoolean ready = new AtomicBoolean(true);
 
-    @Override public void update(float frameRate) {
+    @Override public void update() {
 //        if (ready.compareAndSet(true, false)) {
             //SwingUtilities.invokeLater(() -> {
 //                ready.set(true);

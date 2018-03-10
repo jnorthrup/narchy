@@ -107,7 +107,7 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
         Arrays.fill(rangeMinMax, Float.NaN);
         this.rangeAdaptRate = 1f /(1f + centroids);
 
-        this.distanceSq = distanceSq != null ? distanceSq : this::distanceCartesianSq;
+        this.distanceSq = distanceSq != null ? distanceSq : Centroid.DistanceFunction::distanceCartesianSq;
 
 
         this.iteration = 0;
@@ -172,20 +172,6 @@ public class NeuralGasNet<N extends Centroid>  /*extends SimpleGraph<N, Connecti
         return (N) closest;
     }
 
-    /**
-     * for range normalization
-     * warning: the result here is the Square of the distance, ie. to
-     * avoid needing to calculate sqrt() this can be used in a comparison
-     */
-    public double distanceCartesianSq(double[] x, double[] y) {
-        double s = 0;
-        int l = y.length;
-        for (int i = 0; i < l; i++) {
-            final double d = (y[i] - x[i]);
-            s += d * d;
-        }
-        return s;
-    }
 
 
     /**

@@ -63,7 +63,10 @@ public class RLBooster implements Consumer<NAR> {
 //        env.curiosity().setValue(0f);
 
         List<SensorConcept> sc = $.newArrayList();
-        sc.addAll(env.sensors.keySet());
+        env.sensors.keySet().forEach(c -> {
+            if (c!=env.happy) //exclude the happiness sensor
+                sc.add(c);
+        });
         env.senseNums.forEach(c -> c.forEach(sc::add));
         env.sensorCam.forEach(c -> c.forEach(sc::add));
 

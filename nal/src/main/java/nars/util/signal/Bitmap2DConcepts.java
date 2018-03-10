@@ -69,8 +69,8 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<SensorConc
         return iter.iterator();
     }
 
-    public void update(int frameRate) {
-        src.update(frameRate);
+    public void update() {
+        src.update();
     }
 
     public SensorConcept get(int i) {

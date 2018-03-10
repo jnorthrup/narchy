@@ -7,6 +7,7 @@ import jcog.bloom.hash.BytesHashProvider;
 import jcog.list.FasterList;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
+import jcog.pri.Priority;
 import nars.concept.Concept;
 import nars.control.proto.TaskAdd;
 import nars.op.Operator;
@@ -21,7 +22,6 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.term.var.VarIndep;
-import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -49,11 +49,10 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 /**
  * NAL Task to be processed, consists of a Sentence, stamp, time, and budget.
  */
-public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.data.map.MetaMap {
+public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.data.map.MetaMap, Priority {
 
 
     Task[] EmptyArray = new Task[0];
-    long[] ETERNAL_ETERNAL = {Tense.ETERNAL, Tense.ETERNAL};
 
     /**
      * assumes identity and hash have been tested already.
@@ -90,13 +89,13 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
         if (a.term().equals(b.term())) {
 
-            //clear cyclic state if either is not cyclic
-            boolean ac = a.isCyclic();
-            boolean bc = b.isCyclic();
-            if (!ac && bc)
-                b.setCyclic(false);
-            else if (ac && !bc)
-                a.setCyclic(false);
+//            //clear cyclic state if either is not cyclic
+//            boolean ac = a.isCyclic();
+//            boolean bc = b.isCyclic();
+//            if (!ac && bc)
+//                b.setCyclic(false);
+//            else if (ac && !bc)
+//                a.setCyclic(false);
 
             return true;
         }
@@ -186,11 +185,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
                 new BytesHashProvider<>(IO::taskToBytes));
     }
 
-//    static boolean validConceptTerm(@Nullable Term t, boolean safe) {
-//        return validTaskTerm(t, (byte) 0, null, safe);
-//    }
-
-
     static boolean validTaskTerm(@Nullable Term t) {
         return validTaskTerm(t, (byte) 0, true);
     }
@@ -243,7 +237,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         if ((punc == Op.GOAL || punc == Op.QUEST) && !goalable(t))
             return fail(t, "Goal/Quest task term may not be Implication or Equivalence", safe);
 
-        return o.atomic || validTaskCompound(t, punc, safe);
+        return o.atomic || validTaskCompound(t, safe);
     }
 
 
@@ -251,7 +245,7 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      * call this directly instead of taskContentValid if the level, volume, and normalization have already been tested.
      * these can all be tested prenormalization, because normalization will not affect the result
      */
-    static boolean validTaskCompound(Term t, byte punc, boolean safe) {
+    static boolean validTaskCompound(Term t, boolean safe) {
         /* A statement sentence is not allowed to have a independent variable as subj or pred"); */
 
 //        if (t.varDep()==1) {
@@ -395,6 +389,8 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         //TODO:
         //Task.tryTask()
 
+        if (end < start)
+            end = start; //HACK
 
         boolean negated = (newContent.op() == NEG);
         if (negated) {
@@ -828,7 +824,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
      * Check if a Task is a direct input,
      * or if its origin has been forgotten or never known
      */
-    @Override
     default boolean isInput() {
         if (!isCyclic()) {
             long[] s = stamp();
@@ -1027,7 +1022,6 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return Truthed.super.expectation();
     }
 
-    @Override
     default ITask run(NAR n) {
 
         n.emotion.onInput(this, n);
@@ -1136,6 +1130,17 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
         return new PreciseTruth(freq(), e, false);
     }
 
+//    @Override
+//    default boolean intersectsConf(float cMin, float cMax) {
+//        float c = conf();
+//        return c >= cMin && c <= cMax;
+//    }
+//
+//    @Override
+//    default boolean containsConf(float cMin, float cMax) {
+//        float c = conf();
+//        return c >= cMin && c <= cMax;
+//    }
 
     /**
      * TODO cause should be merged if possible when merging tasks in belief table or otherwise
@@ -1157,5 +1162,15 @@ public interface Task extends Truthed, Stamp, Termed, ITask, TaskRegion, jcog.da
 
     default float eviInteg() {
         return isEternal() ? Float.POSITIVE_INFINITY : range() * evi();
+    }
+
+    byte punc();
+
+    /**
+     * fluent form of setPri which returns this class
+     */
+    default ITask pri(float p) {
+        priSet(p);
+        return this;
     }
 }
