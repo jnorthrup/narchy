@@ -10,6 +10,7 @@ import jcog.list.FasterList;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.rect.RectFloat2D;
 import jcog.util.ArrayIterator;
+import org.eclipse.collections.api.block.procedure.primitive.ObjectLongProcedure;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jbox2d.collision.AABB;
 import org.jbox2d.collision.RayCastInput;
@@ -208,16 +209,8 @@ public class PhyWall extends Wall implements Animated {
 
     private void drawJoint(Joint joint, GL2 g, long now) {
         Object data = joint.data();
-        if (data instanceof Wire) {
-            Wire w = (Wire) data;
-
-            float activity = w.activity(now, 250);
-
-            g.glColor4f(0.3f + activity * 0.75f, 0.3f - 0.1f * activity, 0.3f, 0.5f + 0.25f * activity);
-            g.glLineWidth(15f + activity * 5f);
-
-//            Draw.line(g, w.a.cx(), w.a.cy(), w.b.cx(), w.b.cy());
-//            return;
+        if (data instanceof ObjectLongProcedure) {
+            ((ObjectLongProcedure)data).accept(g, now);
         } else {
 
             Draw.colorHash(g, joint.getClass().hashCode(), 0.5f);
@@ -421,6 +414,35 @@ public class PhyWall extends Wall implements Animated {
         s.attach(menuBody.body, segments / 2 - 1);
 
         deleteButton.click(s::remove);
+
+        int jj = 0;
+        for (Joint j : s.joints) {
+
+            float p = ((float)jj)/(segments-1);
+
+            j.setData((ObjectLongProcedure<GL2>) (g, now) -> {
+
+                int TIME_DECAY_MS = 250;
+                boolean side = p < 0.5f;
+                float activity =
+                        wire.activity(side, now, TIME_DECAY_MS);
+                        //Util.lerp(p, wire.activity(false, now, TIME_DECAY_MS), wire.activity(true, now, TIME_DECAY_MS));
+
+
+                int th = wire.typeHash(side);
+                if (th == 0) {
+                    g.glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
+                } else {
+                    Draw.colorHash(g, th, 0.9f, 0.5f + 0.5f * activity, 0.5f + 0.4f * activity);
+                }
+
+                g.glLineWidth(10f + activity * 10f);
+
+//            Draw.line(g, w.a.cx(), w.a.cy(), w.b.cx(), w.b.cy());
+//            return;
+            });
+            jj++;
+        }
 
         return s;
     }
@@ -729,13 +751,7 @@ public class PhyWall extends Wall implements Animated {
                         //RAW unidirectional
                         //RopeJoint ropeJoint = rope(aa, bb);
                         //ropeJoint.setData(wire);
-                        Snake s = snake(wire, () -> {
-                            unlink(aa, bb);
-                        });
-
-
-                        for (Joint j : s.joints)
-                            j.setData(wire);
+                        Snake s = snake(wire, () -> unlink(aa, bb));
 
                     }
 

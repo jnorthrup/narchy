@@ -7,7 +7,10 @@ import spacegraph.Surface;
 public class Wire {
 
     private final int hash;
-    private volatile long lastActive = Long.MIN_VALUE;
+
+    private volatile long aLastActive = Long.MIN_VALUE, bLastActive = Long.MIN_VALUE;
+    private volatile int aTypeHash = 0, bTypeHash = 0;
+
     //final AtomicHistogram hits = new AtomicHistogram();
 
     final Surface a, b;
@@ -42,7 +45,19 @@ public class Wire {
     /** sends to target */
     public boolean in(Surface sender, Object s) {
         if (((Port)other(sender)).in(this, s)) {
-            lastActive = System.currentTimeMillis();
+            long now = System.currentTimeMillis();
+
+            int th = s.getClass().hashCode();
+
+            if (sender == a) {
+                this.aLastActive = now;
+                this.aTypeHash = th;
+            } else if (sender == b) {
+                this.bLastActive = now;
+                this.bTypeHash = th;
+            } else
+                throw new UnsupportedOperationException();
+
             return true;
         }
         return false;
@@ -63,8 +78,8 @@ public class Wire {
      * used for display purposes.
      * time is in milliesconds
      */
-    public float activity(long now, long window) {
-        long l = lastActive;
+    public float activity(boolean aOrB, long now, long window) {
+        long l = aOrB ? aLastActive : bLastActive;
         if (l == Long.MIN_VALUE)
             return 0;
         else {
@@ -80,5 +95,13 @@ public class Wire {
         }
 
         return true;
+    }
+
+    public int typeHash(boolean aOrB) {
+        int x = aOrB ? aTypeHash : bTypeHash;
+        if (x == 0 && (aOrB ? aLastActive : bLastActive)==Long.MIN_VALUE)
+            return (aOrB ? bTypeHash : aTypeHash ); //if nothing was sent from this side, just use the other (either also inactive, or has some value) to represent the entire wire's activity
+        else
+            return x;
     }
 }

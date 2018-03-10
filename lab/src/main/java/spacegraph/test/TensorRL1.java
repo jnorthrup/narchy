@@ -2,7 +2,6 @@ package spacegraph.test;
 
 import jcog.learn.Agent;
 import jcog.learn.Autoencoder;
-import jcog.learn.ql.DQN;
 import jcog.learn.ql.HaiQ;
 import jcog.math.FloatRange;
 import jcog.math.IntIntToObjectFunc;
@@ -60,8 +59,8 @@ public class TensorRL1 {
         //p.addWindow(new TogglePort(), 0.25f, 0.25f);
 
         p.addWindow(new AgentChip(
-                //HaiQ::new
-                DQN::new
+                HaiQ::new
+                //DQN::new
         ), 1, 1);
 
     }
