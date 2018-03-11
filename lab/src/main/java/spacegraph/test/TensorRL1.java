@@ -14,7 +14,7 @@ import jcog.signal.Bitmap2D;
 import nars.NAR;
 import nars.NARS;
 import nars.NAgent;
-import nars.experiment.NARio;
+import nars.experiment.PoleCart;
 import nars.op.RLBooster;
 import spacegraph.Scale;
 import spacegraph.ZoomOrtho;
@@ -45,10 +45,10 @@ public class TensorRL1 {
 
         {
             p.addWindow(new EnvChip(
-                    //PoleCart::new
+                   PoleCart::new
                     //Recog2D::new
                     //TrackXY::new
-                    NARio::new
+                    //NARio::new
                     //(n) -> new Arkancide(n, false, true)
             ), 1.75f, 1);
         }

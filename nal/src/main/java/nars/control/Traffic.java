@@ -11,23 +11,20 @@ import jcog.util.AtomicFloat;
  *  that safely supports multiple concurrent accumulators */
 public class Traffic extends AtomicFloat {
 
-//    /** previous value */
-//    public float prev;
-
-    /** current value */
-    public volatile float current;
+    /** value at last commit */
+    public volatile float last;
 
     public volatile double total;
 
     public final void commit() {
-        zero((cur)->{
+        zero(cur->{
 //          this.prev = this.current;
-            this.total += (this.current = cur);
+            this.total += (this.last = cur);
         });
     }
 
     @Override
     public String toString() {
-        return Texts.n4(current) + "/" + Texts.n4(total);
+        return Texts.n4(last) + "/" + Texts.n4(total);
     }
 }

@@ -46,7 +46,7 @@ public class CompoundDTLight implements CompoundDT {
             assert (getClass() != CompoundDTLight.class /* a subclass */ || dt != DTERNAL);
 
 
-            @NotNull Subterms subterms = s;
+            Subterms subterms = s;
             int size = subterms.subs();
 
             if (op.temporal && (op != CONJ && size != 2))

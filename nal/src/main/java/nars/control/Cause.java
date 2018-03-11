@@ -225,7 +225,7 @@ public class Cause implements Comparable<Cause> {
         for (int i = 0, purposeLength = goal.length; i < purposeLength; i++) {
             Traffic p = goal[i];
             p.commit();
-            valueSummary[i].accept(p.current);
+            valueSummary[i].accept(p.last);
         }
     }
 
@@ -235,7 +235,7 @@ public class Cause implements Comparable<Cause> {
     }
 
     public void print(PrintStream out) {
-        out.println(toString() + "\t" +
+        out.println(this + "\t" +
                 IntStream.range(0, goal.length).mapToObj(x->
                     MetaGoal.values()[x] + "=" + goal[x]
                 ).collect(toList())

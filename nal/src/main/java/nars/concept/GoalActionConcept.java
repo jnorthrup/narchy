@@ -14,6 +14,7 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 
 
 /**
@@ -77,7 +78,10 @@ public class GoalActionConcept extends ActionConcept {
             float curiConf =
                     //nar.confDefault(GOAL);
                     //nar.confMin.floatValue() * 2;
-                    Math.max(goal != null ? goal.conf() : 0, nar.confMin.floatValue() * 2); //match goal conf
+                    Math.max(goal != null ? goal.conf() : 0, //match goal conf
+                            //nar.confMin.floatValue() * 2
+                            nar.confDefault(GOAL)
+                    );
 
             //nar.confDefault(GOAL) * CURIOSITY_CONF_FACTOR;
 //                    Math.max(goal != null ? goal.conf() : 0,

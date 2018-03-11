@@ -153,9 +153,18 @@ public class PoleCart extends NAgentX {
 //        ).resolution(0.1f);
 
 
+//        final float[] acc = {0.5f};
+//        actionUnipolar($.the("accel"), (a)->{
+//            acc[0] = a;
+//            return a;
+//        });
+
         actionBipolarFrequencyDifferential(id, false, false, (a) -> {
-            if (!manualOverride)
-                action = a;
+            if (!manualOverride) {
+                //action = a;
+                action = Util.tanhFast(a*4);
+                //action = Util.lerp(acc[0], a, Util.tanhFast(a*2));
+            }
             return a;
         });
 //            //eternal bias to stop

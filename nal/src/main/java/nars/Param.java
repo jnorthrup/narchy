@@ -164,7 +164,7 @@ public abstract class Param {
     /**
      * 'time to live', unification steps until unification is stopped
      */
-    public final IntRange matchTTLmean = new IntRange(256, 0, 1024);
+    public final IntRange matchTTLmean = new IntRange(512, 0, 1024);
 
 
     /** temporal radius (in durations) around the present moment to scan for truth */

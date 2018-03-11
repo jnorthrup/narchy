@@ -58,6 +58,10 @@ public class AtomicFloat extends Number implements FloatSupplier {
     public final void zero(FloatConsumer with) {
         _f.zero(this, with);
     }
+
+    public final void zeroIfNonZero(FloatConsumer with) {
+        _f.zeroIfNonZero(this, with);
+    }
     public final float getAndZero(FloatConsumer with) {
         return _f.getAndZero(this, with);
     }

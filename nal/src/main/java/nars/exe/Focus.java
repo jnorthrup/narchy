@@ -5,10 +5,8 @@ import jcog.Util;
 import jcog.learn.Autoencoder;
 import jcog.learn.deep.RBM;
 import jcog.list.FasterList;
-import jcog.math.RecycledSummaryStatistics;
 import nars.NAR;
 import nars.control.Cause;
-import nars.control.MetaGoal;
 import nars.control.Traffic;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -371,7 +369,7 @@ public class Focus extends AtomicRoulette<Causable> {
     public static class DefaultRevaluator implements Exec.Revaluator {
 
         final static double minUpdateDurs = 1f;
-        final RecycledSummaryStatistics[] causeSummary = new RecycledSummaryStatistics[MetaGoal.values().length];
+//        final RecycledSummaryStatistics[] causeSummary = new RecycledSummaryStatistics[MetaGoal.values().length];
         float momentum =
                 //0f;
                 0.5f;
@@ -385,10 +383,10 @@ public class Focus extends AtomicRoulette<Causable> {
          */
         float[] val = ArrayUtils.EMPTY_FLOAT_ARRAY;
 
-        {
-            for (int i = 0; i < causeSummary.length; i++)
-                causeSummary[i] = new RecycledSummaryStatistics();
-        }
+//        {
+//            for (int i = 0; i < causeSummary.length; i++)
+//                causeSummary[i] = new RecycledSummaryStatistics();
+//        }
 
         @Override
         public void update(long time, int dur, FasterList<Cause> causes, float[] goal) {
@@ -400,9 +398,9 @@ public class Focus extends AtomicRoulette<Causable> {
                 return;
             lastUpdate = time;
 
-            for (RecycledSummaryStatistics r : causeSummary) {
-                r.clear();
-            }
+//            for (RecycledSummaryStatistics r : causeSummary) {
+//                r.clear();
+//            }
 
             int cc = causes.size();
 
@@ -411,7 +409,7 @@ public class Focus extends AtomicRoulette<Causable> {
             }
 
             for (int i = 0; i < cc; i++) {
-                causes.get(i).commit(causeSummary);
+                causes.get(i).commit(/*causeSummary*/);
             }
 
 
@@ -433,7 +431,7 @@ public class Focus extends AtomicRoulette<Causable> {
                 //mix the weighted current values of each purpose, each independently normalized against the values (the reason for calculating summary statistics in previous step)
                 float v = 0;
                 for (int j = 0; j < goals; j++) {
-                    v += goal[j] * cg[j].current;
+                    v += goal[j] * cg[j].last;
                 }
 
                 //float prev = c.value();

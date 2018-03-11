@@ -178,7 +178,7 @@ public class ExeCharts {
                             r = 0;
                         }
 
-                        float t = Util.sum(((FloatFunction<Traffic>) (p -> Math.abs(p.current ))), c.goal);
+                        float t = Util.sum(((FloatFunction<Traffic>) (p -> Math.abs(p.last))), c.goal);
 
                         b = Math.max(r, g) / 2f * Util.unitize(t);
 

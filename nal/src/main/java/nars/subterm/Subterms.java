@@ -42,7 +42,9 @@ import static nars.Op.*;
  */
 public interface Subterms extends Termlike, Iterable<Term> {
 
-    /*@NotNull*/ TermVector Empty = new ArrayTermVector(Term.EmptyArray);Function<Term[], Subterms> RawSubtermBuilder = (t) -> {
+    /*@NotNull*/ TermVector Empty = new ArrayTermVector(Term.EmptyArray);
+
+    Function<Term[], Subterms> RawSubtermBuilder = (t) -> {
             if (t.length == 0)
                 return Empty;
 

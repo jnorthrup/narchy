@@ -56,7 +56,22 @@ public class AtomicFloatFieldUpdater<X>  {
     private final static int ZERO = floatToIntBits(0f);
 
     public void zero(X v, FloatConsumer with) {
-        this.updater.getAndUpdate(v, (x)->{ with.accept(intBitsToFloat(x)); return AtomicFloatFieldUpdater.ZERO; } );
+        this.updater.getAndUpdate(v, x->{
+            with.accept(intBitsToFloat(x));
+            return AtomicFloatFieldUpdater.ZERO;
+        });
+    }
+
+    /** if the current value is actually zero, the consumer is not called and nothing needs updated.
+     * should be faster than zero(v,with) when a zero value is expected
+     */
+    public void zeroIfNonZero(X v, FloatConsumer with) {
+        this.updater.getAndUpdate(v, x->{
+            if (x != AtomicFloatFieldUpdater.ZERO) {
+                with.accept(intBitsToFloat(x));
+            }
+            return AtomicFloatFieldUpdater.ZERO;
+        });
     }
 
     public float getAndZero(X v, FloatConsumer with) {
@@ -66,6 +81,8 @@ public class AtomicFloatFieldUpdater<X>  {
     public boolean compareAndSet(X x, float expected, float newvalue) {
         return updater.compareAndSet(x, floatToIntBits(expected), floatToIntBits(newvalue));
     }
+
+
 
 //    public void addAndGet(X v, float x) {
 //        this.updater.updateAndGet(v, (i)-> floatToIntBits(intBitsToFloat(i) + x ));
