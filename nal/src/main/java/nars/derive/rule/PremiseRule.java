@@ -314,7 +314,11 @@ public class PremiseRule {
                     neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
                     neq(constraints, X, Y); //should the constraints be ommited in this case?
                     break;
-
+                case "neqUnneg":
+                    neqPrefilter(pres, taskPattern, beliefPattern, X, Y);
+                    constraints.add(new NotEqualConstraint.NotEqualUnnegConstraint(X, Y));
+                    constraints.add(new NotEqualConstraint.NotEqualUnnegConstraint(Y, X));
+                    break;
 
                 case "neqAndCom":
                     neqPrefilter(pres, taskPattern, beliefPattern, X, Y);

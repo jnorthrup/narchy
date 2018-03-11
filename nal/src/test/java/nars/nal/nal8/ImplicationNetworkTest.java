@@ -157,6 +157,7 @@ public class ImplicationNetworkTest {
 
         NAR n = NARS.tmp();
 
+        n.log();
         Param.DEBUG = true;
 
         n.believe(IMPL.the(a.neg(), b).neg());

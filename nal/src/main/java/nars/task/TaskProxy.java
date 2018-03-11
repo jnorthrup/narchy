@@ -133,6 +133,21 @@ public class TaskProxy implements Task {
     }
 
     @Override
+    public float freqMean() {
+        return task.freqMean();
+    }
+
+    @Override
+    public float freqMax() {
+        return task.freqMax();
+    }
+
+    @Override
+    public float freqMin() {
+        return task.freqMin();
+    }
+
+    @Override
     public float conf() {
         return task.conf();
     }
@@ -255,6 +270,7 @@ public class TaskProxy implements Task {
             throw new UnsupportedOperationException();
         }
 
+
         @Override
         public @Nullable Truth truth(long when, long dur, float minConf) {
             if (when < start) return null;
@@ -262,7 +278,28 @@ public class TaskProxy implements Task {
             return truth();
         }
 
+        @Override
+        public float freq() {
+            float f = super.freq();
+            return negated ? 1 - f : f;
+        }
 
+        @Override
+        public float freqMax() {
+            float f = super.freqMax();
+            return negated ? 1 - f : f;
+        }
+        @Override
+        public float freqMin() {
+            float f = super.freqMin();
+            return negated ? 1 - f : f;
+        }
+
+        @Override
+        public float freqMean() {
+            float f = super.freqMean();
+            return negated ? 1 - f : f;
+        }
 
         @Override
         public @Nullable Truth truth() {

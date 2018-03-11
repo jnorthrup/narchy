@@ -45,17 +45,29 @@
 
 
     //NAL3 single premise decompose
-    (M --> S), S, is(S,"&") |- (M --> dropAnySet(S)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    (S --> M), S, is(S,"|") |- (dropAnySet(S) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (M --> S), S, is(S,"&") |- (M --> dropAnySet(S)), (Belief:StructuralReduction, Goal:StructuralReduction)
+    (S --> M), S, is(S,"|") |- (dropAnySet(S) --> M), (Belief:StructuralReduction, Goal:StructuralReduction)
 
-    (S --> (B - G)), (B - G) |- (S --> B), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-        (S --> (B - G)), (B - G) |- (--,(S --> G)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (S --> (B - G)), B |- (S --> B), (Belief:StructuralReduction, Goal:StructuralReduction)
+        (S --> (B - G)), G |- --(S --> G), (Belief:StructuralReduction, Goal:StructuralReduction)
 
-    ((B ~ G) --> S), (B ~ G) |- (B --> S), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-        ((B ~ G) --> S), (B ~ G) |- (--,(G --> S)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    ((B ~ G) --> S), B |- (B --> S), (Belief:StructuralReduction, Goal:StructuralReduction)
+        ((B ~ G) --> S), G |- --(G --> S), (Belief:StructuralReduction, Goal:StructuralReduction)
 
-        (B ~ G), B |- B, (Belief:StructuralDeduction, Goal:StructuralDeduction)
-            (B ~ G), G |- (--,G), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+        (B ~ G), B |- B, (Belief:StructuralReduction, Goal:StructuralReduction)
+            (B ~ G), G |- --G, (Belief:StructuralReduction, Goal:StructuralReduction)
+
+
+        //if X <= Y, then goal X && --Y to cause (X ~ Y)
+        S:(X ~ Y), S:(X ~ Y), task("!") |- (S:X && (--,S:Y)), (Goal:StrongPN)
+        (X - Y):S, (X - Y):S, task("!") |- (X:S && (--,Y:S)), (Goal:StrongPN)
+        (X ~ Y), (X ~ Y), task("!") |- (X && --Y), (Goal:StrongPN)
+
+        //if X <= Y, then goal --X && Y to cause --(X ~ Y)
+        S:(X ~ Y), S:(X ~ Y), task("!") |- (S:Y && (--,S:X)), (Goal:StrongNN)
+        (X - Y):S, (X - Y):S, task("!") |- (Y:S && (--,X:S)), (Goal:StrongNN)
+        (X ~ Y), (X ~ Y), task("!") |- (Y && --X), (Goal:StrongNN)
+
 
         //1D:
         //(X --> C), (X --> C), is(X,"+") |- (dropAnySet(X) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)

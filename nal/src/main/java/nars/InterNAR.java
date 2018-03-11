@@ -174,7 +174,7 @@ public class InterNAR extends TaskService implements TriConsumer<NAR, ActiveQues
         }
 
         @Override
-        protected void onTell(UDProfile connected, Msg m) {
+        protected void told(UDProfile connected, Msg m) {
 
 
             Task x = IO.taskFromBytes(m.data());

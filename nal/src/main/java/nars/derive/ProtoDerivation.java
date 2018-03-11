@@ -1,6 +1,7 @@
 package nars.derive;
 
 import com.google.common.io.ByteArrayDataOutput;
+import jcog.Util;
 import jcog.data.byt.DynBytes;
 import nars.Op;
 import nars.term.Term;
@@ -39,7 +40,7 @@ public abstract class ProtoDerivation extends Unify {
      * choices mapping the available post targets
      */
     public final RoaringBitmap can = new RoaringBitmap();
-    public int[] will = ArrayUtils.EMPTY_INT_ARRAY;
+    public short[] will = ArrayUtils.EMPTY_SHORT_ARRAY;
 
     public ProtoDerivation(@Nullable Op type, Random random, int stackMax, int initialTTL) {
         super(type, random, stackMax, initialTTL);
@@ -93,7 +94,7 @@ public abstract class ProtoDerivation extends Unify {
         }
 
         /** TODO this can safely return short[] results */
-        public int[] solve() {
+        public short[] solve() {
 
             Derivation derivation  = Deriver.derivation.get();
 
@@ -108,7 +109,7 @@ public abstract class ProtoDerivation extends Unify {
             derivation.can.clear();
 
             //use the common zero array reference
-            return result.length == 0 ? ArrayUtils.EMPTY_INT_ARRAY : result;
+            return Util.toShort(result);
 
         }
 

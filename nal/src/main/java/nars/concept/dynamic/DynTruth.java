@@ -202,11 +202,9 @@ public final class DynTruth extends FasterList<TaskRegion> implements Prioritize
         if (r == null)
             return null;
 
-        //ignore the r.getTwo() negation flag since the truth is already precisely calculated according to the dynamic model
-
         NALTask dyn = new DynTruthTask(
                 r.getOne(), beliefOrGoal,
-                tr, nar, start, end,
+                tr.negIf(r.getTwo()), nar, start, end,
                 ss.getOne());
         //if (ss.getTwo() > 0) dyn.setCyclic(true);
 

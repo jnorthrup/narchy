@@ -804,54 +804,58 @@ public class DeriveTime extends TimeGraph {
      * as a backup option
      */
     private Term solveRaw(Term x) {
-        long[] occ = d.concOcc;
         long s, e;
-        boolean taskEvent = !task.term().op().temporal;
-        if (task.isEternal()) {
-            if (belief == null || belief.isEternal()) {
-                //entirely eternal
-                s = e = ETERNAL;
-            } else {
-                if (taskEvent) {
-                    s = belief.start();
-                    e = belief.end();
-                } else {
-                    //transformed task term, should have been solved
-                    return null;
-                }
-            }
+        if (task.isQuestOrQuestion() && (!task.isEternal() || belief == null)) {
+            //inherit question's specific time directly
+            s = task.start();
+            e = task.end();
         } else {
-            if (belief == null) {
-                //inherit task time
-                s = task.start();
-                e = task.end();
-            } else if (belief.isEternal()) {
-                if (!task.isEternal()) {
+            boolean taskEvent = !task.term().op().temporal;
+            if (task.isEternal()) {
+                if (belief == null || belief.isEternal()) {
+                    //entirely eternal
+                    s = e = ETERNAL;
+                } else {
+                    if (taskEvent) {
+                        s = belief.start();
+                        e = belief.end();
+                    } else {
+                        //transformed task term, should have been solved
+                        return null;
+                    }
+                }
+            } else {
+                if (belief == null) {
                     //inherit task time
                     s = task.start();
                     e = task.end();
+                } else if (belief.isEternal()) {
+                    if (!task.isEternal()) {
+                        //inherit task time
+                        s = task.start();
+                        e = task.end();
+                    } else {
+                        s = e = ETERNAL;
+                    }
+                    //                    //event: inherit task time
+                    //                    boolean beliefEvent = belief == null || (
+                    //                            !belief.term().op().temporal
+                    //                    );
+                    //                    if (beliefEvent) {
+                    //                        s = task.start();
+                    //                        e = task.end();
+                    //                    } else {
+                    //                        return null; //should have calculated solution normally
+                    //                    }
+                    //                }
                 } else {
-                    s = e = ETERNAL;
+                    EviDensity density = new EviDensity(task, belief);
+                    s = density.unionStart;
+                    e = density.unionEnd;
+                    d.concEviFactor *= density.factor();
                 }
-//                    //event: inherit task time
-//                    boolean beliefEvent = belief == null || (
-//                            !belief.term().op().temporal
-//                    );
-//                    if (beliefEvent) {
-//                        s = task.start();
-//                        e = task.end();
-//                    } else {
-//                        return null; //should have calculated solution normally
-//                    }
-//                }
-            } else {
-                EviDensity density = new EviDensity(task, belief);
-                s = density.unionStart;
-                e = density.unionEnd;
-                d.concEviFactor *= density.factor();
             }
         }
-
 
 //        //couldnt solve the start time, so inherit from task or belief as appropriate
 //        if (!d.single && !te && (belief != null && !belief.isEternal())) {
@@ -889,6 +893,7 @@ public class DeriveTime extends TimeGraph {
         if (!eternalCheck(s))
             return null;
 
+        long[] occ = d.concOcc;
         occ[0] = s;
         occ[1] = e;
 

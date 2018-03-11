@@ -2281,6 +2281,17 @@ public enum Util {
         return Texts.levenshteinDistance(a, b) / ((float) len);
     }
 
+    public static short[] toShort(int[] x) {
+        if (x.length == 0) return ArrayUtils.EMPTY_SHORT_ARRAY;
+        short[] s = new short[x.length];
+        int i = 0;
+        for (int xx : x) {
+            assert(xx <= Short.MAX_VALUE && xx >= Short.MIN_VALUE);
+            s[i++] = (short)xx;
+        }
+        return s;
+    }
+
 
 //    public static <T>  Collector<T, ?, List<T>> toListOrNullIfEmpty() {
 //        return new Collectors.CollectorImpl<>((Supplier<List<T>>) ArrayList::new, List::add,

@@ -30,12 +30,13 @@ public class DynamicBeliefTableTest {
         long now = n.time();
 
         assertEquals($.t(1f, 0.81f), n.beliefTruth($("(a:x && a:y)"), now)); //truth only
+        assertEquals($.t(0f, 0.90f), n.beliefTruth("(a:x && (--,a:y))", now));
+
         assertEquals($.t(1f, 0.81f), n.belief($("(a:x && a:y)"), now).truth()); //matched task
 
-        assertEquals($.t(0f, 0.90f), n.beliefTruth(($("(b:x && a:y)")), now));
-        assertEquals($.t(0f, 0.90f), n.beliefTruth(($("(a:x && (--,a:y))")), now));
-        assertEquals($.t(1f, 0.81f), n.beliefTruth(($("((--,b:x) && a:y)")), now));
-        assertEquals($.t(0f, 0.90f), n.beliefTruth(($("((--,b:x) && (--,a:y))")), now));
+        assertEquals($.t(0f, 0.90f), n.beliefTruth("(b:x && a:y)", now));
+        assertEquals($.t(1f, 0.81f), n.beliefTruth("((--,b:x) && a:y)", now));
+        assertEquals($.t(0f, 0.90f), n.beliefTruth("((--,b:x) && (--,a:y))", now));
     }
 
     @Test
@@ -112,7 +113,7 @@ public class DynamicBeliefTableTest {
         n.believe("a:z", 1f, 0.9f);
         n.run(1);
 
-        TaskConcept cc = ((TaskConcept) n.conceptualize($("(&&, a:x, a:y, a:z)")));
+        TaskConcept cc = (TaskConcept) n.conceptualize($("(&&, a:x, a:y, a:z)"));
         Truth now = n.beliefTruth(cc, n.time());
         assertNotNull(now);
         assertTrue($.t(1f, 0.73f).equals(now, 0.1f), now + " truth at " + n.time());
@@ -176,7 +177,7 @@ public class DynamicBeliefTableTest {
         n.time.dur(8);
         TaskConcept cc = (TaskConcept) n.conceptualize($("((x) && (y))"));
 
-        DynamicBeliefTable xtable = (DynamicBeliefTable) (cc.beliefs());
+        DynamicBeliefTable xtable = (DynamicBeliefTable) cc.beliefs();
         Compound template = $("((x) &&+4 (y))");
 
         DynTruth xt = xtable.truth(0, 0, template, n);
@@ -184,10 +185,10 @@ public class DynamicBeliefTableTest {
         //assertTrue($.t(1f, 0.81f).equals(xt.truth(n), 0.1f), xt.truth(n).toString());
 
         assertEquals(0.81f, xtable.generate($("((x) &&+4 (y))"), 0, 0, n).conf(), 0.05f); //best match to the input
-        assertEquals(0.74f, xtable.generate($("((x) &&+6 (y))"), 0, 0, n).conf(), 0.05f);
-        assertEquals(0.75f, xtable.generate($("((x) &&+2 (y))"), 0, 0, n).conf(), 0.05f);
-        assertEquals(0.75f, xtable.generate($("((x) &&+0 (y))"), 0, 0, n).conf(), 0.05f);
-        assertEquals(0.62f, xtable.generate($("((x) &&-32 (y))"), 0, 0, n).conf(), 0.1f);
+        assertEquals(0.74f, xtable.generate($("((x) &&+6 (y))"), 0, 0, n).conf(), 0.07f);
+        assertEquals(0.75f, xtable.generate($("((x) &&+2 (y))"), 0, 0, n).conf(), 0.07f);
+        assertEquals(0.75f, xtable.generate($("((x) &&+0 (y))"), 0, 0, n).conf(), 0.07f);
+        assertEquals(0.62f, xtable.generate($("((x) &&-32 (y))"), 0, 0, n).conf(), 0.2f);
 
 
     }

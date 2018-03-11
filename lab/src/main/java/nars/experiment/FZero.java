@@ -8,6 +8,7 @@ import nars.NAR;
 import nars.NAgentX;
 import nars.Task;
 import nars.concept.ScalarConcepts;
+import nars.concept.SensorConcept;
 import nars.gui.Vis;
 import nars.util.signal.Bitmap2DConcepts;
 import nars.video.Scale;
@@ -19,6 +20,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
+import static jcog.Util.unitize;
 import static spacegraph.render.JoglPhysics.window;
 
 /**
@@ -28,7 +30,7 @@ public class FZero extends NAgentX {
 
     private final FZeroGame fz;
 
-    float fwdSpeed = 24;
+    float fwdSpeed = 10;
     float rotSpeed = 0.35f/3f;
     static float fps = 30f;
     final MiniPID rewardFilter = new MiniPID(0.1f, 0.1, 0.1f);
@@ -44,7 +46,7 @@ public class FZero extends NAgentX {
 
             FZero a = null;
 //            n.freqResolution.set(0.1f);
-            n.confResolution.set(0.02f);
+//            n.confResolution.set(0.02f);
 
             a = new FZero(n);
 
@@ -67,7 +69,7 @@ public class FZero extends NAgentX {
                 24, 16
                 //10,4
                 //16,8
-        )/*.blur()*/).resolution(0.05f);
+        )/*.blur()*/).resolution(0.02f);
 
 //        Bitmap2DSensor<Scale> cDelta = senseCamera($.the("camDelta"), new Scale(() -> fz.image,
 //                //32, 24
@@ -130,11 +132,11 @@ public class FZero extends NAgentX {
 //        });
 
 //        senseNumberDifference($.inh(the("joy"), id), happy).resolution.setValue(0.02f);
-        ScalarConcepts dAngVel = senseNumberDifferenceBi($.p(id, $.the("angVel")), () -> (float) fz.playerAngle).resolution(0.02f);
-        ScalarConcepts dAccel = senseNumberDifferenceBi($.p(id, $.the("accel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.02f);
-        @NotNull ScalarConcepts ang = senseNumber(level->$.inh($.p($.the("ang"), $.the(level)), id), () ->
+        SensorConcept dAngVel = senseNumberDifference($.the("angVel"), () -> (float) fz.playerAngle).resolution(0.02f);
+        SensorConcept dAccel = senseNumberDifference($.the("accel"), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.02f);
+        @NotNull ScalarConcepts ang = senseNumber(level->$.p($.the("ang"), $.the(level)), () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
-                3,
+                5,
                 ScalarConcepts.FuzzyNeedle
                 //ScalarConcepts.Needle
                 //ScalarConcepts.Fluid
@@ -142,7 +144,7 @@ public class FZero extends NAgentX {
         /*window(
                 Vis.conceptBeliefPlots(this, ang , 16), 300, 300);*/
 
-        window(Vis.beliefCharts(64, Iterables.concat(dAngVel, dAccel, ang), nar), 300, 300);
+        window(Vis.beliefCharts(64, Iterables.concat(java.util.List.of(dAngVel, dAccel), ang), nar), 300, 300);
 
 //        new BeliefPredict(
 //                Iterables.concat(actions.keySet(), java.util.List.of(dAngVel, dAccel)),
@@ -323,10 +325,10 @@ public class FZero extends NAgentX {
 
         final float[] left = new float[1];
         final float[] right = new float[1];
-        actionUnipolar($.inh($.the("left"), id), (x) -> {
-            float power = (Math.max(x, 0.5f) - 0.5f)*2f;
+        actionUnipolar($.the("left"), (x) -> {
+            float power = unitize(Math.max(x, 0.5f) - 0.5f)*2f;
             left[0] = power;
-            fz.playerAngle += power * rotSpeed;
+            fz.playerAngle += Math.max(0,(power - right[0])) * rotSpeed;
             fz.vehicleMetrics[0][6] +=
                     //Util.mean(left[0], right[0])
                     Util.and(left[0], right[0])
@@ -334,10 +336,10 @@ public class FZero extends NAgentX {
                             * fwdSpeed/2f;
             return x;
         });
-        actionUnipolar($.inh($.the("right"), id), (x) -> {
-            float power = (Math.max(x, 0.5f) - 0.5f)*2f;
+        actionUnipolar($.the("right"), (x) -> {
+            float power = unitize(Math.max(x, 0.5f) - 0.5f)*2f;
             right[0] = power;
-            fz.playerAngle -= power * rotSpeed;
+            fz.playerAngle -= Math.max(0,(power - left[0])) * rotSpeed;
             fz.vehicleMetrics[0][6] +=
                     //Util.mean(left[0], right[0])
                     Util.and(left[0], right[0])

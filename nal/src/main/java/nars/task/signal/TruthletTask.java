@@ -140,9 +140,26 @@ public class TruthletTask extends SignalTask {
     }
 
     @Override
+    public float evi() {
+        return truthlet.evi();
+    }
+
+    @Override
+    public float freq() {
+        return truthlet.freq();
+    }
+
+    @Override
+    public float conf() {
+        return truthlet.conf();
+    }
+
+    @Override
     public float evi(long when, long dur) {
         return truthlet.truth(when)[1];
     }
+
+
 
     public void updateEnd(Concept c, long nextEnd) {
         updateTime(c, start(), nextEnd);

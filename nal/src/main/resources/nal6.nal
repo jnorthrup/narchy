@@ -1,9 +1,9 @@
     //strong unification
     //      should these be restricted to "$" var subst
-    (Y ==> X), Z, notImpl(Z)     |- subIfUnifiesAny(X,Y,Z), (Belief:Deduction)
-    (Y ==> X), Z, notImpl(Z)     |- subIfUnifiesAny((--,X),Y,Z), (Belief:DeductionN)
-    (--Y ==> X), Z, notImpl(Z)   |- subIfUnifiesAny(X,Y,Z), (Belief:DeductionPN)
-    (--Y ==> X), Z, notImpl(Z)   |- subIfUnifiesAny((--,X),Y,Z), (Belief:DeductionNN)
+    (Y ==> X), Z, notImpl(Z)     |- subIfUnifiesAny(X,Y,Z), (Belief:DeductionPB)
+    //(Y ==> X), Z, notImpl(Z)     |- subIfUnifiesAny((--,X),Y,Z), (Belief:DeductionN)
+    (--Y ==> X), Z, notImpl(Z)   |- subIfUnifiesAny(X,Y,Z), (Belief:DeductionPB)
+    //(--Y ==> X), Z, notImpl(Z)   |- subIfUnifiesAny((--,X),Y,Z), (Belief:DeductionNN)
 
     (X ==> Y), Z, notImpl(Z)     |- subIfUnifiesAny(X,Y,Z), (Belief:AbductionPB)
 
@@ -47,6 +47,7 @@
     //If after S M happens, and after M P happens, so P happens after S
     (M ==> P), (S ==> M) |- (S ==>+- P), (Belief:Deduction)
 
+      (M ==> P), (--S ==> M), neqRCom(S,P), task(".") |- (S ==>+- P), (Punctuation:Question)
       (M ==> P), (S ==> M), neqRCom(S,P), task("?") |- (S ==>+- P), (Punctuation:Question)
       (M ==> P), (S ==> M), neqRCom(S,P), task("?") |- (P ==>+- S), (Punctuation:Question)
 
@@ -61,18 +62,14 @@
       (M ==> S), (M ==> P), neqRCom(S,P), task("?") |- (S ==>+- P), (Punctuation:Question)
       (M ==> S), (M ==> P), neqRCom(S,P), task("?") |- (P ==>+- S), (Punctuation:Question)
 
-        //(M ==> S), (M ==> P) |- (P ==>+- S), (Belief:Abduction)
-
-    //polar balance is possible here, if the impl are both neg ie. --M (as it would unwrap)
-    (P ==> M), (S ==> M) |- (P ==>+- S), (Belief:InductionPB)
+    (P ==> M), (S ==> M) |- (P ==>+- S), (Belief:Induction)
 
       (P ==> M), (S ==> M), neqRCom(S,P), task("?") |- (S ==>+- P), (Punctuation:Question)
       (P ==> M), (S ==> M), neqRCom(S,P), task("?") |- (P ==>+- S), (Punctuation:Question)
 
-        //(S ==> M), (P ==> M)  |- (S ==>+- P), (Belief:InductionPB)
-
     (P ==> M), (M ==> S) |- (S ==>+- P), (Belief:Exemplification)
 
+      (P ==> M), (--M ==> S), neqRCom(S,P), task(".") |- (S ==>+- P), (Punctuation:Question)
       (P ==> M), (M ==> S), neqRCom(S,P), task("?") |- (S ==>+- P), (Punctuation:Question)
       (P ==> M), (M ==> S), neqRCom(S,P), task("?") |- (P ==>+- S), (Punctuation:Question)
 

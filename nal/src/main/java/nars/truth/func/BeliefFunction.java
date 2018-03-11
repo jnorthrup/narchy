@@ -14,7 +14,6 @@ import java.util.Map;
 
 import static nars.$.t;
 import static nars.Op.BELIEF;
-import static nars.truth.TruthFunctions.abduction;
 
 /**
  * http://aleph.sagemath.org/?q=qwssnn
@@ -33,12 +32,10 @@ public enum BeliefFunction implements TruthOperator {
 //        }
 //    },
 
-
-    /** this is not balanced for negative T */
     Deduction() {
         @Override
         public Truth apply(Truth T, Truth B, NAR m, float minConf) {
-            return TruthFunctions.deduction(T, B, minConf);
+            return TruthFunctions.deductionB(T, B.freq(), B.conf(), minConf);
         }
     },
 
@@ -56,7 +53,7 @@ public enum BeliefFunction implements TruthOperator {
      */
     @AllowOverlap @SinglePremise StructuralReduction() {
         @Override
-        public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
+        public Truth apply(final Truth T, final Truth Bignored, /*@NotNull*/ NAR m, float minConf) {
             float c = T.conf() * BeliefFunction.defaultConfidence(m);
             return c > minConf ? $.t(T.freq(), T.conf() * defaultConfidence(m)) : null;
         }
@@ -79,12 +76,12 @@ public enum BeliefFunction implements TruthOperator {
      */
     DeductionPB() {
         @Override
-        public Truth apply(Truth T, Truth B, NAR m, float minConf) {
+        public Truth apply(Truth T, Truth B, NAR n, float minConf) {
             if (B.isNegative()) {
-                Truth x = TruthFunctions.deduction(T.neg(), B.neg(), minConf);
-                return x;
+                Truth d = Deduction.apply(T.neg(), B.neg(), n, minConf);
+                return d!=null ? d.neg() : d;
             } else {
-                return TruthFunctions.deduction(T, B, minConf);
+                return Deduction.apply(T, B, n, minConf);
             }
         }
     },
@@ -118,9 +115,9 @@ public enum BeliefFunction implements TruthOperator {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
             if (B.isNegative()) {
-                return TruthFunctions.induction(T.neg(), B.neg(), minConf);
+                return Induction.apply(T.neg(), B.neg(), m, minConf);
             } else {
-                return TruthFunctions.induction(T, B, minConf);
+                return Induction.apply(T, B, m, minConf);
             }
         }
     },
@@ -142,9 +139,9 @@ public enum BeliefFunction implements TruthOperator {
 
     Abduction() {
         @Override
-        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-
-            return abduction(T, B, minConf);
+        public Truth apply(final Truth T, final Truth B, NAR n, float minConf) {
+            //Abduction(X,Y)=Induction(Y,X)
+            return Induction.apply(B, T, n, minConf);
         }
     },
 
@@ -162,9 +159,9 @@ public enum BeliefFunction implements TruthOperator {
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
 
             if (B.isNegative()) {
-                return abduction(T.neg(), B.neg(), minConf);
+                return Abduction.apply(T.neg(), B.neg(), m, minConf);
             } else {
-                return abduction(T, B, minConf);
+                return Abduction.apply(T, B, m, minConf);
             }
         }
     },
@@ -399,12 +396,12 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
-    @AllowOverlap
+    //@AllowOverlap
     BeliefStructuralAbduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
-            if (B == null) return null;
-            return abduction($.t(1f, defaultConfidence(m)), B, minConf);
+            //if (B == null) return null;
+            return Abduction.apply($.t(1f, defaultConfidence(m)), B, m, minConf);
         }
     },
 

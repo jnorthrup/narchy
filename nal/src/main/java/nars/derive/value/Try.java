@@ -47,7 +47,7 @@ public class Try implements Consumer<Derivation> {
     @Override
     public void accept(Derivation d) {
 
-        int[] choices = d.will;
+        short[] choices = d.will;
         int N = choices.length;
         switch (N) {
             case 0:
@@ -104,7 +104,7 @@ public class Try implements Consumer<Derivation> {
 
     }
 
-    void forkRoulette(Derivation d, int[] choices, float reserve) {
+    void forkRoulette(Derivation d, short[] choices, float reserve) {
         int N = choices.length;
         float[] w =
                 //Util.marginMax(N, x -> valueSum(choices[x]), 1f / N, 0);

@@ -15,7 +15,14 @@ public class SignalTask extends NALTask {
     public SignalTask(Term t, byte punct, Truth truth, long start, long end, long stamp) {
         this(t, punct, truth, start, start, end, stamp);
     }
-
+    @Override
+    public boolean isEternal() {
+        return false;
+    }
+    @Override
+    public boolean isCyclic() {
+        return false;
+    }
 //    @Override
 //    public float eternalizability() {
 //        //return punc == GOAL ? 0 : 1f; //dont eternalize goal

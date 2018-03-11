@@ -309,10 +309,10 @@ public class ConjClustering extends Causable {
 
                                 m.cause = Cause.sample(Param.causeCapacity.intValue(), uu);
 
-                                float priAvg =
+                                float p =
                                         //priMax;
-                                        //priMin;
-                                        (priMin + priMax) / 2f;
+                                        priMin;
+                                        //(priMin + priMax) / 2f;
 
                                 //complexity deduction
                                 //  how much more complex the conjunction is than the most complex of its ingredients
@@ -320,7 +320,7 @@ public class ConjClustering extends Causable {
                                 float cmplFactor =
                                         ((float) v) / (v + maxVolume);
 
-                                m.priSet(Priority.fund(priAvg * cmplFactor, true, uu));
+                                m.priSet(Priority.fund(p * cmplFactor, true, uu));
                                 gen.add(m);
                                 centroidGen++;
                             } else {

@@ -1,6 +1,8 @@
 package nars;
 
 import jcog.exe.Loop;
+import jcog.math.FloatFirstOrderDifference;
+import jcog.math.FloatPolarNormalized;
 import jcog.math.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Bitmap2D;
 import nars.exe.Focus;
@@ -48,6 +50,7 @@ import java.util.function.Supplier;
 import static nars.$.$;
 import static nars.$.$safe;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static spacegraph.container.Gridding.col;
 import static spacegraph.container.Gridding.grid;
 import static spacegraph.render.JoglPhysics.window;
@@ -72,16 +75,16 @@ abstract public class NAgentX extends NAgent {
     public NAgentX(String id, NAR nar) {
         super(id, nar);
 
-//        ActionInfluencingSensorConcept joy = new ActionInfluencingSensorConcept(
-//                id != null ?
-//                        //$.prop($.the(id), $.the("joy"))
-//                        $.inh($.the(id), $.the("joy"))
-//                        :
-//                        $.the("joy"),
-//                new FloatPolarNormalized(new FloatFirstOrderDifference(nar::time,
-//                        () -> reward)).relax(0.001f));
-//        //dont be too strong because we want to be happy primarily, not to seek increasing joy at some cost of stable happiness (ie. it will allow sadness to get future joy)
-//        alwaysWant(joy, nar.confDefault(GOAL)*0.25f);
+        ActionInfluencingSensorConcept joy = new ActionInfluencingSensorConcept(
+                id != null ?
+                        //$.prop($.the(id), $.the("joy"))
+                        $.inh($.the(id), $.the("joy"))
+                        :
+                        $.the("joy"),
+                new FloatPolarNormalized(new FloatFirstOrderDifference(nar::time,
+                        () -> reward)).relax(0.01f));
+        //dont be too strong because we want to be happy primarily, not to seek increasing joy at some cost of stable happiness (ie. it will allow sadness to get future joy)
+        alwaysWant(joy, nar.confDefault(GOAL)*0.25f);
 
         if (Param.DEBUG) {
 //            nar.onTask(x -> {

@@ -22,13 +22,13 @@
     X, (Y==>X), task("!"), neq(X,Y)      |-          (?1 &&+- --Y), (Punctuation:Question)
     X, (Y==>X), task("!"), neq(X,Y)      |-          (?1 ==>+- Y), (Punctuation:Question)
 
-    X, (X==>Y), task("!"), neq(X,Y)      |-          Y, (Punctuation:Quest)
-    X, (--X==>Y), task("!"), neq(X,Y)    |-          Y, (Punctuation:Quest)
-    X, (X && Y), task("!"), neq(X,Y)     |-          Y, (Punctuation:Quest)
-    X, (--X && Y), task("!"), neq(X,Y)   |-          Y, (Punctuation:Quest)
-    X, (X && --Y), task("!"), neq(X,Y)   |-          Y, (Punctuation:Quest)
-    X, (--X && --Y), task("!"), neq(X,Y) |-          Y, (Punctuation:Quest)
+    X, (X==>Y), task("!"), neq(X,Y)         |- Y, (Punctuation:Quest)
+    X, (--X==>Y), task("!"), neq(X,Y)       |- Y, (Punctuation:Quest)
+    X, (X && Y), task("!"), neqUnneg(X,Y)   |- Y, (Punctuation:Quest)
+    X, (--X && Y), task("!"), neqUnneg(X,Y) |- Y, (Punctuation:Quest)
 
+//self-fulfilling prophecy: should I?  i believe it is. then i want it to be. (weakly)
+    //G, G, task("@") |- G, (Goal:BeliefStructuralReduction, Punctuation:Goal)
 
     //quest to 'how' question
     //B, X, task("@"), notImpl(B) |- (B ==>+- X), (Punctuation:Question)

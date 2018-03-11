@@ -73,7 +73,7 @@ public class Deriver extends Causable {
     /**
      * TODO move this to a 'CachingDeriver' subclass
      */
-    final Memoize<ProtoDerivation.PremiseKey, int[]> whats =
+    final Memoize<ProtoDerivation.PremiseKey, short[]> whats =
             new HijackMemoize<>(ProtoDerivation.PremiseKey::solve,
                     32 * 1024, 4, false);
 

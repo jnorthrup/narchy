@@ -85,6 +85,10 @@ public interface Truth extends Truthed {
         return TruthFunctions.expectation(freq(), conf());
     }
 
+    default float expectation(float factor) {
+        return TruthFunctions.expectation(freq(), conf()*factor);
+    }
+
     default float expectationNeg() {
         return TruthFunctions.expectation(1-freq(), conf());
     }

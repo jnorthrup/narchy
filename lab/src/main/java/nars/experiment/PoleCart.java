@@ -161,8 +161,8 @@ public class PoleCart extends NAgentX {
 
         actionBipolarFrequencyDifferential(id, false, false, (a) -> {
             if (!manualOverride) {
-                //action = a;
-                action = Util.tanhFast(a*4);
+                action = a;
+                //action = Util.tanhFast(a*4);
                 //action = Util.lerp(acc[0], a, Util.tanhFast(a*2));
             }
             return a;

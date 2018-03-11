@@ -1,7 +1,6 @@
 package jcog.net;
 
 import jcog.Util;
-import jcog.exe.Loop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,17 +10,22 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.SocketTimeoutException;
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * https://github.com/jackss011/java-netdiscovery-sample
  */
-abstract public class UDiscover<P> extends Loop {
+abstract public class UDiscover<P>  {
 
     static protected final Logger logger = LoggerFactory.getLogger(UDiscover.class);
 
     final static String address = "228.5.6.7";
     final static int port = 6576;
-    public static final int MAX_PAYLOAD_ID = 256;
+    static final int MAX_PAYLOAD_ID = 256;
+
+    /** SO_TIMEOUT value */
+    private static final int TIMEOUT_MS = 250;
+
     private final P id;
 
     MulticastSocket ms;
@@ -30,48 +34,60 @@ abstract public class UDiscover<P> extends Loop {
     private byte[] myID;
     private byte[] theirID;
 
+    final AtomicBoolean busy = new AtomicBoolean(true);
 
-    public UDiscover(P payloadID, int periodMS) {
-        super(periodMS);
+
+    public UDiscover(P payloadID) {
+
         this.id = payloadID;
     }
 
 
     abstract protected void found(P theirs, InetAddress who, int port);
 
-    @Override
-    protected synchronized void onStart() {
-        super.onStart();
 
-        try {
-            ia = InetAddress.getByName(address);
+    public void start() {
+        synchronized (this) {
 
-            ms = new MulticastSocket(port);
 
-            ms.setBroadcast(true);
+            try {
+                ia = InetAddress.getByName(address);
 
-            ms.setReuseAddress(true);
+                ms = new MulticastSocket(port);
 
-            //ms.setTrafficClass();
-            ms.setSoTimeout(periodMS.intValue() /* assuming it isnt changed while running but the initial value should be reasonable.. */);
-            ms.joinGroup(ia);
+                ms.setBroadcast(true);
 
-            theirID = new byte[MAX_PAYLOAD_ID];
-            myID = Util.toBytes(id);
-            p = new DatagramPacket(myID, myID.length, ia, port);
-            q = new DatagramPacket(theirID, theirID.length);
-        
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+                ms.setReuseAddress(true);
+
+                //ms.setTrafficClass();
+                ms.setSoTimeout(TIMEOUT_MS);//periodMS.intValue() /* assuming it isnt changed while running but the initial value should be reasonable.. */);
+                ms.joinGroup(ia);
+
+                theirID = new byte[MAX_PAYLOAD_ID];
+                myID = Util.toBytes(id);
+                p = new DatagramPacket(myID, myID.length, ia, port);
+                q = new DatagramPacket(theirID, theirID.length);
+
+                busy.set(false);
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
         }
-
     }
 
-    @Override
-    public boolean next() {
+
+    public boolean update() {
+
 
 
         try {
+
+            if (!busy.compareAndSet(false, true))
+                return false;
+
+            final MulticastSocket ms = this.ms;
 
             try {
                 ms.send(p);
@@ -102,17 +118,20 @@ abstract public class UDiscover<P> extends Loop {
 
         } catch (Exception e) {
             logger.error("{} {}", this, e);
+        } finally {
+            busy.set(false);
         }
 
         return true;
     }
 
-    @Override
-    protected synchronized void onStop() {
-        super.onStop();
-        if (ms != null) {
-            ms.close();
-            ms = null;
+    public void stop() {
+        synchronized (this) {
+            busy.set(true);
+            if (ms != null) {
+                ms.close();
+                ms = null;
+            }
         }
     }
 

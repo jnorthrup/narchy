@@ -25,6 +25,7 @@ public class NAL8SetTest extends NALTest {
             .mustGoal(cycles,"(a-->g)", 1f, 0.81f)
             .mustGoal(cycles,"(b-->g)", 1f, 0.81f);
     }
+
     @Test
     public void testIntersectGoal1Neg() {
         test

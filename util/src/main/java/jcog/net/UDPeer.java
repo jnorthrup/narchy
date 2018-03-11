@@ -7,6 +7,7 @@ import jcog.bag.Bag;
 import jcog.bag.impl.HijackBag;
 import jcog.bag.impl.hijack.PriorityHijackBag;
 import jcog.data.byt.DynBytes;
+import jcog.exe.Every;
 import jcog.io.BinTxt;
 import jcog.math.FloatRange;
 import jcog.math.RecycledSummaryStatistics;
@@ -39,7 +40,7 @@ import static jcog.net.UDPeer.Msg.ADDRESS_BYTES;
  * <p>
  * see:
  * Gnutella
- * WASTE
+ * GNU WASTE
  * https://github.com/ethereum/ethereumj/blob/develop/ethereumj-core/src/main/java/org/ethereum/net/p2p/P2pMessageCodes.java
  * https://github.com/ethereum/ethereumj/blob/develop/ethereumj-core/src/main/java/org/ethereum/net/shh/WhisperImpl.java
  * https://github.com/ethereum/ethereumj/blob/develop/ethereumj-core/src/main/java/org/ethereum/net/MessageQueue.java
@@ -53,14 +54,16 @@ public class UDPeer extends UDP {
 
     public final Bag<Integer, UDProfile> them;
     public final PriorityHijackBag<Msg, Msg> seen;
+
     public final UDiscover<Discoverability> discover;
+    public final Every discoverEvery;
 
     /**
      * TODO use a variable size identifier, 32+ bit. ethereumj uses 512bits.
      * smaller id's will work better for closed networks with a known population
      */
     public final int me;
-    static final int UNKNOWN_ID = Integer.MIN_VALUE;
+    private static final int UNKNOWN_ID = Integer.MIN_VALUE;
 
     /**
      * rate of sharing peer needs
@@ -129,7 +132,7 @@ public class UDPeer extends UDP {
 
         this.logger = LoggerFactory.getLogger(getClass().getSimpleName() + ':' + name());
 
-        them = new HijackBag<Integer, UDProfile>(3) {
+        them = new HijackBag<>(3) {
 
             @Override
             public void onAdd(UDProfile p) {
@@ -138,13 +141,13 @@ public class UDPeer extends UDP {
             }
 
             @Override
-            public void onRemove(@NotNull UDPeer.UDProfile p) {
+            public void onRemove(UDPeer.UDProfile p) {
                 logger.debug("disconnect {}", p);
                 onAddRemove(p, false);
             }
 
             @Override
-            protected UDProfile merge(@Nullable UDPeer.UDProfile existing, @NotNull UDPeer.UDProfile incoming, MutableFloat overflowing) {
+            protected UDProfile merge(@Nullable UDPeer.UDProfile existing, UDPeer.UDProfile incoming, MutableFloat overflowing) {
                 return (existing != null ? existing : incoming);
             }
 
@@ -154,9 +157,9 @@ public class UDPeer extends UDP {
             }
 
             @Override
-            public float pri(@NotNull UDPeer.UDProfile key) {
+            public float pri(UDPeer.UDProfile key) {
                 long latency = key.latency();
-                return 1f / (1f + Util.sqr (latency / 100f));
+                return 1f / (1f + Util.sqr(latency / 100f));
             }
 
             @Override
@@ -175,7 +178,7 @@ public class UDPeer extends UDP {
 
         them.setCapacity(PEERS_CAPACITY);
 
-        seen = new PriorityHijackBag<Msg, Msg>(SEEN_CAPACITY, 3) {
+        seen = new PriorityHijackBag<>(SEEN_CAPACITY, 3) {
 
             @NotNull
             @Override
@@ -189,7 +192,7 @@ public class UDPeer extends UDP {
             }
         };
 
-        discover = discovery ? new UDiscover<>(new Discoverability(me, addr), 250) {
+        discover = discovery ? new UDiscover<>(new Discoverability(me, addr)) {
             @Override
             protected void found(Discoverability who, InetAddress addr, int port) {
                 if (!them.contains(who.id)) {
@@ -198,9 +201,10 @@ public class UDPeer extends UDP {
                 }
             }
         } : null;
+        discoverEvery = new Every(discover::update, 250);
     }
 
-    public static class Discoverability implements Serializable {
+    static class Discoverability implements Serializable {
         public int id;
         public InetSocketAddress addr;
 
@@ -255,11 +259,15 @@ public class UDPeer extends UDP {
     }
 
     @Override
-    protected void onStop() {
+    protected void onStart() {
+        super.onStart();
+        discover.start();
+    }
 
+    @Override
+    protected void onStop() {
         them.clear();
-        if (discover!=null)
-            discover.stop();
+        discover.stop();
     }
 
 
@@ -282,7 +290,7 @@ public class UDPeer extends UDP {
     /**
      * send to a specific known recipient
      */
-    public void send(@NotNull Msg o, @NotNull InetSocketAddress to) {
+    public void send(Msg o, InetSocketAddress to) {
 //        InetSocketAddress a = o.origin();
 //        if (a != null && a.equals(to))
 //            return;
@@ -291,6 +299,8 @@ public class UDPeer extends UDP {
 
     @Override
     public boolean next() {
+
+        discoverEvery.next();
 
         if (!super.next())
             return false;
@@ -336,7 +346,7 @@ public class UDPeer extends UDP {
         final byte[] inputArray = data;
 
         Msg m = Msg.get(data, len);
-        if (m == null || m.id() == me)
+        if (/*m == null || */m.id() == me)
             return;
 
         Command cmd = Command.get(m.cmd());
@@ -375,7 +385,7 @@ public class UDPeer extends UDP {
 //                m.dataAddresses(this::ping);
 //                break;
             case TELL:
-                onTell(you, m);
+                told(you, m);
                 break;
             case ATTN:
                 if (you != null) {
@@ -419,12 +429,12 @@ public class UDPeer extends UDP {
         }
     }
 
-    protected void onTell(@Nullable UDProfile connected, @NotNull Msg m) {
+    protected void told(@Nullable UDProfile connected, Msg m) {
 
     }
 
 
-    public long latencyAvg() {
+    public synchronized long latencyAvg() {
         RecycledSummaryStatistics r = new RecycledSummaryStatistics();
         them.forEach(x -> r.accept(x.latency));
         return Math.round(r.getMean());
@@ -458,7 +468,7 @@ public class UDPeer extends UDP {
     }
 
 
-    public @Nullable UDProfile onPong(InetSocketAddress p, Msg m, @Nullable UDProfile connected, long now) {
+    protected @Nullable UDProfile onPong(InetSocketAddress p, Msg m, @Nullable UDProfile connected, long now) {
 
         long sent = m.dataLong(0); //TODO dont store the sent time in the message where it can be spoofed. instead store a pending ping table that a pong will lookup by the iniating ping's message hash
         long latency = now - sent; //TODO should be Long
@@ -655,7 +665,6 @@ public class UDPeer extends UDP {
             return (--bytes[TTL_BYTE]) >= 0;
         }
 
-        @Nullable
         public static Msg get(byte[] data, int len) {
             //TODO verification
             return new Msg(data, len);

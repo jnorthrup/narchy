@@ -39,6 +39,7 @@ public interface Priority extends Prioritized {
                     u.take(getPri.apply(t), perSrc, true, copyOrTransfer);
             }
         }
+        assert(u.priElseZero() <= maxPri);
         return u;
     }
 

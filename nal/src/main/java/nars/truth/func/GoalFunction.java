@@ -44,19 +44,26 @@ public enum GoalFunction implements TruthOperator {
         }
     },
 
-   /** deduction used for bipolar implication results. symmetric for positive or negative T unlike ordinary deduction */
-//    //@AllowOverlap
-    DeciDeduction() {
+    DeductionPB() {
         @Override
         public Truth apply(Truth T, Truth B, NAR m, float minConf) {
-            if (!B.isNegative()) {
-                return BeliefFunction.Deduction.apply(T, B, m, minConf);
-            } else {
-                return BeliefFunction.Deduction.apply(T.neg(), B.neg(), m, minConf);
-            }
+            return BeliefFunction.DeductionPB.apply(T, B, m, minConf);
         }
-
     },
+
+   /** deduction used for bipolar implication results. symmetric for positive or negative T unlike ordinary deduction */
+//    //@AllowOverlap
+//    DeciDeduction() {
+//        @Override
+//        public Truth apply(Truth T, Truth B, NAR m, float minConf) {
+//            if (!B.isNegative()) {
+//                return BeliefFunction.Deduction.apply(T, B, m, minConf);
+//            } else {
+//                return BeliefFunction.Deduction.apply(T.neg(), B.neg(), m, minConf);
+//            }
+//        }
+//
+//    },
 
     Induction() {
         @Override
@@ -128,6 +135,13 @@ public enum GoalFunction implements TruthOperator {
         }
     },
 
+    //@AllowOverlap
+    BeliefStructuralReduction() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
+            return BeliefFunction.StructuralReduction.apply(B, null, m, minConf);
+        }
+    },
 
     //@AllowOverlap
     Union() {

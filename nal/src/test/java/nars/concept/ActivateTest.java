@@ -229,7 +229,7 @@ public class ActivateTest {
     @Test
     public void testTemplateProdWithCompound() throws Narsese.NarseseException {
         testTemplates("(a,(b,c))",
-                "[]");
+                "[(b,c), a]");
     }
 
     @Test

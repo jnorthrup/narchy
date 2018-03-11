@@ -220,18 +220,19 @@ public class StampTest {
         assertEquals(0f, Stamp.overlapFraction(a(1, 2), a(3, 4)), 0.01f);
     }
     @Test public void testOverlapFraction2() {
-        assertEquals(1/2f, Stamp.overlapFraction(a(1,2), a(2,3)), 0.01f);
-        assertEquals(1f, Stamp.overlapFraction(a(1,2), a(1,2,3)), 0.01f);
-
+        assertEquals(1 / 2f, Stamp.overlapFraction(a(1, 2), a(2, 3)), 0.01f);
+        assertEquals(1f, Stamp.overlapFraction(a(1, 2), a(1, 2, 3)), 0.01f);
+    }
+    @Test public void testOverlapFraction3() {
         //12345
         //------
         //123345
         assertEquals(1/3f, Stamp.overlapFraction(a(1,2,3), a(3,4,5)), 0.01f);
-        assertEquals(1/2f, Stamp.overlapFraction(a(1,2,3,4), a(3,4,5)), 0.01f);
+        assertEquals(2/3f, Stamp.overlapFraction(a(1,2,3,4), a(3,4,5)), 0.01f);
 
         //one is completely subsumed in another
-        assertEquals(1/2f, Stamp.overlapFraction(a(1,2), a(2)), 0.01f);
-        assertEquals(3/4f, Stamp.overlapFraction(a(1,2,3,4), a(2,3,4)), 0.01f);
+        assertEquals(1f, Stamp.overlapFraction(a(1,2), a(2)), 0.01f);
+        assertEquals(1f, Stamp.overlapFraction(a(1,2,3,4), a(2,3,4)), 0.01f);
     }
 
 }

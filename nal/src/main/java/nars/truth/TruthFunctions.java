@@ -96,10 +96,7 @@ public final class TruthFunctions {
         return deductionB(a, 1f, bC, minConf);
     }
 
-    @Nullable
-    public static Truth deduction(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
-        return deductionB(a, b.freq(), b.conf(), minConf);
-    }
+
 
     @Nullable
     public static Truth deductionB(/*@NotNull*/ Truth a, float bF, float bC, float minConf) {
@@ -153,23 +150,20 @@ public final class TruthFunctions {
      */
     public static Truth induction(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
         float c = w2cSafe(a.conf() * b.freqTimesConf()); //and(a.conf(),b.freq(),b.conf())
-        if (c >= minConf)
-            return $.t(a.freq(), c);
-        else
-            return null;
+        return c >= minConf ? $.t(a.freq(), c) : null;
     }
 
 
-    /**
-     * {<M ==> S>, <M ==> P>} |- <S ==> P>
-     *
-     * @param v1 Truth value of the first premise
-     * @param v2 Truth value of the second premise
-     * @return Truth value of the conclusion
-     */
-    public static Truth abduction(/*@NotNull*/ Truth v1, /*@NotNull*/ Truth v2, float minConf) {
-        return induction(v2, v1, minConf);
-    }
+//    /**
+//     * {<M ==> S>, <M ==> P>} |- <S ==> P>
+//     *
+//     * @param v1 Truth value of the first premise
+//     * @param v2 Truth value of the second premise
+//     * @return Truth value of the conclusion
+//     */
+//    public static Truth abduction(/*@NotNull*/ Truth v1, /*@NotNull*/ Truth v2, float minConf) {
+//        return induction(v2, v1, minConf);
+//    }
 
     /**
      * {<M ==> S>, <P ==> M>} |- <S ==> P>
@@ -275,9 +269,25 @@ public final class TruthFunctions {
      * frequency determined entirely by the desire component.
      */
     @Nullable public static Truth desireStrongNew(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
-        float c = and(a.conf(), b.conf(), b.freq());
-        //float c = w2cSafe(and(a.evi(), b.evi(), bFreq));
-        return c < minConf ? null : $.t(a.freq(), c);
+        //float c = and(a.conf(), b.conf(), b.freq());
+//        return c < minConf ? null : $.t(a.freq(), c);
+        //return $.t(a.expectation(b.freq()), b.conf());
+        float c = and(a.conf(), b.conf());
+        //return c < minConf ? null : $.t(a.expectation(b.freq()), c);
+        //return c < minConf ? null : $.t(TruthFunctions.expectation(a.freq(), b.freq()) /* b.freq used in conf param */, c);
+        return c < minConf ? null : $.t(and(a.freq(), b.freq()), c);
+        //return c < minConf ? null : $.t(a.freq(), c);
+
+    }
+    public static Truth desireWeakNew(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
+        //float c = and(a.conf(), b.conf(), b.freq(), w2c(1.0f));
+//        return c < minConf ? null : $.t(a.freq(), c);
+        //float c = and(b.conf(), w2c(1.0f));
+        float c = and(a.conf(), b.conf(), w2c(1.0f));
+        //return c < minConf ? null : $.t(a.expectation(b.freq()), c);
+        //return c < minConf ? null : $.t(TruthFunctions.expectation(a.freq(), b.freq()) /* b.freq used in conf param */, c);
+        return c < minConf ? null : $.t(and(a.freq(), b.freq()), c);
+        //return c < minConf ? null : $.t(a.freq(), c);
     }
 
     /**
@@ -288,10 +298,7 @@ public final class TruthFunctions {
         float c = and(a.conf(), b.conf(), bFreq, w2c(1.0f));
         return c < minConf ? null : desire(a.freq(), bFreq, c);
     }
-    public static Truth desireWeakNew(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
-        float c = and(a.conf(), b.conf(), b.freq(), w2c(1.0f));
-        return c < minConf ? null : $.t(a.freq(), c);
-    }
+
 
     /*@NotNull*/
     static Truth desire(float f1, float f2, float c) {
