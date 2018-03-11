@@ -19,7 +19,7 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
     }
 
     public CircularArrayList() {
-        this(0);
+        this(1);
     }
 
     public CircularArrayList(int capacity) {
@@ -27,6 +27,7 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
     }
 
     public void clear(int resize) {
+        resize = Math.max(1, resize);
         if (n!=resize) {
             n = resize+1;
             array = (E[]) new Object[resize];
@@ -41,10 +42,13 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
 
     @Override
     public Iterator<E> iterator() {
-        return new Iterator<E>() {
+        final int max = size;
+        if (max == 0)
+            return Collections.emptyIterator();
+
+        return new Iterator<>() {
 
             int pos;
-            final int max = size;
 
             @Override
             public boolean hasNext() {
@@ -53,7 +57,10 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
 
             @Override
             public E next() {
-                return get(pos++);
+                int p = pos;
+                E e = get(p);
+                pos++;
+                return e;
             }
         };
     }

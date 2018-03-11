@@ -459,8 +459,10 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
     /** called each frame regardless of mouse activity */
     Surface updateMouse(float sx, float sy, short[] buttonsDown) {
 
-        if (!updatingMouse.compareAndSet(false, true))
-            return null; //?
+        if (!updatingMouse.compareAndSet(false, true)) {
+            error(this, 1f, "update collision; skipped");
+            return null; //skipped - this is BAD. maybe should be properly queued
+        }
 
         /*if (e == null) {
             off();
@@ -470,7 +472,7 @@ public class Ortho extends Container implements SurfaceRoot, WindowListener, Key
             Surface touching = finger.touching;
             Surface touchedNext = finger.on(surface, sx, sy, wmx, wmy, buttonsDown);
             if (touchedNext!=null && touchedNext!=touching) {
-                debug(this, 1f, ()->"touch: " + touchedNext);
+                debug(this, 1f, ()->"touch(" + touchedNext + ")");
             }
             return touchedNext;
         } finally {

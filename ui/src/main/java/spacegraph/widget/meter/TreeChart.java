@@ -25,10 +25,11 @@ import static jcog.data.map.CustomConcurrentHashMap.*;
 public class TreeChart<X> extends Surface {
 
 
-    private final boolean sort = false;
-    private double heightLeft, widthLeft, top, left;
-    private float width;
-    private float height;
+//    private final boolean sort = false;
+    private double heightLeft, widthLeft;
+
+    @Deprecated private float top = 0, left = 0;
+    @Deprecated private final float width = 1, height = 1;
 
 
     enum LayoutOrient {
@@ -38,22 +39,27 @@ public class TreeChart<X> extends Surface {
 
     private LayoutOrient layoutOrient = LayoutOrient.HORIZONTAL;
 
-    final Flip<CircularArrayList<ItemVis<X>>> phase = new Flip(CircularArrayList::new);
+    final Flip<CircularArrayList<ItemVis<X>>> phase = new Flip(
+            ()->new CircularArrayList<>(512));
 
 
     public TreeChart() {
 
     }
 
-
     @Override
     protected void paint(GL2 gl, int dtMS) {
+        Draw.bounds(gl, bounds, this::paint);
+    }
 
-        double totalArea = w() * h();
+
+    protected void paint(GL2 gl) {
+
+
         CircularArrayList<ItemVis<X>> read = phase.read();
         if (!read.isEmpty()) {
             for (ItemVis v : read) {
-                v.paint(gl, v.area * totalArea);
+                v.paint(gl, v.area);
             }
         }
     }
@@ -80,22 +86,21 @@ public class TreeChart<X> extends Surface {
         };
     }
 
-    public void update(Collection<? extends X> next, BiConsumer<X, ItemVis<X>> update, Function<X, ItemVis<X>> vis) {
-        width = w();
-        height = h();
-        left = bounds.x;
-        top = bounds.y;
+
+
+    public void update(Iterable<? extends X> next, BiConsumer<X, ItemVis<X>> update, Function<X, ItemVis<X>> vis) {
+        left = 0;
+        top = 0;
 
         CircularArrayList<ItemVis<X>> display = phase.commit();
-        int ns = next.size();
-        int cs = display.capacity();
-        if (cs < ns) {
-            display.clear(ns);
-        } else if (cs > ns*2) {
-            display.clear(ns); //shrink if more than 2x as large
-        } else {
+//        int cs = display.capacity();
+//        if (cs < ns) {
+//            display.clear(ns);
+//        } else if (cs > ns*2) {
+//            display.clear(ns); //shrink if more than 2x as large
+//        } else {
             display.clear(); //just fine
-        }
+        //}
 
         final float[] weight = {0};
         next.forEach(item -> {
@@ -150,7 +155,7 @@ public class TreeChart<X> extends Surface {
         double worstConcat = worst(concatRow, w);
         double worstRow = worst(row, w);
 
-        if (row.isEmpty() || (worstRow > worstConcat || isDoubleEqual(worstRow, worstConcat))) {
+        if (row.isEmpty() || (worstRow > worstConcat || Util.equals(worstRow, worstConcat, EPSILON))) {
 
             if (remaining.isEmpty()) {
                 layoutrow(concatRow, w);
@@ -209,7 +214,7 @@ public class TreeChart<X> extends Surface {
                 //assert(area > 0);
 
                 item.top = (float) (top + topItem);
-                item.left = (float) left;
+                item.left = left;
                 item.width = (float) rowWidth;
                 float h = (float) (area / rowWidth);
                 item.height = h;
@@ -220,22 +225,22 @@ public class TreeChart<X> extends Surface {
             //this.heightLeft -= w;
             left += rowWidth;
             double minimumSide = minimumSide();
-            if (!isDoubleEqual(minimumSide, heightLeft)) {
+            if (!Util.equals(minimumSide, heightLeft, EPSILON)) {
                 changeLayout();
             }
         } else {
 
-            double rowHeight = totalArea / w;
+            float rowHeight = (float) (totalArea / w);
             //assert(rowHeight > 0);
-            double rowLeft = 0;
+            float rowLeft = 0;
 
             for (ItemVis item : row) {
                 float area = item.area;
 
-                item.top = (float) top;
-                item.left = (float) (left + rowLeft);
-                item.height = (float) rowHeight;
-                float wi = (float) (area / rowHeight);
+                item.top = top;
+                item.left = left + rowLeft;
+                item.height = rowHeight;
+                float wi = area / rowHeight;
                 item.width = wi;
 
                 rowLeft += wi;
@@ -245,7 +250,7 @@ public class TreeChart<X> extends Surface {
             top += rowHeight;
 
             double minimumSide = minimumSide();
-            if (!isDoubleEqual(minimumSide, widthLeft)) {
+            if (!Util.equals(minimumSide, widthLeft, EPSILON)) {
                 changeLayout();
             }
         }
@@ -256,34 +261,29 @@ public class TreeChart<X> extends Surface {
         layoutOrient = layoutOrient == LayoutOrient.HORIZONTAL ? LayoutOrient.VERTICAL : LayoutOrient.HORIZONTAL;
     }
 
-    private static boolean isDoubleEqual(double one, double two) {
-        double eps = 0.00001;
-        return Math.abs(one - two) < eps;
-    }
-
     private double minimumSide() {
         return Math.min(heightLeft, widthLeft);
     }
 
 
-    public static class WeightedString {
-        public final String label;
-        public final float weight;
-
-        public WeightedString(String label, float weight) {
-            this.label = label;
-            this.weight = weight;
-        }
-
-        @Override
-        public String toString() {
-            return label;
-        }
-
-        public static WeightedString w(String s, float w) {
-            return new WeightedString(s, w);
-        }
-    }
+//    public static class WeightedString {
+//        public final String label;
+//        public final float weight;
+//
+//        public WeightedString(String label, float weight) {
+//            this.label = label;
+//            this.weight = weight;
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return label;
+//        }
+//
+//        public static WeightedString w(String s, float w) {
+//            return new WeightedString(s, w);
+//        }
+//    }
 
 //	// private final ColorBucket colorBucket = ColorBucket.createBucket();
 //	public final Item root;
@@ -339,6 +339,8 @@ public class TreeChart<X> extends Surface {
             this.id = serial.incrementAndGet();
             this.item = item;
             this.label = label;
+            this.weight = 1; //default
+            r = g = b = 0.5f;
         }
 
         public void update(float weight, float r, float g, float b) {
@@ -384,8 +386,8 @@ public class TreeChart<X> extends Surface {
             //        return result;
         }
 
-        public void paint(GL2 gl, double percent) {
-            float i = 0.25f + 0.75f * (float) percent;
+        public void paint(GL2 gl, float percent) {
+            float i = 0.25f + 0.75f * percent;
 
             if (r < 0) {
                 r = i;
@@ -403,7 +405,7 @@ public class TreeChart<X> extends Surface {
 
             float labelSize = 1f / (1 + label.length()); //Math.min(16, (float) (height * percent * 20f ) ); /// 4f * Math.min(0.5f,percent));
 
-            if (area > 16f*label.length()) {
+            /*if (area > 16f*label.length())*/ {
 
                 gl.glLineWidth(1f);
                 gl.glColor3f(1, 1, 1);

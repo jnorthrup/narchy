@@ -7,6 +7,8 @@ import jcog.bag.Bag;
 import jcog.bag.impl.HijackBag;
 import jcog.bag.impl.hijack.PriorityHijackBag;
 import jcog.data.byt.DynBytes;
+import jcog.event.ListTopic;
+import jcog.event.Topic;
 import jcog.exe.Every;
 import jcog.io.BinTxt;
 import jcog.math.FloatRange;
@@ -17,6 +19,7 @@ import jcog.pri.Priority;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.apache.commons.math3.stat.descriptive.SynchronizedDescriptiveStatistics;
+import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -34,6 +37,7 @@ import java.util.function.Consumer;
 
 import static jcog.net.UDPeer.Command.*;
 import static jcog.net.UDPeer.Msg.ADDRESS_BYTES;
+import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
  * UDP peer - self-contained generic p2p/mesh network node
@@ -78,6 +82,8 @@ public class UDPeer extends UDP {
      * TODO make this IntParam mutable
      */
     final static int PEERS_CAPACITY = 64;
+
+    public final Topic<Pair<UDProfile,Msg>> onReceive = new ListTopic<>();
 
     /**
      * message memory
@@ -429,8 +435,9 @@ public class UDPeer extends UDP {
         }
     }
 
-    protected void told(@Nullable UDProfile connected, Msg m) {
-
+    protected void told(@Nullable UDProfile from, Msg m) {
+        if (!onReceive.isEmpty())
+            onReceive.emit(pair(from, m));
     }
 
 
