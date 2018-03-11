@@ -2,11 +2,11 @@ package nars.test.condition;
 
 
 import jcog.Texts;
+import jcog.Util;
 import nars.*;
 import nars.control.MetaGoal;
 import nars.task.Tasked;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import org.jetbrains.annotations.NotNull;
@@ -155,7 +155,7 @@ public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Ta
         }
 
         //HACK use toString for now
-        dist += Terms.levenshteinDistancePercent(
+        dist += Util.levenshteinFraction(
                 a.toString(),
                 b.toString()) * 0.4f;
 

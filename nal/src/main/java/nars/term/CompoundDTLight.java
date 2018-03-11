@@ -50,7 +50,7 @@ public class CompoundDTLight implements CompoundDT {
             int size = subterms.subs();
 
             if (op.temporal && (op != CONJ && size != 2))
-                throw new InvalidTermException(op, dt, "Invalid dt value for operator", subterms.arrayClone());
+                throw new InvalidTermException(op, dt, "Invalid dt value for operator", subterms.arrayShared());
 
             if (dt != XTERNAL && op.commutative && size == 2) {
                 if (sub(0).compareTo(sub(1)) > 0)

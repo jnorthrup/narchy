@@ -606,7 +606,7 @@ public class IO {
                      */
 
                     if (c.op() == NEG) {
-                        Term cx = c.sub(0);
+                        Term cx = c.unneg();
                         if (cx.op() == CONJ && cx.dt() == DTERNAL) { //for DTERNAL only
                             if (Terms.allNegated(cx.subterms())) {
                                 compoundAppend(Op.DISJstr, cx.subterms(), Term::neg, p);
@@ -718,10 +718,11 @@ public class IO {
             }
 
             p.append(opener);
+
+            Subterms setsubs = set.subterms();
             for (int i = 0; i < len; i++) {
-                Term tt = set.sub(i);
                 if (i != 0) p.append(Op.ARGUMENT_SEPARATOR);
-                tt.append(p);
+                setsubs.sub(i).append(p);
             }
             p.append(closer);
         }
@@ -736,7 +737,7 @@ public class IO {
             //        }
 
 
-            Term[] xt = argsProduct.arrayClone();
+            Term[] xt = argsProduct.arrayShared();
 
             p.append(operator.toString());
 

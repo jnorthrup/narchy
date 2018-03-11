@@ -23,7 +23,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
 
     public static final DepIndepVarIntroduction the = new DepIndepVarIntroduction();
 
-    final static int ConjOrStatementBits = Op.IMPL.bit | Op.CONJ.bit; //NOT including similarity or inheritance because variables acorss these would be loopy
+    private final static int ConjOrStatementBits = Op.IMPL.bit | Op.CONJ.bit; //NOT including similarity or inheritance because variables acorss these would be loopy
 
     private final static int DepOrIndepBits = Op.VAR_INDEP.bit | Op.VAR_DEP.bit | Op.VAR_PATTERN.bit;
 
@@ -40,13 +40,13 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     }
 
     @Override
-    protected Term next(Term input, Random shuffle) {
+    protected Term select(Term input, Random shuffle) {
         return Terms.nextRepeat(input, depIndepFilter, 2, shuffle);
     }
 
     @Nullable
     @Override
-    protected Term next(Term input, Term selected, byte order) {
+    protected Term introduce(Term input, Term selected, byte order) {
 
         if (selected.equals(Imdex))
             return null;

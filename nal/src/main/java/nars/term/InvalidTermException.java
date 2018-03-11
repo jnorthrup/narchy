@@ -29,7 +29,7 @@ public final class InvalidTermException extends SoftException {
     }
 
     public InvalidTermException(/*@NotNull*/ Op op, int dt, @NotNull Subterms args, @NotNull String reason) {
-        this(op, dt, reason, args.arrayClone());
+        this(op, dt, reason, args.arrayShared());
     }
 
     public InvalidTermException(/*@NotNull*/ Op op, int dt, @NotNull String reason, @NotNull Term... args) {

@@ -2272,6 +2272,15 @@ public enum Util {
         return null;
     }
 
+    /**
+     * returns lev distance divided by max(a.length(), b.length()
+     */
+    public static float levenshteinFraction(CharSequence a, CharSequence b) {
+        int len = Math.max(a.length(), b.length());
+        if (len == 0) return 0f;
+        return Texts.levenshteinDistance(a, b) / ((float) len);
+    }
+
 
 //    public static <T>  Collector<T, ?, List<T>> toListOrNullIfEmpty() {
 //        return new Collectors.CollectorImpl<>((Supplier<List<T>>) ArrayList::new, List::add,

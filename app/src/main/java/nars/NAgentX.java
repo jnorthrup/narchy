@@ -212,7 +212,7 @@ abstract public class NAgentX extends NAgent {
         n.freqResolution.set(0.01f);
         n.termVolumeMax.set(32);
 
-        n.beliefConfidence(0.9f);
+        n.beliefConfidence(0.98f);
         n.goalConfidence(0.9f);
 
 

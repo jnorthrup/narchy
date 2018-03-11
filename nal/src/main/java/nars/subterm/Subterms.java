@@ -1148,7 +1148,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default Subterms sorted() {
-        return isSorted() ? this : subtermsInterned(Terms.sorted(arrayClone()));
+        return isSorted() ? this : subtermsInterned(Terms.sorted(arrayShared()));
     }
 
     default Term[] termsExcept(int i) {

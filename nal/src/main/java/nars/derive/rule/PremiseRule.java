@@ -95,7 +95,7 @@ public class PremiseRule {
     }
 
     public PremiseRule(Subterms premiseAndResult) {
-        this.id = $.p(premiseAndResult);
+        this.id = Op.PROD.the(premiseAndResult);
     }
 
 
@@ -214,7 +214,7 @@ public class PremiseRule {
      * deduplicate and generate match-optimized compounds for rules
      */
     private void compile(ConceptIndex index) {
-        Term[] premisePattern = ((Subterms) id.sub(0)).arrayClone();
+        Term[] premisePattern = ((Subterms) id.sub(0)).arrayShared();
         premisePattern[0] = index.get(premisePattern[0], true).term(); //task pattern
         premisePattern[1] = index.get(premisePattern[1], true).term(); //belief pattern
     }
@@ -255,8 +255,8 @@ public class PremiseRule {
         //1. construct precondition term array
         //Term[] terms = terms();
 
-        Term[] precon = ((Subterms) id.sub(0)).arrayClone();
-        Term[] postcons = ((Subterms) id.sub(1)).arrayClone();
+        Term[] precon = ((Subterms) id.sub(0)).arrayShared();
+        Term[] postcons = ((Subterms) id.sub(1)).arrayShared();
 
 
         Set<PrediTerm<ProtoDerivation>> pres =
@@ -288,12 +288,12 @@ public class PremiseRule {
 
             String predicateNameStr = predicate_name.toString();
 
-            Term[] args;
+
             Term X, Y;
 
             //if (predicate.getSubject() instanceof SetExt) {
             //decode precondition predicate arguments
-            args = ((Subterms) (predicate.sub(0))).arrayClone();
+            Term[] args = ((Subterms) (predicate.sub(0))).arrayShared();
             X = (args.length > 0) ? args[0] : null;
             Y = (args.length > 1) ? args[1] : null;
 //            Z = (args.length > 2) ? args[2] : null;
@@ -809,14 +809,16 @@ public class PremiseRule {
 
         //Append taskQuestion
         Compound pc = (Compound) remapped.sub(0);
-        Term[] pp = pc.arrayClone(); //premise component
+
         Compound newPremise;
 
         Compound newConclusion = (Compound) remapped.sub(1);
 
         if (question) {
 
-            newPremise = (Compound) $.p(concat(pp, TaskAny));
+            newPremise = (Compound) $.p(concat(
+                    pc.arrayShared() /* premise component */,
+                    TaskAny));
             //newPremise = pc; //same
 
 

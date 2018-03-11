@@ -174,6 +174,8 @@ public enum Texts {
      * @author http://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#Java
      */
     public static int levenshteinDistance(CharSequence a, CharSequence b) {
+        if (a.equals(b)) return 0;
+
         int len0 = a.length() + 1;
         int len1 = b.length() + 1;
         int[] cost = new int[len0];

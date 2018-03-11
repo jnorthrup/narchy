@@ -1,15 +1,14 @@
 package nars.term;
 
-import jcog.Texts;
 import jcog.Util;
+import jcog.list.FasterList;
 import jcog.sort.SortedList;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;
 import nars.term.atom.Bool;
-import org.eclipse.collections.api.RichIterable;
-import org.eclipse.collections.api.list.MutableList;
-import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
+import org.eclipse.collections.api.LazyIterable;
+import org.eclipse.collections.api.iterator.MutableIntIterator;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.jetbrains.annotations.NotNull;
@@ -218,20 +217,15 @@ public enum Terms {
 //    }
 
 
-    @NotNull
-    public static Term[] reverse(Term[] arg) {
-        int l = arg.length;
-        Term[] r = new Term[l];
-        for (int i = 0; i < l; i++) {
-            r[i] = arg[l - i - 1];
-        }
-        return r;
-    }
+//    public static Term[] reverse(Term[] arg) {
+//        int l = arg.length;
+//        Term[] r = new Term[l];
+//        for (int i = 0; i < l; i++) {
+//            r[i] = arg[l - i - 1];
+//        }
+//        return r;
+//    }
 
-
-    /**
-     * warning may rearrange items in the input
-     */
     public static Term[] sorted(Term... arg) {
         int len = arg.length;
         switch (len) {
@@ -346,16 +340,6 @@ public enum Terms {
     }
 
 
-    /**
-     * returns lev distance divided by max(a.length(), b.length()
-     */
-    public static float levenshteinDistancePercent(CharSequence a, CharSequence b) {
-        int len = Math.max(a.length(), b.length());
-        if (len == 0) return 0f;
-        return Texts.levenshteinDistance(a, b) / ((float) len);
-    }
-
-
     @Nullable
     public static Atom atomOr(@Nullable Term possiblyCompound, Atom other) {
         return (possiblyCompound instanceof Atom) ? (Atom) possiblyCompound : other;
@@ -458,41 +442,59 @@ public enum Terms {
      * when there is a chocie, it prefers least aggressive introduction. and then random choice if
      * multiple equals are introducible
      */
-    public static Term nextRepeat(Term c, ToIntFunction<Term> countIf, int minCount, @Nullable Random rng) {
-        //FasterList<Term> oi = uniqueRepeats(c, countIf, minCount);
-        MutableList<ObjectIntPair<Term>> oi = Terms.subtermScore(c, countIf, minCount).toList();
+    public static Term nextRepeat(Term c, ToIntFunction<Term> countIf, int minCount, Random rng) {
+        ObjectIntHashMap<Term> oi = Terms.subtermScore(c, countIf, minCount);
+        LazyIterable<Term> ok = oi.keysView();
         switch (oi.size()) {
             case 0: return null;
-            case 1: return oi.get(0).getOne();
+            case 1: return ok.getFirst();
         }
+
+        oi.compact();
 
         //keep only the unique subterms which are not contained by other terms in the list
         //terms which are contained by other terms in the list
         final int[] minScore = {Integer.MAX_VALUE};
-        oi.removeIf(bb -> {
-            if (oi.anySatisfyWith((a,b) -> (a != b) && a.getOne().containsRecursively(b.getOne()), bb)) {
-                return true;
-            } else {
-                if (bb.getTwo() < minScore[0])
-                    minScore[0] = bb.getTwo();
-                return false;
+        {
+            //Iterator<ObjectIntPair<Term>> oo = oi.keyValuesView().iterator();
+            List<Term> keysToRemove = new FasterList(0);
+            Iterator<Term> oo = ok.iterator();
+            while (oo.hasNext()) {
+                Term bb = oo.next();
+                if (ok.anySatisfyWith((a, b) -> (a != b) && a.containsRecursively(b), bb)) {
+                    keysToRemove.add(bb);
+                } else {
+                    int bs = oi.get(bb);
+                    if (bs < minScore[0])
+                        minScore[0] = bs;
+                }
             }
-        });
-
-        switch (oi.size()) {
-            case 0: throw new RuntimeException("shouldnt happen");
-            case 1:
-                return oi.get(0).getOne();
+            if (!keysToRemove.isEmpty()) {
+                keysToRemove.forEach(oi::removeKey);
+                switch (oi.size()) {
+                    case 0: throw new RuntimeException("shouldnt happen");
+                    case 1: return ok.getFirst();
+                }
+            }
         }
 
-        //prefer least aggressive options to gradually introduce variables rather than destroy the most information first, prefer to destroy small amounts first
-        oi.removeIf(bb -> bb.getTwo() > minScore[0]);
-        switch (oi.size()) {
-            case 0: throw new RuntimeException("shouldnt happen");
-            case 1:
-                return oi.get(0).getOne();
-            default:
-                return oi.get(rng.nextInt(oi.size())).getOne();
+
+        {
+            //prefer least aggressive options to gradually introduce variables rather than destroy the most information first, prefer to destroy small amounts first
+            MutableIntIterator oo = oi.intIterator();
+            float ms = minScore[0];
+            while (oo.hasNext()) {
+                if (oo.next() > ms)
+                    oo.remove();
+            }
+            switch (oi.size()) {
+                case 0:
+                    throw new RuntimeException("shouldnt happen");
+                case 1:
+                    return ok.getFirst();
+                default:
+                    return ok.toList().get(rng.nextInt(oi.size()));
+            }
         }
     }
 
@@ -520,8 +522,8 @@ public enum Terms {
     /**
      * counts the repetition occurrence count of each subterm within a compound
      */
-    public static RichIterable<ObjectIntPair<Term>> subtermScore(Term c, ToIntFunction<Term> score, int minTotalScore) {
-        ObjectIntHashMap<Term> uniques = new ObjectIntHashMap(c.volume() / 2);
+    public static ObjectIntHashMap<Term> subtermScore(Term c, ToIntFunction<Term> score, int minTotalScore) {
+        ObjectIntHashMap<Term> uniques = new ObjectIntHashMap(c.volume());
 
         c.recurseTerms((Term subterm) -> {
             int s = score.applyAsInt(subterm);
@@ -529,7 +531,14 @@ public enum Terms {
                 uniques.addToValue(subterm, s);
         });
 
-        return uniques.keyValuesView().select((oi)->oi.getTwo()>=minTotalScore);
+        MutableIntIterator uu = uniques.intIterator();
+        while (uu.hasNext()) {
+            if (uu.next() < minTotalScore)
+                uu.remove();
+        }
+
+        return uniques;
+        //uniques.keyValuesView().select((oi)->oi.getTwo()>=minTotalScore);
     }
 
     /**

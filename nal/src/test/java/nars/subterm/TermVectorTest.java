@@ -80,7 +80,7 @@ public class TermVectorTest {
         assertTrue(a.isSorted());
         Subterms b = Subterms.subtermsInterned(bb, aa);
         assertFalse(b.isSorted());
-        Subterms s = Subterms.subtermsInterned(Terms.sorted(b.arrayClone()));
+        Subterms s = Subterms.subtermsInterned(Terms.sorted(b.arrayShared()));
         assertTrue(s.isSorted());
         assertEquals(a, s);
         assertNotEquals(b, s);

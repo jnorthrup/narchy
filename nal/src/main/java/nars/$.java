@@ -260,10 +260,6 @@ public enum $ {
     }
 
 
-    public static Term p(Subterms t) {
-        return p((Term[]) t.arrayClone());
-    }
-
     /**
      * creates from a sublist of a list
      */

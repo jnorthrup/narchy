@@ -3,6 +3,7 @@ package nars.gui;
 import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.tree.rtree.rect.RectFloat2D;
+import jcog.util.FloatFloatToFloatFunction;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
@@ -11,6 +12,7 @@ import nars.control.DurService;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
+import nars.truth.TruthFunctions;
 import nars.truth.TruthWave;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SurfaceBase;
@@ -330,8 +332,36 @@ public class BeliefTableChart extends Widget {
 
         //draw projections
         if (projections > 0 && minT != maxT) {
-            TruthWave pwave = beliefOrGoal ? beliefProj : goalProj;
-            renderWaveLine(nowX, minT, maxT, gl, pwave, beliefOrGoal);
+            for (boolean freqOrExp : new boolean[] { true, false }) {
+                TruthWave pwave = beliefOrGoal ? beliefProj : goalProj;
+
+                Colorize colorize;
+                if (freqOrExp) {
+                    colorize = beliefOrGoal ?
+                        (ggl, frq, cnf) -> {
+                            float a = 0.25f + 0.7f * cnf;
+                            ggl.glColor4f(0.25f + 0.75f * cnf, 0.1f * (1f - cnf), 0, a);
+                        } :
+                        (ggl, frq, cnf) -> {
+                            float a = 0.25f + 0.7f * cnf;
+                            ggl.glColor4f(0.1f * (1f - cnf), 0.25f + 0.75f * cnf, 0, a);
+                        };
+                } else {
+                    colorize = beliefOrGoal ?
+                        (ggl, frq, cnf) -> {
+                            ggl.glColor4f(cnf, cnf/2f, 0.25f, 0.7f);
+                        } :
+                        (ggl, frq, cnf) -> {
+                            ggl.glColor4f(cnf/2f, cnf, 0.25f, 0.7f);
+                        };
+                }
+
+
+                FloatFloatToFloatFunction y =
+                    freqOrExp ? (frq, cnf) -> frq : TruthFunctions::expectation;
+
+                renderWaveLine(nowX, minT, maxT, gl, pwave, y, colorize);
+            }
         }
 
         float chSize = 0.1f;
@@ -413,10 +443,16 @@ public class BeliefTableChart extends Widget {
         });
     }
 
+    interface Colorize {
+        void colorize(GL2 gl, float f, float c);
+    }
+
     /**
      * TODO use double not float for precision that may be lost
+     *
+     * @param y (freq,conf)->y
      */
-    private static void renderWaveLine(float nowX, long minT, long maxT, GL2 gl, TruthWave wave, boolean beliefOrGoal) {
+    private static void renderWaveLine(float nowX, long minT, long maxT, GL2 gl, TruthWave wave, FloatFloatToFloatFunction y, Colorize colorize) {
 
         gl.glLineWidth(3.0f);
         gl.glBegin(GL2.GL_LINE_STRIP);
@@ -425,8 +461,8 @@ public class BeliefTableChart extends Widget {
 
             boolean eternal = (start != start);
             float x;
-            float pw = baseTaskSize;// + gew / (1f / conf) / 4f;//10 + 10 * conf;
-            float ph = baseTaskSize;// + geh / (1f / conf) / 4f;//10 + 10 * conf;
+//            float pw = baseTaskSize;// + gew / (1f / conf) / 4f;//10 + 10 * conf;
+//            float ph = baseTaskSize;// + geh / (1f / conf) / 4f;//10 + 10 * conf;
 
             if (eternal) {
                 x = nowX; //???
@@ -436,28 +472,24 @@ public class BeliefTableChart extends Widget {
                 return;
             }
 
-            float a = 0.25f + 0.7f * conf;
-            if (beliefOrGoal) {
-                gl.glColor4f(0.25f + 0.75f * conf, 0.1f * (1f-conf), 0f, a);
-            } else {
-                gl.glColor4f(0.1f * (1f-conf),  0.25f + 0.75f * conf, 0f, a);
-            }
+            colorize.colorize(gl, freq, conf);
 
             //r.renderTask(gl, qua, conf, pw, ph, x, freq);
-            gl.glVertex2f(x, freq);
+            float Y = y.apply(freq, conf);
+            gl.glVertex2f(x, Y);
 
 
             if (start == end)
                 return; //just the one point
 
-            if (eternal) {
-                //x = nowX; //??
+            if (eternal)
                 return;
-            } else if ((end >= minT) && (end <= maxT)) {
+
+            if ((end >= minT) && (end <= maxT)) {
                 x = xTime(minT, maxT, (long) end);
+                gl.glVertex2f(x, Y);
             }
 
-            gl.glVertex2f(x, freq);
         });
 
         gl.glEnd();
