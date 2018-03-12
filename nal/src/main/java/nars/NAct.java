@@ -26,10 +26,8 @@ import java.util.function.IntPredicate;
 
 import static jcog.Util.unitize;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.TruthFunctions.c2wSafe;
-import static nars.truth.TruthFunctions.w2cSafe;
+import static nars.truth.TruthFunctions.*;
 
 /**
  * Created by me on 9/30/16.
@@ -507,12 +505,14 @@ public interface NAct {
 
 
 //            float freqEps = n.freqResolution.floatValue();
-            float confMin = n.confMin.floatValue()*2;
-            float eviMin = c2wSafe(confMin);
-            float goalConf =
-                    n.confDefault(GOAL);
-                    //confMin * 4;
-                    //w2c(c2w(n.confDefault(GOAL))/2f);
+            float confMin = n.confMin.floatValue();
+//            float eviMin = c2wSafe(confMin);
+            float feedbackConf =
+                    w2c(c2w(n.confDefault(BELIEF))/2f); //fairly shared to sum to default
+                    // n.confDefault(BELIEF);
+                    // n.confDefault(GOAL);
+                    //confMin * ...;
+
 
 
             boolean p = action.term().equals(pt);
@@ -544,12 +544,12 @@ public interface NAct {
                 float cur = curiosity().floatValue();
                 if (cur > 0 && rng.nextFloat() <= cur) {
                     x = (rng.nextFloat() - 0.5f) * 2f;
-                    float curiEvi =
-                            //c2w(n.confDefault(BELIEF));
-                            //eviMin*2;
-                            Math.max(c2wSafe(w2cSafe(eviMin)*2), Util.mean(c[0], c[1])); //match desire conf, min=2*minConf
+//                    float curiEvi =
+//                            //c2w(n.confDefault(BELIEF));
+//                            //eviMin*2;
+//                            Math.max(c2wSafe(w2cSafe(eviMin)*2), Util.mean(c[0], c[1])); //match desire conf, min=2*minConf
 
-                    c[0] = c[1] = curiEvi;
+                    c[0] = c[1] = feedbackConf;
                     coherence = 1f;
                     curious = true;
                 } else {
@@ -621,8 +621,8 @@ public interface NAct {
 //                    float yn = 1f - yp;
                     float pbf = yp;
                     float nbf = yn;
-                    Pb = $.t(pbf, goalConf);
-                    Nb = $.t(nbf, goalConf);
+                    Pb = $.t(pbf, feedbackConf);
+                    Nb = $.t(nbf, feedbackConf);
 //                    float goalEvi =
 //                            eviMin;
 //                    //max(eviMin, max(e[0], e[1]));

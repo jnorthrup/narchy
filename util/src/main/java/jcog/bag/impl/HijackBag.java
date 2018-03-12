@@ -578,8 +578,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             int prefilled = 0;
             while ((nulls+prefilled) < c && size > 0) {
                 V v = map
-                        //.get(i);
-                        .getPlain(i);
+                        .get(i);
+                        //.getPlain(i);
 
                 //move ahead now in case it terminates on the first try, it wont remain on the same value when the next phase starts
                 if (direction) {
@@ -605,8 +605,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
             nulls = 0;
             while (nulls < c && size > 0) {
                 V v0 = map
-                        //.get(i);
-                        .getPlain(i);
+                        .get(i);
+                        //.getPlain(i);
                 float p;
                 if (v0 == null) {
                     nulls++;
@@ -743,8 +743,8 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         int len = a.length();
         for (int i = 0; i < len; i++) {
             V f = a
-                    //.get(i);
-                    .getPlain(i);
+                    .get(i);
+                    //.getPlain(i);
             if (f == null)
                 continue;
 
@@ -766,7 +766,7 @@ public abstract class HijackBag<K, V> implements Bag<K, V> {
         }
 
         //assert(size() == count);
-        sizeUpdater.lazySet(this, count);
+        sizeUpdater.set(this, count);
 
         this.mass = mass;
         if (count > 0) {
