@@ -5,7 +5,7 @@ import jcog.math.FloatRange;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
-import nars.concept.SensorConcept;
+import nars.concept.scalar.Scalar;
 import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
 import nars.experiment.mario.Scene;
@@ -109,9 +109,9 @@ public class NARio extends NAgentX {
         initToggle();
 
 
-        SensorConcept dvx = senseNumberDifference($safe("(v,x)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
+        Scalar dvx = senseNumberDifference($safe("(v,x)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
                 mario.x : 0).resolution(0.02f);
-        SensorConcept dvy = senseNumberDifference($safe("(v,y)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
+        Scalar dvy = senseNumberDifference($safe("(v,y)"), () -> mario.scene instanceof LevelScene ? ((LevelScene) mario.scene).
                 mario.y : 0).resolution(0.02f);
 
 //        window(Vis.beliefCharts(64, concat(dvx,dvy), nar), 300, 300);

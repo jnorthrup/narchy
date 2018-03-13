@@ -25,7 +25,7 @@ import jcog.data.map.MetaMap;
 import jcog.pri.PriReference;
 import nars.NAR;
 import nars.Task;
-import nars.concept.state.ConceptState;
+import nars.concept.util.ConceptState;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
 import nars.table.TaskTable;
@@ -46,12 +46,11 @@ import static nars.Op.*;
 public interface Concept extends Termed, MetaMap {
 
 
-    Concept[] EmptyArray = new Concept[0];
+//    Concept[] EmptyArray = new Concept[0];
 
     /*@NotNull*/ Bag<Task,PriReference<Task>> tasklinks();
 
     /*@NotNull*/ Bag<Term,PriReference<Term>> termlinks();
-
 
     /*@NotNull*/ BeliefTable beliefs();
 
@@ -217,10 +216,11 @@ public interface Concept extends Termed, MetaMap {
     }
 
     default void printSummary(PrintStream out, NAR n) {
+        long now = n.time();
         out.println(term() +
                 "\t" +
-                "belief=" + beliefs().truth(n.time(), n) + " $" + n4(beliefs().priSum()) + " , " +
-                "goal=" +   goals().truth(n.time(), n)+ " $" + n4(goals().priSum())
+                "belief=" + beliefs().truth(now, n) + " $" + n4(beliefs().priSum()) + " , " +
+                "goal=" +   goals().truth(now, n)+ " $" + n4(goals().priSum())
         );
     }
 

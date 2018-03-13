@@ -39,9 +39,7 @@ public enum BeliefFunction implements TruthOperator {
         }
     },
 
-    @SinglePremise
-    @AllowOverlap
-    StructuralDeduction() {
+    @SinglePremise @AllowOverlap StructuralDeduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, /*@NotNull*/ NAR m, float minConf) {
             return T != null ? TruthFunctions.deduction1(T, defaultConfidence(m), minConf) : null;
@@ -55,7 +53,7 @@ public enum BeliefFunction implements TruthOperator {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, /*@NotNull*/ NAR m, float minConf) {
             float c = T.conf() * BeliefFunction.defaultConfidence(m);
-            return c > minConf ? $.t(T.freq(), T.conf() * defaultConfidence(m)) : null;
+            return c >= minConf ? $.t(T.freq(), c) : null;
         }
     },
 //    /** similar to structural deduction but preserves the frequency of the task */

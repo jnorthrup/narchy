@@ -58,13 +58,8 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion
      */
     public static Truth contraposition(/*@NotNull*/ Truth t, float minConf) {
-        float cc = t.freqNegTimesConf();
-        if (cc > 0) {
-            float c = w2c(cc);
-            if (c >= minConf)
-                return t(0, c);
-        }
-        return null;
+        float c = w2cSafe(t.freqNegTimesConf());
+        return c >= minConf ? t(0, c) : null;
     }
 
     //    public static float temporalIntersection(long now, long at, long bt) {
@@ -269,24 +264,32 @@ public final class TruthFunctions {
      * frequency determined entirely by the desire component.
      */
     @Nullable public static Truth desireStrongNew(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
+        //float c = and(a.conf(), b.conf());
+        //return c < minConf ? null : $.t(and(a.freq(), b.freq()), c);
+
         //float c = and(a.conf(), b.conf(), b.freq());
 //        return c < minConf ? null : $.t(a.freq(), c);
         //return $.t(a.expectation(b.freq()), b.conf());
-        float c = and(a.conf(), b.conf());
         //return c < minConf ? null : $.t(a.expectation(b.freq()), c);
         //return c < minConf ? null : $.t(TruthFunctions.expectation(a.freq(), b.freq()) /* b.freq used in conf param */, c);
-        return c < minConf ? null : $.t(and(a.freq(), b.freq()), c);
+
+        float c = a.conf() * b.freq();
+        return c < minConf ? null : $.t(a.freq(), c);
         //return c < minConf ? null : $.t(a.freq(), c);
 
     }
     public static Truth desireWeakNew(/*@NotNull*/ Truth a, /*@NotNull*/ Truth b, float minConf) {
+//        float c = and(a.conf(), b.conf(), w2c(1.0f));
+//        return c < minConf ? null : $.t(and(a.freq(), b.freq()), c);
+
+        float c = and(a.conf(), b.freq(), w2c(1.0f));
+        return c < minConf ? null : $.t(a.freq(), c);
+
         //float c = and(a.conf(), b.conf(), b.freq(), w2c(1.0f));
 //        return c < minConf ? null : $.t(a.freq(), c);
         //float c = and(b.conf(), w2c(1.0f));
-        float c = and(a.conf(), b.conf(), w2c(1.0f));
         //return c < minConf ? null : $.t(a.expectation(b.freq()), c);
         //return c < minConf ? null : $.t(TruthFunctions.expectation(a.freq(), b.freq()) /* b.freq used in conf param */, c);
-        return c < minConf ? null : $.t(and(a.freq(), b.freq()), c);
         //return c < minConf ? null : $.t(a.freq(), c);
     }
 

@@ -1,4 +1,4 @@
-package nars.concept;
+package nars.concept.scalar;
 
 import jcog.Util;
 import jcog.util.AtomicFloat;
@@ -30,7 +30,7 @@ import static nars.Op.SETe;
  * <p>
  * expects values which have been normalized to 0..1.0 range (ex: use NormalizedFloat)
  */
-public class ScalarConcepts extends NARService implements Iterable<SensorConcept>, Consumer<NAR>, FloatSupplier {
+public class DigitizedScalar extends NARService implements Iterable<Scalar>, Consumer<NAR>, FloatSupplier {
 
 
     final AtomicFloat value = new AtomicFloat();
@@ -42,7 +42,7 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
         return value.floatValue();
     }
 
-    public Stream<SensorConcept> stream() {
+    public Stream<Scalar> stream() {
         return sensors.stream();
     }
 
@@ -62,7 +62,7 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
     private final FloatSupplier input;
 
     @NotNull
-    public final List<SensorConcept> sensors;
+    public final List<Scalar> sensors;
 
 
     float conf;
@@ -70,7 +70,7 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
 
     @NotNull
     @Override
-    public Iterator<SensorConcept> iterator() {
+    public Iterator<Scalar> iterator() {
         return sensors.iterator();
     }
 
@@ -167,8 +167,8 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
         return sensors.get(i).term();
     }
 
-    public ScalarConcepts resolution(float r) {
-        for (SensorConcept s : sensors)
+    public DigitizedScalar resolution(float r) {
+        for (Scalar s : sensors)
             s.resolution(r);
         return this;
     }
@@ -180,8 +180,8 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
     }
 
 
-    public ScalarConcepts(FloatSupplier input, @NotNull NAR nar, ScalarEncoder freqer, @NotNull Term... states) {
-        super($.func(ScalarConcepts.class.getSimpleName(),
+    public DigitizedScalar(FloatSupplier input, @NotNull NAR nar, ScalarEncoder freqer, @NotNull Term... states) {
+        super($.func(DigitizedScalar.class.getSimpleName(),
                 SETe.the(states),
                 $.quote(Util.toString(input)), $.the(freqer.toString())
         ));
@@ -202,7 +202,7 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
         int i = 0;
         for (Term s : states) {
             final int ii = i++;
-            SensorConcept sc = new SensorConcept(s, nar,
+            Scalar sc = new Scalar(s, nar,
                     () -> freqer.truth(asFloat(), ii, numStates)
             );
             nar.on(sc);
@@ -264,7 +264,7 @@ public class ScalarConcepts extends NARService implements Iterable<SensorConcept
 //    }
 
     @NotNull
-    public ScalarConcepts conf(float c) {
+    public DigitizedScalar conf(float c) {
         this.conf = c;
         return this;
     }

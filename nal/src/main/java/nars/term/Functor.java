@@ -8,7 +8,7 @@ import nars.Op;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.concept.PermanentConcept;
-import nars.concept.builder.ConceptBuilder;
+import nars.concept.util.ConceptBuilder;
 import nars.index.term.TermContext;
 import nars.subterm.Subterms;
 import nars.term.atom.Atom;

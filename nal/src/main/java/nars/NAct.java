@@ -3,10 +3,10 @@ package nars;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.util.FloatConsumer;
-import nars.concept.ActionConcept;
-import nars.concept.BeliefActionConcept;
-import nars.concept.GoalActionAsyncConcept;
-import nars.concept.GoalActionConcept;
+import nars.concept.action.ActionConcept;
+import nars.concept.action.BeliefActionConcept;
+import nars.concept.action.GoalActionAsyncConcept;
+import nars.concept.action.GoalActionConcept;
 import nars.control.CauseChannel;
 import nars.task.ITask;
 import nars.term.Term;
@@ -332,12 +332,24 @@ public interface NAct {
 
     default void actionPushButton(@NotNull Term t, @NotNull BooleanProcedure on) {
 
-
-        actionUnipolar(t, (f) -> {
+        float thresh = 0.1f; // + nar().freqResolution.get()
+        action(t, (b, g) -> {
+            float G = g != null ? g.expectation() : 0.0f;
+            boolean positive;
+            if (G > 0.5f) {
+                float f = G - (b != null ? b.expectation() : 0.5f);
+                positive = f >= thresh;
+            } else {
+                positive = false;
+            }
+            on.value(positive);
+            return $.t(positive ? 1 : 0, nar().confDefault(BELIEF));
+        });
+        /*actionUnipolar(t, (f) -> {
             boolean positive = f >= 0.5f + nar().freqResolution.get();
             on.value(positive);
             return positive ? 1f : 0f;
-        });
+        });*/
 
 //        float thresh =
 //                //0.5f + Param.TRUTH_EPSILON;

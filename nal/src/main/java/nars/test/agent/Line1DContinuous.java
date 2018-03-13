@@ -1,8 +1,8 @@
 package nars.test.agent;
 
 import nars.*;
-import nars.concept.ActionConcept;
-import nars.concept.SensorConcept;
+import nars.concept.action.ActionConcept;
+import nars.concept.scalar.Scalar;
 import nars.term.atom.Atomic;
 
 import java.util.Arrays;
@@ -44,13 +44,13 @@ public class Line1DContinuous extends NAgent {
         for (int i = 0; i < size; i++) {
             int ii = i;
             //hidden
-            addSensor(new SensorConcept(
+            addSensor(new Scalar(
                     $.func("h", Atomic.the("x"), $.the( i)),
                     //$.p($.the("h"), $.the(i)),
                     n, ()-> ins[ii]));
 
             //estimated
-            addSensor(new SensorConcept(
+            addSensor(new Scalar(
                     $.func("e", Atomic.the("x"), $.the( i)),
                     //$.func("e", $.the(i)),
                     //$.p($.the("e"), $.the(i)),

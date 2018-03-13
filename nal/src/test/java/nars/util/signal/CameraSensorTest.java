@@ -4,7 +4,7 @@ import jcog.signal.ArrayBitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.concept.SensorConcept;
+import nars.concept.scalar.Scalar;
 import nars.truth.Truth;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -68,7 +68,7 @@ public class CameraSensorTest {
         final float tolerance = 0.47f;
         for (int i = 0; i < c.width; i++) {
             for (int j = 0; j < c.height; j++) {
-                SensorConcept p = c.get(i, j);
+                Scalar p = c.get(i, j);
                 Truth t = n.beliefTruth(p, when);
                 if (t == null || Math.abs(f[i][j] - t.freq()) > tolerance) {
                     System.err.println("pixel " + p + " incorrect @ t=" + n.time());

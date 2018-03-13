@@ -7,9 +7,9 @@ import nars.$;
 import nars.NAR;
 import nars.NAgent;
 import nars.Task;
-import nars.concept.ActionConcept;
+import nars.concept.action.ActionConcept;
 import nars.concept.Concept;
-import nars.concept.SensorConcept;
+import nars.concept.scalar.Scalar;
 import nars.control.CauseChannel;
 import nars.task.ITask;
 import nars.truth.Truth;
@@ -38,7 +38,7 @@ public class RLBooster implements Consumer<NAR> {
 
     final int inD, outD;
     private final CauseChannel<ITask> in;
-    private final List<SensorConcept> inputs;
+    private final List<Scalar> inputs;
     public final FloatRange conf = new FloatRange(0.5f, 0f, 1f);
 
     public RLBooster(NAgent env, IntIntToObjectFunc<Agent> rl, int actionDiscretization) {
@@ -62,7 +62,7 @@ public class RLBooster implements Consumer<NAR> {
 
 //        env.curiosity().setValue(0f);
 
-        List<SensorConcept> sc = $.newArrayList();
+        List<Scalar> sc = $.newArrayList();
         env.sensors.keySet().forEach(c -> {
             if (c!=env.happy) //exclude the happiness sensor
                 sc.add(c);
@@ -141,7 +141,7 @@ public class RLBooster implements Consumer<NAR> {
     float[] input() {
         //TODO replace with a Tensor API vector function
         int i = 0;
-        for (SensorConcept s : inputs) {
+        for (Scalar s : inputs) {
             input[i++] = s.asFloat();
         }
 

@@ -7,7 +7,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Param;
 import nars.concept.Concept;
-import nars.concept.GoalActionConcept;
+import nars.concept.action.GoalActionConcept;
 import nars.gui.Vis;
 import nars.task.DerivedTask;
 import nars.task.NALTask;

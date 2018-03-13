@@ -7,8 +7,8 @@ import nars.$;
 import nars.NAR;
 import nars.NAgentX;
 import nars.Task;
-import nars.concept.ScalarConcepts;
-import nars.concept.SensorConcept;
+import nars.concept.scalar.DigitizedScalar;
+import nars.concept.scalar.Scalar;
 import nars.gui.Vis;
 import nars.util.signal.Bitmap2DConcepts;
 import nars.video.Scale;
@@ -132,12 +132,12 @@ public class FZero extends NAgentX {
 //        });
 
 //        senseNumberDifference($.inh(the("joy"), id), happy).resolution.setValue(0.02f);
-        SensorConcept dAngVel = senseNumberDifference($.the("angVel"), () -> (float) fz.playerAngle).resolution(0.02f);
-        SensorConcept dAccel = senseNumberDifference($.the("accel"), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.02f);
-        @NotNull ScalarConcepts ang = senseNumber(level->$.p($.the("ang"), $.the(level)), () ->
+        Scalar dAngVel = senseNumberDifference($.the("angVel"), () -> (float) fz.playerAngle).resolution(0.02f);
+        Scalar dAccel = senseNumberDifference($.the("accel"), () -> (float) fz.vehicleMetrics[0][6]).resolution(0.02f);
+        @NotNull DigitizedScalar ang = senseNumber(level->$.p($.the("ang"), $.the(level)), () ->
                         (float) (0.5 + 0.5 * MathUtils.normalizeAngle(fz.playerAngle, 0) / (Math.PI)),
                 5,
-                ScalarConcepts.FuzzyNeedle
+                DigitizedScalar.FuzzyNeedle
                 //ScalarConcepts.Needle
                 //ScalarConcepts.Fluid
         ).resolution(0.04f);

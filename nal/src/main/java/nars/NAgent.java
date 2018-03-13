@@ -7,10 +7,10 @@ import jcog.exe.Loop;
 import jcog.list.FasterList;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
-import nars.concept.ActionConcept;
+import nars.concept.action.ActionConcept;
 import nars.concept.Concept;
-import nars.concept.ScalarConcepts;
-import nars.concept.SensorConcept;
+import nars.concept.scalar.DigitizedScalar;
+import nars.concept.scalar.Scalar;
 import nars.control.CauseChannel;
 import nars.control.DurService;
 import nars.control.NARService;
@@ -51,9 +51,9 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
     public static final Logger logger = LoggerFactory.getLogger(NAgent.class);
     
 
-    public final Map<SensorConcept, CauseChannel<ITask>> sensors = new LinkedHashMap();
+    public final Map<Scalar, CauseChannel<ITask>> sensors = new LinkedHashMap();
 
-    @Deprecated public final Set<ScalarConcepts> senseNums = new LinkedHashSet<>();
+    @Deprecated public final Set<DigitizedScalar> senseNums = new LinkedHashSet<>();
     @Deprecated public final Set<Bitmap2DSensor<?>> sensorCam = new LinkedHashSet<>();
 
     public final Map<ActionConcept, CauseChannel<ITask>> actions = new LinkedHashMap();
@@ -82,7 +82,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     public final AtomicBoolean enabled = new AtomicBoolean(false);
 
-    public SensorConcept happy;
+    public Scalar happy;
 
     public boolean trace;
 
@@ -167,7 +167,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     @NotNull
     @Override
-    public final Map<SensorConcept, CauseChannel<ITask>> sensors() {
+    public final Map<Scalar, CauseChannel<ITask>> sensors() {
         return sensors;
     }
 
@@ -261,7 +261,7 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
             this.now = nar.time();
 
 
-            this.happy = new ActionInfluencingSensorConcept(happyTerm, happyValue);
+            this.happy = new ActionInfluencingScalar(happyTerm, happyValue);
 
 
 
@@ -703,8 +703,8 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
     @Override
     public DurService onFrame(Consumer/*<NAR>*/ each) {
-        if (each instanceof ScalarConcepts) {
-            senseNums.add((ScalarConcepts)each);
+        if (each instanceof DigitizedScalar) {
+            senseNums.add((DigitizedScalar)each);
         }
         return DurService.on(nar, ()->{ if (enabled.get()) each.accept(nar); });
     }
@@ -715,11 +715,11 @@ abstract public class NAgent extends NARService implements NSense, NAct, Runnabl
 
 
     /** adds the actions to its set of termlink templates */
-    protected class ActionInfluencingSensorConcept extends SensorConcept {
+    protected class ActionInfluencingScalar extends Scalar {
 
         List<Termed> templatesPlusActions;
 
-        public ActionInfluencingSensorConcept(Term id, FloatNormalized value) {
+        public ActionInfluencingScalar(Term id, FloatNormalized value) {
             super(id, NAgent.this.nar(), value);
             templatesPlusActions = null;
 

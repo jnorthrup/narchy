@@ -9,7 +9,7 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.concept.ScalarConcepts;
+import nars.concept.scalar.DigitizedScalar;
 import nars.truth.Truth;
 import org.apache.commons.lang3.mutable.MutableFloat;
 import org.eclipse.collections.api.block.predicate.primitive.FloatPredicate;
@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by me on 7/2/16.
  */
-public class ScalarConceptsTest {
+public class DigitizedScalarTest {
 
     //HACK TODO make sure this is smaller
     final static float tolerance = 0.2f;
@@ -48,7 +48,7 @@ public class ScalarConceptsTest {
         MutableFloat m = new MutableFloat(0f);
 
         FloatPolarNormalized range = new FloatPolarNormalized(() -> m.floatValue(), 1f);
-        ScalarConcepts f = new ScalarConcepts(range, n, ScalarConcepts.FuzzyNeedle,
+        DigitizedScalar f = new DigitizedScalar(range, n, DigitizedScalar.FuzzyNeedle,
                 $.p("low"), $.p("mid"), $.p("hih"));
 
 
@@ -80,7 +80,7 @@ public class ScalarConceptsTest {
         }, n);
     }
 
-    public void testSteadyFreqCondition(MutableFloat m, ScalarConcepts f, FloatPredicate withFreqSum, NAR n) {
+    public void testSteadyFreqCondition(MutableFloat m, DigitizedScalar f, FloatPredicate withFreqSum, NAR n) {
 
         //run a few oscillations
         for (int i = 0; i < 5; i++) {
@@ -114,9 +114,9 @@ public class ScalarConceptsTest {
         MutableFloat x = new MutableFloat(0f);
 
         testSteadyFreqCondition(x,
-                new ScalarConcepts(
+                new DigitizedScalar(
                         new FloatNormalized(x::floatValue).updateRange(-1).updateRange(1),
-                        n, ScalarConcepts.FuzzyBinary, $.p("x0"), $.p("x1"), $.p("x2")),
+                        n, DigitizedScalar.FuzzyBinary, $.p("x0"), $.p("x1"), $.p("x2")),
                 (f) -> true /*Util.equals(f, 0.5f + 0.5f * m.floatValue(), tolerance)*/
         , n);
     }
@@ -126,7 +126,7 @@ public class ScalarConceptsTest {
         NAR n = NARS.tmp();
 
         FloatRange x = new FloatRange(0f, 0f, 1f);
-        ScalarConcepts xc = new ScalarConcepts(x, n, ScalarConcepts.Fluid,
+        DigitizedScalar xc = new DigitizedScalar(x, n, DigitizedScalar.Fluid,
                 $.$("x(0)"), $.$("x(1)")
         );
 

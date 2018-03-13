@@ -1,8 +1,7 @@
-package nars.concept.builder;
+package nars.concept.util;
 
 import jcog.bag.Bag;
 import nars.concept.Concept;
-import nars.concept.state.ConceptState;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
 import nars.table.TemporalBeliefTable;

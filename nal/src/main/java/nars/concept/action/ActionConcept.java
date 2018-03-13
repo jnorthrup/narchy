@@ -1,8 +1,9 @@
-package nars.concept;
+package nars.concept.action;
 
 import nars.NAR;
 import nars.Param;
 import nars.Task;
+import nars.concept.Sensor;
 import nars.control.MetaGoal;
 import nars.task.ITask;
 import nars.term.Term;
@@ -14,7 +15,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 
-public abstract class ActionConcept extends WiredConcept {
+public abstract class ActionConcept extends Sensor {
 
     protected ActionConcept(@NotNull Term term, @NotNull NAR n) {
         super(term, n);

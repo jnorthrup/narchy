@@ -135,7 +135,7 @@ public enum GoalFunction implements TruthOperator {
         }
     },
 
-    //@AllowOverlap
+    @AllowOverlap
     BeliefStructuralReduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {

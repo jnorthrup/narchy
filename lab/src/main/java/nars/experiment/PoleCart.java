@@ -7,7 +7,7 @@ import nars.NAR;
 import nars.NAgent;
 import nars.NAgentX;
 import nars.concept.Concept;
-import nars.concept.SensorConcept;
+import nars.concept.scalar.Scalar;
 import nars.gui.Vis;
 import nars.op.language.NARSpeak;
 import spacegraph.audio.NativeSpeechDispatcher;
@@ -96,7 +96,7 @@ public class PoleCart extends NAgentX {
     // Define the Engine
     // Define InputVariable1 Theta(t) {angle with perpendicular}
     Concept angX;
-    SensorConcept angY;
+    Scalar angY;
     // Define InputVariable1 x(t) {angular velocity}
     Concept angVel;
     // OutputVariable {force to be applied}

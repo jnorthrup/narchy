@@ -1,8 +1,8 @@
-package nars.concept.state;
+package nars.concept.util;
 
 import jcog.Util;
 import jcog.math.MutableInteger;
-import nars.concept.ActionConcept;
+import nars.concept.action.ActionConcept;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;

@@ -1,4 +1,4 @@
-package nars.concept;
+package nars.concept.action;
 
 import nars.NAR;
 import nars.task.ITask;

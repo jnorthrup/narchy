@@ -75,7 +75,7 @@ abstract public class NAgentX extends NAgent {
     public NAgentX(String id, NAR nar) {
         super(id, nar);
 
-        ActionInfluencingSensorConcept joy = new ActionInfluencingSensorConcept(
+        ActionInfluencingScalar joy = new ActionInfluencingScalar(
                 id != null ?
                         //$.prop($.the(id), $.the("joy"))
                         $.inh($.the(id), $.the("joy"))

@@ -1,4 +1,4 @@
-package nars.concept.builder;
+package nars.concept.util;
 
 import jcog.bag.Bag;
 import jcog.bag.impl.CurveBag;
@@ -12,8 +12,6 @@ import nars.concept.NodeConcept;
 import nars.concept.TaskConcept;
 import nars.concept.dynamic.DynamicBeliefTable;
 import nars.concept.dynamic.DynamicTruthModel;
-import nars.concept.state.ConceptState;
-import nars.concept.state.DefaultConceptState;
 import nars.link.TaskLinkCurveBag;
 import nars.subterm.Subterms;
 import nars.table.*;

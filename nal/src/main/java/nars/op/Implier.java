@@ -9,7 +9,7 @@ import jcog.math.FloatRange;
 import jcog.pri.PLink;
 import jcog.pri.op.PriMerge;
 import nars.*;
-import nars.concept.ActionConcept;
+import nars.concept.action.ActionConcept;
 import nars.concept.Concept;
 import nars.control.CauseChannel;
 import nars.control.DurService;

@@ -4,7 +4,7 @@ import java4k.gradius4k.Gradius4K;
 import nars.$;
 import nars.NAR;
 import nars.NAgentX;
-import nars.concept.ScalarConcepts;
+import nars.concept.scalar.DigitizedScalar;
 import nars.video.Scale;
 
 import static java4k.gradius4k.Gradius4K.*;
@@ -51,13 +51,13 @@ public class Gradius extends NAgentX {
 
         float width = g.getWidth();
         float height = g.getHeight();
-        ScalarConcepts yPos = senseNumber((level)->$.inh($.p($.the("Y"), $.the(level)), id),
+        DigitizedScalar yPos = senseNumber((level)->$.inh($.p($.the("Y"), $.the(level)), id),
                 ()->g.player[OBJ_Y] / height,
-                2, ScalarConcepts.FuzzyNeedle
+                2, DigitizedScalar.FuzzyNeedle
         ).resolution(0.02f);
-        ScalarConcepts xPos = senseNumber((level)->$.inh($.p($.the("X"), $.the(level)), id),
+        DigitizedScalar xPos = senseNumber((level)->$.inh($.p($.the("X"), $.the(level)), id),
                 ()->g.player[OBJ_X] / width,
-                2, ScalarConcepts.FuzzyNeedle
+                2, DigitizedScalar.FuzzyNeedle
         ).resolution(0.02f);
 //        window(
 //                col(

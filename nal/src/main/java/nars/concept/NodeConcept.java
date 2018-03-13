@@ -7,8 +7,8 @@ import nars.NAR;
 import nars.Op;
 import nars.Param;
 import nars.Task;
-import nars.concept.builder.ConceptBuilder;
-import nars.concept.state.ConceptState;
+import nars.concept.util.ConceptBuilder;
+import nars.concept.util.ConceptState;
 import nars.link.TermLinks;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;
@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static nars.concept.state.ConceptState.New;
+import static nars.concept.util.ConceptState.New;
 
 /** a 'blank' concept which does not store any tasks */
 public class NodeConcept implements Concept {

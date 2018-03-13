@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.Task;
-import nars.concept.SensorConcept;
+import nars.concept.scalar.Scalar;
 import nars.task.signal.SignalTask;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -57,7 +57,7 @@ public class ScalarSignal extends Signal {
      * the time is specified instead of obtained from NAR so that
      * all sensor readings can be timed with perfect consistency within the same cycle
      */
-    public Task update(SensorConcept c, FloatFloatToObjectFunction<Truth> truthFloatFunction, NAR nar, long now, int dur) {
+    public Task update(Scalar c, FloatFloatToObjectFunction<Truth> truthFloatFunction, NAR nar, long now, int dur) {
 
         float next = Util.unitize(Util.round(value.floatValueOf(term), resolution.asFloat()));
 

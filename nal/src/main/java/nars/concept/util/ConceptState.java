@@ -1,4 +1,4 @@
-package nars.concept.state;
+package nars.concept.util;
 
 import nars.concept.Concept;
 import nars.concept.TaskConcept;

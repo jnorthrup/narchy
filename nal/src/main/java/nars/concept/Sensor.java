@@ -3,14 +3,15 @@ package nars.concept;
 import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Param;
-import nars.concept.builder.ConceptBuilder;
+import nars.concept.util.ConceptBuilder;
 import nars.table.BeliefTable;
 import nars.term.Term;
 
 /**
- * base class for concepts which are more or less programmatically "hard-wired" into
- * external systems and transducers that populate certain segments of its
- * belief tables and other components.
+ * base class for concepts which are sensors
+ * providing some form of belief feedback
+ * and may also support some type of actuation
+ * (via goals or otherwise)
  *
  * this usually requires some specific management of
  * beliefs to prevent influence from derivations that the reasoner may form
@@ -23,18 +24,18 @@ import nars.term.Term;
  * to make them directly reflect the sensor concept as the authority.
  *
  * */
-public class WiredConcept extends TaskConcept implements PermanentConcept {
+public class Sensor extends TaskConcept implements PermanentConcept {
 
 
     public FloatRange resolution = new FloatRange(Param.TRUTH_EPSILON, 0f, 1f);
 
-    protected WiredConcept(Term term, NAR n) {
+    protected Sensor(Term term, NAR n) {
         this(term, null /* default by concept builder */, null /* default by concept builder */, n.conceptBuilder);
     }
-    protected WiredConcept(Term term, BeliefTable beliefs, BeliefTable goals, NAR n) {
+    protected Sensor(Term term, BeliefTable beliefs, BeliefTable goals, NAR n) {
         this(term, beliefs, goals, n.conceptBuilder);
     }
-    protected WiredConcept(Term term, BeliefTable beliefs, BeliefTable goals, ConceptBuilder b) {
+    protected Sensor(Term term, BeliefTable beliefs, BeliefTable goals, ConceptBuilder b) {
         super(term, beliefs, goals, b);
     }
 

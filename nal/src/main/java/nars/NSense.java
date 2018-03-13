@@ -5,8 +5,8 @@ import jcog.math.FloatFirstOrderDifference;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatPolarNormalized;
 import jcog.math.FloatSupplier;
-import nars.concept.ScalarConcepts;
-import nars.concept.SensorConcept;
+import nars.concept.scalar.DigitizedScalar;
+import nars.concept.scalar.Scalar;
 import nars.control.CauseChannel;
 import nars.control.DurService;
 import nars.task.ITask;
@@ -34,41 +34,41 @@ public interface NSense {
     @NotNull Atomic MID = Atomic.the("mid");
     @NotNull Atomic HIH = Atomic.the("hih");
 
-    @NotNull Map<SensorConcept,CauseChannel<ITask>> sensors();
+    @NotNull Map<Scalar,CauseChannel<ITask>> sensors();
 
     NAR nar();
 
 
     @NotNull
-    default SensorConcept sense(@NotNull Term term, @NotNull BooleanSupplier value)  {
+    default Scalar sense(@NotNull Term term, @NotNull BooleanSupplier value)  {
         return sense(term, () -> value.getAsBoolean() ? 1f : 0f);
     }
 
     @NotNull
-    default SensorConcept sense(@NotNull Term term, FloatSupplier value)  {
+    default Scalar sense(@NotNull Term term, FloatSupplier value)  {
         return sense(term, value, (x) -> $.t(x, nar().confDefault(Op.BELIEF)));
     }
 
     @NotNull
-    default SensorConcept sense(@NotNull Term term, FloatSupplier value, FloatToObjectFunction<Truth> truthFunc) {
-        SensorConcept s = new SensorConcept(term, nar(), value);
+    default Scalar sense(@NotNull Term term, FloatSupplier value, FloatToObjectFunction<Truth> truthFunc) {
+        Scalar s = new Scalar(term, nar(), value);
         addSensor(s);
         return s;
     }
     @NotNull
-    default SensorConcept sense(CauseChannel c, Term term, FloatSupplier value, FloatToObjectFunction<Truth> truthFunc) {
-        SensorConcept s = new SensorConcept(term, nar(), value);
+    default Scalar sense(CauseChannel c, Term term, FloatSupplier value, FloatToObjectFunction<Truth> truthFunc) {
+        Scalar s = new Scalar(term, nar(), value);
         addSensor(s, c);
         return s;
     }
 
-    default void addSensor(SensorConcept c, CauseChannel cause) {
+    default void addSensor(Scalar c, CauseChannel cause) {
         CauseChannel<ITask> existing = sensors().put(c, cause);
         assert(existing == null);
         nar().on(c);
     }
 
-    default void addSensor(SensorConcept c) {
+    default void addSensor(Scalar c) {
         CauseChannel<ITask> cause = nar().newCauseChannel(c);
         addSensor(c, cause);
     }
@@ -175,8 +175,8 @@ public interface NSense {
     }
 
     @NotNull
-    default List<SensorConcept> senseNumber(int from, int to, IntFunction<String> id, IntFunction<FloatSupplier> v) throws Narsese.NarseseException {
-        List<SensorConcept> l = newArrayList(to-from);
+    default List<Scalar> senseNumber(int from, int to, IntFunction<String> id, IntFunction<FloatSupplier> v) throws Narsese.NarseseException {
+        List<Scalar> l = newArrayList(to-from);
         for (int i = from; i < to; i++) {
             l.add( senseNumber( id.apply(i), v.apply(i)) );
         }
@@ -184,30 +184,30 @@ public interface NSense {
     }
 
 
-    default SensorConcept senseNumberDifference(Term id, FloatSupplier v) {
+    default Scalar senseNumberDifference(Term id, FloatSupplier v) {
         return senseNumber(id, new FloatPolarNormalized(
                 new FloatFirstOrderDifference(nar()::time, v)) );
     }
-    default ScalarConcepts senseNumberDifferenceBi(Term id, FloatSupplier v) {
+    default DigitizedScalar senseNumberDifferenceBi(Term id, FloatSupplier v) {
         FloatNormalized x = new FloatPolarNormalized(
                 new FloatFirstOrderDifference(nar()::time, v));
         //return senseNumberBi(id, x);
-        return senseNumber(x, ScalarConcepts.FuzzyNeedle, inh(id,LOW), inh(id,HIH));
+        return senseNumber(x, DigitizedScalar.FuzzyNeedle, inh(id,LOW), inh(id,HIH));
     }
 
-    default SensorConcept senseNumber(Term id, FloatSupplier v) {
-        SensorConcept c = new SensorConcept(id, nar(), v
+    default Scalar senseNumber(Term id, FloatSupplier v) {
+        Scalar c = new Scalar(id, nar(), v
         );
         addSensor(c);
         return c;
     }
 
     @NotNull
-    default ScalarConcepts senseNumber(FloatSupplier v, ScalarConcepts.ScalarEncoder model, Term... states) {
+    default DigitizedScalar senseNumber(FloatSupplier v, DigitizedScalar.ScalarEncoder model, Term... states) {
 
         assert(states.length > 1);
 
-        ScalarConcepts fs = new ScalarConcepts(
+        DigitizedScalar fs = new DigitizedScalar(
                v, nar(),
                 model,
                 states
@@ -220,7 +220,7 @@ public interface NSense {
     DurService onFrame(Consumer r);
 
     @NotNull
-    default ScalarConcepts senseNumber(IntFunction<Term> levelTermizer, FloatSupplier v, int precision, ScalarConcepts.ScalarEncoder model)  {
+    default DigitizedScalar senseNumber(IntFunction<Term> levelTermizer, FloatSupplier v, int precision, DigitizedScalar.ScalarEncoder model)  {
 //        IntFunction<Term> levelTermizer = (int x) ->
 //                //($.inh(id, $.the(x)))
 //                //($.p(id, $.the(x)))
@@ -232,15 +232,15 @@ public interface NSense {
     }
 
     @NotNull
-    default ScalarConcepts senseNumberBi(Term id, FloatSupplier v)  {
-        return senseNumber(v, ScalarConcepts.FuzzyNeedle, p(id, LOW), p(id, HIH));
+    default DigitizedScalar senseNumberBi(Term id, FloatSupplier v)  {
+        return senseNumber(v, DigitizedScalar.FuzzyNeedle, p(id, LOW), p(id, HIH));
     }
     @NotNull
-    default ScalarConcepts senseNumberTri(Term id, FloatSupplier v)  {
-        return senseNumber(v, ScalarConcepts.Needle,  p(id, LOW), p(id, MID), p(id, HIH));
+    default DigitizedScalar senseNumberTri(Term id, FloatSupplier v)  {
+        return senseNumber(v, DigitizedScalar.Needle,  p(id, LOW), p(id, MID), p(id, HIH));
     }
 
-    default SensorConcept senseNumber(String id, FloatSupplier v) throws Narsese.NarseseException {
+    default Scalar senseNumber(String id, FloatSupplier v) throws Narsese.NarseseException {
         return senseNumber($(id), v);
     }
 

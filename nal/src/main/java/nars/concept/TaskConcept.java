@@ -5,7 +5,7 @@ import jcog.list.FasterList;
 import nars.NAR;
 import nars.Param;
 import nars.Task;
-import nars.concept.builder.ConceptBuilder;
+import nars.concept.util.ConceptBuilder;
 import nars.control.MetaGoal;
 import nars.table.BeliefTable;
 import nars.table.QuestionTable;

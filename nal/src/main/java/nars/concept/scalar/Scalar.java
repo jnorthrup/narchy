@@ -1,9 +1,10 @@
-package nars.concept;
+package nars.concept.scalar;
 
 import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.Task;
-import nars.concept.builder.ConceptBuilder;
+import nars.concept.Sensor;
+import nars.concept.util.ConceptBuilder;
 import nars.task.DerivedTask;
 import nars.task.signal.SignalTask;
 import nars.task.util.PredictionFeedback;
@@ -20,9 +21,9 @@ import static nars.Op.BELIEF;
 
 
 /**
- * primarily a collector for believing time-changing input signals
+ * primarily a collector for belief-generating time-changing input scalar (1-d real value) signals
  */
-public class SensorConcept extends WiredConcept implements FloatFunction<Term>, FloatSupplier {
+public class Scalar extends Sensor implements FloatFunction<Term>, FloatSupplier {
 
     public final ScalarSignal sensor;
     public FloatSupplier signal;
@@ -30,21 +31,21 @@ public class SensorConcept extends WiredConcept implements FloatFunction<Term>, 
 
     private transient short cause = -1;
 
-    public SensorConcept(Term c, NAR n, FloatSupplier signal) {
+    public Scalar(Term c, NAR n, FloatSupplier signal) {
         this(c, n.conceptBuilder, signal);
         sensor.pri(() -> n.priDefault(BELIEF));
     }
 
-    public SensorConcept(Term c, ConceptBuilder b, FloatSupplier signal) {
+    public Scalar(Term c, ConceptBuilder b, FloatSupplier signal) {
         super(c,
                 //new SensorBeliefTable(n.conceptBuilder.newTemporalBeliefTable(c)),
                 null,
                 null, b);
 
-        this.sensor = new ScalarSignal(c, this, ()->SensorConcept.this.resolution.asFloat()) {
+        this.sensor = new ScalarSignal(c, this, ()->Scalar.this.resolution.asFloat()) {
             @Override
             protected LongSupplier stamp(Truth currentBelief,  NAR nar) {
-                return SensorConcept.this.nextStamp(nar);
+                return Scalar.this.nextStamp(nar);
             }
         };
 
@@ -60,7 +61,7 @@ public class SensorConcept extends WiredConcept implements FloatFunction<Term>, 
     }
 
 
-    public SensorConcept signal(FloatSupplier signal) {
+    public Scalar signal(FloatSupplier signal) {
         this.signal = signal;
         return this;
     }
@@ -113,12 +114,12 @@ public class SensorConcept extends WiredConcept implements FloatFunction<Term>, 
     }
 
 
-    public SensorConcept resolution(float r) {
+    public Scalar resolution(float r) {
         resolution.set(r);
         return this;
     }
 
-    public SensorConcept pri(FloatSupplier pri) {
+    public Scalar pri(FloatSupplier pri) {
         sensor.pri(pri);
         return this;
     }

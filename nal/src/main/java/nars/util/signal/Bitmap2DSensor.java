@@ -5,7 +5,7 @@ import jcog.util.Int2Function;
 import nars.$;
 import nars.NAR;
 import nars.Task;
-import nars.concept.SensorConcept;
+import nars.concept.scalar.Scalar;
 import nars.control.CauseChannel;
 import nars.control.DurService;
 import nars.exe.Causable;
@@ -26,7 +26,7 @@ import static nars.Op.BELIEF;
  * manages reading a camera to a pixel grid of SensorConcepts
  * monochrome
  */
-public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> implements Iterable<SensorConcept> {
+public class Bitmap2DSensor<P extends Bitmap2D> extends Bitmap2DConcepts<P> implements Iterable<Scalar> {
 
     private final NAR nar;
 

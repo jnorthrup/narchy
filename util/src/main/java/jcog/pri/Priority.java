@@ -9,7 +9,6 @@ import static jcog.Util.lerp;
 
 /**
  * Mutable Prioritized
- * TODO make completely atomic
  */
 public interface Priority extends Prioritized {
 

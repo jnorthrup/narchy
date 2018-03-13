@@ -4,7 +4,7 @@ import jcog.bag.Bag;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.concept.state.DefaultConceptState;
+import nars.concept.util.DefaultConceptState;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.test.analyze.BeliefAnalysis;

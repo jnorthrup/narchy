@@ -8,7 +8,7 @@ import jcog.util.Array2DIterable;
 import jcog.util.Int2Function;
 import nars.NAR;
 import nars.Task;
-import nars.concept.SensorConcept;
+import nars.concept.scalar.Scalar;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
@@ -24,13 +24,13 @@ import static nars.Op.BELIEF;
 /**
  * rectangular region of pixels
  */
-public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<SensorConcept> {
+public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Scalar> {
 
-    public final SensorConcept[][] matrix;
+    public final Scalar[][] matrix;
     public final int width, height, area;
     public final P src;
 
-    public final Array2DIterable<SensorConcept> iter;
+    public final Array2DIterable<Scalar> iter;
 
     /** each pixel's belief task priority for next input */
     public final FloatRange pixelPri = new FloatRange(0, 0, 1f);
@@ -45,7 +45,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<SensorConc
         this.src = src;
         this.pixelPri.set( n.priDefault(BELIEF) );
 
-        this.matrix = new SensorConcept[width][height];
+        this.matrix = new Scalar[width][height];
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
@@ -54,7 +54,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<SensorConc
 
                 FloatSupplier f = () -> Util.unitize(src.brightness(xx, yy));
 
-                SensorConcept sss = new SensorConcept(pixelTerm.get(x, y), n, f)
+                Scalar sss = new Scalar(pixelTerm.get(x, y), n, f)
                         .pri(pixelPri);
 
                 n.on(matrix[x][y] = sss);
@@ -65,7 +65,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<SensorConc
     }
 
     /** iterate columns (x) first, then rows (y) */
-    @Override final public Iterator<SensorConcept> iterator() {
+    @Override final public Iterator<Scalar> iterator() {
         return iter.iterator();
     }
 
@@ -73,7 +73,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<SensorConc
         src.update();
     }
 
-    public SensorConcept get(int i) {
+    public Scalar get(int i) {
         return iter.order.get(i);
     }
 
@@ -110,10 +110,10 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<SensorConc
         ;
     }
 
-    public SensorConcept getSafe(int i, int j) {
+    public Scalar getSafe(int i, int j) {
         return matrix[i][j];
     }
-    @Nullable public SensorConcept get(int i, int j) {
+    @Nullable public Scalar get(int i, int j) {
         if ((i < 0) || (j < 0) || (i >= width || j >= height))
                 return null;
         return getSafe(i, j);

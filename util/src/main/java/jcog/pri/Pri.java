@@ -6,12 +6,12 @@ import jcog.Util;
 /**
  * default mutable prioritized implementation
  * float 32 bit
+ *
+ * TODO make completely atomic
  */
 public class Pri implements Priority {
 
-    protected
-        //volatile
-        float pri;
+    protected volatile float pri;
 
     public Pri(Prioritized b) {
         this(b.pri());

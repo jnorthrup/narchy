@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.NAgent;
-import nars.concept.SensorConcept;
+import nars.concept.scalar.Scalar;
 
 
 /**
@@ -29,7 +29,7 @@ public class Line1DSimplest extends NAgent {
      * the current value
      */
 
-    public final SensorConcept in;
+    public final Scalar in;
 
 
     public Line1DSimplest() {

@@ -566,38 +566,38 @@ public enum Util {
         return (a + b) * 0.5;
     }
 
+//
+//    public static short f2s(float conf) {
+//        return (short) (conf * Short.MAX_VALUE);
+//    }
+//
+//    public static byte f2b(float conf) {
+//        return (byte) (conf * Byte.MAX_VALUE);
+//    }
 
-    public static short f2s(float conf) {
-        return (short) (conf * Short.MAX_VALUE);
-    }
+//    /**
+//     * removal rates are approximately monotonically increasing function;
+//     * tests first, mid and last for this  ordering
+//     * first items are highest, so it is actually descending order
+//     * TODO improve accuracy
+//     */
+//    public static boolean isSemiMonotonicallyDec(double[] count) {
+//
+//
+//        int cl = count.length;
+//        return
+//                (count[0] >= count[cl - 1]) &&
+//                        (count[cl / 2] >= count[cl - 1]);
+//    }
 
-    public static byte f2b(float conf) {
-        return (byte) (conf * Byte.MAX_VALUE);
-    }
-
-    /**
-     * removal rates are approximately monotonically increasing function;
-     * tests first, mid and last for this  ordering
-     * first items are highest, so it is actually descending order
-     * TODO improve accuracy
-     */
-    public static boolean isSemiMonotonicallyDec(double[] count) {
-
-
-        int cl = count.length;
-        return
-                (count[0] >= count[cl - 1]) &&
-                        (count[cl / 2] >= count[cl - 1]);
-    }
-
-    /* TODO improve accuracy */
-    public static boolean isSemiMonotonicallyInc(int[] count) {
-
-        int cl = count.length;
-        return
-                (count[0] <= count[cl - 1]) &&
-                        (count[cl / 2] <= count[cl - 1]);
-    }
+//    /* TODO improve accuracy */
+//    public static boolean isSemiMonotonicallyInc(int[] count) {
+//
+//        int cl = count.length;
+//        return
+//                (count[0] <= count[cl - 1]) &&
+//                        (count[cl / 2] <= count[cl - 1]);
+//    }
 
     /**
      * Generic utility method for running a list of tasks in current thread
@@ -642,35 +642,16 @@ public enum Util {
      * clamps a value to 0..1 range
      */
     public static double unitize(double x) {
-        if (x <= 1.0) {
-            if (x >= 0.0) {
-                return x;
-            } else {
-                notNaN(x);
-                return 0.0;
-            }
-        } else {
-            notNaN(x);
-            return 1.0;
-        }
-
+        notNaN(x);
+        return Util.clamp(x, 0.0, 1.0);
     }
 
     /**
      * clamps a value to 0..1 range
      */
     public static float unitize(float x) {
-        if (x <= 1f) {
-            if (x >= 0f) {
-                return x;
-            } else {
-                notNaN(x);
-                return 0f;
-            }
-        } else {
-            notNaN(x);
-            return 1f;
-        }
+        notNaN(x);
+        return Util.clamp(x, 0, 1f);
     }
 
     public static float notNaN(float x) throws NumberException {

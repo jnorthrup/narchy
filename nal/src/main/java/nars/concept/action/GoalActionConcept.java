@@ -1,4 +1,4 @@
-package nars.concept;
+package nars.concept.action;
 
 import jcog.math.FloatRange;
 import nars.NAR;
