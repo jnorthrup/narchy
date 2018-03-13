@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 public abstract class ActionConcept extends Sensor {
 
     protected ActionConcept(@NotNull Term term, @NotNull NAR n) {
-        super(term, n);
+        super(term, n.conceptBuilder);
     }
 
     @Nullable

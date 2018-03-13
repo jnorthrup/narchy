@@ -48,7 +48,7 @@ public class DigitizedScalarTest {
         MutableFloat m = new MutableFloat(0f);
 
         FloatPolarNormalized range = new FloatPolarNormalized(() -> m.floatValue(), 1f);
-        DigitizedScalar f = new DigitizedScalar(range, n, DigitizedScalar.FuzzyNeedle,
+        DigitizedScalar f = new DigitizedScalar(range, DigitizedScalar.FuzzyNeedle, n,
                 $.p("low"), $.p("mid"), $.p("hih"));
 
 
@@ -116,7 +116,7 @@ public class DigitizedScalarTest {
         testSteadyFreqCondition(x,
                 new DigitizedScalar(
                         new FloatNormalized(x::floatValue).updateRange(-1).updateRange(1),
-                        n, DigitizedScalar.FuzzyBinary, $.p("x0"), $.p("x1"), $.p("x2")),
+                        DigitizedScalar.FuzzyBinary, n, $.p("x0"), $.p("x1"), $.p("x2")),
                 (f) -> true /*Util.equals(f, 0.5f + 0.5f * m.floatValue(), tolerance)*/
         , n);
     }
@@ -126,7 +126,7 @@ public class DigitizedScalarTest {
         NAR n = NARS.tmp();
 
         FloatRange x = new FloatRange(0f, 0f, 1f);
-        DigitizedScalar xc = new DigitizedScalar(x, n, DigitizedScalar.Fluid,
+        DigitizedScalar xc = new DigitizedScalar(x, DigitizedScalar.Fluid, n,
                 $.$("x(0)"), $.$("x(1)")
         );
 

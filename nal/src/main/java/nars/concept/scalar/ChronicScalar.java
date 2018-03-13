@@ -1,5 +1,18 @@
 package nars.concept.scalar;
 
+import jcog.Paper;
+import jcog.Skill;
+import jcog.Util;
+import jcog.math.FloatSupplier;
+import jcog.util.ArrayIterator;
+import nars.NAR;
+import nars.term.Term;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Iterator;
+import java.util.function.IntFunction;
+
 /**
  *  an input scalar value de-multiplexed into a set of concepts
  *  representing time-averaged samples which capture
@@ -24,9 +37,24 @@ package nars.concept.scalar;
  *
  *  TODO
  */
-public class ChronicScalar {
+@Paper
+@Skill({"Psychology","Addiction","Motivation","Delayed_gratification","Time_preference"})
+public class ChronicScalar extends DemultiplexedScalar {
 
-    static class Window {
+    private final NAR nar;
+
+    public ChronicScalar(FloatSupplier input, @Nullable Term id, int windows, IntFunction<Window> windowBuilder, NAR nar) {
+        super(input, id, nar);
+        this.nar = nar;
+        this.window = Util.map(0, windows, windowBuilder, Window[]::new);
+    }
+
+    @Override
+    public Iterator<Scalar> iterator() {
+        return ArrayIterator.get(window);
+    }
+
+    class Window extends Scalar {
         public final float dur; //in the system clock units (not global system perception duration)
 
         public float belief; //relative priority of generated beliefs
@@ -34,9 +62,11 @@ public class ChronicScalar {
 
         public float value; //current (0th order) value, updated when the input signal is reprocessed
 
-        Window(float dur) {
+        Window(Term id, FloatSupplier f,  float dur) {
+            super(id, nar.conceptBuilder, f);
             this.dur = dur;
         }
     }
 
+    final Window[] window;
 }

@@ -208,8 +208,7 @@ public interface NSense {
         assert(states.length > 1);
 
         DigitizedScalar fs = new DigitizedScalar(
-               v, nar(),
-                model,
+               v, model, nar(),
                 states
         );
 

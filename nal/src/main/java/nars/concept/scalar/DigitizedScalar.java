@@ -1,22 +1,15 @@
 package nars.concept.scalar;
 
 import jcog.Util;
-import jcog.util.AtomicFloat;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
-import nars.control.CauseChannel;
-import nars.control.NARService;
-import nars.task.ITask;
 import nars.term.Term;
 import nars.truth.Truth;
-import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.stream.Stream;
 
 import static nars.Op.BELIEF;
 import static nars.Op.SETe;
@@ -30,22 +23,7 @@ import static nars.Op.SETe;
  * <p>
  * expects values which have been normalized to 0..1.0 range (ex: use NormalizedFloat)
  */
-public class DigitizedScalar extends NARService implements Iterable<Scalar>, Consumer<NAR>, FloatSupplier {
-
-
-    final AtomicFloat value = new AtomicFloat();
-    public final CauseChannel<ITask> in;
-    final FloatFloatToObjectFunction<Truth> truther;
-
-    @Override
-    public final float asFloat() {
-        return value.floatValue();
-    }
-
-    public Stream<Scalar> stream() {
-        return sensors.stream();
-    }
-
+public class DigitizedScalar extends DemultiplexedScalar {
 
     /**
      * decides the truth value of a 'digit'. returns frequency float
@@ -59,16 +37,12 @@ public class DigitizedScalar extends NARService implements Iterable<Scalar>, Con
         float truth(float x, int digit, int maxDigits);
     }
 
-    private final FloatSupplier input;
-
-    @NotNull
     public final List<Scalar> sensors;
 
 
     float conf;
 
 
-    @NotNull
     @Override
     public Iterator<Scalar> iterator() {
         return sensors.iterator();
@@ -163,15 +137,6 @@ public class DigitizedScalar extends NARService implements Iterable<Scalar>, Con
         return f;
     }
 
-    public Term get(int i) {
-        return sensors.get(i).term();
-    }
-
-    public DigitizedScalar resolution(float r) {
-        for (Scalar s : sensors)
-            s.resolution(r);
-        return this;
-    }
 
 
     @Override
@@ -180,51 +145,33 @@ public class DigitizedScalar extends NARService implements Iterable<Scalar>, Con
     }
 
 
-    public DigitizedScalar(FloatSupplier input, @NotNull NAR nar, ScalarEncoder freqer, @NotNull Term... states) {
-        super($.func(DigitizedScalar.class.getSimpleName(),
+    public DigitizedScalar(FloatSupplier input, ScalarEncoder freqer, @NotNull NAR nar, @NotNull Term... states) {
+        super(input, $.func(DigitizedScalar.class.getSimpleName(),
                 SETe.the(states),
-                $.quote(Util.toString(input)), $.the(freqer.toString())
-        ));
-
-        int numStates = states.length;
-
-        assert (numStates > 1);
+                $.quote(Util.toString(input)), $.the(freqer.getClass().getSimpleName())
+        ), nar);
 
         this.conf = nar.confDefault(BELIEF);
-        this.input = input;
-        this.in = nar.newCauseChannel(id);
-        //output.amplitude(1f / numStates);
 
-        this.sensors = $.newArrayList(numStates);
 
-        truther = (prev,next) -> $.t(next, nar.confDefault(BELIEF));
-
+        assert (states.length > 1);
+        this.sensors = $.newArrayList(states.length);
         int i = 0;
         for (Term s : states) {
             final int ii = i++;
             Scalar sc = new Scalar(s, nar,
-                    () -> freqer.truth(asFloat(), ii, numStates)
+                    () -> freqer.truth(asFloat(), ii, states.length)
             );
             nar.on(sc);
             sensors.add(sc);
         }
+
 
         nar.on(this);
 
     }
 
 
-    @Override
-    public void accept(NAR n) {
-        update(n.time(), n.dur(), n);
-    }
-
-    public void update(long now, int dur, NAR n) {
-
-        value.set(input.asFloat());
-
-        in.input(sensors.stream().map(x -> x.update(truther, now, dur, n)));
-    }
 
 
 
